@@ -53,17 +53,17 @@
 
 **Cỡ:** M
 
-### [ ] T3: Quy tắc 4 và 5 cho workflow
+### [x] T3: Quy tắc 4 và 5 cho workflow
 
 **Mô tả:** Quy tắc 4: transition vào `done` của workflow `standard` và `epic` chỉ có actor `human`; phần kiểm cổng duyệt được thêm ở T9. Quy tắc 5: mọi transition đi lùi về `in-progress` phải có ít nhất một guard có nguồn bằng chứng, và có effect `increment-rework`. Transition đi lùi xác định theo thứ tự khai báo state (plan, quyết định 4).
 
 **Tiêu chí chấp nhận:**
-- [ ] Thêm một agent vào actor của `accept` hoặc `complete` → lỗi `R4`.
-- [ ] Bỏ `increment-rework` khỏi `qa-fail` → lỗi `R5`; bỏ guard của `request-changes` → lỗi `R5`.
-- [ ] Transition `start` (`ready` → `in-progress`) không bị quy tắc 5 coi là đi lùi.
+- [x] Thêm một agent vào actor của `accept` hoặc `complete` → lỗi `R4`.
+- [x] Bỏ `increment-rework` khỏi `qa-fail` → lỗi `R5`; bỏ guard của `request-changes` → lỗi `R5`.
+- [x] Transition `start` (`ready` → `in-progress`) không bị quy tắc 5 coi là đi lùi.
 
 **Kiểm chứng:**
-- [ ] `npm test` và `npm run validate` xanh
+- [x] `npm test` và `npm run validate` xanh
 
 **Phụ thuộc:** T2
 

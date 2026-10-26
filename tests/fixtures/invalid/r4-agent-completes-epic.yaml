@@ -1,0 +1,8 @@
+description: an agent among the actors that move an Epic to done
+rule: R4
+expect:
+  - "workflows.epic.transitions[id=complete].actors"
+patch:
+  - op: set
+    path: "workflows.epic.transitions[id=complete].actors"
+    value: [human, pm]

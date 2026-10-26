@@ -1,0 +1,7 @@
+description: a transition back to in-progress with no guard that brings evidence
+rule: R5
+expect:
+  - "workflows.standard.transitions[id=request-changes].guards"
+patch:
+  - op: remove
+    path: "workflows.standard.transitions[id=request-changes].guards"
