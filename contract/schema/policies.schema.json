@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "policies.yaml",
+  "description": "Limits and rules that apply across the workflow (spec sections 2.4 and 2.7-2.9).",
+  "type": "object",
+  "required": ["rework"],
+  "additionalProperties": false,
+  "properties": {
+    "rework": {
+      "type": "object",
+      "required": ["limit", "on_limit"],
+      "additionalProperties": false,
+      "properties": {
+        "limit": { "type": "integer", "minimum": 1 },
+        "on_limit": { "$ref": "#/$defs/id" }
+      }
+    }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$"
+    }
+  }
+}

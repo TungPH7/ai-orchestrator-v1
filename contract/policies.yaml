@@ -1,0 +1,5 @@
+# Policies (spec sections 2.4 and 2.7–2.9).
+# Rework: request-changes and qa-fail add 1 to the item's Rework count; reaching the limit adds the on_limit effect.
+rework:
+  limit: 3
+  on_limit: flag-needs-you
