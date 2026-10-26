@@ -2,7 +2,7 @@
 
 > **Module:** `sdlc-contract`, xem capability map trong [SPEC.md](SPEC.md). **Phụ thuộc:** không. **Được dùng bởi:** `agent-roster`, `tracker-integration`, `quality-gates`, `dev-workflow`, `release-workflow`, và `orchestrator-cli` ở Cấp 2.
 >
-> **Trạng thái:** đã duyệt (2026-10-26), kể cả các sửa đổi cùng ngày theo Phiên 3 · Lượt 1 (nhánh cho Story có cả FE và BE) và Lượt 2 (release theo quyết định của bạn). **Plan:** [tasks/plan.md](tasks/plan.md). **Nguồn thảo luận:** [misc/brainstorm-discussion.md](misc/brainstorm-discussion.md), Phiên 1 · Lượt 5 đến Phiên 3 · Lượt 3.
+> **Trạng thái:** đã duyệt (2026-10-26), kể cả các sửa đổi cùng ngày theo Phiên 3 · Lượt 1 (nhánh cho Story có cả FE và BE) và Lượt 2 (release theo quyết định của bạn); hoàn thành 2026-10-27. **Plan:** [tasks/archive/sdlc-contract/plan.md](tasks/archive/sdlc-contract/plan.md). **Nguồn thảo luận:** [misc/brainstorm-discussion.md](misc/brainstorm-discussion.md), Phiên 1 · Lượt 5 đến Phiên 3 · Lượt 3.
 
 ## 1. Mục tiêu
 
