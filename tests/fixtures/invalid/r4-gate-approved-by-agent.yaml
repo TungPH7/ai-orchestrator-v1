@@ -1,0 +1,8 @@
+description: an approval gate with an agent among its approvers
+rule: R4
+expect:
+  - "gates[id=merge-approval].approvers"
+patch:
+  - op: set
+    path: "gates[id=merge-approval].approvers"
+    value: [human, reviewer]

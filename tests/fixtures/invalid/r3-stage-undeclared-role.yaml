@@ -1,0 +1,8 @@
+description: a stage worked on by a role that is not declared
+rule: R3
+expect:
+  - "stages[id=spec].roles"
+patch:
+  - op: set
+    path: "stages[id=spec].roles"
+    value: [ba, ux, sa, writer]

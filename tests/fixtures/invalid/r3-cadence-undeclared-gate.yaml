@@ -1,0 +1,9 @@
+description: a cadence entry that names a gate that is not declared
+rule: R3
+expect:
+  - "cadence.schedule[0].gates"
+patch:
+  - op: set
+    path: "cadence.schedule"
+    value:
+      - { when: "Thứ 2", what: "Duyệt SPEC và plan", gates: [spec-approval, design-approval] }

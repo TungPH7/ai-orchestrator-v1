@@ -170,17 +170,17 @@
 
 **Cỡ:** M
 
-### [ ] T9: `stages.yaml`: giai đoạn, cổng duyệt, môi trường, nhịp làm việc, release
+### [x] T9: `stages.yaml`: giai đoạn, cổng duyệt, môi trường, nhịp làm việc, release
 
 **Mô tả:** Viết spec mục 2.2, bảng môi trường ở mục 2.6, nhịp làm việc và quy tắc release ở mục 2.7: 11 giai đoạn, 5 cổng duyệt, 3 môi trường, lịch làm việc, và guard của `release-cut` (điểm cắt hợp lệ, không có nhánh release đang mở). Quy tắc 3 kiểm thêm tham chiếu tới role, guard, artifact và môi trường, kể cả môi trường trong `routing.yaml`. Quy tắc 4 kiểm thêm: mọi cổng duyệt chỉ có `human`.
 
 **Tiêu chí chấp nhận:**
-- [ ] 11 giai đoạn, 5 cổng và 3 môi trường khớp spec; mỗi giai đoạn có người làm, đầu vào, đầu ra (id artifact) và điều kiện để qua.
-- [ ] Cổng có người duyệt khác `human` → lỗi `R4`; giai đoạn tham chiếu artifact hoặc môi trường chưa khai báo → lỗi `R3`.
-- [ ] `docs/sdlc.md` có bảng giai đoạn, cổng, môi trường, nhịp làm việc và quy tắc release.
+- [x] 11 giai đoạn, 5 cổng và 3 môi trường khớp spec; mỗi giai đoạn có người làm, đầu vào, đầu ra (id artifact) và điều kiện để qua.
+- [x] Cổng có người duyệt khác `human` → lỗi `R4`; giai đoạn tham chiếu artifact hoặc môi trường chưa khai báo → lỗi `R3`.
+- [x] `docs/sdlc.md` có bảng giai đoạn, cổng, môi trường, nhịp làm việc và quy tắc release.
 
 **Kiểm chứng:**
-- [ ] `npm test`, `npm run validate`, `npm run render:check` xanh
+- [x] `npm test`, `npm run validate`, `npm run render:check` xanh
 
 **Phụ thuộc:** T7, T8
 
@@ -189,8 +189,8 @@
 **Cỡ:** M
 
 ### Checkpoint 2: sau T6–T9
-- [ ] Đủ 6 file trong `contract/`; quy tắc 1–6 và 8 có test dương và fixture âm
-- [ ] Mọi kịch bản ở spec mục 7 chạy được bằng `lib/contract.mjs`
+- [x] Đủ 6 file trong `contract/`; quy tắc 1–6 và 8 có test dương và fixture âm
+- [x] Mọi kịch bản ở spec mục 7 chạy được bằng `lib/contract.mjs`
 - [ ] Bạn đọc toàn bộ `docs/sdlc.md`, đối chiếu spec mục 2, trước khi làm template
 
 ---

@@ -1,0 +1,8 @@
+description: a stage guarded by a guard that is not declared
+rule: R3
+expect:
+  - "stages[id=release-cut].guards"
+patch:
+  - op: set
+    path: "stages[id=release-cut].guards"
+    value: [cut-point-ready, no-open-release, code-freeze]

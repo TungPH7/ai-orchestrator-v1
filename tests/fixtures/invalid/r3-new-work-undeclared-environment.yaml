@@ -1,0 +1,8 @@
+description: new work tested on an environment that is not declared
+rule: R3
+expect:
+  - "new_work_route.qa_environments"
+patch:
+  - op: set
+    path: "new_work_route.qa_environments"
+    value: [dev]
