@@ -1,0 +1,8 @@
+description: a new-work route for a work type not declared in work_types
+rule: R3
+expect:
+  - "new_work_route.applies_to"
+patch:
+  - op: set
+    path: "new_work_route.applies_to"
+    value: [story, task, spike]

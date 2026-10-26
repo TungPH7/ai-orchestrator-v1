@@ -199,3 +199,32 @@ Phần riêng của từng loại, cộng thêm phần chung nếu loại đó c
 | `story` | E2E test cho từng acceptance criterion đều pass |
 | `task` | Bộ regression pass |
 | `bug` | Có test tái hiện lỗi (fail trước khi sửa, pass sau khi sửa), được đưa vào bộ regression |
+
+## Môi trường, nhánh và định tuyến bug
+
+**Việc mới** (`story`, `task`) tách nhánh từ `develop` và được QA trên `development`.
+
+### Định tuyến bug
+
+Theo vị trí của bản cũ nhất đang có lỗi, và Severity:
+
+| Bản cũ nhất đang có lỗi | Severity | Fix Version | Nhánh gốc | QA trên | Ghi chú |
+| --- | --- | --- | --- | --- | --- |
+| Production | `critical`, `high` | Bản vá của bản đang chạy trên Production (`patch-of-production`) | `main` | `staging`, `production` | Nhánh hotfix/... tách từ main. QA trên Staging, rồi smoke test trên Production |
+| Production | `medium`, `low` | Bản kế tiếp (`next-release`) | `develop` | `development` |  |
+| Staging, chưa lên Production | `critical`, `high` | Bản đang ở Staging (`current-release`) | `release/*` | `staging` |  |
+| Staging, chưa lên Production | `medium`, `low` | Bản kế tiếp (`next-release`) | `develop` | `development` | Ghi known issue vào release note |
+| Chỉ có trên develop | `critical`, `high`, `medium`, `low` | Bản kế tiếp (`next-release`) | `develop` | `development` |  |
+
+- Bug được sửa trên nhánh cũ nhất còn cần bản sửa, rồi merge ngược về các nhánh mới hơn.
+- Lỗi Critical/High được chen vào luồng ngay; lỗi Medium/Low vào Product Backlog để bạn xếp thứ tự.
+- Nhánh release/* và hotfix/* khi kết thúc đều được merge vào main và merge ngược về develop; hotfix làm lúc đang có nhánh release mở thì được merge thêm vào nhánh release đó.
+- Lỗi tìm thấy khi QA một item chưa Done thì không tạo Bug: item quay lại in-progress qua qa-fail, và được sửa trên nhánh mới tách từ nhánh gốc cũ, vẫn mang mã item cũ.
+
+### Đánh số phiên bản
+
+Theo SemVer:
+
+- Mỗi bản release: tăng `minor` (v1.4.0 → v1.5.0)
+- Hotfix: tăng `patch` (v1.4.0 → v1.4.1)
+- Thay đổi phá vỡ tương thích, do bạn quyết: tăng `major`
