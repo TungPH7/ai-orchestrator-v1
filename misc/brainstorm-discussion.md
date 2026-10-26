@@ -11,6 +11,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 1 | `939a53bd-1857-4112-aae9-9942c061d12c` | 2026-10-26 01:56 → 11:08 | Đọc bối cảnh; chốt pilot, hạ tầng, Jira, GitFlow; môi trường cho từng giai đoạn; capability map; 9 giả định; dung lượng GitHub; state machine ticket |
 | 2 | `075cf034-63dd-4693-9a6a-39cdea6d9231` | 2026-10-26 11:21 → 13:16 | Duyệt capability map; bug chỉ lỗi ở Staging; chọn môi trường để làm/fix; có nên thêm Feature; Scrum; Story và Task khác gì nhau; có cần chạy Scrum không; chốt Kanban, viết SPEC-sdlc-contract |
 | 3 | `c097b31c-efdb-42a0-96ba-8a2b65140f99` | 2026-10-26 15:43 → 17:17 | Duyệt SPEC-sdlc-contract và 7 câu hỏi mở; Story có cả FE và BE có tách hai nhánh không; monorepo hay hai repo; release theo quyết định của bạn; lập plan cho sdlc-contract; commit đầu tiên, repo GitHub, đổi tên thư mục |
+| 4 | `46e4e518-ac41-4570-8bcc-37d5a88788c5` | 2026-10-26 21:35 → | Build và đóng module sdlc-contract (14 task, PR #1–#16, không ghi vào lịch sử vì là lượt code); chọn module kế tiếp tracker-integration; giả định và câu hỏi cho tracker-integration |
 
 ---
 
@@ -1288,3 +1289,100 @@ Git không phụ thuộc vào tên thư mục, nên repo, commit và remote vẫ
 Bước tiếp theo là T1: khung dự án, `roles.yaml` và quy tắc 1, chạy bằng `/agent-skills:build`. T1 cần `npm install` để tải `yaml` và `ajv` từ npm. Mình đề xuất bạn đổi tên thư mục, rồi mở một phiên Claude Code mới trong `ai-orchestrator-v1` và gõ `/agent-skills:build`. Phiên mới sẽ làm việc ngay trên đường dẫn mới, và memory đã ghi đủ bối cảnh để làm tiếp.
 
 Lượt này đã được ghi tiếp vào `ai-orchestrator/misc/brainstorm-discussion.md` và commit thành `docs(misc): update brainstorm log`. Từ giờ, sau mỗi lượt brainstorm, mình sẽ commit lịch sử theo cách này để lệnh build luôn thấy cây làm việc sạch.
+
+---
+
+# Phiên 4 · Lượt 1 — 2026-10-27 00:50
+
+**Bạn:**
+
+```markdown
+Xác nhận OK, tiếp tục. Trước khi làm module tiếp theo thì dừng lại hỏi xác nhận nhé
+```
+
+**Claude:**
+
+Tiêu chí 6 đã được xác nhận. Mình đóng module `sdlc-contract` bằng một PR, rồi dừng lại hỏi bạn trước khi bắt đầu module tiếp theo. Trước khi chuyển file, mình tìm các chỗ đang link tới `tasks/plan.md` và `tasks/todo.md`, để sau khi chuyển link không bị gãy.
+
+Có 5 chỗ cần sửa: dòng trạng thái và bảng module trong `SPEC.md`, dòng trạng thái của `SPEC-sdlc-contract.md`, và link tới spec trong hai file plan sau khi chuyển vào `tasks/archive/sdlc-contract/` (đường dẫn tương đối đổi từ `../` thành `../../../`). Mình đọc đúng các dòng đó, cùng với "Thứ tự build" trong `SPEC.md` để chuẩn bị câu hỏi về module tiếp theo.
+
+Mình đã có đủ thông tin để sửa. Còn một điểm nữa: spec mục 4 vẫn ghi lệnh test là `node --test tests/`, lệnh mà Node 24 không chạy được (mình đã nêu ở T1). Mình sửa luôn dòng này trong PR đóng module, tách thành một commit riêng. Trước đó, mình đọc phần "Câu hỏi mở" của `SPEC.md` để chuẩn bị câu hỏi về module tiếp theo.
+
+Giờ mình làm các bước đóng module: đánh dấu checkpoint cuối, sửa link, chuyển hai file vào `tasks/archive/sdlc-contract/`, cập nhật trạng thái trong hai file spec, và sửa dòng lệnh test.
+
+Lúc commit mình lỡ gộp dòng sửa lệnh test vào commit "mark sdlc-contract done", trong khi đã định tách riêng. Commit chưa push, nên mình tách lại cho đúng: đưa dòng lệnh test về như cũ, commit phần trạng thái, rồi sửa lại dòng đó trong một commit riêng.
+
+Module `sdlc-contract` đã đóng: PR #16 đã merge, CI xanh, `tasks/` đã trống để dành cho module sau. Mình cập nhật memory, kể cả yêu cầu vừa rồi của bạn là phải hỏi trước khi bắt đầu module mới.
+
+Module **`sdlc-contract` đã hoàn thành** (PR [#16](https://github.com/TungPH7/ai-orchestrator-v1/pull/16)):
+- Checkpoint cuối đã đánh dấu đủ, kèm ghi chú bạn đã xác nhận ngày 2026-10-27.
+- `tasks/plan.md` và `tasks/todo.md` đã chuyển vào `tasks/archive/sdlc-contract/`, link tới spec đã sửa theo chỗ mới.
+- `SPEC.md` và `SPEC-sdlc-contract.md` đã ghi trạng thái "hoàn thành", và lệnh test ở spec mục 4 đã sửa cho đúng.
+- CI xanh trên PR, và mình đã kiểm mọi link tương đối trong các file vừa sửa đều mở được.
+
+Theo yêu cầu của bạn, mình dừng ở đây để hỏi trước khi bắt đầu module tiếp theo:
+
+Claude hỏi lại bạn 1 câu trắc nghiệm:
+
+**1. Module `sdlc-contract` đã xong. Bắt đầu module nào tiếp theo? Cả ba module dưới đây chỉ phụ thuộc `sdlc-contract`. Module bạn chọn sẽ bắt đầu bằng bước viết spec, và mình sẽ dừng lại để bạn duyệt spec trước khi lập plan.** _(Module kế)_
+
+- **tracker-integration (Recommended)**: Cấu hình workflow và board Jira khớp với state machine, cài Rovo MCP, quy ước gắn mã Jira vào nhánh, commit, PR. Module này dựa vào hệ thống bên ngoài và còn 2 câu hỏi mở trong SPEC.md, nên làm trước để lộ vấn đề sớm. Tới bước thử thật sẽ cần bạn đăng nhập Jira.
+- **agent-roster**: Định nghĩa từng subagent: phạm vi, đầu vào và đầu ra, tool, skill, model. Không phụ thuộc hệ thống bên ngoài, nên làm nhanh và sửa lại dễ.
+- **quality-gates**: Pre-commit hook, pipeline CI cho dự án, branch protection, script kiểm đủ artifact. Khó kiểm thật khi chưa có dự án pilot để chạy thử.
+
+→ Bạn chọn (khoảng 2026-10-27 00:54): **tracker-integration (Recommended)**
+
+Bạn chọn `tracker-integration`. Theo skill `spec-driven-development`, bước đầu tiên là nêu rõ các giả định và hỏi những điểm chưa rõ, trước khi viết spec. Module này dựa nhiều vào Jira Cloud, Rovo MCP và app GitHub for Jira. Mình không muốn đưa ra giả định sai về khả năng của các hệ thống đó, nên trước hết mình đọc lại các phần liên quan trong repo, rồi tra tài liệu chính thức.
+
+Repo đã ghi sẵn vài điểm: Rovo MCP đăng nhập OAuth và dùng quyền của tài khoản bạn, app GitHub for Atlassian lo phần Deployments, và còn hai câu hỏi mở. Mình tra thêm tài liệu chính thức cho những điểm sẽ quyết định thiết kế.
+
+Một phần kết quả tìm kiếm còn mâu thuẫn. Riêng cách app GitHub for Jira nhận diện môi trường liên quan trực tiếp tới câu hỏi mở số 2 trong `SPEC.md`, nên mình đọc thẳng tài liệu trong repo chính thức `atlassian/github-for-jira`.
+
+File này không còn trên nhánh chính, nên mình lấy đúng bản ở commit mà kết quả tìm kiếm đã dẫn, và tìm thêm chỗ code xử lý ánh xạ môi trường.
+
+Mình đã đủ thông tin cho bước nêu giả định. Lượt này có chọn module kế tiếp và mở đầu phần thảo luận thiết kế, nên theo quy ước mình ghi nó vào lịch sử brainstorm và commit trước, rồi mới gửi câu trả lời. Đầu tiên mình lấy mốc thời gian để ghi.
+
+Mình tạo nhánh cho phần spec của module mới, rồi ghi lượt này vào lịch sử: thêm dòng Phiên 4 vào bảng ở đầu file, và nối nội dung lượt vào cuối file.
+
+Lệnh ghi thất bại do shell báo lỗi cú pháp ở heredoc. Việc thêm dòng vào bảng (bằng Edit) đã xong, còn nội dung lượt thì chưa ghi gì. Mình ghi nội dung đó ra một file tạm bằng Write, để không phải đi qua shell, rồi nối file tạm vào cuối lịch sử.
+
+Mình bắt đầu module **`tracker-integration`** bằng bước viết spec. Theo skill `spec-driven-development`, trước khi viết spec mình nêu phạm vi, các giả định và những điểm cần bạn quyết. Vài thông tin về Jira mình chưa kiểm được từ nguồn chính thức; chỗ nào như vậy được đánh dấu [Unverified] hoặc [Inference].
+
+## Phạm vi module
+
+Theo `SPEC.md` và những phần `sdlc-contract` để lại cho module này:
+
+| Trong phạm vi | Thuộc module khác |
+|---|---|
+| Cấu hình Jira khớp hợp đồng: 5 loại item, 3 workflow, các trường (Found in, Severity, Rework count…), Kanban board có giới hạn WIP từng cột, Fix Version "bản kế tiếp" | Prompt, tool và model của từng agent: `agent-roster` |
+| Cài Rovo MCP cho Claude Code, và chặn agent tự chuyển item sang Done hoặc qua cổng duyệt | Pipeline CI, pre-commit, branch protection: `quality-gates` |
+| Quy ước gắn mã Jira vào tên nhánh, commit, PR | Các lệnh điều phối từ spec tới merge: `dev-workflow` |
+| Nối GitHub với Jira: nhánh, commit, PR, build và deploy hiện trên item; panel Deployments nhận đúng 3 môi trường | Pipeline deploy: `release-workflow` |
+| Các transition do vai trò `automation` thực hiện (`refine`, `submit`, `request-changes` khi CI đỏ, `deploy-to-qa`) và việc đếm Rework count | |
+
+## Giả định (bạn sửa nếu sai)
+
+1. **Rovo MCP chuyển được trạng thái item:** danh sách tool chính thức có `getTransitionsForJiraIssue` và `transitionJiraIssue`. Bộ tool mới có thể đổi tên, nên mình sẽ kiểm tên thật khi kết nối.
+2. **[Inference] Mọi thao tác qua Rovo MCP mang tên tài khoản đã đăng nhập OAuth.** Phiên 1 đã ghi là agent dùng đúng quyền của tài khoản bạn; suy ra nếu agent dùng tài khoản của bạn thì Jira không phân biệt được bạn với agent (câu hỏi 3).
+3. **Panel Deployments:** app GitHub for Jira đoán loại môi trường từ tên (tên chứa `prod` là production…), và cho khai báo rõ bằng file `.jira/config.yml` trên nhánh mặc định; khi đã có file này thì app thôi tự đoán. App chỉ nghe sự kiện `deployment_status`, nên pipeline deploy phải tạo deployment kèm status. Mình đề xuất đặt tên environment trên GitHub là `development`, `staging`, `production` và khai báo đủ trong `.jira/config.yml`. Theo một bài KB của Atlassian, lần đầu thêm file này phải ngắt rồi nối lại kết nối GitHub. Đây là câu trả lời cho câu hỏi mở thứ hai trong `SPEC.md`.
+4. **Deploy được gắn vào item nhờ mã Jira trong commit message** trên nhánh được deploy, nên mọi commit của dự án đều cần mã Jira, không chỉ tên nhánh và PR. Đề xuất: nhánh `feature/DEMO-12-login` (như đã ghi trong `SPEC.md`), commit `feat(auth): add email login (DEMO-12)`, tiêu đề PR theo template `pull-request.md`.
+5. **Jira Automation có sẵn trigger từ GitHub:** tạo nhánh, tạo commit, tạo, từ chối hoặc merge PR; ngoài ra có nhóm trigger build và deploy mà mình chưa kiểm tên cụ thể.
+6. **[Unverified] Giới hạn lượt chạy Jira Automation mỗi tháng:** nguồn bên thứ ba ghi gói Free khoảng 100 lượt, Standard khoảng 1.700 lượt. Mình chưa đối chiếu được với trang chính thức của Atlassian.
+
+## Câu hỏi cần bạn quyết
+
+1. **Site Jira của bạn đang ở gói nào:** Free, Standard hay Premium? Bạn xem ở Administration → Billing. Gói quyết định giới hạn Automation và tính năng phân quyền.
+2. **Loại space.** Mình đề xuất **company-managed**: có condition và validator cho từng transition (để chặn đúng "chỉ bạn chuyển sang Done" và các cổng), một workflow scheme dùng chung cho các dự án sau (`project-scaffold`), và có đủ Affects Version, Fix Version, Resolution. Team-managed dựng nhanh hơn nhưng [Unverified] thiếu một phần các tính năng trên.
+3. **Agent đăng nhập Jira bằng tài khoản nào?** Mình đề xuất **một tài khoản bot riêng cho agent**: Jira chặn được bot ở các transition chỉ dành cho bạn, và lịch sử item tách được việc của bạn với việc của agent. Đổi lại tốn một chỗ user trên Jira, và bạn đăng nhập MCP bằng tài khoản bot một lần. Nếu dùng chung tài khoản của bạn, quy tắc "chỉ bạn chuyển sang Done" chỉ còn được giữ bằng hook trong Claude Code. Cách nào thì mình cũng đặt hook gọi `checkTransition` của hợp đồng trước mỗi lần agent dùng tool chuyển trạng thái.
+4. **Ai thực hiện các transition của vai trò `automation`?** Mình đề xuất **GitHub Actions gọi Jira REST API** bằng API token của bot: logic nằm trong repo, đọc thẳng guard của hợp đồng, test được, và không tốn lượt Automation. Cách còn lại là rule Jira Automation với trigger từ GitHub: không cần code, nhưng rule nằm trong Jira, khó test và bị giới hạn lượt chạy.
+5. **Cách dựng cấu hình Jira.** Mình đề xuất ở Cấp 1 **bạn dựng tay theo checklist sinh từ hợp đồng**, kèm **một script chỉ đọc** so cấu hình Jira thật với hợp đồng và báo chỗ lệch. Việc dựng tự động bằng REST API để sau, cho `project-scaffold`, vì mỗi dự án chỉ dựng một lần, còn API sửa workflow thì phức tạp.
+
+Bạn trả lời 5 câu trên (và sửa giả định nào sai) là mình viết `SPEC-tracker-integration.md`, rồi dừng lại để bạn duyệt trước khi lập plan.
+
+Nguồn:
+- [Atlassian Rovo MCP Server: Supported tools](https://support.atlassian.com/atlassian-rovo-mcp-server/docs/supported-tools/)
+- [Atlassian: Link GitHub workflows and deployments to Jira work items](https://support.atlassian.com/jira-cloud-administration/docs/link-github-workflows-and-deployments-to-jira-issues/)
+- [atlassian/github-for-jira: Showing GitHub deployments in Jira](https://github.com/atlassian/github-for-jira/blob/332b5ae08042c631fdce6465386a6c338e819d99/docs/deployments.md)
+- [Atlassian KB: custom environment names show "undefined environment"](https://support.atlassian.com/jira/kb/jira-github-integration-custom-environment-names-does-not-show-up-in-releases-panel-and-instead-show-undefined-environment/)
+- [Atlassian Community: New automation triggers across Jira Cloud, Bitbucket, GitLab & GitHub](https://community.atlassian.com/t5/Automation-articles/New-automation-triggers-across-Jira-Cloud-Bitbucket-GitLab-amp/ba-p/1337351)
+- [eesel.ai: A comprehensive Jira pricing guide for 2026](https://www.eesel.ai/blog/jira-pricing-guide) (nguồn bên thứ ba, cho con số ở giả định 6)
