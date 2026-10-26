@@ -1,0 +1,7 @@
+description: a template file that no artifact uses
+rule: R7
+expect:
+  - "template_files"
+patch:
+  - op: remove
+    path: "artifacts[id=ledger]"

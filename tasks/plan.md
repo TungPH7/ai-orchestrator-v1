@@ -70,10 +70,10 @@ T6, T7 và T8 làm song song được, nhưng gói Pro giới hạn usage nên m
 - [x] T10: Template `spec.md`, `plan.md`, `adr.md`
 - [x] T11: Template `story.md`, `task.md`, `bug.md`, `pull-request.md`
 - [x] T12: Template `review-report.md`, `qa-report.md`, `regression-report.md`
-- [ ] T13: Template `release-notes.md`, `ledger.md` và quy tắc 7
+- [x] T13: Template `release-notes.md`, `ledger.md` và quy tắc 7
 
 ### Checkpoint 3
-- [ ] `npm run validate` xanh với cả quy tắc 7
+- [x] `npm run validate` xanh với cả quy tắc 7
 - [ ] Bạn xem nhanh 12 template
 
 ### Giai đoạn 4: hoàn thiện

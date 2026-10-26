@@ -22,13 +22,13 @@ test('roles.yaml declares the 12 roles of spec section 2.1, in order', () => {
 });
 
 test('readContract lists the files in the templates folder next to the contract folder', (t) => {
-  const root = makeKit(t, { 'templates/spec.md': '', 'templates/adr.md': '' });
+  const root = makeKit(t, { 'templates/extra.md': '' });
 
-  assert.deepEqual(readContract(join(root, 'contract')).template_files, ['adr.md', 'spec.md']);
+  assert.deepEqual(readContract(join(root, 'contract')).template_files, [...readdirSync(join(ROOT, 'templates')), 'extra.md'].sort());
 });
 
 test('readContract returns no template files when the templates folder is missing', (t) => {
-  const root = makeKit(t, {});
+  const root = makeKit(t, {}, { templates: false });
 
   assert.deepEqual(readContract(join(root, 'contract')).template_files, []);
 });
