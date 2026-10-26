@@ -1,0 +1,8 @@
+description: a transition actor that is not a declared role
+rule: R3
+expect:
+  - "workflows.standard.transitions[id=pick-up].actors"
+patch:
+  - op: set
+    path: "workflows.standard.transitions[id=pick-up].actors"
+    value: [tester]

@@ -1,0 +1,7 @@
+description: a state no transition leads to
+rule: R2
+expect:
+  - "workflows.standard.states.cancelled"
+patch:
+  - op: remove
+    path: "workflows.standard.transitions[id=cancel]"

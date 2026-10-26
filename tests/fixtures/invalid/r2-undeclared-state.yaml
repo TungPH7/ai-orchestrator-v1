@@ -1,0 +1,8 @@
+description: a transition that goes to a state the workflow does not declare
+rule: R2
+expect:
+  - "workflows.standard.transitions[id=request-changes].to"
+patch:
+  - op: set
+    path: "workflows.standard.transitions[id=request-changes].to"
+    value: fixing

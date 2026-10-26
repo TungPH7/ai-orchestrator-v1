@@ -35,17 +35,17 @@
 
 **Cỡ:** M (nhiều file nhưng phần lớn chỉ vài dòng)
 
-### [ ] T2: `workflows.yaml`, quy tắc 2 và 3
+### [x] T2: `workflows.yaml`, quy tắc 2 và 3
 
 **Mô tả:** Viết ba workflow `standard`, `epic`, `sub-task` theo spec mục 2.4, cùng danh mục guard (tên, mô tả, nguồn bằng chứng) và effect. Transition `submit` có guard "mọi Sub-task đã `done`". Thêm quy tắc 2 (đồ thị trạng thái) và quy tắc 3 (tham chiếu tới guard, effect, role đều đã khai báo). Tham chiếu tới work type được kiểm ở T6.
 
 **Tiêu chí chấp nhận:**
-- [ ] `standard` có 8 state và 9 transition; `epic` có 6 state và 5 transition; `sub-task` có 3 state. Actor, guard và effect của từng transition khớp spec mục 2.4.
-- [ ] Quy tắc 2 bắt được: `from` hoặc `to` chưa khai báo; state không đi tới được từ `initial`; state chưa kết thúc không có đường tới state kết thúc; state kết thúc có transition đi ra. Mỗi trường hợp có một fixture âm.
-- [ ] Quy tắc 3 bắt được guard, effect và role chưa khai báo, mỗi loại một fixture âm.
+- [x] `standard` có 8 state và 9 transition; `epic` có 6 state và 5 transition; `sub-task` có 3 state. Actor, guard và effect của từng transition khớp spec mục 2.4.
+- [x] Quy tắc 2 bắt được: `from` hoặc `to` chưa khai báo; state không đi tới được từ `initial`; state chưa kết thúc không có đường tới state kết thúc; state kết thúc có transition đi ra. Mỗi trường hợp có một fixture âm.
+- [x] Quy tắc 3 bắt được guard, effect và role chưa khai báo, mỗi loại một fixture âm.
 
 **Kiểm chứng:**
-- [ ] `npm test` và `npm run validate` xanh
+- [x] `npm test` và `npm run validate` xanh
 
 **Phụ thuộc:** T1
 

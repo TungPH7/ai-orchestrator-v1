@@ -1,0 +1,8 @@
+description: a transition effect that is not declared under effects
+rule: R3
+expect:
+  - "workflows.epic.transitions[id=approve-plan].effects"
+patch:
+  - op: set
+    path: "workflows.epic.transitions[id=approve-plan].effects"
+    value: [ready-children]

@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -11,13 +11,18 @@ const ROOT = fileURLToPath(new URL('../', import.meta.url));
 const CONTRACT_DIR = join(ROOT, 'contract');
 const VALIDATE_SCRIPT = join(ROOT, 'scripts', 'validate-contract.mjs');
 
-const INVALID_ROLES = 'roles:\n  - id: pm\n    responsibilities: "Bản tổng hợp mỗi sáng"\n';
+// The real roles.yaml with the name of `pm` removed: breaks R1 only.
+const INVALID_ROLES = readFileSync(join(CONTRACT_DIR, 'roles.yaml'), 'utf8').replace(/^ {4}name: "Project Manager"\r?\n/m, '');
 
-// Writes { 'relative/path': text } into a fresh temp folder, removed when the test ends.
+// Copies the real contract YAML files into a fresh temp folder, then applies { 'relative/path': text },
+// where null leaves a file out. The folder is removed when the test ends.
 function makeKit(t, files) {
   const root = mkdtempSync(join(tmpdir(), 'kit-'));
   t.after(() => rmSync(root, { recursive: true, force: true }));
-  for (const [path, text] of Object.entries(files)) {
+  const real = readdirSync(CONTRACT_DIR).filter((file) => file.endsWith('.yaml'));
+  const all = { ...Object.fromEntries(real.map((file) => [`contract/${file}`, readFileSync(join(CONTRACT_DIR, file), 'utf8')])), ...files };
+  for (const [path, text] of Object.entries(all)) {
+    if (text === null) continue;
     mkdirSync(dirname(join(root, path)), { recursive: true });
     writeFileSync(join(root, path), text);
   }
@@ -34,21 +39,27 @@ test('roles.yaml declares the 12 roles of spec section 2.1, in order', () => {
 });
 
 test('readContract lists the files in the templates folder next to the contract folder', (t) => {
-  const root = makeKit(t, { 'contract/roles.yaml': INVALID_ROLES, 'templates/spec.md': '', 'templates/adr.md': '' });
+  const root = makeKit(t, { 'templates/spec.md': '', 'templates/adr.md': '' });
 
   assert.deepEqual(readContract(join(root, 'contract')).template_files, ['adr.md', 'spec.md']);
 });
 
 test('readContract returns no template files when the templates folder is missing', (t) => {
-  const root = makeKit(t, { 'contract/roles.yaml': INVALID_ROLES });
+  const root = makeKit(t, {});
 
   assert.deepEqual(readContract(join(root, 'contract')).template_files, []);
 });
 
 test('readContract names the contract file it cannot read', (t) => {
-  const root = makeKit(t, { 'contract/.keep': '' });
+  const root = makeKit(t, { 'contract/workflows.yaml': null });
 
-  assert.throws(() => readContract(join(root, 'contract')), /roles\.yaml/);
+  assert.throws(() => readContract(join(root, 'contract')), /workflows\.yaml/);
+});
+
+test('readContract merges the top-level keys of every contract file', () => {
+  const contract = readContract(CONTRACT_DIR);
+
+  assert.deepEqual(Object.keys(contract).sort(), ['effects', 'guards', 'roles', 'template_files', 'workflows']);
 });
 
 test('loadContract returns a deeply frozen contract', () => {
