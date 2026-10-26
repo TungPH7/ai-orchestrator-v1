@@ -287,7 +287,7 @@ Mọi đường dẫn tính từ gốc repo của dự án. Agent-skills mặc �
 ```
 npm install
 npm run validate        # node scripts/validate-contract.mjs: kiểm tra schema và tính nhất quán (mục 7)
-npm test                # node --test tests/: test của validator, thư viện và các kịch bản
+npm test                # node --test "tests/**/*.test.mjs": test của validator, thư viện, các kịch bản và template (Node 24 không nhận tham số là thư mục)
 npm run render          # node scripts/render-docs.mjs: sinh docs/sdlc.md từ YAML
 npm run render:check    # sinh lại vào bộ nhớ, báo lỗi nếu docs/sdlc.md đã cũ (dùng trong CI)
 ```
