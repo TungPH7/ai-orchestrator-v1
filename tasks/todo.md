@@ -116,17 +116,17 @@
 
 ## Giai đoạn 2: phần còn lại của hợp đồng
 
-### [ ] T6: `work-items.yaml`, quy tắc 8
+### [x] T6: `work-items.yaml`, quy tắc 8
 
 **Mô tả:** Viết spec mục 2.3 và 2.5: các loại work item và ánh xạ sang Jira, cách chọn loại, quy ước nhánh và PR, các trường dữ liệu, DoR và DoD. Quy tắc 8: mỗi work type gắn với đúng một workflow. Quy tắc 3 kiểm thêm tham chiếu tới work type trong `workflows.yaml`. Thêm phần tương ứng vào `docs/sdlc.md`.
 
 **Tiêu chí chấp nhận:**
-- [ ] Đủ 5 loại (Epic, Story, Task, Bug, Sub-task), 7 trường dữ liệu, DoR của Story, Task, Bug, DoD chung, DoD riêng của từng loại và DoD của Epic, đúng như spec.
-- [ ] Work type không gắn workflow nào, hoặc gắn hai workflow → lỗi `R8` (hai fixture).
-- [ ] `docs/sdlc.md` có bảng phân cấp, quy ước, trường dữ liệu, DoR, DoD.
+- [x] Đủ 5 loại (Epic, Story, Task, Bug, Sub-task), 7 trường dữ liệu, DoR của Story, Task, Bug, DoD chung, DoD riêng của từng loại và DoD của Epic, đúng như spec.
+- [x] Work type không gắn workflow nào, hoặc gắn hai workflow → lỗi `R8` (hai fixture).
+- [x] `docs/sdlc.md` có bảng phân cấp, quy ước, trường dữ liệu, DoR, DoD.
 
 **Kiểm chứng:**
-- [ ] `npm test`, `npm run validate`, `npm run render:check` xanh
+- [x] `npm test`, `npm run validate`, `npm run render:check` xanh
 
 **Phụ thuộc:** T5
 

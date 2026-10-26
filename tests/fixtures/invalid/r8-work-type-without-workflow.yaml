@@ -1,0 +1,8 @@
+description: a work type that no workflow applies to
+rule: R8
+expect:
+  - "work_types[id=bug]"
+patch:
+  - op: set
+    path: "workflows.standard.applies_to"
+    value: [story, task]

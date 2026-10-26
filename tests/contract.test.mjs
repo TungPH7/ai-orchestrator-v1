@@ -1,8 +1,9 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { readFileSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { parse } from 'yaml';
 import { loadContract, readContract } from '../lib/contract.mjs';
 import { CONTRACT_DIR, ROOT, makeKit } from './helpers/kit.mjs';
 
@@ -41,7 +42,11 @@ test('readContract names the contract file it cannot read', (t) => {
 test('readContract merges the top-level keys of every contract file', () => {
   const contract = readContract(CONTRACT_DIR);
 
-  assert.deepEqual(Object.keys(contract).sort(), ['effects', 'guards', 'rework', 'roles', 'template_files', 'workflows']);
+  for (const file of readdirSync(CONTRACT_DIR).filter((name) => name.endsWith('.yaml'))) {
+    for (const [key, value] of Object.entries(parse(readFileSync(join(CONTRACT_DIR, file), 'utf8')))) {
+      assert.deepEqual(contract[key], value, `${file}: ${key}`);
+    }
+  }
 });
 
 test('loadContract returns a deeply frozen contract', () => {

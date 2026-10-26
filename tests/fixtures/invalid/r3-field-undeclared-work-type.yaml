@@ -1,0 +1,8 @@
+description: a field that applies to a work type not declared in work_types
+rule: R3
+expect:
+  - "work_item_fields[id=severity].applies_to"
+patch:
+  - op: set
+    path: "work_item_fields[id=severity].applies_to"
+    value: [bug, defect]
