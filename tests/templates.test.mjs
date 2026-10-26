@@ -29,6 +29,21 @@ const SECTIONS = {
   'task.md': ['Goal', 'Technical Checklist', 'Dependencies', 'Verification', 'Definition of Ready', 'Example'],
   'bug.md': ['Steps to Reproduce', 'Actual Result', 'Expected Result', 'Fields', 'Evidence', 'Definition of Ready', 'Example'],
   'pull-request.md': ['Jira', 'What Changed', 'How It Was Tested', 'Acceptance Criteria Coverage', 'Risks', 'Definition of Done', 'Example'],
+  // The five axes and the review checklist of code-review-and-quality.
+  'review-report.md': [
+    'Context',
+    'Findings',
+    'Correctness',
+    'Readability',
+    'Architecture',
+    'Security',
+    'Performance',
+    'Verification',
+    'Verdict',
+    'Example',
+  ],
+  'qa-report.md': ['Result', 'Environment', 'Commit', 'Acceptance Criteria', 'CI Artifacts', 'Notes', 'Example'],
+  'regression-report.md': ['Release', 'Regression Result', 'Demo and UAT', 'Open Bugs', 'Known Issues', 'Exit Check', 'Example'],
 };
 
 const EPIC_HEADER = ['spec.md', 'plan.md', 'adr.md'];
@@ -120,6 +135,31 @@ test('a Bug has the four fields its DoR asks for', () => {
     assert.ok(contract.work_item_fields.some((field) => field.name === name), `${name} is a contract field`);
     assert.match(section('bug.md', 'Fields'), new RegExp(`^\\| ${name} \\|`, 'm'), name);
   }
+});
+
+test('a review finding names its severity (Critical, High, Medium or Low), its axis and where it is', () => {
+  const findings = section('review-report.md', 'Findings');
+
+  assert.match(findings, /^\| Severity \| Axis \| Where \| Finding \| Suggested fix \|$/m);
+  for (const level of ['Critical', 'High', 'Medium', 'Low']) assert.match(findings, new RegExp(`\\b${level}\\b`), level);
+});
+
+test('a QA report says PASS or FAIL, and gives the result of each acceptance criterion', () => {
+  assert.match(section('qa-report.md', 'Result'), /PASS[\s\S]*FAIL|FAIL[\s\S]*PASS/);
+  assert.match(section('qa-report.md', 'Acceptance Criteria'), /^\| Acceptance criterion \| Result \| Evidence \|$/m);
+});
+
+test('a regression report counts open Bugs for every Severity level', () => {
+  const levels = contract.work_item_fields.find(({ id }) => id === 'severity').values.map(({ name }) => name);
+
+  for (const level of levels) assert.match(section('regression-report.md', 'Open Bugs'), new RegExp(`^\\| ${level} \\|`, 'm'), level);
+});
+
+test('the exit check of a regression report quotes the exit condition of staging-verify', () => {
+  const exit = contract.stages.find(({ id }) => id === 'staging-verify').exit;
+  const conditions = exit.split('; ').map((condition) => condition[0].toUpperCase() + condition.slice(1));
+
+  assert.deepEqual(checklist(section('regression-report.md', 'Exit Check')), conditions);
 });
 
 test('the PR maps each acceptance criterion to the test that covers it', () => {

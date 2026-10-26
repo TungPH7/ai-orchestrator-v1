@@ -235,17 +235,17 @@ Mọi template: tiêu đề và hướng dẫn điền viết tiếng Anh, chỗ
 
 **Cỡ:** M
 
-### [ ] T12: Template `review-report.md`, `qa-report.md`, `regression-report.md`
+### [x] T12: Template `review-report.md`, `qa-report.md`, `regression-report.md`
 
 **Mô tả:** Báo cáo review trên PR, báo cáo QA của từng item trên Jira, và báo cáo regression của bản release trong Git.
 
 **Tiêu chí chấp nhận:**
-- [ ] `review-report.md`: năm trục review của agent-skills (correctness, readability, architecture, security, performance), mỗi finding có mức Critical/High/Medium/Low.
-- [ ] `qa-report.md`: kết quả PASS/FAIL, kết quả từng acceptance criterion, môi trường, commit đã kiểm, link artifact CI. `regression-report.md`: phiên bản, kết quả trên Staging, Bug còn mở theo severity, known issue.
-- [ ] Mỗi template có hướng dẫn điền và một ví dụ ngắn.
+- [x] `review-report.md`: năm trục review của agent-skills (correctness, readability, architecture, security, performance), mỗi finding có mức Critical/High/Medium/Low.
+- [x] `qa-report.md`: kết quả PASS/FAIL, kết quả từng acceptance criterion, môi trường, commit đã kiểm, link artifact CI. `regression-report.md`: phiên bản, kết quả trên Staging, Bug còn mở theo severity, known issue.
+- [x] Mỗi template có hướng dẫn điền và một ví dụ ngắn.
 
 **Kiểm chứng:**
-- [ ] Thủ công: đối chiếu với spec mục 2.2 (stage `review`, `qa-verify`, `staging-verify`) và 2.9
+- [x] Thủ công: đối chiếu với spec mục 2.2 (stage `review`, `qa-verify`, `staging-verify`) và 2.9
 
 **Phụ thuộc:** T8
 
