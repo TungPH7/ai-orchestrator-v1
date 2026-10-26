@@ -1,0 +1,7 @@
+description: a role without a name
+rule: R1
+expect:
+  - "roles[id=pm].name"
+patch:
+  - op: remove
+    path: "roles[id=pm].name"

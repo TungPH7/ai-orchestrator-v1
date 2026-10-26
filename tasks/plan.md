@@ -41,7 +41,7 @@ T6, T7 và T8 làm song song được, nhưng gói Pro giới hạn usage nên m
 ## Danh sách task
 
 ### Giai đoạn 1: khung và workflow
-- [ ] T1: Khung dự án và `roles.yaml`, quy tắc 1
+- [x] T1: Khung dự án và `roles.yaml`, quy tắc 1
 - [ ] T2: `workflows.yaml`, quy tắc 2 và 3
 - [ ] T3: Quy tắc 4 và 5 cho workflow
 - [ ] T4: `allowedTransitions`, `checkTransition` và kịch bản chuyển trạng thái
