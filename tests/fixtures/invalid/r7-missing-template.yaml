@@ -1,0 +1,9 @@
+description: an artifact whose template file does not exist, which also leaves its old template unused
+rule: R7
+expect:
+  - "artifacts[id=adr].template"
+  - "template_files"
+patch:
+  - op: set
+    path: "artifacts[id=adr].template"
+    value: templates/decision.md

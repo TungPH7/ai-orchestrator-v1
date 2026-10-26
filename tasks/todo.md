@@ -253,17 +253,17 @@ Mọi template: tiêu đề và hướng dẫn điền viết tiếng Anh, chỗ
 
 **Cỡ:** S
 
-### [ ] T13: Template `release-notes.md`, `ledger.md` và quy tắc 7
+### [x] T13: Template `release-notes.md`, `ledger.md` và quy tắc 7
 
 **Mô tả:** Template release note và ledger tiến độ của agent. Quy tắc 7: mọi artifact đầu ra của stage có template tồn tại trên đĩa, và mọi file trong `templates/` đều được một artifact dùng. `readContract` đã đọc danh sách file template từ T1, nên quy tắc vẫn là hàm thuần.
 
 **Tiêu chí chấp nhận:**
-- [ ] `release-notes.md`: phiên bản, mục tiêu của bản, tính năng, bản sửa lỗi, known issue, kèm phần rút gọn để gửi khách. `ledger.md`: mã item, bước hiện tại, việc đã xong, việc kế tiếp, quyết định, điểm bị chặn.
-- [ ] Artifact trỏ tới template không tồn tại, hoặc có file template không artifact nào dùng → lỗi `R7` (hai fixture).
-- [ ] `npm run validate` xanh với đủ 12 template.
+- [x] `release-notes.md`: phiên bản, mục tiêu của bản, tính năng, bản sửa lỗi, known issue, kèm phần rút gọn để gửi khách. `ledger.md`: mã item, bước hiện tại, việc đã xong, việc kế tiếp, quyết định, điểm bị chặn.
+- [x] Artifact trỏ tới template không tồn tại, hoặc có file template không artifact nào dùng → lỗi `R7` (hai fixture).
+- [x] `npm run validate` xanh với đủ 12 template.
 
 **Kiểm chứng:**
-- [ ] `npm test`, `npm run validate`, `npm run render:check` xanh
+- [x] `npm test`, `npm run validate`, `npm run render:check` xanh
 
 **Phụ thuộc:** T9, T10, T11, T12
 
@@ -272,7 +272,7 @@ Mọi template: tiêu đề và hướng dẫn điền viết tiếng Anh, chỗ
 **Cỡ:** M
 
 ### Checkpoint 3: sau T10–T13
-- [ ] `npm run validate` xanh với cả 8 quy tắc
+- [x] `npm run validate` xanh với cả 8 quy tắc
 - [ ] Bạn xem nhanh 12 template
 
 ---

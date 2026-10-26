@@ -44,6 +44,9 @@ const SECTIONS = {
   ],
   'qa-report.md': ['Result', 'Environment', 'Commit', 'Acceptance Criteria', 'CI Artifacts', 'Notes', 'Example'],
   'regression-report.md': ['Release', 'Regression Result', 'Demo and UAT', 'Open Bugs', 'Known Issues', 'Exit Check', 'Example'],
+  // Added, Changed and Fixed are the changelog sections of documentation-and-adrs.
+  'release-notes.md': ['Goal', 'Added', 'Changed', 'Fixed', 'Known Issues', 'Customer Summary', 'Example'],
+  'ledger.md': ['Current Step', 'Done', 'Next', 'Decisions', 'Blockers', 'Example'],
 };
 
 const EPIC_HEADER = ['spec.md', 'plan.md', 'adr.md'];
@@ -160,6 +163,18 @@ test('the exit check of a regression report quotes the exit condition of staging
   const conditions = exit.split('; ').map((condition) => condition[0].toUpperCase() + condition.slice(1));
 
   assert.deepEqual(checklist(section('regression-report.md', 'Exit Check')), conditions);
+});
+
+test('release notes name the version, and a ledger names its item', () => {
+  assert.match(read('release-notes.md'), /^# Release notes: <vX\.Y\.Z>/m);
+  assert.match(read('ledger.md'), /^# Ledger: <KEY>/m);
+});
+
+test('every artifact in the catalog has its template here', () => {
+  assert.deepEqual(
+    readdirSync(TEMPLATE_DIR).sort(),
+    contract.artifacts.map(({ template }) => template.replace('templates/', '')).sort(),
+  );
 });
 
 test('the PR maps each acceptance criterion to the test that covers it', () => {
