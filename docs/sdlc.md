@@ -21,6 +21,32 @@ Bản đọc của hợp đồng trong `contract/`. Nội dung và lý do của 
 | `devops` | DevOps Engineer | Deploy, cắt release, ship, rollback |
 | `automation` | CI, webhook, Jira Automation | Chuyển trạng thái theo dữ kiện: CI xanh, merge, deploy xong |
 
+## Giai đoạn và cổng
+
+| Stage id | Giai đoạn | Người làm | Đầu vào | Đầu ra | Điều kiện để qua |
+| --- | --- | --- | --- | --- | --- |
+| `spec` | Viết SPEC cho Epic | `ba` (chính), `ux`, `sa` | Epic ở new | SPEC của Epic (`spec`) | Cổng ① `spec-approval`: Bạn duyệt SPEC của Epic |
+| `plan` | Lập plan, tạo Story/Task | `sa` (chính), `ba` | SPEC đã duyệt | Plan (`plan`); Story (`story`); Task (`task`); Plan gồm hợp đồng API cho Story có cả FE và BE; các Story/Task nằm trên Jira | Cổng ② `plan-approval`: Bạn duyệt plan của Epic |
+| `build` | Code theo TDD | `fe-dev`, `be-dev` | Item ready | Nhánh, commit, test | Unit và integration test pass ở local; pre-commit pass |
+| `ci-gate` | Quality gate tự động | `automation` | PR | Kết quả CI | Mọi check CI xanh |
+| `review` | Review code và security | `reviewer`, `security`, `human`; human duyệt sau reviewer và security | PR có CI xanh | Báo cáo review (`review-report`) | Không còn finding Critical/High; Cổng ③ `merge-approval`: Bạn approve PR |
+| `merge` | Merge PR | `automation` | PR đã approve | Commit trên nhánh đích | Branch protection pass |
+| `qa-verify` | QA trên môi trường kiểm | `qa` | Bản đã deploy lên môi trường QA (mục 2.6) | Báo cáo QA của item (`qa-report`) | Báo cáo PASS; bạn chấp nhận |
+| `release-cut` | Cắt release lên Staging, khi bạn yêu cầu | `devops` | Điểm cắt trên develop có ít nhất một item Done chưa release; không có nhánh release/* nào đang mở (mục 2.7). Guard: `cut-point-ready`, `no-open-release` | Nhánh release/vX.Y.0 tách từ điểm cắt, Fix Version | Cổng ④ `release-cut-approval`: Bạn duyệt danh sách item của bản |
+| `staging-verify` | Full regression, demo, UAT | `qa`, `human` | Bản release trên Staging | Báo cáo regression của bản release (`regression-report`); Release note (`release-notes`) | Regression PASS; không còn Bug Critical/High mở cho bản này |
+| `ship` | Lên Production | `devops` | Bản đã qua Staging | Merge vào main, tag vX.Y.Z, merge ngược về develop | Smoke test sau deploy pass; Cổng ⑤ `production-approval`: Bạn duyệt lên Production |
+| `hotfix` | Sửa gấp trên Production | `fe-dev`, `be-dev`, `qa`, `devops`; fe-dev hoặc be-dev sửa | Bug Critical/High trên Production | Nhánh hotfix/..., tag bản vá | Như ship, rút gọn |
+
+### Cổng duyệt
+
+| Cổng | Gate id | Giai đoạn | Người duyệt | Nội dung |
+| --- | --- | --- | --- | --- |
+| ① | `spec-approval` | `spec` | `human` | Bạn duyệt SPEC của Epic |
+| ② | `plan-approval` | `plan` | `human` | Bạn duyệt plan của Epic |
+| ③ | `merge-approval` | `review` | `human` | Bạn approve PR |
+| ④ | `release-cut-approval` | `release-cut` | `human` | Bạn duyệt danh sách item của bản |
+| ⑤ | `production-approval` | `ship` | `human` | Bạn duyệt lên Production |
+
 ## Work item
 
 ### Phân cấp
@@ -202,6 +228,12 @@ Phần riêng của từng loại, cộng thêm phần chung nếu loại đó c
 
 ## Môi trường, nhánh và định tuyến bug
 
+| Môi trường | Nhận code từ | Khi nào deploy | Dữ liệu |
+| --- | --- | --- | --- |
+| Development | `develop` | Tự động mỗi khi develop có commit mới | Dữ liệu test |
+| Staging | `release/*`, `hotfix/*` | Khi nhánh release hoặc hotfix có commit mới | Giống production, đã ẩn danh |
+| Production | `main` + tag | Sau cổng ⑤ | Thật |
+
 **Việc mới** (`story`, `task`) tách nhánh từ `develop` và được QA trên `development`.
 
 ### Định tuyến bug
@@ -230,6 +262,22 @@ Theo SemVer:
 - Thay đổi phá vỡ tương thích, do bạn quyết: tăng `major`
 
 ## Nhịp làm việc, release, WIP và số liệu
+
+Quy trình chạy theo Kanban: agent kéo item ready kế tiếp khi còn chỗ WIP. Không có sprint, story point hay Daily Scrum.
+
+| Thời điểm | Việc |
+| --- | --- |
+| Thứ 2 | Bạn sắp lại thứ tự Product Backlog và duyệt các SPEC, plan đang chờ (cổng ① ②) |
+| Hằng ngày | pm gửi bản tổng hợp từ Jira và GitHub: việc đang chờ bạn, các item đã Done nhưng chưa release, và item Done đã chờ release lâu nhất |
+| Khi bạn quyết định | release-cut lên Staging; full regression, demo và UAT trên Staging; rồi ship (cổng ④ ⑤) |
+| Thứ 6 | Retro dựa trên số liệu của tuần |
+
+### Release
+
+- **Release theo quyết định của bạn, không theo lịch cố định.** Bạn cắt release khi thấy đủ giá trị để đưa lên, ví dụ khi mọi Story của một Epic đã Done, hoặc khi khách cần sớm một tính năng. Lúc lên Production cũng do bạn quyết ở cổng ⑤.
+- **Điểm cắt.** develop nhận merge liên tục, nên lúc bạn muốn release thường vẫn còn item đã merge nhưng chưa Done. Vì vậy nhánh release tách từ điểm cắt, không từ commit mới nhất của develop. Điểm cắt là commit mới nhất trên lịch sử develop sao cho mọi item có commit tính tới điểm đó đều đã Done, và không item nào trong số đó còn commit nằm sau điểm cắt. Item nằm sau điểm cắt vào bản kế tiếp. release-workflow tính điểm cắt và đưa bạn danh sách item để duyệt ở cổng ④.
+- **Mỗi lúc chỉ có một nhánh release/* mở.** Muốn cắt bản mới thì bản đang ở Staging phải lên Production xong trước.
+- **Fix Version.** Luôn có sẵn một Fix Version chưa phát hành làm "bản kế tiếp", vì Bug Medium/Low được gắn vào đó ngay khi triage (mục 2.6). Khi cắt release, Fix Version này được gán cho các item trong điểm cắt; item nằm sau điểm cắt chuyển sang một Fix Version kế tiếp mới. Mô tả Fix Version ghi mục tiêu của bản để báo khách; mục tiêu là dự báo, không phải cam kết.
 
 ### Giới hạn WIP
 

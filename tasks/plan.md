@@ -57,11 +57,11 @@ T6, T7 và T8 làm song song được, nhưng gói Pro giới hạn usage nên m
 - [x] T6: `work-items.yaml`, quy tắc 8
 - [x] T7: `routing.yaml`, quy tắc 6 và `routeBug`
 - [x] T8: `policies.yaml` đầy đủ và danh mục artifact
-- [ ] T9: `stages.yaml`: giai đoạn, cổng duyệt, môi trường, nhịp làm việc, release
+- [x] T9: `stages.yaml`: giai đoạn, cổng duyệt, môi trường, nhịp làm việc, release
 
 ### Checkpoint 2
-- [ ] Đủ 6 file trong `contract/`; quy tắc 1–6 và 8 có test dương và fixture âm
-- [ ] Mọi kịch bản ở spec mục 7 chạy được bằng `lib/contract.mjs`
+- [x] Đủ 6 file trong `contract/`; quy tắc 1–6 và 8 có test dương và fixture âm
+- [x] Mọi kịch bản ở spec mục 7 chạy được bằng `lib/contract.mjs`
 - [ ] Bạn đọc toàn bộ `docs/sdlc.md`, đối chiếu spec mục 2
 
 ### Giai đoạn 3: template

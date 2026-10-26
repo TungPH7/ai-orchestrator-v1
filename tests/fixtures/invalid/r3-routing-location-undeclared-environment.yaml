@@ -1,0 +1,8 @@
+description: a bug routing location that is not a declared environment
+rule: R3
+expect:
+  - "bug_routing[id=develop]"
+patch:
+  - op: set
+    path: "bug_routing[id=development].id"
+    value: develop

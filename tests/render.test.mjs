@@ -26,6 +26,23 @@ test('the generated file says it is generated and must not be edited by hand', (
   assert.match(docs.split('\n')[0], /generated.*do not edit/i);
 });
 
+test('the stage table has one row per stage, and the gate table one row per gate', () => {
+  for (const { id, name } of contract.stages) assert.ok(docs.includes(`| \`${id}\` | ${name} |`), id);
+  for (const { id, number } of contract.gates) assert.ok(docs.includes(`| ${String.fromCharCode(0x2460 + number - 1)} | \`${id}\` |`), id);
+});
+
+test('the environment table has one row per environment', () => {
+  for (const { name, deploy, data } of contract.environments) {
+    const row = docs.split('\n').find((line) => line.startsWith(`| ${name} |`));
+    assert.ok(row?.endsWith(`| ${deploy} | ${data} |`), name);
+  }
+});
+
+test('the cadence table and the release rules are rendered', () => {
+  for (const { when } of contract.cadence.schedule) assert.ok(docs.includes(`| ${when} |`), when);
+  for (const { title } of contract.release_rules) assert.ok(docs.includes(`**${title}.**`), title);
+});
+
 test('the bug routing table has one row per route, with its Fix Version, base branch and QA environments', () => {
   for (const { id, name, routes } of contract.bug_routing) {
     for (const { severities, fix_version: fixVersion, base_branch: base } of routes) {
@@ -75,6 +92,7 @@ test('each workflow has a Mermaid state diagram with every state and transition'
 test('sections follow the order of spec section 2', () => {
   const headings = [
     '## Vai trò',
+    '## Giai đoạn và cổng',
     '## Work item',
     '## Workflow',
     '## DoR và DoD',

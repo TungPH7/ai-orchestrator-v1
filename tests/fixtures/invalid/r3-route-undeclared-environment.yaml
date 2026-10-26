@@ -1,0 +1,10 @@
+description: a bug route tested on an environment that is not declared
+rule: R3
+expect:
+  - "bug_routing[id=staging].routes[0].qa_environments"
+patch:
+  - op: set
+    path: "bug_routing[id=staging].routes"
+    value:
+      - { severities: [critical, high], fix_version: current-release, base_branch: "release/*", qa_environments: [uat] }
+      - { severities: [medium, low], fix_version: next-release, base_branch: develop, qa_environments: [development] }

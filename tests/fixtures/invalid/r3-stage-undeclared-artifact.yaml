@@ -1,0 +1,8 @@
+description: a stage whose output is an artifact the catalog does not declare
+rule: R3
+expect:
+  - "stages[id=qa-verify].outputs.artifacts"
+patch:
+  - op: set
+    path: "stages[id=qa-verify].outputs.artifacts"
+    value: [qa-report, test-log]

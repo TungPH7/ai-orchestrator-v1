@@ -1,0 +1,8 @@
+description: a stage that ends at a gate that is not declared
+rule: R3
+expect:
+  - "stages[id=ship].gate"
+patch:
+  - op: set
+    path: "stages[id=ship].gate"
+    value: prod-approval

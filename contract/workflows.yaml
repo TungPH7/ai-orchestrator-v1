@@ -190,6 +190,12 @@ guards:
   work-committed:
     description: "Phần việc của Sub-task đã được commit lên nhánh của Story"
     evidence: { source: git }
+  cut-point-ready:
+    description: "Điểm cắt trên develop có ít nhất một item Done chưa release (mục 2.7)"
+    evidence: { source: git }
+  no-open-release:
+    description: "Không có nhánh release/* nào đang mở"
+    evidence: { source: git }
 
 effects:
   increment-rework:
