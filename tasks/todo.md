@@ -273,7 +273,7 @@ Mọi template: tiêu đề và hướng dẫn điền viết tiếng Anh, chỗ
 
 ### Checkpoint 3: sau T10–T13
 - [x] `npm run validate` xanh với cả 8 quy tắc
-- [ ] Bạn xem nhanh 12 template
+- [x] Bạn xem nhanh 12 template
 
 ---
 
