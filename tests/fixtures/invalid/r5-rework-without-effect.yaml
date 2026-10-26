@@ -1,0 +1,7 @@
+description: a transition back to in-progress that does not increment the rework count
+rule: R5
+expect:
+  - "workflows.standard.transitions[id=qa-fail].effects"
+patch:
+  - op: remove
+    path: "workflows.standard.transitions[id=qa-fail].effects"

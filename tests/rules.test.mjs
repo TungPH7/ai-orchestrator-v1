@@ -15,6 +15,12 @@ test('the real contract breaks no rule', () => {
   assert.deepEqual(validateContract(contract), []);
 });
 
+test('R5 does not treat start (ready -> in-progress) as going back, so it needs no evidence or rework effect', () => {
+  const withoutGuards = applyPatch(contract, [{ op: 'remove', path: 'workflows.standard.transitions[id=start].guards' }]);
+
+  assert.deepEqual(validateContract(withoutGuards), []);
+});
+
 // Each fixture breaks exactly one rule: { description, rule, expect: [paths], patch: [ops] }
 const fixtures = readdirSync(FIXTURE_DIR).filter((file) => file.endsWith('.yaml')).sort();
 

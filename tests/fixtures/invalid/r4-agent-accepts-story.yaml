@@ -1,0 +1,8 @@
+description: an agent among the actors that move a Story, Task or Bug to done
+rule: R4
+expect:
+  - "workflows.standard.transitions[id=accept].actors"
+patch:
+  - op: set
+    path: "workflows.standard.transitions[id=accept].actors"
+    value: [human, qa]
