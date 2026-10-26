@@ -1,0 +1,9 @@
+description: a field with both a free-text value and a list of values
+rule: R1
+expect:
+  - "work_item_fields[id=flagged]"
+patch:
+  - op: set
+    path: "work_item_fields[id=flagged].values"
+    value:
+      - { id: blocked, name: "Blocked" }

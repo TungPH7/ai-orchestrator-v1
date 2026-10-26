@@ -1,0 +1,8 @@
+description: a work type that two workflows apply to
+rule: R8
+expect:
+  - "work_types[id=story]"
+patch:
+  - op: set
+    path: "workflows.epic.applies_to"
+    value: [epic, story]

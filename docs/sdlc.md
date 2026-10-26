@@ -21,6 +21,42 @@ Bản đọc của hợp đồng trong `contract/`. Nội dung và lý do của 
 | `devops` | DevOps Engineer | Deploy, cắt release, ship, rollback |
 | `automation` | CI, webhook, Jira Automation | Chuyển trạng thái theo dữ kiện: CI xanh, merge, deploy xong |
 
+## Work item
+
+### Phân cấp
+
+| Mô hình khái niệm | Trong Jira | Work type | Workflow | Ghi chú |
+| --- | --- | --- | --- | --- |
+| Project | Space |  |  | Mỗi sản phẩm một space |
+| Epic (mục tiêu lớn) | Label hoặc Component |  |  | Chỉ để nhóm, không có workflow |
+| Feature | Epic | `epic` | `epic` | Có SPEC và plan, kéo dài 1–3 tuần |
+| User Story | Story | `story` | `standard` | Đơn vị để QA và Done; tốt nhất làm xong trong 1–2 ngày |
+| Task (con của Story) | Sub-task | `sub-task` | `sub-task` | Chỉ dùng khi một Story phải chia cho nhiều agent |
+| Task độc lập | Task | `task` | `standard` | Cùng cấp Story. Việc kỹ thuật không trực tiếp mang giá trị cho người dùng |
+| Bug | Bug | `bug` | `standard` | Cùng cấp Story. Link tới Story hoặc Epic liên quan |
+
+**Cách chọn loại:** Người dùng cuối có nhìn thấy hoặc kiểm chứng được kết quả không? Có thì là Story, không thì là Task. Hành vi hiện có sai so với yêu cầu đã có thì là Bug.
+
+### Quy ước
+
+- Mỗi Story, Task, Bug có một nhánh và một PR, chứa mọi phần nó cần: FE, BE, migration, test. Item quay lại sau qa-fail thì được sửa trên nhánh và PR mới, vẫn mang mã item (mục 2.6). Tại mỗi thời điểm, một item có tối đa một PR đang mở.
+- Story có cả FE và BE được chia thành Sub-task FE và Sub-task BE. Hai agent commit lên cùng nhánh của Story, BE làm trước; PR chỉ được mở khi mọi Sub-task đã xong.
+- Story quá lớn thì tách theo chiều dọc thành nhiều Story nhỏ, mỗi Story vẫn đủ FE và BE.
+- Phần kỹ thuật của một tính năng thuộc về chính Story đó, không tách thành Task theo lớp (BE, FE). Ngoại lệ duy nhất là phần nền dùng chung cho nhiều Story, như module auth hay schema của cả Epic: phần này là Task độc lập, làm trước, và các Story khai báo phụ thuộc vào nó.
+- PR của một Task mà làm đổi giao diện hoặc API công khai thì reviewer yêu cầu đổi Task thành Story.
+
+### Trường dữ liệu
+
+| Trường | Áp dụng | Giá trị | Ai điền |
+| --- | --- | --- | --- |
+| Found in | `bug` | Development, Staging, Production | Người báo lỗi |
+| Affects Version | `bug` | Bản cũ nhất đang có lỗi | ba đề xuất, bạn duyệt |
+| Severity | `bug` | Critical: Mất hoặc sai dữ liệu, lỗ hổng bảo mật, hệ thống hoặc luồng thanh toán ngừng; High: Luồng chính hỏng, không có cách né; Medium: Có cách né; Low: Giao diện, chính tả | ba đề xuất, bạn duyệt |
+| Fix Version | `story`, `task`, `bug` | Bug: suy ra từ bảng định tuyến (mục 2.6). Story, Task: gắn khi cắt release | automation, devops |
+| Rework count | `story`, `task`, `bug` | Số lần quay lại in-progress. Cách lưu trên Jira (trường số, hay đếm từ lịch sử chuyển trạng thái) do tracker-integration chọn | automation |
+| Flagged | `epic`, `story`, `sub-task`, `task`, `bug` | Lý do bị chặn hoặc cần bạn quyết | Bất kỳ ai |
+| Resolution | `epic`, `story`, `task`, `bug` | Won't do, Duplicate, Not a bug, Cannot reproduce. Điền khi item chuyển sang cancelled | Bạn |
+
 ## Workflow
 
 ### `standard`
@@ -131,3 +167,35 @@ stateDiagram-v2
 | --- | --- | --- | --- | --- | --- |
 | `start` | `to-do` → `in-progress` | `fe-dev`, `be-dev` | Agent còn chỗ WIP: tính theo Sub-task nếu Story có Sub-task, nếu không thì theo cả item (mục 2.7) | `tracker` |  |
 | `complete` | `in-progress` → `done` | `fe-dev`, `be-dev` | Phần việc của Sub-task đã được commit lên nhánh của Story | `git` |  |
+
+## DoR và DoD
+
+### DoR
+
+Điều kiện để item vào `ready`.
+
+| Loại | DoR |
+| --- | --- |
+| `story` | Có câu user story; Có acceptance criteria dạng Given/When/Then, mỗi tiêu chí kiểm thử được; Thuộc Epic có plan đã duyệt; Đã xác định item phụ thuộc; Vừa cỡ: mỗi Sub-task, hoặc cả Story nếu không có Sub-task, khoảng 5 file code trở xuống, không tính file test; Có hợp đồng API trong plan nếu Story có cả FE và BE; Có thiết kế màn hình nếu đụng tới giao diện |
+| `task` | Có mục tiêu và checklist kỹ thuật kiểm tra được; Thuộc Epic có plan đã duyệt, hoặc được bạn duyệt trực tiếp |
+| `bug` | Có bước tái hiện, kết quả thực tế và kết quả mong đợi; Đã điền Found in, Affects Version, Severity, Fix Version; Có bằng chứng (log, ảnh) |
+
+### DoD
+
+Điều kiện để item vào `done`. Phần chung cho `story`, `task`, `bug`:
+
+- PR đã merge vào đúng nhánh gốc, mọi check CI xanh
+- Không còn finding Critical/High chưa xử lý
+- Hành vi mới hoặc thay đổi được phủ bởi unit và integration test viết theo TDD
+- Báo cáo QA PASS trên đúng môi trường QA
+- Đã cập nhật tài liệu, và ADR nếu có thay đổi kiến trúc
+- Bạn đã chấp nhận
+
+Phần riêng của từng loại, cộng thêm phần chung nếu loại đó có trong danh sách trên:
+
+| Loại | DoD |
+| --- | --- |
+| `epic` | Mọi item con đã Done hoặc Cancelled; Bản chứa các item con đã lên Production |
+| `story` | E2E test cho từng acceptance criterion đều pass |
+| `task` | Bộ regression pass |
+| `bug` | Có test tái hiện lỗi (fail trước khi sửa, pass sau khi sửa), được đưa vào bộ regression |

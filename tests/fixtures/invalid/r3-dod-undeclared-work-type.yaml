@@ -1,0 +1,8 @@
+description: a common DoD that applies to a work type not declared in work_types
+rule: R3
+expect:
+  - "dod_common.applies_to"
+patch:
+  - op: set
+    path: "dod_common.applies_to"
+    value: [story, task, bug, chore]

@@ -1,0 +1,8 @@
+description: a workflow that applies to a work type not declared in work_types
+rule: R3
+expect:
+  - "workflows.sub-task.applies_to"
+patch:
+  - op: set
+    path: "workflows.sub-task.applies_to"
+    value: [sub-task, chore]

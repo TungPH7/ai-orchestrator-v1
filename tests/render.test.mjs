@@ -45,6 +45,36 @@ test('each workflow has a Mermaid state diagram with every state and transition'
   }
 });
 
+test('sections follow the order of spec section 2', () => {
+  const order = ['## Vai trò', '## Work item', '## Workflow', '## DoR và DoD'].map((heading) => docs.indexOf(`\n${heading}\n`));
+
+  assert.ok(order.every((index, i) => index > (order[i - 1] ?? 0)), order.join(', '));
+});
+
+test('the hierarchy table has one row per work type, with its Jira issue type and workflow', () => {
+  for (const { id, concept, jira_issue_type: jira } of contract.work_types) {
+    const workflow = Object.keys(contract.workflows).find((name) => contract.workflows[name].applies_to.includes(id));
+    assert.ok(docs.includes(`| ${concept} | ${jira} | \`${id}\` | \`${workflow}\` |`), id);
+  }
+});
+
+test('the field table describes every value of Severity', () => {
+  assert.ok(
+    docs.includes(
+      '| Severity | `bug` | Critical: Mất hoặc sai dữ liệu, lỗ hổng bảo mật, hệ thống hoặc luồng thanh toán ngừng; High: Luồng chính hỏng, không có cách né; Medium: Có cách né; Low: Giao diện, chính tả | ba đề xuất, bạn duyệt |',
+    ),
+  );
+});
+
+test('the DoR table has one row per work type that has a DoR', () => {
+  for (const { id, dor } of contract.work_types.filter((type) => type.dor)) assert.ok(docs.includes(`| \`${id}\` | ${dor.join('; ')} |`), id);
+});
+
+test('the DoD lists the common criteria, then the criteria of each type', () => {
+  for (const criterion of contract.dod_common.criteria) assert.ok(docs.includes(`- ${criterion}\n`), criterion);
+  for (const { id, dod } of contract.work_types.filter((type) => type.dod)) assert.ok(docs.includes(`| \`${id}\` | ${dod.join('; ')} |`), id);
+});
+
 test('each transition row names who moves it, its conditions, evidence and effects', () => {
   assert.ok(
     docs.includes(

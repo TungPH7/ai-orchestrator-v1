@@ -54,7 +54,7 @@ T6, T7 và T8 làm song song được, nhưng gói Pro giới hạn usage nên m
 Đã qua ngày 2026-10-26: bạn giữ nguyên các lựa chọn mô hình hóa ghi ở PR #2 và #4, và cách vẽ `cancel` trong sơ đồ.
 
 ### Giai đoạn 2: phần còn lại của hợp đồng
-- [ ] T6: `work-items.yaml`, quy tắc 8
+- [x] T6: `work-items.yaml`, quy tắc 8
 - [ ] T7: `routing.yaml`, quy tắc 6 và `routeBug`
 - [ ] T8: `policies.yaml` đầy đủ và danh mục artifact
 - [ ] T9: `stages.yaml`: giai đoạn, cổng duyệt, môi trường, nhịp làm việc, release
