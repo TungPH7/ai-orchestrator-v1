@@ -48,8 +48,10 @@ T6, T7 và T8 làm song song được, nhưng gói Pro giới hạn usage nên m
 - [x] T5: `render-docs` với sơ đồ Mermaid cho ba workflow
 
 ### Checkpoint 1
-- [ ] `npm run validate`, `npm test`, `npm run render:check` xanh
-- [ ] Bạn soát sơ đồ ba workflow trong `docs/sdlc.md`, đối chiếu spec mục 2.4
+- [x] `npm run validate`, `npm test`, `npm run render:check` xanh
+- [x] Bạn soát sơ đồ ba workflow trong `docs/sdlc.md`, đối chiếu spec mục 2.4
+
+Đã qua ngày 2026-10-26: bạn giữ nguyên các lựa chọn mô hình hóa ghi ở PR #2 và #4, và cách vẽ `cancel` trong sơ đồ.
 
 ### Giai đoạn 2: phần còn lại của hợp đồng
 - [ ] T6: `work-items.yaml`, quy tắc 8

@@ -109,8 +109,8 @@
 **Cỡ:** M
 
 ### Checkpoint 1: sau T1–T5
-- [ ] `npm run validate`, `npm test`, `npm run render:check` xanh
-- [ ] Bạn soát ba sơ đồ workflow trong `docs/sdlc.md`, đối chiếu spec mục 2.4, trước khi làm tiếp
+- [x] `npm run validate`, `npm test`, `npm run render:check` xanh
+- [x] Bạn soát ba sơ đồ workflow trong `docs/sdlc.md`, đối chiếu spec mục 2.4, trước khi làm tiếp
 
 ---
 
