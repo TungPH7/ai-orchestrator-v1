@@ -228,3 +228,71 @@ Theo SemVer:
 - Mỗi bản release: tăng `minor` (v1.4.0 → v1.5.0)
 - Hotfix: tăng `patch` (v1.4.0 → v1.4.1)
 - Thay đổi phá vỡ tương thích, do bạn quyết: tăng `major`
+
+## Nhịp làm việc, release, WIP và số liệu
+
+### Giới hạn WIP
+
+Giới hạn mặc định, chỉnh được ở retro:
+
+| Chỗ | Giới hạn |
+| --- | --- |
+| Việc đang làm của mỗi dev agent: Sub-task nếu Story có Sub-task, nếu không thì cả item | 1 |
+| Cột In Review (gồm PR đang chờ bạn approve) | 2 |
+| Epic ở specifying hoặc planning | 1 |
+
+### Số liệu cho retro
+
+| Số liệu | Cách tính |
+| --- | --- |
+| Cycle time | Từ lúc vào in-progress tới lúc vào done |
+| Thời gian chờ release | Từ lúc item vào done tới lúc bản chứa nó lên Production |
+| Throughput | Số item vào done trong tuần |
+| Rework | Tổng Rework count, và các item chạm giới hạn 3 |
+| Lỗi lọt | Số Bug có Found in là Staging hoặc Production, theo từng bản release |
+| Thời gian chờ bạn | Tổng thời gian item nằm chờ một cổng duyệt hoặc mang cờ "Needs you" |
+| Usage mỗi item | Cấp 1 ghi tay nếu đo được; Cấp 2 đo tự động |
+
+## Xử lý lỗi
+
+- Rework count chạm `3` thì thêm effect `flag-needs-you`.
+- CI fail nghi do test chập chờn được chạy lại tối đa `1` lần.
+- Agent dừng sau `2` lần thất bại liên tiếp ở cùng một bước.
+
+| Tình huống | Xử lý |
+| --- | --- |
+| Review yêu cầu sửa, CI đỏ, QA FAIL | Về in-progress, Rework count tăng 1 |
+| Rework count chạm 3 | Gắn cờ "Needs you", agent dừng xử lý item |
+| CI fail nghi do test chập chờn | Tự chạy lại tối đa 1 lần. Fail lần nữa thì coi là fail thật, và ghi test đó vào danh sách cần sửa |
+| Agent thất bại 2 lần liên tiếp ở cùng một bước | Dừng, gắn cờ "Needs you", kèm log |
+| Chạm giới hạn usage | Dừng, ghi tiến độ vào ledger của item, làm tiếp ở phiên sau |
+| Deploy lên môi trường QA thất bại | Item giữ nguyên in-review, gắn cờ; devops xử lý |
+| Smoke test sau khi lên Production fail | Rollback về bản trước, tạo Bug Critical |
+
+## Artifact và template
+
+| Artifact | Template | Ai tạo | Lưu ở đâu |
+| --- | --- | --- | --- |
+| SPEC của Epic | `templates/spec.md` | `ba` | Git: `docs/specs/<EPIC-KEY>/spec.md` |
+| Plan | `templates/plan.md` | `sa` | Git: `docs/specs/<EPIC-KEY>/plan.md` |
+| ADR | `templates/adr.md` | `sa` | Git: `docs/adr/NNNN-<slug>.md` |
+| Story | `templates/story.md` | `ba` | Jira: Mô tả item |
+| Task | `templates/task.md` | `ba` | Jira: Mô tả item |
+| Bug | `templates/bug.md` | Người báo lỗi | Jira: Mô tả item |
+| Mô tả PR (bàn giao từ dev sang reviewer và QA) | `templates/pull-request.md` | `fe-dev`, `be-dev` | GitHub: Mô tả của PR |
+| Báo cáo review | `templates/review-report.md` | `reviewer`, `security` | GitHub: Review trên PR |
+| Báo cáo QA của item | `templates/qa-report.md` | `qa` | Jira: Comment trên item, kèm link artifact CI (video, trace) |
+| Báo cáo regression của bản release | `templates/regression-report.md` | `qa` | Git: `docs/releases/vX.Y.Z.md`, trên nhánh release |
+| Release note | `templates/release-notes.md` | `devops`, `ba` | Git: `CHANGELOG.md`; Jira: Mô tả Fix Version; Google Drive: Bản gửi khách |
+| Ledger tiến độ | `templates/ledger.md` | Agent đang làm item | Local: `.ai/ledger/<KEY>.md`, không commit |
+
+- Mọi đường dẫn tính từ gốc repo của dự án.
+- Agent-skills mặc định để SPEC.md ở gốc repo và plan ở tasks/plan.md. Dự án có nhiều Epic nên mỗi Epic có một thư mục riêng, và danh sách task nằm trên Jira thay cho tasks/todo.md; các lệnh của dev-workflow sẽ truyền đường dẫn này cho skill.
+
+### Ngôn ngữ
+
+| Nội dung | Ngôn ngữ |
+| --- | --- |
+| Template: tiêu đề và hướng dẫn điền | Tiếng Anh |
+| Nội dung điền vào SPEC, plan, báo cáo, item Jira | Tiếng Việt |
+| Code, commit và PR | Tiếng Anh |

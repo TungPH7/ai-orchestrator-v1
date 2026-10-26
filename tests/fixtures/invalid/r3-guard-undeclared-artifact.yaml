@@ -1,0 +1,8 @@
+description: a guard whose evidence is an artifact the catalog does not declare
+rule: R3
+expect:
+  - "guards.qa-report-failed.evidence.artifact"
+patch:
+  - op: set
+    path: "guards.qa-report-failed.evidence.artifact"
+    value: test-report
