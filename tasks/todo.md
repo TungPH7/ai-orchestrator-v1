@@ -199,17 +199,17 @@
 
 Mọi template: tiêu đề và hướng dẫn điền viết tiếng Anh, chỗ điền nội dung dành cho tiếng Việt, và một ví dụ ngắn ở cuối file (dùng chung ví dụ Epic "Đăng nhập"). Đường dẫn phải khớp danh mục artifact ở `policies.yaml`.
 
-### [ ] T10: Template `spec.md`, `plan.md`, `adr.md`
+### [x] T10: Template `spec.md`, `plan.md`, `adr.md`
 
 **Mô tả:** `spec.md` theo cấu trúc của skill `spec-driven-development`, `plan.md` theo skill `planning-and-task-breakdown`, `adr.md` theo skill `documentation-and-adrs`. Phần đầu file có mã Epic và link Jira.
 
 **Tiêu chí chấp nhận:**
-- [ ] Mỗi template có đủ các mục của skill tương ứng, cộng phần đầu file cho mã Epic và link Jira.
-- [ ] `plan.md` có mục hợp đồng API cho Story có cả FE và BE, và mục danh sách Story/Task trỏ sang Jira.
-- [ ] Mỗi template có hướng dẫn điền và một ví dụ ngắn.
+- [x] Mỗi template có đủ các mục của skill tương ứng, cộng phần đầu file cho mã Epic và link Jira.
+- [x] `plan.md` có mục hợp đồng API cho Story có cả FE và BE, và mục danh sách Story/Task trỏ sang Jira.
+- [x] Mỗi template có hướng dẫn điền và một ví dụ ngắn.
 
 **Kiểm chứng:**
-- [ ] Thủ công: so từng template với SKILL.md tương ứng của agent-skills 0.6.13
+- [x] Thủ công: so từng template với SKILL.md tương ứng của agent-skills 0.6.13
 
 **Phụ thuộc:** T8
 
