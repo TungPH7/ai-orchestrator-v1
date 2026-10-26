@@ -1,0 +1,8 @@
+description: an artifact created by a role that is not declared
+rule: R3
+expect:
+  - "artifacts[id=adr].created_by"
+patch:
+  - op: set
+    path: "artifacts[id=adr].created_by"
+    value: [architect]

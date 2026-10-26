@@ -152,17 +152,17 @@
 
 **Cỡ:** M
 
-### [ ] T8: `policies.yaml` đầy đủ và danh mục artifact
+### [x] T8: `policies.yaml` đầy đủ và danh mục artifact
 
 **Mô tả:** Bổ sung phần còn lại của spec mục 2.7–2.9 vào `policies.yaml`: giới hạn WIP, retry, bảng xử lý lỗi, số liệu cho retro, danh mục artifact (template, ai tạo, lưu ở đâu) và quy ước ngôn ngữ. Quy tắc 3 kiểm thêm role tạo artifact. Thêm các bảng tương ứng vào `docs/sdlc.md`.
 
 **Tiêu chí chấp nhận:**
-- [ ] Đủ 3 giới hạn WIP, 7 tình huống xử lý lỗi, 7 số liệu, và 12 artifact (Story, Task, Bug tách riêng), mỗi artifact có đường dẫn template, người tạo và nơi lưu.
-- [ ] Artifact có người tạo chưa khai báo → lỗi `R3`.
-- [ ] `docs/sdlc.md` có bảng WIP, xử lý lỗi, số liệu, artifact và quy ước ngôn ngữ.
+- [x] Đủ 3 giới hạn WIP, 7 tình huống xử lý lỗi, 7 số liệu, và 12 artifact (Story, Task, Bug tách riêng), mỗi artifact có đường dẫn template, người tạo và nơi lưu.
+- [x] Artifact có người tạo chưa khai báo → lỗi `R3`.
+- [x] `docs/sdlc.md` có bảng WIP, xử lý lỗi, số liệu, artifact và quy ước ngôn ngữ.
 
 **Kiểm chứng:**
-- [ ] `npm test`, `npm run validate`, `npm run render:check` xanh
+- [x] `npm test`, `npm run validate`, `npm run render:check` xanh
 
 **Phụ thuộc:** T5
 

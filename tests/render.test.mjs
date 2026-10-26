@@ -39,6 +39,20 @@ test('the version rules say which part each kind of release bumps', () => {
   for (const { part, when } of contract.versioning.bumps) assert.ok(docs.includes(`- ${when}: tăng \`${part}\``), part);
 });
 
+test('the WIP, error handling and metric tables have one row per entry', () => {
+  for (const { scope, limit } of contract.wip_limits) assert.ok(docs.includes(`| ${scope} | ${limit} |`), scope);
+  for (const { situation, action } of contract.error_handling) assert.ok(docs.includes(`| ${situation} | ${action} |`), situation);
+  for (const { name, definition } of contract.metrics) assert.ok(docs.includes(`| ${name} | ${definition} |`), name);
+});
+
+test('the artifact table has one row per artifact, with its template', () => {
+  for (const { name, template } of contract.artifacts) assert.ok(docs.includes(`| ${name} | \`${template}\` |`), name);
+});
+
+test('the language rules are listed', () => {
+  for (const { what } of contract.language) assert.ok(docs.includes(`| ${what} |`), what);
+});
+
 test('the roles table has one row per role', () => {
   for (const { id, name } of contract.roles) assert.ok(docs.includes(`| \`${id}\` | ${name} |`), id);
 });
@@ -59,9 +73,17 @@ test('each workflow has a Mermaid state diagram with every state and transition'
 });
 
 test('sections follow the order of spec section 2', () => {
-  const order = ['## Vai trò', '## Work item', '## Workflow', '## DoR và DoD', '## Môi trường, nhánh và định tuyến bug'].map((heading) =>
-    docs.indexOf(`\n${heading}\n`),
-  );
+  const headings = [
+    '## Vai trò',
+    '## Work item',
+    '## Workflow',
+    '## DoR và DoD',
+    '## Môi trường, nhánh và định tuyến bug',
+    '## Nhịp làm việc, release, WIP và số liệu',
+    '## Xử lý lỗi',
+    '## Artifact và template',
+  ];
+  const order = headings.map((heading) => docs.indexOf(`\n${heading}\n`));
 
   assert.ok(order.every((index, i) => index > (order[i - 1] ?? 0)), order.join(', '));
 });
