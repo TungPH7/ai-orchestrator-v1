@@ -1,0 +1,10 @@
+description: a location with a severity that two routes cover
+rule: R6
+expect:
+  - "bug_routing[id=production].routes"
+patch:
+  - op: set
+    path: "bug_routing[id=production].routes"
+    value:
+      - { severities: [critical, high], fix_version: patch-of-production, base_branch: main, qa_environments: [staging, production] }
+      - { severities: [high, medium, low], fix_version: next-release, base_branch: develop, qa_environments: [development] }

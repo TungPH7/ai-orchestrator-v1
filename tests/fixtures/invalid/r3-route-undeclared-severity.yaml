@@ -1,0 +1,9 @@
+description: a bug route for a severity the Severity field does not declare
+rule: R3
+expect:
+  - "bug_routing[id=development].routes[0].severities"
+patch:
+  - op: set
+    path: "bug_routing[id=development].routes"
+    value:
+      - { severities: [critical, high, medium, low, trivial], fix_version: next-release, base_branch: develop, qa_environments: [development] }

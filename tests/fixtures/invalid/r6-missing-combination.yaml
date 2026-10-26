@@ -1,0 +1,10 @@
+description: a location with a severity that no route covers
+rule: R6
+expect:
+  - "bug_routing[id=staging].routes"
+patch:
+  - op: set
+    path: "bug_routing[id=staging].routes"
+    value:
+      - { severities: [critical, high], fix_version: current-release, base_branch: "release/*", qa_environments: [staging] }
+      - { severities: [medium], fix_version: next-release, base_branch: develop, qa_environments: [development] }

@@ -55,7 +55,7 @@ T6, T7 và T8 làm song song được, nhưng gói Pro giới hạn usage nên m
 
 ### Giai đoạn 2: phần còn lại của hợp đồng
 - [x] T6: `work-items.yaml`, quy tắc 8
-- [ ] T7: `routing.yaml`, quy tắc 6 và `routeBug`
+- [x] T7: `routing.yaml`, quy tắc 6 và `routeBug`
 - [ ] T8: `policies.yaml` đầy đủ và danh mục artifact
 - [ ] T9: `stages.yaml`: giai đoạn, cổng duyệt, môi trường, nhịp làm việc, release
 

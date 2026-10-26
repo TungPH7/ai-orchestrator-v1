@@ -134,17 +134,17 @@
 
 **Cỡ:** M
 
-### [ ] T7: `routing.yaml`, quy tắc 6 và `routeBug`
+### [x] T7: `routing.yaml`, quy tắc 6 và `routeBug`
 
 **Mô tả:** Viết bảng định tuyến bug và quy tắc đánh số phiên bản ở spec mục 2.6. Quy tắc 6: bảng phủ đủ 3 vị trí lỗi × 4 severity, mỗi tổ hợp đúng một lần. Cài `routeBug(contract, { affects, severity })`, trả về quy tắc Fix Version (`patch-of-production`, `current-release`, `next-release`), nhánh gốc và môi trường QA. Tham chiếu tới môi trường được kiểm ở T9.
 
 **Tiêu chí chấp nhận:**
-- [ ] Ba kịch bản ở spec mục 7 pass: Critical ở Staging → nhánh gốc `release/*`, QA trên Staging; Critical ở Production → `main`, QA trên Staging rồi Production; Low ở Production → `develop`, QA trên Development.
-- [ ] Thiếu một tổ hợp, hoặc một tổ hợp xuất hiện hai lần → lỗi `R6` (hai fixture).
-- [ ] `docs/sdlc.md` có bảng định tuyến và quy tắc SemVer.
+- [x] Ba kịch bản ở spec mục 7 pass: Critical ở Staging → nhánh gốc `release/*`, QA trên Staging; Critical ở Production → `main`, QA trên Staging rồi Production; Low ở Production → `develop`, QA trên Development.
+- [x] Thiếu một tổ hợp, hoặc một tổ hợp xuất hiện hai lần → lỗi `R6` (hai fixture).
+- [x] `docs/sdlc.md` có bảng định tuyến và quy tắc SemVer.
 
 **Kiểm chứng:**
-- [ ] `npm test`, `npm run validate`, `npm run render:check` xanh
+- [x] `npm test`, `npm run validate`, `npm run render:check` xanh
 
 **Phụ thuộc:** T5
 

@@ -1,10 +1,34 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { fileURLToPath } from 'node:url';
-import { allowedTransitions, checkTransition, loadContract } from '../lib/contract.mjs';
+import { allowedTransitions, checkTransition, loadContract, routeBug } from '../lib/contract.mjs';
 
 const contract = loadContract(fileURLToPath(new URL('../contract/', import.meta.url)));
 const EVERY_GUARD = Object.keys(contract.guards);
+
+test('a Critical bug on Staging is fixed from release/* in the current release and tested on Staging (spec section 7)', () => {
+  assert.deepEqual(routeBug(contract, { affects: 'staging', severity: 'critical' }), {
+    fixVersion: 'current-release',
+    baseBranch: 'release/*',
+    qaEnvironments: ['staging'],
+  });
+});
+
+test('a Critical bug on Production is fixed from main as a patch and tested on Staging, then Production (spec section 7)', () => {
+  assert.deepEqual(routeBug(contract, { affects: 'production', severity: 'critical' }), {
+    fixVersion: 'patch-of-production',
+    baseBranch: 'main',
+    qaEnvironments: ['staging', 'production'],
+  });
+});
+
+test('a Low bug on Production is fixed from develop in the next release and tested on Development (spec section 7)', () => {
+  assert.deepEqual(routeBug(contract, { affects: 'production', severity: 'low' }), {
+    fixVersion: 'next-release',
+    baseBranch: 'develop',
+    qaEnvironments: ['development'],
+  });
+});
 
 test('a Story goes from new to done when every guard holds (spec section 7)', () => {
   const steps = [

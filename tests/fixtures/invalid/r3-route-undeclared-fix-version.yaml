@@ -1,0 +1,9 @@
+description: a bug route with a Fix Version rule that fix_versions does not declare
+rule: R3
+expect:
+  - "bug_routing[id=development].routes[0].fix_version"
+patch:
+  - op: set
+    path: "bug_routing[id=development].routes"
+    value:
+      - { severities: [critical, high, medium, low], fix_version: later, base_branch: develop, qa_environments: [development] }

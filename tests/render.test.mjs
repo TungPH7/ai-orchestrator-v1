@@ -26,6 +26,19 @@ test('the generated file says it is generated and must not be edited by hand', (
   assert.match(docs.split('\n')[0], /generated.*do not edit/i);
 });
 
+test('the bug routing table has one row per route, with its Fix Version, base branch and QA environments', () => {
+  for (const { id, name, routes } of contract.bug_routing) {
+    for (const { severities, fix_version: fixVersion, base_branch: base } of routes) {
+      const row = `| ${name} | ${severities.map((s) => `\`${s}\``).join(', ')} | ${contract.fix_versions[fixVersion]} (\`${fixVersion}\`) | \`${base}\` |`;
+      assert.ok(docs.includes(row), `${id}: ${severities}`);
+    }
+  }
+});
+
+test('the version rules say which part each kind of release bumps', () => {
+  for (const { part, when } of contract.versioning.bumps) assert.ok(docs.includes(`- ${when}: tăng \`${part}\``), part);
+});
+
 test('the roles table has one row per role', () => {
   for (const { id, name } of contract.roles) assert.ok(docs.includes(`| \`${id}\` | ${name} |`), id);
 });
@@ -46,7 +59,9 @@ test('each workflow has a Mermaid state diagram with every state and transition'
 });
 
 test('sections follow the order of spec section 2', () => {
-  const order = ['## Vai trò', '## Work item', '## Workflow', '## DoR và DoD'].map((heading) => docs.indexOf(`\n${heading}\n`));
+  const order = ['## Vai trò', '## Work item', '## Workflow', '## DoR và DoD', '## Môi trường, nhánh và định tuyến bug'].map((heading) =>
+    docs.indexOf(`\n${heading}\n`),
+  );
 
   assert.ok(order.every((index, i) => index > (order[i - 1] ?? 0)), order.join(', '));
 });
