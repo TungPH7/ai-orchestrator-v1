@@ -191,7 +191,7 @@
 ### Checkpoint 2: sau T6–T9
 - [x] Đủ 6 file trong `contract/`; quy tắc 1–6 và 8 có test dương và fixture âm
 - [x] Mọi kịch bản ở spec mục 7 chạy được bằng `lib/contract.mjs`
-- [ ] Bạn đọc toàn bộ `docs/sdlc.md`, đối chiếu spec mục 2, trước khi làm template
+- [x] Bạn đọc toàn bộ `docs/sdlc.md`, đối chiếu spec mục 2, trước khi làm template
 
 ---
 
