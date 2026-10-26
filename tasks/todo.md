@@ -279,16 +279,16 @@ Mọi template: tiêu đề và hướng dẫn điền viết tiếng Anh, chỗ
 
 ## Giai đoạn 4: hoàn thiện
 
-### [ ] T14: CI cho repo kit và README
+### [x] T14: CI cho repo kit và README
 
 **Mô tả:** `.github/workflows/contract.yml` chạy `npm ci`, `npm run validate`, `npm test`, `npm run render:check` trên PR và khi push vào `main`. `README.md` ngắn: hợp đồng là gì, ai dùng, bốn lệnh, cấu trúc thư mục, và quy tắc không sửa tay `docs/sdlc.md`.
 
 **Tiêu chí chấp nhận:**
-- [ ] Workflow CI chạy đúng bốn lệnh như ở local, trên Node 24.
-- [ ] README có bốn lệnh, cấu trúc thư mục, và trỏ tới `SPEC.md`, `SPEC-sdlc-contract.md`, `docs/sdlc.md`.
+- [x] Workflow CI chạy đúng bốn lệnh như ở local, trên Node 24.
+- [x] README có bốn lệnh, cấu trúc thư mục, và trỏ tới `SPEC.md`, `SPEC-sdlc-contract.md`, `docs/sdlc.md`.
 
 **Kiểm chứng:**
-- [ ] Nếu đã có remote: CI xanh trên PR đầu tiên. Nếu chưa: đọc lại file workflow, chạy thử bốn lệnh ở local
+- [x] Nếu đã có remote: CI xanh trên PR đầu tiên. Nếu chưa: đọc lại file workflow, chạy thử bốn lệnh ở local
 
 **Phụ thuộc:** T13
 
