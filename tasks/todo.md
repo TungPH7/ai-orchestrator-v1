@@ -100,7 +100,7 @@
 
 **Kiểm chứng:**
 - [x] `npm test`, `npm run validate`, `npm run render:check` xanh
-- [ ] Thủ công: mở `docs/sdlc.md` bằng trình xem Markdown có hỗ trợ Mermaid (ví dụ GitHub), ba sơ đồ hiển thị đúng (bạn kiểm ở Checkpoint 1)
+- [x] Thủ công: mở `docs/sdlc.md` bằng trình xem Markdown có hỗ trợ Mermaid (ví dụ GitHub), ba sơ đồ hiển thị đúng (đã render bằng `@mermaid-js/mermaid-cli` 12.0.0 ra PNG và đối chiếu spec mục 2.4)
 
 **Phụ thuộc:** T2
 
