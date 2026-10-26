@@ -1,6 +1,6 @@
 # Task: sdlc-contract
 
-> **Plan:** [plan.md](plan.md). **Spec:** [SPEC-sdlc-contract.md](../SPEC-sdlc-contract.md). Làm theo thứ tự; mỗi task viết test đỏ trước, commit riêng, rồi đánh dấu `[x]`.
+> **Plan:** [plan.md](plan.md). **Spec:** [SPEC-sdlc-contract.md](../../../SPEC-sdlc-contract.md). Làm theo thứ tự; mỗi task viết test đỏ trước, commit riêng, rồi đánh dấu `[x]`.
 
 **Quy ước chung cho mọi task:**
 
@@ -297,6 +297,6 @@ Mọi template: tiêu đề và hướng dẫn điền viết tiếng Anh, chỗ
 **Cỡ:** S
 
 ### Checkpoint cuối
-- [ ] Đạt 6 tiêu chí hoàn thành ở spec mục 9
-- [ ] Bạn xác nhận `docs/sdlc.md` khớp với các quyết định trong `misc/brainstorm-discussion.md`
-- [ ] Chuyển `tasks/plan.md` và `tasks/todo.md` vào `tasks/archive/sdlc-contract/`; cập nhật trạng thái module trong `SPEC.md`
+- [x] Đạt 6 tiêu chí hoàn thành ở spec mục 9
+- [x] Bạn xác nhận `docs/sdlc.md` khớp với các quyết định trong `misc/brainstorm-discussion.md`
+- [x] Chuyển `tasks/plan.md` và `tasks/todo.md` vào `tasks/archive/sdlc-contract/`; cập nhật trạng thái module trong `SPEC.md`
