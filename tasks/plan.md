@@ -94,5 +94,5 @@ T6, T7 và T8 làm song song được, nhưng gói Pro giới hạn usage nên m
 ## Câu hỏi đã trả lời (2026-10-26)
 
 1. **Commit đầu tiên:** ba commit riêng, theo thứ tự `misc/`, rồi `SPEC.md` và `SPEC-sdlc-contract.md`, rồi `tasks/`.
-2. **Repo GitHub:** `https://github.com/TungPH7/ai-orchestrator-v1.git`. Thư mục repo đổi tên từ `ai-orchestrator` thành `ai-orchestrator-v1` cho khớp.
+2. **Repo GitHub:** `https://github.com/TungPH7/ai-orchestrator-v1.git`. Thư mục local giữ tên `ai-orchestrator`: lúc đầu định đổi thành `ai-orchestrator-v1` cho khớp, sau đó bạn quyết định không đổi.
 3. **Quy trình nhánh của repo kit:** `main`, mỗi task một nhánh ngắn, xong thì merge vào `main` qua PR.
