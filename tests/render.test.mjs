@@ -1,0 +1,104 @@
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
+import { appendFileSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { loadContract } from '../lib/contract.mjs';
+import { renderDocs } from '../lib/render.mjs';
+import { CONTRACT_DIR, ROOT, makeKit } from './helpers/kit.mjs';
+
+const RENDER_SCRIPT = join(ROOT, 'scripts', 'render-docs.mjs');
+
+const contract = loadContract(CONTRACT_DIR);
+const docs = renderDocs(contract);
+
+function render(root, ...flags) {
+  return spawnSync(process.execPath, [RENDER_SCRIPT, ...flags, join(root, 'contract'), join(root, 'docs', 'sdlc.md')], { encoding: 'utf8' });
+}
+
+// The fenced mermaid block that follows a workflow's heading.
+function diagramOf(name) {
+  const section = docs.slice(docs.indexOf(`### \`${name}\``));
+  return section.slice(section.indexOf('```mermaid'), section.indexOf('```', section.indexOf('```mermaid') + 3));
+}
+
+test('the generated file says it is generated and must not be edited by hand', () => {
+  assert.match(docs.split('\n')[0], /generated.*do not edit/i);
+});
+
+test('the roles table has one row per role', () => {
+  for (const { id, name } of contract.roles) assert.ok(docs.includes(`| \`${id}\` | ${name} |`), id);
+});
+
+test('each workflow has a Mermaid state diagram with every state and transition', () => {
+  for (const [name, workflow] of Object.entries(contract.workflows)) {
+    const diagram = diagramOf(name);
+    const node = (state) => state.replaceAll('-', '_');
+
+    assert.match(diagram, /^```mermaid\nstateDiagram-v2\n/, name);
+    assert.ok(diagram.includes(`[*] --> ${node(workflow.initial)}\n`), `${name}: initial`);
+    for (const state of Object.keys(workflow.states)) assert.ok(diagram.includes(`state "${state}" as ${node(state)}\n`), `${name}: ${state}`);
+    for (const state of workflow.final) assert.ok(diagram.includes(`${node(state)} --> [*]\n`), `${name}: final ${state}`);
+    for (const { id, from, to } of workflow.transitions) {
+      for (const source of [from].flat()) assert.ok(diagram.includes(`${node(source)} --> ${node(to)}: ${id}\n`), `${name}: ${id} from ${source}`);
+    }
+  }
+});
+
+test('each transition row names who moves it, its conditions, evidence and effects', () => {
+  assert.ok(
+    docs.includes(
+      '| `qa-fail` | `in-qa` → `in-progress` | `qa` | Báo cáo QA mới nhất của item có kết quả FAIL | `tracker` (`qa-report`) | `increment-rework` |',
+    ),
+  );
+});
+
+test('the output uses LF line endings and ends with one newline', () => {
+  assert.ok(!docs.includes('\r'));
+  assert.ok(docs.endsWith('\n') && !docs.endsWith('\n\n'));
+});
+
+test('the committed docs/sdlc.md is up to date with the contract', () => {
+  const result = spawnSync(process.execPath, [RENDER_SCRIPT, '--check'], { cwd: ROOT, encoding: 'utf8' });
+
+  assert.equal(result.status, 0, result.stderr);
+});
+
+test('rendering twice gives the same file', (t) => {
+  const root = makeKit(t, {});
+  const out = join(root, 'docs', 'sdlc.md');
+
+  render(root);
+  const first = readFileSync(out, 'utf8');
+  render(root);
+
+  assert.equal(readFileSync(out, 'utf8'), first);
+});
+
+test('render --check passes right after render', (t) => {
+  const root = makeKit(t, {});
+
+  render(root);
+
+  assert.equal(render(root, '--check').status, 0);
+});
+
+test('render --check fails when docs/sdlc.md was edited by hand', (t) => {
+  const root = makeKit(t, {});
+  render(root);
+
+  appendFileSync(join(root, 'docs', 'sdlc.md'), 'hand edit\n');
+  const result = render(root, '--check');
+
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /npm run render/);
+});
+
+test('render --check fails when the YAML changed and docs were not rendered again', (t) => {
+  const root = makeKit(t, {});
+  render(root);
+
+  appendFileSync(join(root, 'contract', 'roles.yaml'), '  - id: data\n    name: "Data Engineer"\n    responsibilities: "Pipeline dữ liệu"\n');
+
+  assert.notEqual(render(root, '--check').status, 0);
+});

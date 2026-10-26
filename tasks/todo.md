@@ -89,18 +89,18 @@
 
 **Cỡ:** M
 
-### [ ] T5: `render-docs` với sơ đồ Mermaid cho ba workflow
+### [x] T5: `render-docs` với sơ đồ Mermaid cho ba workflow
 
 **Mô tả:** Script sinh `docs/sdlc.md` từ hợp đồng, bắt đầu với bảng vai trò và ba workflow: mỗi workflow có sơ đồ Mermaid `stateDiagram-v2` và bảng transition (ai chuyển, điều kiện, bằng chứng). Thêm script `render` và `render:check` vào `package.json`. Các task sau thêm phần của mình vào renderer.
 
 **Tiêu chí chấp nhận:**
-- [ ] `docs/sdlc.md` có bảng vai trò và ba sơ đồ có đủ state và transition; đầu file ghi rõ file được sinh tự động, không sửa tay.
-- [ ] `npm run render:check` pass ngay sau `npm run render`; fail khi sửa tay `docs/sdlc.md`, hoặc khi đổi YAML mà chưa render lại.
-- [ ] Chạy `npm run render` hai lần cho ra cùng một file.
+- [x] `docs/sdlc.md` có bảng vai trò và ba sơ đồ có đủ state và transition; đầu file ghi rõ file được sinh tự động, không sửa tay.
+- [x] `npm run render:check` pass ngay sau `npm run render`; fail khi sửa tay `docs/sdlc.md`, hoặc khi đổi YAML mà chưa render lại.
+- [x] Chạy `npm run render` hai lần cho ra cùng một file.
 
 **Kiểm chứng:**
-- [ ] `npm test`, `npm run validate`, `npm run render:check` xanh
-- [ ] Thủ công: mở `docs/sdlc.md` bằng trình xem Markdown có hỗ trợ Mermaid (ví dụ GitHub), ba sơ đồ hiển thị đúng
+- [x] `npm test`, `npm run validate`, `npm run render:check` xanh
+- [ ] Thủ công: mở `docs/sdlc.md` bằng trình xem Markdown có hỗ trợ Mermaid (ví dụ GitHub), ba sơ đồ hiển thị đúng (bạn kiểm ở Checkpoint 1)
 
 **Phụ thuộc:** T2
 
