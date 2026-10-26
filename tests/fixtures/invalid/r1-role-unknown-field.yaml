@@ -1,0 +1,8 @@
+description: a role with a field its schema does not declare
+rule: R1
+expect:
+  - "roles[id=qa].owner"
+patch:
+  - op: set
+    path: "roles[id=qa].owner"
+    value: human

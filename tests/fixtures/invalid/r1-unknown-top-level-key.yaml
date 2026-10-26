@@ -1,0 +1,8 @@
+description: a top-level key that no contract schema declares
+rule: R1
+expect:
+  - "role_notes"
+patch:
+  - op: set
+    path: "role_notes"
+    value: draft

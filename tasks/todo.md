@@ -16,18 +16,18 @@
 
 ## Giai đoạn 1: khung và workflow
 
-### [ ] T1: Khung dự án và `roles.yaml`, quy tắc 1
+### [x] T1: Khung dự án và `roles.yaml`, quy tắc 1
 
 **Mô tả:** Tạo khung để chạy được `npm run validate` và `npm test`: `package.json` (ES module, script `validate` và `test`, dependency `yaml` 2.x và `ajv` 8.x), `.gitignore`, `.gitattributes`, `lib/contract.mjs` với `readContract`, `validateContract`, `loadContract`, quy tắc 1 ở `lib/rules/schema.mjs`, và script `scripts/validate-contract.mjs`. File hợp đồng đầu tiên là `contract/roles.yaml` với 12 vai trò ở spec mục 2.1, cùng schema của nó. Có luôn helper áp bản vá cho fixture âm.
 
 **Tiêu chí chấp nhận:**
-- [ ] `roles.yaml` có đủ 12 vai trò của spec mục 2.1, mỗi vai trò có id, tên và việc chính.
-- [ ] Với hợp đồng thật, `npm run validate` báo OK và thoát mã 0. Khi có lỗi, script in mã quy tắc, đường dẫn, thông báo, và thoát mã khác 0.
-- [ ] Fixture âm "vai trò thiếu trường bắt buộc" và "vai trò có trường lạ" đều làm `validateContract` trả lỗi `R1`.
+- [x] `roles.yaml` có đủ 12 vai trò của spec mục 2.1, mỗi vai trò có id, tên và việc chính.
+- [x] Với hợp đồng thật, `npm run validate` báo OK và thoát mã 0. Khi có lỗi, script in mã quy tắc, đường dẫn, thông báo, và thoát mã khác 0.
+- [x] Fixture âm "vai trò thiếu trường bắt buộc" và "vai trò có trường lạ" đều làm `validateContract` trả lỗi `R1`.
 
 **Kiểm chứng:**
-- [ ] `npm install`, `npm test`, `npm run validate` chạy được và xanh
-- [ ] Thủ công: sửa tạm `roles.yaml` cho sai schema, `npm run validate` báo đúng chỗ sai
+- [x] `npm install`, `npm test`, `npm run validate` chạy được và xanh
+- [x] Thủ công: sửa tạm `roles.yaml` cho sai schema, `npm run validate` báo đúng chỗ sai
 
 **Phụ thuộc:** không
 
