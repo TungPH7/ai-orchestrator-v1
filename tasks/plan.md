@@ -62,7 +62,7 @@ T6, T7 và T8 làm song song được, nhưng gói Pro giới hạn usage nên m
 ### Checkpoint 2
 - [x] Đủ 6 file trong `contract/`; quy tắc 1–6 và 8 có test dương và fixture âm
 - [x] Mọi kịch bản ở spec mục 7 chạy được bằng `lib/contract.mjs`
-- [ ] Bạn đọc toàn bộ `docs/sdlc.md`, đối chiếu spec mục 2
+- [x] Bạn đọc toàn bộ `docs/sdlc.md`, đối chiếu spec mục 2
 
 ### Giai đoạn 3: template
 - [ ] T10: Template `spec.md`, `plan.md`, `adr.md`
