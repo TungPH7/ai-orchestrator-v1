@@ -1,0 +1,1 @@
+- Commit message theo format type(scope): subject (không body, không Co-Authored-By)
