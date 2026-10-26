@@ -45,7 +45,7 @@ T6, T7 và T8 làm song song được, nhưng gói Pro giới hạn usage nên m
 - [x] T2: `workflows.yaml`, quy tắc 2 và 3
 - [x] T3: Quy tắc 4 và 5 cho workflow
 - [x] T4: `allowedTransitions`, `checkTransition` và kịch bản chuyển trạng thái
-- [ ] T5: `render-docs` với sơ đồ Mermaid cho ba workflow
+- [x] T5: `render-docs` với sơ đồ Mermaid cho ba workflow
 
 ### Checkpoint 1
 - [ ] `npm run validate`, `npm test`, `npm run render:check` xanh
