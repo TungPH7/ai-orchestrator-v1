@@ -79,7 +79,7 @@ T6, T7 và T8 làm song song được, nhưng gói Pro giới hạn usage nên m
 Đã qua ngày 2026-10-27: bạn duyệt 12 template, không cần sửa.
 
 ### Giai đoạn 4: hoàn thiện
-- [ ] T14: CI cho repo kit và README
+- [x] T14: CI cho repo kit và README
 
 ### Checkpoint cuối
 - [ ] Đạt 6 tiêu chí hoàn thành ở spec mục 9
