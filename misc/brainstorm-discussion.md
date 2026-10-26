@@ -10,7 +10,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 |---|---|---|---|
 | 1 | `939a53bd-1857-4112-aae9-9942c061d12c` | 2026-10-26 01:56 → 11:08 | Đọc bối cảnh; chốt pilot, hạ tầng, Jira, GitFlow; môi trường cho từng giai đoạn; capability map; 9 giả định; dung lượng GitHub; state machine ticket |
 | 2 | `075cf034-63dd-4693-9a6a-39cdea6d9231` | 2026-10-26 11:21 → 13:16 | Duyệt capability map; bug chỉ lỗi ở Staging; chọn môi trường để làm/fix; có nên thêm Feature; Scrum; Story và Task khác gì nhau; có cần chạy Scrum không; chốt Kanban, viết SPEC-sdlc-contract |
-| 3 | `c097b31c-efdb-42a0-96ba-8a2b65140f99` | 2026-10-26 15:43 → | Duyệt SPEC-sdlc-contract và 7 câu hỏi mở; Story có cả FE và BE có tách hai nhánh không; monorepo hay hai repo; release theo quyết định của bạn; lập plan cho sdlc-contract |
+| 3 | `c097b31c-efdb-42a0-96ba-8a2b65140f99` | 2026-10-26 15:43 → 17:17 | Duyệt SPEC-sdlc-contract và 7 câu hỏi mở; Story có cả FE và BE có tách hai nhánh không; monorepo hay hai repo; release theo quyết định của bạn; lập plan cho sdlc-contract; commit đầu tiên, repo GitHub, đổi tên thư mục |
 
 ---
 
@@ -1197,3 +1197,94 @@ Mình thấy bạn vừa thêm `ai-orchestrator/CLAUDE.md` với quy ước comm
 **Bạn duyệt giúp mình plan và trả lời 3 câu hỏi trên.** Sau khi bạn duyệt, mình làm commit đầu tiên rồi bắt đầu T1 bằng `/agent-skills:build`. Mỗi lần làm một task: viết test đỏ trước, commit riêng, rồi dừng lại.
 
 Lượt này đã được ghi tiếp vào `ai-orchestrator/misc/brainstorm-discussion.md`.
+
+---
+
+# Phiên 3 · Lượt 4 — 2026-10-26 17:09
+
+**Bạn:**
+
+```markdown
+OK với plan.
+
+Trả lời 3 câu:
+1. commit riêng cho misc, sau đó SPEC.md, SPEC-sdlc-contract.md, sau đó tasks
+2. có: https://github.com/TungPH7/ai-orchestrator-v1.git, thực hiện đổi tên 'ai-orchestrator' thành 'ai-orchestrator-v1' giúp tôi
+3. OK
+```
+
+**Claude:**
+
+Mình bắt đầu: kiểm tra trạng thái git, danh tính commit và repo GitHub bạn vừa tạo, rồi đổi tên thư mục.
+
+Đã sửa xong. Giờ mình tạo ba commit theo đúng thứ tự bạn chọn.
+
+Ba commit đã xong. Còn ba việc cần bạn quyết: hai file bạn chưa nhắc tới, và chuyện thư mục đang bị khóa.
+
+Claude hỏi lại bạn 3 câu trắc nghiệm:
+
+**1. `CLAUDE.md` (quy ước commit bạn vừa thêm) chưa được commit. Bạn muốn xử lý thế nào?** _(CLAUDE.md)_
+
+- **Commit riêng (Recommended)**: Commit `chore(repo): add CLAUDE.md`. Quy ước commit nằm trong repo, nên agent ở mọi máy và mọi phiên đều đọc được.
+- **Chỉ giữ ở local**: Thêm vào `.git/info/exclude`: không commit, không hiện trong `git status`, chỉ có tác dụng trên máy này.
+
+→ Bạn chọn (2026-10-26 17:15): **Commit riêng (Recommended)**
+
+**2. `todo.md` ở gốc repo là ghi chú riêng của bạn. Bạn muốn xử lý thế nào?** _(todo.md)_
+
+- **Chỉ giữ ở local (Recommended)**: Thêm vào `.git/info/exclude`: file vẫn ở đó, không commit, không chặn lệnh build (lệnh này đòi cây làm việc sạch). Nội dung của nó đã có trong lịch sử brainstorm.
+- **Commit riêng**: Commit `docs(repo): add personal notes`, file được đẩy lên GitHub cùng repo.
+
+→ Bạn chọn (2026-10-26 17:15): **Chỉ giữ ở local (Recommended)**
+
+**3. Không đổi tên được thư mục vì có tiến trình khác đang giữ nó (Permission denied). Thường là terminal hoặc cửa sổ VS Code đang mở trong `ai-orchestrator`. Bạn muốn làm thế nào?** _(Đổi tên)_
+
+- **Tôi đóng rồi, thử lại**: Bạn đóng các terminal và cửa sổ đang mở trong `ai-orchestrator`, rồi chọn mục này để Claude đổi tên lại. Nếu Claude Code đang chạy trong terminal của VS Code thì đừng đóng terminal đó.
+- **Tôi tự đổi tên sau**: Bạn tự đổi tên sau khi kết thúc phiên này. Claude chỉ sửa đường dẫn trong memory và nhắc lại các bước.
+
+→ Bạn chọn (2026-10-26 17:15): **Tôi tự đổi tên sau**
+
+Mình làm theo lựa chọn của bạn: commit `CLAUDE.md` riêng, và cho `todo.md` vào `.git/info/exclude` để nó chỉ nằm ở local.
+
+Cây làm việc đã sạch, có 4 commit trên `main`. Giờ mình cập nhật memory: tên thư mục mới, repo GitHub, quy ước nhánh, và chuyện tài khoản `gh`.
+
+Đoạn script bị lỗi vì dấu `\` trong đường dẫn Windows, và chưa ghi gì. Mình chuyển sang công cụ Edit.
+
+> _Ghi chú: phần tổng kết của lượt này bị safeguard của Claude Code chặn lúc 17:17 nên chưa tới tay bạn. Phiên kế tiếp (`46e4e518-ac41-4570-8bcc-37d5a88788c5`) đã kiểm tra lại trạng thái, ghi bổ sung lượt này và gửi bản tổng kết dưới đây._
+
+Plan đã được duyệt. 3 câu trả lời của bạn đã được ghi vào `tasks/plan.md` (mục "Câu hỏi đã trả lời") và vào bảng quyết định trong `SPEC.md`.
+
+## Đã làm
+
+| Việc | Kết quả |
+|---|---|
+| Commit | 4 commit trên `main`: `5c07ac0 docs(misc): add brainstorm history and reference material`, `3729667 docs(spec): add overview and sdlc-contract spec`, `fe64a04 docs(tasks): add sdlc-contract plan`, `c0ff893 chore(repo): add CLAUDE.md`. Message theo `CLAUDE.md`: không body, không `Co-Authored-By` |
+| `todo.md` | Thêm vào `.git/info/exclude`: file vẫn ở chỗ cũ, nhưng không được commit và không hiện trong `git status` |
+| Remote | `origin` đã trỏ sẵn tới `https://github.com/TungPH7/ai-orchestrator-v1.git` (bạn gắn từ trước). Chưa push |
+| Tên trong tài liệu | `SPEC.md`, `SPEC-sdlc-contract.md` và `tasks/` đã dùng tên `ai-orchestrator-v1`. Lịch sử brainstorm và các file nguồn trong `misc/` giữ nguyên văn |
+| Quy ước nhánh của repo kit | Ghi vào `SPEC.md` và `tasks/todo.md`: mỗi task một nhánh `task/t<N>-<slug>` tách từ `main`, merge vào `main` qua PR |
+| Memory | Cập nhật đường dẫn mới, repo GitHub, quy ước nhánh, và việc `gh` đang đăng nhập bằng tài khoản khác |
+
+## Hai việc bạn cần làm
+
+**1. Push lên GitHub.** `gh` trên máy này đang đăng nhập bằng tài khoản `anttp212`, và tài khoản này không thấy repo `TungPH7/ai-orchestrator-v1` (có thể repo là private, hoặc chưa tạo xong). Mình không push bằng tài khoản đó. Bạn push bằng tài khoản `TungPH7`:
+
+```
+! git -C "D:/Document/1Khoahoc/4LapTrinh/AI-for-coding/ai-orchestrator" push -u origin main
+```
+
+Nếu Git Credential Manager hỏi đăng nhập, bạn chọn tài khoản `TungPH7`. Từ T1 trở đi mình cần mở PR, nên `gh` cũng phải đăng nhập bằng `TungPH7` (`! gh auth login`), hoặc bạn thêm `anttp212` làm collaborator của repo. Nếu tới lúc đó `gh` vẫn chưa có quyền, mình sẽ commit trên nhánh của task rồi dừng ở bước mở PR.
+
+**2. Đổi tên thư mục, làm sau khi kết thúc phiên này.** Thư mục `ai-orchestrator` đang bị một tiến trình khác giữ nên mình không đổi tên được. Bạn đóng phiên này cùng các terminal và cửa sổ đang mở trong thư mục đó, rồi chạy trong PowerShell:
+
+```powershell
+Rename-Item "D:\Document\1Khoahoc\4LapTrinh\AI-for-coding\ai-orchestrator" "ai-orchestrator-v1"
+```
+
+Git không phụ thuộc vào tên thư mục, nên repo, commit và remote vẫn giữ nguyên sau khi đổi.
+
+## Bước tiếp theo
+
+Bước tiếp theo là T1: khung dự án, `roles.yaml` và quy tắc 1, chạy bằng `/agent-skills:build`. T1 cần `npm install` để tải `yaml` và `ajv` từ npm. Mình đề xuất bạn đổi tên thư mục, rồi mở một phiên Claude Code mới trong `ai-orchestrator-v1` và gõ `/agent-skills:build`. Phiên mới sẽ làm việc ngay trên đường dẫn mới, và memory đã ghi đủ bối cảnh để làm tiếp.
+
+Lượt này đã được ghi tiếp vào `ai-orchestrator/misc/brainstorm-discussion.md` và commit thành `docs(misc): update brainstorm log`. Từ giờ, sau mỗi lượt brainstorm, mình sẽ commit lịch sử theo cách này để lệnh build luôn thấy cây làm việc sạch.
