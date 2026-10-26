@@ -1,6 +1,6 @@
 # Plan triển khai: sdlc-contract
 
-> **Spec:** [SPEC-sdlc-contract.md](../SPEC-sdlc-contract.md), đã duyệt 2026-10-26. **Trạng thái:** đã duyệt 2026-10-26. **Task chi tiết:** [todo.md](todo.md).
+> **Spec:** [SPEC-sdlc-contract.md](../../../SPEC-sdlc-contract.md), đã duyệt 2026-10-26. **Trạng thái:** hoàn thành 2026-10-27, đã lưu trữ. **Task chi tiết:** [todo.md](todo.md).
 
 ## Tổng quan
 
@@ -82,9 +82,11 @@ T6, T7 và T8 làm song song được, nhưng gói Pro giới hạn usage nên m
 - [x] T14: CI cho repo kit và README
 
 ### Checkpoint cuối
-- [ ] Đạt 6 tiêu chí hoàn thành ở spec mục 9
-- [ ] Bạn xác nhận `docs/sdlc.md` khớp với các quyết định trong `misc/brainstorm-discussion.md` (tiêu chí 6)
-- [ ] Chuyển `tasks/plan.md` và `tasks/todo.md` vào `tasks/archive/sdlc-contract/`
+- [x] Đạt 6 tiêu chí hoàn thành ở spec mục 9
+- [x] Bạn xác nhận `docs/sdlc.md` khớp với các quyết định trong `misc/brainstorm-discussion.md` (tiêu chí 6)
+- [x] Chuyển `tasks/plan.md` và `tasks/todo.md` vào `tasks/archive/sdlc-contract/`
+
+Đã qua ngày 2026-10-27: bạn xác nhận `docs/sdlc.md` khớp với các quyết định đã thảo luận. Module hoàn thành sau 14 task, PR #1–#15.
 
 ## Rủi ro
 
