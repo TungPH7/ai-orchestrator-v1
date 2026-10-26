@@ -217,17 +217,17 @@ Mọi template: tiêu đề và hướng dẫn điền viết tiếng Anh, chỗ
 
 **Cỡ:** S
 
-### [ ] T11: Template `story.md`, `task.md`, `bug.md`, `pull-request.md`
+### [x] T11: Template `story.md`, `task.md`, `bug.md`, `pull-request.md`
 
 **Mô tả:** Ba template cho mô tả item trên Jira và một template mô tả PR, là bản bàn giao từ dev sang reviewer và QA.
 
 **Tiêu chí chấp nhận:**
-- [ ] `story.md`: câu user story, acceptance criteria dạng Given/When/Then, item phụ thuộc, link thiết kế, Sub-task FE/BE khi có cả hai phía, checklist DoR. `task.md`: mục tiêu và checklist kỹ thuật. `bug.md`: bước tái hiện, kết quả thực tế, kết quả mong đợi, Found in, Affects Version, Severity, Fix Version, bằng chứng.
-- [ ] `pull-request.md`: mã Jira, thay đổi gì, đã test thế nào, acceptance criterion nào được phủ bởi test nào, rủi ro, checklist DoD.
-- [ ] Mỗi template có hướng dẫn điền và một ví dụ ngắn.
+- [x] `story.md`: câu user story, acceptance criteria dạng Given/When/Then, item phụ thuộc, link thiết kế, Sub-task FE/BE khi có cả hai phía, checklist DoR. `task.md`: mục tiêu và checklist kỹ thuật. `bug.md`: bước tái hiện, kết quả thực tế, kết quả mong đợi, Found in, Affects Version, Severity, Fix Version, bằng chứng.
+- [x] `pull-request.md`: mã Jira, thay đổi gì, đã test thế nào, acceptance criterion nào được phủ bởi test nào, rủi ro, checklist DoD.
+- [x] Mỗi template có hướng dẫn điền và một ví dụ ngắn.
 
 **Kiểm chứng:**
-- [ ] Thủ công: đối chiếu với DoR, DoD và các trường ở spec mục 2.3, 2.5
+- [x] Thủ công: đối chiếu với DoR, DoD và các trường ở spec mục 2.3, 2.5
 
 **Phụ thuộc:** T8
 
