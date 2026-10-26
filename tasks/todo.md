@@ -71,17 +71,17 @@
 
 **Cỡ:** S
 
-### [ ] T4: `allowedTransitions`, `checkTransition` và kịch bản chuyển trạng thái
+### [x] T4: `allowedTransitions`, `checkTransition` và kịch bản chuyển trạng thái
 
 **Mô tả:** Cài hai hàm thuần ở spec mục 6. `checkTransition(contract, workType, transitionId, { actor, facts })` trả về `{ ok, missingGuards, effects }`: từ chối khi actor không được phép hoặc thiếu guard, và thêm effect `flag-needs-you` khi Rework count sau lần tăng chạm giới hạn. Giới hạn đọc từ `policies.yaml`, nên task này tạo `policies.yaml` với phần rework; phần còn lại thêm ở T8.
 
 **Tiêu chí chấp nhận:**
-- [ ] Kịch bản: một Story đi từ `new` tới `done` khi có đủ dữ kiện; `accept` do một agent gọi thì bị từ chối.
-- [ ] Kịch bản: lần `qa-fail` thứ ba liên tiếp trả về effect `flag-needs-you`; hai lần đầu thì không.
-- [ ] `allowedTransitions(contract, 'story', 'in-review')` trả về đúng `request-changes`, `deploy-to-qa` và `cancel`.
+- [x] Kịch bản: một Story đi từ `new` tới `done` khi có đủ dữ kiện; `accept` do một agent gọi thì bị từ chối.
+- [x] Kịch bản: lần `qa-fail` thứ ba liên tiếp trả về effect `flag-needs-you`; hai lần đầu thì không.
+- [x] `allowedTransitions(contract, 'story', 'in-review')` trả về đúng `request-changes`, `deploy-to-qa` và `cancel`.
 
 **Kiểm chứng:**
-- [ ] `npm test` và `npm run validate` xanh
+- [x] `npm test` và `npm run validate` xanh
 
 **Phụ thuộc:** T3
 

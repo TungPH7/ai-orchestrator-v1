@@ -1,0 +1,8 @@
+description: a rework limit whose effect is not declared under effects
+rule: R3
+expect:
+  - "rework.on_limit"
+patch:
+  - op: set
+    path: "rework.on_limit"
+    value: needs-you

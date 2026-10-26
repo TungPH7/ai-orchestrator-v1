@@ -59,7 +59,7 @@ test('readContract names the contract file it cannot read', (t) => {
 test('readContract merges the top-level keys of every contract file', () => {
   const contract = readContract(CONTRACT_DIR);
 
-  assert.deepEqual(Object.keys(contract).sort(), ['effects', 'guards', 'roles', 'template_files', 'workflows']);
+  assert.deepEqual(Object.keys(contract).sort(), ['effects', 'guards', 'rework', 'roles', 'template_files', 'workflows']);
 });
 
 test('loadContract returns a deeply frozen contract', () => {
