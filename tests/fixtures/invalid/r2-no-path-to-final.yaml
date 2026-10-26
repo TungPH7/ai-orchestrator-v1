@@ -1,0 +1,8 @@
+description: a non-final state with no path to a final state
+rule: R2
+expect:
+  - "workflows.standard.states.cancelled"
+patch:
+  - op: set
+    path: "workflows.standard.final"
+    value: [done]

@@ -25,8 +25,8 @@ for (const file of fixtures) {
     const errors = validateContract(applyPatch(contract, fixture.patch));
 
     assert.deepEqual(
-      errors.map(({ rule, path }) => ({ rule, path })),
-      fixture.expect.map((path) => ({ rule: fixture.rule, path })),
+      errors.map(({ rule, path }) => `${rule} ${path}`).sort(),
+      fixture.expect.map((path) => `${fixture.rule} ${path}`).sort(),
     );
     for (const { message } of errors) assert.ok(message, 'every error has a message');
   });

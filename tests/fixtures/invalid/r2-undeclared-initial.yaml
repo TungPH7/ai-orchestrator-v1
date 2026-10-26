@@ -1,0 +1,8 @@
+description: an initial state the workflow does not declare
+rule: R2
+expect:
+  - "workflows.sub-task.initial"
+patch:
+  - op: set
+    path: "workflows.sub-task.initial"
+    value: todo

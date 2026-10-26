@@ -1,0 +1,8 @@
+description: a transition guard that is not declared under guards
+rule: R3
+expect:
+  - "workflows.standard.transitions[id=submit].guards"
+patch:
+  - op: set
+    path: "workflows.standard.transitions[id=submit].guards"
+    value: [subtasks-done, pr-open, ci-passed]

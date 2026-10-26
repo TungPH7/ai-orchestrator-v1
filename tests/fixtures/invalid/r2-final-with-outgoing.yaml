@@ -1,0 +1,8 @@
+description: a final state with outgoing transitions
+rule: R2
+expect:
+  - "workflows.epic.states.in-progress"
+patch:
+  - op: set
+    path: "workflows.epic.final"
+    value: [in-progress, done, cancelled]
