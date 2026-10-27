@@ -2,7 +2,7 @@
 
 > **Module:** `tracker-integration`, xem capability map trong [SPEC.md](SPEC.md). **Phụ thuộc:** `sdlc-contract`. **Được dùng bởi:** `dev-workflow`, `release-workflow`, `project-scaffold`, và `orchestrator-cli` ở Cấp 2.
 >
-> **Trạng thái:** đã duyệt 2026-10-27; mục 2.6 sửa sau khi duyệt, chờ bạn xác nhận cùng plan. **Plan:** [tasks/plan.md](tasks/plan.md). **Nguồn thảo luận:** [misc/brainstorm-discussion.md](misc/brainstorm-discussion.md), Phiên 4 · Lượt 1 đến Phiên 6 · Lượt 4.
+> **Trạng thái:** đã duyệt 2026-10-27, cùng hai thay đổi đi kèm plan (mục 2.6, tiêu chí 7), đang làm theo plan. **Plan:** [tasks/plan.md](tasks/plan.md). **Nguồn thảo luận:** [misc/brainstorm-discussion.md](misc/brainstorm-discussion.md), Phiên 4 · Lượt 1 đến Phiên 6 · Lượt 4.
 
 ## 1. Mục tiêu
 
@@ -308,7 +308,7 @@ Thư viện chỉ gọi mạng trong `jira-client.mjs` và `github-client.mjs`. 
 4. Agent dùng `orchestratoragent` tạo, đọc, tìm và chuyển item qua Rovo MCP; lịch sử item ghi tên service account.
 5. Hook chặn agent gọi `accept`, chặn phiên không rõ vai trò, và cho qua `start` khi đủ guard; mỗi trường hợp được thử thật một lần.
 6. Trên gói Free, rule Restrict chặn `orchestratoragent` ở các transition của `human`. Nếu gói Free không có rule này, spec và `docs/jira-setup.md` ghi rõ điều đó, và hook là lớp chặn duy nhất đối với agent.
-7. Trên repo sandbox: PR mở và CI xanh thì item sang In Review, do `orchestratorci` chuyển; CI đỏ thì item về In Progress và đếm rework bằng 1; merge rồi deploy thử lên `development` thành công thì item sang Ready for QA.
+7. Trên repo sandbox: PR mở và CI xanh thì item sang In Review, do `orchestratorci` chuyển; CI đỏ thì item về In Progress và đếm rework bằng 1; merge rồi deploy thử lên `development` thành công mà PR chưa có approve của bạn thì item đứng yên ở In Review, và `jira-sync` báo thiếu `merge-approved`. Chặng sang Ready for QA kiểm thật ở `quality-gates` (mục 11).
 8. Nhánh, commit, PR và các deployment thử hiện trên item; panel Deployments nhận đúng loại môi trường của `development`, `staging`, `production`.
 9. Hai câu hỏi mở trong `SPEC.md` được đóng.
 
@@ -321,7 +321,7 @@ Thư viện chỉ gọi mạng trong `jira-client.mjs` và `github-client.mjs`. 
 
 ## 11. Rủi ro chuyển sang module khác
 
-- **Bạn không approve được PR của chính mình.** GitHub không cho tác giả PR approve PR đó. Nếu agent mở PR bằng tài khoản `TungPH7`, guard `merge-approved` không bao giờ thỏa. Agent cần mở PR bằng một danh tính khác, như GitHub App hoặc một tài khoản máy. Chốt ở `quality-gates`; trong module này, guard được test bằng dữ liệu mẫu.
+- **Bạn không approve được PR của chính mình.** GitHub không cho tác giả PR approve PR đó. Nếu agent mở PR bằng tài khoản `TungPH7`, guard `merge-approved` không bao giờ thỏa. Agent cần mở PR bằng một danh tính khác, như GitHub App hoặc một tài khoản máy. Chốt ở `quality-gates`; trong module này, guard được test bằng dữ liệu mẫu, và `quality-gates` kiểm thật chặng `deploy-to-qa` của tiêu chí 7 (bạn chọn ngày 2026-10-27).
 - **`agent-roster` phải đặt tên file agent trùng id vai trò** (`fe-dev.md` có `name: fe-dev`), vì hook lấy vai trò từ `agent_type` (mục 2.6).
 
 ## Nguồn
