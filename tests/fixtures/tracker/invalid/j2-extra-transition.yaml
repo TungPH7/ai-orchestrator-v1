@@ -1,0 +1,8 @@
+description: a mapped transition that the contract does not have
+rule: J2
+expect:
+  - "workflows.standard.transitions.reopen"
+patch:
+  - op: set
+    path: "workflows.standard.transitions.reopen"
+    value: { name: "Reopen" }

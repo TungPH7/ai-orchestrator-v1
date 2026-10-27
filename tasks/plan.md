@@ -44,7 +44,7 @@ T1 đứng đầu vì nếu service account không dùng được với Rovo MCP
 - [x] T1: Kết nối thật bằng hai service account
 - [x] T2: Hợp đồng: trường Agent và cách đếm rework
 - [x] T3: `tracker/jira.yaml` phần danh tính, quy tắc J1 và J4
-- [ ] T4: Ánh xạ workflow, trường, board và môi trường, quy tắc J2 và J3
+- [x] T4: Ánh xạ workflow, trường, board và môi trường, quy tắc J2 và J3
 - [ ] T5: Quy ước gắn mã Jira
 - [ ] T6: Đếm rework từ lịch sử item
 

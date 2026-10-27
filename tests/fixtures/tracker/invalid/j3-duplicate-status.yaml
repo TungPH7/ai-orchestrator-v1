@@ -1,0 +1,8 @@
+description: two states of one workflow with the same Jira status
+rule: J3
+expect:
+  - "workflows.standard.states.in-qa.status"
+patch:
+  - op: set
+    path: "workflows.standard.states.in-qa.status"
+    value: "Ready for QA"

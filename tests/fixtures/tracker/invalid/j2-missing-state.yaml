@@ -1,0 +1,7 @@
+description: a contract state with no Jira status
+rule: J2
+expect:
+  - "workflows.standard.states.in-qa"
+patch:
+  - op: remove
+    path: "workflows.standard.states.in-qa"

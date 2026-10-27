@@ -1,0 +1,8 @@
+description: a board column whose WIP limit is not declared in policies.yaml
+rule: J2
+expect:
+  - "board.columns[id=in-review].wip_limit"
+patch:
+  - op: set
+    path: "board.columns[id=in-review].wip_limit"
+    value: review

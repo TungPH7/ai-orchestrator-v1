@@ -1,0 +1,7 @@
+description: a board column of the contract with no Jira column
+rule: J2
+expect:
+  - "board.columns"
+patch:
+  - op: remove
+    path: "board.columns[id=qa]"

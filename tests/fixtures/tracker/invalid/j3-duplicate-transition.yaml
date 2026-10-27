@@ -1,0 +1,8 @@
+description: two different transitions of one workflow with the same Jira name
+rule: J3
+expect:
+  - "workflows.standard.transitions.pick-up.name"
+patch:
+  - op: set
+    path: "workflows.standard.transitions.pick-up.name"
+    value: "Start"

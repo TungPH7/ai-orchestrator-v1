@@ -1,0 +1,8 @@
+description: one Jira status in two workflows with different categories, which Jira cannot hold
+rule: J3
+expect:
+  - "workflows.sub-task.states.in-progress.category"
+patch:
+  - op: set
+    path: "workflows.sub-task.states.in-progress.category"
+    value: to-do

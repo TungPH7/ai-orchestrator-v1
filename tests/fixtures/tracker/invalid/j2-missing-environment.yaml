@@ -1,0 +1,7 @@
+description: a contract environment with no mapping
+rule: J2
+expect:
+  - "environments.staging"
+patch:
+  - op: remove
+    path: "environments.staging"
