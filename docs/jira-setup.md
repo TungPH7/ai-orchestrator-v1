@@ -201,13 +201,13 @@ Workflow scheme chỉ gắn được work type đã có trên site, nên tạo �
 2. Menu bên trái: **Fields** → nút tạo field (đối chiếu giao diện: **Create new field** hoặc **Create custom field**).
 3. Chọn loại **Select List (single choice)** → gõ tên field → thêm từng option theo đúng thứ tự bên dưới → tạo field.
 4. Nếu Jira hỏi gắn field vào màn hình (screen) nào, bỏ qua: mục 9 gắn field vào màn hình của space.
-5. Giới hạn work type: ở danh sách field, tìm field vừa tạo → **•••** → **Contexts and default value** → sửa context mặc định → phần **Applicable work types** chỉ chọn các work type ghi ở dòng đó → lưu.
+5. Không giới hạn work type cho field: Jira không cho sửa work type của context mặc định (Global context, ô **Any issue type**), và cũng không cần **Add new context**. Work type ghi sau "dùng cho" là nơi hợp đồng dùng field đó; Jira vẫn hiện field ở mọi work type.
 
-- [ ] Field `Found in`, type Select List (single choice), work type `Bug`. Option: `Development`, `Staging`, `Production`
+- [ ] Field `Found in`, type Select List (single choice), dùng cho `Bug`. Option: `Development`, `Staging`, `Production`
 - [ ] `Affects versions`: trường có sẵn, không tạo; dùng cho `Bug`
-- [ ] Field `Severity`, type Select List (single choice), work type `Bug`. Option: `Critical`, `High`, `Medium`, `Low`
+- [ ] Field `Severity`, type Select List (single choice), dùng cho `Bug`. Option: `Critical`, `High`, `Medium`, `Low`
 - [ ] `Fix versions`: trường có sẵn, không tạo; dùng cho `Story`, `Task`, `Bug`
-- [ ] Field `Agent`, type Select List (single choice), work type `Story`, `Sub-task`, `Task`, `Bug`. Option: `Project Manager`, `Business Analyst`, `UI/UX designer`, `Solution Architect`, `Frontend Developer`, `Backend Developer`, `Code Reviewer`, `Security Engineer`, `Tester/QA Engineer`, `DevOps Engineer`
+- [ ] Field `Agent`, type Select List (single choice), dùng cho `Story`, `Sub-task`, `Task`, `Bug`. Option: `Project Manager`, `Business Analyst`, `UI/UX designer`, `Solution Architect`, `Frontend Developer`, `Backend Developer`, `Code Reviewer`, `Security Engineer`, `Tester/QA Engineer`, `DevOps Engineer`
 - [ ] Rework count: không tạo trường, số này được đếm từ lịch sử chuyển trạng thái
 - [ ] `Flagged`: trường có sẵn, không tạo; dùng cho `Epic`, `Story`, `Sub-task`, `Task`, `Bug`
 

@@ -48,9 +48,9 @@
 | 3. Resolution | Xong (2026-10-27). Site có hai resolution `Done` ("GreenHopper Managed Resolution", do Jira Software tạo); giữ cả hai |
 | 4. Status | Xong (2026-10-27): 10 status mới và `In Progress` có sẵn, đúng tên và Category |
 | 5. Workflow | Đang làm: đã có `AO standard`; `AO epic`, `AO sub-task` chưa xác nhận |
-| 6. Work type | Đang làm (2026-10-27): site chỉ có `Epic`, `Story`; cần tạo `Task`, `Bug`, `Sub-task` |
-| 7. Workflow scheme | Đang làm: đã tạo `AO workflow scheme`, chưa gắn workflow |
-| 8. Trường | Chưa làm |
+| 6. Work type | Xong (2026-10-27): đã tạo `Task`, `Bug`, `Sub-task`; `Epic`, `Story` có sẵn |
+| 7. Workflow scheme | Đã tạo `AO workflow scheme`; chưa xác nhận đã gắn đủ ba workflow |
+| 8. Trường | Đang làm: `Found in` đã tạo, đúng ba option; giữ Global context |
 | 9. Space | Chưa làm |
 | 10. Board | Chưa làm |
 | 11. GitHub for Jira | Chưa làm |
@@ -61,3 +61,4 @@
 | Gói Free có rule "Restrict who can move a work item" theo group không | Có trong danh sách rule (2026-10-27, ảnh `misc/images/phien-6-luot-17-anh-2.png`). Rule có chặn thật hay không được kiểm ở T15 |
 | Service account thêm được vào group không | Chưa biết |
 | Site có sẵn những work type nào | Chỉ `Epic` và `Story` (2026-10-27, ảnh `misc/images/phien-6-luot-18-anh-1.png`). Checklist thêm mục 6 Work type, trước Workflow scheme |
+| Giới hạn custom field theo work type được không | Không: Global context của field không còn sửa được work type (banner CHANGE-3019, ảnh `misc/images/phien-6-luot-19-anh-2.png`). Giữ **Any issue type**; work type nào dùng field nào do hợp đồng quy định |

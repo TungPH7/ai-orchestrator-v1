@@ -105,15 +105,17 @@ test('the workflow scheme lists each workflow with the Jira work types it serves
   ]);
 });
 
-test('custom fields list their type, work types and options; Rework count is not a field', () => {
+test('custom fields list their type, work types and options, and keep the global context; Rework count is not a field', () => {
   const fields = section('## 8.');
-  assert.ok(fields.includes('- [ ] Field `Severity`, type Select List (single choice), work type `Bug`. Option: `Critical`, `High`, `Medium`, `Low`'));
+  assert.ok(fields.includes('- [ ] Field `Severity`, type Select List (single choice), dùng cho `Bug`. Option: `Critical`, `High`, `Medium`, `Low`'));
   assert.ok(
     fields.some(
-      (line) => line.startsWith('- [ ] Field `Agent`') && line.includes('`Story`, `Sub-task`, `Task`, `Bug`') && line.includes('`Frontend Developer`'),
+      (line) => line.startsWith('- [ ] Field `Agent`') && line.includes('dùng cho') && line.includes('`Story`, `Sub-task`, `Task`, `Bug`') && line.includes('`Frontend Developer`'),
     ),
   );
   assert.ok(fields.includes('- [ ] Rework count: không tạo trường, số này được đếm từ lịch sử chuyển trạng thái'));
+  // Jira no longer lets the global context be restricted to work types (CHANGE-3019).
+  assert.ok(!doc.includes('Applicable work types'));
 });
 
 test('resolutions: the four of the contract, then Done for the transitions into done', () => {
