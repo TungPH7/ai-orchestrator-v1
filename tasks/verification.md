@@ -51,7 +51,7 @@
 | 6. Work type | Xong (2026-10-27): đã tạo `Task`, `Bug`, `Sub-task`; `Epic`, `Story` có sẵn |
 | 7. Workflow scheme | Đã tạo `AO workflow scheme`; chưa xác nhận đã gắn đủ ba workflow |
 | 8. Trường | Đang làm: `Found in` đã tạo, đúng ba option; giữ Global context |
-| 9. Space | Chưa làm |
+| 9. Space | Đang làm: đang tạo `DEMO` bằng trình tạo space (3 bước) |
 | 10. Board | Chưa làm |
 | 11. GitHub for Jira | Chưa làm |
 | 12. Môi trường | Xong, Claude làm |
@@ -62,3 +62,4 @@
 | Service account thêm được vào group không | Chưa biết |
 | Site có sẵn những work type nào | Chỉ `Epic` và `Story` (2026-10-27, ảnh `misc/images/phien-6-luot-18-anh-1.png`). Checklist thêm mục 6 Work type, trước Workflow scheme |
 | Giới hạn custom field theo work type được không | Không: Global context của field không còn sửa được work type (banner CHANGE-3019, ảnh `misc/images/phien-6-luot-19-anh-2.png`). Giữ **Any issue type**; work type nào dùng field nào do hợp đồng quy định |
+| Trình tạo space có loại sub-task không | Bước 2 (**Let's set up your space**) chỉ có sẵn `Epic`, `Story`, `Bug`, `Task` (ảnh `misc/images/phien-6-luot-20-anh-1.png`). `Sub-task` thêm sau trong Space settings |

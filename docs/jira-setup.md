@@ -218,13 +218,15 @@ Workflow scheme chỉ gắn được work type đã có trên site, nên tạo �
 1. Thanh trên cùng của Jira: **Spaces** → **Create space**.
 2. Chọn template **Kanban** → **Use template**.
 3. Chọn loại **Company-managed** (không chọn Team-managed).
-4. Ô **Name** gõ tên dự án, ô **Key** gõ key của dự án (pilot: `DEMO`) → tạo space.
+4. Bước **Name your space**: ô **Name** gõ tên dự án, ô **Key** gõ key của dự án (pilot: `DEMO`) → **Next**.
+5. Bước **Let's set up your space**: phần **Work types** giữ các loại có sẵn; nếu **Add work type** cho chọn `Sub-task` thì thêm, không có thì bỏ qua (bước Work type bên dưới thêm sau). Phần **Statuses** để nguyên: bước Workflow scheme bên dưới thay toàn bộ → **Next**.
+6. Bước cuối: làm theo màn hình để tạo space (đối chiếu giao diện).
 
 - [ ] Space company-managed, template Kanban, key của dự án (pilot: `DEMO`)
 
 **Mở Space settings:** trong space, menu bên trái, bấm **•••** cạnh tên space → **Space settings**.
 
-**Work type:** Space settings → **Work types**. Danh sách phải có đủ các loại bên dưới. Thiếu loại nào: bấm **Actions** → **Edit work types**, kéo loại còn thiếu vào cột của scheme → **Save**.
+**Work type:** Space settings → **Work types**. Danh sách phải có đủ các loại bên dưới. Thiếu loại nào: bấm **Actions** → **Edit work types**, kéo loại còn thiếu vào cột của scheme → **Save**. Trình tạo space không có sẵn loại sub-task, nên `Sub-task` thường phải thêm ở đây. Nếu danh sách có loại lạ, ví dụ `Subtask` không gạch nối, đừng xóa; chụp màn hình rồi hỏi.
 
 - [ ] Space có đủ work type: `Epic`, `Story`, `Sub-task`, `Task`, `Bug`
 
