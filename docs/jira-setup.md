@@ -201,7 +201,7 @@ Workflow scheme chỉ gắn được work type đã có trên site, nên tạo �
 2. Menu bên trái: **Fields** → nút tạo field (đối chiếu giao diện: **Create new field** hoặc **Create custom field**).
 3. Chọn loại **Select List (single choice)** → gõ tên field → thêm từng option theo đúng thứ tự bên dưới → tạo field.
 4. Nếu Jira hỏi gắn field vào màn hình (screen) nào, bỏ qua: mục 9 gắn field vào màn hình của space.
-5. Không giới hạn work type cho field: Jira không cho sửa work type của context mặc định (Global context, ô **Any issue type**), và cũng không cần **Add new context**. Work type ghi sau "dùng cho" là nơi hợp đồng dùng field đó; Jira vẫn hiện field ở mọi work type.
+5. Không giới hạn work type cho field: Jira không cho sửa work type của context mặc định (Global context, ô **Any issue type**), và cũng không cần **Add new context**. Work type ghi sau "dùng cho" là nơi hợp đồng dùng field đó; mục 9 chỉ đưa field lên screen của các work type này.
 
 - [ ] Field `Found in`, type Select List (single choice), dùng cho `Bug`. Option: `Development`, `Staging`, `Production`
 - [ ] `Affects versions`: trường có sẵn, không tạo; dùng cho `Bug`
@@ -234,9 +234,18 @@ Workflow scheme chỉ gắn được work type đã có trên site, nên tạo �
 
 - [ ] Space dùng workflow scheme `AO workflow scheme`
 
-**Màn hình:** Space settings → menu bên trái **Work items** → **Screens** → bấm vào từng screen trong danh sách (thường có màn hình tạo, sửa, xem) → kéo xuống cuối, ô **Select Field...** gõ tên field → chọn → field được thêm vào cuối màn hình. Làm cho từng field bên dưới, trên từng screen.
+**Màn hình:** Space settings → menu bên trái **Work items** → **Screens**. Trang này chia theo screen scheme; mỗi scheme ghi work type nào dùng nó và cột **Screen** ghi tên screen (thường một screen dùng cho cả Create, Edit, View). Field chỉ hiện ở work type có field đó trên screen.
 
-- [ ] Mọi screen của space có các field: `Found in`, `Affects versions`, `Severity`, `Fix versions`, `Agent`, `Flagged`
+1. Với từng dòng bên dưới, tìm screen của từng work type ghi ở dòng đó. Nhiều work type dùng chung một screen thì chỉ thêm một lần.
+2. Bấm tên screen (chữ xanh ở cột **Screen**) → trang cấu hình screen mở ra.
+3. Tìm ô thêm field (đối chiếu giao diện: ô **Select Field...** ở cuối danh sách, hoặc nút **Add field**) → gõ tên field → chọn. Field đã có trên screen thì bỏ qua.
+
+- [ ] `Found in`: screen của `Bug`
+- [ ] `Affects versions`: screen của `Bug`
+- [ ] `Severity`: screen của `Bug`
+- [ ] `Fix versions`: screen của `Story`, `Task`, `Bug`
+- [ ] `Agent`: screen của `Story`, `Sub-task`, `Task`, `Bug`
+- [ ] `Flagged`: screen của `Epic`, `Story`, `Sub-task`, `Task`, `Bug`
 
 ## 10. Board
 
