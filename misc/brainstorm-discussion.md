@@ -13,7 +13,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 3 | `c097b31c-efdb-42a0-96ba-8a2b65140f99` | 2026-10-26 15:43 → 17:17 | Duyệt SPEC-sdlc-contract và 7 câu hỏi mở; Story có cả FE và BE có tách hai nhánh không; monorepo hay hai repo; release theo quyết định của bạn; lập plan cho sdlc-contract; commit đầu tiên, repo GitHub, đổi tên thư mục |
 | 4 | `46e4e518-ac41-4570-8bcc-37d5a88788c5` | 2026-10-26 21:35 → 2026-10-27 01:02 | Build và đóng module sdlc-contract (14 task, PR #1–#16, không ghi vào lịch sử vì là lượt code); chọn module kế tiếp tracker-integration; giả định và câu hỏi cho tracker-integration |
 | 5 | `76bd80d2-8083-45f7-93a7-d7ffab2e246c` | 2026-10-27 09:45 → 10:02 | Bạn trả lời 5 câu hỏi của tracker-integration; câu trả lời của Claude bị bộ lọc an toàn chặn, hai lần |
-| 6 | `02493cdb-1425-4498-9a25-6408d7717c70` | 2026-10-27 10:03 → | Gói Free và company-managed; cách tạo tài khoản bot cho agent; viết SPEC-tracker-integration; cách chọn scope khi tạo token; duyệt spec, lập plan tracker-integration |
+| 6 | `02493cdb-1425-4498-9a25-6408d7717c70` | 2026-10-27 10:03 → | Gói Free và company-managed; cách tạo tài khoản bot cho agent; viết SPEC-tracker-integration; cách chọn scope khi tạo token; duyệt spec, lập plan tracker-integration; bắt đầu T1 |
 
 ---
 
@@ -1698,3 +1698,49 @@ Các task có phần bạn làm:
 Spec và plan đã được commit trên nhánh `task/spec-tracker-integration` và push lên GitHub, và lượt này đã được ghi vào lịch sử brainstorm. Bạn duyệt plan cùng hai thay đổi ở trên, và trả lời 2 câu này. Sau đó mình mở PR cho spec và plan, rồi bắt đầu T1.
 
 Nguồn: [Claude Code: Hooks reference](https://code.claude.com/docs/en/hooks)
+
+---
+
+# Phiên 6 · Lượt 5 — 2026-10-27 khoảng 12:10
+
+**Bạn:**
+
+```markdown
+Câu hỏi cần bạn quyết
+1. Làm như đề xuất
+2. Ngày hết hạn của hai token: 27 thg 10, 2027
+```
+
+**Claude:**
+
+Mình coi câu trả lời này là bạn duyệt plan, cùng hai thay đổi ở lượt trước, và đã làm tiếp:
+
+- **Ghi câu trả lời.** Tiêu chí 7 của spec giờ ghi: merge và deploy khi PR chưa có approve của bạn thì item đứng yên ở In Review, và `jira-sync` báo thiếu `merge-approved`; chặng sang Ready for QA kiểm thật ở `quality-gates`. Ngày hết hạn 2027-10-27 được ghi vào plan, để T3 đưa vào `tracker/jira.yaml`.
+- **Merge spec và plan** qua PR #17, sau khi CI xanh.
+- **Bắt đầu T1** trên nhánh `task/t1-live-connection`. Mình đã tạo repo private `TungPH7/ao-pilot` có nhánh `main` và `develop`, clone về `D:\Document\1Khoahoc\4LapTrinh\AI-for-coding\ao-pilot`, và viết `kit/.mcp.json`. Kết quả kiểm thật sẽ ghi ở `tasks/verification.md`.
+
+T1 đang chờ bạn làm hai việc. Mình chưa chạy được phép thử nào, vì hai biến môi trường chứa token chưa có trên máy.
+
+## Việc 1: bật API token cho Rovo MCP
+
+1. Mở [admin.atlassian.com](https://admin.atlassian.com), chọn tổ chức `phunghuutung12b4`.
+2. Tìm mục **Rovo** → **Rovo MCP server** → **Authentication**, rồi bật xác thực bằng API token.
+
+[Unverified] Đường dẫn này lấy từ một trả lời trên Atlassian Community, không phải tài liệu chính thức. Nếu không thấy mục này, bạn chụp màn hình trang Administration gửi mình.
+
+## Việc 2: đặt hai biến môi trường chứa token
+
+1. Bấm Start, gõ `biến môi trường` (hoặc `environment variables`), rồi chọn **Chỉnh sửa biến môi trường cho tài khoản của bạn** (Edit environment variables for your account).
+2. Ở khung **Biến người dùng** (User variables), bấm **Mới** (New):
+   - Tên: `ATLASSIAN_AGENT_TOKEN`. Giá trị: token của `orchestratoragent`.
+3. Bấm **Mới** lần nữa:
+   - Tên: `JIRA_CI_TOKEN`. Giá trị: token của `orchestratorci`.
+4. Bấm **OK** để đóng hộp thoại.
+
+Đừng đặt biến bằng lệnh `! setx` trong khung chat này: lệnh có dấu `!` hiện lên trong cuộc trò chuyện, kèm cả token. Bạn cũng không cần khởi động lại Claude Code. Mình đọc biến từ registry ngay bên trong lệnh, không in giá trị ra, và chạy phép thử Rovo MCP bằng một tiến trình Claude Code riêng.
+
+Xong hai việc thì bạn nhắn "xong". Mình sẽ chạy ba phép thử của T1:
+
+1. `curl -I` tới Rovo MCP bằng token của agent.
+2. Claude Code trong `ao-pilot` gọi tool Jira bằng `orchestratoragent`.
+3. Token CI gọi `GET /rest/api/3/myself`.
