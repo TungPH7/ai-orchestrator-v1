@@ -4,7 +4,7 @@
 // Needs JIRA_ADMIN_EMAIL and JIRA_ADMIN_TOKEN.
 import { join } from 'node:path';
 import { formatError, loadContract } from '../lib/contract.mjs';
-import { findDrift, readJiraConfig } from '../lib/tracker/drift.mjs';
+import { findDrift, manualChecks, readJiraConfig, tokenWarnings } from '../lib/tracker/drift.mjs';
 import { basicAuth, createJiraClient } from '../lib/tracker/jira-client.mjs';
 import { readMapping, validateMapping } from '../lib/tracker/mapping.mjs';
 
@@ -31,6 +31,9 @@ try {
   });
   const drift = findDrift(await readJiraConfig(client, { space, mapping }), { contract, mapping });
   for (const { message } of drift) console.log(message);
+  // Neither of these fails the check: the API cannot show the first, and the second is only a reminder.
+  for (const check of manualChecks(contract, mapping)) console.log(`Check by hand: ${check}`);
+  for (const warning of tokenWarnings(mapping)) console.log(`Warning: ${warning}`);
   if (drift.length > 0) {
     console.error(`${drift.length} difference(s) between Jira and ${join(trackerDir, 'jira.yaml')}`);
     process.exitCode = 1;
