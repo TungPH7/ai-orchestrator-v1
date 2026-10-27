@@ -2475,3 +2475,41 @@ Mình đã cập nhật:
 Cài xong app thì T8 còn một bước kiểm: tạo một Story thử trên `DEMO` và chuyển qua vài status. Bạn báo xong mục 11, mình sẽ hướng dẫn bước này.
 
 Nguồn: [GitHub for Atlassian trên Atlassian Marketplace](https://marketplace.atlassian.com/apps/1219592/github-for-atlassian), [Link GitHub workflows and deployments to Jira work items](https://support.atlassian.com/jira-cloud-administration/docs/link-github-workflows-and-deployments-to-jira-issues/), [KB: custom environment names do not show up in the releases panel](https://support.atlassian.com/jira/kb/jira-github-integration-custom-environment-names-does-not-show-up-in-releases-panel-and-instead-show-undefined-environment/)
+
+---
+
+# Phiên 6 · Lượt 25 — 2026-10-28 khoảng 00:25
+
+**Bạn:**
+
+```markdown
+[Image #21][Image #22]
+sau khi bấm next thì như Image #22, tôi bấm Select an organization... thì không có gì xảy ra. Mà vì sao chỉ cho chọn organization??
+```
+
+Ảnh đính kèm:
+
+- [Image #21](images/phien-6-luot-25-anh-1.png): trang **GitHub for Atlassian** trong Jira admin settings (Marketplace apps): "Connect GitHub to Atlassian", chọn sản phẩm **GitHub Cloud** hoặc GitHub Enterprise Server, nút **Next**.
+- [Image #22](images/phien-6-luot-25-anh-2.png): bước tiếp theo: khung "Select a GitHub organization" ("The repositories you select from this organization will be available to all projects in https://phunghuutung12b4.atlassian.net"), nút **Select an organization in GitHub**, dòng "Logged in as TungPH7. Change GitHub login". Cuối thanh địa chỉ có biểu tượng **Pop-up blocked**.
+
+**Claude:**
+
+Bấm mà không có gì xảy ra là vì Chrome đã chặn pop-up. Ở cuối thanh địa chỉ trong ảnh thứ hai có biểu tượng **Pop-up blocked**. Nút đó mở GitHub ở một tab mới, nên bị chặn.
+
+Bạn làm như sau:
+
+1. Bấm biểu tượng **Pop-up blocked** ở cuối thanh địa chỉ → chọn **Always allow pop-ups and redirects from https://phunghuutung12b4.atlassian.net** → **Done**.
+2. Bấm lại **Select an organization in GitHub**. Tab GitHub sẽ mở ra và hỏi cài app vào tài khoản nào.
+3. Nếu danh sách có `TungPH7` (tài khoản cá nhân của bạn): chọn nó → **Only select repositories** → chọn `ao-pilot` → **Install**. Rồi quay lại tab Jira, nếu thấy **Connect** cạnh `TungPH7` thì bấm.
+4. Nếu danh sách không có `TungPH7`, chỉ có organization hoặc trống: dừng lại, chụp màn hình gửi mình.
+
+Về câu hỏi vì sao chỉ cho chọn organization: tài liệu của Atlassian cho app này chỉ nói tới GitHub organization, không nhắc tới tài khoản cá nhân. Theo tài liệu, nếu không có organization nào thì phải cài app vào một organization mới. Trang cài app của GitHub thường liệt kê cả tài khoản cá nhân, nhưng mình chưa xác nhận được điều này cho app này, nên bước 3 là để thử.
+
+Nếu bước 4 xảy ra, cách theo tài liệu là tạo một GitHub organization miễn phí rồi chuyển `ao-pilot` sang đó. Việc này đổi địa chỉ repo, kéo theo remote ở máy và đường dẫn trong kit, nên mình sẽ hỏi bạn trước khi làm.
+
+Mình đã cập nhật:
+
+- Mục 11 của checklist: thêm bước **GitHub Cloud** → **Next**, dòng **Logged in as**, cách mở khóa pop-up, và dặn dừng lại hỏi nếu GitHub không cho chọn tài khoản sở hữu repo.
+- `tasks/verification.md`: mục 11 đang nối với GitHub; thêm câu hỏi "app có nối được với tài khoản cá nhân không", chờ kết quả của bạn.
+
+Nguồn: [Connect GitHub Cloud to Jira](https://support.atlassian.com/jira-cloud-administration/docs/integrate-with-github-cloud/)
