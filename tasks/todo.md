@@ -157,16 +157,16 @@ Claude làm: tạo repo private `TungPH7/ao-pilot` với nhánh `main` và `deve
 
 **Cỡ:** M
 
-### [ ] T8: Bạn dựng space `DEMO` theo checklist [bạn]
+### [x] T8: Bạn dựng space `DEMO` theo checklist [bạn]
 
 **Mô tả:** Bạn dựng Jira theo `docs/jira-setup.md`; Claude giải đáp từng bước, và tạo ba GitHub environment `development`, `staging`, `production` trong `ao-pilot`. Ghi lại rule "Restrict who can move a work item" có trên gói Free hay không. Nếu không có, hoặc gói Free thiếu thứ gì khác, Claude sửa spec mục 2.1 và bộ sinh checklist trong cùng task.
 
 **Tiêu chí chấp nhận:**
-- [ ] Space `DEMO` có ba workflow, các trường và board Kanban theo checklist; app GitHub for Jira nối với `ao-pilot`.
-- [ ] Kết quả về rule Restrict trên gói Free ghi trong `tasks/verification.md`, và trong spec nếu phải đổi.
+- [x] Space `DEMO` có ba workflow, các trường và board Kanban theo checklist; app GitHub for Jira nối với `ao-pilot`.
+- [x] Kết quả về rule Restrict trên gói Free ghi trong `tasks/verification.md`, và trong spec nếu phải đổi.
 
 **Kiểm chứng:**
-- [ ] Thủ công: tạo một Story thử trên `DEMO`, đi qua vài status trên board
+- [x] Thủ công: tạo một Story thử trên `DEMO`, đi qua vài status trên board
 
 **Phụ thuộc:** T1, T7
 
