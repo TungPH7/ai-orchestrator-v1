@@ -52,8 +52,8 @@
 | 7. Workflow scheme | Xong (bạn báo 2026-10-27) |
 | 8. Trường | Xong (bạn báo 2026-10-27). `Found in` đúng ba option; giữ Global context |
 | 9. Space | Xong (bạn báo 2026-10-27): `DEMO` company-managed (ảnh `misc/images/phien-6-luot-21-anh-1.png`), đủ năm work type (ảnh `misc/images/phien-6-luot-22-anh-1.png`), field thêm theo screen của từng work type |
-| 10. Board | Đang làm: filter chưa lưu. Đọc qua REST lúc 2026-10-27 vẫn là `project = "DEMO" ORDER BY Rank ASC` (ảnh `misc/images/phien-6-luot-23-anh-2.png`) |
-| 11. GitHub for Jira | Chưa làm |
+| 10. Board | Xong (bạn chuyển sang mục 11, 2026-10-28). Filter đọc lại qua REST đã là `project = DEMO AND issuetype != Epic ORDER BY Rank ASC`; cột và giới hạn WIP do `jira:check` kiểm |
+| 11. GitHub for Jira | Đang làm: app nay tên **GitHub for Atlassian**, nhà phát hành Atlassian (ảnh `misc/images/phien-6-luot-24-anh-1.png`) |
 | 12. Môi trường | Xong, Claude làm |
 
 | Câu hỏi | Kết quả |
