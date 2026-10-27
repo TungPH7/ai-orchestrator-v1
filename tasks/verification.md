@@ -39,7 +39,21 @@
 - Tạo ba GitHub environment `development`, `staging`, `production` trong `TungPH7/ao-pilot`.
 - Đưa `.jira/config.yml` lên nhánh `main` của `ao-pilot`, sinh từ `tracker/jira.yaml`. File có trước khi cài app GitHub for Jira, nên không cần ngắt rồi nối lại kết nối.
 
-**Bạn làm:** dựng Jira theo `docs/jira-setup.md`, mục 1 đến 10. _Chưa xong._
+**Bạn làm:** dựng Jira theo `docs/jira-setup.md`, mục 1 đến 10. File checklist được sinh tự động nên không tick trong đó; tiến độ ghi ở bảng dưới.
+
+| Mục | Trạng thái |
+|---|---|
+| 1. Group và service account | Đang làm |
+| 2. Rovo MCP | Xong ở T1 |
+| 3. Resolution | Xong (2026-10-27). Site có hai resolution `Done` ("GreenHopper Managed Resolution", do Jira Software tạo); giữ cả hai |
+| 4. Status | Chưa làm |
+| 5. Workflow | Chưa làm |
+| 6. Workflow scheme | Chưa làm |
+| 7. Trường | Chưa làm |
+| 8. Space | Chưa làm |
+| 9. Board | Chưa làm |
+| 10. GitHub for Jira | Chưa làm |
+| 11. Môi trường | Xong, Claude làm |
 
 | Câu hỏi | Kết quả |
 |---|---|
