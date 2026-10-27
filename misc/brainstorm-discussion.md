@@ -13,7 +13,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 3 | `c097b31c-efdb-42a0-96ba-8a2b65140f99` | 2026-10-26 15:43 → 17:17 | Duyệt SPEC-sdlc-contract và 7 câu hỏi mở; Story có cả FE và BE có tách hai nhánh không; monorepo hay hai repo; release theo quyết định của bạn; lập plan cho sdlc-contract; commit đầu tiên, repo GitHub, đổi tên thư mục |
 | 4 | `46e4e518-ac41-4570-8bcc-37d5a88788c5` | 2026-10-26 21:35 → 2026-10-27 01:02 | Build và đóng module sdlc-contract (14 task, PR #1–#16, không ghi vào lịch sử vì là lượt code); chọn module kế tiếp tracker-integration; giả định và câu hỏi cho tracker-integration |
 | 5 | `76bd80d2-8083-45f7-93a7-d7ffab2e246c` | 2026-10-27 09:45 → 10:02 | Bạn trả lời 5 câu hỏi của tracker-integration; câu trả lời của Claude bị bộ lọc an toàn chặn, hai lần |
-| 6 | `02493cdb-1425-4498-9a25-6408d7717c70` | 2026-10-27 10:03 → | Gói Free và company-managed; cách tạo tài khoản bot cho agent; viết SPEC-tracker-integration; cách chọn scope khi tạo token; duyệt spec, lập plan tracker-integration; bắt đầu T1; T1–T10, Checkpoint 1; dựng `DEMO` theo checklist, sửa checklist theo giao diện thật, thêm rule workflow qua REST; dừng ở Checkpoint 2 |
+| 6 | `02493cdb-1425-4498-9a25-6408d7717c70` | 2026-10-27 10:03 → | Gói Free và company-managed; cách tạo tài khoản bot cho agent; viết SPEC-tracker-integration; cách chọn scope khi tạo token; duyệt spec, lập plan tracker-integration; bắt đầu T1; T1–T14, Checkpoint 1 và 2; dựng `DEMO` theo checklist, sửa checklist theo giao diện thật, thêm rule workflow qua REST; chuẩn bị `ao-pilot` cho T15 |
 
 ---
 
@@ -3044,3 +3044,57 @@ Bạn xem hai thứ này:
 Có điều gì muốn đổi thì bạn nói; nếu ổn thì nhắn "qua checkpoint 2", mình sang Giai đoạn 3 (T11–T15: dữ kiện cho guard, hook `jira-guard`, kiểm thật agent).
 
 **Nhắc lần nữa:** token `ao-workflow-edit` **vẫn còn hiệu lực**, mình vừa thử lúc 01:56 và Jira vẫn trả 200. Bạn thu hồi nó: trang <https://id.atlassian.com/manage-profile/security/api-tokens> → `ao-workflow-edit` → **Revoke**. Sau đó xóa biến `JIRA_ADMIN_WRITE_TOKEN` trong **Edit environment variables for your account**.
+
+---
+
+# Phiên 6 · Lượt 39 — 2026-10-28 khoảng 02:30
+
+**Bạn:**
+
+```markdown
+qua checkpoint 2
+```
+
+**Claude:**
+
+Giai đoạn 3 xong phần code (T11–T14). Giờ tới T15, phần kiểm thật, và bước này cần bạn.
+
+**Đã làm** (mỗi task một PR, CI xanh, đã merge; 315 test):
+
+| Task | PR | Nội dung |
+|---|---|---|
+| T11 | [#30](https://github.com/TungPH7/ai-orchestrator-v1/pull/30) | Dữ kiện Jira cho guard: `dor-met`, `wip-available` (đếm theo trường Agent, tính theo Sub-task), `subtasks-done`, kết quả báo cáo QA mới nhất |
+| T12 | [#31](https://github.com/TungPH7/ai-orchestrator-v1/pull/31) | Dữ kiện GitHub: nhánh, PR mới nhất (sau `qa-fail`), CI, review, merge, deploy lên môi trường QA, commit của Sub-task, item phụ thuộc |
+| T13 | [#32](https://github.com/TungPH7/ai-orchestrator-v1/pull/32) | Hook `jira-guard`: lấy vai trò từ `agent_type`, đổi transition sang hợp đồng, gom guard, chặn kèm lý do |
+| T14 | [#33](https://github.com/TungPH7/ai-orchestrator-v1/pull/33) | Hook `block-atlassian` (chặn Bash gọi Atlassian, `executeWrite`/`executeDestructive`, connector khác, ghi ngoài space dự án) và hook `jira-rework` (rework lần 3 thì bắt agent gắn cờ rồi dừng) |
+| Sửa | [#34](https://github.com/TungPH7/ai-orchestrator-v1/pull/34), [#35](https://github.com/TungPH7/ai-orchestrator-v1/pull/35) | Hai lỗi lộ ra khi chạy hook trong `ao-pilot`: hook đòi thư mục `templates/` mà bản chép không có; và `qa` gọi `Accept` bị chặn vì status thay vì vì vai trò |
+
+**Hai quyết định mới để bạn biết:**
+
+1. **Key của space đặt ở biến `AO_JIRA_SPACE`**, trong mục `env` của `.claude/settings.json` của dự án. Spec chưa có chỗ khai báo space của dự án, mà hook cần nó để chặn agent ghi vào space khác (ví dụ `SCRUM`). Chưa đặt thì mọi lệnh ghi bị chặn. Mình đã ghi thêm vào spec mục 2.6.
+2. **Token GitHub cho hook trên máy bạn** lấy từ `GITHUB_TOKEN`, hoặc từ GitHub CLI. `gh` của bạn là bản 2.16, chưa có `gh auth token`, nên hook đọc dòng `Token:` của `gh auth status --show-token`.
+
+**Đã chuẩn bị `ao-pilot` cho T15** (chưa commit): bản chép `contract/`, `lib/`, `tracker/` trong `.ai-orchestrator/` (đã cài `ajv`, `yaml`), `.mcp.json`, ba hook và `.claude/settings.json` với `AO_JIRA_SPACE: DEMO`, cùng hai subagent thử `fe-dev` và `qa`. Mình đã chạy thử các hook ngay trong `ao-pilot`, và chúng chặn đúng.
+
+**Việc của bạn (một lần, khoảng 2 phút):**
+
+1. Mở PowerShell mới, gõ:
+   ```
+   cd D:\Document\1Khoahoc\4LapTrinh\AI-for-coding\ao-pilot
+   claude
+   ```
+2. Hộp hỏi có tin thư mục này không: chọn đồng ý (Yes, trust).
+3. Hộp báo có MCP server mới `atlassian` trong `.mcp.json`: chọn dùng server này. Nếu tên lựa chọn khác, chọn dòng cho phép server `atlassian`.
+4. Gõ `/mcp`: dòng `atlassian` phải hiện connected. Nếu báo lỗi, chụp màn hình gửi mình.
+5. Gõ `/exit`, rồi nhắn mình "xong".
+
+Sau đó mình chạy các kịch bản bằng `claude -p` trong `ao-pilot`:
+
+- `fe-dev` tạo, đọc, tìm một Story trên `DEMO`.
+- Phiên chính (không phải subagent) gọi transition: phải bị chặn.
+- `qa` gọi `Accept`: phải bị chặn.
+- `fe-dev` gọi `Start` khi đủ guard: phải được cho qua, và lịch sử item ghi `orchestratoragent`.
+
+Ở bước `Start`, Story cần ở `Ready` và có nhánh trên GitHub. Lúc đó mình sẽ nhờ bạn bấm **Refine** trên Jira, còn nhánh thì mình tự đẩy lên `ao-pilot`.
+
+**Nhắc lần thứ ba:** token `ao-workflow-edit` vẫn còn hiệu lực, mình vừa thử lúc 02:28. Bạn **Revoke** nó ở <https://id.atlassian.com/manage-profile/security/api-tokens>, rồi xóa biến `JIRA_ADMIN_WRITE_TOKEN`.
