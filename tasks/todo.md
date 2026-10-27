@@ -236,16 +236,16 @@ Claude làm: tạo repo private `TungPH7/ao-pilot` với nhánh `main` và `deve
 
 **Cỡ:** M
 
-### [ ] T12: Dữ kiện từ GitHub cho guard
+### [x] T12: Dữ kiện từ GitHub cho guard
 
 **Mô tả:** `lib/tracker/github-client.mjs` và phần GitHub của `facts.mjs`: `branch-created`, `dependencies-merged`, `pr-open`, `ci-green`, `changes-requested`, `merge-approved`, `pr-merged`, `qa-deployed`, `work-committed`. Dùng `conventions.mjs` để tìm nhánh, PR, commit theo mã item. Token lấy từ `GITHUB_TOKEN` khi chạy trong CI, hoặc từ `gh auth token` ở máy bạn.
 
 **Tiêu chí chấp nhận:**
-- [ ] Mỗi guard có test cho trường hợp thỏa và không thỏa, dùng response GitHub ghi sẵn.
-- [ ] Item có nhiều PR (sau `qa-fail`) thì guard xét PR mới nhất.
+- [x] Mỗi guard có test cho trường hợp thỏa và không thỏa, dùng response GitHub ghi sẵn.
+- [x] Item có nhiều PR (sau `qa-fail`) thì guard xét PR mới nhất.
 
 **Kiểm chứng:**
-- [ ] `npm test` xanh
+- [x] `npm test` xanh
 
 **Phụ thuộc:** T5, T11
 
