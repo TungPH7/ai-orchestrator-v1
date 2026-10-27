@@ -29,12 +29,13 @@ if (input.tool_name === TOOL) {
 }
 
 async function decideCall(call) {
-  const { loadContract } = await load('lib/contract.mjs');
+  const { readContract } = await load('lib/contract.mjs');
   const { readMapping } = await load('lib/tracker/mapping.mjs');
   const { bearerAuth, createJiraClient } = await load('lib/tracker/jira-client.mjs');
   const { createGitHubClient } = await load('lib/tracker/github-client.mjs');
   const { decide } = await load('lib/tracker/guard.mjs');
-  const contract = loadContract(join(kit, 'contract'));
+  // Read without validating: the copy has no templates, and npm run validate already checks the contract in the kit.
+  const contract = readContract(join(kit, 'contract'));
   const mapping = readMapping(join(kit, 'tracker'));
 
   const token = process.env.ATLASSIAN_AGENT_TOKEN;
