@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { basicAuth, createJiraClient } from '../../lib/tracker/jira-client.mjs';
+import { basicAuth, bearerAuth, createJiraClient } from '../../lib/tracker/jira-client.mjs';
 
 // A fetch that answers from a list of responses and records the requests it gets.
 function fakeFetch(responses) {
@@ -60,4 +60,32 @@ test('an error response becomes an error with the status', async () => {
   const { fetch } = fakeFetch([{ status: 401, body: { code: 401, message: 'Unauthorized; scope does not match' } }]);
   const client = createJiraClient({ cloudId: 'c1', authorization: 'Basic x', fetch });
   await assert.rejects(client.get('/rest/api/3/workflows/search'), /GET \/rest\/api\/3\/workflows\/search returned 401.*scope does not match/);
+});
+
+test('a service account token goes as Bearer', () => {
+  assert.equal(bearerAuth('t0k'), 'Bearer t0k');
+});
+
+test('lists under another key than values, like comments', async () => {
+  const { fetch } = fakeFetch([{ body: { startAt: 0, total: 1, comments: [{ id: '1' }] } }]);
+  const client = createJiraClient({ cloudId: 'c1', authorization: 'Basic x', fetch });
+  assert.deepEqual(await client.getAll('/rest/api/3/issue/DEMO-1/comment', { orderBy: '-created' }, 'comments'), [{ id: '1' }]);
+});
+
+test('searches with JQL by GET, following nextPageToken', async () => {
+  const { fetch, calls } = fakeFetch([
+    { body: { issues: [{ key: 'DEMO-1' }], nextPageToken: 'p2', isLast: false } },
+    { body: { issues: [{ key: 'DEMO-2' }], isLast: true } },
+  ]);
+  const client = createJiraClient({ cloudId: 'c1', authorization: 'Basic x', fetch });
+
+  assert.deepEqual(await client.searchAll('project = DEMO', ['status', 'subtasks']), [{ key: 'DEMO-1' }, { key: 'DEMO-2' }]);
+  assert.ok(calls.every(({ init }) => init.method === 'GET'));
+  assert.deepEqual(
+    calls.map(({ url }) => [url.pathname, url.searchParams.get('jql'), url.searchParams.get('fields'), url.searchParams.get('nextPageToken')]),
+    [
+      ['/ex/jira/c1/rest/api/3/search/jql', 'project = DEMO', 'status,subtasks', null],
+      ['/ex/jira/c1/rest/api/3/search/jql', 'project = DEMO', 'status,subtasks', 'p2'],
+    ],
+  );
 });
