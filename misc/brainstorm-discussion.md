@@ -2816,3 +2816,52 @@ Bạn thêm biến này:
 2. Phần **User variables** → **New...** → **Variable name** gõ `JIRA_ADMIN_EMAIL`, **Variable value** gõ email bạn dùng đăng nhập Atlassian → **OK** → **OK**.
 
 Xong thì nhắn mình "xong", mình chạy lại.
+
+---
+
+# Phiên 6 · Lượt 34 — 2026-10-28 khoảng 01:20
+
+**Bạn:**
+
+```markdown
+xong
+```
+
+**Claude:**
+
+Token chạy được. Mình đã đọc cả ba workflow, và ba group.
+
+**Đã đúng:**
+
+- Ba group có đúng thành viên: `ao-humans` có bạn, `ao-agents` có `orchestratoragent`, `ao-automation` có `orchestratorci`. Câu hỏi "service account có thêm được vào group không" giờ đã có câu trả lời: được.
+- Status, tên transition và đường đi (từ đâu tới đâu) của cả ba workflow đều khớp checklist.
+- 6 transition đã có rule Restrict đúng group: `Refine`, `Start`, `Submit`, `Request changes`, `Deploy to QA`, `Pick up` của `AO standard`.
+
+**Còn thiếu: 18 transition chưa có rule nào.** Bảng dưới là những gì cần thêm:
+
+| Workflow | Transition | Từ → tới | Cần thêm |
+|---|---|---|---|
+| `AO standard` | `QA fail` | In QA → In Progress | Restrict `ao-agents` |
+| `AO standard` | `Accept` | In QA → Done | Restrict `ao-humans`, đặt Resolution `Done` |
+| `AO standard` | `Cancel` × 6 | New, Ready, In Progress, In Review, Ready for QA, In QA → Cancelled | Restrict `ao-humans`, Show a screen |
+| `AO epic` | `Start spec` | New → Specifying | Restrict `ao-humans` |
+| `AO epic` | `Approve spec` | Specifying → Planning | Restrict `ao-humans` |
+| `AO epic` | `Approve plan` | Planning → In Progress | Restrict `ao-humans` |
+| `AO epic` | `Complete` | In Progress → Done | Restrict `ao-humans`, đặt Resolution `Done` |
+| `AO epic` | `Cancel` × 4 | New, Specifying, Planning, In Progress → Cancelled | Restrict `ao-humans`, Show a screen |
+| `AO sub-task` | `Start` | To Do → In Progress | Restrict `ao-agents` |
+| `AO sub-task` | `Complete` | In Progress → Done | Restrict `ao-agents`, đặt Resolution `Done` |
+
+Riêng `Cancel` từ `Ready`: bản Jira đã lưu vẫn chưa có rule nào. Vậy là hai rule bạn thêm ở lượt trước **chưa được lưu**. Nếu tab đó còn mở và nút **Update workflow** còn sáng thì bấm nó; nếu không, bạn thêm lại.
+
+**Cách thêm từng loại rule** (bấm nhãn transition trên sơ đồ, rồi làm trong khung **Rules** bên phải):
+
+- **Restrict:** nhóm **Restrict transition** → **Add restrict transition rule** → **Restrict who can move a work item** → **Select** → **Restrict to** chọn **Groups** → chọn group → **Add**.
+- **Show a screen:** nhóm **Request input** → **Add request input rule** → **Show a screen** → **Select a screen** chọn `Resolve Issue Screen` → **Add**.
+- **Đặt Resolution `Done`:** nhóm **Perform actions** → **Add perform actions rule** → **Update an issue field** (có thể tên **Update a work item field**) → **Select** → ô **Update this field** chọn **Resolution** → giá trị `Done`, chọn cái đầu danh sách → **Add**. Nếu không thấy rule này, chụp danh sách gửi mình.
+
+Mỗi workflow sửa xong thì bấm **Update workflow** ngay, đừng để dồn sang workflow khác. Làm xong cả ba, bạn nhắn "xong", mình đọc lại và báo còn thiếu gì, rồi ta làm Story thử thứ hai.
+
+Mình đã ghi vào `tasks/verification.md`: mục 1 đã kiểm qua REST; mục 5 đang sửa, kèm bảng các transition thiếu rule; và danh sách 20 scope của token chỉ đọc, cho T9. Bước tạo rule đặt Resolution trong checklist giờ ghi đúng tên **Update an issue field**, lấy từ tài liệu của Atlassian.
+
+Nguồn: [Configure resolutions in a Jira workflow](https://support.atlassian.com/jira-cloud-administration/docs/configure-resolutions-in-a-jira-workflow/)
