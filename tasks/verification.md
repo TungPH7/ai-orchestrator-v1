@@ -39,6 +39,8 @@
 - Tạo ba GitHub environment `development`, `staging`, `production` trong `TungPH7/ao-pilot`.
 - Đưa `.jira/config.yml` lên nhánh `main` của `ao-pilot`, sinh từ `tracker/jira.yaml`. File có trước khi cài app GitHub for Jira, nên không cần ngắt rồi nối lại kết nối.
 
+**Kết quả:** T8 xong ngày 2026-10-28. Space `DEMO` đủ ba workflow với rule, field, board và app GitHub for Atlassian; Story thử `DEMO-2` đi `New` → `Ready` → `Cancelled` đúng quyền và có Resolution. `DEMO-1` giữ lại làm bằng chứng của lỗi thiếu rule hỏi Resolution trước khi sửa.
+
 **Bạn làm:** dựng Jira theo `docs/jira-setup.md`, mục 1 đến 11. File checklist được sinh tự động nên không tick trong đó; tiến độ ghi ở bảng dưới.
 
 | Mục | Trạng thái |
@@ -102,4 +104,5 @@ Vậy API sửa workflow dùng được cho rule. Spec mục 2.10 ghi Cấp 1 ch
 | Ở `Ready`, bạn không thấy `Start` | Chưa kiểm: chưa có ảnh danh sách transition |
 | `Cancel` (`Ready` → `Cancelled`) hỏi Resolution | **Không đạt:** lịch sử ghi `Ready` → `Cancelled` lúc 00:56, Resolution vẫn trống, và bạn không thấy hộp hỏi Resolution nào. Nguyên nhân: transition chưa có rule **Request input → Show a screen**. Checklist mục 5 đã thêm các bước này |
 | Story thử thứ hai `DEMO-2` ở `Ready`, sau khi đủ rule: mỗi tài khoản thấy transition nào | Đạt (2026-10-28): bạn chỉ thấy `Cancel` (ảnh `misc/images/phien-6-luot-37-anh-1.png`); `orchestratoragent` chỉ thấy `Start`; `orchestratorci` không thấy transition nào (đọc `GET /issue/DEMO-2/transitions`). Rule Restrict theo group có tác dụng trên gói Free. Việc Jira từ chối khi gọi thẳng transition bị ẩn được kiểm ở T15 |
+| `Cancel` của `DEMO-2` (`Ready` → `Cancelled`) hỏi Resolution | Đạt (2026-10-28): Jira hiện màn hình Resolution, bạn chọn `Won't Do`; lịch sử ghi Resolution `Won't Do` và status `Ready` → `Cancelled` lúc 01:36 |
 | Rule của transition `Cancel` (`Ready` → `Cancelled`) trong `AO standard` | **Thiếu cả rule Restrict:** khung **Rules** của transition này không có rule nào, cả bốn nhóm chỉ có nút **Add … rule** (ảnh `misc/images/phien-6-luot-30-anh-1.png`). Vậy agent cũng hủy được item ở `Ready`. Đã thêm đủ hai rule (ảnh `misc/images/phien-6-luot-31-anh-1.png`): Restrict `ao-humans` và **Show a screen** `Resolve Issue Screen`. Các transition khác chưa kiểm |
