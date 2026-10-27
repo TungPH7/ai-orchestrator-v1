@@ -282,11 +282,11 @@ Template Kanban đã tạo sẵn một board cho space; mục này sửa board �
 
 **Cách làm** (đối chiếu giao diện ở bước 2 và 3):
 
-1. Thanh trên cùng của Jira: **Apps** → **Explore more apps** → tìm `GitHub for Jira` → **Get app**.
+1. Thanh bên trái của Jira: **Apps** → **Explore more apps** → ô tìm gõ `GitHub for Atlassian` (tên mới của GitHub for Jira) → chọn app **GitHub for Atlassian** của nhà phát hành **Atlassian**, không chọn các app GitHub của hãng khác → **Get app**.
 2. Sau khi cài, mở app (Apps → Manage your apps, hoặc nút **Get started**) → nối với GitHub → đăng nhập GitHub.
 3. Chọn tài khoản GitHub của bạn → **Only select repositories** → chọn repo của dự án → **Install** → quay lại Jira, bấm **Connect** cạnh tài khoản.
 
-- [ ] App GitHub for Jira đã cài và nối với repo của dự án (pilot: `TungPH7/ao-pilot`)
+- [ ] App GitHub for Atlassian đã cài và nối với repo của dự án (pilot: `TungPH7/ao-pilot`)
 
 ## 12. Môi trường
 
