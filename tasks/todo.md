@@ -43,17 +43,17 @@ Claude làm: tạo repo private `TungPH7/ao-pilot` với nhánh `main` và `deve
 
 **Cỡ:** S
 
-### [ ] T2: Hợp đồng: trường Agent và cách đếm rework
+### [x] T2: Hợp đồng: trường Agent và cách đếm rework
 
 **Mô tả:** Áp hai thay đổi bạn đã duyệt ở spec mục 2.4. Thêm trường `agent` (Agent) vào `work_item_fields`: áp dụng cho Story, Sub-task, Task, Bug; giá trị là các vai trò agent; agent điền khi `start` và `pick-up`. Sửa ghi chú của `rework-count` thành: đếm số transition có effect `increment-rework` trong lịch sử item. Quy tắc R3 kiểm mỗi giá trị của trường Agent là một vai trò đã khai báo, khác `human` và `automation`.
 
 **Tiêu chí chấp nhận:**
-- [ ] `work-items.yaml` có trường `agent` với 10 giá trị, khớp 10 vai trò agent trong `roles.yaml`.
-- [ ] Fixture âm "trường Agent có giá trị không phải vai trò agent" làm `validateContract` trả lỗi `R3`.
-- [ ] `docs/sdlc.md` được sinh lại và có trường mới.
+- [x] `work-items.yaml` có trường `agent` với 10 giá trị, khớp 10 vai trò agent trong `roles.yaml`.
+- [x] Fixture âm "trường Agent có giá trị không phải vai trò agent" làm `validateContract` trả lỗi `R3`.
+- [x] `docs/sdlc.md` được sinh lại và có trường mới.
 
 **Kiểm chứng:**
-- [ ] `npm run validate`, `npm test`, `npm run render:check` xanh
+- [x] `npm run validate`, `npm test`, `npm run render:check` xanh
 
 **Phụ thuộc:** không
 

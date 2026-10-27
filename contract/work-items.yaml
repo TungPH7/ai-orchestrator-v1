@@ -95,12 +95,28 @@ work_item_fields:
     applies_to: [story, task, bug]
     value: "Bug: suy ra từ bảng định tuyến (mục 2.6). Story, Task: gắn khi cắt release"
     filled_by: "automation, devops"
+  - id: agent
+    name: "Agent"
+    applies_to: [story, sub-task, task, bug]
+    values:
+      - { id: pm, name: "Project Manager" }
+      - { id: ba, name: "Business Analyst" }
+      - { id: ux, name: "UI/UX designer" }
+      - { id: sa, name: "Solution Architect" }
+      - { id: fe-dev, name: "Frontend Developer" }
+      - { id: be-dev, name: "Backend Developer" }
+      - { id: reviewer, name: "Code Reviewer" }
+      - { id: security, name: "Security Engineer" }
+      - { id: qa, name: "Tester/QA Engineer" }
+      - { id: devops, name: "DevOps Engineer" }
+    filled_by: "Agent, khi start và pick-up"
+    note: "Vai trò agent đang giữ item. Mọi agent dùng chung một tài khoản Jira, nên assignee không cho biết agent nào; guard wip-available đếm WIP theo trường này"
   - id: rework-count
     name: "Rework count"
     applies_to: [story, task, bug]
     value: "Số lần quay lại in-progress"
-    filled_by: "automation"
-    note: "Cách lưu trên Jira (trường số, hay đếm từ lịch sử chuyển trạng thái) do tracker-integration chọn"
+    filled_by: "Không ai điền: tự tính từ lịch sử"
+    note: "Không lưu thành trường: là số transition có effect increment-rework trong lịch sử chuyển trạng thái của item"
   - id: flagged
     name: "Flagged"
     applies_to: [epic, story, sub-task, task, bug]

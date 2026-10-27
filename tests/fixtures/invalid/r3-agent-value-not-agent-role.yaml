@@ -1,0 +1,10 @@
+description: a value of the Agent field that is a role but not an agent role
+rule: R3
+expect:
+  - "work_item_fields[id=agent].values"
+patch:
+  - op: set
+    path: "work_item_fields[id=agent].values"
+    value:
+      - { id: fe-dev, name: "Frontend Developer" }
+      - { id: human, name: "Bạn" }
