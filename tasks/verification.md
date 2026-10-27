@@ -106,3 +106,23 @@ Vậy API sửa workflow dùng được cho rule. Spec mục 2.10 ghi Cấp 1 ch
 | Story thử thứ hai `DEMO-2` ở `Ready`, sau khi đủ rule: mỗi tài khoản thấy transition nào | Đạt (2026-10-28): bạn chỉ thấy `Cancel` (ảnh `misc/images/phien-6-luot-37-anh-1.png`); `orchestratoragent` chỉ thấy `Start`; `orchestratorci` không thấy transition nào (đọc `GET /issue/DEMO-2/transitions`). Rule Restrict theo group có tác dụng trên gói Free. Việc Jira từ chối khi gọi thẳng transition bị ẩn được kiểm ở T15 |
 | `Cancel` của `DEMO-2` (`Ready` → `Cancelled`) hỏi Resolution | Đạt (2026-10-28): Jira hiện màn hình Resolution, bạn chọn `Won't Do`; lịch sử ghi Resolution `Won't Do` và status `Ready` → `Cancelled` lúc 01:36 |
 | Rule của transition `Cancel` (`Ready` → `Cancelled`) trong `AO standard` | **Thiếu cả rule Restrict:** khung **Rules** của transition này không có rule nào, cả bốn nhóm chỉ có nút **Add … rule** (ảnh `misc/images/phien-6-luot-30-anh-1.png`). Vậy agent cũng hủy được item ở `Ready`. Đã thêm đủ hai rule (ảnh `misc/images/phien-6-luot-31-anh-1.png`): Restrict `ao-humans` và **Show a screen** `Resolve Issue Screen`. Các transition khác chưa kiểm |
+
+## T9: `jira:check` phần 1: status, transition, scheme
+
+**Token:** token chỉ đọc của bạn đã tạo trong T8 (xem mục T8, đoạn "Đọc ba workflow bằng token chỉ đọc của bạn"). Danh sách scope cũng ghi trong README.
+
+**Cách đọc cấu hình** (`lib/tracker/drift.mjs`, qua `lib/tracker/jira-client.mjs` chỉ gửi GET và luôn gửi `Accept-Language: en-US`):
+
+- `GET /project/<KEY>` để lấy id của space; `GET /issuetype/project` cho work type của space; `GET /workflowscheme/project` cho scheme và bảng work type → workflow.
+- `GET /workflows/search?queryString=<tên>&expand=values.transitions` cho từng workflow trong ánh xạ, chỉ giữ workflow trùng tên tuyệt đối. Không dùng `POST /workflows` (đọc theo danh sách tên), để client chỉ cần GET.
+- Dữ liệu mẫu ghi từ `DEMO` ngày 2026-10-28, đã lược còn các trường cần dùng, ở `tests/fixtures/tracker/api/demo/`. Mỗi loại lệch có một test sửa bản ghi này rồi so thông báo.
+
+**Loại lệch được báo:** workflow không có; item mới tạo vào sai status; status thiếu, sai nhóm, hoặc thừa so với ánh xạ; transition thiếu, sai `from`/`to` (cùng tên nhưng khác đường đi), hoặc thừa (kể cả transition từ mọi status); space không có workflow scheme hoặc dùng scheme khác; work type không có trong space hoặc dùng sai workflow.
+
+**Chạy thật (2026-10-28):**
+
+| Lệnh | Kết quả |
+|---|---|
+| `npm run jira:check -- --space DEMO` | `Jira space DEMO matches tracker\jira.yaml`, mã thoát 0 |
+| `node scripts/jira-check.mjs --space SCRUM` (space team-managed của bạn, chỉ đọc) | 3 chỗ lệch: không có workflow scheme; không có work type `Sub-task` và `Bug`. Mã thoát 1 |
+

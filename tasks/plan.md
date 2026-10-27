@@ -58,7 +58,7 @@ T1 đứng đầu vì nếu service account không dùng được với Rovo MCP
 ### Giai đoạn 2: dựng Jira và kiểm lệch
 - [x] T7: Sinh checklist dựng Jira
 - [x] T8: Bạn dựng space `DEMO` theo checklist
-- [ ] T9: `jira:check` phần 1: status, transition, scheme
+- [x] T9: `jira:check` phần 1: status, transition, scheme
 - [ ] T10: `jira:check` phần 2: rule Restrict, board, trường, hạn token
 
 ### Checkpoint 2
