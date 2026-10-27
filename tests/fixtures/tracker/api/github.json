@@ -1,0 +1,63 @@
+{
+  "/commits/c5/check-runs": {
+    "total_count": 2,
+    "check_runs": [
+      { "name": "test", "status": "completed", "conclusion": "success" },
+      { "name": "e2e", "status": "completed", "conclusion": "skipped" }
+    ]
+  },
+  "/commits/c5/status": { "state": "pending", "total_count": 0, "statuses": [] },
+  "/commits?per_page=100&sha=feature/DEMO-12-login-r2": [
+    { "sha": "c5", "commit": { "message": "feat(auth): show the login error (DEMO-12, DEMO-14)" } },
+    { "sha": "c6", "commit": { "message": "feat(auth): add the login form (DEMO-12, DEMO-13)\n\nUses the API contract of the plan." } },
+    { "sha": "c1", "commit": { "message": "chore(repo): set up the monorepo" } }
+  ],
+  "/compare/m4...d21": { "status": "ahead", "ahead_by": 1, "behind_by": 0 },
+  "/deployments/21/statuses": [
+    { "state": "success", "environment": "development" },
+    { "state": "in_progress", "environment": "development" }
+  ],
+  "/deployments?environment=development": [
+    { "id": 21, "sha": "d21", "ref": "develop", "environment": "development", "created_at": "2026-11-01T12:10:00Z" },
+    { "id": 20, "sha": "d20", "ref": "develop", "environment": "development", "created_at": "2026-11-01T08:00:00Z" }
+  ],
+  "/git/matching-refs/heads/bugfix/DEMO-12-": [],
+  "/git/matching-refs/heads/feature/DEMO-12-": [
+    { "ref": "refs/heads/feature/DEMO-12-login-r2", "object": { "sha": "c5" } }
+  ],
+  "/git/matching-refs/heads/hotfix/DEMO-12-": [],
+  "/pulls/5/reviews": [
+    { "user": { "login": "TungPH7" }, "state": "CHANGES_REQUESTED", "submitted_at": "2026-11-02T10:00:00Z" },
+    { "user": { "login": "reviewer-bot" }, "state": "COMMENTED", "submitted_at": "2026-11-02T10:30:00Z" },
+    { "user": { "login": "TungPH7" }, "state": "APPROVED", "submitted_at": "2026-11-02T11:00:00Z" }
+  ],
+  "/pulls?direction=desc&sort=created&state=all": [
+    {
+      "number": 5,
+      "state": "open",
+      "created_at": "2026-11-02T09:00:00Z",
+      "merged_at": null,
+      "merge_commit_sha": null,
+      "head": { "ref": "feature/DEMO-12-login-r2", "sha": "c5" },
+      "base": { "ref": "develop" }
+    },
+    {
+      "number": 4,
+      "state": "closed",
+      "created_at": "2026-11-01T09:00:00Z",
+      "merged_at": "2026-11-01T12:00:00Z",
+      "merge_commit_sha": "m4",
+      "head": { "ref": "feature/DEMO-11-cart", "sha": "c4" },
+      "base": { "ref": "develop" }
+    },
+    {
+      "number": 3,
+      "state": "closed",
+      "created_at": "2026-10-30T09:00:00Z",
+      "merged_at": "2026-10-30T15:00:00Z",
+      "merge_commit_sha": "m3",
+      "head": { "ref": "feature/DEMO-12-login", "sha": "c3" },
+      "base": { "ref": "develop" }
+    }
+  ]
+}

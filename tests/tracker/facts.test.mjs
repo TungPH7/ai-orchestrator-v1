@@ -12,7 +12,7 @@ const mapping = readMapping(join(ROOT, 'tracker'));
 // Jira answers in the shape GET /issue returns, built from a short description of the item.
 const status = (name, category) => ({ name, statusCategory: { key: category } });
 const IN_PROGRESS = status('In Progress', 'indeterminate');
-const issue = ({ key, type = 'Story', st = status('Ready', 'new'), parent, subtasks = [], description = 'Có user story', labels = [] }) => ({
+const issue = ({ key, type = 'Story', st = status('Ready', 'new'), parent, subtasks = [], description = 'Có user story', labels = [], links = [] }) => ({
   key,
   fields: {
     issuetype: { name: type },
@@ -21,8 +21,10 @@ const issue = ({ key, type = 'Story', st = status('Ready', 'new'), parent, subta
     description: description && { type: 'doc', version: 1, content: [{ type: 'paragraph', content: [{ type: 'text', text: description }] }] },
     parent: parent && { key: parent.key, fields: { issuetype: { name: parent.type }, status: parent.st } },
     subtasks: subtasks.map(([k, s]) => ({ key: k, fields: { status: s } })),
+    issuelinks: links,
   },
 });
+const BLOCKS = { name: 'Blocks', inward: 'is blocked by', outward: 'blocks' };
 // A QA report comment as Jira stores markdown posted through Rovo MCP: headings and paragraphs in ADF.
 const report = (result, created) => ({
   created,
@@ -63,7 +65,7 @@ function fakeJira({ issues = [], comments = {}, search = () => [] }) {
 
 const guards = (client, key, actor, needed) => jiraGuards(client, { key, actor, needed, contract, mapping });
 
-test('reads an item: type, status, parent, sub-tasks, labels and description as text', async () => {
+test('reads an item: type, status, parent, sub-tasks, labels, blocking items and description as text', async () => {
   const client = fakeJira({
     issues: [
       issue({
@@ -71,6 +73,11 @@ test('reads an item: type, status, parent, sub-tasks, labels and description as 
         parent: { key: 'DEMO-1', type: 'Epic', st: IN_PROGRESS },
         subtasks: [['DEMO-6', status('Done', 'done')], ['DEMO-7', IN_PROGRESS]],
         labels: ['needs-you'],
+        links: [
+          { type: BLOCKS, inwardIssue: { key: 'DEMO-3' } },
+          { type: BLOCKS, outwardIssue: { key: 'DEMO-8' } },
+          { type: { name: 'Relates', inward: 'relates to', outward: 'relates to' }, inwardIssue: { key: 'DEMO-4' } },
+        ],
       }),
     ],
   });
@@ -85,6 +92,7 @@ test('reads an item: type, status, parent, sub-tasks, labels and description as 
       { key: 'DEMO-6', status: 'Done', done: true },
       { key: 'DEMO-7', status: 'In Progress', done: false },
     ],
+    blockedBy: ['DEMO-3'],
   });
 });
 
