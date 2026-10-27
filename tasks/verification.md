@@ -126,3 +126,37 @@ Vậy API sửa workflow dùng được cho rule. Spec mục 2.10 ghi Cấp 1 ch
 | `npm run jira:check -- --space DEMO` | `Jira space DEMO matches tracker\jira.yaml`, mã thoát 0 |
 | `node scripts/jira-check.mjs --space SCRUM` (space team-managed của bạn, chỉ đọc) | 3 chỗ lệch: không có workflow scheme; không có work type `Sub-task` và `Bug`. Mã thoát 1 |
 
+## T10: `jira:check` phần 2: rule, group, resolution, field, board, hạn token
+
+**Đọc thêm** (cùng client chỉ GET, cùng token):
+
+- Rule của transition: điều kiện `system:restrict-issue-transition` (kể cả trong nhóm điều kiện lồng nhau) ra danh sách group; id group lạ được tra tên bằng `GET /group/bulk?groupId=`. Màn hình transition (`system:transition-screen`) ra danh sách field của màn hình, qua `GET /screens/<id>/tabs` và `/tabs/<id>/fields`. Action `system:update-field` với `field: resolution` ra tên resolution.
+- Group: `GET /group/bulk?groupName=` cho từng group trong ánh xạ; với group của service account, `GET /group/member` để xem có đúng tài khoản.
+- Resolution: `GET /resolution/search`. Field: `GET /field`, rồi với field dạng chọn, context toàn cục và option đang bật.
+- Board: `GET /rest/agile/1.0/board?projectKeyOrId=<KEY>&type=kanban`, cấu hình board, rồi `GET /filter/<id>` cho câu JQL.
+- Dữ liệu mẫu: mọi request `readJiraConfig` gửi cho `DEMO` ngày 2026-10-28, ghi vào một file `tests/fixtures/tracker/api/demo.json` theo khóa request (thay các file riêng của T9), đã lược trường không dùng và không còn thông tin cá nhân. `tests/helpers/jira.mjs` trả lời theo bản ghi này.
+
+**Loại lệch mới:** transition thiếu rule Restrict hoặc giới hạn sai group; transition `Cancel` không hỏi Resolution, hoặc màn hình không có field Resolution; transition vào Done không đặt Resolution, hoặc đặt giá trị khác; group thiếu, hoặc service account không ở trong group; resolution thiếu; field thiếu, hoặc option khác (tên hoặc thứ tự); không có board Kanban; filter khác (bỏ qua dấu nháy, khoảng trắng, chữ hoa); cột khác tên hoặc thứ tự; cột chứa status khác; giới hạn WIP khác; status lẽ ra ngoài board lại nằm trong cột.
+
+**Cần kiểm tay** (lệnh in dòng `Check by hand`, không tính là đạt): Kanban backlog bật và chứa `New` (API features của board trả 400); Atlassian MCP server nhận API token; app GitHub for Atlassian nối với repo; field nằm trên screen của đúng work type.
+
+**Hạn token:** cảnh báo, không báo lỗi, khi token trong `tracker/jira.yaml` còn dưới 14 ngày hoặc đã hết hạn.
+
+**Tách phần dùng chung:** `lib/tracker/expected.mjs` tính cấu hình phải có (workflow và transition theo từng `from`, group, cột board, option, resolution) cho cả checklist lẫn `jira:check`. Checklist sinh lại giống hệt bản cũ.
+
+**Chạy thật (2026-10-28):**
+
+| Lệnh | Kết quả |
+|---|---|
+| `npm run jira:check -- --space DEMO` | Không lệch; in 4 dòng `Check by hand`; mã thoát 0. Tiêu chí 3 của spec đạt |
+| `node scripts/jira-check.mjs --space SCRUM` (chỉ đọc) | 4 chỗ lệch: không có workflow scheme, thiếu work type `Sub-task` và `Bug`, không có board Kanban (space này dùng board Scrum) |
+
+## Checkpoint 2
+
+| Mục | Trạng thái |
+|---|---|
+| Tiêu chí 2: `docs/jira-setup.md` sinh từ ánh xạ, CI báo lỗi khi file cũ | Đạt từ T7; CI vẫn chạy `jira:checklist:check` |
+| Tiêu chí 3: `DEMO` dựng theo checklist, `jira:check` không báo lệch | Đạt (T8, T10) |
+| Tiêu chí 6: rule Restrict chặn `orchestratoragent` ở transition của `human` | Đạt phần Jira ẩn transition: ở `DEMO-2`, `orchestratoragent` chỉ thấy `Start`, không thấy `Cancel` (T8). Việc Jira từ chối khi agent gọi thẳng transition của bạn qua Rovo MCP được thử ở T15 |
+| Bạn xem board `DEMO` và `docs/jira-setup.md` | Chờ bạn |
+
