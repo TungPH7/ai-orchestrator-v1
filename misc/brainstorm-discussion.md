@@ -2061,3 +2061,39 @@ Tên nút lấy từ tài liệu của Atlassian. Ba chỗ tài liệu không n�
 File mới nằm trên nhánh `task/t8-build-demo` (chưa merge). Bạn mở bản local `docs/jira-setup.md` trong VS Code (Ctrl+Shift+V để xem dạng đẹp), hoặc trên GitHub: <https://github.com/TungPH7/ai-orchestrator-v1/blob/task/t8-build-demo/docs/jira-setup.md>.
 
 Nguồn: [Restrict workflows based on user groups](https://support.atlassian.com/jira-cloud-administration/docs/restrict-workflows-based-on-user-groups/), [Add statuses to a Jira workflow](https://support.atlassian.com/jira-cloud-administration/docs/add-statuses-to-a-jira-workflow/), [Create workflow transitions](https://support.atlassian.com/jira-cloud-administration/docs/create-workflow-transitions/), [Configure workflow schemes](https://support.atlassian.com/jira-cloud-administration/docs/configure-workflow-schemes/), [Configure columns](https://support.atlassian.com/jira-software-cloud/docs/configure-columns/), [View a field context](https://support.atlassian.com/jira-cloud-administration/docs/view-a-field-context-and-how-its-set-up/)
+
+---
+
+# Phiên 6 · Lượt 14 — 2026-10-27 khoảng 14:45
+
+**Bạn:**
+
+```markdown
+việc setup jira ở d:\Document\1Khoahoc\4LapTrinh\AI-for-coding\ai-orchestrator\docs\jira-setup.md bạn không thể làm được thông qua MCP của jira hay sao mà cần tôi làm thủ công? Trả lời trước giúp tôi
+```
+
+**Claude:**
+
+**Qua Rovo MCP thì không, và đó là chủ ý.** Token của agent không có scope quản trị: spec cấm điều này, để agent không tự sửa được workflow hay quyền. Các tool Jira của Rovo MCP chỉ làm việc với item (đọc, tạo, sửa, chuyển trạng thái). Tool chung `executeWrite` thì bị hook chặn, và dù không bị chặn, nó vẫn cần scope quản trị.
+
+**Qua Jira REST API thì làm được phần lớn**, nếu dùng một token quản trị của chính tài khoản bạn:
+
+| Phần | Tự động được? |
+|---|---|
+| Resolution, status, custom field (option, context), workflow, workflow scheme, tạo space, thêm field vào màn hình | Được, có API |
+| Rule Restrict theo group trong workflow | Có thể; chưa kiểm API có nhận group không [Unverified] |
+| Tạo group, thêm service account vào group | Có thể; chưa chắc API của Jira nhận service account [Unverified] |
+| Cột board, Kanban backlog, giới hạn WIP | Không: API công khai của board chỉ cho đọc cấu hình |
+| Cài app GitHub for Jira | Không: phải bấm cài và đồng ý quyền trên GitHub |
+
+Lúc chốt spec, mình đề xuất dựng tay, và bạn đồng ý (câu 5 ở Phiên 4). Lý do: mỗi dự án chỉ dựng một lần, API tạo workflow khá phức tạp, nên phần tự động để dành cho `project-scaffold`.
+
+Giờ bạn có hai lựa chọn:
+
+1. **Giữ dựng tay** như checklist hiện tại: khoảng 1–2 giờ của bạn, không thêm task.
+2. **Dựng tự động phần làm được** (mình đề xuất, vì bạn thấy giao diện khó dùng, và dự án nào sau này cũng cần bước này). Mình viết script `jira:setup` gọi REST API, chạy một lần cho space `DEMO`. Bạn chỉ còn làm tay cột board, app GitHub for Jira, và có thể cả group. Cái giá:
+   - Thêm 1–2 task, kéo một phần việc của `project-scaffold` lên module này. Spec cần sửa mục "Ngoài phạm vi".
+   - Bạn tạo một token tạm của tài khoản bạn có scope quản trị Jira, đặt hạn 1 ngày, thu hồi ngay khi chạy xong.
+   - `jira:check` (T9, T10) vẫn kiểm kết quả như cũ.
+
+Bạn chọn cách nào? Nếu chọn cách 2, mình sửa spec và plan trước, gửi bạn duyệt, rồi mới viết script.
