@@ -65,3 +65,8 @@
 | Trình tạo space có loại sub-task không | Bước 2 (**Let's set up your space**) chỉ có sẵn `Epic`, `Story`, `Bug`, `Task` (ảnh `misc/images/phien-6-luot-20-anh-1.png`). `Sub-task` thêm sau trong Space settings |
 | Sửa filter của board ở đâu | Board settings → **Details** → **Edit filter query** mở trang filter ở tab mới; phải chạy câu JQL (Enter) rồi mới lưu (ảnh `misc/images/phien-6-luot-23-anh-1.png`). **Board sub-filter** mặc định của Kanban là `fixVersion in unreleasedVersions() OR fixVersion is EMPTY`, để nguyên |
 | App GitHub for Atlassian nối được với tài khoản GitHub cá nhân không | Được (2026-10-28): nối với tài khoản cá nhân `TungPH7`, dù trang ghi "organization". Chrome chặn pop-up của nút **Select an organization in GitHub**; cho phép pop-up từ site Jira là bấm được |
+
+**Phát hiện (2026-10-28):**
+
+1. **Hai service account trả tên bằng tiếng Trung.** Đọc `DEMO-1` qua REST bằng token của `orchestratoragent` hay `orchestratorci` đều ra work type `故事` (Story) và status `全新` (New); id status (`10004`) và nhóm status (`new`) thì không đổi. Gửi kèm header `Accept-Language: en-US` thì ra `Story`, `New`. Không đọc được ngôn ngữ đang đặt, vì `/mypreferences/locale` cần scope khác (401). Ánh xạ so theo tên, nên mọi request REST của module phải gửi `Accept-Language: en-US`: client ở T9, dữ kiện cho guard ở T11, `jira-sync` ở T17. Với Rovo MCP thì chưa biết tool trả tên theo ngôn ngữ nào; T13 kiểm, và `jira-guard` phải nhận được cả `transitionName` agent đọc từ MCP.
+2. **Item ở status `New` không hiện trên board**, vì `New` là Kanban backlog. Board `DEMO` không có tab Backlog riêng; xem các item này ở tab **List**.
