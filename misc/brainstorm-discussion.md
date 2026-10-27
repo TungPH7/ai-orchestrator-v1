@@ -2159,3 +2159,42 @@ Mình đã ghi mục 4 là xong trong `tasks/verification.md`.
 Tiếp theo là mục 5, Workflow, phần dài nhất. Mình gợi ý làm `AO sub-task` trước: nó chỉ có 3 status và 2 transition, đủ để làm quen trình sửa workflow. Sau đó tới `AO epic`, cuối cùng là `AO standard`. Ở transition đầu tiên, bạn kiểm tra ngay rule **Restrict who can move a work item** có trong danh sách rule không, rồi báo mình, vì đây là điều mình cần biết nhất về gói Free.
 
 Mục 1 (group) bạn đã làm xong chưa? Mục 5 cần các group để đặt rule Restrict.
+
+---
+
+# Phiên 6 · Lượt 17 — 2026-10-27 khoảng 15:15
+
+**Bạn:**
+
+```markdown
+[Image #10] [Image #11]
+
+Tôi ừa tạo 1 Transition, Restrict → Groups như bạn nói là ở chỗ nào?
+```
+
+Ảnh đính kèm:
+
+- [Image #10](images/phien-6-luot-17-anh-1.png): trình sửa workflow `AO standard`, transition `Refine` (From New, To Ready) đang chọn; hộp **Add rule**, nhóm **Restrict transition**, phần đầu danh sách rule.
+- [Image #11](images/phien-6-luot-17-anh-2.png): cùng hộp đó, kéo xuống cuối danh sách: có rule **Restrict who can move a work item**.
+
+**Claude:**
+
+Bạn đang đứng đúng chỗ rồi, và ảnh thứ hai trả lời luôn câu mình cần nhất: **gói Free có rule "Restrict who can move a work item"**. Đó là dòng cuối cùng trong danh sách.
+
+Làm tiếp như sau, cho transition `Refine`:
+
+1. Trong hộp **Add rule**, bấm vào dòng **Restrict who can move a work item** (dòng cuối, ảnh thứ hai) → bấm **Select** ở góc dưới bên phải.
+2. Ô **Restrict to** chọn **Groups**.
+3. Chọn hai group `ao-humans` và `ao-automation` (đúng như dòng `Refine` trong checklist) → bấm **Add**.
+4. Trong khung **Transition** bên phải, nhóm **Restrict transition** giờ có một rule. Bấm vào để kiểm lại đúng hai group.
+
+Với các transition khác, bạn làm lại từ đầu: bấm nhãn transition trên sơ đồ → nhóm **Restrict transition** → **Add restrict transition rule** → kéo xuống cuối → **Restrict who can move a work item** → **Groups** → chọn group theo dòng của transition đó.
+
+Nếu ô chọn group không có `ao-humans`, `ao-agents`, `ao-automation`, tức là mục 1 chưa xong: bạn quay lại tạo group trước.
+
+Hai điều nữa từ ảnh:
+
+- Khung bên phải còn ba nhóm rule khác: **Request input**, **Validate details**, **Perform actions**. Rule "đặt Resolution là Done" (cho `Accept`) nhiều khả năng nằm ở **Perform actions**, còn rule "hỏi Resolution khi hủy" (cho `Cancel`) nằm ở **Request input**. Tới hai transition đó, bạn chụp danh sách rule của nhóm tương ứng gửi mình, mình chỉ đúng dòng.
+- Nút **View warning** ở trên cùng: lúc workflow chưa xong, Jira thường cảnh báo status chưa có transition. Bấm **Update workflow** khi đã thêm xong mọi transition; nếu lúc đó vẫn còn cảnh báo, bạn chụp gửi mình.
+
+Mình đã ghi kết quả về rule Restrict vào `tasks/verification.md`, và sửa mục 5 của checklist theo đúng tên trên giao diện: khung **Transition**, nhóm **Restrict transition**, nút **Add restrict transition rule**, hộp **Add rule**. Rule có chặn thật hay không, mình sẽ thử ở T15.
