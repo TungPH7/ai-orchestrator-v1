@@ -1997,3 +1997,67 @@ Có một rủi ro cần kiểm khi dựng xong. Theo vài bài trên Atlassian 
 Mình cũng đã sửa mục 1 trong checklist để ghi rõ hai cách thêm này.
 
 Nguồn: [Atlassian: Understand service accounts](https://support.atlassian.com/user-management/docs/understand-service-accounts/), [Atlassian Community: Using new Atlassian Service Accounts with add-on](https://community.atlassian.com/forums/Jira-questions/Using-new-Atlassian-Service-Accounts-with-add-on-Jira-Misc/qaq-p/3252792)
+
+---
+
+# Phiên 6 · Lượt 13 — 2026-10-27 khoảng 14:30
+
+**Bạn:**
+
+````markdown
+Bạn viết hướng dẫn khó hiểu quá. Hướng dẫn theo bước cụ thể chứ. Ví dụ 3. Status
+
+```
+Status nằm ở Jira settings → Work items → Statuses. Jira có sẵn To Do, In Progress, Done: dùng lại nếu đúng nhóm.
+
+[ ] New: nhóm To Do
+[ ] Ready: nhóm To Do
+[ ] In Progress: nhóm In Progress
+[ ] In Review: nhóm In Progress
+[ ] Ready for QA: nhóm In Progress
+[ ] In QA: nhóm In Progress
+[ ] Done: nhóm Done
+[ ] Cancelled: nhóm Done
+[ ] Specifying: nhóm To Do
+[ ] Planning: nhóm To Do
+[ ] To Do: nhóm To Do
+```
+
+Bạn ghi như vậy thì tôi không rõ phải làmgifl luôn ấy
+````
+
+Trong lúc Claude đang làm, bạn gửi thêm một ảnh:
+
+- [Image #7](images/phien-6-luot-13-anh-1.png): trang **Jira admin settings → Work items → Statuses** của site, có nút **Add status**; danh sách status có sẵn: Open, In Progress, Reopened, Resolved, Closed, Building, Build Broken.
+
+**Claude:**
+
+Bạn nói đúng: checklist cũ chỉ ghi cần có gì, không ghi bấm vào đâu. Ảnh bạn gửi còn cho thấy một chỗ sai: site của bạn không có sẵn status `To Do` hay `Done`, chỉ có `In Progress`.
+
+Mình đã viết lại `docs/jira-setup.md`. Giờ mỗi mục có phần **Cách làm** đánh số từng bước bấm, rồi mới tới danh sách `- [ ]` những thứ cần tạo. Ví dụ, mục Status giờ là:
+
+> **Cách làm:**
+>
+> 1. Trên Jira, bấm biểu tượng bánh răng ⚙ ở góc trên bên phải. Trong **Jira admin settings**, ô **Switch settings** chọn **Work items**.
+> 2. Menu bên trái, chọn **Statuses**.
+> 3. Với từng dòng bên dưới, xem danh sách status có sẵn trước. Nếu đã có status cùng tên và cột **Category** trùng thì dùng lại, đánh dấu là xong.
+> 4. Nếu chưa có: bấm **Add status**. Ô **Name** gõ tên, ô **Category** chọn như bên dưới, bấm **Add**.
+>
+> - [ ] Name `New`, Category `To Do`
+> - [ ] Name `Ready`, Category `To Do`
+> - …
+
+Với site của bạn, `In Progress` đã có và đúng Category, nên dùng lại; 10 status còn lại cần tạo mới.
+
+Những thay đổi khác:
+
+- **Resolution chuyển lên trước Status và Workflow** (giờ là mục 3), vì transition `Cancel` hỏi Resolution và các transition vào Done đặt Resolution.
+- **Mục Workflow** có các bước: mở trình sửa, thêm status, thêm transition (From, To, tên), thêm rule Restrict theo group, lưu. Mỗi transition là một dòng dạng `Transition Submit: From In Progress, To In Review. Restrict → Groups: ao-automation`.
+- **Mục Space** gồm cả tạo space company-managed, kiểm work type, gắn workflow scheme (Switch scheme → Associate → Acknowledge), và thêm field vào màn hình.
+- **Mục Board** ghi rõ: Board settings → Details để sửa filter; Columns để đổi cột, kéo status, đặt Kanban backlog và giới hạn tối đa.
+
+Tên nút lấy từ tài liệu của Atlassian. Ba chỗ tài liệu không nêu tên nút chính xác, mình ghi "đối chiếu giao diện": nút tạo workflow mới, rule đặt Resolution là Done, và rule hiện màn hình chọn Resolution khi hủy. Tới ba chỗ đó, nếu không thấy nút giống mô tả, bạn chụp màn hình gửi mình.
+
+File mới nằm trên nhánh `task/t8-build-demo` (chưa merge). Bạn mở bản local `docs/jira-setup.md` trong VS Code (Ctrl+Shift+V để xem dạng đẹp), hoặc trên GitHub: <https://github.com/TungPH7/ai-orchestrator-v1/blob/task/t8-build-demo/docs/jira-setup.md>.
+
+Nguồn: [Restrict workflows based on user groups](https://support.atlassian.com/jira-cloud-administration/docs/restrict-workflows-based-on-user-groups/), [Add statuses to a Jira workflow](https://support.atlassian.com/jira-cloud-administration/docs/add-statuses-to-a-jira-workflow/), [Create workflow transitions](https://support.atlassian.com/jira-cloud-administration/docs/create-workflow-transitions/), [Configure workflow schemes](https://support.atlassian.com/jira-cloud-administration/docs/configure-workflow-schemes/), [Configure columns](https://support.atlassian.com/jira-software-cloud/docs/configure-columns/), [View a field context](https://support.atlassian.com/jira-cloud-administration/docs/view-a-field-context-and-how-its-set-up/)
