@@ -1826,3 +1826,31 @@ Không cần đến Basic auth hay phương án dự phòng.
 Chi tiết ở `tasks/verification.md`. T1 nằm trong PR #18, mình merge ngay khi CI xanh.
 
 Đổi token CI xong thì bạn nhắn mình. Mình sẽ kiểm lại token mới, rồi làm tiếp T2 đến T6 (hợp đồng, ánh xạ, quy ước mã Jira, đếm rework) cho tới Checkpoint 1. Các task này là code thuần, không cần bạn làm gì thêm.
+
+---
+
+# Phiên 6 · Lượt 8 — 2026-10-27 khoảng 12:55
+
+**Bạn:**
+
+```markdown
+Tôi đã revoke token CI cũ và sửa lại token CI mới ở env
+```
+
+_Kèm tin nhắn này, extension Claude Code lại tự gửi dòng đang được bôi đen, lần này trong file ghi chú cá nhân `todo.md`. Dòng đó là token CI mới, nên không được chép vào đây._
+
+**Claude:**
+
+Token CI mới chạy được: `GET /project/search` trả 200. Nhưng nó cũng đã lọt vào cuộc trò chuyện, theo đúng đường lần trước.
+
+Lúc bạn gửi tin nhắn, dòng 140 của file ghi chú `todo.md` (thư mục `ai-orchestrator`) đang được bôi đen, và dòng đó là token CI mới. Mình đã đối chiếu 8 ký tự cuối với biến `JIRA_CI_TOKEN`. File này không được Git theo dõi, nên token không lên GitHub. Nhưng phần bôi đen vẫn được gửi kèm tin nhắn.
+
+`todo.md` còn có một dòng token nữa, nhiều khả năng là token của agent. Token đó chưa lọt vào chat, nhưng nó đang nằm dạng chữ thường trong thư mục mà mọi phiên Claude Code làm việc trên repo kit đều đọc được.
+
+Bạn làm giúp mình:
+
+1. Thu hồi token CI vừa tạo, tạo token thứ ba (scope `read:jira-work`, `write:jira-work`, hết hạn 2027-10-27), rồi dán thẳng từ trang Atlassian vào hộp thoại biến môi trường, không qua editor.
+2. Xóa cả hai dòng token trong `todo.md` và lưu file. Token chỉ nên nằm trong trình quản lý mật khẩu và trong biến môi trường. Nếu bạn muốn, mình xóa hai dòng đó giúp bạn.
+3. Trước khi gửi tin nhắn cho mình, kiểm tra VS Code không bôi đen dòng nào chứa thông tin nhạy cảm.
+
+Việc đổi token không chặn T2 đến T6, vì các task đó chỉ là code. Bạn có thể nhắn "làm tiếp" ngay, rồi đổi token sau. Khi bạn báo đã đổi, mình sẽ kiểm token thứ ba.
