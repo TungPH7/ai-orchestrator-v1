@@ -79,16 +79,16 @@ Claude làm: tạo repo private `TungPH7/ao-pilot` với nhánh `main` và `deve
 
 **Cỡ:** M
 
-### [ ] T4: Ánh xạ workflow, trường, board và môi trường, quy tắc J2 và J3
+### [x] T4: Ánh xạ workflow, trường, board và môi trường, quy tắc J2 và J3
 
 **Mô tả:** Hoàn thiện ánh xạ theo spec mục 2.3: tên status và nhóm status của ba workflow, tên transition (tách `cancel` theo từng `from`), các trường (custom field Found in, Severity, Agent; trường có sẵn Affects versions, Fix versions, Resolution; cờ Flagged; Rework count đếm từ lịch sử), cột board và giới hạn WIP, môi trường. J2: ánh xạ phủ đủ hợp đồng theo cả hai chiều. J3: tên status không trùng trong một workflow; tên transition chỉ trùng giữa các bản tách của cùng một transition.
 
 **Tiêu chí chấp nhận:**
-- [ ] Mọi workflow, state, transition, trường, cột board và môi trường của hợp đồng đều có ánh xạ.
-- [ ] Fixture âm cho J2 (thiếu state, thừa transition không có trong hợp đồng) và J3 (trùng tên status, trùng tên transition).
+- [x] Mọi workflow, state, transition, trường, cột board và môi trường của hợp đồng đều có ánh xạ.
+- [x] Fixture âm cho J2 (thiếu state, thừa transition không có trong hợp đồng) và J3 (trùng tên status, trùng tên transition).
 
 **Kiểm chứng:**
-- [ ] `npm run validate` và `npm test` xanh
+- [x] `npm run validate` và `npm test` xanh
 
 **Phụ thuộc:** T3
 

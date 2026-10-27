@@ -1,0 +1,8 @@
+description: a Sub-task status placed in a column the board does not have
+rule: J2
+expect:
+  - "workflows.sub-task.board_columns.to-do"
+patch:
+  - op: set
+    path: "workflows.sub-task.board_columns.to-do"
+    value: todo

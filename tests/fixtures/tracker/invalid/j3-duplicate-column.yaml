@@ -1,0 +1,8 @@
+description: two board columns with the same name
+rule: J3
+expect:
+  - "board.columns[id=qa].name"
+patch:
+  - op: set
+    path: "board.columns[id=qa].name"
+    value: "In Review"

@@ -1,0 +1,8 @@
+description: a single-select Jira field for a contract field that has no list of values
+rule: J2
+expect:
+  - "fields.affects-version.type"
+patch:
+  - op: set
+    path: "fields.affects-version.type"
+    value: select

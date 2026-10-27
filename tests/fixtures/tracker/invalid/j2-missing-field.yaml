@@ -1,0 +1,7 @@
+description: a contract field with no Jira field
+rule: J2
+expect:
+  - "fields.agent"
+patch:
+  - op: remove
+    path: "fields.agent"
