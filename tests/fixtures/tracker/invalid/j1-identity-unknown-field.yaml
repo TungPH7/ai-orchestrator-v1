@@ -1,0 +1,8 @@
+description: an identity with a field the schema does not declare
+rule: J1
+expect:
+  - "identities[id=agents].password"
+patch:
+  - op: set
+    path: "identities[id=agents].password"
+    value: "never here"

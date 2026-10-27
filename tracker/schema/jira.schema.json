@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "tracker/jira.yaml",
+  "description": "Mapping of the SDLC contract to Jira Cloud (tracker-integration spec sections 2.2 and 2.3).",
+  "type": "object",
+  "required": ["site", "cloud_id", "identities"],
+  "additionalProperties": false,
+  "properties": {
+    "site": {
+      "type": "string",
+      "pattern": "^[a-z0-9-]+\\.atlassian\\.net$"
+    },
+    "cloud_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "identities": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/identity" }
+    }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$"
+    },
+    "text": { "type": "string", "minLength": 1 },
+    "identity": {
+      "type": "object",
+      "required": ["id", "kind", "account", "group", "roles"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "kind": { "enum": ["user", "service-account"] },
+        "account": { "$ref": "#/$defs/text" },
+        "group": { "$ref": "#/$defs/id" },
+        "roles": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/id" }
+        },
+        "token_env": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Z0-9_]*$"
+        },
+        "token_expires_on": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        },
+        "note": { "$ref": "#/$defs/text" }
+      },
+      "if": { "properties": { "kind": { "const": "service-account" } } },
+      "then": { "required": ["token_env", "token_expires_on"] }
+    }
+  }
+}

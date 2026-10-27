@@ -1,0 +1,8 @@
+description: an identity that names a role the contract does not declare
+rule: J4
+expect:
+  - "identities[id=agents].roles"
+patch:
+  - op: set
+    path: "identities[id=agents].roles"
+    value: [pm, ba, ux, sa, fe-dev, be-dev, reviewer, security, qa, devops, designer]

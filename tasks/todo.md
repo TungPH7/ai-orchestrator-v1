@@ -61,17 +61,17 @@ Claude làm: tạo repo private `TungPH7/ao-pilot` với nhánh `main` và `deve
 
 **Cỡ:** S
 
-### [ ] T3: `tracker/jira.yaml` phần danh tính, quy tắc J1 và J4
+### [x] T3: `tracker/jira.yaml` phần danh tính, quy tắc J1 và J4
 
 **Mô tả:** Tạo ánh xạ với phần site, cloud id và ba danh tính ở spec mục 2.2 (group, vai trò, ngày hết hạn token: 2027-10-27 cho cả hai). Có schema, `lib/tracker/mapping.mjs` với `readMapping` và `validateMapping`, và `npm run validate` kiểm cả ánh xạ. J1: ánh xạ đúng schema. J4: mỗi vai trò của hợp đồng thuộc đúng một danh tính.
 
 **Tiêu chí chấp nhận:**
-- [ ] `npm run validate` báo OK cho cả hợp đồng và ánh xạ; khi có lỗi thì in mã J, đường dẫn, thông báo và thoát mã khác 0.
-- [ ] Fixture âm cho J1 (trường lạ, thiếu trường bắt buộc) và J4 (vai trò thiếu danh tính, vai trò thuộc hai danh tính).
+- [x] `npm run validate` báo OK cho cả hợp đồng và ánh xạ; khi có lỗi thì in mã J, đường dẫn, thông báo và thoát mã khác 0.
+- [x] Fixture âm cho J1 (trường lạ, thiếu trường bắt buộc) và J4 (vai trò thiếu danh tính, vai trò thuộc hai danh tính).
 
 **Kiểm chứng:**
-- [ ] `npm run validate` và `npm test` xanh
-- [ ] Thủ công: sửa tạm ánh xạ cho sai, `npm run validate` báo đúng chỗ sai
+- [x] `npm run validate` và `npm test` xanh
+- [x] Thủ công: sửa tạm ánh xạ cho sai, `npm run validate` báo đúng chỗ sai
 
 **Phụ thuộc:** T2
 
