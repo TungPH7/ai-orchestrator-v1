@@ -1,6 +1,6 @@
 # Plan triển khai: tracker-integration
 
-> **Spec:** [SPEC-tracker-integration.md](../SPEC-tracker-integration.md), đã duyệt 2026-10-27. **Trạng thái:** chờ bạn duyệt. **Task chi tiết:** [todo.md](todo.md). **Kết quả kiểm thật:** [verification.md](verification.md), tạo ở T1.
+> **Spec:** [SPEC-tracker-integration.md](../SPEC-tracker-integration.md), đã duyệt 2026-10-27. **Trạng thái:** đã duyệt 2026-10-27, đang làm. **Task chi tiết:** [todo.md](todo.md). **Kết quả kiểm thật:** [verification.md](verification.md), tạo ở T1.
 
 ## Tổng quan
 
@@ -80,7 +80,7 @@ T1 đứng đầu vì nếu service account không dùng được với Rovo MCP
 - [ ] T18: Kiểm thật trên `ao-pilot`
 
 ### Checkpoint 4
-- [ ] Tiêu chí 7 và 8 của spec mục 9 đạt (riêng chặng `deploy-to-qa`, xem câu hỏi 1)
+- [ ] Tiêu chí 7 và 8 của spec mục 9 đạt
 
 ### Giai đoạn 5: hoàn thiện
 - [ ] T19: README, đóng câu hỏi mở của `SPEC.md`, lưu trữ plan
@@ -95,7 +95,7 @@ T1 đứng đầu vì nếu service account không dùng được với Rovo MCP
 |---|---|---|
 | Rovo MCP từ chối token `Bearer` của service account | Cao | T1 làm đầu tiên; thử Basic auth với email của service account; nếu vẫn hỏng thì dừng và hỏi bạn về phương án dự phòng của spec |
 | Token lộ qua chat, log hoặc lịch sử lệnh | Cao | Quyết định 8; client không log header; test kiểm thông báo lỗi không chứa token |
-| Bạn không approve được PR do chính tài khoản `TungPH7` mở, nên `deploy-to-qa` không xảy ra thật | Cao | Câu hỏi 1 bên dưới |
+| Bạn không approve được PR do chính tài khoản `TungPH7` mở, nên `deploy-to-qa` không xảy ra thật | Cao | T18 kiểm `jira-sync` đứng yên và báo thiếu `merge-approved`; chặng sang Ready for QA kiểm ở `quality-gates` (câu hỏi 1) |
 | Gói Free không có rule Restrict | Trung bình | T8 kiểm ngay khi dựng; nếu không có thì ghi vào spec và checklist, hook là lớp chặn duy nhất (tiêu chí 6 đã tính trường hợp này) |
 | REST API không trả rule Restrict hoặc cấu hình workflow mới | Trung bình | `jira:check` in dòng "cần kiểm tay" cho phần không đọc được, không báo đạt |
 | `agent_type` không có trong một số cách gọi agent | Trung bình | Không có `agent_type` thì chặn, là mặc định an toàn; T15 thử với subagent thật |
@@ -104,7 +104,7 @@ T1 đứng đầu vì nếu service account không dùng được với Rovo MCP
 | Dữ liệu mẫu lộ email, account id | Thấp | Quyết định 6 |
 | Hết usage giữa task | Thấp | Task cỡ S hoặc M; mỗi task một PR; tiến độ đánh dấu trong `todo.md` |
 
-## Câu hỏi mở
+## Câu hỏi đã trả lời (2026-10-27)
 
-1. **Chặng `deploy-to-qa` của tiêu chí 7.** Mọi PR trong `ao-pilot` đều do tài khoản `TungPH7` mở, mà GitHub không cho tác giả tự approve PR của mình. Vì vậy guard `merge-approved` không thỏa, và item không sang Ready for QA. Mình đề xuất T18 kiểm `jira-sync` đứng yên và báo thiếu `merge-approved`, vì đó là hành vi đúng; chặng chuyển sang Ready for QA kiểm lại ở `quality-gates`, sau khi chốt danh tính mở PR cho agent. Cách khác là chốt danh tính đó ngay trong module này, nhưng như vậy là làm trước việc của `quality-gates`.
-2. **Ngày hết hạn của hai token** (chỉ ngày, không gửi token), để ghi vào `tracker/jira.yaml` ở T3.
+1. **Chặng `deploy-to-qa` của tiêu chí 7:** làm như đề xuất. Mọi PR trong `ao-pilot` đều do tài khoản `TungPH7` mở, mà GitHub không cho tác giả tự approve PR của mình, nên guard `merge-approved` không thỏa. T18 kiểm `jira-sync` đứng yên và báo thiếu `merge-approved`; chặng sang Ready for QA kiểm thật ở `quality-gates`, sau khi chốt danh tính mở PR cho agent. Tiêu chí 7 của spec đã được sửa theo.
+2. **Ngày hết hạn của hai token:** cả hai hết hạn ngày 2027-10-27. T3 ghi ngày này vào `tracker/jira.yaml`.

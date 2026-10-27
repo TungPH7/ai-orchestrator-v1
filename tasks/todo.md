@@ -24,7 +24,7 @@
 Bạn làm:
 1. Bật xác thực bằng API token cho Rovo MCP: admin.atlassian.com → Rovo → Rovo MCP server → Authentication.
 2. Đặt hai biến môi trường user `ATLASSIAN_AGENT_TOKEN` và `JIRA_CI_TOKEN` bằng hộp thoại "Chỉnh sửa biến môi trường cho tài khoản của bạn" của Windows.
-3. Báo Claude ngày hết hạn của hai token.
+Ngày hết hạn của hai token (2027-10-27) bạn đã báo ngày 2026-10-27.
 
 Claude làm: tạo repo private `TungPH7/ao-pilot` với nhánh `main` và `develop`; viết `kit/.mcp.json`; chạy ba phép thử bên dưới.
 
@@ -63,7 +63,7 @@ Claude làm: tạo repo private `TungPH7/ao-pilot` với nhánh `main` và `deve
 
 ### [ ] T3: `tracker/jira.yaml` phần danh tính, quy tắc J1 và J4
 
-**Mô tả:** Tạo ánh xạ với phần site, cloud id và ba danh tính ở spec mục 2.2 (group, vai trò, ngày hết hạn token lấy từ T1). Có schema, `lib/tracker/mapping.mjs` với `readMapping` và `validateMapping`, và `npm run validate` kiểm cả ánh xạ. J1: ánh xạ đúng schema. J4: mỗi vai trò của hợp đồng thuộc đúng một danh tính.
+**Mô tả:** Tạo ánh xạ với phần site, cloud id và ba danh tính ở spec mục 2.2 (group, vai trò, ngày hết hạn token: 2027-10-27 cho cả hai). Có schema, `lib/tracker/mapping.mjs` với `readMapping` và `validateMapping`, và `npm run validate` kiểm cả ánh xạ. J1: ánh xạ đúng schema. J4: mỗi vai trò của hợp đồng thuộc đúng một danh tính.
 
 **Tiêu chí chấp nhận:**
 - [ ] `npm run validate` báo OK cho cả hợp đồng và ánh xạ; khi có lỗi thì in mã J, đường dẫn, thông báo và thoát mã khác 0.
@@ -351,7 +351,7 @@ Claude làm: tạo repo private `TungPH7/ao-pilot` với nhánh `main` và `deve
 
 **Tiêu chí chấp nhận:**
 - [ ] PR mở và CI xanh thì item sang In Review, do `orchestratorci` chuyển; CI đỏ thì item về In Progress, rework bằng 1 (tiêu chí 7).
-- [ ] Chặng merge rồi deploy: làm theo câu trả lời của bạn cho câu hỏi 1 trong plan.
+- [ ] Merge rồi deploy thử lên `development` thành công khi PR chưa có approve của bạn: item đứng yên ở In Review, `jira-sync` báo thiếu `merge-approved` (plan, câu hỏi 1).
 - [ ] Nhánh, commit, PR và các deployment thử hiện trên item; panel Deployments nhận đúng loại môi trường (tiêu chí 8).
 
 **Kiểm chứng:**
