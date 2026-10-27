@@ -115,7 +115,7 @@ Dự án khai báo server trong `.mcp.json`. Token nằm trong biến môi trư�
 }
 ```
 
-- Admin tổ chức phải bật xác thực bằng API token cho Rovo MCP. [Unverified] Theo một trả lời trên Atlassian Community, công tắc nằm ở Atlassian Administration → Rovo → Rovo MCP server → Authentication.
+- Admin tổ chức phải bật xác thực bằng API token cho Rovo MCP, ở Atlassian Administration → **Connectors** → **Atlassian MCP server** → mục **Authentication** → **API token**. Đường dẫn lấy từ trang hỗ trợ của Atlassian; bản trước của spec ghi theo một trả lời trên Atlassian Community, và đường dẫn đó không còn đúng.
 - Tool Jira agent dùng: `getJiraIssue`, `searchJiraIssuesUsingJql`, `createJiraIssue`, `editJiraIssue`, `addOrEditJiraIssueComment`, `listJiraIssueTransitions`, `transitionJiraIssue`, `lookupJiraAccountId`. Tên tool lấy từ trang Supported tools; giả định 1 ở Phiên 4 ghi nhầm tên tool liệt kê transition.
 - Không bật connector Atlassian của claude.ai cho Claude Code, vì connector đó chạy bằng tài khoản của bạn. Hook chặn mọi tool Atlassian không thuộc server `atlassian` của dự án.
 
@@ -336,6 +336,7 @@ Thư viện chỉ gọi mạng trong `jira-client.mjs` và `github-client.mjs`. 
 - [Atlassian Developer: Configuring authentication via API token (Rovo MCP)](https://developer.atlassian.com/cloud/rovo-mcp/guides/configuring-authentication-via-api-token/)
 - [Atlassian KB: Rovo MCP Server only returns Teamwork Graph tools when using API Token](https://support.atlassian.com/rovo/kb/rovo-mcp-server-only-returns-teamwork-graph-tools-when-using-api-token/)
 - [Claude Code: Hooks reference](https://code.claude.com/docs/en/hooks)
+- [Atlassian: Control Atlassian Rovo MCP server settings](https://support.atlassian.com/security-and-access-policies/docs/control-atlassian-rovo-mcp-server-settings/)
 - [Atlassian Community: Unable to enable Atlassian Rovo MCP Server API Token](https://community.atlassian.com/forums/Jira-questions/Unable-to-enable-Atlassian-Rovo-MCP-Server-API-Token/qaq-p/3263746)
 - [atlassian/github-for-jira: Showing GitHub deployments in Jira](https://github.com/atlassian/github-for-jira/blob/332b5ae08042c631fdce6465386a6c338e819d99/docs/deployments.md)
 - [Atlassian KB: custom environment names show "undefined environment"](https://support.atlassian.com/jira/kb/jira-github-integration-custom-environment-names-does-not-show-up-in-releases-panel-and-instead-show-undefined-environment/)

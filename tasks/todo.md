@@ -22,7 +22,7 @@
 **Mô tả:** Kiểm giả định nền của spec trước khi viết code: agent nối được Rovo MCP bằng token của `orchestratoragent`, và CI gọi được Jira REST API bằng token của `orchestratorci`, trên gói Free.
 
 Bạn làm:
-1. Bật xác thực bằng API token cho Rovo MCP: admin.atlassian.com → Rovo → Rovo MCP server → Authentication.
+1. Bật xác thực bằng API token cho Rovo MCP: admin.atlassian.com → Connectors → Atlassian MCP server → Authentication → API token.
 2. Đặt hai biến môi trường user `ATLASSIAN_AGENT_TOKEN` và `JIRA_CI_TOKEN` bằng hộp thoại "Chỉnh sửa biến môi trường cho tài khoản của bạn" của Windows.
 Ngày hết hạn của hai token (2027-10-27) bạn đã báo ngày 2026-10-27.
 
