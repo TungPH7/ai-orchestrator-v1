@@ -47,7 +47,7 @@
 | 2. Rovo MCP | Xong ở T1 |
 | 3. Resolution | Xong (2026-10-27). Site có hai resolution `Done` ("GreenHopper Managed Resolution", do Jira Software tạo); giữ cả hai |
 | 4. Status | Xong (2026-10-27): 10 status mới và `In Progress` có sẵn, đúng tên và Category |
-| 5. Workflow | Đang sửa (2026-10-28): status và đường đi của ba workflow đều đúng; 18 trong 24 transition thiếu rule (xem bảng dưới) |
+| 5. Workflow | Xong (2026-10-28): bạn dựng status, transition và 7 rule; Claude thêm rule cho 17 transition còn lại qua REST theo yêu cầu của bạn. Đọc lại: đủ 24 transition, đúng group, đúng màn hình và rule đặt Resolution |
 | 6. Work type | Xong (2026-10-27): đã tạo `Task`, `Bug`, `Sub-task`; `Epic`, `Story` có sẵn |
 | 7. Workflow scheme | Xong (bạn báo 2026-10-27) |
 | 8. Trường | Xong (bạn báo 2026-10-27). `Found in` đúng ba option; giữ Global context |
@@ -82,6 +82,16 @@ Rule Restrict lưu thành điều kiện `system:restrict-issue-transition` vớ
 | `AO standard` | `Refine`, `Start`, `Submit`, `Request changes`, `Deploy to QA`, `Pick up`: đúng group | `QA fail` (Restrict); `Accept` (Restrict, đặt Resolution); 6 `Cancel` (Restrict, Show a screen). `Cancel` từ `Ready` đã sửa trên màn hình nhưng chưa bấm **Update workflow** |
 | `AO epic` | không có | cả 8: `Start spec`, `Approve spec`, `Approve plan` (Restrict); `Complete` (Restrict, đặt Resolution); 4 `Cancel` (Restrict, Show a screen) |
 | `AO sub-task` | không có | `Start` (Restrict); `Complete` (Restrict, đặt Resolution) |
+
+**Thêm rule qua REST (2026-10-28, bạn yêu cầu):** bạn tạo token tạm `ao-workflow-edit` (hạn 1 ngày; scope `write:workflow:jira`, `read:workflow:jira`, `read:screen:jira`, `read:project:jira`, `read:avatar:jira`, `read:project-category:jira`), biến `JIRA_ADMIN_WRITE_TOKEN`. Script tạm của Claude đọc ba workflow bằng `POST /workflows`, tính rule cần có từ `contract/` và `tracker/jira.yaml`, chỉ thêm vào transition còn thiếu, gửi `POST /workflows/update/validation` (không lỗi), rồi `POST /workflows/update`. Kết quả: `AO standard` lên version 3, `AO epic` và `AO sub-task` lên version 2. Đọc lại bằng token chỉ đọc: đủ 24 transition.
+
+Dạng rule trong API:
+
+- Restrict: điều kiện `system:restrict-issue-transition`, tham số `groupIds` là id group nối bằng dấu phẩy.
+- Hỏi Resolution: `transitionScreen` = `system:transition-screen`, tham số `screenId`. `Resolve Issue Screen` có id `3`, gồm các trường Resolution, Fix versions, Assignee, Log Work.
+- Đặt Resolution: action `system:update-field`, tham số `field: resolution`, `value: 10000` (id của `Done` đứng đầu), `mode: replace`.
+
+Vậy API sửa workflow dùng được cho rule. Spec mục 2.10 ghi Cấp 1 chưa dựng tự động vì API sửa workflow phức tạp; điều này đáng xem lại sau T10.
 
 **Kiểm thủ công bằng Story thử `DEMO-1` (2026-10-28):**
 
