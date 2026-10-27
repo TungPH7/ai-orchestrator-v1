@@ -173,3 +173,27 @@ Vậy API sửa workflow dùng được cho rule. Spec mục 2.10 ghi Cấp 1 ch
 
 Chạy thử với Jira thật (2026-10-28, token của agent, chỉ đọc): đọc `DEMO-2` đúng; JQL theo trường Agent chạy được; `fe-dev` có `wip-available`.
 
+## T12: Dữ kiện từ GitHub cho guard
+
+`lib/tracker/github-client.mjs` chỉ gửi GET tới `api.github.com/repos/<owner>/<repo>`, phân trang theo header `Link`. `githubGuards` trong `lib/tracker/facts.mjs` tìm nhánh và PR của item theo mã item bằng `parseBranch` và `checkBranch` của `conventions.mjs`. Sau `qa-fail` item có nhiều PR; mọi guard xét PR mới nhất.
+
+| Guard | Cách tính |
+|---|---|
+| `branch-created` | Có nhánh `feature/`, `bugfix/` hoặc `hotfix/` mang mã item (`GET /git/matching-refs/heads/<loại>/<KEY>-`), đúng tiền tố của loại item |
+| `dependencies-merged` | Mỗi item chặn item này (link "is blocked by" trên Jira, `readItem` đọc thêm `issuelinks`) có PR mới nhất đã merge vào nhánh gốc đúng với tiền tố nhánh |
+| `pr-open`, `pr-merged` | PR mới nhất đang mở, hoặc đã merge, vào nhánh gốc đúng với loại item |
+| `ci-green` | Commit đầu của PR có ít nhất một check; mọi check run đã xong với kết quả success, neutral hoặc skipped; commit status (nếu có) là success |
+| `changes-requested` | Review quyết định mới nhất (APPROVED, CHANGES_REQUESTED hoặc DISMISSED; COMMENTED không tính) là CHANGES_REQUESTED, hoặc có check failure hay timed_out |
+| `merge-approved` | Review quyết định mới nhất của một trong các login trong `approvers` là APPROVED |
+| `qa-deployed` | Một deployment lên môi trường QA ứng với nhánh gốc của PR (`routing.yaml`: `develop` ra development, `release/*` và `main` ra staging), tạo sau lúc merge, chứa merge commit (`GET /compare`), có trạng thái mới nhất là success |
+| `work-committed` | Nhánh mới nhất của Story cha có commit mà dòng tiêu đề mang mã Sub-task |
+
+Ghi chú cho các task sau:
+
+- `branch-created` chưa kiểm nhánh có tách từ đúng nhánh gốc không: GitHub không lưu nhánh được tách từ đâu. Nhánh gốc được kiểm qua đích của PR (`pr-open`).
+- `approvers` (login GitHub của bạn) chưa có chỗ khai báo; T16 hoặc T17 quyết định đặt ở đâu.
+- Danh sách PR được đọc toàn bộ (`GET /pulls?state=all`), đủ cho repo nhỏ của pilot.
+- `gh` trên máy bạn là bản 2.16, chưa có `gh auth token` (có từ 2.17). Khi chạy thử, Claude lấy token qua `git credential fill`. Hook ở T13 cần token GitHub trên máy bạn; T13 chọn cách lấy.
+
+Chạy thử với GitHub thật (2026-10-28, chỉ đọc): trên `TungPH7/ao-pilot`, `DEMO-2` chỉ có `dependencies-merged` (không bị chặn bởi item nào); chưa có nhánh, PR hay deployment nào.
+
