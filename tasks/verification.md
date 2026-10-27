@@ -197,3 +197,21 @@ Ghi chú cho các task sau:
 
 Chạy thử với GitHub thật (2026-10-28, chỉ đọc): trên `TungPH7/ao-pilot`, `DEMO-2` chỉ có `dependencies-merged` (không bị chặn bởi item nào); chưa có nhánh, PR hay deployment nào.
 
+## T13: Hook `jira-guard`
+
+`lib/tracker/guard.mjs` quyết định; `kit/.claude/hooks/jira-guard.mjs` đọc input, tạo client và in quyết định; `kit/.claude/settings.json` khai báo hook một lần cho `mcp__atlassian__transitionJiraIssue`.
+
+Thứ tự kiểm, dừng ở bước đầu tiên không đạt:
+
+1. Có `agent_type`, và đó là vai trò agent của hợp đồng (không phải `human`, `automation`, hay agent của plugin). Hai bước này không gọi Jira.
+2. Đọc item bằng token của agent. Item có label `needs-you` thì chặn mọi agent.
+3. Loại item có trong hợp đồng; tìm transition của hợp đồng theo tên và status hiện tại. Tool đưa `transitionId` thì đổi ra tên bằng danh sách transition agent được thấy trên item (`GET /issue/<key>/transitions`); id không có trong danh sách thì chặn, vì Jira cũng sẽ từ chối.
+4. Vai trò có trong `actors` của transition.
+5. Gom guard từ Jira và GitHub (T11, T12), gọi `checkTransition`; thiếu guard nào thì chặn và nêu tên.
+
+Hook cho qua bằng cách không in gì, để luồng xin quyền bình thường của Claude Code chạy tiếp; chặn bằng `permissionDecision: "deny"` kèm lý do. Lỗi khi đọc dữ kiện (mất mạng, thiếu token) thì chặn.
+
+Token: Jira dùng `ATLASSIAN_AGENT_TOKEN`. GitHub dùng `GITHUB_TOKEN` nếu có, không thì token của GitHub CLI: `gh auth token`, hoặc với `gh` cũ như bản 2.16 trên máy bạn, dòng `Token:` của `gh auth status --show-token`. Repo lấy từ remote `origin` của thư mục dự án.
+
+Chạy thử với Jira thật (2026-10-28, token của agent, thư mục dự án `ao-pilot`): `fe-dev` gọi `Start` trên `DEMO-2` bị chặn vì hợp đồng không có `Start` từ `Cancelled`; gọi `transitionId: 999` bị chặn vì id đó không có trên item.
+
