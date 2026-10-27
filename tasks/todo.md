@@ -133,7 +133,7 @@ Claude làm: tạo repo private `TungPH7/ao-pilot` với nhánh `main` và `deve
 ### Checkpoint 1
 - [x] `npm run validate`, `npm test`, `npm run render:check` xanh
 - [x] Kết nối của T1 chạy được
-- [ ] Bạn soát tên status và transition trong `tracker/jira.yaml`
+- [x] Bạn soát tên status và transition trong `tracker/jira.yaml`
 
 ---
 

@@ -51,7 +51,9 @@ T1 đứng đầu vì nếu service account không dùng được với Rovo MCP
 ### Checkpoint 1
 - [x] `npm run validate`, `npm test`, `npm run render:check` xanh
 - [x] Kết nối của T1 chạy được, kết quả ghi trong `tasks/verification.md`
-- [ ] Bạn soát tên status và transition trong `tracker/jira.yaml`: đây là những tên bạn sẽ thấy trên Jira
+- [x] Bạn soát tên status và transition trong `tracker/jira.yaml`: đây là những tên bạn sẽ thấy trên Jira
+
+Đã qua ngày 2026-10-27: bạn giữ nguyên mọi tên trong `tracker/jira.yaml`, kể cả tiền tố `AO` (viết tắt của ai-orchestrator).
 
 ### Giai đoạn 2: dựng Jira và kiểm lệch
 - [ ] T7: Sinh checklist dựng Jira
