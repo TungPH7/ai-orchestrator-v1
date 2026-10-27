@@ -2741,3 +2741,57 @@ Sau đó làm tương tự với `AO epic` và `AO sub-task`. Mỗi workflow s�
 Nếu muốn mình đọc giúp cả 24 transition để chỉ đúng chỗ thiếu, bạn nhắn "tạo token". Mình sẽ hướng dẫn tạo token chỉ đọc, đây cũng là bước đầu của T9.
 
 Mình đã ghi vào `tasks/verification.md`: transition `Cancel` từ `Ready` đã có đủ hai rule.
+
+---
+
+# Phiên 6 · Lượt 32 — 2026-10-28 khoảng 01:15
+
+**Bạn:**
+
+```markdown
+tạo token
+```
+
+**Claude:**
+
+Đây là token chỉ đọc cho **tài khoản Atlassian của bạn**, tức tài khoản admin của site, không phải hai service account. Token này dùng để mình đọc cấu hình Jira: workflow, scheme, field, board. Nó cũng là token `jira:check` cần ở T9. Danh sách scope dưới đây mình lấy từ OpenAPI spec của Jira, theo từng API sẽ gọi. Không có scope nào cho quyền ghi.
+
+**Bước 1: tạo token**
+
+1. Mở <https://id.atlassian.com/manage-profile/security/api-tokens>, đăng nhập bằng tài khoản admin của bạn.
+2. Bấm **Create API token with scopes**.
+3. Ô tên gõ `ao-jira-check`. Ngày hết hạn chọn 365 ngày, mức tối đa; token chỉ đọc nên để dài cho đỡ phải tạo lại. Bấm **Next**.
+4. Chọn app **Jira** → **Next**.
+5. Tick đủ 20 scope sau. Gõ tên vào ô tìm cho nhanh. Nếu bảng báo "No scopes available" thì bấm đặt lại bộ lọc và quay về trang 1, như lần tạo token cho service account.
+   - `read:jira-work`
+   - `read:workflow:jira`
+   - `read:workflow-scheme:jira`
+   - `read:issue-type-scheme:jira`
+   - `read:issue-type:jira`
+   - `read:project:jira`
+   - `read:project-category:jira`
+   - `read:application-role:jira`
+   - `read:avatar:jira`
+   - `read:group:jira`
+   - `read:user:jira`
+   - `read:field:jira`
+   - `read:custom-field-contextual-configuration:jira`
+   - `read:field.option:jira`
+   - `read:issue-type-screen-scheme:jira`
+   - `read:screen-scheme:jira`
+   - `read:screen-tab:jira`
+   - `read:screenable-field:jira`
+   - `read:board-scope:jira-software`
+   - `read:board-scope.admin:jira-software`
+6. **Next** → xem lại danh sách → **Create**.
+7. Bấm **Copy to clipboard**. Đừng dán token vào chat, VS Code hay file ghi chú; dán thẳng vào bước 2.
+
+**Bước 2: đặt biến môi trường** (giống lần trước)
+
+1. Bấm Start, gõ `environment` → mở **Edit environment variables for your account**.
+2. Ở phần **User variables**, bấm **New...** → **Variable name** `JIRA_ADMIN_TOKEN`, **Variable value** dán token → **OK**.
+3. Bấm **New...** lần nữa → `JIRA_ADMIN_EMAIL`, giá trị là email bạn dùng đăng nhập Atlassian → **OK** → **OK**.
+
+Xong thì nhắn mình "xong". Mình sẽ đọc token từ biến môi trường (không in ra), gọi thử một request, rồi đọc cả ba workflow và liệt kê transition nào thiếu rule gì.
+
+Ghi chú về scope: nhiều API cấu hình của Jira chỉ có scope cổ điển `manage:jira-configuration`, mà scope này cho cả quyền ghi. Vì vậy mình dùng các scope chi tiết (granular) chỉ đọc thay thế. Khi một API cần bộ scope chi tiết, phải có đủ cả bộ; ví dụ API đọc workflow scheme của space cần 9 scope. Đó là lý do danh sách dài.
