@@ -158,5 +158,18 @@ Vậy API sửa workflow dùng được cho rule. Spec mục 2.10 ghi Cấp 1 ch
 | Tiêu chí 2: `docs/jira-setup.md` sinh từ ánh xạ, CI báo lỗi khi file cũ | Đạt từ T7; CI vẫn chạy `jira:checklist:check` |
 | Tiêu chí 3: `DEMO` dựng theo checklist, `jira:check` không báo lệch | Đạt (T8, T10) |
 | Tiêu chí 6: rule Restrict chặn `orchestratoragent` ở transition của `human` | Đạt phần Jira ẩn transition: ở `DEMO-2`, `orchestratoragent` chỉ thấy `Start`, không thấy `Cancel` (T8). Việc Jira từ chối khi agent gọi thẳng transition của bạn qua Rovo MCP được thử ở T15 |
-| Bạn xem board `DEMO` và `docs/jira-setup.md` | Chờ bạn |
+| Bạn xem board `DEMO` và `docs/jira-setup.md` | Bạn duyệt, qua checkpoint ngày 2026-10-28 |
+
+## T11: Dữ kiện từ Jira cho guard
+
+`lib/tracker/facts.mjs` đọc item (`GET /issue/<key>` với các field cần dùng), tìm bằng JQL (`GET /search/jql`, phân trang theo `nextPageToken`) và đọc comment (`GET /issue/<key>/comment`, khóa `comments`). Client vẫn chỉ gửi GET; token của service account đi dạng Bearer.
+
+| Guard | Cách tính |
+|---|---|
+| `dor-met` | Story hoặc Task có mô tả, nằm dưới Epic ở status `In Progress` (plan đã duyệt) |
+| `wip-available` | JQL `project = "<KEY>" AND "Agent" = "<giá trị của vai trò>" AND status in ("In Progress")`; bỏ Story có Sub-task, vì Sub-task của nó đã được đếm; còn dưới giới hạn `dev-agent` (1) thì đạt |
+| `subtasks-done` | Mọi Sub-task ở nhóm status Done, hoặc không có Sub-task |
+| `qa-report-failed`, `qa-report-passed` | Comment mới nhất là báo cáo QA (có dòng `QA report`), dòng đầu tiên dưới tiêu đề `Result` là `FAIL` hoặc `PASS`. Đọc được cả ADF lẫn markdown thô |
+
+Chạy thử với Jira thật (2026-10-28, token của agent, chỉ đọc): đọc `DEMO-2` đúng; JQL theo trường Agent chạy được; `fe-dev` có `wip-available`.
 
