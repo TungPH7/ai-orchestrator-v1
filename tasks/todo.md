@@ -271,17 +271,17 @@ Claude làm: tạo repo private `TungPH7/ao-pilot` với nhánh `main` và `deve
 
 **Cỡ:** M
 
-### [ ] T14: Hook đếm rework và hook chặn đường vòng
+### [x] T14: Hook đếm rework và hook chặn đường vòng
 
 **Mô tả:** Hook PostToolUse sau `transitionJiraIssue`: đếm lại rework, nếu chạm giới hạn thì trả `decision: block`, yêu cầu agent gắn Flagged, label `needs-you` và comment lý do qua Rovo MCP, rồi dừng (plan, quyết định 2). Hook PreToolUse chặn lệnh Bash có chứa `atlassian`, chặn `mcp__atlassian__executeWrite` và `mcp__atlassian__executeDestructive` (spec mục 2.6), và chặn mọi tool Atlassian không thuộc server `atlassian` của dự án.
 
 **Tiêu chí chấp nhận:**
-- [ ] Transition `request-changes` lần thứ 3 thì hook trả yêu cầu gắn cờ; lần 1 và 2 thì không.
-- [ ] Lệnh Bash `curl https://api.atlassian.com/...` bị chặn; `executeWrite`, `executeDestructive` và tool `mcp__claude_ai_Atlassian__...` bị chặn; `executeRead` được cho qua.
-- [ ] Tool ghi của agent (`createJiraIssue`, `editJiraIssue`, `addOrEditJiraIssueComment`, `transitionJiraIssue`) bị chặn khi item không thuộc space của dự án. Gói Free không có permission scheme, nên token của agent ghi được vào mọi space trên site, kể cả space `SCRUM` có sẵn (phát hiện ở T1).
+- [x] Transition `request-changes` lần thứ 3 thì hook trả yêu cầu gắn cờ; lần 1 và 2 thì không.
+- [x] Lệnh Bash `curl https://api.atlassian.com/...` bị chặn; `executeWrite`, `executeDestructive` và tool `mcp__claude_ai_Atlassian__...` bị chặn; `executeRead` được cho qua.
+- [x] Tool ghi của agent (`createJiraIssue`, `editJiraIssue`, `addOrEditJiraIssueComment`, `transitionJiraIssue`) bị chặn khi item không thuộc space của dự án. Gói Free không có permission scheme, nên token của agent ghi được vào mọi space trên site, kể cả space `SCRUM` có sẵn (phát hiện ở T1).
 
 **Kiểm chứng:**
-- [ ] `npm test` xanh
+- [x] `npm test` xanh
 
 **Phụ thuộc:** T13
 

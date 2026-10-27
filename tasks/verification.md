@@ -215,3 +215,18 @@ Token: Jira dùng `ATLASSIAN_AGENT_TOKEN`. GitHub dùng `GITHUB_TOKEN` nếu có
 
 Chạy thử với Jira thật (2026-10-28, token của agent, thư mục dự án `ao-pilot`): `fe-dev` gọi `Start` trên `DEMO-2` bị chặn vì hợp đồng không có `Start` từ `Cancelled`; gọi `transitionId: 999` bị chặn vì id đó không có trên item.
 
+## T14: Hook đếm rework và hook chặn đường vòng
+
+**`block-atlassian`** (PreToolUse, matcher `Bash|mcp__.*`; logic ở `checkToolCall` trong `lib/tracker/guard.mjs`):
+
+- Lệnh Bash có chữ `atlassian` (không phân biệt hoa thường) bị chặn.
+- `mcp__atlassian__executeWrite` và `executeDestructive` bị chặn; `executeRead` và các tool đọc được cho qua.
+- Tool có chữ `atlassian` của server khác (ví dụ `mcp__claude_ai_Atlassian__...`) bị chặn.
+- Bốn tool ghi chỉ được chạm item của space dự án: `createJiraIssue` theo `projectKey`, ba tool còn lại theo key lấy từ `issueIdOrKey` (nhận cả URL của item). Id số bị chặn, vì không biết space. `cloudId` khác site của ánh xạ cũng bị chặn.
+- Key của space nằm ở biến `AO_JIRA_SPACE`, khai báo trong mục `env` của `kit/.claude/settings.json` (giá trị mẫu `<KEY>`, dự án thay bằng key của mình). Chưa đặt, hoặc còn `<KEY>`, thì mọi lệnh ghi bị chặn. Đây là quyết định mới trong T14: spec không có chỗ khai báo space của dự án; mục 2.6 của spec đã ghi thêm.
+- Không tìm thấy kit thì hook chỉ chặn những gì chạm tới Atlassian, để các tool khác vẫn chạy.
+
+**`jira-rework`** (PostToolUse sau `transitionJiraIssue`; logic ở `reworkDecision`): đọc item và lịch sử bằng token của agent. Nếu lần chuyển cuối là rework (`request-changes`, `qa-fail`) và số lần rework đã chạm giới hạn trong `policies.yaml` (3), mà item chưa có label `needs-you`, hook trả `decision: "block"` kèm yêu cầu agent gắn Flagged, label `needs-you` và comment lý do qua Rovo MCP, rồi dừng. Chỉ xét khi lần chuyển cuối là rework, nên sau khi bạn gỡ label, agent làm tiếp được mà không bị nhắc lại cho tới lần rework kế tiếp. Không đọc được lịch sử thì hook nhắc agent kiểm số rework trước khi làm tiếp.
+
+Chạy thử với Jira thật (2026-10-28): `jira-rework` trên `DEMO-2` không in gì, vì lần chuyển cuối là hủy, không phải rework.
+
