@@ -1,0 +1,347 @@
+{
+  "startAt": 0,
+  "maxResults": 50,
+  "total": 1,
+  "isLast": true,
+  "statuses": [
+    {
+      "id": "10004",
+      "statusReference": "10004",
+      "name": "New",
+      "statusCategory": "TODO"
+    },
+    {
+      "id": "10006",
+      "statusReference": "10006",
+      "name": "Specifying",
+      "statusCategory": "TODO"
+    },
+    {
+      "id": "10007",
+      "statusReference": "10007",
+      "name": "Planning",
+      "statusCategory": "TODO"
+    },
+    {
+      "id": "3",
+      "statusReference": "3",
+      "name": "In Progress",
+      "statusCategory": "IN_PROGRESS"
+    },
+    {
+      "id": "10012",
+      "statusReference": "10012",
+      "name": "Done",
+      "statusCategory": "DONE"
+    },
+    {
+      "id": "10013",
+      "statusReference": "10013",
+      "name": "Cancelled",
+      "statusCategory": "DONE"
+    }
+  ],
+  "values": [
+    {
+      "id": "b5960510-d51c-425d-bf45-6b46efd9fe6c",
+      "name": "AO epic",
+      "statuses": [
+        {
+          "statusReference": "10004"
+        },
+        {
+          "statusReference": "10006"
+        },
+        {
+          "statusReference": "10007"
+        },
+        {
+          "statusReference": "3"
+        },
+        {
+          "statusReference": "10012"
+        },
+        {
+          "statusReference": "10013"
+        }
+      ],
+      "transitions": [
+        {
+          "id": "1",
+          "type": "INITIAL",
+          "name": "Create",
+          "toStatusReference": "10004",
+          "links": [
+            {}
+          ]
+        },
+        {
+          "id": "2",
+          "type": "DIRECTED",
+          "name": "Start spec",
+          "toStatusReference": "10006",
+          "links": [
+            {
+              "fromStatusReference": "10004"
+            }
+          ],
+          "conditions": {
+            "operation": "ALL",
+            "conditions": [
+              {
+                "ruleKey": "system:restrict-issue-transition",
+                "parameters": {
+                  "accountIds": "",
+                  "roleIds": "",
+                  "groupIds": "8ac2cc1a-cdb1-4d2e-a854-501daec18aa4",
+                  "permissionKeys": "",
+                  "groupCustomFields": "",
+                  "allowUserCustomFields": "",
+                  "denyUserCustomFields": ""
+                }
+              }
+            ],
+            "conditionGroups": []
+          }
+        },
+        {
+          "id": "6",
+          "type": "DIRECTED",
+          "name": "Cancel",
+          "toStatusReference": "10013",
+          "links": [
+            {
+              "fromStatusReference": "10004"
+            }
+          ],
+          "conditions": {
+            "operation": "ALL",
+            "conditions": [
+              {
+                "ruleKey": "system:restrict-issue-transition",
+                "parameters": {
+                  "accountIds": "",
+                  "roleIds": "",
+                  "groupIds": "8ac2cc1a-cdb1-4d2e-a854-501daec18aa4",
+                  "permissionKeys": "",
+                  "groupCustomFields": "",
+                  "allowUserCustomFields": "",
+                  "denyUserCustomFields": ""
+                }
+              }
+            ],
+            "conditionGroups": []
+          },
+          "transitionScreen": {
+            "ruleKey": "system:transition-screen",
+            "parameters": {
+              "screenId": "3"
+            }
+          }
+        },
+        {
+          "id": "3",
+          "type": "DIRECTED",
+          "name": "Approve spec",
+          "toStatusReference": "10007",
+          "links": [
+            {
+              "fromStatusReference": "10006"
+            }
+          ],
+          "conditions": {
+            "operation": "ALL",
+            "conditions": [
+              {
+                "ruleKey": "system:restrict-issue-transition",
+                "parameters": {
+                  "accountIds": "",
+                  "roleIds": "",
+                  "groupIds": "8ac2cc1a-cdb1-4d2e-a854-501daec18aa4",
+                  "permissionKeys": "",
+                  "groupCustomFields": "",
+                  "allowUserCustomFields": "",
+                  "denyUserCustomFields": ""
+                }
+              }
+            ],
+            "conditionGroups": []
+          }
+        },
+        {
+          "id": "7",
+          "type": "DIRECTED",
+          "name": "Cancel",
+          "toStatusReference": "10013",
+          "links": [
+            {
+              "fromStatusReference": "10006"
+            }
+          ],
+          "conditions": {
+            "operation": "ALL",
+            "conditions": [
+              {
+                "ruleKey": "system:restrict-issue-transition",
+                "parameters": {
+                  "accountIds": "",
+                  "roleIds": "",
+                  "groupIds": "8ac2cc1a-cdb1-4d2e-a854-501daec18aa4",
+                  "permissionKeys": "",
+                  "groupCustomFields": "",
+                  "allowUserCustomFields": "",
+                  "denyUserCustomFields": ""
+                }
+              }
+            ],
+            "conditionGroups": []
+          },
+          "transitionScreen": {
+            "ruleKey": "system:transition-screen",
+            "parameters": {
+              "screenId": "3"
+            }
+          }
+        },
+        {
+          "id": "4",
+          "type": "DIRECTED",
+          "name": "Approve plan",
+          "toStatusReference": "3",
+          "links": [
+            {
+              "fromStatusReference": "10007"
+            }
+          ],
+          "conditions": {
+            "operation": "ALL",
+            "conditions": [
+              {
+                "ruleKey": "system:restrict-issue-transition",
+                "parameters": {
+                  "accountIds": "",
+                  "roleIds": "",
+                  "groupIds": "8ac2cc1a-cdb1-4d2e-a854-501daec18aa4",
+                  "permissionKeys": "",
+                  "groupCustomFields": "",
+                  "allowUserCustomFields": "",
+                  "denyUserCustomFields": ""
+                }
+              }
+            ],
+            "conditionGroups": []
+          }
+        },
+        {
+          "id": "8",
+          "type": "DIRECTED",
+          "name": "Cancel",
+          "toStatusReference": "10013",
+          "links": [
+            {
+              "fromStatusReference": "10007"
+            }
+          ],
+          "conditions": {
+            "operation": "ALL",
+            "conditions": [
+              {
+                "ruleKey": "system:restrict-issue-transition",
+                "parameters": {
+                  "accountIds": "",
+                  "roleIds": "",
+                  "groupIds": "8ac2cc1a-cdb1-4d2e-a854-501daec18aa4",
+                  "permissionKeys": "",
+                  "groupCustomFields": "",
+                  "allowUserCustomFields": "",
+                  "denyUserCustomFields": ""
+                }
+              }
+            ],
+            "conditionGroups": []
+          },
+          "transitionScreen": {
+            "ruleKey": "system:transition-screen",
+            "parameters": {
+              "screenId": "3"
+            }
+          }
+        },
+        {
+          "id": "5",
+          "type": "DIRECTED",
+          "name": "Complete",
+          "toStatusReference": "10012",
+          "links": [
+            {
+              "fromStatusReference": "3"
+            }
+          ],
+          "conditions": {
+            "operation": "ALL",
+            "conditions": [
+              {
+                "ruleKey": "system:restrict-issue-transition",
+                "parameters": {
+                  "accountIds": "",
+                  "roleIds": "",
+                  "groupIds": "8ac2cc1a-cdb1-4d2e-a854-501daec18aa4",
+                  "permissionKeys": "",
+                  "groupCustomFields": "",
+                  "allowUserCustomFields": "",
+                  "denyUserCustomFields": ""
+                }
+              }
+            ],
+            "conditionGroups": []
+          },
+          "actions": [
+            {
+              "ruleKey": "system:update-field",
+              "parameters": {
+                "field": "resolution",
+                "value": "10000",
+                "mode": "replace"
+              }
+            }
+          ]
+        },
+        {
+          "id": "9",
+          "type": "DIRECTED",
+          "name": "Cancel",
+          "toStatusReference": "10013",
+          "links": [
+            {
+              "fromStatusReference": "3"
+            }
+          ],
+          "conditions": {
+            "operation": "ALL",
+            "conditions": [
+              {
+                "ruleKey": "system:restrict-issue-transition",
+                "parameters": {
+                  "accountIds": "",
+                  "roleIds": "",
+                  "groupIds": "8ac2cc1a-cdb1-4d2e-a854-501daec18aa4",
+                  "permissionKeys": "",
+                  "groupCustomFields": "",
+                  "allowUserCustomFields": "",
+                  "denyUserCustomFields": ""
+                }
+              }
+            ],
+            "conditionGroups": []
+          },
+          "transitionScreen": {
+            "ruleKey": "system:transition-screen",
+            "parameters": {
+              "screenId": "3"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
