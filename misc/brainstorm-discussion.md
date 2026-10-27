@@ -11,7 +11,9 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 1 | `939a53bd-1857-4112-aae9-9942c061d12c` | 2026-10-26 01:56 → 11:08 | Đọc bối cảnh; chốt pilot, hạ tầng, Jira, GitFlow; môi trường cho từng giai đoạn; capability map; 9 giả định; dung lượng GitHub; state machine ticket |
 | 2 | `075cf034-63dd-4693-9a6a-39cdea6d9231` | 2026-10-26 11:21 → 13:16 | Duyệt capability map; bug chỉ lỗi ở Staging; chọn môi trường để làm/fix; có nên thêm Feature; Scrum; Story và Task khác gì nhau; có cần chạy Scrum không; chốt Kanban, viết SPEC-sdlc-contract |
 | 3 | `c097b31c-efdb-42a0-96ba-8a2b65140f99` | 2026-10-26 15:43 → 17:17 | Duyệt SPEC-sdlc-contract và 7 câu hỏi mở; Story có cả FE và BE có tách hai nhánh không; monorepo hay hai repo; release theo quyết định của bạn; lập plan cho sdlc-contract; commit đầu tiên, repo GitHub, đổi tên thư mục |
-| 4 | `46e4e518-ac41-4570-8bcc-37d5a88788c5` | 2026-10-26 21:35 → | Build và đóng module sdlc-contract (14 task, PR #1–#16, không ghi vào lịch sử vì là lượt code); chọn module kế tiếp tracker-integration; giả định và câu hỏi cho tracker-integration |
+| 4 | `46e4e518-ac41-4570-8bcc-37d5a88788c5` | 2026-10-26 21:35 → 2026-10-27 01:02 | Build và đóng module sdlc-contract (14 task, PR #1–#16, không ghi vào lịch sử vì là lượt code); chọn module kế tiếp tracker-integration; giả định và câu hỏi cho tracker-integration |
+| 5 | `76bd80d2-8083-45f7-93a7-d7ffab2e246c` | 2026-10-27 09:45 → 10:02 | Bạn trả lời 5 câu hỏi của tracker-integration; câu trả lời của Claude bị bộ lọc an toàn chặn, hai lần |
+| 6 | `02493cdb-1425-4498-9a25-6408d7717c70` | 2026-10-27 10:03 → | Gói Free và company-managed; cách tạo tài khoản bot cho agent; viết SPEC-tracker-integration |
 
 ---
 
@@ -1386,3 +1388,164 @@ Nguồn:
 - [Atlassian KB: custom environment names show "undefined environment"](https://support.atlassian.com/jira/kb/jira-github-integration-custom-environment-names-does-not-show-up-in-releases-panel-and-instead-show-undefined-environment/)
 - [Atlassian Community: New automation triggers across Jira Cloud, Bitbucket, GitLab & GitHub](https://community.atlassian.com/t5/Automation-articles/New-automation-triggers-across-Jira-Cloud-Bitbucket-GitLab-amp/ba-p/1337351)
 - [eesel.ai: A comprehensive Jira pricing guide for 2026](https://www.eesel.ai/blog/jira-pricing-guide) (nguồn bên thứ ba, cho con số ở giả định 6)
+
+---
+
+# Phiên 5 · Lượt 1 — 2026-10-27 khoảng 09:46
+
+**Bạn:**
+
+```markdown
+[Image #1] [Image #2] [Image #3]
+
+Làm tiếp session id: 46e4e518-ac41-4570-8bcc-37d5a88788c5
+
+1. Tôi được dùng thử gói Standard nhưng bạn cứ làm theo hướng tôi đang dùng Gói Free nhé
+2. OK với company-managed. Kiểm tra xem Free plan có dùng được company-managed không?
+3. Ok với đề xuất. Hướng dẫn tôi cách tạo tài khoản bot riêng cho agent
+4. Ok với đề xuất
+5. Ok với đề xuất
+```
+
+Ba ảnh đính kèm:
+
+- [Image #1](images/phien-5-luot-1-anh-1.png): trang Billing của Jira, gói Standard dùng thử 30 ngày, hết hạn ngày 22/11/2026.
+- [Image #2](images/phien-5-luot-1-anh-2.png): trang tổng quan thanh toán và đăng ký của tổ chức.
+- [Image #3](images/phien-5-luot-1-anh-3.png): màn hình chọn gói Jira: Free (tối đa 10 user, 100 automation mỗi tháng), Standard, Premium.
+
+**Claude:**
+
+_Không có câu trả lời. Claude đọc lại bối cảnh và tra tài liệu của Atlassian, nhưng câu trả lời bị bộ lọc an toàn dừng giữa chừng._
+
+---
+
+# Phiên 5 · Lượt 2 — 2026-10-27 khoảng 10:02
+
+Trước lượt này, bạn chạy `/model` và chọn lại Opus 5.5.
+
+**Bạn:**
+
+```markdown
+Tiếp tục
+```
+
+**Claude:**
+
+_Không có câu trả lời: lần này câu trả lời cũng bị bộ lọc an toàn dừng._
+
+---
+
+# Phiên 6 · Lượt 1 — 2026-10-27 10:03
+
+Trước lượt này, bạn chạy `/model` và chọn Opus 5.5.
+
+**Bạn:**
+
+```markdown
+Làm tiếp session id: 76bd80d2-8083-45f7-93a7-d7ffab2e246c
+```
+
+**Claude:**
+
+Đang đọc lại bối cảnh phiên trước (log brainstorm, Phiên 4 · Lượt 1) để nối tiếp đúng chỗ.
+
+Đã nắm bối cảnh: phiên trước bạn đã trả lời 5 câu hỏi cho module `tracker-integration`, nhưng câu trả lời của mình bị bộ lọc chặn giữa chừng. Mình kiểm lại các điểm về gói Free và tài khoản bot trên tài liệu chính thức, rồi viết spec.
+
+Đã có đủ dữ kiện về service account và Rovo MCP (vài tên tool khác với giả định cũ). Giờ mình đọc lại SPEC.md và hợp đồng để viết spec cho module.
+
+Đủ dữ kiện rồi. Mình lấy mốc thời gian cho lịch sử brainstorm và kiểm nhánh hiện tại trước khi viết spec.
+
+Mốc thời gian đã có. Giờ mình viết `SPEC-tracker-integration.md` theo các câu trả lời của bạn và dữ kiện vừa kiểm.
+
+Spec đã commit. Mình ghi lượt này vào lịch sử brainstorm, commit rồi push nhánh.
+
+Mình đã viết `SPEC-tracker-integration.md` theo 5 câu trả lời của bạn, và dừng ở đây để bạn duyệt trước khi lập plan. Trước hết là hai điểm bạn hỏi.
+
+## 1. Gói Free có dùng được company-managed không
+
+**Có.** [Inference] Trang của Atlassian chỉ liệt kê các giới hạn sau cho gói Free: phân quyền, role và issue security; audit log; email notification; app mở rộng Jira; advanced roadmaps. Loại space không nằm trong danh sách đó, và người tạo site trên gói Free là admin nên tạo được company-managed space.
+
+Cần lưu ý là gói Free **không có** permission scheme, project role và issue security. Nghĩa là mọi user có quyền Jira đều làm được mọi việc trong space, kể cả tài khoản bot. Vì vậy spec giữ quyền của agent bằng ba lớp: scope của API token, rule "Restrict who can move a work item" trên từng transition (theo group), và hook trong Claude Code. Tài liệu không ghi gói Free có rule Restrict hay không [Unverified], nên hook là lớp bắt buộc, còn rule Restrict là lớp thêm nếu gói Free có.
+
+Việc đang dùng thử kéo theo một hệ quả: tính năng chỉ có ở Standard mà dựng bây giờ sẽ bị khóa chỉ đọc khi site về Free (2026-11-22), và dự án sau dựng trên Free không làm lại được. Spec cấm dùng các tính năng này ngay từ bây giờ. Mình cũng đề xuất chuyển site về Free trước khi dựng Jira (câu hỏi 1 bên dưới), để kiểm thật trên đúng gói bạn sẽ dùng.
+
+Ảnh chụp màn hình của bạn cũng xác nhận giả định 6: gói Free có 100 lượt Automation mỗi tháng, Standard có 1.700. Module không dùng Jira Automation (bạn đã chọn GitHub Actions ở câu 4), nên giới hạn này không ảnh hưởng.
+
+## 2. Cách tạo tài khoản bot cho agent
+
+Atlassian có sẵn loại **service account** cho việc này: mỗi tổ chức được 5 cái miễn phí, không tính vào giới hạn 10 user, không có mật khẩu, và chỉ xác thực bằng API token. Spec đề xuất hai cái: `orchestratoragent` cho mọi agent trong Claude Code, và `orchestratorci` cho GitHub Actions (câu hỏi 2 bên dưới).
+
+**Bước 1: kiểm tổ chức có service account không (làm ngay được)**
+
+1. Mở [admin.atlassian.com](https://admin.atlassian.com), chọn tổ chức `phunghuutung12b4`.
+2. Vào **Thư mục** (Directory) → **Service accounts**.
+3. Thấy nút **Create a service account** là dùng được.
+
+Tài liệu không nói rõ gói Free có service account không [Unverified]. Bạn đang dùng thử, nên thấy menu này lúc này chưa chứng minh được gì cho gói Free; nếu bạn chuyển về Free trước rồi mới kiểm thì chắc chắn hơn. Không thấy menu thì bạn báo mình: phương án dự phòng là dùng tài khoản Atlassian thường với email riêng, mỗi tài khoản tốn 1 trong 10 chỗ user.
+
+**Bước 2: tạo tài khoản**
+
+1. Chọn **Create a service account**.
+2. **Name:** `orchestratoragent` (6–30 ký tự, chỉ gồm chữ và số). **Description:** `AI agents in Claude Code via Rovo MCP`. Atlassian tự sinh email cho tài khoản, và email này không đổi được sau khi tạo.
+3. **App role:** ở App chọn **Jira** (không chọn Jira Administration), ở Role chọn **User**. Các app khác để None.
+4. Chọn **Create**.
+5. Nếu bạn đồng ý dùng hai tài khoản, lặp lại với Name `orchestratorci`, Description `Automation role in GitHub Actions`.
+
+**Bước 3: tạo token (để tới task kết nối, mình sẽ nhắc)**
+
+Token chỉ hiện một lần và sống tối đa 365 ngày, nên tạo đúng lúc cần dùng. Các bước: chọn service account → **Create credentials** → **API token** → đặt tên và ngày hết hạn → lọc App là Jira rồi chọn scope → **Next** → **Create** → copy token.
+
+| Tài khoản | Scope |
+|---|---|
+| `orchestratoragent` | `read:jira:agent-interface`, `write:jira:agent-interface`, `search:jira:agent-interface`, `read:jira-work` |
+| `orchestratorci` | `read:jira-work`, `write:jira-work` |
+
+Đừng dán token vào chat. Bạn lưu nó vào trình quản lý mật khẩu; tới task kết nối, mình hướng dẫn bạn đặt nó vào biến môi trường của Windows.
+
+**Bước 4: bật API token cho Rovo MCP (cũng để tới task kết nối)**
+
+Service account không đăng nhập OAuth được, nên Claude Code nối Rovo MCP bằng header `Authorization: Bearer <token>`. Cách này chỉ chạy được khi admin tổ chức đã bật nó. [Unverified] Theo một trả lời trên Atlassian Community, công tắc nằm ở Atlassian Administration → Rovo → Rovo MCP server → Authentication.
+
+Các group `ao-humans`, `ao-agents`, `ao-automation` và rule Restrict nằm trong checklist dựng Jira mà module sẽ sinh ra, nên bạn chưa cần tạo bây giờ.
+
+## 3. Spec có gì
+
+| Mục | Nội dung chính |
+|---|---|
+| 2.1–2.2 | Gói Free dùng được gì; ba danh tính (bạn, agent, CI); scope và hạn token; phương án dự phòng |
+| 2.3 | Ánh xạ hợp đồng sang Jira trong `tracker/jira.yaml`: status, transition, group theo `actors`, field, board, WIP |
+| 2.4 | Hai thay đổi hợp đồng cần bạn duyệt |
+| 2.5 | Quy ước mã Jira: nhánh `feature/DEMO-12-...`, `bugfix/...`, `hotfix/...`; commit `type(scope): subject (DEMO-12)` |
+| 2.6 | `.mcp.json` lấy token từ biến môi trường; hook `jira-guard` kiểm vai trò và guard trước mỗi lần agent chuyển trạng thái |
+| 2.7–2.8 | `jira-sync` trên GitHub Actions đối soát item theo sự kiện PR, CI, deploy; bảng nguồn dữ kiện cho từng guard |
+| 2.9 | `.jira/config.yml` cho panel Deployments, trả lời câu hỏi mở thứ hai của `SPEC.md` |
+| 2.10 | Checklist dựng tay sinh từ hợp đồng; `jira:check` chỉ đọc và báo chỗ lệch |
+
+Ba điểm mình sửa so với Phiên 4:
+
+- Tool liệt kê transition của Rovo MCP tên là `listJiraIssueTransitions`, không phải `getTransitionsForJiraIssue`.
+- Token dùng cho Rovo MCP không gắn với site nào, nên agent phải truyền cloud id. Mình đã lấy cloud id của site và ghi vào spec.
+- Rework count được đếm từ lịch sử chuyển trạng thái, không lưu thành trường số.
+
+Spec cũng nêu một rủi ro cho `quality-gates`: GitHub không cho tác giả PR approve PR của chính mình. Nếu agent mở PR bằng tài khoản `TungPH7` thì bạn không approve được, và guard `merge-approved` không bao giờ thỏa. Agent cần mở PR bằng một danh tính khác, như GitHub App hoặc tài khoản máy; việc này chốt ở `quality-gates`.
+
+## 4. Câu hỏi cần bạn quyết (mục 10 của spec)
+
+1. **Chuyển site về Free ngay** trước khi dựng Jira (mình đề xuất), hay giữ bản dùng thử tới 2026-11-22? Giữ dùng thử thì phần kiểm thật trên gói Free phải đợi tới 2026-11-22.
+2. **Hai service account** (mình đề xuất), hay một tài khoản chung cho agent và CI?
+3. **Nơi kiểm thật:** dùng space `DEMO` của dự án pilot, cùng một repo private mới `TungPH7/ao-pilot` làm sandbox, sau này thành repo của Pilot 1. Bạn đồng ý không?
+4. **Hai thay đổi hợp đồng** ở mục 2.4: thêm trường Agent, và cách đếm rework.
+
+Spec đã được commit trên nhánh `task/spec-tracker-integration` và push lên GitHub. Lượt này cũng đã được ghi vào lịch sử brainstorm, kèm 3 ảnh chụp màn hình của bạn ở `misc/images/`. Bạn duyệt spec (hoặc chỉ chỗ chưa đúng) và trả lời 4 câu trên, rồi mình lập plan.
+
+Nguồn:
+
+- [Atlassian: Understand service accounts](https://support.atlassian.com/user-management/docs/understand-service-accounts/)
+- [Atlassian KB: Configuring Jira connector credentials using a Jira Cloud API service account](https://support.atlassian.com/jira-align/kb/configuring-jira-connector-credentials-using-jira-cloud-api-service-account/)
+- [Atlassian Rovo MCP Server: Configuring authentication via API token](https://support.atlassian.com/atlassian-rovo-mcp-server/docs/configuring-authentication-via-api-token/)
+- [Atlassian Rovo MCP Server: Supported tools](https://support.atlassian.com/atlassian-rovo-mcp-server/docs/supported-tools/)
+- [Atlassian: Permissions and issue-level security in Free plans](https://support.atlassian.com/jira-cloud-administration/docs/permissions-and-issue-level-security-in-free-plans/)
+- [Atlassian: What is the Free Jira Cloud plan?](https://support.atlassian.com/jira-cloud-administration/docs/explore-jira-cloud-plans/)
+- [Atlassian: Restrict workflows based on user groups](https://support.atlassian.com/jira-cloud-administration/docs/restrict-workflows-based-on-user-groups/)
+- [Atlassian Community: Unable to enable Atlassian Rovo MCP Server API Token](https://community.atlassian.com/forums/Jira-questions/Unable-to-enable-Atlassian-Rovo-MCP-Server-API-Token/qaq-p/3263746)
+- [Atlassian Community: JIRA Admin Role](https://community.atlassian.com/t5/Jira-Software-questions/JIRA-Admin-Role/qaq-p/1907574)
