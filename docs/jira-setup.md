@@ -8,11 +8,16 @@ Tên menu của Jira thay đổi theo thời gian: nếu không thấy đúng t�
 
 ## 1. Group và service account
 
-Group nằm ở admin.atlassian.com → Directory → Groups. Rule Restrict ở mục 4 cho phép transition theo group.
+Tạo group ở admin.atlassian.com → Directory → Groups → Create group. Rule Restrict ở mục 4 cho phép transition theo group.
 
-- [ ] Group `ao-humans`: thêm tài khoản admin của bạn (`site-admin`), vai trò `human`
-- [ ] Group `ao-agents`: thêm service account `orchestratoragent`, vai trò `pm`, `ba`, `ux`, `sa`, `fe-dev`, `be-dev`, `reviewer`, `security`, `qa`, `devops`
-- [ ] Group `ao-automation`: thêm service account `orchestratorci`, vai trò `automation`
+Hai cách thêm thành viên. Tài khoản thường: mở group → Add users. Service account: thêm từ trang của chính nó, ở Directory → Service accounts → chọn service account → ••• → Add to group.
+
+- [ ] Tạo group `ao-humans` cho danh tính `human`
+- [ ] Tạo group `ao-agents` cho danh tính `agents`
+- [ ] Tạo group `ao-automation` cho danh tính `automation`
+- [ ] Group `ao-humans`: thêm tài khoản admin của bạn (`site-admin`) bằng Add users, vai trò `human`
+- [ ] Group `ao-agents`: thêm service account `orchestratoragent` bằng Add to group, vai trò `pm`, `ba`, `ux`, `sa`, `fe-dev`, `be-dev`, `reviewer`, `security`, `qa`, `devops`
+- [ ] Group `ao-automation`: thêm service account `orchestratorci` bằng Add to group, vai trò `automation`
 - [ ] Token của `orchestratoragent` hết hạn 2027-10-27, nằm trong biến môi trường `ATLASSIAN_AGENT_TOKEN`, không nằm trong file nào
 - [ ] Token của `orchestratorci` hết hạn 2027-10-27, nằm trong biến môi trường `JIRA_CI_TOKEN`, không nằm trong file nào
 
