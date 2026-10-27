@@ -1549,3 +1549,56 @@ Nguồn:
 - [Atlassian: Restrict workflows based on user groups](https://support.atlassian.com/jira-cloud-administration/docs/restrict-workflows-based-on-user-groups/)
 - [Atlassian Community: Unable to enable Atlassian Rovo MCP Server API Token](https://community.atlassian.com/forums/Jira-questions/Unable-to-enable-Atlassian-Rovo-MCP-Server-API-Token/qaq-p/3263746)
 - [Atlassian Community: JIRA Admin Role](https://community.atlassian.com/t5/Jira-Software-questions/JIRA-Admin-Role/qaq-p/1907574)
+
+---
+
+# Phiên 6 · Lượt 2 — 2026-10-27 11:23
+
+**Bạn:**
+
+```markdown
+Tôi đang tắc ở lọc App là Jira rồi chọn scope. Làm sao để chọn đúng scope như bạn nói [Image #1]
+```
+
+Ảnh đính kèm:
+
+- [Image #1](images/phien-6-luot-2-anh-1.png): màn hình **Select token scopes** (bước "Chọn phạm vi") khi tạo token cho service account, đang lọc App: Jira, Scope type: Granular, Scope actions: Read; hiện 163 trong 526 scope, trang 61–70.
+
+**Claude:**
+
+Bạn đang lọc **Scope actions: Read** và **Scope type: Granular**, nên danh sách chỉ còn các scope đọc dạng chi tiết như `read:issue-meta:jira`. Scope cần cho agent thuộc hai nhóm khác: nhóm `agent-interface` dành cho Rovo MCP, và `read:jira-work` thuộc loại classic. Với bộ lọc hiện tại thì cả hai đều không hiện ra. Cách nhanh nhất là bỏ hết bộ lọc rồi tìm theo tên scope.
+
+## Token cho `orchestratoragent` (4 scope)
+
+1. Bấm **Đặt lại** ở cuối hàng bộ lọc.
+2. Gõ `agent-interface` vào ô **Search by scope name**, rồi tick đúng 3 dòng có chữ `jira`:
+   - `read:jira:agent-interface`
+   - `write:jira:agent-interface`
+   - `search:jira:agent-interface`
+
+   Nếu danh sách có thêm các scope `agent-interface` của Confluence hay Rovo thì bạn bỏ qua.
+3. Xóa ô tìm kiếm, gõ `jira-work`, rồi tick `read:jira-work`. Đừng tick `write:jira-work`: agent chỉ ghi vào Jira qua Rovo MCP.
+4. Bấm **Tiếp theo**. Ở bước **Tạo mã token**, kiểm tra danh sách có đủ 4 scope trên rồi mới tạo. Nếu thiếu (ví dụ dấu tick bị mất khi bạn đổi từ khóa tìm kiếm), bấm **Quay lại** để chọn lại.
+
+[Unverified] Mình không tìm được tài liệu nào mô tả màn hình này, nên không chắc 3 scope `agent-interface` nằm dưới app nào. Có thể là Jira, cũng có thể là một app riêng cho MCP: link tạo token mẫu trong hướng dẫn của Atlassian dùng `appId=mcp-v2`. Sau khi bấm **Đặt lại**, ô tìm kiếm sẽ tìm trên mọi app. Nếu gõ `agent-interface` mà không có kết quả nào, bạn dừng ở đó và gửi mình ảnh chụp màn hình, vì có thể service account không được cấp các scope này.
+
+## Token cho `orchestratorci` (2 scope)
+
+Cũng bấm **Đặt lại**, gõ `jira-work`, rồi tick `read:jira-work` và `write:jira-work`. Token này chỉ dùng cho `jira-sync` trên GitHub Actions, nên bạn có thể đợi tới task đó mới tạo, để không mất bớt thời hạn 365 ngày.
+
+## Sau khi bấm Create
+
+- Copy token ngay, vì Atlassian chỉ hiện nó một lần. Lưu vào trình quản lý mật khẩu, kèm tên service account và ngày hết hạn.
+- Đừng dán token vào chat hay vào file nào trong repo. Tới task kết nối, mình hướng dẫn bạn đặt nó vào biến môi trường `ATLASSIAN_AGENT_TOKEN` của Windows.
+- Bạn chỉ cần báo mình ngày hết hạn (không phải token). `tracker/jira.yaml` sẽ lưu ngày này để `jira:check` cảnh báo khi còn dưới 14 ngày.
+
+Thêm một điểm mình phát hiện khi tra lại tài liệu: hai trang của Atlassian nói khác nhau về cách xác thực. Hướng dẫn cho developer viết rằng API key của service account dùng header `Authorization: Bearer`, và Rovo MCP dùng các scope `agent-interface`. Một bài KB của bộ phận hỗ trợ lại viết rằng Rovo MCP chỉ nhận Basic auth (email và token), với scope `read:jira-work`. Spec đang theo hướng dẫn cho developer, vì trang đó nói riêng về API key của service account. Token có đủ 4 scope ở trên thì khớp với cả hai trang về mặt scope. Task kết nối sẽ kiểm bằng `curl -I https://mcp.atlassian.com/v2/mcp`: trả về `200 OK` là chạy. Nếu Bearer bị từ chối, phương án dự phòng là Basic auth với email mà Atlassian tự sinh cho service account.
+
+Lượt này đã được ghi vào lịch sử brainstorm, kèm ảnh chụp màn hình của bạn ở `misc/images/`. 4 câu hỏi ở mục 10 của spec vẫn chờ bạn trả lời.
+
+Nguồn:
+
+- [Atlassian Developer: Configuring authentication via API token (Rovo MCP)](https://developer.atlassian.com/cloud/rovo-mcp/guides/configuring-authentication-via-api-token/)
+- [Atlassian Rovo MCP Server: Supported tools](https://support.atlassian.com/atlassian-rovo-mcp-server/docs/supported-tools/)
+- [Atlassian KB: Rovo MCP Server only returns Teamwork Graph tools when using API Token](https://support.atlassian.com/rovo/kb/rovo-mcp-server-only-returns-teamwork-graph-tools-when-using-api-token/)
+- [Atlassian: Manage API tokens for service accounts](https://support.atlassian.com/user-management/docs/manage-api-tokens-for-service-accounts/)
