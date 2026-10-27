@@ -2672,3 +2672,37 @@ Sau khi bạn sửa xong, ta làm Story thử thứ hai:
 Mình đã sửa mục 5 của checklist theo đúng các bước trên, và ghi nguyên nhân vào `tasks/verification.md`.
 
 Nguồn: [Map a screen to a workflow transition](https://support.atlassian.com/jira-cloud-administration/docs/map-a-screen-to-a-workflow-transition/)
+
+---
+
+# Phiên 6 · Lượt 30 — 2026-10-28 khoảng 01:05
+
+**Bạn:**
+
+```markdown
+[Image #27]
+```
+
+Ảnh đính kèm:
+
+- [Image #27](images/phien-6-luot-30-anh-1.png): trình sửa workflow `AO standard` (Used in 1 space), đang chọn transition **Cancel**: From statuses `Ready`, To status `Cancelled`. Khung **Rules** có bốn nhóm, nhóm nào cũng chỉ có nút thêm rule: **Add restrict transition rule**, **Add request input rule**, **Add validate details rule**, **Add perform actions rule**. Nút **Update workflow** đang mờ. Ô **Show transition labels** chưa tick.
+
+**Claude:**
+
+Ảnh cho thấy transition `Cancel` (`Ready` → `Cancelled`) **chưa có rule nào, kể cả rule Restrict**. Cả bốn nhóm chỉ có nút **Add … rule**; nhóm nào đã có rule thì rule đó hiện ngay trong nhóm. Nghĩa là hiện giờ agent cũng hủy được item ở `Ready`. Vậy transition này thiếu hai thứ: rule Restrict và rule hỏi Resolution.
+
+Với transition đang chọn, bạn thêm hai rule:
+
+1. Nhóm **Restrict transition** → **Add restrict transition rule** → **Restrict who can move a work item** → **Select** → ô **Restrict to** chọn **Groups** → chọn `ao-humans` → **Add**.
+2. Nhóm **Request input** → **Add request input rule** → **Show a screen** → ô **Select a screen** chọn `Resolve Issue Screen` → **Add**.
+3. Chụp khung **Rules** gửi mình kiểm.
+4. Bấm **Update workflow** ở góc trên bên phải. Nút này chỉ sáng lên khi đã có thay đổi.
+
+Transition này thiếu cả Restrict, nên có thể các transition khác cũng thiếu. Ba workflow có tổng cộng 24 transition: `AO standard` 14, `AO epic` 8, `AO sub-task` 2. Có hai cách kiểm:
+
+- **Tự dò:** tick ô **Show transition labels** ở góc trên sơ đồ để thấy tên mọi transition, rồi bấm lần lượt từng cái. Nhóm **Restrict transition** phải có rule; các transition `Cancel` còn phải có rule **Show a screen**.
+- **Mình đọc giúp (mình đề xuất cách này):** làm sớm bước đầu của T9. Bạn tạo một API token chỉ đọc cho tài khoản của bạn, rồi mình dùng nó đọc cả ba workflow qua REST và liệt kê chính xác transition nào thiếu rule gì. T9 vốn cần token này, nên bạn không tốn thêm việc.
+
+Bạn chọn cách nào? Nếu chọn cách thứ hai, mình sẽ hướng dẫn tạo token từng bước, kèm danh sách scope chỉ đọc.
+
+Mình đã ghi chỗ thiếu này vào `tasks/verification.md`, và đổi mục 5 sang "đang sửa". Mục 5 của checklist cũng có thêm bước **Kiểm trước khi lưu**: bật **Show transition labels**, rồi xem khung **Rules** của từng transition.
