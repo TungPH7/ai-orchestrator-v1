@@ -47,7 +47,7 @@
 | 2. Rovo MCP | Xong ở T1 |
 | 3. Resolution | Xong (2026-10-27). Site có hai resolution `Done` ("GreenHopper Managed Resolution", do Jira Software tạo); giữ cả hai |
 | 4. Status | Xong (2026-10-27): 10 status mới và `In Progress` có sẵn, đúng tên và Category |
-| 5. Workflow | Xong (bạn báo 2026-10-27): `AO standard`, `AO epic`, `AO sub-task` |
+| 5. Workflow | Đang sửa (2026-10-28): bạn báo xong ngày 2026-10-27, nhưng `Cancel` từ `Ready` của `AO standard` thiếu rule Restrict và rule hỏi Resolution |
 | 6. Work type | Xong (2026-10-27): đã tạo `Task`, `Bug`, `Sub-task`; `Epic`, `Story` có sẵn |
 | 7. Workflow scheme | Xong (bạn báo 2026-10-27) |
 | 8. Trường | Xong (bạn báo 2026-10-27). `Found in` đúng ba option; giữ Global context |
@@ -79,3 +79,4 @@
 | `Refine` (`New` → `Ready`) do bạn chuyển | Đạt: lịch sử ghi `New` → `Ready` lúc 00:54, người chuyển là bạn |
 | Ở `Ready`, bạn không thấy `Start` | Chưa kiểm: chưa có ảnh danh sách transition |
 | `Cancel` (`Ready` → `Cancelled`) hỏi Resolution | **Không đạt:** lịch sử ghi `Ready` → `Cancelled` lúc 00:56, Resolution vẫn trống, và bạn không thấy hộp hỏi Resolution nào. Nguyên nhân: transition chưa có rule **Request input → Show a screen**. Checklist mục 5 đã thêm các bước này |
+| Rule của transition `Cancel` (`Ready` → `Cancelled`) trong `AO standard` | **Thiếu cả rule Restrict:** khung **Rules** của transition này không có rule nào, cả bốn nhóm chỉ có nút **Add … rule** (ảnh `misc/images/phien-6-luot-30-anh-1.png`). Vậy agent cũng hủy được item ở `Ready`. Các transition khác chưa kiểm |
