@@ -13,7 +13,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 3 | `c097b31c-efdb-42a0-96ba-8a2b65140f99` | 2026-10-26 15:43 → 17:17 | Duyệt SPEC-sdlc-contract và 7 câu hỏi mở; Story có cả FE và BE có tách hai nhánh không; monorepo hay hai repo; release theo quyết định của bạn; lập plan cho sdlc-contract; commit đầu tiên, repo GitHub, đổi tên thư mục |
 | 4 | `46e4e518-ac41-4570-8bcc-37d5a88788c5` | 2026-10-26 21:35 → 2026-10-27 01:02 | Build và đóng module sdlc-contract (14 task, PR #1–#16, không ghi vào lịch sử vì là lượt code); chọn module kế tiếp tracker-integration; giả định và câu hỏi cho tracker-integration |
 | 5 | `76bd80d2-8083-45f7-93a7-d7ffab2e246c` | 2026-10-27 09:45 → 10:02 | Bạn trả lời 5 câu hỏi của tracker-integration; câu trả lời của Claude bị bộ lọc an toàn chặn, hai lần |
-| 6 | `02493cdb-1425-4498-9a25-6408d7717c70` | 2026-10-27 10:03 → | Gói Free và company-managed; cách tạo tài khoản bot cho agent; viết SPEC-tracker-integration; cách chọn scope khi tạo token; duyệt spec, lập plan tracker-integration; bắt đầu T1; T1–T7, Checkpoint 1, bắt đầu T8 |
+| 6 | `02493cdb-1425-4498-9a25-6408d7717c70` | 2026-10-27 10:03 → | Gói Free và company-managed; cách tạo tài khoản bot cho agent; viết SPEC-tracker-integration; cách chọn scope khi tạo token; duyệt spec, lập plan tracker-integration; bắt đầu T1; T1–T10, Checkpoint 1; dựng `DEMO` theo checklist, sửa checklist theo giao diện thật, thêm rule workflow qua REST; dừng ở Checkpoint 2 |
 
 ---
 
@@ -3007,3 +3007,40 @@ xong
 2. **Edit environment variables for your account** → chọn `JIRA_ADMIN_WRITE_TOKEN` → **Delete** → **OK**.
 
 Tiếp theo là T9: `jira:check` phần 1, kiểm status, transition và scheme. Phần của bạn trong T9 là token chỉ đọc, và bạn đã tạo xong rồi. Mình bắt đầu T9 luôn.
+
+**Claude (tiếp, cùng lượt, sau khi làm T9 và T10):**
+
+T9 và T10 xong, mình dừng ở **Checkpoint 2** để bạn xem.
+
+**T9**, [PR #27](https://github.com/TungPH7/ai-orchestrator-v1/pull/27): `npm run jira:check -- --space <KEY>`
+
+- Client chỉ gửi GET; gặp lệnh ghi thì từ chối trước khi gửi, có test kiểm việc này. Mọi request đều gửi kèm `Accept-Language: en-US`.
+- Lệnh kiểm status, transition (thiếu, thừa, sai đường đi), status đầu, workflow scheme và work type của space.
+
+**T10**, [PR #28](https://github.com/TungPH7/ai-orchestrator-v1/pull/28): kiểm nốt phần còn lại.
+
+- Rule của từng transition: Restrict đúng group, `Cancel` có màn hình hỏi Resolution, transition vào Done có đặt Resolution. Đây đúng là những chỗ đã thiếu lúc dựng tay.
+- Group và service account trong group, resolution, field và option, board (filter, cột, status trong cột, giới hạn WIP).
+- Những gì API không cho đọc, lệnh in thành dòng `Check by hand`: Kanban backlog, cài đặt token của Rovo MCP, app GitHub, field trên screen.
+- Lệnh cảnh báo khi token sắp hết hạn (dưới 14 ngày).
+- Checklist và `jira:check` giờ dùng chung một module để tính "Jira phải có gì", nên hai bên không thể hiểu ánh xạ khác nhau.
+
+Chạy thật trên `DEMO`: **không có lệch nào**. Bộ test có 260 test, tất cả xanh.
+
+**Checkpoint 2:**
+
+| Mục | Trạng thái |
+|---|---|
+| Tiêu chí 2: checklist sinh từ ánh xạ, CI báo khi cũ | Đạt |
+| Tiêu chí 3: `DEMO` dựng xong, `jira:check` không lệch | Đạt |
+| Tiêu chí 6: rule Restrict chặn agent ở transition của bạn | Đạt phần Jira ẩn transition (`DEMO-2`). Phần agent gọi thẳng qua Rovo MCP sẽ thử ở T15 |
+| Bạn xem board `DEMO` và `docs/jira-setup.md` | Chờ bạn |
+
+Bạn xem hai thứ này:
+
+1. **Board `DEMO`**: các cột `Ready`, `In Progress`, `In Review` (tối đa 2), `QA`, `Done`; `DEMO-1` và `DEMO-2` ở tab **List**.
+2. **`docs/jira-setup.md`** trên `main`: <https://github.com/TungPH7/ai-orchestrator-v1/blob/main/docs/jira-setup.md>. Đây là bản đã sửa theo mọi chỗ ta gặp khi dựng.
+
+Có điều gì muốn đổi thì bạn nói; nếu ổn thì nhắn "qua checkpoint 2", mình sang Giai đoạn 3 (T11–T15: dữ kiện cho guard, hook `jira-guard`, kiểm thật agent).
+
+**Nhắc lần nữa:** token `ao-workflow-edit` **vẫn còn hiệu lực**, mình vừa thử lúc 01:56 và Jira vẫn trả 200. Bạn thu hồi nó: trang <https://id.atlassian.com/manage-profile/security/api-tokens> → `ao-workflow-edit` → **Revoke**. Sau đó xóa biến `JIRA_ADMIN_WRITE_TOKEN` trong **Edit environment variables for your account**.
