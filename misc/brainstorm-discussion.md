@@ -2388,3 +2388,48 @@ Bảng trên cũng sửa lại một điều mình nói ở lượt trước. Fi
 Mình đã sửa mục 9 của checklist: bỏ dòng "mọi screen có mọi field", thay bằng các bước trên và mỗi field một dòng ghi screen của work type nào. Mục 8 cũng được sửa theo cho khớp. Tiến độ đã ghi vào `tasks/verification.md`.
 
 Một câu hỏi: trong checklist, bước **Workflow scheme** của mục 9 đứng trước bước Màn hình. Bạn đã vào **Workflows** → **Switch scheme** để chuyển `DEMO` sang `AO workflow scheme` chưa?
+
+---
+
+# Phiên 6 · Lượt 23 — 2026-10-27 khoảng 18:45
+
+**Bạn:**
+
+```markdown
+đã làm xong từ mục 1 tới 9, đang làm mục 10. Board
+
+[Image #18]
+
+"Details → sửa filter query thành dòng bên dưới (thay <KEY> bằng key của space) → lưu." Tôi không thấy nút lưu??
+```
+
+Trong lúc Claude đang làm, bạn gửi thêm một ảnh: [Image #19].
+
+Ảnh đính kèm:
+
+- [Image #18](images/phien-6-luot-23-anh-1.png): trang filter **Filter for DEMO board** (`/issues/?filter=10001`), chế độ JQL, ô JQL đã gõ `project = DEMO AND issuetype != Epic ORDER BY Rank ASC`; bên phải có **Clear filters**, **Copy filter**; kết quả "There are no work items here yet". Không thấy nút lưu.
+- [Image #19](images/phien-6-luot-23-anh-2.png): trang **Board settings → Details** của `DEMO board`: phần **Board filter**, Select filter "Filter for DEMO board", Filter query `project = "DEMO" ORDER BY Rank ASC`, link **Edit filter query**; **Board sub-filter** `fixVersion in unreleasedVersions() OR fixVersion is EMPTY`; Completed work items 2 weeks.
+
+**Claude:**
+
+Câu JQL mới của bạn chưa được lưu. Mình đã đọc filter qua REST (chỉ đọc): Jira vẫn giữ câu cũ `project = "DEMO" ORDER BY Rank ASC`. Ảnh thứ hai cũng cho thấy đúng câu cũ này ở ô **Filter query**.
+
+Nút lưu chưa hiện vì Jira chỉ coi filter là đã đổi sau khi bạn chạy câu JQL mới. Gõ vào ô JQL thôi thì chưa tính. Một yêu cầu cải tiến trên trang Jira của Atlassian cũng mô tả chuyện này: nếu chưa chạy câu mới mà đã lưu, Jira lưu lại câu cũ.
+
+Bạn làm như sau, ở tab filter (ảnh thứ nhất):
+
+1. Bấm vào ô JQL, kiểm lại câu là `project = DEMO AND issuetype != Epic ORDER BY Rank ASC`.
+2. Bấm **Enter**, hoặc biểu tượng kính lúp ở cuối ô JQL, để chạy câu.
+3. Sau khi chạy, nút lưu sẽ hiện cạnh tên filter **Filter for DEMO board** hoặc ở góc trên bên phải. Tên nút thường là **Save filter** hoặc **Save changes**. Bấm nút đó.
+4. Quay lại tab **Board settings**, tải lại trang (F5). Ô **Filter query** phải hiện câu mới.
+
+Nếu đã chạy câu mà vẫn không thấy nút lưu, bạn thử bấm **•••** ở góc trên bên phải trang filter. Vẫn không có thì chụp màn hình gửi mình. Bạn lưu xong thì báo mình, mình sẽ đọc lại filter qua REST để chắc chắn.
+
+Hai thứ khác trong ảnh thứ hai thì để nguyên:
+
+- **Board sub-filter** `fixVersion in unreleasedVersions() OR fixVersion is EMPTY`: đây là mặc định của board Kanban. Nó ẩn các item thuộc bản đã phát hành, nên board không đầy dần theo thời gian.
+- **Completed work items: 2 weeks**: item Done quá 2 tuần sẽ rời board.
+
+Mình đã ghi tiến độ vào `tasks/verification.md`: mục 1 đến 9 xong theo bạn báo, mục 10 đang làm và filter chưa lưu. Mục 10 của checklist cũng được viết lại theo đúng các bước trên: **Edit filter query** → trang filter → chạy câu → lưu → kiểm lại trong Board settings.
+
+Nguồn: [Edit a board filter on a company-managed board](https://support.atlassian.com/jira-software-cloud/docs/edit-a-board-filter-on-a-company-managed-board/), [JRACLOUD-95140: Improve JQL Filter Saving Process in Jira Cloud](https://jira.atlassian.com/browse/JRACLOUD-95140)
