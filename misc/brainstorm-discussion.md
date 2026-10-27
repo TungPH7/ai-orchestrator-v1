@@ -1908,3 +1908,17 @@ Các lựa chọn spec chưa nói rõ, mình đã chọn trong `tracker/jira.yam
 - **Label của `flag-needs-you`:** `needs-you`.
 
 Tên ổn thì bạn nhắn "qua checkpoint 1"; muốn đổi tên nào thì chỉ tên đó. Sau đó mình làm T7 (sinh checklist dựng Jira), rồi tới T8 là phần bạn dựng space `DEMO`.
+
+---
+
+# Phiên 6 · Lượt 10 — 2026-10-27 khoảng 13:50
+
+**Bạn:**
+
+```markdown
+trả lời nhanh, AO nghĩa là gì nhỉ?
+```
+
+**Claude:**
+
+AO là viết tắt của **ai-orchestrator**, tên của kit này. Tiền tố đó giúp nhận ra ngay workflow, scheme và group (`ao-humans`, `ao-agents`, `ao-automation`) nào do kit tạo, để không lẫn với cấu hình mặc định của Jira hay của space `SCRUM`. Nếu bạn muốn tên khác, ví dụ `Orchestrator standard`, thì đổi ngay bây giờ vẫn dễ.
