@@ -266,7 +266,7 @@ Template Kanban đã tạo sẵn một board cho space; mục này sửa board �
 **Cột:** Board settings → **Columns** (nếu menu thu gọn, bấm **Layout** để mở thêm).
 
 1. Sửa danh sách cột cho đúng tên và thứ tự bên dưới: đổi tên cột có sẵn, thêm cột bằng nút **+** bên phải các cột, xóa cột thừa.
-2. Kéo status `New` vào ô **Kanban backlog** (đây là cột `Backlog`).
+2. Kéo status `New` vào ô **Kanban backlog** (đây là cột `Backlog`). Item ở đây không hiện trên board; xem chúng ở tab **List** của space.
 3. Kéo từng status còn lại vào đúng cột ghi bên dưới. Status không dùng để lại ở ô **Unmapped statuses**.
 4. Phần **Column constraints** chọn **Work item count**, rồi gõ số tối đa dưới tên cột có ghi "Tối đa".
 
