@@ -1,0 +1,29 @@
+{
+  "comment": "Changelog of a Story in the shape of GET /rest/api/3/issue/{key}/changelog, trimmed. Account ids are fake.",
+  "values": [
+    { "id": "10100", "created": "2026-11-02T09:00:00.000+0700", "author": { "accountId": "fake-automation" },
+      "items": [{ "field": "status", "fieldtype": "jira", "from": "1", "fromString": "New", "to": "2", "toString": "Ready" }] },
+    { "id": "10101", "created": "2026-11-02T09:30:00.000+0700", "author": { "accountId": "fake-agents" },
+      "items": [
+        { "field": "status", "fieldtype": "jira", "from": "2", "fromString": "Ready", "to": "3", "toString": "In Progress" },
+        { "field": "Agent", "fieldtype": "custom", "from": null, "fromString": null, "to": "5", "toString": "Backend Developer" }
+      ] },
+    { "id": "10102", "created": "2026-11-02T14:00:00.000+0700", "author": { "accountId": "fake-automation" },
+      "items": [{ "field": "status", "fieldtype": "jira", "from": "3", "fromString": "In Progress", "to": "4", "toString": "In Review" }] },
+    { "id": "10103", "created": "2026-11-02T15:00:00.000+0700", "author": { "accountId": "fake-agents" },
+      "items": [{ "field": "status", "fieldtype": "jira", "from": "4", "fromString": "In Review", "to": "3", "toString": "In Progress" }] },
+    { "id": "10104", "created": "2026-11-02T16:00:00.000+0700", "author": { "accountId": "fake-automation" },
+      "items": [{ "field": "status", "fieldtype": "jira", "from": "3", "fromString": "In Progress", "to": "4", "toString": "In Review" }] },
+    { "id": "10105", "created": "2026-11-03T10:00:00.000+0700", "author": { "accountId": "fake-automation" },
+      "items": [{ "field": "status", "fieldtype": "jira", "from": "4", "fromString": "In Review", "to": "5", "toString": "Ready for QA" }] },
+    { "id": "10106", "created": "2026-11-03T10:10:00.000+0700", "author": { "accountId": "fake-agents" },
+      "items": [{ "field": "status", "fieldtype": "jira", "from": "5", "fromString": "Ready for QA", "to": "6", "toString": "In QA" }] },
+    { "id": "10107", "created": "2026-11-03T11:00:00.000+0700", "author": { "accountId": "fake-agents" },
+      "items": [
+        { "field": "status", "fieldtype": "jira", "from": "6", "fromString": "In QA", "to": "3", "toString": "In Progress" },
+        { "field": "labels", "fieldtype": "jira", "from": null, "fromString": "", "to": null, "toString": "qa-failed" }
+      ] },
+    { "id": "10108", "created": "2026-11-03T11:05:00.000+0700", "author": { "accountId": "fake-human" },
+      "items": [{ "field": "Flagged", "fieldtype": "custom", "from": null, "fromString": null, "to": "10019", "toString": "Impediment" }] }
+  ]
+}
