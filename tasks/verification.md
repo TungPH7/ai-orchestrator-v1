@@ -43,11 +43,11 @@
 
 | Mục | Trạng thái |
 |---|---|
-| 1. Group và service account | Xong (bạn báo 2026-10-27); `jira:check` kiểm lại thành viên group |
+| 1. Group và service account | Xong, đã kiểm qua REST (2026-10-28): `ao-humans` có bạn, `ao-agents` có `orchestratoragent`, `ao-automation` có `orchestratorci` |
 | 2. Rovo MCP | Xong ở T1 |
 | 3. Resolution | Xong (2026-10-27). Site có hai resolution `Done` ("GreenHopper Managed Resolution", do Jira Software tạo); giữ cả hai |
 | 4. Status | Xong (2026-10-27): 10 status mới và `In Progress` có sẵn, đúng tên và Category |
-| 5. Workflow | Đang sửa (2026-10-28): bạn báo xong ngày 2026-10-27, nhưng `Cancel` từ `Ready` của `AO standard` thiếu rule Restrict và rule hỏi Resolution |
+| 5. Workflow | Đang sửa (2026-10-28): status và đường đi của ba workflow đều đúng; 18 trong 24 transition thiếu rule (xem bảng dưới) |
 | 6. Work type | Xong (2026-10-27): đã tạo `Task`, `Bug`, `Sub-task`; `Epic`, `Story` có sẵn |
 | 7. Workflow scheme | Xong (bạn báo 2026-10-27) |
 | 8. Trường | Xong (bạn báo 2026-10-27). `Found in` đúng ba option; giữ Global context |
@@ -59,7 +59,7 @@
 | Câu hỏi | Kết quả |
 |---|---|
 | Gói Free có rule "Restrict who can move a work item" theo group không | Có trong danh sách rule (2026-10-27, ảnh `misc/images/phien-6-luot-17-anh-2.png`). Rule có chặn thật hay không được kiểm ở T15 |
-| Service account thêm được vào group không | Bạn báo mục 1 xong (2026-10-27); `jira:check` kiểm lại thành viên từng group |
+| Service account thêm được vào group không | Được: đọc qua REST ngày 2026-10-28, mỗi group có đúng thành viên (`orchestratoragent` và `orchestratorci` là loại tài khoản `app`) |
 | Site có sẵn những work type nào | Chỉ `Epic` và `Story` (2026-10-27, ảnh `misc/images/phien-6-luot-18-anh-1.png`). Checklist thêm mục 6 Work type, trước Workflow scheme |
 | Giới hạn custom field theo work type được không | Không: Global context của field không còn sửa được work type (banner CHANGE-3019, ảnh `misc/images/phien-6-luot-19-anh-2.png`). Giữ **Any issue type**; work type nào dùng field nào do hợp đồng quy định |
 | Trình tạo space có loại sub-task không | Bước 2 (**Let's set up your space**) chỉ có sẵn `Epic`, `Story`, `Bug`, `Task` (ảnh `misc/images/phien-6-luot-20-anh-1.png`). `Sub-task` thêm sau trong Space settings |
@@ -70,6 +70,18 @@
 
 1. **Hai service account trả tên bằng tiếng Trung.** Đọc `DEMO-1` qua REST bằng token của `orchestratoragent` hay `orchestratorci` đều ra work type `故事` (Story) và status `全新` (New); id status (`10004`) và nhóm status (`new`) thì không đổi. Gửi kèm header `Accept-Language: en-US` thì ra `Story`, `New`. Không đọc được ngôn ngữ đang đặt, vì `/mypreferences/locale` cần scope khác (401). Ánh xạ so theo tên, nên mọi request REST của module phải gửi `Accept-Language: en-US`: client ở T9, dữ kiện cho guard ở T11, `jira-sync` ở T17. Với Rovo MCP thì chưa biết tool trả tên theo ngôn ngữ nào; T13 kiểm, và `jira-guard` phải nhận được cả `transitionName` agent đọc từ MCP.
 2. **Item ở status `New` không hiện trên board**, vì `New` là Kanban backlog. Board `DEMO` không có tab Backlog riêng; xem các item này ở tab **List**.
+
+**Đọc ba workflow bằng token chỉ đọc của bạn (2026-10-28, làm sớm bước đầu của T9):**
+
+Token: tài khoản admin của bạn, Basic auth qua `api.atlassian.com/ex/jira/<cloud-id>`, biến `JIRA_ADMIN_EMAIL` và `JIRA_ADMIN_TOKEN`, hết hạn sau 365 ngày. 20 scope chỉ đọc, lấy từ OpenAPI spec của Jira theo từng API: `read:jira-work`, `read:workflow:jira`, `read:workflow-scheme:jira`, `read:issue-type-scheme:jira`, `read:issue-type:jira`, `read:project:jira`, `read:project-category:jira`, `read:application-role:jira`, `read:avatar:jira`, `read:group:jira`, `read:user:jira`, `read:field:jira`, `read:custom-field-contextual-configuration:jira`, `read:field.option:jira`, `read:issue-type-screen-scheme:jira`, `read:screen-scheme:jira`, `read:screen-tab:jira`, `read:screenable-field:jira`, `read:board-scope:jira-software`, `read:board-scope.admin:jira-software`. Đã gọi được: `GET /project/DEMO`, `POST /workflows`, `GET /group/bulk`, `GET /group/member`.
+
+Rule Restrict lưu thành điều kiện `system:restrict-issue-transition` với tham số `groupIds` (id của group, không phải tên). Màn hình transition và rule đặt trường không có trong bản đã lưu của transition nào.
+
+| Workflow | Transition đúng | Transition thiếu rule |
+|---|---|---|
+| `AO standard` | `Refine`, `Start`, `Submit`, `Request changes`, `Deploy to QA`, `Pick up`: đúng group | `QA fail` (Restrict); `Accept` (Restrict, đặt Resolution); 6 `Cancel` (Restrict, Show a screen). `Cancel` từ `Ready` đã sửa trên màn hình nhưng chưa bấm **Update workflow** |
+| `AO epic` | không có | cả 8: `Start spec`, `Approve spec`, `Approve plan` (Restrict); `Complete` (Restrict, đặt Resolution); 4 `Cancel` (Restrict, Show a screen) |
+| `AO sub-task` | không có | `Start` (Restrict); `Complete` (Restrict, đặt Resolution) |
 
 **Kiểm thủ công bằng Story thử `DEMO-1` (2026-10-28):**
 
