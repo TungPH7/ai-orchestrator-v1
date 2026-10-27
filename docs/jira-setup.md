@@ -2,144 +2,257 @@
 
 # Dựng Jira cho một dự án
 
-Checklist dựng tay theo hợp đồng trong `contract/` và ánh xạ `tracker/jira.yaml`, cho gói Jira Free. Làm theo thứ tự; mỗi dự án chỉ dựng một lần. Lý do của từng mục nằm ở [SPEC-tracker-integration.md](../SPEC-tracker-integration.md), mục 2.
+Checklist dựng tay theo hợp đồng trong `contract/` và ánh xạ `tracker/jira.yaml`, cho gói Jira Free. Làm theo thứ tự, vì mục sau dùng thứ mục trước tạo ra; mỗi dự án chỉ dựng một lần. Lý do của từng mục nằm ở [SPEC-tracker-integration.md](../SPEC-tracker-integration.md), mục 2.
 
-Tên menu của Jira thay đổi theo thời gian: nếu không thấy đúng tên, tìm mục gần nhất và giữ nguyên tên trong checklist.
+Mỗi mục có phần **Cách làm** (bấm vào đâu) và danh sách `- [ ]` (tạo những gì). Tên nút lấy từ tài liệu của Atlassian; giao diện thật có thể khác một chút. Chỗ nào ghi "đối chiếu giao diện" là tài liệu không nêu tên nút: nếu không thấy, chụp màn hình rồi hỏi.
 
 ## 1. Group và service account
 
-Tạo group ở admin.atlassian.com → Directory → Groups → Create group. Rule Restrict ở mục 4 cho phép transition theo group.
+**Cách tạo group:**
 
-Hai cách thêm thành viên. Tài khoản thường: mở group → Add users. Service account: thêm từ trang của chính nó, ở Directory → Service accounts → chọn service account → ••• → Add to group.
+1. Mở admin.atlassian.com, chọn tổ chức của bạn.
+2. Menu bên trái: **Directory** → **Groups** → **Create group**.
+3. Gõ tên group, bấm **Create**.
 
-- [ ] Tạo group `ao-humans` cho danh tính `human`
-- [ ] Tạo group `ao-agents` cho danh tính `agents`
-- [ ] Tạo group `ao-automation` cho danh tính `automation`
-- [ ] Group `ao-humans`: thêm tài khoản admin của bạn (`site-admin`) bằng Add users, vai trò `human`
-- [ ] Group `ao-agents`: thêm service account `orchestratoragent` bằng Add to group, vai trò `pm`, `ba`, `ux`, `sa`, `fe-dev`, `be-dev`, `reviewer`, `security`, `qa`, `devops`
-- [ ] Group `ao-automation`: thêm service account `orchestratorci` bằng Add to group, vai trò `automation`
+- [ ] Tạo group `ao-humans` (danh tính `human`)
+- [ ] Tạo group `ao-agents` (danh tính `agents`)
+- [ ] Tạo group `ao-automation` (danh tính `automation`)
+
+**Cách thêm tài khoản của bạn vào group:**
+
+1. **Directory** → **Groups** → bấm vào tên group.
+2. Bấm **Add users**, gõ tên hoặc email của bạn, chọn tài khoản, bấm **Add**.
+
+- [ ] Group `ao-humans`: thêm tài khoản admin của bạn (`site-admin`), vai trò `human`
+
+**Cách thêm service account vào group** (ô tìm trong trang group chỉ lọc người đã có trong group, nên không dùng được):
+
+1. **Directory** → **Service accounts** → bấm vào tên service account.
+2. Bấm **•••** ở góc trên bên phải → **Add to group**.
+3. Chọn group, xác nhận.
+
+- [ ] Group `ao-agents`: thêm service account `orchestratoragent`, vai trò `pm`, `ba`, `ux`, `sa`, `fe-dev`, `be-dev`, `reviewer`, `security`, `qa`, `devops`
+- [ ] Group `ao-automation`: thêm service account `orchestratorci`, vai trò `automation`
+
+**Kiểm lại:** mở từng group, tài khoản phải hiện ở tab **Members** hoặc **Agents**.
+
 - [ ] Token của `orchestratoragent` hết hạn 2027-10-27, nằm trong biến môi trường `ATLASSIAN_AGENT_TOKEN`, không nằm trong file nào
 - [ ] Token của `orchestratorci` hết hạn 2027-10-27, nằm trong biến môi trường `JIRA_CI_TOKEN`, không nằm trong file nào
 
 ## 2. Rovo MCP
 
-- [ ] Administration → Connectors → Atlassian MCP server → Authentication: bật API token
+**Cách làm:** admin.atlassian.com → menu bên trái **Connectors** → **Atlassian MCP server** → mục **Authentication** → bật **API token**.
 
-## 3. Status
+- [ ] API token cho Rovo MCP đã bật
 
-Status nằm ở Jira settings → Work items → Statuses. Jira có sẵn `To Do`, `In Progress`, `Done`: dùng lại nếu đúng nhóm.
+## 3. Resolution
 
-- [ ] `New`: nhóm To Do
-- [ ] `Ready`: nhóm To Do
-- [ ] `In Progress`: nhóm In Progress
-- [ ] `In Review`: nhóm In Progress
-- [ ] `Ready for QA`: nhóm In Progress
-- [ ] `In QA`: nhóm In Progress
-- [ ] `Done`: nhóm Done
-- [ ] `Cancelled`: nhóm Done
-- [ ] `Specifying`: nhóm To Do
-- [ ] `Planning`: nhóm To Do
-- [ ] `To Do`: nhóm To Do
+Resolution làm trước workflow, vì transition `Cancel` hỏi Resolution và các transition vào Done đặt Resolution.
 
-## 4. Workflow
+**Cách làm:**
 
-Workflow nằm ở Jira settings → Work items → Workflows. Mỗi transition có rule "Restrict who can move a work item" theo group. Nếu gói Free không có rule này, bỏ phần group và ghi lại: khi đó hook trong Claude Code là lớp chặn duy nhất với agent.
+1. Trên Jira, bấm biểu tượng bánh răng ⚙ ở góc trên bên phải. Trong **Jira admin settings**, ô **Switch settings** chọn **Work items**.
+2. Menu bên trái, kéo xuống, chọn **Resolutions**.
+3. Xem danh sách: tên nào bên dưới đã có (đúng chữ hoa, chữ thường) thì đánh dấu là xong.
+4. Tên nào chưa có: bấm **Add resolution**, gõ tên, bấm **Add**.
 
-Không thêm transition nào khác. Nếu Jira tự tạo transition từ mọi status (Any status), xóa nó: state kết thúc không được có transition đi ra.
+- [ ] Resolution `Won't Do`
+- [ ] Resolution `Duplicate`
+- [ ] Resolution `Not a bug`
+- [ ] Resolution `Cannot Reproduce`
+- [ ] Resolution `Done`
+
+## 4. Status
+
+**Cách làm:**
+
+1. Trên Jira, bấm biểu tượng bánh răng ⚙ ở góc trên bên phải. Trong **Jira admin settings**, ô **Switch settings** chọn **Work items**.
+2. Menu bên trái, chọn **Statuses**.
+3. Với từng dòng bên dưới, xem danh sách status có sẵn trước. Nếu đã có status cùng tên và cột **Category** trùng thì dùng lại, đánh dấu là xong.
+4. Nếu chưa có: bấm **Add status**. Ô **Name** gõ tên, ô **Category** chọn như bên dưới, bấm **Add**.
+
+- [ ] Name `New`, Category `To Do`
+- [ ] Name `Ready`, Category `To Do`
+- [ ] Name `In Progress`, Category `In Progress`
+- [ ] Name `In Review`, Category `In Progress`
+- [ ] Name `Ready for QA`, Category `In Progress`
+- [ ] Name `In QA`, Category `In Progress`
+- [ ] Name `Done`, Category `Done`
+- [ ] Name `Cancelled`, Category `Done`
+- [ ] Name `Specifying`, Category `To Do`
+- [ ] Name `Planning`, Category `To Do`
+- [ ] Name `To Do`, Category `To Do`
+
+## 5. Workflow
+
+**Cách mở trình sửa workflow:**
+
+1. Trên Jira, bấm biểu tượng bánh răng ⚙ ở góc trên bên phải. Trong **Jira admin settings**, ô **Switch settings** chọn **Work items**.
+2. Menu bên trái: **Workflows**.
+3. Tạo workflow mới: bấm nút tạo workflow ở góc trên bên phải (đối chiếu giao diện: có thể tên là **Create workflow** hoặc **Add workflow**), gõ tên workflow.
+4. Sửa workflow đã có: tìm tên workflow → **•••** → **Edit**.
+
+**Cách thêm status vào workflow:** bấm **Add status** → tìm status đã tạo ở mục 4 → **Add**. Ở khung chi tiết bên phải, **không** tick ô "Allow all statuses to transition to this one".
+
+**Cách thêm transition:** bấm **Add transition** ở đầu trang → chọn **From status** và **To status** → gõ tên transition → **Add**.
+
+**Cách giới hạn ai được chuyển (rule Restrict):** bấm vào mũi tên của transition → ở khung chi tiết, bấm **+** cạnh **Rules** → chọn **Restrict who can move a work item** → **Select** → ô **Restrict to** chọn **Groups** → chọn các group ghi ở dòng đó → **Add**.
+
+**Rule đặt Resolution là Done** (đối chiếu giao diện): ở **Rules**, bấm **+**, chọn rule cập nhật một trường của work item, chọn trường **Resolution**, giá trị **Done**.
+
+**Rule hỏi Resolution khi hủy** (đối chiếu giao diện): ở **Rules**, bấm **+**, chọn rule hiện màn hình khi chuyển, chọn màn hình có sẵn chứa trường Resolution (thường tên **Resolve Issue Screen** hoặc **Resolve Work Item Screen**).
+
+**Cuối cùng:** bấm **Update workflow** (hoặc nút lưu tương ứng) để lưu.
+
+Lưu ý:
+
+- Workflow mới có thể có sẵn vài status hoặc transition mẫu. Xóa mọi status và transition không có trong danh sách bên dưới.
+- Mũi tên **Create** (item mới tạo) phải đi vào status đầu ghi ở dòng "Tạo workflow".
+- Không có transition nào từ "Any status": item đã Done hoặc Cancelled không được chuyển đi đâu nữa.
+- Nếu không tìm thấy rule **Restrict who can move a work item** (gói Free có thể không có), bỏ phần group, chụp màn hình danh sách rule rồi báo lại. Khi đó hook trong Claude Code là lớp chặn duy nhất với agent.
 
 ### `AO standard` (`Story`, `Task`, `Bug`)
 
-- [ ] Tạo workflow `AO standard`, status đầu là `New`, gồm: `New`, `Ready`, `In Progress`, `In Review`, `Ready for QA`, `In QA`, `Done`, `Cancelled`
-- [ ] Transition `Refine`: `New` → `Ready`. Chỉ group `ao-humans`, `ao-automation`
-- [ ] Transition `Start`: `Ready` → `In Progress`. Chỉ group `ao-agents`
-- [ ] Transition `Submit`: `In Progress` → `In Review`. Chỉ group `ao-automation`
-- [ ] Transition `Request changes`: `In Review` → `In Progress`. Chỉ group `ao-humans`, `ao-agents`, `ao-automation`
-- [ ] Transition `Deploy to QA`: `In Review` → `Ready for QA`. Chỉ group `ao-automation`
-- [ ] Transition `Pick up`: `Ready for QA` → `In QA`. Chỉ group `ao-agents`
-- [ ] Transition `QA fail`: `In QA` → `In Progress`. Chỉ group `ao-agents`
-- [ ] Transition `Accept`: `In QA` → `Done`. Chỉ group `ao-humans`. Đặt Resolution là `Done`
-- [ ] Transition `Cancel`: `New` → `Cancelled`. Chỉ group `ao-humans`. Màn hình chọn Resolution
-- [ ] Transition `Cancel`: `Ready` → `Cancelled`. Chỉ group `ao-humans`. Màn hình chọn Resolution
-- [ ] Transition `Cancel`: `In Progress` → `Cancelled`. Chỉ group `ao-humans`. Màn hình chọn Resolution
-- [ ] Transition `Cancel`: `In Review` → `Cancelled`. Chỉ group `ao-humans`. Màn hình chọn Resolution
-- [ ] Transition `Cancel`: `Ready for QA` → `Cancelled`. Chỉ group `ao-humans`. Màn hình chọn Resolution
-- [ ] Transition `Cancel`: `In QA` → `Cancelled`. Chỉ group `ao-humans`. Màn hình chọn Resolution
+- [ ] Tạo workflow `AO standard`, status đầu là `New`
+- [ ] Thêm status: `New`, `Ready`, `In Progress`, `In Review`, `Ready for QA`, `In QA`, `Done`, `Cancelled`
+- [ ] Transition `Refine`: From `New`, To `Ready`. Restrict → Groups: `ao-humans`, `ao-automation`
+- [ ] Transition `Start`: From `Ready`, To `In Progress`. Restrict → Groups: `ao-agents`
+- [ ] Transition `Submit`: From `In Progress`, To `In Review`. Restrict → Groups: `ao-automation`
+- [ ] Transition `Request changes`: From `In Review`, To `In Progress`. Restrict → Groups: `ao-humans`, `ao-agents`, `ao-automation`
+- [ ] Transition `Deploy to QA`: From `In Review`, To `Ready for QA`. Restrict → Groups: `ao-automation`
+- [ ] Transition `Pick up`: From `Ready for QA`, To `In QA`. Restrict → Groups: `ao-agents`
+- [ ] Transition `QA fail`: From `In QA`, To `In Progress`. Restrict → Groups: `ao-agents`
+- [ ] Transition `Accept`: From `In QA`, To `Done`. Restrict → Groups: `ao-humans`. Rule đặt Resolution là `Done`
+- [ ] Transition `Cancel`: From `New`, To `Cancelled`. Restrict → Groups: `ao-humans`. Rule hỏi Resolution khi hủy
+- [ ] Transition `Cancel`: From `Ready`, To `Cancelled`. Restrict → Groups: `ao-humans`. Rule hỏi Resolution khi hủy
+- [ ] Transition `Cancel`: From `In Progress`, To `Cancelled`. Restrict → Groups: `ao-humans`. Rule hỏi Resolution khi hủy
+- [ ] Transition `Cancel`: From `In Review`, To `Cancelled`. Restrict → Groups: `ao-humans`. Rule hỏi Resolution khi hủy
+- [ ] Transition `Cancel`: From `Ready for QA`, To `Cancelled`. Restrict → Groups: `ao-humans`. Rule hỏi Resolution khi hủy
+- [ ] Transition `Cancel`: From `In QA`, To `Cancelled`. Restrict → Groups: `ao-humans`. Rule hỏi Resolution khi hủy
+- [ ] Bấm **Update workflow** để lưu
 
 ### `AO epic` (`Epic`)
 
-- [ ] Tạo workflow `AO epic`, status đầu là `New`, gồm: `New`, `Specifying`, `Planning`, `In Progress`, `Done`, `Cancelled`
-- [ ] Transition `Start spec`: `New` → `Specifying`. Chỉ group `ao-humans`
-- [ ] Transition `Approve spec`: `Specifying` → `Planning`. Chỉ group `ao-humans`
-- [ ] Transition `Approve plan`: `Planning` → `In Progress`. Chỉ group `ao-humans`
-- [ ] Transition `Complete`: `In Progress` → `Done`. Chỉ group `ao-humans`. Đặt Resolution là `Done`
-- [ ] Transition `Cancel`: `New` → `Cancelled`. Chỉ group `ao-humans`. Màn hình chọn Resolution
-- [ ] Transition `Cancel`: `Specifying` → `Cancelled`. Chỉ group `ao-humans`. Màn hình chọn Resolution
-- [ ] Transition `Cancel`: `Planning` → `Cancelled`. Chỉ group `ao-humans`. Màn hình chọn Resolution
-- [ ] Transition `Cancel`: `In Progress` → `Cancelled`. Chỉ group `ao-humans`. Màn hình chọn Resolution
+- [ ] Tạo workflow `AO epic`, status đầu là `New`
+- [ ] Thêm status: `New`, `Specifying`, `Planning`, `In Progress`, `Done`, `Cancelled`
+- [ ] Transition `Start spec`: From `New`, To `Specifying`. Restrict → Groups: `ao-humans`
+- [ ] Transition `Approve spec`: From `Specifying`, To `Planning`. Restrict → Groups: `ao-humans`
+- [ ] Transition `Approve plan`: From `Planning`, To `In Progress`. Restrict → Groups: `ao-humans`
+- [ ] Transition `Complete`: From `In Progress`, To `Done`. Restrict → Groups: `ao-humans`. Rule đặt Resolution là `Done`
+- [ ] Transition `Cancel`: From `New`, To `Cancelled`. Restrict → Groups: `ao-humans`. Rule hỏi Resolution khi hủy
+- [ ] Transition `Cancel`: From `Specifying`, To `Cancelled`. Restrict → Groups: `ao-humans`. Rule hỏi Resolution khi hủy
+- [ ] Transition `Cancel`: From `Planning`, To `Cancelled`. Restrict → Groups: `ao-humans`. Rule hỏi Resolution khi hủy
+- [ ] Transition `Cancel`: From `In Progress`, To `Cancelled`. Restrict → Groups: `ao-humans`. Rule hỏi Resolution khi hủy
+- [ ] Bấm **Update workflow** để lưu
 
 ### `AO sub-task` (`Sub-task`)
 
-- [ ] Tạo workflow `AO sub-task`, status đầu là `To Do`, gồm: `To Do`, `In Progress`, `Done`
-- [ ] Transition `Start`: `To Do` → `In Progress`. Chỉ group `ao-agents`
-- [ ] Transition `Complete`: `In Progress` → `Done`. Chỉ group `ao-agents`. Đặt Resolution là `Done`
+- [ ] Tạo workflow `AO sub-task`, status đầu là `To Do`
+- [ ] Thêm status: `To Do`, `In Progress`, `Done`
+- [ ] Transition `Start`: From `To Do`, To `In Progress`. Restrict → Groups: `ao-agents`
+- [ ] Transition `Complete`: From `In Progress`, To `Done`. Restrict → Groups: `ao-agents`. Rule đặt Resolution là `Done`
+- [ ] Bấm **Update workflow** để lưu
 
-## 5. Workflow scheme
+## 6. Workflow scheme
+
+**Cách làm:**
+
+1. Trên Jira, bấm biểu tượng bánh răng ⚙ ở góc trên bên phải. Trong **Jira admin settings**, ô **Switch settings** chọn **Work items**.
+2. Menu bên trái: **Workflow schemes** → **Add workflow scheme**.
+3. Ô name gõ `AO workflow scheme` → **Add**.
+4. Với từng workflow bên dưới: bấm **Add workflow** → **Add existing** → chọn workflow → chọn các work type ghi ở dòng đó → **Finish**.
+5. Nếu scheme còn dòng workflow mặc định cho "All unassigned work types", để nguyên.
 
 - [ ] Tạo workflow scheme `AO workflow scheme`
-- [ ] `Epic` → `AO epic`
-- [ ] `Story` → `AO standard`
-- [ ] `Sub-task` → `AO sub-task`
-- [ ] `Task` → `AO standard`
-- [ ] `Bug` → `AO standard`
+- [ ] Workflow `AO epic`: `Epic`
+- [ ] Workflow `AO standard`: `Story`, `Task`, `Bug`
+- [ ] Workflow `AO sub-task`: `Sub-task`
 
-## 6. Trường
+## 7. Trường
 
-Custom field nằm ở Jira settings → Work items → Fields.
+**Cách tạo một custom field:**
 
-- [ ] Tạo custom field `Found in`, loại Select List (single choice), cho `Bug`. Option: `Development`, `Staging`, `Production`
-- [ ] `Affects versions`: trường có sẵn, dùng cho `Bug`
-- [ ] Tạo custom field `Severity`, loại Select List (single choice), cho `Bug`. Option: `Critical`, `High`, `Medium`, `Low`
-- [ ] `Fix versions`: trường có sẵn, dùng cho `Story`, `Task`, `Bug`
-- [ ] Tạo custom field `Agent`, loại Select List (single choice), cho `Story`, `Sub-task`, `Task`, `Bug`. Option: `Project Manager`, `Business Analyst`, `UI/UX designer`, `Solution Architect`, `Frontend Developer`, `Backend Developer`, `Code Reviewer`, `Security Engineer`, `Tester/QA Engineer`, `DevOps Engineer`
-- [ ] Không tạo trường cho Rework count: số này được đếm từ lịch sử chuyển trạng thái
-- [ ] `Flagged`: trường có sẵn, dùng cho `Epic`, `Story`, `Sub-task`, `Task`, `Bug`
+1. Trên Jira, bấm biểu tượng bánh răng ⚙ ở góc trên bên phải. Trong **Jira admin settings**, ô **Switch settings** chọn **Work items**.
+2. Menu bên trái: **Fields** → nút tạo field (đối chiếu giao diện: **Create new field** hoặc **Create custom field**).
+3. Chọn loại **Select List (single choice)** → gõ tên field → thêm từng option theo đúng thứ tự bên dưới → tạo field.
+4. Nếu Jira hỏi gắn field vào màn hình (screen) nào, bỏ qua: mục 8 gắn field vào màn hình của space.
+5. Giới hạn work type: ở danh sách field, tìm field vừa tạo → **•••** → **Contexts and default value** → sửa context mặc định → phần **Applicable work types** chỉ chọn các work type ghi ở dòng đó → lưu.
 
-## 7. Resolution
-
-- [ ] `Won't Do`: có sẵn trong Jira, giữ lại
-- [ ] `Duplicate`: có sẵn trong Jira, giữ lại
-- [ ] `Not a bug`: tạo mới
-- [ ] `Cannot Reproduce`: có sẵn trong Jira, giữ lại
-- [ ] `Done`: có sẵn trong Jira, giữ lại
+- [ ] Field `Found in`, type Select List (single choice), work type `Bug`. Option: `Development`, `Staging`, `Production`
+- [ ] `Affects versions`: trường có sẵn, không tạo; dùng cho `Bug`
+- [ ] Field `Severity`, type Select List (single choice), work type `Bug`. Option: `Critical`, `High`, `Medium`, `Low`
+- [ ] `Fix versions`: trường có sẵn, không tạo; dùng cho `Story`, `Task`, `Bug`
+- [ ] Field `Agent`, type Select List (single choice), work type `Story`, `Sub-task`, `Task`, `Bug`. Option: `Project Manager`, `Business Analyst`, `UI/UX designer`, `Solution Architect`, `Frontend Developer`, `Backend Developer`, `Code Reviewer`, `Security Engineer`, `Tester/QA Engineer`, `DevOps Engineer`
+- [ ] Rework count: không tạo trường, số này được đếm từ lịch sử chuyển trạng thái
+- [ ] `Flagged`: trường có sẵn, không tạo; dùng cho `Epic`, `Story`, `Sub-task`, `Task`, `Bug`
 
 ## 8. Space
 
-- [ ] Tạo space company-managed theo template Kanban, với key của dự án (pilot: `DEMO`)
-- [ ] Issue type scheme của space gồm: `Epic`, `Story`, `Sub-task`, `Task`, `Bug`
-- [ ] Gán workflow scheme `AO workflow scheme` cho space
-- [ ] Thêm `Found in`, `Affects versions`, `Severity`, `Fix versions`, `Agent`, `Flagged` vào màn hình tạo, sửa và xem item của space
+**Tạo space:**
+
+1. Thanh trên cùng của Jira: **Spaces** → **Create space**.
+2. Chọn template **Kanban** → **Use template**.
+3. Chọn loại **Company-managed** (không chọn Team-managed).
+4. Ô **Name** gõ tên dự án, ô **Key** gõ key của dự án (pilot: `DEMO`) → tạo space.
+
+- [ ] Space company-managed, template Kanban, key của dự án (pilot: `DEMO`)
+
+**Mở Space settings:** trong space, menu bên trái, bấm **•••** cạnh tên space → **Space settings**.
+
+**Work type:** Space settings → **Work types**. Danh sách phải có đủ các loại bên dưới. Thiếu loại nào: bấm **Actions** → **Edit work types**, kéo loại còn thiếu vào cột của scheme → **Save**.
+
+- [ ] Space có đủ work type: `Epic`, `Story`, `Sub-task`, `Task`, `Bug`
+
+**Workflow scheme:** Space settings → **Workflows** → **Switch scheme** → chọn `AO workflow scheme` → **Associate** → chờ Jira chuyển xong → **Acknowledge**.
+
+- [ ] Space dùng workflow scheme `AO workflow scheme`
+
+**Màn hình:** Space settings → **Screens** → bấm vào từng screen trong danh sách (thường có màn hình tạo, sửa, xem) → kéo xuống cuối, ô **Select Field...** gõ tên field → chọn → field được thêm vào cuối màn hình. Làm cho từng field bên dưới, trên từng screen.
+
+- [ ] Mọi screen của space có các field: `Found in`, `Affects versions`, `Severity`, `Fix versions`, `Agent`, `Flagged`
 
 ## 9. Board
 
-- [ ] Tạo board Kanban cho space
-- [ ] Filter của board: `project = <KEY> AND issuetype != Epic ORDER BY Rank ASC`
-- [ ] Cột `Backlog` (Kanban backlog): status `New`
+Template Kanban đã tạo sẵn một board cho space; mục này sửa board đó.
+
+**Mở Board settings:** trong space, mở board → bấm **•••** cạnh tên board → **Board settings**.
+
+**Filter:** Board settings → **Details** → sửa filter query thành dòng bên dưới (thay `<KEY>` bằng key của space) → lưu.
+
+- [ ] Filter: `project = <KEY> AND issuetype != Epic ORDER BY Rank ASC`
+
+**Cột:** Board settings → **Columns** (nếu menu thu gọn, bấm **Layout** để mở thêm).
+
+1. Sửa danh sách cột cho đúng tên và thứ tự bên dưới: đổi tên cột có sẵn, thêm cột bằng nút **+** bên phải các cột, xóa cột thừa.
+2. Kéo status `New` vào ô **Kanban backlog** (đây là cột `Backlog`).
+3. Kéo từng status còn lại vào đúng cột ghi bên dưới. Status không dùng để lại ở ô **Unmapped statuses**.
+4. Phần **Column constraints** chọn **Work item count**, rồi gõ số tối đa dưới tên cột có ghi "Tối đa".
+
+- [ ] Kanban backlog (`Backlog`): status `New`
 - [ ] Cột `Ready`: status `Ready`, `To Do`
 - [ ] Cột `In Progress`: status `In Progress`
 - [ ] Cột `In Review`: status `In Review`. Tối đa 2
 - [ ] Cột `QA`: status `Ready for QA`, `In QA`
 - [ ] Cột `Done`: status `Done`
-- [ ] Status `Cancelled` không gắn vào cột nào, để item rời khỏi board
+- [ ] Status `Cancelled` để ở Unmapped statuses, để item rời khỏi board
 
 ## 10. GitHub for Jira
 
-- [ ] Cài app GitHub for Jira (Apps → Explore more apps), nối tài khoản GitHub và chọn repo của dự án
+**Cách làm** (đối chiếu giao diện ở bước 2 và 3):
+
+1. Thanh trên cùng của Jira: **Apps** → **Explore more apps** → tìm `GitHub for Jira` → **Get app**.
+2. Sau khi cài, mở app (Apps → Manage your apps, hoặc nút **Get started**) → nối với GitHub → đăng nhập GitHub.
+3. Chọn tài khoản GitHub của bạn → **Only select repositories** → chọn repo của dự án → **Install** → quay lại Jira, bấm **Connect** cạnh tài khoản.
+
+- [ ] App GitHub for Jira đã cài và nối với repo của dự án (pilot: `TungPH7/ao-pilot`)
 
 ## 11. Môi trường
 
-- [ ] GitHub environment `development` trong repo dự án
-- [ ] GitHub environment `staging` trong repo dự án
-- [ ] GitHub environment `production` trong repo dự án
+**Cách làm:** repo dự án trên GitHub → **Settings** → **Environments** → **New environment** → gõ tên → **Configure environment**.
+
+- [ ] GitHub environment `development`
+- [ ] GitHub environment `staging`
+- [ ] GitHub environment `production`
 - [ ] File `.jira/config.yml` trên nhánh mặc định của repo dự án, với nội dung:
 
 ```yaml
@@ -150,7 +263,7 @@ deployments:
     production: ["production"]
 ```
 
-- [ ] Lần đầu thêm file này: ngắt rồi nối lại kết nối GitHub trong app GitHub for Jira
+- [ ] Nếu app GitHub for Jira được nối trước khi có file này: ngắt rồi nối lại kết nối GitHub trong app
 
 ## 12. Kiểm lại
 
