@@ -190,7 +190,7 @@ Mục này trả lời câu hỏi mở thứ hai trong `SPEC.md`; mục 2.3 tr�
 
 ### 2.10 Dựng và kiểm cấu hình Jira
 
-- **Dựng tay theo checklist.** `npm run jira:checklist` sinh `docs/jira-setup.md` từ hợp đồng và `tracker/jira.yaml`. Checklist đi theo thứ tự: service account và group, bật API token cho Rovo MCP, resolution, status, workflow, workflow scheme, custom field, space (kèm work type và màn hình), board, app GitHub for Jira, environment. Mỗi mục ghi các bước bấm cụ thể trước danh sách cần tạo. Mỗi dự án chỉ dựng một lần, còn API sửa workflow phức tạp, nên Cấp 1 chưa dựng tự động.
+- **Dựng tay theo checklist.** `npm run jira:checklist` sinh `docs/jira-setup.md` từ hợp đồng và `tracker/jira.yaml`. Checklist đi theo thứ tự: service account và group, bật API token cho Rovo MCP, resolution, status, workflow, work type, workflow scheme, custom field, space (kèm work type scheme và màn hình), board, app GitHub for Jira, environment. Mỗi mục ghi các bước bấm cụ thể trước danh sách cần tạo. Mỗi dự án chỉ dựng một lần, còn API sửa workflow phức tạp, nên Cấp 1 chưa dựng tự động.
 - **Kiểm lệch.** `npm run jira:check -- --space DEMO` chỉ gửi request đọc, so cấu hình Jira thật với ánh xạ và in từng chỗ lệch: thiếu status, transition sai `from` hoặc `to`, rule Restrict thiếu group, cột board hoặc giới hạn WIP sai, thiếu field hay giá trị field, scheme thiếu issue type. Lệnh trả mã lỗi khác 0 khi có chỗ lệch. Lệnh chạy trên máy bạn bằng token chỉ đọc của bạn, vì đọc cấu hình workflow cần quyền admin.
 
 ## 3. Tech stack

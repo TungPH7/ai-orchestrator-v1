@@ -160,29 +160,47 @@ Lưu ý:
 - [ ] Transition `Complete`: From `In Progress`, To `Done`. Restrict → Groups: `ao-agents`. Rule đặt Resolution là `Done`
 - [ ] Bấm **Update workflow** để lưu
 
-## 6. Workflow scheme
+## 6. Work type
+
+Workflow scheme chỉ gắn được work type đã có trên site, nên tạo đủ work type trước.
+
+**Cách làm:**
+
+1. Trên Jira, bấm biểu tượng bánh răng ⚙ ở góc trên bên phải. Trong **Jira admin settings**, ô **Switch settings** chọn **Work items**.
+2. Menu bên trái, chọn **Work types**. Với từng dòng bên dưới, xem danh sách trước: đã có work type đúng tên thì dùng lại, đánh dấu là xong.
+3. Loại Standard còn thiếu: bấm **Add work type** → ô **Name** gõ tên → nếu hộp có ô chọn loại thì chọn loại Standard (đối chiếu giao diện) → không chọn work type scheme → **Add**.
+4. Loại sub-task còn thiếu: menu bên trái chọn **Sub-tasks** → **Add subtask work type** (đối chiếu giao diện) → ô **Name** gõ tên → **Add**. Nếu trang báo sub-task đang tắt, bấm **Enable** trước.
+5. Tên phải đúng từng chữ như dòng bên dưới, kể cả dấu gạch nối.
+
+- [ ] Work type `Epic`: có sẵn trong Jira, không tạo
+- [ ] Work type `Story`, loại Standard
+- [ ] Work type `Sub-task`, loại sub-task (trang **Sub-tasks**)
+- [ ] Work type `Task`, loại Standard
+- [ ] Work type `Bug`, loại Standard
+
+## 7. Workflow scheme
 
 **Cách làm:**
 
 1. Trên Jira, bấm biểu tượng bánh răng ⚙ ở góc trên bên phải. Trong **Jira admin settings**, ô **Switch settings** chọn **Work items**.
 2. Menu bên trái: **Workflow schemes** → **Add workflow scheme**.
 3. Ô name gõ `AO workflow scheme` → **Add**.
-4. Với từng workflow bên dưới: bấm **Add workflow** → **Add existing** → chọn workflow → chọn các work type ghi ở dòng đó → **Finish**.
-5. Nếu scheme còn dòng workflow mặc định cho "All unassigned work types", để nguyên.
+4. Với từng workflow bên dưới: bấm **Add Workflow** → **Add Existing** → chọn workflow → **Next** → hộp **Assign Issue Types** hiện ra, tick các work type ghi ở dòng đó → **Finish**. Nếu hộp thiếu work type nào, quay lại mục 6.
+5. Không tick ô **All Unassigned Issue Types**. Dòng workflow mặc định `Jira Workflow (jira)` của scheme để nguyên.
 
 - [ ] Tạo workflow scheme `AO workflow scheme`
 - [ ] Workflow `AO epic`: `Epic`
 - [ ] Workflow `AO standard`: `Story`, `Task`, `Bug`
 - [ ] Workflow `AO sub-task`: `Sub-task`
 
-## 7. Trường
+## 8. Trường
 
 **Cách tạo một custom field:**
 
 1. Trên Jira, bấm biểu tượng bánh răng ⚙ ở góc trên bên phải. Trong **Jira admin settings**, ô **Switch settings** chọn **Work items**.
 2. Menu bên trái: **Fields** → nút tạo field (đối chiếu giao diện: **Create new field** hoặc **Create custom field**).
 3. Chọn loại **Select List (single choice)** → gõ tên field → thêm từng option theo đúng thứ tự bên dưới → tạo field.
-4. Nếu Jira hỏi gắn field vào màn hình (screen) nào, bỏ qua: mục 8 gắn field vào màn hình của space.
+4. Nếu Jira hỏi gắn field vào màn hình (screen) nào, bỏ qua: mục 9 gắn field vào màn hình của space.
 5. Giới hạn work type: ở danh sách field, tìm field vừa tạo → **•••** → **Contexts and default value** → sửa context mặc định → phần **Applicable work types** chỉ chọn các work type ghi ở dòng đó → lưu.
 
 - [ ] Field `Found in`, type Select List (single choice), work type `Bug`. Option: `Development`, `Staging`, `Production`
@@ -193,7 +211,7 @@ Lưu ý:
 - [ ] Rework count: không tạo trường, số này được đếm từ lịch sử chuyển trạng thái
 - [ ] `Flagged`: trường có sẵn, không tạo; dùng cho `Epic`, `Story`, `Sub-task`, `Task`, `Bug`
 
-## 8. Space
+## 9. Space
 
 **Tạo space:**
 
@@ -218,7 +236,7 @@ Lưu ý:
 
 - [ ] Mọi screen của space có các field: `Found in`, `Affects versions`, `Severity`, `Fix versions`, `Agent`, `Flagged`
 
-## 9. Board
+## 10. Board
 
 Template Kanban đã tạo sẵn một board cho space; mục này sửa board đó.
 
@@ -243,7 +261,7 @@ Template Kanban đã tạo sẵn một board cho space; mục này sửa board �
 - [ ] Cột `Done`: status `Done`
 - [ ] Status `Cancelled` để ở Unmapped statuses, để item rời khỏi board
 
-## 10. GitHub for Jira
+## 11. GitHub for Jira
 
 **Cách làm** (đối chiếu giao diện ở bước 2 và 3):
 
@@ -253,7 +271,7 @@ Template Kanban đã tạo sẵn một board cho space; mục này sửa board �
 
 - [ ] App GitHub for Jira đã cài và nối với repo của dự án (pilot: `TungPH7/ao-pilot`)
 
-## 11. Môi trường
+## 12. Môi trường
 
 **Cách làm:** repo dự án trên GitHub → **Settings** → **Environments** → **New environment** → gõ tên → **Configure environment**.
 
@@ -272,6 +290,6 @@ deployments:
 
 - [ ] Nếu app GitHub for Jira được nối trước khi có file này: ngắt rồi nối lại kết nối GitHub trong app
 
-## 12. Kiểm lại
+## 13. Kiểm lại
 
 - [ ] Chạy `npm run jira:check -- --space <KEY>` trong repo kit: lệnh không báo chỗ lệch nào

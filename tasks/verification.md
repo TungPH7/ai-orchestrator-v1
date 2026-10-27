@@ -39,7 +39,7 @@
 - Tạo ba GitHub environment `development`, `staging`, `production` trong `TungPH7/ao-pilot`.
 - Đưa `.jira/config.yml` lên nhánh `main` của `ao-pilot`, sinh từ `tracker/jira.yaml`. File có trước khi cài app GitHub for Jira, nên không cần ngắt rồi nối lại kết nối.
 
-**Bạn làm:** dựng Jira theo `docs/jira-setup.md`, mục 1 đến 10. File checklist được sinh tự động nên không tick trong đó; tiến độ ghi ở bảng dưới.
+**Bạn làm:** dựng Jira theo `docs/jira-setup.md`, mục 1 đến 11. File checklist được sinh tự động nên không tick trong đó; tiến độ ghi ở bảng dưới.
 
 | Mục | Trạng thái |
 |---|---|
@@ -47,15 +47,17 @@
 | 2. Rovo MCP | Xong ở T1 |
 | 3. Resolution | Xong (2026-10-27). Site có hai resolution `Done` ("GreenHopper Managed Resolution", do Jira Software tạo); giữ cả hai |
 | 4. Status | Xong (2026-10-27): 10 status mới và `In Progress` có sẵn, đúng tên và Category |
-| 5. Workflow | Đang làm: bắt đầu từ `AO standard` |
-| 6. Workflow scheme | Chưa làm |
-| 7. Trường | Chưa làm |
-| 8. Space | Chưa làm |
-| 9. Board | Chưa làm |
-| 10. GitHub for Jira | Chưa làm |
-| 11. Môi trường | Xong, Claude làm |
+| 5. Workflow | Đang làm: đã có `AO standard`; `AO epic`, `AO sub-task` chưa xác nhận |
+| 6. Work type | Đang làm (2026-10-27): site chỉ có `Epic`, `Story`; cần tạo `Task`, `Bug`, `Sub-task` |
+| 7. Workflow scheme | Đang làm: đã tạo `AO workflow scheme`, chưa gắn workflow |
+| 8. Trường | Chưa làm |
+| 9. Space | Chưa làm |
+| 10. Board | Chưa làm |
+| 11. GitHub for Jira | Chưa làm |
+| 12. Môi trường | Xong, Claude làm |
 
 | Câu hỏi | Kết quả |
 |---|---|
 | Gói Free có rule "Restrict who can move a work item" theo group không | Có trong danh sách rule (2026-10-27, ảnh `misc/images/phien-6-luot-17-anh-2.png`). Rule có chặn thật hay không được kiểm ở T15 |
 | Service account thêm được vào group không | Chưa biết |
+| Site có sẵn những work type nào | Chỉ `Epic` và `Story` (2026-10-27, ảnh `misc/images/phien-6-luot-18-anh-1.png`). Checklist thêm mục 6 Work type, trước Workflow scheme |

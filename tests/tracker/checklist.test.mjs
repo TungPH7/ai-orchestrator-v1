@@ -26,11 +26,11 @@ test('the generated file says it is generated and must not be edited by hand', (
   assert.match(lines[0], /generated.*do not edit/i);
 });
 
-test('sections follow spec 2.10, with resolutions before the workflows that set them', () => {
+test('sections follow spec 2.10, with resolutions before the workflows that set them and work types before the scheme', () => {
   const headings = lines.filter((line) => line.startsWith('## ')).map((line) => line.replace(/^## \d+\. /, ''));
   assert.deepEqual(headings, [
-    'Group và service account', 'Rovo MCP', 'Resolution', 'Status', 'Workflow', 'Workflow scheme', 'Trường',
-    'Space', 'Board', 'GitHub for Jira', 'Môi trường', 'Kiểm lại',
+    'Group và service account', 'Rovo MCP', 'Resolution', 'Status', 'Workflow', 'Work type', 'Workflow scheme',
+    'Trường', 'Space', 'Board', 'GitHub for Jira', 'Môi trường', 'Kiểm lại',
   ]);
 });
 
@@ -87,8 +87,18 @@ test('cancel becomes one Jira transition per `from`, each asking for a Resolutio
   for (const line of [...cancels('### `AO standard`'), ...cancels('### `AO epic`')]) assert.match(line, /Rule hỏi Resolution khi hủy$/);
 });
 
+test('work types: Epic is built in, Sub-task is a sub-task type, the others are standard', () => {
+  assert.deepEqual(section('## 6.'), [
+    '- [ ] Work type `Epic`: có sẵn trong Jira, không tạo',
+    '- [ ] Work type `Story`, loại Standard',
+    '- [ ] Work type `Sub-task`, loại sub-task (trang **Sub-tasks**)',
+    '- [ ] Work type `Task`, loại Standard',
+    '- [ ] Work type `Bug`, loại Standard',
+  ]);
+});
+
 test('the workflow scheme lists each workflow with the Jira work types it serves', () => {
-  assert.deepEqual(section('## 6.').slice(1), [
+  assert.deepEqual(section('## 7.').slice(1), [
     '- [ ] Workflow `AO epic`: `Epic`',
     '- [ ] Workflow `AO standard`: `Story`, `Task`, `Bug`',
     '- [ ] Workflow `AO sub-task`: `Sub-task`',
@@ -96,7 +106,7 @@ test('the workflow scheme lists each workflow with the Jira work types it serves
 });
 
 test('custom fields list their type, work types and options; Rework count is not a field', () => {
-  const fields = section('## 7.');
+  const fields = section('## 8.');
   assert.ok(fields.includes('- [ ] Field `Severity`, type Select List (single choice), work type `Bug`. Option: `Critical`, `High`, `Medium`, `Low`'));
   assert.ok(
     fields.some(
@@ -117,7 +127,7 @@ test('resolutions: the four of the contract, then Done for the transitions into 
 });
 
 test('board columns list their statuses, the Kanban backlog and the WIP limit', () => {
-  const start = lines.findIndex((line) => line.startsWith('## 9.'));
+  const start = lines.findIndex((line) => line.startsWith('## 10.'));
   const board = lines.slice(start, lines.findIndex((line, index) => index > start && line.startsWith('## '))).filter((line) => line.startsWith('- [ ]'));
   assert.ok(board.includes('- [ ] Filter: `project = <KEY> AND issuetype != Epic ORDER BY Rank ASC`'));
   assert.ok(board.includes('- [ ] Kanban backlog (`Backlog`): status `New`'));
