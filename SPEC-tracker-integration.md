@@ -54,7 +54,7 @@ Vì gói Free không có permission scheme, mọi user có quyền Jira đều l
 
 - **Hai service account tách riêng** để lịch sử item phân biệt việc của agent với việc của CI, và để rule Restrict chặn được agent ở các transition chỉ dành cho `automation` (như `submit`).
 - **Mọi agent dùng chung `orchestratoragent`**, vì không đủ service account cho từng vai trò. Vai trò cụ thể (`fe-dev`, `qa`…) do hook kiểm, và được ghi vào trường Agent của item (mục 2.4).
-- **Phương án nếu Bearer bị từ chối.** Hai trang của Atlassian nói khác nhau về cách Rovo MCP xác thực: hướng dẫn cho developer ghi API key của service account dùng `Bearer`, còn một bài KB ghi Rovo MCP chỉ nhận Basic auth. Task kết nối thật thử `Bearer` trước; nếu bị từ chối thì dùng Basic auth với email mà Atlassian tự sinh cho service account.
+- **Xác thực `Bearer` đã chạy được** với cả Rovo MCP lẫn REST API (T1, 2026-10-27), dù một bài KB của Atlassian ghi Rovo MCP chỉ nhận Basic auth. Không cần phương án Basic auth.
 - **Scope token.** Agent: `read:jira:agent-interface`, `write:jira:agent-interface`, `search:jira:agent-interface` (cho Rovo MCP) và `read:jira-work` (để hook đọc dữ kiện). CI: `read:jira-work`, `write:jira-work`.
 - **Hạn token** tối đa 365 ngày. Ngày hết hạn ghi trong `tracker/jira.yaml`; `jira:check` cảnh báo khi còn dưới 14 ngày.
 - **Phương án dự phòng**, nếu gói Free không có service account: mỗi danh tính dùng một tài khoản Atlassian thường (tốn 2 trong 10 chỗ user), và agent đăng nhập Rovo MCP bằng OAuth. Phần còn lại của spec giữ nguyên.
@@ -116,13 +116,15 @@ Dự án khai báo server trong `.mcp.json`. Token nằm trong biến môi trư�
 ```
 
 - Admin tổ chức phải bật xác thực bằng API token cho Rovo MCP, ở Atlassian Administration → **Connectors** → **Atlassian MCP server** → mục **Authentication** → **API token**. Đường dẫn lấy từ trang hỗ trợ của Atlassian; bản trước của spec ghi theo một trả lời trên Atlassian Community, và đường dẫn đó không còn đúng.
-- Tool Jira agent dùng: `getJiraIssue`, `searchJiraIssuesUsingJql`, `createJiraIssue`, `editJiraIssue`, `addOrEditJiraIssueComment`, `listJiraIssueTransitions`, `transitionJiraIssue`, `lookupJiraAccountId`. Tên tool lấy từ trang Supported tools; giả định 1 ở Phiên 4 ghi nhầm tên tool liệt kê transition.
+- Tool Jira agent dùng: `getJiraIssue`, `searchJiraIssuesUsingJql`, `createJiraIssue`, `editJiraIssue`, `addOrEditJiraIssueComment`, `transitionJiraIssue`. Các thao tác đọc khác, như `listJiraIssueTransitions` và `listJiraIssueComments`, được gọi qua tool `executeRead`. Danh sách này lấy từ `tools/list` của server thật ở T1, và khác trang Supported tools.
+- Hook chặn `executeWrite` và `executeDestructive` với mọi agent. Hai tool này chạy được mọi thao tác ghi hoặc xóa theo tên, nên là đường vòng qua `transitionJiraIssue` và `jira-guard`. Agent không cần chúng, vì mọi việc ghi của agent đều có tool riêng ở trên.
+- Agent tìm item bằng JQL có điều kiện giới hạn (`project = <KEY>`), không dùng tool `search`: tool đó tốn Rovo Credits, và Jira từ chối JQL không có điều kiện.
 - Không bật connector Atlassian của claude.ai cho Claude Code, vì connector đó chạy bằng tài khoản của bạn. Hook chặn mọi tool Atlassian không thuộc server `atlassian` của dự án.
 
 **Hook `jira-guard`** được khai báo một lần trong `.claude/settings.json` của dự án, và chạy trước mỗi lần gọi `mcp__atlassian__transitionJiraIssue`:
 
 1. Lấy vai trò agent từ trường `agent_type` trong input của hook. Claude Code điền trường này bằng tên subagent khi tool được gọi bên trong subagent, và khi phiên chạy bằng `--agent`. Tên file agent trùng id vai trò (`fe-dev`, `qa`…), nên `agent_type` chính là vai trò. Không có `agent_type` (phiên chính tự gọi tool), hoặc `agent_type` không phải vai trò agent của hợp đồng (ví dụ agent của plugin), thì chặn.
-2. Đổi transition Jira sang transition của hợp đồng, theo `tracker/jira.yaml`.
+2. Đổi transition Jira sang transition của hợp đồng, theo `tracker/jira.yaml`. Tool nhận `transitionId` hoặc `transitionName`, nên hook xử lý cả hai.
 3. Gom dữ kiện cho các guard (mục 2.8), rồi gọi `checkTransition` của hợp đồng.
 4. Cho qua, hoặc chặn và báo lý do: vai trò không được phép, hoặc guard nào còn thiếu.
 
