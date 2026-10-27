@@ -2279,3 +2279,36 @@ Còn hai chỗ mình chưa rõ:
 - Mục 1 (group): bạn đã làm xong chưa?
 
 Nguồn: chủ yếu là banner trên chính trang của bạn (dẫn tới CHANGE-3019). Một trang tài liệu API của bên thứ ba ghi rằng từ tháng 4/2026 Jira chặn việc thêm work type vào global context ([withone.ai](https://www.withone.ai/knowledge/jira/conn_mod_def%3A%3AGJ4qW7AJDd4%3A%3AVDl-tRW4TL2O0UZGO4HAPQ/md)). Mình chưa đọc được bản ghi chính thức của CHANGE-3019.
+
+---
+
+# Phiên 6 · Lượt 20 — 2026-10-27 khoảng 18:00
+
+**Bạn:**
+
+```markdown
+[Image #15]
+"Work type: Space settings → Work types. Danh sách phải có đủ các loại bên dưới. Thiếu loại nào: bấm Actions → Edit work types, kéo loại còn thiếu vào cột của scheme → Save."
+
+Không có Sub-task
+```
+
+Ảnh đính kèm:
+
+- [Image #15](images/phien-6-luot-20-anh-1.png): trình tạo space, bước 2/3 **Let's set up your space**. Phần Configuration gồm **Work types** (Epic ở dòng riêng phía trên; Story, Bug, Task có nút xóa; nút **+ Add work type**), **Statuses** (Backlog, Selected for development, In Progress, Done) và **Views**. Bên phải là ảnh xem trước board của "Company-managed space DEMO"; nút **Next** ở góc dưới.
+
+**Claude:**
+
+Bạn đang ở trình tạo space, tức là trước bước Space settings mà đoạn bạn trích nói tới. Đoạn đó dùng sau khi space đã được tạo. Ở trình tạo này, Epic nằm riêng một dòng phía trên, rồi tới các loại cùng cấp Story; loại sub-task không có sẵn trong danh sách. Vì vậy thiếu `Sub-task` ở đây là bình thường, mình sẽ thêm sau.
+
+Bạn làm tiếp như sau:
+
+1. Phần **Work types**: giữ nguyên `Epic`, `Story`, `Bug`, `Task`. Bấm thử **+ Add work type**: nếu danh sách có `Sub-task` thì chọn, nếu không có thì bỏ qua.
+2. Phần **Statuses** (Backlog, Selected for development…): để nguyên. Ở bước Workflow scheme phía sau, `AO workflow scheme` sẽ thay toàn bộ.
+3. Bấm **Next**, rồi làm theo bước 3 để tạo space. Nếu bước 3 hỏi gì bạn không chắc, chụp gửi mình.
+4. Sau khi tạo xong: vào space, menu bên trái bấm **•••** cạnh tên space → **Space settings** → **Work types**.
+5. Nếu chưa có `Sub-task`: bấm **Actions** → **Edit work types**. Trang này có hai cột: một cột là các loại đang có trong scheme của space, cột kia là các loại còn lại trên site. Kéo `Sub-task` sang cột của scheme → **Save**. Nếu trang trông khác mô tả, chụp gửi mình.
+
+Nếu danh sách work type của space có loại lạ, ví dụ `Subtask` (không gạch nối) do Jira tự tạo, thì đừng xóa, chụp gửi mình.
+
+Mình đã sửa mục 9 của checklist theo trình tạo space thật: bước **Name your space**, bước **Let's set up your space** (giữ work type, để nguyên Statuses), và ghi chú rằng `Sub-task` thường phải thêm sau trong Space settings. Tiến độ đã ghi vào `tasks/verification.md`: mục 9 đang làm.
