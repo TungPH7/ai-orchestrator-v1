@@ -2706,3 +2706,38 @@ Transition này thiếu cả Restrict, nên có thể các transition khác cũn
 Bạn chọn cách nào? Nếu chọn cách thứ hai, mình sẽ hướng dẫn tạo token từng bước, kèm danh sách scope chỉ đọc.
 
 Mình đã ghi chỗ thiếu này vào `tasks/verification.md`, và đổi mục 5 sang "đang sửa". Mục 5 của checklist cũng có thêm bước **Kiểm trước khi lưu**: bật **Show transition labels**, rồi xem khung **Rules** của từng transition.
+
+---
+
+# Phiên 6 · Lượt 31 — 2026-10-28 khoảng 01:05
+
+**Bạn:**
+
+```markdown
+[Image #28]
+```
+
+Ảnh đính kèm:
+
+- [Image #28](images/phien-6-luot-31-anh-1.png): vẫn là transition **Cancel** (`Ready` → `Cancelled`) của `AO standard`. Khung **Rules**: **Restrict transition (1)**, MUST BE ALL (1): "Restrict who can move a work item — Only people in ao-humans can see this transition"; **Request input (1)**: "Show a screen — Update fields in the "Resolve Issue Screen" screen". Nút **Update workflow** đã sáng, cạnh nút **Discard changes**.
+
+**Claude:**
+
+Đúng rồi. Transition `Cancel` từ `Ready` giờ đã có đủ hai rule:
+
+- **Restrict transition**: chỉ người trong `ao-humans` thấy transition này.
+- **Request input**: **Show a screen** với `Resolve Issue Screen`.
+
+Thay đổi này **chưa được lưu**. Bạn bấm **Update workflow** (nút xanh ở góc trên bên phải) trước khi làm gì khác. Nếu đóng trang lúc này, Jira sẽ bỏ thay đổi.
+
+Sau đó, bạn kiểm các transition còn lại. Bạn tick ô **Show transition labels**, rồi bấm lần lượt từng transition và xem khung **Rules**:
+
+- Mọi transition phải có rule trong nhóm **Restrict transition**, với đúng group ghi ở mục 5 của checklist.
+- Năm transition `Cancel` còn lại của `AO standard` (từ `New`, `In Progress`, `In Review`, `Ready for QA`, `In QA`) phải có thêm **Show a screen** như transition vừa sửa.
+- `Accept` phải có một rule ở nhóm **Perform actions** đặt Resolution là `Done`.
+
+Sau đó làm tương tự với `AO epic` và `AO sub-task`. Mỗi workflow sửa xong thì bấm **Update workflow**.
+
+Nếu muốn mình đọc giúp cả 24 transition để chỉ đúng chỗ thiếu, bạn nhắn "tạo token". Mình sẽ hướng dẫn tạo token chỉ đọc, đây cũng là bước đầu của T9.
+
+Mình đã ghi vào `tasks/verification.md`: transition `Cancel` từ `Ready` đã có đủ hai rule.
