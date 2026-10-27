@@ -2865,3 +2865,47 @@ Mỗi workflow sửa xong thì bấm **Update workflow** ngay, đừng để d�
 Mình đã ghi vào `tasks/verification.md`: mục 1 đã kiểm qua REST; mục 5 đang sửa, kèm bảng các transition thiếu rule; và danh sách 20 scope của token chỉ đọc, cho T9. Bước tạo rule đặt Resolution trong checklist giờ ghi đúng tên **Update an issue field**, lấy từ tài liệu của Atlassian.
 
 Nguồn: [Configure resolutions in a Jira workflow](https://support.atlassian.com/jira-cloud-administration/docs/configure-resolutions-in-a-jira-workflow/)
+
+---
+
+# Phiên 6 · Lượt 35 — 2026-10-28 khoảng 01:30
+
+**Bạn:**
+
+```markdown
+Bạn thêm các rule luôn giúp tôi được không?
+```
+
+Trong lúc Claude đang làm, bạn hỏi thêm:
+
+```markdown
+Cần tôi cung cấp gì không?
+```
+
+**Claude:**
+
+Được, mình thêm qua REST API của Jira. Bạn chỉ cần cung cấp một thứ: **một token tạm có quyền sửa workflow**. Token `ao-jira-check` bạn vừa tạo cố ý chỉ đọc, và nên giữ như vậy cho `jira:check`.
+
+**Tạo token tạm**
+
+1. Mở <https://id.atlassian.com/manage-profile/security/api-tokens> → **Create API token with scopes**.
+2. Tên `ao-workflow-edit`, hạn **1 ngày** → **Next** → app **Jira** → **Next**.
+3. Tick 6 scope:
+   - `write:workflow:jira` (sửa workflow, scope ghi duy nhất)
+   - `read:workflow:jira`
+   - `read:screen:jira` (tìm id của `Resolve Issue Screen`)
+   - `read:project:jira`
+   - `read:avatar:jira`
+   - `read:project-category:jira`
+4. **Next** → **Create** → **Copy to clipboard**.
+5. Mở **Edit environment variables for your account** → **New...** → tên `JIRA_ADMIN_WRITE_TOKEN`, giá trị dán token → **OK** → **OK**. Email thì mình dùng lại `JIRA_ADMIN_EMAIL`.
+
+**Mình sẽ làm gì khi bạn nhắn "xong"**
+
+1. Đọc ba workflow, id của ba group, id của `Resolve Issue Screen` và id của resolution `Done`.
+2. Thêm rule cho đúng 18 transition trong bảng lượt trước, theo `tracker/jira.yaml`. Transition đã đúng thì giữ nguyên, status và đường đi không đổi.
+3. Gửi bản sửa cho API kiểm tra (validation) của Jira trước. Nếu Jira báo lỗi thì dừng lại và báo bạn, không ghi gì.
+4. Nếu hợp lệ thì lưu, rồi đọc lại bằng token chỉ đọc để xác nhận đủ 24 transition.
+5. Báo kết quả. Sau đó bạn xóa token `ao-workflow-edit` (trang API tokens → **Revoke**), không cần chờ nó hết hạn.
+
+Lưu ý: nếu bạn còn mở trình sửa workflow có thay đổi chưa lưu, bấm **Discard changes** rồi đóng tab trước khi nhắn "xong", để hai bên không ghi đè lên nhau.
