@@ -1776,3 +1776,53 @@ Nếu trong Connectors không có **Atlassian MCP server**, hoặc mục Authent
 Mình đã sửa đường dẫn này trong spec mục 2.6 và trong task T1. Bạn làm xong cả hai việc thì nhắn "xong", mình chạy ba phép thử của T1.
 
 Nguồn: [Atlassian: Control Atlassian Rovo MCP server settings](https://support.atlassian.com/security-and-access-policies/docs/control-atlassian-rovo-mcp-server-settings/)
+
+---
+
+# Phiên 6 · Lượt 7 — 2026-10-27 khoảng 12:40
+
+**Bạn:**
+
+```markdown
+Tôi làm xong 2 việc rồi nhé, bạn làm tiếp đi
+```
+
+_Kèm tin nhắn này, extension Claude Code trong VS Code tự gửi dòng đang được bôi đen trong một file chưa lưu. Dòng đó là token của `orchestratorci`, nên không được chép vào đây._
+
+**Claude:**
+
+T1 xong, cả ba phép thử đều đạt. Nhưng trước hết có một việc cần bạn làm ngay.
+
+## Token của `orchestratorci` đã lọt vào cuộc trò chuyện
+
+Lúc bạn gửi tin nhắn, file `Untitled-1` trong VS Code đang có một dòng chứa token được bôi đen. Extension Claude Code tự gửi phần bôi đen kèm theo tin nhắn, nên token đó giờ nằm trong lịch sử của phiên này: lịch sử được lưu trên máy bạn và đã gửi tới Anthropic. Mình đối chiếu 8 ký tự cuối với hai biến môi trường thì thấy đó là token của `orchestratorci`, không phải token của agent. Mình không chép token vào file nào, kể cả lịch sử brainstorm.
+
+Bạn làm giúp mình các bước sau:
+
+1. Vào admin.atlassian.com → **Directory** → **Service accounts** → `orchestratorci`, rồi thu hồi (revoke) token hiện tại.
+2. Tạo token mới với đúng hai scope `read:jira-work` và `write:jira-work`, hết hạn ngày 2027-10-27.
+3. Thay giá trị biến `JIRA_CI_TOKEN` bằng token mới, qua hộp thoại biến môi trường như lần trước.
+4. Xóa các dòng chứa token trong `Untitled-1`, rồi đóng file mà không lưu. Đừng để token trong editor, vì cứ bôi đen là token đi theo tin nhắn.
+
+## Kết quả T1
+
+| Phép thử | Kết quả |
+|---|---|
+| Rovo MCP nhận token của agent qua `Bearer` | Đạt: `initialize` trả 200, `tools/list` trả 21 tool |
+| Claude Code trong `ao-pilot` gọi tool Jira bằng `kit/.mcp.json` | Đạt: đọc được item của space `SCRUM` có sẵn, bằng account của service account |
+| Token CI gọi REST API qua `api.atlassian.com` | Đạt: đọc được danh sách space và thông tin site |
+
+Không cần đến Basic auth hay phương án dự phòng.
+
+## Phát hiện làm đổi spec
+
+- **Danh sách tool thật khác trang tài liệu.** Server có sẵn 6 tool Jira: `getJiraIssue`, `searchJiraIssuesUsingJql`, `createJiraIssue`, `editJiraIssue`, `transitionJiraIssue`, `addOrEditJiraIssueComment`. Các thao tác khác, như liệt kê transition, được gọi qua tool chung `executeRead`.
+- **Có đường vòng qua hook.** Hai tool chung `executeWrite` và `executeDestructive` chạy được mọi thao tác ghi hoặc xóa theo tên. Agent có thể dùng chúng để chuyển trạng thái mà không qua `jira-guard`. Spec mục 2.6 giờ ghi hook chặn hai tool này với mọi agent. Agent không cần chúng, vì mọi việc ghi đều đã có tool riêng.
+- **Token của agent ghi được vào mọi space trên site**, kể cả space `SCRUM` ("E-commerce V1 by Tung") của bạn, vì gói Free không có permission scheme. Mình thêm vào T14: hook chặn tool ghi của agent khi item không thuộc space của dự án.
+- **`transitionJiraIssue` nhận cả id lẫn tên transition**, nên `jira-guard` phải xử lý cả hai.
+- **JQL phải có điều kiện giới hạn**, như `project = DEMO`, vì Jira từ chối truy vấn không giới hạn. Còn tool `search` tốn Rovo Credits, nên agent tìm item bằng JQL.
+- **Hai cách lấy danh tính cần scope mình không cấp:** `/myself` cần `read:jira-user`, `atlassianUserInfo` cần `read:me`. Module không cần hai scope này, nên danh tính `orchestratorci` sẽ được kiểm qua lịch sử item ở T18.
+
+Chi tiết ở `tasks/verification.md`. T1 nằm trong PR #18, mình merge ngay khi CI xanh.
+
+Đổi token CI xong thì bạn nhắn mình. Mình sẽ kiểm lại token mới, rồi làm tiếp T2 đến T6 (hợp đồng, ánh xạ, quy ước mã Jira, đếm rework) cho tới Checkpoint 1. Các task này là code thuần, không cần bạn làm gì thêm.
