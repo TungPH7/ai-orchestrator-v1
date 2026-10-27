@@ -41,9 +41,15 @@ npm run render          # sinh lại docs/sdlc.md từ YAML
 npm run render:check    # báo lỗi nếu docs/sdlc.md cũ hơn YAML
 npm run jira:checklist  # sinh lại docs/jira-setup.md, checklist dựng Jira
 npm run jira:checklist:check  # báo lỗi nếu docs/jira-setup.md cũ hơn YAML
+npm run jira:check -- --space DEMO  # chỉ đọc: so cấu hình Jira thật của space với tracker/jira.yaml
 ```
 
 CI ([.github/workflows/contract.yml](.github/workflows/contract.yml)) chạy `npm ci`, `npm run validate`, `npm test`, `npm run render:check` và `npm run jira:checklist:check` trên mọi PR và mỗi lần push vào `main`.
+
+`jira:check` không chạy trong CI, vì đọc cấu hình workflow cần quyền admin. Lệnh chạy trên máy bạn, chỉ gửi request đọc, và trả mã khác 0 khi có chỗ lệch. Hiện lệnh kiểm status, transition và workflow scheme của space. Lệnh cần hai biến:
+
+- `JIRA_ADMIN_EMAIL`: email Atlassian của bạn.
+- `JIRA_ADMIN_TOKEN`: API token có scope của bạn (Create API token with scopes, app Jira), chỉ gồm các scope đọc: `read:jira-work`, `read:workflow:jira`, `read:workflow-scheme:jira`, `read:issue-type-scheme:jira`, `read:issue-type:jira`, `read:project:jira`, `read:project-category:jira`, `read:application-role:jira`, `read:avatar:jira`, `read:group:jira`, `read:user:jira`, `read:field:jira`, `read:custom-field-contextual-configuration:jira`, `read:field.option:jira`, `read:issue-type-screen-scheme:jira`, `read:screen-scheme:jira`, `read:screen-tab:jira`, `read:screenable-field:jira`, `read:board-scope:jira-software`, `read:board-scope.admin:jira-software`.
 
 ## Cấu trúc thư mục
 
