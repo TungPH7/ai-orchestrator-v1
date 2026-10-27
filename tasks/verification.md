@@ -78,4 +78,4 @@
 | Tạo Story, status ban đầu | Đạt: `New`, nằm ở Kanban backlog (ảnh `misc/images/phien-6-luot-28-anh-1.png` chụp lúc đã sang `Ready`) |
 | `Refine` (`New` → `Ready`) do bạn chuyển | Đạt: lịch sử ghi `New` → `Ready` lúc 00:54, người chuyển là bạn |
 | Ở `Ready`, bạn không thấy `Start` | Chưa kiểm: chưa có ảnh danh sách transition |
-| `Cancel` (`Ready` → `Cancelled`) hỏi Resolution | **Không đạt:** lịch sử ghi `Ready` → `Cancelled` lúc 00:56, nhưng Resolution vẫn trống. Rule hỏi Resolution có thể thiếu ở transition này, hoặc ô Resolution không bắt buộc |
+| `Cancel` (`Ready` → `Cancelled`) hỏi Resolution | **Không đạt:** lịch sử ghi `Ready` → `Cancelled` lúc 00:56, Resolution vẫn trống, và bạn không thấy hộp hỏi Resolution nào. Nguyên nhân: transition chưa có rule **Request input → Show a screen**. Checklist mục 5 đã thêm các bước này |

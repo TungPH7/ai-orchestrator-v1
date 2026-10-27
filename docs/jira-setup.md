@@ -107,7 +107,11 @@ Nếu danh sách có hai resolution `Done` cùng mô tả "GreenHopper Managed R
 
 **Rule đặt Resolution là Done** (đối chiếu giao diện): trong khung **Transition**, nhóm **Perform actions** → **+** → chọn rule cập nhật một trường của work item → trường **Resolution**, giá trị **Done**.
 
-**Rule hỏi Resolution khi hủy** (đối chiếu giao diện): trong khung **Transition**, nhóm **Request input** → **+** → chọn rule hiện màn hình hoặc hỏi giá trị trường → chọn trường **Resolution** (hoặc màn hình có sẵn chứa Resolution, thường tên **Resolve Issue Screen**).
+**Rule hỏi Resolution khi hủy:** làm cho **từng** transition có ghi "Rule hỏi Resolution khi hủy", vì mỗi transition giữ rule riêng. Thiếu rule thì Jira hủy item mà không hỏi gì, và Resolution để trống.
+
+1. Trước tiên kiểm màn hình: **Jira admin settings** → **Work items** → **Screens** → tìm `Resolve Issue Screen` (màn hình có sẵn của Jira) → bấm vào, xem có trường **Resolution**. Không có màn hình này thì chụp danh sách rồi hỏi.
+2. Trong trình sửa workflow, bấm nhãn transition → khung **Transition** → nhóm **Request input** → nút thêm rule của nhóm (đối chiếu giao diện: giống **Add restrict transition rule** của nhóm Restrict) → chọn **Show a screen**.
+3. Ô **Select a screen** chọn `Resolve Issue Screen` → **Add**.
 
 **Cuối cùng:** bấm **Update workflow** (hoặc nút lưu tương ứng) để lưu.
 
