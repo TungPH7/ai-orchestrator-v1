@@ -118,6 +118,20 @@ test('custom fields list their type, work types and options, and keep the global
   assert.ok(!doc.includes('Applicable work types'));
 });
 
+test('each field goes on the screens of the work types that use it', () => {
+  assert.deepEqual(
+    section('## 9.').filter((line) => line.includes(': screen của')),
+    [
+      '- [ ] `Found in`: screen của `Bug`',
+      '- [ ] `Affects versions`: screen của `Bug`',
+      '- [ ] `Severity`: screen của `Bug`',
+      '- [ ] `Fix versions`: screen của `Story`, `Task`, `Bug`',
+      '- [ ] `Agent`: screen của `Story`, `Sub-task`, `Task`, `Bug`',
+      '- [ ] `Flagged`: screen của `Epic`, `Story`, `Sub-task`, `Task`, `Bug`',
+    ],
+  );
+});
+
 test('resolutions: the four of the contract, then Done for the transitions into done', () => {
   assert.deepEqual(section('## 3.'), [
     "- [ ] Resolution `Won't Do`",

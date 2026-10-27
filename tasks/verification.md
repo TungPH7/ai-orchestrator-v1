@@ -51,7 +51,7 @@
 | 6. Work type | Xong (2026-10-27): đã tạo `Task`, `Bug`, `Sub-task`; `Epic`, `Story` có sẵn |
 | 7. Workflow scheme | Đã tạo `AO workflow scheme`; chưa xác nhận đã gắn đủ ba workflow |
 | 8. Trường | Đang làm: `Found in` đã tạo, đúng ba option; giữ Global context |
-| 9. Space | Đang làm: đã tạo `DEMO`, company-managed (Space settings có **Workflows**, **Work items** → **Types**, **Screens**; ảnh `misc/images/phien-6-luot-21-anh-1.png`); đang kiểm work type |
+| 9. Space | Đang làm: đã tạo `DEMO`, company-managed (Space settings có **Workflows**, **Work items** → **Types**, **Screens**; ảnh `misc/images/phien-6-luot-21-anh-1.png`). Đủ năm work type: trang **Screens** có `Story`, `Task`, `Sub-task` dùng chung screen scheme, `Bug` và `Epic` có scheme riêng (ảnh `misc/images/phien-6-luot-22-anh-1.png`). Đang thêm field lên screen |
 | 10. Board | Chưa làm |
 | 11. GitHub for Jira | Chưa làm |
 | 12. Môi trường | Xong, Claude làm |
