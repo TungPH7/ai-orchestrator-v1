@@ -13,7 +13,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 3 | `c097b31c-efdb-42a0-96ba-8a2b65140f99` | 2026-10-26 15:43 → 17:17 | Duyệt SPEC-sdlc-contract và 7 câu hỏi mở; Story có cả FE và BE có tách hai nhánh không; monorepo hay hai repo; release theo quyết định của bạn; lập plan cho sdlc-contract; commit đầu tiên, repo GitHub, đổi tên thư mục |
 | 4 | `46e4e518-ac41-4570-8bcc-37d5a88788c5` | 2026-10-26 21:35 → 2026-10-27 01:02 | Build và đóng module sdlc-contract (14 task, PR #1–#16, không ghi vào lịch sử vì là lượt code); chọn module kế tiếp tracker-integration; giả định và câu hỏi cho tracker-integration |
 | 5 | `76bd80d2-8083-45f7-93a7-d7ffab2e246c` | 2026-10-27 09:45 → 10:02 | Bạn trả lời 5 câu hỏi của tracker-integration; câu trả lời của Claude bị bộ lọc an toàn chặn, hai lần |
-| 6 | `02493cdb-1425-4498-9a25-6408d7717c70` | 2026-10-27 10:03 → | Gói Free và company-managed; cách tạo tài khoản bot cho agent; viết SPEC-tracker-integration; cách chọn scope khi tạo token; duyệt spec, lập plan tracker-integration; bắt đầu T1; T1–T6, Checkpoint 1 |
+| 6 | `02493cdb-1425-4498-9a25-6408d7717c70` | 2026-10-27 10:03 → | Gói Free và company-managed; cách tạo tài khoản bot cho agent; viết SPEC-tracker-integration; cách chọn scope khi tạo token; duyệt spec, lập plan tracker-integration; bắt đầu T1; T1–T7, Checkpoint 1, bắt đầu T8 |
 
 ---
 
@@ -1922,3 +1922,39 @@ trả lời nhanh, AO nghĩa là gì nhỉ?
 **Claude:**
 
 AO là viết tắt của **ai-orchestrator**, tên của kit này. Tiền tố đó giúp nhận ra ngay workflow, scheme và group (`ao-humans`, `ao-agents`, `ao-automation`) nào do kit tạo, để không lẫn với cấu hình mặc định của Jira hay của space `SCRUM`. Nếu bạn muốn tên khác, ví dụ `Orchestrator standard`, thì đổi ngay bây giờ vẫn dễ.
+
+---
+
+# Phiên 6 · Lượt 11 — 2026-10-27 khoảng 13:55
+
+Trước lượt này, bạn chạy `/context`.
+
+**Bạn:**
+
+```markdown
+qua checkpoint 1
+```
+
+**Claude:**
+
+Mình đã ghi nhận Checkpoint 1 (PR #24) và làm xong T7 (PR #25). Giờ tới T8, phần bạn dựng Jira.
+
+## T7: checklist dựng Jira
+
+`docs/jira-setup.md` được sinh từ hợp đồng và `tracker/jira.yaml`, gồm 12 mục theo thứ tự cần làm. Mỗi transition có một dòng riêng, ghi status đi và đến, group được phép chuyển, và Resolution mà transition đặt hoặc hỏi. CI báo lỗi nếu file này cũ hơn YAML.
+
+## T8: bạn dựng space `DEMO`
+
+Mở `docs/jira-setup.md` trong repo kit (trên GitHub: <https://github.com/TungPH7/ai-orchestrator-v1/blob/main/docs/jira-setup.md>) và làm từ mục 1 đến mục 10. Khoảng 1–2 giờ.
+
+Mình đã làm sẵn mục 11 trong `ao-pilot`: ba GitHub environment, và file `.jira/config.yml` trên nhánh `main`. File có trước khi bạn cài app GitHub for Jira, nên bạn bỏ qua bước "ngắt rồi nối lại kết nối". Mục 12 (`jira:check`) để sau, vì lệnh đó viết ở T9 và T10.
+
+Một vài lưu ý khi làm:
+
+- **Mục 1:** tài liệu Atlassian không nói rõ service account có thêm được vào group không [Unverified]. Nếu không thêm được, bạn ghi lại rồi làm tiếp.
+- **Mục 4:** đây là chỗ mình cần kết quả nhất: gói Free có rule "Restrict who can move a work item" theo group không. Có thì đặt group theo từng dòng. Không có thì bỏ phần group, chụp màn hình chỗ thêm rule gửi mình, và mình sẽ sửa spec, checklist theo.
+- **Mục 8:** space dùng key `DEMO`. Space `SCRUM` hiện có thì để nguyên.
+- **Mục 10:** khi cài app, chỉ cấp quyền cho repo `TungPH7/ao-pilot`.
+- Chỗ nào tên menu khác checklist, hoặc Jira không cho làm, bạn chụp màn hình gửi mình. Trước khi gửi, kiểm tra trong ảnh và trong VS Code không có token.
+
+Xong thì bạn nhắn mình, kèm hai điều: rule Restrict có trên gói Free không, và service account có vào được group không. Mình sẽ ghi vào `tasks/verification.md`, rồi tạo một Story thử để kiểm board.
