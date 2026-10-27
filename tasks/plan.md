@@ -62,11 +62,11 @@ T1 đứng đầu vì nếu service account không dùng được với Rovo MCP
 - [x] T10: `jira:check` phần 2: rule Restrict, board, trường, hạn token
 
 ### Checkpoint 2
-- [ ] Tiêu chí 2, 3 và 6 của spec mục 9 đạt
-- [ ] Bạn xem board `DEMO` và `docs/jira-setup.md`
+- [x] Tiêu chí 2, 3 và 6 của spec mục 9 đạt
+- [x] Bạn xem board `DEMO` và `docs/jira-setup.md`
 
 ### Giai đoạn 3: agent và hook
-- [ ] T11: Dữ kiện từ Jira cho guard
+- [x] T11: Dữ kiện từ Jira cho guard
 - [ ] T12: Dữ kiện từ GitHub cho guard
 - [ ] T13: Hook `jira-guard`
 - [ ] T14: Hook đếm rework và hook chặn đường vòng

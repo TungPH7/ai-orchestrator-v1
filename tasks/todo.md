@@ -210,23 +210,25 @@ Claude làm: tạo repo private `TungPH7/ao-pilot` với nhánh `main` và `deve
 **Cỡ:** M
 
 ### Checkpoint 2
-- [ ] Tiêu chí 2, 3 và 6 của spec mục 9 đạt
-- [ ] Bạn xem board `DEMO` và `docs/jira-setup.md`
+- [x] Tiêu chí 2, 3 và 6 của spec mục 9 đạt
+- [x] Bạn xem board `DEMO` và `docs/jira-setup.md`
+
+Đã qua ngày 2026-10-28. Tiêu chí 6 mới đạt phần Jira ẩn transition; phần agent gọi thẳng qua Rovo MCP được thử ở T15.
 
 ---
 
 ## Giai đoạn 3: agent và hook
 
-### [ ] T11: Dữ kiện từ Jira cho guard
+### [x] T11: Dữ kiện từ Jira cho guard
 
 **Mô tả:** Phần Jira của `lib/tracker/facts.mjs` theo spec mục 2.8: `dor-met`, `wip-available` (JQL đếm item ở `in-progress` có cùng giá trị Agent, tính theo Sub-task nếu Story có Sub-task), `subtasks-done`, `qa-report-failed`, `qa-report-passed` (đọc comment báo cáo QA mới nhất theo template `qa-report.md`). Client Jira thêm tìm bằng JQL, đọc item kèm lịch sử, đọc comment.
 
 **Tiêu chí chấp nhận:**
-- [ ] Mỗi guard có test cho trường hợp thỏa và không thỏa, dùng client giả.
-- [ ] `wip-available` đúng cho cả Story có Sub-task và Story không có Sub-task.
+- [x] Mỗi guard có test cho trường hợp thỏa và không thỏa, dùng client giả.
+- [x] `wip-available` đúng cho cả Story có Sub-task và Story không có Sub-task.
 
 **Kiểm chứng:**
-- [ ] `npm test` xanh
+- [x] `npm test` xanh
 
 **Phụ thuộc:** T6, T10
 
