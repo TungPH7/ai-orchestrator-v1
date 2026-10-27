@@ -2097,3 +2097,31 @@ Giờ bạn có hai lựa chọn:
    - `jira:check` (T9, T10) vẫn kiểm kết quả như cũ.
 
 Bạn chọn cách nào? Nếu chọn cách 2, mình sửa spec và plan trước, gửi bạn duyệt, rồi mới viết script.
+
+---
+
+# Phiên 6 · Lượt 15 — 2026-10-27 khoảng 14:50
+
+**Bạn:**
+
+```markdown
+Giữ dựng tay.
+
+Tôi vừa làm 3. resolution, update check list giúp tôi, có cần xóa 2 cái Done không? [Image #8]
+```
+
+Ảnh đính kèm:
+
+- [Image #8](images/phien-6-luot-15-anh-1.png): trang **View Resolutions**: `Done`, `Done` (cả hai mô tả "GreenHopper Managed Resolution"), `Won't Do`, `Duplicate`, `Not a bug`, `Cannot Reproduce`; ô Add New Resolution báo "A resolution with that name already exists".
+
+**Claude:**
+
+Mục 3 xong: đủ 5 resolution cần có. **Đừng xóa cái `Done` nào.**
+
+Hai resolution `Done` có mô tả "GreenHopper Managed Resolution" (GreenHopper là tên cũ của Jira Software) là do Jira Software tự tạo cho các workflow đơn giản, như workflow của space `SCRUM`. Theo các báo lỗi của Atlassian, nếu xóa thì Jira tạo lại `Done` ngay khi có item được kéo vào cột cuối của board. Còn theo một trả lời trên Community, transition nào đang đặt resolution đó sẽ bị lỗi. Để nguyên cả hai không ảnh hưởng gì tới thiết kế của mình: `jira:check` so theo tên, nên không coi đây là chỗ lệch. Ở mục 5, khi rule cần chọn `Done`, bạn chọn cái đứng đầu danh sách.
+
+Về việc cập nhật checklist: `docs/jira-setup.md` được sinh tự động, nên nếu tick vào đó thì CI sẽ báo file đã cũ. Vì vậy mình ghi tiến độ vào `tasks/verification.md`, mục T8, và mục 3 đã được ghi là xong. Bạn cứ nhắn mục nào xong, mình ghi giúp. Mình cũng thêm vào mục 3 của checklist một đoạn dặn giữ hai `Done`, cho các dự án sau.
+
+Mục 1 (group) bạn đã làm xong chưa? Tiếp theo là mục 4, Status. Site đã có `In Progress` đúng Category, nên bạn chỉ cần tạo 10 status còn lại.
+
+Nguồn: [Atlassian KB: Deleted "Done" resolution was added back](https://support.atlassian.com/jira/kb/deleted-done-resolution-was-added-back-with-greenhopper-managed-resolution-description/), [JRACLOUD-72706: Re-appearance of the deleted resolution Done](https://jira.atlassian.com/browse/JRACLOUD-72706), [Atlassian Community: Deleting resolutions in Jira](https://community.atlassian.com/forums/Jira-questions/Deleting-resolutions-in-Jira/qaq-p/3129301)
