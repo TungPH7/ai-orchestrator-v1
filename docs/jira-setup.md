@@ -226,7 +226,7 @@ Workflow scheme chỉ gắn được work type đã có trên site, nên tạo �
 
 **Mở Space settings:** trong space, menu bên trái, bấm **•••** cạnh tên space → **Space settings**.
 
-**Work type:** Space settings → **Work types**. Danh sách phải có đủ các loại bên dưới. Thiếu loại nào: bấm **Actions** → **Edit work types**, kéo loại còn thiếu vào cột của scheme → **Save**. Trình tạo space không có sẵn loại sub-task, nên `Sub-task` thường phải thêm ở đây. Nếu danh sách có loại lạ, ví dụ `Subtask` không gạch nối, đừng xóa; chụp màn hình rồi hỏi.
+**Work type:** Space settings → menu bên trái **Work items** → **Types**. Danh sách phải có đủ các loại bên dưới. Thiếu loại nào: bấm **Actions** → **Edit work types** (đối chiếu giao diện), kéo loại còn thiếu vào cột của scheme → **Save**. Trình tạo space không có sẵn loại sub-task, nên `Sub-task` thường phải thêm ở đây. Nếu danh sách có loại lạ, ví dụ `Subtask` không gạch nối, đừng xóa; chụp màn hình rồi hỏi.
 
 - [ ] Space có đủ work type: `Epic`, `Story`, `Sub-task`, `Task`, `Bug`
 
@@ -234,7 +234,7 @@ Workflow scheme chỉ gắn được work type đã có trên site, nên tạo �
 
 - [ ] Space dùng workflow scheme `AO workflow scheme`
 
-**Màn hình:** Space settings → **Screens** → bấm vào từng screen trong danh sách (thường có màn hình tạo, sửa, xem) → kéo xuống cuối, ô **Select Field...** gõ tên field → chọn → field được thêm vào cuối màn hình. Làm cho từng field bên dưới, trên từng screen.
+**Màn hình:** Space settings → menu bên trái **Work items** → **Screens** → bấm vào từng screen trong danh sách (thường có màn hình tạo, sửa, xem) → kéo xuống cuối, ô **Select Field...** gõ tên field → chọn → field được thêm vào cuối màn hình. Làm cho từng field bên dưới, trên từng screen.
 
 - [ ] Mọi screen của space có các field: `Found in`, `Affects versions`, `Severity`, `Fix versions`, `Agent`, `Flagged`
 
