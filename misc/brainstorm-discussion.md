@@ -2513,3 +2513,38 @@ Mình đã cập nhật:
 - `tasks/verification.md`: mục 11 đang nối với GitHub; thêm câu hỏi "app có nối được với tài khoản cá nhân không", chờ kết quả của bạn.
 
 Nguồn: [Connect GitHub Cloud to Jira](https://support.atlassian.com/jira-cloud-administration/docs/integrate-with-github-cloud/)
+
+---
+
+# Phiên 6 · Lượt 26 — 2026-10-28 khoảng 00:35
+
+**Bạn:**
+
+```markdown
+- đã cài xong app, nối được với ao-pilot
+11. tôi check thì đã thấy env từ trước
+
+[Image #23] [Image #24]
+```
+
+Ảnh đính kèm:
+
+- [Image #23](images/phien-6-luot-26-anh-1.png): trang **GitHub configuration → Connections** của app GitHub for Atlassian: GitHub Cloud, Connected organization `TungPH7`, Repository access **Only select repos** (1), Backfill status **FINISHED** (Backfilled from: Apr 30, 2026), Permissions **Full Access**.
+- [Image #24](images/phien-6-luot-26-anh-2.png): trang **Settings → Environments** của `TungPH7/ao-pilot`: `production`, `staging`, `development`.
+
+**Claude:**
+
+Mục 11 và 12 xong. Ảnh thứ nhất còn trả lời luôn câu hỏi lượt trước: app nối được với tài khoản cá nhân `TungPH7`, dù trang ghi "organization". Không cần tạo organization hay chuyển repo. Ba environment là do mình tạo ở đầu T8, nên bạn thấy có sẵn là đúng.
+
+Vậy là bạn đã dựng xong cả 12 mục. T8 còn một bước kiểm: tạo một Story thử trên `DEMO` và chuyển qua vài status. Bước này cũng thử luôn rule Restrict và rule hỏi Resolution khi hủy.
+
+1. Thanh trên cùng của Jira: bấm **+ Create** → **Space** chọn `DEMO`, **Work type** chọn `Story`, **Summary** gõ `Story thử T8` → **Create**.
+2. Story mới ở status `New`. Status này là Kanban backlog nên Story nằm ở trang **Backlog** của space, chưa lên board. Vào space `DEMO`, mở **Backlog**, bấm vào Story.
+3. Trong trang Story, bấm nút status (đang ghi `New`, ở phía trên bên phải) → chọn **Refine** (có thể hiện là `Ready`). Story chuyển sang `Ready` và hiện trên board, cột `Ready`.
+4. Bấm lại nút status (giờ ghi `Ready`), rồi chụp danh sách hiện ra gửi mình. Danh sách **không được có** `Start` hay `In Progress`, vì `Start` chỉ dành cho group `ao-agents`. Nếu thấy chúng thì rule Restrict chưa chặn.
+5. Trong danh sách đó, chọn **Cancel**. Jira phải hiện hộp hỏi **Resolution**: chọn `Won't Do` → xác nhận. Story chuyển sang `Cancelled` và rời board.
+6. Đừng xóa Story này. Mình cần lịch sử của nó để kiểm.
+
+Bạn làm xong thì gửi mình key của Story (ví dụ `DEMO-1`). Mình sẽ đọc Story qua REST (chỉ đọc) để kiểm status, resolution và lịch sử chuyển. Sau đó mình đánh dấu T8 xong, mở PR cho nhánh `task/t8-build-demo` và merge khi CI xanh. Task tiếp theo, T9, cần bạn tạo một API token chỉ đọc; tới lúc đó mình sẽ hướng dẫn từng bước.
+
+Mình đã ghi mục 11, 12 xong vào `tasks/verification.md`. Mục 11 của checklist cũng được sửa: tài khoản cá nhân dùng được, kèm bước kiểm trên trang **Connections** (Only select repos, Backfill FINISHED).
