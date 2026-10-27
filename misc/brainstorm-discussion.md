@@ -1958,3 +1958,42 @@ Một vài lưu ý khi làm:
 - Chỗ nào tên menu khác checklist, hoặc Jira không cho làm, bạn chụp màn hình gửi mình. Trước khi gửi, kiểm tra trong ảnh và trong VS Code không có token.
 
 Xong thì bạn nhắn mình, kèm hai điều: rule Restrict có trên gói Free không, và service account có vào được group không. Mình sẽ ghi vào `tasks/verification.md`, rồi tạo một Story thử để kiểm board.
+
+---
+
+# Phiên 6 · Lượt 12 — 2026-10-27 khoảng 14:25
+
+**Bạn:**
+
+```markdown
+Bạn hướng dẫn '## 1. Group và service account' rõ hơn nhé, cách thêm như nào? Tôi tìm 'orchestratoragent' không thấy [Image #5]
+```
+
+Ảnh đính kèm:
+
+- [Image #5](images/phien-6-luot-12-anh-1.png): trang group `ao-agents` trong admin.atlassian.com, tab Agents, ô tìm có chữ `orchestratoragent`, kết quả trống; group có 0 member, 0 agent, 0 app.
+
+**Claude:**
+
+Ô tìm trong ảnh chỉ lọc những ai **đã có** trong group, mà group đang trống, nên không ra gì. Theo tài liệu của Atlassian, service account được thêm vào group từ trang của chính service account:
+
+**Thêm service account vào group**
+
+1. Ở menu bên trái, chọn **Directory** → **Service accounts**.
+2. Bấm vào `orchestratoragent`.
+3. Bấm nút **•••** (more actions) ở góc trên bên phải → **Add to group**.
+4. Chọn group `ao-agents` → xác nhận.
+5. Làm lại với `orchestratorci`, chọn group `ao-automation`.
+
+**Thêm tài khoản của bạn vào group `ao-humans`**
+
+1. **Directory** → **Groups** → bấm `ao-humans`.
+2. Bấm **Add users** (nút xanh góc trên bên phải), gõ tên hoặc email của bạn, chọn, rồi **Add**.
+
+Kiểm lại: mở từng group, tab **Members** hoặc **Agents** phải thấy đúng tài khoản. Nếu service account nằm ở tab khác, bạn ghi lại cho mình.
+
+Có một rủi ro cần kiểm khi dựng xong. Theo vài bài trên Atlassian Community, service account được quản lý ở cấp tổ chức, nên một số chỗ trong Jira không thấy nó là thành viên group. Nếu rule Restrict ở mục 4 cũng không thấy, agent sẽ bị chặn ở chính các transition của nó. Mình sẽ thử điều này bằng Story thử sau khi bạn dựng xong.
+
+Mình cũng đã sửa mục 1 trong checklist để ghi rõ hai cách thêm này.
+
+Nguồn: [Atlassian: Understand service accounts](https://support.atlassian.com/user-management/docs/understand-service-accounts/), [Atlassian Community: Using new Atlassian Service Accounts with add-on](https://community.atlassian.com/forums/Jira-questions/Using-new-Atlassian-Service-Accounts-with-add-on-Jira-Misc/qaq-p/3252792)
