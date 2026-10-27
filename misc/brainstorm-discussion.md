@@ -1602,3 +1602,34 @@ Nguồn:
 - [Atlassian Rovo MCP Server: Supported tools](https://support.atlassian.com/atlassian-rovo-mcp-server/docs/supported-tools/)
 - [Atlassian KB: Rovo MCP Server only returns Teamwork Graph tools when using API Token](https://support.atlassian.com/rovo/kb/rovo-mcp-server-only-returns-teamwork-graph-tools-when-using-api-token/)
 - [Atlassian: Manage API tokens for service accounts](https://support.atlassian.com/user-management/docs/manage-api-tokens-for-service-accounts/)
+
+---
+
+# Phiên 6 · Lượt 3 — 2026-10-27 11:32
+
+**Bạn:**
+
+```markdown
+[Image #2] search agent-interface không ra kết quả
+```
+
+Ảnh đính kèm:
+
+- [Image #2](images/phien-6-luot-3-anh-1.png): màn hình **Select token scopes** sau khi bấm "Đặt lại" và tìm `agent-interface`: dòng đếm ghi "Hiển thị 16 kết quả trong số 526 mục", bảng ghi "No scopes available", phân trang ghi "Từ 61 đến 16 trong tổng số 16 kết quả".
+
+**Claude:**
+
+Thật ra tìm kiếm đã ra kết quả. Dòng "Hiển thị **16 kết quả** trong số 526 mục" cho thấy có 16 scope khớp với `agent-interface`. Bảng trống vì màn hình vẫn đứng ở trang 7, tức trang bạn đang xem trước khi tìm: dòng phân trang ghi "Từ **61** đến 16 trong tổng số 16 kết quả". 16 kết quả chỉ đủ cho 2 trang, nên trang 7 không có gì.
+
+Cách sửa:
+
+1. Đổi **Số kết quả ở mỗi trang** từ 10 sang mức lớn nhất trong danh sách, để 16 kết quả nằm gọn trong một trang.
+2. Nếu bảng vẫn trống, bấm **Trước** vài lần tới khi dòng phân trang ghi "Từ 1 đến ...".
+3. Tick đúng 3 scope có tên sau, bỏ qua các dòng còn lại:
+   - `read:jira:agent-interface`
+   - `write:jira:agent-interface`
+   - `search:jira:agent-interface`
+
+Lúc tìm `jira-work` ở bước sau, bạn cũng nhìn dòng phân trang: phải ghi "Từ 1 đến ..." thì bảng mới hiện đủ. Trước khi bấm tạo, kiểm lại ở bước **Tạo mã token** xem có đủ 4 scope không.
+
+Kết quả này cũng trả lời điều mình chưa chắc ở lượt trước: màn hình tạo token của service account có cung cấp scope `agent-interface`, nên chưa cần phương án dự phòng.
