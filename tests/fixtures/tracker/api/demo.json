@@ -1,0 +1,1500 @@
+{
+  "/rest/agile/1.0/board?projectKeyOrId=DEMO&type=kanban": {
+    "isLast": true,
+    "values": [
+      {
+        "id": 2,
+        "name": "DEMO board",
+        "type": "kanban"
+      }
+    ]
+  },
+  "/rest/agile/1.0/board/2/configuration": {
+    "id": 2,
+    "name": "DEMO board",
+    "type": "kanban",
+    "filter": {
+      "id": "10001"
+    },
+    "columnConfig": {
+      "columns": [
+        {
+          "name": "Backlog",
+          "statuses": [
+            {
+              "id": "10004"
+            }
+          ]
+        },
+        {
+          "name": "Ready",
+          "statuses": [
+            {
+              "id": "10008"
+            },
+            {
+              "id": "10005"
+            }
+          ]
+        },
+        {
+          "name": "In Progress",
+          "statuses": [
+            {
+              "id": "3"
+            }
+          ]
+        },
+        {
+          "name": "In Review",
+          "statuses": [
+            {
+              "id": "10009"
+            }
+          ],
+          "max": 2
+        },
+        {
+          "name": "QA",
+          "statuses": [
+            {
+              "id": "10011"
+            },
+            {
+              "id": "10010"
+            }
+          ]
+        },
+        {
+          "name": "Done",
+          "statuses": [
+            {
+              "id": "10012"
+            }
+          ]
+        }
+      ],
+      "constraintType": "issueCount"
+    }
+  },
+  "/rest/api/3/field": [
+    {
+      "id": "fixVersions",
+      "name": "Fix versions",
+      "custom": false
+    },
+    {
+      "id": "resolution",
+      "name": "Resolution",
+      "custom": false
+    },
+    {
+      "id": "customfield_10021",
+      "name": "Flagged",
+      "custom": true
+    },
+    {
+      "id": "versions",
+      "name": "Affects versions",
+      "custom": false
+    },
+    {
+      "id": "customfield_10044",
+      "name": "Found in",
+      "custom": true
+    },
+    {
+      "id": "customfield_10045",
+      "name": "Severity",
+      "custom": true
+    },
+    {
+      "id": "customfield_10046",
+      "name": "Agent",
+      "custom": true
+    }
+  ],
+  "/rest/api/3/field/customfield_10044/context": {
+    "isLast": true,
+    "values": [
+      {
+        "id": "10146",
+        "name": "Default Configuration Scheme for Found in",
+        "isGlobalContext": true,
+        "isAnyIssueType": true
+      }
+    ]
+  },
+  "/rest/api/3/field/customfield_10044/context/10146/option": {
+    "isLast": true,
+    "values": [
+      {
+        "id": "10020",
+        "value": "Development",
+        "disabled": false
+      },
+      {
+        "id": "10021",
+        "value": "Staging",
+        "disabled": false
+      },
+      {
+        "id": "10022",
+        "value": "Production",
+        "disabled": false
+      }
+    ]
+  },
+  "/rest/api/3/field/customfield_10045/context": {
+    "isLast": true,
+    "values": [
+      {
+        "id": "10147",
+        "name": "Default Configuration Scheme for Severity",
+        "isGlobalContext": true,
+        "isAnyIssueType": true
+      }
+    ]
+  },
+  "/rest/api/3/field/customfield_10045/context/10147/option": {
+    "isLast": true,
+    "values": [
+      {
+        "id": "10023",
+        "value": "Critical",
+        "disabled": false
+      },
+      {
+        "id": "10024",
+        "value": "High",
+        "disabled": false
+      },
+      {
+        "id": "10025",
+        "value": "Medium",
+        "disabled": false
+      },
+      {
+        "id": "10026",
+        "value": "Low",
+        "disabled": false
+      }
+    ]
+  },
+  "/rest/api/3/field/customfield_10046/context": {
+    "isLast": true,
+    "values": [
+      {
+        "id": "10148",
+        "name": "Default Configuration Scheme for Agent",
+        "isGlobalContext": true,
+        "isAnyIssueType": true
+      }
+    ]
+  },
+  "/rest/api/3/field/customfield_10046/context/10148/option": {
+    "isLast": true,
+    "values": [
+      {
+        "id": "10027",
+        "value": "Project Manager",
+        "disabled": false
+      },
+      {
+        "id": "10028",
+        "value": "Business Analyst",
+        "disabled": false
+      },
+      {
+        "id": "10029",
+        "value": "UI/UX designer",
+        "disabled": false
+      },
+      {
+        "id": "10030",
+        "value": "Solution Architect",
+        "disabled": false
+      },
+      {
+        "id": "10031",
+        "value": "Frontend Developer",
+        "disabled": false
+      },
+      {
+        "id": "10032",
+        "value": "Backend Developer",
+        "disabled": false
+      },
+      {
+        "id": "10033",
+        "value": "Code Reviewer",
+        "disabled": false
+      },
+      {
+        "id": "10034",
+        "value": "Security Engineer",
+        "disabled": false
+      },
+      {
+        "id": "10035",
+        "value": "Tester/QA Engineer",
+        "disabled": false
+      },
+      {
+        "id": "10036",
+        "value": "DevOps Engineer",
+        "disabled": false
+      }
+    ]
+  },
+  "/rest/api/3/filter/10001": {
+    "id": "10001",
+    "name": "Filter for DEMO board",
+    "jql": "project = DEMO AND issuetype != Epic ORDER BY Rank ASC",
+    "isWritable": true,
+    "approximateLastUsed": "2026-10-27T18:20:08.558+0000"
+  },
+  "/rest/api/3/group/bulk?groupName=ao-agents": {
+    "isLast": true,
+    "values": [
+      {
+        "name": "ao-agents",
+        "groupId": "6366693c-304b-4564-a8d1-97e10e0a7278"
+      }
+    ]
+  },
+  "/rest/api/3/group/bulk?groupName=ao-automation": {
+    "isLast": true,
+    "values": [
+      {
+        "name": "ao-automation",
+        "groupId": "4b5aeeb0-e374-49d6-a429-879ca97f6ec0"
+      }
+    ]
+  },
+  "/rest/api/3/group/bulk?groupName=ao-humans": {
+    "isLast": true,
+    "values": [
+      {
+        "name": "ao-humans",
+        "groupId": "8ac2cc1a-cdb1-4d2e-a854-501daec18aa4"
+      }
+    ]
+  },
+  "/rest/api/3/group/member?groupname=ao-agents&includeInactiveUsers=true": {
+    "isLast": true,
+    "values": [
+      {
+        "displayName": "orchestratoragent",
+        "accountType": "app"
+      }
+    ]
+  },
+  "/rest/api/3/group/member?groupname=ao-automation&includeInactiveUsers=true": {
+    "isLast": true,
+    "values": [
+      {
+        "displayName": "orchestratorci",
+        "accountType": "app"
+      }
+    ]
+  },
+  "/rest/api/3/issuetype/project?projectId=10001": [
+    {
+      "id": "10008",
+      "name": "Sub-task",
+      "subtask": true,
+      "hierarchyLevel": -1
+    },
+    {
+      "id": "10000",
+      "name": "Epic",
+      "subtask": false,
+      "hierarchyLevel": 1
+    },
+    {
+      "id": "10005",
+      "name": "Story",
+      "subtask": false,
+      "hierarchyLevel": 0
+    },
+    {
+      "id": "10007",
+      "name": "Bug",
+      "subtask": false,
+      "hierarchyLevel": 0
+    },
+    {
+      "id": "10006",
+      "name": "Task",
+      "subtask": false,
+      "hierarchyLevel": 0
+    }
+  ],
+  "/rest/api/3/project/DEMO": {
+    "id": "10001",
+    "key": "DEMO",
+    "name": "DEMO"
+  },
+  "/rest/api/3/resolution/search": {
+    "isLast": true,
+    "values": [
+      {
+        "id": "10000",
+        "name": "Done",
+        "isDefault": false
+      },
+      {
+        "id": "10001",
+        "name": "Done",
+        "isDefault": false
+      },
+      {
+        "id": "10002",
+        "name": "Won't Do",
+        "isDefault": false
+      },
+      {
+        "id": "10003",
+        "name": "Duplicate",
+        "isDefault": false
+      },
+      {
+        "id": "10004",
+        "name": "Not a bug",
+        "isDefault": false
+      },
+      {
+        "id": "10005",
+        "name": "Cannot Reproduce",
+        "isDefault": false
+      }
+    ]
+  },
+  "/rest/api/3/screens/3/tabs": [
+    {
+      "id": 10002,
+      "name": "Field Tab"
+    }
+  ],
+  "/rest/api/3/screens/3/tabs/10002/fields": [
+    {
+      "id": "resolution",
+      "name": "Resolution"
+    },
+    {
+      "id": "fixVersions",
+      "name": "Fix versions"
+    },
+    {
+      "id": "assignee",
+      "name": "Assignee"
+    },
+    {
+      "id": "worklog",
+      "name": "Log Work"
+    }
+  ],
+  "/rest/api/3/workflows/search?expand=values.transitions&queryString=AO epic": {
+    "maxResults": 50,
+    "startAt": 0,
+    "total": 1,
+    "isLast": true,
+    "statuses": [
+      {
+        "id": "10004",
+        "statusReference": "10004",
+        "name": "New",
+        "statusCategory": "TODO"
+      },
+      {
+        "id": "10006",
+        "statusReference": "10006",
+        "name": "Specifying",
+        "statusCategory": "TODO"
+      },
+      {
+        "id": "10007",
+        "statusReference": "10007",
+        "name": "Planning",
+        "statusCategory": "TODO"
+      },
+      {
+        "id": "3",
+        "statusReference": "3",
+        "name": "In Progress",
+        "statusCategory": "IN_PROGRESS"
+      },
+      {
+        "id": "10012",
+        "statusReference": "10012",
+        "name": "Done",
+        "statusCategory": "DONE"
+      },
+      {
+        "id": "10013",
+        "statusReference": "10013",
+        "name": "Cancelled",
+        "statusCategory": "DONE"
+      }
+    ],
+    "values": [
+      {
+        "id": "b5960510-d51c-425d-bf45-6b46efd9fe6c",
+        "name": "AO epic",
+        "statuses": [
+          {
+            "statusReference": "10004"
+          },
+          {
+            "statusReference": "10006"
+          },
+          {
+            "statusReference": "10007"
+          },
+          {
+            "statusReference": "3"
+          },
+          {
+            "statusReference": "10012"
+          },
+          {
+            "statusReference": "10013"
+          }
+        ],
+        "transitions": [
+          {
+            "id": "1",
+            "type": "INITIAL",
+            "toStatusReference": "10004",
+            "links": [
+              {}
+            ],
+            "name": "Create",
+            "actions": []
+          },
+          {
+            "id": "2",
+            "type": "DIRECTED",
+            "toStatusReference": "10006",
+            "links": [
+              {
+                "fromStatusReference": "10004"
+              }
+            ],
+            "name": "Start spec",
+            "actions": [],
+            "conditions": {
+              "operation": "ALL",
+              "conditionGroups": [],
+              "conditions": [
+                {
+                  "ruleKey": "system:restrict-issue-transition",
+                  "parameters": {
+                    "accountIds": "",
+                    "roleIds": "",
+                    "groupIds": "8ac2cc1a-cdb1-4d2e-a854-501daec18aa4",
+                    "permissionKeys": "",
+                    "groupCustomFields": "",
+                    "allowUserCustomFields": "",
+                    "denyUserCustomFields": ""
+                  },
+                  "id": "f858db56-8d64-4522-88c0-c197280e266e"
+                }
+              ]
+            }
+          },
+          {
+            "id": "6",
+            "type": "DIRECTED",
+            "toStatusReference": "10013",
+            "links": [
+              {
+                "fromStatusReference": "10004"
+              }
+            ],
+            "name": "Cancel",
+            "actions": [],
+            "conditions": {
+              "operation": "ALL",
+              "conditionGroups": [],
+              "conditions": [
+                {
+                  "ruleKey": "system:restrict-issue-transition",
+                  "parameters": {
+                    "accountIds": "",
+                    "roleIds": "",
+                    "groupIds": "8ac2cc1a-cdb1-4d2e-a854-501daec18aa4",
+                    "permissionKeys": "",
+                    "groupCustomFields": "",
+                    "allowUserCustomFields": "",
+                    "denyUserCustomFields": ""
+                  },
+                  "id": "f699ae03-e3a0-4495-aa79-642e69d7523a"
+                }
+              ]
+            },
+            "transitionScreen": {
+              "ruleKey": "system:transition-screen",
+              "parameters": {
+                "screenId": "3"
+              },
+              "id": "2ce88ffb-e676-427c-ab54-d20e2024b586"
+            }
+          },
+          {
+            "id": "3",
+            "type": "DIRECTED",
+            "toStatusReference": "10007",
+            "links": [
+              {
+                "fromStatusReference": "10006"
+              }
+            ],
+            "name": "Approve spec",
+            "actions": [],
+            "conditions": {
+              "operation": "ALL",
+              "conditionGroups": [],
+              "conditions": [
+                {
+                  "ruleKey": "system:restrict-issue-transition",
+                  "parameters": {
+                    "accountIds": "",
+                    "roleIds": "",
+                    "groupIds": "8ac2cc1a-cdb1-4d2e-a854-501daec18aa4",
+                    "permissionKeys": "",
+                    "groupCustomFields": "",
+                    "allowUserCustomFields": "",
+                    "denyUserCustomFields": ""
+                  },
+                  "id": "0583345b-37d7-471d-a312-7bbeb2950c7e"
+                }
+              ]
+            }
+          },
+          {
+            "id": "7",
+            "type": "DIRECTED",
+            "toStatusReference": "10013",
+            "links": [
+              {
+                "fromStatusReference": "10006"
+              }
+            ],
+            "name": "Cancel",
+            "actions": [],
+            "conditions": {
+              "operation": "ALL",
+              "conditionGroups": [],
+              "conditions": [
+                {
+                  "ruleKey": "system:restrict-issue-transition",
+                  "parameters": {
+                    "accountIds": "",
+                    "roleIds": "",
+                    "groupIds": "8ac2cc1a-cdb1-4d2e-a854-501daec18aa4",
+                    "permissionKeys": "",
+                    "groupCustomFields": "",
+                    "allowUserCustomFields": "",
+                    "denyUserCustomFields": ""
+                  },
+                  "id": "44ff76e0-1be9-4eb8-80ea-4b0f6a2dd7ac"
+                }
+              ]
+            },
+            "transitionScreen": {
+              "ruleKey": "system:transition-screen",
+              "parameters": {
+                "screenId": "3"
+              },
+              "id": "b44c26c8-bca3-4823-9424-9ba9580fed8c"
+            }
+          },
+          {
+            "id": "4",
+            "type": "DIRECTED",
+            "toStatusReference": "3",
+            "links": [
+              {
+                "fromStatusReference": "10007"
+              }
+            ],
+            "name": "Approve plan",
+            "actions": [],
+            "conditions": {
+              "operation": "ALL",
+              "conditionGroups": [],
+              "conditions": [
+                {
+                  "ruleKey": "system:restrict-issue-transition",
+                  "parameters": {
+                    "accountIds": "",
+                    "roleIds": "",
+                    "groupIds": "8ac2cc1a-cdb1-4d2e-a854-501daec18aa4",
+                    "permissionKeys": "",
+                    "groupCustomFields": "",
+                    "allowUserCustomFields": "",
+                    "denyUserCustomFields": ""
+                  },
+                  "id": "3e573c6c-e74d-4ed8-aa4e-0c7a69dd8a26"
+                }
+              ]
+            }
+          },
+          {
+            "id": "8",
+            "type": "DIRECTED",
+            "toStatusReference": "10013",
+            "links": [
+              {
+                "fromStatusReference": "10007"
+              }
+            ],
+            "name": "Cancel",
+            "actions": [],
+            "conditions": {
+              "operation": "ALL",
+              "conditionGroups": [],
+              "conditions": [
+                {
+                  "ruleKey": "system:restrict-issue-transition",
+                  "parameters": {
+                    "accountIds": "",
+                    "roleIds": "",
+                    "groupIds": "8ac2cc1a-cdb1-4d2e-a854-501daec18aa4",
+                    "permissionKeys": "",
+                    "groupCustomFields": "",
+                    "allowUserCustomFields": "",
+                    "denyUserCustomFields": ""
+                  },
+                  "id": "3fd9fda1-3b6a-4022-973b-7fcd370f3085"
+                }
+              ]
+            },
+            "transitionScreen": {
+              "ruleKey": "system:transition-screen",
+              "parameters": {
+                "screenId": "3"
+              },
+              "id": "4f6afdeb-bf18-41d5-8f1c-e5e4d795d708"
+            }
+          },
+          {
+            "id": "5",
+            "type": "DIRECTED",
+            "toStatusReference": "10012",
+            "links": [
+              {
+                "fromStatusReference": "3"
+              }
+            ],
+            "name": "Complete",
+            "actions": [
+              {
+                "ruleKey": "system:update-field",
+                "parameters": {
+                  "field": "resolution",
+                  "value": "10000",
+                  "mode": "replace"
+                },
+                "id": "659157015"
+              }
+            ],
+            "conditions": {
+              "operation": "ALL",
+              "conditionGroups": [],
+              "conditions": [
+                {
+                  "ruleKey": "system:restrict-issue-transition",
+                  "parameters": {
+                    "accountIds": "",
+                    "roleIds": "",
+                    "groupIds": "8ac2cc1a-cdb1-4d2e-a854-501daec18aa4",
+                    "permissionKeys": "",
+                    "groupCustomFields": "",
+                    "allowUserCustomFields": "",
+                    "denyUserCustomFields": ""
+                  },
+                  "id": "dc5c218c-b41f-4616-a916-df0a70231b2d"
+                }
+              ]
+            }
+          },
+          {
+            "id": "9",
+            "type": "DIRECTED",
+            "toStatusReference": "10013",
+            "links": [
+              {
+                "fromStatusReference": "3"
+              }
+            ],
+            "name": "Cancel",
+            "actions": [],
+            "conditions": {
+              "operation": "ALL",
+              "conditionGroups": [],
+              "conditions": [
+                {
+                  "ruleKey": "system:restrict-issue-transition",
+                  "parameters": {
+                    "accountIds": "",
+                    "roleIds": "",
+                    "groupIds": "8ac2cc1a-cdb1-4d2e-a854-501daec18aa4",
+                    "permissionKeys": "",
+                    "groupCustomFields": "",
+                    "allowUserCustomFields": "",
+                    "denyUserCustomFields": ""
+                  },
+                  "id": "e6a047b5-891c-4fc1-8b75-63a8133f8def"
+                }
+              ]
+            },
+            "transitionScreen": {
+              "ruleKey": "system:transition-screen",
+              "parameters": {
+                "screenId": "3"
+              },
+              "id": "603dfa4c-090e-4460-98f7-3d6a511759b6"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "/rest/api/3/workflows/search?expand=values.transitions&queryString=AO standard": {
+    "maxResults": 50,
+    "startAt": 0,
+    "total": 1,
+    "isLast": true,
+    "statuses": [
+      {
+        "id": "10004",
+        "statusReference": "10004",
+        "name": "New",
+        "statusCategory": "TODO"
+      },
+      {
+        "id": "10005",
+        "statusReference": "10005",
+        "name": "Ready",
+        "statusCategory": "TODO"
+      },
+      {
+        "id": "3",
+        "statusReference": "3",
+        "name": "In Progress",
+        "statusCategory": "IN_PROGRESS"
+      },
+      {
+        "id": "10009",
+        "statusReference": "10009",
+        "name": "In Review",
+        "statusCategory": "IN_PROGRESS"
+      },
+      {
+        "id": "10010",
+        "statusReference": "10010",
+        "name": "Ready for QA",
+        "statusCategory": "IN_PROGRESS"
+      },
+      {
+        "id": "10011",
+        "statusReference": "10011",
+        "name": "In QA",
+        "statusCategory": "IN_PROGRESS"
+      },
+      {
+        "id": "10012",
+        "statusReference": "10012",
+        "name": "Done",
+        "statusCategory": "DONE"
+      },
+      {
+        "id": "10013",
+        "statusReference": "10013",
+        "name": "Cancelled",
+        "statusCategory": "DONE"
+      }
+    ],
+    "values": [
+      {
+        "id": "cc6d5446-7746-495e-9a40-f2307ea9b568",
+        "name": "AO standard",
+        "statuses": [
+          {
+            "statusReference": "10004"
+          },
+          {
+            "statusReference": "10005"
+          },
+          {
+            "statusReference": "3"
+          },
+          {
+            "statusReference": "10009"
+          },
+          {
+            "statusReference": "10010"
+          },
+          {
+            "statusReference": "10011"
+          },
+          {
+            "statusReference": "10012"
+          },
+          {
+            "statusReference": "10013"
+          }
+        ],
+        "transitions": [
+          {
+            "id": "1",
+            "type": "INITIAL",
+            "toStatusReference": "10004",
+            "links": [
+              {}
+            ],
+            "name": "Create",
+            "actions": []
+          },
+          {
+            "id": "2",
+            "type": "DIRECTED",
+            "toStatusReference": "10005",
+            "links": [
+              {
+                "fromStatusReference": "10004"
+              }
+            ],
+            "name": "Refine",
+            "actions": [],
+            "conditions": {
+              "operation": "ALL",
+              "conditionGroups": [],
+              "conditions": [
+                {
+                  "ruleKey": "system:restrict-issue-transition",
+                  "parameters": {
+                    "accountIds": "",
+                    "roleIds": "",
+                    "groupIds": "8ac2cc1a-cdb1-4d2e-a854-501daec18aa4,4b5aeeb0-e374-49d6-a429-879ca97f6ec0",
+                    "permissionKeys": "",
+                    "groupCustomFields": "",
+                    "allowUserCustomFields": "",
+                    "denyUserCustomFields": ""
+                  },
+                  "id": "364e0e54-280e-4b05-98fb-87546969779d"
+                }
+              ]
+            }
+          },
+          {
+            "id": "10",
+            "type": "DIRECTED",
+            "toStatusReference": "10013",
+            "links": [
+              {
+                "fromStatusReference": "10004"
+              }
+            ],
+            "name": "Cancel",
+            "actions": [],
+            "conditions": {
+              "operation": "ALL",
+              "conditionGroups": [],
+              "conditions": [
+                {
+                  "ruleKey": "system:restrict-issue-transition",
+                  "parameters": {
+                    "accountIds": "",
+                    "roleIds": "",
+                    "groupIds": "8ac2cc1a-cdb1-4d2e-a854-501daec18aa4",
+                    "permissionKeys": "",
+                    "groupCustomFields": "",
+                    "allowUserCustomFields": "",
+                    "denyUserCustomFields": ""
+                  },
+                  "id": "243eab16-f40b-4473-8078-bdb9221abb37"
+                }
+              ]
+            },
+            "transitionScreen": {
+              "ruleKey": "system:transition-screen",
+              "parameters": {
+                "screenId": "3"
+              },
+              "id": "bfcad5fc-abe7-4acb-8713-32d431b5e932"
+            }
+          },
+          {
+            "id": "3",
+            "type": "DIRECTED",
+            "toStatusReference": "3",
+            "links": [
+              {
+                "fromStatusReference": "10005"
+              }
+            ],
+            "name": "Start",
+            "actions": [],
+            "conditions": {
+              "operation": "ALL",
+              "conditionGroups": [],
+              "conditions": [
+                {
+                  "ruleKey": "system:restrict-issue-transition",
+                  "parameters": {
+                    "accountIds": "",
+                    "roleIds": "",
+                    "groupIds": "6366693c-304b-4564-a8d1-97e10e0a7278",
+                    "permissionKeys": "",
+                    "groupCustomFields": "",
+                    "allowUserCustomFields": "",
+                    "denyUserCustomFields": ""
+                  },
+                  "id": "06d3b285-0d07-4dad-90a5-b8aead1fab4e"
+                }
+              ]
+            }
+          },
+          {
+            "id": "11",
+            "type": "DIRECTED",
+            "toStatusReference": "10013",
+            "links": [
+              {
+                "fromStatusReference": "10005"
+              }
+            ],
+            "name": "Cancel",
+            "actions": [],
+            "conditions": {
+              "operation": "ALL",
+              "conditionGroups": [],
+              "conditions": [
+                {
+                  "ruleKey": "system:restrict-issue-transition",
+                  "parameters": {
+                    "accountIds": "",
+                    "roleIds": "",
+                    "groupIds": "8ac2cc1a-cdb1-4d2e-a854-501daec18aa4",
+                    "permissionKeys": "",
+                    "groupCustomFields": "",
+                    "allowUserCustomFields": "",
+                    "denyUserCustomFields": ""
+                  },
+                  "id": "ea9947e5-689f-4313-b27a-5278a30cf3d6"
+                }
+              ]
+            },
+            "transitionScreen": {
+              "ruleKey": "system:transition-screen",
+              "parameters": {
+                "screenId": "3"
+              },
+              "id": "ce673792-10ba-45bd-8b0c-f9063f92e888"
+            }
+          },
+          {
+            "id": "4",
+            "type": "DIRECTED",
+            "toStatusReference": "10009",
+            "links": [
+              {
+                "fromStatusReference": "3"
+              }
+            ],
+            "name": "Submit",
+            "actions": [],
+            "conditions": {
+              "operation": "ALL",
+              "conditionGroups": [],
+              "conditions": [
+                {
+                  "ruleKey": "system:restrict-issue-transition",
+                  "parameters": {
+                    "accountIds": "",
+                    "roleIds": "",
+                    "groupIds": "4b5aeeb0-e374-49d6-a429-879ca97f6ec0",
+                    "permissionKeys": "",
+                    "groupCustomFields": "",
+                    "allowUserCustomFields": "",
+                    "denyUserCustomFields": ""
+                  },
+                  "id": "4852e735-0bc8-4273-a014-2cf17676f021"
+                }
+              ]
+            }
+          },
+          {
+            "id": "12",
+            "type": "DIRECTED",
+            "toStatusReference": "10013",
+            "links": [
+              {
+                "fromStatusReference": "3"
+              }
+            ],
+            "name": "Cancel",
+            "actions": [],
+            "conditions": {
+              "operation": "ALL",
+              "conditionGroups": [],
+              "conditions": [
+                {
+                  "ruleKey": "system:restrict-issue-transition",
+                  "parameters": {
+                    "accountIds": "",
+                    "roleIds": "",
+                    "groupIds": "8ac2cc1a-cdb1-4d2e-a854-501daec18aa4",
+                    "permissionKeys": "",
+                    "groupCustomFields": "",
+                    "allowUserCustomFields": "",
+                    "denyUserCustomFields": ""
+                  },
+                  "id": "c48e446a-edfd-4a41-aff3-3496479c3510"
+                }
+              ]
+            },
+            "transitionScreen": {
+              "ruleKey": "system:transition-screen",
+              "parameters": {
+                "screenId": "3"
+              },
+              "id": "fc5b319f-f947-48ea-b0e8-abce92e30e7f"
+            }
+          },
+          {
+            "id": "5",
+            "type": "DIRECTED",
+            "toStatusReference": "3",
+            "links": [
+              {
+                "fromStatusReference": "10009"
+              }
+            ],
+            "name": "Request changes",
+            "actions": [],
+            "conditions": {
+              "operation": "ALL",
+              "conditionGroups": [],
+              "conditions": [
+                {
+                  "ruleKey": "system:restrict-issue-transition",
+                  "parameters": {
+                    "accountIds": "",
+                    "roleIds": "",
+                    "groupIds": "6366693c-304b-4564-a8d1-97e10e0a7278,8ac2cc1a-cdb1-4d2e-a854-501daec18aa4,4b5aeeb0-e374-49d6-a429-879ca97f6ec0",
+                    "permissionKeys": "",
+                    "groupCustomFields": "",
+                    "allowUserCustomFields": "",
+                    "denyUserCustomFields": ""
+                  },
+                  "id": "a5af104a-e9fa-4961-a96a-d272a89ad627"
+                }
+              ]
+            }
+          },
+          {
+            "id": "6",
+            "type": "DIRECTED",
+            "toStatusReference": "10010",
+            "links": [
+              {
+                "fromStatusReference": "10009"
+              }
+            ],
+            "name": "Deploy to QA",
+            "actions": [],
+            "conditions": {
+              "operation": "ALL",
+              "conditionGroups": [],
+              "conditions": [
+                {
+                  "ruleKey": "system:restrict-issue-transition",
+                  "parameters": {
+                    "accountIds": "",
+                    "roleIds": "",
+                    "groupIds": "4b5aeeb0-e374-49d6-a429-879ca97f6ec0",
+                    "permissionKeys": "",
+                    "groupCustomFields": "",
+                    "allowUserCustomFields": "",
+                    "denyUserCustomFields": ""
+                  },
+                  "id": "a5b141e0-dd5d-4cbc-930e-5d0bb71a7ded"
+                }
+              ]
+            }
+          },
+          {
+            "id": "13",
+            "type": "DIRECTED",
+            "toStatusReference": "10013",
+            "links": [
+              {
+                "fromStatusReference": "10009"
+              }
+            ],
+            "name": "Cancel",
+            "actions": [],
+            "conditions": {
+              "operation": "ALL",
+              "conditionGroups": [],
+              "conditions": [
+                {
+                  "ruleKey": "system:restrict-issue-transition",
+                  "parameters": {
+                    "accountIds": "",
+                    "roleIds": "",
+                    "groupIds": "8ac2cc1a-cdb1-4d2e-a854-501daec18aa4",
+                    "permissionKeys": "",
+                    "groupCustomFields": "",
+                    "allowUserCustomFields": "",
+                    "denyUserCustomFields": ""
+                  },
+                  "id": "a4143aa0-f57c-4af3-9948-76c355912d5a"
+                }
+              ]
+            },
+            "transitionScreen": {
+              "ruleKey": "system:transition-screen",
+              "parameters": {
+                "screenId": "3"
+              },
+              "id": "6f0ba23d-f0a7-49fa-a184-0fdbd5d0f619"
+            }
+          },
+          {
+            "id": "7",
+            "type": "DIRECTED",
+            "toStatusReference": "10011",
+            "links": [
+              {
+                "fromStatusReference": "10010"
+              }
+            ],
+            "name": "Pick up",
+            "actions": [],
+            "conditions": {
+              "operation": "ALL",
+              "conditionGroups": [],
+              "conditions": [
+                {
+                  "ruleKey": "system:restrict-issue-transition",
+                  "parameters": {
+                    "accountIds": "",
+                    "roleIds": "",
+                    "groupIds": "6366693c-304b-4564-a8d1-97e10e0a7278",
+                    "permissionKeys": "",
+                    "groupCustomFields": "",
+                    "allowUserCustomFields": "",
+                    "denyUserCustomFields": ""
+                  },
+                  "id": "a8aab7ca-57c5-4edc-847b-9f90ddb0abac"
+                }
+              ]
+            }
+          },
+          {
+            "id": "14",
+            "type": "DIRECTED",
+            "toStatusReference": "10013",
+            "links": [
+              {
+                "fromStatusReference": "10010"
+              }
+            ],
+            "name": "Cancel",
+            "actions": [],
+            "conditions": {
+              "operation": "ALL",
+              "conditionGroups": [],
+              "conditions": [
+                {
+                  "ruleKey": "system:restrict-issue-transition",
+                  "parameters": {
+                    "accountIds": "",
+                    "roleIds": "",
+                    "groupIds": "8ac2cc1a-cdb1-4d2e-a854-501daec18aa4",
+                    "permissionKeys": "",
+                    "groupCustomFields": "",
+                    "allowUserCustomFields": "",
+                    "denyUserCustomFields": ""
+                  },
+                  "id": "6794501d-1ffb-439b-93fa-4cb1207dabc7"
+                }
+              ]
+            },
+            "transitionScreen": {
+              "ruleKey": "system:transition-screen",
+              "parameters": {
+                "screenId": "3"
+              },
+              "id": "8151b892-7752-488e-8944-3d17220bf4f0"
+            }
+          },
+          {
+            "id": "8",
+            "type": "DIRECTED",
+            "toStatusReference": "3",
+            "links": [
+              {
+                "fromStatusReference": "10011"
+              }
+            ],
+            "name": "QA fail",
+            "actions": [],
+            "conditions": {
+              "operation": "ALL",
+              "conditionGroups": [],
+              "conditions": [
+                {
+                  "ruleKey": "system:restrict-issue-transition",
+                  "parameters": {
+                    "accountIds": "",
+                    "roleIds": "",
+                    "groupIds": "6366693c-304b-4564-a8d1-97e10e0a7278",
+                    "permissionKeys": "",
+                    "groupCustomFields": "",
+                    "allowUserCustomFields": "",
+                    "denyUserCustomFields": ""
+                  },
+                  "id": "6ebb0115-d4ef-4367-80d4-573c44493ada"
+                }
+              ]
+            }
+          },
+          {
+            "id": "9",
+            "type": "DIRECTED",
+            "toStatusReference": "10012",
+            "links": [
+              {
+                "fromStatusReference": "10011"
+              }
+            ],
+            "name": "Accept",
+            "actions": [
+              {
+                "ruleKey": "system:update-field",
+                "parameters": {
+                  "field": "resolution",
+                  "value": "10000",
+                  "mode": "replace"
+                },
+                "id": "1340570250"
+              }
+            ],
+            "conditions": {
+              "operation": "ALL",
+              "conditionGroups": [],
+              "conditions": [
+                {
+                  "ruleKey": "system:restrict-issue-transition",
+                  "parameters": {
+                    "accountIds": "",
+                    "roleIds": "",
+                    "groupIds": "8ac2cc1a-cdb1-4d2e-a854-501daec18aa4",
+                    "permissionKeys": "",
+                    "groupCustomFields": "",
+                    "allowUserCustomFields": "",
+                    "denyUserCustomFields": ""
+                  },
+                  "id": "e12e1648-40f1-4cd4-a0a5-6bf132de9daf"
+                }
+              ]
+            }
+          },
+          {
+            "id": "15",
+            "type": "DIRECTED",
+            "toStatusReference": "10013",
+            "links": [
+              {
+                "fromStatusReference": "10011"
+              }
+            ],
+            "name": "Cancel",
+            "actions": [],
+            "conditions": {
+              "operation": "ALL",
+              "conditionGroups": [],
+              "conditions": [
+                {
+                  "ruleKey": "system:restrict-issue-transition",
+                  "parameters": {
+                    "accountIds": "",
+                    "roleIds": "",
+                    "groupIds": "8ac2cc1a-cdb1-4d2e-a854-501daec18aa4",
+                    "permissionKeys": "",
+                    "groupCustomFields": "",
+                    "allowUserCustomFields": "",
+                    "denyUserCustomFields": ""
+                  },
+                  "id": "abcb1d02-d95c-40d6-9571-60f13d19de9e"
+                }
+              ]
+            },
+            "transitionScreen": {
+              "ruleKey": "system:transition-screen",
+              "parameters": {
+                "screenId": "3"
+              },
+              "id": "11c9e650-cb83-4f90-953c-fd3d6fbf04af"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "/rest/api/3/workflows/search?expand=values.transitions&queryString=AO sub-task": {
+    "maxResults": 50,
+    "startAt": 0,
+    "total": 1,
+    "isLast": true,
+    "statuses": [
+      {
+        "id": "3",
+        "statusReference": "3",
+        "name": "In Progress",
+        "statusCategory": "IN_PROGRESS"
+      },
+      {
+        "id": "10008",
+        "statusReference": "10008",
+        "name": "To Do",
+        "statusCategory": "TODO"
+      },
+      {
+        "id": "10012",
+        "statusReference": "10012",
+        "name": "Done",
+        "statusCategory": "DONE"
+      }
+    ],
+    "values": [
+      {
+        "id": "d12e4f40-0c67-4a56-8577-1df4bd17c917",
+        "name": "AO sub-task",
+        "statuses": [
+          {
+            "statusReference": "10008"
+          },
+          {
+            "statusReference": "3"
+          },
+          {
+            "statusReference": "10012"
+          }
+        ],
+        "transitions": [
+          {
+            "id": "1",
+            "type": "INITIAL",
+            "toStatusReference": "10008",
+            "links": [
+              {}
+            ],
+            "name": "Create",
+            "actions": []
+          },
+          {
+            "id": "2",
+            "type": "DIRECTED",
+            "toStatusReference": "3",
+            "links": [
+              {
+                "fromStatusReference": "10008"
+              }
+            ],
+            "name": "Start",
+            "actions": [],
+            "conditions": {
+              "operation": "ALL",
+              "conditionGroups": [],
+              "conditions": [
+                {
+                  "ruleKey": "system:restrict-issue-transition",
+                  "parameters": {
+                    "accountIds": "",
+                    "roleIds": "",
+                    "groupIds": "6366693c-304b-4564-a8d1-97e10e0a7278",
+                    "permissionKeys": "",
+                    "groupCustomFields": "",
+                    "allowUserCustomFields": "",
+                    "denyUserCustomFields": ""
+                  },
+                  "id": "c7c0f68e-c49f-467a-8812-abd707780472"
+                }
+              ]
+            }
+          },
+          {
+            "id": "3",
+            "type": "DIRECTED",
+            "toStatusReference": "10012",
+            "links": [
+              {
+                "fromStatusReference": "3"
+              }
+            ],
+            "name": "Complete",
+            "actions": [
+              {
+                "ruleKey": "system:update-field",
+                "parameters": {
+                  "field": "resolution",
+                  "value": "10000",
+                  "mode": "replace"
+                },
+                "id": "385117044"
+              }
+            ],
+            "conditions": {
+              "operation": "ALL",
+              "conditionGroups": [],
+              "conditions": [
+                {
+                  "ruleKey": "system:restrict-issue-transition",
+                  "parameters": {
+                    "accountIds": "",
+                    "roleIds": "",
+                    "groupIds": "6366693c-304b-4564-a8d1-97e10e0a7278",
+                    "permissionKeys": "",
+                    "groupCustomFields": "",
+                    "allowUserCustomFields": "",
+                    "denyUserCustomFields": ""
+                  },
+                  "id": "d57d76fb-450f-4b4b-b490-b6497b82ed18"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "/rest/api/3/workflowscheme/project?projectId=10001": {
+    "values": [
+      {
+        "projectIds": [
+          "10001"
+        ],
+        "workflowScheme": {
+          "id": 10002,
+          "name": "AO workflow scheme",
+          "defaultWorkflow": "jira",
+          "issueTypeMappings": {
+            "10000": "AO epic",
+            "10005": "AO standard",
+            "10006": "AO standard",
+            "10007": "AO standard",
+            "10008": "AO sub-task"
+          }
+        }
+      }
+    ]
+  }
+}
