@@ -1,4 +1,4 @@
-// A Jira client for tests that answers from a recording of real GET requests, keyed by requestKey.
+// A Jira or GitHub client for tests that answers from a recording of GET requests, keyed by requestKey.
 
 // The path and its query without startAt, keys sorted: one recording entry per request whatever its page.
 export function requestKey(path, query = {}) {
@@ -21,7 +21,10 @@ export function recordedClient(recording) {
     async *pages(path, query) {
       yield answer(path, query);
     },
-    getAll: async (path, query, itemsKey = 'values') => answer(path, query)[itemsKey],
+    getAll: async (path, query, itemsKey) => {
+      const found = answer(path, query);
+      return itemsKey ? found[itemsKey] : Array.isArray(found) ? found : found.values;
+    },
     searchAll: async (jql, fields) => answer('/rest/api/3/search/jql', { jql, fields: fields.join(',') }).issues,
   };
 }
