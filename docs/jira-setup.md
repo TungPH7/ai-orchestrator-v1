@@ -253,7 +253,13 @@ Template Kanban đã tạo sẵn một board cho space; mục này sửa board �
 
 **Mở Board settings:** trong space, mở board → bấm **•••** cạnh tên board → **Board settings**.
 
-**Filter:** Board settings → **Details** → sửa filter query thành dòng bên dưới (thay `<KEY>` bằng key của space) → lưu.
+**Filter:** filter của board được sửa ở trang filter, không sửa ngay trong Board settings.
+
+1. Board settings → **Details** → phần **Board filter** → bấm **Edit filter query**. Trang filter mở ở tab mới.
+2. Ô JQL: xóa câu cũ, dán dòng bên dưới (thay `<KEY>` bằng key của space).
+3. Bấm Enter, hoặc biểu tượng kính lúp ở cuối ô JQL, để chạy câu mới. Chưa chạy thì Jira lưu lại câu cũ.
+4. Bấm nút lưu hiện ra cạnh tên filter (đối chiếu giao diện: **Save filter** hoặc **Save changes**).
+5. Quay lại tab Board settings, tải lại trang (F5): ô **Filter query** phải hiện câu mới. **Board sub-filter** để nguyên.
 
 - [ ] Filter: `project = <KEY> AND issuetype != Epic ORDER BY Rank ASC`
 

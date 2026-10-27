@@ -43,23 +43,24 @@
 
 | Mục | Trạng thái |
 |---|---|
-| 1. Group và service account | Đang làm |
+| 1. Group và service account | Xong (bạn báo 2026-10-27); `jira:check` kiểm lại thành viên group |
 | 2. Rovo MCP | Xong ở T1 |
 | 3. Resolution | Xong (2026-10-27). Site có hai resolution `Done` ("GreenHopper Managed Resolution", do Jira Software tạo); giữ cả hai |
 | 4. Status | Xong (2026-10-27): 10 status mới và `In Progress` có sẵn, đúng tên và Category |
-| 5. Workflow | Đang làm: đã có `AO standard`; `AO epic`, `AO sub-task` chưa xác nhận |
+| 5. Workflow | Xong (bạn báo 2026-10-27): `AO standard`, `AO epic`, `AO sub-task` |
 | 6. Work type | Xong (2026-10-27): đã tạo `Task`, `Bug`, `Sub-task`; `Epic`, `Story` có sẵn |
-| 7. Workflow scheme | Đã tạo `AO workflow scheme`; chưa xác nhận đã gắn đủ ba workflow |
-| 8. Trường | Đang làm: `Found in` đã tạo, đúng ba option; giữ Global context |
-| 9. Space | Đang làm: đã tạo `DEMO`, company-managed (Space settings có **Workflows**, **Work items** → **Types**, **Screens**; ảnh `misc/images/phien-6-luot-21-anh-1.png`). Đủ năm work type: trang **Screens** có `Story`, `Task`, `Sub-task` dùng chung screen scheme, `Bug` và `Epic` có scheme riêng (ảnh `misc/images/phien-6-luot-22-anh-1.png`). Đang thêm field lên screen |
-| 10. Board | Chưa làm |
+| 7. Workflow scheme | Xong (bạn báo 2026-10-27) |
+| 8. Trường | Xong (bạn báo 2026-10-27). `Found in` đúng ba option; giữ Global context |
+| 9. Space | Xong (bạn báo 2026-10-27): `DEMO` company-managed (ảnh `misc/images/phien-6-luot-21-anh-1.png`), đủ năm work type (ảnh `misc/images/phien-6-luot-22-anh-1.png`), field thêm theo screen của từng work type |
+| 10. Board | Đang làm: filter chưa lưu. Đọc qua REST lúc 2026-10-27 vẫn là `project = "DEMO" ORDER BY Rank ASC` (ảnh `misc/images/phien-6-luot-23-anh-2.png`) |
 | 11. GitHub for Jira | Chưa làm |
 | 12. Môi trường | Xong, Claude làm |
 
 | Câu hỏi | Kết quả |
 |---|---|
 | Gói Free có rule "Restrict who can move a work item" theo group không | Có trong danh sách rule (2026-10-27, ảnh `misc/images/phien-6-luot-17-anh-2.png`). Rule có chặn thật hay không được kiểm ở T15 |
-| Service account thêm được vào group không | Chưa biết |
+| Service account thêm được vào group không | Bạn báo mục 1 xong (2026-10-27); `jira:check` kiểm lại thành viên từng group |
 | Site có sẵn những work type nào | Chỉ `Epic` và `Story` (2026-10-27, ảnh `misc/images/phien-6-luot-18-anh-1.png`). Checklist thêm mục 6 Work type, trước Workflow scheme |
 | Giới hạn custom field theo work type được không | Không: Global context của field không còn sửa được work type (banner CHANGE-3019, ảnh `misc/images/phien-6-luot-19-anh-2.png`). Giữ **Any issue type**; work type nào dùng field nào do hợp đồng quy định |
 | Trình tạo space có loại sub-task không | Bước 2 (**Let's set up your space**) chỉ có sẵn `Epic`, `Story`, `Bug`, `Task` (ảnh `misc/images/phien-6-luot-20-anh-1.png`). `Sub-task` thêm sau trong Space settings |
+| Sửa filter của board ở đâu | Board settings → **Details** → **Edit filter query** mở trang filter ở tab mới; phải chạy câu JQL (Enter) rồi mới lưu (ảnh `misc/images/phien-6-luot-23-anh-1.png`). **Board sub-filter** mặc định của Kanban là `fixVersion in unreleasedVersions() OR fixVersion is EMPTY`, để nguyên |
