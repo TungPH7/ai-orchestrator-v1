@@ -2341,3 +2341,50 @@ Bạn làm tiếp như sau:
 4. Nếu có loại lạ, ví dụ `Subtask` không gạch nối, đừng xóa, chụp gửi mình.
 
 Mình đã sửa mục 9 của checklist theo đúng menu này: Work type nằm ở **Work items** → **Types**, màn hình nằm ở **Work items** → **Screens**; **Workflows** vẫn ở cấp ngoài cùng như checklist ghi. Tiến độ đã ghi vào `tasks/verification.md`: `DEMO` đã tạo, đang kiểm work type.
+
+---
+
+# Phiên 6 · Lượt 22 — 2026-10-27 khoảng 18:25
+
+**Bạn:**
+
+```markdown
+[Image #17]
+
+Tôi không thấy "bấm vào từng screen trong danh sách (thường có màn hình tạo, sửa, xem) → kéo xuống cuối, ô Select Field... gõ tên field → chọn → field được thêm vào cuối màn hình. Làm cho từng field bên dưới, trên từng screen." ???
+```
+
+Ảnh đính kèm:
+
+- [Image #17](images/phien-6-luot-22-anh-1.png): trang **Space settings → Work items → Screens** của `DEMO`: "DEMO: Kanban Issue Type Screen Scheme", banner về Layout trong giao diện work item mới (Project settings > Issue layout). Ba screen scheme: **DEMO: Kanban Default Screen Scheme** (Story, Task, Sub-task; Create/Edit/View issue đều là `DEMO: Kanban Default Issue Screen`), **DEMO: Kanban Bug Screen Scheme** (Bug; `DEMO: Kanban Bug Screen`), **DEMO: Kanban Epic Screen Scheme** (Epic; `DEMO: Kanban Epic Screen`).
+
+**Claude:**
+
+Checklist viết chưa đúng với trang này. Trang **Screens** không có ô thêm field. Nó chỉ liệt kê screen nào dùng cho work type nào. Ô thêm field nằm trong trang của từng screen, mở ra khi bấm vào tên screen (chữ xanh).
+
+Ảnh của bạn còn cho thấy hai điều:
+
+- **Mục work type đã xong.** `Sub-task` đã có trong space, nằm chung scheme với `Story` và `Task`.
+- **Space chỉ có ba screen, mỗi screen dùng chung cho Create, Edit và View.** Vì vậy mỗi screen chỉ cần thêm field một lần.
+
+Space `DEMO` cần thêm field như sau:
+
+| Screen (chữ xanh) | Work type | Field cần thêm |
+|---|---|---|
+| `DEMO: Kanban Default Issue Screen` | Story, Task, Sub-task | `Fix versions`, `Agent`, `Flagged` |
+| `DEMO: Kanban Bug Screen` | Bug | `Found in`, `Affects versions`, `Severity`, `Fix versions`, `Agent`, `Flagged` |
+| `DEMO: Kanban Epic Screen` | Epic | `Flagged` |
+
+Cách làm:
+
+1. Bấm chữ xanh `DEMO: Kanban Default Issue Screen`. Bấm ở dòng Create, Edit hay View đều được, vì cả ba là cùng một screen.
+2. Trang cấu hình screen mở ra, có danh sách field. Tìm ô thêm field: thường là ô **Select Field...** ở cuối danh sách, hoặc nút **Add field**. Gõ tên field rồi chọn. Field nào đã có trong danh sách thì bỏ qua.
+3. Quay lại trang **Screens** và làm tương tự với hai screen còn lại.
+
+Nếu trang cấu hình screen trông khác mô tả, bạn chụp màn hình gửi mình.
+
+Bảng trên cũng sửa lại một điều mình nói ở lượt trước. Field không giới hạn được theo work type qua context, nhưng screen thì giới hạn được. Thêm như bảng trên thì `Found in` và `Severity` chỉ hiện ở Bug, không hiện ở Story hay Task.
+
+Mình đã sửa mục 9 của checklist: bỏ dòng "mọi screen có mọi field", thay bằng các bước trên và mỗi field một dòng ghi screen của work type nào. Mục 8 cũng được sửa theo cho khớp. Tiến độ đã ghi vào `tasks/verification.md`.
+
+Một câu hỏi: trong checklist, bước **Workflow scheme** của mục 9 đứng trước bước Màn hình. Bạn đã vào **Workflows** → **Switch scheme** để chuyển `DEMO` sang `AO workflow scheme` chưa?
