@@ -68,7 +68,7 @@ T1 đứng đầu vì nếu service account không dùng được với Rovo MCP
 ### Giai đoạn 3: agent và hook
 - [x] T11: Dữ kiện từ Jira cho guard
 - [x] T12: Dữ kiện từ GitHub cho guard
-- [ ] T13: Hook `jira-guard`
+- [x] T13: Hook `jira-guard`
 - [ ] T14: Hook đếm rework và hook chặn đường vòng
 - [ ] T15: Kiểm thật agent và hook trên `DEMO`
 

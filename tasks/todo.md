@@ -253,17 +253,17 @@ Claude làm: tạo repo private `TungPH7/ao-pilot` với nhánh `main` và `deve
 
 **Cỡ:** M
 
-### [ ] T13: Hook `jira-guard`
+### [x] T13: Hook `jira-guard`
 
 **Mô tả:** `lib/tracker/guard.mjs` và `kit/.claude/hooks/jira-guard.mjs` theo spec mục 2.6: lấy vai trò từ `agent_type`; đổi transition Jira trong input của `transitionJiraIssue` (theo `transitionId` hoặc `transitionName`) sang transition của hợp đồng; gom dữ kiện; gọi `checkTransition`; trả `permissionDecision: deny` kèm lý do, hoặc cho qua. Chặn mọi transition của agent trên item có label `needs-you` (plan, quyết định 2). Khai báo hook trong `kit/.claude/settings.json`.
 
 **Tiêu chí chấp nhận:**
-- [ ] `qa` gọi `accept` thì bị chặn; không có `agent_type` thì bị chặn; `agent_type` không phải vai trò agent thì bị chặn.
-- [ ] `fe-dev` gọi `start` khi đã hết chỗ WIP thì bị chặn, lý do nêu thiếu `wip-available`; đủ guard thì cho qua.
-- [ ] Item có label `needs-you` thì mọi transition của agent bị chặn.
+- [x] `qa` gọi `accept` thì bị chặn; không có `agent_type` thì bị chặn; `agent_type` không phải vai trò agent thì bị chặn.
+- [x] `fe-dev` gọi `start` khi đã hết chỗ WIP thì bị chặn, lý do nêu thiếu `wip-available`; đủ guard thì cho qua.
+- [x] Item có label `needs-you` thì mọi transition của agent bị chặn.
 
 **Kiểm chứng:**
-- [ ] `npm test` xanh
+- [x] `npm test` xanh
 
 **Phụ thuộc:** T12
 
