@@ -43,7 +43,7 @@ T1 đứng đầu vì nếu service account không dùng được với Rovo MCP
 ### Giai đoạn 1: kết nối thật và ánh xạ
 - [x] T1: Kết nối thật bằng hai service account
 - [x] T2: Hợp đồng: trường Agent và cách đếm rework
-- [ ] T3: `tracker/jira.yaml` phần danh tính, quy tắc J1 và J4
+- [x] T3: `tracker/jira.yaml` phần danh tính, quy tắc J1 và J4
 - [ ] T4: Ánh xạ workflow, trường, board và môi trường, quy tắc J2 và J3
 - [ ] T5: Quy ước gắn mã Jira
 - [ ] T6: Đếm rework từ lịch sử item

@@ -1,0 +1,7 @@
+description: an identity without the Jira group that the Restrict rules use
+rule: J1
+expect:
+  - "identities[id=automation].group"
+patch:
+  - op: remove
+    path: "identities[id=automation].group"

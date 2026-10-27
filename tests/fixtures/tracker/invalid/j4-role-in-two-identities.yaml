@@ -1,0 +1,8 @@
+description: a role in two identities, so its Jira group is ambiguous
+rule: J4
+expect:
+  - "identities[id=automation].roles"
+patch:
+  - op: set
+    path: "identities[id=automation].roles"
+    value: [automation, devops]

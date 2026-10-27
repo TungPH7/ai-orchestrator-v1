@@ -1,0 +1,8 @@
+description: a contract role that belongs to no identity
+rule: J4
+expect:
+  - "identities"
+patch:
+  - op: set
+    path: "identities[id=agents].roles"
+    value: [pm, ba, ux, sa, fe-dev, be-dev, reviewer, security, devops]

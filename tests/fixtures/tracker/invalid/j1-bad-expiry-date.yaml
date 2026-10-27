@@ -1,0 +1,8 @@
+description: a token expiry date that is not written as YYYY-MM-DD
+rule: J1
+expect:
+  - "identities[id=agents].token_expires_on"
+patch:
+  - op: set
+    path: "identities[id=agents].token_expires_on"
+    value: "27 thg 10, 2027"

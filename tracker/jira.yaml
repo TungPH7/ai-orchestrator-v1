@@ -1,0 +1,30 @@
+# Mapping of the SDLC contract to Jira Cloud on the Free plan (tracker-integration spec sections 2.2 and 2.3).
+# Ids come from the contract; names are what you see on Jira. Rules J1–J4 check this file (spec section 7).
+# Tokens are never written here: an identity only names the environment variable that holds its token.
+site: phunghuutung12b4.atlassian.net
+cloud_id: 58b36210-6e4d-421a-adf4-e74a4e23b069
+
+# Each contract role belongs to exactly one identity (rule J4); the group is what the Restrict rules name.
+identities:
+  - id: human
+    kind: user
+    account: site-admin
+    group: ao-humans
+    roles: [human]
+    note: "Tài khoản Atlassian của bạn, admin của site"
+  - id: agents
+    kind: service-account
+    account: orchestratoragent
+    group: ao-agents
+    roles: [pm, ba, ux, sa, fe-dev, be-dev, reviewer, security, qa, devops]
+    token_env: ATLASSIAN_AGENT_TOKEN
+    token_expires_on: "2027-10-27"
+    note: "Mọi agent trong Claude Code, qua Rovo MCP; vai trò cụ thể do hook kiểm"
+  - id: automation
+    kind: service-account
+    account: orchestratorci
+    group: ao-automation
+    roles: [automation]
+    token_env: JIRA_CI_TOKEN
+    token_expires_on: "2027-10-27"
+    note: "Vai trò automation, chạy jira-sync trong GitHub Actions"
