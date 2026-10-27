@@ -2625,3 +2625,50 @@ Mình đoán là một trong hai nguyên nhân sau:
 Giữ nguyên `DEMO-1`, đừng xóa: nó là bằng chứng của lỗi này. Sửa rule xong, mình sẽ nhờ bạn tạo một Story thử thứ hai để kiểm lại cả hai việc: `Start` không hiện ở `Ready`, và `Cancel` bắt chọn Resolution.
 
 Mình đã ghi kết quả kiểm vào `tasks/verification.md`: tạo Story và `Refine` đạt; hủy có hỏi Resolution không đạt; việc chặn `Start` chưa kiểm.
+
+---
+
+# Phiên 6 · Lượt 29 — 2026-10-28 khoảng 01:00
+
+**Bạn:**
+
+```markdown
+không thấy hiện hộp hỏi Resolution??
+```
+
+**Claude:**
+
+Vậy là transition `Cancel` chưa có rule hiện màn hình. Không có rule thì Jira hủy item luôn, không hỏi gì, và Resolution để trống, đúng như `DEMO-1`. Lỗi này nằm ở checklist: mục 5 chỉ ghi chung chung "chọn rule hiện màn hình", không nói rõ tên rule. Theo tài liệu của Atlassian, rule đó là **Request input → Show a screen**, và phải chọn một màn hình có sẵn chứa trường Resolution.
+
+**Bước 1: kiểm màn hình**
+
+1. Bánh răng ⚙ → **Jira admin settings** → **Work items** → menu bên trái **Screens**.
+2. Tìm `Resolve Issue Screen`. Đây là màn hình có sẵn của Jira.
+3. Bấm vào nó, xem danh sách có trường **Resolution** không. Nếu không thấy màn hình này, hoặc nó không có Resolution, bạn chụp màn hình gửi mình.
+
+**Bước 2: thêm rule cho từng transition `Cancel`**
+
+1. Menu bên trái **Workflows** → `AO standard` → mở trình sửa.
+2. Bấm nhãn **Cancel** của một đường vào `Cancelled`.
+3. Khung **Transition** bên phải → nhóm **Request input** → bấm nút thêm rule của nhóm. Nút này nằm giống **Add restrict transition rule** ở nhóm Restrict.
+4. Chọn **Show a screen** → ô **Select a screen** chọn `Resolve Issue Screen` → **Add**.
+5. Lặp lại bước 2–4 cho đủ 6 transition `Cancel` của `AO standard`, từ: `New`, `Ready`, `In Progress`, `In Review`, `Ready for QA`, `In QA`.
+6. Bấm **Update workflow**.
+7. Làm tương tự với `AO epic`: 4 transition `Cancel`, từ `New`, `Specifying`, `Planning`, `In Progress`. Xong thì bấm **Update workflow**.
+
+Mỗi transition giữ rule riêng, nên phải thêm đủ 10 lần.
+
+Làm transition đầu tiên xong, bạn chụp nhóm **Request input** gửi mình xem đúng chưa rồi hãy làm tiếp.
+
+Về việc có bắt buộc chọn hay không: theo mình biết, khi Resolution nằm trên màn hình transition, Jira bắt chọn một giá trị và không cho để trống. Mình chưa tìm được tài liệu chính thức nói điều này, nên sẽ kiểm bằng Story thử thứ hai.
+
+Sau khi bạn sửa xong, ta làm Story thử thứ hai:
+
+1. **+ Create** → `DEMO`, `Story`, Summary `Story thử T8 lần 2` → **Create**.
+2. Mở Story ở tab **List** → nút status → **Refine**.
+3. Bấm lại nút status, chụp danh sách gửi mình. Danh sách không được có `Start`.
+4. Chọn **Cancel**: lần này Jira phải hiện màn hình có ô **Resolution** → chọn `Won't Do` → xác nhận.
+
+Mình đã sửa mục 5 của checklist theo đúng các bước trên, và ghi nguyên nhân vào `tasks/verification.md`.
+
+Nguồn: [Map a screen to a workflow transition](https://support.atlassian.com/jira-cloud-administration/docs/map-a-screen-to-a-workflow-transition/)
