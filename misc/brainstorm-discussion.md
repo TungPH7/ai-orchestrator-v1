@@ -2198,3 +2198,42 @@ Hai điều nữa từ ảnh:
 - Nút **View warning** ở trên cùng: lúc workflow chưa xong, Jira thường cảnh báo status chưa có transition. Bấm **Update workflow** khi đã thêm xong mọi transition; nếu lúc đó vẫn còn cảnh báo, bạn chụp gửi mình.
 
 Mình đã ghi kết quả về rule Restrict vào `tasks/verification.md`, và sửa mục 5 của checklist theo đúng tên trên giao diện: khung **Transition**, nhóm **Restrict transition**, nút **Add restrict transition rule**, hộp **Add rule**. Rule có chặn thật hay không, mình sẽ thử ở T15.
+
+---
+
+# Phiên 6 · Lượt 18 — 2026-10-27 khoảng 17:15
+
+**Bạn:**
+
+```markdown
+6. Workflow scheme: d:\Document\1Khoahoc\4LapTrinh\AI-for-coding\ai-orchestrator\docs\jira-setup.md
+'chọn các work type ghi ở dòng đó' có vẻ thiếu à? [Image #12]
+```
+
+Ảnh đính kèm:
+
+- [Image #12](images/phien-6-luot-18-anh-1.png): trang sửa `AO workflow scheme`, nút **Add Workflow** được khoanh đỏ; hộp **Assign Issue Types to "AO standard"** chỉ có ba ô: All Unassigned Issue Types (đang dùng Jira Workflow (jira)), Epic, Story; nút Back, Finish (mờ), Cancel.
+
+**Claude:**
+
+Đúng là thiếu. Hộp **Assign Issue Types** liệt kê mọi work type đang có trên site, mà site của bạn chỉ có `Epic` và `Story`. `AO standard` cần thêm `Task` và `Bug`, còn `AO sub-task` cần `Sub-task`. Checklist cũ bỏ sót bước tạo work type vì mình tưởng site đã có sẵn.
+
+Mình đã thêm vào checklist mục **6. Work type**, đặt trước Workflow scheme. Các mục sau lùi một số: Workflow scheme giờ là mục 7, Space là mục 9.
+
+Bạn làm như sau:
+
+1. Bấm **Cancel** để đóng hộp này. Scheme `AO workflow scheme` đã tạo thì giữ nguyên, và giữ tab này để lát quay lại.
+2. Mở tab mới, vào lại **Jira admin settings** → **Work items**. Menu bên trái chọn **Work types** → **Add work type** → ô **Name** gõ `Task` → nếu hộp có ô chọn loại thì chọn Standard → không chọn work type scheme → **Add**.
+3. Làm lại bước 2 với tên `Bug`.
+4. Menu bên trái chọn **Sub-tasks** → **Add subtask work type** → ô **Name** gõ `Sub-task` (có gạch nối) → **Add**. Nếu trang báo sub-task đang tắt, bấm **Enable** trước.
+5. Quay về tab scheme, tải lại trang (F5). Bấm **Add Workflow** → **Add Existing** → chọn `AO standard` → **Next** → tick `Story`, `Task`, `Bug` → **Finish**.
+6. Làm tương tự với `AO epic` (tick `Epic`) và `AO sub-task` (tick `Sub-task`).
+
+Hai lưu ý:
+
+- Trong hộp chọn work type, **không tick ô All Unassigned Issue Types**. Tick ô đó thì mọi work type khác cũng chạy theo workflow đang gắn. Dòng `Jira Workflow (jira)` có sẵn của scheme để nguyên.
+- `Epic` có sẵn trên mọi site Jira, không cần tạo. Ở bước 5, nếu danh sách workflow chưa có `AO epic` hoặc `AO sub-task` thì mục 5 chưa xong, bạn làm nốt trước.
+
+Mình đã ghi vào `tasks/verification.md`: mục 5 đã có `AO standard`; mục 6 đang làm (thiếu `Task`, `Bug`, `Sub-task`); mục 7 đã tạo scheme, chưa gắn workflow. Thứ tự trong spec mục 2.10 cũng được sửa cho khớp. Mục 1 (group) bạn làm xong chưa?
+
+Nguồn: [Add, edit, and delete a work type](https://support.atlassian.com/jira-cloud-administration/docs/add-edit-and-delete-an-issue-type/), [Configure sub-tasks](https://support.atlassian.com/jira-cloud-administration/docs/configure-sub-tasks/)
