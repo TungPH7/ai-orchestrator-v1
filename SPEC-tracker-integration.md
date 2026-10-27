@@ -132,6 +132,8 @@ Sau khi agent chuyển trạng thái thành công, hook thứ hai đếm lại r
 
 Agent không được gọi thẳng Jira REST API. Một hook chặn lệnh Bash có chứa `atlassian`. Biện pháp này không kín hoàn toàn, nên lớp chặn cuối cho các transition của bạn vẫn là rule Restrict.
 
+Cũng hook đó chỉ cho các tool ghi (`createJiraIssue`, `editJiraIssue`, `addOrEditJiraIssueComment`, `transitionJiraIssue`) chạm vào item của space dự án, vì gói Free không có permission scheme nên token của agent ghi được vào mọi space trên site. Key của space đặt ở biến `AO_JIRA_SPACE` trong mục `env` của `.claude/settings.json` dự án; chưa đặt thì mọi lệnh ghi bị chặn. Tool ghi phải nhận key của item, không nhận id số.
+
 Bản nháp trước của spec cho mỗi agent khai báo hook trong frontmatter, kèm `--actor <role>`. Cách đó bị bỏ vì ba lý do. Hook trong file settings của dự án cũng chạy bên trong subagent, nên một hook khai báo ở cả hai nơi sẽ chạy hai lần, và lần không có `--actor` luôn chặn. Hook trong frontmatter chỉ chạy sau khi bạn chấp nhận hộp thoại tin cậy thư mục, và không chạy trong phiên `claude -p`. Còn `agent_type` thì do Claude Code điền, agent không tự đổi được.
 
 ### 2.7 Automation trên GitHub Actions
@@ -234,6 +236,8 @@ ai-orchestrator-v1/
 │   ├── .jira/config.yml
 │   ├── .claude/settings.json   # khai báo các hook
 │   ├── .claude/hooks/jira-guard.mjs
+│   ├── .claude/hooks/jira-rework.mjs      # đếm rework sau transition của agent
+│   ├── .claude/hooks/block-atlassian.mjs  # chặn đường vòng và lệnh ghi ngoài space dự án
 │   └── .github/workflows/jira-sync.yml
 ├── docs/jira-setup.md          # sinh tự động, không sửa tay
 └── tests/tracker/              # dữ liệu mẫu ở tests/fixtures/tracker/
