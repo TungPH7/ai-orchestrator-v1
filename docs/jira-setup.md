@@ -280,11 +280,13 @@ Template Kanban đã tạo sẵn một board cho space; mục này sửa board �
 
 ## 11. GitHub for Jira
 
-**Cách làm** (đối chiếu giao diện ở bước 2 và 3):
+**Cách làm** (đối chiếu giao diện ở bước 5):
 
 1. Thanh bên trái của Jira: **Apps** → **Explore more apps** → ô tìm gõ `GitHub for Atlassian` (tên mới của GitHub for Jira) → chọn app **GitHub for Atlassian** của nhà phát hành **Atlassian**, không chọn các app GitHub của hãng khác → **Get app**.
-2. Sau khi cài, mở app (Apps → Manage your apps, hoặc nút **Get started**) → nối với GitHub → đăng nhập GitHub.
-3. Chọn tài khoản GitHub của bạn → **Only select repositories** → chọn repo của dự án → **Install** → quay lại Jira, bấm **Connect** cạnh tài khoản.
+2. Cài xong, Jira mở trang **Connect GitHub to Atlassian** (nếu không, vào **Jira admin settings** → **Marketplace apps** → **GitHub for Atlassian**). Chọn **GitHub Cloud** → **Next**.
+3. Nếu được hỏi thì đăng nhập GitHub. Dòng **Logged in as** phải là tài khoản sở hữu repo của dự án.
+4. Bấm **Select an organization in GitHub**: GitHub mở ở tab mới. Nếu bấm mà không có gì xảy ra, trình duyệt đã chặn pop-up: bấm biểu tượng chặn pop-up ở cuối thanh địa chỉ → cho phép pop-up từ site Jira → bấm lại.
+5. Trên GitHub: chọn tài khoản sở hữu repo → **Only select repositories** → chọn repo của dự án → **Install** → quay lại tab Jira, bấm **Connect** cạnh tài khoản nếu có. Nếu danh sách không có tài khoản sở hữu repo, dừng lại và hỏi: tài liệu của Atlassian chỉ nói tới GitHub organization.
 
 - [ ] App GitHub for Atlassian đã cài và nối với repo của dự án (pilot: `TungPH7/ao-pilot`)
 

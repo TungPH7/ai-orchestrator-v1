@@ -53,7 +53,7 @@
 | 8. Trường | Xong (bạn báo 2026-10-27). `Found in` đúng ba option; giữ Global context |
 | 9. Space | Xong (bạn báo 2026-10-27): `DEMO` company-managed (ảnh `misc/images/phien-6-luot-21-anh-1.png`), đủ năm work type (ảnh `misc/images/phien-6-luot-22-anh-1.png`), field thêm theo screen của từng work type |
 | 10. Board | Xong (bạn chuyển sang mục 11, 2026-10-28). Filter đọc lại qua REST đã là `project = DEMO AND issuetype != Epic ORDER BY Rank ASC`; cột và giới hạn WIP do `jira:check` kiểm |
-| 11. GitHub for Jira | Đang làm: app nay tên **GitHub for Atlassian**, nhà phát hành Atlassian (ảnh `misc/images/phien-6-luot-24-anh-1.png`) |
+| 11. GitHub for Jira | Đang làm: app nay tên **GitHub for Atlassian**, nhà phát hành Atlassian (ảnh `misc/images/phien-6-luot-24-anh-1.png`); đã cài, đang nối với GitHub. Nút **Select an organization in GitHub** mở tab mới, bị Chrome chặn pop-up (ảnh `misc/images/phien-6-luot-25-anh-2.png`) |
 | 12. Môi trường | Xong, Claude làm |
 
 | Câu hỏi | Kết quả |
@@ -64,3 +64,4 @@
 | Giới hạn custom field theo work type được không | Không: Global context của field không còn sửa được work type (banner CHANGE-3019, ảnh `misc/images/phien-6-luot-19-anh-2.png`). Giữ **Any issue type**; work type nào dùng field nào do hợp đồng quy định |
 | Trình tạo space có loại sub-task không | Bước 2 (**Let's set up your space**) chỉ có sẵn `Epic`, `Story`, `Bug`, `Task` (ảnh `misc/images/phien-6-luot-20-anh-1.png`). `Sub-task` thêm sau trong Space settings |
 | Sửa filter của board ở đâu | Board settings → **Details** → **Edit filter query** mở trang filter ở tab mới; phải chạy câu JQL (Enter) rồi mới lưu (ảnh `misc/images/phien-6-luot-23-anh-1.png`). **Board sub-filter** mặc định của Kanban là `fixVersion in unreleasedVersions() OR fixVersion is EMPTY`, để nguyên |
+| App GitHub for Atlassian nối được với tài khoản GitHub cá nhân không | Chưa biết: tài liệu của Atlassian chỉ nói tới GitHub organization. `ao-pilot` thuộc tài khoản cá nhân `TungPH7` |
