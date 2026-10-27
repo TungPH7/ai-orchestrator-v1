@@ -113,16 +113,16 @@ Claude làm: tạo repo private `TungPH7/ao-pilot` với nhánh `main` và `deve
 
 **Cỡ:** S
 
-### [ ] T6: Đếm rework từ lịch sử item
+### [x] T6: Đếm rework từ lịch sử item
 
 **Mô tả:** `lib/tracker/rework.mjs`: từ lịch sử chuyển trạng thái của một item (định dạng changelog của Jira) và ánh xạ, đếm số transition có effect `increment-rework`, và cho biết đã chạm giới hạn trong `policies.yaml` chưa.
 
 **Tiêu chí chấp nhận:**
-- [ ] Đếm đúng với lịch sử có `request-changes` và `qa-fail` xen kẽ, và bỏ qua thay đổi không phải status.
-- [ ] Lần thứ 3 thì báo chạm giới hạn, kèm effect `flag-needs-you`.
+- [x] Đếm đúng với lịch sử có `request-changes` và `qa-fail` xen kẽ, và bỏ qua thay đổi không phải status.
+- [x] Lần thứ 3 thì báo chạm giới hạn, kèm effect `flag-needs-you`.
 
 **Kiểm chứng:**
-- [ ] `npm test` xanh
+- [x] `npm test` xanh
 
 **Phụ thuộc:** T4
 

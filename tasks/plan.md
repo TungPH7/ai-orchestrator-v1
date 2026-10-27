@@ -46,7 +46,7 @@ T1 đứng đầu vì nếu service account không dùng được với Rovo MCP
 - [x] T3: `tracker/jira.yaml` phần danh tính, quy tắc J1 và J4
 - [x] T4: Ánh xạ workflow, trường, board và môi trường, quy tắc J2 và J3
 - [x] T5: Quy ước gắn mã Jira
-- [ ] T6: Đếm rework từ lịch sử item
+- [x] T6: Đếm rework từ lịch sử item
 
 ### Checkpoint 1
 - [ ] `npm run validate`, `npm test`, `npm run render:check` xanh
