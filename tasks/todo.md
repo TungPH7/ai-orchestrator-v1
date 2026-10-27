@@ -192,16 +192,16 @@ Claude làm: tạo repo private `TungPH7/ao-pilot` với nhánh `main` và `deve
 
 **Cỡ:** M
 
-### [ ] T10: `jira:check` phần 2: rule Restrict, board, trường, hạn token
+### [x] T10: `jira:check` phần 2: rule Restrict, board, trường, hạn token
 
 **Mô tả:** Kiểm nốt các loại lệch ở spec mục 2.10: rule Restrict thiếu group, cột board hoặc giới hạn WIP sai, thiếu trường hoặc giá trị của trường. Phần nào REST API không đọc được thì in dòng "cần kiểm tay", không báo đạt. Cảnh báo (không báo lỗi) khi token còn dưới 14 ngày.
 
 **Tiêu chí chấp nhận:**
-- [ ] Mỗi loại lệch mới có một bộ dữ liệu mẫu và thông báo mong đợi.
-- [ ] Chạy thật `npm run jira:check -- --space DEMO` không báo lệch (tiêu chí 3).
+- [x] Mỗi loại lệch mới có một bộ dữ liệu mẫu và thông báo mong đợi.
+- [x] Chạy thật `npm run jira:check -- --space DEMO` không báo lệch (tiêu chí 3).
 
 **Kiểm chứng:**
-- [ ] `npm test` xanh; kết quả chạy thật ghi trong `tasks/verification.md`
+- [x] `npm test` xanh; kết quả chạy thật ghi trong `tasks/verification.md`
 
 **Phụ thuộc:** T9
 
