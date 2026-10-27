@@ -13,7 +13,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 3 | `c097b31c-efdb-42a0-96ba-8a2b65140f99` | 2026-10-26 15:43 → 17:17 | Duyệt SPEC-sdlc-contract và 7 câu hỏi mở; Story có cả FE và BE có tách hai nhánh không; monorepo hay hai repo; release theo quyết định của bạn; lập plan cho sdlc-contract; commit đầu tiên, repo GitHub, đổi tên thư mục |
 | 4 | `46e4e518-ac41-4570-8bcc-37d5a88788c5` | 2026-10-26 21:35 → 2026-10-27 01:02 | Build và đóng module sdlc-contract (14 task, PR #1–#16, không ghi vào lịch sử vì là lượt code); chọn module kế tiếp tracker-integration; giả định và câu hỏi cho tracker-integration |
 | 5 | `76bd80d2-8083-45f7-93a7-d7ffab2e246c` | 2026-10-27 09:45 → 10:02 | Bạn trả lời 5 câu hỏi của tracker-integration; câu trả lời của Claude bị bộ lọc an toàn chặn, hai lần |
-| 6 | `02493cdb-1425-4498-9a25-6408d7717c70` | 2026-10-27 10:03 → | Gói Free và company-managed; cách tạo tài khoản bot cho agent; viết SPEC-tracker-integration; cách chọn scope khi tạo token |
+| 6 | `02493cdb-1425-4498-9a25-6408d7717c70` | 2026-10-27 10:03 → | Gói Free và company-managed; cách tạo tài khoản bot cho agent; viết SPEC-tracker-integration; cách chọn scope khi tạo token; duyệt spec, lập plan tracker-integration |
 
 ---
 
@@ -1633,3 +1633,68 @@ Cách sửa:
 Lúc tìm `jira-work` ở bước sau, bạn cũng nhìn dòng phân trang: phải ghi "Từ 1 đến ..." thì bảng mới hiện đủ. Trước khi bấm tạo, kiểm lại ở bước **Tạo mã token** xem có đủ 4 scope không.
 
 Kết quả này cũng trả lời điều mình chưa chắc ở lượt trước: màn hình tạo token của service account có cung cấp scope `agent-interface`, nên chưa cần phương án dự phòng.
+
+---
+
+# Phiên 6 · Lượt 4 — 2026-10-27 khoảng 11:35–12:00
+
+**Bạn:**
+
+```markdown
+1. Đã chuyển site về Free
+2. đã tạo 2 service acc và đã tạo token cho 2 acc
+3. ok
+4. 2.4 Thay đổi hợp đồng (cần bạn duyệt)
+    1. OK với Thêm trường agent
+    2. OK
+```
+
+**Claude:**
+
+Mình đã ghi 4 câu trả lời vào spec và lập plan cho module. `tasks/plan.md` có tổng quan, các quyết định và rủi ro; `tasks/todo.md` có 19 task, chi tiết từng task. Trước khi duyệt plan, bạn cần biết hai chỗ mình đổi so với spec đã duyệt.
+
+## Hai chỗ thay đổi so với spec
+
+**1. Hook lấy vai trò agent từ `agent_type`** (spec mục 2.6 đã sửa). Khi lập plan, mình đọc lại tài liệu hook của Claude Code và thấy ba điều:
+
+- Khi tool được gọi bên trong subagent, input của hook có trường `agent_type` chứa tên subagent. Claude Code điền trường này, agent không tự đổi được.
+- Hook trong `.claude/settings.json` của dự án cũng chạy bên trong subagent. Nếu khai báo hook ở cả settings (để chặn phiên chính) lẫn frontmatter (để biết vai trò), hook sẽ chạy hai lần, và lần không có `--actor` luôn chặn.
+- Hook trong frontmatter chỉ chạy sau khi bạn chấp nhận hộp thoại tin cậy thư mục, và không chạy trong phiên `claude -p`.
+
+Vì vậy hook giờ được khai báo một lần trong settings của dự án và lấy vai trò từ `agent_type`. `agent-roster` chỉ cần đặt tên file agent trùng id vai trò (`fe-dev.md`).
+
+**2. Agent tự gắn cờ `flag-needs-you`, `jira-sync` gắn bù** (plan, quyết định 2). Spec ghi hook tự gắn cờ khi rework chạm giới hạn. Nhưng hook chạy bằng token của agent, mà token này chỉ có quyền đọc với REST API, nên hook không ghi được lên Jira. Cách trong plan:
+
+- Hook yêu cầu agent gắn cờ qua Rovo MCP rồi dừng.
+- Hook chặn mọi transition của agent trên item có label `needs-you`. Bạn gỡ label thì agent làm tiếp được.
+- `jira-sync` chạy bằng token CI có quyền ghi, nên gắn cờ bù nếu agent không gắn.
+
+Cách này không cần thêm scope ghi cho token của agent.
+
+## Plan gồm gì
+
+| Giai đoạn | Task | Kết thúc bằng |
+|---|---|---|
+| 1. Kết nối thật và ánh xạ | T1–T6 | Kết nối Rovo MCP và REST API chạy được; bạn soát tên status, transition |
+| 2. Dựng Jira và kiểm lệch | T7–T10 | Space `DEMO` dựng xong; `jira:check` không báo lệch |
+| 3. Agent và hook | T11–T15 | Hook chặn và cho qua đúng, thử thật trên `DEMO` |
+| 4. Automation | T16–T18 | `jira-sync` chuyển item thật trên `ao-pilot` |
+| 5. Hoàn thiện | T19 | README, đóng câu hỏi mở, lưu trữ plan |
+
+T1 làm đầu tiên vì nó kiểm giả định nền của cả module: service account nối được Rovo MCP. Nếu không nối được thì phải chuyển sang phương án dự phòng, và cách cài đặt sẽ đổi. Space `DEMO` cũng được dựng sớm (T8), để biết gói Free có rule Restrict hay không trước khi viết `jira:check` và hook.
+
+Các task có phần bạn làm:
+
+- **T1:** bật API token cho Rovo MCP, đặt hai biến môi trường chứa token.
+- **T8:** dựng `DEMO` theo checklist, khoảng 1–2 giờ.
+- **T9:** tạo một token chỉ đọc cho `jira:check`.
+- **T15:** mở Claude Code trong `ao-pilot` một lần để chấp nhận hộp thoại tin cậy thư mục.
+
+## Câu hỏi cần bạn quyết
+
+1. **Chặng `deploy-to-qa` của tiêu chí 7.** Mọi PR trong `ao-pilot` đều do tài khoản `TungPH7` mở, mà GitHub không cho tác giả tự approve PR của mình. Vì vậy guard `merge-approved` không thỏa, và item không sang Ready for QA. Mình đề xuất T18 chỉ kiểm rằng `jira-sync` đứng yên và báo thiếu `merge-approved`, vì đó là hành vi đúng. Chặng chuyển sang Ready for QA được kiểm lại ở `quality-gates`, sau khi chốt danh tính mở PR cho agent. Cách khác là chốt danh tính đó ngay trong module này, nhưng như vậy là làm trước việc của `quality-gates`.
+2. **Ngày hết hạn của hai token** (chỉ ngày, không gửi token), để ghi vào `tracker/jira.yaml` ở T3.
+
+Spec và plan đã được commit trên nhánh `task/spec-tracker-integration` và push lên GitHub, và lượt này đã được ghi vào lịch sử brainstorm. Bạn duyệt plan cùng hai thay đổi ở trên, và trả lời 2 câu này. Sau đó mình mở PR cho spec và plan, rồi bắt đầu T1.
+
+Nguồn: [Claude Code: Hooks reference](https://code.claude.com/docs/en/hooks)
