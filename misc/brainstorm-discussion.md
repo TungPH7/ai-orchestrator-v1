@@ -2977,3 +2977,33 @@ Giờ bạn bấm **Cancel**. Lần này Jira phải hiện màn hình có ô **
 Nhắc lại: biến `JIRA_ADMIN_WRITE_TOKEN` vẫn còn trong máy. Bạn nhớ **Revoke** token `ao-workflow-edit` trên trang API tokens, và xóa biến này đi.
 
 Mình đã ghi kết quả vào `tasks/verification.md`. Việc Jira có từ chối khi agent gọi thẳng một transition bị ẩn hay không, mình sẽ kiểm ở T15.
+
+---
+
+# Phiên 6 · Lượt 38 — 2026-10-28 khoảng 01:40
+
+**Bạn:**
+
+```markdown
+xong
+```
+
+**Claude:**
+
+`DEMO-2` đạt cả hai việc cần kiểm:
+
+- Lịch sử ghi Resolution `Won't Do` và status `Ready` → `Cancelled` lúc 01:36.
+- Rule hỏi Resolution có tác dụng, và rule Restrict đúng với cả ba tài khoản.
+
+**T8 xong.** Mình đã đánh dấu task, mở [PR #26](https://github.com/TungPH7/ai-orchestrator-v1/pull/26) cho nhánh `task/t8-build-demo`, CI xanh và đã merge vào `main`. PR gồm:
+
+- Checklist viết lại thành từng bước bấm, rồi sửa theo giao diện thật qua từng ảnh bạn gửi.
+- Kết quả của 12 mục trong `tasks/verification.md`.
+- Các phát hiện: gói Free có rule Restrict và rule này chặn được; service account nhận tên tiếng Trung nếu không gửi kèm `Accept-Language`; danh sách 20 scope của token chỉ đọc; 17 transition được thêm rule qua REST.
+
+**Việc cần làm ngay:** token tạm `ao-workflow-edit` **vẫn còn hiệu lực**. Mình vừa gọi thử một request đọc bằng nó và Jira trả 200. Bạn thu hồi nó:
+
+1. Mở <https://id.atlassian.com/manage-profile/security/api-tokens> → dòng `ao-workflow-edit` → **Revoke**.
+2. **Edit environment variables for your account** → chọn `JIRA_ADMIN_WRITE_TOKEN` → **Delete** → **OK**.
+
+Tiếp theo là T9: `jira:check` phần 1, kiểm status, transition và scheme. Phần của bạn trong T9 là token chỉ đọc, và bạn đã tạo xong rồi. Mình bắt đầu T9 luôn.
