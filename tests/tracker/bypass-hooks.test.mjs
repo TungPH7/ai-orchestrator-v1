@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { readFileSync } from 'node:fs';
+import { cpSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
 import { ROOT } from '../helpers/kit.mjs';
 
@@ -58,4 +58,17 @@ test('the kit declares each hook once, with the project space to fill in', () =>
   ]);
   assert.deepEqual(declared('PostToolUse'), [['mcp__atlassian__transitionJiraIssue', 'node "$CLAUDE_PROJECT_DIR/.claude/hooks/jira-rework.mjs"']]);
   assert.equal(settings.env.AO_JIRA_SPACE, '<KEY>');
+});
+
+test('the Jira hooks work with the copy a project has: contract, lib and tracker, without templates', (t) => {
+  // Inside the repo, so the copied lib still finds node_modules.
+  const copy = mkdtempSync(join(ROOT, '.tmp-kit-'));
+  t.after(() => rmSync(copy, { recursive: true, force: true }));
+  for (const dir of ['contract', 'lib', 'tracker']) cpSync(join(ROOT, dir), join(copy, dir), { recursive: true });
+  const input = { hook_event_name: 'PreToolUse', tool_name: 'mcp__atlassian__transitionJiraIssue', agent_type: 'fe-dev', tool_input: { issueIdOrKey: 'DEMO-12', transitionName: 'Start' } };
+
+  const guard = run('jira-guard.mjs', input, { AO_KIT_DIR: copy });
+  assert.equal(reason(guard), 'jira-guard: could not check DEMO-12: ATLASSIAN_AGENT_TOKEN is not set');
+  const rework = run('jira-rework.mjs', { ...input, hook_event_name: 'PostToolUse', tool_response: {} }, { AO_KIT_DIR: copy });
+  assert.match(JSON.parse(rework.stdout).reason, /ATLASSIAN_AGENT_TOKEN is not set/);
 });

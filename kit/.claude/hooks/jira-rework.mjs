@@ -18,13 +18,14 @@ if (input.tool_name === TOOL) {
   const key = input.tool_input?.issueIdOrKey;
   let decision;
   try {
-    const { loadContract } = await load('lib/contract.mjs');
+    const { readContract } = await load('lib/contract.mjs');
     const { readMapping } = await load('lib/tracker/mapping.mjs');
     const { bearerAuth, createJiraClient } = await load('lib/tracker/jira-client.mjs');
     const { readItem } = await load('lib/tracker/facts.mjs');
     const { reworkDecision } = await load('lib/tracker/guard.mjs');
     if (!process.env.ATLASSIAN_AGENT_TOKEN) throw new Error('ATLASSIAN_AGENT_TOKEN is not set');
-    const contract = loadContract(join(kit, 'contract'));
+    // Read without validating: the copy has no templates, and npm run validate already checks the contract in the kit.
+    const contract = readContract(join(kit, 'contract'));
     const mapping = readMapping(join(kit, 'tracker'));
     const jira = createJiraClient({ cloudId: mapping.cloud_id, authorization: bearerAuth(process.env.ATLASSIAN_AGENT_TOKEN) });
     const item = await readItem(jira, key);
