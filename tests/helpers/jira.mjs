@@ -21,6 +21,7 @@ export function recordedClient(recording) {
     async *pages(path, query) {
       yield answer(path, query);
     },
-    getAll: async (path, query) => answer(path, query).values,
+    getAll: async (path, query, itemsKey = 'values') => answer(path, query)[itemsKey],
+    searchAll: async (jql, fields) => answer('/rest/api/3/search/jql', { jql, fields: fields.join(',') }).issues,
   };
 }
