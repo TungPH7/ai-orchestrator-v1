@@ -2125,3 +2125,37 @@ Về việc cập nhật checklist: `docs/jira-setup.md` được sinh tự đ�
 Mục 1 (group) bạn đã làm xong chưa? Tiếp theo là mục 4, Status. Site đã có `In Progress` đúng Category, nên bạn chỉ cần tạo 10 status còn lại.
 
 Nguồn: [Atlassian KB: Deleted "Done" resolution was added back](https://support.atlassian.com/jira/kb/deleted-done-resolution-was-added-back-with-greenhopper-managed-resolution-description/), [JRACLOUD-72706: Re-appearance of the deleted resolution Done](https://jira.atlassian.com/browse/JRACLOUD-72706), [Atlassian Community: Deleting resolutions in Jira](https://community.atlassian.com/forums/Jira-questions/Deleting-resolutions-in-Jira/qaq-p/3129301)
+
+---
+
+# Phiên 6 · Lượt 16 — 2026-10-27 khoảng 15:00
+
+**Bạn:**
+
+```markdown
+[Image #9]
+
+Tôi vừa làm 4. Status, check giúp xem đúng chưa
+```
+
+Ảnh đính kèm:
+
+- [Image #9](images/phien-6-luot-16-anh-1.png): trang **Statuses**: 7 status cũ (Open, In Progress, Reopened, Resolved, Closed, Building, Build Broken) và 10 status mới New, Ready, Specifying, Planning, To Do (To Do); In Review, Ready for QA, In QA (In Progress); Done, Cancelled (Done), đều "No associated workflows".
+
+**Claude:**
+
+Đúng hết. Mình đối chiếu từng dòng với mục 4:
+
+| Status | Category cần | Trên Jira |
+|---|---|---|
+| New, Ready, Specifying, Planning, To Do | To Do | To Do ✓ |
+| In Progress (có sẵn), In Review, Ready for QA, In QA | In Progress | In Progress ✓ |
+| Done, Cancelled | Done | Done ✓ |
+
+Tên đều đúng chính tả và chữ hoa. Cột Workflows ghi "No associated workflows" là bình thường: mục 5 sẽ gắn chúng vào workflow. Các status cũ như Open, Resolved, Closed thì để nguyên, đừng xóa, vì chúng đang thuộc workflow khác. Status mới cũng đừng xóa, dù đang có nút Delete.
+
+Mình đã ghi mục 4 là xong trong `tasks/verification.md`.
+
+Tiếp theo là mục 5, Workflow, phần dài nhất. Mình gợi ý làm `AO sub-task` trước: nó chỉ có 3 status và 2 transition, đủ để làm quen trình sửa workflow. Sau đó tới `AO epic`, cuối cùng là `AO standard`. Ở transition đầu tiên, bạn kiểm tra ngay rule **Restrict who can move a work item** có trong danh sách rule không, rồi báo mình, vì đây là điều mình cần biết nhất về gói Free.
+
+Mục 1 (group) bạn đã làm xong chưa? Mục 5 cần các group để đặt rule Restrict.
