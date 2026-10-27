@@ -49,8 +49,8 @@ T1 đứng đầu vì nếu service account không dùng được với Rovo MCP
 - [x] T6: Đếm rework từ lịch sử item
 
 ### Checkpoint 1
-- [ ] `npm run validate`, `npm test`, `npm run render:check` xanh
-- [ ] Kết nối của T1 chạy được, kết quả ghi trong `tasks/verification.md`
+- [x] `npm run validate`, `npm test`, `npm run render:check` xanh
+- [x] Kết nối của T1 chạy được, kết quả ghi trong `tasks/verification.md`
 - [ ] Bạn soát tên status và transition trong `tracker/jira.yaml`: đây là những tên bạn sẽ thấy trên Jira
 
 ### Giai đoạn 2: dựng Jira và kiểm lệch
