@@ -66,12 +66,13 @@ test('the main session, or an agent without a role of the contract, may not move
   assert.deepEqual(jira.calls, []);
 });
 
-test('qa may not accept: the transition is for you', async () => {
-  const jira = fakeJira({ st: status('In QA') });
-  assert.deepEqual(await run(call('qa', { transitionName: 'Accept' }), jira), {
-    allow: false,
-    reason: 'jira-guard: qa may not make "Accept" on DEMO-12; it is for human',
-  });
+test('qa may not accept: the transition is for you, whatever the status of the item', async () => {
+  for (const st of [status('In QA'), status('Ready', 'new'), status('Cancelled', 'done')]) {
+    assert.deepEqual(await run(call('qa', { transitionName: 'Accept' }), fakeJira({ st })), {
+      allow: false,
+      reason: 'jira-guard: qa may not make "Accept" on DEMO-12; it is for human',
+    });
+  }
 });
 
 test('fe-dev may start when the guards hold', async () => {
@@ -109,10 +110,14 @@ test('a transition id is turned into its name through the transitions the agent 
   });
 });
 
-test('a transition the contract does not have from the current status is refused', async () => {
-  assert.deepEqual(await run(call('fe-dev', { transitionName: 'Submit' })), {
+test('a transition the contract does not have, or not from the current status, is refused', async () => {
+  assert.deepEqual(await run(call('fe-dev', { transitionName: 'Start' }), fakeJira({ st: status('In Review') })), {
     allow: false,
-    reason: 'jira-guard: the contract has no transition "Submit" from "Ready" for a Story',
+    reason: 'jira-guard: the contract has no transition "Start" from "In Review" for a Story',
+  });
+  assert.deepEqual(await run(call('fe-dev', { transitionName: 'Reopen' })), {
+    allow: false,
+    reason: 'jira-guard: the contract has no transition "Reopen" for a Story',
   });
   assert.deepEqual(await run(call('fe-dev', { transitionName: 'Start' }), fakeJira({ type: 'Improvement' })), {
     allow: false,
