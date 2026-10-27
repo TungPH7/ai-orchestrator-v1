@@ -2433,3 +2433,45 @@ Hai thứ khác trong ảnh thứ hai thì để nguyên:
 Mình đã ghi tiến độ vào `tasks/verification.md`: mục 1 đến 9 xong theo bạn báo, mục 10 đang làm và filter chưa lưu. Mục 10 của checklist cũng được viết lại theo đúng các bước trên: **Edit filter query** → trang filter → chạy câu → lưu → kiểm lại trong Board settings.
 
 Nguồn: [Edit a board filter on a company-managed board](https://support.atlassian.com/jira-software-cloud/docs/edit-a-board-filter-on-a-company-managed-board/), [JRACLOUD-95140: Improve JQL Filter Saving Process in Jira Cloud](https://jira.atlassian.com/browse/JRACLOUD-95140)
+
+---
+
+# Phiên 6 · Lượt 24 — 2026-10-28 khoảng 00:10
+
+**Bạn:**
+
+```markdown
+11. GitHub for Jira
+
+[Image #20] không tìm thấy Github for Jira??
+```
+
+Ảnh đính kèm:
+
+- [Image #20](images/phien-6-luot-24-anh-1.png): trang **Explore apps for Jira** (Apps → Explore more apps ở thanh bên trái), tìm "GitHub for Jira". Kết quả: **GitHub for Atlassian** (By Atlassian, 3.3 sao, 138K lượt cài, Free), GitHub Integration for Jira (GitHub Connector) FORGE (Getint), Create GitHub Branches from Jira, GitHub connector for Jira, GitHub Links for Jira, GitHub & Jira integration, GitHub Copilot for Jira…; đa số app của hãng khác ghi "Free up to 10 users".
+
+**Claude:**
+
+App vẫn có, chỉ là đã đổi tên thành **GitHub for Atlassian**. Đó là thẻ đầu tiên trong ảnh của bạn: nhà phát hành Atlassian, 138K lượt cài, Free. Trang Marketplace của app vẫn dùng đường dẫn cũ `github-for-jira`, và tài liệu của Atlassian về deployment giờ cũng gọi app là "GitHub for Atlassian".
+
+Bạn làm như sau:
+
+1. Bấm thẻ **GitHub for Atlassian** (dòng "By Atlassian"). Đừng chọn các app khác có chữ GitHub, như GitHub Integration for Jira (Getint) hay GitHub connector for Jira: đó là app của hãng khác, nhiều app chỉ miễn phí tới 10 người.
+2. Bấm **Get app** (tên nút có thể khác một chút) → xác nhận cài.
+3. Cài xong, mở app → nối với GitHub → đăng nhập GitHub.
+4. Chọn tài khoản `TungPH7` → **Only select repositories** → chọn `ao-pilot` → **Install** → quay lại Jira, bấm **Connect** cạnh tài khoản.
+
+Bước 3 và 4 mình viết theo tài liệu, chưa thấy giao diện thật. Chỗ nào khác, bạn chụp gửi mình.
+
+Cài xong không cần ngắt rồi nối lại. Atlassian có ghi rằng khi `.jira/config.yml` được tạo lần đầu thì phải nối lại để app đọc file, nhưng file của `ao-pilot` đã nằm trên `main` từ trước khi cài app.
+
+Về mục 10, mình đã đọc lại filter qua REST: giờ đã đúng câu mới `project = DEMO AND issuetype != Epic ORDER BY Rank ASC`.
+
+Mình đã cập nhật:
+
+- `tasks/verification.md`: mục 10 xong (cột và giới hạn WIP sẽ do `jira:check` kiểm sau), mục 11 đang làm.
+- Mục 11 của checklist: tìm `GitHub for Atlassian`, chọn app của Atlassian; **Apps** nằm ở thanh bên trái, không phải thanh trên cùng.
+
+Cài xong app thì T8 còn một bước kiểm: tạo một Story thử trên `DEMO` và chuyển qua vài status. Bạn báo xong mục 11, mình sẽ hướng dẫn bước này.
+
+Nguồn: [GitHub for Atlassian trên Atlassian Marketplace](https://marketplace.atlassian.com/apps/1219592/github-for-atlassian), [Link GitHub workflows and deployments to Jira work items](https://support.atlassian.com/jira-cloud-administration/docs/link-github-workflows-and-deployments-to-jira-issues/), [KB: custom environment names do not show up in the releases panel](https://support.atlassian.com/jira/kb/jira-github-integration-custom-environment-names-does-not-show-up-in-releases-panel-and-instead-show-undefined-environment/)
