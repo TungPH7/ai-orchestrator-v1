@@ -2795,3 +2795,24 @@ tạo token
 Xong thì nhắn mình "xong". Mình sẽ đọc token từ biến môi trường (không in ra), gọi thử một request, rồi đọc cả ba workflow và liệt kê transition nào thiếu rule gì.
 
 Ghi chú về scope: nhiều API cấu hình của Jira chỉ có scope cổ điển `manage:jira-configuration`, mà scope này cho cả quyền ghi. Vì vậy mình dùng các scope chi tiết (granular) chỉ đọc thay thế. Khi một API cần bộ scope chi tiết, phải có đủ cả bộ; ví dụ API đọc workflow scheme của space cần 9 scope. Đó là lý do danh sách dài.
+
+---
+
+# Phiên 6 · Lượt 33 — 2026-10-28 khoảng 01:25
+
+**Bạn:**
+
+```markdown
+xong
+```
+
+**Claude:**
+
+Token `JIRA_ADMIN_TOKEN` đã có trong biến môi trường. Nhưng còn thiếu `JIRA_ADMIN_EMAIL`: mình kiểm cả biến của tài khoản lẫn biến hệ thống, đều không có biến này. Token có scope phải đi kèm email đăng nhập (Jira dùng cặp email và token), nên request thử trả về 401.
+
+Bạn thêm biến này:
+
+1. Bấm Start, gõ `environment` → mở **Edit environment variables for your account**.
+2. Phần **User variables** → **New...** → **Variable name** gõ `JIRA_ADMIN_EMAIL`, **Variable value** gõ email bạn dùng đăng nhập Atlassian → **OK** → **OK**.
+
+Xong thì nhắn mình "xong", mình chạy lại.
