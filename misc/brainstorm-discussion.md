@@ -13,7 +13,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 3 | `c097b31c-efdb-42a0-96ba-8a2b65140f99` | 2026-10-26 15:43 → 17:17 | Duyệt SPEC-sdlc-contract và 7 câu hỏi mở; Story có cả FE và BE có tách hai nhánh không; monorepo hay hai repo; release theo quyết định của bạn; lập plan cho sdlc-contract; commit đầu tiên, repo GitHub, đổi tên thư mục |
 | 4 | `46e4e518-ac41-4570-8bcc-37d5a88788c5` | 2026-10-26 21:35 → 2026-10-27 01:02 | Build và đóng module sdlc-contract (14 task, PR #1–#16, không ghi vào lịch sử vì là lượt code); chọn module kế tiếp tracker-integration; giả định và câu hỏi cho tracker-integration |
 | 5 | `76bd80d2-8083-45f7-93a7-d7ffab2e246c` | 2026-10-27 09:45 → 10:02 | Bạn trả lời 5 câu hỏi của tracker-integration; câu trả lời của Claude bị bộ lọc an toàn chặn, hai lần |
-| 6 | `02493cdb-1425-4498-9a25-6408d7717c70` | 2026-10-27 10:03 → | Gói Free và company-managed; cách tạo tài khoản bot cho agent; viết SPEC-tracker-integration; cách chọn scope khi tạo token; duyệt spec, lập plan tracker-integration; bắt đầu T1 |
+| 6 | `02493cdb-1425-4498-9a25-6408d7717c70` | 2026-10-27 10:03 → | Gói Free và company-managed; cách tạo tài khoản bot cho agent; viết SPEC-tracker-integration; cách chọn scope khi tạo token; duyệt spec, lập plan tracker-integration; bắt đầu T1; T1–T6, Checkpoint 1 |
 
 ---
 
@@ -1854,3 +1854,57 @@ Bạn làm giúp mình:
 3. Trước khi gửi tin nhắn cho mình, kiểm tra VS Code không bôi đen dòng nào chứa thông tin nhạy cảm.
 
 Việc đổi token không chặn T2 đến T6, vì các task đó chỉ là code. Bạn có thể nhắn "làm tiếp" ngay, rồi đổi token sau. Khi bạn báo đã đổi, mình sẽ kiểm token thứ ba.
+
+---
+
+# Phiên 6 · Lượt 9 — 2026-10-27 khoảng 13:00
+
+**Bạn:**
+
+```markdown
+Tôi đã revoke token CI cũ và sửa lại token CI mới ở env
+```
+
+**Claude:**
+
+Token CI thứ ba chạy được: `GET /project/search` trả 200, và token này không trùng với hai token đã lọt. Riêng `todo.md` vẫn còn 2 dòng trông giống token; bạn nên xóa chúng.
+
+Sau đó mình làm từ T2 đến T6, mỗi task một PR, merge khi CI xanh:
+
+| Task | PR | Kết quả |
+|---|---|---|
+| T2 | #19 | Hợp đồng có trường Agent (10 vai trò agent); Rework count tính từ lịch sử; R3 kiểm giá trị của Agent |
+| T3 | #20 | `tracker/jira.yaml` có site, cloud id, ba danh tính và tên biến chứa token; quy tắc J1, J4 |
+| T4 | #21 | Ánh xạ workflow, trường, board, môi trường; quy tắc J2, J3 |
+| T5 | #22 | `conventions.mjs`: kiểm tên nhánh, commit, tiêu đề PR, kèm lý do khi sai |
+| T6 | #23 | `rework.mjs`: đếm rework từ changelog, chạm 3 thì thêm `flag-needs-you` |
+
+`npm run validate`, `npm test` (210 test) và `npm run render:check` đều xanh.
+
+## Checkpoint 1: bạn soát tên sẽ thấy trên Jira
+
+Đây là những tên bạn sẽ gõ khi dựng Jira ở T8, và sẽ thấy hằng ngày trên board. Đổi bây giờ thì rẻ; đổi sau khi đã có item thì phải sửa cả Jira lẫn `tracker/jira.yaml`.
+
+**Workflow `AO standard`** (Story, Task, Bug)
+
+| Nhóm | Status |
+|---|---|
+| To Do | New, Ready |
+| In Progress | In Progress, In Review, Ready for QA, In QA |
+| Done | Done, Cancelled |
+
+Transition: Refine, Start, Submit, Request changes, Deploy to QA, Pick up, QA fail, Accept, Cancel. `Cancel` được tách thành 6 transition cùng tên trên Jira, mỗi cái đi từ một status.
+
+**Workflow `AO epic`:** status New, Specifying, Planning (To Do), In Progress, Done, Cancelled; transition Start spec, Approve spec, Approve plan, Complete, Cancel.
+
+**Workflow `AO sub-task`:** status To Do, In Progress, Done; transition Start, Complete.
+
+Các lựa chọn spec chưa nói rõ, mình đã chọn trong `tracker/jira.yaml`:
+
+- **Tên workflow có tiền tố `AO`**, scheme tên `AO workflow scheme`, để không lẫn với workflow mặc định của Jira và của space `SCRUM`.
+- **Board:** cột Backlog, Ready, In Progress, In Review (tối đa 2), QA, Done. Status To Do của Sub-task nằm ở cột Ready. Cancelled không có cột nên rời khỏi board. Epic bị filter của board loại ra.
+- **Resolution** dùng tên Jira có sẵn: Won't Do, Duplicate, Cannot Reproduce, thêm Not a bug. `Accept` và hai transition `Complete` đặt Resolution là Done, để JQL `resolution = Unresolved` lọc đúng item còn mở.
+- **Trường Agent:** mỗi option là tên vai trò, như Frontend Developer.
+- **Label của `flag-needs-you`:** `needs-you`.
+
+Tên ổn thì bạn nhắn "qua checkpoint 1"; muốn đổi tên nào thì chỉ tên đó. Sau đó mình làm T7 (sinh checklist dựng Jira), rồi tới T8 là phần bạn dựng space `DEMO`.
