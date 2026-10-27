@@ -2945,3 +2945,35 @@ Mình làm theo thứ tự đã hẹn:
 Lúc Story đang ở `Ready`, mình sẽ đọc qua REST xem mỗi service account thấy transition nào. Mong đợi là `orchestratoragent` chỉ thấy `Start`, còn `orchestratorci` không thấy gì. Như vậy ta kiểm được rule Restrict từ cả hai phía. Sau đó bạn mới bấm **Cancel** và chọn Resolution `Won't Do`.
 
 Mình đã ghi vào `tasks/verification.md`: mục 5 xong, cách thêm rule qua REST, và dạng của từng rule trong API. Phát hiện này đáng xem lại: spec mục 2.10 ghi Cấp 1 chưa dựng tự động vì API sửa workflow phức tạp, nhưng thực tế thêm rule qua API khá gọn. Mình sẽ nêu lại sau T10.
+
+---
+
+# Phiên 6 · Lượt 37 — 2026-10-28 khoảng 01:35
+
+**Bạn:**
+
+```markdown
+[Image #29]
+```
+
+Ảnh đính kèm:
+
+- [Image #29](images/phien-6-luot-37-anh-1.png): trang Story `DEMO-2` "Story thử T8 lần 2" ở status **Ready**; danh sách khi bấm nút status chỉ có **Cancel → Cancelled** và **View workflow**. Khung chi tiết có trường **Agent** ("Add option"). Thông báo "Created Story DEMO-2".
+
+**Claude:**
+
+Rule Restrict có tác dụng trên gói Free. Lúc `DEMO-2` ở `Ready`, mỗi tài khoản chỉ thấy đúng transition của mình:
+
+| Tài khoản | Thấy | Mong đợi |
+|---|---|---|
+| Bạn (`ao-humans`) | `Cancel` | `Cancel` |
+| `orchestratoragent` (`ao-agents`) | `Start` | `Start` |
+| `orchestratorci` (`ao-automation`) | không có gì | không có gì |
+
+Ảnh của bạn còn cho thấy trường **Agent** đã hiện trên Story, đúng như cách mình thêm field vào screen.
+
+Giờ bạn bấm **Cancel**. Lần này Jira phải hiện màn hình có ô **Resolution**: chọn `Won't Do` → xác nhận. Xong thì nhắn "xong", mình đọc lại Resolution và lịch sử của `DEMO-2`.
+
+Nhắc lại: biến `JIRA_ADMIN_WRITE_TOKEN` vẫn còn trong máy. Bạn nhớ **Revoke** token `ao-workflow-edit` trên trang API tokens, và xóa biến này đi.
+
+Mình đã ghi kết quả vào `tasks/verification.md`. Việc Jira có từ chối khi agent gọi thẳng một transition bị ẩn hay không, mình sẽ kiểm ở T15.
