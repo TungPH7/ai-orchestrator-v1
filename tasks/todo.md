@@ -139,17 +139,17 @@ Claude làm: tạo repo private `TungPH7/ao-pilot` với nhánh `main` và `deve
 
 ## Giai đoạn 2: dựng Jira và kiểm lệch
 
-### [ ] T7: Sinh checklist dựng Jira
+### [x] T7: Sinh checklist dựng Jira
 
 **Mô tả:** `npm run jira:checklist` sinh `docs/jira-setup.md` từ hợp đồng và ánh xạ, theo thứ tự ở spec mục 2.10: group và service account, bật API token cho Rovo MCP, status, workflow (kèm rule Restrict theo group cho từng transition, màn hình chọn Resolution cho `cancel`), workflow scheme, custom field, resolution `Not a bug`, space company-managed `DEMO`, board Kanban với cột và WIP, app GitHub for Jira, GitHub environment và `.jira/config.yml`. Đầu ra tất định, xuống dòng LF. `jira:checklist:check` báo lỗi khi file đã cũ, và chạy trong CI.
 
 **Tiêu chí chấp nhận:**
-- [ ] Checklist có đủ mọi status, transition, group, trường và cột của ánh xạ; mỗi mục là một ô tick.
-- [ ] Đổi ánh xạ mà không sinh lại thì `jira:checklist:check` thoát mã khác 0.
-- [ ] CI của repo kit chạy `jira:checklist:check`.
+- [x] Checklist có đủ mọi status, transition, group, trường và cột của ánh xạ; mỗi mục là một ô tick.
+- [x] Đổi ánh xạ mà không sinh lại thì `jira:checklist:check` thoát mã khác 0.
+- [x] CI của repo kit chạy `jira:checklist:check`.
 
 **Kiểm chứng:**
-- [ ] `npm test`, `npm run jira:checklist:check` xanh
+- [x] `npm test`, `npm run jira:checklist:check` xanh
 
 **Phụ thuộc:** T4
 

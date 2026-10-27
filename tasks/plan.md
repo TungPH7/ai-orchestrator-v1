@@ -56,7 +56,7 @@ T1 đứng đầu vì nếu service account không dùng được với Rovo MCP
 Đã qua ngày 2026-10-27: bạn giữ nguyên mọi tên trong `tracker/jira.yaml`, kể cả tiền tố `AO` (viết tắt của ai-orchestrator).
 
 ### Giai đoạn 2: dựng Jira và kiểm lệch
-- [ ] T7: Sinh checklist dựng Jira
+- [x] T7: Sinh checklist dựng Jira
 - [ ] T8: Bạn dựng space `DEMO` theo checklist
 - [ ] T9: `jira:check` phần 1: status, transition, scheme
 - [ ] T10: `jira:check` phần 2: rule Restrict, board, trường, hạn token
