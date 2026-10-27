@@ -2237,3 +2237,45 @@ Hai lưu ý:
 Mình đã ghi vào `tasks/verification.md`: mục 5 đã có `AO standard`; mục 6 đang làm (thiếu `Task`, `Bug`, `Sub-task`); mục 7 đã tạo scheme, chưa gắn workflow. Thứ tự trong spec mục 2.10 cũng được sửa cho khớp. Mục 1 (group) bạn làm xong chưa?
 
 Nguồn: [Add, edit, and delete a work type](https://support.atlassian.com/jira-cloud-administration/docs/add-edit-and-delete-an-issue-type/), [Configure sub-tasks](https://support.atlassian.com/jira-cloud-administration/docs/configure-sub-tasks/)
+
+---
+
+# Phiên 6 · Lượt 19 — 2026-10-27 khoảng 17:40
+
+**Bạn:**
+
+```markdown
+Tại 8. Trường
+bạn nói "sửa context mặc định → phần Applicable work types chỉ chọn các work type ghi ở dòng đó", nhưng có vẻ không edit được. [Image #13] [Image #14]
+```
+
+Ảnh đính kèm:
+
+- [Image #13](images/phien-6-luot-19-anh-1.png): trang **Configure Custom Field: Found in**: Default Configuration Scheme for Found in, banner "Global configuration scheme contexts now exist for all fields by default and can no longer be deleted or restricted to specific work types or spaces. See the announcement and CHANGE-3019"; Work type(s): Global (all work items); Options: Development, Staging, Production.
+- [Image #14](images/phien-6-luot-19-anh-2.png): trang **Modify configuration scheme context** của Found in, cùng banner đó; ô Issue types có Any issue type (bị khóa), Sub-task, Task, Bug, Story; Choose applicable context đang chọn Global context; nút Modify, Cancel.
+
+**Claude:**
+
+Bạn nói đúng, bước 5 không làm được nữa. Banner trong cả hai ảnh đã nói rõ: context mặc định (Global) giờ có sẵn cho mọi field, không xóa được, và không giới hạn được theo work type hay space. Ô **Any issue type** bị khóa cũng vì vậy.
+
+Bạn làm như sau:
+
+1. Ở trang **Modify configuration scheme context** (ảnh thứ hai), bấm **Cancel** ở cuối trang, không bấm **Modify**.
+2. Không cần **Add new context**: hợp đồng không yêu cầu ẩn field ở các work type khác.
+3. Tạo tiếp `Severity` và `Agent` theo mục 8, bỏ qua bước giới hạn work type.
+
+Hệ quả: Jira sẽ cho điền `Found in` và `Severity` cả ở Story và Task. Không sao, vì hợp đồng đã ghi work type nào dùng field nào, và agent điền theo hợp đồng. Mình đã sửa mục 8 của checklist: bỏ bước 5 cũ, thay bằng lời dặn để nguyên Global context, và đổi "work type `Bug`" thành "dùng cho `Bug`" để khỏi hiểu nhầm là phải cài đặt gì.
+
+Phần bạn đã làm đều đúng:
+
+- `Found in`: đúng tên, đủ ba option theo đúng thứ tự `Development`, `Staging`, `Production`.
+- Mục 6 xong: ảnh thứ hai cho thấy site đã có `Sub-task` (có gạch nối), `Task`, `Bug`, `Story`.
+
+Mình đã ghi tiến độ vào `tasks/verification.md`: mục 6 xong, mục 8 đang làm.
+
+Còn hai chỗ mình chưa rõ:
+
+- Mục 7: bạn đã gắn đủ ba workflow vào `AO workflow scheme` chưa?
+- Mục 1 (group): bạn đã làm xong chưa?
+
+Nguồn: chủ yếu là banner trên chính trang của bạn (dẫn tới CHANGE-3019). Một trang tài liệu API của bên thứ ba ghi rằng từ tháng 4/2026 Jira chặn việc thêm work type vào global context ([withone.ai](https://www.withone.ai/knowledge/jira/conn_mod_def%3A%3AGJ4qW7AJDd4%3A%3AVDl-tRW4TL2O0UZGO4HAPQ/md)). Mình chưa đọc được bản ghi chính thức của CHANGE-3019.
