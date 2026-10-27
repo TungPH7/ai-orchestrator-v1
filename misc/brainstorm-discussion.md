@@ -2312,3 +2312,32 @@ Bạn làm tiếp như sau:
 Nếu danh sách work type của space có loại lạ, ví dụ `Subtask` (không gạch nối) do Jira tự tạo, thì đừng xóa, chụp gửi mình.
 
 Mình đã sửa mục 9 của checklist theo trình tạo space thật: bước **Name your space**, bước **Let's set up your space** (giữ work type, để nguyên Statuses), và ghi chú rằng `Sub-task` thường phải thêm sau trong Space settings. Tiến độ đã ghi vào `tasks/verification.md`: mục 9 đang làm.
+
+---
+
+# Phiên 6 · Lượt 21 — 2026-10-27 khoảng 18:10
+
+**Bạn:**
+
+```markdown
+làm gì có Work types nhỉ? [Image #16]
+```
+
+Ảnh đính kèm:
+
+- [Image #16](images/phien-6-luot-21-anh-1.png): trang **Space settings → Details** của space `DEMO` (Software space): Name `DEMO`, Space key `DEMO`, How your space is managed "Jira - software project". Menu bên trái: Details, Summary, People, Permissions, Notifications, Automation, Features, Toolchain, Workflows, **Work items** (mở ra: Types, Layout, Screens, Fields, Collectors, Security), Versions, Components, Apps.
+
+**Claude:**
+
+Có đấy, chỉ là tên khác với checklist: trong menu bên trái, mục **Work items** (đang mở) có dòng **Types**. Đó chính là trang Work types. Checklist ghi sai tên, mình đã sửa.
+
+Ảnh này cũng xác nhận space `DEMO` đã tạo đúng loại company-managed, vì menu có **Workflows** và **Work items → Screens, Fields**. Space team-managed không có các trang này.
+
+Bạn làm tiếp như sau:
+
+1. Menu bên trái: **Work items** → **Types**.
+2. Xem danh sách: cần đủ `Epic`, `Story`, `Sub-task`, `Task`, `Bug`.
+3. Nếu thiếu `Sub-task`: tìm nút **Actions** → **Edit work types** (tên nút có thể khác), kéo `Sub-task` sang cột của scheme → **Save**. Nếu không thấy nút nào giống vậy, chụp trang **Types** gửi mình.
+4. Nếu có loại lạ, ví dụ `Subtask` không gạch nối, đừng xóa, chụp gửi mình.
+
+Mình đã sửa mục 9 của checklist theo đúng menu này: Work type nằm ở **Work items** → **Types**, màn hình nằm ở **Work items** → **Screens**; **Workflows** vẫn ở cấp ngoài cùng như checklist ghi. Tiến độ đã ghi vào `tasks/verification.md`: `DEMO` đã tạo, đang kiểm work type.
