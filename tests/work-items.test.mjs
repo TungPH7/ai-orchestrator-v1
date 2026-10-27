@@ -23,11 +23,26 @@ test('Project and the grouping Epic map to a Jira space and a label or component
   );
 });
 
-test('the 7 fields of spec 2.3, in order', () => {
+test('the 7 fields of spec 2.3 and the Agent field of the tracker-integration spec 2.4, in order', () => {
   assert.deepEqual(
     contract.work_item_fields.map(({ name }) => name),
-    ['Found in', 'Affects Version', 'Severity', 'Fix Version', 'Rework count', 'Flagged', 'Resolution'],
+    ['Found in', 'Affects Version', 'Severity', 'Fix Version', 'Agent', 'Rework count', 'Flagged', 'Resolution'],
   );
+});
+
+test('Agent lists the 10 agent roles, with their names from roles.yaml', () => {
+  const agentRoles = contract.roles.filter(({ id }) => !['human', 'automation'].includes(id)).map(({ id, name }) => ({ id, name }));
+
+  assert.equal(agentRoles.length, 10);
+  assert.deepEqual(contract.work_item_fields.find(({ id }) => id === 'agent').values, agentRoles);
+});
+
+test('Agent applies to the items an agent holds: Story, Sub-task, Task and Bug', () => {
+  assert.deepEqual(contract.work_item_fields.find(({ id }) => id === 'agent').applies_to, ['story', 'sub-task', 'task', 'bug']);
+});
+
+test('Rework count is counted from the history, as the transitions with effect increment-rework', () => {
+  assert.match(contract.work_item_fields.find(({ id }) => id === 'rework-count').note, /increment-rework/);
 });
 
 test('Severity has 4 levels, from critical to low', () => {
