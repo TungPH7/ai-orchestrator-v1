@@ -17,7 +17,7 @@
 
 ## Giai đoạn 1: kết nối thật và ánh xạ
 
-### [ ] T1: Kết nối thật bằng hai service account [bạn]
+### [x] T1: Kết nối thật bằng hai service account [bạn]
 
 **Mô tả:** Kiểm giả định nền của spec trước khi viết code: agent nối được Rovo MCP bằng token của `orchestratoragent`, và CI gọi được Jira REST API bằng token của `orchestratorci`, trên gói Free.
 
@@ -29,13 +29,13 @@ Ngày hết hạn của hai token (2027-10-27) bạn đã báo ngày 2026-10-27.
 Claude làm: tạo repo private `TungPH7/ao-pilot` với nhánh `main` và `develop`; viết `kit/.mcp.json`; chạy ba phép thử bên dưới.
 
 **Tiêu chí chấp nhận:**
-- [ ] `curl -I https://mcp.atlassian.com/v2/mcp` với token của agent trả `200 OK`.
-- [ ] Một phiên Claude Code trong `ao-pilot`, dùng `kit/.mcp.json`, gọi được tool Jira của Rovo MCP (ví dụ `listJiraProjects`) bằng danh tính `orchestratoragent`.
-- [ ] `GET /rest/api/3/myself` qua `https://api.atlassian.com/ex/jira/<cloud-id>` với token CI trả về `orchestratorci`.
+- [x] Rovo MCP nhận token của agent qua header `Bearer`: `initialize` và `tools/list` trả 200. (Bản đầu ghi `curl -I` trả `200 OK`; cách đó không kiểm được, xem `tasks/verification.md`.)
+- [x] Một phiên Claude Code trong `ao-pilot`, dùng `kit/.mcp.json`, gọi được tool Jira của Rovo MCP bằng danh tính service account.
+- [x] Token CI gọi được REST API qua `https://api.atlassian.com/ex/jira/<cloud-id>`. (Bản đầu dùng `GET /myself`; endpoint đó cần scope `read:jira-user` mà token không có, nên danh tính `orchestratorci` được kiểm ở T18.)
 
 **Kiểm chứng:**
-- [ ] Kết quả ba phép thử ghi trong `tasks/verification.md`
-- [ ] Nếu `Bearer` bị từ chối: thử Basic auth với email của service account. Nếu vẫn hỏng: dừng và hỏi bạn
+- [x] Kết quả ba phép thử ghi trong `tasks/verification.md`
+- [x] `Bearer` chạy được, không cần Basic auth
 
 **Phụ thuộc:** không
 
@@ -253,7 +253,7 @@ Claude làm: tạo repo private `TungPH7/ao-pilot` với nhánh `main` và `deve
 
 ### [ ] T13: Hook `jira-guard`
 
-**Mô tả:** `lib/tracker/guard.mjs` và `kit/.claude/hooks/jira-guard.mjs` theo spec mục 2.6: lấy vai trò từ `agent_type`; đổi transition Jira trong input của `transitionJiraIssue` sang transition của hợp đồng; gom dữ kiện; gọi `checkTransition`; trả `permissionDecision: deny` kèm lý do, hoặc cho qua. Chặn mọi transition của agent trên item có label `needs-you` (plan, quyết định 2). Khai báo hook trong `kit/.claude/settings.json`.
+**Mô tả:** `lib/tracker/guard.mjs` và `kit/.claude/hooks/jira-guard.mjs` theo spec mục 2.6: lấy vai trò từ `agent_type`; đổi transition Jira trong input của `transitionJiraIssue` (theo `transitionId` hoặc `transitionName`) sang transition của hợp đồng; gom dữ kiện; gọi `checkTransition`; trả `permissionDecision: deny` kèm lý do, hoặc cho qua. Chặn mọi transition của agent trên item có label `needs-you` (plan, quyết định 2). Khai báo hook trong `kit/.claude/settings.json`.
 
 **Tiêu chí chấp nhận:**
 - [ ] `qa` gọi `accept` thì bị chặn; không có `agent_type` thì bị chặn; `agent_type` không phải vai trò agent thì bị chặn.
@@ -271,11 +271,12 @@ Claude làm: tạo repo private `TungPH7/ao-pilot` với nhánh `main` và `deve
 
 ### [ ] T14: Hook đếm rework và hook chặn đường vòng
 
-**Mô tả:** Hook PostToolUse sau `transitionJiraIssue`: đếm lại rework, nếu chạm giới hạn thì trả `decision: block`, yêu cầu agent gắn Flagged, label `needs-you` và comment lý do qua Rovo MCP, rồi dừng (plan, quyết định 2). Hook PreToolUse chặn lệnh Bash có chứa `atlassian`, và chặn mọi tool Atlassian không thuộc server `atlassian` của dự án.
+**Mô tả:** Hook PostToolUse sau `transitionJiraIssue`: đếm lại rework, nếu chạm giới hạn thì trả `decision: block`, yêu cầu agent gắn Flagged, label `needs-you` và comment lý do qua Rovo MCP, rồi dừng (plan, quyết định 2). Hook PreToolUse chặn lệnh Bash có chứa `atlassian`, chặn `mcp__atlassian__executeWrite` và `mcp__atlassian__executeDestructive` (spec mục 2.6), và chặn mọi tool Atlassian không thuộc server `atlassian` của dự án.
 
 **Tiêu chí chấp nhận:**
 - [ ] Transition `request-changes` lần thứ 3 thì hook trả yêu cầu gắn cờ; lần 1 và 2 thì không.
-- [ ] Lệnh Bash `curl https://api.atlassian.com/...` bị chặn; tool `mcp__claude_ai_Atlassian__...` bị chặn.
+- [ ] Lệnh Bash `curl https://api.atlassian.com/...` bị chặn; `executeWrite`, `executeDestructive` và tool `mcp__claude_ai_Atlassian__...` bị chặn; `executeRead` được cho qua.
+- [ ] Tool ghi của agent (`createJiraIssue`, `editJiraIssue`, `addOrEditJiraIssueComment`, `transitionJiraIssue`) bị chặn khi item không thuộc space của dự án. Gói Free không có permission scheme, nên token của agent ghi được vào mọi space trên site, kể cả space `SCRUM` có sẵn (phát hiện ở T1).
 
 **Kiểm chứng:**
 - [ ] `npm test` xanh
