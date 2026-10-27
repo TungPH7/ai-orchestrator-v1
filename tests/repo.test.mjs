@@ -6,7 +6,7 @@ import { parse } from 'yaml';
 import { ROOT } from './helpers/kit.mjs';
 
 const WORKFLOW = join(ROOT, '.github', 'workflows', 'contract.yml');
-const COMMANDS = ['npm run validate', 'npm test', 'npm run render:check'];
+const COMMANDS = ['npm run validate', 'npm test', 'npm run render:check', 'npm run jira:checklist:check'];
 
 function readme() {
   return readFileSync(join(ROOT, 'README.md'), 'utf8');

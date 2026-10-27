@@ -35,13 +35,15 @@ Cần Node.js 24.
 
 ```
 npm install             # trong CI dùng npm ci
-npm run validate        # kiểm hợp đồng theo 8 quy tắc ở spec mục 7
+npm run validate        # kiểm hợp đồng (quy tắc R1–R8) và ánh xạ Jira (J1–J4)
 npm test                # test của validator, thư viện, kịch bản và template
 npm run render          # sinh lại docs/sdlc.md từ YAML
 npm run render:check    # báo lỗi nếu docs/sdlc.md cũ hơn YAML
+npm run jira:checklist  # sinh lại docs/jira-setup.md, checklist dựng Jira
+npm run jira:checklist:check  # báo lỗi nếu docs/jira-setup.md cũ hơn YAML
 ```
 
-CI ([.github/workflows/contract.yml](.github/workflows/contract.yml)) chạy `npm ci`, `npm run validate`, `npm test` và `npm run render:check` trên mọi PR và mỗi lần push vào `main`.
+CI ([.github/workflows/contract.yml](.github/workflows/contract.yml)) chạy `npm ci`, `npm run validate`, `npm test`, `npm run render:check` và `npm run jira:checklist:check` trên mọi PR và mỗi lần push vào `main`.
 
 ## Cấu trúc thư mục
 

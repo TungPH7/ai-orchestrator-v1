@@ -11,7 +11,9 @@
     "validate": "node scripts/validate-contract.mjs",
     "test": "node --test \"tests/**/*.test.mjs\"",
     "render": "node scripts/render-docs.mjs",
-    "render:check": "node scripts/render-docs.mjs --check"
+    "render:check": "node scripts/render-docs.mjs --check",
+    "jira:checklist": "node scripts/jira-checklist.mjs",
+    "jira:checklist:check": "node scripts/jira-checklist.mjs --check"
   },
   "dependencies": {
     "ajv": "8.20.0",
