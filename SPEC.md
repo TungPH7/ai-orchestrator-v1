@@ -124,7 +124,7 @@ sdlc-contract → agent-roster, tracker-integration, quality-gates (làm song so
 |---|---|---|
 | `sdlc-contract` | [`SPEC-sdlc-contract.md`](SPEC-sdlc-contract.md) | Hoàn thành 2026-10-27; plan lưu ở [`tasks/archive/sdlc-contract/`](tasks/archive/sdlc-contract/plan.md) |
 | `agent-roster` | `SPEC-agent-roster.md` | Chưa viết |
-| `tracker-integration` | [`SPEC-tracker-integration.md`](SPEC-tracker-integration.md) | Bản nháp, chờ duyệt |
+| `tracker-integration` | [`SPEC-tracker-integration.md`](SPEC-tracker-integration.md) | Đã duyệt 2026-10-27; plan ở [`tasks/plan.md`](tasks/plan.md), chờ duyệt |
 | `quality-gates` | `SPEC-quality-gates.md` | Chưa viết |
 | `dev-workflow` | `SPEC-dev-workflow.md` | Chưa viết |
 | `release-workflow` | `SPEC-release-workflow.md` | Chưa viết |

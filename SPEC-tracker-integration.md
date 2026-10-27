@@ -2,7 +2,7 @@
 
 > **Module:** `tracker-integration`, xem capability map trong [SPEC.md](SPEC.md). **Phụ thuộc:** `sdlc-contract`. **Được dùng bởi:** `dev-workflow`, `release-workflow`, `project-scaffold`, và `orchestrator-cli` ở Cấp 2.
 >
-> **Trạng thái:** bản nháp, chờ bạn duyệt. **Nguồn thảo luận:** [misc/brainstorm-discussion.md](misc/brainstorm-discussion.md), Phiên 4 · Lượt 1 đến Phiên 6 · Lượt 1.
+> **Trạng thái:** đã duyệt 2026-10-27; mục 2.6 sửa sau khi duyệt, chờ bạn xác nhận cùng plan. **Plan:** [tasks/plan.md](tasks/plan.md). **Nguồn thảo luận:** [misc/brainstorm-discussion.md](misc/brainstorm-discussion.md), Phiên 4 · Lượt 1 đến Phiên 6 · Lượt 4.
 
 ## 1. Mục tiêu
 
@@ -13,11 +13,11 @@ Nối hợp đồng `sdlc-contract` với Jira Cloud và GitHub, để trạng t
 - GitHub Actions thực hiện các transition của vai trò `automation` (`submit`, `request-changes`, `deploy-to-qa`, `refine` các item con của Epic) dựa trên sự kiện thật của PR, CI và deploy.
 - Nhánh, commit, PR và deploy hiện trên item Jira; panel Deployments nhận đúng Development, Staging, Production.
 
-**Ràng buộc gói Jira.** Site đang dùng thử Standard tới 2026-11-22, sau đó tự về Free. Module này thiết kế cho gói **Free**: không dùng tính năng nào gói Free không có, kể cả trong lúc dùng thử. Có hai lý do: dự án sau dựng trên Free sẽ không làm lại được cấu hình đó, và theo Atlassian, permission scheme, project role, issue security dựng trong lúc dùng thử sẽ bị khóa chỉ đọc khi site về Free.
+**Ràng buộc gói Jira.** Module này thiết kế cho gói **Free**: không dùng tính năng nào gói Free không có. Ngày 2026-10-27 bạn đã chuyển site từ bản dùng thử Standard về Free, nên mọi bước kiểm thật chạy trên đúng gói Free.
 
 **Ngoài phạm vi:**
 
-- Prompt, tool, model của từng agent, và việc khai báo hook trong từng agent: thuộc `agent-roster`. Module này cung cấp hook và cách khai báo.
+- Prompt, tool, model của từng agent: thuộc `agent-roster`. Module này cung cấp hook và khai báo nó trong `kit/.claude/settings.json`; `agent-roster` chỉ cần đặt tên agent trùng id vai trò.
 - Gắn hàm kiểm quy ước nhánh, commit vào commit-msg hook, CI và branch protection: thuộc `quality-gates`. Module này cung cấp hàm kiểm.
 - Pipeline deploy, tạo và phát hành Fix Version khi cắt release: thuộc `release-workflow`. Module này chỉ nhận sự kiện deploy.
 - Khi nào gọi agent nào: thuộc `dev-workflow`.
@@ -33,7 +33,7 @@ Nối hợp đồng `sdlc-contract` với Jira Cloud và GitHub, để trạng t
 | Workflow riêng (status, transition), custom field, Kanban board, Version | Có | [Inference] Cùng lý do trên |
 | Permission scheme, project role, issue security | **Không** | Trang Atlassian về quyền trên gói Free |
 | Rule "Restrict who can move a work item" theo group | Chưa rõ | [Unverified] Tài liệu chỉ ghi cần quyền admin, không ghi gói |
-| Service account | 5 cái miễn phí mỗi tổ chức, không tính vào giới hạn 10 user | [Unverified] Tài liệu không nói riêng về gói Free |
+| Service account | 5 cái miễn phí mỗi tổ chức, không tính vào giới hạn 10 user | Ngày 2026-10-27 bạn đã tạo `orchestratoragent`, `orchestratorci` và token của chúng. Việc dùng chúng trên gói Free được kiểm ở task kết nối thật |
 | Jira Automation | 100 lượt mỗi tháng (màn hình chọn gói của bạn). Trang hỗ trợ của Atlassian tính theo step: 150 step | Module không dùng Jira Automation, nên con số này không ảnh hưởng |
 | App GitHub for Jira | Có | [Inference] Gói Free giới hạn app mở rộng Jira, nhưng app này không nằm trong danh sách app không tương thích với Free |
 | Email notification | Bị giới hạn | Không ảnh hưởng: `pm` gửi bản tổng hợp hằng ngày |
@@ -54,6 +54,7 @@ Vì gói Free không có permission scheme, mọi user có quyền Jira đều l
 
 - **Hai service account tách riêng** để lịch sử item phân biệt việc của agent với việc của CI, và để rule Restrict chặn được agent ở các transition chỉ dành cho `automation` (như `submit`).
 - **Mọi agent dùng chung `orchestratoragent`**, vì không đủ service account cho từng vai trò. Vai trò cụ thể (`fe-dev`, `qa`…) do hook kiểm, và được ghi vào trường Agent của item (mục 2.4).
+- **Phương án nếu Bearer bị từ chối.** Hai trang của Atlassian nói khác nhau về cách Rovo MCP xác thực: hướng dẫn cho developer ghi API key của service account dùng `Bearer`, còn một bài KB ghi Rovo MCP chỉ nhận Basic auth. Task kết nối thật thử `Bearer` trước; nếu bị từ chối thì dùng Basic auth với email mà Atlassian tự sinh cho service account.
 - **Scope token.** Agent: `read:jira:agent-interface`, `write:jira:agent-interface`, `search:jira:agent-interface` (cho Rovo MCP) và `read:jira-work` (để hook đọc dữ kiện). CI: `read:jira-work`, `write:jira-work`.
 - **Hạn token** tối đa 365 ngày. Ngày hết hạn ghi trong `tracker/jira.yaml`; `jira:check` cảnh báo khi còn dưới 14 ngày.
 - **Phương án dự phòng**, nếu gói Free không có service account: mỗi danh tính dùng một tài khoản Atlassian thường (tốn 2 trong 10 chỗ user), và agent đăng nhập Rovo MCP bằng OAuth. Phần còn lại của spec giữ nguyên.
@@ -80,7 +81,7 @@ File `tracker/jira.yaml` ánh xạ mọi id của hợp đồng sang tên trên 
 | Giới hạn WIP `dev-agent`, `epic-shaping` | Không đặt được trên cột board; guard `wip-available` và `epic-wip-available` đếm bằng JQL |
 | Môi trường | GitHub environment `development`, `staging`, `production`, khai báo trong `.jira/config.yml` (mục 2.9) |
 
-### 2.4 Thay đổi hợp đồng (cần bạn duyệt)
+### 2.4 Thay đổi hợp đồng (đã duyệt 2026-10-27)
 
 1. **Thêm trường `agent` (Agent):** vai trò agent đang giữ item, dạng chọn một giá trị trong các role của agent; áp dụng cho Story, Sub-task, Task, Bug; agent điền khi `start` và `pick-up`. Lý do: mọi agent dùng chung một tài khoản Jira, nên assignee không cho biết agent nào đang giữ item, trong khi guard `wip-available` phải đếm WIP theo từng dev agent.
 2. **Ghi rõ cách tính `rework-count`:** số transition có effect `increment-rework` trong lịch sử của item. Hợp đồng hiện để module này chọn giữa trường số và đếm từ lịch sử. Mình chọn đếm từ lịch sử: chỉ có một nguồn sự thật, không cần ai nhớ tăng số, và không lệch được.
@@ -118,9 +119,9 @@ Dự án khai báo server trong `.mcp.json`. Token nằm trong biến môi trư�
 - Tool Jira agent dùng: `getJiraIssue`, `searchJiraIssuesUsingJql`, `createJiraIssue`, `editJiraIssue`, `addOrEditJiraIssueComment`, `listJiraIssueTransitions`, `transitionJiraIssue`, `lookupJiraAccountId`. Tên tool lấy từ trang Supported tools; giả định 1 ở Phiên 4 ghi nhầm tên tool liệt kê transition.
 - Không bật connector Atlassian của claude.ai cho Claude Code, vì connector đó chạy bằng tài khoản của bạn. Hook chặn mọi tool Atlassian không thuộc server `atlassian` của dự án.
 
-**Hook `jira-guard`** chạy trước mỗi lần gọi `mcp__atlassian__transitionJiraIssue`:
+**Hook `jira-guard`** được khai báo một lần trong `.claude/settings.json` của dự án, và chạy trước mỗi lần gọi `mcp__atlassian__transitionJiraIssue`:
 
-1. Lấy vai trò agent. Mỗi agent khai báo hook trong frontmatter của mình, kèm tham số `--actor <role>`. Không biết vai trò, ví dụ khi phiên chính tự gọi tool, thì chặn.
+1. Lấy vai trò agent từ trường `agent_type` trong input của hook. Claude Code điền trường này bằng tên subagent khi tool được gọi bên trong subagent, và khi phiên chạy bằng `--agent`. Tên file agent trùng id vai trò (`fe-dev`, `qa`…), nên `agent_type` chính là vai trò. Không có `agent_type` (phiên chính tự gọi tool), hoặc `agent_type` không phải vai trò agent của hợp đồng (ví dụ agent của plugin), thì chặn.
 2. Đổi transition Jira sang transition của hợp đồng, theo `tracker/jira.yaml`.
 3. Gom dữ kiện cho các guard (mục 2.8), rồi gọi `checkTransition` của hợp đồng.
 4. Cho qua, hoặc chặn và báo lý do: vai trò không được phép, hoặc guard nào còn thiếu.
@@ -128,6 +129,8 @@ Dự án khai báo server trong `.mcp.json`. Token nằm trong biến môi trư�
 Sau khi agent chuyển trạng thái thành công, hook thứ hai đếm lại rework; nếu chạm giới hạn trong `policies.yaml` thì thực hiện `flag-needs-you`.
 
 Agent không được gọi thẳng Jira REST API. Một hook chặn lệnh Bash có chứa `atlassian`. Biện pháp này không kín hoàn toàn, nên lớp chặn cuối cho các transition của bạn vẫn là rule Restrict.
+
+Bản nháp trước của spec cho mỗi agent khai báo hook trong frontmatter, kèm `--actor <role>`. Cách đó bị bỏ vì ba lý do. Hook trong file settings của dự án cũng chạy bên trong subagent, nên một hook khai báo ở cả hai nơi sẽ chạy hai lần, và lần không có `--actor` luôn chặn. Hook trong frontmatter chỉ chạy sau khi bạn chấp nhận hộp thoại tin cậy thư mục, và không chạy trong phiên `claude -p`. Còn `agent_type` thì do Claude Code điền, agent không tự đổi được.
 
 ### 2.7 Automation trên GitHub Actions
 
@@ -227,6 +230,7 @@ ai-orchestrator-v1/
 ├── kit/                        # file nằm trong repo dự án, giữ đúng đường dẫn tương đối
 │   ├── .mcp.json
 │   ├── .jira/config.yml
+│   ├── .claude/settings.json   # khai báo các hook
 │   ├── .claude/hooks/jira-guard.mjs
 │   └── .github/workflows/jira-sync.yml
 ├── docs/jira-setup.md          # sinh tự động, không sửa tay
@@ -308,17 +312,17 @@ Thư viện chỉ gọi mạng trong `jira-client.mjs` và `github-client.mjs`. 
 8. Nhánh, commit, PR và các deployment thử hiện trên item; panel Deployments nhận đúng loại môi trường của `development`, `staging`, `production`.
 9. Hai câu hỏi mở trong `SPEC.md` được đóng.
 
-## 10. Câu hỏi cần bạn quyết
+## 10. Câu hỏi đã trả lời (2026-10-27)
 
-1. **Chuyển site về Free ngay** trước khi dựng Jira, hay giữ bản dùng thử tới 2026-11-22? Mình đề xuất chuyển ngay. Bạn đã chọn thiết kế cho Free, mà còn dùng thử thì tiêu chí 6, cùng một phần tiêu chí 3, 4 và 8, chỉ kiểm thật được sau 2026-11-22; tới lúc đó mới biết gói Free thiếu gì thì phải sửa thiết kế muộn.
-2. **Hai service account** như mục 2.2, hay một tài khoản chung cho agent và CI? Mình đề xuất hai: không tốn thêm tiền, và Jira chặn được agent tự `submit` khi CI chưa xanh.
-3. **Nơi kiểm thật:** dùng luôn space `DEMO` của dự án pilot, và tạo repo private `TungPH7/ao-pilot` làm sandbox. Tới Pilot 1, repo này nhận code mẫu Next.js + NestJS và trở thành repo pilot.
-4. **Hai thay đổi hợp đồng** ở mục 2.4.
+1. **Gói Jira:** bạn đã chuyển site về Free trước khi dựng Jira.
+2. **Tài khoản:** hai service account, `orchestratoragent` và `orchestratorci`; bạn đã tạo cả hai cùng token của chúng.
+3. **Nơi kiểm thật:** space `DEMO` của dự án pilot, và repo private `TungPH7/ao-pilot` làm sandbox. Tới Pilot 1, repo này nhận code mẫu Next.js + NestJS và trở thành repo pilot.
+4. **Thay đổi hợp đồng:** bạn đồng ý cả hai thay đổi ở mục 2.4.
 
 ## 11. Rủi ro chuyển sang module khác
 
 - **Bạn không approve được PR của chính mình.** GitHub không cho tác giả PR approve PR đó. Nếu agent mở PR bằng tài khoản `TungPH7`, guard `merge-approved` không bao giờ thỏa. Agent cần mở PR bằng một danh tính khác, như GitHub App hoặc một tài khoản máy. Chốt ở `quality-gates`; trong module này, guard được test bằng dữ liệu mẫu.
-- **Cách hook biết vai trò agent** dựa vào hook khai báo trong frontmatter của agent. Cần kiểm lại khi viết `agent-roster`.
+- **`agent-roster` phải đặt tên file agent trùng id vai trò** (`fe-dev.md` có `name: fe-dev`), vì hook lấy vai trò từ `agent_type` (mục 2.6).
 
 ## Nguồn
 
@@ -329,6 +333,9 @@ Thư viện chỉ gọi mạng trong `jira-client.mjs` và `github-client.mjs`. 
 - [Atlassian: Permissions and issue-level security in Free plans](https://support.atlassian.com/jira-cloud-administration/docs/permissions-and-issue-level-security-in-free-plans/)
 - [Atlassian: What is the Free Jira Cloud plan?](https://support.atlassian.com/jira-cloud-administration/docs/explore-jira-cloud-plans/)
 - [Atlassian: Restrict workflows based on user groups](https://support.atlassian.com/jira-cloud-administration/docs/restrict-workflows-based-on-user-groups/)
+- [Atlassian Developer: Configuring authentication via API token (Rovo MCP)](https://developer.atlassian.com/cloud/rovo-mcp/guides/configuring-authentication-via-api-token/)
+- [Atlassian KB: Rovo MCP Server only returns Teamwork Graph tools when using API Token](https://support.atlassian.com/rovo/kb/rovo-mcp-server-only-returns-teamwork-graph-tools-when-using-api-token/)
+- [Claude Code: Hooks reference](https://code.claude.com/docs/en/hooks)
 - [Atlassian Community: Unable to enable Atlassian Rovo MCP Server API Token](https://community.atlassian.com/forums/Jira-questions/Unable-to-enable-Atlassian-Rovo-MCP-Server-API-Token/qaq-p/3263746)
 - [atlassian/github-for-jira: Showing GitHub deployments in Jira](https://github.com/atlassian/github-for-jira/blob/332b5ae08042c631fdce6465386a6c338e819d99/docs/deployments.md)
 - [Atlassian KB: custom environment names show "undefined environment"](https://support.atlassian.com/jira/kb/jira-github-integration-custom-environment-names-does-not-show-up-in-releases-panel-and-instead-show-undefined-environment/)
