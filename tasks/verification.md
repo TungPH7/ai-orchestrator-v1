@@ -46,7 +46,7 @@
 | 1. Group và service account | Đang làm |
 | 2. Rovo MCP | Xong ở T1 |
 | 3. Resolution | Xong (2026-10-27). Site có hai resolution `Done` ("GreenHopper Managed Resolution", do Jira Software tạo); giữ cả hai |
-| 4. Status | Chưa làm |
+| 4. Status | Xong (2026-10-27): 10 status mới và `In Progress` có sẵn, đúng tên và Category |
 | 5. Workflow | Chưa làm |
 | 6. Workflow scheme | Chưa làm |
 | 7. Trường | Chưa làm |
