@@ -96,16 +96,16 @@ Claude làm: tạo repo private `TungPH7/ao-pilot` với nhánh `main` và `deve
 
 **Cỡ:** M
 
-### [ ] T5: Quy ước gắn mã Jira
+### [x] T5: Quy ước gắn mã Jira
 
 **Mô tả:** `lib/tracker/conventions.mjs` theo spec mục 2.5: tách mã Jira từ chuỗi, kiểm tên nhánh (`feature/`, `bugfix/`, `hotfix/`, hậu tố `-rN`, nhánh `release/*` không có mã), commit `type(scope): subject (<KEY>)` và tiêu đề PR. `<slug>` gồm chữ thường, số, gạch nối, tối đa 40 ký tự.
 
 **Tiêu chí chấp nhận:**
-- [ ] Tên nhánh, commit, tiêu đề PR đúng và sai, mỗi loại có test; hàm trả lý do khi sai.
-- [ ] Tách được nhiều mã trong một commit, như `(DEMO-12, DEMO-13)`.
+- [x] Tên nhánh, commit, tiêu đề PR đúng và sai, mỗi loại có test; hàm trả lý do khi sai.
+- [x] Tách được nhiều mã trong một commit, như `(DEMO-12, DEMO-13)`.
 
 **Kiểm chứng:**
-- [ ] `npm test` xanh
+- [x] `npm test` xanh
 
 **Phụ thuộc:** không
 
