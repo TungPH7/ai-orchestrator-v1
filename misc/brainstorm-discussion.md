@@ -1744,3 +1744,35 @@ Xong hai việc thì bạn nhắn "xong". Mình sẽ chạy ba phép thử của
 1. `curl -I` tới Rovo MCP bằng token của agent.
 2. Claude Code trong `ao-pilot` gọi tool Jira bằng `orchestratoragent`.
 3. Token CI gọi `GET /rest/api/3/myself`.
+
+---
+
+# Phiên 6 · Lượt 6 — 2026-10-27 khoảng 12:30
+
+Trước lượt này, bạn chạy `/context`.
+
+**Bạn:**
+
+```markdown
+[Image #4]
+Việc 1: Image #4, tôi không thấy chỗ bật xác thực
+Việc 2: tôi đang làm
+```
+
+Ảnh đính kèm:
+
+- [Image #4](images/phien-6-luot-6-anh-1.png): trang **Rovo settings** trong Atlassian Administration (AI and Rovo → Rovo settings), chỉ có các tab Beta features, Web access, Search bookmarks.
+
+**Claude:**
+
+Đường dẫn mình đưa ở lượt trước sai. Nó lấy từ một trả lời trên Atlassian Community, và menu đó không còn tồn tại. Theo trang hỗ trợ chính thức của Atlassian, công tắc nằm ở mục **Connectors**, ngay trong menu bên trái của ảnh bạn gửi:
+
+1. Ở menu bên trái của Atlassian Administration, chọn **Connectors**.
+2. Chọn **Atlassian MCP server**.
+3. Ở mục **Authentication**, bật **API token**.
+
+Nếu trong Connectors không có **Atlassian MCP server**, hoặc mục Authentication không có công tắc API token, bạn chụp màn hình gửi mình.
+
+Mình đã sửa đường dẫn này trong spec mục 2.6 và trong task T1. Bạn làm xong cả hai việc thì nhắn "xong", mình chạy ba phép thử của T1.
+
+Nguồn: [Atlassian: Control Atlassian Rovo MCP server settings](https://support.atlassian.com/security-and-access-policies/docs/control-atlassian-rovo-mcp-server-settings/)
