@@ -47,7 +47,7 @@
 | 2. Rovo MCP | Xong ở T1 |
 | 3. Resolution | Xong (2026-10-27). Site có hai resolution `Done` ("GreenHopper Managed Resolution", do Jira Software tạo); giữ cả hai |
 | 4. Status | Xong (2026-10-27): 10 status mới và `In Progress` có sẵn, đúng tên và Category |
-| 5. Workflow | Chưa làm |
+| 5. Workflow | Đang làm: bắt đầu từ `AO standard` |
 | 6. Workflow scheme | Chưa làm |
 | 7. Trường | Chưa làm |
 | 8. Space | Chưa làm |
@@ -57,5 +57,5 @@
 
 | Câu hỏi | Kết quả |
 |---|---|
-| Gói Free có rule "Restrict who can move a work item" theo group không | Chưa biết |
+| Gói Free có rule "Restrict who can move a work item" theo group không | Có trong danh sách rule (2026-10-27, ảnh `misc/images/phien-6-luot-17-anh-2.png`). Rule có chặn thật hay không được kiểm ở T15 |
 | Service account thêm được vào group không | Chưa biết |

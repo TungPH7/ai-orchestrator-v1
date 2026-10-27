@@ -98,11 +98,16 @@ Nếu danh sách có hai resolution `Done` cùng mô tả "GreenHopper Managed R
 
 **Cách thêm transition:** bấm **Add transition** ở đầu trang → chọn **From status** và **To status** → gõ tên transition → **Add**.
 
-**Cách giới hạn ai được chuyển (rule Restrict):** bấm vào mũi tên của transition → ở khung chi tiết, bấm **+** cạnh **Rules** → chọn **Restrict who can move a work item** → **Select** → ô **Restrict to** chọn **Groups** → chọn các group ghi ở dòng đó → **Add**.
+**Cách giới hạn ai được chuyển (rule Restrict):**
 
-**Rule đặt Resolution là Done** (đối chiếu giao diện): ở **Rules**, bấm **+**, chọn rule cập nhật một trường của work item, chọn trường **Resolution**, giá trị **Done**.
+1. Bấm vào nhãn của transition trên sơ đồ. Khung **Transition** hiện ở bên phải.
+2. Trong khung đó, phần **Rules** có bốn nhóm: Restrict transition, Request input, Validate details, Perform actions. Ở nhóm **Restrict transition**, bấm **Add restrict transition rule** (hoặc dấu **+**).
+3. Hộp **Add rule** mở ra. Kéo danh sách bên phải xuống cuối, chọn **Restrict who can move a work item** → **Select**.
+4. Ô **Restrict to** chọn **Groups** → chọn các group ghi ở dòng đó → **Add**.
 
-**Rule hỏi Resolution khi hủy** (đối chiếu giao diện): ở **Rules**, bấm **+**, chọn rule hiện màn hình khi chuyển, chọn màn hình có sẵn chứa trường Resolution (thường tên **Resolve Issue Screen** hoặc **Resolve Work Item Screen**).
+**Rule đặt Resolution là Done** (đối chiếu giao diện): trong khung **Transition**, nhóm **Perform actions** → **+** → chọn rule cập nhật một trường của work item → trường **Resolution**, giá trị **Done**.
+
+**Rule hỏi Resolution khi hủy** (đối chiếu giao diện): trong khung **Transition**, nhóm **Request input** → **+** → chọn rule hiện màn hình hoặc hỏi giá trị trường → chọn trường **Resolution** (hoặc màn hình có sẵn chứa Resolution, thường tên **Resolve Issue Screen**).
 
 **Cuối cùng:** bấm **Update workflow** (hoặc nút lưu tương ứng) để lưu.
 
