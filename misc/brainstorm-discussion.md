@@ -2582,3 +2582,46 @@ Mở được Story rồi thì bạn làm tiếp từ bước 3 của lượt tr
 Một phát hiện khi đọc `DEMO-1`: với token của cả hai service account, Jira trả tên bằng tiếng Trung, work type là `故事` (Story), status là `全新` (New). Gửi kèm header `Accept-Language: en-US` thì Jira trả tên tiếng Anh. Ánh xạ của mình so theo tên, nên từ T9, mọi request REST của module sẽ gửi kèm header này. Rovo MCP thì mình sẽ kiểm ở T13. Bạn không cần làm gì.
 
 Mình đã ghi phát hiện này vào `tasks/verification.md`. Mục Board của checklist cũng có thêm một dòng: item ở Kanban backlog không hiện trên board, xem ở tab **List**.
+
+---
+
+# Phiên 6 · Lượt 28 — 2026-10-28 khoảng 01:00
+
+**Bạn:**
+
+```markdown
+[Image #26]
+```
+
+Ảnh đính kèm:
+
+- [Image #26](images/phien-6-luot-28-anh-1.png): tab **List** của `DEMO board`: một dòng `DEMO-1` "Story thử T8", Unassigned, Reporter tung phunghuu, Priority Medium, Status **Ready**, Resolution Unresolved, Created Oct 28, 2026, 12:47 AM.
+
+**Claude:**
+
+Mình đã đọc lịch sử của `DEMO-1` qua REST. Bạn đã chuyển hai bước, cả hai đều chạy:
+
+- `Refine` (`New` → `Ready`) lúc 00:54.
+- `Cancel` (`Ready` → `Cancelled`) lúc 00:56.
+
+Nhưng có một lỗi: **sau khi hủy, Resolution của `DEMO-1` vẫn trống**, đáng ra phải là `Won't Do`. Item ở `Cancelled` mà không có Resolution thì vẫn bị Jira tính là chưa giải quyết.
+
+Mình cần bạn trả lời hai câu:
+
+1. Lúc bấm **Cancel**, Jira có hiện hộp hỏi Resolution không? Nếu có, bạn đã chọn `Won't Do` chưa?
+2. Lúc Story ở `Ready`, danh sách status có `Start` hay `In Progress` không?
+
+Để tìm nguyên nhân, bạn mở rule của transition này:
+
+1. Bánh răng ⚙ → **Jira admin settings** → **Work items** → **Workflows** → workflow `AO standard` → mở trình sửa.
+2. Trên sơ đồ, bấm nhãn **Cancel** của đường `Ready` → `Cancelled`.
+3. Ở khung **Transition** bên phải, chụp nhóm **Request input** gửi mình. Nếu nhóm này có rule, bấm vào rule và chụp luôn phần cài đặt của nó.
+
+Mình đoán là một trong hai nguyên nhân sau:
+
+- Transition `Cancel` từ `Ready` chưa có rule Request input. `AO standard` có 6 transition `Cancel`, nên dễ sót một cái.
+- Rule có rồi, nhưng ô Resolution không bắt buộc nên bỏ qua được.
+
+Giữ nguyên `DEMO-1`, đừng xóa: nó là bằng chứng của lỗi này. Sửa rule xong, mình sẽ nhờ bạn tạo một Story thử thứ hai để kiểm lại cả hai việc: `Start` không hiện ở `Ready`, và `Cancel` bắt chọn Resolution.
+
+Mình đã ghi kết quả kiểm vào `tasks/verification.md`: tạo Story và `Refine` đạt; hủy có hỏi Resolution không đạt; việc chặn `Start` chưa kiểm.
