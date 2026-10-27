@@ -2548,3 +2548,37 @@ Vậy là bạn đã dựng xong cả 12 mục. T8 còn một bước kiểm: t�
 Bạn làm xong thì gửi mình key của Story (ví dụ `DEMO-1`). Mình sẽ đọc Story qua REST (chỉ đọc) để kiểm status, resolution và lịch sử chuyển. Sau đó mình đánh dấu T8 xong, mở PR cho nhánh `task/t8-build-demo` và merge khi CI xanh. Task tiếp theo, T9, cần bạn tạo một API token chỉ đọc; tới lúc đó mình sẽ hướng dẫn từng bước.
 
 Mình đã ghi mục 11, 12 xong vào `tasks/verification.md`. Mục 11 của checklist cũng được sửa: tài khoản cá nhân dùng được, kèm bước kiểm trên trang **Connections** (Only select repos, Backfill FINISHED).
+
+---
+
+# Phiên 6 · Lượt 27 — 2026-10-28 khoảng 00:50
+
+**Bạn:**
+
+```markdown
+[Image #25]
+trang Backlog của space ở đâu??
+```
+
+Ảnh đính kèm:
+
+- [Image #25](images/phien-6-luot-27-anh-1.png): board **DEMO board** (tab **Kanban board**). Các tab: Summary, Timeline, Kanban board, Calendar, List, Forms, Development, Docs, +. Cột: READY (trống, ghi "Create and move work items from the backlog to get started"), IN PROGRESS, IN REVIEW (MAX: 2), QA, DONE. Không có tab Backlog.
+
+**Claude:**
+
+Board của bạn không có tab Backlog riêng. Bạn mở Story theo một trong hai cách:
+
+- Bấm tab **List** (cạnh **Calendar**) → bấm `DEMO-1`.
+- Hoặc mở thẳng link: <https://phunghuutung12b4.atlassian.net/browse/DEMO-1>
+
+Mình đã đọc qua REST (chỉ đọc): `DEMO-1` "Story thử T8" là Story, đang ở status `New`, đúng như mong đợi. Ảnh của bạn cũng cho thấy Kanban backlog đã bật đúng: board không có cột Backlog, và cột `Ready` ghi "Create and move work items from the backlog". Nghĩa là item ở `New` không hiện trên board.
+
+Mở được Story rồi thì bạn làm tiếp từ bước 3 của lượt trước:
+
+1. Bấm nút status `New` → **Refine**.
+2. Bấm lại nút status (giờ là `Ready`) → chụp danh sách gửi mình. Danh sách không được có `Start` hay `In Progress`.
+3. Chọn **Cancel** → hộp **Resolution** chọn `Won't Do` → xác nhận.
+
+Một phát hiện khi đọc `DEMO-1`: với token của cả hai service account, Jira trả tên bằng tiếng Trung, work type là `故事` (Story), status là `全新` (New). Gửi kèm header `Accept-Language: en-US` thì Jira trả tên tiếng Anh. Ánh xạ của mình so theo tên, nên từ T9, mọi request REST của module sẽ gửi kèm header này. Rovo MCP thì mình sẽ kiểm ở T13. Bạn không cần làm gì.
+
+Mình đã ghi phát hiện này vào `tasks/verification.md`. Mục Board của checklist cũng có thêm một dòng: item ở Kanban backlog không hiện trên board, xem ở tab **List**.
