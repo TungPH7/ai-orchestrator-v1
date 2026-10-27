@@ -174,17 +174,17 @@ Claude làm: tạo repo private `TungPH7/ao-pilot` với nhánh `main` và `deve
 
 **Cỡ:** S (phần code), phần dựng tay mất khoảng 1–2 giờ
 
-### [ ] T9: `jira:check` phần 1: status, transition, scheme [bạn]
+### [x] T9: `jira:check` phần 1: status, transition, scheme [bạn]
 
 **Mô tả:** Bạn tạo một API token cá nhân chỉ có scope đọc (Claude đưa danh sách scope), đặt vào biến `JIRA_ADMIN_EMAIL` và `JIRA_ADMIN_TOKEN`. Claude viết `lib/tracker/jira-client.mjs` (chỉ GET trong task này, có phân trang), `lib/tracker/drift.mjs` và `scripts/jira-check.mjs`, rồi kiểm các loại lệch: thiếu status, sai nhóm status, transition sai `from` hoặc `to`, scheme thiếu issue type. Dữ liệu mẫu ghi từ `DEMO`.
 
 **Tiêu chí chấp nhận:**
-- [ ] Mỗi loại lệch có một bộ dữ liệu mẫu và thông báo mong đợi; có lệch thì thoát mã khác 0.
-- [ ] `jira:check` chỉ dùng client chỉ đọc; có test kiểm client này từ chối request ghi.
-- [ ] Chạy thật `npm run jira:check -- --space DEMO` cho kết quả đúng với phần đã kiểm.
+- [x] Mỗi loại lệch có một bộ dữ liệu mẫu và thông báo mong đợi; có lệch thì thoát mã khác 0.
+- [x] `jira:check` chỉ dùng client chỉ đọc; có test kiểm client này từ chối request ghi.
+- [x] Chạy thật `npm run jira:check -- --space DEMO` cho kết quả đúng với phần đã kiểm.
 
 **Kiểm chứng:**
-- [ ] `npm test` xanh; kết quả chạy thật ghi trong `tasks/verification.md`
+- [x] `npm test` xanh; kết quả chạy thật ghi trong `tasks/verification.md`
 
 **Phụ thuộc:** T8
 
