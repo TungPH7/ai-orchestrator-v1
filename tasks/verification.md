@@ -31,3 +31,17 @@
 7. **Tool `search` tốn Rovo Credits.** Agent tìm item bằng JQL, không dùng `search`.
 
 **Sự cố:** ngày 2026-10-27, token của `orchestratorci` lọt vào cuộc trò chuyện: dòng chứa token đang được bôi đen trong một file chưa lưu của VS Code, và extension Claude Code gửi phần bôi đen kèm tin nhắn. Bạn đã thu hồi token này và tạo token mới. Kiểm lại token mới bằng `GET /project/search`: đạt, trả 200. Nhưng token mới cũng lọt theo đúng đường cũ: nó nằm trong file ghi chú cá nhân `todo.md` của bạn (không được Git theo dõi) và đang được bôi đen khi bạn gửi tin nhắn. Bạn được đề nghị đổi token CI lần nữa, và không để token trong file nào mở bằng VS Code. Kiểm lại token thứ ba: _chưa chạy_.
+
+## T8: Dựng space `DEMO` theo checklist
+
+**Claude đã làm (2026-10-27):**
+
+- Tạo ba GitHub environment `development`, `staging`, `production` trong `TungPH7/ao-pilot`.
+- Đưa `.jira/config.yml` lên nhánh `main` của `ao-pilot`, sinh từ `tracker/jira.yaml`. File có trước khi cài app GitHub for Jira, nên không cần ngắt rồi nối lại kết nối.
+
+**Bạn làm:** dựng Jira theo `docs/jira-setup.md`, mục 1 đến 10. _Chưa xong._
+
+| Câu hỏi | Kết quả |
+|---|---|
+| Gói Free có rule "Restrict who can move a work item" theo group không | Chưa biết |
+| Service account thêm được vào group không | Chưa biết |
