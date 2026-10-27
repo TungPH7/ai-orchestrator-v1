@@ -2909,3 +2909,39 @@ Cần tôi cung cấp gì không?
 5. Báo kết quả. Sau đó bạn xóa token `ao-workflow-edit` (trang API tokens → **Revoke**), không cần chờ nó hết hạn.
 
 Lưu ý: nếu bạn còn mở trình sửa workflow có thay đổi chưa lưu, bấm **Discard changes** rồi đóng tab trước khi nhắn "xong", để hai bên không ghi đè lên nhau.
+
+---
+
+# Phiên 6 · Lượt 36 — 2026-10-28 khoảng 01:30
+
+**Bạn:**
+
+```markdown
+xong
+```
+
+**Claude:**
+
+Xong rồi: cả ba workflow giờ đủ rule cho 24 transition. Mình đã đọc lại bằng token chỉ đọc để xác nhận.
+
+Mình làm theo thứ tự đã hẹn:
+
+1. **Kiểm trước, chưa ghi gì:** script tính ra 17 transition cần sửa, chứ không phải 18, vì `Cancel` từ `Ready` bạn đã lưu trong lúc chờ. API kiểm tra của Jira báo không có lỗi nào.
+2. **Lưu:** `AO standard` lên version 3, `AO epic` và `AO sub-task` lên version 2. Status và đường đi không đổi.
+3. **Đọc lại:**
+   - Mọi transition đều có rule Restrict, đúng group như checklist.
+   - 10 transition `Cancel` hiện `Resolve Issue Screen`. Màn hình này có trường Resolution, Fix versions, Assignee và Log Work.
+   - `Accept`, `Complete` (epic) và `Complete` (sub-task) đặt Resolution là `Done`, đúng cái `Done` đứng đầu danh sách.
+
+**Việc của bạn bây giờ:**
+
+1. Xóa token tạm: mở <https://id.atlassian.com/manage-profile/security/api-tokens> → dòng `ao-workflow-edit` → **Revoke**.
+2. Xóa biến môi trường của nó: **Edit environment variables for your account** → chọn `JIRA_ADMIN_WRITE_TOKEN` → **Delete** → **OK**.
+3. Làm Story thử thứ hai:
+   - **+ Create** → `DEMO`, `Story`, Summary `Story thử T8 lần 2` → **Create**.
+   - Mở Story ở tab **List** → nút status → **Refine**.
+   - **Dừng ở đây**, nhắn mình key của Story (ví dụ `DEMO-2`) kèm ảnh danh sách khi bấm nút status `Ready`. Danh sách đó chỉ nên có `Cancel`.
+
+Lúc Story đang ở `Ready`, mình sẽ đọc qua REST xem mỗi service account thấy transition nào. Mong đợi là `orchestratoragent` chỉ thấy `Start`, còn `orchestratorci` không thấy gì. Như vậy ta kiểm được rule Restrict từ cả hai phía. Sau đó bạn mới bấm **Cancel** và chọn Resolution `Won't Do`.
+
+Mình đã ghi vào `tasks/verification.md`: mục 5 xong, cách thêm rule qua REST, và dạng của từng rule trong API. Phát hiện này đáng xem lại: spec mục 2.10 ghi Cấp 1 chưa dựng tự động vì API sửa workflow phức tạp, nhưng thực tế thêm rule qua API khá gọn. Mình sẽ nêu lại sau T10.
