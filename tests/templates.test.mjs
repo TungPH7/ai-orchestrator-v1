@@ -147,6 +147,13 @@ test('a review finding names its severity (Critical, High, Medium or Low), its a
   for (const level of ['Critical', 'High', 'Medium', 'Low']) assert.match(findings, new RegExp(`\\b${level}\\b`), level);
 });
 
+test('a review report names the role that posts it, reviewer or security, under its title (quality-gates spec 2.9)', () => {
+  const text = read('review-report.md');
+
+  assert.match(text, /^# Review: <PR title> \(<KEY>\)\n\nRole: <reviewer \| security>$/m);
+  assert.match(section('review-report.md', 'Example'), /^# Review: .*\n\nRole: reviewer$/m);
+});
+
 test('a QA report says PASS or FAIL, and gives the result of each acceptance criterion', () => {
   assert.match(section('qa-report.md', 'Result'), /PASS[\s\S]*FAIL|FAIL[\s\S]*PASS/);
   assert.match(section('qa-report.md', 'Acceptance Criteria'), /^\| Acceptance criterion \| Result \| Evidence \|$/m);

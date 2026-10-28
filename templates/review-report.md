@@ -2,10 +2,14 @@
 Template for the `review-report` artifact in contract/policies.yaml: a review posted on the PR. It follows the five axes and
 the review checklist of agent-skills' code-review-and-quality. `reviewer` covers every axis; `security` posts its own
 review with this template and goes deep on the Security axis.
+Both roles post through the same GitHub App, so the Role line says which one wrote the report: merge-gate needs a report
+of each role on the PR's newest commit.
 Keep headings in English and write the content in Vietnamese. Delete the guidance comments and the Example section when you are done.
 -->
 
 # Review: <PR title> (<KEY>)
+
+Role: <reviewer | security>
 
 ## Context
 
@@ -79,6 +83,8 @@ The review stage passes only when no Critical or High finding is open. -->
 
 ````markdown
 # Review: feat(auth): add email and password login (DEMO-12)
+
+Role: reviewer
 
 ## Context
 - [x] Thay đổi thêm `POST /auth/login` và trang `/login`, theo plan của DEMO-10.
