@@ -11,6 +11,26 @@ Bạn tạo hai App một lần cho tài khoản. Mỗi dự án mới chỉ c�
 
 Nhãn nút lấy từ tài liệu GitHub. Chỗ ghi **(đối chiếu giao diện)** là nhãn chưa đối chiếu được với màn hình thật: nếu màn hình của bạn khác, chụp màn hình gửi Claude.
 
+## Cách nhanh: script tạo App
+
+Script `scripts/github-app-create.mjs` dùng manifest flow của GitHub: nó điền sẵn tên, mô tả, quyền, tắt webhook, chọn "Only on this account", rồi nhận private key thẳng từ GitHub và ghi vào `C:\Users\Huu Tung\ao-keys\<slug>.pem`. Key không đi qua thư mục Downloads, chat hay log.
+
+1. Claude chạy, hoặc bạn chạy trong thư mục `ai-orchestrator`:
+
+   ```
+   node scripts/github-app-create.mjs --owner TungPH7 --repo ao-pilot
+   ```
+
+2. Mở `http://127.0.0.1:47100/` trên trình duyệt đang đăng nhập GitHub. Trang liệt kê hai App.
+3. Với App đầu tiên, bấm **Tạo App trên GitHub**. GitHub mở trang tạo App đã điền sẵn; bấm nút **Create GitHub App for TungPH7** ở cuối trang **(đối chiếu giao diện)**. GitHub có thể hỏi lại mật khẩu hoặc mã xác thực hai bước.
+4. GitHub chuyển sang trang cài App. Chọn **Only select repositories**, chọn `ao-pilot` (nếu chưa được chọn sẵn), bấm **Install**.
+5. GitHub quay về trang `127.0.0.1`. Làm lại bước 3 và 4 cho App thứ hai. Khi trang ghi "Xong cả hai App", script tự dừng và in slug, App ID, đường dẫn file key của từng App.
+6. Đặt hai biến môi trường ở mục 4 (Claude làm được, vì giá trị chỉ là đường dẫn). Slug và App ID đã có trong output của script, không cần gửi lại.
+
+Script dừng sau 30 phút nếu chưa xong. File key đã có thì script không ghi đè; muốn tạo lại App thì đổi tên hoặc xóa file cũ trước.
+
+Các mục 1 đến 5 dưới đây là cách làm tay, dùng khi script không chạy được.
+
 ## 1. Tạo App
 
 Làm hai lần: lần đầu cho `ao-dev`, lần hai cho `ao-review`.
