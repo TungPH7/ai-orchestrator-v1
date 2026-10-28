@@ -38,3 +38,12 @@ test('README shows the folder layout and says docs/sdlc.md is never edited by ha
   for (const folder of ['contract/', 'templates/', 'lib/', 'scripts/', 'docs/', 'tests/']) assert.ok(readme().includes(folder), folder);
   assert.match(readme(), /docs\/sdlc\.md.*không sửa tay/i);
 });
+
+test('README covers the tracker: commands, folders, how to install kit/ and every environment variable', () => {
+  const texts = ['npm run jira:check', 'jira-sync.mjs --dry-run', '(SPEC-tracker-integration.md)', '(docs/jira-setup.md)'];
+  for (const text of [...texts, 'tracker/', 'lib/tracker/', 'kit/', '.ai-orchestrator/']) assert.ok(readme().includes(text), text);
+
+  const { env } = JSON.parse(readFileSync(join(ROOT, 'kit', '.claude', 'settings.json'), 'utf8'));
+  const tokens = ['ATLASSIAN_AGENT_TOKEN', 'JIRA_CI_TOKEN', 'JIRA_ADMIN_EMAIL', 'JIRA_ADMIN_TOKEN', 'GITHUB_TOKEN'];
+  for (const name of [...Object.keys(env), ...tokens]) assert.ok(readme().includes(`\`${name}\``), name);
+});
