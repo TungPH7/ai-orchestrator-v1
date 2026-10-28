@@ -13,7 +13,8 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 3 | `c097b31c-efdb-42a0-96ba-8a2b65140f99` | 2026-10-26 15:43 → 17:17 | Duyệt SPEC-sdlc-contract và 7 câu hỏi mở; Story có cả FE và BE có tách hai nhánh không; monorepo hay hai repo; release theo quyết định của bạn; lập plan cho sdlc-contract; commit đầu tiên, repo GitHub, đổi tên thư mục |
 | 4 | `46e4e518-ac41-4570-8bcc-37d5a88788c5` | 2026-10-26 21:35 → 2026-10-27 01:02 | Build và đóng module sdlc-contract (14 task, PR #1–#16, không ghi vào lịch sử vì là lượt code); chọn module kế tiếp tracker-integration; giả định và câu hỏi cho tracker-integration |
 | 5 | `76bd80d2-8083-45f7-93a7-d7ffab2e246c` | 2026-10-27 09:45 → 10:02 | Bạn trả lời 5 câu hỏi của tracker-integration; câu trả lời của Claude bị bộ lọc an toàn chặn, hai lần |
-| 6 | `02493cdb-1425-4498-9a25-6408d7717c70` | 2026-10-27 10:03 → | Gói Free và company-managed; cách tạo tài khoản bot cho agent; viết SPEC-tracker-integration; cách chọn scope khi tạo token; duyệt spec, lập plan tracker-integration; bắt đầu T1; T1–T14, Checkpoint 1 và 2; dựng `DEMO` theo checklist, sửa checklist theo giao diện thật, thêm rule workflow qua REST; chuẩn bị `ao-pilot` cho T15 |
+| 6 | `02493cdb-1425-4498-9a25-6408d7717c70` | 2026-10-27 10:03 → 2026-10-28 khoảng 02:30 | Gói Free và company-managed; cách tạo tài khoản bot cho agent; viết SPEC-tracker-integration; cách chọn scope khi tạo token; duyệt spec, lập plan tracker-integration; bắt đầu T1; T1–T14, Checkpoint 1 và 2; dựng `DEMO` theo checklist, sửa checklist theo giao diện thật, thêm rule workflow qua REST; chuẩn bị `ao-pilot` cho T15 |
+| 7 | `86f38192-1135-4f7d-85f4-ce02cffc6b43` | 2026-10-28 10:20 → | T15 kiểm thật agent và hook (lượt code, không ghi); T16 đối soát (lượt code); giải thích lại thay đổi của guard `changes-requested` |
 
 ---
 
@@ -3098,3 +3099,60 @@ Sau đó mình chạy các kịch bản bằng `claude -p` trong `ao-pilot`:
 Ở bước `Start`, Story cần ở `Ready` và có nhánh trên GitHub. Lúc đó mình sẽ nhờ bạn bấm **Refine** trên Jira, còn nhánh thì mình tự đẩy lên `ao-pilot`.
 
 **Nhắc lần thứ ba:** token `ao-workflow-edit` vẫn còn hiệu lực, mình vừa thử lúc 02:28. Bạn **Revoke** nó ở <https://id.atlassian.com/manage-profile/security/api-tokens>, rồi xóa biến `JIRA_ADMIN_WRITE_TOKEN`.
+
+---
+
+# Phiên 7 · Lượt 1 — 2026-10-28 11:10
+
+**Bạn:**
+
+```markdown
+Tôi chưa hiểu đoạn này lắm "Một thay đổi nhỏ về cách hiểu "yêu cầu sửa" (đã ghi vào spec mục 2.8): guard changes-requested giờ chỉ tính review trên commit mới nhất của PR. Dev push bản sửa là đã trả lời yêu cầu sửa; review yêu cầu sửa trên commit cũ không còn kéo item về. Nếu giữ cách cũ, sau mỗi lần dev sửa, jira-sync sẽ đẩy item lên In Review rồi kéo về ngay, mỗi lần kéo về lại đếm thêm một rework. Bạn thấy cách hiểu này không hợp thì báo mình."
+
+GIải thích chậm hơn giúp tôi nhé
+```
+
+**Claude:**
+
+Mình giải thích lại bằng một ví dụ cụ thể.
+
+**Ba điều cần biết trước**
+
+1. Trên GitHub, mỗi lần dev push, PR có thêm một commit. Commit mới nhất chính là phiên bản code hiện tại của PR.
+2. Mỗi review trên GitHub gắn với đúng commit mà reviewer đã xem. Một PR có thể có nhiều review qua nhiều vòng, ví dụ vòng 1 là "Request changes", vòng 2 là "Approve".
+3. `jira-sync` (sẽ làm ở T17) không nhớ gì giữa các lần chạy. Mỗi khi GitHub có chuyện (push, CI chạy xong, có review), nó nhìn tình trạng hiện tại của PR rồi quyết định item trên Jira nên ở đâu. Một trong các câu nó tự hỏi là: "PR này có đang bị yêu cầu sửa không?". Đó là guard `changes-requested`. Nếu câu trả lời là "có" trong lúc item ở In Review, item về In Progress và số rework tăng 1.
+
+Thay đổi của mình nằm ở cách trả lời câu hỏi đó.
+
+**Ví dụ: Story `DEMO-5` với một vòng sửa bình thường**
+
+| Giờ | Chuyện xảy ra trên GitHub | Item nên ở đâu |
+|---|---|---|
+| 9:00 | Dev mở PR với commit A, CI xanh | In Review |
+| 10:00 | Reviewer xem commit A, bấm **Request changes** | In Progress, rework = 1 |
+| 11:00 | Dev sửa xong, push commit B, CI xanh | In Review, chờ reviewer xem lại |
+| 11:30 | Reviewer xem commit B, bấm **Approve** | In Review, chờ merge |
+
+Hai cách hiểu khác nhau ở mốc 11:00.
+
+**Cách cũ:** "PR đang bị yêu cầu sửa nếu review mới nhất là Request changes."
+
+Lúc 11:00 reviewer chưa xem lại, nên review mới nhất vẫn là Request changes của 10:00, trên commit A. `jira-sync` thấy PR mở và CI xanh, nên muốn đưa item lên In Review. Nhưng nó cũng thấy "đang bị yêu cầu sửa", nên muốn kéo item về In Progress. Hậu quả:
+
+- Nếu nó làm theo cả hai, item lên In Review rồi xuống In Progress mỗi khi GitHub có sự kiện, và mỗi lần xuống lại tính thêm một rework. Sau vài lần, item chạm giới hạn 3 rework và bị gắn `needs-you`, dù không ai yêu cầu sửa thêm. Đây là điều mình nói ở tin trước.
+- Thực ra T16 có thêm một quy tắc chống lên xuống: không đưa item lên nếu ngay sau đó nó sẽ bị kéo về. Với quy tắc này, item không lên xuống nữa mà **kẹt ở In Progress**. Reviewer chỉ xem item ở In Review, nên không ai xem commit B, và review cũ mãi là review mới nhất. Item kẹt vĩnh viễn. Tin trước mình chỉ nói hậu quả thứ nhất; hậu quả thật với code hiện tại là hậu quả này.
+
+**Cách mới:** "PR đang bị yêu cầu sửa nếu, chỉ xét các review trên commit mới nhất, review mới nhất là Request changes." CI đỏ trên commit mới nhất vẫn tính là bị yêu cầu sửa, như trước.
+
+Lúc 11:00, commit mới nhất là B và chưa ai review B, nên câu trả lời là "không". Item lên In Review, reviewer xem B. Nếu reviewer lại bấm Request changes trên B, item về In Progress với rework = 2. Đó là vòng sửa thật thứ hai, nên đếm như vậy là đúng.
+
+Nói ngắn: **dev push bản sửa thì coi như đã trả lời yêu cầu sửa, và đến lượt reviewer xem lại.**
+
+**Cái giá của cách mới:** nếu dev push một commit chưa sửa gì (ví dụ chỉ sửa chính tả), item vẫn lên In Review. Reviewer thấy chưa sửa thì bấm Request changes lần nữa, item về In Progress và rework tăng 1. Mình thấy chấp nhận được, vì reviewer vẫn là người quyết định cuối.
+
+**Những gì không đổi:**
+
+- CI đỏ trên commit mới nhất vẫn kéo item về In Progress.
+- Trên GitHub, PR vẫn hiện "Changes requested" cho tới khi reviewer xem lại. Thay đổi chỉ nằm ở cách `jira-sync` đọc trạng thái đó để chuyển item trên Jira.
+
+Bạn đồng ý thì mình giữ cách mới và làm tiếp T17. Còn một cách khác: bắt reviewer bấm **Dismiss review** cho review cũ thì mới tính là đã trả lời. Cách đó thêm một bước tay mỗi vòng sửa; nếu bạn muốn dùng thì báo mình.
