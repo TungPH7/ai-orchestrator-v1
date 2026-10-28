@@ -48,7 +48,7 @@ T1–T3 đứng đầu vì nếu một giả định nền sai thì `merge-gate`
 - [x] T2: Token của GitHub App
 - [x] T3: Kiểm giả định nền trên `ao-pilot` [bạn]
 - [x] T4: `quality/gates.yaml`, quy tắc Q1, Q3, Q4
-- [ ] T5: Thay đổi hợp đồng: stage `merge`, template báo cáo review
+- [x] T5: Thay đổi hợp đồng: stage `merge`, template báo cáo review
 
 ### Checkpoint 1
 - [ ] `npm run validate`, `npm test`, `npm run render:check`, `npm run jira:checklist:check` xanh
