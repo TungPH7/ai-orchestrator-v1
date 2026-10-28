@@ -143,13 +143,13 @@ Workflow `jira-sync.yml` trong repo dự án chạy `scripts/jira-sync.mjs` khi 
 | Sự kiện GitHub | Transition có thể xảy ra |
 |---|---|
 | `pull_request` (opened, reopened, synchronize, ready_for_review); `workflow_run` của CI đã xong | `submit` khi đủ guard; `request-changes` khi CI đỏ |
-| `pull_request_review` có trạng thái yêu cầu sửa | `request-changes` |
+| `pull_request_review` (mọi review) | `request-changes` khi review trên commit mới nhất yêu cầu sửa; một approve có thể cho item đã merge và deploy sang QA |
 | `deployment_status` thành công | `deploy-to-qa` cho các item có PR đã merge nằm trong bản deploy, nếu môi trường đó là môi trường QA của item |
 | `workflow_dispatch`, nhận vào mã item | Đối soát lại một item. Với Epic ở `in-progress`: `refine` các item con đạt DoR (effect `refine-children`) |
 
 `jira-sync` không chạy kịch bản riêng cho từng sự kiện mà **đối soát**: với mỗi item liên quan, nó đọc state hiện tại, gom dữ kiện, rồi thực hiện transition của `automation` mà mọi guard đều thỏa (dùng `allowedTransitions` và `checkTransition`). Chạy lại bao nhiêu lần cũng ra cùng một kết quả, nên sự kiện bị lỡ được bù bằng `workflow_dispatch`. `dev-workflow` sẽ gọi `workflow_dispatch` cho Epic ngay sau khi bạn duyệt plan.
 
-Token của CI là secret `JIRA_CI_TOKEN`, cloud id là biến `JIRA_CLOUD_ID`. GitHub chỉ chạy workflow có trigger `workflow_run` và `deployment_status` từ bản trên nhánh mặc định của repo.
+Token của CI là secret `JIRA_CI_TOKEN`; cloud id lấy từ `tracker/jira.yaml`. Space của dự án và login GitHub của bạn (cho `merge-approved`) lấy từ `AO_JIRA_SPACE` và `AO_APPROVERS` trong mục `env` của `.claude/settings.json` của dự án, nơi hook cũng đọc space. `jira-sync` chỉ chuyển item thuộc space đó, vì trên gói Free token CI ghi được mọi space. Với mỗi item không đổi, `jira-sync` in transition của `automation` đã thỏa một phần guard và các guard còn thiếu, ví dụ `Deploy to QA needs merge-approved`. (Chốt ở T17.) GitHub chỉ chạy workflow có trigger `workflow_run` và `deployment_status` từ bản trên nhánh mặc định của repo.
 
 ### 2.8 Dữ kiện cho guard
 
@@ -243,7 +243,7 @@ ai-orchestrator-v1/
 └── tests/tracker/              # dữ liệu mẫu ở tests/fixtures/tracker/
 ```
 
-Thư mục `kit/` là chỗ mới, chứa file sẽ nằm trong repo dự án; `agent-roster` sẽ đặt agent ở `kit/.claude/agents/`. File trong `kit/` gọi thư viện của kit qua thư mục `.ai-orchestrator/` của dự án, nơi chứa bản chép của `contract/`, `lib/` và `tracker/`. Cách cài và cập nhật bản chép này chốt ở `project-scaffold`; trong module này và ở Pilot 1, bản chép được làm tay.
+Thư mục `kit/` là chỗ mới, chứa file sẽ nằm trong repo dự án; `agent-roster` sẽ đặt agent ở `kit/.claude/agents/`. File trong `kit/` gọi thư viện của kit qua thư mục `.ai-orchestrator/` của dự án, nơi chứa bản chép của `contract/`, `lib/`, `tracker/` và `scripts/jira-sync.mjs`. Cách cài và cập nhật bản chép này chốt ở `project-scaffold`; trong module này và ở Pilot 1, bản chép được làm tay.
 
 ## 6. Code style
 
