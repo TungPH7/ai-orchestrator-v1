@@ -17,7 +17,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 7 | `86f38192-1135-4f7d-85f4-ce02cffc6b43` | 2026-10-28 10:20 → 13:25 | T15 kiểm thật agent và hook (lượt code, không ghi); T16 đối soát (lượt code); giải thích lại thay đổi của guard `changes-requested`; bạn đồng ý, T17 `jira-sync`; T18 kiểm thật `jira-sync` trên `ao-pilot` (lượt code) |
 | 8 | `56ad3187-0f02-4139-9d15-eff3c7191377` | 2026-10-28 13:25 → 16:22 | T19 đóng gói tài liệu và lưu plan của tracker-integration (lượt code, không ghi) |
 | 9 | `79cccd91-9d3a-495d-a154-927ae2ce5928` | 2026-10-28 16:22 → 16:34 | Bạn xác nhận tracker-integration hoàn thành và chọn quality-gates; Claude đánh dấu ô cuối (PR #45); câu trả lời bị bộ lọc an toàn chặn |
-| 10 | `b645b669-931c-4d95-ba32-24fd3e090d67` | 2026-10-28 16:35 → | Giả định và câu hỏi cho quality-gates: bảo vệ nhánh khi repo private ở gói Free, danh tính để agent mở PR |
+| 10 | `b645b669-931c-4d95-ba32-24fd3e090d67` | 2026-10-28 16:35 → | Giả định và câu hỏi cho quality-gates: bảo vệ nhánh khi repo private ở gói Free, danh tính để agent mở PR; bạn chọn 1a, 2a; viết SPEC-quality-gates |
 
 ---
 
@@ -3290,3 +3290,49 @@ Bạn trả lời hai câu trên và sửa giả định nếu cần. Sau đó m
 - [GitHub Docs: About GitHub Advanced Security](https://docs.github.com/en/get-started/learning-about-github/about-github-advanced-security)
 - [GitHub Terms of Service, mục B.3](https://docs.github.com/en/site-policy/github-terms/github-terms-of-service)
 - [Capital & Compute: GitHub pricing plans (7/2026)](https://capitalandcompute.net/blog/github-pricing-plans-cost/)
+
+---
+
+# Phiên 10 · Lượt 2 — 2026-10-29 khoảng 00:20
+
+**Bạn:**
+
+```markdown
+Trả lời
+1. (a)
+2. (a)
+```
+
+**Claude:**
+
+Mình đã viết `SPEC-quality-gates.md` theo hai lựa chọn của bạn (1a, 2a). Spec nằm trên nhánh `task/spec-quality-gates`, chưa mở PR: như hai module trước, spec và plan sẽ vào `main` cùng một PR sau khi bạn duyệt.
+
+## Tóm tắt
+
+**Bốn lớp chốt** (mục 2.1), vì repo private ở gói Free không có branch protection:
+
+1. **Hook git ở local:** `commit-msg` kiểm quy ước, `pre-commit` quét secret bằng secretlint, `pre-push` chặn push thẳng lên `develop`, `main`, `release/*`.
+2. **Hook `gh-guard` của Claude Code:** chặn agent bỏ qua hook git, tự merge, tự approve, lấy token, sửa file của kit.
+3. **`merge-gate`:** tự squash PR vào `develop` khi đủ điều kiện, trong đó có approve của bạn trên commit mới nhất. Nó chạy bằng bản trên nhánh mặc định (`workflow_run` sau `jira-sync`), nên PR không sửa được nó.
+4. **`audit`:** chạy trước mỗi lần deploy. Commit không qua cổng thì không được deploy, và item Jira bị gắn cờ "Needs you".
+
+**CI** gồm bốn job để tiết kiệm phút Actions: `policy` (quy ước, mẫu tắt kiểm tra, ngưỡng bị hạ, `npm audit`), `build-test` (lint, typecheck, test, coverage của dòng thay đổi từ 80%, build), `secrets` (gitleaks) và `sast` (Semgrep).
+
+**Hai App:** `ao-dev` mở PR và merge; `ao-review` đăng báo cáo review. Agent chỉ làm việc với PR qua script `ao-pr.mjs`, và không bao giờ approve.
+
+**File được bảo vệ** (`.github/workflows/**`, `.githooks/**`, `.claude/**`, `.ai-orchestrator/**`): PR của agent sửa các file này thì `merge-gate` không merge; bạn đọc diff rồi tự merge. Đây là chỗ hở lớn nhất của gói Free: workflow chạy theo `pull_request` và `push` dùng bản nằm trong commit, nên một PR sửa workflow có thể tự làm CI của nó xanh.
+
+**Ba thay đổi cần bạn duyệt cùng spec** (mục 2.9):
+
+1. Stage `merge` của hợp đồng: điều kiện "Branch protection pass" đổi thành "`merge-gate` pass".
+2. Template `review-report.md` thêm dòng `Role: reviewer` hoặc `Role: security`, vì hai vai trò dùng chung một App.
+3. Capability map: `quality-gates` phụ thuộc thêm `tracker-integration`. Thứ tự build không đổi, vì module đó đã xong.
+
+**Một điều mình phát hiện khi viết spec** (mục 12): secret của repo, kể cả `JIRA_CI_TOKEN`, đọc được từ workflow chạy trên bất kỳ nhánh nào. Để giảm rủi ro, key của `ao-dev` nằm trong một environment chỉ cho nhánh mặc định. API nhận cấu hình này trên gói Free (mình đã tạo thử environment `probe-gate` trên `ao-pilot` rồi xóa ngay), nhưng chưa biết GitHub có thực thi hay không; tiêu chí 10 kiểm điều đó.
+
+## Câu hỏi mở
+
+1. **Kiểm ruleset trên một repo public tạm?** Trên `ao-pilot` chỉ kiểm được soft mode. Mình đề xuất tạo repo public rỗng `TungPH7/ao-ruleset-probe`, chạy `gh:protect`, đọc lại ruleset, rồi xóa repo. Nếu bạn không muốn, phần áp ruleset chỉ có test đơn vị.
+2. **Tên hai App:** tên App là duy nhất trên toàn GitHub. Mình đề xuất `tungph7-ao-dev` và `tungph7-ao-review`.
+
+Bạn đọc spec, trả lời hai câu trên, rồi duyệt hoặc yêu cầu sửa. Mình chỉ lập plan sau khi bạn duyệt.
