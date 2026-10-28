@@ -77,7 +77,7 @@ T1 đứng đầu vì nếu service account không dùng được với Rovo MCP
 - [ ] Bạn xem lịch sử item thử trên `DEMO`
 
 ### Giai đoạn 4: automation trên GitHub Actions
-- [ ] T16: Đối soát: chọn transition của `automation`
+- [x] T16: Đối soát: chọn transition của `automation`
 - [ ] T17: `jira-sync` và workflow GitHub Actions
 - [ ] T18: Kiểm thật trên `ao-pilot`
 

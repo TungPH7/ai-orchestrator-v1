@@ -276,3 +276,27 @@ Phát hiện:
 6. Giữ lại `DEMO-3` (In Progress, Agent là Frontend Developer, có nhánh `feature/DEMO-3-t15-live-test` trên `ao-pilot`): T18 có thể dùng nó cho kịch bản PR và CI. `DEMO-4` (New) là bằng chứng cho tiêu chí 6; bạn có thể Cancel nó.
 
 Tiêu chí 4, 5 và 6 của spec mục 9 đạt.
+
+## T16: Đối soát: chọn transition của `automation`
+
+`lib/tracker/reconcile.mjs` có hai hàm. `planMoves` là hàm thuần: nhận state và các guard đang thỏa, trả các transition của `automation` sẽ thực hiện. `reconcile` đọc item, lịch sử và dữ kiện qua client, rồi gọi `planMoves`.
+
+**Cách chọn** (`planMoves`):
+
+- Lấy các transition của `automation` từ state hiện tại mà mọi guard đều thỏa (`allowedTransitions`, `checkTransition`). Chọn transition đầu tiên theo thứ tự trong hợp đồng.
+- Không đi tiến nếu ngay sau đó có một rework của `automation` kéo item về. Ví dụ: PR đã xanh nhưng commit mới nhất vẫn có review yêu cầu sửa. Item ở In Progress thì không `submit`; item ở In Review thì `request-changes`. Thiếu quy tắc này, item sẽ lên rồi xuống ở mỗi lần chạy.
+- Đi tiếp từ state mới cho tới khi không còn transition nào đi được, nên chạy lần hai không đổi gì.
+- Báo cần gắn `flag-needs-you` khi số rework (đếm từ lịch sử, cộng các rework vừa chọn) đã chạm giới hạn trong `policies.yaml` mà item chưa có label `needs-you`. Cùng một điều kiện này lo cả rework vừa chạm giới hạn lẫn trường hợp agent quên gắn cờ (plan, quyết định 2).
+
+**Kết quả của `reconcile`** (dùng ở T17), là danh sách việc theo thứ tự:
+
+- `{ key, transition, name, from, to }`: một transition; `name` là tên trên Jira.
+- `{ key, effect: "flag-needs-you", reworkCount }`: gắn Flagged, label `needs-you` và comment lý do.
+- Epic ở state mà transition đi vào có effect `refine-children` (tức `in-progress`, sau `approve-plan`): thêm `refine` cho từng item con mà `automation` được `refine` và đạt `dor-met`. Bug con không được `refine`, vì `dor-met` của `automation` chỉ áp cho Story và Task (ghi chú của transition `refine`).
+
+**Sửa guard `changes-requested` (T12).** Guard này chỉ còn tính review trên commit mới nhất của PR (`commit_id` trùng commit đầu PR). Dev push bản sửa là đã trả lời yêu cầu sửa; review yêu cầu sửa trên commit cũ không còn kéo item về. Thiếu điều kiện này, item sẽ kẹt ở In Progress sau mỗi lần sửa, vì review cũ luôn làm `submit` bị bỏ qua. Spec mục 2.8 đã ghi lại.
+
+Ghi chú cho T17:
+
+- `reconcile` nhận `approvers` (login GitHub của bạn, cho `merge-approved`) qua tham số. T17 quyết định khai báo nó ở đâu.
+- `reconcile` đọc lịch sử item bằng `GET /issue/<key>/changelog` và tìm item con bằng JQL `parent = "<KEY>"`; token CI cần quyền đọc hai thứ này.
