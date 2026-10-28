@@ -17,6 +17,8 @@
     "jira:check": "node scripts/jira-check.mjs"
   },
   "dependencies": {
+    "@secretlint/node": "13.0.7",
+    "@secretlint/secretlint-rule-preset-recommend": "13.0.7",
     "ajv": "8.20.0",
     "yaml": "2.9.1"
   }

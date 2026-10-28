@@ -106,10 +106,18 @@ test('the pre-push script reads the refs on stdin and the protected branches of 
   assert.equal(allowed.status, 0, allowed.stderr);
 });
 
+const HOOKS = ['commit-msg', 'pre-commit', 'pre-push'];
+
 test('the kit hooks are sh scripts that hand over to the kit scripts', () => {
-  for (const [hook, script] of [['commit-msg', 'commit-msg.mjs'], ['pre-push', 'pre-push.mjs']]) {
+  for (const hook of HOOKS) {
     const text = readFileSync(join(ROOT, 'kit', '.githooks', hook), 'utf8');
     assert.match(text, /^#!\/bin\/sh\n/, hook);
-    assert.match(text, new RegExp(`exec node \\.ai-orchestrator/scripts/${script.replace('.', '\\.')} "\\$@"`), hook);
+    assert.match(text, new RegExp(`exec node \\.ai-orchestrator/scripts/${hook}\\.mjs "\\$@"`), hook);
   }
+});
+
+// Windows keeps no executable bit, so a commit made there can drop it; git on Linux and macOS skips a hook without it.
+test('the kit hooks are executable in git', () => {
+  const modes = spawnSync('git', ['ls-files', '-s', 'kit/.githooks'], { cwd: ROOT, encoding: 'utf8' }).stdout;
+  for (const hook of HOOKS) assert.match(modes, new RegExp(`^100755 \\w+ 0\\tkit/\\.githooks/${hook}$`, 'm'), hook);
 });
