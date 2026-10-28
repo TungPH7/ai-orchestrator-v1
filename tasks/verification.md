@@ -78,3 +78,11 @@ File `probe/t3.md` nằm lại trên `develop` của `ao-pilot`; T13 xóa nó kh
 | Push xóa `release/v0.1.0` | Bị chặn: `release/v0.1.0 is protected: do not delete it` |
 
 Lần thử đầu, bản chép thiếu thư mục `contract/`, nên `pre-push` dừng với lỗi đọc schema và chặn mọi push (hỏng thì chặn, không thả). Bản chép kit thật luôn có `contract/`.
+
+## T13: Kiểm thật hook git và CI trên `ao-pilot` (đang làm)
+
+**2026-10-29, khoảng 03:00:** tạo Task `DEMO-5` (New, người tạo `orchestratorci`) làm item của PR thử. Phiên chính cài bản chép kit mới, `.githooks/`, `ci.yml` của kit và một package TypeScript nhỏ (`src/cart.ts`, TypeScript 6.0.3, ESLint 10.12.0, typescript-eslint 8.71.2) lên `develop` của `ao-pilot`, xóa `demo/`, `tests/`, `ci-state.txt`, `probe/`. Bốn script `lint`, `typecheck`, `test:coverage`, `build` chạy được ở máy. Commit qua được hook `pre-commit` (secretlint trên 42 file rồi ESLint, khoảng 5 giây) và `commit-msg`.
+
+- Lần chạy `CI` đầu trên push (run 40754471353): `sast` đỏ đúng lý do. Semgrep bắt rule `spawn-shell-true` trong `scripts/pre-commit.mjs` của kit (gọi `npm` qua shell trên Windows). Kit sửa bằng `lib/quality/npm.mjs` (gọi `npm-cli.js` bằng `node`, không shell), áp cho cả `check-policy.mjs`.
+- Lần chạy sau khi sửa (run 40754782522): cả bốn job xanh. Semgrep 1.180.0 chạy được với `--metrics off` và bộ rule registry.
+- Còn lại: tiêu chí 3 (thử từng hook trên `ao-pilot`), tiêu chí 4 (PR thử của `DEMO-5`, mỗi job đỏ một lần rồi xanh), đo phút Actions (API `timing` trả 0 ms cho repo private; cần cách đo khác).
