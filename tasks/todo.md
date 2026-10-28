@@ -121,9 +121,11 @@ Claude làm: chạy script, mở trang, đặt hai biến môi trường user `A
 
 ### Checkpoint 1
 
-- [ ] `npm run validate`, `npm test`, `npm run render:check`, `npm run jira:checklist:check` xanh
-- [ ] Ba giả định nền của T3 đúng, kết quả ghi trong `tasks/verification.md`; giả định nào sai thì spec đã được sửa và bạn đã duyệt bản sửa
-- [ ] Bạn soát các giá trị trong `quality/gates.yaml`: ngưỡng, mẫu tắt kiểm tra, nhánh và file được bảo vệ
+- [x] `npm run validate`, `npm test`, `npm run render:check`, `npm run jira:checklist:check` xanh
+- [x] Ba giả định nền của T3 đúng, kết quả ghi trong `tasks/verification.md`; giả định nào sai thì spec đã được sửa và bạn đã duyệt bản sửa
+- [x] Bạn soát các giá trị trong `quality/gates.yaml`: ngưỡng, mẫu tắt kiểm tra, nhánh và file được bảo vệ
+
+Đã qua ngày 2026-10-29: bạn đồng ý ba đề xuất: `ba` và `sa` dùng App `ao-dev`; coverage bỏ qua `**/*.config.*` và `**/migrations/**`.
 
 ---
 
