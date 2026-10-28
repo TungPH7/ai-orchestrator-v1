@@ -247,17 +247,17 @@ Claude làm: chạy script, mở trang, đặt hai biến môi trường user `A
 
 **Cỡ:** M
 
-### [ ] T12: Workflow `CI` bốn job, quy tắc Q2
+### [x] T12: Workflow `CI` bốn job, quy tắc Q2
 
 **Mô tả:** `kit/.github/workflows/ci.yml` tên `CI`, bốn job `policy`, `build-test`, `secrets`, `sast` theo spec mục 2.4, có `concurrency` hủy lần chạy cũ. gitleaks tải từ GitHub release, kiểm SHA-256 rồi mới chạy. Semgrep chạy bằng `uvx semgrep==<phiên bản>` với `--baseline-commit` là merge base. Quy tắc Q2: `checks` của `quality/gates.yaml` trùng khớp tập job của `ci.yml`.
 
 **Tiêu chí chấp nhận:**
-- [ ] Bốn job đọc cấu hình từ `.ai-orchestrator/quality/gates.yaml` của dự án.
-- [ ] Q2 có test dương và fixture âm (thừa một job, thiếu một job).
-- [ ] Mọi action ghim theo SHA; gitleaks và Semgrep ghim phiên bản.
+- [x] Bốn job đọc cấu hình từ `.ai-orchestrator/quality/gates.yaml` của dự án.
+- [x] Q2 có test dương và fixture âm (thừa một job, thiếu một job).
+- [x] Mọi action ghim theo SHA; gitleaks và Semgrep ghim phiên bản.
 
 **Kiểm chứng:**
-- [ ] `npm run validate`, `npm test` xanh; workflow chạy thật ở T13
+- [x] `npm run validate`, `npm test` xanh; workflow chạy thật ở T13
 
 **Phụ thuộc:** T7, T11
 
