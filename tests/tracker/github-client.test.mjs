@@ -19,6 +19,18 @@ test('refuses any method but GET, without sending the request', async () => {
   assert.equal(calls.length, 0);
 });
 
+test('with write: true it sends other methods with a JSON body, and an empty answer becomes null', async () => {
+  const { fetch, calls } = fakeFetch([{ status: 201, body: { number: 8 } }]);
+  const github = createGitHubClient({ repo: 'TungPH7/ao-pilot', token: 't', fetch, write: true });
+  assert.deepEqual(await github.request('POST', '/pulls', {}, { title: 'x' }), { number: 8 });
+  assert.equal(calls[0].init.method, 'POST');
+  assert.equal(calls[0].init.headers['Content-Type'], 'application/json');
+  assert.deepEqual(JSON.parse(calls[0].init.body), { title: 'x' });
+
+  const empty = createGitHubClient({ repo: 'TungPH7/ao-pilot', token: 't', write: true, fetch: async () => new Response(null, { status: 204 }) });
+  assert.equal(await empty.request('PUT', '/pulls/8/merge'), null);
+});
+
 test('sends GET for the repository, with the token and the API version', async () => {
   const { fetch, calls } = fakeFetch([{ body: { number: 7 } }]);
   const github = createGitHubClient({ repo: 'TungPH7/ao-pilot', token: 'ghs_x', fetch });
