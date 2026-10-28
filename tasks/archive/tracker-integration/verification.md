@@ -395,3 +395,17 @@ Phát hiện:
 `.jira/config.yml` đã có trên nhánh mặc định từ T8, trước khi có deployment đầu tiên, nên loại môi trường được nhận đúng ngay, không phải ngắt rồi nối lại app như bài KB nói. Ảnh đã cắt bỏ thanh tab của trình duyệt.
 
 Tiêu chí 7 và 8 của spec mục 9 đạt.
+
+## Checkpoint cuối: 9 tiêu chí của spec mục 9
+
+| Tiêu chí | Kết quả | Kiểm ở |
+|---|---|---|
+| 1. `tracker/jira.yaml` phủ đủ hợp đồng; `validate`, `test`, CI xanh | Đạt (2026-10-28): `npm run validate` in `Contract OK` và `Mapping OK`; 353 test xanh; CI xanh trên `main` | T19 |
+| 2. `docs/jira-setup.md` sinh từ ánh xạ, CI báo lỗi khi file cũ | Đạt | T7, Checkpoint 2 |
+| 3. `DEMO` dựng theo checklist, `jira:check` không báo lệch | Đạt | T8, T10 |
+| 4. Agent dùng `orchestratoragent` tạo, đọc, tìm, chuyển item qua Rovo MCP | Đạt | T15 |
+| 5. Hook chặn `accept` của agent, chặn phiên không rõ vai trò, cho qua `start` khi đủ guard | Đạt | T15 |
+| 6. Rule Restrict chặn `orchestratoragent` ở transition của `human` | Đạt cả hai lớp: Jira ẩn transition, và trả 400 khi gọi thẳng qua Rovo MCP | T8, T15 |
+| 7. `jira-sync` chuyển item theo PR và CI, đếm rework, đứng yên khi thiếu `merge-approved` | Đạt | T18 |
+| 8. Nhánh, commit, PR, deployment hiện trên item; panel Deployments nhận đúng môi trường | Đạt | T18 |
+| 9. Hai câu hỏi mở trong `SPEC.md` được đóng | Đạt: mục "Câu hỏi đã đóng" của `SPEC.md` | T19 |
