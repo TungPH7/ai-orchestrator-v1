@@ -17,7 +17,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 7 | `86f38192-1135-4f7d-85f4-ce02cffc6b43` | 2026-10-28 10:20 → 13:25 | T15 kiểm thật agent và hook (lượt code, không ghi); T16 đối soát (lượt code); giải thích lại thay đổi của guard `changes-requested`; bạn đồng ý, T17 `jira-sync`; T18 kiểm thật `jira-sync` trên `ao-pilot` (lượt code) |
 | 8 | `56ad3187-0f02-4139-9d15-eff3c7191377` | 2026-10-28 13:25 → 16:22 | T19 đóng gói tài liệu và lưu plan của tracker-integration (lượt code, không ghi) |
 | 9 | `79cccd91-9d3a-495d-a154-927ae2ce5928` | 2026-10-28 16:22 → 16:34 | Bạn xác nhận tracker-integration hoàn thành và chọn quality-gates; Claude đánh dấu ô cuối (PR #45); câu trả lời bị bộ lọc an toàn chặn |
-| 10 | `b645b669-931c-4d95-ba32-24fd3e090d67` | 2026-10-28 16:35 → | Giả định và câu hỏi cho quality-gates: bảo vệ nhánh khi repo private ở gói Free, danh tính để agent mở PR; bạn chọn 1a, 2a; viết SPEC-quality-gates |
+| 10 | `b645b669-931c-4d95-ba32-24fd3e090d67` | 2026-10-28 16:35 → | Giả định và câu hỏi cho quality-gates: bảo vệ nhánh khi repo private ở gói Free, danh tính để agent mở PR; bạn chọn 1a, 2a; viết SPEC-quality-gates; bạn duyệt spec, lập plan 21 task |
 
 ---
 
@@ -3336,3 +3336,49 @@ Mình đã viết `SPEC-quality-gates.md` theo hai lựa chọn của bạn (1a,
 2. **Tên hai App:** tên App là duy nhất trên toàn GitHub. Mình đề xuất `tungph7-ao-dev` và `tungph7-ao-review`.
 
 Bạn đọc spec, trả lời hai câu trên, rồi duyệt hoặc yêu cầu sửa. Mình chỉ lập plan sau khi bạn duyệt.
+
+---
+
+# Phiên 10 · Lượt 3 — 2026-10-29 khoảng 00:45
+
+**Bạn:**
+
+```markdown
+Ba thay đổi cần bạn duyệt cùng spec (mục 2.9) => Tôi duyệt
+Câu hỏi mở:
+1. tạo đi nhé
+2. OK
+```
+
+**Claude:**
+
+Mình ghi nhận: bạn duyệt spec cùng ba thay đổi, đồng ý tạo repo public tạm, và đồng ý hai tên App. Spec đã chuyển sang "đã duyệt", hai câu hỏi mở đã đóng, và capability map trong `SPEC.md` đã thêm phụ thuộc vào `tracker-integration`. Repo public tạm `TungPH7/ao-ruleset-probe` mình chưa tạo ngay: nó chỉ cần lúc kiểm `gh:protect` ở T17, và bị xóa ngay sau đó.
+
+Plan có 21 task trong 6 giai đoạn, ở `tasks/plan.md` và `tasks/todo.md`:
+
+| Giai đoạn | Task | Nội dung |
+|---|---|---|
+| 1. Danh tính và nền | T1–T5 | Bạn tạo hai App; token của App; kiểm ba giả định nền; `quality/gates.yaml` với quy tắc Q1, Q3, Q4; hai thay đổi hợp đồng |
+| 2. Kiểm ở máy bạn | T6–T9 | Hook `commit-msg`, `pre-push`, `pre-commit`; hook `gh-guard`; script `ao-pr.mjs` |
+| 3. CI | T10–T13 | Coverage của dòng thay đổi; job `policy`; workflow `CI` với quy tắc Q2; kiểm thật trên `ao-pilot` |
+| 4. merge-gate, audit, ruleset | T14–T17 | `decideMerge`, `merge-gate`, `audit`, `gh:protect` |
+| 5. Kiểm thật đầu cuối | T18–T20 | Agent mở PR và review; `merge-gate` merge, item sang Ready for QA; `audit` chặn merge tay |
+| 6. Hoàn thiện | T21 | README, tài liệu, lưu trữ plan |
+
+**Ba điểm chính của plan:**
+
+1. **T3 kiểm ba giả định nền trước khi viết `merge-gate`:** bot `ao-review` request changes được trên PR của bot `ao-dev`; merge bằng token App vẫn kích hoạt workflow deploy; giới hạn nhánh của environment có hiệu lực trên gói Free. Giả định nào sai thì mình dừng, đề xuất sửa spec và chờ bạn duyệt.
+2. **Cài kit lên `ao-pilot` bằng phiên chính, push thẳng lên `main` và `develop`**, vì `merge-gate` và `jira-sync` phải nằm trên nhánh mặc định mới chạy. Các commit này sẽ đỏ `audit` và không được deploy, đúng thiết kế. Cách này chỉ dùng cho sandbox.
+3. **Dùng lại `facts.mjs`**, để "CI xanh" và "yêu cầu sửa" trong `merge-gate` được tính đúng như guard của `jira-sync`.
+
+**Việc bạn sẽ làm** (task có nhãn [bạn]; mình ghi từng bước bấm rồi dừng chờ):
+
+- T1: tạo hai App, lưu hai file private key ngoài repo, cài App vào `ao-pilot`, đặt hai biến môi trường.
+- T3 và T19: approve PR thử trên GitHub.
+- T17: cấp thêm quyền xóa repo cho `gh` nếu cần, để xóa repo public tạm.
+- T18: chấp nhận hook mới của dự án khi Claude Code hỏi.
+- T20: bấm Merge một PR chưa có approve, để thử `audit`.
+
+Ngoài các bước trên, mình dừng ở 4 checkpoint và checkpoint cuối để bạn soát. Checkpoint 1 gồm kết quả của T3 và các giá trị trong `quality/gates.yaml`.
+
+Bạn duyệt plan hoặc yêu cầu sửa. Duyệt xong, mình merge spec và plan vào `main` bằng một PR, rồi bắt đầu T1 bằng tài liệu hướng dẫn tạo App.
