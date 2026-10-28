@@ -1,7 +1,11 @@
 {
   "env": {
     "AO_JIRA_SPACE": "<KEY>",
-    "AO_APPROVERS": "<github-login>"
+    "AO_APPROVERS": "<github-login>",
+    "AO_DEV_APP": "<dev-app-slug>",
+    "AO_DEV_APP_ID": "<dev-app-id>",
+    "AO_REVIEW_APP": "<review-app-slug>",
+    "AO_REVIEW_APP_ID": "<review-app-id>"
   },
   "hooks": {
     "PreToolUse": [
