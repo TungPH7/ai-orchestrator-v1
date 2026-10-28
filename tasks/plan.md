@@ -47,7 +47,7 @@ T1–T3 đứng đầu vì nếu một giả định nền sai thì `merge-gate`
 - [x] T1: Tạo hai GitHub App bằng manifest flow [bạn]
 - [x] T2: Token của GitHub App
 - [x] T3: Kiểm giả định nền trên `ao-pilot` [bạn]
-- [ ] T4: `quality/gates.yaml`, quy tắc Q1, Q3, Q4
+- [x] T4: `quality/gates.yaml`, quy tắc Q1, Q3, Q4
 - [ ] T5: Thay đổi hợp đồng: stage `merge`, template báo cáo review
 
 ### Checkpoint 1
