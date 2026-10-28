@@ -58,7 +58,7 @@ T1–T3 đứng đầu vì nếu một giả định nền sai thì `merge-gate`
 Đã qua ngày 2026-10-29: bạn đồng ý thêm `ba`, `sa` vào App `ao-dev`, và bỏ file cấu hình, migration khỏi phần tính coverage.
 
 ### Giai đoạn 2: kiểm ở máy bạn
-- [ ] T6: Hook `commit-msg`, `pre-push` và lệnh cài hook
+- [x] T6: Hook `commit-msg`, `pre-push` và lệnh cài hook
 - [ ] T7: Hook `pre-commit` với secretlint
 - [ ] T8: Hook `gh-guard` của Claude Code
 - [ ] T9: Script `ao-pr.mjs` và kiểm mô tả PR

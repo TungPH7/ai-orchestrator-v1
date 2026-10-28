@@ -131,18 +131,18 @@ Claude làm: chạy script, mở trang, đặt hai biến môi trường user `A
 
 ## Giai đoạn 2: kiểm ở máy bạn
 
-### [ ] T6: Hook `commit-msg`, `pre-push` và lệnh cài hook
+### [x] T6: Hook `commit-msg`, `pre-push` và lệnh cài hook
 
 **Mô tả:** `lib/quality/git-hooks.mjs` có hai hàm thuần: kiểm header commit (dùng `checkCommit`, cho qua commit merge và revert do git tạo) và kiểm các dòng ref mà git đưa vào `pre-push` (chặn cập nhật `develop`, `main`, `release/*` đã có; cho tạo `release/*` mới). `kit/.githooks/commit-msg` và `kit/.githooks/pre-push` là file sh ngắn gọi script Node. `scripts/install-hooks.mjs` đặt `core.hooksPath` thành `.githooks`.
 
 **Tiêu chí chấp nhận:**
-- [ ] Header đúng, sai, merge, revert cho ra kết quả như spec mục 2.3.
-- [ ] Dòng ref cập nhật `develop` bị chặn; dòng tạo `release/v1.0.0` mới được cho qua; xóa nhánh `feature/` được cho qua.
-- [ ] Chạy `install-hooks.mjs` hai lần không lỗi và không đổi gì ở lần hai.
+- [x] Header đúng, sai, merge, revert cho ra kết quả như spec mục 2.3.
+- [x] Dòng ref cập nhật `develop` bị chặn; dòng tạo `release/v1.0.0` mới được cho qua; xóa nhánh `feature/` được cho qua.
+- [x] Chạy `install-hooks.mjs` hai lần không lỗi và không đổi gì ở lần hai.
 
 **Kiểm chứng:**
-- [ ] `npm test` xanh
-- [ ] Thử tay trong một repo git tạm: commit sai header bị chặn
+- [x] `npm test` xanh
+- [x] Thử tay trong một repo git tạm: commit sai header bị chặn
 
 **Phụ thuộc:** T4
 

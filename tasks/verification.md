@@ -61,3 +61,20 @@ Dọn dẹp: workflow thử trên `main` đã gỡ (commit `e893183`), nhánh `p
 | `jira-sync` (hai lần) | `deployment_status` | `tungph7-ao-dev[bot]` | success |
 
 File `probe/t3.md` nằm lại trên `develop` của `ao-pilot`; T13 xóa nó khi cài bản chép kit.
+
+## T6: Hook `commit-msg`, `pre-push` và lệnh cài hook
+
+**Thử tay (2026-10-29, khoảng 02:05)** trong một repo git tạm có remote là một bare repo, với bản chép kit ở `.ai-orchestrator/` và hai hook ở `.githooks/`:
+
+| Thao tác | Kết quả |
+|---|---|
+| `install-hooks.mjs` | `core.hooksPath set to .githooks` |
+| Commit với header `wip` | Bị chặn: `the header must be type(scope): subject (<KEY>)`, kèm ví dụ |
+| Commit với header `chore(repo): start the try (DEMO-1)` | Qua |
+| Push tạo `develop` trên remote (nhánh chưa có) | Qua |
+| Push cập nhật `develop` | Bị chặn: `develop is protected: change it through a pull request, not a push` |
+| Push tạo `release/v0.1.0` | Qua |
+| Push tạo `feature/DEMO-1-try` | Qua |
+| Push xóa `release/v0.1.0` | Bị chặn: `release/v0.1.0 is protected: do not delete it` |
+
+Lần thử đầu, bản chép thiếu thư mục `contract/`, nên `pre-push` dừng với lỗi đọc schema và chặn mọi push (hỏng thì chặn, không thả). Bản chép kit thật luôn có `contract/`.
