@@ -17,7 +17,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 7 | `86f38192-1135-4f7d-85f4-ce02cffc6b43` | 2026-10-28 10:20 → 13:25 | T15 kiểm thật agent và hook (lượt code, không ghi); T16 đối soát (lượt code); giải thích lại thay đổi của guard `changes-requested`; bạn đồng ý, T17 `jira-sync`; T18 kiểm thật `jira-sync` trên `ao-pilot` (lượt code) |
 | 8 | `56ad3187-0f02-4139-9d15-eff3c7191377` | 2026-10-28 13:25 → 16:22 | T19 đóng gói tài liệu và lưu plan của tracker-integration (lượt code, không ghi) |
 | 9 | `79cccd91-9d3a-495d-a154-927ae2ce5928` | 2026-10-28 16:22 → 16:34 | Bạn xác nhận tracker-integration hoàn thành và chọn quality-gates; Claude đánh dấu ô cuối (PR #45); câu trả lời bị bộ lọc an toàn chặn |
-| 10 | `b645b669-931c-4d95-ba32-24fd3e090d67` | 2026-10-28 16:35 → | Giả định và câu hỏi cho quality-gates: bảo vệ nhánh khi repo private ở gói Free, danh tính để agent mở PR; bạn chọn 1a, 2a; viết SPEC-quality-gates; bạn duyệt spec, lập plan 21 task; bạn duyệt plan, bắt đầu T1; vì sao bạn phải tự tạo App, script tạo App bằng manifest flow; T1–T5, Checkpoint 1 |
+| 10 | `b645b669-931c-4d95-ba32-24fd3e090d67` | 2026-10-28 16:35 → | Giả định và câu hỏi cho quality-gates: bảo vệ nhánh khi repo private ở gói Free, danh tính để agent mở PR; bạn chọn 1a, 2a; viết SPEC-quality-gates; bạn duyệt spec, lập plan 21 task; bạn duyệt plan, bắt đầu T1; vì sao bạn phải tự tạo App, script tạo App bằng manifest flow; T1–T5, Checkpoint 1; ba đề xuất được đồng ý, T6–T13, hết lượt dùng giữa T13, Checkpoint 2 |
 
 ---
 
@@ -3493,3 +3493,65 @@ Mình có ba đề xuất:
 3. **Bỏ migration khỏi phần tính coverage:** thêm `**/migrations/**`. Migration của NestJS thường được sinh tự động, và chạy thử nó là việc của test tích hợp chứ không phải của coverage.
 
 Bạn trả lời: đồng ý cả ba, hoặc chọn từng mục, hoặc sửa giá trị nào khác. Sau đó mình đánh dấu Checkpoint 1 rồi sang Giai đoạn 2 (hook ở máy bạn).
+
+---
+
+# Phiên 10 · Lượt 7 — 2026-10-29 khoảng 01:50
+
+**Bạn:**
+
+```markdown
+đồng ý cả ba
+```
+
+Sau lượt này Claude áp ba đề xuất, qua Checkpoint 1 rồi làm T6–T13 (lượt code, không ghi), tới khi hết lượt dùng giữa T13.
+
+**Claude:**
+
+Bạn đã hết lượt dùng, nên mình dừng giữa T13. Mọi thứ đã làm đều được lưu trên GitHub.
+
+**Đã xong (mọi PR đều có CI xanh và đã merge vào `main`):**
+- **Checkpoint 1 (PR #52):** đã áp ba đề xuất bạn đồng ý: `ba` và `sa` dùng App `ao-dev`; coverage bỏ qua file cấu hình và migration.
+- **T6–T9 (PR #53–#56):** ba hook git (`commit-msg`, `pre-commit` có secretlint, `pre-push`), hook `gh-guard` chặn agent đi đường vòng, và script `ao-pr.mjs`.
+- **T10–T12 (PR #57–#59):** đo coverage của dòng thay đổi, job `policy`, workflow `CI` bốn job của kit, và quy tắc Q2.
+
+**T13 đang làm dở**, nằm trên nhánh `task/t13-live-ci` (đã push, chưa mở PR):
+- Mình tạo Task `DEMO-5` trên Jira, rồi cài bản chép kit, ba hook và một package TypeScript nhỏ lên `develop` của `ao-pilot`. Commit qua được hook `pre-commit` và `commit-msg` thật.
+- Lần chạy `CI` đầu tiên trên `ao-pilot` đỏ ở job `sast`, đúng lý do: Semgrep tìm ra lỗi thật trong chính kit, script gọi `npm` qua shell. Mình đã sửa (commit `de807e4`), và lần chạy sau cả bốn job đều xanh.
+
+**Còn lại của T13:**
+1. Thử từng hook git trên `ao-pilot` (tiêu chí 3).
+2. Mở PR thử của `DEMO-5` bằng `ao-pr.mjs`, cho mỗi job đỏ một lần đúng lý do rồi xanh lại (tiêu chí 4).
+3. Đo số phút Actions. API `timing` trả 0 ms với repo private, nên mình sẽ cộng thời gian của từng job.
+4. Mở PR cho T13, rồi dừng ở Checkpoint 2 để bạn xem một lần `CI` đỏ.
+
+Lượt chat này (bạn trả lời "đồng ý cả ba") chưa được ghi vào `misc/brainstorm-discussion.md`; phiên sau mình ghi bù. Khi có lượt dùng mới, bạn chỉ cần nhắn "tiếp tục" là mình làm tiếp từ bước 1.
+
+**Claude, sau khi lượt dùng được cấp lại (2026-10-29, khoảng 03:30):**
+
+T13 đã xong (PR #60), nên mình dừng ở Checkpoint 2.
+
+**Kết quả trên `ao-pilot`:**
+
+- **Tiêu chí 3 đạt.** Ba hook git chặn đúng lý do: commit với header `wip`; file đã stage có private key (key bị che khi in); push thẳng lên `develop`.
+- **Tiêu chí 4 đạt.** Bot `ao-dev` mở PR #3 của `ao-pilot` bằng `ao-pr.mjs`. Commit đầu cố ý làm đỏ cả bốn job, mỗi job đúng lý do:
+
+  | Job | Đỏ vì |
+  |---|---|
+  | `policy` | Dòng `eslint-disable` không ghi `reason:` |
+  | `build-test` | Một file nguồn không có trong lcov; dòng thay đổi chỉ phủ 69,2%, dưới 80% |
+  | `secrets` | gitleaks thấy một token GitHub giả (giá trị bị che trong log) |
+  | `sast` | Semgrep thấy token đó và một lệnh gọi `spawnSync` qua shell |
+
+  Bản sửa làm cả bốn job xanh. Token giả đã nằm trong lịch sử nhánh, nên cách sửa đúng là viết lại nhánh rồi force push, không chỉ xóa file. Mình sẽ ghi điều này vào `docs/quality-gates.md` ở T21.
+- **Một lỗi thật của kit được tìm ra.** Ở lần chạy `CI` đầu tiên trên `ao-pilot`, Semgrep bắt chính script của kit gọi `npm` qua shell. Mình đã sửa bằng `lib/quality/npm.mjs` (gọi `npm-cli.js` bằng `node`).
+- **Phút Actions:** mỗi lần chạy `CI` tốn 4 phút. Bốn job chỉ chạy 6 đến 31 giây, nhưng GitHub làm tròn mỗi job lên một phút. Với 2.000 phút mỗi tháng, đủ khoảng 500 lần chạy `CI`, chưa tính `jira-sync` và `merge-gate`. T19 sẽ đo cả một vòng PR.
+
+## Checkpoint 2: bạn xem một lần `CI` đỏ
+
+1. Mở https://github.com/TungPH7/ao-pilot/actions/runs/40762740821
+2. Ở trang **Summary**, kéo xuống dưới sơ đồ các job. Phải thấy hai mục do kit ghi: **Policy** (dấu ❌ ở Suppressions, kèm dòng bị bắt) và **Coverage of changed lines: 69.2%** (bảng theo file, có cột các dòng chưa chạy). Mình không đọc được trang Summary qua API, nên đây cũng là chỗ nhờ bạn kiểm.
+3. Ở cột bên trái, bấm job `secrets`, rồi `sast`, để xem log. gitleaks ghi `leaks found: 1` và che token; Semgrep liệt kê hai finding.
+4. So với lần chạy xanh: https://github.com/TungPH7/ao-pilot/actions/runs/40762874979
+
+Bạn nhắn "qua Checkpoint 2", hoặc điều muốn sửa, thì mình sang Giai đoạn 4 (`merge-gate`, `audit`, `gh:protect`). PR #3 của `ao-pilot` mình để mở tới khi bạn xem xong rồi mới đóng.
