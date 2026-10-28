@@ -300,3 +300,42 @@ Ghi chú cho T17:
 
 - `reconcile` nhận `approvers` (login GitHub của bạn, cho `merge-approved`) qua tham số. T17 quyết định khai báo nó ở đâu.
 - `reconcile` đọc lịch sử item bằng `GET /issue/<key>/changelog` và tìm item con bằng JQL `parent = "<KEY>"`; token CI cần quyền đọc hai thứ này.
+
+## T17: `jira-sync` và workflow GitHub Actions
+
+`lib/tracker/sync.mjs` chứa logic; `scripts/jira-sync.mjs` chỉ đọc sự kiện và dựng client; `kit/.github/workflows/jira-sync.yml` là workflow cho repo dự án.
+
+**Sự kiện → item** (`itemsOf`):
+
+| Sự kiện | Item |
+|---|---|
+| `pull_request`, `pull_request_review` | Mã trong tên nhánh PR và trong tiêu đề PR |
+| `workflow_run` (CI xong) | Mã trong `head_branch` |
+| `deployment_status` thành công | Mọi item ở state mà một deployment có thể đẩy đi tiếp: các `from` của transition của `automation` cần `qa-deployed` (hiện là In Review), tìm bằng JQL. `reconcile` của từng item kiểm bản deploy có chứa merge commit, trên đúng môi trường QA của item không |
+| `workflow_dispatch` | Mã ở input `item` |
+
+Rồi `reconcile` từng item và thực hiện các thay đổi theo thứ tự. Lỗi ở một item hay một thay đổi không chặn các item khác; script thoát mã 1 khi có lỗi.
+
+**Quyết định mới:**
+
+1. **Chỉ chạm item trong space của dự án.** Mã ngoài space (ví dụ nhánh `feature/SCRUM-3-cart`, hay item con của Epic nằm ở space khác) bị bỏ qua. Lý do: gói Free không có permission scheme, nên token CI ghi được mọi space.
+2. **Space và login GitHub của bạn** lấy từ `AO_JIRA_SPACE` và `AO_APPROVERS` trong mục `env` của `.claude/settings.json` của dự án; biến môi trường cùng tên được ưu tiên. Hook đọc space cũng từ file này, nên mỗi dự án khai báo một lần. `kit/.claude/settings.json` có `AO_APPROVERS: <github-login>`; giá trị mẫu dạng `<...>` coi như chưa đặt. Thiếu space thì script dừng; thiếu approver thì script cảnh báo, vì khi đó không item nào sang QA được.
+3. **Cloud id lấy từ `tracker/jira.yaml`**, không cần biến `JIRA_CLOUD_ID` như spec ghi lúc đầu.
+4. **Workflow chạy với mọi review**, không chỉ review yêu cầu sửa: một approve có thể cho item đã merge và deploy sang QA. Đối soát chạy thừa thì không đổi gì.
+5. **Báo item đang chờ gì.** Với transition của `automation` mà đã có ít nhất một guard thỏa, `jira-sync` in các guard còn thiếu, ví dụ `Waiting DEMO-11: Deploy to QA needs merge-approved`. Tiêu chí của T18 cần dòng này.
+6. **`flag-needs-you`**: đặt trường Flagged là `Impediment` (lựa chọn duy nhất của trường này), thêm label `needs-you` trong cùng một lệnh sửa, rồi comment lý do.
+
+**Jira client ghi được** khi tạo với `write: true`: `transition(key, name)` tìm id theo tên trong các transition mà tài khoản của token được thấy trên item, `editItem`, `comment` (văn bản thành ADF). Client mặc định vẫn chỉ đọc; `--dry-run` tạo client chỉ đọc, nên không request ghi nào đi được.
+
+**Workflow** (`kit/.github/workflows/jira-sync.yml`): các trigger ở spec mục 2.7; quyền GitHub chỉ đọc (contents, pull-requests, checks, statuses, deployments); chạy `npm ci --prefix .ai-orchestrator` rồi `node .ai-orchestrator/scripts/jira-sync.mjs` với secret `JIRA_CI_TOKEN` và `github.token`. Trigger `workflow_run` theo dõi workflow tên `CI` của dự án.
+
+Kiểm tay (2026-10-28, `--dry-run`, token CI, Jira `DEMO` và repo `TungPH7/ao-pilot` thật):
+
+| Sự kiện | Kết quả |
+|---|---|
+| `workflow_dispatch` với `DEMO-3` | `No change` |
+| `pull_request` của nhánh `feature/DEMO-3-t15-live-test` | `Waiting DEMO-3: Submit needs pr-open, ci-green`, `No change` (chưa có PR) |
+| `deployment_status` thành công lên `development` | `no work item of DEMO` (không item nào ở In Review) |
+| `workflow_dispatch` với `SCRUM-1` | `no work item of DEMO` |
+
+Token CI đọc được item, lịch sử và tìm bằng JQL. Quyền ghi của nó (transition, sửa item, comment, đọc danh sách field) được thử ở T18.

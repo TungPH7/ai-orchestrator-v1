@@ -331,16 +331,16 @@ Claude làm: tạo repo private `TungPH7/ao-pilot` với nhánh `main` và `deve
 
 **Cỡ:** S
 
-### [ ] T17: `jira-sync` và workflow GitHub Actions
+### [x] T17: `jira-sync` và workflow GitHub Actions
 
 **Mô tả:** `scripts/jira-sync.mjs` đọc sự kiện GitHub (`GITHUB_EVENT_NAME`, `GITHUB_EVENT_PATH`), tìm các item liên quan theo mã Jira, gọi `reconcile`, rồi thực hiện transition bằng token CI. Có `--dry-run`. Client Jira thêm các lệnh ghi (transition, sửa item, comment), chỉ bật khi tạo client ở chế độ ghi. `kit/.github/workflows/jira-sync.yml` chạy với các trigger ở spec mục 2.7.
 
 **Tiêu chí chấp nhận:**
-- [ ] Mỗi loại sự kiện ở spec mục 2.7 có payload mẫu, và test kiểm danh sách item cùng transition được chọn.
-- [ ] `--dry-run` in transition sẽ thực hiện mà không gửi request ghi nào.
+- [x] Mỗi loại sự kiện ở spec mục 2.7 có payload mẫu, và test kiểm danh sách item cùng transition được chọn.
+- [x] `--dry-run` in transition sẽ thực hiện mà không gửi request ghi nào.
 
 **Kiểm chứng:**
-- [ ] `npm test` xanh; thủ công: `node scripts/jira-sync.mjs --dry-run` với một payload mẫu
+- [x] `npm test` xanh; thủ công: `node scripts/jira-sync.mjs --dry-run` với một payload mẫu
 
 **Phụ thuộc:** T16
 
@@ -350,7 +350,7 @@ Claude làm: tạo repo private `TungPH7/ao-pilot` với nhánh `main` và `deve
 
 ### [ ] T18: Kiểm thật trên `ao-pilot`
 
-**Mô tả:** Đưa lên `main` của `ao-pilot`: `jira-sync.yml`, `.jira/config.yml`, một CI nhỏ (một test có thể bật đỏ hoặc xanh), và một workflow deploy giả tạo deployment kèm status cho `development`, `staging`, `production`. Đặt secret `JIRA_CI_TOKEN` và biến `JIRA_CLOUD_ID`. Rồi chạy kịch bản ở tiêu chí 7 và 8 với một Story thử trên `DEMO`.
+**Mô tả:** Đưa lên `main` của `ao-pilot`: `jira-sync.yml`, `.jira/config.yml`, một CI nhỏ (một test có thể bật đỏ hoặc xanh), và một workflow deploy giả tạo deployment kèm status cho `development`, `staging`, `production`. Chép thêm `scripts/jira-sync.mjs` vào `.ai-orchestrator/scripts/`; workflow CI của `ao-pilot` đặt tên `CI` (trigger `workflow_run` của `jira-sync.yml` theo tên này). Đặt secret `JIRA_CI_TOKEN`, và `AO_APPROVERS` (login GitHub của bạn) trong `.claude/settings.json` của `ao-pilot`. Rồi chạy kịch bản ở tiêu chí 7 và 8 với một Story thử trên `DEMO`.
 
 **Tiêu chí chấp nhận:**
 - [ ] PR mở và CI xanh thì item sang In Review, do `orchestratorci` chuyển; CI đỏ thì item về In Progress, rework bằng 1 (tiêu chí 7).
