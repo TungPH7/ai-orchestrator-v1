@@ -28,3 +28,50 @@ export function recordedClient(recording) {
     searchAll: async (jql, fields) => answer('/rest/api/3/search/jql', { jql, fields: fields.join(',') }).issues,
   };
 }
+
+// A Jira status and a work item in the shape GET /issue returns, from a short description.
+export const jiraStatus = (name, category) => ({ name, statusCategory: { key: category } });
+
+export function jiraIssue({ key, type = 'Story', st, parent, subtasks = [], description = 'Có user story', labels = [] }) {
+  return {
+    key,
+    fields: {
+      issuetype: { name: type },
+      status: st,
+      labels,
+      description: description && { type: 'doc', version: 1, content: [{ type: 'paragraph', content: [{ type: 'text', text: description }] }] },
+      parent: parent && { key: parent.key, fields: { issuetype: { name: parent.type }, status: parent.st } },
+      subtasks: subtasks.map(([k, s]) => ({ key: k, fields: { status: s } })),
+      issuelinks: [],
+    },
+  };
+}
+
+// A Jira client for tests: GET /issue/<key> from `issues`, GET /field from `fields`, changelogs by key, JQL searches
+// from `search` by query. Writes are recorded in `writes`; a write on a key in `failOn` fails.
+export function fakeJira({ issues = [], fields = [], changelogs = {}, search = {}, failOn = [] }) {
+  const writes = [];
+  const searches = [];
+  const write = (kind) => async (key, arg) => {
+    if (failOn.includes(key)) throw new Error(`Jira refused ${kind} on ${key}`);
+    writes.push([kind, key, arg]);
+  };
+  return {
+    writes,
+    searches,
+    async get(path) {
+      if (path === '/rest/api/3/field') return fields;
+      const found = issues.find(({ key }) => key === decodeURIComponent(path.split('/').pop()));
+      if (!found) throw new Error(`Jira GET ${path} returned 404`);
+      return found;
+    },
+    getAll: async (path) => changelogs[path.split('/').at(-2)] ?? [],
+    async searchAll(jql) {
+      searches.push(jql);
+      return search[jql] ?? [];
+    },
+    transition: write('transition'),
+    editItem: write('edit'),
+    comment: write('comment'),
+  };
+}

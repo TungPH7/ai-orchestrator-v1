@@ -1,0 +1,12 @@
+{
+  "action": "submitted",
+  "review": { "state": "changes_requested", "commit_id": "c5", "user": { "login": "TungPH7" }, "submitted_at": "2026-11-02T12:00:00Z" },
+  "pull_request": {
+    "number": 5,
+    "state": "open",
+    "title": "feat(auth): show the login error (DEMO-12)",
+    "head": { "ref": "feature/DEMO-12-login-r2", "sha": "c5" },
+    "base": { "ref": "develop" }
+  },
+  "repository": { "full_name": "TungPH7/ao-pilot" }
+}

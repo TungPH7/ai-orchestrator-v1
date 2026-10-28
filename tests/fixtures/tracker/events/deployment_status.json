@@ -1,0 +1,6 @@
+{
+  "action": "created",
+  "deployment_status": { "state": "success", "environment": "development", "created_at": "2026-11-01T12:15:00Z" },
+  "deployment": { "id": 21, "sha": "d21", "ref": "develop", "environment": "development", "created_at": "2026-11-01T12:10:00Z" },
+  "repository": { "full_name": "TungPH7/ao-pilot" }
+}

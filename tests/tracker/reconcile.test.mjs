@@ -5,7 +5,7 @@ import { join } from 'node:path';
 import { loadContract } from '../../lib/contract.mjs';
 import { readMapping } from '../../lib/tracker/mapping.mjs';
 import { planMoves, reconcile } from '../../lib/tracker/reconcile.mjs';
-import { recordedClient } from '../helpers/jira.mjs';
+import { fakeJira, jiraIssue, jiraStatus, recordedClient } from '../helpers/jira.mjs';
 import { CONTRACT_DIR, ROOT } from '../helpers/kit.mjs';
 
 const contract = loadContract(CONTRACT_DIR);
@@ -78,33 +78,10 @@ test('the rework that reaches the limit flags the item, and a flag an agent miss
 // deployed to development.
 const answers = JSON.parse(readFileSync(join(ROOT, 'tests/fixtures/tracker/api/github.json'), 'utf8'));
 const reworkHistory = JSON.parse(readFileSync(join(ROOT, 'tests/fixtures/tracker/api/changelog-rework.json'), 'utf8')).values;
-const status = (name, category) => ({ name, statusCategory: { key: category } });
+const status = jiraStatus;
+const issue = jiraIssue;
 const DONE = status('Done', 'done');
 const EPIC_IN_PROGRESS = status('In Progress', 'indeterminate');
-const issue = ({ key, type = 'Story', st, parent, subtasks = [], description = 'Có user story', labels = [] }) => ({
-  key,
-  fields: {
-    issuetype: { name: type },
-    status: st,
-    labels,
-    description: description && { type: 'doc', version: 1, content: [{ type: 'paragraph', content: [{ type: 'text', text: description }] }] },
-    parent: parent && { key: parent.key, fields: { issuetype: { name: parent.type }, status: parent.st } },
-    subtasks: subtasks.map(([k, s]) => ({ key: k, fields: { status: s } })),
-    issuelinks: [],
-  },
-});
-
-function fakeJira({ issues, changelogs = {}, children = {} }) {
-  return {
-    async get(path) {
-      const found = issues.find(({ key }) => key === decodeURIComponent(path.split('/').pop()));
-      if (!found) throw new Error(`Jira GET ${path} returned 404`);
-      return found;
-    },
-    getAll: async (path) => changelogs[path.split('/').at(-2)] ?? [],
-    searchAll: async (jql) => children[jql] ?? [],
-  };
-}
 
 const github = (change = () => {}) => {
   const copy = structuredClone(answers);
@@ -159,9 +136,9 @@ test('an Epic in progress refines its children that meet DoR, and nothing before
     issue({ key: 'DEMO-16', st: NEW, parent, description: '' }),
     issue({ key: 'DEMO-17', type: 'Bug', st: NEW, parent }),
   ];
-  const children = { 'parent = "DEMO-10"': kids };
-  assert.deepEqual(await run('DEMO-10', fakeJira({ issues: [epic(EPIC_IN_PROGRESS), ...kids], children })), [
+  const search = { 'parent = "DEMO-10"': kids };
+  assert.deepEqual(await run('DEMO-10', fakeJira({ issues: [epic(EPIC_IN_PROGRESS), ...kids], search })), [
     { key: 'DEMO-15', transition: 'refine', name: 'Refine', from: 'new', to: 'ready' },
   ]);
-  assert.deepEqual(await run('DEMO-10', fakeJira({ issues: [epic(status('Planning', 'new')), ...kids], children })), []);
+  assert.deepEqual(await run('DEMO-10', fakeJira({ issues: [epic(status('Planning', 'new')), ...kids], search })), []);
 });
