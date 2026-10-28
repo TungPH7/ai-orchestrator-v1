@@ -110,14 +110,34 @@ const runEvent = async (event, jira, options = {}) => {
 
 test('a dry run prints the transitions it would make and writes nothing', async () => {
   const jira = fakeJira({ issues: [story('DEMO-12', IN_PROGRESS)] });
-  assert.deepEqual((await runEvent('pull_request', jira, { dryRun: true })).lines, ['pull_request: DEMO-12', 'Would make DEMO-12: Submit (in-progress → in-review)']);
+  assert.deepEqual((await runEvent('pull_request', jira, { dryRun: true })).lines, [
+    'pull_request: DEMO-12',
+    'Would make DEMO-12: Submit (in-progress → in-review)',
+    'Waiting DEMO-12: Deploy to QA needs pr-merged, qa-deployed',
+  ]);
   assert.deepEqual(jira.writes, []);
 });
 
 test('a run makes the transitions with their Jira names', async () => {
   const jira = fakeJira({ issues: [story('DEMO-12', IN_PROGRESS)] });
-  assert.deepEqual((await runEvent('pull_request', jira)).lines, ['pull_request: DEMO-12', 'Made DEMO-12: Submit (in-progress → in-review)']);
+  assert.deepEqual((await runEvent('pull_request', jira)).lines, [
+    'pull_request: DEMO-12',
+    'Made DEMO-12: Submit (in-progress → in-review)',
+    'Waiting DEMO-12: Deploy to QA needs pr-merged, qa-deployed',
+  ]);
   assert.deepEqual(jira.writes, [['transition', 'DEMO-12', 'Submit']]);
+});
+
+test('a merged and deployed PR without your approval leaves the item in review, and says so', async () => {
+  const jira = fakeJira({ issues: [story('DEMO-11', IN_REVIEW)], search: { [WAITING_FOR_DEPLOY]: [{ key: 'DEMO-11' }] } });
+  const lines = [];
+  const notApproved = (a) => {
+    approved(a);
+    a['/pulls/4/reviews'] = [];
+  };
+  await runSync({ event: 'deployment_status', payload: payload('deployment_status'), jira, github: github(notApproved), contract, mapping, space: 'DEMO', approvers: ['TungPH7'], log: (line) => lines.push(line) });
+  assert.deepEqual(lines, ['deployment_status: DEMO-11', 'Waiting DEMO-11: Deploy to QA needs merge-approved', 'No change']);
+  assert.deepEqual(jira.writes, []);
 });
 
 test('flag-needs-you sets Flagged and the label, and comments why', async () => {
@@ -127,7 +147,11 @@ test('flag-needs-you sets Flagged and the label, and comments why', async () => 
     fields: [{ id: 'customfield_10021', name: 'Flagged' }, { id: 'labels', name: 'Labels' }],
     changelogs: { 'DEMO-12': [back(2), back(3), back(4)] },
   });
-  assert.deepEqual((await runEvent('pull_request', jira)).lines, ['pull_request: DEMO-12', 'Made DEMO-12: flag-needs-you (rework 3)']);
+  assert.deepEqual((await runEvent('pull_request', jira)).lines, [
+    'pull_request: DEMO-12',
+    'Made DEMO-12: flag-needs-you (rework 3)',
+    'Waiting DEMO-12: Submit needs subtasks-done',
+  ]);
   assert.deepEqual(jira.writes, [
     ['edit', 'DEMO-12', { fields: { customfield_10021: [{ value: 'Impediment' }] }, update: { labels: [{ add: 'needs-you' }] } }],
     ['comment', 'DEMO-12', 'jira-sync: DEMO-12 went back 3 times, the limit in policies.yaml. It is flagged with the label needs-you and waits for you.'],
@@ -152,5 +176,10 @@ test('an item that cannot be reconciled is reported, and the others go on', asyn
   const jira = fakeJira({ issues: [story('DEMO-11', jiraStatus('Blocked', 'indeterminate')), story('DEMO-12', IN_REVIEW)], search: { [WAITING_FOR_DEPLOY]: [{ key: 'DEMO-11' }, { key: 'DEMO-12' }] } });
   const { lines, failures } = await runEvent('deployment_status', jira);
   assert.deepEqual(failures, ['DEMO-11: DEMO-11 has the status Blocked, which AO standard does not map']);
-  assert.deepEqual(lines, ['deployment_status: DEMO-11, DEMO-12', 'Failed DEMO-11: DEMO-11 has the status Blocked, which AO standard does not map', 'No change']);
+  assert.deepEqual(lines, [
+    'deployment_status: DEMO-11, DEMO-12',
+    'Failed DEMO-11: DEMO-11 has the status Blocked, which AO standard does not map',
+    'Waiting DEMO-12: Deploy to QA needs pr-merged, qa-deployed',
+    'No change',
+  ]);
 });

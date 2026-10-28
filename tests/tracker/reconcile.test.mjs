@@ -63,6 +63,14 @@ test('no move where only agents or you act, and refine only with dor-met', () =>
   assert.deepEqual(ids(plan('new', ['dor-met'])), ['refine']);
 });
 
+test('says which guards a transition of automation still waits for, once some of them hold', () => {
+  assert.deepEqual(plan('in-review', ['pr-merged', 'qa-deployed']).waiting, [{ transition: 'deploy-to-qa', missing: ['merge-approved'] }]);
+  assert.deepEqual(plan('in-progress', ['pr-open']).waiting, [{ transition: 'submit', missing: ['subtasks-done', 'ci-green'] }]);
+  // Nothing holds yet, or the move was made: nothing to wait for.
+  assert.deepEqual(plan('in-review', []).waiting, []);
+  assert.deepEqual(plan('in-progress', ['subtasks-done', 'pr-open', 'ci-green']).waiting, []);
+});
+
 test('the rework that reaches the limit flags the item, and a flag an agent missed is set later', () => {
   const back = plan('in-review', ['changes-requested'], { reworkCount: 2 });
   assert.deepEqual([ids(back), back.reworkCount, back.flag], [['request-changes'], 3, true]);
@@ -88,7 +96,8 @@ const github = (change = () => {}) => {
   change(copy);
   return recordedClient(copy);
 };
-const run = (key, jira, gh = github()) => reconcile(key, { jira, github: gh, contract, mapping, approvers: ['TungPH7'] });
+const reconcileWith = (key, jira, gh = github(), approvers = ['TungPH7']) => reconcile(key, { jira, github: gh, contract, mapping, approvers });
+const run = async (key, jira, gh) => (await reconcileWith(key, jira, gh)).actions;
 
 test('reconciles a Story from Jira and GitHub, and names the transition as Jira does', async () => {
   const story = issue({ key: 'DEMO-12', st: status('In Progress', 'indeterminate'), subtasks: [['DEMO-13', DONE], ['DEMO-14', DONE]] });
@@ -116,6 +125,11 @@ test('a deployment to development moves the merged item to QA; one to staging le
     a['/deployments?environment=staging'] = [{ id: 30, sha: 'd30', ref: 'release/1.2.0', environment: 'staging', created_at: '2026-11-01T13:00:00Z' }];
   };
   assert.deepEqual(await run('DEMO-11', jira, github(stagingOnly)), []);
+});
+
+test('reports the Jira name of a transition that waits for a guard', async () => {
+  const jira = fakeJira({ issues: [issue({ key: 'DEMO-12', st: status('In Progress', 'indeterminate'), subtasks: [['DEMO-13', status('In Progress', 'indeterminate')]] })] });
+  assert.deepEqual(await reconcileWith('DEMO-12', jira), { actions: [], waiting: [{ key: 'DEMO-12', transition: 'submit', name: 'Submit', missing: ['subtasks-done'] }] });
 });
 
 test('flags an item whose rework reached the limit, once', async () => {
