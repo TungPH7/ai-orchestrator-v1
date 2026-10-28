@@ -213,7 +213,7 @@ Claude làm: tạo repo private `TungPH7/ao-pilot` với nhánh `main` và `deve
 - [x] Tiêu chí 2, 3 và 6 của spec mục 9 đạt
 - [x] Bạn xem board `DEMO` và `docs/jira-setup.md`
 
-Đã qua ngày 2026-10-28. Tiêu chí 6 mới đạt phần Jira ẩn transition; phần agent gọi thẳng qua Rovo MCP được thử ở T15.
+Đã qua ngày 2026-10-28. Tiêu chí 6 mới đạt phần Jira ẩn transition; phần agent gọi thẳng qua Rovo MCP đạt ở T15 (Jira trả 400).
 
 ---
 
@@ -289,16 +289,16 @@ Claude làm: tạo repo private `TungPH7/ao-pilot` với nhánh `main` và `deve
 
 **Cỡ:** M
 
-### [ ] T15: Kiểm thật agent và hook trên `DEMO` [bạn]
+### [x] T15: Kiểm thật agent và hook trên `DEMO` [bạn]
 
 **Mô tả:** Chép tay `contract/`, `lib/`, `tracker/` vào `ao-pilot/.ai-orchestrator/`, và chép các file trong `kit/` vào `ao-pilot`. Tạo hai subagent thử `qa` và `fe-dev`. Bạn mở Claude Code tương tác trong `ao-pilot` một lần để chấp nhận hộp thoại tin cậy thư mục. Thử các trường hợp ở tiêu chí 4 và 5 của spec.
 
 **Tiêu chí chấp nhận:**
-- [ ] Agent tạo, đọc, tìm và chuyển item qua Rovo MCP; lịch sử item ghi `orchestratoragent` (tiêu chí 4).
-- [ ] Hook chặn `qa` gọi `accept`, chặn phiên chính gọi transition, cho qua `fe-dev` gọi `start` khi đủ guard (tiêu chí 5).
+- [x] Agent tạo, đọc, tìm và chuyển item qua Rovo MCP; lịch sử item ghi `orchestratoragent` (tiêu chí 4).
+- [x] Hook chặn `qa` gọi `accept`, chặn phiên chính gọi transition, cho qua `fe-dev` gọi `start` khi đủ guard (tiêu chí 5).
 
 **Kiểm chứng:**
-- [ ] Kết quả và ảnh chụp lịch sử item ghi trong `tasks/verification.md`
+- [x] Kết quả và lịch sử item ghi trong `tasks/verification.md` (lịch sử đọc qua REST, thay cho ảnh chụp)
 
 **Phụ thuộc:** T8, T14
 
@@ -307,7 +307,7 @@ Claude làm: tạo repo private `TungPH7/ao-pilot` với nhánh `main` và `deve
 **Cỡ:** S (phần code)
 
 ### Checkpoint 3
-- [ ] Tiêu chí 4 và 5 của spec mục 9 đạt
+- [x] Tiêu chí 4 và 5 của spec mục 9 đạt
 - [ ] Bạn xem lịch sử item thử trên `DEMO`
 
 ---

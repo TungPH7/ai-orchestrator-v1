@@ -157,7 +157,7 @@ Vậy API sửa workflow dùng được cho rule. Spec mục 2.10 ghi Cấp 1 ch
 |---|---|
 | Tiêu chí 2: `docs/jira-setup.md` sinh từ ánh xạ, CI báo lỗi khi file cũ | Đạt từ T7; CI vẫn chạy `jira:checklist:check` |
 | Tiêu chí 3: `DEMO` dựng theo checklist, `jira:check` không báo lệch | Đạt (T8, T10) |
-| Tiêu chí 6: rule Restrict chặn `orchestratoragent` ở transition của `human` | Đạt phần Jira ẩn transition: ở `DEMO-2`, `orchestratoragent` chỉ thấy `Start`, không thấy `Cancel` (T8). Việc Jira từ chối khi agent gọi thẳng transition của bạn qua Rovo MCP được thử ở T15 |
+| Tiêu chí 6: rule Restrict chặn `orchestratoragent` ở transition của `human` | Đạt phần Jira ẩn transition: ở `DEMO-2`, `orchestratoragent` chỉ thấy `Start`, không thấy `Cancel` (T8). Lớp thứ hai đạt ở T15: agent gọi thẳng transition của bạn qua Rovo MCP, không qua hook, thì Jira trả 400 |
 | Bạn xem board `DEMO` và `docs/jira-setup.md` | Bạn duyệt, qua checkpoint ngày 2026-10-28 |
 
 ## T11: Dữ kiện từ Jira cho guard
@@ -230,3 +230,49 @@ Chạy thử với Jira thật (2026-10-28, token của agent, thư mục dự �
 
 Chạy thử với Jira thật (2026-10-28): `jira-rework` trên `DEMO-2` không in gì, vì lần chuyển cuối là hủy, không phải rework.
 
+
+## T15: Kiểm thật agent và hook trên `DEMO`
+
+**Chuẩn bị.** Chép `contract/`, `lib/`, `tracker/` vào `ao-pilot/.ai-orchestrator/` (thêm `package.json` cài `ajv`, `yaml`; `node_modules` nằm trong `.gitignore`). Chép `kit/.claude/hooks/`, `kit/.claude/settings.json` (đặt `AO_JIRA_SPACE` là `DEMO`) và `.mcp.json`. Hai agent thử `.claude/agents/fe-dev.md` và `qa.md` chỉ có tool của server `atlassian`. Bạn mở `claude` tương tác trong `ao-pilot` một lần: tin cậy thư mục, cho phép server `atlassian`, `/mcp` báo connected. Các file này chưa commit vào `ao-pilot`.
+
+**Cách chạy.** `claude -p` trong `ao-pilot`, model Sonnet, `--allowedTools` chỉ gồm các tool kịch bản cần. Token của agent được nạp từ registry vào biến môi trường của lệnh. Agent được gọi theo hai cách: `claude --agent fe-dev`, và phiên chính không có `--agent` gọi subagent `qa` bằng tool Agent.
+
+| # | Ai gọi | Gọi gì | Kết quả |
+|---|---|---|---|
+| 1 | `fe-dev` (`--agent`) | `createJiraIssue` một Story trên `DEMO`, rồi `getJiraIssue`, `searchJiraIssuesUsingJql` | Tạo `DEMO-3`, người tạo `orchestratoragent`; đọc lại đúng; JQL ra 1 item |
+| 2 | Phiên chính, không vai trò | `transitionJiraIssue` `Refine` trên `DEMO-3` | Bị chặn: `jira-guard: only an agent may move a Jira item; this call does not come from a subagent named after a role of the contract` |
+| 3 | Subagent `qa` (tool Agent) | `transitionJiraIssue` `Accept` trên `DEMO-3` | Bị chặn: `jira-guard: qa may not make "Accept" on DEMO-3; it is for human` |
+| 4 | Bạn, trên giao diện Jira | `Refine` trên `DEMO-3` | New → Ready |
+| 5 | `fe-dev` | `Start` trên `DEMO-3` ở Ready; nhánh `feature/DEMO-3-t15-live-test` đã có trên `ao-pilot` | Lần đầu bị chặn sai, xem phát hiện 1. Sau PR #37 thì được: item sang In Progress |
+| 6 | `fe-dev` | `editJiraIssue` trường Agent là `Frontend Developer` | Được |
+| 7 | Chạy tay `jira-rework` với input của lần 5 | | Không in gì: `Start` không phải rework |
+| 8 | Chạy tay `jira-guard`: `fe-dev` gọi `Start` lần nữa | | Bị chặn: `the contract has no transition "Start" from "In Progress" for a Story` |
+
+Lịch sử `DEMO-3`, đọc qua REST bằng token của agent (thay cho ảnh chụp):
+
+```
+2026-10-28 10:24:50  orchestratoragent  tạo item (Story, New)
+2026-10-28 10:35:42  bạn                status: New -> Ready
+2026-10-28 10:42:13  orchestratoragent  status: Ready -> In Progress
+2026-10-28 10:42:17  orchestratoragent  Agent: - -> Frontend Developer
+```
+
+**Tiêu chí 6, lớp thứ hai: gọi thẳng Rovo MCP, không qua hook.** Một script Node gọi `https://mcp.atlassian.com/v2/mcp` bằng token của agent, không qua Claude Code nên không có hook nào. Script tạo `DEMO-4` (Story, New), rồi thử hai transition của bạn:
+
+| Gọi | Kết quả |
+|---|---|
+| `transitionName: Refine`, rồi `Cancel` | Rovo MCP báo `Transition "Refine" not found. Available: ` (danh sách rỗng); tương tự với `Cancel` |
+| `transitionId: 2` (Refine), rồi `10` (Cancel từ New) | Jira trả 400 `TRANSITION_FAILED`: `Can't move (DEMO-4). You might not have permission, ...` |
+
+`DEMO-4` vẫn ở New, lịch sử không có thay đổi status. Trên gói Free, rule Restrict chặn `orchestratoragent` cả khi agent đi vòng qua hook. Tiêu chí 6 đạt đủ.
+
+Phát hiện:
+
+1. **`jira-guard` không đọc được token GitHub với `gh` 2.16.** `gh auth status --show-token` in ra stderr cả khi thành công. Hook chỉ đọc stderr khi `gh` lỗi, nên không có token và bỏ qua mọi guard lấy từ GitHub: `Start` bị chặn vì thiếu `dependencies-merged` và `branch-created`. PR #37 sửa: `readGitHubToken` chuyển vào `lib/tracker/github-client.mjs`, đọc cả stdout lẫn stderr của `gh auth status`, có test. Lần chạy thật ở T13 chỉ thử các trường hợp bị chặn trước bước đọc GitHub, nên lỗi chưa lộ ra.
+2. **Hook nhận được `agent_type` ở cả hai cách gọi agent**: `claude --agent fe-dev`, và subagent gọi qua tool Agent. Rủi ro "`agent_type` không có trong một số cách gọi agent" của plan không xảy ra với hai cách này.
+3. **Trường Agent nhận tên hiển thị của vai trò** (`Frontend Developer`), không nhận id (`fe-dev`). `facts.mjs` đổi đúng như vậy khi đếm WIP, nhưng agent cũng phải biết: module `agent-roster` ghi tên này vào định nghĩa của từng agent. Hai agent thử đã có dòng đó. `editJiraIssue` nhận `additional_fields: { "customfield_10046": "Frontend Developer" }`.
+4. **Phiên chính nạp tool MCP muộn (deferred).** Lần đầu, phiên chính gọi `transitionJiraIssue` khi chưa nạp schema, nên input rỗng (`{}`). Hook vẫn chặn, vì nó kiểm vai trò trước; lần chạy lại với input đủ bị chặn với cùng lý do. Subagent có danh sách tool riêng nên gọi đúng ngay lần đầu.
+5. **Rovo MCP không đánh dấu lỗi khi Jira từ chối transition.** Kết quả có `error: "TRANSITION_FAILED"` trong `data`, nhưng `isError` không bật. Hook `jira-rework` vẫn chạy sau lệnh đó; nó chỉ xét lần chuyển status cuối trong lịch sử, nên không bị ảnh hưởng.
+6. Giữ lại `DEMO-3` (In Progress, Agent là Frontend Developer, có nhánh `feature/DEMO-3-t15-live-test` trên `ao-pilot`): T18 có thể dùng nó cho kịch bản PR và CI. `DEMO-4` (New) là bằng chứng cho tiêu chí 6; bạn có thể Cancel nó.
+
+Tiêu chí 4, 5 và 6 của spec mục 9 đạt.

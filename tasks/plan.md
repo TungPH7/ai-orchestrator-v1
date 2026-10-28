@@ -70,7 +70,7 @@ T1 đứng đầu vì nếu service account không dùng được với Rovo MCP
 - [x] T12: Dữ kiện từ GitHub cho guard
 - [x] T13: Hook `jira-guard`
 - [x] T14: Hook đếm rework và hook chặn đường vòng
-- [ ] T15: Kiểm thật agent và hook trên `DEMO`
+- [x] T15: Kiểm thật agent và hook trên `DEMO`
 
 ### Checkpoint 3
 - [ ] Tiêu chí 4 và 5 của spec mục 9 đạt
