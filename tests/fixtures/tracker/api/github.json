@@ -27,9 +27,9 @@
   ],
   "/git/matching-refs/heads/hotfix/DEMO-12-": [],
   "/pulls/5/reviews": [
-    { "user": { "login": "TungPH7" }, "state": "CHANGES_REQUESTED", "submitted_at": "2026-11-02T10:00:00Z" },
-    { "user": { "login": "reviewer-bot" }, "state": "COMMENTED", "submitted_at": "2026-11-02T10:30:00Z" },
-    { "user": { "login": "TungPH7" }, "state": "APPROVED", "submitted_at": "2026-11-02T11:00:00Z" }
+    { "user": { "login": "TungPH7" }, "state": "CHANGES_REQUESTED", "commit_id": "c5", "submitted_at": "2026-11-02T10:00:00Z" },
+    { "user": { "login": "reviewer-bot" }, "state": "COMMENTED", "commit_id": "c5", "submitted_at": "2026-11-02T10:30:00Z" },
+    { "user": { "login": "TungPH7" }, "state": "APPROVED", "commit_id": "c5", "submitted_at": "2026-11-02T11:00:00Z" }
   ],
   "/pulls?direction=desc&sort=created&state=all": [
     {

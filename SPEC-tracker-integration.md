@@ -164,7 +164,7 @@ Token của CI là secret `JIRA_CI_TOKEN`, cloud id là biến `JIRA_CLOUD_ID`. 
 | `subtasks-done` | Jira: mọi Sub-task ở nhóm Done |
 | `pr-open` | GitHub: PR mới nhất mang mã item đang mở, vào đúng nhánh gốc |
 | `ci-green` | GitHub: mọi check của commit mới nhất trên PR đều thành công |
-| `changes-requested` | GitHub: review mới nhất yêu cầu sửa, hoặc có check thất bại |
+| `changes-requested` | GitHub: review mới nhất trên commit mới nhất của PR yêu cầu sửa, hoặc có check thất bại. Push sau yêu cầu sửa là đã trả lời yêu cầu đó (sửa ở T16) |
 | `merge-approved` | GitHub: PR có review approve của bạn |
 | `pr-merged` | GitHub: PR đã merge |
 | `qa-deployed` | GitHub: deployment lên môi trường QA của item chứa merge commit và có trạng thái thành công |

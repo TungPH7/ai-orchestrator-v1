@@ -77,6 +77,20 @@ test('changes-requested: the latest review that decides asks for changes, or a c
   );
 });
 
+test('changes-requested: a push after the request answers it, so a review of an older commit no longer counts', async () => {
+  // Without this, jira-sync would submit the fixed PR and then send it back for the old request, again and again.
+  const older = (a) => {
+    a['/pulls/5/reviews'].pop();
+    a['/pulls/5/reviews'][0].commit_id = 'c4';
+  };
+  assert.deepEqual(await holds(item('DEMO-12'), ['changes-requested'], { change: older }), []);
+  const failedOnHead = (a) => {
+    older(a);
+    a['/commits/c5/check-runs'].check_runs[0].conclusion = 'failure';
+  };
+  assert.deepEqual(await holds(item('DEMO-12'), ['changes-requested'], { change: failedOnHead }), ['changes-requested']);
+});
+
 test('merge-approved: one of the approvers approved, and did not ask for changes after', async () => {
   assert.deepEqual(await holds(item('DEMO-12'), ['merge-approved']), ['merge-approved']);
   assert.deepEqual(await holds(item('DEMO-12'), ['merge-approved'], { approvers: ['someone-else'] }), []);
