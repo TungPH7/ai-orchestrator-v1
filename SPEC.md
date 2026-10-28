@@ -1,6 +1,6 @@
 # SPEC: ai-orchestrator-v1 — Tổng quan và Capability Map
 
-> **Trạng thái:** capability map và `SPEC-sdlc-contract.md` đã được duyệt ngày 2026-10-26, kể cả các sửa đổi theo Phiên 3 · Lượt 1–2 (cấu trúc repo, nhánh cho Story có cả FE và BE, release theo quyết định của bạn). Module `sdlc-contract` hoàn thành ngày 2026-10-27; plan và danh sách task lưu ở [tasks/archive/sdlc-contract/](tasks/archive/sdlc-contract/plan.md).
+> **Trạng thái:** capability map và `SPEC-sdlc-contract.md` đã được duyệt ngày 2026-10-26, kể cả các sửa đổi theo Phiên 3 · Lượt 1–2 (cấu trúc repo, nhánh cho Story có cả FE và BE, release theo quyết định của bạn). Module `sdlc-contract` hoàn thành ngày 2026-10-27; plan và danh sách task lưu ở [tasks/archive/sdlc-contract/](tasks/archive/sdlc-contract/plan.md). Module `tracker-integration` hoàn thành ngày 2026-10-28; plan lưu ở [tasks/archive/tracker-integration/](tasks/archive/tracker-integration/plan.md).
 >
 > **Lịch sử thảo luận:** [misc/brainstorm-discussion.md](misc/brainstorm-discussion.md)
 
@@ -124,7 +124,7 @@ sdlc-contract → agent-roster, tracker-integration, quality-gates (làm song so
 |---|---|---|
 | `sdlc-contract` | [`SPEC-sdlc-contract.md`](SPEC-sdlc-contract.md) | Hoàn thành 2026-10-27; plan lưu ở [`tasks/archive/sdlc-contract/`](tasks/archive/sdlc-contract/plan.md) |
 | `agent-roster` | `SPEC-agent-roster.md` | Chưa viết |
-| `tracker-integration` | [`SPEC-tracker-integration.md`](SPEC-tracker-integration.md) | Đã duyệt 2026-10-27; đang làm theo [`tasks/plan.md`](tasks/plan.md) |
+| `tracker-integration` | [`SPEC-tracker-integration.md`](SPEC-tracker-integration.md) | Hoàn thành 2026-10-28; plan lưu ở [`tasks/archive/tracker-integration/`](tasks/archive/tracker-integration/plan.md) |
 | `quality-gates` | `SPEC-quality-gates.md` | Chưa viết |
 | `dev-workflow` | `SPEC-dev-workflow.md` | Chưa viết |
 | `release-workflow` | `SPEC-release-workflow.md` | Chưa viết |
@@ -132,5 +132,9 @@ sdlc-contract → agent-roster, tracker-integration, quality-gates (làm song so
 
 ## Câu hỏi mở
 
-- Loại Jira space cho dự án pilot: team-managed hay company-managed. Chốt trong `tracker-integration`.
-- Cách đặt tên môi trường để panel Deployments của Jira nhận đúng Development, Staging, Production. Chốt trong `tracker-integration`.
+Không còn câu hỏi mở.
+
+## Câu hỏi đã đóng
+
+- **Loại Jira space cho dự án pilot:** company-managed, chốt ngày 2026-10-27 trong `tracker-integration` (mục 2.3 của [`SPEC-tracker-integration.md`](SPEC-tracker-integration.md)). Space `DEMO` được dựng theo loại này.
+- **Tên môi trường cho panel Deployments của Jira:** ba GitHub environment `development`, `staging`, `production`, khai báo trong `.jira/config.yml` ở nhánh mặc định (mục 2.9). Ngày 2026-10-28, panel Deployments của `DEMO-3` nhận đúng ba loại môi trường này.
