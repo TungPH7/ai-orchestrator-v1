@@ -339,3 +339,48 @@ Kiểm tay (2026-10-28, `--dry-run`, token CI, Jira `DEMO` và repo `TungPH7/ao-
 | `workflow_dispatch` với `SCRUM-1` | `no work item of DEMO` |
 
 Token CI đọc được item, lịch sử và tìm bằng JQL. Quyền ghi của nó (transition, sửa item, comment, đọc danh sách field) được thử ở T18.
+
+## T18: Kiểm thật trên `ao-pilot`
+
+**Chuẩn bị (2026-10-28).** Commit `25339ea` trên `main` và `develop` của `ao-pilot`:
+
+- Bản chép kit trong `.ai-orchestrator/`, thêm `scripts/jira-sync.mjs`.
+- `.claude/` với `AO_JIRA_SPACE: DEMO` và `AO_APPROVERS: TungPH7`; `settings.local.json` nằm trong `.gitignore`.
+- `.mcp.json`.
+- Ba workflow: `jira-sync` của kit, `CI` (một test đọc `ci-state.txt`, bật đỏ hoặc xanh được), và `Deploy` giả (job có `environment:`; `develop` ra `development`, `release/*` ra `staging`, chạy tay ra môi trường bất kỳ).
+
+Secret `JIRA_CI_TOKEN` được đặt bằng cách pipe từ registry vào `gh secret set`. Story thử là `DEMO-3`, nhánh `feature/DEMO-3-t15-live-test`, PR [#1](https://github.com/TungPH7/ao-pilot/pull/1).
+
+Trước khi chạy, phát hiện và sửa một lỗi (PR #42): job `jira-sync` chạy theo `pull_request` nên là một check run trên commit đầu PR, và `ci-green` từng tính cả check đó. `facts.mjs` giờ bỏ qua check run tên `jira-sync`, và job trong workflow mang đúng tên này.
+
+**Kết quả** (run nào cũng xanh; link là run của `jira-sync`):
+
+| # | Việc | `jira-sync` in ra | Item |
+|---|---|---|---|
+| 0 | Push `develop`, `Deploy` lên `development` | [run](https://github.com/TungPH7/ao-pilot/actions/runs/40634945378): `deployment_status: no work item of DEMO` | — |
+| 1 | Mở PR #1, CI xanh | [pull_request](https://github.com/TungPH7/ao-pilot/actions/runs/40635035625): `Made DEMO-3: Submit`; [workflow_run](https://github.com/TungPH7/ao-pilot/actions/runs/40635051573) sau đó: `No change` | In Progress → In Review, do `orchestratorci` |
+| 2 | Push commit làm CI đỏ | [pull_request](https://github.com/TungPH7/ao-pilot/actions/runs/40635129384): `Made DEMO-3: Request changes`; [workflow_run](https://github.com/TungPH7/ao-pilot/actions/runs/40635147067): `Waiting DEMO-3: Submit needs ci-green` | In Review → In Progress, rework = 1 |
+| 3 | Push commit làm CI xanh lại | [pull_request](https://github.com/TungPH7/ao-pilot/actions/runs/40635212289) (CI chưa xong): `Waiting DEMO-3: Submit needs ci-green`; [workflow_run](https://github.com/TungPH7/ao-pilot/actions/runs/40635232993): `Made DEMO-3: Submit` | In Progress → In Review |
+| 4 | Merge PR #1 (chưa có approve của bạn), `Deploy` lên `development` | [deployment_status](https://github.com/TungPH7/ao-pilot/actions/runs/40635307855): `Waiting DEMO-3: Deploy to QA needs merge-approved`, `No change` | Đứng yên ở In Review |
+| 5 | Cắt `release/0.1.0`, `Deploy` lên `staging` | [deployment_status](https://github.com/TungPH7/ao-pilot/actions/runs/40635410222): `Waiting DEMO-3: Deploy to QA needs merge-approved` | Đứng yên |
+| 6 | Đưa `release/0.1.0` vào `main`, tag `v0.1.0`, chạy tay `Deploy` lên `production` | [deployment_status](https://github.com/TungPH7/ao-pilot/actions/runs/40635518290): `Waiting DEMO-3: Deploy to QA needs merge-approved` | Đứng yên |
+
+Lịch sử `DEMO-3` sau T18, đọc qua REST:
+
+```
+2026-10-28 11:55:53  orchestratorci  status: In Progress -> In Review
+2026-10-28 11:56:54  orchestratorci  status: In Review -> In Progress
+2026-10-28 11:58:03  orchestratorci  status: In Progress -> In Review
+```
+
+Các deployment trên GitHub: `development` hai lần (`25339ea` lúc dựng, rồi merge commit `d013acc`), `staging` và `production` mỗi nơi một lần (`d013acc`).
+
+Phát hiện:
+
+1. **Deployment do job có `environment:` tạo ra vẫn kích hoạt workflow theo `deployment_status`**, dù job chạy bằng `GITHUB_TOKEN`. Mỗi deployment kích hoạt hai run: một cho status `in_progress` (`jira-sync` bỏ qua), một cho `success`. Pipeline deploy của `release-workflow` chỉ cần một job có `environment:`, không cần token riêng.
+2. **Hai đường đến `Submit` đều chạy:** run của `pull_request` chuyển được ngay nếu CI xong trước (lần 1); nếu chưa thì run của `workflow_run` lo (lần 3). Các run thừa in `No change`.
+3. **Token CI ghi được:** `orchestratorci` chuyển được `Submit` và `Request changes` qua REST, nên token có quyền ghi và rule Restrict của hai transition này cho tài khoản đó đi qua.
+4. **API dev-status của Jira** (`/rest/dev-status/latest/issue/summary`) trả 401 "scope does not match" với cả token đọc của bạn lẫn token của agent, nên tiêu chí 8 kiểm trên giao diện.
+5. `kit/.jira/config.yml` được thêm vào kit, có test kiểm file khớp các môi trường trong `tracker/jira.yaml`.
+
+**Tiêu chí 8 (bạn xem trên Jira):** CHỜ.
