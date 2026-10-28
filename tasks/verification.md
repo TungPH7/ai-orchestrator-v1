@@ -50,4 +50,14 @@ Phát hiện thêm: job khai environment mà không có `deployment: false` tạ
 
 Dọn dẹp: workflow thử trên `main` đã gỡ (commit `e893183`), nhánh `probe/t3-env` đã xóa, secret giả đã xóa, deployment thử đã chuyển inactive rồi xóa. Environment `merge-gate` giữ lại, chỉ cho `main`, chưa có secret.
 
-**Giả định 2, merge bằng token App kích hoạt workflow của `push`:** chờ bạn approve PR #2, rồi `ao-dev` merge.
+**Approve của bạn trên PR của bot (khoảng 02:55): GitHub nhận.** Review trên PR #2: `tungph7-ao-review[bot]` CHANGES_REQUESTED và `TungPH7` APPROVED, cả hai trên commit `3a12727`.
+
+**Giả định 2, merge bằng token App kích hoạt workflow của `push`: đúng.** `ao-dev` squash merge PR #2 vào `develop`, truyền kèm SHA của commit đầu và tiêu đề commit bằng tiêu đề PR. Commit `eacd786` trên `develop` có tiêu đề `chore(probe): check the GitHub App identities`, không có `(#2)`; tác giả `tungph7-ao-dev[bot]`. Push đó kích hoạt:
+
+| Workflow | Sự kiện | Người kích hoạt | Kết quả |
+|---|---|---|---|
+| `CI` | `push` lên `develop` | `tungph7-ao-dev[bot]` | success |
+| `Deploy` | `push` lên `develop` | `tungph7-ao-dev[bot]` | success; deployment `development` do bot tạo, trạng thái success |
+| `jira-sync` (hai lần) | `deployment_status` | `tungph7-ao-dev[bot]` | success |
+
+File `probe/t3.md` nằm lại trên `develop` của `ao-pilot`; T13 xóa nó khi cài bản chép kit.
