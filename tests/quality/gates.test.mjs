@@ -24,11 +24,12 @@ test('the gates hold the values of the spec: four checks, 80% of changed lines, 
   assert.equal(gates.coverage.changed_lines_min, 80);
   assert.equal(gates.dependencies.audit_level, 'high');
   assert.deepEqual(gates.suppressions.never, ['.only(']);
+  for (const left of ['**/*.config.*', '**/migrations/**']) assert.ok(gates.coverage.exclude.includes(left), left);
   assert.deepEqual(gates.protected_branches, ['develop', 'main', 'release/*']);
 });
 
 test('dev roles open PRs with ao-dev and review roles post reports with ao-review (spec 2.2)', () => {
-  assert.deepEqual(gates.github_apps.dev, { env: 'AO_DEV_APP', roles: ['fe-dev', 'be-dev', 'devops'], commands: ['create', 'edit', 'comment'] });
+  assert.deepEqual(gates.github_apps.dev, { env: 'AO_DEV_APP', roles: ['ba', 'sa', 'fe-dev', 'be-dev', 'devops'], commands: ['create', 'edit', 'comment'] });
   assert.deepEqual(gates.github_apps.review, { env: 'AO_REVIEW_APP', roles: ['reviewer', 'security'], commands: ['review'] });
 });
 
