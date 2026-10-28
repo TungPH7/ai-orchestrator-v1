@@ -210,17 +210,17 @@ Claude làm: chạy script, mở trang, đặt hai biến môi trường user `A
 
 ## Giai đoạn 3: CI
 
-### [ ] T10: Coverage của dòng thay đổi
+### [x] T10: Coverage của dòng thay đổi
 
 **Mô tả:** `lib/quality/coverage.mjs` đọc lcov (nhiều file, theo `coverage.lcov`), đọc `git diff -U0` tính từ merge base, và tính tỷ lệ phủ của các dòng thêm hoặc sửa theo spec mục 2.4. `scripts/coverage-diff.mjs --base <ref>` in bảng theo file và thoát với mã khác 0 khi dưới ngưỡng.
 
 **Tiêu chí chấp nhận:**
-- [ ] Dòng không có trong lcov (comment, kiểu) không được tính.
-- [ ] File nguồn thay đổi mà thiếu trong lcov thì đỏ, kèm lời nhắc về cấu hình coverage.
-- [ ] File test, file ngoài `coverage.source` và file trong `coverage.exclude` không được tính; PR không đổi dòng thực thi nào thì đạt.
+- [x] Dòng không có trong lcov (comment, kiểu) không được tính.
+- [x] File nguồn thay đổi mà thiếu trong lcov thì đỏ, kèm lời nhắc về cấu hình coverage.
+- [x] File test, file ngoài `coverage.source` và file trong `coverage.exclude` không được tính; PR không đổi dòng thực thi nào thì đạt.
 
 **Kiểm chứng:**
-- [ ] `npm test` xanh, với lcov và diff mẫu
+- [x] `npm test` xanh, với lcov và diff mẫu
 
 **Phụ thuộc:** T4
 
