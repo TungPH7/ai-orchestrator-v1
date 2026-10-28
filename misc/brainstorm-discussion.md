@@ -14,7 +14,10 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 4 | `46e4e518-ac41-4570-8bcc-37d5a88788c5` | 2026-10-26 21:35 → 2026-10-27 01:02 | Build và đóng module sdlc-contract (14 task, PR #1–#16, không ghi vào lịch sử vì là lượt code); chọn module kế tiếp tracker-integration; giả định và câu hỏi cho tracker-integration |
 | 5 | `76bd80d2-8083-45f7-93a7-d7ffab2e246c` | 2026-10-27 09:45 → 10:02 | Bạn trả lời 5 câu hỏi của tracker-integration; câu trả lời của Claude bị bộ lọc an toàn chặn, hai lần |
 | 6 | `02493cdb-1425-4498-9a25-6408d7717c70` | 2026-10-27 10:03 → 2026-10-28 khoảng 02:30 | Gói Free và company-managed; cách tạo tài khoản bot cho agent; viết SPEC-tracker-integration; cách chọn scope khi tạo token; duyệt spec, lập plan tracker-integration; bắt đầu T1; T1–T14, Checkpoint 1 và 2; dựng `DEMO` theo checklist, sửa checklist theo giao diện thật, thêm rule workflow qua REST; chuẩn bị `ao-pilot` cho T15 |
-| 7 | `86f38192-1135-4f7d-85f4-ce02cffc6b43` | 2026-10-28 10:20 → | T15 kiểm thật agent và hook (lượt code, không ghi); T16 đối soát (lượt code); giải thích lại thay đổi của guard `changes-requested`; bạn đồng ý, T17 `jira-sync` |
+| 7 | `86f38192-1135-4f7d-85f4-ce02cffc6b43` | 2026-10-28 10:20 → 13:25 | T15 kiểm thật agent và hook (lượt code, không ghi); T16 đối soát (lượt code); giải thích lại thay đổi của guard `changes-requested`; bạn đồng ý, T17 `jira-sync`; T18 kiểm thật `jira-sync` trên `ao-pilot` (lượt code) |
+| 8 | `56ad3187-0f02-4139-9d15-eff3c7191377` | 2026-10-28 13:25 → 16:22 | T19 đóng gói tài liệu và lưu plan của tracker-integration (lượt code, không ghi) |
+| 9 | `79cccd91-9d3a-495d-a154-927ae2ce5928` | 2026-10-28 16:22 → 16:34 | Bạn xác nhận tracker-integration hoàn thành và chọn quality-gates; Claude đánh dấu ô cuối (PR #45); câu trả lời bị bộ lọc an toàn chặn |
+| 10 | `b645b669-931c-4d95-ba32-24fd3e090d67` | 2026-10-28 16:35 → | Giả định và câu hỏi cho quality-gates: bảo vệ nhánh khi repo private ở gói Free, danh tính để agent mở PR |
 
 ---
 
@@ -3190,3 +3193,100 @@ Mình giữ cách mới cho `changes-requested`, và T17 đã xong: `jira-sync` 
 4. Workflow chạy với mọi review, không chỉ review yêu cầu sửa, vì một approve đến muộn vẫn có thể đưa item đã merge và deploy sang QA.
 
 **Tiếp theo là T18:** kiểm thật trên `ao-pilot`. Mình sẽ đưa workflow lên `main`, thêm một CI nhỏ và một workflow deploy giả, rồi chạy các kịch bản với `DEMO-3`. Secret `JIRA_CI_TOKEN` mình đặt bằng `gh secret set`, đọc token thẳng từ registry nên token không hiện ra đâu. Bạn nhắn "tiếp" thì mình làm.
+
+---
+
+# Phiên 9 · Lượt 1 — 2026-10-28 16:22
+
+**Bạn:**
+
+```markdown
+Tiếp tục session id: 56ad3187-0f02-4139-9d15-eff3c7191377
+
+- Xác nhận module hoàn thành
+- Chọn làm quality-gates trước
+```
+
+**Claude:**
+
+_Không có câu trả lời. Claude đánh dấu ô cuối "Bạn xác nhận module hoàn thành" của `tracker-integration` (PR #45, đã merge), tạo nhánh `task/spec-quality-gates`, đọc lại spec và tra tài liệu GitHub. Sau đó câu trả lời bị bộ lọc an toàn dừng giữa chừng, rồi lần gọi tiếp theo báo lỗi API._
+
+---
+
+# Phiên 10 · Lượt 1 — 2026-10-28 16:35
+
+**Bạn:**
+
+```markdown
+Tiếp tục session id: 79cccd91-9d3a-495d-a154-927ae2ce5928
+```
+
+Trước lượt này, bạn chạy `/model` hai lần, lần cuối chọn Opus 5.5.
+
+**Claude:**
+
+Phiên trước (79cccd91) đã đánh dấu ô cuối của `tracker-integration` (PR #45 đã merge) và tạo nhánh `task/spec-quality-gates`. Sau đó câu trả lời bị bộ lọc an toàn chặn trước khi tới phần giả định, nên mình làm lại phần đó ở đây.
+
+## Phạm vi của `quality-gates`
+
+Theo capability map, module này gồm hook ở local, CI trên PR, bảo vệ nhánh và script kiểm artifact. Từ `tracker-integration` chuyển sang thêm ba việc:
+
+- Gắn các hàm kiểm quy ước nhánh, commit, tiêu đề PR (`lib/tracker/conventions.mjs`) vào hook và CI.
+- Chọn danh tính để agent mở PR. Bạn không approve được PR do chính tài khoản `TungPH7` mở (mục 11 của `SPEC-tracker-integration.md`).
+- Kiểm thật chặng `deploy-to-qa` của tiêu chí 7: PR có approve của bạn, merge, deploy lên `development`, rồi item sang Ready for QA.
+
+## Điều mình vừa kiểm
+
+- `ao-pilot` là repo private của tài khoản cá nhân dùng gói Free. Gọi API branch protection và rulesets đều nhận 403: "Upgrade to GitHub Pro or make this repository public to enable this feature." Trang gói của GitHub cũng xếp protected branches, required reviewers và code owners cho repo private vào gói Pro.
+- Auto-merge chỉ merge "after all required reviews and status checks pass". Khi không có rule bắt buộc nào, auto-merge không có gì để chờ.
+- Tác giả PR không approve và không request changes được PR của chính mình, kể cả khi tác giả là bot.
+- Sự kiện do `GITHUB_TOKEN` tạo ra không kích hoạt workflow khác. Nếu một workflow merge PR bằng `GITHUB_TOKEN`, push vào `develop` sẽ không chạy deploy lên Development. Token của GitHub App hoặc PAT thì kích hoạt được.
+- Fine-grained PAT không dùng được trên repo mà tài khoản chỉ là collaborator, nên một tài khoản máy sẽ phải dùng classic PAT.
+- Code scanning (CodeQL), secret scanning và push protection cho repo private phải mua riêng, và chỉ tổ chức ở gói Team hoặc Enterprise mới mua được.
+- Gói Free có 2.000 phút GitHub Actions mỗi tháng cho repo private, nên CI của kit phải gọn.
+
+## Giả định (sửa ngay nếu sai)
+
+1. **Chưa có code Next.js + NestJS.** CI của kit không gắn với stack nào. Nó gọi các npm script có tên cố định mà dự án phải có: `lint`, `typecheck`, `test:coverage` (xuất file lcov) và `build`. `project-scaffold` sẽ viết các script này cho Next.js + NestJS. Module này kiểm trên `ao-pilot` bằng một package TypeScript nhỏ.
+2. **Workflow CI của kit tên `CI`**, vì `jira-sync` chờ workflow có tên này. Nó thay CI nhỏ đang có trong `ao-pilot`. Check nào đỏ cũng chặn ngay từ đầu, vì dự án mới chưa có code cũ để cho nợ:
+
+   | Check | Công cụ | Đỏ khi |
+   |---|---|---|
+   | `conventions` | `conventions.mjs` | Tên nhánh, một commit trong PR, hoặc tiêu đề PR sai quy ước |
+   | `lint`, `typecheck`, `build` | npm script của dự án | Có lỗi |
+   | `test` | `test:coverage` và một script đọc lcov | Test fail, hoặc các dòng PR thêm/sửa có coverage dưới 80% |
+   | `secrets` | gitleaks, quét mọi commit của PR | Có secret |
+   | `sast` | Semgrep CE (`p/default`, `p/owasp-top-ten`), gọi qua `uvx` | Có finding mức ERROR |
+   | `deps` | `npm audit --audit-level=high` | Có lỗ hổng high hoặc critical |
+   | `suppressions` | Script đọc diff | PR thêm `eslint-disable`, `@ts-ignore`, `.skip`, `.only`, `istanbul ignore`, `nosemgrep` hoặc `gitleaks:allow` mà không ghi lý do ngay trên dòng đó, hoặc PR hạ một ngưỡng |
+   | `artifacts` | Script đọc PR | Mô tả PR thiếu mục bắt buộc của template; chưa có báo cáo review của `reviewer` và `security` trên commit mới nhất; hoặc còn finding Critical/High |
+
+3. **Ngưỡng** theo mặc định của skill `constraint-driven-development`: coverage của các dòng thay đổi từ 80% trở lên. Ngưỡng cho cả dự án ("coverage không được giảm") để tới khi có code thật. Các ngưỡng nằm trong một file cấu hình của kit.
+4. **Hook git ở local** đặt qua `core.hooksPath` (script `prepare` của npm tự đặt khi chạy `npm install`), không thêm husky. `pre-commit` chạy secretlint (gói npm) và lint trên file đã stage. `commit-msg` kiểm quy ước commit. `pre-push` chặn push thẳng lên `develop`, `main`, `release/*`, nhưng vẫn cho tạo nhánh `release/*` mới. Semgrep, gitleaks và `npm audit` chỉ chạy ở CI, vì máy bạn không có Python.
+5. **Hook của Claude Code** chặn agent chạy `git commit --no-verify`, `git push --no-verify`, `gh pr merge`, `gh pr review --approve`, `gh auth token`, và `gh api` gọi endpoint merge hoặc review. Agent chạy trên máy bạn, dùng `gh` đang đăng nhập bằng `TungPH7`, nên nếu không chặn thì agent approve thay bạn được. Chặn như vậy giảm rủi ro nhưng không kín hoàn toàn, vì agent vẫn dùng chung máy và tài khoản với bạn.
+6. **Cách merge:** PR của Story, Task, Bug vào `develop` dùng squash, nên mỗi item thành một commit trên `develop`, mang tiêu đề PR `type(scope): subject (<KEY>)`. Merge `release/*` vào `main` và merge ngược về `develop` dùng merge commit, theo GitFlow.
+
+## Câu hỏi
+
+**1. Bảo vệ nhánh thế nào khi repo private ở gói Free?**
+
+- **(a) Ở lại Free, chốt ở bước merge và deploy (mình đề xuất).** Bạn chỉ approve trên PR. Workflow `merge-gate` của kit kiểm lại mọi check và approve của bạn, rồi tự merge bằng token của danh tính ở câu 2, để push vào `develop` kích hoạt deploy. Workflow `audit` chạy trên mỗi commit vào `develop`, `main`, `release/*`, và deploy chỉ chạy khi `audit` xanh. Nút Merge trên giao diện vẫn bấm được, vì GitHub không chặn, nhưng commit merge tay sẽ đỏ `audit` và không được deploy. Kit có thêm script tự áp ruleset khi repo hỗ trợ (repo public, hoặc khi bạn lên Pro), nên sau này đổi gói thì không phải sửa kit. Hợp đồng cần sửa một chỗ: điều kiện qua stage `merge` đổi từ "Branch protection pass" thành "`merge-gate` pass".
+- **(b) Lên GitHub Pro**, khoảng 4 USD mỗi tháng theo một bài viết tháng 7/2026; trang giá chính thức không ghi giá Pro, bạn xem giá thật ở Settings → Billing and plans trước khi nâng. Repo private có branch protection, required checks, required approval và auto-merge thật. Mình vẫn làm `audit` để kit chạy được cả với repo ở gói Free.
+- **(c) Để repo dự án public.** Ruleset miễn phí, nhưng code lộ ra ngoài, nên không dùng được cho dự án của khách.
+
+**2. Agent mở PR bằng danh tính nào?**
+
+- **(a) Hai GitHub App do bạn tạo, chỉ cài vào repo dự án (mình đề xuất).** Dev agent mở PR bằng `ao-dev`, và `merge-gate` cũng merge bằng app này. Reviewer và security đăng báo cáo review bằng `ao-review`, và request changes khi còn finding Critical/High. Cần hai danh tính vì tác giả PR không request changes được PR của mình, trong khi guard `changes-requested` dựa vào review "request changes". Token chỉ sống một giờ; script của kit tạo token từ private key để ngoài repo. Cách này miễn phí và không cần email mới. Bạn tạo mỗi app theo hướng dẫn từng bước.
+- **(b) Tài khoản máy.** Một tài khoản GitHub thứ hai, cần email khác; điều khoản của GitHub cho mỗi người giữ thêm đúng một tài khoản máy miễn phí. Tài khoản này dùng classic PAT quyền `repo`, sống lâu. Một tài khoản máy chỉ là một danh tính, nên reviewer vẫn cần thêm một App, hoặc phải đổi guard `changes-requested`.
+
+Bạn trả lời hai câu trên và sửa giả định nếu cần. Sau đó mình viết `SPEC-quality-gates.md` rồi dừng lại để bạn duyệt.
+
+## Nguồn
+
+- [GitHub Docs: GitHub's plans](https://docs.github.com/en/get-started/learning-about-github/githubs-plans)
+- [GitHub Docs: Automatically merging a pull request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/incorporating-changes-from-a-pull-request/automatically-merging-a-pull-request)
+- [GitHub Docs: GITHUB_TOKEN](https://docs.github.com/en/actions/concepts/security/github_token)
+- [GitHub Docs: Managing your personal access tokens](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)
+- [GitHub Docs: About GitHub Advanced Security](https://docs.github.com/en/get-started/learning-about-github/about-github-advanced-security)
+- [GitHub Terms of Service, mục B.3](https://docs.github.com/en/site-policy/github-terms/github-terms-of-service)
+- [Capital & Compute: GitHub pricing plans (7/2026)](https://capitalandcompute.net/blog/github-pricing-plans-cost/)
