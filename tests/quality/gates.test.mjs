@@ -5,7 +5,7 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { parse } from 'yaml';
 import { readContract } from '../../lib/contract.mjs';
-import { readGates, validateGates } from '../../lib/quality/gates.mjs';
+import { readCiJobs, readGates, validateGates } from '../../lib/quality/gates.mjs';
 import { CONTRACT_DIR, ROOT, makeKit } from '../helpers/kit.mjs';
 import { applyPatch } from '../helpers/patch.mjs';
 
@@ -14,9 +14,10 @@ const VALIDATE_SCRIPT = join(ROOT, 'scripts', 'validate-contract.mjs');
 
 const contract = readContract(CONTRACT_DIR);
 const gates = readGates(join(ROOT, 'quality'));
+const ciJobs = readCiJobs(join(ROOT, 'kit', '.github', 'workflows', 'ci.yml'));
 
 test('the real gates break no rule', () => {
-  assert.deepEqual(validateGates(gates, contract), []);
+  assert.deepEqual(validateGates(gates, contract, { ciJobs }), []);
 });
 
 test('the gates hold the values of the spec: four checks, 80% of changed lines, high audit level (spec 2.4, 6)', () => {
@@ -67,7 +68,7 @@ for (const file of fixtures) {
   const fixture = parse(readFileSync(new URL(file, FIXTURE_DIR), 'utf8'));
 
   test(`${file}: ${fixture.description}`, () => {
-    const errors = validateGates(applyPatch(gates, fixture.patch), contract);
+    const errors = validateGates(applyPatch(gates, fixture.patch), contract, { ciJobs });
 
     assert.deepEqual(
       errors.map(({ rule, path }) => `${rule} ${path}`).sort(),

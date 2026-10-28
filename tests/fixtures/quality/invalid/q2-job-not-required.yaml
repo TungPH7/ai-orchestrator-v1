@@ -1,0 +1,8 @@
+description: a CI job that is not a required check
+rule: Q2
+expect:
+  - "checks"
+patch:
+  - op: set
+    path: "checks"
+    value: [policy, build-test, secrets]
