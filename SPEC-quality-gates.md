@@ -2,7 +2,7 @@
 
 > **Module:** `quality-gates`, xem capability map trong [SPEC.md](SPEC.md). **Phụ thuộc:** `sdlc-contract`, `tracker-integration` (mục 2.9). **Được dùng bởi:** `dev-workflow`, `release-workflow`, `project-scaffold`, và `ci-agents` ở Cấp 2.
 >
-> **Trạng thái:** chờ duyệt, viết ngày 2026-10-29. **Nguồn thảo luận:** [misc/brainstorm-discussion.md](misc/brainstorm-discussion.md), Phiên 10 · Lượt 1–2.
+> **Trạng thái:** đã duyệt 2026-10-29, cùng ba thay đổi ở mục 2.9. **Plan:** [tasks/plan.md](tasks/plan.md). **Nguồn thảo luận:** [misc/brainstorm-discussion.md](misc/brainstorm-discussion.md), Phiên 10 · Lượt 1–3.
 
 ## 1. Mục tiêu
 
@@ -57,7 +57,7 @@ Không có branch protection thì GitHub không chặn được merge hay push. 
 | `ao-review` | GitHub App | `reviewer`, `security` đăng báo cáo review | Contents: read; Pull requests: read and write |
 
 - **Hai App**, vì tác giả PR không approve và không request changes được PR của mình, kể cả khi tác giả là bot, trong khi guard `changes-requested` dựa vào review "request changes".
-- **Tên App là duy nhất trên toàn GitHub** và dài tối đa 34 ký tự, nên tên thật có tiền tố, ví dụ `tungph7-ao-dev` (câu hỏi mở 2). Spec gọi tắt là `ao-dev` và `ao-review`.
+- **Tên App là duy nhất trên toàn GitHub** và dài tối đa 34 ký tự, nên tên thật có tiền tố: `tungph7-ao-dev` và `tungph7-ao-review` (bạn đồng ý ngày 2026-10-29; tên nào đã có người dùng thì bạn chọn tên khác lúc tạo). Spec gọi tắt là `ao-dev` và `ao-review`.
 - **Cài đặt:** mỗi App chọn "Only on this account", tắt webhook, và chỉ cài vào repo của dự án.
 - **Token:** script của kit ký JWT bằng private key của App (RS256, `node:crypto`), tìm installation của repo, rồi xin installation token chỉ cho repo đó. Token sống một giờ và không bao giờ được in ra.
 - **Private key ở máy bạn:** mỗi App một file PEM nằm ngoài repo. Biến môi trường user `AO_DEV_APP_KEY_FILE` và `AO_REVIEW_APP_KEY_FILE` trỏ tới hai file này.
@@ -157,7 +157,7 @@ Hook đọc lệnh theo mẫu nên không kín hoàn toàn: agent chạy trên m
 
 Repo không hỗ trợ ruleset (API trả 403, như `ao-pilot`) thì lệnh in `soft mode: merge-gate and audit enforce the gates`, không đổi gì, và thoát với mã 0.
 
-### 2.9 Thay đổi hợp đồng và capability map
+### 2.9 Thay đổi hợp đồng và capability map (đã duyệt 2026-10-29)
 
 1. **Stage `merge`:** điều kiện qua đổi từ "Branch protection pass" thành "`merge-gate` pass". Sửa `contract/stages.yaml`, bảng 2.2 của `SPEC-sdlc-contract.md`, và sinh lại `docs/sdlc.md`.
 2. **Template `review-report.md`:** thêm dòng `Role: reviewer` hoặc `Role: security` ngay dưới tiêu đề, vì hai vai trò đăng báo cáo bằng cùng một App. Ví dụ trong template sửa theo.
@@ -299,7 +299,7 @@ github_apps:
 8. `merge-gate` đứng chờ và in lý do khi approve nằm trên commit cũ; không merge PR của agent có sửa `.github/workflows/`, và báo bạn tự merge.
 9. `audit`: một PR bạn merge tay khi chưa approve làm `audit` đỏ, deploy không chạy, và item mang cờ "Needs you".
 10. Secret `AO_DEV_APP_KEY` của environment `merge-gate`: workflow chạy trên một nhánh khác nhánh mặc định không đọc được secret này. Nếu đọc được, key chuyển sang secret của repo và mục 12 ghi rõ rủi ro.
-11. `npm run gh:protect -- --repo TungPH7/ao-pilot` báo soft mode và không đổi gì trên repo. Phần áp ruleset thật xem câu hỏi mở 1.
+11. `npm run gh:protect -- --repo TungPH7/ao-pilot` báo soft mode và không đổi gì trên repo. Trên repo public tạm `TungPH7/ao-ruleset-probe`, lệnh áp ruleset, đọc lại thấy đúng, chạy lần hai không tạo bản trùng; sau đó repo bị xóa.
 12. Số phút Actions của một vòng PR đầy đủ (mở, sửa một lần, review, approve, merge, deploy) được đo và ghi lại.
 13. README có mục về quality gates; có `docs/quality-gates.md` và `docs/github-apps-setup.md`; `SPEC.md` ghi module hoàn thành.
 
@@ -308,11 +308,13 @@ github_apps:
 1. **Bảo vệ nhánh khi repo private ở gói Free:** ở lại gói Free, chốt ở `merge-gate` và `audit`; ruleset chỉ áp khi repo hỗ trợ (mục 2.1, 2.5, 2.6, 2.8).
 2. **Danh tính để agent mở PR:** hai GitHub App, `ao-dev` và `ao-review` (mục 2.2).
 3. Bạn không sửa giả định nào trong sáu giả định ở Phiên 10 · Lượt 1. Spec làm rõ thêm hai điểm: mẫu `.only(` luôn đỏ, và `npm audit` có danh sách ngoại lệ có hạn.
+4. **Ba thay đổi ở mục 2.9:** bạn duyệt.
+5. **Kiểm ruleset trên repo public tạm:** đồng ý. Claude tạo repo public rỗng `TungPH7/ao-ruleset-probe` lúc kiểm `gh:protect`, rồi xóa repo khi kiểm xong (tiêu chí 11).
+6. **Tên hai App:** `tungph7-ao-dev` và `tungph7-ao-review`.
 
 ## 11. Câu hỏi mở
 
-1. **Kiểm ruleset trên một repo public tạm?** Trên `ao-pilot` chỉ kiểm được soft mode. Mình đề xuất tạo repo public rỗng `TungPH7/ao-ruleset-probe`, chạy `gh:protect`, đọc lại ruleset, rồi xóa repo. Nếu bạn không muốn, phần áp ruleset chỉ có test đơn vị.
-2. **Tên hai App:** mình đề xuất `tungph7-ao-dev` và `tungph7-ao-review`. Nếu tên đã có người dùng, bạn chọn tên khác lúc tạo, và mình ghi tên thật vào cấu hình.
+Không còn câu hỏi mở.
 
 ## 12. Rủi ro
 

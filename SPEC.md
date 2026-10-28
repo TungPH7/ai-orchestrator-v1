@@ -87,7 +87,7 @@ Staging và Production dùng cùng một Docker image build từ nhánh `release
 | `sdlc-contract` | Quy trình chuẩn ở dạng máy đọc được (YAML + Markdown). Mỗi giai đoạn ghi rõ agent phụ trách, đầu vào, đầu ra và điều kiện qua cổng. Module này còn chứa: state machine của task, DoR/DoD, các cổng duyệt, ánh xạ môi trường, artifact templates, và quy tắc xử lý lỗi (retry tối đa mấy lần, khi nào báo bạn). Bổ sung 2026-10-26: phân cấp work item, nhịp làm việc, release theo quyết định của bạn, giới hạn WIP | — |
 | `agent-roster` | Định nghĩa từng subagent: phạm vi, đầu vào/đầu ra, tool được phép, skill được dùng, model. Dựa trên 10 vai trò bạn đã chốt trong `misc/chat.md` | sdlc-contract |
 | `tracker-integration` | Workflow và board Jira khớp với state machine; cài Rovo MCP; quy ước gắn mã Jira vào nhánh, commit, PR; liên kết Jira với GitHub. Bổ sung 2026-10-26: Kanban board, giới hạn WIP cho từng cột, Fix Version cho từng bản release | sdlc-contract |
-| `quality-gates` | Pre-commit hook ở local; pipeline CI trên PR; branch protection; script kiểm tra đã có đủ artifact chưa | sdlc-contract |
+| `quality-gates` | Pre-commit hook ở local; pipeline CI trên PR; branch protection; script kiểm tra đã có đủ artifact chưa. Bổ sung 2026-10-29: danh tính GitHub App cho agent, `merge-gate` và `audit` thay cho branch protection trên gói Free | sdlc-contract, tracker-integration |
 | `dev-workflow` | Lệnh điều phối vòng trong: spec → plan → build → review → merge vào `develop`. Mỗi lệnh gọi đúng agent, tạo artifact, kiểm tra cổng, cập nhật Jira | agent-roster, tracker-integration, quality-gates |
 | `release-workflow` | Vòng ngoài trên Docker/VPS: tự deploy `develop` lên Development; QA (E2E, regression); tính điểm cắt và cắt `release/*` lên Staging; release lên Production; hotfix; rollback | agent-roster, tracker-integration, quality-gates |
 | `project-scaffold` | Profile theo stack (Next.js + NestJS trước, Spring Boot sau) và script cài/đồng bộ kit vào dự án | Tất cả module trên |
@@ -95,7 +95,8 @@ Staging và Production dùng cùng một Docker image build từ nhánh `release
 **Thứ tự build:**
 
 ```
-sdlc-contract → agent-roster, tracker-integration, quality-gates (làm song song được)
+sdlc-contract → agent-roster, tracker-integration (làm song song được)
+              → quality-gates (cần tracker-integration, đổi ngày 2026-10-29)
               → dev-workflow → release-workflow → project-scaffold
 ```
 
@@ -125,7 +126,7 @@ sdlc-contract → agent-roster, tracker-integration, quality-gates (làm song so
 | `sdlc-contract` | [`SPEC-sdlc-contract.md`](SPEC-sdlc-contract.md) | Hoàn thành 2026-10-27; plan lưu ở [`tasks/archive/sdlc-contract/`](tasks/archive/sdlc-contract/plan.md) |
 | `agent-roster` | `SPEC-agent-roster.md` | Chưa viết |
 | `tracker-integration` | [`SPEC-tracker-integration.md`](SPEC-tracker-integration.md) | Hoàn thành 2026-10-28; plan lưu ở [`tasks/archive/tracker-integration/`](tasks/archive/tracker-integration/plan.md) |
-| `quality-gates` | [`SPEC-quality-gates.md`](SPEC-quality-gates.md) | Chờ duyệt (viết ngày 2026-10-29) |
+| `quality-gates` | [`SPEC-quality-gates.md`](SPEC-quality-gates.md) | Đã duyệt 2026-10-29; plan ở [`tasks/plan.md`](tasks/plan.md) |
 | `dev-workflow` | `SPEC-dev-workflow.md` | Chưa viết |
 | `release-workflow` | `SPEC-release-workflow.md` | Chưa viết |
 | `project-scaffold` | `SPEC-project-scaffold.md` | Chưa viết |
