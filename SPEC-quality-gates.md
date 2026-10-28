@@ -53,7 +53,7 @@ Không có branch protection thì GitHub không chặn được merge hay push. 
 | Danh tính | Loại | Dùng cho | Quyền trên repo |
 |---|---|---|---|
 | Bạn (`TungPH7`) | Tài khoản cá nhân | Approve PR (cổng ③); merge tay PR có sửa file được bảo vệ; chạy `gh:protect` | Admin |
-| `ao-dev` | GitHub App | `fe-dev`, `be-dev`, `devops` mở và sửa PR; `merge-gate` merge | Contents: read and write; Pull requests: read and write |
+| `ao-dev` | GitHub App | `ba`, `sa` (SPEC, plan, ADR), `fe-dev`, `be-dev`, `devops` mở và sửa PR; `merge-gate` merge | Contents: read and write; Pull requests: read and write |
 | `ao-review` | GitHub App | `reviewer`, `security` đăng báo cáo review | Contents: read; Pull requests: read and write |
 
 - **Hai App**, vì tác giả PR không approve và không request changes được PR của mình, kể cả khi tác giả là bot, trong khi guard `changes-requested` dựa vào review "request changes".
@@ -98,7 +98,7 @@ Workflow `kit/.github/workflows/ci.yml` tên `CI`, là tên `jira-sync` đang ch
 | `sast` | Semgrep CE bản cố định, chạy qua `uvx`, với `--config p/default --config p/owasp-top-ten`; chỉ báo finding mới so với nhánh đích (`--baseline-commit`) | Có finding mức ERROR |
 
 - **Bốn job thay vì mười check**, vì mỗi job tính tròn lên một phút Actions. Từng bước vẫn hiện riêng trong log và trong job summary. Khi push (không có PR), `policy` chỉ chạy `npm audit`.
-- **Coverage của dòng thay đổi:** script đọc lcov (đường dẫn trong `quality/gates.yaml`) và `git diff` tính từ merge base, rồi chỉ tính các dòng có trong lcov, tức dòng thực thi được. File nguồn thay đổi mà không có trong lcov thì đỏ, kèm lời nhắc cấu hình coverage phải gồm mọi file nguồn, kể cả file chưa có test. PR không đổi dòng thực thi nào thì bước này đạt.
+- **Coverage của dòng thay đổi:** script đọc lcov (đường dẫn trong `quality/gates.yaml`) và `git diff` tính từ merge base, rồi chỉ tính các dòng có trong lcov, tức dòng thực thi được. File nguồn thay đổi mà không có trong lcov thì đỏ, kèm lời nhắc cấu hình coverage phải gồm mọi file nguồn, kể cả file chưa có test. PR không đổi dòng thực thi nào thì bước này đạt. File cấu hình (`*.config.*`) và migration không được tính (Checkpoint 1).
 - **Mẫu tắt kiểm tra** cấu hình trong `quality/gates.yaml`: `eslint-disable`, `@ts-ignore`, `@ts-nocheck`, `.skip(`, `xit(`, `xdescribe(`, `istanbul ignore`, `c8 ignore`, `nosemgrep`, `gitleaks:allow`, `secretlint-disable`. Dòng có `reason: <lý do>` thì cho qua, để reviewer đọc lý do. `.only(` luôn đỏ. PR xóa file test không làm đỏ, nhưng được liệt kê trong job summary cho reviewer.
 - **Ngoại lệ của `npm audit`:** mỗi ngoại lệ ghi mã advisory, lý do và ngày hết hạn; hết hạn thì tự đỏ lại. Thêm ngoại lệ là sửa một file được bảo vệ (mục 2.5), nên PR đó do bạn merge.
 - Guard `ci-green` của `tracker-integration` tính mọi check run trên commit đầu của PR, trừ `jira-sync`, nên bốn job này được tính mà không phải sửa `facts.mjs`.
@@ -239,7 +239,7 @@ coverage:
   changed_lines_min: 80
   lcov: ["coverage/lcov.info", "apps/*/coverage/lcov.info"]
   source: ["**/*.{ts,tsx,js,jsx,mjs,cjs}"]
-  exclude: ["**/*.{test,spec}.*", "**/*.d.ts", "e2e/**", ".ai-orchestrator/**"]
+  exclude: ["**/*.{test,spec}.*", "**/*.d.ts", "**/*.config.*", "**/migrations/**", "e2e/**", ".ai-orchestrator/**"]
 dependencies:
   audit_level: high
   exceptions: []   # { advisory: GHSA-xxxx-xxxx-xxxx, reason: "...", expires: 2026-12-31 }
@@ -256,7 +256,7 @@ protected_paths:          # editors: vai trò agent được sửa, dù PR đó 
   - { path: ".ai-orchestrator/**" }
 merge_method: { feature: squash, bugfix: squash, hotfix: squash }
 github_apps:
-  dev: { env: AO_DEV_APP, roles: [fe-dev, be-dev, devops], commands: [create, edit, comment] }
+  dev: { env: AO_DEV_APP, roles: [ba, sa, fe-dev, be-dev, devops], commands: [create, edit, comment] }
   review: { env: AO_REVIEW_APP, roles: [reviewer, security], commands: [review] }
 ```
 
@@ -315,6 +315,7 @@ github_apps:
 4. **Ba thay đổi ở mục 2.9:** bạn duyệt.
 5. **Kiểm ruleset trên repo public tạm:** đồng ý. Claude tạo repo public rỗng `TungPH7/ao-ruleset-probe` lúc kiểm `gh:protect`, rồi xóa repo khi kiểm xong (tiêu chí 11).
 6. **Tên hai App:** `tungph7-ao-dev` và `tungph7-ao-review`.
+7. **Checkpoint 1 (2026-10-29):** `ba` và `sa` dùng App `ao-dev`, vì hai vai trò này viết SPEC, plan, ADR vào Git; PR chỉ có tài liệu cần review gì thì `dev-workflow` quyết. Coverage bỏ qua file cấu hình (`**/*.config.*`) và migration (`**/migrations/**`).
 
 ## 11. Câu hỏi mở
 

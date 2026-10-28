@@ -4,7 +4,7 @@ Hướng dẫn này thuộc module `quality-gates` ([SPEC-quality-gates.md](../S
 
 | App | Tên | Repository permissions | Dùng cho |
 |---|---|---|---|
-| `ao-dev` | `tungph7-ao-dev` | Contents: Read and write; Pull requests: Read and write | `fe-dev`, `be-dev`, `devops` mở và sửa PR; `merge-gate` merge |
+| `ao-dev` | `tungph7-ao-dev` | Contents: Read and write; Pull requests: Read and write | `ba`, `sa`, `fe-dev`, `be-dev`, `devops` mở và sửa PR; `merge-gate` merge |
 | `ao-review` | `tungph7-ao-review` | Contents: Read-only; Pull requests: Read and write | `reviewer`, `security` đăng báo cáo review |
 
 Bạn tạo hai App một lần cho tài khoản. Mỗi dự án mới chỉ cần cài thêm hai App vào repo của dự án (mục 3).
