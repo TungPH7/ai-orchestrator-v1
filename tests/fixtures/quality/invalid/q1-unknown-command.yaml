@@ -1,0 +1,8 @@
+description: an ao-pr.mjs command that does not exist
+rule: Q1
+expect:
+  - "github_apps.dev.commands[3]"
+patch:
+  - op: set
+    path: "github_apps.dev.commands"
+    value: [create, edit, comment, merge]

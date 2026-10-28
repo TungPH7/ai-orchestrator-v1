@@ -1,0 +1,8 @@
+description: a key the schema does not declare
+rule: Q1
+expect:
+  - "branch_protection"
+patch:
+  - op: set
+    path: "branch_protection"
+    value: true

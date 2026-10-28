@@ -1,0 +1,8 @@
+description: a coverage threshold above 100 percent
+rule: Q1
+expect:
+  - "coverage.changed_lines_min"
+patch:
+  - op: set
+    path: "coverage.changed_lines_min"
+    value: 120

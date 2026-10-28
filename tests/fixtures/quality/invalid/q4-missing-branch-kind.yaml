@@ -1,0 +1,7 @@
+description: a kind of work item branch with no merge method
+rule: Q4
+expect:
+  - "merge_method.hotfix"
+patch:
+  - op: remove
+    path: "merge_method.hotfix"

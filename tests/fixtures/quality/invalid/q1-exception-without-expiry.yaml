@@ -1,0 +1,9 @@
+description: an npm audit exception with no end date
+rule: Q1
+expect:
+  - "dependencies.exceptions[0].expires"
+patch:
+  - op: set
+    path: "dependencies.exceptions"
+    value:
+      - { advisory: GHSA-xxxx-xxxx-xxxx, reason: "only in a dev tool" }

@@ -1,0 +1,8 @@
+description: a protected path whose editor is not an agent role
+rule: Q3
+expect:
+  - "protected_paths[0].editors"
+patch:
+  - op: set
+    path: "protected_paths.0.editors"
+    value: [automation]
