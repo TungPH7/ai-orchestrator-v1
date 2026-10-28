@@ -59,7 +59,7 @@ Claude làm: chạy script, mở trang, đặt hai biến môi trường user `A
 
 **Cỡ:** S
 
-### [ ] T3: Kiểm giả định nền trên `ao-pilot` [bạn]
+### [x] T3: Kiểm giả định nền trên `ao-pilot` [bạn]
 
 **Mô tả:** Thử ba giả định của spec bằng một PR thử, trước khi viết code phụ thuộc vào chúng (plan, quyết định 1). Script thử nằm trong scratchpad, gọi `github-app.mjs`. Nhánh thử không mang mã Jira, nên `jira-sync` bỏ qua.
 
@@ -69,13 +69,13 @@ Claude làm: chạy script, mở trang, đặt hai biến môi trường user `A
 4. Tạo environment `merge-gate` chỉ cho nhánh `main`, với một secret giả. Một workflow thử trên nhánh khác `main` in độ dài của secret (không in giá trị). Xong thì xóa workflow, nhánh và secret giả; environment `merge-gate` giữ lại nếu giới hạn nhánh có hiệu lực.
 
 **Tiêu chí chấp nhận:**
-- [ ] PR thử có tác giả là bot của `ao-dev`; review của bot `ao-review` có trạng thái `CHANGES_REQUESTED`.
-- [ ] Approve của bạn được GitHub nhận trên PR của bot.
-- [ ] Push do bot `ao-dev` merge kích hoạt workflow `Deploy` trên `develop`.
-- [ ] Biết chắc giới hạn nhánh của environment có được thực thi trên gói Free hay không (tiêu chí 10 của spec).
+- [x] PR thử có tác giả là bot của `ao-dev`; review của bot `ao-review` có trạng thái `CHANGES_REQUESTED`.
+- [x] Approve của bạn được GitHub nhận trên PR của bot.
+- [x] Push do bot `ao-dev` merge kích hoạt workflow `Deploy` trên `develop`.
+- [x] Biết chắc giới hạn nhánh của environment có được thực thi trên gói Free hay không (tiêu chí 10 của spec).
 
 **Kiểm chứng:**
-- [ ] Bốn kết quả ghi trong `tasks/verification.md`. Giả định nào sai thì Claude dừng, đề xuất sửa spec và chờ bạn duyệt
+- [x] Bốn kết quả ghi trong `tasks/verification.md`. Giả định nào sai thì Claude dừng, đề xuất sửa spec và chờ bạn duyệt
 
 **Phụ thuộc:** T2
 
