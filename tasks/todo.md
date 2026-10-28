@@ -150,17 +150,17 @@ Claude làm: chạy script, mở trang, đặt hai biến môi trường user `A
 
 **Cỡ:** M
 
-### [ ] T7: Hook `pre-commit` với secretlint
+### [x] T7: Hook `pre-commit` với secretlint
 
 **Mô tả:** Thêm `secretlint` và `@secretlint/secretlint-rule-preset-recommend` (phiên bản chính xác) vào `package.json` của kit. `kit/.githooks/pre-commit` gọi `scripts/pre-commit.mjs`: chạy secretlint trên các file đã stage, rồi `npm run precommit --if-present` của dự án.
 
 **Tiêu chí chấp nhận:**
-- [ ] File stage có secret giả theo dạng của preset (ví dụ khóa riêng PEM giả) thì hook chặn và in tên file.
-- [ ] Không có file nào stage, hoặc chỉ có file bị xóa, thì hook cho qua.
-- [ ] Script `precommit` của dự án lỗi thì hook chặn.
+- [x] File stage có secret giả theo dạng của preset (ví dụ khóa riêng PEM giả) thì hook chặn và in tên file.
+- [x] Không có file nào stage, hoặc chỉ có file bị xóa, thì hook cho qua.
+- [x] Script `precommit` của dự án lỗi thì hook chặn.
 
 **Kiểm chứng:**
-- [ ] `npm ci`, `npm test` xanh, và CI của kit cài được dependency mới
+- [x] `npm ci`, `npm test` xanh, và CI của kit cài được dependency mới
 
 **Phụ thuộc:** T6
 
