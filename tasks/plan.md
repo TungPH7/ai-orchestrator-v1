@@ -65,7 +65,7 @@ T1–T3 đứng đầu vì nếu một giả định nền sai thì `merge-gate`
 
 ### Giai đoạn 3: CI
 - [x] T10: Coverage của dòng thay đổi
-- [ ] T11: Job `policy`: quy ước của PR, mẫu tắt kiểm tra, ngưỡng bị hạ, `npm audit`
+- [x] T11: Job `policy`: quy ước của PR, mẫu tắt kiểm tra, ngưỡng bị hạ, `npm audit`
 - [ ] T12: Workflow `CI` bốn job, quy tắc Q2
 - [ ] T13: Kiểm thật hook git và CI trên `ao-pilot`
 

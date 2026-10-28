@@ -228,18 +228,18 @@ Claude làm: chạy script, mở trang, đặt hai biến môi trường user `A
 
 **Cỡ:** S
 
-### [ ] T11: Job `policy`: quy ước của PR, mẫu tắt kiểm tra, ngưỡng bị hạ, `npm audit`
+### [x] T11: Job `policy`: quy ước của PR, mẫu tắt kiểm tra, ngưỡng bị hạ, `npm audit`
 
 **Mô tả:** `lib/quality/suppressions.mjs` đọc diff: dòng thêm có mẫu tắt kiểm tra mà không có `reason:`, `.only(`, ngưỡng trong `quality/gates.yaml` bị hạ, file test bị xóa (chỉ liệt kê). `scripts/check-policy.mjs` gộp bốn bước của job `policy`: quy ước (nhánh nguồn so với nhánh đích, mọi commit của PR trừ commit merge, tiêu đề PR), mẫu tắt kiểm tra, ngưỡng, và `npm audit --json` lọc theo `audit_level` và ngoại lệ còn hạn. Kết quả ghi vào job summary.
 
 **Tiêu chí chấp nhận:**
-- [ ] Mỗi mẫu tắt kiểm tra có test có và không có `reason:`; `.only(` luôn đỏ.
-- [ ] Hạ `changed_lines_min` hoặc đổi `audit_level` xuống mức thấp hơn thì đỏ.
-- [ ] Ngoại lệ hết hạn thì advisory đó làm đỏ lại; advisory mức moderate không làm đỏ.
-- [ ] Khi chạy do push (không có PR), chỉ bước `npm audit` chạy.
+- [x] Mỗi mẫu tắt kiểm tra có test có và không có `reason:`; `.only(` luôn đỏ.
+- [x] Hạ `changed_lines_min` hoặc đổi `audit_level` xuống mức thấp hơn thì đỏ.
+- [x] Ngoại lệ hết hạn thì advisory đó làm đỏ lại; advisory mức moderate không làm đỏ.
+- [x] Khi chạy do push (không có PR), chỉ bước `npm audit` chạy.
 
 **Kiểm chứng:**
-- [ ] `npm test` xanh, với diff và output `npm audit` mẫu
+- [x] `npm test` xanh, với diff và output `npm audit` mẫu
 
 **Phụ thuộc:** T10
 
