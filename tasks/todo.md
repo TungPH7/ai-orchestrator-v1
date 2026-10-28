@@ -27,7 +27,7 @@ Claude làm: chạy script, mở trang, đặt hai biến môi trường user `A
 
 **Tiêu chí chấp nhận:**
 - [x] Manifest của `ao-dev` chỉ xin Contents và Pull requests ở mức ghi; của `ao-review` chỉ xin Contents đọc và Pull requests ghi; cả hai không công khai, không webhook. Có test.
-- [ ] Hai App tồn tại, chỉ cài vào `ao-pilot`; `GET /repos/TungPH7/ao-pilot/installation` bằng JWT của từng App trả 200 (Claude kiểm ở T2).
+- [x] Hai App tồn tại, chỉ cài vào `ao-pilot`; `GET /repos/TungPH7/ao-pilot/installation` bằng JWT của từng App trả 200 (Claude kiểm ở T2).
 - [x] Slug và App ID của hai App ghi trong `tasks/verification.md`; output của script không chứa key, code hay client secret.
 
 **Kiểm chứng:**
@@ -40,18 +40,18 @@ Claude làm: chạy script, mở trang, đặt hai biến môi trường user `A
 
 **Cỡ:** S
 
-### [ ] T2: Token của GitHub App
+### [x] T2: Token của GitHub App
 
 **Mô tả:** `lib/quality/github-app.mjs`: ký JWT RS256 bằng `node:crypto` (thời hạn 10 phút, lùi `iat` 60 giây cho lệch đồng hồ), tìm installation của repo, rồi xin installation token chỉ cho repo đó. Hàm trả token cho code gọi, không in ra. `lib/tracker/github-client.mjs` thêm chế độ ghi khi truyền `write: true` (POST, PATCH, PUT); mặc định vẫn chỉ đọc.
 
 **Tiêu chí chấp nhận:**
-- [ ] JWT kiểm được bằng public key của một cặp khóa sinh ra trong test; `iss` là App ID.
-- [ ] Request xin token có `repositories: [<repo>]`; lỗi 401, 404 ra thông báo rõ ràng và không chứa JWT, token hay key.
-- [ ] Client ở chế độ chỉ đọc từ chối mọi method khác GET.
+- [x] JWT kiểm được bằng public key của một cặp khóa sinh ra trong test; `iss` là App ID.
+- [x] Request xin token có `repositories: [<repo>]`; lỗi 401, 404 ra thông báo rõ ràng và không chứa JWT, token hay key.
+- [x] Client ở chế độ chỉ đọc từ chối mọi method khác GET.
 
 **Kiểm chứng:**
-- [ ] `npm test` xanh
-- [ ] Kiểm thật: lấy token của cả hai App cho `ao-pilot`, gọi `GET /installation/repositories` thấy đúng một repo; ghi vào `tasks/verification.md`
+- [x] `npm test` xanh
+- [x] Kiểm thật: lấy token của cả hai App cho `ao-pilot`, gọi `GET /installation/repositories` thấy đúng một repo; ghi vào `tasks/verification.md`
 
 **Phụ thuộc:** T1
 
