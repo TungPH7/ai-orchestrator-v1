@@ -5,6 +5,7 @@ import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'nod
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { parse } from 'yaml';
+import { readMapping } from '../../lib/tracker/mapping.mjs';
 import { ROOT } from '../helpers/kit.mjs';
 
 const SCRIPT = join(ROOT, 'scripts', 'jira-sync.mjs');
@@ -57,4 +58,12 @@ test('the kit has the workflow that runs jira-sync on the events of spec section
 test('the kit settings leave the approvers to fill in, next to the project space', () => {
   const settings = JSON.parse(readFileSync(join(ROOT, 'kit', '.claude', 'settings.json'), 'utf8'));
   assert.deepEqual(settings.env, { AO_JIRA_SPACE: '<KEY>', AO_APPROVERS: '<github-login>' });
+});
+
+test('the kit maps every environment of tracker/jira.yaml for GitHub for Jira', () => {
+  const mapping = readMapping(join(ROOT, 'tracker'));
+  const config = parse(readFileSync(join(ROOT, 'kit', '.jira', 'config.yml'), 'utf8'));
+  const expected = {};
+  for (const { github_environment: name, jira_type: type } of Object.values(mapping.environments)) (expected[type] ??= []).push(name);
+  assert.deepEqual(config.deployments.environmentMapping, expected);
 });
