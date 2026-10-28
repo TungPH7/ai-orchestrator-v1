@@ -1,6 +1,6 @@
 # Plan triển khai: quality-gates
 
-> **Spec:** [SPEC-quality-gates.md](../SPEC-quality-gates.md), đã duyệt 2026-10-29. **Trạng thái:** chờ duyệt. **Task chi tiết:** [todo.md](todo.md). **Kết quả kiểm thật:** [verification.md](verification.md), tạo ở T1.
+> **Spec:** [SPEC-quality-gates.md](../SPEC-quality-gates.md), đã duyệt 2026-10-29. **Trạng thái:** đã duyệt 2026-10-29, đang làm. **Task chi tiết:** [todo.md](todo.md). **Kết quả kiểm thật:** [verification.md](verification.md), tạo ở T1.
 
 ## Tổng quan
 
