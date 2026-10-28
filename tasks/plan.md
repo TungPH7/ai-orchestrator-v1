@@ -64,7 +64,7 @@ T1–T3 đứng đầu vì nếu một giả định nền sai thì `merge-gate`
 - [x] T9: Script `ao-pr.mjs` và kiểm mô tả PR
 
 ### Giai đoạn 3: CI
-- [ ] T10: Coverage của dòng thay đổi
+- [x] T10: Coverage của dòng thay đổi
 - [ ] T11: Job `policy`: quy ước của PR, mẫu tắt kiểm tra, ngưỡng bị hạ, `npm audit`
 - [ ] T12: Workflow `CI` bốn job, quy tắc Q2
 - [ ] T13: Kiểm thật hook git và CI trên `ao-pilot`
