@@ -60,7 +60,7 @@ T1–T3 đứng đầu vì nếu một giả định nền sai thì `merge-gate`
 ### Giai đoạn 2: kiểm ở máy bạn
 - [x] T6: Hook `commit-msg`, `pre-push` và lệnh cài hook
 - [x] T7: Hook `pre-commit` với secretlint
-- [ ] T8: Hook `gh-guard` của Claude Code
+- [x] T8: Hook `gh-guard` của Claude Code
 - [ ] T9: Script `ao-pr.mjs` và kiểm mô tả PR
 
 ### Giai đoạn 3: CI
