@@ -144,12 +144,13 @@ Hook mới `kit/.claude/hooks/gh-guard.mjs` khai báo trong `kit/.claude/setting
 |---|---|
 | Bỏ qua hook git | `git commit --no-verify` hoặc `-n`; `git push --no-verify`; `git -c core.hooksPath=…`; `git config core.hooksPath` |
 | Push lên nhánh được bảo vệ | `git push` có ref đích là `develop`, `main` hoặc `release/*` (hook `pre-push` cũng chặn) |
-| Làm việc với PR bằng tài khoản của bạn | `gh pr create`, `edit`, `merge`, `review`, `close`, `ready`; `gh api` với method khác GET, hoặc có `-f`, `-F`, `--input` |
+| Làm việc với PR bằng tài khoản của bạn | `gh pr create`, `edit`, `merge`, `review`, `close`, `ready`, `reopen`, `comment`; `gh api` với method khác GET, hoặc có `-f`, `-F`, `--input` |
 | Lấy token hoặc key | `gh auth token`, `login`, `switch`, `refresh`; đọc file PEM của App |
+| Đổi cấu hình repo (thêm ở T8) | `gh secret` và `gh variable` với `set`, `delete`; `gh repo edit`, `delete`, `rename`, `archive` |
 | Sửa file được bảo vệ | `Edit`, `Write`, `NotebookEdit` vào `protected_paths`. Riêng `devops` được sửa `.github/workflows/**`; PR đó vẫn phải do bạn merge |
 | Dùng sai App | Vai trò dev chạy `ao-pr.mjs review`; vai trò review chạy `ao-pr.mjs create`, `edit` hoặc `comment` |
 
-Hook đọc lệnh theo mẫu nên không kín hoàn toàn: agent chạy trên máy bạn, cùng tài khoản `gh` và cùng file key. `merge-gate` và `audit` là hai lớp không phụ thuộc vào máy bạn.
+Không nạp được kit thì hook chặn mọi lệnh `git` và `gh` của agent, còn các lệnh khác vẫn chạy. Hook đọc lệnh theo mẫu nên không kín hoàn toàn: agent chạy trên máy bạn, cùng tài khoản `gh` và cùng file key. `merge-gate` và `audit` là hai lớp không phụ thuộc vào máy bạn.
 
 ### 2.8 Ruleset khi repo hỗ trợ
 
