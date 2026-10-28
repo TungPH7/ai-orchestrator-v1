@@ -1,6 +1,6 @@
 # Plan triển khai: tracker-integration
 
-> **Spec:** [SPEC-tracker-integration.md](../SPEC-tracker-integration.md), đã duyệt 2026-10-27. **Trạng thái:** đã duyệt 2026-10-27, đang làm. **Task chi tiết:** [todo.md](todo.md). **Kết quả kiểm thật:** [verification.md](verification.md), tạo ở T1.
+> **Spec:** [SPEC-tracker-integration.md](../../../SPEC-tracker-integration.md), đã duyệt 2026-10-27. **Trạng thái:** hoàn thành 2026-10-28, đã lưu trữ. **Task chi tiết:** [todo.md](todo.md). **Kết quả kiểm thật:** [verification.md](verification.md), tạo ở T1.
 
 ## Tổng quan
 
@@ -85,11 +85,11 @@ T1 đứng đầu vì nếu service account không dùng được với Rovo MCP
 - [x] Tiêu chí 7 và 8 của spec mục 9 đạt
 
 ### Giai đoạn 5: hoàn thiện
-- [ ] T19: README, đóng câu hỏi mở của `SPEC.md`, lưu trữ plan
+- [x] T19: README, đóng câu hỏi mở của `SPEC.md`, lưu trữ plan
 
 ### Checkpoint cuối
-- [ ] Đạt 9 tiêu chí ở spec mục 9
-- [ ] Chuyển `tasks/plan.md`, `tasks/todo.md`, `tasks/verification.md` vào `tasks/archive/tracker-integration/`
+- [x] Đạt 9 tiêu chí ở spec mục 9
+- [x] Chuyển `tasks/plan.md`, `tasks/todo.md`, `tasks/verification.md` vào `tasks/archive/tracker-integration/`
 
 ## Rủi ro
 

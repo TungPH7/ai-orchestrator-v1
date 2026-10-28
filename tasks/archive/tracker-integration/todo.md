@@ -1,6 +1,6 @@
 # Task: tracker-integration
 
-> **Plan:** [plan.md](plan.md). **Spec:** [SPEC-tracker-integration.md](../SPEC-tracker-integration.md). Làm theo thứ tự; mỗi task viết test đỏ trước, commit riêng, rồi đánh dấu `[x]`.
+> **Plan:** [plan.md](plan.md). **Spec:** [SPEC-tracker-integration.md](../../../SPEC-tracker-integration.md). Làm theo thứ tự; mỗi task viết test đỏ trước, commit riêng, rồi đánh dấu `[x]`.
 
 **Quy ước chung cho mọi task:**
 
@@ -373,16 +373,16 @@ Claude làm: tạo repo private `TungPH7/ao-pilot` với nhánh `main` và `deve
 
 ## Giai đoạn 5: hoàn thiện
 
-### [ ] T19: README, đóng câu hỏi mở của `SPEC.md`, lưu trữ plan
+### [x] T19: README, đóng câu hỏi mở của `SPEC.md`, lưu trữ plan
 
 **Mô tả:** Thêm phần tracker vào `README.md` (lệnh, biến môi trường, cách cài `kit/` vào dự án). Đóng hai câu hỏi mở trong `SPEC.md` (tiêu chí 9), ghi trạng thái hoàn thành cho module, rồi chuyển các file plan vào `tasks/archive/tracker-integration/`.
 
 **Tiêu chí chấp nhận:**
-- [ ] Đạt 9 tiêu chí ở spec mục 9.
-- [ ] `SPEC.md` không còn câu hỏi mở thuộc module này.
+- [x] Đạt 9 tiêu chí ở spec mục 9.
+- [x] `SPEC.md` không còn câu hỏi mở thuộc module này.
 
 **Kiểm chứng:**
-- [ ] CI xanh trên `main`
+- [x] CI xanh trên `main`
 
 **Phụ thuộc:** T18
 
@@ -391,5 +391,5 @@ Claude làm: tạo repo private `TungPH7/ao-pilot` với nhánh `main` và `deve
 **Cỡ:** S
 
 ### Checkpoint cuối
-- [ ] Đạt 9 tiêu chí ở spec mục 9
+- [x] Đạt 9 tiêu chí ở spec mục 9
 - [ ] Bạn xác nhận module hoàn thành
