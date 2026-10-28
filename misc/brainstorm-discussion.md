@@ -17,7 +17,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 7 | `86f38192-1135-4f7d-85f4-ce02cffc6b43` | 2026-10-28 10:20 → 13:25 | T15 kiểm thật agent và hook (lượt code, không ghi); T16 đối soát (lượt code); giải thích lại thay đổi của guard `changes-requested`; bạn đồng ý, T17 `jira-sync`; T18 kiểm thật `jira-sync` trên `ao-pilot` (lượt code) |
 | 8 | `56ad3187-0f02-4139-9d15-eff3c7191377` | 2026-10-28 13:25 → 16:22 | T19 đóng gói tài liệu và lưu plan của tracker-integration (lượt code, không ghi) |
 | 9 | `79cccd91-9d3a-495d-a154-927ae2ce5928` | 2026-10-28 16:22 → 16:34 | Bạn xác nhận tracker-integration hoàn thành và chọn quality-gates; Claude đánh dấu ô cuối (PR #45); câu trả lời bị bộ lọc an toàn chặn |
-| 10 | `b645b669-931c-4d95-ba32-24fd3e090d67` | 2026-10-28 16:35 → | Giả định và câu hỏi cho quality-gates: bảo vệ nhánh khi repo private ở gói Free, danh tính để agent mở PR; bạn chọn 1a, 2a; viết SPEC-quality-gates; bạn duyệt spec, lập plan 21 task; bạn duyệt plan, bắt đầu T1; vì sao bạn phải tự tạo App, script tạo App bằng manifest flow |
+| 10 | `b645b669-931c-4d95-ba32-24fd3e090d67` | 2026-10-28 16:35 → | Giả định và câu hỏi cho quality-gates: bảo vệ nhánh khi repo private ở gói Free, danh tính để agent mở PR; bạn chọn 1a, 2a; viết SPEC-quality-gates; bạn duyệt spec, lập plan 21 task; bạn duyệt plan, bắt đầu T1; vì sao bạn phải tự tạo App, script tạo App bằng manifest flow; T1–T5, Checkpoint 1 |
 
 ---
 
@@ -3443,3 +3443,53 @@ Vì vậy mình đã viết script `scripts/github-app-create.mjs` (kèm test) �
 5. Trang ghi "Xong cả hai App" là xong. Bạn không cần gửi gì: script tự dừng, mình nhận kết quả, đặt biến môi trường rồi làm tiếp T2.
 
 Script chờ tối đa 30 phút. Nếu GitHub báo lỗi (ví dụ tên App đã có người dùng, hoặc từ chối đường dẫn `127.0.0.1`), chụp màn hình gửi mình.
+
+---
+
+# Phiên 10 · Lượt 6 — 2026-10-29 khoảng 01:38
+
+Giữa Lượt 5 và lượt này, bạn tạo và cài hai GitHub App bằng trang của script; Claude làm T1–T3 (lượt code, không ghi), rồi nhờ bạn approve PR #2 của `ao-pilot`.
+
+**Bạn:**
+
+```markdown
+đã approve
+```
+
+**Claude:**
+
+Cảm ơn bạn. Giả định thứ ba cũng đúng: bot `ao-dev` merge PR #2 của `ao-pilot`, và push vào `develop` tự kích hoạt `CI`, `Deploy` (deploy lên `development` thành công) và `jira-sync`. Cả ba giả định nền đều đúng, nên `merge-gate` giữ nguyên thiết kế.
+
+Giai đoạn 1 xong, tất cả đã merge vào `main` với CI xanh (385 test):
+
+| Task | PR | Kết quả |
+|---|---|---|
+| T1 | #47 | Hai App tạo bằng script; key ở `C:\Users\Huu Tung\ao-keys\` |
+| T2 | #48 | Token của App chỉ cho một repo; client GitHub ghi được khi cần |
+| T3 | #49 | Ba giả định nền đúng; spec thêm `deployment: false` cho `merge-gate` |
+| T4 | #50 | `quality/gates.yaml`, schema, quy tắc Q1, Q3, Q4 |
+| T5 | #51 | Stage `merge` qua bằng "`merge-gate` pass"; báo cáo review có dòng `Role:` |
+
+## Checkpoint 1: bạn soát `quality/gates.yaml`
+
+File này là "luật chơi" mà CI, `merge-gate`, `audit` và các hook sẽ đọc. Giá trị hiện tại:
+
+| Mục | Giá trị |
+|---|---|
+| Check bắt buộc | `policy`, `build-test`, `secrets`, `sast` |
+| Coverage | Dòng thêm hoặc sửa phải phủ từ 80%. Tính file `ts`, `tsx`, `js`, `jsx`, `mjs`, `cjs`; bỏ file test, file `.d.ts`, thư mục `e2e/` và `.ai-orchestrator/` |
+| `npm audit` | Đỏ từ mức `high`; chưa có ngoại lệ |
+| Mẫu tắt kiểm tra | `eslint-disable`, `@ts-ignore`, `@ts-nocheck`, `.skip(`, `xit(`, `xdescribe(`, `istanbul ignore`, `c8 ignore`, `nosemgrep`, `gitleaks:allow`, `secretlint-disable`: cho qua nếu cùng dòng có `reason:`. `.only(` luôn đỏ |
+| Nhánh được bảo vệ | `develop`, `main`, `release/*` |
+| Cách merge | `feature/`, `bugfix/`, `hotfix/`: squash |
+| File được bảo vệ | `.github/workflows/**` (riêng `devops` được sửa), `.githooks/**`, `.claude/**`, `.ai-orchestrator/**` |
+| App `ao-dev` | `fe-dev`, `be-dev`, `devops`; lệnh `create`, `edit`, `comment` |
+| App `ao-review` | `reviewer`, `security`; lệnh `review` |
+
+Mình có ba đề xuất:
+
+1. **Thêm `ba` và `sa` vào App `ao-dev`.** Hợp đồng giao cho `ba` viết SPEC và cho `sa` viết plan, ADR vào Git (`docs/specs/<EPIC-KEY>/`). Nếu không có App, hai agent này không mở được PR. Còn PR chỉ có tài liệu có cần báo cáo của `reviewer` và `security` hay không thì để `dev-workflow` quyết.
+2. **Bỏ file cấu hình khỏi phần tính coverage:** thêm `**/*.config.*` (ví dụ `next.config.mjs`, `jest.config.ts`). Nếu không, PR nào sửa file cấu hình cũng bị đỏ, vì file đó không có trong lcov.
+3. **Bỏ migration khỏi phần tính coverage:** thêm `**/migrations/**`. Migration của NestJS thường được sinh tự động, và chạy thử nó là việc của test tích hợp chứ không phải của coverage.
+
+Bạn trả lời: đồng ý cả ba, hoặc chọn từng mục, hoặc sửa giá trị nào khác. Sau đó mình đánh dấu Checkpoint 1 rồi sang Giai đoạn 2 (hook ở máy bạn).
