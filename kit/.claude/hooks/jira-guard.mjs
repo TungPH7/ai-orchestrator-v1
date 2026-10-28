@@ -32,7 +32,7 @@ async function decideCall(call) {
   const { readContract } = await load('lib/contract.mjs');
   const { readMapping } = await load('lib/tracker/mapping.mjs');
   const { bearerAuth, createJiraClient } = await load('lib/tracker/jira-client.mjs');
-  const { createGitHubClient } = await load('lib/tracker/github-client.mjs');
+  const { createGitHubClient, readGitHubToken } = await load('lib/tracker/github-client.mjs');
   const { decide } = await load('lib/tracker/guard.mjs');
   // Read without validating: the copy has no templates, and npm run validate already checks the contract in the kit.
   const contract = readContract(join(kit, 'contract'));
@@ -56,19 +56,4 @@ function githubRepo() {
   } catch {
     return null;
   }
-}
-
-// GITHUB_TOKEN, else the token of the GitHub CLI: `gh auth token`, or the --show-token output of older versions.
-function readGitHubToken() {
-  if (process.env.GITHUB_TOKEN) return process.env.GITHUB_TOKEN;
-  const gh = (args) => {
-    try {
-      return execFileSync('gh', args, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
-    } catch (error) {
-      return `${error.stdout ?? ''}${error.stderr ?? ''}`;
-    }
-  };
-  const token = gh(['auth', 'token']).trim();
-  if (/^gh[opsu]_\w+$/.test(token)) return token;
-  return gh(['auth', 'status', '--show-token']).match(/Token: (gh[opsu]_\w+)/)?.[1] ?? null;
 }

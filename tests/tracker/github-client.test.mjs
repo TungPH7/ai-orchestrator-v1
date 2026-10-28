@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { createGitHubClient } from '../../lib/tracker/github-client.mjs';
+import { createGitHubClient, readGitHubToken } from '../../lib/tracker/github-client.mjs';
 
 function fakeFetch(responses) {
   const calls = [];
@@ -48,4 +48,21 @@ test('an error response becomes an error with the status', async () => {
   const { fetch } = fakeFetch([{ status: 404, body: { message: 'Not Found' } }]);
   const github = createGitHubClient({ repo: 'TungPH7/ao-pilot', token: 't', fetch });
   await assert.rejects(github.get('/pulls/99'), /GET \/pulls\/99 returned 404.*Not Found/);
+});
+
+test('the token comes from GITHUB_TOKEN first, then from the GitHub CLI', () => {
+  const noGh = () => assert.fail('gh should not run');
+  assert.equal(readGitHubToken({ env: { GITHUB_TOKEN: 'ci-token' }, gh: noGh }), 'ci-token');
+  const gh = (args) => (args.join(' ') === 'auth token' ? { stdout: 'gho_new123\n', stderr: '' } : assert.fail(`unexpected gh ${args}`));
+  assert.equal(readGitHubToken({ env: {}, gh }), 'gho_new123');
+  assert.equal(readGitHubToken({ env: {}, gh: () => ({ stdout: '', stderr: '' }) }), null);
+});
+
+test('with gh before 2.17 the token comes from auth status, which prints on stderr', () => {
+  // gh 2.16 has no `auth token`, and `auth status` writes to stderr even when it exits 0 (found in T15).
+  const gh = (args) =>
+    args[1] === 'token'
+      ? { stdout: '', stderr: 'unknown command "token" for "gh auth"\n' }
+      : { stdout: '', stderr: 'github.com\n  ✓ Logged in to github.com as someone (keyring)\n  ✓ Token: gho_old456\n' };
+  assert.equal(readGitHubToken({ env: {}, gh }), 'gho_old456');
 });
