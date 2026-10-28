@@ -308,22 +308,22 @@ Claude làm: tạo repo private `TungPH7/ao-pilot` với nhánh `main` và `deve
 
 ### Checkpoint 3
 - [x] Tiêu chí 4 và 5 của spec mục 9 đạt
-- [ ] Bạn xem lịch sử item thử trên `DEMO`
+- [x] Bạn xem lịch sử item thử trên `DEMO`
 
 ---
 
 ## Giai đoạn 4: automation trên GitHub Actions
 
-### [ ] T16: Đối soát: chọn transition của `automation`
+### [x] T16: Đối soát: chọn transition của `automation`
 
 **Mô tả:** `lib/tracker/reconcile.mjs`: với một item, từ state hiện tại và dữ kiện, chọn transition của `automation` mà mọi guard đều thỏa, dùng `allowedTransitions` và `checkTransition`. Có `refine-children` cho Epic ở `in-progress`, và gắn bù `flag-needs-you` khi rework đã chạm giới hạn mà item chưa có label.
 
 **Tiêu chí chấp nhận:**
-- [ ] Đủ các kịch bản ở spec mục 7: PR mở, CI xanh, Sub-task xong → `submit`; CI đỏ khi đang `in-review` → `request-changes`; PR đã merge, deploy lên `development` thành công → `deploy-to-qa`; deploy lên `staging` cho item mới → không đổi gì; chạy lần hai → không đổi gì.
-- [ ] Epic ở `in-progress` có item con đạt DoR → `refine` các item con đó.
+- [x] Đủ các kịch bản ở spec mục 7: PR mở, CI xanh, Sub-task xong → `submit`; CI đỏ khi đang `in-review` → `request-changes`; PR đã merge, deploy lên `development` thành công → `deploy-to-qa`; deploy lên `staging` cho item mới → không đổi gì; chạy lần hai → không đổi gì.
+- [x] Epic ở `in-progress` có item con đạt DoR → `refine` các item con đó.
 
 **Kiểm chứng:**
-- [ ] `npm test` xanh
+- [x] `npm test` xanh
 
 **Phụ thuộc:** T12
 
