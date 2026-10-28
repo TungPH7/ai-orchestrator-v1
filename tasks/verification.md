@@ -79,10 +79,32 @@ File `probe/t3.md` nằm lại trên `develop` của `ao-pilot`; T13 xóa nó kh
 
 Lần thử đầu, bản chép thiếu thư mục `contract/`, nên `pre-push` dừng với lỗi đọc schema và chặn mọi push (hỏng thì chặn, không thả). Bản chép kit thật luôn có `contract/`.
 
-## T13: Kiểm thật hook git và CI trên `ao-pilot` (đang làm)
+## T13: Kiểm thật hook git và CI trên `ao-pilot`
 
-**2026-10-29, khoảng 03:00:** tạo Task `DEMO-5` (New, người tạo `orchestratorci`) làm item của PR thử. Phiên chính cài bản chép kit mới, `.githooks/`, `ci.yml` của kit và một package TypeScript nhỏ (`src/cart.ts`, TypeScript 6.0.3, ESLint 10.12.0, typescript-eslint 8.71.2) lên `develop` của `ao-pilot`, xóa `demo/`, `tests/`, `ci-state.txt`, `probe/`. Bốn script `lint`, `typecheck`, `test:coverage`, `build` chạy được ở máy. Commit qua được hook `pre-commit` (secretlint trên 42 file rồi ESLint, khoảng 5 giây) và `commit-msg`.
+**Cài đặt (2026-10-29, khoảng 03:00):** tạo Task `DEMO-5` (New, người tạo `orchestratorci`) làm item của PR thử. Phiên chính cài bản chép kit mới, `.githooks/`, `ci.yml` của kit và một package TypeScript nhỏ (`src/cart.ts`; TypeScript 6.0.3, ESLint 10.12.0, typescript-eslint 8.71.2) lên `develop` của `ao-pilot`, xóa `demo/`, `tests/`, `ci-state.txt`, `probe/`. Bốn script `lint`, `typecheck`, `test:coverage`, `build` chạy được ở máy. Commit cài đặt qua được hook `pre-commit` (secretlint trên 42 file rồi ESLint, khoảng 5 giây) và `commit-msg`.
 
-- Lần chạy `CI` đầu trên push (run 40754471353): `sast` đỏ đúng lý do. Semgrep bắt rule `spawn-shell-true` trong `scripts/pre-commit.mjs` của kit (gọi `npm` qua shell trên Windows). Kit sửa bằng `lib/quality/npm.mjs` (gọi `npm-cli.js` bằng `node`, không shell), áp cho cả `check-policy.mjs`.
-- Lần chạy sau khi sửa (run 40754782522): cả bốn job xanh. Semgrep 1.180.0 chạy được với `--metrics off` và bộ rule registry.
-- Còn lại: tiêu chí 3 (thử từng hook trên `ao-pilot`), tiêu chí 4 (PR thử của `DEMO-5`, mỗi job đỏ một lần rồi xanh), đo phút Actions (API `timing` trả 0 ms cho repo private; cần cách đo khác).
+- Lần chạy `CI` đầu trên push (run 40754471353): `sast` đỏ đúng lý do. Semgrep bắt rule `spawn-shell-true` trong `scripts/pre-commit.mjs` của kit (gọi `npm` qua shell trên Windows). Kit sửa bằng `lib/quality/npm.mjs` (gọi `npm-cli.js` bằng `node`, không qua shell), áp cho cả `check-policy.mjs`.
+- Lần chạy sau khi sửa (run 40754782522): cả bốn job xanh. Semgrep 1.180.0 chạy được với `--metrics off` và bộ rule của registry.
+
+**Tiêu chí 3, hook git trên `ao-pilot` (khoảng 03:15):** đạt.
+
+| Thử | Kết quả |
+|---|---|
+| Commit với header `wip` | `commit-msg` chặn: `the header must be type(scope): subject (<KEY>)` |
+| Stage `src/key.ts` chứa một private key RSA sinh lúc thử | `pre-commit` chặn: `[PrivateKey] found private key: ****`, key bị che |
+| `git push origin HEAD:develop` | `pre-push` chặn: `develop is protected: change it through a pull request, not a push` |
+
+**Tiêu chí 4, bốn job của `CI` trên PR thử (khoảng 03:20):** đạt. Nhánh `feature/DEMO-5-ci-live-test`; [PR #3](https://github.com/TungPH7/ao-pilot/pull/3) do `ao-pr.mjs create` mở, tác giả `tungph7-ao-dev[bot]`. Commit đầu (đẩy bằng `--no-verify`, vì secretlint chặn token giả) cố ý làm đỏ cả bốn job; [run 40762740821](https://github.com/TungPH7/ao-pilot/actions/runs/40762740821):
+
+| Job | Đỏ vì |
+|---|---|
+| `policy` | `src/discount.ts:10 eslint-disable needs "reason: <why>" on the same line` |
+| `build-test` | `src/config.ts is not in any lcov file`; `changed lines covered: 69.2% (9 of 13), below 80%` |
+| `secrets` | gitleaks: `leaks found: 1` (token GitHub giả, giá trị bị che) |
+| `sast` | Semgrep: `detected-github-token` và `spawn-shell-true`, cả hai chặn |
+
+Sửa: token đã nằm trong lịch sử nhánh, nên nhánh được viết lại (`git reset --soft` về `develop`, commit lại, force push) chứ không chỉ xóa file; dòng `eslint-disable` có `-- reason: ...`; hàm thứ hai có test. Commit mới qua được hook `pre-commit`. [Run 40762874979](https://github.com/TungPH7/ao-pilot/actions/runs/40762874979): cả bốn job xanh.
+
+**Phút Actions:** API `timing` trả 0 ms với repo private, nên tính từ thời gian từng job, mỗi job làm tròn lên một phút như GitHub tính: một lần chạy `CI` tốn 4 phút (các job chạy 6 đến 31 giây). PR #3 để mở cho Checkpoint 2.
+
+`jira-sync` chạy hai lần theo sự kiện của PR, cả hai thành công; `DEMO-5` vẫn ở New, không nhãn, vì Task không có Epic cha nên không qua được guard nào.

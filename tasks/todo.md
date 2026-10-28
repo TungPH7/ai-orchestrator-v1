@@ -265,17 +265,17 @@ Claude làm: chạy script, mở trang, đặt hai biến môi trường user `A
 
 **Cỡ:** S
 
-### [ ] T13: Kiểm thật hook git và CI trên `ao-pilot`
+### [x] T13: Kiểm thật hook git và CI trên `ao-pilot`
 
 **Mô tả:** Phiên chính cập nhật bản chép kit trên `main` và `develop` của `ao-pilot` (plan, quyết định 7): thêm `quality/`, các script mới, `.githooks/`, `ci.yml` thay CI nhỏ cũ. Thêm một package TypeScript nhỏ ở gốc repo có `lint`, `typecheck`, `test:coverage` (ghi lcov cho mọi file nguồn), `build`, `precommit` và `prepare`, với ít dependency nhất có thể. Rồi thử các tiêu chí 3 và 4 của spec trên một PR thử mang mã một item `DEMO`.
 
 **Tiêu chí chấp nhận:**
-- [ ] Tiêu chí 3: `commit-msg` chặn header sai, `pre-commit` chặn file có secret giả, `pre-push` chặn push lên `develop`.
-- [ ] Tiêu chí 4: mỗi job đỏ ít nhất một lần đúng lý do, rồi xanh khi sửa.
-- [ ] Số phút Actions của một lần chạy `CI` được ghi lại.
+- [x] Tiêu chí 3: `commit-msg` chặn header sai, `pre-commit` chặn file có secret giả, `pre-push` chặn push lên `develop`.
+- [x] Tiêu chí 4: mỗi job đỏ ít nhất một lần đúng lý do, rồi xanh khi sửa.
+- [x] Số phút Actions của một lần chạy `CI` được ghi lại.
 
 **Kiểm chứng:**
-- [ ] Kết quả và link các lần chạy ghi trong `tasks/verification.md`
+- [x] Kết quả và link các lần chạy ghi trong `tasks/verification.md`
 
 **Phụ thuộc:** T6, T7, T12
 

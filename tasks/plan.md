@@ -67,7 +67,7 @@ T1–T3 đứng đầu vì nếu một giả định nền sai thì `merge-gate`
 - [x] T10: Coverage của dòng thay đổi
 - [x] T11: Job `policy`: quy ước của PR, mẫu tắt kiểm tra, ngưỡng bị hạ, `npm audit`
 - [x] T12: Workflow `CI` bốn job, quy tắc Q2
-- [ ] T13: Kiểm thật hook git và CI trên `ao-pilot`
+- [x] T13: Kiểm thật hook git và CI trên `ao-pilot`
 
 ### Checkpoint 2
 - [ ] Tiêu chí 3 và 4 của spec mục 9 đạt
