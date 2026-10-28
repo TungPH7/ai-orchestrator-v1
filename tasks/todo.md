@@ -17,28 +17,26 @@
 
 ## Giai đoạn 1: danh tính và nền
 
-### [ ] T1: Hướng dẫn tạo GitHub App, bạn tạo hai App [bạn]
+### [ ] T1: Tạo hai GitHub App bằng manifest flow [bạn]
 
-**Mô tả:** Viết `docs/github-apps-setup.md`: các bước bấm để tạo một GitHub App trên tài khoản cá nhân, chọn quyền, tắt webhook, chọn "Only on this account", tạo private key, cài App vào một repo, và đặt biến môi trường trỏ tới file key. Nhãn nút lấy từ tài liệu GitHub; nhãn nào chưa đối chiếu được thì ghi rõ để bạn chụp màn hình.
+**Mô tả:** Viết `docs/github-apps-setup.md` (cách nhanh bằng script, và các bước bấm làm tay để dự phòng), `lib/quality/app-manifest.mjs` (manifest của hai App, trang đăng ký) và `scripts/github-app-create.mjs`. Script phục vụ một trang ở `127.0.0.1`; mỗi nút gửi manifest của một App lên GitHub; GitHub trả về một code dùng một lần, script đổi code lấy App ID, slug và private key, rồi ghi key thẳng vào `C:\Users\Huu Tung\ao-keys\<slug>.pem`. Đổi so với bản plan đầu: bạn không phải điền form hay cầm file key (bạn hỏi ngày 2026-10-29 vì sao phải tự làm).
 
-Bạn làm theo tài liệu:
-1. Tạo App `tungph7-ao-dev` (Contents: read and write; Pull requests: read and write) và `tungph7-ao-review` (Contents: read; Pull requests: read and write). Tên nào đã có người dùng thì chọn tên khác và báo Claude.
-2. Mỗi App tạo một private key, lưu file PEM vào một thư mục ngoài mọi repo, ví dụ `%USERPROFILE%\.ai-orchestrator\keys\`.
-3. Cài cả hai App vào riêng repo `TungPH7/ao-pilot`.
-4. Đặt hai biến môi trường user `AO_DEV_APP_KEY_FILE` và `AO_REVIEW_APP_KEY_FILE` (đường dẫn tới hai file PEM) bằng hộp thoại Environment Variables của Windows.
-5. Báo Claude slug và App ID của hai App (hai giá trị này không bí mật).
+Bạn làm: với mỗi App, bấm **Tạo App trên GitHub** trên trang của script, bấm **Create GitHub App** trên GitHub, rồi cài App vào `ao-pilot`. GitHub không có API tạo App hay cài App mà bỏ qua được bước xác nhận này của chủ tài khoản.
+
+Claude làm: chạy script, mở trang, đặt hai biến môi trường user `AO_DEV_APP_KEY_FILE` và `AO_REVIEW_APP_KEY_FILE` (giá trị chỉ là đường dẫn), ghi slug và App ID vào `tasks/verification.md`.
 
 **Tiêu chí chấp nhận:**
-- [ ] `docs/github-apps-setup.md` có các bước bấm đánh số cho cả năm bước trên.
+- [ ] Manifest của `ao-dev` chỉ xin Contents và Pull requests ở mức ghi; của `ao-review` chỉ xin Contents đọc và Pull requests ghi; cả hai không công khai, không webhook. Có test.
 - [ ] Hai App tồn tại, chỉ cài vào `ao-pilot`; `GET /repos/TungPH7/ao-pilot/installation` bằng JWT của từng App trả 200 (Claude kiểm ở T2).
-- [ ] Slug và App ID của hai App ghi trong `tasks/verification.md`.
+- [ ] Slug và App ID của hai App ghi trong `tasks/verification.md`; output của script không chứa key, code hay client secret.
 
 **Kiểm chứng:**
+- [ ] `npm test` xanh
 - [ ] Hai biến môi trường đọc được từ registry và trỏ tới file tồn tại; Claude chỉ in "có" hoặc "không", không in nội dung file
 
 **Phụ thuộc:** không
 
-**File dự kiến:** `docs/github-apps-setup.md`, `tasks/verification.md`
+**File dự kiến:** `docs/github-apps-setup.md`, `lib/quality/app-manifest.mjs`, `scripts/github-app-create.mjs`, `tasks/verification.md`
 
 **Cỡ:** S
 
