@@ -53,7 +53,7 @@ Chỉ `human` được qua cổng duyệt và chuyển Story, Task, Bug, Epic sa
 | `build` | Code theo TDD | `fe-dev`, `be-dev` | Item `ready` | Nhánh, commit, test | Unit và integration test pass ở local; pre-commit pass |
 | `ci-gate` | Quality gate tự động | `automation` | PR | Kết quả CI | Mọi check CI xanh |
 | `review` | Review code và security | `reviewer`, `security`, sau đó `human` | PR có CI xanh | Review trên PR | Không còn finding Critical/High; cổng ③ `merge-approval`: bạn approve |
-| `merge` | Merge PR | `automation` | PR đã approve | Commit trên nhánh đích | Branch protection pass |
+| `merge` | Merge PR | `automation` | PR đã approve | Commit trên nhánh đích | `merge-gate` pass (đổi ngày 2026-10-29 theo `SPEC-quality-gates.md` mục 2.9; trước đó: Branch protection pass) |
 | `qa-verify` | QA trên môi trường kiểm | `qa` | Bản đã deploy lên môi trường QA (mục 2.6) | Báo cáo QA | Báo cáo PASS; bạn chấp nhận |
 | `release-cut` | Cắt release lên Staging, khi bạn yêu cầu | `devops` | Điểm cắt trên `develop` có ít nhất một item Done chưa release; không có nhánh `release/*` nào đang mở (mục 2.7) | Nhánh `release/vX.Y.0` tách từ điểm cắt, Fix Version | Cổng ④ `release-cut-approval`: bạn duyệt danh sách item của bản |
 | `staging-verify` | Full regression, demo, UAT | `qa`, `human` | Bản release trên Staging | Báo cáo regression, release note | Regression PASS; không còn Bug Critical/High mở cho bản này |
