@@ -83,17 +83,17 @@ Claude làm: chạy script, mở trang, đặt hai biến môi trường user `A
 
 **Cỡ:** S
 
-### [ ] T4: `quality/gates.yaml`, quy tắc Q1, Q3, Q4
+### [x] T4: `quality/gates.yaml`, quy tắc Q1, Q3, Q4
 
 **Mô tả:** Viết `quality/gates.yaml` theo spec mục 6, schema `quality/schema/gates.schema.json`, và `lib/quality/gates.mjs` (đọc và kiểm). `scripts/validate-contract.mjs` kiểm thêm cấu hình này. Q1: đúng schema. Q3: mỗi vai trò trong `github_apps` là vai trò agent của hợp đồng, và thuộc nhiều nhất một App. Q4: `merge_method` chỉ dùng `feature`, `bugfix`, `hotfix`.
 
 **Tiêu chí chấp nhận:**
-- [ ] `quality/gates.yaml` có mọi khóa của spec mục 6.
-- [ ] Mỗi quy tắc Q1, Q3, Q4 có test dương và fixture âm.
-- [ ] Lỗi in theo dạng `{ rule, path, message }` như các quy tắc R và J.
+- [x] `quality/gates.yaml` có mọi khóa của spec mục 6.
+- [x] Mỗi quy tắc Q1, Q3, Q4 có test dương và fixture âm.
+- [x] Lỗi in theo dạng `{ rule, path, message }` như các quy tắc R và J.
 
 **Kiểm chứng:**
-- [ ] `npm run validate` và `npm test` xanh
+- [x] `npm run validate` và `npm test` xanh
 
 **Phụ thuộc:** không
 
