@@ -249,7 +249,11 @@ suppressions:
              "c8 ignore", "nosemgrep", "gitleaks:allow", "secretlint-disable"]
   never: [".only("]
 protected_branches: [develop, main, "release/*"]
-protected_paths: [".github/workflows/**", ".githooks/**", ".claude/**", ".ai-orchestrator/**"]
+protected_paths:          # editors: vai trò agent được sửa, dù PR đó vẫn do bạn merge
+  - { path: ".github/workflows/**", editors: [devops] }
+  - { path: ".githooks/**" }
+  - { path: ".claude/**" }
+  - { path: ".ai-orchestrator/**" }
 merge_method: { feature: squash, bugfix: squash, hotfix: squash }
 github_apps:
   dev: { env: AO_DEV_APP, roles: [fe-dev, be-dev, devops], commands: [create, edit, comment] }
