@@ -73,8 +73,8 @@ T1 đứng đầu vì nếu service account không dùng được với Rovo MCP
 - [x] T15: Kiểm thật agent và hook trên `DEMO`
 
 ### Checkpoint 3
-- [ ] Tiêu chí 4 và 5 của spec mục 9 đạt
-- [ ] Bạn xem lịch sử item thử trên `DEMO`
+- [x] Tiêu chí 4 và 5 của spec mục 9 đạt
+- [x] Bạn xem lịch sử item thử trên `DEMO`
 
 ### Giai đoạn 4: automation trên GitHub Actions
 - [x] T16: Đối soát: chọn transition của `automation`
@@ -82,7 +82,7 @@ T1 đứng đầu vì nếu service account không dùng được với Rovo MCP
 - [x] T18: Kiểm thật trên `ao-pilot`
 
 ### Checkpoint 4
-- [ ] Tiêu chí 7 và 8 của spec mục 9 đạt
+- [x] Tiêu chí 7 và 8 của spec mục 9 đạt
 
 ### Giai đoạn 5: hoàn thiện
 - [ ] T19: README, đóng câu hỏi mở của `SPEC.md`, lưu trữ plan
