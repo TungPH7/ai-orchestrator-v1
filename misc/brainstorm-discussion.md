@@ -17,7 +17,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 7 | `86f38192-1135-4f7d-85f4-ce02cffc6b43` | 2026-10-28 10:20 → 13:25 | T15 kiểm thật agent và hook (lượt code, không ghi); T16 đối soát (lượt code); giải thích lại thay đổi của guard `changes-requested`; bạn đồng ý, T17 `jira-sync`; T18 kiểm thật `jira-sync` trên `ao-pilot` (lượt code) |
 | 8 | `56ad3187-0f02-4139-9d15-eff3c7191377` | 2026-10-28 13:25 → 16:22 | T19 đóng gói tài liệu và lưu plan của tracker-integration (lượt code, không ghi) |
 | 9 | `79cccd91-9d3a-495d-a154-927ae2ce5928` | 2026-10-28 16:22 → 16:34 | Bạn xác nhận tracker-integration hoàn thành và chọn quality-gates; Claude đánh dấu ô cuối (PR #45); câu trả lời bị bộ lọc an toàn chặn |
-| 10 | `b645b669-931c-4d95-ba32-24fd3e090d67` | 2026-10-28 16:35 → | Giả định và câu hỏi cho quality-gates: bảo vệ nhánh khi repo private ở gói Free, danh tính để agent mở PR; bạn chọn 1a, 2a; viết SPEC-quality-gates; bạn duyệt spec, lập plan 21 task |
+| 10 | `b645b669-931c-4d95-ba32-24fd3e090d67` | 2026-10-28 16:35 → | Giả định và câu hỏi cho quality-gates: bảo vệ nhánh khi repo private ở gói Free, danh tính để agent mở PR; bạn chọn 1a, 2a; viết SPEC-quality-gates; bạn duyệt spec, lập plan 21 task; bạn duyệt plan, bắt đầu T1 |
 
 ---
 
@@ -3382,3 +3382,34 @@ Plan có 21 task trong 6 giai đoạn, ở `tasks/plan.md` và `tasks/todo.md`:
 Ngoài các bước trên, mình dừng ở 4 checkpoint và checkpoint cuối để bạn soát. Checkpoint 1 gồm kết quả của T3 và các giá trị trong `quality/gates.yaml`.
 
 Bạn duyệt plan hoặc yêu cầu sửa. Duyệt xong, mình merge spec và plan vào `main` bằng một PR, rồi bắt đầu T1 bằng tài liệu hướng dẫn tạo App.
+
+---
+
+# Phiên 10 · Lượt 4 — 2026-10-29 khoảng 00:58
+
+**Bạn:**
+
+```markdown
+duyệt nhé, tiếp tục nhé
+```
+
+**Claude:**
+
+PR #46 (spec và plan) đã merge vào `main`, CI xanh. Mình bắt đầu T1 trên nhánh `task/t1-github-apps-setup`.
+
+**Mình đã làm:** viết `docs/github-apps-setup.md`, hướng dẫn từng bước bấm, với nhãn nút lấy từ tài liệu GitHub. Có 4 chỗ ghi "(đối chiếu giao diện)": ô chọn quyền ở **Repository permissions**, mục **About** chứa App ID, mục **Credentials → Key pairs** để tạo key, và trang **Configure** khi thêm repo cho dự án sau. Nếu màn hình của bạn khác hướng dẫn, chụp màn hình gửi mình.
+
+**Bạn làm** theo `docs/github-apps-setup.md` (trong VS Code, bấm Ctrl+Shift+V để xem bản đã định dạng):
+
+1. Mục 1: tạo App `tungph7-ao-dev`, rồi App `tungph7-ao-review`. `ao-dev` có Contents và Pull requests đều **Read and write**; `ao-review` có Contents **Read-only** và Pull requests **Read and write**. Bỏ chọn **Active** ở mục Webhook, và chọn **Only on this account**.
+2. Mục 2: mỗi App tạo một private key, rồi chuyển file `.pem` vào thư mục `C:\Users\Huu Tung\ao-keys`. Không mở file, không dán nội dung file ở đâu cả.
+3. Mục 3: cài cả hai App vào riêng repo `TungPH7/ao-pilot`.
+4. Mục 4: đặt hai biến môi trường user `AO_DEV_APP_KEY_FILE` và `AO_REVIEW_APP_KEY_FILE`, giá trị là đường dẫn tới hai file key.
+5. Mục 5: gửi mình slug và App ID của hai App, theo mẫu:
+
+```
+ao-dev: tungph7-ao-dev, <App ID>
+ao-review: tungph7-ao-review, <App ID>
+```
+
+Sau đó mình kiểm hai biến môi trường (chỉ in "có" hoặc "không", không in nội dung), làm T2 (lấy token của App), rồi T3: mở PR thử trên `ao-pilot` và nhờ bạn approve một lần.
