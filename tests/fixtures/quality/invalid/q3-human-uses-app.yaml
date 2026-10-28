@@ -1,0 +1,8 @@
+description: an App used by human, who approves with your own account
+rule: Q3
+expect:
+  - "github_apps.review.roles"
+patch:
+  - op: set
+    path: "github_apps.review.roles"
+    value: [reviewer, security, human]

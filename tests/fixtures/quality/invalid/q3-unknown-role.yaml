@@ -1,0 +1,8 @@
+description: an App used by a role the contract does not have
+rule: Q3
+expect:
+  - "github_apps.dev.roles"
+patch:
+  - op: set
+    path: "github_apps.dev.roles"
+    value: [fe-dev, be-dev, devops, mobile-dev]

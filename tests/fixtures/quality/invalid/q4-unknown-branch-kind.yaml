@@ -1,0 +1,8 @@
+description: a merge method for a branch kind the conventions do not have
+rule: Q4
+expect:
+  - "merge_method.chore"
+patch:
+  - op: set
+    path: "merge_method.chore"
+    value: squash

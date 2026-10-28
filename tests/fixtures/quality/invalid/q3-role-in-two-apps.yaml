@@ -1,0 +1,8 @@
+description: a role that uses both Apps
+rule: Q3
+expect:
+  - "github_apps.review.roles"
+patch:
+  - op: set
+    path: "github_apps.review.roles"
+    value: [reviewer, security, fe-dev]
