@@ -51,9 +51,11 @@ T1–T3 đứng đầu vì nếu một giả định nền sai thì `merge-gate`
 - [x] T5: Thay đổi hợp đồng: stage `merge`, template báo cáo review
 
 ### Checkpoint 1
-- [ ] `npm run validate`, `npm test`, `npm run render:check`, `npm run jira:checklist:check` xanh
-- [ ] Ba giả định nền của T3 đúng, kết quả ghi trong `tasks/verification.md`; giả định nào sai thì spec đã được sửa và bạn đã duyệt bản sửa
-- [ ] Bạn soát các giá trị trong `quality/gates.yaml`: ngưỡng, mẫu tắt kiểm tra, nhánh và file được bảo vệ
+- [x] `npm run validate`, `npm test`, `npm run render:check`, `npm run jira:checklist:check` xanh
+- [x] Ba giả định nền của T3 đúng, kết quả ghi trong `tasks/verification.md`; giả định nào sai thì spec đã được sửa và bạn đã duyệt bản sửa
+- [x] Bạn soát các giá trị trong `quality/gates.yaml`: ngưỡng, mẫu tắt kiểm tra, nhánh và file được bảo vệ
+
+Đã qua ngày 2026-10-29: bạn đồng ý thêm `ba`, `sa` vào App `ao-dev`, và bỏ file cấu hình, migration khỏi phần tính coverage.
 
 ### Giai đoạn 2: kiểm ở máy bạn
 - [ ] T6: Hook `commit-msg`, `pre-push` và lệnh cài hook
