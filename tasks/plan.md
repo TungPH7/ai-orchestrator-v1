@@ -44,7 +44,7 @@ T1–T3 đứng đầu vì nếu một giả định nền sai thì `merge-gate`
 ## Danh sách task
 
 ### Giai đoạn 1: danh tính và nền
-- [ ] T1: Tạo hai GitHub App bằng manifest flow [bạn]
+- [x] T1: Tạo hai GitHub App bằng manifest flow [bạn]
 - [ ] T2: Token của GitHub App
 - [ ] T3: Kiểm giả định nền trên `ao-pilot` [bạn]
 - [ ] T4: `quality/gates.yaml`, quy tắc Q1, Q3, Q4
