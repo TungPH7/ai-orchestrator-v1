@@ -168,18 +168,18 @@ Claude làm: chạy script, mở trang, đặt hai biến môi trường user `A
 
 **Cỡ:** S
 
-### [ ] T8: Hook `gh-guard` của Claude Code
+### [x] T8: Hook `gh-guard` của Claude Code
 
 **Mô tả:** `lib/quality/commands.mjs` phân loại lệnh Bash và đường dẫn file theo bảng ở spec mục 2.7. `kit/.claude/hooks/gh-guard.mjs` đọc input của hook, lấy vai trò từ `agent_type` như `jira-guard`, gọi thư viện và in quyết định. `kit/.claude/settings.json` khai báo hook cho `Bash`, `Read`, `Edit`, `Write`, `NotebookEdit`.
 
 **Tiêu chí chấp nhận:**
-- [ ] Mỗi dòng của bảng mục 2.7 có một lệnh bị chặn và một lệnh gần giống được cho qua (ví dụ `git commit -m "-n"`, `gh pr view`, `gh api` với GET).
-- [ ] Phiên chính (không có `agent_type`) và agent không thuộc hợp đồng không bị chặn bởi hook này.
-- [ ] `devops` sửa được `.github/workflows/**`; vai trò khác thì bị chặn. Không vai trò nào sửa được `.ai-orchestrator/**`, `.githooks/**`, `.claude/**`.
-- [ ] Lý do chặn nói rõ cách làm đúng, ví dụ "use ao-pr.mjs create".
+- [x] Mỗi dòng của bảng mục 2.7 có một lệnh bị chặn và một lệnh gần giống được cho qua (ví dụ `git commit -m "-n"`, `gh pr view`, `gh api` với GET).
+- [x] Phiên chính (không có `agent_type`) và agent không thuộc hợp đồng không bị chặn bởi hook này.
+- [x] `devops` sửa được `.github/workflows/**`; vai trò khác thì bị chặn. Không vai trò nào sửa được `.ai-orchestrator/**`, `.githooks/**`, `.claude/**`.
+- [x] Lý do chặn nói rõ cách làm đúng, ví dụ "use ao-pr.mjs create".
 
 **Kiểm chứng:**
-- [ ] `npm test` xanh
+- [x] `npm test` xanh
 
 **Phụ thuộc:** T4
 
