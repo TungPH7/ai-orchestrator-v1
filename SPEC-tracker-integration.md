@@ -2,7 +2,7 @@
 
 > **Module:** `tracker-integration`, xem capability map trong [SPEC.md](SPEC.md). **Phụ thuộc:** `sdlc-contract`. **Được dùng bởi:** `dev-workflow`, `release-workflow`, `project-scaffold`, và `orchestrator-cli` ở Cấp 2.
 >
-> **Trạng thái:** đã duyệt 2026-10-27, cùng hai thay đổi đi kèm plan (mục 2.6, tiêu chí 7), đang làm theo plan. **Plan:** [tasks/plan.md](tasks/plan.md). **Nguồn thảo luận:** [misc/brainstorm-discussion.md](misc/brainstorm-discussion.md), Phiên 4 · Lượt 1 đến Phiên 6 · Lượt 4.
+> **Trạng thái:** đã duyệt 2026-10-27, cùng hai thay đổi đi kèm plan (mục 2.6, tiêu chí 7); hoàn thành 2026-10-28. **Plan:** [tasks/archive/tracker-integration/plan.md](tasks/archive/tracker-integration/plan.md). **Kết quả kiểm thật:** [tasks/archive/tracker-integration/verification.md](tasks/archive/tracker-integration/verification.md). **Nguồn thảo luận:** [misc/brainstorm-discussion.md](misc/brainstorm-discussion.md), Phiên 4 · Lượt 1 đến Phiên 6 · Lượt 4.
 
 ## 1. Mục tiêu
 
@@ -67,6 +67,7 @@ File `tracker/jira.yaml` ánh xạ mọi id của hợp đồng sang tên trên 
 
 | Hợp đồng | Trên Jira |
 |---|---|
+| Space của dự án | Company-managed: có rule cho từng transition, một workflow scheme dùng chung cho mọi dự án, và đủ Affects versions, Fix versions, Resolution. Team-managed dựng nhanh hơn nhưng không có workflow scheme dùng chung |
 | Work type `epic`, `story`, `task`, `bug`, `sub-task` | Issue type Epic, Story, Task, Bug, Sub-task |
 | Workflow `standard`, `epic`, `sub-task` | Ba workflow, gom trong một workflow scheme dùng chung cho mọi dự án |
 | State | Status, tên tiếng Anh viết hoa chữ đầu theo id: `ready-for-qa` → `Ready for QA`. Nhóm status: `new`, `ready`, `to-do`, `specifying`, `planning` thuộc To Do; `done`, `cancelled` thuộc Done; các state còn lại thuộc In Progress |
@@ -317,6 +318,8 @@ Thư viện chỉ gọi mạng trong `jira-client.mjs` và `github-client.mjs`. 
 7. Trên repo sandbox: PR mở và CI xanh thì item sang In Review, do `orchestratorci` chuyển; CI đỏ thì item về In Progress và đếm rework bằng 1; merge rồi deploy thử lên `development` thành công mà PR chưa có approve của bạn thì item đứng yên ở In Review, và `jira-sync` báo thiếu `merge-approved`. Chặng sang Ready for QA kiểm thật ở `quality-gates` (mục 11).
 8. Nhánh, commit, PR và các deployment thử hiện trên item; panel Deployments nhận đúng loại môi trường của `development`, `staging`, `production`.
 9. Hai câu hỏi mở trong `SPEC.md` được đóng.
+
+Cả 9 tiêu chí đạt ngày 2026-10-28. Bằng chứng của tiêu chí 3 đến 8 ghi trong [tasks/archive/tracker-integration/verification.md](tasks/archive/tracker-integration/verification.md).
 
 ## 10. Câu hỏi đã trả lời (2026-10-27)
 
