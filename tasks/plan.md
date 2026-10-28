@@ -79,7 +79,7 @@ T1 đứng đầu vì nếu service account không dùng được với Rovo MCP
 ### Giai đoạn 4: automation trên GitHub Actions
 - [x] T16: Đối soát: chọn transition của `automation`
 - [x] T17: `jira-sync` và workflow GitHub Actions
-- [ ] T18: Kiểm thật trên `ao-pilot`
+- [x] T18: Kiểm thật trên `ao-pilot`
 
 ### Checkpoint 4
 - [ ] Tiêu chí 7 và 8 của spec mục 9 đạt

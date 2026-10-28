@@ -348,17 +348,17 @@ Claude làm: tạo repo private `TungPH7/ao-pilot` với nhánh `main` và `deve
 
 **Cỡ:** M
 
-### [ ] T18: Kiểm thật trên `ao-pilot`
+### [x] T18: Kiểm thật trên `ao-pilot`
 
 **Mô tả:** Đưa lên `main` của `ao-pilot`: `jira-sync.yml`, `.jira/config.yml`, một CI nhỏ (một test có thể bật đỏ hoặc xanh), và một workflow deploy giả tạo deployment kèm status cho `development`, `staging`, `production`. Chép thêm `scripts/jira-sync.mjs` vào `.ai-orchestrator/scripts/`; workflow CI của `ao-pilot` đặt tên `CI` (trigger `workflow_run` của `jira-sync.yml` theo tên này). Đặt secret `JIRA_CI_TOKEN`, và `AO_APPROVERS` (login GitHub của bạn) trong `.claude/settings.json` của `ao-pilot`. Rồi chạy kịch bản ở tiêu chí 7 và 8 với một Story thử trên `DEMO`.
 
 **Tiêu chí chấp nhận:**
-- [ ] PR mở và CI xanh thì item sang In Review, do `orchestratorci` chuyển; CI đỏ thì item về In Progress, rework bằng 1 (tiêu chí 7).
-- [ ] Merge rồi deploy thử lên `development` thành công khi PR chưa có approve của bạn: item đứng yên ở In Review, `jira-sync` báo thiếu `merge-approved` (plan, câu hỏi 1).
-- [ ] Nhánh, commit, PR và các deployment thử hiện trên item; panel Deployments nhận đúng loại môi trường (tiêu chí 8).
+- [x] PR mở và CI xanh thì item sang In Review, do `orchestratorci` chuyển; CI đỏ thì item về In Progress, rework bằng 1 (tiêu chí 7).
+- [x] Merge rồi deploy thử lên `development` thành công khi PR chưa có approve của bạn: item đứng yên ở In Review, `jira-sync` báo thiếu `merge-approved` (plan, câu hỏi 1).
+- [x] Nhánh, commit, PR và các deployment thử hiện trên item; panel Deployments nhận đúng loại môi trường (tiêu chí 8).
 
 **Kiểm chứng:**
-- [ ] Kết quả, link run của Actions và ảnh chụp ghi trong `tasks/verification.md`
+- [x] Kết quả, link run của Actions và ảnh chụp ghi trong `tasks/verification.md`
 
 **Phụ thuộc:** T8, T17
 
@@ -367,7 +367,7 @@ Claude làm: tạo repo private `TungPH7/ao-pilot` với nhánh `main` và `deve
 **Cỡ:** M
 
 ### Checkpoint 4
-- [ ] Tiêu chí 7 và 8 của spec mục 9 đạt
+- [x] Tiêu chí 7 và 8 của spec mục 9 đạt
 
 ---
 
