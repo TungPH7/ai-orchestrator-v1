@@ -17,7 +17,7 @@
 
 ## Giai đoạn 1: danh tính và nền
 
-### [ ] T1: Tạo hai GitHub App bằng manifest flow [bạn]
+### [x] T1: Tạo hai GitHub App bằng manifest flow [bạn]
 
 **Mô tả:** Viết `docs/github-apps-setup.md` (cách nhanh bằng script, và các bước bấm làm tay để dự phòng), `lib/quality/app-manifest.mjs` (manifest của hai App, trang đăng ký) và `scripts/github-app-create.mjs`. Script phục vụ một trang ở `127.0.0.1`; mỗi nút gửi manifest của một App lên GitHub; GitHub trả về một code dùng một lần, script đổi code lấy App ID, slug và private key, rồi ghi key thẳng vào `C:\Users\Huu Tung\ao-keys\<slug>.pem`. Đổi so với bản plan đầu: bạn không phải điền form hay cầm file key (bạn hỏi ngày 2026-10-29 vì sao phải tự làm).
 
@@ -26,13 +26,13 @@ Bạn làm: với mỗi App, bấm **Tạo App trên GitHub** trên trang của 
 Claude làm: chạy script, mở trang, đặt hai biến môi trường user `AO_DEV_APP_KEY_FILE` và `AO_REVIEW_APP_KEY_FILE` (giá trị chỉ là đường dẫn), ghi slug và App ID vào `tasks/verification.md`.
 
 **Tiêu chí chấp nhận:**
-- [ ] Manifest của `ao-dev` chỉ xin Contents và Pull requests ở mức ghi; của `ao-review` chỉ xin Contents đọc và Pull requests ghi; cả hai không công khai, không webhook. Có test.
+- [x] Manifest của `ao-dev` chỉ xin Contents và Pull requests ở mức ghi; của `ao-review` chỉ xin Contents đọc và Pull requests ghi; cả hai không công khai, không webhook. Có test.
 - [ ] Hai App tồn tại, chỉ cài vào `ao-pilot`; `GET /repos/TungPH7/ao-pilot/installation` bằng JWT của từng App trả 200 (Claude kiểm ở T2).
-- [ ] Slug và App ID của hai App ghi trong `tasks/verification.md`; output của script không chứa key, code hay client secret.
+- [x] Slug và App ID của hai App ghi trong `tasks/verification.md`; output của script không chứa key, code hay client secret.
 
 **Kiểm chứng:**
-- [ ] `npm test` xanh
-- [ ] Hai biến môi trường đọc được từ registry và trỏ tới file tồn tại; Claude chỉ in "có" hoặc "không", không in nội dung file
+- [x] `npm test` xanh
+- [x] Hai biến môi trường đọc được từ registry và trỏ tới file tồn tại; Claude chỉ in "có" hoặc "không", không in nội dung file
 
 **Phụ thuộc:** không
 
