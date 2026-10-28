@@ -383,4 +383,15 @@ Phát hiện:
 4. **API dev-status của Jira** (`/rest/dev-status/latest/issue/summary`) trả 401 "scope does not match" với cả token đọc của bạn lẫn token của agent, nên tiêu chí 8 kiểm trên giao diện.
 5. `kit/.jira/config.yml` được thêm vào kit, có test kiểm file khớp các môi trường trong `tracker/jira.yaml`.
 
-**Tiêu chí 8 (bạn xem trên Jira):** CHỜ.
+**Tiêu chí 8, bạn xem trên Jira (2026-10-28):** đạt.
+
+| Chỗ xem | Thấy gì | Ảnh |
+|---|---|---|
+| Mục Development của `DEMO-3` | 1 branch; mục Releases có Production, Successful, "View all 3 deployments" | [t18-development-panel.png](images/t18-development-panel.png) |
+| Hộp thoại Development, tab Commits | 4 commit của `TungPH7/ao-pilot`: 3 commit mang `DEMO-3` và merge commit của PR #1 | [t18-commits.png](images/t18-commits.png) |
+| Tab Pull requests | PR #1 `feature/DEMO-3-t15-live-test → develop`, MERGED; dòng "This work item has been deployed!" | [t18-pull-request.png](images/t18-pull-request.png) |
+| Tab Deployments | Ba nhóm Production, Staging, Development, ứng đúng môi trường `production`, `staging`, `development`; pipeline `deploy`, đều Successful | [t18-deployments.png](images/t18-deployments.png) |
+
+`.jira/config.yml` đã có trên nhánh mặc định từ T8, trước khi có deployment đầu tiên, nên loại môi trường được nhận đúng ngay, không phải ngắt rồi nối lại app như bài KB nói. Ảnh đã cắt bỏ thanh tab của trình duyệt.
+
+Tiêu chí 7 và 8 của spec mục 9 đạt.
