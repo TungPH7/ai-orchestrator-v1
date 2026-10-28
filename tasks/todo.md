@@ -187,18 +187,18 @@ Claude làm: chạy script, mở trang, đặt hai biến môi trường user `A
 
 **Cỡ:** M
 
-### [ ] T9: Script `ao-pr.mjs` và kiểm mô tả PR
+### [x] T9: Script `ao-pr.mjs` và kiểm mô tả PR
 
 **Mô tả:** `lib/quality/pull-request.mjs` kiểm tiêu đề (`checkPrTitle`) và mô tả PR theo spec mục 2.5: đủ sáu mục của `pull-request.md`, mục nào cũng có nội dung, không còn `<...>`, không còn mục Example. `scripts/ao-pr.mjs` có bốn lệnh `create`, `edit`, `comment`, `review` (spec mục 2.2), lấy token qua `github-app.mjs`, đọc slug và App ID từ biến `AO_DEV_APP`, `AO_DEV_APP_ID`, `AO_REVIEW_APP`, `AO_REVIEW_APP_ID`. `kit/.claude/settings.json` thêm bốn biến này.
 
 **Tiêu chí chấp nhận:**
-- [ ] `create` từ chối tiêu đề hoặc mô tả sai và nói thiếu gì, trước khi gọi API.
-- [ ] `review` chỉ nhận `--event COMMENT` hoặc `--event REQUEST_CHANGES`.
-- [ ] `edit` chỉ đổi tiêu đề và mô tả.
-- [ ] Ví dụ trong template `pull-request.md` (bỏ phần hướng dẫn) đạt kiểm tra mô tả.
+- [x] `create` từ chối tiêu đề hoặc mô tả sai và nói thiếu gì, trước khi gọi API.
+- [x] `review` chỉ nhận `--event COMMENT` hoặc `--event REQUEST_CHANGES`.
+- [x] `edit` chỉ đổi tiêu đề và mô tả.
+- [x] Ví dụ trong template `pull-request.md` (bỏ phần hướng dẫn) đạt kiểm tra mô tả.
 
 **Kiểm chứng:**
-- [ ] `npm test` xanh (API giả)
+- [x] `npm test` xanh (API giả)
 
 **Phụ thuộc:** T2, T4
 
