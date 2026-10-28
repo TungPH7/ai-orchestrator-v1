@@ -57,7 +57,8 @@ test('the kit has the workflow that runs jira-sync on the events of spec section
 
 test('the kit settings leave the approvers to fill in, next to the project space', () => {
   const settings = JSON.parse(readFileSync(join(ROOT, 'kit', '.claude', 'settings.json'), 'utf8'));
-  assert.deepEqual(settings.env, { AO_JIRA_SPACE: '<KEY>', AO_APPROVERS: '<github-login>' });
+  assert.equal(settings.env.AO_JIRA_SPACE, '<KEY>');
+  assert.equal(settings.env.AO_APPROVERS, '<github-login>');
 });
 
 test('the kit maps every environment of tracker/jira.yaml for GitHub for Jira', () => {
