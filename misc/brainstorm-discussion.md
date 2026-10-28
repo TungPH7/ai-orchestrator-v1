@@ -14,7 +14,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 4 | `46e4e518-ac41-4570-8bcc-37d5a88788c5` | 2026-10-26 21:35 → 2026-10-27 01:02 | Build và đóng module sdlc-contract (14 task, PR #1–#16, không ghi vào lịch sử vì là lượt code); chọn module kế tiếp tracker-integration; giả định và câu hỏi cho tracker-integration |
 | 5 | `76bd80d2-8083-45f7-93a7-d7ffab2e246c` | 2026-10-27 09:45 → 10:02 | Bạn trả lời 5 câu hỏi của tracker-integration; câu trả lời của Claude bị bộ lọc an toàn chặn, hai lần |
 | 6 | `02493cdb-1425-4498-9a25-6408d7717c70` | 2026-10-27 10:03 → 2026-10-28 khoảng 02:30 | Gói Free và company-managed; cách tạo tài khoản bot cho agent; viết SPEC-tracker-integration; cách chọn scope khi tạo token; duyệt spec, lập plan tracker-integration; bắt đầu T1; T1–T14, Checkpoint 1 và 2; dựng `DEMO` theo checklist, sửa checklist theo giao diện thật, thêm rule workflow qua REST; chuẩn bị `ao-pilot` cho T15 |
-| 7 | `86f38192-1135-4f7d-85f4-ce02cffc6b43` | 2026-10-28 10:20 → | T15 kiểm thật agent và hook (lượt code, không ghi); T16 đối soát (lượt code); giải thích lại thay đổi của guard `changes-requested` |
+| 7 | `86f38192-1135-4f7d-85f4-ce02cffc6b43` | 2026-10-28 10:20 → | T15 kiểm thật agent và hook (lượt code, không ghi); T16 đối soát (lượt code); giải thích lại thay đổi của guard `changes-requested`; bạn đồng ý, T17 `jira-sync` |
 
 ---
 
@@ -3156,3 +3156,37 @@ Nói ngắn: **dev push bản sửa thì coi như đã trả lời yêu cầu s�
 - Trên GitHub, PR vẫn hiện "Changes requested" cho tới khi reviewer xem lại. Thay đổi chỉ nằm ở cách `jira-sync` đọc trạng thái đó để chuyển item trên Jira.
 
 Bạn đồng ý thì mình giữ cách mới và làm tiếp T17. Còn một cách khác: bắt reviewer bấm **Dismiss review** cho review cũ thì mới tính là đã trả lời. Cách đó thêm một bước tay mỗi vòng sửa; nếu bạn muốn dùng thì báo mình.
+
+---
+
+# Phiên 7 · Lượt 2 — 2026-10-28 khoảng 11:15
+
+**Bạn:**
+
+```markdown
+đồng ý  giữ cách mới và làm tiếp T17
+```
+
+**Claude:**
+
+Mình giữ cách mới cho `changes-requested`, và T17 đã xong: `jira-sync` chạy được, PR #41 đã merge, CI xanh, 350 test qua.
+
+**Đã làm** (4 lát, mỗi lát một commit, test viết trước):
+
+| Phần | Nội dung |
+|---|---|
+| Jira client | Ghi được khi tạo với `write: true`: chuyển transition theo tên, sửa item, comment. Mặc định vẫn chỉ đọc |
+| `lib/tracker/sync.mjs` | Từ một sự kiện GitHub, tìm các item liên quan, gọi `reconcile` (T16), rồi chuyển item. Có payload mẫu cho 5 loại sự kiện |
+| `scripts/jira-sync.mjs` và `kit/.github/workflows/jira-sync.yml` | Script chạy trên GitHub Actions; `--dry-run` chỉ in, không ghi gì |
+| Báo item đang chờ gì | Ví dụ `Waiting DEMO-11: Deploy to QA needs merge-approved`. Tiêu chí của T18 cần dòng này |
+
+**Kiểm tay:** mình chạy dry run với Jira và GitHub thật, bằng token CI. `DEMO-3` cho ra `Waiting DEMO-3: Submit needs pr-open, ci-green`, đúng vì item chưa có PR. Item `SCRUM-1` bị bỏ qua vì không thuộc `DEMO`.
+
+**Bốn quyết định mới, để bạn biết:**
+
+1. `jira-sync` chỉ chạm item trong space của dự án (`DEMO`), vì trên gói Free token CI ghi được mọi space, kể cả `SCRUM`.
+2. Login GitHub của bạn, dùng để kiểm "PR đã được bạn approve", khai báo ở `AO_APPROVERS` trong `.claude/settings.json` của dự án, cạnh `AO_JIRA_SPACE`. Mỗi dự án chỉ khai báo ở một chỗ.
+3. Cloud id lấy từ `tracker/jira.yaml`, nên không cần biến `JIRA_CLOUD_ID` như spec ghi lúc đầu. Spec mục 2.7 đã sửa.
+4. Workflow chạy với mọi review, không chỉ review yêu cầu sửa, vì một approve đến muộn vẫn có thể đưa item đã merge và deploy sang QA.
+
+**Tiếp theo là T18:** kiểm thật trên `ao-pilot`. Mình sẽ đưa workflow lên `main`, thêm một CI nhỏ và một workflow deploy giả, rồi chạy các kịch bản với `DEMO-3`. Secret `JIRA_CI_TOKEN` mình đặt bằng `gh secret set`, đọc token thẳng từ registry nên token không hiện ra đâu. Bạn nhắn "tiếp" thì mình làm.
