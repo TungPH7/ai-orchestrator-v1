@@ -183,7 +183,7 @@ Chạy thử với Jira thật (2026-10-28, token của agent, chỉ đọc): đ
 | `dependencies-merged` | Mỗi item chặn item này (link "is blocked by" trên Jira, `readItem` đọc thêm `issuelinks`) có PR mới nhất đã merge vào nhánh gốc đúng với tiền tố nhánh |
 | `pr-open`, `pr-merged` | PR mới nhất đang mở, hoặc đã merge, vào nhánh gốc đúng với loại item |
 | `ci-green` | Commit đầu của PR có ít nhất một check; mọi check run đã xong với kết quả success, neutral hoặc skipped; commit status (nếu có) là success |
-| `changes-requested` | Review quyết định mới nhất (APPROVED, CHANGES_REQUESTED hoặc DISMISSED; COMMENTED không tính) là CHANGES_REQUESTED, hoặc có check failure hay timed_out |
+| `changes-requested` | Trong các review của commit đầu PR (`commit_id`), review quyết định mới nhất (APPROVED, CHANGES_REQUESTED hoặc DISMISSED; COMMENTED không tính) là CHANGES_REQUESTED; hoặc có check failure hay timed_out. T16 thêm điều kiện commit đầu PR |
 | `merge-approved` | Review quyết định mới nhất của một trong các login trong `approvers` là APPROVED |
 | `qa-deployed` | Một deployment lên môi trường QA ứng với nhánh gốc của PR (`routing.yaml`: `develop` ra development, `release/*` và `main` ra staging), tạo sau lúc merge, chứa merge commit (`GET /compare`), có trạng thái mới nhất là success |
 | `work-committed` | Nhánh mới nhất của Story cha có commit mà dòng tiêu đề mang mã Sub-task |
