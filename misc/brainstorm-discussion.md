@@ -17,7 +17,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 7 | `86f38192-1135-4f7d-85f4-ce02cffc6b43` | 2026-10-28 10:20 → 13:25 | T15 kiểm thật agent và hook (lượt code, không ghi); T16 đối soát (lượt code); giải thích lại thay đổi của guard `changes-requested`; bạn đồng ý, T17 `jira-sync`; T18 kiểm thật `jira-sync` trên `ao-pilot` (lượt code) |
 | 8 | `56ad3187-0f02-4139-9d15-eff3c7191377` | 2026-10-28 13:25 → 16:22 | T19 đóng gói tài liệu và lưu plan của tracker-integration (lượt code, không ghi) |
 | 9 | `79cccd91-9d3a-495d-a154-927ae2ce5928` | 2026-10-28 16:22 → 16:34 | Bạn xác nhận tracker-integration hoàn thành và chọn quality-gates; Claude đánh dấu ô cuối (PR #45); câu trả lời bị bộ lọc an toàn chặn |
-| 10 | `b645b669-931c-4d95-ba32-24fd3e090d67` | 2026-10-28 16:35 → | Giả định và câu hỏi cho quality-gates: bảo vệ nhánh khi repo private ở gói Free, danh tính để agent mở PR; bạn chọn 1a, 2a; viết SPEC-quality-gates; bạn duyệt spec, lập plan 21 task; bạn duyệt plan, bắt đầu T1 |
+| 10 | `b645b669-931c-4d95-ba32-24fd3e090d67` | 2026-10-28 16:35 → | Giả định và câu hỏi cho quality-gates: bảo vệ nhánh khi repo private ở gói Free, danh tính để agent mở PR; bạn chọn 1a, 2a; viết SPEC-quality-gates; bạn duyệt spec, lập plan 21 task; bạn duyệt plan, bắt đầu T1; vì sao bạn phải tự tạo App, script tạo App bằng manifest flow |
 
 ---
 
@@ -3413,3 +3413,33 @@ ao-review: tungph7-ao-review, <App ID>
 ```
 
 Sau đó mình kiểm hai biến môi trường (chỉ in "có" hoặc "không", không in nội dung), làm T2 (lấy token của App), rồi T3: mở PR thử trên `ao-pilot` và nhờ bạn approve một lần.
+
+---
+
+# Phiên 10 · Lượt 5 — 2026-10-29 khoảng 01:07
+
+**Bạn:**
+
+```markdown
+Task này mình phải tự làm à, bạn có thể làm được không hay bị giới hanh hay chặn ?
+```
+
+**Claude:**
+
+Phần lớn mình làm được. Chỉ còn bước GitHub bắt chính chủ tài khoản xác nhận, và bước đó mình không làm thay được:
+
+- **Tạo App:** GitHub không có API tạo App bằng token. Cách tự động duy nhất là "manifest flow": script gửi sẵn mọi thông số, nhưng bạn vẫn phải bấm nút tạo trên GitHub khi đang đăng nhập.
+- **Cài App vào repo:** cũng phải bấm trên giao diện GitHub.
+- Phiên này không có công cụ điều khiển trình duyệt. Kể cả có, đây là thao tác cấp quyền trên tài khoản của bạn, nên mình vẫn để bạn tự bấm xác nhận.
+
+Vì vậy mình đã viết script `scripts/github-app-create.mjs` (kèm test) để bạn chỉ còn bấm bốn lần. Script điền sẵn tên, quyền, tắt webhook, chọn "Only on this account", nhận private key thẳng từ GitHub và ghi vào `C:\Users\Huu Tung\ao-keys\`. Bạn không phải điền form, không phải cầm file key, và không phải gửi lại App ID. Hai biến môi trường mình đặt, vì giá trị chỉ là đường dẫn. Mô tả T1 trong `tasks/todo.md` đã sửa theo. Các bước làm tay vẫn còn trong `docs/github-apps-setup.md` để dự phòng.
+
+**Script đang chạy, và mình đã mở trang `http://127.0.0.1:47100/` trên trình duyệt của bạn** (nếu chưa thấy thì mở link này). Bạn làm:
+
+1. Ở App đầu tiên (`tungph7-ao-dev`), bấm **Tạo App trên GitHub**.
+2. GitHub mở trang tạo App đã điền sẵn. Kéo xuống cuối, bấm **Create GitHub App for TungPH7** (nhãn có thể hơi khác). GitHub có thể hỏi lại mật khẩu hoặc mã xác thực hai bước.
+3. GitHub chuyển sang trang cài App: chọn **Only select repositories**, chọn `ao-pilot` nếu chưa được chọn sẵn, rồi bấm **Install**.
+4. GitHub quay về trang `127.0.0.1`. Làm lại bước 1 đến 3 cho App thứ hai (`tungph7-ao-review`).
+5. Trang ghi "Xong cả hai App" là xong. Bạn không cần gửi gì: script tự dừng, mình nhận kết quả, đặt biến môi trường rồi làm tiếp T2.
+
+Script chờ tối đa 30 phút. Nếu GitHub báo lỗi (ví dụ tên App đã có người dùng, hoặc từ chối đường dẫn `127.0.0.1`), chụp màn hình gửi mình.
