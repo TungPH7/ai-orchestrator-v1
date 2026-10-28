@@ -1,0 +1,8 @@
+description: a required check that is not a job of the CI workflow
+rule: Q2
+expect:
+  - "checks"
+patch:
+  - op: set
+    path: "checks"
+    value: [policy, build-test, secrets, sast, e2e]

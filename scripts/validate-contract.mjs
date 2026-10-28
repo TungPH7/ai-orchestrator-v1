@@ -5,7 +5,7 @@
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { formatError, readContract, validateContract } from '../lib/contract.mjs';
-import { readGates, validateGates } from '../lib/quality/gates.mjs';
+import { readCiJobs, readGates, validateGates } from '../lib/quality/gates.mjs';
 import { readMapping, validateMapping } from '../lib/tracker/mapping.mjs';
 
 const dir = process.argv[2] ?? 'contract';
@@ -30,7 +30,9 @@ try {
     report(validateMapping(readMapping(trackerDir), contract), `Mapping OK: ${join(trackerDir, 'jira.yaml')}`, trackerDir);
   }
   if (contractOk && existsSync(join(qualityDir, 'gates.yaml'))) {
-    report(validateGates(readGates(qualityDir), contract), `Gates OK: ${join(qualityDir, 'gates.yaml')}`, qualityDir);
+    const ciFile = join(qualityDir, '..', 'kit', '.github', 'workflows', 'ci.yml');
+    const ciJobs = existsSync(ciFile) ? readCiJobs(ciFile) : undefined;
+    report(validateGates(readGates(qualityDir), contract, { ciJobs }), `Gates OK: ${join(qualityDir, 'gates.yaml')}`, qualityDir);
   }
 } catch (error) {
   console.error(error.message);
