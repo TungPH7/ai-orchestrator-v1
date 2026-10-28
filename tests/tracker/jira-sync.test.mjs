@@ -45,7 +45,9 @@ test('the kit has the workflow that runs jira-sync on the events of spec section
   assert.equal(workflow.on.workflow_dispatch.inputs.item.required, true);
   assert.ok(Object.values(workflow.permissions).every((right) => right === 'read'));
 
-  const steps = workflow.jobs.sync.steps;
+  // The job id is the check run name that facts.mjs leaves out of CI.
+  assert.deepEqual(Object.keys(workflow.jobs), ['jira-sync']);
+  const steps = workflow.jobs['jira-sync'].steps;
   const sync = steps.find(({ run: command }) => command?.includes('jira-sync.mjs'));
   assert.equal(sync.run, 'node .ai-orchestrator/scripts/jira-sync.mjs');
   assert.equal(sync.env.JIRA_CI_TOKEN, '${{ secrets.JIRA_CI_TOKEN }}');

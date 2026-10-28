@@ -66,6 +66,17 @@ test('ci-green: every check run of the newest commit succeeded or was skipped, a
   );
 });
 
+test('the check run of jira-sync itself is not CI: running or failed, it changes neither ci-green nor changes-requested', async () => {
+  // jira-sync runs on pull_request too, so its own job is a check run on the PR head (found in T18).
+  for (const own of [{ status: 'in_progress', conclusion: null }, { status: 'completed', conclusion: 'failure' }]) {
+    const withOwn = (a) => a['/commits/c5/check-runs'].check_runs.push({ name: 'jira-sync', ...own });
+    assert.deepEqual(await holds(item('DEMO-12'), ['ci-green', 'changes-requested'], { change: withOwn }), ['ci-green']);
+  }
+  // With only its own check, the commit has no CI yet.
+  const onlyOwn = (a) => (a['/commits/c5/check-runs'] = { total_count: 1, check_runs: [{ name: 'jira-sync', status: 'completed', conclusion: 'success' }] });
+  assert.deepEqual(await holds(item('DEMO-12'), ['ci-green'], { change: onlyOwn }), []);
+});
+
 test('changes-requested: the latest review that decides asks for changes, or a check failed', async () => {
   const reviews = (a) => a['/pulls/5/reviews'];
   // The approval after the request for changes wins; comments do not decide.

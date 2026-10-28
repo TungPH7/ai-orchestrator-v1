@@ -28,7 +28,8 @@ permissions:
   deployments: read
 
 jobs:
-  sync:
+  # The job id is the check run name, which lib/tracker/facts.mjs leaves out of CI.
+  jira-sync:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
