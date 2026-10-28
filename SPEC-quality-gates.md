@@ -38,7 +38,7 @@ Biến các cổng tự động của hợp đồng thành kiểm tra thật: co
 | CodeQL, secret scanning, push protection | Không: phải mua, và chỉ tổ chức ở gói Team hoặc Enterprise mua được | Tài liệu GitHub Advanced Security |
 | GitHub App và installation token | Có | [Inference] Tài liệu không giới hạn theo gói |
 | Environment và deployment | Có | Ba environment của `ao-pilot` đã chạy ở T18 của `tracker-integration` |
-| Secret của environment, giới hạn nhánh cho environment | API nhận cấu hình (2026-10-29); chưa biết GitHub có thực thi không | [Unverified] Kiểm ở tiêu chí 10 |
+| Secret của environment, giới hạn nhánh cho environment | Có: job ở nhánh khác nhánh được phép thì bị chặn, không đọc được secret | Kiểm thật ở T3 (2026-10-29), tiêu chí 10 |
 | GitHub Actions | 2.000 phút mỗi tháng | Trang gói của GitHub |
 
 Không có branch protection thì GitHub không chặn được merge hay push. Cổng vì vậy chốt ở bốn lớp:
@@ -61,7 +61,7 @@ Không có branch protection thì GitHub không chặn được merge hay push. 
 - **Cài đặt:** mỗi App chọn "Only on this account", tắt webhook, và chỉ cài vào repo của dự án.
 - **Token:** script của kit ký JWT bằng private key của App (RS256, `node:crypto`), tìm installation của repo, rồi xin installation token chỉ cho repo đó. Token sống một giờ và không bao giờ được in ra.
 - **Private key ở máy bạn:** mỗi App một file PEM nằm ngoài repo. Biến môi trường user `AO_DEV_APP_KEY_FILE` và `AO_REVIEW_APP_KEY_FILE` trỏ tới hai file này.
-- **Private key trong CI:** chỉ `merge-gate` cần key, và chỉ key của `ao-dev`. Đây là một private key riêng (một App có được nhiều key), lưu ở secret `AO_DEV_APP_KEY` của environment `merge-gate`; environment này chỉ cho nhánh mặc định. Nếu GitHub không thực thi giới hạn nhánh trên gói Free (tiêu chí 10), key chuyển thành secret của repo và mục 12 ghi rõ rủi ro.
+- **Private key trong CI:** chỉ `merge-gate` cần key, và chỉ key của `ao-dev`. Đây là một private key riêng (một App có được nhiều key), lưu ở secret `AO_DEV_APP_KEY` của environment `merge-gate`; environment này chỉ cho nhánh mặc định. T3 đã kiểm: GitHub thực thi giới hạn nhánh này trên gói Free. Job của `merge-gate` khai `environment: { name: merge-gate, deployment: false }`: vẫn chịu giới hạn nhánh nhưng không tạo deployment. Nếu tạo deployment, sự kiện `deployment_status` sẽ kích hoạt `jira-sync`, và `jira-sync` chạy xong lại kích hoạt `merge-gate`, thành vòng lặp (phát hiện ở T3).
 - **Cấu hình không bí mật** (slug và App ID) nằm trong `env` của `.claude/settings.json` của dự án, cạnh `AO_JIRA_SPACE` và `AO_APPROVERS`: `AO_DEV_APP`, `AO_DEV_APP_ID`, `AO_REVIEW_APP`, `AO_REVIEW_APP_ID`.
 - **Agent vẫn commit và push bằng git của bạn.** GitHub chỉ cấm tác giả PR approve, không cấm người commit, nên chỉ hai việc cần App: mở PR và đăng review.
 
