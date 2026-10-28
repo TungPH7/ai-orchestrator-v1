@@ -101,17 +101,17 @@ Claude làm: chạy script, mở trang, đặt hai biến môi trường user `A
 
 **Cỡ:** M
 
-### [ ] T5: Thay đổi hợp đồng: stage `merge`, template báo cáo review
+### [x] T5: Thay đổi hợp đồng: stage `merge`, template báo cáo review
 
 **Mô tả:** Áp hai thay đổi hợp đồng bạn đã duyệt ở spec mục 2.9 (thay đổi thứ ba, capability map, đã sửa trong `SPEC.md` cùng lúc duyệt spec). Stage `merge` đổi điều kiện qua thành "`merge-gate` pass". Template `review-report.md` thêm dòng `Role: reviewer` hoặc `Role: security` ngay dưới tiêu đề, và ví dụ có dòng này.
 
 **Tiêu chí chấp nhận:**
-- [ ] `contract/stages.yaml` và bảng 2.2 của `SPEC-sdlc-contract.md` ghi "`merge-gate` pass".
-- [ ] Template và ví dụ của `review-report.md` có dòng `Role:`; test của template kiểm dòng này.
-- [ ] `docs/sdlc.md` được sinh lại.
+- [x] `contract/stages.yaml` và bảng 2.2 của `SPEC-sdlc-contract.md` ghi "`merge-gate` pass".
+- [x] Template và ví dụ của `review-report.md` có dòng `Role:`; test của template kiểm dòng này.
+- [x] `docs/sdlc.md` được sinh lại.
 
 **Kiểm chứng:**
-- [ ] `npm run validate`, `npm test`, `npm run render:check` xanh
+- [x] `npm run validate`, `npm test`, `npm run render:check` xanh
 
 **Phụ thuộc:** không
 
