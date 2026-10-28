@@ -8,7 +8,7 @@ function fakeFetch(responses) {
   const fetch = async (url, init) => {
     calls.push({ url: new URL(url), init });
     const { status = 200, body } = responses.shift();
-    return new Response(JSON.stringify(body), { status });
+    return new Response(status === 204 ? null : JSON.stringify(body), { status });
   };
   return { fetch, calls };
 }
@@ -88,4 +88,47 @@ test('searches with JQL by GET, following nextPageToken', async () => {
       ['/ex/jira/c1/rest/api/3/search/jql', 'project = DEMO', 'status,subtasks', 'p2'],
     ],
   );
+});
+
+test('the write requests of jira-sync are refused unless the client is made for writing', async () => {
+  const { fetch, calls } = fakeFetch([{ body: { transitions: [{ id: '4', name: 'Submit' }] } }]);
+  const client = createJiraClient({ cloudId: 'c1', authorization: 'Bearer x', fetch });
+  await assert.rejects(client.editItem('DEMO-1', { update: {} }), /read-only/i);
+  await assert.rejects(client.comment('DEMO-1', 'x'), /read-only/i);
+  await assert.rejects(client.transition('DEMO-1', 'Submit'), /read-only/i);
+  assert.deepEqual(calls.map(({ init }) => init.method), ['GET']);
+});
+
+test('a client made for writing moves an item by the transition name, edits it and comments in ADF', async () => {
+  const { fetch, calls } = fakeFetch([
+    { body: { transitions: [{ id: '11', name: 'Cancel' }, { id: '4', name: 'Submit' }] } },
+    { status: 204 },
+    { status: 204 },
+    { status: 201, body: { id: '10050' } },
+  ]);
+  const client = createJiraClient({ cloudId: 'c1', authorization: 'Bearer x', fetch, write: true });
+
+  await client.transition('DEMO-1', 'Submit');
+  await client.editItem('DEMO-1', { update: { labels: [{ add: 'needs-you' }] } });
+  assert.deepEqual(await client.comment('DEMO-1', 'Waits for you.'), { id: '10050' });
+
+  const sent = calls.map(({ url, init }) => [init.method, url.pathname, init.body && JSON.parse(init.body)]);
+  assert.deepEqual(sent, [
+    ['GET', '/ex/jira/c1/rest/api/3/issue/DEMO-1/transitions', undefined],
+    ['POST', '/ex/jira/c1/rest/api/3/issue/DEMO-1/transitions', { transition: { id: '4' } }],
+    ['PUT', '/ex/jira/c1/rest/api/3/issue/DEMO-1', { update: { labels: [{ add: 'needs-you' }] } }],
+    [
+      'POST',
+      '/ex/jira/c1/rest/api/3/issue/DEMO-1/comment',
+      { body: { type: 'doc', version: 1, content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Waits for you.' }] }] } },
+    ],
+  ]);
+  assert.ok(calls.slice(1).every(({ init }) => init.headers['Content-Type'] === 'application/json'));
+});
+
+test('a transition the account cannot make on the item is an error, and nothing is posted', async () => {
+  const { fetch, calls } = fakeFetch([{ body: { transitions: [{ id: '11', name: 'Cancel' }] } }]);
+  const client = createJiraClient({ cloudId: 'c1', authorization: 'Bearer x', fetch, write: true });
+  await assert.rejects(client.transition('DEMO-1', 'Submit'), /DEMO-1 has no transition "Submit" for this account/);
+  assert.equal(calls.length, 1);
 });
