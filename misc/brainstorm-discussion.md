@@ -19,7 +19,8 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 9 | `79cccd91-9d3a-495d-a154-927ae2ce5928` | 2026-10-28 16:22 → 16:34 | Bạn xác nhận tracker-integration hoàn thành và chọn quality-gates; Claude đánh dấu ô cuối (PR #45); câu trả lời bị bộ lọc an toàn chặn |
 | 10 | `b645b669-931c-4d95-ba32-24fd3e090d67` | 2026-10-28 16:35 → 2026-10-29 khoảng 03:30 | Giả định và câu hỏi cho quality-gates: bảo vệ nhánh khi repo private ở gói Free, danh tính để agent mở PR; bạn chọn 1a, 2a; viết SPEC-quality-gates; bạn duyệt spec, lập plan 21 task; bạn duyệt plan, bắt đầu T1; vì sao bạn phải tự tạo App, script tạo App bằng manifest flow; T1–T5, Checkpoint 1; ba đề xuất được đồng ý, T6–T13, hết lượt dùng giữa T13, Checkpoint 2 |
 | 11 | `318a4364-f1b9-4cc5-9744-ae8ff4f80c7d` | 2026-10-29 09:00 → khoảng 09:40 | Bạn cho qua Checkpoint 2; T14–T17 (lượt code): merge-gate, audit, gh:protect; Checkpoint 3, chờ bạn xóa repo thử |
-| 12 | `32807628-e04f-47b4-889d-f855a40dabce` | 2026-10-29 khoảng 11:04 → | Bạn cho qua Checkpoint 3; T17 và Checkpoint 3 đóng (PR #65, #66); T18 (lượt code): cài kit mới lên `ao-pilot`, tạo `DEMO-6`, `gh-guard` chặn ba đường vòng; bạn chuyển `DEMO-6` sang Ready và tạo key thứ hai của `ao-dev`; T18 đóng (PR #67): `fe-dev` mở PR #4, `reviewer` yêu cầu sửa, kit tắt ghi công AI; T19: vòng sửa, tiêu chí 10; bạn approve PR #4 lần đầu; T19: approve trên commit cũ không còn được tính, `devops` mở PR #5 sửa workflow, `reviewer` và `security` đăng báo cáo, bạn approve PR #4 lần hai và PR #5; T19 đóng (PR #68): `merge-gate` merge PR #4, `DEMO-6` sang Ready for QA, vòng PR tốn 55 phút Actions; T20: `fe-dev` mở PR #6, chờ bạn merge tay; bạn báo đã merge nhưng PR #6 vẫn mở; bạn merge lại, `audit` chặn deploy và gắn cờ `DEMO-8`; `fe-dev` mở PR #7 revert; bạn approve PR #7; T20 đóng (PR #69): `merge-gate` merge PR #7, `develop` sạch trở lại, gỡ cờ `DEMO-8`; Checkpoint 4, chờ bạn; bạn hỏi về `gh` 2.16.1, mình đề xuất sửa `gh-guard` cho các lệnh `gh` mới rồi mới cập nhật `gh`; bạn đồng ý: vá `gh-guard` (PR #70), lên `gh` 2.103.3, tắt telemetry; bạn đăng nhập lại `gh`, token vào keyring; bạn thu hồi token cũ và cho qua Checkpoint 4; git mất quyền push vì Git Credential Manager giữ token cũ của `gh`; bạn đăng nhập lại git; Checkpoint 4 đóng (PR #71); T21 đóng (PR #72); checkpoint cuối, chờ bạn |
+| 12 | `32807628-e04f-47b4-889d-f855a40dabce` | 2026-10-29 khoảng 11:04 → khoảng 23:06 | Bạn cho qua Checkpoint 3; T17 và Checkpoint 3 đóng (PR #65, #66); T18 (lượt code): cài kit mới lên `ao-pilot`, tạo `DEMO-6`, `gh-guard` chặn ba đường vòng; bạn chuyển `DEMO-6` sang Ready và tạo key thứ hai của `ao-dev`; T18 đóng (PR #67): `fe-dev` mở PR #4, `reviewer` yêu cầu sửa, kit tắt ghi công AI; T19: vòng sửa, tiêu chí 10; bạn approve PR #4 lần đầu; T19: approve trên commit cũ không còn được tính, `devops` mở PR #5 sửa workflow, `reviewer` và `security` đăng báo cáo, bạn approve PR #4 lần hai và PR #5; T19 đóng (PR #68): `merge-gate` merge PR #4, `DEMO-6` sang Ready for QA, vòng PR tốn 55 phút Actions; T20: `fe-dev` mở PR #6, chờ bạn merge tay; bạn báo đã merge nhưng PR #6 vẫn mở; bạn merge lại, `audit` chặn deploy và gắn cờ `DEMO-8`; `fe-dev` mở PR #7 revert; bạn approve PR #7; T20 đóng (PR #69): `merge-gate` merge PR #7, `develop` sạch trở lại, gỡ cờ `DEMO-8`; Checkpoint 4, chờ bạn; bạn hỏi về `gh` 2.16.1, mình đề xuất sửa `gh-guard` cho các lệnh `gh` mới rồi mới cập nhật `gh`; bạn đồng ý: vá `gh-guard` (PR #70), lên `gh` 2.103.3, tắt telemetry; bạn đăng nhập lại `gh`, token vào keyring; bạn thu hồi token cũ và cho qua Checkpoint 4; git mất quyền push vì Git Credential Manager giữ token cũ của `gh`; bạn đăng nhập lại git; Checkpoint 4 đóng (PR #71); T21 đóng (PR #72); checkpoint cuối, chờ bạn |
+| 13 | `2c3e5733-3a72-4ae6-b04c-ca09a16731cc` | 2026-10-29 khoảng 23:31 → | Bạn chọn làm tiếp agent-roster; quality-gates đóng (PR #73); giả định và câu hỏi cho agent-roster: model cho từng vai trò, `ux` giao gì |
 
 ---
 
@@ -4230,3 +4231,110 @@ Những việc còn để lại, không thuộc module này:
 1. Đọc `docs/quality-gates.md` trên GitHub: https://github.com/TungPH7/ai-orchestrator-v1/blob/main/docs/quality-gates.md
 2. Nếu thấy ổn, nhắn "xác nhận quality-gates hoàn thành". Mình sẽ đánh dấu ô cuối của checkpoint cuối, như đã làm với `tracker-integration`.
 3. Rồi chọn module tiếp theo. Theo thứ tự build trong `SPEC.md`, module nên làm tiếp là `agent-roster`, vì `dev-workflow` cần nó cùng hai module đã xong. Mình sẽ chờ bạn chọn, và chưa bắt đầu module nào.
+
+---
+
+# Phiên 13 · Lượt 1 — 2026-10-29 khoảng 23:31
+
+**Bạn:**
+
+```markdown
+Tiếp tục session id: 32807628-e04f-47b4-889d-f855a40dabce
+
+làm tiếp module agent-roster
+```
+
+Trước lượt này, bạn chạy `/clear`, rồi `/model` chọn Opus 5.5 với effort `max` cho phiên này.
+
+**Claude:**
+
+Mình đã đánh dấu ô cuối của `quality-gates` (PR #73, đã merge), vì bạn chọn làm tiếp `agent-roster`. Nếu bạn chưa muốn xác nhận module đó thì báo mình, mình sẽ mở lại. Mình cũng đã tạo nhánh `task/spec-agent-roster`. Dưới đây là phạm vi, những điều mình vừa kiểm, các giả định và hai câu hỏi, trước khi viết `SPEC-agent-roster.md`.
+
+## Phạm vi của `agent-roster`
+
+Theo capability map, module này định nghĩa từng subagent: phạm vi, đầu vào và đầu ra, tool, skill và model. Ba module trước để lại cho nó bốn việc:
+
+- Tên file agent trùng id vai trò (`fe-dev.md` có `name: fe-dev`), vì hook lấy vai trò từ `agent_type`.
+- Agent ghi tên hiển thị của vai trò vào trường Agent trên Jira (`Frontend Developer`, không phải `fe-dev`).
+- Agent phải có template để dùng, mà bản chép kit trong dự án chưa có thư mục `templates/`.
+- Lần chép kit vào `ao-pilot` của module này mang theo bản vá `gh-guard` (PR #70) và setting `attribution`, qua một PR.
+
+Ranh giới với `dev-workflow`: `agent-roster` quyết định mỗi agent làm gì và làm thế nào; `dev-workflow` quyết định lúc nào gọi agent nào, và nối các bước thành lệnh.
+
+## Điều mình vừa kiểm
+
+Theo tài liệu subagent của Claude Code (máy bạn đang chạy bản 2.1.312):
+
+- Frontmatter có đủ các trường mình cần: `tools`, `disallowedTools`, `model` (`haiku`, `sonnet`, `opus`, `fable` hoặc `inherit`), `effort`, `skills`, `maxTurns`, `color`. Trường viết sai tên bị bỏ qua mà không báo lỗi, nên kit cần test kiểm frontmatter.
+- `tools` bật hoặc tắt cả một tool. Không giới hạn được Bash theo từng lệnh; việc đó vẫn do hook làm, như hiện nay.
+- `permissionMode` của agent bị bỏ qua khi phiên chính chạy ở chế độ `auto`, `acceptEdits` hoặc `bypassPermissions`. Máy bạn mặc định `auto`. Điều này khớp với phát hiện ở T19: lớp chặn thật là hook và các luật phía server.
+- `skills` nạp toàn bộ nội dung skill vào ngữ cảnh lúc agent khởi động. Không có trường này, agent vẫn tự gọi được mọi skill qua tool `Skill`, trừ khi `tools` bỏ tool đó ra. Tài liệu không ghi cách viết tên skill của plugin trong trường này, nên task đầu sẽ thử `agent-skills:test-driven-development`.
+- Subagent nạp `CLAUDE.md` và `.claude/rules/*.md` của dự án, nhưng không nạp auto memory của phiên chính. Khi chạy `claude --agent <role>`, prompt của agent thay hẳn system prompt mặc định của Claude Code.
+- Hook khai trong frontmatter của agent bị bỏ qua cho tới khi bạn tin cậy thư mục. Kit vẫn khai hook trong `.claude/settings.json`.
+- `.claude/settings.json` của dự án khai được plugin (`enabledPlugins`, `extraKnownMarketplaces`); máy khác mở dự án sẽ nhận plugin sau khi tin cậy thư mục.
+
+Giá API hiện tại, tính bằng USD cho mỗi triệu token vào/ra: Haiku 5.5 0,10/0,50 (prompt dưới 100.000 token), Sonnet 5.5 2/10, Opus 5.5 4/20, Fable 5.1 10/50. [Inference] Anthropic không công bố cách gói Pro quy đổi token ra giới hạn usage, nên tỷ lệ giá là cách ước tốt nhất mình có: Opus tốn gấp đôi Sonnet, còn Haiku rẻ hơn Sonnet khoảng 20 lần. Mình không đề xuất Fable 5.1, vì giá gấp 2,5 lần Opus.
+
+Plugin agent-skills 0.6.13 có 25 skill, mỗi skill ước 2.000 đến 5.000 token. Một số mặc định của skill trái với hợp đồng:
+
+- `code-review-and-quality` gắn mức Critical, Required, Optional, Nit cho finding. Template `review-report.md` dùng Critical, High, Medium, Low, và `merge-gate` coi báo cáo có mức lạ là không đọc được.
+- `spec-driven-development` để SPEC ở gốc repo. `planning-and-task-breakdown` để plan ở `tasks/plan.md` và danh sách task ở `tasks/todo.md`. Hợp đồng để cả hai ở `docs/specs/<EPIC-KEY>/` và để task trên Jira. Skill planning chấp nhận tracker ngoài khi rules của dự án chỉ định.
+- `git-workflow-and-versioning` khuyên trunk-based, trái với GitFlow.
+
+Bốn agent thử trong `ao-pilot` (`fe-dev`, `qa`, `reviewer`, `security`) đang được commit trong repo đó. Module này sẽ thay chúng.
+
+## Giả định (sửa ngay nếu sai)
+
+1. **Agent được sinh ra, không viết tay toàn bộ**, giống cách `docs/sdlc.md` được sinh từ YAML:
+   - `agents/roster.yaml` ghi model, effort, tool và skill của từng vai trò.
+   - `agents/prompts/<role>.md` ghi quy trình làm việc của vai trò, viết tay bằng tiếng Anh.
+   - Một script ghép hai file đó với phần hợp đồng của vai trò, rồi ghi ra `kit/.claude/agents/<role>.md`. Phần hợp đồng gồm stage, artifact và template, transition được phép, App GitHub, file được sửa, và tên trong trường Agent. CI đỏ khi file agent cũ hơn nguồn, như `render:check`. Nhờ vậy, đổi hợp đồng thì agent đổi theo.
+   - `npm run validate` có thêm quy tắc: mỗi vai trò agent có đúng một agent; tool chỉ lấy từ danh sách cho phép, và không bao giờ có `executeWrite`, `executeDestructive`; chỉ vai trò có transition trong hợp đồng mới có tool chuyển trạng thái; skill phải có trong agent-skills 0.6.13; model và effort hợp lệ.
+2. **Quy ước chung nằm trong một file rules của kit**, `kit/.claude/rules/ai-orchestrator.md`, cũng sinh từ hợp đồng. File gồm: Jira site, cloud id và space; quy ước nhánh, commit, PR; ngôn ngữ; chỗ để template (bản chép kit thêm `.ai-orchestrator/templates/`); cách làm việc với PR; ledger; và quy tắc "hook từ chối thì dừng, báo nguyên văn lý do". Mọi agent và cả phiên chính của bạn đều nạp file này. `CLAUDE.md` của dự án để dành cho chính dự án.
+3. **Skill:** mỗi agent nạp sẵn 1 đến 3 skill chính và không có tool `Skill`, để chạy ổn định và đỡ token. Prompt ghi rõ chỗ hợp đồng thắng mặc định của skill: đường dẫn, mức finding, GitFlow. agent-skills thành phụ thuộc của dự án, khai trong `settings.json` của kit.
+4. **Phân công.** Tool Jira là các tool của server `atlassian`. Mọi agent có Read, Glob, Grep; cột "Tool thêm" chỉ ghi phần khác nhau.
+
+| Vai trò | Việc | Skill nạp sẵn | Tool thêm | App GitHub | Jira |
+|---|---|---|---|---|---|
+| `pm` | Bản tổng hợp mỗi sáng, số liệu retro đếm được bằng JQL | Không | Bash (`gh` chỉ đọc), Write | Không | Chỉ đọc |
+| `ba` | SPEC; tạo Story, Task; đề xuất triage Bug | `spec-driven-development`, `interview-me` | Bash, Write, Edit | `ao-dev` | Đọc, tạo, sửa, comment |
+| `ux` | Luồng màn hình, wireframe (câu 2) | `frontend-ui-engineering` | Bash (git), Write, Edit | Không | Chỉ đọc |
+| `sa` | Plan, hợp đồng API, ADR, thiết kế DB | `planning-and-task-breakdown`, `api-and-interface-design`, `documentation-and-adrs` | Bash, Write, Edit | `ao-dev` | Đọc, comment |
+| `fe-dev`, `be-dev` | Code theo TDD, mở PR, sửa theo review | `test-driven-development`, `incremental-implementation`, cộng `frontend-ui-engineering` (FE) hoặc `api-and-interface-design` (BE) | Bash, Write, Edit | `ao-dev` | Đọc, sửa, comment; `start`; Sub-task `start`, `complete` |
+| `reviewer` | Review năm trục, chặn Task trá hình | `code-review-and-quality` | Bash, Write; không có Edit | `ao-review` | Chỉ đọc |
+| `security` | Security review, threat model | `security-and-hardening` | Như `reviewer` | `ao-review` | Chỉ đọc |
+| `qa` | Chạy E2E và regression trên môi trường QA, báo cáo QA, tạo Bug | Không; prompt dựa trên persona `test-engineer` của agent-skills | Bash, Write | Không | Đọc, tạo Bug, sửa, comment; `pick-up`, `qa-fail` |
+| `devops` | Workflow CI/CD, deploy, cắt release, ship, rollback | `ci-cd-and-automation`, `shipping-and-launch` | Bash, Write, Edit | `ao-dev` | Đọc, sửa, comment; `start` |
+
+`reviewer` và `security` không chuyển trạng thái trên Jira, dù hợp đồng cho phép. `jira-sync` đã đưa item về In Progress dựa trên review trên GitHub (T18), nên trạng thái vẫn đi theo dữ kiện.
+
+5. **Hai cách chạy.** `ba`, `ux`, `sa` làm việc trực tiếp với bạn: bạn mở `claude --agent ba`, và agent hỏi bạn từng câu. Khi được gọi mà không có bạn (subagent hoặc `claude -p`), chúng ghi câu hỏi vào mục Open Questions của artifact rồi dừng. Bảy vai trò còn lại chạy không cần hỏi; gặp chỗ phải quyết thì gắn cờ "Needs you" và dừng.
+6. **E2E test do dev agent viết, trong PR của item.** Mỗi acceptance criterion có một test, cùng nhánh, cùng PR, và `reviewer` kiểm criterion nào cũng có test. `qa` không viết code: `qa` chạy bộ E2E và regression trên môi trường QA, kiểm thêm bằng tay theo acceptance criteria, ghi báo cáo, và tạo Bug cho lỗi nằm ngoài item. Cách này giữ quy ước "một item, một PR" và không đổi App. Nếu bạn muốn `qa` tự viết E2E để dev không tự chấm bài mình, `qa` cần App `ao-dev` và một bước mới trước review, tức là phải đổi hợp đồng.
+7. **Agent không có trí nhớ riêng** (trường `memory`). Trạng thái nằm ở Jira, Git và ledger. Trí nhớ ở phạm vi dự án nằm trong `.claude/`, là đường dẫn được bảo vệ; ở phạm vi user thì dùng chung cho mọi dự án. Cả hai làm kết quả của agent khó đoán hơn.
+8. **`pm` chỉ đọc.** Bản tổng hợp in ra trong phiên và lưu ở `.ai/reports/<ngày>.md`, không commit. Số liệu cần lịch sử của nhiều item (cycle time, thời gian chờ release, thời gian chờ bạn) sẽ do một script tất định tính ở Cấp 2 (`orchestrator-cli`). Ở Cấp 1, `pm` chỉ báo các số đếm được bằng JQL: throughput, lỗi lọt, item mang cờ.
+9. **Kiểm thật trên `ao-pilot`** bằng một Epic nhỏ trên `DEMO`. Claude tự chuyền đầu vào từ agent này sang agent kia; `dev-workflow` sẽ tự động hóa việc đó sau. Mỗi agent chạy thật ít nhất một lần bằng `claude -p --agent <role>`, và thử một việc ngoài vai trò (ví dụ `qa` gọi `start`). Mỗi lần chạy ghi lại model, tool, số token và kết quả. Ước khoảng 15 lượt chạy, phần lớn là Sonnet. Bản chép kit mới vào `ao-pilot` qua một PR do bạn merge tay, vì PR đó sửa đường dẫn được bảo vệ.
+
+## Câu hỏi
+
+**1. Model cho từng vai trò?**
+
+- **(a) Cân bằng (mình đề xuất).** `pm` dùng Haiku. `ba`, `sa`, `reviewer` dùng Opus: SPEC và plan sai thì mọi bước sau sai theo, mà mỗi Epic chỉ viết một lần; `reviewer` dùng model khác dev để không "tự chấm bài", như lời khuyên trong `misc/chat.md`. Sáu vai trò còn lại dùng Sonnet; dev chạy nhiều nhất, nên đây là chỗ tiết kiệm lớn nhất. Effort: `pm` ở `low`, `ux` ở `medium`, các vai trò còn lại ở `high`.
+- **(b) Tiết kiệm.** `pm` dùng Haiku, còn lại dùng Sonnet. `reviewer` khác dev ở prompt và ngữ cảnh mới, không khác model.
+- **(c) Chất lượng.** Như (a), thêm `security` dùng Opus.
+
+**2. `ux` giao gì, và lưu ở đâu?** Hợp đồng chưa có artifact này, dù DoR của Story đòi "có thiết kế màn hình nếu đụng tới giao diện".
+
+- **(a) Artifact mới `design` (mình đề xuất).** Template `templates/design.md`, lưu ở `docs/specs/<EPIC-KEY>/design.md`. File gồm danh sách màn hình, luồng màn hình vẽ bằng Mermaid, wireframe của từng màn hình bằng khối ASCII, các trạng thái (rỗng, đang tải, lỗi) và ghi chú accessibility. Mục Design của Story trỏ tới màn hình trong file này. Đây là thay đổi hợp đồng: thêm artifact vào `policies.yaml`, thêm `design` vào đầu ra của stage `spec`, thêm template. Ưu điểm: text nằm trong Git, review được trong PR, ít token.
+- **(b) Wireframe HTML tĩnh** ở `docs/specs/<EPIC-KEY>/design/*.html`, mở bằng trình duyệt. Dễ hình dung hơn, nhưng tốn token hơn nhiều, và diff khó review.
+- **(c) Không thêm artifact.** `ux` viết mục "Màn hình" ngay trong `spec.md`.
+
+Bạn trả lời hai câu trên và sửa giả định nếu cần. Sau đó mình viết `SPEC-agent-roster.md` rồi dừng lại để bạn duyệt.
+
+## Nguồn
+
+- [Claude Code Docs: Create custom subagents](https://code.claude.com/docs/en/sub-agents)
+- [Claude Code Docs: Skills](https://code.claude.com/docs/en/skills)
+- [Claude Code Docs: How Claude remembers your project](https://code.claude.com/docs/en/memory)
+- [Claude Code Docs: Settings files and precedence](https://code.claude.com/docs/en/settings)
+- Giá model: skill `claude-api` có sẵn trong Claude Code, bảng giá cập nhật ngày 2026-10-06
+- agent-skills 0.6.13: `skills/*/SKILL.md` và `agents/*.md` trong thư mục plugin
