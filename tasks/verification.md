@@ -120,3 +120,14 @@ Sửa: token đã nằm trong lịch sử nhánh, nên nhánh được viết l�
 | CI xong ([run 40805863207](https://github.com/TungPH7/ao-pilot/actions/runs/40805863207), xanh, 4 phút), chạy hai lần liền | Cả hai lần: `Waiting #3: reviewer report on head df44b9e; security report on head df44b9e; approval on head df44b9e` |
 
 PR #3 để mở cho Checkpoint 3, rồi đóng lại.
+
+## T16: `audit --dry-run` trên commit thật của `ao-pilot`
+
+**2026-10-29, khoảng 10:40.** Chạy từ bản clone `ao-pilot` với `--dry-run` (không ghi Jira), `AO_DEV_APP` và `AO_REVIEW_APP` qua biến môi trường; `AO_APPROVERS` và `AO_JIRA_SPACE` đọc từ `.claude/settings.json` của bản clone. Cả hai lần đều thoát mã 1, đúng như mong đợi:
+
+| Commit trên `develop` | Output |
+|---|---|
+| `68d2a15`, commit cài kit của T13, phiên chính push thẳng | `68d2a15 on develop is not the merge of a PR into develop: it was pushed without one`; `Would flag DEMO-5` (mã trong header của commit) |
+| `eacd786`, commit squash của PR #2 (PR thử của T3, nhánh `probe/t3-app-identity`) | `PR #2 was merged without: valid branch (...); valid title (...); complete description (...); reviewer report on head 3a12727; security report on head 3a12727`; không có mã item nên `No work item of DEMO to flag`. Approve của bạn trên commit đầu được tính, nên không có dòng `approval` |
+
+`GET /commits/{sha}/pulls` trả đúng PR đã merge, có `merge_commit_sha` và `merged_at`.
