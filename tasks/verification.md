@@ -160,7 +160,9 @@ Các run do hai lần push kích hoạt:
 
 Item thử: Task `DEMO-6` (New, người tạo `orchestratorci`), "quality-gates T18–T19: phí vận chuyển của giỏ hàng", checklist bốn mục: phí 3000 khi tổng từ 1 đến 49999, miễn phí từ 50000, giỏ rỗng trả 0, và `RangeError` khi `quantity` không phải số nguyên dương hoặc `price` âm.
 
-**Tiêu chí 6, phần chặn (khoảng 11:25): đạt.** `claude -p --agent fe-dev --model sonnet` trong `ao-pilot`, với `--allowedTools "Bash(git:*)" Edit`. Lệnh `gh` không nằm trong quyền đã cho, nên nếu hook không chặn thì lớp quyền vẫn chặn và không PR nào bị merge; còn `git commit` và `Edit` thì chỉ hook chặn được.
+**Tiêu chí 6, phần chặn (khoảng 11:25): đạt.** `claude -p --agent fe-dev --model sonnet` trong `ao-pilot`, với `--allowedTools "Bash(git:*)" Edit`. PR #3 đã đóng, nên lệnh merge không merge được gì, kể cả khi hook không chặn.
+
+Sửa ở T19: lúc viết dòng trên, Claude cho rằng lớp quyền cũng chặn `gh`, vì `gh` không nằm trong `--allowedTools`. Điều đó sai. Các lượt `claude -p` chạy ở chế độ quyền `auto`, nên lệnh ngoài `--allowedTools` vẫn có thể được cho qua (xem T19). Ở cả ba bước dưới đây, chỉ hook chặn.
 
 | Bước | `gh-guard` trả |
 |---|---|
@@ -248,3 +250,55 @@ Lịch sử `DEMO-6`, đọc qua REST bằng token CI:
 `merge-gate` đã chạy qua cả hai đường: sau `jira-sync` của một lần `CI` (run 40832462437), và sau `jira-sync` của một review (run 40833032071).
 
 Tiêu chí 5 và 6 của spec mục 9 đạt. PR #4 để mở cho T19.
+
+## T19: `merge-gate` merge sau khi bạn approve, item sang Ready for QA (tiêu chí 7, 8, 10, 12)
+
+**Vòng sửa của PR #4 (14:09–14:25).**
+
+Lượt chạy thứ hai của `fe-dev` (14:09:52 → 14:11:29, 19 lượt, khoảng 0,17 USD):
+
+- Agent đọc review bằng `gh pr view 4 --json reviews`, rồi chỉ sửa finding High.
+- Test viết trước: 12 test mới cho mục 4 đỏ. Sau khi `total` kiểm `quantity` và `price`, 18/18 test xanh. Lint, typecheck, coverage (100%) và build đều qua.
+- Agent commit và push `7e66a58`. Commit này không có dòng `Co-Authored-By`, nên setting `attribution` đã có tác dụng.
+- Agent cập nhật mô tả PR bằng `ao-pr.mjs edit 4`, lệnh in `edited #4`.
+
+Trong lượt này, agent thử sửa file mô tả bằng một đoạn `python`. Máy không có Python nên đoạn đó không chạy, và agent dùng Edit thay thế. Agent cũng tự nêu rằng mục Risks không còn đúng, vì `total` giờ ném lỗi. Lượt thứ ba (4 lượt, khoảng 0,04 USD) sửa câu đó, rồi chạy `ao-pr.mjs edit 4`.
+
+**Phát hiện: `--allowedTools` không phải lớp chặn ở máy bạn.** Sự kiện `init` của mọi lượt `claude -p` báo `permissionMode: auto`, theo `defaultMode` trong `~/.claude/settings.json` của bạn. Ở chế độ này, bộ phân loại của Claude Code vẫn cho chạy các lệnh nằm ngoài `--allowedTools`:
+
+- `fe-dev` chạy `python`.
+- `reviewer` chạy `cat`, `git fetch`, `git ls-files` và `git ls-tree`.
+
+Các lớp chặn thật là:
+
+- Các hook. Hook trả `deny` thì lệnh bị chặn ở mọi chế độ quyền.
+- Các luật phía server: Restrict của Jira, environment `merge-gate`, và hai bước `merge-gate`, `audit`.
+
+`docs/quality-gates.md` (T21) cần ghi điều này. Câu về lớp quyền ở T18 đã được sửa.
+
+| Run | Kết quả |
+|---|---|
+| `CI` pull_request trên `7e66a58` ([40833765153](https://github.com/TungPH7/ao-pilot/actions/runs/40833765153)) | Xanh, 4 phút tính tiền |
+| `jira-sync` pull_request ([40833765142](https://github.com/TungPH7/ao-pilot/actions/runs/40833765142)) | `Waiting DEMO-6: Submit needs ci-green` |
+| `jira-sync` workflow_run sau `CI` ([40833806512](https://github.com/TungPH7/ao-pilot/actions/runs/40833806512)) | `Made DEMO-6: Submit (in-progress → in-review)`. Trên Jira: In Progress → In Review lúc 14:11:25. Review yêu cầu sửa nằm trên `50741da`, không phải commit mới nhất, nên không còn kéo item về |
+| `merge-gate` ([40833803100](https://github.com/TungPH7/ao-pilot/actions/runs/40833803100), [40833842344](https://github.com/TungPH7/ao-pilot/actions/runs/40833842344)) | `Waiting #4: reviewer report on head 7e66a58; security report on head 7e66a58; approval on head 7e66a58`. Dòng `answer to the changes requested` đã hết |
+
+**Lượt `reviewer` vòng hai (14:23:50 → 14:25:14, 11 lượt, khoảng 0,17 USD).** Lời nhắc giống vòng một, thêm câu nói đây là vòng hai. Agent đăng báo cáo COMMENT trên `7e66a58` lúc 14:25:03: `posted the reviewer report (COMMENT) on #4 at 7e66a58`. Mục 4 đạt, nên finding High của vòng một đã xử lý. Còn hai finding:
+
+- **Medium:** `price` là `NaN` hoặc `Infinity` không bị chặn, nên giỏ có dữ liệu sai được miễn phí vận chuyển. Checklist chỉ nói giá âm, nên agent đề nghị làm sau.
+- **Low:** chưa có test cho `quantity` là `Infinity`; nên tách phần kiểm tra ra một hàm riêng.
+
+| Run | Kết quả |
+|---|---|
+| `jira-sync` pull_request_review ([40835292796](https://github.com/TungPH7/ao-pilot/actions/runs/40835292796)) | `No change` |
+| `merge-gate` ([40835328117](https://github.com/TungPH7/ao-pilot/actions/runs/40835328117)) | `Waiting #4: security report on head 7e66a58; approval on head 7e66a58` |
+
+**Tiêu chí 10, xác nhận lại với secret thật (14:27): đạt.** Ở T3, job thử khai environment mà không có `deployment: false`. Job `merge-gate` thật thì khai `deployment: false`, nên lần thử này dùng đúng cấu hình đó.
+
+- Claude push nhánh `probe/t19-env` từ `develop`, với workflow `probe-env`. Job của workflow khai `environment: { name: merge-gate, deployment: false }` và chỉ in độ dài của `secrets.AO_DEV_APP_KEY`.
+- [Run 40835599131](https://github.com/TungPH7/ao-pilot/actions/runs/40835599131) đỏ, và job không chạy bước nào. Lý do GitHub ghi: `Branch "probe/t19-env" is not allowed to deploy to merge-gate due to environment protection rules.`
+- Không deployment nào được tạo, và `jira-sync` không chạy.
+
+Vậy giới hạn nhánh `main` của environment vẫn có hiệu lực khi có `deployment: false`, và secret không lộ cho nhánh khác. Nhánh probe đã xóa trên GitHub và ở máy. Phần còn lại của tiêu chí 10 (`merge-gate` trên `main` dùng được key để merge) sẽ thấy ở lần merge thật.
+
+**Bước tiếp:** bạn approve PR #4 trên `7e66a58` khi `security` chưa đăng báo cáo, nên `merge-gate` phải đứng chờ. Sau đó `fe-dev` push thêm một commit (sửa finding Medium) để thử approve cũ.
