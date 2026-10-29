@@ -77,7 +77,7 @@ T1–T3 đứng đầu vì nếu một giả định nền sai thì `merge-gate`
 
 ### Giai đoạn 4: merge-gate, audit, ruleset
 - [x] T14: `decideMerge` và đọc báo cáo review
-- [ ] T15: `merge-gate`: script và workflow
+- [x] T15: `merge-gate`: script và workflow
 - [ ] T16: `audit`: quyết định, script, reusable workflow, cờ "Needs you"
 - [ ] T17: `gh:protect` và kiểm trên repo public tạm [bạn]
 

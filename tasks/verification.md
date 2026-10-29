@@ -108,3 +108,15 @@ Sửa: token đã nằm trong lịch sử nhánh, nên nhánh được viết l�
 **Phút Actions:** API `timing` trả 0 ms với repo private, nên tính từ thời gian từng job, mỗi job làm tròn lên một phút như GitHub tính: một lần chạy `CI` tốn 4 phút (các job chạy 6 đến 31 giây). PR #3 để mở cho Checkpoint 2, rồi đóng (không merge) sau khi bạn cho qua checkpoint, ngày 2026-10-29.
 
 `jira-sync` chạy hai lần theo sự kiện của PR, cả hai thành công; `DEMO-5` vẫn ở New, không nhãn, vì Task không có Epic cha nên không qua được guard nào.
+
+## T15: `merge-gate --dry-run` trên `ao-pilot`
+
+**2026-10-29, khoảng 10:00.** Chạy từ bản clone `ao-pilot`: `node ../ai-orchestrator/scripts/merge-gate.mjs --dry-run`. `.claude/settings.json` của bản clone chưa có slug hai App (T18 cập nhật bản chép kit), nên lần chạy đầu dừng đúng với `Set AO_DEV_APP and AO_REVIEW_APP, ...`; các lần sau truyền `AO_DEV_APP`, `AO_REVIEW_APP` qua biến môi trường. Script đọc bằng token của `gh`, không mua token App.
+
+| Bước | Output |
+|---|---|
+| Không có PR mở | `No open PR` |
+| Mở lại PR #3 (`DEMO-5`, tác giả `tungph7-ao-dev[bot]`), CI đang chạy lại | `Waiting #3: CI green on head df44b9e; reviewer report on head df44b9e; security report on head df44b9e; approval on head df44b9e` |
+| CI xong ([run 40805863207](https://github.com/TungPH7/ao-pilot/actions/runs/40805863207), xanh, 4 phút), chạy hai lần liền | Cả hai lần: `Waiting #3: reviewer report on head df44b9e; security report on head df44b9e; approval on head df44b9e` |
+
+PR #3 để mở cho Checkpoint 3, rồi đóng lại.
