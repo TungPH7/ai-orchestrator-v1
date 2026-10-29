@@ -19,7 +19,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 9 | `79cccd91-9d3a-495d-a154-927ae2ce5928` | 2026-10-28 16:22 → 16:34 | Bạn xác nhận tracker-integration hoàn thành và chọn quality-gates; Claude đánh dấu ô cuối (PR #45); câu trả lời bị bộ lọc an toàn chặn |
 | 10 | `b645b669-931c-4d95-ba32-24fd3e090d67` | 2026-10-28 16:35 → 2026-10-29 khoảng 03:30 | Giả định và câu hỏi cho quality-gates: bảo vệ nhánh khi repo private ở gói Free, danh tính để agent mở PR; bạn chọn 1a, 2a; viết SPEC-quality-gates; bạn duyệt spec, lập plan 21 task; bạn duyệt plan, bắt đầu T1; vì sao bạn phải tự tạo App, script tạo App bằng manifest flow; T1–T5, Checkpoint 1; ba đề xuất được đồng ý, T6–T13, hết lượt dùng giữa T13, Checkpoint 2 |
 | 11 | `318a4364-f1b9-4cc5-9744-ae8ff4f80c7d` | 2026-10-29 09:00 → khoảng 09:40 | Bạn cho qua Checkpoint 2; T14–T17 (lượt code): merge-gate, audit, gh:protect; Checkpoint 3, chờ bạn xóa repo thử |
-| 12 | `32807628-e04f-47b4-889d-f855a40dabce` | 2026-10-29 khoảng 11:04 → | Bạn cho qua Checkpoint 3; T17 và Checkpoint 3 đóng (PR #65, #66); T18 (lượt code): cài kit mới lên `ao-pilot`, tạo `DEMO-6`, `gh-guard` chặn ba đường vòng; bạn chuyển `DEMO-6` sang Ready và tạo key thứ hai của `ao-dev`; T18 đóng (PR #67): `fe-dev` mở PR #4, `reviewer` yêu cầu sửa, kit tắt ghi công AI; T19: vòng sửa, tiêu chí 10; bạn approve PR #4 lần đầu; T19: approve trên commit cũ không còn được tính, `devops` mở PR #5 sửa workflow, `reviewer` và `security` đăng báo cáo, bạn approve PR #4 lần hai và PR #5; T19 đóng (PR #68): `merge-gate` merge PR #4, `DEMO-6` sang Ready for QA, vòng PR tốn 55 phút Actions; T20: `fe-dev` mở PR #6, chờ bạn merge tay; bạn báo đã merge nhưng PR #6 vẫn mở; bạn merge lại, `audit` chặn deploy và gắn cờ `DEMO-8`; `fe-dev` mở PR #7 revert, chờ bạn approve |
+| 12 | `32807628-e04f-47b4-889d-f855a40dabce` | 2026-10-29 khoảng 11:04 → | Bạn cho qua Checkpoint 3; T17 và Checkpoint 3 đóng (PR #65, #66); T18 (lượt code): cài kit mới lên `ao-pilot`, tạo `DEMO-6`, `gh-guard` chặn ba đường vòng; bạn chuyển `DEMO-6` sang Ready và tạo key thứ hai của `ao-dev`; T18 đóng (PR #67): `fe-dev` mở PR #4, `reviewer` yêu cầu sửa, kit tắt ghi công AI; T19: vòng sửa, tiêu chí 10; bạn approve PR #4 lần đầu; T19: approve trên commit cũ không còn được tính, `devops` mở PR #5 sửa workflow, `reviewer` và `security` đăng báo cáo, bạn approve PR #4 lần hai và PR #5; T19 đóng (PR #68): `merge-gate` merge PR #4, `DEMO-6` sang Ready for QA, vòng PR tốn 55 phút Actions; T20: `fe-dev` mở PR #6, chờ bạn merge tay; bạn báo đã merge nhưng PR #6 vẫn mở; bạn merge lại, `audit` chặn deploy và gắn cờ `DEMO-8`; `fe-dev` mở PR #7 revert; bạn approve PR #7; T20 đóng (PR #69): `merge-gate` merge PR #7, `develop` sạch trở lại, gỡ cờ `DEMO-8`; Checkpoint 4, chờ bạn |
 
 ---
 
@@ -3900,3 +3900,61 @@ Lần này PR #6 đã được merge, và tiêu chí 9 đạt. T20 đã làm t�
 1. Kiểm `merge-gate` merge PR #7, rồi ở lần deploy sau đó `audit` xanh và deploy chạy.
 2. Gỡ cờ và nhãn `needs-you` của `DEMO-8`.
 3. Ghi kết quả, đóng T20, rồi tới Checkpoint 4.
+
+---
+
+# Phiên 12 · Lượt 7 — 2026-10-29 khoảng 17:08
+
+**Bạn:**
+
+```markdown
+đã approve
+```
+
+Sau tin nhắn này Claude kiểm lần merge của PR #7, gỡ cờ của `DEMO-8`, rồi đóng T20 (PR #69) (lượt code, không ghi).
+
+**Claude:**
+
+T20 đã xong và đã merge (PR #69, CI xanh). Giai đoạn kiểm thật đầu cuối đã xong, và mình dừng ở **Checkpoint 4**.
+
+**T20, đã xong:**
+
+- `merge-gate` merge PR #7 (PR revert) 38 giây sau khi bạn approve. `audit` in `audit passed: 0e55963 on develop is the merge of PR #7, which met every gate`, rồi deploy lên `development` chạy.
+- `develop` có lại đúng nội dung của `9f17f6d`, tức nội dung trước lần merge tay.
+- Mình đã gỡ cờ Impediment và nhãn `needs-you` của `DEMO-8`, kèm một bình luận giải thích.
+
+## Checkpoint 4
+
+**Tiêu chí 5 đến 10 và 12 của spec mục 9 đều đạt:**
+
+| Tiêu chí | Kết quả | Ở đâu |
+|---|---|---|
+| 5. PR do bot `ao-dev` mở; bot `ao-review` yêu cầu sửa; item về In Progress | Đạt | T18, PR #4 |
+| 6. `gh-guard` chặn `gh pr merge`, `--no-verify` và việc sửa `ci.yml`; cho chạy `ao-pr.mjs create` | Đạt | T18 |
+| 7. `merge-gate` squash bằng `ao-dev`; `CI`, `audit` và deploy chạy; item sang Ready for QA | Đạt | T19, PR #4, `DEMO-6` |
+| 8. `merge-gate` chờ khi approve nằm trên commit cũ; không merge PR sửa workflow | Đạt | T19, PR #4 và PR #5 |
+| 9. Merge tay khi chưa approve: `audit` đỏ, không deploy, item mang cờ | Đạt | T20, PR #6, `DEMO-8` |
+| 10. Nhánh khác `main` không đọc được secret của environment `merge-gate` | Đạt | T19, nhánh probe |
+| 12. Số phút Actions của một vòng PR | 55 phút cho PR #4; một vòng chuẩn khoảng 37 phút | T19 |
+
+**T21 sẽ ghi vào tài liệu:**
+
+1. `--allowedTools` không chặn được lệnh nào khi `claude -p` chạy ở chế độ quyền `auto`. Lớp chặn thật là các hook và các luật phía server.
+2. Kit đặt `attribution` rỗng, để agent không thêm dòng ghi công AI vào commit và PR.
+3. `jira-sync` và `merge-gate` chiếm 33 trên 55 phút của vòng PR #4, vì mỗi lần chạy bị tính tròn một phút.
+4. Cập nhật bản chép kit trong dự án phải đi qua PR. Push thẳng lên `develop` làm `audit` chặn deploy và gắn cờ item. Vì vậy `DEMO-5` vẫn mang cờ từ lần cài kit ở T18.
+
+## Việc cần bạn: xem lại các item và PR thử
+
+1. Mở từng item thử, rồi xem lịch sử ở tab **History** trong mục **Activity** **(đối chiếu giao diện)**:
+   - https://phunghuutung12b4.atlassian.net/browse/DEMO-6 đi New → Ready (bạn) → In Progress (`orchestratoragent`) → In Review → In Progress (khi bị yêu cầu sửa) → In Review → Ready for QA (`orchestratorci`).
+   - https://phunghuutung12b4.atlassian.net/browse/DEMO-8 có cờ và nhãn `needs-you` do `audit` gắn, rồi được gỡ sau PR revert.
+2. Mở các PR thử: [#4](https://github.com/TungPH7/ao-pilot/pull/4), [#5](https://github.com/TungPH7/ao-pilot/pull/5), [#6](https://github.com/TungPH7/ao-pilot/pull/6), [#7](https://github.com/TungPH7/ao-pilot/pull/7). Báo cáo của `reviewer` và `security` nằm ở tab **Conversation** của mỗi PR.
+
+Việc không bắt buộc: trên `DEMO` còn vài item thử. `DEMO-7` và `DEMO-8` ở New; `DEMO-5` ở New và còn cờ; `DEMO-3` (item thử của `tracker-integration`) ở In Review. Bạn có thể giữ chúng làm hồ sơ, hoặc Cancel chúng như sau:
+
+1. Mở item, rồi bấm nút trạng thái (ví dụ **New**) ở gần tiêu đề **(đối chiếu giao diện)**.
+2. Chọn **Cancel**.
+3. Chọn một Resolution trong hộp thoại, rồi xác nhận.
+
+Xem xong, bạn nhắn "qua Checkpoint 4" để mình làm T21: README, `docs/quality-gates.md`, `SPEC.md`, và lưu plan. Nếu thấy chỗ nào chưa ổn, bạn cứ nói.
