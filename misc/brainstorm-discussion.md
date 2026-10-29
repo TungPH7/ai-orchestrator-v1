@@ -19,7 +19,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 9 | `79cccd91-9d3a-495d-a154-927ae2ce5928` | 2026-10-28 16:22 → 16:34 | Bạn xác nhận tracker-integration hoàn thành và chọn quality-gates; Claude đánh dấu ô cuối (PR #45); câu trả lời bị bộ lọc an toàn chặn |
 | 10 | `b645b669-931c-4d95-ba32-24fd3e090d67` | 2026-10-28 16:35 → 2026-10-29 khoảng 03:30 | Giả định và câu hỏi cho quality-gates: bảo vệ nhánh khi repo private ở gói Free, danh tính để agent mở PR; bạn chọn 1a, 2a; viết SPEC-quality-gates; bạn duyệt spec, lập plan 21 task; bạn duyệt plan, bắt đầu T1; vì sao bạn phải tự tạo App, script tạo App bằng manifest flow; T1–T5, Checkpoint 1; ba đề xuất được đồng ý, T6–T13, hết lượt dùng giữa T13, Checkpoint 2 |
 | 11 | `318a4364-f1b9-4cc5-9744-ae8ff4f80c7d` | 2026-10-29 09:00 → khoảng 09:40 | Bạn cho qua Checkpoint 2; T14–T17 (lượt code): merge-gate, audit, gh:protect; Checkpoint 3, chờ bạn xóa repo thử |
-| 12 | `32807628-e04f-47b4-889d-f855a40dabce` | 2026-10-29 khoảng 11:04 → | Bạn cho qua Checkpoint 3; T17 và Checkpoint 3 đóng (PR #65, #66); T18 (lượt code): cài kit mới lên `ao-pilot`, tạo `DEMO-6`, `gh-guard` chặn ba đường vòng; bạn chuyển `DEMO-6` sang Ready và tạo key thứ hai của `ao-dev`; T18 đóng (PR #67): `fe-dev` mở PR #4, `reviewer` yêu cầu sửa, kit tắt ghi công AI; T19: vòng sửa, tiêu chí 10; bạn approve PR #4 lần đầu; T19: approve trên commit cũ không còn được tính, `devops` mở PR #5 sửa workflow, `reviewer` và `security` đăng báo cáo, bạn approve PR #4 lần hai và PR #5; T19 đóng (PR #68): `merge-gate` merge PR #4, `DEMO-6` sang Ready for QA, vòng PR tốn 55 phút Actions; T20: `fe-dev` mở PR #6, chờ bạn merge tay; bạn báo đã merge nhưng PR #6 vẫn mở; bạn merge lại, `audit` chặn deploy và gắn cờ `DEMO-8`; `fe-dev` mở PR #7 revert; bạn approve PR #7; T20 đóng (PR #69): `merge-gate` merge PR #7, `develop` sạch trở lại, gỡ cờ `DEMO-8`; Checkpoint 4, chờ bạn; bạn hỏi về `gh` 2.16.1, mình đề xuất sửa `gh-guard` cho các lệnh `gh` mới rồi mới cập nhật `gh`; bạn đồng ý: vá `gh-guard` (PR #70), lên `gh` 2.103.3, tắt telemetry; bạn đăng nhập lại `gh`, token vào keyring; bạn thu hồi token cũ và cho qua Checkpoint 4; git mất quyền push vì Git Credential Manager giữ token cũ của `gh`, chờ bạn đăng nhập lại git |
+| 12 | `32807628-e04f-47b4-889d-f855a40dabce` | 2026-10-29 khoảng 11:04 → | Bạn cho qua Checkpoint 3; T17 và Checkpoint 3 đóng (PR #65, #66); T18 (lượt code): cài kit mới lên `ao-pilot`, tạo `DEMO-6`, `gh-guard` chặn ba đường vòng; bạn chuyển `DEMO-6` sang Ready và tạo key thứ hai của `ao-dev`; T18 đóng (PR #67): `fe-dev` mở PR #4, `reviewer` yêu cầu sửa, kit tắt ghi công AI; T19: vòng sửa, tiêu chí 10; bạn approve PR #4 lần đầu; T19: approve trên commit cũ không còn được tính, `devops` mở PR #5 sửa workflow, `reviewer` và `security` đăng báo cáo, bạn approve PR #4 lần hai và PR #5; T19 đóng (PR #68): `merge-gate` merge PR #4, `DEMO-6` sang Ready for QA, vòng PR tốn 55 phút Actions; T20: `fe-dev` mở PR #6, chờ bạn merge tay; bạn báo đã merge nhưng PR #6 vẫn mở; bạn merge lại, `audit` chặn deploy và gắn cờ `DEMO-8`; `fe-dev` mở PR #7 revert; bạn approve PR #7; T20 đóng (PR #69): `merge-gate` merge PR #7, `develop` sạch trở lại, gỡ cờ `DEMO-8`; Checkpoint 4, chờ bạn; bạn hỏi về `gh` 2.16.1, mình đề xuất sửa `gh-guard` cho các lệnh `gh` mới rồi mới cập nhật `gh`; bạn đồng ý: vá `gh-guard` (PR #70), lên `gh` 2.103.3, tắt telemetry; bạn đăng nhập lại `gh`, token vào keyring; bạn thu hồi token cũ và cho qua Checkpoint 4; git mất quyền push vì Git Credential Manager giữ token cũ của `gh`; bạn đăng nhập lại git; Checkpoint 4 đóng (PR #71); T21 đóng (PR #72); checkpoint cuối, chờ bạn |
 
 ---
 
@@ -4170,3 +4170,63 @@ Không có gì bị mất. Các commit vẫn nằm ở nhánh `task/checkpoint-4
 **Cách 2: cho git dùng chính token của `gh`.** Mình chạy `gh auth setup-git`, lệnh này thêm `gh` làm credential helper cho `github.com` trong file `.gitconfig` của bạn. Bạn không phải bấm gì, và chỉ có một token. Đổi lại, thu hồi token của `gh` sẽ làm git hỏng theo, như lần này. Muốn cách này thì nhắn "dùng gh cho git".
 
 Sau khi git đăng nhập lại, mình push nhánh, mở PR cho Checkpoint 4, rồi làm T21 tới checkpoint cuối.
+
+---
+
+# Phiên 12 · Lượt 12 — 2026-10-29 khoảng 23:03
+
+**Bạn:**
+
+```markdown
+! git credential-manager github login
+```
+
+Bạn chạy lệnh trên ngay trong phiên bằng dấu `!`; lệnh không in gì. Sau đó Claude kiểm rằng git đã đăng nhập, merge PR #71 cho Checkpoint 4, rồi làm T21 (lượt code, không ghi).
+
+**Claude:**
+
+Git đã đăng nhập lại bằng Git Credential Manager (tài khoản `TungPH7`), và push chạy bình thường. Checkpoint 4 đã đóng (PR #71). T21 đã xong và đã merge (PR #72, CI xanh). Module `quality-gates` đã tới **checkpoint cuối**.
+
+**T21, đã xong:**
+
+- README có mục **Quality gates**, gồm bốn lớp chốt và hai GitHub App. Mục **Cài kit vào repo dự án** gộp các bước của `tracker-integration` và `quality-gates`. Bảng biến môi trường có thêm `AO_DEV_APP_KEY`, và mục **Lệnh** có `gh:protect` cùng các lệnh chạy trong repo dự án.
+- `docs/quality-gates.md` mới, viết cho bạn:
+  - vòng của một PR;
+  - từng check của `CI`, cách đọc job summary, và cách xử lý khi cổng đỏ;
+  - khi nào bạn tự merge;
+  - từng bước cài environment `merge-gate`;
+  - `gh-guard`, ruleset và phút Actions;
+  - GitHub CLI trên máy bạn, kể cả chuyện Git Credential Manager giữ token của `gh` ở Checkpoint 4.
+- Hai test mới kiểm README và `docs/quality-gates.md`. Cả bộ 501 test xanh.
+- `SPEC-quality-gates.md` và `SPEC.md` ghi module hoàn thành ngày 2026-10-29. Plan, danh sách task và kết quả kiểm thật đã chuyển vào `tasks/archive/quality-gates/`.
+
+## Checkpoint cuối
+
+**Cả 13 tiêu chí của spec mục 9 đều đạt:**
+
+| Tiêu chí | Ở đâu |
+|---|---|
+| 1. `quality/gates.yaml` và bốn quy tắc Q1–Q4; `validate`, `test` và CI của kit xanh | T4, T12; CI trên `main` |
+| 2. Ba thay đổi ở mục 2.9, và `docs/sdlc.md` được sinh lại | T5 |
+| 3. Hook git trên `ao-pilot` chặn đúng ba trường hợp | T13 |
+| 4. Mỗi job của `CI` đỏ đúng lý do, rồi xanh lại | T13 |
+| 5. PR của bot `ao-dev`; bot `ao-review` yêu cầu sửa; item về In Progress | T18 |
+| 6. `gh-guard` chặn đường vòng, và cho chạy `ao-pr.mjs create` | T18 |
+| 7. `merge-gate` merge, deploy chạy, item sang Ready for QA | T19 |
+| 8. `merge-gate` chờ khi approve nằm trên commit cũ; không merge PR sửa workflow | T19 |
+| 9. `audit` chặn commit merge tay | T20 |
+| 10. Nhánh khác `main` không đọc được secret của environment `merge-gate` | T3, T19 |
+| 11. `gh:protect` | T17 |
+| 12. Số phút Actions của một vòng PR | T19 |
+| 13. README, `docs/quality-gates.md`, `docs/github-apps-setup.md`, `SPEC.md` | T21; `docs/github-apps-setup.md` có từ T1 |
+
+Những việc còn để lại, không thuộc module này:
+
+- Bản chép kit trong `ao-pilot` chưa có bản vá `gh-guard` (PR #70) và setting `attribution`. Lần chép kit tới sẽ đưa cả hai vào, qua một PR. Trước lần đó, mình không chạy agent nào trong `ao-pilot`.
+- Trên `DEMO` còn các item thử: `DEMO-3` ở In Review; `DEMO-5` ở New và còn cờ; `DEMO-7`, `DEMO-8` ở New. Bạn có thể giữ hoặc Cancel chúng, theo các bước trong tin Checkpoint 4. Nếu muốn, mình gỡ cờ của `DEMO-5`.
+
+## Việc cần bạn
+
+1. Đọc `docs/quality-gates.md` trên GitHub: https://github.com/TungPH7/ai-orchestrator-v1/blob/main/docs/quality-gates.md
+2. Nếu thấy ổn, nhắn "xác nhận quality-gates hoàn thành". Mình sẽ đánh dấu ô cuối của checkpoint cuối, như đã làm với `tracker-integration`.
+3. Rồi chọn module tiếp theo. Theo thứ tự build trong `SPEC.md`, module nên làm tiếp là `agent-roster`, vì `dev-workflow` cần nó cùng hai module đã xong. Mình sẽ chờ bạn chọn, và chưa bắt đầu module nào.
