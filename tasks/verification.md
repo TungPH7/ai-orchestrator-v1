@@ -559,4 +559,4 @@ Bản chép kit trong `ao-pilot` nhận PR #70 ở lần chép kit tới, qua PR
 | Cấu hình git | `credential.helper` vẫn là `manager`, nên git vẫn dùng Git Credential Manager |
 | `gh config get telemetry` | `disabled` |
 
-Thu hồi token cũ trên GitHub là bước tùy chọn. Mình không kiểm được bước này từ máy, vì muốn kiểm phải dùng chính token cũ.
+Thu hồi token cũ trên GitHub là bước tùy chọn, và mình không kiểm được bước này từ máy, vì muốn kiểm phải dùng chính token cũ. Sau đó bạn cho biết đã thu hồi token cũ. `gh` vẫn chạy bằng token mới: `gh api user` trả `TungPH7`, và `gh auth status` vẫn báo `keyring`.
