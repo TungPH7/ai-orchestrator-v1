@@ -431,8 +431,8 @@ Bạn làm, nếu `gh` chưa có quyền xóa repo: chạy `gh auth refresh -h g
 
 ### Checkpoint 4
 
-- [ ] Tiêu chí 5 đến 10 và 12 của spec mục 9 đạt
-- [ ] Bạn xem lịch sử item thử trên `DEMO` và các PR thử trên `ao-pilot`
+- [x] Tiêu chí 5 đến 10 và 12 của spec mục 9 đạt
+- [x] Bạn xem lịch sử item thử trên `DEMO` và các PR thử trên `ao-pilot`
 
 ---
 

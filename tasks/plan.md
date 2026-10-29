@@ -91,8 +91,8 @@ T1–T3 đứng đầu vì nếu một giả định nền sai thì `merge-gate`
 - [x] T20: `audit` chặn commit merge tay [bạn]
 
 ### Checkpoint 4
-- [ ] Tiêu chí 5 đến 10 và 12 của spec mục 9 đạt
-- [ ] Bạn xem lịch sử item thử trên `DEMO` và các PR thử trên `ao-pilot`
+- [x] Tiêu chí 5 đến 10 và 12 của spec mục 9 đạt
+- [x] Bạn xem lịch sử item thử trên `DEMO` và các PR thử trên `ao-pilot`
 
 ### Giai đoạn 6: hoàn thiện
 - [ ] T21: README, tài liệu, `SPEC.md`, lưu trữ plan
