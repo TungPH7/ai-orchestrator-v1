@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { PLACEHOLDERS, PR_SECTIONS, checkPullRequest, checkReviewHeader } from '../../lib/quality/pull-request.mjs';
+import { PLACEHOLDERS, PR_SECTIONS, checkPullRequest, checkReviewHeader, readReviewReport, SEVERITIES } from '../../lib/quality/pull-request.mjs';
 import { ROOT } from '../helpers/kit.mjs';
 
 const template = readFileSync(join(ROOT, 'templates', 'pull-request.md'), 'utf8');
@@ -38,4 +38,50 @@ test('a review report starts with its title and the role that wrote it', () => {
   assert.deepEqual(checkReviewHeader('# Review: feat(auth): add login (DEMO-12)\n\nRole: security\n\n## Context\n', roles), { ok: true, role: 'security', problems: [] });
   assert.deepEqual(checkReviewHeader('Looks good to me', roles).problems, ['the report must start with "# Review: <PR title> (<KEY>)"', 'the report needs a line "Role: reviewer" or "Role: security"']);
   assert.match(checkReviewHeader('# Review: x (DEMO-1)\n\nRole: qa\n', roles).problems[0], /Role: reviewer.*security/);
+});
+
+const reviewTemplate = readFileSync(join(ROOT, 'templates', 'review-report.md'), 'utf8');
+const reviewExample = reviewTemplate.match(/````markdown\n([\s\S]*?)````/)[1];
+const ROLES = ['reviewer', 'security'];
+const report = (findings) => `# Review: feat(auth): add login (DEMO-12)\n\nRole: security\n\n## Findings\n${findings}\n## Verdict\n- [x] **Approve**\n`;
+const TABLE = '| Severity | Axis | Where | Finding | Suggested fix |\n|---|---|---|---|---|\n';
+
+test('a review report gives its role, its findings, and the Critical and High ones that block the merge', () => {
+  // The severities merge-gate reads are those of the template's Findings table.
+  assert.deepEqual(reviewTemplate.match(/^\| (Critical[^|]*?) \|/m)[1].split(' / '), SEVERITIES);
+  const read = readReviewReport(reviewExample, ROLES);
+  assert.equal(read.ok, true);
+  assert.equal(read.role, 'reviewer');
+  assert.deepEqual(read.findings.map(({ severity, axis }) => `${severity} ${axis}`), ['High Correctness', 'Low Readability']);
+  assert.deepEqual(read.blocking, [read.findings[0]]);
+  assert.deepEqual(read.findings[0], {
+    severity: 'High',
+    axis: 'Correctness',
+    where: '`apps/api/src/auth/auth.controller.ts:31`',
+    finding: 'Body thiếu `email` thì API trả 500',
+    fix: 'Validate body, trả 400',
+  });
+});
+
+test('a report without findings has none, whether its table is empty or replaced by a sentence', () => {
+  for (const findings of [TABLE, 'Không có finding.\n']) {
+    assert.deepEqual(readReviewReport(report(findings), ROLES), { ok: true, role: 'security', findings: [], blocking: [], problems: [] });
+  }
+});
+
+test('a severity is read through bold and case; any other severity makes the report unreadable', () => {
+  const read = readReviewReport(report(`${TABLE}| **critical** | Security | a.ts:1 | x | y |\n`), ROLES);
+  assert.deepEqual(read.blocking.map(({ severity }) => severity), ['Critical']);
+  // The template's placeholder row left in place.
+  const left = readReviewReport(report(`${TABLE}| Low | Readability | a.ts:2 | x | y |\n| Critical / High / Medium / Low | <axis> | <file:line> | <...> | <...> |\n`), ROLES);
+  assert.equal(left.ok, false);
+  assert.equal(left.role, 'security');
+  assert.deepEqual(left.problems, ["finding 2: severity 'Critical / High / Medium / Low' is not Critical, High, Medium or Low"]);
+});
+
+test('a report needs its Findings section; text that is not a report has no role', () => {
+  assert.deepEqual(readReviewReport(report('').replace('## Findings\n', ''), ROLES), { ok: false, role: 'security', problems: ['the report needs a "## Findings" section'] });
+  const notReport = readReviewReport('Looks good to me', ROLES);
+  assert.equal(notReport.ok, false);
+  assert.equal(notReport.role, undefined);
 });

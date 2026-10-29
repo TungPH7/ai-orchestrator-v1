@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { loadContract } from '../../lib/contract.mjs';
 import { readMapping } from '../../lib/tracker/mapping.mjs';
-import { githubGuards } from '../../lib/tracker/facts.mjs';
+import { changesRequestedOn, githubGuards, lastDecision, readChecks } from '../../lib/tracker/facts.mjs';
 import { recordedClient } from '../helpers/jira.mjs';
 import { CONTRACT_DIR, ROOT } from '../helpers/kit.mjs';
 
@@ -156,4 +156,17 @@ test('guards from other sources are left out, and the PR list is read once', asy
   const result = await githubGuards(client, { item: item('DEMO-12'), needed: ['wip-available', 'pr-open', 'pr-merged', 'ci-green'], contract, mapping, approvers: [] });
   assert.deepEqual(result, ['pr-open', 'ci-green']);
   assert.equal(calls, 1);
+});
+
+test('merge-gate shares the reading of checks and reviews: readChecks, the latest deciding review, changes requested on a commit', async () => {
+  assert.deepEqual(await readChecks(recordedClient(answers), 'c5'), { green: true, failed: false });
+  const reviews = [
+    { user: { login: 'TungPH7' }, state: 'CHANGES_REQUESTED', commit_id: 'c4' },
+    { user: { login: 'reviewer-bot' }, state: 'COMMENTED', commit_id: 'c5' },
+    { user: { login: 'TungPH7' }, state: 'APPROVED', commit_id: 'c5' },
+  ];
+  assert.equal(lastDecision(reviews), reviews[2]);
+  assert.equal(lastDecision(reviews, 'reviewer-bot'), undefined);
+  assert.equal(changesRequestedOn(reviews, 'c4'), true);
+  assert.equal(changesRequestedOn(reviews, 'c5'), false);
 });
