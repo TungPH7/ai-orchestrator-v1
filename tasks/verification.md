@@ -459,4 +459,39 @@ Tiêu chí 7, 8, 10 và 12 của spec mục 9 đạt. T19 đóng.
 
 PR #6 chưa có báo cáo nào và chưa có approve, nên `merge-gate` không merge.
 
-**Bước tiếp:** bạn bấm Squash and merge trên PR #6. Ở lần deploy sau đó, `audit` phải đỏ và ghi lý do, job `deploy` không chạy, và `DEMO-8` mang cờ "Needs you".
+**Bạn merge tay PR #6 (tiêu chí 9): đạt.**
+
+Ở lần báo đầu (16:44), PR #6 vẫn mở và `develop` không đổi. GitHub báo PR merge được (`mergeable_state: clean`), nên có lẽ bước Confirm chưa được bấm. Ở lần thứ hai, bạn merge lúc 16:47:01. `merged_by` là `TungPH7`, và commit squash `2e16d25` (`test(cart): cover a quantity of Infinity (DEMO-8) (#6)`) nằm trên `develop`. PR không có review nào.
+
+| Run | Kết quả |
+|---|---|
+| `Deploy` push trên `develop` ([40852338720](https://github.com/TungPH7/ao-pilot/actions/runs/40852338720)) | Đỏ. Job `audit` in `audit failed: 2e16d25 on develop`, `- PR #6 was merged without: reviewer report on head 451523d; security report on head 451523d; approval on head 451523d` và `Flagged DEMO-8`. Job `deploy` bị bỏ qua (skipped) |
+| `CI` push trên `develop` ([40852338759](https://github.com/TungPH7/ao-pilot/actions/runs/40852338759)) | Xanh |
+| `jira-sync` workflow_run sau `CI` ([40852391812](https://github.com/TungPH7/ao-pilot/actions/runs/40852391812)) | `workflow_run: no work item of DEMO` |
+| `merge-gate` ([40852424250](https://github.com/TungPH7/ao-pilot/actions/runs/40852424250)) | `No open PR` |
+
+- Không có deployment nào cho `2e16d25`. Deployment mới nhất của `development` vẫn là `9f17f6d`.
+- Script `audit` cũng ghi các dòng trên vào job summary (`### Audit`). REST API không đọc được job summary, nên phần đó xem trên trang của run.
+- Trên Jira, lúc 16:47:17, `orchestratorci` đặt Flagged của `DEMO-8` là Impediment và thêm nhãn `needs-you`. Lúc 16:47:19, tài khoản này bình luận: `audit: 2e16d25 on develop was not deployed. PR #6 was merged without: reviewer report on head 451523d; security report on head 451523d; approval on head 451523d. It is flagged with the label needs-you and waits for you.`
+
+Tiêu chí 9 đạt.
+
+**PR revert qua đủ cổng.**
+
+Lượt `fe-dev` (16:49:42 → 16:51:05, 10 lượt, khoảng 0,12 USD):
+
+- Agent cắt nhánh `feature/DEMO-8-revert-unapproved-merge` từ `develop`, rồi chạy `git revert --no-edit 2e16d25`. Commit `6eb5c4e` có header `Revert "..."` do git viết, và hook `commit-msg` chấp nhận header này.
+- Test, lint, typecheck, coverage và build đều qua. Agent push, rồi mở [PR #7](https://github.com/TungPH7/ao-pilot/pull/7) `revert(cart): undo the unapproved merge of PR #6 (DEMO-8)` bằng `ao-pr.mjs create`.
+
+Lời nhắc của `reviewer` và `security` nói PR #7 là một revert: nó phải gỡ đúng `2e16d25` và không gì khác. Checklist của `DEMO-8` không phải điều PR này cần đạt.
+
+- `reviewer` (16:52:11 → 16:53:29, 12 lượt, khoảng 0,14 USD) đăng báo cáo COMMENT trên `6eb5c4e` lúc 16:53:18. Agent so cây thư mục của PR với cây của `2e16d25~1`, và thấy giống hệt. Có một finding Low: sau revert, `develop` lại không có test cho `quantity` là `Infinity`.
+- `security` (16:53:36 → 16:55:35, 15 lượt, khoảng 0,21 USD) đăng báo cáo COMMENT lúc 16:55:23, với cùng một finding Low.
+
+| Run | Kết quả |
+|---|---|
+| `CI` pull_request trên `6eb5c4e` ([40852845441](https://github.com/TungPH7/ao-pilot/actions/runs/40852845441)) | Xanh, 4 phút tính tiền |
+| `jira-sync` pull_request ([40852845460](https://github.com/TungPH7/ao-pilot/actions/runs/40852845460)), workflow_run ([40852891507](https://github.com/TungPH7/ao-pilot/actions/runs/40852891507)), hai pull_request_review ([40853154881](https://github.com/TungPH7/ao-pilot/actions/runs/40853154881), [40853426591](https://github.com/TungPH7/ao-pilot/actions/runs/40853426591)) | `No change`: `DEMO-8` ở New |
+| `merge-gate` ([40852939894](https://github.com/TungPH7/ao-pilot/actions/runs/40852939894), [40853192413](https://github.com/TungPH7/ao-pilot/actions/runs/40853192413), [40853472127](https://github.com/TungPH7/ao-pilot/actions/runs/40853472127)) | Từ `Waiting #7: reviewer report on head 6eb5c4e; security report on head 6eb5c4e; approval on head 6eb5c4e` tới `Waiting #7: approval on head 6eb5c4e` |
+
+**Bước tiếp:** bạn approve PR #7. `merge-gate` phải merge PR này, và ở lần deploy sau đó `audit` phải xanh. Khi đó `develop` có lại nội dung của `9f17f6d`, và Claude gỡ cờ của `DEMO-8`.
