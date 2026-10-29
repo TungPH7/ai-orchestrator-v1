@@ -1,8 +1,9 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { parse } from 'yaml';
+import { readGates } from '../lib/quality/gates.mjs';
 import { ROOT } from './helpers/kit.mjs';
 
 const WORKFLOW = join(ROOT, '.github', 'workflows', 'contract.yml');
@@ -46,4 +47,24 @@ test('README covers the tracker: commands, folders, how to install kit/ and ever
   const { env } = JSON.parse(readFileSync(join(ROOT, 'kit', '.claude', 'settings.json'), 'utf8'));
   const tokens = ['ATLASSIAN_AGENT_TOKEN', 'JIRA_CI_TOKEN', 'JIRA_ADMIN_EMAIL', 'JIRA_ADMIN_TOKEN', 'GITHUB_TOKEN'];
   for (const name of [...Object.keys(env), ...tokens]) assert.ok(readme().includes(`\`${name}\``), name);
+});
+
+test('README covers the quality gates: the layers, the docs, the commands, the folders, the workflows and the new keys', () => {
+  const texts = ['## Quality gates', '(SPEC-quality-gates.md)', '(docs/quality-gates.md)', '(docs/github-apps-setup.md)', 'npm run gh:protect'];
+  const commands = ['install-hooks.mjs', 'coverage-diff.mjs --base', 'merge-gate.mjs --dry-run', 'audit.mjs --sha'];
+  for (const text of [...texts, ...commands, 'quality/', 'lib/quality/', '.githooks/']) assert.ok(readme().includes(text), text);
+
+  const { checks } = readGates(join(ROOT, 'quality'));
+  const workflows = readdirSync(join(ROOT, 'kit', '.github', 'workflows'));
+  for (const name of [...checks, ...workflows, 'AO_DEV_APP_KEY', 'AO_DEV_APP_KEY_FILE', 'AO_REVIEW_APP_KEY_FILE']) {
+    assert.ok(readme().includes(`\`${name}\``), name);
+  }
+});
+
+test('docs/quality-gates.md covers every check of CI, the git hooks, merge-gate, audit and gh-guard', () => {
+  const doc = readFileSync(join(ROOT, 'docs', 'quality-gates.md'), 'utf8');
+  const { checks } = readGates(join(ROOT, 'quality'));
+  for (const name of [...checks, 'pre-commit', 'commit-msg', 'pre-push', 'merge-gate', 'audit', 'gh-guard', 'AO_DEV_APP_KEY']) {
+    assert.ok(doc.includes(`\`${name}\``), name);
+  }
 });
