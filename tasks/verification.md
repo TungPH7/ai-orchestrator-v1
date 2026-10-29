@@ -374,4 +374,69 @@ Agent còn đọc thêm bằng `gh api` (chỉ GET) và chạy hai lệnh `node 
 | `jira-sync` pull_request_review của #4 ([40847708920](https://github.com/TungPH7/ao-pilot/actions/runs/40847708920)) và #5 ([40847722705](https://github.com/TungPH7/ao-pilot/actions/runs/40847722705)) | `DEMO-6`: `Waiting DEMO-6: Deploy to QA needs pr-merged, qa-deployed`, `No change`. `DEMO-7`: `No change` |
 | `merge-gate` ([40847751562](https://github.com/TungPH7/ao-pilot/actions/runs/40847751562), [40847763722](https://github.com/TungPH7/ao-pilot/actions/runs/40847763722)) | `Waiting #4: approval on head 8924767` và `Needs you #5: it changes .github/workflows/ci.yml, so read the diff and merge it yourself (still missing: approval on head a8e842e)` |
 
-**Bước tiếp:** bạn approve PR #4 trên `8924767` và PR #5 trên `a8e842e`. Với PR #4, `merge-gate` phải squash vào `develop` bằng `ao-dev`; sau đó `CI`, `audit` và deploy lên `development` chạy, và `jira-sync` chuyển `DEMO-6` sang Ready for QA. Với PR #5, `merge-gate` phải in `Needs you` khi không còn điều kiện nào thiếu, và không merge.
+**Approve lần hai, merge và deploy (tiêu chí 7, 8 và 10): đạt.**
+
+Bạn approve PR #4 trên `8924767` lúc 16:21:24, và PR #5 trên `a8e842e` lúc 16:21:31.
+
+| Run | Kết quả |
+|---|---|
+| `jira-sync` pull_request_review của #4 ([40848987044](https://github.com/TungPH7/ao-pilot/actions/runs/40848987044)) | `Waiting DEMO-6: Deploy to QA needs pr-merged, qa-deployed`, `No change` |
+| `jira-sync` pull_request_review của #5 ([40849002456](https://github.com/TungPH7/ao-pilot/actions/runs/40849002456)) | `No change` |
+| `merge-gate` ([40849032590](https://github.com/TungPH7/ao-pilot/actions/runs/40849032590)) | `Merged #4: feat(cart): add the shipping fee of a cart (DEMO-6) (squash at 8924767)` và `Needs you #5: it changes .github/workflows/ci.yml, so read the diff and merge it yourself` |
+| `merge-gate` ([40849043431](https://github.com/TungPH7/ao-pilot/actions/runs/40849043431)) | `Needs you #5: it changes .github/workflows/ci.yml, so read the diff and merge it yourself` |
+
+- PR #4 được merge lúc 16:22:04, và `merged_by` là `tungph7-ao-dev[bot]`. Commit squash `9f17f6d` trên `develop` có tác giả `tungph7-ao-dev[bot]`. Tiêu đề của nó là tiêu đề PR, và phần thân là header của ba commit:
+
+  ```text
+  - feat(cart): add the shipping fee of a cart (DEMO-6)
+  - feat(cart): reject a line with a bad quantity or price (DEMO-6)
+  - fix(cart): reject a price that is not a finite number (DEMO-6)
+  ```
+
+- Key trong environment `merge-gate` dùng được để merge từ `main`, nên phần còn lại của tiêu chí 10 đạt.
+- Với PR #5, dòng `Needs you` không còn phần `still missing`: PR đã có `CI` xanh, đủ hai báo cáo và approve của bạn, nhưng `merge-gate` vẫn không merge. Tiêu chí 8 đạt cả hai phần.
+
+Sau merge:
+
+| Run | Kết quả |
+|---|---|
+| `CI` push trên `develop` ([40849074485](https://github.com/TungPH7/ao-pilot/actions/runs/40849074485)) | Xanh |
+| `Deploy` push trên `develop` ([40849074468](https://github.com/TungPH7/ao-pilot/actions/runs/40849074468)) | Job `audit`: `audit passed: 9f17f6d on develop is the merge of PR #4, which met every gate`. Job `deploy` chạy và tạo deployment `development` cho `9f17f6d` |
+| `jira-sync` deployment_status ([40849119366](https://github.com/TungPH7/ao-pilot/actions/runs/40849119366)) | `deployment_status: no work item of DEMO`. Đây là trạng thái chưa phải `success`, và `jira-sync` bỏ qua trạng thái đó |
+| `jira-sync` deployment_status ([40849127330](https://github.com/TungPH7/ao-pilot/actions/runs/40849127330)) | `Made DEMO-6: Deploy to QA (in-review → ready-for-qa)`. Dòng `Waiting DEMO-3: Deploy to QA needs merge-approved` là của item thử cũ của `tracker-integration`: PR của nó được merge khi chưa có approve, nên nó vẫn ở In Review |
+| `jira-sync` workflow_run sau `CI` ([40849126674](https://github.com/TungPH7/ao-pilot/actions/runs/40849126674)) | `workflow_run: no work item of DEMO` |
+| `merge-gate` ([40849148431](https://github.com/TungPH7/ao-pilot/actions/runs/40849148431), [40849176610](https://github.com/TungPH7/ao-pilot/actions/runs/40849176610)) | `Needs you #5: it changes .github/workflows/ci.yml, so read the diff and merge it yourself`. Lần chạy [40849160806](https://github.com/TungPH7/ao-pilot/actions/runs/40849160806) bị hủy khi còn chờ, vì một lần chạy mới hơn xếp sau nó (`concurrency` của `merge-gate`) |
+
+Trên Jira, `DEMO-6` chuyển In Review → Ready for QA lúc 16:22:48, bằng `orchestratorci`. Tiêu chí 7 đạt.
+
+Dọn sau bài thử:
+
+- Claude đóng PR #5 mà không merge, kèm một bình luận nói rõ lý do. Nhánh `feature/DEMO-7-ci-job-timeout` được giữ lại, như nhánh của các bài thử trước.
+- `DEMO-7` vẫn ở New. Bạn có thể Cancel nó khi xem lại ở Checkpoint 4.
+- Claude xóa agent `devops` ở máy, và bỏ dòng của nó khỏi `.git/info/exclude`. Bản `ao-pilot` ở máy về `develop` (`9f17f6d`).
+
+**Số phút Actions của vòng PR #4 (tiêu chí 12): đã đo.** Claude đọc mọi lần chạy từ lúc PR #4 mở (13:57:38) tới lần chạy cuối cùng sau deploy (16:22:54). Mỗi job được tính như GitHub tính cho repo private: làm tròn lên một phút. Job bị bỏ qua, hoặc không nhận được runner, thì không tính.
+
+| Phần | Số lần chạy | Phút |
+|---|---|---|
+| `CI`: bốn lần push lên PR, một lần push lên `develop` | 5 | 20 |
+| `jira-sync` | 17 | 17 |
+| `merge-gate` | 17, một lần bị hủy nên không tính | 16 |
+| `Deploy`: `audit` và `deploy` | 1 | 2 |
+| **Tổng của PR #4** | **40** | **55** |
+
+Bảng không tính PR #5 (11 lần chạy, 14 phút) và nhánh probe của tiêu chí 10 (0 phút).
+
+Chi phí theo từng sự kiện:
+
+- Mỗi lần push lên PR tốn 8 phút: `CI` 4 phút, rồi `jira-sync` và `merge-gate`, mỗi workflow chạy hai lần.
+- Mỗi báo cáo review, hay mỗi lần bạn approve, tốn 2 phút: `jira-sync` và `merge-gate`, mỗi workflow một lần.
+- Merge và deploy tốn 11 phút: `CI` 4, `Deploy` 2, `jira-sync` ba lần, `merge-gate` hai lần.
+
+PR #4 có bốn lần push (mở PR, ghi lại commit để bỏ dòng ghi công, hai lần sửa), sáu lần review hoặc approve, và một lần merge: 4 × 8 + 6 × 2 + 11 = 55.
+
+Một vòng chuẩn gồm: mở PR, sửa một lần, `reviewer` và `security` báo cáo ở cả hai vòng, bạn approve một lần, rồi merge và deploy. Vòng đó tốn 2 × 8 + 5 × 2 + 11 = 37 phút. Gói Free có 2.000 phút mỗi tháng cho repo private, đủ cho khoảng 54 vòng như vậy.
+
+`jira-sync` và `merge-gate` chiếm 33 trên 55 phút. Mỗi lần chạy chỉ mất khoảng 10 đến 20 giây, nhưng vẫn bị tính tròn một phút, và `merge-gate` chạy sau mọi lần `jira-sync`. `docs/quality-gates.md` (T21) cần ghi con số này.
+
+Tiêu chí 7, 8, 10 và 12 của spec mục 9 đạt. T19 đóng.

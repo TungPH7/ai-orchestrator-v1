@@ -394,18 +394,18 @@ Bạn làm, nếu `gh` chưa có quyền xóa repo: chạy `gh auth refresh -h g
 
 **Cỡ:** S
 
-### [ ] T19: `merge-gate` merge sau khi bạn approve, item sang Ready for QA [bạn]
+### [x] T19: `merge-gate` merge sau khi bạn approve, item sang Ready for QA [bạn]
 
 **Mô tả:** Tiếp PR của T18: `fe-dev` sửa theo yêu cầu, `reviewer` và `security` đăng báo cáo không còn Critical/High. Bạn approve một lần, rồi Claude push thêm một commit để thử approve cũ; bạn approve lại. Thêm một PR của agent sửa `.github/workflows/` để thử điều kiện file được bảo vệ.
 
 **Tiêu chí chấp nhận:**
-- [ ] Tiêu chí 7: `merge-gate` squash vào `develop` bằng `ao-dev`; CI, `audit` và deploy lên `development` chạy; `jira-sync` chuyển item sang Ready for QA bằng `orchestratorci`.
-- [ ] Tiêu chí 8: `merge-gate` đứng chờ khi approve nằm trên commit cũ, và không merge PR sửa `.github/workflows/`.
-- [ ] `merge-gate` chạy được qua cả hai đường: sau review, và sau khi CI chạy xong.
-- [ ] Tiêu chí 10 xác nhận lại trong lần chạy thật của `merge-gate`. Tiêu chí 12: số phút Actions của cả vòng PR được ghi lại.
+- [x] Tiêu chí 7: `merge-gate` squash vào `develop` bằng `ao-dev`; CI, `audit` và deploy lên `development` chạy; `jira-sync` chuyển item sang Ready for QA bằng `orchestratorci`.
+- [x] Tiêu chí 8: `merge-gate` đứng chờ khi approve nằm trên commit cũ, và không merge PR sửa `.github/workflows/`.
+- [x] `merge-gate` chạy được qua cả hai đường: sau review, và sau khi CI chạy xong.
+- [x] Tiêu chí 10 xác nhận lại trong lần chạy thật của `merge-gate`. Tiêu chí 12: số phút Actions của cả vòng PR được ghi lại.
 
 **Kiểm chứng:**
-- [ ] Kết quả, link PR và link các lần chạy ghi trong `tasks/verification.md`
+- [x] Kết quả, link PR và link các lần chạy ghi trong `tasks/verification.md`
 
 **Phụ thuộc:** T18
 

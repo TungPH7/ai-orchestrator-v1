@@ -87,7 +87,7 @@ T1–T3 đứng đầu vì nếu một giả định nền sai thì `merge-gate`
 
 ### Giai đoạn 5: kiểm thật đầu cuối
 - [x] T18: Agent mở PR, reviewer yêu cầu sửa, `gh-guard` chặn đường vòng [bạn]
-- [ ] T19: `merge-gate` merge sau khi bạn approve, item sang Ready for QA [bạn]
+- [x] T19: `merge-gate` merge sau khi bạn approve, item sang Ready for QA [bạn]
 - [ ] T20: `audit` chặn commit merge tay [bạn]
 
 ### Checkpoint 4
