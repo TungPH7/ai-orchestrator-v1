@@ -19,7 +19,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 9 | `79cccd91-9d3a-495d-a154-927ae2ce5928` | 2026-10-28 16:22 → 16:34 | Bạn xác nhận tracker-integration hoàn thành và chọn quality-gates; Claude đánh dấu ô cuối (PR #45); câu trả lời bị bộ lọc an toàn chặn |
 | 10 | `b645b669-931c-4d95-ba32-24fd3e090d67` | 2026-10-28 16:35 → 2026-10-29 khoảng 03:30 | Giả định và câu hỏi cho quality-gates: bảo vệ nhánh khi repo private ở gói Free, danh tính để agent mở PR; bạn chọn 1a, 2a; viết SPEC-quality-gates; bạn duyệt spec, lập plan 21 task; bạn duyệt plan, bắt đầu T1; vì sao bạn phải tự tạo App, script tạo App bằng manifest flow; T1–T5, Checkpoint 1; ba đề xuất được đồng ý, T6–T13, hết lượt dùng giữa T13, Checkpoint 2 |
 | 11 | `318a4364-f1b9-4cc5-9744-ae8ff4f80c7d` | 2026-10-29 09:00 → khoảng 09:40 | Bạn cho qua Checkpoint 2; T14–T17 (lượt code): merge-gate, audit, gh:protect; Checkpoint 3, chờ bạn xóa repo thử |
-| 12 | `32807628-e04f-47b4-889d-f855a40dabce` | 2026-10-29 khoảng 11:04 → | Bạn cho qua Checkpoint 3; T17 và Checkpoint 3 đóng (PR #65, #66); T18 (lượt code): cài kit mới lên `ao-pilot`, tạo `DEMO-6`, `gh-guard` chặn ba đường vòng; bạn chuyển `DEMO-6` sang Ready và tạo key thứ hai của `ao-dev`; T18 đóng (PR #67): `fe-dev` mở PR #4, `reviewer` yêu cầu sửa, kit tắt ghi công AI; T19: vòng sửa, tiêu chí 10; bạn approve PR #4 lần đầu; T19: approve trên commit cũ không còn được tính, `devops` mở PR #5 sửa workflow, `reviewer` và `security` đăng báo cáo, bạn approve PR #4 lần hai và PR #5; T19 đóng (PR #68): `merge-gate` merge PR #4, `DEMO-6` sang Ready for QA, vòng PR tốn 55 phút Actions; T20: `fe-dev` mở PR #6, chờ bạn merge tay; bạn báo đã merge nhưng PR #6 vẫn mở, chờ bạn làm lại |
+| 12 | `32807628-e04f-47b4-889d-f855a40dabce` | 2026-10-29 khoảng 11:04 → | Bạn cho qua Checkpoint 3; T17 và Checkpoint 3 đóng (PR #65, #66); T18 (lượt code): cài kit mới lên `ao-pilot`, tạo `DEMO-6`, `gh-guard` chặn ba đường vòng; bạn chuyển `DEMO-6` sang Ready và tạo key thứ hai của `ao-dev`; T18 đóng (PR #67): `fe-dev` mở PR #4, `reviewer` yêu cầu sửa, kit tắt ghi công AI; T19: vòng sửa, tiêu chí 10; bạn approve PR #4 lần đầu; T19: approve trên commit cũ không còn được tính, `devops` mở PR #5 sửa workflow, `reviewer` và `security` đăng báo cáo, bạn approve PR #4 lần hai và PR #5; T19 đóng (PR #68): `merge-gate` merge PR #4, `DEMO-6` sang Ready for QA, vòng PR tốn 55 phút Actions; T20: `fe-dev` mở PR #6, chờ bạn merge tay; bạn báo đã merge nhưng PR #6 vẫn mở; bạn merge lại, `audit` chặn deploy và gắn cờ `DEMO-8`; `fe-dev` mở PR #7 revert, chờ bạn approve |
 
 ---
 
@@ -3856,3 +3856,47 @@ Bạn làm lại giúp mình:
 6. Kiểm lại: đầu trang hiện nhãn tím **Merged**, và cuối trang ghi **Pull request successfully merged and closed** **(đối chiếu giao diện)**.
 
 Nếu GitHub báo lỗi ở bước nào, hoặc nút bị xám không bấm được, bạn chép nguyên văn dòng báo cho mình. Xong thì nhắn "đã merge".
+
+---
+
+# Phiên 12 · Lượt 6 — 2026-10-29 khoảng 16:47
+
+**Bạn:**
+
+```markdown
+đã merge
+```
+
+Sau tin nhắn này Claude kiểm `audit`, rồi làm T20 tới bước cần bạn approve PR revert (lượt code, không ghi).
+
+**Claude:**
+
+Lần này PR #6 đã được merge, và tiêu chí 9 đạt. T20 đã làm tới bước cần bạn approve PR revert.
+
+**Tiêu chí 9: đạt.**
+
+- Bạn merge PR #6 lúc 16:47:01, thành commit `2e16d25` trên `develop`.
+- Workflow `Deploy` chạy, và job `audit` đỏ với lý do: `PR #6 was merged without: reviewer report on head 451523d; security report on head 451523d; approval on head 451523d`.
+- Job `deploy` bị bỏ qua. Không có deployment nào cho `2e16d25`, nên `development` vẫn chạy `9f17f6d`.
+- `orchestratorci` gắn cho `DEMO-8` cờ Impediment và nhãn `needs-you`, kèm một bình luận nói lý do.
+
+**Dọn `develop`, đã chuẩn bị:**
+
+- `fe-dev` mở [PR #7](https://github.com/TungPH7/ao-pilot/pull/7), revert đúng commit `2e16d25`. `CI` xanh.
+- `reviewer` và `security` đăng báo cáo COMMENT, không có finding Critical hay High. Cả hai đều kiểm rằng sau revert, code giống hệt `9f17f6d`.
+- Mỗi báo cáo có một finding Low: `develop` lại thiếu test cho `quantity` là `Infinity`. Ở Checkpoint 4, bạn có thể Cancel `DEMO-8`, hoặc giữ nó để làm lại qua đủ cổng.
+- `merge-gate` in `Waiting #7: approval on head 6eb5c4e`.
+
+## Việc cần bạn: approve PR #7
+
+1. Mở https://github.com/TungPH7/ao-pilot/pull/7
+2. Nếu muốn đọc diff, bấm tab **Files changed**. Diff chỉ xóa một dòng trong `src/cart.test.ts`.
+3. Bấm nút **Review changes** màu xanh ở góc phải phía trên danh sách file. Giao diện mới có thể ghi **Submit review** **(đối chiếu giao diện)**.
+4. Chọn **Approve**. Ô bình luận có thể để trống.
+5. Bấm **Submit review**.
+
+Đừng bấm **Merge**: `merge-gate` sẽ tự merge khoảng nửa phút sau khi bạn approve. Xong thì nhắn "đã approve". Mình làm tiếp:
+
+1. Kiểm `merge-gate` merge PR #7, rồi ở lần deploy sau đó `audit` xanh và deploy chạy.
+2. Gỡ cờ và nhãn `needs-you` của `DEMO-8`.
+3. Ghi kết quả, đóng T20, rồi tới Checkpoint 4.
