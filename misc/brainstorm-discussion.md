@@ -19,7 +19,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 9 | `79cccd91-9d3a-495d-a154-927ae2ce5928` | 2026-10-28 16:22 → 16:34 | Bạn xác nhận tracker-integration hoàn thành và chọn quality-gates; Claude đánh dấu ô cuối (PR #45); câu trả lời bị bộ lọc an toàn chặn |
 | 10 | `b645b669-931c-4d95-ba32-24fd3e090d67` | 2026-10-28 16:35 → 2026-10-29 khoảng 03:30 | Giả định và câu hỏi cho quality-gates: bảo vệ nhánh khi repo private ở gói Free, danh tính để agent mở PR; bạn chọn 1a, 2a; viết SPEC-quality-gates; bạn duyệt spec, lập plan 21 task; bạn duyệt plan, bắt đầu T1; vì sao bạn phải tự tạo App, script tạo App bằng manifest flow; T1–T5, Checkpoint 1; ba đề xuất được đồng ý, T6–T13, hết lượt dùng giữa T13, Checkpoint 2 |
 | 11 | `318a4364-f1b9-4cc5-9744-ae8ff4f80c7d` | 2026-10-29 09:00 → khoảng 09:40 | Bạn cho qua Checkpoint 2; T14–T17 (lượt code): merge-gate, audit, gh:protect; Checkpoint 3, chờ bạn xóa repo thử |
-| 12 | `32807628-e04f-47b4-889d-f855a40dabce` | 2026-10-29 khoảng 11:04 → | Bạn cho qua Checkpoint 3; T17 và Checkpoint 3 đóng (PR #65, #66); T18 (lượt code): cài kit mới lên `ao-pilot`, tạo `DEMO-6`, `gh-guard` chặn ba đường vòng; chờ bạn chuyển `DEMO-6` sang Ready và tạo key thứ hai của `ao-dev` |
+| 12 | `32807628-e04f-47b4-889d-f855a40dabce` | 2026-10-29 khoảng 11:04 → | Bạn cho qua Checkpoint 3; T17 và Checkpoint 3 đóng (PR #65, #66); T18 (lượt code): cài kit mới lên `ao-pilot`, tạo `DEMO-6`, `gh-guard` chặn ba đường vòng; bạn chuyển `DEMO-6` sang Ready và tạo key thứ hai của `ao-dev`; T18 đóng (PR #67): `fe-dev` mở PR #4, `reviewer` yêu cầu sửa, kit tắt ghi công AI; T19: vòng sửa, tiêu chí 10, chờ bạn approve PR #4 lần đầu |
 
 ---
 
@@ -3662,3 +3662,70 @@ Checkpoint 3 đã qua, và T18 đã làm được một nửa. Phần còn lại
 Sau đó mình pipe file vào `gh secret set` để đặt secret `AO_DEV_APP_KEY` cho environment `merge-gate` trên `ao-pilot`, nên nội dung key không hiện ra ở đâu. Xong thì mình xóa file đó khỏi `ao-keys`. File `tungph7-ao-dev.pem` đang có giữ nguyên.
 
 Bạn làm xong cả hai thì nhắn "xong". Mình sẽ cho `fe-dev` nhận `DEMO-6`, làm mục 1–3 của checklist, rồi mở PR bằng `ao-pr.mjs`. Khi `CI` xanh, `jira-sync` chuyển item sang In Review. Sau đó `reviewer` đăng báo cáo yêu cầu sửa bằng bot `ao-review`, vì mục 4 còn thiếu; mình cố ý để lại mục 4 để reviewer có lý do thật mà yêu cầu sửa. Khi `jira-sync` đưa item về In Progress là xong T18. T19 làm tiếp trên cùng PR và cần bạn approve PR trên GitHub.
+
+---
+
+# Phiên 12 · Lượt 2 — 2026-10-29 khoảng 13:50
+
+Giữa Lượt 1 và lượt này, bạn chuyển `DEMO-6` sang Ready và tạo key thứ hai của `ao-dev`.
+
+**Bạn:**
+
+```markdown
+xong
+```
+
+Sau lượt này Claude làm nốt T18 (PR #67), rồi làm T19 tới bước cần bạn approve (lượt code, không ghi).
+
+**Claude:**
+
+T18 đã xong và đã merge (PR #67, CI xanh). T19 đã làm tới bước cần bạn approve PR #4 lần đầu.
+
+**Đã xong:**
+
+- **Key thứ hai của `ao-dev`:** key ký đúng App `tungph7-ao-dev`. Mình đã đặt nó làm secret `AO_DEV_APP_KEY` của environment `merge-gate`, rồi xóa file khỏi `ao-keys`.
+- **Tiêu chí 5: đạt.**
+  - `fe-dev` nhận `DEMO-6`, viết test trước rồi code mục 1–3, rồi mở [PR #4](https://github.com/TungPH7/ao-pilot/pull/4) bằng `ao-pr.mjs`. Tác giả PR là `tungph7-ao-dev[bot]`.
+  - Khi `CI` xanh, `jira-sync` chuyển item sang In Review.
+  - `reviewer` đăng báo cáo REQUEST_CHANGES bằng `tungph7-ao-review[bot]`, với finding High là thiếu mục 4.
+  - `jira-sync` đưa item về In Progress. Rework count là 1.
+- **Tiêu chí 6: đạt đủ**, vì agent chạy được `ao-pr.mjs create`.
+- **Tiêu chí 10: đạt.** Bài thử ở T3 dùng job không có `deployment: false`, còn job `merge-gate` thật thì có, nên mình thử lại đúng cấu hình đó với secret thật. Job trên một nhánh probe bị GitHub chặn trước khi chạy bước nào: `Branch "probe/t19-env" is not allowed to deploy to merge-gate due to environment protection rules.` Nhánh probe đã xóa.
+- **T19, vòng sửa:**
+  - `fe-dev` sửa mục 4 (viết test trước) và push commit `7e66a58`.
+  - `jira-sync` lại chuyển item sang In Review.
+  - `reviewer` review vòng hai và đăng báo cáo COMMENT. Không còn finding Critical hay High; còn một Medium (`price` là `NaN` hoặc `Infinity` chưa bị chặn) và một Low.
+  - `merge-gate` in: `Waiting #4: security report on head 7e66a58; approval on head 7e66a58`.
+
+**Ba phát hiện, đã ghi vào `tasks/verification.md`:**
+
+1. **Agent tự thêm dòng `Co-Authored-By: Claude` vào commit**, vì Claude Code mặc định dặn agent làm vậy. Mình đã sửa ba chỗ:
+   - `kit/.claude/settings.json` có thêm setting `attribution` để trống, kèm một test.
+   - `ao-pilot` nhận cùng setting qua `.claude/settings.local.json`, cho tới lần chép kit sau.
+   - Commit đó của agent được viết lại, không còn dòng ghi công.
+
+   Commit sau của agent không còn dòng này.
+2. **`--allowedTools` không chặn được lệnh nào ở máy bạn.** Các lượt `claude -p` chạy ở chế độ quyền `auto`, theo `defaultMode` trong setting của bạn. Agent vẫn chạy được `python`, `cat` và `git fetch` dù các lệnh này không có trong danh sách cho phép. Lớp chặn thật là:
+   - các hook, vì hook từ chối thì lệnh bị chặn ở mọi chế độ;
+   - các luật phía server: Restrict của Jira, environment `merge-gate`, `merge-gate` và `audit`.
+
+   Ở T18 mình đã ghi sai rằng lớp quyền cũng chặn `gh`, và đã sửa câu đó. Tài liệu ở T21 sẽ ghi rõ điều này.
+3. **`gh` 2.16 của bạn lỗi khi chạy `gh pr view <n>` không kèm `--json`**, vì GitHub đã tắt Projects (classic). Lời nhắc cho agent vì vậy dùng `--json`. Bản chép kit trong dự án cũng không có `templates/`, nên lời nhắc chỉ tới một bản sao của mẫu. Module `agent-roster` cần lo cả hai chuyện này.
+
+## Việc cần bạn: approve PR #4 lần đầu
+
+Bạn approve ngay bây giờ, dù `security` chưa đăng báo cáo. Đó là cố ý: `merge-gate` sẽ đứng chờ báo cáo của `security` và không merge. Trong lúc đó mình cho `fe-dev` push thêm một commit sửa finding Medium, để kiểm rằng approve trên commit cũ không còn được tính.
+
+1. Mở https://github.com/TungPH7/ao-pilot/pull/4
+2. Bấm tab **Files changed** để đọc diff, nếu bạn muốn.
+3. Bấm nút **Review changes** màu xanh ở góc phải phía trên danh sách file. Giao diện mới có thể ghi **Submit review** **(đối chiếu giao diện)**.
+4. Chọn **Approve**. Ô bình luận có thể để trống.
+5. Bấm **Submit review**.
+
+Xong thì nhắn "đã approve". Mình làm tiếp:
+
+1. Kiểm `merge-gate` đứng chờ báo cáo của `security`.
+2. Cho `fe-dev` push commit sửa finding Medium, rồi kiểm `merge-gate` đòi approve trên commit mới. Đây là phần approve cũ của tiêu chí 8.
+3. Cho `devops` mở một PR nhỏ sửa `.github/workflows/`, để thử phần còn lại của tiêu chí 8.
+4. Cho `reviewer` và `security` đăng báo cáo trên cả hai PR.
+5. Nhờ bạn approve lại PR #4, và approve PR của `devops`. Lúc đó `merge-gate` phải merge PR #4, nhưng không merge PR của `devops` mà báo bạn tự merge.
