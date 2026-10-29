@@ -18,7 +18,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 8 | `56ad3187-0f02-4139-9d15-eff3c7191377` | 2026-10-28 13:25 → 16:22 | T19 đóng gói tài liệu và lưu plan của tracker-integration (lượt code, không ghi) |
 | 9 | `79cccd91-9d3a-495d-a154-927ae2ce5928` | 2026-10-28 16:22 → 16:34 | Bạn xác nhận tracker-integration hoàn thành và chọn quality-gates; Claude đánh dấu ô cuối (PR #45); câu trả lời bị bộ lọc an toàn chặn |
 | 10 | `b645b669-931c-4d95-ba32-24fd3e090d67` | 2026-10-28 16:35 → 2026-10-29 khoảng 03:30 | Giả định và câu hỏi cho quality-gates: bảo vệ nhánh khi repo private ở gói Free, danh tính để agent mở PR; bạn chọn 1a, 2a; viết SPEC-quality-gates; bạn duyệt spec, lập plan 21 task; bạn duyệt plan, bắt đầu T1; vì sao bạn phải tự tạo App, script tạo App bằng manifest flow; T1–T5, Checkpoint 1; ba đề xuất được đồng ý, T6–T13, hết lượt dùng giữa T13, Checkpoint 2 |
-| 11 | `318a4364-f1b9-4cc5-9744-ae8ff4f80c7d` | 2026-10-29 09:00 → | Bạn cho qua Checkpoint 2; Giai đoạn 4 của quality-gates |
+| 11 | `318a4364-f1b9-4cc5-9744-ae8ff4f80c7d` | 2026-10-29 09:00 → | Bạn cho qua Checkpoint 2; T14–T17 (lượt code): merge-gate, audit, gh:protect; Checkpoint 3, chờ bạn xóa repo thử |
 
 ---
 
@@ -3556,3 +3556,51 @@ T13 đã xong (PR #60), nên mình dừng ở Checkpoint 2.
 4. So với lần chạy xanh: https://github.com/TungPH7/ao-pilot/actions/runs/40762874979
 
 Bạn nhắn "qua Checkpoint 2", hoặc điều muốn sửa, thì mình sang Giai đoạn 4 (`merge-gate`, `audit`, `gh:protect`). PR #3 của `ao-pilot` mình để mở tới khi bạn xem xong rồi mới đóng.
+
+---
+
+# Phiên 11 · Lượt 1 — 2026-10-29 09:00
+
+**Bạn:**
+
+```markdown
+Tiếp tục session id: b645b669-931c-4d95-ba32-24fd3e090d67
+
+qua Checkpoint 2 nhé
+```
+
+Sau lượt này Claude qua Checkpoint 2 (PR #61), làm T14–T17 (lượt code, không ghi), rồi dừng ở Checkpoint 3.
+
+**Claude:**
+
+Checkpoint 2 đã qua, và Giai đoạn 4 gần xong: T14–T16 đã merge, T17 chỉ còn một bước cần bạn.
+
+**Đã xong (CI xanh, đã merge vào `main`):**
+
+- **Checkpoint 2 (PR #61):** đã tick trong plan; PR #3 của `ao-pilot` đã đóng.
+- **T14 (PR #62):** `decideMerge`, phần quyết định của `merge-gate`. Với mỗi PR, nó trả một trong bốn kết quả: merge, chờ (kèm điều kiện còn thiếu), để bạn tự merge (PR sửa file được bảo vệ), hoặc bỏ qua. Kit giờ đọc được báo cáo review: dòng `Role:`, bảng Findings, các finding Critical và High. `ao-pr.mjs review` cũng từ chối báo cáo mà `merge-gate` không đọc được, ngay trước khi gửi.
+- **T15 (PR #63):** script và workflow `merge-gate`. Workflow chạy sau mỗi lần `jira-sync`, chỉ ở nhánh mặc định, lấy key từ environment `merge-gate` và không tạo deployment. GitHub từ chối merge vì PR vừa có push mới thì script báo chờ, không báo lỗi.
+- **T16 (PR #64):** `audit` trước khi deploy, gồm script và reusable workflow. Khi `audit` đỏ, item Jira được gắn cờ "Needs you", mỗi commit chỉ một comment. Chạy thử trên `ao-pilot`: commit cài kit mà mình push thẳng lên `develop` ở T13 bị đỏ đúng lý do.
+
+**T17 (PR #65, đang mở):** lệnh `npm run gh:protect`. Trên `ao-pilot` lệnh báo soft mode và không đổi gì. Trên repo public tạm `TungPH7/ao-ruleset-probe`: lần đầu tạo ruleset, lần hai cập nhật đúng ruleset đó, và đọc lại thấy khớp. GitHub tự thêm trường `require_extra_approval_for_unattributed_changes: true`, trường mình chưa thấy trong tài liệu; mình đã ghi lại để xem khi có dự án thật dùng ruleset.
+
+Một chỗ mình phải tự diễn giải spec: với `audit`, PR từ `release/*` do bạn mở được tính là đã approve, vì GitHub không cho tác giả tự approve PR của mình. Spec chỉ ghi quy tắc này cho PR của Story, Task, Bug. Nếu bạn muốn khác, mình sửa.
+
+## Việc cần bạn: xóa repo thử `TungPH7/ao-ruleset-probe`
+
+Token của `gh` không có quyền xóa repo, và mình không muốn thêm quyền đó vào một token dùng lâu dài. Bạn xóa trên giao diện:
+
+1. Mở https://github.com/TungPH7/ao-ruleset-probe/settings
+2. Kéo xuống cuối trang, tới mục **Danger Zone**, bấm **Delete this repository**.
+3. Bấm **I want to delete this repository**, rồi **I have read and understand these effects**.
+4. Gõ `TungPH7/ao-ruleset-probe` vào ô xác nhận, rồi bấm **Delete this repository**. GitHub có thể hỏi lại mật khẩu hoặc mã 2FA.
+
+Nhãn nút lấy theo giao diện GitHub mà mình biết; nếu bạn thấy khác, chụp màn hình gửi mình.
+
+## Checkpoint 3
+
+1. `npm test` xanh: 497 test.
+2. `merge-gate --dry-run` trên `ao-pilot`: mình mở lại PR #3 để có một PR thật. Script in `Waiting #3: reviewer report on head df44b9e; security report on head df44b9e; approval on head df44b9e`. Kết quả này đúng, vì PR đó chưa có báo cáo review và chưa có approve. Chạy hai lần in y hệt nhau; lúc CI còn chạy thì dòng này có thêm `CI green on head df44b9e`.
+3. Tiêu chí 11: đạt khi repo thử đã bị xóa.
+
+Bạn xóa repo xong thì nhắn "qua Checkpoint 3" (hoặc điều muốn sửa). Mình sẽ kiểm repo đã mất, tick T17 và Checkpoint 3, đóng lại PR #3, rồi sang Giai đoạn 5: kiểm thật đầu cuối với agent `fe-dev` và `reviewer`. Giai đoạn đó cần bạn chấp nhận hook mới của `ao-pilot`, approve PR, và một lần bấm Merge tay để thử `audit`.
