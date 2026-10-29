@@ -20,7 +20,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 10 | `b645b669-931c-4d95-ba32-24fd3e090d67` | 2026-10-28 16:35 → 2026-10-29 khoảng 03:30 | Giả định và câu hỏi cho quality-gates: bảo vệ nhánh khi repo private ở gói Free, danh tính để agent mở PR; bạn chọn 1a, 2a; viết SPEC-quality-gates; bạn duyệt spec, lập plan 21 task; bạn duyệt plan, bắt đầu T1; vì sao bạn phải tự tạo App, script tạo App bằng manifest flow; T1–T5, Checkpoint 1; ba đề xuất được đồng ý, T6–T13, hết lượt dùng giữa T13, Checkpoint 2 |
 | 11 | `318a4364-f1b9-4cc5-9744-ae8ff4f80c7d` | 2026-10-29 09:00 → khoảng 09:40 | Bạn cho qua Checkpoint 2; T14–T17 (lượt code): merge-gate, audit, gh:protect; Checkpoint 3, chờ bạn xóa repo thử |
 | 12 | `32807628-e04f-47b4-889d-f855a40dabce` | 2026-10-29 khoảng 11:04 → khoảng 23:06 | Bạn cho qua Checkpoint 3; T17 và Checkpoint 3 đóng (PR #65, #66); T18 (lượt code): cài kit mới lên `ao-pilot`, tạo `DEMO-6`, `gh-guard` chặn ba đường vòng; bạn chuyển `DEMO-6` sang Ready và tạo key thứ hai của `ao-dev`; T18 đóng (PR #67): `fe-dev` mở PR #4, `reviewer` yêu cầu sửa, kit tắt ghi công AI; T19: vòng sửa, tiêu chí 10; bạn approve PR #4 lần đầu; T19: approve trên commit cũ không còn được tính, `devops` mở PR #5 sửa workflow, `reviewer` và `security` đăng báo cáo, bạn approve PR #4 lần hai và PR #5; T19 đóng (PR #68): `merge-gate` merge PR #4, `DEMO-6` sang Ready for QA, vòng PR tốn 55 phút Actions; T20: `fe-dev` mở PR #6, chờ bạn merge tay; bạn báo đã merge nhưng PR #6 vẫn mở; bạn merge lại, `audit` chặn deploy và gắn cờ `DEMO-8`; `fe-dev` mở PR #7 revert; bạn approve PR #7; T20 đóng (PR #69): `merge-gate` merge PR #7, `develop` sạch trở lại, gỡ cờ `DEMO-8`; Checkpoint 4, chờ bạn; bạn hỏi về `gh` 2.16.1, mình đề xuất sửa `gh-guard` cho các lệnh `gh` mới rồi mới cập nhật `gh`; bạn đồng ý: vá `gh-guard` (PR #70), lên `gh` 2.103.3, tắt telemetry; bạn đăng nhập lại `gh`, token vào keyring; bạn thu hồi token cũ và cho qua Checkpoint 4; git mất quyền push vì Git Credential Manager giữ token cũ của `gh`; bạn đăng nhập lại git; Checkpoint 4 đóng (PR #71); T21 đóng (PR #72); checkpoint cuối, chờ bạn |
-| 13 | `2c3e5733-3a72-4ae6-b04c-ca09a16731cc` | 2026-10-29 khoảng 23:31 → | Bạn chọn làm tiếp agent-roster; quality-gates đóng (PR #73); giả định và câu hỏi cho agent-roster: model cho từng vai trò, `ux` giao gì |
+| 13 | `2c3e5733-3a72-4ae6-b04c-ca09a16731cc` | 2026-10-29 khoảng 23:31 → | Bạn chọn làm tiếp agent-roster; quality-gates đóng (PR #73); giả định và câu hỏi cho agent-roster: model cho từng vai trò, `ux` giao gì; bạn đề xuất model và effort, đồng ý artifact `design`; Claude đề xuất effort theo vai trò, quy tắc cho `design.md`, ba skill từ registry, chỉ lấy ý từ `agency-agents` |
 
 ---
 
@@ -4338,3 +4338,170 @@ Bạn trả lời hai câu trên và sửa giả định nếu cần. Sau đó m
 - [Claude Code Docs: Settings files and precedence](https://code.claude.com/docs/en/settings)
 - Giá model: skill `claude-api` có sẵn trong Claude Code, bảng giá cập nhật ngày 2026-10-06
 - agent-skills 0.6.13: `skills/*/SKILL.md` và `agents/*.md` trong thư mục plugin
+
+---
+
+# Phiên 13 · Lượt 2 — 2026-10-30 khoảng 01:18
+
+**Bạn:**
+
+```markdown
+Thảo luận 1 nhé, thảo luận xong thì dừng lại, hỏi xác nhận
+
+cân nhắc sử dụng /find-skills để tìm các skills phù hợp, nhiều lượt install nhé. Có nên chọn lọc những agent hay tại D:\Document\1Khoahoc\4LapTrinh\AI-for-coding\agency-agents không?
+
+1. Model cho từng vai trò? tôi dùng như này bạn xem có ổn không?
+- pm, ux dùng Sonet ở xHigh Effort
+- các vai trò còn lại dùng Opus với Max Effort
+
+2. đồng ý với (a) Artifact mới design (như đề xuất), chỗ 'wireframe của từng màn hình' có nên dùng ASCII có đánh số (bố cục) không? Khuyến nghị: Mermaid (luồng) + ASCII có đánh số (bố cục) + YAML spec (hành vi) bạn thấy ok không ? đánh số khối trong ASCII, rồi mô tả chi tiết từng số ở phần spec
+```
+
+Trước lượt này, bạn chạy `/model` (giữ Opus 5.5), rồi `/context`. Trong lúc mình chuẩn bị câu trả lời, bạn nhắn thêm: `Try again`.
+
+**Claude:**
+
+Mình đã chạy `find-skills` với khoảng 35 từ khóa, đọc các agent liên quan trong `agency-agents`, và đối chiếu đề xuất model của bạn với tài liệu về effort. Dưới đây là bốn phần, mỗi phần kèm đề xuất; cuối cùng là bốn điểm cần bạn xác nhận. Mình chưa viết SPEC.
+
+## 1. Model và effort
+
+**Model: mình đồng ý.** Opus cho tám vai trò, Sonnet cho `pm` và `ux`. Hệ quả nhỏ: `reviewer` cùng model với dev nên mất một lớp khác biệt. Bù lại, `reviewer` có ngữ cảnh mới và checklist riêng, còn `security` và `qa` kiểm độc lập. Mình thấy chấp nhận được.
+
+**Effort `max` cho cả tám vai trò: mình đề xuất không.** Bốn lý do:
+
+- Tài liệu Claude Code dành `max` cho "việc khó mà bạn muốn Claude tự làm không cần bạn, ví dụ tìm lỗ hổng bảo mật", và cảnh báo `max` có thể cho lợi ích giảm dần, dễ nghĩ quá mức, nên thử trước khi dùng rộng.
+- Theo tài liệu API, Opus 5.5 ở `medium` đã vượt Opus 5 ở `high` trên các bài đánh giá về code. Ở cùng một mức, Opus 5.5 nghĩ nhiều hơn Opus 5, nhất là ở `xhigh` và `max`, và `max` không có trần.
+- Cấu hình Claude Code trên máy cho thấy tài khoản ở hạng giới hạn `default_claude_ai`, tức gói Pro như mình ghi nhận từ trước, và chưa bật extra usage. Hết giới hạn thì agent dừng giữa task. Dev chạy nhiều nhất, nên đó là chỗ tốn nhất.
+- `ba` và `sa` hỏi bạn từng câu. Ở `max`, mỗi lượt bạn chờ lâu hơn.
+
+Mình đề xuất giữ model của bạn và chỉnh effort theo việc:
+
+| Vai trò | Model | Bạn đề xuất | Mình đề xuất | Lý do |
+|---|---|---|---|---|
+| `security` | Opus | `max` | `max` | Đúng ví dụ của tài liệu: tìm lỗ hổng, chạy không cần bạn |
+| `ba`, `sa` | Opus | `max` | `xhigh` | Mỗi Epic một lần nên đáng chi, nhưng làm việc trực tiếp với bạn |
+| `reviewer` | Opus | `max` | `xhigh` | Mỗi vòng PR một lần, cần soi kỹ |
+| `fe-dev`, `be-dev` | Opus | `max` | `high` | Chạy nhiều nhất. Task đã có plan, acceptance criteria và test để tự kiểm; tài liệu xếp "sửa lỗi trong codebase có sẵn" vào `high` |
+| `qa` | Opus | `max` | `high` | Phần lớn là chạy test và so kết quả với acceptance criteria. Snapshot trình duyệt đã làm token tăng nhanh, không cần nghĩ thêm ở `max` |
+| `devops` | Opus | `max` | `high` | Ít khi chạy; sửa workflow luôn qua bạn duyệt, vì đó là đường dẫn được bảo vệ |
+| `ux` | Sonnet | `xhigh` | `xhigh` | Giữ như bạn: `design.md` là đầu vào của FE và E2E |
+| `pm` | Sonnet | `xhigh` | `medium` | Chỉ tóm tắt kết quả JQL; chênh lệch nhỏ vì mỗi ngày chạy một lần |
+
+`security` chạy ở mọi PR, nên dòng `max` của nó tốn nhất bảng; lượt kiểm thật sẽ cho biết có chịu được không.
+
+Khi một item khó, hoặc bị trả về lần thứ hai, có thể chạy lại agent đó với biến môi trường `CLAUDE_CODE_EFFORT_LEVEL=xhigh`, vì biến này thắng effort trong frontmatter. Khi nào nâng là việc của `dev-workflow`; module này chỉ kiểm cách đó chạy được. Máy bạn chưa đặt biến này, nên effort trong frontmatter có hiệu lực, thắng cả setting hiện tại của bạn (Opus và Sonnet ở `xhigh`).
+
+Mình không có hai con số: Anthropic không công bố gói Pro quy đổi token ra giới hạn thế nào, và chưa có số đo một lượt dev ở `max` tốn bao nhiêu. Lượt kiểm thật sẽ ghi token và thời gian của từng lượt chạy. Nếu bạn muốn quyết bằng số đo, mình cho `fe-dev` làm cùng một task hai lần, ở `high` và ở `max`, rồi so token, thời gian và kết quả.
+
+## 2. Định dạng `design.md`
+
+**Mình đồng ý với Mermaid cho luồng, ASCII có đánh số cho bố cục, YAML cho hành vi.** Mỗi lớp làm một việc, con số nối bố cục với hành vi, YAML để script kiểm được, và cả ba là text nên nằm trong Git, review được trong PR. Mình đề xuất thêm năm quy tắc:
+
+1. **Mã ổn định.** Màn hình đánh `S1`, `S2`; khối trong một màn hình đánh `[1]`, `[2]` theo thứ tự đọc (trên xuống, trái sang phải), cũng là thứ tự phím Tab mong muốn. Story, acceptance criteria và tên E2E test trỏ tới khối bằng mã đầy đủ, ví dụ `S1.4`.
+2. **Khung vẽ bằng ký tự ASCII** (`+`, `-`, `|`, `[ ]`, `_`), không dùng ký tự vẽ khung Unicode hay emoji, rộng tối đa 100 cột, để hình thẳng cột trên GitHub, VS Code và terminal. Trong khung chỉ để số và nhãn ngắn; nội dung chi tiết nằm ở YAML. Chỉ vẽ thêm hình khi bố cục đổi theo cỡ màn hình, ví dụ trên mobile.
+3. **YAML nằm ngay dưới hình của màn hình đó.** Khóa bằng tiếng Anh, giá trị bằng tiếng Việt, theo quy ước ngôn ngữ của kit. Mỗi khối có các khóa `name`, `type`, `content`, `behavior`, `validation`, `states`, `a11y`, `ac`; khóa nào không cần thì bỏ.
+4. **Mermaid dùng mã màn hình làm tên nút**, và ghi khối kích hoạt lên mũi tên.
+5. **Một script Node kiểm `design.md`:** YAML đọc được; mỗi `[n]` trong hình có đúng một mục trong YAML và ngược lại; mỗi nút trong Mermaid có phần màn hình tương ứng. `ux` chạy script này trước khi giao.
+
+Ví dụ ngắn cho màn hình đăng nhập:
+
+```mermaid
+flowchart LR
+  S1[S1 Đăng nhập] -->|"[4] thành công"| S2[S2 Trang chủ]
+  S1 -->|"[5]"| S3[S3 Quên mật khẩu]
+```
+
+```text
+S1 · Đăng nhập · desktop
++----------------------------------------+
+| [1] Logo                               |
++----------------------------------------+
+| [2] Email      [__________________]    |
+| [3] Mật khẩu   [__________________]    |
+| [4] (Đăng nhập)   [5] Quên mật khẩu?   |
+| [6] Thông báo lỗi                      |
++----------------------------------------+
+```
+
+```yaml
+screen: S1
+route: /login
+blocks:
+  # Lược bớt [1], [3], [5] cho gọn.
+  2:
+    name: Ô email
+    type: input
+    validation: Bắt buộc, đúng định dạng email
+    a11y: { label: Email }
+  4:
+    name: Nút Đăng nhập
+    type: button
+    behavior: Gửi form. Thành công thì sang S2; sai mật khẩu thì hiện [6]
+    states:
+      submitting: Khóa nút, hiện vòng xoay
+    ac: [AC1, AC2]
+  6:
+    name: Thông báo lỗi
+    type: alert
+    content: Email hoặc mật khẩu không đúng
+    a11y: { role: alert }
+```
+
+Thêm artifact `design` là thay đổi hợp đồng: artifact mới trong `policies.yaml`, đầu ra mới của stage `spec`, và template mới. Bạn đã đồng ý hướng (a), nên mình đưa cả ba vào SPEC.
+
+## 3. Skill từ registry
+
+Mình chạy `npx skills find` theo từng vai trò, rồi kiểm chủ repo, số sao, giấy phép và đọc SKILL.md. Số lượt cài một mình không đủ tin: trong kết quả có ba repo cùng tên `superpowers` của ba chủ lạ, đều có skill `agent-browser` với hơn 100K lượt cài, và vài công cụ trình duyệt "chống phát hiện" xếp gần đầu.
+
+Nguyên tắc mình dùng: agent-skills vẫn là xương sống. Chỉ thêm skill khi nó lấp một khoảng trống, chủ repo đáng tin, không trái hợp đồng, và chỉ cần Node. Các skill nhiều lượt cài nhất phần lớn trùng với agent-skills hoặc không hợp, nên ba skill mình chọn có lượt cài thấp hơn:
+
+| Skill | Lượt cài | Chủ repo | Cho vai trò | Lấp khoảng trống nào |
+|---|---|---|---|---|
+| `microsoft/playwright-cli@playwright-cli` | 199,7K | Microsoft, 14,7K sao, Apache-2.0 | `qa` | `qa` chưa có cách lái trình duyệt trên môi trường QA. Skill trình duyệt của agent-skills cần MCP server chrome-devtools; skill này dùng CLI: snapshot, click, điền form, chụp ảnh, gắn ảnh vào PR. Cần Node 18+ và `npm install -g @playwright/cli@latest` |
+| `getsentry/skills@security-review` | 21,7K | Sentry, 1,1K sao, Apache-2.0 | `security` | Chỉ báo lỗi đã lần ra đường khai thác; tìm hiểu cả codebase nhưng chỉ báo trên diff; thang mức Critical, High, Medium, Low khớp template `review-report`. Hướng dẫn theo ngôn ngữ chỉ có JavaScript và Python; với Spring Boot chỉ dùng được phần chung |
+| `getsentry/skills@gha-security-review` | 4,8K | Sentry | `security` | Review PR sửa `.github/workflows/**` theo các vụ tấn công thật (pwn request, expression injection). Kit dựa nhiều vào GitHub Actions |
+
+Không chọn:
+
+- `anthropics/skills@webapp-testing` (192K): dùng script Python, máy bạn không có Python.
+- `mattpocock/skills` (`tdd` 1,2M, `code-review` 815,4K, `to-prd` 351,6K) và `obra/superpowers` (308K sao): tốt, nhưng trùng từng việc với agent-skills và có quy ước riêng. Hai bộ trong cùng một agent sẽ cho chỉ dẫn trái nhau; quyết định từ đầu dự án cũng là không cài `superpowers` cạnh agent-skills.
+- Skill thiết kế (`vercel-labs/agent-skills@web-design-guidelines` 800,4K, `pbakaus/impeccable` 369,4K, `ui-ux-pro-max` 422,6K): dùng để chỉnh giao diện đã code, không phải để viết wireframe. `web-design-guidelines` còn tải luật từ Internet mỗi lần chạy.
+- Skill Jira và standup: lượt cài thấp (`jira-integration` 10,2K, `atlassian-mcp` 4,5K) hoặc dành cho Lark, Google Workspace. Quy tắc Jira của kit đã nằm trong hook và hợp đồng.
+
+Repo của Sentry là một plugin gồm 30 skill, trong đó có `commit`, `create-branch`, `pr-writer` theo quy ước của Sentry. Bật cả plugin thì phiên chính của bạn có thể tự gọi chúng, nên kit chỉ lấy hai skill cần dùng. Tên `security-review` cũng trùng với một skill có sẵn của Claude Code. Cách đưa vào dự án (cài bằng `npx skills add`, hay chép file kèm giấy phép rồi đổi tên) mình chốt trong SPEC.
+
+Skill theo stack phụ thuộc từng dự án, nên không nằm trong kit. Mình đề xuất mỗi dự án khai thêm skill cho từng vai trò trong một file nhỏ, ví dụ `.ai-orchestrator/roster.local.yaml`, và script sinh agent gộp vào. Với pilot Next.js + NestJS, `fe-dev` có `vercel-react-best-practices` (851,8K, máy bạn đã cài). Phía NestJS chưa có skill đủ tin: `nestjs-best-practices` (30,7K) nằm trong repo 292 sao và không có giấy phép. Cho E2E, `currents-dev/playwright-best-practices` (99,9K) đáng cân nhắc, nhưng repo chỉ 413 sao và SKILL.md dài 26 KB. Với Spring Boot có `github/awesome-copilot@java-springboot` (21,4K, GitHub, MIT).
+
+## 4. `agency-agents`
+
+Repo có 329 file Markdown, giấy phép MIT, 165K sao; mỗi file là một persona cho một chuyên môn, đúng định dạng agent của Claude Code. **Mình đề xuất chọn lọc ý, không chọn lọc agent:** không đưa agent nào vào kit, chỉ viết lại vài quy tắc tốt vào prompt của mình và ghi nguồn. Cách này khớp với quyết định từ đầu dự án: mượn có chọn lọc từ `agency-agents`. Lý do không lấy nguyên agent:
+
+- Persona gắn với quy trình riêng của repo đó. `Evidence Collector` chạy `./qa-playwright-capture.sh` và tìm file trong `resources/views/` của Laravel. `Jira Workflow Steward` bắt commit theo dạng `<gitmoji> JIRA-ID: mô tả`, trái với `type(scope): subject`. `Code Reviewer` chia mức 🔴, 🟡, 💭, trái với Critical, High, Medium, Low.
+- Vài persona tự nhận có trí nhớ lâu dài (`Evidence Collector`, `Senior Project Manager`, `Senior Developer`), trong khi agent của kit không có trí nhớ riêng (giả định 7).
+- Các file mình xem dài 3 đến 34 KB, tức khoảng 800 đến 9.000 token thêm vào system prompt, chưa kể skill.
+- Phần chính của `Minimal Change Engineer` (chỉ sửa đúng phạm vi task) đã có trong mục "Rule 0.5: Scope Discipline" của skill `incremental-implementation`.
+
+Ý đáng lấy:
+
+- **Cho `qa`, từ `Evidence Collector` và `Reality Checker`:** mỗi kết luận cần bằng chứng hợp với nó (ảnh chụp cho giao diện; assertion hoặc kết quả ghi lại cho hành vi); trích acceptance criterion bên cạnh điều quan sát được; không có lỗi nào cũng là kết quả hợp lệ, nhưng criterion chưa kiểm được thì ghi NOT TESTED chứ không ghi đạt; không thêm yêu cầu ngoài spec. Mình đề xuất thêm trạng thái NOT TESTED vào template `qa-report`.
+- **Cho `security`, từ `AI-Generated Code Security Auditor`:** danh sách lỗi mà code do AI viết hay mắc, như secret lọt vào bundle phía client hoặc nằm trong biến môi trường public kiểu `NEXT_PUBLIC_`, phân quyền "đã bật" nhưng policy cho mọi người đọc, và input của người dùng nối thẳng vào prompt gửi LLM. Mọi code trong hệ này đều do AI viết, nên danh sách này đúng chỗ.
+
+Các vai trò còn lại không có persona nào tốt hơn agent-skills.
+
+## Bạn xác nhận giúp mình
+
+1. **Model và effort** theo bảng ở phần 1, kèm cách nâng effort bằng biến môi trường. Hay bạn vẫn giữ `max` cho cả tám vai trò? Có làm phép so `high` với `max` cho `fe-dev` không?
+2. **`design.md`** theo Mermaid, ASCII có đánh số và YAML, với năm quy tắc và script kiểm.
+3. **Skill:** thêm `playwright-cli` cho `qa`; `security-review` và `gha-security-review` cho `security`; skill theo stack khai trong file riêng của từng dự án.
+4. **`agency-agents`:** chỉ lấy ý cho `qa` và `security`, và thêm trạng thái NOT TESTED vào `qa-report`.
+
+Bạn xác nhận hoặc sửa từng điểm. Sau đó mình viết `SPEC-agent-roster.md` rồi dừng lại để bạn duyệt.
+
+## Nguồn
+
+- [Claude Code Docs: Model configuration](https://code.claude.com/docs/en/model-config): các mức effort, mặc định, thứ tự ưu tiên, khi nào dùng `max`
+- Effort của Opus 5.5 và Sonnet 5.5: skill `claude-api` có sẵn trong Claude Code, `shared/model-migration.md`
+- Registry skills.sh qua `npx skills find` (2026-10-30); số sao và giấy phép đọc từ GitHub API
+- SKILL.md của `microsoft/playwright-cli` (`skills/playwright-cli`), `getsentry/skills` (`skills/security-review`, `skills/gha-security-review`, `.claude-plugin/marketplace.json`), `vercel-labs/agent-skills` (`skills/web-design-guidelines`), `anthropics/skills` (`skills/webapp-testing`)
+- `agency-agents` bản trên máy, commit `4e3ac3c`: `testing/testing-evidence-collector.md`, `testing/testing-reality-checker.md`, `security/security-ai-generated-code-auditor.md`, `engineering/engineering-code-reviewer.md`, `engineering/engineering-minimal-change-engineer.md`, `project-management/project-management-jira-workflow-steward.md`
+- agent-skills 0.6.13: `skills/incremental-implementation/SKILL.md`, `skills/browser-testing-with-devtools/SKILL.md`
