@@ -64,10 +64,14 @@ test('working on a PR with your account is refused, and the refusal names ao-pr.
     'gh pr comment 12 -b hi',
     'gh pr revert 12',
     'gh pr update-branch 12 --rebase',
+    'gh pr -R o/r merge 12',
+    'gh pr --repo o/r review 12 --approve',
   ]) {
     denied(bash(command), /ao-pr\.mjs/, command);
   }
-  for (const command of ['gh pr view 12', 'gh pr list --state open', 'gh pr checks 12', 'gh pr diff 12']) allowed(bash(command), command);
+  for (const command of ['gh pr view 12', 'gh pr list --state open', 'gh pr checks 12', 'gh pr diff 12', 'gh pr -R o/r view 12']) {
+    allowed(bash(command), command);
+  }
 });
 
 test('gh api may read but not write', () => {
