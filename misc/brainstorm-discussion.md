@@ -19,7 +19,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 9 | `79cccd91-9d3a-495d-a154-927ae2ce5928` | 2026-10-28 16:22 → 16:34 | Bạn xác nhận tracker-integration hoàn thành và chọn quality-gates; Claude đánh dấu ô cuối (PR #45); câu trả lời bị bộ lọc an toàn chặn |
 | 10 | `b645b669-931c-4d95-ba32-24fd3e090d67` | 2026-10-28 16:35 → 2026-10-29 khoảng 03:30 | Giả định và câu hỏi cho quality-gates: bảo vệ nhánh khi repo private ở gói Free, danh tính để agent mở PR; bạn chọn 1a, 2a; viết SPEC-quality-gates; bạn duyệt spec, lập plan 21 task; bạn duyệt plan, bắt đầu T1; vì sao bạn phải tự tạo App, script tạo App bằng manifest flow; T1–T5, Checkpoint 1; ba đề xuất được đồng ý, T6–T13, hết lượt dùng giữa T13, Checkpoint 2 |
 | 11 | `318a4364-f1b9-4cc5-9744-ae8ff4f80c7d` | 2026-10-29 09:00 → khoảng 09:40 | Bạn cho qua Checkpoint 2; T14–T17 (lượt code): merge-gate, audit, gh:protect; Checkpoint 3, chờ bạn xóa repo thử |
-| 12 | `32807628-e04f-47b4-889d-f855a40dabce` | 2026-10-29 khoảng 11:04 → | Bạn cho qua Checkpoint 3; T17 và Checkpoint 3 đóng (PR #65, #66); T18 (lượt code): cài kit mới lên `ao-pilot`, tạo `DEMO-6`, `gh-guard` chặn ba đường vòng; bạn chuyển `DEMO-6` sang Ready và tạo key thứ hai của `ao-dev`; T18 đóng (PR #67): `fe-dev` mở PR #4, `reviewer` yêu cầu sửa, kit tắt ghi công AI; T19: vòng sửa, tiêu chí 10; bạn approve PR #4 lần đầu; T19: approve trên commit cũ không còn được tính, `devops` mở PR #5 sửa workflow, `reviewer` và `security` đăng báo cáo, bạn approve PR #4 lần hai và PR #5; T19 đóng (PR #68): `merge-gate` merge PR #4, `DEMO-6` sang Ready for QA, vòng PR tốn 55 phút Actions; T20: `fe-dev` mở PR #6, chờ bạn merge tay; bạn báo đã merge nhưng PR #6 vẫn mở; bạn merge lại, `audit` chặn deploy và gắn cờ `DEMO-8`; `fe-dev` mở PR #7 revert; bạn approve PR #7; T20 đóng (PR #69): `merge-gate` merge PR #7, `develop` sạch trở lại, gỡ cờ `DEMO-8`; Checkpoint 4, chờ bạn; bạn hỏi về `gh` 2.16.1, mình đề xuất sửa `gh-guard` cho các lệnh `gh` mới rồi mới cập nhật `gh` |
+| 12 | `32807628-e04f-47b4-889d-f855a40dabce` | 2026-10-29 khoảng 11:04 → | Bạn cho qua Checkpoint 3; T17 và Checkpoint 3 đóng (PR #65, #66); T18 (lượt code): cài kit mới lên `ao-pilot`, tạo `DEMO-6`, `gh-guard` chặn ba đường vòng; bạn chuyển `DEMO-6` sang Ready và tạo key thứ hai của `ao-dev`; T18 đóng (PR #67): `fe-dev` mở PR #4, `reviewer` yêu cầu sửa, kit tắt ghi công AI; T19: vòng sửa, tiêu chí 10; bạn approve PR #4 lần đầu; T19: approve trên commit cũ không còn được tính, `devops` mở PR #5 sửa workflow, `reviewer` và `security` đăng báo cáo, bạn approve PR #4 lần hai và PR #5; T19 đóng (PR #68): `merge-gate` merge PR #4, `DEMO-6` sang Ready for QA, vòng PR tốn 55 phút Actions; T20: `fe-dev` mở PR #6, chờ bạn merge tay; bạn báo đã merge nhưng PR #6 vẫn mở; bạn merge lại, `audit` chặn deploy và gắn cờ `DEMO-8`; `fe-dev` mở PR #7 revert; bạn approve PR #7; T20 đóng (PR #69): `merge-gate` merge PR #7, `develop` sạch trở lại, gỡ cờ `DEMO-8`; Checkpoint 4, chờ bạn; bạn hỏi về `gh` 2.16.1, mình đề xuất sửa `gh-guard` cho các lệnh `gh` mới rồi mới cập nhật `gh`; bạn đồng ý: vá `gh-guard` (PR #70), lên `gh` 2.103.3, tắt telemetry; chờ bạn đăng nhập lại `gh` |
 
 ---
 
@@ -4027,3 +4027,68 @@ Mình vẫn dừng ở **Checkpoint 4**. Bạn nhắn một trong hai:
 
 - **"làm đề xuất gh"** (mình khuyên cách này): mình làm bước 1–4, gửi bước 5, rồi chờ bạn cho qua Checkpoint 4. Khi đó T21 ghi bản `gh` đã kiểm và luật mới của `gh-guard`.
 - **"qua Checkpoint 4"**: mình làm T21 trước, còn việc `gh` để sau. Khi đó bạn đừng cập nhật `gh` cho tới khi bản sửa `gh-guard` đã merge.
+
+---
+
+# Phiên 12 · Lượt 9 — 2026-10-29 khoảng 22:25
+
+**Bạn:**
+
+```markdown
+làm đề xuất gh
+```
+
+Sau tin nhắn này Claude vá `gh-guard` (PR #70), cập nhật `gh` lên 2.103.3, tắt telemetry, chạy các bước kiểm, rồi ghi kết quả vào `tasks/verification.md` (lượt code, không ghi).
+
+**Claude:**
+
+Mình đã làm xong bước 1–4. Còn bước 5 là việc của bạn.
+
+**1. Vá `gh-guard`: xong ([PR #70](https://github.com/TungPH7/ai-orchestrator-v1/pull/70), CI xanh, đã merge).**
+
+- Chặn bốn lệnh mới: `gh pr revert`, `gh pr update-branch`, `gh repo autolink create`/`delete` và `gh run delete`.
+- Chặn `gh auth status` khi kèm `-t` hoặc `--show-token`, kể cả trong một nhóm cờ như `-at`. Chặn agent đọc `hosts.yml` của `gh`.
+- Ngoài đề xuất, mình vá thêm một chỗ hở cùng loại, tìm thấy lúc viết test: `gh pr -R o/r merge 12` lọt qua hook, vì `-R` đứng trước lệnh con. Giờ hook đọc lệnh này là `pr merge`.
+- Bảng ở mục 2.7 của spec ghi các luật mới. Mỗi luật có test cho lệnh bị chặn và lệnh gần giống được cho qua. Các test mới đỏ khi chưa có bản sửa, và cả bộ 499 test đều xanh.
+
+**2. Cập nhật `gh`: xong.** `winget` đã cài bản 2.103.3.
+
+**3. Tắt telemetry: xong.** Lệnh `gh` đầu tiên trên bản mới là `gh config set telemetry disabled`, chạy kèm `GH_TELEMETRY=false` để chính lệnh đó không gửi gì. `gh config get telemetry` trả `disabled`.
+
+**4. Kiểm: đạt.**
+
+- `gh --version` in `2.103.3`.
+- `gh pr view 7 -R TungPH7/ao-pilot` không kèm `--json` in được PR #7. Trên 2.16, lệnh này lỗi.
+- `readGitHubToken` lấy được token qua `gh auth token`, đúng dạng. Mình không in token.
+- 499 test của kit xanh trên `main`.
+- `gh auth status` cho thấy token vẫn nằm trong `hosts.yml`. Bước 5 xử lý việc này.
+
+Bản chép kit trong `ao-pilot` sẽ nhận PR #70 ở lần chép kit tới, qua PR. Mình đã ghi các kết quả trên vào `tasks/verification.md`.
+
+## Việc cần bạn: bước 5, chuyển token vào Credential Manager
+
+Phần A nên làm nhưng không bắt buộc. Phần B là phần chính.
+
+**A. Thu hồi token cũ.** Sau phần B, token cũ không còn nằm trên đĩa, nhưng vẫn dùng được trên GitHub. Thu hồi quyền của "GitHub CLI" làm token cũ hết hiệu lực. Việc này đăng xuất `gh` trên mọi máy của bạn, nên phải làm A trước B.
+
+1. Mở https://github.com/settings/applications
+2. Chọn tab **Authorized OAuth Apps** **(đối chiếu giao diện)**.
+3. Ở dòng **GitHub CLI**, bấm nút **...**, rồi chọn **Revoke** **(đối chiếu giao diện)**. Chỉ thu hồi dòng này. Nếu có dòng **Git Credential Manager** thì để nguyên, vì git dùng nó.
+4. Trong hộp thoại, bấm **I understand, revoke access** **(đối chiếu giao diện)**.
+
+**B. Đăng nhập lại.**
+
+1. Mở PowerShell: bấm Start, gõ `PowerShell`, rồi bấm Enter.
+2. Dán lệnh sau, rồi bấm Enter:
+   ```
+   gh auth login --hostname github.com --git-protocol https --web --scopes workflow
+   ```
+3. Khi `gh` hỏi `Authenticate Git with your GitHub credentials? (Y/n)`, gõ `n` rồi bấm Enter. Như vậy git vẫn dùng Git Credential Manager như hiện nay.
+4. `gh` in một mã dạng `XXXX-XXXX`. Chép mã đó, rồi bấm Enter để mở trình duyệt.
+5. Trên trang **Device Activation**, dán mã, rồi bấm **Continue** **(đối chiếu giao diện)**.
+6. Trang tiếp theo liệt kê các quyền `gist`, `read:org`, `repo` và `workflow`. Bấm **Authorize github** **(đối chiếu giao diện)**. GitHub có thể hỏi lại mật khẩu hoặc mã 2FA.
+7. Quay lại PowerShell. Khi thấy dòng `✓ Logged in as TungPH7` là xong.
+
+Xong thì nhắn "đã đăng nhập lại". Mình sẽ kiểm rằng token đã vào Credential Manager và `hosts.yml` không còn token, ghi kết quả, rồi chờ bạn cho qua Checkpoint 4.
+
+Nếu chưa muốn làm bước 5 lúc này, bạn nhắn thẳng "qua Checkpoint 4".
