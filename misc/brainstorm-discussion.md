@@ -19,7 +19,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 9 | `79cccd91-9d3a-495d-a154-927ae2ce5928` | 2026-10-28 16:22 → 16:34 | Bạn xác nhận tracker-integration hoàn thành và chọn quality-gates; Claude đánh dấu ô cuối (PR #45); câu trả lời bị bộ lọc an toàn chặn |
 | 10 | `b645b669-931c-4d95-ba32-24fd3e090d67` | 2026-10-28 16:35 → 2026-10-29 khoảng 03:30 | Giả định và câu hỏi cho quality-gates: bảo vệ nhánh khi repo private ở gói Free, danh tính để agent mở PR; bạn chọn 1a, 2a; viết SPEC-quality-gates; bạn duyệt spec, lập plan 21 task; bạn duyệt plan, bắt đầu T1; vì sao bạn phải tự tạo App, script tạo App bằng manifest flow; T1–T5, Checkpoint 1; ba đề xuất được đồng ý, T6–T13, hết lượt dùng giữa T13, Checkpoint 2 |
 | 11 | `318a4364-f1b9-4cc5-9744-ae8ff4f80c7d` | 2026-10-29 09:00 → khoảng 09:40 | Bạn cho qua Checkpoint 2; T14–T17 (lượt code): merge-gate, audit, gh:protect; Checkpoint 3, chờ bạn xóa repo thử |
-| 12 | `32807628-e04f-47b4-889d-f855a40dabce` | 2026-10-29 khoảng 11:04 → | Bạn cho qua Checkpoint 3; T17 và Checkpoint 3 đóng (PR #65, #66); T18 (lượt code): cài kit mới lên `ao-pilot`, tạo `DEMO-6`, `gh-guard` chặn ba đường vòng; bạn chuyển `DEMO-6` sang Ready và tạo key thứ hai của `ao-dev`; T18 đóng (PR #67): `fe-dev` mở PR #4, `reviewer` yêu cầu sửa, kit tắt ghi công AI; T19: vòng sửa, tiêu chí 10; bạn approve PR #4 lần đầu; T19: approve trên commit cũ không còn được tính, `devops` mở PR #5 sửa workflow, `reviewer` và `security` đăng báo cáo, chờ bạn approve PR #4 lần hai và PR #5 |
+| 12 | `32807628-e04f-47b4-889d-f855a40dabce` | 2026-10-29 khoảng 11:04 → | Bạn cho qua Checkpoint 3; T17 và Checkpoint 3 đóng (PR #65, #66); T18 (lượt code): cài kit mới lên `ao-pilot`, tạo `DEMO-6`, `gh-guard` chặn ba đường vòng; bạn chuyển `DEMO-6` sang Ready và tạo key thứ hai của `ao-dev`; T18 đóng (PR #67): `fe-dev` mở PR #4, `reviewer` yêu cầu sửa, kit tắt ghi công AI; T19: vòng sửa, tiêu chí 10; bạn approve PR #4 lần đầu; T19: approve trên commit cũ không còn được tính, `devops` mở PR #5 sửa workflow, `reviewer` và `security` đăng báo cáo, bạn approve PR #4 lần hai và PR #5; T19 đóng (PR #68): `merge-gate` merge PR #4, `DEMO-6` sang Ready for QA, vòng PR tốn 55 phút Actions; T20: `fe-dev` mở PR #6, chờ bạn merge tay |
 
 ---
 
@@ -3779,3 +3779,55 @@ Bạn approve cả PR #5 dù PR này sẽ không được merge. Mục đích l�
 1. Kiểm `merge-gate` squash PR #4 vào `develop` bằng `ao-dev`. Sau đó `CI`, `audit` và deploy lên `development` phải chạy, và `jira-sync` phải chuyển `DEMO-6` sang Ready for QA. Đây là tiêu chí 7.
 2. Kiểm `merge-gate` báo `Needs you` cho PR #5 khi không còn điều kiện nào thiếu, rồi đóng PR #5.
 3. Đo số phút Actions của cả vòng PR #4 (tiêu chí 12), ghi lại, rồi đóng T19.
+
+---
+
+# Phiên 12 · Lượt 4 — 2026-10-29 khoảng 16:22
+
+**Bạn:**
+
+```markdown
+đã approve
+```
+
+Sau tin nhắn này Claude làm nốt T19 (PR #68), rồi làm T20 tới bước cần bạn merge tay (lượt code, không ghi).
+
+**Claude:**
+
+T19 đã xong và đã merge (PR #68, CI xanh). T20 đã làm tới bước cần bạn merge tay.
+
+**T19, đã xong:**
+
+- **Tiêu chí 7: đạt.**
+  - `merge-gate` squash PR #4 vào `develop` bằng `tungph7-ao-dev[bot]`, 40 giây sau khi bạn approve. Thân commit là header của ba commit trong PR.
+  - `CI` chạy trên `develop`. `audit` in `audit passed: 9f17f6d on develop is the merge of PR #4, which met every gate`, rồi deploy lên `development` chạy.
+  - `jira-sync` chuyển `DEMO-6` sang Ready for QA bằng `orchestratorci`.
+- **Tiêu chí 8: đạt cả hai phần.** Với PR #5, `merge-gate` in `Needs you #5: it changes .github/workflows/ci.yml, so read the diff and merge it yourself`. Lúc đó PR không còn thiếu điều kiện nào, nhưng `merge-gate` vẫn không merge. Mình đã đóng PR #5, kèm một bình luận nói lý do.
+- **Tiêu chí 10: đạt nốt.** Key trong environment `merge-gate` dùng được để merge từ `main`.
+- **Tiêu chí 12: vòng PR #4 tốn 55 phút Actions.**
+  - Mỗi lần push lên PR tốn 8 phút. Mỗi báo cáo review, hay mỗi lần bạn approve, tốn 2 phút. Merge và deploy tốn 11 phút.
+  - Một vòng chuẩn tốn khoảng 37 phút: mở PR, sửa một lần, hai báo cáo ở mỗi vòng, một lần approve, merge và deploy. 2.000 phút mỗi tháng của gói Free đủ cho khoảng 54 vòng như vậy.
+  - `jira-sync` và `merge-gate` chiếm 33 trên 55 phút. Mỗi lần chạy chỉ mất 10–20 giây, nhưng bị tính tròn một phút. T21 sẽ ghi con số này vào tài liệu.
+- **Dọn dẹp:** `DEMO-7` vẫn ở New, và bạn có thể Cancel nó ở Checkpoint 4. Agent `devops` ở máy đã được xóa.
+
+**T20, đã chuẩn bị:**
+
+- Mình tạo item thử `DEMO-8`: thêm test cho `quantity` là `Infinity`, tức finding Low của `reviewer` ở PR #4.
+- `fe-dev` mở [PR #6](https://github.com/TungPH7/ao-pilot/pull/6), và `CI` xanh.
+- `merge-gate` in `Waiting #6: reviewer report on head 451523d; security report on head 451523d; approval on head 451523d`, nên không merge.
+
+## Việc cần bạn: merge tay PR #6 khi chưa approve
+
+Đây là bài thử tiêu chí 9. Repo private ở gói Free không có bảo vệ nhánh, nên nút Merge vẫn bấm được. Điều cần kiểm là commit không qua cổng thì không lên môi trường nào. Bạn không review và không approve PR này.
+
+1. Mở https://github.com/TungPH7/ao-pilot/pull/6
+2. Kéo xuống cuối trang, tới khung có nút merge màu xanh.
+3. Bấm mũi tên ▾ ở bên phải nút đó, rồi chọn **Squash and merge**. Nếu nút đã ghi **Squash and merge** thì bỏ qua bước này **(đối chiếu giao diện)**.
+4. Bấm **Squash and merge**.
+5. Bấm **Confirm squash and merge**. Không cần sửa tiêu đề hay nội dung commit.
+
+Xong thì nhắn "đã merge". Mình làm tiếp:
+
+1. Kiểm rằng ở lần deploy sau đó, `audit` đỏ và ghi lý do, job `deploy` không chạy, và `DEMO-8` mang cờ "Needs you". Đây là tiêu chí 9.
+2. Cho `fe-dev` mở PR revert commit đó, rồi cho `reviewer` và `security` đăng báo cáo. Khi đó mình nhờ bạn approve PR revert, để nó qua đủ cổng và `merge-gate` merge.
+3. Gỡ cờ của `DEMO-8`, ghi kết quả, đóng T20, rồi tới Checkpoint 4.
