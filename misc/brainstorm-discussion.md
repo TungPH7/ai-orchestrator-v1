@@ -19,7 +19,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 9 | `79cccd91-9d3a-495d-a154-927ae2ce5928` | 2026-10-28 16:22 → 16:34 | Bạn xác nhận tracker-integration hoàn thành và chọn quality-gates; Claude đánh dấu ô cuối (PR #45); câu trả lời bị bộ lọc an toàn chặn |
 | 10 | `b645b669-931c-4d95-ba32-24fd3e090d67` | 2026-10-28 16:35 → 2026-10-29 khoảng 03:30 | Giả định và câu hỏi cho quality-gates: bảo vệ nhánh khi repo private ở gói Free, danh tính để agent mở PR; bạn chọn 1a, 2a; viết SPEC-quality-gates; bạn duyệt spec, lập plan 21 task; bạn duyệt plan, bắt đầu T1; vì sao bạn phải tự tạo App, script tạo App bằng manifest flow; T1–T5, Checkpoint 1; ba đề xuất được đồng ý, T6–T13, hết lượt dùng giữa T13, Checkpoint 2 |
 | 11 | `318a4364-f1b9-4cc5-9744-ae8ff4f80c7d` | 2026-10-29 09:00 → khoảng 09:40 | Bạn cho qua Checkpoint 2; T14–T17 (lượt code): merge-gate, audit, gh:protect; Checkpoint 3, chờ bạn xóa repo thử |
-| 12 | `32807628-e04f-47b4-889d-f855a40dabce` | 2026-10-29 khoảng 11:04 → | Bạn cho qua Checkpoint 3; T17 và Checkpoint 3 đóng (PR #65, #66); T18 (lượt code): cài kit mới lên `ao-pilot`, tạo `DEMO-6`, `gh-guard` chặn ba đường vòng; bạn chuyển `DEMO-6` sang Ready và tạo key thứ hai của `ao-dev`; T18 đóng (PR #67): `fe-dev` mở PR #4, `reviewer` yêu cầu sửa, kit tắt ghi công AI; T19: vòng sửa, tiêu chí 10, chờ bạn approve PR #4 lần đầu |
+| 12 | `32807628-e04f-47b4-889d-f855a40dabce` | 2026-10-29 khoảng 11:04 → | Bạn cho qua Checkpoint 3; T17 và Checkpoint 3 đóng (PR #65, #66); T18 (lượt code): cài kit mới lên `ao-pilot`, tạo `DEMO-6`, `gh-guard` chặn ba đường vòng; bạn chuyển `DEMO-6` sang Ready và tạo key thứ hai của `ao-dev`; T18 đóng (PR #67): `fe-dev` mở PR #4, `reviewer` yêu cầu sửa, kit tắt ghi công AI; T19: vòng sửa, tiêu chí 10; bạn approve PR #4 lần đầu; T19: approve trên commit cũ không còn được tính, `devops` mở PR #5 sửa workflow, `reviewer` và `security` đăng báo cáo, chờ bạn approve PR #4 lần hai và PR #5 |
 
 ---
 
@@ -3729,3 +3729,53 @@ Xong thì nhắn "đã approve". Mình làm tiếp:
 3. Cho `devops` mở một PR nhỏ sửa `.github/workflows/`, để thử phần còn lại của tiêu chí 8.
 4. Cho `reviewer` và `security` đăng báo cáo trên cả hai PR.
 5. Nhờ bạn approve lại PR #4, và approve PR của `devops`. Lúc đó `merge-gate` phải merge PR #4, nhưng không merge PR của `devops` mà báo bạn tự merge.
+
+---
+
+# Phiên 12 · Lượt 3 — 2026-10-29 khoảng 15:55
+
+**Bạn:**
+
+```markdown
+đã approve
+```
+
+Sau tin nhắn này Claude làm tiếp T19 tới bước cần bạn approve lần hai (lượt code, không ghi).
+
+**Claude:**
+
+T19 đã làm tới bước cần bạn approve lần hai. Kết quả đã ghi vào `tasks/verification.md`.
+
+**Đã xong:**
+
+- **Tiêu chí 8, phần approve trên commit cũ: đạt.**
+  - Sau khi bạn approve trên `7e66a58`, `merge-gate` chỉ còn chờ báo cáo của `security`.
+  - `fe-dev` sửa finding Medium (`price` là `NaN` hoặc `Infinity`), viết test trước, rồi push commit `8924767`. `CI` xanh.
+  - `merge-gate` in: `Waiting #4: reviewer report on head 8924767; security report on head 8924767; approval on head 8924767`. Approve và hai báo cáo trên commit cũ đều không còn được tính.
+- **Tiêu chí 8, phần PR sửa workflow:**
+  - Mình tạo item thử `DEMO-7`. Mình cũng tạo agent `devops` chỉ ở máy, không commit, vì `.claude/` là đường dẫn được bảo vệ.
+  - `devops` thêm `timeout-minutes: 15` vào bốn job của `.github/workflows/ci.yml`, rồi mở [PR #5](https://github.com/TungPH7/ao-pilot/pull/5) bằng `ao-pr.mjs`. `gh-guard` cho qua, vì chỉ `devops` được sửa thư mục này. `CI` xanh.
+  - `merge-gate` in: `Needs you #5: it changes .github/workflows/ci.yml, so read the diff and merge it yourself`.
+- **Review:** `reviewer` và `security` đăng báo cáo COMMENT trên cả hai PR, không có finding Critical hay High.
+  - PR #4 có một finding Medium của `security`: `quantity` và `price` không có giới hạn trên. Vì vậy một giỏ có số quá lớn cho `total` là `Infinity`, và được miễn phí vận chuyển. Finding Medium không chặn merge, và có thể thành một item sau.
+  - PR #5 chỉ có finding Low.
+- **`merge-gate` giờ in:** `Waiting #4: approval on head 8924767` và `Needs you #5: ... (still missing: approval on head a8e842e)`.
+
+**Sự cố RAM:** trong lúc `security` chạy, Claude Code dừng lệnh nền của mình vì máy thiếu RAM (còn khoảng 690 MB trống trên 16 GB). Tiến trình của agent vẫn chạy hết và đăng đủ báo cáo, nên không phải chạy lại. Lúc nãy mình nói có 7 phiên `claude.exe` cũ, nhưng một trong số đó là phiên này. Số tiến trình `claude.exe` khác đang mở từ 26–28/10 là 6. Nếu bạn không dùng chúng, đóng bớt sẽ đỡ thiếu RAM ở các bước sau.
+
+## Việc cần bạn: approve PR #4 lần hai và approve PR #5
+
+Bạn approve cả PR #5 dù PR này sẽ không được merge. Mục đích là thử rằng `merge-gate` không merge PR sửa workflow, kể cả khi PR đã đủ mọi điều kiện khác. Sau bài thử, mình đóng PR #5.
+
+1. Mở https://github.com/TungPH7/ao-pilot/pull/4
+2. Nếu muốn đọc diff, bấm tab **Files changed**. So với lần approve trước, commit `8924767` chỉ đổi điều kiện của `price` (kèm thông điệp lỗi và comment), và thêm 6 test.
+3. Bấm nút **Review changes** màu xanh ở góc phải phía trên danh sách file. Giao diện mới có thể ghi **Submit review** **(đối chiếu giao diện)**.
+4. Chọn **Approve**. Ô bình luận có thể để trống.
+5. Bấm **Submit review**.
+6. Mở https://github.com/TungPH7/ao-pilot/pull/5 và làm lại bước 2 đến 5. Diff chỉ có bốn dòng `timeout-minutes: 15`.
+
+Đừng bấm **Merge** trên PR nào: `merge-gate` sẽ tự merge PR #4 khoảng nửa phút sau khi bạn approve. Xong thì nhắn "đã approve". Mình làm tiếp:
+
+1. Kiểm `merge-gate` squash PR #4 vào `develop` bằng `ao-dev`. Sau đó `CI`, `audit` và deploy lên `development` phải chạy, và `jira-sync` phải chuyển `DEMO-6` sang Ready for QA. Đây là tiêu chí 7.
+2. Kiểm `merge-gate` báo `Needs you` cho PR #5 khi không còn điều kiện nào thiếu, rồi đóng PR #5.
+3. Đo số phút Actions của cả vòng PR #4 (tiêu chí 12), ghi lại, rồi đóng T19.
