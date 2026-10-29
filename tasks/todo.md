@@ -285,8 +285,10 @@ Claude làm: chạy script, mở trang, đặt hai biến môi trường user `A
 
 ### Checkpoint 2
 
-- [ ] Tiêu chí 3 và 4 của spec mục 9 đạt
-- [ ] Bạn xem một lần chạy `CI` đỏ và job summary của nó trên `ao-pilot`
+- [x] Tiêu chí 3 và 4 của spec mục 9 đạt
+- [x] Bạn xem một lần chạy `CI` đỏ và job summary của nó trên `ao-pilot`
+
+Đã qua ngày 2026-10-29, không có gì phải sửa. PR #3 của `ao-pilot` (PR thử của T13) đã đóng.
 
 ---
 
