@@ -54,7 +54,17 @@ test('pushing to a protected branch is refused; pushing a work branch is not', (
 });
 
 test('working on a PR with your account is refused, and the refusal names ao-pr.mjs', () => {
-  for (const command of ['gh pr merge 12 --squash', 'gh pr review 12 --approve', 'gh pr create --title x --body y', 'gh pr edit 12 --title x', 'gh pr close 12', 'gh pr ready 12', 'gh pr comment 12 -b hi']) {
+  for (const command of [
+    'gh pr merge 12 --squash',
+    'gh pr review 12 --approve',
+    'gh pr create --title x --body y',
+    'gh pr edit 12 --title x',
+    'gh pr close 12',
+    'gh pr ready 12',
+    'gh pr comment 12 -b hi',
+    'gh pr revert 12',
+    'gh pr update-branch 12 --rebase',
+  ]) {
     denied(bash(command), /ao-pr\.mjs/, command);
   }
   for (const command of ['gh pr view 12', 'gh pr list --state open', 'gh pr checks 12', 'gh pr diff 12']) allowed(bash(command), command);
@@ -82,12 +92,19 @@ test('taking your token, an App key, or changing the repository settings is refu
     'gh secret set JIRA_CI_TOKEN',
     'gh variable delete X',
     'gh repo edit --visibility public',
+    'gh repo autolink create TICKET- "https://example.com/t/<num>"',
+    'gh repo autolink delete 3 --yes',
   ]) {
     denied(bash(command), /token|key|repository settings|secret|variable/, command);
   }
-  allowed(bash('gh auth status'), 'gh auth status');
+  for (const command of ['gh auth status', 'gh repo autolink list']) allowed(bash(command), command);
   denied(call('fe-dev', 'Read', { file_path: 'C:\\Users\\Huu Tung\\ao-keys\\tungph7-ao-review.pem' }), /key/, 'Read of a key');
   allowed(call('fe-dev', 'Read', { file_path: `${PROJECT}\\src\\a.ts` }), 'Read of code');
+});
+
+test('deleting a workflow run is refused; reading runs is not', () => {
+  denied(bash('gh run delete 123'), /workflow runs/, 'gh run delete');
+  for (const command of ['gh run view 123 --log-failed', 'gh run list --workflow CI']) allowed(bash(command), command);
 });
 
 test('each role runs ao-pr.mjs only with its own App', () => {
