@@ -82,8 +82,8 @@ T1–T3 đứng đầu vì nếu một giả định nền sai thì `merge-gate`
 - [x] T17: `gh:protect` và kiểm trên repo public tạm [bạn]
 
 ### Checkpoint 3
-- [ ] `npm test` xanh; `merge-gate.mjs --dry-run` trên `ao-pilot` in đúng PR nào chờ gì
-- [ ] Tiêu chí 11 đạt
+- [x] `npm test` xanh; `merge-gate.mjs --dry-run` trên `ao-pilot` in đúng PR nào chờ gì
+- [x] Tiêu chí 11 đạt
 
 ### Giai đoạn 5: kiểm thật đầu cuối
 - [ ] T18: Agent mở PR, reviewer yêu cầu sửa, `gh-guard` chặn đường vòng [bạn]

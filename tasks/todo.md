@@ -370,8 +370,8 @@ Bạn làm, nếu `gh` chưa có quyền xóa repo: chạy `gh auth refresh -h g
 
 ### Checkpoint 3
 
-- [ ] `npm test` xanh; `merge-gate.mjs --dry-run` trên `ao-pilot` in đúng PR nào chờ gì
-- [ ] Tiêu chí 11 đạt
+- [x] `npm test` xanh; `merge-gate.mjs --dry-run` trên `ao-pilot` in đúng PR nào chờ gì
+- [x] Tiêu chí 11 đạt
 
 ---
 
