@@ -547,4 +547,16 @@ Tiêu chí 9 của spec mục 9 đạt. T20 đóng.
 
 Bản chép kit trong `ao-pilot` nhận PR #70 ở lần chép kit tới, qua PR. Trước lần đó, không agent nào chạy trong `ao-pilot`.
 
-Còn lại: bạn đăng nhập lại `gh` để chuyển token vào Windows Credential Manager.
+**Đăng nhập lại: đạt.** Bạn đăng nhập lại bằng `gh auth login --hostname github.com --git-protocol https --web --scopes workflow`.
+
+| Kiểm | Kết quả |
+|---|---|
+| `gh auth status` | Đăng nhập `TungPH7`, token nằm trong `keyring` |
+| `hosts.yml` | Không còn dòng `oauth_token` |
+| Windows Credential Manager | Có mục `gh:github.com:TungPH7` và `gh:github.com:` (chỉ xem tên mục, không xem giá trị) |
+| Scope của token | `gist`, `read:org`, `repo`, `workflow`, như trước |
+| `readGitHubToken` với `env` rỗng | Lấy được token, đúng dạng |
+| Cấu hình git | `credential.helper` vẫn là `manager`, nên git vẫn dùng Git Credential Manager |
+| `gh config get telemetry` | `disabled` |
+
+Thu hồi token cũ trên GitHub là bước tùy chọn. Mình không kiểm được bước này từ máy, vì muốn kiểm phải dùng chính token cũ.
