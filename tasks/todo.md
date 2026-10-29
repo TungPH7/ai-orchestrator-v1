@@ -312,17 +312,17 @@ Claude làm: chạy script, mở trang, đặt hai biến môi trường user `A
 
 **Cỡ:** M
 
-### [ ] T15: `merge-gate`: script và workflow
+### [x] T15: `merge-gate`: script và workflow
 
 **Mô tả:** `scripts/merge-gate.mjs` gom dữ kiện của các PR đang mở, gọi `decideMerge`, merge bằng token của `ao-dev`, và in `Waiting #<n>: ...` cho PR chưa đủ; `--dry-run` chỉ in. `kit/.github/workflows/merge-gate.yml` chạy theo `workflow_run` của `jira-sync` và `workflow_dispatch`, bỏ qua lần chạy không ở nhánh mặc định, và lấy key từ environment `merge-gate` (hoặc secret của repo, theo kết quả T3).
 
 **Tiêu chí chấp nhận:**
-- [ ] Chạy lại lần hai không merge hay in gì khác lần đầu.
-- [ ] Merge gửi kèm SHA của commit đầu; GitHub từ chối vì PR có push mới thì script báo `wait`, không báo lỗi.
-- [ ] Workflow không có trigger `pull_request` hay `pull_request_review`.
+- [x] Chạy lại lần hai không merge hay in gì khác lần đầu.
+- [x] Merge gửi kèm SHA của commit đầu; GitHub từ chối vì PR có push mới thì script báo `wait`, không báo lỗi.
+- [x] Workflow không có trigger `pull_request` hay `pull_request_review`.
 
 **Kiểm chứng:**
-- [ ] `npm test` xanh; `node scripts/merge-gate.mjs --dry-run` trên `ao-pilot` in đúng PR nào chờ gì
+- [x] `npm test` xanh; `node scripts/merge-gate.mjs --dry-run` trên `ao-pilot` in đúng PR nào chờ gì
 
 **Phụ thuộc:** T3, T14
 
