@@ -1,4 +1,5 @@
 {
+  "attribution": { "commit": "", "pr": "" },
   "env": {
     "AO_JIRA_SPACE": "<KEY>",
     "AO_APPROVERS": "<github-login>",

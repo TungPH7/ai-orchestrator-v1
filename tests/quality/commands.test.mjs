@@ -144,3 +144,9 @@ test('the kit settings run gh-guard before Bash, Read, Edit, Write and NotebookE
   assert.ok(entry, 'gh-guard is declared');
   assert.deepEqual(entry.matcher.split('|').sort(), ['Bash', 'Edit', 'NotebookEdit', 'Read', 'Write']);
 });
+
+// Without it, Claude Code tells agents to end their commits with a Co-Authored-By trailer (seen in T18).
+test('the kit settings hide the attribution Claude Code adds to commits and PRs', async () => {
+  const { default: settings } = await import('../../kit/.claude/settings.json', { with: { type: 'json' } });
+  assert.deepEqual(settings.attribution, { commit: '', pr: '' });
+});
