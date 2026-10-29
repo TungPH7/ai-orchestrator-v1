@@ -105,6 +105,6 @@ Lần thử đầu, bản chép thiếu thư mục `contract/`, nên `pre-push` 
 
 Sửa: token đã nằm trong lịch sử nhánh, nên nhánh được viết lại (`git reset --soft` về `develop`, commit lại, force push) chứ không chỉ xóa file; dòng `eslint-disable` có `-- reason: ...`; hàm thứ hai có test. Commit mới qua được hook `pre-commit`. [Run 40762874979](https://github.com/TungPH7/ao-pilot/actions/runs/40762874979): cả bốn job xanh.
 
-**Phút Actions:** API `timing` trả 0 ms với repo private, nên tính từ thời gian từng job, mỗi job làm tròn lên một phút như GitHub tính: một lần chạy `CI` tốn 4 phút (các job chạy 6 đến 31 giây). PR #3 để mở cho Checkpoint 2.
+**Phút Actions:** API `timing` trả 0 ms với repo private, nên tính từ thời gian từng job, mỗi job làm tròn lên một phút như GitHub tính: một lần chạy `CI` tốn 4 phút (các job chạy 6 đến 31 giây). PR #3 để mở cho Checkpoint 2, rồi đóng (không merge) sau khi bạn cho qua checkpoint, ngày 2026-10-29.
 
 `jira-sync` chạy hai lần theo sự kiện của PR, cả hai thành công; `DEMO-5` vẫn ở New, không nhãn, vì Task không có Epic cha nên không qua được guard nào.

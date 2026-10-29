@@ -70,8 +70,10 @@ T1–T3 đứng đầu vì nếu một giả định nền sai thì `merge-gate`
 - [x] T13: Kiểm thật hook git và CI trên `ao-pilot`
 
 ### Checkpoint 2
-- [ ] Tiêu chí 3 và 4 của spec mục 9 đạt
-- [ ] Bạn xem một lần chạy `CI` đỏ và job summary của nó trên `ao-pilot`
+- [x] Tiêu chí 3 và 4 của spec mục 9 đạt
+- [x] Bạn xem một lần chạy `CI` đỏ và job summary của nó trên `ao-pilot`
+
+Đã qua ngày 2026-10-29, không có gì phải sửa. PR #3 của `ao-pilot` (PR thử của T13) đã đóng.
 
 ### Giai đoạn 4: merge-gate, audit, ruleset
 - [ ] T14: `decideMerge` và đọc báo cáo review
