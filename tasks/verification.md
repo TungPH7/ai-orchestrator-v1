@@ -111,7 +111,7 @@ Sửa: token đã nằm trong lịch sử nhánh, nên nhánh được viết l�
 
 ## T15: `merge-gate --dry-run` trên `ao-pilot`
 
-**2026-10-29, khoảng 10:00.** Chạy từ bản clone `ao-pilot`: `node ../ai-orchestrator/scripts/merge-gate.mjs --dry-run`. `.claude/settings.json` của bản clone chưa có slug hai App (T18 cập nhật bản chép kit), nên lần chạy đầu dừng đúng với `Set AO_DEV_APP and AO_REVIEW_APP, ...`; các lần sau truyền `AO_DEV_APP`, `AO_REVIEW_APP` qua biến môi trường. Script đọc bằng token của `gh`, không mua token App.
+**2026-10-29, khoảng 09:20.** Chạy từ bản clone `ao-pilot`: `node ../ai-orchestrator/scripts/merge-gate.mjs --dry-run`. `.claude/settings.json` của bản clone chưa có slug hai App (T18 cập nhật bản chép kit), nên lần chạy đầu dừng đúng với `Set AO_DEV_APP and AO_REVIEW_APP, ...`; các lần sau truyền `AO_DEV_APP`, `AO_REVIEW_APP` qua biến môi trường. Script đọc bằng token của `gh`, không mua token App.
 
 | Bước | Output |
 |---|---|
@@ -123,7 +123,7 @@ PR #3 để mở cho Checkpoint 3, rồi đóng lại.
 
 ## T16: `audit --dry-run` trên commit thật của `ao-pilot`
 
-**2026-10-29, khoảng 10:40.** Chạy từ bản clone `ao-pilot` với `--dry-run` (không ghi Jira), `AO_DEV_APP` và `AO_REVIEW_APP` qua biến môi trường; `AO_APPROVERS` và `AO_JIRA_SPACE` đọc từ `.claude/settings.json` của bản clone. Cả hai lần đều thoát mã 1, đúng như mong đợi:
+**2026-10-29, khoảng 09:30.** Chạy từ bản clone `ao-pilot` với `--dry-run` (không ghi Jira), `AO_DEV_APP` và `AO_REVIEW_APP` qua biến môi trường; `AO_APPROVERS` và `AO_JIRA_SPACE` đọc từ `.claude/settings.json` của bản clone. Cả hai lần đều thoát mã 1, đúng như mong đợi:
 
 | Commit trên `develop` | Output |
 |---|---|
@@ -134,7 +134,7 @@ PR #3 để mở cho Checkpoint 3, rồi đóng lại.
 
 ## T17: `gh:protect` (tiêu chí 11)
 
-**2026-10-29, khoảng 11:00.**
+**2026-10-29, khoảng 09:35.**
 
 - **`ao-pilot`:** `npm run gh:protect -- --repo TungPH7/ao-pilot` in `soft mode: merge-gate and audit enforce the gates`, thoát mã 0. `GET /rulesets` trả 403 (`Upgrade to GitHub Pro or make this repository public to enable this feature.`), nên script không gửi gì và repo không đổi.
 - **Repo public tạm `TungPH7/ao-ruleset-probe`:** tạo rỗng bằng `POST /user/repos`. Lần chạy đầu in `created ruleset ao-protected (id 26093077)`, lần hai in `updated ruleset ao-protected (id 26093077)`. Đọc lại: repo chỉ có một ruleset `ao-protected`; `name`, `target`, `enforcement`, `bypass_actors`, `conditions` giống hệt payload; trong `rules`, mọi trường đã gửi đều giữ nguyên giá trị. GitHub điền thêm ba trường mặc định cho rule `pull_request`: `required_reviewers: []`, `allowed_merge_methods: [merge, squash, rebase]` và `require_extra_approval_for_unattributed_changes: true`. Trường cuối không có trong tài liệu mình đã đọc; cần xem lại khi một dự án thật dùng ruleset.
