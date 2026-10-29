@@ -19,7 +19,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 9 | `79cccd91-9d3a-495d-a154-927ae2ce5928` | 2026-10-28 16:22 → 16:34 | Bạn xác nhận tracker-integration hoàn thành và chọn quality-gates; Claude đánh dấu ô cuối (PR #45); câu trả lời bị bộ lọc an toàn chặn |
 | 10 | `b645b669-931c-4d95-ba32-24fd3e090d67` | 2026-10-28 16:35 → 2026-10-29 khoảng 03:30 | Giả định và câu hỏi cho quality-gates: bảo vệ nhánh khi repo private ở gói Free, danh tính để agent mở PR; bạn chọn 1a, 2a; viết SPEC-quality-gates; bạn duyệt spec, lập plan 21 task; bạn duyệt plan, bắt đầu T1; vì sao bạn phải tự tạo App, script tạo App bằng manifest flow; T1–T5, Checkpoint 1; ba đề xuất được đồng ý, T6–T13, hết lượt dùng giữa T13, Checkpoint 2 |
 | 11 | `318a4364-f1b9-4cc5-9744-ae8ff4f80c7d` | 2026-10-29 09:00 → khoảng 09:40 | Bạn cho qua Checkpoint 2; T14–T17 (lượt code): merge-gate, audit, gh:protect; Checkpoint 3, chờ bạn xóa repo thử |
-| 12 | `32807628-e04f-47b4-889d-f855a40dabce` | 2026-10-29 khoảng 11:04 → | Bạn cho qua Checkpoint 3; T17 và Checkpoint 3 đóng (PR #65, #66); T18 (lượt code): cài kit mới lên `ao-pilot`, tạo `DEMO-6`, `gh-guard` chặn ba đường vòng; bạn chuyển `DEMO-6` sang Ready và tạo key thứ hai của `ao-dev`; T18 đóng (PR #67): `fe-dev` mở PR #4, `reviewer` yêu cầu sửa, kit tắt ghi công AI; T19: vòng sửa, tiêu chí 10; bạn approve PR #4 lần đầu; T19: approve trên commit cũ không còn được tính, `devops` mở PR #5 sửa workflow, `reviewer` và `security` đăng báo cáo, bạn approve PR #4 lần hai và PR #5; T19 đóng (PR #68): `merge-gate` merge PR #4, `DEMO-6` sang Ready for QA, vòng PR tốn 55 phút Actions; T20: `fe-dev` mở PR #6, chờ bạn merge tay; bạn báo đã merge nhưng PR #6 vẫn mở; bạn merge lại, `audit` chặn deploy và gắn cờ `DEMO-8`; `fe-dev` mở PR #7 revert; bạn approve PR #7; T20 đóng (PR #69): `merge-gate` merge PR #7, `develop` sạch trở lại, gỡ cờ `DEMO-8`; Checkpoint 4, chờ bạn; bạn hỏi về `gh` 2.16.1, mình đề xuất sửa `gh-guard` cho các lệnh `gh` mới rồi mới cập nhật `gh`; bạn đồng ý: vá `gh-guard` (PR #70), lên `gh` 2.103.3, tắt telemetry; bạn đăng nhập lại `gh`, token vào keyring; Checkpoint 4, chờ bạn |
+| 12 | `32807628-e04f-47b4-889d-f855a40dabce` | 2026-10-29 khoảng 11:04 → | Bạn cho qua Checkpoint 3; T17 và Checkpoint 3 đóng (PR #65, #66); T18 (lượt code): cài kit mới lên `ao-pilot`, tạo `DEMO-6`, `gh-guard` chặn ba đường vòng; bạn chuyển `DEMO-6` sang Ready và tạo key thứ hai của `ao-dev`; T18 đóng (PR #67): `fe-dev` mở PR #4, `reviewer` yêu cầu sửa, kit tắt ghi công AI; T19: vòng sửa, tiêu chí 10; bạn approve PR #4 lần đầu; T19: approve trên commit cũ không còn được tính, `devops` mở PR #5 sửa workflow, `reviewer` và `security` đăng báo cáo, bạn approve PR #4 lần hai và PR #5; T19 đóng (PR #68): `merge-gate` merge PR #4, `DEMO-6` sang Ready for QA, vòng PR tốn 55 phút Actions; T20: `fe-dev` mở PR #6, chờ bạn merge tay; bạn báo đã merge nhưng PR #6 vẫn mở; bạn merge lại, `audit` chặn deploy và gắn cờ `DEMO-8`; `fe-dev` mở PR #7 revert; bạn approve PR #7; T20 đóng (PR #69): `merge-gate` merge PR #7, `develop` sạch trở lại, gỡ cờ `DEMO-8`; Checkpoint 4, chờ bạn; bạn hỏi về `gh` 2.16.1, mình đề xuất sửa `gh-guard` cho các lệnh `gh` mới rồi mới cập nhật `gh`; bạn đồng ý: vá `gh-guard` (PR #70), lên `gh` 2.103.3, tắt telemetry; bạn đăng nhập lại `gh`, token vào keyring; bạn thu hồi token cũ và cho qua Checkpoint 4; git mất quyền push vì Git Credential Manager giữ token cũ của `gh`, chờ bạn đăng nhập lại git |
 
 ---
 
@@ -4128,3 +4128,45 @@ Việc `gh` đã xong, và mình vẫn dừng ở **Checkpoint 4**. Khi đã xem
 - bản `gh` đã kiểm là 2.103.3, và bản tối thiểu nên dùng;
 - các luật mới của `gh-guard`;
 - lời khuyên để token của `gh` trong keyring, không để trong `hosts.yml`.
+
+---
+
+# Phiên 12 · Lượt 11 — 2026-10-29 khoảng 22:46
+
+**Bạn:**
+
+```markdown
+Tôi đã thu hồi token cũ. qua Checkpoint 4 nhé
+```
+
+Sau tin nhắn này Claude kiểm rằng `gh` vẫn chạy, đánh dấu qua Checkpoint 4, rồi gặp lỗi khi push (lượt code, không ghi).
+
+**Claude:**
+
+Mình đã đánh dấu qua Checkpoint 4 trong `tasks/plan.md` và `tasks/todo.md`, và ghi việc bạn thu hồi token cũ vào `tasks/verification.md`. `gh` vẫn chạy tốt bằng token mới. Nhưng mình chưa push được, nên chưa mở được PR và chưa làm T21.
+
+**Lỗi:** `git push` báo `Invalid username or token. Password authentication is not supported for Git operations.`
+
+**Nguyên nhân, và đây là lỗi của mình:**
+
+- Ở Lượt 8 và Lượt 9, mình nói git không dùng token của `gh`, vì git dùng Git Credential Manager. Nhận định đó sai: mình chỉ xem cấu hình của git, mà không xem Git Credential Manager đang giữ token nào.
+- Khi đăng nhập, `gh` hỏi `Authenticate Git with your GitHub credentials?`, và Yes là mặc định. Chọn Yes thì `gh` chép token của nó vào Git Credential Manager bằng `git credential approve`. Mình đã đọc mã của `gh` 2.16.1 và thấy đúng đoạn này.
+- Nhiều khả năng lần đăng nhập `gh` đầu tiên của bạn đã chọn Yes. Vì vậy git vẫn dùng token cũ của `gh`, và khi bạn thu hồi quyền của "GitHub CLI", git mất quyền theo. Sau lần push lỗi, Git Credential Manager đã xóa credential hỏng của `github.com`.
+
+Không có gì bị mất. Các commit vẫn nằm ở nhánh `task/checkpoint-4` trên máy, chỉ chưa lên GitHub.
+
+## Việc cần bạn: chọn cách cho git đăng nhập lại
+
+**Cách 1 (mình khuyên): đăng nhập Git Credential Manager bằng app riêng của nó.** Git và `gh` sẽ dùng hai token khác nhau, nên thu hồi token này không làm hỏng bên kia.
+
+1. Gõ dòng sau vào ô nhắn của Claude Code, rồi bấm Enter. Dấu `!` cho lệnh chạy ngay trong phiên này:
+   ```
+   ! git credential-manager github login
+   ```
+2. Một cửa sổ Git Credential Manager hiện ra. Bấm **Sign in with your browser** **(đối chiếu giao diện)**.
+3. Trình duyệt mở trang cấp quyền cho **Git Credential Manager**. Bấm **Authorize git-ecosystem** **(đối chiếu giao diện)**. GitHub có thể hỏi lại mật khẩu hoặc mã 2FA.
+4. Khi trình duyệt báo đăng nhập thành công, quay lại Claude Code và nhắn "đã đăng nhập git".
+
+**Cách 2: cho git dùng chính token của `gh`.** Mình chạy `gh auth setup-git`, lệnh này thêm `gh` làm credential helper cho `github.com` trong file `.gitconfig` của bạn. Bạn không phải bấm gì, và chỉ có một token. Đổi lại, thu hồi token của `gh` sẽ làm git hỏng theo, như lần này. Muốn cách này thì nhắn "dùng gh cho git".
+
+Sau khi git đăng nhập lại, mình push nhánh, mở PR cho Checkpoint 4, rồi làm T21 tới checkpoint cuối.
