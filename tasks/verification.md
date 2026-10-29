@@ -301,4 +301,77 @@ Các lớp chặn thật là:
 
 Vậy giới hạn nhánh `main` của environment vẫn có hiệu lực khi có `deployment: false`, và secret không lộ cho nhánh khác. Nhánh probe đã xóa trên GitHub và ở máy. Phần còn lại của tiêu chí 10 (`merge-gate` trên `main` dùng được key để merge) sẽ thấy ở lần merge thật.
 
-**Bước tiếp:** bạn approve PR #4 trên `7e66a58` khi `security` chưa đăng báo cáo, nên `merge-gate` phải đứng chờ. Sau đó `fe-dev` push thêm một commit (sửa finding Medium) để thử approve cũ.
+**Approve trên commit cũ (tiêu chí 8, phần một): đạt.**
+
+Bạn approve PR #4 trên `7e66a58` lúc 15:53:01, khi `security` chưa đăng báo cáo.
+
+| Run | Kết quả |
+|---|---|
+| `jira-sync` pull_request_review ([40845368376](https://github.com/TungPH7/ao-pilot/actions/runs/40845368376)) | `Waiting DEMO-6: Deploy to QA needs pr-merged, qa-deployed`, `No change` |
+| `merge-gate` ([40845406972](https://github.com/TungPH7/ao-pilot/actions/runs/40845406972)) | `Waiting #4: security report on head 7e66a58`. Approve của bạn đã được tính; chỉ còn thiếu báo cáo của `security` |
+
+Lượt `fe-dev` thứ tư (15:57:18 → 15:59:38, 22 lượt, khoảng 0,27 USD) sửa finding Medium của vòng review thứ hai:
+
+- Test viết trước: thêm `price` là `NaN`, `Infinity` và `-Infinity` vào bảng dòng xấu, cho cả `total` và `shipping`. 4 trên 24 test đỏ (`NaN` và `Infinity`; `-Infinity` đã bị chặn vì nhỏ hơn 0).
+- Điều kiện đổi thành `!Number.isFinite(line.price) || line.price < 0`, thông điệp lỗi và comment đổi theo. 24/24 test xanh; lint, typecheck, coverage (100%) và build đều qua.
+- Agent commit và push `8924767` (`fix(cart): reject a price that is not a finite number (DEMO-6)`), không có dòng `Co-Authored-By`. `ao-pr.mjs edit 4` in `edited #4`. Lần này agent tự sửa cả mục Risks, vì lời nhắc dặn đọc lại mọi câu.
+
+| Run | Kết quả |
+|---|---|
+| `CI` pull_request trên `8924767` ([40846066800](https://github.com/TungPH7/ao-pilot/actions/runs/40846066800)) | Xanh, 4 phút tính tiền |
+| `jira-sync` pull_request ([40846066685](https://github.com/TungPH7/ao-pilot/actions/runs/40846066685)) và workflow_run sau `CI` ([40846113745](https://github.com/TungPH7/ao-pilot/actions/runs/40846113745)) | `Waiting DEMO-6: Deploy to QA needs pr-merged, qa-deployed`, `No change`. Item vẫn In Review |
+| `merge-gate` sau hai lần `jira-sync` ([40846105099](https://github.com/TungPH7/ao-pilot/actions/runs/40846105099), [40846144882](https://github.com/TungPH7/ao-pilot/actions/runs/40846144882)) | `Waiting #4: reviewer report on head 8924767; security report on head 8924767; approval on head 8924767` |
+
+Vậy approve trên commit cũ không còn được tính, và hai báo cáo trên commit cũ cũng vậy.
+
+Guard `merge-approved` của `jira-sync` thì tính lần quyết định mới nhất của bạn trên bất kỳ commit nào (thiết kế của `tracker-integration`), nên dòng `Waiting` của `jira-sync` không nhắc tới approve. Điều kiện approve trên commit mới nhất thuộc về `merge-gate` và `audit`. Item chỉ sang Ready for QA khi đã merge và deploy, nên chỗ khác nhau này không cho item đi sớm.
+
+`merge-gate` chạy được qua cả hai đường: sau một review (`jira-sync` pull_request_review, rồi `merge-gate`), và sau khi `CI` xong (`CI`, rồi `jira-sync` workflow_run, rồi `merge-gate`). Chuỗi thứ hai có hai tầng `workflow_run`, dưới giới hạn ba tầng của GitHub.
+
+**PR của agent có sửa `.github/workflows/` (tiêu chí 8, phần hai).**
+
+Chuẩn bị:
+
+- Claude tạo `DEMO-7` (Task, "quality-gates T19: PR của devops sửa workflow") bằng token CI. Checklist: bốn job của `ci.yml` có `timeout-minutes: 15`, và `CI` vẫn xanh. Item để nguyên ở New, vì bài thử chỉ cần PR.
+- Claude thêm agent thử `devops` vào `.claude/agents/devops.md` của `ao-pilot`, chỉ ở máy: file nằm trong `.git/info/exclude`, không commit, vì `.claude/**` là đường dẫn được bảo vệ.
+
+Lượt `devops` (16:00:53 → 16:02:21, 12 lượt, khoảng 0,15 USD):
+
+- Agent đọc `DEMO-7`, cắt nhánh `feature/DEMO-7-ci-job-timeout` từ `develop`, rồi thêm `timeout-minutes: 15` vào bốn job của `.github/workflows/ci.yml` bằng Edit. `gh-guard` cho qua, vì `devops` có trong `editors` của `.github/workflows/**`.
+- Agent commit và push `a8e842e` (`ci(workflows): stop a hung CI job after 15 minutes (DEMO-7)`), rồi mở [PR #5](https://github.com/TungPH7/ao-pilot/pull/5) bằng `ao-pr.mjs create`: `opened #5`. Tác giả PR là `tungph7-ao-dev[bot]`.
+
+| Run | Kết quả |
+|---|---|
+| `CI` pull_request trên `a8e842e` ([40846495849](https://github.com/TungPH7/ao-pilot/actions/runs/40846495849)) | Xanh, 4 phút tính tiền |
+| `jira-sync` pull_request ([40846496008](https://github.com/TungPH7/ao-pilot/actions/runs/40846496008)) và workflow_run ([40846543496](https://github.com/TungPH7/ao-pilot/actions/runs/40846543496)) | `No change`: `DEMO-7` ở New, không có bước chuyển nào của automation |
+| `merge-gate` ([40846537154](https://github.com/TungPH7/ao-pilot/actions/runs/40846537154), [40846583820](https://github.com/TungPH7/ao-pilot/actions/runs/40846583820)) | `Needs you #5: it changes .github/workflows/ci.yml, so read the diff and merge it yourself (still missing: reviewer report on head a8e842e; security report on head a8e842e; approval on head a8e842e)` |
+
+**Lượt `reviewer` trên cả hai PR (16:03:47 → 16:06:53, 25 lượt, khoảng 0,39 USD).** Agent đăng hai báo cáo COMMENT, không có finding Critical hay High:
+
+- PR #4, vòng ba, trên `8924767` lúc 16:05:55: `posted the reviewer report (COMMENT) on #4 at 8924767`. Bốn mục checklist đạt, và finding Medium của vòng hai đã đóng. Còn hai finding Low từ vòng hai: chưa có test cho `quantity` là `Infinity`, và phần kiểm tra nằm trong callback của `reduce`. Báo cáo cũng nêu rằng approve của bạn cũ hơn commit `8924767`.
+- PR #5, vòng một, trên `a8e842e` lúc 16:06:42: `posted the reviewer report (COMMENT) on #5 at a8e842e`. Hai mục checklist đạt. Có một finding Low: bốn workflow còn lại chưa có `timeout-minutes`, nằm ngoài phạm vi `DEMO-7`. Báo cáo nêu PR sửa `.github/workflows/`, nên merge hay đóng là việc của bạn.
+
+| Run | Kết quả |
+|---|---|
+| `jira-sync` pull_request_review của #4 ([40846975239](https://github.com/TungPH7/ao-pilot/actions/runs/40846975239)) | `Waiting DEMO-6: Deploy to QA needs pr-merged, qa-deployed`, `No change` |
+| `merge-gate` ([40847013946](https://github.com/TungPH7/ao-pilot/actions/runs/40847013946)) | `Waiting #4: security report on head 8924767; approval on head 8924767` |
+| `jira-sync` pull_request_review của #5 ([40847074667](https://github.com/TungPH7/ao-pilot/actions/runs/40847074667)) | `No change` |
+| `merge-gate` ([40847118169](https://github.com/TungPH7/ao-pilot/actions/runs/40847118169)) | `Needs you #5: ... (still missing: security report on head a8e842e; approval on head a8e842e)` |
+
+**Lượt `security` trên cả hai PR (16:06:53 → 16:11:59, 28 lượt, khoảng 0,62 USD).** Trong lúc agent chạy, Claude Code dừng lệnh nền chứa lượt này, vì máy thiếu RAM (còn khoảng 690 MB trống trên 16 GB). Tiến trình `claude` của agent không bị dừng theo và chạy hết. Claude chỉ chờ nó xong, không chạy lại. Agent đăng hai báo cáo COMMENT, không có finding Critical hay High:
+
+- PR #4 trên `8924767` lúc 16:11:33: `posted the security report (COMMENT) on #4 at 8924767`.
+  - Một finding Medium: `quantity` và `price` không có giới hạn trên. Dòng `{ price: 1e308, quantity: 10 }` qua được kiểm tra, `total` trả `Infinity` và `shipping` trả 0.
+  - Bốn finding Low, trong đó có: thông điệp lỗi in lại giá trị đầu vào, và một dòng `null` gây `TypeError` thay vì `RangeError`.
+- PR #5 trên `a8e842e` lúc 16:11:39: `posted the security report (COMMENT) on #5 at a8e842e`.
+  - Diff chỉ có bốn dòng thêm. Quyền, secret, action và trigger của `ci.yml` không đổi.
+  - Một finding Low có sẵn trong file, không thuộc diff: các bước `actions/checkout` chưa đặt `persist-credentials: false`.
+
+Agent còn đọc thêm bằng `gh api` (chỉ GET) và chạy hai lệnh `node -e` về hành vi chuẩn của JavaScript. Cả hai đều nằm ngoài `--allowedTools`, đúng như phát hiện về chế độ quyền `auto` ở trên.
+
+| Run | Kết quả |
+|---|---|
+| `jira-sync` pull_request_review của #4 ([40847708920](https://github.com/TungPH7/ao-pilot/actions/runs/40847708920)) và #5 ([40847722705](https://github.com/TungPH7/ao-pilot/actions/runs/40847722705)) | `DEMO-6`: `Waiting DEMO-6: Deploy to QA needs pr-merged, qa-deployed`, `No change`. `DEMO-7`: `No change` |
+| `merge-gate` ([40847751562](https://github.com/TungPH7/ao-pilot/actions/runs/40847751562), [40847763722](https://github.com/TungPH7/ao-pilot/actions/runs/40847763722)) | `Waiting #4: approval on head 8924767` và `Needs you #5: it changes .github/workflows/ci.yml, so read the diff and merge it yourself (still missing: approval on head a8e842e)` |
+
+**Bước tiếp:** bạn approve PR #4 trên `8924767` và PR #5 trên `a8e842e`. Với PR #4, `merge-gate` phải squash vào `develop` bằng `ao-dev`; sau đó `CI`, `audit` và deploy lên `development` chạy, và `jira-sync` chuyển `DEMO-6` sang Ready for QA. Với PR #5, `merge-gate` phải in `Needs you` khi không còn điều kiện nào thiếu, và không merge.
