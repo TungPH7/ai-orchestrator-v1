@@ -494,4 +494,23 @@ Lời nhắc của `reviewer` và `security` nói PR #7 là một revert: nó ph
 | `jira-sync` pull_request ([40852845460](https://github.com/TungPH7/ao-pilot/actions/runs/40852845460)), workflow_run ([40852891507](https://github.com/TungPH7/ao-pilot/actions/runs/40852891507)), hai pull_request_review ([40853154881](https://github.com/TungPH7/ao-pilot/actions/runs/40853154881), [40853426591](https://github.com/TungPH7/ao-pilot/actions/runs/40853426591)) | `No change`: `DEMO-8` ở New |
 | `merge-gate` ([40852939894](https://github.com/TungPH7/ao-pilot/actions/runs/40852939894), [40853192413](https://github.com/TungPH7/ao-pilot/actions/runs/40853192413), [40853472127](https://github.com/TungPH7/ao-pilot/actions/runs/40853472127)) | Từ `Waiting #7: reviewer report on head 6eb5c4e; security report on head 6eb5c4e; approval on head 6eb5c4e` tới `Waiting #7: approval on head 6eb5c4e` |
 
-**Bước tiếp:** bạn approve PR #7. `merge-gate` phải merge PR này, và ở lần deploy sau đó `audit` phải xanh. Khi đó `develop` có lại nội dung của `9f17f6d`, và Claude gỡ cờ của `DEMO-8`.
+**Approve PR revert, merge và deploy: đạt.**
+
+Bạn approve PR #7 trên `6eb5c4e` lúc 17:07:20.
+
+| Run | Kết quả |
+|---|---|
+| `jira-sync` pull_request_review ([40855012227](https://github.com/TungPH7/ao-pilot/actions/runs/40855012227)) | `No change` |
+| `merge-gate` ([40855058493](https://github.com/TungPH7/ao-pilot/actions/runs/40855058493)) | `Merged #7: revert(cart): undo the unapproved merge of PR #6 (DEMO-8) (squash at 6eb5c4e)` |
+| `Deploy` push trên `develop` ([40855101441](https://github.com/TungPH7/ao-pilot/actions/runs/40855101441)) | Job `audit` in `audit passed: 0e55963 on develop is the merge of PR #7, which met every gate`. Job `deploy` chạy và tạo deployment `development` cho `0e55963` |
+| `CI` push trên `develop` ([40855101410](https://github.com/TungPH7/ao-pilot/actions/runs/40855101410)) | Xanh |
+| `jira-sync` workflow_run ([40855148788](https://github.com/TungPH7/ao-pilot/actions/runs/40855148788)) và deployment_status ([40855154007](https://github.com/TungPH7/ao-pilot/actions/runs/40855154007), [40855162716](https://github.com/TungPH7/ao-pilot/actions/runs/40855162716)) | `no work item of DEMO` và `Waiting DEMO-3: Deploy to QA needs merge-approved`. `DEMO-8` ở New, nên không có bước chuyển nào |
+| `merge-gate` ([40855181306](https://github.com/TungPH7/ao-pilot/actions/runs/40855181306), [40855211388](https://github.com/TungPH7/ao-pilot/actions/runs/40855211388)) | `No open PR`. Lần chạy [40855184242](https://github.com/TungPH7/ao-pilot/actions/runs/40855184242) bị hủy khi còn chờ |
+
+- PR #7 được merge lúc 17:07:58, 38 giây sau khi bạn approve. `merged_by` là `tungph7-ao-dev[bot]`, và commit squash là `0e55963`.
+- Cây thư mục của `develop` (`0e55963`) giống hệt cây của `9f17f6d`, nên `develop` đã sạch trở lại.
+- Lúc 17:12:21, Claude gỡ cờ Impediment và nhãn `needs-you` của `DEMO-8` bằng token CI. Bình luận kèm theo: `Flag removed after the cleanup of quality-gates T20: PR #7 reverted 2e16d25 through every gate, and the audit passed for 0e55963 on develop. develop again holds only commits that came through the gates.`
+- Bản `ao-pilot` ở máy về `develop` (`0e55963`).
+- `DEMO-5` vẫn mang cờ từ T18: commit cài kit `2830053` được push thẳng lên `develop`, nên `audit` chặn deploy của nó, đúng thiết kế.
+
+Tiêu chí 9 của spec mục 9 đạt. T20 đóng.
