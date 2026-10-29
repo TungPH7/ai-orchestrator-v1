@@ -7,14 +7,13 @@
 // is AO_DEV_APP_KEY in CI or the file AO_DEV_APP_KEY_FILE names on your machine. The App slugs and id, and your GitHub
 // logins (AO_APPROVERS), come from the environment or from the env block of the project's .claude/settings.json.
 // --dry-run prints the decisions and buys no App token.
-import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 import { projectSettings, setting } from '../lib/project-settings.mjs';
 import { readGates } from '../lib/quality/gates.mjs';
 import { appCredentials, installationToken } from '../lib/quality/github-app.mjs';
 import { runMergeGate } from '../lib/quality/merge-gate.mjs';
-import { createGitHubClient, readGitHubToken } from '../lib/tracker/github-client.mjs';
+import { createGitHubClient, originRepo, readGitHubToken } from '../lib/tracker/github-client.mjs';
 
 const projectDir = process.env.GITHUB_WORKSPACE ?? process.cwd();
 
@@ -48,10 +47,4 @@ try {
 } catch (error) {
   console.error(error.message);
   process.exitCode = 1;
-}
-
-// owner/name of the GitHub remote origin of the clone in `dir`; undefined when there is none.
-function originRepo(dir) {
-  const url = spawnSync('git', ['-C', dir, 'remote', 'get-url', 'origin'], { encoding: 'utf8' }).stdout?.trim() ?? '';
-  return url.match(/github\.com[:/]([^/\s]+\/[^/\s]+?)(?:\.git)?$/)?.[1];
 }
