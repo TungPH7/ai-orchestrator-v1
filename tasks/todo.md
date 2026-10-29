@@ -377,16 +377,16 @@ Bạn làm, nếu `gh` chưa có quyền xóa repo: chạy `gh auth refresh -h g
 
 ## Giai đoạn 5: kiểm thật đầu cuối
 
-### [ ] T18: Agent mở PR, reviewer yêu cầu sửa, `gh-guard` chặn đường vòng [bạn]
+### [x] T18: Agent mở PR, reviewer yêu cầu sửa, `gh-guard` chặn đường vòng [bạn]
 
 **Mô tả:** Cập nhật bản chép kit trên `ao-pilot` (gồm `gh-guard`, `ao-pr.mjs`, `merge-gate.yml`, `audit.yml`; workflow deploy giả gọi `audit`). Chạy agent `fe-dev` và `reviewer` bằng `claude -p --agent` như T15 của `tracker-integration`, với một item `DEMO`. Bạn chấp nhận hook mới của dự án khi Claude Code hỏi.
 
 **Tiêu chí chấp nhận:**
-- [ ] Tiêu chí 5: PR do `fe-dev` mở bằng `ao-pr.mjs` có tác giả là bot của `ao-dev`; báo cáo yêu cầu sửa của `reviewer` do bot của `ao-review` đăng; `jira-sync` đưa item về In Progress.
-- [ ] Tiêu chí 6: agent bị chặn khi chạy `gh pr merge`, `git commit --no-verify`, và khi sửa `.github/workflows/ci.yml`; được chạy `ao-pr.mjs create`.
+- [x] Tiêu chí 5: PR do `fe-dev` mở bằng `ao-pr.mjs` có tác giả là bot của `ao-dev`; báo cáo yêu cầu sửa của `reviewer` do bot của `ao-review` đăng; `jira-sync` đưa item về In Progress.
+- [x] Tiêu chí 6: agent bị chặn khi chạy `gh pr merge`, `git commit --no-verify`, và khi sửa `.github/workflows/ci.yml`; được chạy `ao-pr.mjs create`.
 
 **Kiểm chứng:**
-- [ ] Kết quả ghi trong `tasks/verification.md`
+- [x] Kết quả ghi trong `tasks/verification.md`
 
 **Phụ thuộc:** T8, T9, T13, T15, T16
 
