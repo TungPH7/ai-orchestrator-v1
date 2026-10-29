@@ -2,7 +2,7 @@
 
 > **Module:** `quality-gates`, xem capability map trong [SPEC.md](SPEC.md). **Phụ thuộc:** `sdlc-contract`, `tracker-integration` (mục 2.9). **Được dùng bởi:** `dev-workflow`, `release-workflow`, `project-scaffold`, và `ci-agents` ở Cấp 2.
 >
-> **Trạng thái:** đã duyệt 2026-10-29, cùng ba thay đổi ở mục 2.9. **Plan:** [tasks/plan.md](tasks/plan.md). **Nguồn thảo luận:** [misc/brainstorm-discussion.md](misc/brainstorm-discussion.md), Phiên 10 · Lượt 1–3.
+> **Trạng thái:** đã duyệt 2026-10-29, cùng ba thay đổi ở mục 2.9; hoàn thành 2026-10-29. **Plan:** [tasks/archive/quality-gates/plan.md](tasks/archive/quality-gates/plan.md). **Kết quả kiểm thật:** [tasks/archive/quality-gates/verification.md](tasks/archive/quality-gates/verification.md). **Nguồn thảo luận:** [misc/brainstorm-discussion.md](misc/brainstorm-discussion.md), Phiên 10 · Lượt 1–3.
 
 ## 1. Mục tiêu
 
@@ -311,6 +311,8 @@ github_apps:
 12. Số phút Actions của một vòng PR đầy đủ (mở, sửa một lần, review, approve, merge, deploy) được đo và ghi lại.
 13. README có mục về quality gates; có `docs/quality-gates.md` và `docs/github-apps-setup.md`; `SPEC.md` ghi module hoàn thành.
 
+Cả 13 tiêu chí đạt ngày 2026-10-29. Bằng chứng của tiêu chí 3 đến 12 ghi trong [tasks/archive/quality-gates/verification.md](tasks/archive/quality-gates/verification.md).
+
 ## 10. Câu hỏi đã trả lời (2026-10-29)
 
 1. **Bảo vệ nhánh khi repo private ở gói Free:** ở lại gói Free, chốt ở `merge-gate` và `audit`; ruleset chỉ áp khi repo hỗ trợ (mục 2.1, 2.5, 2.6, 2.8).
@@ -330,8 +332,8 @@ Không còn câu hỏi mở.
 - **PR sửa được workflow chạy trên chính nó.** Workflow chạy theo `pull_request` và `push` dùng bản nằm trong commit, nên một PR sửa `ci.yml` có thể tự làm CI của nó xanh. Chỉ `merge-gate` không bị PR sửa. Vì vậy PR đụng file được bảo vệ chỉ do bạn merge, sau khi đọc diff.
 - **Secret của repo đọc được từ workflow ở mọi nhánh,** kể cả `JIRA_CI_TOKEN`. Một nhánh có workflow mới có thể đọc chúng. `gh-guard` chặn agent sửa `.github/workflows/**`, trừ `devops`.
 - **Sửa `merge-gate.yml` chỉ có hiệu lực khi tới nhánh mặc định** (`main` của `ao-pilot`), tức sau một lần release. Việc cập nhật kit cho dự án phải tính tới điều này.
-- **Agent dùng chung máy với bạn:** `gh` đăng nhập bằng `TungPH7`, file key của App nằm trên đĩa. `gh-guard` đọc lệnh theo mẫu nên không kín hoàn toàn; `merge-gate` và `audit` không phụ thuộc vào máy bạn.
-- **Phút Actions:** mỗi lần push vào PR chạy bốn job CI, rồi `jira-sync` và `merge-gate`. Tiêu chí 12 đo con số thật; nếu vượt ngân sách thì gộp job hoặc bớt trigger.
+- **Agent dùng chung máy với bạn:** `gh` đăng nhập bằng `TungPH7`, file key của App nằm trên đĩa. `gh-guard` đọc lệnh theo mẫu nên không kín hoàn toàn; `merge-gate` và `audit` không phụ thuộc vào máy bạn. Token của `gh` nên nằm trong keyring của hệ điều hành, không trong `hosts.yml` (Checkpoint 4).
+- **Phút Actions:** mỗi lần push vào PR chạy bốn job CI, rồi `jira-sync` và `merge-gate`. T19 đo được 37 phút cho một vòng PR chuẩn, tức khoảng 54 vòng mỗi tháng ở gói Free (chi tiết ở `docs/quality-gates.md`). Nếu vượt ngân sách thì gộp job hoặc bớt trigger.
 - **Advisory mới có thể làm mọi PR đỏ,** vì `npm audit` đọc cả lockfile. Cách xử lý: cập nhật dependency, hoặc thêm ngoại lệ có hạn.
 - **Chuỗi `workflow_run` tối đa ba tầng:** CI → `jira-sync` → `merge-gate` đã chạm giới hạn, nên không thêm tầng thứ tư.
 - **Squash gộp các commit của PR thành một trên `develop`.** Body của commit squash giữ header các commit (kèm mã Sub-task), và nhánh không bị xóa sau khi merge, nên GitHub for Jira vẫn giữ liên kết tới từng commit.
