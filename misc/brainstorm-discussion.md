@@ -19,6 +19,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 9 | `79cccd91-9d3a-495d-a154-927ae2ce5928` | 2026-10-28 16:22 → 16:34 | Bạn xác nhận tracker-integration hoàn thành và chọn quality-gates; Claude đánh dấu ô cuối (PR #45); câu trả lời bị bộ lọc an toàn chặn |
 | 10 | `b645b669-931c-4d95-ba32-24fd3e090d67` | 2026-10-28 16:35 → 2026-10-29 khoảng 03:30 | Giả định và câu hỏi cho quality-gates: bảo vệ nhánh khi repo private ở gói Free, danh tính để agent mở PR; bạn chọn 1a, 2a; viết SPEC-quality-gates; bạn duyệt spec, lập plan 21 task; bạn duyệt plan, bắt đầu T1; vì sao bạn phải tự tạo App, script tạo App bằng manifest flow; T1–T5, Checkpoint 1; ba đề xuất được đồng ý, T6–T13, hết lượt dùng giữa T13, Checkpoint 2 |
 | 11 | `318a4364-f1b9-4cc5-9744-ae8ff4f80c7d` | 2026-10-29 09:00 → khoảng 09:40 | Bạn cho qua Checkpoint 2; T14–T17 (lượt code): merge-gate, audit, gh:protect; Checkpoint 3, chờ bạn xóa repo thử |
+| 12 | `32807628-e04f-47b4-889d-f855a40dabce` | 2026-10-29 khoảng 11:04 → | Bạn cho qua Checkpoint 3; T17 và Checkpoint 3 đóng (PR #65, #66); T18 (lượt code): cài kit mới lên `ao-pilot`, tạo `DEMO-6`, `gh-guard` chặn ba đường vòng; chờ bạn chuyển `DEMO-6` sang Ready và tạo key thứ hai của `ao-dev` |
 
 ---
 
@@ -3604,3 +3605,60 @@ Nhãn nút lấy theo giao diện GitHub mà mình biết; nếu bạn thấy kh
 3. Tiêu chí 11: đạt khi repo thử đã bị xóa.
 
 Bạn xóa repo xong thì nhắn "qua Checkpoint 3" (hoặc điều muốn sửa). Mình sẽ kiểm repo đã mất, tick T17 và Checkpoint 3, đóng lại PR #3, rồi sang Giai đoạn 5: kiểm thật đầu cuối với agent `fe-dev` và `reviewer`. Giai đoạn đó cần bạn chấp nhận hook mới của `ao-pilot`, approve PR, và một lần bấm Merge tay để thử `audit`.
+
+---
+
+# Phiên 12 · Lượt 1 — 2026-10-29 khoảng 11:04
+
+**Bạn:**
+
+```markdown
+Tiếp tục session id: 318a4364-f1b9-4cc5-9744-ae8ff4f80c7d
+
+qua Checkpoint 3
+```
+
+Sau lượt này Claude đóng T17 (PR #65), qua Checkpoint 3 (PR #66), rồi làm T18 tới bước cần bạn (lượt code, không ghi).
+
+**Claude:**
+
+Checkpoint 3 đã qua, và T18 đã làm được một nửa. Phần còn lại cần bạn hai việc nhỏ, ghi ở cuối tin này.
+
+**Đã xong (CI xanh, đã merge vào `main`):**
+
+- **T17 (PR #65):** repo thử `TungPH7/ao-ruleset-probe` đã bị xóa (API trả 404). Tiêu chí 11 đạt, đã ghi vào `tasks/verification.md`.
+- **Checkpoint 3 (PR #66):** đã tick trong plan. PR #3 của `ao-pilot` đã đóng.
+
+**T18, đang làm (nhánh `task/t18-agent-pr`):**
+
+- **Cài kit mới lên `ao-pilot`:** `merge-gate`, `audit`, hook `gh-guard`, slug và App ID của hai App, và ba agent thử `fe-dev`, `reviewer`, `security`. Mình push thẳng lên `develop` rồi merge `develop` vào `main`, vì `merge-gate` và `jira-sync` chỉ chạy từ nhánh mặc định. `CI` xanh trên cả hai nhánh. `merge-gate` chạy được và in `No open PR`.
+- **`audit` chặn đúng ngay lần đầu:** commit cài kit được push thẳng, không qua PR, nên `audit` đỏ và job deploy không chạy. `DEMO-5` bị gắn cờ, kèm comment của `orchestratorci`. Đây đúng là thiết kế; mình giữ cờ đó làm bằng chứng.
+- **Item thử:** mình tạo Task `DEMO-6`, "phí vận chuyển của giỏ hàng", checklist bốn mục.
+- **Tiêu chí 6, phần chặn: đạt.** Agent `fe-dev` chạy thật (`claude -p --agent fe-dev`) bị `gh-guard` chặn cả ba đường vòng, và repo không đổi:
+
+  | Agent thử | Kết quả |
+  |---|---|
+  | `gh pr merge 3 --squash` | Bị chặn: không merge bằng tài khoản của bạn, merge là việc của `merge-gate` |
+  | `git commit --no-verify` | Bị chặn: không được bỏ qua hook git |
+  | Sửa `.github/workflows/ci.yml` | Bị chặn: chỉ `devops` được sửa thư mục này |
+
+  Câu chặn nguyên văn nằm trong `tasks/verification.md`. `claude -p` chạy hook mới mà không hỏi gì, nên bạn không phải chấp nhận hook như plan dự kiến.
+
+## Việc cần bạn
+
+**1. Chuyển `DEMO-6` sang Ready**, giống bạn đã làm với `DEMO-3` ở T15. Theo hợp đồng, Task không thuộc Epic thì bạn là người duyệt nó sẵn sàng, nên mình không tự chuyển bằng token CI.
+
+1. Mở https://phunghuutung12b4.atlassian.net/browse/DEMO-6
+2. Bấm nút trạng thái **New** ở gần tiêu đề item **(đối chiếu giao diện)**.
+3. Chọn **Refine**. Item chuyển sang **Ready**.
+
+**2. Tạo key thứ hai cho App `ao-dev`**, để `merge-gate` trên GitHub Actions merge được ở T19. Key này khác key mà `ao-pr.mjs` đang dùng ở máy bạn, để thu hồi riêng được.
+
+1. Mở https://github.com/settings/apps/tungph7-ao-dev
+2. Ở thanh bên trái, bấm **Credentials**, rồi **Key pairs**, rồi **New key**. Nếu không thấy mục **Credentials**, kéo xuống cuối trang **General**, tới mục **Private keys**, bấm **Generate a private key** **(đối chiếu giao diện)**. GitHub có thể hỏi lại mật khẩu hoặc mã 2FA.
+3. Trình duyệt tải về một file dạng `tungph7-ao-dev.2026-10-29.private-key.pem`, thường vào thư mục Downloads.
+4. Cắt và dán (không sao chép) file đó vào `C:\Users\Huu Tung\ao-keys`, giữ nguyên tên. Đừng mở file.
+
+Sau đó mình pipe file vào `gh secret set` để đặt secret `AO_DEV_APP_KEY` cho environment `merge-gate` trên `ao-pilot`, nên nội dung key không hiện ra ở đâu. Xong thì mình xóa file đó khỏi `ao-keys`. File `tungph7-ao-dev.pem` đang có giữ nguyên.
+
+Bạn làm xong cả hai thì nhắn "xong". Mình sẽ cho `fe-dev` nhận `DEMO-6`, làm mục 1–3 của checklist, rồi mở PR bằng `ao-pr.mjs`. Khi `CI` xanh, `jira-sync` chuyển item sang In Review. Sau đó `reviewer` đăng báo cáo yêu cầu sửa bằng bot `ao-review`, vì mục 4 còn thiếu; mình cố ý để lại mục 4 để reviewer có lý do thật mà yêu cầu sửa. Khi `jira-sync` đưa item về In Progress là xong T18. T19 làm tiếp trên cùng PR và cần bạn approve PR trên GitHub.
