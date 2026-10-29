@@ -3,7 +3,8 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { readGates } from '../../lib/quality/gates.mjs';
-import { decideMerge } from '../../lib/quality/merge-gate.mjs';
+import { decideMerge, runMergeGate } from '../../lib/quality/merge-gate.mjs';
+import { recordedClient } from '../helpers/jira.mjs';
 import { ROOT } from '../helpers/kit.mjs';
 
 const gates = readGates(join(ROOT, 'quality'));
@@ -130,4 +131,109 @@ test('CI, a request for changes, the title, the description, the base branch and
   assert.deepEqual(waits((f) => (f.pr.mergeable = false)), ['conflicts with develop resolved']);
   // GitHub works mergeability out in the background; until then the merge call itself refuses a conflict.
   assert.equal(decide((f) => (f.pr.mergeable = null)).action, 'merge');
+});
+
+// A run of merge-gate over the recorded repository, after `change` edits a copy of the answers. The writing client
+// records each request; `refuse` makes the merge call fail with that HTTP status.
+async function runOnce({ change = () => {}, dryRun = false, refuse } = {}) {
+  const copy = structuredClone(answers);
+  change(copy);
+  const sent = [];
+  const lines = [];
+  let writers = 0;
+  const writer = async () => {
+    writers += 1;
+    return {
+      request: async (method, path, query, body) => {
+        sent.push({ method, path, body });
+        if (refuse) throw Object.assign(new Error(`GitHub ${method} ${path} returned ${refuse.status}: ${refuse.message}`), { status: refuse.status });
+        return { merged: true };
+      },
+    };
+  };
+  const { failures } = await runMergeGate({
+    github: recordedClient(copy),
+    mergeClient: writer,
+    gates,
+    apps: { dev: 'tungph7-ao-dev', review: 'tungph7-ao-review' },
+    approvers: ['approver'],
+    dryRun,
+    log: (line) => lines.push(line),
+  });
+  return { lines, sent, writers, failures };
+}
+const SKIPPED_13 = 'Skipped #13: opened by approver, not by tungph7-ao-dev: whoever opened it merges it';
+const noApproval = (a) => a['/pulls/12/reviews'].pop();
+
+test('a run merges the PR that meets every condition with the ao-dev App, at its head commit, and skips the PR you opened', async () => {
+  const { lines, sent, failures } = await runOnce();
+  assert.deepEqual(lines, ['Merged #12: feat(auth): add email and password login (DEMO-12) (squash at a1b2c3d)', SKIPPED_13]);
+  assert.deepEqual(sent, [
+    {
+      method: 'PUT',
+      path: '/pulls/12/merge',
+      body: {
+        sha: HEAD,
+        merge_method: 'squash',
+        commit_title: 'feat(auth): add email and password login (DEMO-12)',
+        commit_message: '- feat(auth): add the login endpoint (DEMO-12, DEMO-13)\n- feat(auth): add the login page (DEMO-12, DEMO-14)',
+      },
+    },
+  ]);
+  assert.deepEqual(failures, []);
+});
+
+test('a dry run prints the same decisions, and never buys an App token or sends a request', async () => {
+  const { lines, writers, sent } = await runOnce({ dryRun: true });
+  assert.deepEqual(lines, ['Would merge #12: feat(auth): add email and password login (DEMO-12) (squash at a1b2c3d)', SKIPPED_13]);
+  assert.equal(writers, 0);
+  assert.deepEqual(sent, []);
+});
+
+test('a PR that waits prints what it waits for, the same on every run, and nothing is sent', async () => {
+  const first = await runOnce({ change: noApproval });
+  const second = await runOnce({ change: noApproval });
+  assert.deepEqual(first.lines, ['Waiting #12: approval on head a1b2c3d', SKIPPED_13]);
+  assert.deepEqual(second.lines, first.lines);
+  assert.deepEqual([first.writers, second.writers], [0, 0]);
+});
+
+test('once a PR is merged, the next run does not merge it again', async () => {
+  const merged = (a) => a['/pulls?direction=asc&sort=created&state=open'].shift();
+  const { lines, sent } = await runOnce({ change: merged });
+  assert.deepEqual(lines, [SKIPPED_13]);
+  assert.deepEqual(sent, []);
+});
+
+test('GitHub refusing the merge because the head moved, or because it cannot merge, is a wait, not a failure', async () => {
+  const moved = await runOnce({ refuse: { status: 409, message: '{"message":"Head branch was modified. Review and try the merge again."}' } });
+  assert.match(moved.lines[0], /^Waiting #12: GitHub refused the merge at a1b2c3d \(409\): .*Head branch was modified/);
+  assert.deepEqual(moved.failures, []);
+  const blocked = await runOnce({ refuse: { status: 405, message: '{"message":"Pull Request is not mergeable"}' } });
+  assert.match(blocked.lines[0], /^Waiting #12: GitHub refused the merge at a1b2c3d \(405\)/);
+  assert.deepEqual(blocked.failures, []);
+});
+
+test('any other error is a failure, and the run goes on with the next PR', async () => {
+  const { lines, failures } = await runOnce({ refuse: { status: 500, message: 'Server Error' } });
+  assert.deepEqual(lines, ['Failed #12: GitHub PUT /pulls/12/merge returned 500: Server Error', SKIPPED_13]);
+  assert.deepEqual(failures.map(({ number }) => number), [12]);
+});
+
+test('a PR that changes a protected path is left to you, with what it still misses', async () => {
+  const touches = (a) => {
+    a['/pulls/12/files'].push({ filename: '.github/workflows/ci.yml', status: 'modified' });
+    noApproval(a);
+  };
+  const { lines, writers } = await runOnce({ change: touches });
+  assert.deepEqual(lines, [
+    'Needs you #12: it changes .github/workflows/ci.yml, so read the diff and merge it yourself (still missing: approval on head a1b2c3d)',
+    SKIPPED_13,
+  ]);
+  assert.equal(writers, 0);
+});
+
+test('with no open PR the run says so', async () => {
+  const { lines } = await runOnce({ change: (a) => (a['/pulls?direction=asc&sort=created&state=open'] = []) });
+  assert.deepEqual(lines, ['No open PR']);
 });

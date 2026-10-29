@@ -1,4 +1,40 @@
 {
+  "/pulls?direction=asc&sort=created&state=open": [
+    {
+      "number": 12,
+      "state": "open",
+      "draft": false,
+      "title": "feat(auth): add email and password login (DEMO-12)",
+      "user": {
+        "login": "tungph7-ao-dev[bot]",
+        "type": "Bot"
+      },
+      "head": {
+        "ref": "feature/DEMO-12-login",
+        "sha": "a1b2c3d4e5f60718293a4b5c6d7e8f9012345678"
+      },
+      "base": {
+        "ref": "develop"
+      }
+    },
+    {
+      "number": 13,
+      "state": "open",
+      "draft": false,
+      "title": "docs(readme): explain the login (DEMO-15)",
+      "user": {
+        "login": "approver",
+        "type": "User"
+      },
+      "head": {
+        "ref": "feature/DEMO-15-readme",
+        "sha": "b1b2b3b4b5b6b7b8b9babbbcbdbebfc0c1c2c3c4"
+      },
+      "base": {
+        "ref": "develop"
+      }
+    }
+  ],
   "/pulls/12": {
     "number": 12,
     "state": "open",
@@ -112,5 +148,45 @@
       "submitted_at": "2026-11-02T11:00:00Z",
       "body": ""
     }
-  ]
+  ],
+  "/commits/a1b2c3d4e5f60718293a4b5c6d7e8f9012345678/check-runs": {
+    "total_count": 5,
+    "check_runs": [
+      {
+        "name": "policy",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "a1b2c3d4e5f60718293a4b5c6d7e8f9012345678"
+      },
+      {
+        "name": "build-test",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "a1b2c3d4e5f60718293a4b5c6d7e8f9012345678"
+      },
+      {
+        "name": "secrets",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "a1b2c3d4e5f60718293a4b5c6d7e8f9012345678"
+      },
+      {
+        "name": "sast",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "a1b2c3d4e5f60718293a4b5c6d7e8f9012345678"
+      },
+      {
+        "name": "jira-sync",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "a1b2c3d4e5f60718293a4b5c6d7e8f9012345678"
+      }
+    ]
+  },
+  "/commits/a1b2c3d4e5f60718293a4b5c6d7e8f9012345678/status": {
+    "state": "pending",
+    "total_count": 0,
+    "statuses": []
+  }
 }
