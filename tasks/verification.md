@@ -131,3 +131,11 @@ PR #3 để mở cho Checkpoint 3, rồi đóng lại.
 | `eacd786`, commit squash của PR #2 (PR thử của T3, nhánh `probe/t3-app-identity`) | `PR #2 was merged without: valid branch (...); valid title (...); complete description (...); reviewer report on head 3a12727; security report on head 3a12727`; không có mã item nên `No work item of DEMO to flag`. Approve của bạn trên commit đầu được tính, nên không có dòng `approval` |
 
 `GET /commits/{sha}/pulls` trả đúng PR đã merge, có `merge_commit_sha` và `merged_at`.
+
+## T17: `gh:protect` (tiêu chí 11)
+
+**2026-10-29, khoảng 11:00.**
+
+- **`ao-pilot`:** `npm run gh:protect -- --repo TungPH7/ao-pilot` in `soft mode: merge-gate and audit enforce the gates`, thoát mã 0. `GET /rulesets` trả 403 (`Upgrade to GitHub Pro or make this repository public to enable this feature.`), nên script không gửi gì và repo không đổi.
+- **Repo public tạm `TungPH7/ao-ruleset-probe`:** tạo rỗng bằng `POST /user/repos`. Lần chạy đầu in `created ruleset ao-protected (id 26093077)`, lần hai in `updated ruleset ao-protected (id 26093077)`. Đọc lại: repo chỉ có một ruleset `ao-protected`; `name`, `target`, `enforcement`, `bypass_actors`, `conditions` giống hệt payload; trong `rules`, mọi trường đã gửi đều giữ nguyên giá trị. GitHub điền thêm ba trường mặc định cho rule `pull_request`: `required_reviewers: []`, `allowed_merge_methods: [merge, squash, rebase]` và `require_extra_approval_for_unattributed_changes: true`. Trường cuối không có trong tài liệu mình đã đọc; cần xem lại khi một dự án thật dùng ruleset.
+- **Xóa repo tạm:** chờ bạn. Token của `gh` có scope `gist, read:org, repo, workflow`, không có `delete_repo`.
