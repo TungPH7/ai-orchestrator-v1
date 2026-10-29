@@ -440,3 +440,23 @@ Một vòng chuẩn gồm: mở PR, sửa một lần, `reviewer` và `security`
 `jira-sync` và `merge-gate` chiếm 33 trên 55 phút. Mỗi lần chạy chỉ mất khoảng 10 đến 20 giây, nhưng vẫn bị tính tròn một phút, và `merge-gate` chạy sau mọi lần `jira-sync`. `docs/quality-gates.md` (T21) cần ghi con số này.
 
 Tiêu chí 7, 8, 10 và 12 của spec mục 9 đạt. T19 đóng.
+
+## T20: `audit` chặn commit merge tay (tiêu chí 9)
+
+**Chuẩn bị (16:30–16:35).**
+
+- Claude tạo `DEMO-8` (Task, "quality-gates T20: test cho quantity là Infinity") bằng token CI, và để nó ở New. Việc của item là finding Low của `reviewer` ở PR #4.
+- Lượt `fe-dev` (16:31:42 → 16:33:59, 16 lượt, khoảng 0,21 USD):
+  - Agent cắt nhánh `feature/DEMO-8-infinity-quantity-test` từ `develop`, rồi thêm dòng `quantity` là `Infinity` vào bảng dòng xấu của `src/cart.test.ts`.
+  - 26/26 test xanh. Hai test mới qua ngay, vì `total` đã từ chối giá trị này. Lint, typecheck, coverage (100%) và build đều qua.
+  - Agent commit và push `451523d` (`test(cart): cover a quantity of Infinity (DEMO-8)`), rồi mở [PR #6](https://github.com/TungPH7/ao-pilot/pull/6) bằng `ao-pr.mjs create`.
+
+| Run | Kết quả |
+|---|---|
+| `CI` pull_request trên `451523d` ([40850608988](https://github.com/TungPH7/ao-pilot/actions/runs/40850608988)) | Xanh, 4 phút tính tiền |
+| `jira-sync` pull_request ([40850608881](https://github.com/TungPH7/ao-pilot/actions/runs/40850608881)) và workflow_run ([40850658943](https://github.com/TungPH7/ao-pilot/actions/runs/40850658943)) | `No change`: `DEMO-8` ở New |
+| `merge-gate` ([40850652835](https://github.com/TungPH7/ao-pilot/actions/runs/40850652835), [40850693564](https://github.com/TungPH7/ao-pilot/actions/runs/40850693564)) | `Waiting #6: reviewer report on head 451523d; security report on head 451523d; approval on head 451523d` |
+
+PR #6 chưa có báo cáo nào và chưa có approve, nên `merge-gate` không merge.
+
+**Bước tiếp:** bạn bấm Squash and merge trên PR #6. Ở lần deploy sau đó, `audit` phải đỏ và ghi lý do, job `deploy` không chạy, và `DEMO-8` mang cờ "Needs you".
