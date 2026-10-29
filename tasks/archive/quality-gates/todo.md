@@ -1,6 +1,6 @@
 # Task: quality-gates
 
-> **Plan:** [plan.md](plan.md). **Spec:** [SPEC-quality-gates.md](../SPEC-quality-gates.md). Làm theo thứ tự; mỗi task viết test đỏ trước, commit riêng, rồi đánh dấu `[x]`.
+> **Plan:** [plan.md](plan.md). **Spec:** [SPEC-quality-gates.md](../../../SPEC-quality-gates.md). Làm theo thứ tự; mỗi task viết test đỏ trước, commit riêng, rồi đánh dấu `[x]`.
 
 **Quy ước chung cho mọi task:**
 
@@ -438,16 +438,16 @@ Bạn làm, nếu `gh` chưa có quyền xóa repo: chạy `gh auth refresh -h g
 
 ## Giai đoạn 6: hoàn thiện
 
-### [ ] T21: README, tài liệu, `SPEC.md`, lưu trữ plan
+### [x] T21: README, tài liệu, `SPEC.md`, lưu trữ plan
 
 **Mô tả:** README thêm mục quality gates (các lớp chốt, biến môi trường mới, cách cài hook). Viết `docs/quality-gates.md`: từng check, đọc job summary thế nào, xử lý khi đỏ, khi nào bạn phải merge tay. Spec ghi module hoàn thành và kết quả kiểm thật; `SPEC.md` cập nhật trạng thái. Chuyển `plan.md`, `todo.md`, `verification.md` vào `tasks/archive/quality-gates/`.
 
 **Tiêu chí chấp nhận:**
-- [ ] Tiêu chí 13 của spec đạt.
-- [ ] Test của README (như `tests/repo.test.mjs`) kiểm mục mới và các biến môi trường mới.
+- [x] Tiêu chí 13 của spec đạt.
+- [x] Test của README (như `tests/repo.test.mjs`) kiểm mục mới và các biến môi trường mới.
 
 **Kiểm chứng:**
-- [ ] `npm run validate`, `npm test`, `npm run render:check`, `npm run jira:checklist:check` và CI trên `main` xanh
+- [x] `npm run validate`, `npm test`, `npm run render:check`, `npm run jira:checklist:check` và CI trên `main` xanh
 
 **Phụ thuộc:** T20
 
@@ -457,6 +457,6 @@ Bạn làm, nếu `gh` chưa có quyền xóa repo: chạy `gh auth refresh -h g
 
 ### Checkpoint cuối
 
-- [ ] Đạt 13 tiêu chí ở spec mục 9
-- [ ] Chuyển `tasks/plan.md`, `tasks/todo.md`, `tasks/verification.md` vào `tasks/archive/quality-gates/`
+- [x] Đạt 13 tiêu chí ở spec mục 9
+- [x] Chuyển `tasks/plan.md`, `tasks/todo.md`, `tasks/verification.md` vào `tasks/archive/quality-gates/`
 - [ ] Bạn xác nhận module hoàn thành

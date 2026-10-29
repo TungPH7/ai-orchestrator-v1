@@ -560,3 +560,21 @@ Bản chép kit trong `ao-pilot` nhận PR #70 ở lần chép kit tới, qua PR
 | `gh config get telemetry` | `disabled` |
 
 Thu hồi token cũ trên GitHub là bước tùy chọn, và mình không kiểm được bước này từ máy, vì muốn kiểm phải dùng chính token cũ. Sau đó bạn cho biết đã thu hồi token cũ. `gh` vẫn chạy bằng token mới: `gh api user` trả `TungPH7`, và `gh auth status` vẫn báo `keyring`.
+
+## T21: README, tài liệu, `SPEC.md`, lưu trữ plan (tiêu chí 13)
+
+**Đạt (2026-10-29).**
+
+- README có mục "Quality gates": bốn lớp chốt, hai GitHub App, và link tới `docs/quality-gates.md`, `docs/github-apps-setup.md`. Mục "Cài kit vào repo dự án" gộp các bước của `tracker-integration` và `quality-gates`. Bảng biến môi trường có thêm `AO_DEV_APP_KEY`. Mục "Lệnh" có `gh:protect` và các lệnh chạy trong repo dự án.
+- `docs/quality-gates.md` mới, gồm:
+  - vòng của một PR;
+  - từng check của `CI`, cách đọc job summary, và cách xử lý khi một cổng đỏ;
+  - khi nào bạn tự merge;
+  - environment `merge-gate`, `gh-guard` và ruleset;
+  - phút Actions đo ở T19;
+  - GitHub CLI trên máy bạn, theo những gì xảy ra ở Checkpoint 4.
+- `docs/github-apps-setup.md` đã có từ T1.
+- `tests/repo.test.mjs` có hai test mới. Test thứ nhất kiểm mục mới của README, kể cả bốn check, bốn workflow của kit và các biến mới; test thứ hai kiểm `docs/quality-gates.md`. Cả hai đỏ khi chưa có tài liệu. Cả bộ 501 test xanh.
+- `SPEC-quality-gates.md` và `SPEC.md` ghi module hoàn thành. `plan.md`, `todo.md` và `verification.md` chuyển vào `tasks/archive/quality-gates/`.
+
+Cả 13 tiêu chí của spec mục 9 đạt. T21 đóng.

@@ -1,6 +1,6 @@
 # Plan triển khai: quality-gates
 
-> **Spec:** [SPEC-quality-gates.md](../SPEC-quality-gates.md), đã duyệt 2026-10-29. **Trạng thái:** đã duyệt 2026-10-29, đang làm. **Task chi tiết:** [todo.md](todo.md). **Kết quả kiểm thật:** [verification.md](verification.md), tạo ở T1.
+> **Spec:** [SPEC-quality-gates.md](../../../SPEC-quality-gates.md), đã duyệt 2026-10-29. **Trạng thái:** hoàn thành 2026-10-29, đã lưu trữ. **Task chi tiết:** [todo.md](todo.md). **Kết quả kiểm thật:** [verification.md](verification.md), tạo ở T1.
 
 ## Tổng quan
 
@@ -95,11 +95,11 @@ T1–T3 đứng đầu vì nếu một giả định nền sai thì `merge-gate`
 - [x] Bạn xem lịch sử item thử trên `DEMO` và các PR thử trên `ao-pilot`
 
 ### Giai đoạn 6: hoàn thiện
-- [ ] T21: README, tài liệu, `SPEC.md`, lưu trữ plan
+- [x] T21: README, tài liệu, `SPEC.md`, lưu trữ plan
 
 ### Checkpoint cuối
-- [ ] Đạt 13 tiêu chí ở spec mục 9
-- [ ] Chuyển `tasks/plan.md`, `tasks/todo.md`, `tasks/verification.md` vào `tasks/archive/quality-gates/`
+- [x] Đạt 13 tiêu chí ở spec mục 9
+- [x] Chuyển `tasks/plan.md`, `tasks/todo.md`, `tasks/verification.md` vào `tasks/archive/quality-gates/`
 - [ ] Bạn xác nhận module hoàn thành
 
 ## Rủi ro
