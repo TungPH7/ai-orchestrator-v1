@@ -19,7 +19,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 9 | `79cccd91-9d3a-495d-a154-927ae2ce5928` | 2026-10-28 16:22 → 16:34 | Bạn xác nhận tracker-integration hoàn thành và chọn quality-gates; Claude đánh dấu ô cuối (PR #45); câu trả lời bị bộ lọc an toàn chặn |
 | 10 | `b645b669-931c-4d95-ba32-24fd3e090d67` | 2026-10-28 16:35 → 2026-10-29 khoảng 03:30 | Giả định và câu hỏi cho quality-gates: bảo vệ nhánh khi repo private ở gói Free, danh tính để agent mở PR; bạn chọn 1a, 2a; viết SPEC-quality-gates; bạn duyệt spec, lập plan 21 task; bạn duyệt plan, bắt đầu T1; vì sao bạn phải tự tạo App, script tạo App bằng manifest flow; T1–T5, Checkpoint 1; ba đề xuất được đồng ý, T6–T13, hết lượt dùng giữa T13, Checkpoint 2 |
 | 11 | `318a4364-f1b9-4cc5-9744-ae8ff4f80c7d` | 2026-10-29 09:00 → khoảng 09:40 | Bạn cho qua Checkpoint 2; T14–T17 (lượt code): merge-gate, audit, gh:protect; Checkpoint 3, chờ bạn xóa repo thử |
-| 12 | `32807628-e04f-47b4-889d-f855a40dabce` | 2026-10-29 khoảng 11:04 → | Bạn cho qua Checkpoint 3; T17 và Checkpoint 3 đóng (PR #65, #66); T18 (lượt code): cài kit mới lên `ao-pilot`, tạo `DEMO-6`, `gh-guard` chặn ba đường vòng; bạn chuyển `DEMO-6` sang Ready và tạo key thứ hai của `ao-dev`; T18 đóng (PR #67): `fe-dev` mở PR #4, `reviewer` yêu cầu sửa, kit tắt ghi công AI; T19: vòng sửa, tiêu chí 10; bạn approve PR #4 lần đầu; T19: approve trên commit cũ không còn được tính, `devops` mở PR #5 sửa workflow, `reviewer` và `security` đăng báo cáo, bạn approve PR #4 lần hai và PR #5; T19 đóng (PR #68): `merge-gate` merge PR #4, `DEMO-6` sang Ready for QA, vòng PR tốn 55 phút Actions; T20: `fe-dev` mở PR #6, chờ bạn merge tay; bạn báo đã merge nhưng PR #6 vẫn mở; bạn merge lại, `audit` chặn deploy và gắn cờ `DEMO-8`; `fe-dev` mở PR #7 revert; bạn approve PR #7; T20 đóng (PR #69): `merge-gate` merge PR #7, `develop` sạch trở lại, gỡ cờ `DEMO-8`; Checkpoint 4, chờ bạn |
+| 12 | `32807628-e04f-47b4-889d-f855a40dabce` | 2026-10-29 khoảng 11:04 → | Bạn cho qua Checkpoint 3; T17 và Checkpoint 3 đóng (PR #65, #66); T18 (lượt code): cài kit mới lên `ao-pilot`, tạo `DEMO-6`, `gh-guard` chặn ba đường vòng; bạn chuyển `DEMO-6` sang Ready và tạo key thứ hai của `ao-dev`; T18 đóng (PR #67): `fe-dev` mở PR #4, `reviewer` yêu cầu sửa, kit tắt ghi công AI; T19: vòng sửa, tiêu chí 10; bạn approve PR #4 lần đầu; T19: approve trên commit cũ không còn được tính, `devops` mở PR #5 sửa workflow, `reviewer` và `security` đăng báo cáo, bạn approve PR #4 lần hai và PR #5; T19 đóng (PR #68): `merge-gate` merge PR #4, `DEMO-6` sang Ready for QA, vòng PR tốn 55 phút Actions; T20: `fe-dev` mở PR #6, chờ bạn merge tay; bạn báo đã merge nhưng PR #6 vẫn mở; bạn merge lại, `audit` chặn deploy và gắn cờ `DEMO-8`; `fe-dev` mở PR #7 revert; bạn approve PR #7; T20 đóng (PR #69): `merge-gate` merge PR #7, `develop` sạch trở lại, gỡ cờ `DEMO-8`; Checkpoint 4, chờ bạn; bạn hỏi về `gh` 2.16.1, mình đề xuất sửa `gh-guard` cho các lệnh `gh` mới rồi mới cập nhật `gh` |
 
 ---
 
@@ -3958,3 +3958,72 @@ Việc không bắt buộc: trên `DEMO` còn vài item thử. `DEMO-7` và `DEM
 3. Chọn một Resolution trong hộp thoại, rồi xác nhận.
 
 Xem xong, bạn nhắn "qua Checkpoint 4" để mình làm T21: README, `docs/quality-gates.md`, `SPEC.md`, và lưu plan. Nếu thấy chỗ nào chưa ổn, bạn cứ nói.
+
+---
+
+# Phiên 12 · Lượt 8 — 2026-10-29 khoảng 22:07
+
+**Bạn:**
+
+```markdown
+gh cli của tôi đang ở v2.16 à ? Có nên update lên phiên bản mới nhất không? Có ảnh hưởng những gì đã làm từ T1 đến T20 không?
+```
+
+Trước câu hỏi này bạn chạy `/context`, một lệnh của Claude Code, không cần trả lời. Trước khi trả lời, Claude kiểm bản `gh` trên máy, đọc `gh-guard`, ghi chú phát hành và các security advisory của `gh` (lượt code, không ghi).
+
+**Claude:**
+
+Đúng, máy bạn đang chạy `gh` **2.16.1**, ra ngày 2022-09-26. Bản mới nhất là **2.103.3**, ra ngày 2026-10-26, và `winget` đã thấy bản này.
+
+## Có nên cập nhật không
+
+Nên, nhưng nên sửa `gh-guard` trước. Lý do sửa trước nằm ở phần "Ảnh hưởng tới T1–T20" bên dưới. Lý do nên cập nhật:
+
+1. **Bảo mật.** Ít nhất 9 security advisory đã công bố ảnh hưởng tới 2.16.1. Advisory mức cao duy nhất trong số đó nằm ở Codespaces, mà ta không dùng. Ba advisory gần với cách kit dùng `gh`:
+   - chèn escape sequence vào terminal, qua log của `gh run view` và vài lệnh khác;
+   - lộ token khi clone repo có submodule trỏ ra ngoài GitHub;
+   - lộ một phần token trong output của `gh auth status`.
+
+   Bản 2.102.0 trở lên vá hết các advisory này.
+2. **`gh pr view <n>` không kèm `--json` lỗi trên 2.16**, vì GitHub đã tắt Projects (classic). Bản 2.73.0 sửa lỗi này. Cũng vì lỗi đó mà lời nhắc của agent ở T18–T20 phải dặn dùng `--json`.
+3. **Token của `gh` đang nằm trong `%AppData%\GitHub CLI\hosts.yml`, không mã hóa.** Mình chỉ đếm dòng `oauth_token`, không in giá trị. Mọi agent chạy dưới tài khoản Windows của bạn đều đọc được file này, và `gh-guard` không chặn việc đọc đó. Từ bản 2.26.0, `gh auth login` cất token vào Windows Credential Manager. Ghi chú phát hành nói việc này xảy ra khi chạy `gh auth login`, nên token đang có vẫn nằm trong file cho tới khi bạn đăng nhập lại. Mình sẽ kiểm lại điều này sau khi cập nhật.
+
+## Ảnh hưởng tới T1–T20
+
+**Không ảnh hưởng:**
+
+- Mọi thứ đã nằm trên GitHub và Jira không bị ảnh hưởng: PR đã merge, workflow, secret của environment, hai App, lịch sử item. Các workflow không gọi `gh`; chúng chạy script Node trên máy của GitHub. `ao-pr.mjs`, `merge-gate`, `audit` và `jira-sync` gọi thẳng REST API.
+- Ở máy bạn, kit chỉ gọi `gh` ở `readGitHubToken` (`lib/tracker/github-client.mjs:60`). Hàm này thử `gh auth token` trước, và chỉ dùng `gh auth status --show-token` khi `gh` cũ hơn 2.17. Bản mới đi theo nhánh đầu. Test đã phủ cả hai nhánh.
+- Kết quả kiểm ở T18–T20 vẫn đúng. Chúng được đo với 2.16.1, và T21 sẽ ghi rõ điều đó cùng bản `gh` tối thiểu.
+
+**Có ảnh hưởng: `gh-guard`.** Hook này chặn theo một danh sách lệnh (`lib/quality/commands.mjs:145`). Bản mới có thêm bốn lệnh ghi lên GitHub bằng tài khoản của bạn, mà danh sách chưa có:
+
+| Lệnh mới | Làm gì |
+|---|---|
+| `gh pr revert` | Mở một PR revert mới, đứng tên bạn. `audit` coi PR do bạn mở là đã approve (`lib/quality/audit.mjs:35`). `merge-gate` không tự merge PR này, nhưng agent không được mở PR bằng tên bạn |
+| `gh pr update-branch` | Đẩy một commit đứng tên bạn vào nhánh của PR |
+| `gh repo autolink create` và `delete` | Đổi cài đặt của repo |
+| `gh run delete` | Xóa lần chạy workflow, kể cả lần `audit` đỏ |
+
+Trên 2.16.1, bốn lệnh này chưa có, nên hiện giờ `gh-guard` chưa hở chỗ này. Chỗ hở chỉ xuất hiện sau khi cập nhật.
+
+Khi kiểm, mình thấy thêm một chỗ hở có từ trước và không phụ thuộc phiên bản: `gh-guard` chặn `gh auth token`, nhưng không chặn `gh auth status --show-token`, dù lệnh này cũng in token của bạn.
+
+**Một thay đổi nên biết:** từ bản 2.91.0, `gh` mặc định gửi telemetry, tức dữ liệu về cách bạn dùng lệnh, gắn với một mã định danh giả. Lệnh `gh config set telemetry disabled` tắt nó.
+
+## Đề xuất
+
+1. **Sửa `gh-guard`, qua PR, có test (mình làm).** Chặn bốn lệnh trên, chặn `gh auth status` khi kèm `-t` hoặc `--show-token`, và chặn việc đọc `hosts.yml` của `gh`. Bản chép kit trong `ao-pilot` sẽ nhận bản sửa ở lần chép kit tới, qua PR, cùng với `attribution`. Trước lần chép đó, mình không chạy agent nào trong `ao-pilot`.
+2. **Cập nhật `gh` (mình chạy):** `winget upgrade --id GitHub.cli -e`. Windows có thể hiện hộp thoại hỏi quyền quản trị. Khi đó bạn bấm **Yes** **(đối chiếu giao diện)**.
+3. **Tắt telemetry (mình chạy, nếu bạn đồng ý):** `gh config set telemetry disabled`.
+4. **Kiểm sau khi cập nhật (mình làm):**
+   - `gh --version`;
+   - `gh pr view 7 -R TungPH7/ao-pilot`, không kèm `--json`;
+   - `readGitHubToken` vẫn lấy được token (mình chỉ kiểm có hay không, không in);
+   - chạy test của kit.
+5. **Đăng nhập lại để chuyển token vào Credential Manager (bạn làm; không bắt buộc nhưng nên).** Mình gửi các bước bấm sau bước 4. Token hiện có các scope `gist`, `read:org`, `repo` và `workflow`, và lần đăng nhập mới sẽ xin đúng các scope đó. Git không bị ảnh hưởng, vì git dùng Git Credential Manager riêng, không dùng token của `gh`.
+
+Mình vẫn dừng ở **Checkpoint 4**. Bạn nhắn một trong hai:
+
+- **"làm đề xuất gh"** (mình khuyên cách này): mình làm bước 1–4, gửi bước 5, rồi chờ bạn cho qua Checkpoint 4. Khi đó T21 ghi bản `gh` đã kiểm và luật mới của `gh-guard`.
+- **"qua Checkpoint 4"**: mình làm T21 trước, còn việc `gh` để sau. Khi đó bạn đừng cập nhật `gh` cho tới khi bản sửa `gh-guard` đã merge.
