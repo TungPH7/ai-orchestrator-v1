@@ -79,7 +79,7 @@ T1–T3 đứng đầu vì nếu một giả định nền sai thì `merge-gate`
 - [x] T14: `decideMerge` và đọc báo cáo review
 - [x] T15: `merge-gate`: script và workflow
 - [x] T16: `audit`: quyết định, script, reusable workflow, cờ "Needs you"
-- [ ] T17: `gh:protect` và kiểm trên repo public tạm [bạn]
+- [x] T17: `gh:protect` và kiểm trên repo public tạm [bạn]
 
 ### Checkpoint 3
 - [ ] `npm test` xanh; `merge-gate.mjs --dry-run` trên `ao-pilot` in đúng PR nào chờ gì

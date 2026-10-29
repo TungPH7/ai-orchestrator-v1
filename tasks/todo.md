@@ -348,19 +348,19 @@ Claude làm: chạy script, mở trang, đặt hai biến môi trường user `A
 
 **Cỡ:** M
 
-### [ ] T17: `gh:protect` và kiểm trên repo public tạm [bạn]
+### [x] T17: `gh:protect` và kiểm trên repo public tạm [bạn]
 
 **Mô tả:** `scripts/gh-protect.mjs` (`npm run gh:protect -- --repo <owner>/<name>`) dựng payload ruleset `ao-protected` theo spec mục 2.8 từ `quality/gates.yaml`, tạo mới hoặc cập nhật ruleset cùng tên, và báo soft mode khi API trả 403. Kiểm thật: chạy trên `ao-pilot`; tạo repo public rỗng `TungPH7/ao-ruleset-probe`, chạy hai lần, đọc lại ruleset, rồi xóa repo.
 
 Bạn làm, nếu `gh` chưa có quyền xóa repo: chạy `gh auth refresh -h github.com -s delete_repo` rồi xác nhận trên trình duyệt; hoặc xóa repo trên giao diện theo các bước Claude ghi.
 
 **Tiêu chí chấp nhận:**
-- [ ] Payload có đủ rule của spec mục 2.8, và bốn check lấy từ `checks`.
-- [ ] Trên `ao-pilot`: in soft mode, thoát mã 0, repo không đổi.
-- [ ] Trên repo tạm: ruleset đọc lại khớp payload; lần chạy thứ hai không tạo ruleset thứ hai; repo đã bị xóa.
+- [x] Payload có đủ rule của spec mục 2.8, và bốn check lấy từ `checks`.
+- [x] Trên `ao-pilot`: in soft mode, thoát mã 0, repo không đổi.
+- [x] Trên repo tạm: ruleset đọc lại khớp payload; lần chạy thứ hai không tạo ruleset thứ hai; repo đã bị xóa.
 
 **Kiểm chứng:**
-- [ ] `npm test` xanh; tiêu chí 11 ghi trong `tasks/verification.md`
+- [x] `npm test` xanh; tiêu chí 11 ghi trong `tasks/verification.md`
 
 **Phụ thuộc:** T4
 
