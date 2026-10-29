@@ -19,7 +19,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 9 | `79cccd91-9d3a-495d-a154-927ae2ce5928` | 2026-10-28 16:22 → 16:34 | Bạn xác nhận tracker-integration hoàn thành và chọn quality-gates; Claude đánh dấu ô cuối (PR #45); câu trả lời bị bộ lọc an toàn chặn |
 | 10 | `b645b669-931c-4d95-ba32-24fd3e090d67` | 2026-10-28 16:35 → 2026-10-29 khoảng 03:30 | Giả định và câu hỏi cho quality-gates: bảo vệ nhánh khi repo private ở gói Free, danh tính để agent mở PR; bạn chọn 1a, 2a; viết SPEC-quality-gates; bạn duyệt spec, lập plan 21 task; bạn duyệt plan, bắt đầu T1; vì sao bạn phải tự tạo App, script tạo App bằng manifest flow; T1–T5, Checkpoint 1; ba đề xuất được đồng ý, T6–T13, hết lượt dùng giữa T13, Checkpoint 2 |
 | 11 | `318a4364-f1b9-4cc5-9744-ae8ff4f80c7d` | 2026-10-29 09:00 → khoảng 09:40 | Bạn cho qua Checkpoint 2; T14–T17 (lượt code): merge-gate, audit, gh:protect; Checkpoint 3, chờ bạn xóa repo thử |
-| 12 | `32807628-e04f-47b4-889d-f855a40dabce` | 2026-10-29 khoảng 11:04 → | Bạn cho qua Checkpoint 3; T17 và Checkpoint 3 đóng (PR #65, #66); T18 (lượt code): cài kit mới lên `ao-pilot`, tạo `DEMO-6`, `gh-guard` chặn ba đường vòng; bạn chuyển `DEMO-6` sang Ready và tạo key thứ hai của `ao-dev`; T18 đóng (PR #67): `fe-dev` mở PR #4, `reviewer` yêu cầu sửa, kit tắt ghi công AI; T19: vòng sửa, tiêu chí 10; bạn approve PR #4 lần đầu; T19: approve trên commit cũ không còn được tính, `devops` mở PR #5 sửa workflow, `reviewer` và `security` đăng báo cáo, bạn approve PR #4 lần hai và PR #5; T19 đóng (PR #68): `merge-gate` merge PR #4, `DEMO-6` sang Ready for QA, vòng PR tốn 55 phút Actions; T20: `fe-dev` mở PR #6, chờ bạn merge tay; bạn báo đã merge nhưng PR #6 vẫn mở; bạn merge lại, `audit` chặn deploy và gắn cờ `DEMO-8`; `fe-dev` mở PR #7 revert; bạn approve PR #7; T20 đóng (PR #69): `merge-gate` merge PR #7, `develop` sạch trở lại, gỡ cờ `DEMO-8`; Checkpoint 4, chờ bạn; bạn hỏi về `gh` 2.16.1, mình đề xuất sửa `gh-guard` cho các lệnh `gh` mới rồi mới cập nhật `gh`; bạn đồng ý: vá `gh-guard` (PR #70), lên `gh` 2.103.3, tắt telemetry; chờ bạn đăng nhập lại `gh` |
+| 12 | `32807628-e04f-47b4-889d-f855a40dabce` | 2026-10-29 khoảng 11:04 → | Bạn cho qua Checkpoint 3; T17 và Checkpoint 3 đóng (PR #65, #66); T18 (lượt code): cài kit mới lên `ao-pilot`, tạo `DEMO-6`, `gh-guard` chặn ba đường vòng; bạn chuyển `DEMO-6` sang Ready và tạo key thứ hai của `ao-dev`; T18 đóng (PR #67): `fe-dev` mở PR #4, `reviewer` yêu cầu sửa, kit tắt ghi công AI; T19: vòng sửa, tiêu chí 10; bạn approve PR #4 lần đầu; T19: approve trên commit cũ không còn được tính, `devops` mở PR #5 sửa workflow, `reviewer` và `security` đăng báo cáo, bạn approve PR #4 lần hai và PR #5; T19 đóng (PR #68): `merge-gate` merge PR #4, `DEMO-6` sang Ready for QA, vòng PR tốn 55 phút Actions; T20: `fe-dev` mở PR #6, chờ bạn merge tay; bạn báo đã merge nhưng PR #6 vẫn mở; bạn merge lại, `audit` chặn deploy và gắn cờ `DEMO-8`; `fe-dev` mở PR #7 revert; bạn approve PR #7; T20 đóng (PR #69): `merge-gate` merge PR #7, `develop` sạch trở lại, gỡ cờ `DEMO-8`; Checkpoint 4, chờ bạn; bạn hỏi về `gh` 2.16.1, mình đề xuất sửa `gh-guard` cho các lệnh `gh` mới rồi mới cập nhật `gh`; bạn đồng ý: vá `gh-guard` (PR #70), lên `gh` 2.103.3, tắt telemetry; bạn đăng nhập lại `gh`, token vào keyring; Checkpoint 4, chờ bạn |
 
 ---
 
@@ -4092,3 +4092,39 @@ Phần A nên làm nhưng không bắt buộc. Phần B là phần chính.
 Xong thì nhắn "đã đăng nhập lại". Mình sẽ kiểm rằng token đã vào Credential Manager và `hosts.yml` không còn token, ghi kết quả, rồi chờ bạn cho qua Checkpoint 4.
 
 Nếu chưa muốn làm bước 5 lúc này, bạn nhắn thẳng "qua Checkpoint 4".
+
+---
+
+# Phiên 12 · Lượt 10 — 2026-10-29 khoảng 22:31
+
+**Bạn:**
+
+```markdown
+đã đăng nhập lại
+```
+
+Sau tin nhắn này Claude kiểm rằng token đã vào keyring, rồi ghi kết quả vào `tasks/verification.md` (lượt code, không ghi).
+
+**Claude:**
+
+Đăng nhập lại đã thành công. Token của `gh` giờ nằm trong Windows Credential Manager.
+
+| Kiểm | Kết quả |
+|---|---|
+| `gh auth status` | Đăng nhập `TungPH7`, token nằm trong `keyring` |
+| `hosts.yml` | Không còn dòng `oauth_token` |
+| Windows Credential Manager | Có mục `gh:github.com:TungPH7` và `gh:github.com:`. Mình chỉ xem tên mục, không xem giá trị |
+| Scope của token | `gist`, `read:org`, `repo`, `workflow`, như trước |
+| `readGitHubToken` của kit | Lấy được token, đúng dạng |
+| Git | Vẫn dùng Git Credential Manager (`credential.helper` là `manager`) |
+| Telemetry | Vẫn `disabled` |
+
+Mình không kiểm được phần A (thu hồi token cũ) từ máy, vì muốn kiểm phải dùng chính token cũ. Nếu bạn đã bỏ qua phần A, token cũ vẫn dùng được trên GitHub, dù không còn nằm trên đĩa. Bạn có thể thu hồi sau, nhưng khi đó cần đăng nhập lại `gh` thêm một lần.
+
+Mình đã ghi kết quả vào `tasks/verification.md`, trên nhánh của Checkpoint 4. Nhánh này sẽ vào `main` cùng PR đánh dấu qua Checkpoint 4.
+
+Việc `gh` đã xong, và mình vẫn dừng ở **Checkpoint 4**. Khi đã xem xong các item và PR thử như trong tin Checkpoint 4, bạn nhắn "qua Checkpoint 4". Khi đó T21 sẽ ghi thêm:
+
+- bản `gh` đã kiểm là 2.103.3, và bản tối thiểu nên dùng;
+- các luật mới của `gh-guard`;
+- lời khuyên để token của `gh` trong keyring, không để trong `hosts.yml`.
