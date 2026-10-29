@@ -330,17 +330,17 @@ Claude làm: chạy script, mở trang, đặt hai biến môi trường user `A
 
 **Cỡ:** S
 
-### [ ] T16: `audit`: quyết định, script, reusable workflow, cờ "Needs you"
+### [x] T16: `audit`: quyết định, script, reusable workflow, cờ "Needs you"
 
 **Mô tả:** `lib/quality/audit.mjs` có `decideAudit(facts)` thuần theo spec mục 2.6. `scripts/audit.mjs --sha <commit> --branch <nhánh>` gom dữ kiện (PR của commit qua `GET /commits/{sha}/pulls`, review, check), gọi `decideAudit`, ghi job summary; khi đỏ thì gắn cờ "Needs you" cho item bằng token CI, dùng lại phần ghi Jira của `tracker-integration`. `kit/.github/workflows/audit.yml` là reusable workflow (`workflow_call`).
 
 **Tiêu chí chấp nhận:**
-- [ ] Bảng tình huống của spec mục 7 cho `decideAudit` chạy đủ.
-- [ ] Commit không mang mã item nào thì `audit` vẫn đỏ đúng, chỉ không gắn cờ.
-- [ ] Gắn cờ hai lần cho cùng một item không tạo comment trùng.
+- [x] Bảng tình huống của spec mục 7 cho `decideAudit` chạy đủ.
+- [x] Commit không mang mã item nào thì `audit` vẫn đỏ đúng, chỉ không gắn cờ.
+- [x] Gắn cờ hai lần cho cùng một item không tạo comment trùng.
 
 **Kiểm chứng:**
-- [ ] `npm test` xanh
+- [x] `npm test` xanh
 
 **Phụ thuộc:** T14
 
