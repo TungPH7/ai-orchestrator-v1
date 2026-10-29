@@ -294,17 +294,17 @@ Claude làm: chạy script, mở trang, đặt hai biến môi trường user `A
 
 ## Giai đoạn 4: merge-gate, audit, ruleset
 
-### [ ] T14: `decideMerge` và đọc báo cáo review
+### [x] T14: `decideMerge` và đọc báo cáo review
 
 **Mô tả:** `lib/quality/pull-request.mjs` thêm phần đọc báo cáo review: dòng `Role:`, bảng Findings, các finding Critical và High. `lib/quality/merge-gate.mjs` có `decideMerge(facts)` thuần, theo bảng điều kiện ở spec mục 2.5: trả `merge` (kèm tiêu đề và body của commit squash, SHA của commit đầu), `wait` (kèm danh sách điều kiện thiếu), `needs-you` (PR sửa file được bảo vệ), hoặc `skip` (PR do người mở, PR draft, nhánh không phải của item). `facts.mjs` export `readChecks` và hàm đọc review để dùng chung.
 
 **Tiêu chí chấp nhận:**
-- [ ] Bảng tình huống của spec mục 7 cho `decideMerge` chạy đủ.
-- [ ] Commit squash có tiêu đề đúng bằng tiêu đề PR và body liệt kê header các commit của PR.
-- [ ] Guard `ci-green` và `changes-requested` của `tracker-integration` vẫn qua toàn bộ test cũ.
+- [x] Bảng tình huống của spec mục 7 cho `decideMerge` chạy đủ.
+- [x] Commit squash có tiêu đề đúng bằng tiêu đề PR và body liệt kê header các commit của PR.
+- [x] Guard `ci-green` và `changes-requested` của `tracker-integration` vẫn qua toàn bộ test cũ.
 
 **Kiểm chứng:**
-- [ ] `npm test` xanh
+- [x] `npm test` xanh
 
 **Phụ thuộc:** T5, T9
 
