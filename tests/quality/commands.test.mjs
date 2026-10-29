@@ -91,6 +91,11 @@ test('taking your token, an App key, or changing the repository settings is refu
     'gh auth token',
     'echo $(gh auth token)',
     'gh auth switch',
+    'gh auth status -t',
+    'gh auth status --show-token',
+    'gh auth status -h github.com -at',
+    'cat "$APPDATA/GitHub CLI/hosts.yml"',
+    'cat ~/.config/gh/hosts.yml',
     'cat "C:\\Users\\Huu Tung\\ao-keys\\tungph7-ao-dev.pem"',
     'cat $AO_DEV_APP_KEY_FILE',
     'gh secret set JIRA_CI_TOKEN',
@@ -101,9 +106,13 @@ test('taking your token, an App key, or changing the repository settings is refu
   ]) {
     denied(bash(command), /token|key|repository settings|secret|variable/, command);
   }
-  for (const command of ['gh auth status', 'gh repo autolink list']) allowed(bash(command), command);
+  for (const command of ['gh auth status', 'gh auth status -h github.com', 'gh auth status --active', 'gh repo autolink list']) {
+    allowed(bash(command), command);
+  }
   denied(call('fe-dev', 'Read', { file_path: 'C:\\Users\\Huu Tung\\ao-keys\\tungph7-ao-review.pem' }), /key/, 'Read of a key');
+  denied(call('fe-dev', 'Read', { file_path: 'C:\\Users\\Huu Tung\\AppData\\Roaming\\GitHub CLI\\hosts.yml' }), /token/, 'Read of the gh hosts file');
   allowed(call('fe-dev', 'Read', { file_path: `${PROJECT}\\src\\a.ts` }), 'Read of code');
+  allowed(call('fe-dev', 'Read', { file_path: `${PROJECT}\\deploy\\hosts.yml` }), 'Read of a hosts.yml of the project');
 });
 
 test('deleting a workflow run is refused; reading runs is not', () => {
