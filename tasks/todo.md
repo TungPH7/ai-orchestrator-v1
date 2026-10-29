@@ -413,15 +413,15 @@ Bạn làm, nếu `gh` chưa có quyền xóa repo: chạy `gh auth refresh -h g
 
 **Cỡ:** S
 
-### [ ] T20: `audit` chặn commit merge tay [bạn]
+### [x] T20: `audit` chặn commit merge tay [bạn]
 
 **Mô tả:** Một PR của agent có CI xanh nhưng chưa có approve; bạn bấm Merge trên giao diện (Claude ghi các bước bấm).
 
 **Tiêu chí chấp nhận:**
-- [ ] Tiêu chí 9: `audit` đỏ và ghi lý do, job deploy không chạy, item mang cờ "Needs you".
+- [x] Tiêu chí 9: `audit` đỏ và ghi lý do, job deploy không chạy, item mang cờ "Needs you".
 
 **Kiểm chứng:**
-- [ ] Kết quả ghi trong `tasks/verification.md`; Claude gỡ cờ và trả `develop` của `ao-pilot` về trạng thái sạch bằng một PR revert qua đủ cổng
+- [x] Kết quả ghi trong `tasks/verification.md`; Claude gỡ cờ và trả `develop` của `ao-pilot` về trạng thái sạch bằng một PR revert qua đủ cổng
 
 **Phụ thuộc:** T19
 
