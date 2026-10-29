@@ -514,3 +514,37 @@ Bạn approve PR #7 trên `6eb5c4e` lúc 17:07:20.
 - `DEMO-5` vẫn mang cờ từ T18: commit cài kit `2830053` được push thẳng lên `develop`, nên `audit` chặn deploy của nó, đúng thiết kế.
 
 Tiêu chí 9 của spec mục 9 đạt. T20 đóng.
+
+## Checkpoint 4: lên `gh` 2.103.3 và vá `gh-guard`
+
+Ở Checkpoint 4, bạn hỏi về bản `gh` trên máy: 2.16.1, ra ngày 2022-09-26. Các lần kiểm từ T13 tới T20 đều chạy với bản này. Bản mới nhất là 2.103.3, ra ngày 2026-10-26.
+
+**Lý do cập nhật:**
+
+- 9 security advisory đã công bố ảnh hưởng tới 2.16.1. Advisory mức cao duy nhất trong số đó nằm ở Codespaces, mà kit không dùng. Bản 2.102.0 trở lên vá hết.
+- `gh pr view <n>` không kèm `--json` lỗi trên 2.16, vì GitHub đã tắt Projects (classic). Bản 2.73.0 sửa lỗi này.
+- Token của `gh` nằm trong `%AppData%\GitHub CLI\hosts.yml`, không mã hóa. Từ 2.26.0, `gh auth login` cất token vào keyring của hệ điều hành.
+
+**Vá `gh-guard` trước khi cập nhật ([PR #70](https://github.com/TungPH7/ai-orchestrator-v1/pull/70)):**
+
+- Bản mới có bốn lệnh ghi lên GitHub bằng tài khoản của bạn mà danh sách chặn chưa có: `gh pr revert`, `gh pr update-branch`, `gh repo autolink create` và `delete`, `gh run delete`. PR #70 chặn cả bốn.
+- PR #70 cũng vá ba chỗ hở có từ trước:
+  - `gh auth status -t` in token của bạn;
+  - agent đọc được `hosts.yml` của `gh`;
+  - `gh pr -R o/r merge 12` lọt qua hook, vì `-R` đứng trước lệnh con.
+- Mục 2.7 của spec ghi các luật mới. Các test mới đỏ khi chưa có bản sửa, và cả bộ 499 test đều xanh.
+
+**Cập nhật và kiểm: đạt.**
+
+| Bước | Kết quả |
+|---|---|
+| `winget upgrade --id GitHub.cli -e` | `Successfully installed`, bản 2.103.3 |
+| `gh config set telemetry disabled`, chạy kèm `GH_TELEMETRY=false` | `gh config get telemetry` trả `disabled`. Từ 2.91.0, `gh` mặc định gửi telemetry, nên đây là lệnh `gh` đầu tiên chạy trên bản mới |
+| `gh pr view 7 -R TungPH7/ao-pilot`, không kèm `--json` | In được PR #7: tiêu đề, trạng thái `MERGED`, người review |
+| `readGitHubToken` với `env` rỗng | Lấy được token qua `gh auth token`, đúng dạng. Token không được in |
+| `gh auth status` | Đăng nhập `TungPH7`, scope `gist`, `read:org`, `repo`, `workflow`. Token vẫn nằm trong `hosts.yml` |
+| `npm test` trên `main` (`33600cd`) | 499 test xanh |
+
+Bản chép kit trong `ao-pilot` nhận PR #70 ở lần chép kit tới, qua PR. Trước lần đó, không agent nào chạy trong `ao-pilot`.
+
+Còn lại: bạn đăng nhập lại `gh` để chuyển token vào Windows Credential Manager.
