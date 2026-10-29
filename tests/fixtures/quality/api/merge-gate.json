@@ -1,0 +1,116 @@
+{
+  "/pulls/12": {
+    "number": 12,
+    "state": "open",
+    "draft": false,
+    "title": "feat(auth): add email and password login (DEMO-12)",
+    "body": "## Jira\n[DEMO-12](https://example.atlassian.net/browse/DEMO-12): Đăng nhập bằng email và mật khẩu. First round.\n\n## What Changed\n- DEMO-13 (BE): `POST /auth/login` checks the password and sets the `access_token` cookie, as in the plan's API contract.\n- DEMO-14 (FE): the `/login` page calls the API and shows the error message on 401.\n\n## How It Was Tested\nUnit and integration tests of `apps/api` and `apps/web`: pass. E2E `e2e/auth/login.spec.ts`: pass on a local stack.\n\n## Acceptance Criteria Coverage\n| Acceptance criterion | Test |\n|---|---|\n| Given an active account, When the right email and password are entered, Then the Orders page opens | `e2e/auth/login.spec.ts` › logs in with valid credentials |\n| Given a wrong password, When Log in is pressed, Then \"Email hoặc mật khẩu không đúng\" is shown | `e2e/auth/login.spec.ts` › rejects a wrong password |\n\n## Risks\nNone: a new endpoint and a new page, no migration.\n\n## Definition of Done\n- [x] Hành vi mới hoặc thay đổi được phủ bởi unit và integration test viết theo TDD\n- [x] Đã cập nhật tài liệu, và ADR nếu có thay đổi kiến trúc\n- [x] E2E test cho từng acceptance criterion đều pass\n",
+    "user": {
+      "login": "tungph7-ao-dev[bot]",
+      "type": "Bot"
+    },
+    "head": {
+      "ref": "feature/DEMO-12-login",
+      "sha": "a1b2c3d4e5f60718293a4b5c6d7e8f9012345678"
+    },
+    "base": {
+      "ref": "develop"
+    },
+    "mergeable": true,
+    "merged_at": null
+  },
+  "/pulls/12/commits": [
+    {
+      "sha": "0f1e2d3c4b5a69788796a5b4c3d2e1f00f1e2d3c",
+      "commit": {
+        "message": "feat(auth): add the login endpoint (DEMO-12, DEMO-13)"
+      },
+      "parents": [
+        {
+          "sha": "d0d1d2d3d4d5d6d7d8d9dadbdcdddedfe0e1e2e3"
+        }
+      ]
+    },
+    {
+      "sha": "5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f",
+      "commit": {
+        "message": "Merge branch 'develop' into feature/DEMO-12-login"
+      },
+      "parents": [
+        {
+          "sha": "0f1e2d3c4b5a69788796a5b4c3d2e1f00f1e2d3c"
+        },
+        {
+          "sha": "c0c1c2c3c4c5c6c7c8c9cacbcccdcecfd0d1d2d3"
+        }
+      ]
+    },
+    {
+      "sha": "a1b2c3d4e5f60718293a4b5c6d7e8f9012345678",
+      "commit": {
+        "message": "feat(auth): add the login page (DEMO-12, DEMO-14)\n\nThe page shows the API error on 401."
+      },
+      "parents": [
+        {
+          "sha": "5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f"
+        }
+      ]
+    }
+  ],
+  "/pulls/12/files": [
+    {
+      "filename": "apps/api/src/auth/auth.controller.ts",
+      "status": "added"
+    },
+    {
+      "filename": "apps/web/app/login/page.tsx",
+      "status": "added"
+    }
+  ],
+  "/pulls/12/reviews": [
+    {
+      "id": 101,
+      "user": {
+        "login": "tungph7-ao-review[bot]",
+        "type": "Bot"
+      },
+      "state": "CHANGES_REQUESTED",
+      "commit_id": "0f1e2d3c4b5a69788796a5b4c3d2e1f00f1e2d3c",
+      "submitted_at": "2026-11-02T09:30:00Z",
+      "body": "# Review: feat(auth): add email and password login (DEMO-12)\n\nRole: reviewer\n\n## Context\n- [x] Thay đổi thêm `POST /auth/login` và trang `/login`, theo plan của DEMO-10.\n\n## Findings\n| Severity | Axis | Where | Finding | Suggested fix |\n|---|---|---|---|---|\n| High | Correctness | `apps/api/src/auth/auth.controller.ts:31` | Body thiếu `email` thì API trả 500 | Validate body, trả 400 |\n\n## Verdict\n- [x] **Request changes**: sửa finding High rồi review lại.\n"
+    },
+    {
+      "id": 102,
+      "user": {
+        "login": "tungph7-ao-review[bot]",
+        "type": "Bot"
+      },
+      "state": "COMMENTED",
+      "commit_id": "a1b2c3d4e5f60718293a4b5c6d7e8f9012345678",
+      "submitted_at": "2026-11-02T10:30:00Z",
+      "body": "# Review: feat(auth): add email and password login (DEMO-12)\n\nRole: reviewer\n\n## Context\n- [x] Finding High của lần trước đã sửa: body thiếu `email` giờ trả 400.\n\n## Findings\n| Severity | Axis | Where | Finding | Suggested fix |\n|---|---|---|---|---|\n| Low | Readability | `apps/web/app/login/page.tsx:12` | Tên biến `res2` khó hiểu | Đổi thành `loginResponse` |\n\n## Verdict\n- [x] **Approve**: ready for your approval at gate ③ merge-approval\n"
+    },
+    {
+      "id": 103,
+      "user": {
+        "login": "tungph7-ao-review[bot]",
+        "type": "Bot"
+      },
+      "state": "COMMENTED",
+      "commit_id": "a1b2c3d4e5f60718293a4b5c6d7e8f9012345678",
+      "submitted_at": "2026-11-02T10:40:00Z",
+      "body": "# Review: feat(auth): add email and password login (DEMO-12)\n\nRole: security\n\n## Findings\nKhông có finding.\n\n## Verdict\n- [x] **Approve**: ready for your approval at gate ③ merge-approval\n"
+    },
+    {
+      "id": 104,
+      "user": {
+        "login": "approver",
+        "type": "User"
+      },
+      "state": "APPROVED",
+      "commit_id": "a1b2c3d4e5f60718293a4b5c6d7e8f9012345678",
+      "submitted_at": "2026-11-02T11:00:00Z",
+      "body": ""
+    }
+  ]
+}

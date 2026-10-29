@@ -69,10 +69,12 @@ test('review posts the report with the ao-review App on the newest commit of the
   ]);
 });
 
-test('review never approves, and refuses a report without its role', async () => {
-  const { sent, run } = setup({ files: { 'r.md': REVIEW, 'bad.md': 'LGTM' } });
+test('review never approves, and refuses a report without its role or with findings merge-gate cannot read', async () => {
+  const unreadable = REVIEW.replace('None.', '| Severity | Axis | Where | Finding | Suggested fix |\n|---|---|---|---|---|\n| Blocker | Security | a.ts:1 | x | y |');
+  const { sent, run } = setup({ files: { 'r.md': REVIEW, 'bad.md': 'LGTM', 'table.md': unreadable } });
   await assert.rejects(run('review', '7', '--event', 'APPROVE', '--body-file', 'r.md'), /approving is for the human/);
   await assert.rejects(run('review', '7', '--event', 'COMMENT', '--body-file', 'bad.md'), /Role: reviewer/);
+  await assert.rejects(run('review', '7', '--event', 'COMMENT', '--body-file', 'table.md'), /finding 1: severity 'Blocker'/);
   assert.deepEqual(sent, []);
 });
 
