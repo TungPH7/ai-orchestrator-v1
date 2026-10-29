@@ -1,6 +1,6 @@
 # SPEC: ai-orchestrator-v1 — Tổng quan và Capability Map
 
-> **Trạng thái:** capability map và `SPEC-sdlc-contract.md` đã được duyệt ngày 2026-10-26, kể cả các sửa đổi theo Phiên 3 · Lượt 1–2 (cấu trúc repo, nhánh cho Story có cả FE và BE, release theo quyết định của bạn). Module `sdlc-contract` hoàn thành ngày 2026-10-27; plan và danh sách task lưu ở [tasks/archive/sdlc-contract/](tasks/archive/sdlc-contract/plan.md). Module `tracker-integration` hoàn thành ngày 2026-10-28; plan lưu ở [tasks/archive/tracker-integration/](tasks/archive/tracker-integration/plan.md).
+> **Trạng thái:** capability map và `SPEC-sdlc-contract.md` đã được duyệt ngày 2026-10-26, kể cả các sửa đổi theo Phiên 3 · Lượt 1–2 (cấu trúc repo, nhánh cho Story có cả FE và BE, release theo quyết định của bạn). Module `sdlc-contract` hoàn thành ngày 2026-10-27; plan và danh sách task lưu ở [tasks/archive/sdlc-contract/](tasks/archive/sdlc-contract/plan.md). Module `tracker-integration` hoàn thành ngày 2026-10-28; plan lưu ở [tasks/archive/tracker-integration/](tasks/archive/tracker-integration/plan.md). Module `quality-gates` hoàn thành ngày 2026-10-29; plan lưu ở [tasks/archive/quality-gates/](tasks/archive/quality-gates/plan.md).
 >
 > **Lịch sử thảo luận:** [misc/brainstorm-discussion.md](misc/brainstorm-discussion.md)
 
@@ -126,7 +126,7 @@ sdlc-contract → agent-roster, tracker-integration (làm song song được)
 | `sdlc-contract` | [`SPEC-sdlc-contract.md`](SPEC-sdlc-contract.md) | Hoàn thành 2026-10-27; plan lưu ở [`tasks/archive/sdlc-contract/`](tasks/archive/sdlc-contract/plan.md) |
 | `agent-roster` | `SPEC-agent-roster.md` | Chưa viết |
 | `tracker-integration` | [`SPEC-tracker-integration.md`](SPEC-tracker-integration.md) | Hoàn thành 2026-10-28; plan lưu ở [`tasks/archive/tracker-integration/`](tasks/archive/tracker-integration/plan.md) |
-| `quality-gates` | [`SPEC-quality-gates.md`](SPEC-quality-gates.md) | Đã duyệt 2026-10-29; plan ở [`tasks/plan.md`](tasks/plan.md) |
+| `quality-gates` | [`SPEC-quality-gates.md`](SPEC-quality-gates.md) | Hoàn thành 2026-10-29; plan lưu ở [`tasks/archive/quality-gates/`](tasks/archive/quality-gates/plan.md) |
 | `dev-workflow` | `SPEC-dev-workflow.md` | Chưa viết |
 | `release-workflow` | `SPEC-release-workflow.md` | Chưa viết |
 | `project-scaffold` | `SPEC-project-scaffold.md` | Chưa viết |
