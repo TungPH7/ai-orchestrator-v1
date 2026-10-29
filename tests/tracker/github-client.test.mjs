@@ -57,9 +57,11 @@ test('follows the next link, for lists and for lists under a key', async () => {
 });
 
 test('an error response becomes an error with the status', async () => {
-  const { fetch } = fakeFetch([{ status: 404, body: { message: 'Not Found' } }]);
+  const { fetch } = fakeFetch([{ status: 404, body: { message: 'Not Found' } }, { status: 409, body: {} }]);
   const github = createGitHubClient({ repo: 'TungPH7/ao-pilot', token: 't', fetch });
   await assert.rejects(github.get('/pulls/99'), /GET \/pulls\/99 returned 404.*Not Found/);
+  // merge-gate tells a refused merge (405, 409) from a failure by the status.
+  await assert.rejects(github.get('/pulls/99'), { status: 409 });
 });
 
 test('the token comes from GITHUB_TOKEN first, then from the GitHub CLI', () => {
