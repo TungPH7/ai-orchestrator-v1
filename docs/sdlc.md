@@ -25,7 +25,7 @@ Bản đọc của hợp đồng trong `contract/`. Nội dung và lý do của 
 
 | Stage id | Giai đoạn | Người làm | Đầu vào | Đầu ra | Điều kiện để qua |
 | --- | --- | --- | --- | --- | --- |
-| `spec` | Viết SPEC cho Epic | `ba` (chính), `ux`, `sa` | Epic ở new | SPEC của Epic (`spec`) | Cổng ① `spec-approval`: Bạn duyệt SPEC của Epic |
+| `spec` | Viết SPEC cho Epic | `ba` (chính), `ux`, `sa`; ux viết design khi Epic đụng tới giao diện | Epic ở new | SPEC của Epic (`spec`); Thiết kế màn hình (`design`) | Cổng ① `spec-approval`: Bạn duyệt SPEC của Epic |
 | `plan` | Lập plan, tạo Story/Task | `sa` (chính), `ba` | SPEC đã duyệt | Plan (`plan`); Story (`story`); Task (`task`); Plan gồm hợp đồng API cho Story có cả FE và BE; các Story/Task nằm trên Jira | Cổng ② `plan-approval`: Bạn duyệt plan của Epic |
 | `build` | Code theo TDD | `fe-dev`, `be-dev` | Item ready | Nhánh, commit, test | Unit và integration test pass ở local; pre-commit pass |
 | `ci-gate` | Quality gate tự động | `automation` | PR | Kết quả CI | Mọi check CI xanh |
@@ -323,6 +323,7 @@ Giới hạn mặc định, chỉnh được ở retro:
 | Artifact | Template | Ai tạo | Lưu ở đâu |
 | --- | --- | --- | --- |
 | SPEC của Epic | `templates/spec.md` | `ba` | Git: `docs/specs/<EPIC-KEY>/spec.md` |
+| Thiết kế màn hình | `templates/design.md` | `ux` | Git: `docs/specs/<EPIC-KEY>/design.md`; Git: `docs/specs/<EPIC-KEY>/design/`, ảnh của màn hình kiểu Figma |
 | Plan | `templates/plan.md` | `sa` | Git: `docs/specs/<EPIC-KEY>/plan.md` |
 | ADR | `templates/adr.md` | `sa` | Git: `docs/adr/NNNN-<slug>.md` |
 | Story | `templates/story.md` | `ba` | Jira: Mô tả item |

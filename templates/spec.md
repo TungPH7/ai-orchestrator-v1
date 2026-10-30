@@ -12,7 +12,9 @@ Delete the guidance comments and the Example section when you are done.
 ## Objective
 
 <!-- What the Epic builds and why, for which users, and what success looks like. List its user stories, each with
-acceptance criteria in Given/When/Then form; the plan turns them into Jira Stories. -->
+acceptance criteria in Given/When/Then form, numbered AC1, AC2… across the whole Epic. The plan turns the stories into
+Jira Stories, which keep the numbers, and design.md points to criteria by these codes. When the Epic touches the UI,
+`ux` writes the screens in docs/specs/<EPIC-KEY>/design.md next to this file. -->
 
 ## Tech Stack
 
@@ -62,9 +64,10 @@ acceptance criterion (Story DoD in docs/sdlc.md), and where each kind of test li
 ## Objective
 Người dùng đã có tài khoản đăng nhập bằng email và mật khẩu để dùng các trang cần xác thực.
 - Story: Là người dùng, tôi muốn đăng nhập bằng email và mật khẩu để xem đơn hàng của mình.
-  - Given tài khoản đã kích hoạt, When nhập đúng email và mật khẩu, Then vào trang Đơn hàng.
-  - Given mật khẩu sai, When bấm Đăng nhập, Then thấy "Email hoặc mật khẩu không đúng".
+  - AC1: Given tài khoản đã kích hoạt, When nhập đúng email và mật khẩu, Then vào trang Đơn hàng.
+  - AC2: Given mật khẩu sai, When bấm Đăng nhập, Then thấy "Email hoặc mật khẩu không đúng".
 - Story: Là chủ shop, tôi muốn tài khoản bị khóa 15 phút sau 5 lần nhập sai để chống dò mật khẩu.
+  - AC3: Given đã nhập sai 5 lần liên tiếp, When đăng nhập lần thứ 6, Then thấy "Tài khoản tạm khóa 15 phút".
 
 ## Tech Stack
 Thêm thư viện phát JWT và băm mật khẩu ở `apps/api`; phần còn lại như README.
