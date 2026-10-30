@@ -156,7 +156,7 @@ blocks:
   4:
     name: Thông báo của mã
     type: text
-    content: "Đã giảm 10%" hoặc "Mã không hợp lệ hoặc đã hết hạn"
+    content: '"Đã giảm 10%", hoặc "Mã không hợp lệ hoặc đã hết hạn"'
     a11y: Vùng aria-live, để trình đọc màn hình đọc thông báo
     ac: [AC2]
   5:
