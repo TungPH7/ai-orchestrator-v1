@@ -168,7 +168,7 @@ Xem [plan.md](plan.md#checkpoint-1).
 
 **Cỡ:** M
 
-### [ ] T6: `check-design` cho màn hình kiểu Figma và ảnh
+### [x] T6: `check-design` cho màn hình kiểu Figma và ảnh
 
 **Mô tả:** Thêm hai mã:
 
@@ -185,7 +185,7 @@ Xem [plan.md](plan.md#checkpoint-1).
 Kích thước ảnh đọc từ header: chunk IHDR của PNG, marker SOF của JPEG. Với file con trỏ của Git LFS, D8 chỉ kiểm cỡ ghi trong con trỏ.
 
 **Tiêu chí chấp nhận:**
-- [ ] Fixture do test tạo ra:
+- [x] Fixture do test tạo ra:
   - PNG và JPG nhỏ hợp lệ;
   - ảnh quá 1 MB;
   - header PNG 1440×4000;
@@ -194,10 +194,10 @@ Kích thước ảnh đọc từ header: chunk IHDR của PNG, marker SOF của 
   - link Figma không có `node-id`;
   - alt sai dạng;
   - thiếu dòng `Figma version:`.
-- [ ] Ví dụ kiểu Figma trong template, cùng ảnh mẫu của nó trong fixture, sạch.
+- [x] Ví dụ kiểu Figma trong template, cùng ảnh mẫu của nó trong fixture, sạch.
 
 **Kiểm chứng:**
-- [ ] `npm test` xanh
+- [x] `npm test` xanh
 
 **Phụ thuộc:** T5
 
