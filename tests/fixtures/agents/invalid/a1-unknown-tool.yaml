@@ -1,0 +1,8 @@
+description: a tool outside Bash, Edit and Write, such as WebFetch
+rule: A1
+expect:
+  - "roles.reviewer.tools[2]"
+patch:
+  - op: set
+    path: "roles.reviewer.tools"
+    value: [Bash, Write, WebFetch]

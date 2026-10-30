@@ -1,0 +1,8 @@
+description: a Chrome DevTools group that is not allowed, such as memory
+rule: A1
+expect:
+  - "roles.fe-dev.mcp.chrome-devtools"
+patch:
+  - op: set
+    path: "roles.fe-dev.mcp.chrome-devtools"
+    value: [navigation, memory]

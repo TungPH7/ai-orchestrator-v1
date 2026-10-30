@@ -1,9 +1,11 @@
 // Checks the contract against its schemas and consistency rules (spec section 7), then the Jira mapping
-// in the tracker folder next to it (tracker-integration spec section 7) and the quality gates in the quality folder
-// (quality-gates spec section 7), when those folders have them.
+// in the tracker folder next to it (tracker-integration spec section 7), the quality gates in the quality folder
+// (quality-gates spec section 7) and the agent roster in the agents folder (agent-roster spec section 7), when those
+// folders have them.
 // Usage: node scripts/validate-contract.mjs [contract-dir]
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
+import { readRoster, validateRoster } from '../lib/agents/roster.mjs';
 import { formatError, readContract, validateContract } from '../lib/contract.mjs';
 import { readCiJobs, readGates, validateGates } from '../lib/quality/gates.mjs';
 import { readMapping, validateMapping } from '../lib/tracker/mapping.mjs';
@@ -11,6 +13,7 @@ import { readMapping, validateMapping } from '../lib/tracker/mapping.mjs';
 const dir = process.argv[2] ?? 'contract';
 const trackerDir = join(dir, '..', 'tracker');
 const qualityDir = join(dir, '..', 'quality');
+const agentsDir = join(dir, '..', 'agents');
 
 function report(errors, okMessage, where) {
   if (errors.length === 0) {
@@ -33,6 +36,10 @@ try {
     const ciFile = join(qualityDir, '..', 'kit', '.github', 'workflows', 'ci.yml');
     const ciJobs = existsSync(ciFile) ? readCiJobs(ciFile) : undefined;
     report(validateGates(readGates(qualityDir), contract, { ciJobs }), `Gates OK: ${join(qualityDir, 'gates.yaml')}`, qualityDir);
+  }
+  if (contractOk && existsSync(join(agentsDir, 'roster.yaml'))) {
+    const gates = existsSync(join(qualityDir, 'gates.yaml')) ? readGates(qualityDir) : undefined;
+    report(validateRoster(readRoster(agentsDir), contract, { gates }), `Roster OK: ${join(agentsDir, 'roster.yaml')}`, agentsDir);
   }
 } catch (error) {
   console.error(error.message);

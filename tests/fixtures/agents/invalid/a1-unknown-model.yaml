@@ -1,0 +1,8 @@
+description: a model that is not haiku, sonnet or opus
+rule: A1
+expect:
+  - "roles.pm.model"
+patch:
+  - op: set
+    path: "roles.pm.model"
+    value: gpt-5

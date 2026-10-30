@@ -1,0 +1,16 @@
+description: a roster entry that is not an agent role of the contract
+rule: A2
+expect:
+  - "roles.qa-lead"
+patch:
+  - op: set
+    path: "roles.qa-lead"
+    value:
+      description: "QA lead"
+      model: opus
+      effort: high
+      tools: [Bash, Write]
+      jira: [read]
+      git: read
+      writes: [".ai/**"]
+      skills: []

@@ -1,0 +1,8 @@
+description: pm moves no item in any workflow, so it may not move items
+rule: A3
+expect:
+  - "roles.pm.jira"
+patch:
+  - op: set
+    path: "roles.pm.jira"
+    value: [read, transition]
