@@ -64,6 +64,7 @@ function fakeJira({ issues = [], comments = {}, search = () => [] }) {
 }
 
 const guards = (client, key, actor, needed) => jiraGuards(client, { key, actor, needed, contract, mapping });
+const withComments = (list) => fakeJira({ issues: [issue({ key: 'DEMO-5', st: status('In QA', 'indeterminate') })], comments: { 'DEMO-5': list } });
 
 test('reads an item: type, status, parent, sub-tasks, labels, blocking items and description as text', async () => {
   const client = fakeJira({
@@ -142,7 +143,6 @@ test('subtasks-done: every Sub-task is in the Done category, or there is none', 
 });
 
 test('qa-report-failed and qa-report-passed read the latest QA report comment', async () => {
-  const withComments = (list) => fakeJira({ issues: [issue({ key: 'DEMO-5', st: status('In QA', 'indeterminate') })], comments: { 'DEMO-5': list } });
   const both = ['qa-report-failed', 'qa-report-passed'];
 
   assert.deepEqual(await guards(withComments([]), 'DEMO-5', 'qa', both), []);
@@ -163,6 +163,19 @@ test('the QA result is read from markdown text as well as from ADF', () => {
   assert.equal(qaReportResult('## Result\nPASS'), null);
   assert.equal(qaReportResult('# QA report: DEMO-5\n## Result\nPASS | FAIL'), null);
   assert.equal(qaReportResult(report('PASS').body), 'PASS');
+  assert.equal(qaReportResult('# QA report: DEMO-5 Đăng nhập\n\n## Result\n\nNOT TESTED\n'), 'NOT TESTED');
+  assert.equal(qaReportResult(report('NOT TESTED').body), 'NOT TESTED');
+  assert.equal(qaReportResult(report('FAIL').body), 'FAIL');
+  assert.equal(qaReportResult('# QA report: DEMO-5\n## Result\nPASS | FAIL | NOT TESTED'), null);
+});
+
+// agent-roster spec 2.9: a report that could not test every criterion is still the latest report.
+test('a NOT TESTED report hides an older FAIL, and then neither qa-report-failed nor qa-report-passed holds', async () => {
+  const both = ['qa-report-failed', 'qa-report-passed'];
+  const comments = [report('FAIL', '2026-10-28T10:00:00.000+0700'), report('NOT TESTED', '2026-10-28T12:00:00.000+0700')];
+
+  assert.deepEqual(await guards(withComments(comments), 'DEMO-5', 'qa', both), []);
+  assert.deepEqual(await guards(withComments(comments.toReversed()), 'DEMO-5', 'qa', both), []);
 });
 
 test('ADF becomes text with one line per block', () => {
