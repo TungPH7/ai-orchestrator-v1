@@ -372,7 +372,7 @@ A4 kiểm thêm: mỗi skill chép vào có `SKILL.md`, và `name:` trùng tên 
 
 **Cỡ:** M
 
-### [ ] T13: Sinh agent và file quy ước, `agents:check`
+### [x] T13: Sinh agent và file quy ước, `agents:check`
 
 **Mô tả:** `lib/agents/render.mjs` là hàm thuần, ghép ba phần (spec mục 2.1):
 
@@ -391,17 +391,17 @@ Hàm cũng sinh file quy ước từ `agents/rules.md` và hợp đồng, theo b
 Claude sinh mười agent vào `kit/.claude/agents/` và file `kit/.claude/rules/ai-orchestrator.md`, rồi đọc lại cả mười file.
 
 **Tiêu chí chấp nhận:**
-- [ ] Test `render` (spec mục 7):
+- [x] Test `render` (spec mục 7):
   - từng trường frontmatter đúng;
   - transition chỉ hiện với vai trò có quyền chuyển trạng thái;
   - tên trường Agent, App và file được ghi đúng;
   - comment HTML bị bỏ;
   - chạy hai lần ra cùng kết quả, xuống dòng LF.
-- [ ] `agents:check` đỏ khi file sinh ra cũ hơn nguồn.
-- [ ] Mười file agent và file quy ước có trong kit; phần viết tay không lặp hay trái phần sinh tự động.
+- [x] `agents:check` đỏ khi file sinh ra cũ hơn nguồn.
+- [x] Mười file agent và file quy ước có trong kit; phần viết tay không lặp hay trái phần sinh tự động.
 
 **Kiểm chứng:**
-- [ ] Năm lệnh xanh; CI của kit xanh trên PR của task
+- [x] Năm lệnh xanh; CI của kit xanh trên PR của task
 
 **Phụ thuộc:** T12
 
