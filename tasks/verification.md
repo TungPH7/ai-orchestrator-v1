@@ -220,3 +220,65 @@ Bạn đồng ý hai đề xuất (2026-10-30 22:29):
 
 - Agent tiếp tục chạy `gh` và `git` bằng login của bạn trong sandbox `ao-pilot`. Điều này được ghi thành rủi ro. Trước Pilot 1, agent sẽ có danh tính GitHub riêng, không nằm trong `AO_APPROVERS` (module `dev-workflow`). Các lỗ cụ thể của `gh-guard` được vá dần trong kit.
 - `.mcp.json` của kit thêm `--no-file-navigations` và vào `protected_paths`. Bản vá chưa chép vào `ao-pilot` trước T17.
+
+## T16: Trang giỏ hàng tối thiểu và Playwright trong `ao-pilot`
+
+**PR:** [ao-pilot #9](https://github.com/TungPH7/ao-pilot/pull/9), Story [DEMO-10](https://phunghuutung12b4.atlassian.net/browse/DEMO-10) (AC1, AC2; không thuộc Epic; vẫn ở New), nhánh `feature/DEMO-10-cart-page`, do `tungph7-ao-dev[bot]` mở. Item là Story, không phải Task, vì prompt của `reviewer` coi một Task đổi UI là finding High.
+
+**Nội dung:**
+
+- `src/page.ts` dựng trang HTML ở server từ `total` và `shipping` của `src/cart.ts`, escape tên sản phẩm, định dạng tiền bằng `Intl.NumberFormat('vi-VN')`.
+- `src/server.ts` là server `node:http`. Server chỉ nghe ở `127.0.0.1`, CSP không cho script, path khác trả 404, method khác trả 405. Lệnh chạy: `npm run serve`.
+- `@playwright/test` 1.64.1, ghim bản, bạn đồng ý cài lúc 22:44. Lệnh cài không tải trình duyệt: `ms-playwright` không đổi kể từ T2.
+- `playwright.config.ts` chạy với `channel: 'chrome'` và tự bật server ở cổng 3100. `e2e/cart.spec.ts` có hai test `AC1 …`, `AC2 …`. Lệnh: `npm run test:e2e`.
+- README của `ao-pilot` được viết lại.
+
+Claude chọn dựng trang ở server, không có JavaScript trên trình duyệt. Lý do: cổng coverage đòi mọi file mã nguồn có trong lcov, và dựng ở server thì test được hết bằng `node:test`.
+
+**Kiểm của Claude:**
+
+- 36 unit test, sau vòng sửa là 38.
+- Coverage của dòng đổi 96,8%, sau vòng sửa 96,9%.
+- E2E 2/2 xanh trong Chrome có sẵn. Đổi giá trị mong đợi thành 43.000 ₫ thì AC2 đỏ.
+
+### Lượt chạy
+
+Prompt: "Review PR #9." Bản `gh-guard` trong `ao-pilot` vẫn là bản của kit `d49aa51`, chưa có PR #95–#97.
+
+| Lượt | Commit | Effort | Lượt model | Thời gian | Token ra | Cache đọc | Cache ghi | Quy ra USD | Kết quả |
+|---|---|---|---|---|---|---|---|---|---|
+| `reviewer` 1 | `0f4bc40` | xhigh | 28 | 5 ph 53 s | 29.277 | 1.428.437 | 87.348 | 1,570 | REQUEST_CHANGES: 1 High, 5 Low |
+| `reviewer` 2 | `df09e34` | xhigh | 29 | 6 ph 48 s | 25.885 | 1.442.810 | 66.151 | 1,336 | COMMENT: 3 Low |
+| `security` | `df09e34` | max | 55 | 12 ph 6 s | 69.174 | 3.889.105 | 153.877 | 3,393 | COMMENT: không có finding |
+
+Tổng ba lượt là 6,30 USD quy đổi, so với 14,30 USD của T15. `security` ở `max` vẫn tốn gấp 2–2,5 lần `reviewer`.
+
+### Agent làm gì
+
+- **`reviewer` 1** chép file của nhánh vào `.ai/reviews/tmp-9/head/` bằng `git show`, vì `git archive` bị chặn ở vai trò chỉ đọc. Trên bản chép đó, nó chạy unit test và E2E, rồi thử 11 đột biến code (test bắt được 9).
+  - Nó gửi thử các request lạ và tìm ra finding High: `GET //` làm `new URL('//', 'http://localhost')` ném lỗi trong handler, server thoát với mã 1. Mở `http://127.0.0.1:3100//` trong Chrome cũng sập. Còn `//evil.example/` thì trả 200.
+  - Nó đề xuất cách sửa một dòng, và đã thử cách đó trên bản chép.
+- **Vòng sửa của Claude** (`df09e34`):
+  - Path là request target tới trước dấu `?`, đọc nguyên văn.
+  - Trang được dựng một lần trong `cartServer()`.
+  - `engines.node` thành `>=24.2`, bản đầu tiên có `import.meta.main`.
+  - Test kiểm `nosniff` ở 404 và 405.
+  - CSP thêm `base-uri 'none'; form-action 'self'; frame-ancestors 'none'`.
+  - Test dùng `TestContext`.
+
+  Với test mới và `server.ts` cũ, `node --test` treo rồi bị dừng, vì server sập ngay trong tiến trình test.
+- **`reviewer` 2:** cả sáu finding của vòng 1 đã sửa; test bắt được 17/18 đột biến. Còn lại ba finding Low:
+  - test hồi quy treo thay vì đỏ (đề xuất `AbortSignal.timeout`);
+  - `package-lock.json` còn ghi `engines` cũ;
+  - mô tả PR đã cũ. Claude sửa mô tả mà không đổi commit.
+- **`security`:**
+  - gửi 18 request lạ: `Host` khác, markup trong path, header kiểu smuggling, body 8 MB;
+  - so hash trong lockfile với registry và provenance của ba gói Playwright; `npm audit signatures` xác minh được chữ ký;
+  - tìm chỉ dẫn ẩn trong PR, README, comment và cả ký tự Unicode ẩn: không thấy.
+- **Bị chặn nhầm:** cả hai agent bị `gh-guard` chặn `grep … ao-pr.mjs` ("reviewer uses the review App, which runs ao-pr.mjs review, not undefined"). Hai agent đều làm tiếp theo luật mới. Kit PR #97 sửa: chỉ xét lệnh mà chương trình là `node`.
+
+### Ghi chú của `security` cho Epic mã giảm giá (T18)
+
+1. **CSRF:** `form-action 'self'` không chặn trang khác post vào server. Form mã giảm giá cần kiểm `Origin` hoặc dùng token CSRF, và giới hạn cỡ body.
+2. **Server nhận mọi `Host`:** một trang độc hại đọc được trang này qua DNS rebinding. Khi trang có dữ liệu thật hoặc nhận thay đổi, server chỉ nên trả lời đúng địa chỉ của nó.
+3. **`quantity` không được escape:** điều này an toàn chỉ vì giỏ được kiểm trước khi dựng trang. Mã giảm giá hiện lại cho người dùng phải được escape.
