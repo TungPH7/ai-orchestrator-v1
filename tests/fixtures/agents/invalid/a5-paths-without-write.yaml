@@ -1,0 +1,8 @@
+description: security lists paths but has neither Edit nor Write
+rule: A5
+expect:
+  - "roles.security.writes"
+patch:
+  - op: set
+    path: "roles.security.tools"
+    value: [Bash]

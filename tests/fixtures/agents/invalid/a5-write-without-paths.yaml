@@ -1,0 +1,8 @@
+description: pm has Write but no paths it may write
+rule: A5
+expect:
+  - "roles.pm.writes"
+patch:
+  - op: set
+    path: "roles.pm.writes"
+    value: []

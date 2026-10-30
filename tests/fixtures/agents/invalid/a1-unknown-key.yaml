@@ -1,0 +1,8 @@
+description: a field Claude Code would ignore without a word, such as memory
+rule: A1
+expect:
+  - "roles.pm.memory"
+patch:
+  - op: set
+    path: "roles.pm.memory"
+    value: project

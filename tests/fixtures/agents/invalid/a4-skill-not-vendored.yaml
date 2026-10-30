@@ -1,0 +1,8 @@
+description: a preloaded skill that is not in the kit
+rule: A4
+expect:
+  - "roles.ux.skills"
+patch:
+  - op: set
+    path: "roles.ux.skills"
+    value: [frontend-ui-engineering, figma-design]

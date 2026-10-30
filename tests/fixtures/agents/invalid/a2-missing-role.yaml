@@ -1,0 +1,7 @@
+description: an agent role of the contract without a roster entry
+rule: A2
+expect:
+  - "roles.devops"
+patch:
+  - op: remove
+    path: "roles.devops"

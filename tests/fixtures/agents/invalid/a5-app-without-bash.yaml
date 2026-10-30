@@ -1,0 +1,8 @@
+description: reviewer posts reports with ao-review, which needs Bash
+rule: A5
+expect:
+  - "roles.reviewer.tools"
+patch:
+  - op: set
+    path: "roles.reviewer.tools"
+    value: [Write]

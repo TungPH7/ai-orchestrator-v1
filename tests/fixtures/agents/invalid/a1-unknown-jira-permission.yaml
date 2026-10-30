@@ -1,0 +1,8 @@
+description: a Jira permission that does not exist
+rule: A1
+expect:
+  - "roles.qa.jira[5]"
+patch:
+  - op: set
+    path: "roles.qa.jira"
+    value: [read, create, edit, comment, transition, delete]

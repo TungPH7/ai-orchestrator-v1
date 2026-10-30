@@ -1,0 +1,8 @@
+description: two vendored skills with the same name
+rule: A4
+expect:
+  - "vendored_skills"
+patch:
+  - op: set
+    path: "vendored_skills.15.name"
+    value: playwright-cli

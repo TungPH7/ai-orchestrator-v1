@@ -1,0 +1,8 @@
+description: a vendored skill pinned by a short commit
+rule: A1
+expect:
+  - "vendored_skills[0].commit"
+patch:
+  - op: set
+    path: "vendored_skills.0.commit"
+    value: aeac41d

@@ -1,0 +1,8 @@
+description: ux commits to its branch, which needs Bash
+rule: A5
+expect:
+  - "roles.ux.tools"
+patch:
+  - op: set
+    path: "roles.ux.tools"
+    value: [Edit, Write]

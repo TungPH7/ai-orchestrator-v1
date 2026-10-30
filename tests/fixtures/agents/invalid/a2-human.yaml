@@ -1,0 +1,16 @@
+description: human is a role of the contract, but not an agent
+rule: A2
+expect:
+  - "roles.human"
+patch:
+  - op: set
+    path: "roles.human"
+    value:
+      description: "You"
+      model: opus
+      effort: high
+      tools: []
+      jira: [read]
+      git: read
+      writes: []
+      skills: []
