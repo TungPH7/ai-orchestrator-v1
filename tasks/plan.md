@@ -113,7 +113,7 @@ T19, T20, T21 ── T22 maxTurns, tài liệu, lưu trữ
 - [x] T11: Prompt của `pm`, `ba`, `ux`, `sa`
 - [x] T12: Prompt của sáu vai trò còn lại, `agents/rules.md`
 - [x] T13: Sinh agent và file quy ước, `agents:check`
-- [ ] T14: Chế độ dự án: `--project`, `roster.local.yaml` và `ao-agent.mjs`
+- [x] T14: Chế độ dự án: `--project`, `roster.local.yaml` và `ao-agent.mjs`
 
 ### Checkpoint 2
 - [ ] `npm run validate`, `npm test`, `npm run render:check`, `npm run jira:checklist:check`, `npm run agents:check` và CI của kit xanh
