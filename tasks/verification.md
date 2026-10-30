@@ -144,3 +144,13 @@ Test của script trong `tests/quality/policy.test.mjs` lặp lại việc này 
 | `gha-security-review` | Chỉ tính kẻ tấn công không có quyền ghi repo; mẫu báo cáo riêng | Báo cáo theo `review-report.md`. T12 cân nhắc thêm trường hợp agent của repo bị nội dung PR dẫn dắt |
 | `playwright-cli` | Thiếu lệnh thì `npm install -g @playwright/cli@latest`; đính ảnh vào PR bằng `gh --attach`; ảnh lưu ở `.playwright-cli/` | Không cài gì: chạy `npx -y @playwright/cli@0.1.22` hoặc Playwright của dự án; không dùng `gh`; bằng chứng lưu ở `.ai/qa/<KEY>/`; không dùng `--persistent` hay `--profile` |
 | `sentry-security-review`, `gha-security-review` | `allowed-tools: Read Grep Glob Bash Task` | `allowed-tools` của skill không thêm tool cho agent; `security` không có tool `Agent` (tên cũ `Task`) |
+
+## T14: Chế độ dự án và `ao-agent.mjs`
+
+**Chạy thật một lượt (2026-10-30, khoảng 18:20):** trong dự án tạm của T1, với `kit/.claude/agents/reviewer.md` và skill `code-review-and-quality` chép vào `.claude/`, lệnh `AO_KIT_DIR=<kit> node <kit>/scripts/ao-agent.mjs reviewer -p "..." --model haiku --output-format json` chạy `claude --agent reviewer --effort xhigh --append-system-prompt-file .ai/agents/reviewer.skills.md -p ... --model haiku`. Agent:
+
+- trích đúng dòng `Nit` trong bảng mức của skill: skill được nạp khi agent chạy làm phiên chính;
+- trích đúng câu của mục Session ("You run unattended (claude -p) ...");
+- nêu đúng phần hợp đồng và phần viết tay của prompt reviewer.
+
+1 lượt, Haiku 5.5, 14.852 token vào, 868 token ra, 0,003 USD.
