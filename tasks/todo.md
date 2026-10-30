@@ -110,7 +110,7 @@ Capability map trong `SPEC.md` đã được cập nhật lúc duyệt spec.
 
 **Cỡ:** M
 
-### [ ] T4: NOT TESTED trong báo cáo QA (spec mục 2.9)
+### [x] T4: NOT TESTED trong báo cáo QA (spec mục 2.9)
 
 **Mô tả:**
 
@@ -118,12 +118,12 @@ Capability map trong `SPEC.md` đã được cập nhật lúc duyệt spec.
 - `qaReportResult` của `lib/tracker/facts.mjs` nhận thêm NOT TESTED, để báo cáo mới nhất luôn là báo cáo được tính.
 
 **Tiêu chí chấp nhận:**
-- [ ] Có test cho PASS, FAIL và NOT TESTED, ở cả dạng markdown lẫn ADF.
-- [ ] Một báo cáo NOT TESTED mới hơn che một báo cáo FAIL cũ hơn.
-- [ ] Với NOT TESTED, cả `qa-report-passed` lẫn `qa-report-failed` đều không thỏa.
+- [x] Có test cho PASS, FAIL và NOT TESTED, ở cả dạng markdown lẫn ADF.
+- [x] Một báo cáo NOT TESTED mới hơn che một báo cáo FAIL cũ hơn.
+- [x] Với NOT TESTED, cả `qa-report-passed` lẫn `qa-report-failed` đều không thỏa.
 
 **Kiểm chứng:**
-- [ ] `npm test` xanh
+- [x] `npm test` xanh
 
 **Phụ thuộc:** không
 

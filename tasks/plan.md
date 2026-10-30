@@ -92,7 +92,7 @@ T19, T20, T21 ── T22 maxTurns, tài liệu, lưu trữ
 - [x] T1: Tiền đề về Claude Code (spec mục 2.12, điểm 1–5)
 - [x] T2: Tiền đề về trình duyệt (điểm 6–7) [bạn]
 - [x] T3: Thay đổi hợp đồng và template `design.md`
-- [ ] T4: NOT TESTED trong báo cáo QA
+- [x] T4: NOT TESTED trong báo cáo QA
 
 ### Checkpoint 1
 - [ ] `npm run validate`, `npm test`, `npm run render:check`, `npm run jira:checklist:check` xanh
