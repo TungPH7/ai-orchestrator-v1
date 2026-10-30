@@ -3,7 +3,7 @@
 // (quality-gates spec section 7) and the agent roster in the agents folder (agent-roster spec section 7), when those
 // folders have them.
 // Usage: node scripts/validate-contract.mjs [contract-dir]
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { readRoster, validateRoster } from '../lib/agents/roster.mjs';
 import { formatError, readContract, validateContract } from '../lib/contract.mjs';
@@ -14,6 +14,16 @@ const dir = process.argv[2] ?? 'contract';
 const trackerDir = join(dir, '..', 'tracker');
 const qualityDir = join(dir, '..', 'quality');
 const agentsDir = join(dir, '..', 'agents');
+
+// The SKILL.md of each vendored skill, by name; undefined when it is missing.
+function readSkills(roster, skillsDir) {
+  return new Map(
+    roster.vendored_skills.map(({ name }) => {
+      const file = join(skillsDir, name, 'SKILL.md');
+      return [name, existsSync(file) ? readFileSync(file, 'utf8') : undefined];
+    }),
+  );
+}
 
 function report(errors, okMessage, where) {
   if (errors.length === 0) {
@@ -38,8 +48,12 @@ try {
     report(validateGates(readGates(qualityDir), contract, { ciJobs }), `Gates OK: ${join(qualityDir, 'gates.yaml')}`, qualityDir);
   }
   if (contractOk && existsSync(join(agentsDir, 'roster.yaml'))) {
+    const roster = readRoster(agentsDir);
     const gates = existsSync(join(qualityDir, 'gates.yaml')) ? readGates(qualityDir) : undefined;
-    report(validateRoster(readRoster(agentsDir), contract, { gates }), `Roster OK: ${join(agentsDir, 'roster.yaml')}`, agentsDir);
+    // In the kit repo the vendored skills sit in kit/.claude/skills/; a project's copy has no kit folder.
+    const skillsDir = join(dir, '..', 'kit', '.claude', 'skills');
+    const skills = existsSync(skillsDir) ? readSkills(roster, skillsDir) : undefined;
+    report(validateRoster(roster, contract, { gates, skills }), `Roster OK: ${join(agentsDir, 'roster.yaml')}`, agentsDir);
   }
 } catch (error) {
   console.error(error.message);

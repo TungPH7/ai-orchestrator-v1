@@ -15,7 +15,8 @@
     "jira:checklist": "node scripts/jira-checklist.mjs",
     "jira:checklist:check": "node scripts/jira-checklist.mjs --check",
     "jira:check": "node scripts/jira-check.mjs",
-    "gh:protect": "node scripts/gh-protect.mjs"
+    "gh:protect": "node scripts/gh-protect.mjs",
+    "skills:vendor": "node scripts/vendor-skills.mjs"
   },
   "dependencies": {
     "@secretlint/node": "13.0.7",

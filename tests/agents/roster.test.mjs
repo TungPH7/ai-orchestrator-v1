@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { readdirSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { parse } from 'yaml';
 import { readRoster, validateRoster } from '../../lib/agents/roster.mjs';
@@ -17,8 +17,28 @@ const contract = readContract(CONTRACT_DIR);
 const gates = readGates(join(ROOT, 'quality'));
 const roster = readRoster(join(ROOT, 'agents'));
 
-test('the real roster breaks no rule', () => {
-  assert.deepEqual(validateRoster(roster, contract, { gates }), []);
+// The SKILL.md of each vendored skill in the kit, by skill name; undefined when the folder or file is missing.
+const kitSkills = new Map(
+  roster.vendored_skills.map(({ name }) => {
+    const file = join(ROOT, 'kit', '.claude', 'skills', name, 'SKILL.md');
+    return [name, existsSync(file) ? readFileSync(file, 'utf8') : undefined];
+  }),
+);
+
+test('the real roster, with the skills vendored into the kit, breaks no rule', () => {
+  assert.deepEqual(validateRoster(roster, contract, { gates, skills: kitSkills }), []);
+});
+
+test('A4 also checks the vendored folders: each has a SKILL.md named like the skill (T9)', () => {
+  const skills = new Map(roster.vendored_skills.map(({ name }) => [name, `---\nname: ${name}\ndescription: d\n---\n`]));
+  assert.deepEqual(validateRoster(roster, contract, { gates, skills }), []);
+
+  skills.set('interview-me', undefined);
+  skills.set('playwright-cli', '---\nname: playwright\ndescription: d\n---\n');
+  assert.deepEqual(
+    validateRoster(roster, contract, { gates, skills }).map(({ rule, path, message }) => `${rule} ${path}: ${message}`),
+    ['A4 vendored_skills.interview-me: has no SKILL.md in kit/.claude/skills/interview-me', 'A4 vendored_skills.playwright-cli: SKILL.md is named playwright, not playwright-cli'],
+  );
 });
 
 test('model and effort of each role (spec 2.2)', () => {
