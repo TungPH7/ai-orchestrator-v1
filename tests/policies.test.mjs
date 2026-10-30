@@ -27,10 +27,10 @@ test('the 7 retro metrics of spec 2.7, in order', () => {
   );
 });
 
-test('12 artifacts, Story, Task and Bug separate, each with its own template (spec 2.9)', () => {
+test('13 artifacts, Story, Task and Bug separate, each with its own template (spec 2.9; agent-roster spec 2.11)', () => {
   assert.deepEqual(
     contract.artifacts.map(({ id }) => id),
-    ['spec', 'plan', 'adr', 'story', 'task', 'bug', 'pull-request', 'review-report', 'qa-report', 'regression-report', 'release-notes', 'ledger'],
+    ['spec', 'design', 'plan', 'adr', 'story', 'task', 'bug', 'pull-request', 'review-report', 'qa-report', 'regression-report', 'release-notes', 'ledger'],
   );
   for (const { id, template } of contract.artifacts) assert.equal(template, `templates/${id}.md`, id);
 });
@@ -40,6 +40,17 @@ test('every artifact says who creates it and where it is stored', () => {
     assert.ok(createdBy.length > 0, `${id}: created_by`);
     assert.ok(storedIn.length > 0, `${id}: stored_in`);
   }
+});
+
+test('ux writes the design next to the SPEC, with the images of Figma screens in a design/ folder (agent-roster spec 2.11)', () => {
+  const design = contract.artifacts.find(({ id }) => id === 'design');
+
+  assert.equal(design.name, 'Thiết kế màn hình');
+  assert.deepEqual(design.created_by, ['ux']);
+  assert.deepEqual(
+    design.stored_in.map(({ place, path }) => `${place}: ${path}`),
+    ['git: docs/specs/<EPIC-KEY>/design.md', 'git: docs/specs/<EPIC-KEY>/design/'],
+  );
 });
 
 test('a Bug is created by whoever reports it, a ledger by the agent working on the item', () => {

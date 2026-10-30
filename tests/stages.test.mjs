@@ -32,11 +32,18 @@ test('each gate closes the stage of spec 2.2', () => {
   );
 });
 
-test('stage outputs that are artifacts: spec, plan with Story and Task, review report, QA report, regression report and release note', () => {
+test('stage outputs that are artifacts: spec with design, plan with Story and Task, review report, QA report, regression report and release note', () => {
   assert.deepEqual(
     contract.stages.filter(({ outputs }) => outputs.artifacts).map(({ id, outputs }) => `${id}: ${outputs.artifacts.join(', ')}`),
-    ['spec: spec', 'plan: plan, story, task', 'review: review-report', 'qa-verify: qa-report', 'staging-verify: regression-report, release-notes'],
+    ['spec: spec, design', 'plan: plan, story, task', 'review: review-report', 'qa-verify: qa-report', 'staging-verify: regression-report, release-notes'],
   );
+});
+
+test('ux writes the design in the spec stage when the Epic touches the UI (agent-roster spec 2.11)', () => {
+  const spec = contract.stages.find(({ id }) => id === 'spec');
+
+  assert.ok(spec.roles.includes('ux'));
+  assert.equal(spec.note, 'ux viết design khi Epic đụng tới giao diện');
 });
 
 test('release-cut needs a valid cut point and no open release branch (spec 2.7)', () => {

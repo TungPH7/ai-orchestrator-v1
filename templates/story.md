@@ -15,9 +15,10 @@ Delete the guidance comments and the Example section when you are done.
 
 ## Acceptance Criteria
 
-<!-- Each criterion is testable and gets its own E2E test (Story DoD). -->
+<!-- Each criterion is testable and gets its own E2E test, whose name starts with the criterion code (Story DoD).
+Keep the AC<n> codes of the SPEC. -->
 
-- [ ] Given <context>, When <action>, Then <outcome>
+- [ ] AC<n>: Given <context>, When <action>, Then <outcome>
 
 ## Dependencies
 
@@ -25,7 +26,7 @@ Delete the guidance comments and the Example section when you are done.
 
 ## Design
 
-<!-- Link to the screen design when the Story touches the UI, or "Không đổi giao diện". -->
+<!-- The screens of docs/specs/<EPIC-KEY>/design.md that the Story covers, by code (S1, S2), or "Không đổi giao diện". -->
 
 ## Sub-tasks
 
@@ -66,14 +67,14 @@ Otherwise write "Không có Sub-task" and keep the whole Story within about 5 co
 Là người dùng, tôi muốn đăng nhập bằng email và mật khẩu để xem đơn hàng của mình.
 
 ## Acceptance Criteria
-- [ ] Given tài khoản đã kích hoạt, When nhập đúng email và mật khẩu, Then vào trang Đơn hàng.
-- [ ] Given mật khẩu sai, When bấm Đăng nhập, Then thấy "Email hoặc mật khẩu không đúng".
+- [ ] AC1: Given tài khoản đã kích hoạt, When nhập đúng email và mật khẩu, Then vào trang Đơn hàng.
+- [ ] AC2: Given mật khẩu sai, When bấm Đăng nhập, Then thấy "Email hoặc mật khẩu không đúng".
 
 ## Dependencies
 DEMO-11 (module auth dùng chung).
 
 ## Design
-https://example.com/design/login
+S1, S2 trong docs/specs/DEMO-10/design.md.
 
 ## Sub-tasks
 | Sub-task | Side | Scope |

@@ -23,6 +23,8 @@ const SECTIONS = {
     'Open Questions',
     'Example',
   ],
+  // The screens of an Epic, agent-roster spec 2.8.
+  'design.md': ['Screens', 'Flow', 'Screen Details', 'Open Questions', 'Example'],
   'plan.md': ['Overview', 'Architecture Decisions', 'API Contract', 'Task List', 'Risks and Mitigations', 'Open Questions', 'Example'],
   'adr.md': ['Status', 'Date', 'Context', 'Decision', 'Alternatives Considered', 'Consequences', 'Example'],
   'story.md': ['User Story', 'Acceptance Criteria', 'Dependencies', 'Design', 'Sub-tasks', 'Verification', 'Definition of Ready', 'Example'],
@@ -49,7 +51,7 @@ const SECTIONS = {
   'ledger.md': ['Current Step', 'Done', 'Next', 'Decisions', 'Blockers', 'Example'],
 };
 
-const EPIC_HEADER = ['spec.md', 'plan.md', 'adr.md'];
+const EPIC_HEADER = ['spec.md', 'design.md', 'plan.md', 'adr.md'];
 
 function read(file) {
   return readFileSync(join(TEMPLATE_DIR, file), 'utf8');
@@ -61,6 +63,12 @@ function section(file, name) {
   const start = text.indexOf(`\n## ${name}\n`);
   const end = text.indexOf('\n## ', start + 1);
   return text.slice(start, end === -1 ? undefined : end);
+}
+
+// The Example section to the end of the file; its own headings sit inside a fence, so section() would stop at them.
+function example(file) {
+  const text = read(file);
+  return text.slice(text.lastIndexOf('\n## Example\n'));
 }
 
 function checklist(text) {
@@ -109,7 +117,7 @@ test('every template has one title, opens with fill-in guidance, and ends with a
   }
 });
 
-test('spec, plan and adr start with the Epic key and its Jira link', () => {
+test('spec, design, plan and adr start with the Epic key and its Jira link', () => {
   for (const file of EPIC_HEADER) assert.match(read(file), /^> \*\*Epic:\*\* .+ · \*\*Jira:\*\* /m, file);
 });
 
@@ -186,4 +194,38 @@ test('every artifact in the catalog has its template here', () => {
 
 test('the PR maps each acceptance criterion to the test that covers it', () => {
   assert.match(section('pull-request.md', 'Acceptance Criteria Coverage'), /^\| Acceptance criterion \| Test \|$/m);
+});
+
+// agent-roster spec 2.11: the YAML of design.md points to criteria by code, before the Stories exist in Jira.
+test('acceptance criteria are numbered AC<n> across the Epic: the SPEC numbers them, a Story keeps the numbers', () => {
+  assert.match(section('spec.md', 'Objective'), /AC1, AC2/);
+  assert.match(example('spec.md'), /^ {2}- AC1: Given .+, When .+, Then /m);
+  assert.match(section('story.md', 'Acceptance Criteria'), /^- \[ \] AC<n>: Given <context>, When <action>, Then <outcome>$/m);
+  assert.match(example('story.md'), /^- \[ \] AC1: Given /m);
+});
+
+test('the Design of a Story names the screens of design.md it covers, or says the UI does not change', () => {
+  const design = section('story.md', 'Design');
+
+  assert.match(design, /design\.md/);
+  assert.match(design, /S1, S2/);
+  assert.match(design, /Không đổi giao diện/);
+});
+
+test('design.md lists its screens with code, name, route, user story and kind, and names the approved Figma version', () => {
+  const screens = section('design.md', 'Screens');
+
+  assert.match(screens, /^\| Code \| Name \| Route \| User story \| Kind \|$/m);
+  assert.match(screens, /\bASCII\b/);
+  assert.match(screens, /\bFigma\b/);
+  assert.match(read('design.md'), /^> \*\*Figma version:\*\* /m);
+});
+
+test('design.md draws the flow in Mermaid, and its example has one ASCII screen and one Figma screen, each with its YAML', () => {
+  assert.match(section('design.md', 'Flow'), /```mermaid\nflowchart/);
+  const text = example('design.md');
+
+  assert.match(text, /```text\nS1 · .+ · desktop\n\+-/);
+  assert.match(text, /!\[S2 · .+ · desktop\]\(design\/S2-desktop\.png\)/);
+  assert.equal(text.match(/```yaml\nscreen: S\d+/g)?.length, 2);
 });
