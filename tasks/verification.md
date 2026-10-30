@@ -42,6 +42,6 @@ Tài liệu Claude Code khớp với kết quả: `--agent` chỉ áp "tool rest
 - Điểm 1, 2a và `maxTurns` chỉ đúng khi agent chạy làm subagent.
 - Điểm 5 sai: settings của dự án không cài được plugin và không ghim được bản.
 
-Theo plan, Claude dừng và đề xuất sửa spec (Phiên 14 · Lượt 1).
+Theo plan, Claude dừng và đề xuất sửa spec (Phiên 14 · Lượt 1). Bạn duyệt đề xuất ở Phiên 14 · Lượt 2: chép 13 skill của agent-skills vào kit (T9), và viết script `ao-agent.mjs` chạy agent làm phiên chính với `--effort`, `--append-system-prompt-file` và `--max-turns` (T14). Spec mục 1, 2.1–2.3, 2.5, 2.7, 2.12, 3–7, 9, 10 và 12 đã sửa theo đó; `kit/.claude/settings.json` không thêm khóa plugin.
 
 Dọn dẹp: dự án tạm chỉ nằm trong scratchpad; file `.claude/settings.json` thử đã xóa. Claude Code ghi lịch sử các phiên thử vào `~/.claude/projects/` dưới tên thư mục của dự án tạm.

@@ -19,7 +19,7 @@
 
 ## Giai đoạn 1: tiền đề và hợp đồng
 
-### [ ] T1: Tiền đề về Claude Code (spec mục 2.12, điểm 1–5)
+### [x] T1: Tiền đề về Claude Code (spec mục 2.12, điểm 1–5)
 
 **Mô tả:** Claude dựng một dự án tạm trong scratchpad gồm:
 
@@ -41,13 +41,13 @@ Chạy `claude -p --agent probe --output-format json` và một subagent gọi t
 **Kết quả (2026-10-30):** điểm 1 và 2 sai khi agent chạy làm phiên chính, và điểm 5 sai. Bạn duyệt cách sửa ở Phiên 14 · Lượt 2: chép 13 skill của agent-skills vào kit (T9) và viết script `ao-agent.mjs` (T14). Vì vậy `kit/.claude/settings.json` không thêm khóa plugin.
 
 **Tiêu chí chấp nhận:**
-- [ ] Năm điểm có kết quả đúng hoặc sai, kèm bằng chứng (lệnh, số token, trích output), trong `tasks/verification.md`.
-- [ ] Spec và plan đã sửa theo kết quả, và bạn đã duyệt bản sửa.
-- [ ] Mọi lượt chạy dùng Haiku.
+- [x] Năm điểm có kết quả đúng hoặc sai, kèm bằng chứng (lệnh, số token, trích output), trong `tasks/verification.md`.
+- [x] Spec và plan đã sửa theo kết quả, và bạn đã duyệt bản sửa.
+- [x] Mọi lượt chạy dùng Haiku.
 
 **Kiểm chứng:**
-- [ ] `npm test` xanh
-- [ ] Dự án tạm chỉ nằm trong scratchpad, không vào repo nào
+- [x] `npm test` xanh
+- [x] Dự án tạm chỉ nằm trong scratchpad, không vào repo nào
 
 **Phụ thuộc:** không
 
