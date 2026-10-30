@@ -300,7 +300,7 @@ A4 kiểm thêm: mỗi skill chép vào có `SKILL.md`, và `name:` trùng tên 
 
 **Cỡ:** M
 
-### [ ] T10: `gh-guard` theo vai trò (spec mục 2.10)
+### [x] T10: `gh-guard` theo vai trò (spec mục 2.10)
 
 **Mô tả:** `lib/agents/scope.mjs` là hàm thuần, chứa hai luật:
 
@@ -310,13 +310,13 @@ A4 kiểm thêm: mỗi skill chép vào có `SKILL.md`, và `name:` trùng tên 
 `kit/.claude/hooks/gh-guard.mjs` đọc `.ai-orchestrator/agents/roster.yaml` của bản chép kit và áp hai luật cho agent, tức lời gọi có `agent_type`. Phiên chính của bạn không bị ảnh hưởng. Nếu matcher của hook trong `kit/.claude/settings.json` chưa có `Edit`, `Write`, `NotebookEdit` thì thêm vào.
 
 **Tiêu chí chấp nhận:**
-- [ ] Mỗi vai trò có test ghi file trong và ngoài phạm vi của mình.
-- [ ] Vai trò chỉ đọc chạy `git diff`, `git show`, `git fetch` thì qua; chạy `git checkout`, `commit`, `push`, `stash` thì bị chặn.
-- [ ] Lệnh gần giống như `git log --grep=commit` vẫn qua.
-- [ ] Lời từ chối nêu rõ vai trò và luật.
+- [x] Mỗi vai trò có test ghi file trong và ngoài phạm vi của mình.
+- [x] Vai trò chỉ đọc chạy `git diff`, `git show`, `git fetch` thì qua; chạy `git checkout`, `commit`, `push`, `stash` thì bị chặn.
+- [x] Lệnh gần giống như `git log --grep=commit` vẫn qua.
+- [x] Lời từ chối nêu rõ vai trò và luật.
 
 **Kiểm chứng:**
-- [ ] `npm test` xanh
+- [x] `npm test` xanh
 
 **Phụ thuộc:** T8
 

@@ -107,7 +107,7 @@ T19, T20, T21 ── T22 maxTurns, tài liệu, lưu trữ
 ### Giai đoạn 3: roster, skill, gh-guard
 - [x] T8: `agents/roster.yaml`, schema, quy tắc A1–A5
 - [x] T9: Chép skill: `skills:vendor` và 16 skill
-- [ ] T10: `gh-guard` theo vai trò
+- [x] T10: `gh-guard` theo vai trò
 
 ### Giai đoạn 4: prompt và sinh agent
 - [ ] T11: Prompt của `pm`, `ba`, `ux`, `sa`
