@@ -1,0 +1,6 @@
+description: a prompt file without a roster entry
+rule: A2
+expect:
+  - "prompts.qa-lead"
+prompts: [pm, ba, ux, sa, fe-dev, be-dev, reviewer, security, qa, devops, qa-lead]
+patch: []

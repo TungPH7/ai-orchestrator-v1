@@ -3,7 +3,7 @@
 // (quality-gates spec section 7) and the agent roster in the agents folder (agent-roster spec section 7), when those
 // folders have them.
 // Usage: node scripts/validate-contract.mjs [contract-dir]
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { readRoster, validateRoster } from '../lib/agents/roster.mjs';
 import { formatError, readContract, validateContract } from '../lib/contract.mjs';
@@ -53,7 +53,9 @@ try {
     // In the kit repo the vendored skills sit in kit/.claude/skills/; a project's copy has no kit folder.
     const skillsDir = join(dir, '..', 'kit', '.claude', 'skills');
     const skills = existsSync(skillsDir) ? readSkills(roster, skillsDir) : undefined;
-    report(validateRoster(roster, contract, { gates, skills }), `Roster OK: ${join(agentsDir, 'roster.yaml')}`, agentsDir);
+    const promptsDir = join(agentsDir, 'prompts');
+    const prompts = existsSync(promptsDir) ? readdirSync(promptsDir).filter((f) => f.endsWith('.md')).map((f) => f.slice(0, -3)) : undefined;
+    report(validateRoster(roster, contract, { gates, skills, prompts }), `Roster OK: ${join(agentsDir, 'roster.yaml')}`, agentsDir);
   }
 } catch (error) {
   console.error(error.message);
