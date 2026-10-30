@@ -350,3 +350,16 @@ Snapshot `.ai/qa/DEMO-10/cart-snapshot.yml`:
 **`chrome-devtools` trong `claude -p`:** lần này server đã được bật (`enabledMcpjsonServers` có `chrome-devtools`). Lúc khởi động, `fe-dev` thấy server `connected`, `qa` thấy `pending`. Ở T15, khi chưa bật, server cũng đã chạy trong các lượt `-p`. Vậy trong chế độ `-p`, Claude Code khởi động server của `.mcp.json` dù bạn chưa duyệt. Chỉ agent có tool của server mới gọi được server đó.
 
 Tiêu chí 12 của spec mục 9 đạt.
+
+## T18: Epic thử: spec và plan
+
+Bạn chọn chạy tiếp theo plan ở Checkpoint 3, `security` giữ effort `max` (Phiên 15 · Lượt 1).
+
+### Chuẩn bị
+
+- Epic **DEMO-11** "Mã giảm giá cho giỏ hàng", do Claude tạo bằng token CI (`orchestratorci`) lúc 00:22 ngày 2026-10-31, ở New, không có Figma. Mô tả gồm:
+  - mục tiêu, phạm vi và ràng buộc của tính năng;
+  - ba ghi chú của `security` ở T16: CSRF, `Host`, escape mã giảm giá;
+  - hai finding Low của `reviewer` ở T16 chưa sửa: test hồi quy treo, `engines` trong `package-lock.json`.
+- Nhánh tài liệu `feature/DEMO-11-spec` trên `ao-pilot`, tách từ `develop` `6c25b8b` (plan, quyết định 6).
+- Bản chép kit trong `ao-pilot` vẫn là bản của T15. Kit PR #95–#97 chưa có trong đó.
