@@ -25,8 +25,12 @@ const kitSkills = new Map(
   }),
 );
 
-test('the real roster, with the skills vendored into the kit, breaks no rule', () => {
-  assert.deepEqual(validateRoster(roster, contract, { gates, skills: kitSkills }), []);
+// The roles that have a hand-written prompt in agents/prompts/.
+const prompts = readdirSync(join(ROOT, 'agents', 'prompts')).filter((file) => file.endsWith('.md')).map((file) => file.slice(0, -3));
+
+test('the real roster, with the skills vendored into the kit and the prompts, breaks no rule', () => {
+  assert.deepEqual(validateRoster(roster, contract, { gates, skills: kitSkills, prompts }), []);
+  assert.equal(prompts.length, 10);
 });
 
 test('A4 also checks the vendored folders: each has a SKILL.md named like the skill (T9)', () => {
@@ -135,7 +139,8 @@ test('validate script prints roster errors and exits non-zero', (t) => {
   assert.match(result.stderr, /A1 roles\.pm\.model: \S/);
 });
 
-// Each fixture breaks exactly one rule: { description, rule, expect: [paths], patch: [ops] }
+// Each fixture breaks exactly one rule: { description, rule, expect: [paths], patch: [ops], prompts? }. prompts, when
+// given, stands for the prompt files of agents/prompts/; without it the prompts are not checked.
 const fixtures = readdirSync(FIXTURE_DIR).filter((file) => file.endsWith('.yaml')).sort();
 
 test('every rule from A1 to A5 has at least one fixture', () => {
@@ -147,7 +152,7 @@ for (const file of fixtures) {
   const fixture = parse(readFileSync(new URL(file, FIXTURE_DIR), 'utf8'));
 
   test(`${file}: ${fixture.description}`, () => {
-    const errors = validateRoster(applyPatch(roster, fixture.patch), contract, { gates });
+    const errors = validateRoster(applyPatch(roster, fixture.patch), contract, { gates, prompts: fixture.prompts });
 
     assert.deepEqual(
       errors.map(({ rule, path }) => `${rule} ${path}`).sort(),
