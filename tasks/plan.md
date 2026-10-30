@@ -111,7 +111,7 @@ T19, T20, T21 ── T22 maxTurns, tài liệu, lưu trữ
 
 ### Giai đoạn 4: prompt và sinh agent
 - [x] T11: Prompt của `pm`, `ba`, `ux`, `sa`
-- [ ] T12: Prompt của sáu vai trò còn lại, `agents/rules.md`
+- [x] T12: Prompt của sáu vai trò còn lại, `agents/rules.md`
 - [ ] T13: Sinh agent và file quy ước, `agents:check`
 - [ ] T14: Chế độ dự án: `--project`, `roster.local.yaml` và `ao-agent.mjs`
 
