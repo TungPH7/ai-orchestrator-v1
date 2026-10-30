@@ -7,7 +7,8 @@
 Biến mười vai trò của hợp đồng thành mười subagent của Claude Code, sinh từ `agents/roster.yaml`, prompt viết tay và hợp đồng. Việc gồm:
 
 - Thêm artifact `design` cùng script kiểm `check-design`, và trạng thái NOT TESTED cho báo cáo QA.
-- Chép ba skill từ registry vào kit.
+- Chép vào kit 16 skill: 13 skill của agent-skills và ba skill từ registry.
+- Script `ao-agent.mjs` chạy agent làm phiên chính với đủ skill, effort và giới hạn lượt.
 - `gh-guard` giới hạn quyền theo vai trò.
 - Cho mười agent chạy thật trên `ao-pilot`, có số đo cho từng lượt.
 
@@ -30,7 +31,7 @@ Như hai module trước, plan kiểm tiền đề trước: T1–T2 thử bảy
 4. **Viết prompt trước, ghép sau.**
    - T11–T12 viết phần viết tay của mười vai trò. T13 ghép prompt với roster và hợp đồng thành file agent.
    - Ở T13, Claude đọc lại cả mười file sinh ra và sửa chỗ phần viết tay lặp lại hoặc trái với phần sinh tự động.
-5. **Kiểm thật bằng `claude -p --agent <role> --output-format json`,** chạy từ thư mục `ao-pilot`, lần lượt từng lượt, ở foreground.
+5. **Kiểm thật bằng `ao-agent.mjs <role> -p "<prompt>" --output-format json` (có từ T14),** chạy từ thư mục `ao-pilot`, lần lượt từng lượt, ở foreground.
    - Mỗi lượt ghi lại model, effort, token vào và ra, chi phí quy đổi theo giá API, thời gian và số lượt vào `tasks/verification.md`.
    - Câu hỏi của `ba` được Claude trả lời thay bạn bằng một lượt `--resume`.
    - Năm việc ngoài vai trò chạy với `CLAUDE_CODE_EFFORT_LEVEL=low` cho rẻ, vì chỉ kiểm tool và hook.
@@ -54,8 +55,7 @@ Như hai module trước, plan kiểm tiền đề trước: T1–T2 thử bảy
 8. **Key và token không đi qua chat, log hay lịch sử lệnh.** Như các module trước, Claude đọc biến môi trường từ registry ngay trong lệnh.
 9. **Ghim phiên bản:**
    - `@playwright/cli` 0.1.22 và `chrome-devtools-mcp` 1.12.0.
-   - Plugin agent-skills 0.6.13.
-   - Ba skill chép vào kit, ghim theo SHA đầy đủ.
+   - 16 skill chép vào kit, ghim theo SHA đầy đủ: 13 skill của agent-skills ở commit của tag 0.6.13, và ba skill từ registry.
    - `@playwright/test` ghim bản cố định.
 10. **Quy trình nhánh như các module trước.**
     - Mỗi task một nhánh `task/t<N>-<slug>` tách từ `main`, merge qua PR khi CI xanh, rồi làm tiếp.
@@ -72,7 +72,7 @@ T2 tiền đề trình duyệt ──┘                      ├── T10 gh-g
                                                 └── T11 prompt pm ba ux sa ◄─┘
                                                      └── T12 prompt sáu vai trò, rules.md
                                                           └── T13 sinh agent, agents:check
-                                                               └── T14 chế độ dự án
+                                                               └── T14 chế độ dự án, ao-agent.mjs
 T3 hợp đồng, template design ── T5 check-design ASCII ── T6 kiểu Figma ── T7 job policy
 T4 NOT TESTED
 
@@ -106,14 +106,14 @@ T19, T20, T21 ── T22 maxTurns, tài liệu, lưu trữ
 
 ### Giai đoạn 3: roster, skill, gh-guard
 - [ ] T8: `agents/roster.yaml`, schema, quy tắc A1–A5
-- [ ] T9: Chép skill: `skills:vendor` và ba skill
+- [ ] T9: Chép skill: `skills:vendor` và 16 skill
 - [ ] T10: `gh-guard` theo vai trò
 
 ### Giai đoạn 4: prompt và sinh agent
 - [ ] T11: Prompt của `pm`, `ba`, `ux`, `sa`
 - [ ] T12: Prompt của sáu vai trò còn lại, `agents/rules.md`
 - [ ] T13: Sinh agent và file quy ước, `agents:check`
-- [ ] T14: Chế độ dự án: `--project` và `roster.local.yaml`
+- [ ] T14: Chế độ dự án: `--project`, `roster.local.yaml` và `ao-agent.mjs`
 
 ### Checkpoint 2
 - [ ] `npm run validate`, `npm test`, `npm run render:check`, `npm run jira:checklist:check`, `npm run agents:check` và CI của kit xanh
@@ -151,7 +151,7 @@ T19, T20, T21 ── T22 maxTurns, tài liệu, lưu trữ
 
 | Task | Lượt chạy agent | Model |
 |---|---|---|
-| T1–T2 | Khoảng 10 lượt ngắn | Haiku |
+| T1–T2 | T1 chạy 26 lượt ngắn (0,076 USD); T2 vài lượt | Haiku |
 | T15 | `reviewer`, `security` | Opus |
 | T16 | `reviewer`, `security` | Opus |
 | T17 | `qa`, `fe-dev` | Opus |
@@ -166,11 +166,11 @@ Tổng cộng khoảng 30 lượt Opus hoặc Sonnet, có thể cần ba đến 
 
 | Rủi ro | Mức | Cách giảm |
 |---|---|---|
-| Một tiền đề về Claude Code sai: skill của plugin không được nạp, file rules không được nạp, hoặc `tools` không giới hạn được agent ở chế độ auto | Cao | T1 kiểm trước khi viết code; mỗi điểm có phương án ở spec mục 2.12 |
+| Một tiền đề về Claude Code sai: skill của plugin không được nạp, file rules không được nạp, hoặc `tools` không giới hạn được agent ở chế độ auto | Cao | T1 kiểm trước khi viết code; mỗi điểm có phương án ở spec mục 2.12. Đã xảy ra ở T1: spec sửa theo phương án bạn duyệt ở Phiên 14 · Lượt 2 |
 | `playwright-cli` hoặc Chrome DevTools MCP không chạy được trên Windows | Trung bình | T2 kiểm trước. Nếu hỏng: đổi công cụ cho vai trò đó, sửa spec, chờ bạn duyệt |
 | Hết usage giữa lúc kiểm thật | Cao | Chạy lần lượt; tiến độ ghi trong `todo.md` và ledger; Checkpoint 3 hỏi trước phần tốn nhất; năm việc ngoài vai trò chạy ở effort `low` |
 | Agent làm việc ngoài vai trò, như ghi sai chỗ hay chuyển trạng thái sai | Trung bình | `tools` của từng agent, `gh-guard`, `jira-guard`; mọi việc chỉ diễn ra trên space thử `DEMO`, không agent nào ghi vào `SCRUM` |
-| Skill chép vào kit chứa chỉ dẫn xấu | Thấp | Ghim theo commit; Claude đọc hết ba skill ở T9 trước khi commit |
+| Skill chép vào kit chứa chỉ dẫn xấu | Thấp | Ghim theo commit; Claude đọc hết 16 skill ở T9 trước khi commit |
 | Nhiều phiên `claude -p` lồng nhau làm máy hết RAM | Trung bình | Chạy agent ở foreground, mỗi lần một lượt |
 | `jira-sync` phản ứng với PR thử mang key của Jira | Thấp | PR thử đóng ngay sau khi xong, như PR #3 ở T13 của `quality-gates` |
 | Kết quả phép so dao động giữa các lần chạy | Trung bình | Phép so chỉ cho một hình dung (spec mục 2.2); bạn là người chọn mức |
