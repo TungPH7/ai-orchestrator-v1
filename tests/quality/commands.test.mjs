@@ -143,6 +143,11 @@ test('each role runs ao-pr.mjs only with its own App', () => {
   denied(bash('node .ai-orchestrator/scripts/ao-pr.mjs review 12 --event COMMENT --body-file r.md'), /fe-dev.*review/, 'fe-dev review');
   denied(bash('node .ai-orchestrator/scripts/ao-pr.mjs create --base develop --title x --body-file pr.md', 'security'), /security.*create/, 'security create');
   denied(bash('node .ai-orchestrator/scripts/ao-pr.mjs merge 12', 'devops'), /merge/, 'devops merge');
+  denied(bash('node --no-warnings .ai-orchestrator/scripts/ao-pr.mjs create --base develop --title x --body-file pr.md', 'qa'), /qa has no GitHub App/, 'node option first');
+  // Reading the script is not running it (reviews of ao-pilot PR #8 and #9).
+  for (const command of ['grep -n review .ai-orchestrator/scripts/ao-pr.mjs', 'cat .ai-orchestrator/scripts/ao-pr.mjs', 'git log -1 -- .ai-orchestrator/scripts/ao-pr.mjs']) {
+    allowed(bash(command, 'reviewer'), command);
+  }
 });
 
 test('agents do not edit protected paths, except devops on workflows', () => {
