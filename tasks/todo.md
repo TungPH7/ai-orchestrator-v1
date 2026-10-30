@@ -443,7 +443,7 @@ Xem [plan.md](plan.md#checkpoint-2).
 
 ## Giai đoạn 5: lên `ao-pilot`
 
-### [ ] T15: Bản chép kit vào `ao-pilot` qua PR [bạn]
+### [x] T15: Bản chép kit vào `ao-pilot` qua PR [bạn]
 
 **Mô tả:** Claude tạo một Task trên `DEMO` và nhánh `feature/DEMO-<n>-agent-roster`, rồi chép vào `ao-pilot`:
 
@@ -462,11 +462,11 @@ Claude mở PR, rồi `reviewer` và `security` review, chạy bằng `ao-agent.
 Bạn làm: approve PR, rồi tự merge, vì PR sửa đường dẫn được bảo vệ.
 
 **Tiêu chí chấp nhận:**
-- [ ] Tiêu chí 6 của spec mục 9.
-- [ ] Hai báo cáo review được đăng bằng App `ao-review`, đúng template; số đo của hai lượt chạy nằm trong `tasks/verification.md`.
+- [x] Tiêu chí 6 của spec mục 9.
+- [x] Hai báo cáo review được đăng bằng App `ao-review`, đúng template; số đo của hai lượt chạy nằm trong `tasks/verification.md`.
 
 **Kiểm chứng:**
-- [ ] `audit` xanh trên commit merge
+- [x] `audit` xanh trên commit merge
 
 **Phụ thuộc:** T4, T7, T10, T14
 
