@@ -21,7 +21,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 11 | `318a4364-f1b9-4cc5-9744-ae8ff4f80c7d` | 2026-10-29 09:00 → khoảng 09:40 | Bạn cho qua Checkpoint 2; T14–T17 (lượt code): merge-gate, audit, gh:protect; Checkpoint 3, chờ bạn xóa repo thử |
 | 12 | `32807628-e04f-47b4-889d-f855a40dabce` | 2026-10-29 khoảng 11:04 → khoảng 23:06 | Bạn cho qua Checkpoint 3; T17 và Checkpoint 3 đóng (PR #65, #66); T18 (lượt code): cài kit mới lên `ao-pilot`, tạo `DEMO-6`, `gh-guard` chặn ba đường vòng; bạn chuyển `DEMO-6` sang Ready và tạo key thứ hai của `ao-dev`; T18 đóng (PR #67): `fe-dev` mở PR #4, `reviewer` yêu cầu sửa, kit tắt ghi công AI; T19: vòng sửa, tiêu chí 10; bạn approve PR #4 lần đầu; T19: approve trên commit cũ không còn được tính, `devops` mở PR #5 sửa workflow, `reviewer` và `security` đăng báo cáo, bạn approve PR #4 lần hai và PR #5; T19 đóng (PR #68): `merge-gate` merge PR #4, `DEMO-6` sang Ready for QA, vòng PR tốn 55 phút Actions; T20: `fe-dev` mở PR #6, chờ bạn merge tay; bạn báo đã merge nhưng PR #6 vẫn mở; bạn merge lại, `audit` chặn deploy và gắn cờ `DEMO-8`; `fe-dev` mở PR #7 revert; bạn approve PR #7; T20 đóng (PR #69): `merge-gate` merge PR #7, `develop` sạch trở lại, gỡ cờ `DEMO-8`; Checkpoint 4, chờ bạn; bạn hỏi về `gh` 2.16.1, mình đề xuất sửa `gh-guard` cho các lệnh `gh` mới rồi mới cập nhật `gh`; bạn đồng ý: vá `gh-guard` (PR #70), lên `gh` 2.103.3, tắt telemetry; bạn đăng nhập lại `gh`, token vào keyring; bạn thu hồi token cũ và cho qua Checkpoint 4; git mất quyền push vì Git Credential Manager giữ token cũ của `gh`; bạn đăng nhập lại git; Checkpoint 4 đóng (PR #71); T21 đóng (PR #72); checkpoint cuối, chờ bạn |
 | 13 | `2c3e5733-3a72-4ae6-b04c-ca09a16731cc` | 2026-10-29 khoảng 23:31 → 2026-10-30 khoảng 16:15 | Bạn chọn làm tiếp agent-roster; quality-gates đóng (PR #73); giả định và câu hỏi cho agent-roster: model cho từng vai trò, `ux` giao gì; bạn đề xuất model và effort, đồng ý artifact `design`; Claude đề xuất effort theo vai trò, quy tắc cho `design.md`, ba skill từ registry, chỉ lấy ý từ `agency-agents`; bạn duyệt bốn điểm, yêu cầu so `high` với `max` cho `fe-dev`, và hỏi lại nên dùng `playwright-cli` hay Chrome DevTools MCP; Claude đề xuất `qa` dùng `playwright-cli`, `fe-dev` dùng Chrome DevTools MCP, và viết bản nháp `SPEC-agent-roster.md`; bạn hỏi Story đã có Figma có cần `design.md` không; Claude đề xuất `design.md` có hai kiểu màn hình (ASCII hoặc Figma kèm ảnh PNG đã duyệt), Figma MCP để sau; bạn hỏi ảnh trong Git có làm repo vượt dung lượng không, cho biết gói Figma Education, hỏi chụp màn hình Figma được không; Claude đo cỡ ảnh, đề xuất năm quy tắc ảnh do `check-design` kiểm, bạn export ảnh vào `.ai/design-inbox/`, tách Figma MCP và script REST thành module riêng; bạn đồng ý cả ba, chọn module riêng cho Figma MCP; Claude sửa SPEC theo đó và xin duyệt SPEC; bạn duyệt SPEC; Claude viết plan 22 task (T16 chuẩn bị `ao-pilot` với trang giỏ hàng và Playwright, tài liệu của Epic thử không merge) và xin duyệt plan |
-| 14 | `cb0eafc3-b9fb-4ef7-9d75-cbacef12fa98` | 2026-10-30 khoảng 16:29 → | Bạn duyệt plan; spec và plan merge (PR #74); T1 kiểm năm tiền đề: `claude --agent` bỏ qua `skills`, `effort`, `maxTurns`, settings của dự án không cài được plugin; Claude đề xuất chép 13 skill của agent-skills vào kit và script `ao-agent.mjs`, xin bạn duyệt cùng cách chạy hai công cụ trình duyệt qua `npx`; bạn duyệt cả hai; T1–T4 đóng (PR #75–#78): spec sửa sau T1, kiểm `playwright-cli` và Chrome DevTools MCP, artifact `design`, NOT TESTED; Checkpoint 1, chờ bạn; bạn hỏi xem kết quả T1–T2 ở đâu; bạn cho qua Checkpoint 1 (PR #79); T5–T14 đóng (PR #80–#89): `check-design`, roster và quy tắc A1–A5, 16 skill chép vào kit, `gh-guard` theo vai trò, mười prompt và file quy ước, sinh agent, `ao-agent.mjs`; Checkpoint 2, chờ bạn |
+| 14 | `cb0eafc3-b9fb-4ef7-9d75-cbacef12fa98` | 2026-10-30 khoảng 16:29 → | Bạn duyệt plan; spec và plan merge (PR #74); T1 kiểm năm tiền đề: `claude --agent` bỏ qua `skills`, `effort`, `maxTurns`, settings của dự án không cài được plugin; Claude đề xuất chép 13 skill của agent-skills vào kit và script `ao-agent.mjs`, xin bạn duyệt cùng cách chạy hai công cụ trình duyệt qua `npx`; bạn duyệt cả hai; T1–T4 đóng (PR #75–#78): spec sửa sau T1, kiểm `playwright-cli` và Chrome DevTools MCP, artifact `design`, NOT TESTED; Checkpoint 1, chờ bạn; bạn hỏi xem kết quả T1–T2 ở đâu; bạn cho qua Checkpoint 1 (PR #79); T5–T14 đóng (PR #80–#89): `check-design`, roster và quy tắc A1–A5, 16 skill chép vào kit, `gh-guard` theo vai trò, mười prompt và file quy ước, sinh agent, `ao-agent.mjs`; Checkpoint 2, chờ bạn; bạn hỏi vì sao `fe-dev` không dùng `vercel-react-best-practices`: skill theo stack khai trong `roster.local.yaml` của từng dự án |
 
 ---
 
@@ -5165,3 +5165,45 @@ Giai đoạn 5 lên `ao-pilot`, gồm ba task có phần cần bạn:
 Sau đó là Checkpoint 3, nơi mình hỏi bạn trước phần kiểm thật tốn nhất.
 
 Bạn đọc xong và cho qua Checkpoint 2 thì mình làm tiếp T15.
+
+---
+
+# Phiên 14 · Lượt 5 — 2026-10-30 khoảng 19:48
+
+**Bạn:**
+
+```markdown
+Tại sao agent fe-dev bạn không dùng skill react-best-pratice của vercel
+```
+
+**Claude:**
+
+`fe-dev` vẫn dùng được skill này. Có điều skill không khai trong kit mà khai trong từng dự án. Ở Phiên 13, Lượt 2 mình đề xuất cách này, và ở Lượt 3 bạn trả lời "3. OK". Quyết định nằm ở spec mục 2.7, phần "Skill theo stack". Trên máy bạn, skill có tên đầy đủ là `vercel-react-best-practices` (thư mục `~/.claude/skills/`, của Vercel, giấy phép MIT, bản 1.0.0).
+
+## Vì sao không đưa vào kit
+
+- **Kit không gắn với stack nào.** Bốn skill của `fe-dev` trong kit đúng với mọi giao diện web: `test-driven-development`, `incremental-implementation`, `frontend-ui-engineering`, `browser-testing-with-devtools`. Còn `vercel-react-best-practices` gồm 70 quy tắc riêng cho React và Next.js, ví dụ `bundle-dynamic-imports` (dùng `next/dynamic`), `server-cache-react` (dùng `React.cache()`), `async-suspense-boundaries`. Dự án Vue, Angular hay HTML thuần mà nạp skill này thì agent mang theo chỉ dẫn không áp dụng được, và có thể làm theo nhầm chỗ.
+- **Skill nạp sẵn tốn ngữ cảnh ở mọi lượt chạy.** `ao-agent.mjs` ghép nguyên `SKILL.md` của từng skill vào system prompt. Riêng `SKILL.md` của skill này là 7 KB, khoảng 2.000 token, cho mỗi lần `fe-dev` chạy. 72 file quy tắc chi tiết thì agent chỉ đọc khi cần.
+- **`ao-pilot` hiện chưa có React.** Đây là một gói TypeScript nhỏ (`src/cart.ts`). Trang giỏ hàng ở T16 là HTML thuần, chạy bằng `node:http` (quyết định 7). Nếu thêm skill bây giờ, skill không có gì để áp dụng.
+
+## Khi nào `fe-dev` có skill này
+
+Dự án đầu tiên dùng Next.js là Pilot 1. Dự án đó sẽ làm hai việc:
+
+1. Khai skill trong `.ai-orchestrator/roster.local.yaml`:
+
+   ```yaml
+   roles:
+     fe-dev:
+       skills: [vercel-react-best-practices]
+   ```
+
+2. Chép thư mục skill vào `.claude/skills/vercel-react-best-practices/` của repo. Như vậy máy khác cũng có cùng bản, và `ao-agent.mjs` đọc được `SKILL.md` từ đó.
+
+Khi chạy, `render-agents.mjs --project .` thêm skill vào cuối danh sách của `fe-dev`. Cơ chế này đã làm và đã test ở T14, và test dùng chính skill này làm ví dụ. Mình đề xuất module `project-scaffold` cho sẵn hai bước trên vào profile Next.js, để bạn khỏi phải nhớ.
+
+## Nếu bạn muốn khác
+
+Nếu mọi dự án của bạn đều làm frontend bằng Next.js, ta có thể đưa skill này vào kit như 16 skill kia: chép vào và ghim theo commit. Mình vẫn đề xuất giữ theo từng dự án, vì dự án Spring Boot có thể không có frontend React, và cơ chế theo dự án đã chạy được.
+
+Checkpoint 2 vẫn chờ bạn đọc file quy ước và hai agent `fe-dev`, `qa`.
