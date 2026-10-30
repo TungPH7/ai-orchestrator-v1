@@ -163,7 +163,8 @@ Chi tiết nằm trong `agents/prompts/<role>.md`. Mọi vai trò làm việc v�
 - **Subagent:** phiên chính của bạn giao việc cho agent. Claude Code áp đủ frontmatter, gồm `skills`, `effort` và `maxTurns`.
 - **Phiên chính:** `node .ai-orchestrator/scripts/ao-agent.mjs <role>`, thêm `-p "<prompt>"` để chạy không cần hỏi. `claude --agent` chỉ lấy tool, model và system prompt của agent, bỏ qua `skills`, `effort` và `maxTurns` (T1). Vì vậy script dựng lệnh `claude --agent <role> --effort <effort> --append-system-prompt-file <file>`, và thêm `--max-turns <maxTurns>` khi có `-p` và roster có `maxTurns`.
   - File ghép nội dung `SKILL.md` của các skill nạp sẵn của vai trò, kể cả skill theo stack trong `roster.local.yaml`. Mỗi skill mở đầu bằng một dòng ghi thư mục của nó, để agent tìm được file đi kèm.
-  - File được tạo lại ở `.ai/agents/<role>.skills.md` mỗi lần chạy.
+  - File được tạo lại ở `.ai/agents/<role>.skills.md` mỗi lần chạy. File mở đầu bằng mục Session: có `-p` thì ghi agent chạy một mình, không ai trả lời câu hỏi; không có `-p` thì ghi agent làm trực tiếp với bạn. Prompt của `ba`, `ux`, `sa` dựa vào mục này để biết được hỏi hay phải ghi câu hỏi vào Open Questions. Subagent không có mục này, và luôn chạy một mình.
+  - `--ao-dry-run` ghi file skill và in lệnh `claude` mà không chạy.
   - Cờ khác của người gọi được truyền nguyên cho `claude`. `CLAUDE_CODE_EFFORT_LEVEL` vẫn thắng `--effort`.
   - Không dùng `initialPrompt`: trường này chỉ nạp được một skill.
 
