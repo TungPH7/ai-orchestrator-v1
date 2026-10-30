@@ -36,11 +36,13 @@ Chạy `claude -p --agent probe --output-format json` và một subagent gọi t
 4. `tools` giới hạn tool của agent cả khi phiên ở chế độ auto: agent không gọi được tool nằm ngoài danh sách.
 5. Plugin khai trong `.claude/settings.json` của dự án được Claude Code nhận, và biết ghim được bản 0.6.13 hay không.
 
-Theo kết quả của điểm 5, `kit/.claude/settings.json` thêm `enabledPlugins` và `extraKnownMarketplaces`. Điểm nào sai thì Claude dừng, đề xuất sửa spec và chờ bạn duyệt.
+Điểm nào sai thì Claude dừng, đề xuất sửa spec và chờ bạn duyệt.
+
+**Kết quả (2026-10-30):** điểm 1 và 2 sai khi agent chạy làm phiên chính, và điểm 5 sai. Bạn duyệt cách sửa ở Phiên 14 · Lượt 2: chép 13 skill của agent-skills vào kit (T9) và viết script `ao-agent.mjs` (T14). Vì vậy `kit/.claude/settings.json` không thêm khóa plugin.
 
 **Tiêu chí chấp nhận:**
 - [ ] Năm điểm có kết quả đúng hoặc sai, kèm bằng chứng (lệnh, số token, trích output), trong `tasks/verification.md`.
-- [ ] `kit/.claude/settings.json` có hai khóa mới; test kiểm hai khóa này.
+- [ ] Spec và plan đã sửa theo kết quả, và bạn đã duyệt bản sửa.
 - [ ] Mọi lượt chạy dùng Haiku.
 
 **Kiểm chứng:**
@@ -49,7 +51,7 @@ Theo kết quả của điểm 5, `kit/.claude/settings.json` thêm `enabledPlug
 
 **Phụ thuộc:** không
 
-**File dự kiến:** `tasks/verification.md`, `kit/.claude/settings.json`, `tests/repo.test.mjs`
+**File dự kiến:** `tasks/verification.md`, `SPEC-agent-roster.md`, `SPEC.md`, `tasks/plan.md`, `tasks/todo.md`
 
 **Cỡ:** M
 
@@ -234,8 +236,7 @@ Rồi chạy kiểm trên từng file. Lỗi được ghi vào job summary như 
 **Mô tả:** `agents/roster.yaml` viết theo spec mục 2.2, 2.3 và 6:
 
 - mười vai trò;
-- agent-skills 0.6.13 và danh sách skill của nó;
-- ba skill chép vào kit, mỗi skill ghi repo, đường dẫn và SHA đầy đủ;
+- 16 skill chép vào kit (13 của agent-skills, ba từ registry), mỗi skill ghi repo, đường dẫn và SHA đầy đủ;
 - các nhóm tool Chrome DevTools, lấy theo kết quả T2.
 
 `maxTurns` chưa đặt; T22 đặt từ số đo.
@@ -253,7 +254,7 @@ Năm quy tắc:
 | A1 | Đúng schema |
 | A2 | Mỗi vai trò agent của hợp đồng có đúng một mục trong roster, và ngược lại. Phần file prompt thêm ở T12 |
 | A3 | Chỉ vai trò là actor của ít nhất một transition mới có quyền chuyển trạng thái |
-| A4 | Mỗi skill dạng `agent-skills:<name>` nằm trong danh sách skill của plugin. Phần skill chép vào kit thêm ở T9 |
+| A4 | Mỗi skill nạp sẵn có mục trong `vendored_skills`. Phần kiểm thư mục và `SKILL.md` thêm ở T9 |
 | A5 | Vai trò có App hoặc quyền git "Ghi" thì có Bash; vai trò có `Edit` hoặc `Write` thì có cột "Ghi được", và ngược lại |
 
 **Tiêu chí chấp nhận:**
@@ -269,7 +270,7 @@ Năm quy tắc:
 
 **Cỡ:** M
 
-### [ ] T9: Chép skill: `skills:vendor` và ba skill (spec mục 2.7)
+### [ ] T9: Chép skill: `skills:vendor` và 16 skill (spec mục 2.7)
 
 **Mô tả:** `lib/agents/vendor.mjs` làm bốn việc:
 
@@ -280,14 +281,15 @@ Năm quy tắc:
 
 Đi kèm có `scripts/vendor-skills.mjs` và lệnh `npm run skills:vendor -- <name>`.
 
-Claude tải ba skill vào `kit/.claude/skills/`, kèm file giấy phép. Trước khi commit, Claude đọc hết nội dung ba skill và ghi lại những chỗ trái quy ước của kit, để prompt ở T11–T12 xử lý. Ví dụ: skill `playwright-cli` hướng dẫn đính file vào PR bằng `gh`.
+Claude tải 16 skill vào `kit/.claude/skills/`, kèm file giấy phép. Với agent-skills, file `LICENSE` ở gốc repo được chép vào thư mục của từng skill. Trước khi commit, Claude đọc hết nội dung 16 skill và ghi lại những chỗ trái quy ước của kit, để prompt ở T11–T12 xử lý. Ví dụ: skill `playwright-cli` hướng dẫn đính file vào PR bằng `gh`.
 
 A4 kiểm thêm: mỗi skill chép vào có `SKILL.md`, và `name:` trùng tên skill.
 
 **Tiêu chí chấp nhận:**
 - [ ] Test `vendor` chạy với cây thư mục ghi sẵn và cho ra đúng danh sách file; `name:` được đổi; `SOURCE.md` đủ nội dung.
-- [ ] Chạy lại `skills:vendor` cho ba skill thì `git diff` rỗng.
-- [ ] Có file giấy phép Apache-2.0, và ghi chú CC BY-SA 4.0 cho phần tham khảo lấy từ OWASP.
+- [ ] Chạy lại `skills:vendor` cho 16 skill thì `git diff` rỗng.
+- [ ] 13 skill của agent-skills giống hệt bản plugin 0.6.13 đang cài trên máy bạn, so từng file.
+- [ ] Có file giấy phép MIT và Apache-2.0, và ghi chú CC BY-SA 4.0 cho phần tham khảo lấy từ OWASP.
 
 **Kiểm chứng:**
 - [ ] `npm run validate`, `npm test` xanh
@@ -407,12 +409,14 @@ Claude sinh mười agent vào `kit/.claude/agents/` và file `kit/.claude/rules
 
 **Cỡ:** M
 
-### [ ] T14: Chế độ dự án: `--project` và `roster.local.yaml`
+### [ ] T14: Chế độ dự án: `--project`, `roster.local.yaml` và `ao-agent.mjs`
 
 **Mô tả:** `render-agents.mjs --project .` sinh agent vào `.claude/` của dự án, từ bản chép ở `.ai-orchestrator/`. Bản chép vì vậy cần có thêm `agents/` và `templates/`. Script làm thêm hai việc:
 
 - gộp các skill khai trong `.ai-orchestrator/roster.local.yaml`; file này chỉ thêm skill;
 - điền key của space từ `AO_JIRA_SPACE` trong `.claude/settings.json`; bản trong kit để `<KEY>`.
+
+`scripts/ao-agent.mjs` chạy agent làm phiên chính (spec mục 2.5). `lib/agents/launch.mjs` là hàm thuần, dựng lệnh `claude` và nội dung file skill từ roster, `roster.local.yaml` và các file `SKILL.md`. Script ghi file skill vào `.ai/agents/<role>.skills.md`, chạy `claude` với stdin, stdout, stderr nối thẳng, rồi trả về mã thoát của `claude`.
 
 **Tiêu chí chấp nhận:**
 - [ ] Test:
@@ -420,15 +424,16 @@ Claude sinh mười agent vào `kit/.claude/agents/` và file `kit/.claude/rules
   - vai trò lạ hoặc skill không có thì báo lỗi rõ;
   - model, effort và tool không đổi được qua file này;
   - key của space được điền.
+- [ ] Test `launch` theo spec mục 7.
 
 **Kiểm chứng:**
 - [ ] `npm test` xanh
 
 **Phụ thuộc:** T13
 
-**File dự kiến:** `scripts/render-agents.mjs`, `lib/agents/roster.mjs`
+**File dự kiến:** `scripts/render-agents.mjs`, `lib/agents/roster.mjs`, `lib/agents/launch.mjs`, `scripts/ao-agent.mjs`
 
-**Cỡ:** S
+**Cỡ:** M
 
 ### Checkpoint 2
 
@@ -446,13 +451,13 @@ Xem [plan.md](plan.md#checkpoint-2).
 - `.claude/agents/`, sinh bằng `--project .`;
 - `.claude/rules/ai-orchestrator.md`;
 - `.claude/skills/`;
-- `.claude/settings.json`: plugin và setting `attribution`;
+- `.claude/settings.json`: setting `attribution`;
 - `.claude/hooks/gh-guard.mjs`: bản vá của PR #70 và luật theo vai trò;
 - `.mcp.json`: thêm `chrome-devtools`.
 
 Claude cũng bỏ bốn agent thử cũ và thêm `.ai/` vào `.gitignore`.
 
-Claude mở PR, rồi `reviewer` và `security` review. Đây là lượt chạy thật đầu tiên của hai agent này. File skill chép vào được kiểm bằng nguồn gốc (`skills:vendor` tải lại ra đúng các file đó), nên không cần agent đọc.
+Claude mở PR, rồi `reviewer` và `security` review, chạy bằng `ao-agent.mjs -p`. Đây là lượt chạy thật đầu tiên của hai agent này. File skill chép vào được kiểm bằng nguồn gốc (`skills:vendor` tải lại ra đúng các file đó), nên không cần agent đọc.
 
 Bạn làm: approve PR, rồi tự merge, vì PR sửa đường dẫn được bảo vệ.
 

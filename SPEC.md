@@ -47,7 +47,7 @@ Tất cả được chốt ngày 2026-10-26.
 | Cấu trúc repo | Monorepo: FE (Next.js) ở `apps/web`, BE (NestJS) ở `apps/api`. Story có cả FE và BE dùng một nhánh, một PR. Công cụ quản lý monorepo chọn ở `project-scaffold` |
 | Quy trình quản lý | Kanban: agent kéo việc khi còn chỗ WIP. Thứ 2 sắp backlog và duyệt SPEC/plan, thứ 6 retro. Không dùng Scrum |
 | Release | Không theo lịch cố định: bạn quyết định lúc cắt release lên Staging và lúc lên Production. Nhánh release tách từ điểm cắt trên `develop`. Trước đó từng chốt cắt release cố định vào thứ 5 |
-| Xương sống skill | agent-skills 0.6.13 (plugin). Không cài Superpowers; chỉ lấy chọn lọc ý từ Superpowers, agency-agents và orchestrator.inc |
+| Xương sống skill | agent-skills 0.6.13 (plugin). Từ `agent-roster`, các skill mà agent dùng được chép vào kit, ghim theo commit. Không cài Superpowers; chỉ lấy chọn lọc ý từ Superpowers, agency-agents và orchestrator.inc |
 | Repo kit | `ai-orchestrator-v1`, trên GitHub là `TungPH7/ai-orchestrator-v1`. Nhánh `main`, mỗi task một nhánh ngắn, xong thì merge vào `main` qua PR. Repo kit không dùng GitFlow vì không deploy lên môi trường nào |
 | Runtime cho script | Chỉ Node.js. Khi thật sự cần công cụ chỉ có bản Python thì gọi qua `uvx` |
 | Lưu trữ tài liệu | Tài liệu text (spec, plan, ADR, báo cáo) trong Git. Bằng chứng nặng (video, trace, báo cáo HTML, coverage) là artifact của GitHub Actions. Ảnh lỗi đính kèm Jira. Tài liệu gửi khách trên Google Drive |

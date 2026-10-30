@@ -2,7 +2,7 @@
 
 > **Module:** `agent-roster`, xem capability map trong [SPEC.md](SPEC.md). **Phụ thuộc:** `sdlc-contract`; dùng hook, script và cấu hình của `tracker-integration` và `quality-gates` (mục 2.11). **Được dùng bởi:** `dev-workflow`, `release-workflow`, `project-scaffold`, và `ci-agents` ở Cấp 2.
 >
-> **Trạng thái:** đã duyệt ngày 2026-10-30; plan ở [tasks/plan.md](tasks/plan.md). **Nguồn thảo luận:** [misc/brainstorm-discussion.md](misc/brainstorm-discussion.md), Phiên 13 · Lượt 1–6.
+> **Trạng thái:** đã duyệt ngày 2026-10-30, sửa theo kết quả T1 cùng ngày (mục 2.12); plan ở [tasks/plan.md](tasks/plan.md). **Nguồn thảo luận:** [misc/brainstorm-discussion.md](misc/brainstorm-discussion.md), Phiên 13 · Lượt 1–6 và Phiên 14 · Lượt 1–2.
 
 ## 1. Mục tiêu
 
@@ -13,7 +13,8 @@ Mỗi vai trò agent của hợp đồng có một subagent của Claude Code bi
 - Hợp đồng có thêm artifact `design`: luồng màn hình bằng Mermaid; bố cục bằng ASCII có đánh số, hoặc bằng ảnh export từ Figma khi màn hình đã có thiết kế; hành vi bằng YAML. Một script kiểm file này cùng ảnh đi kèm, và CI chạy script đó.
 - Báo cáo QA có thêm trạng thái NOT TESTED.
 - `qa` lái trình duyệt bằng `playwright-cli`; `fe-dev` xem trang đang code bằng Chrome DevTools MCP.
-- Ba skill từ registry được chép vào kit, ghim theo commit, giữ giấy phép. Mỗi dự án khai thêm skill theo stack trong `.ai-orchestrator/roster.local.yaml`.
+- 16 skill được chép vào kit, ghim theo commit, giữ giấy phép: 13 skill của agent-skills và ba skill từ registry. Mỗi dự án khai thêm skill theo stack trong `.ai-orchestrator/roster.local.yaml`.
+- Agent chạy làm phiên chính qua script `ao-agent.mjs`, để có đủ skill, effort và giới hạn lượt như khi chạy làm subagent.
 - Hook `gh-guard` giới hạn file mỗi vai trò được ghi, và không cho vai trò chỉ đọc đổi bản checkout.
 - Mười agent chạy thật trên `ao-pilot` qua một Epic nhỏ, mỗi lượt chạy có số đo; `fe-dev` được so ở `high` và `max`.
 
@@ -33,7 +34,7 @@ Mỗi vai trò agent của hợp đồng có một subagent của Claude Code bi
 
 | Nguồn | Nội dung |
 |---|---|
-| `agents/roster.yaml` | Model, effort, tool, quyền Jira, quyền git, file được ghi và skill nạp sẵn của từng vai trò; danh sách skill của agent-skills 0.6.13; nguồn của các skill chép vào kit |
+| `agents/roster.yaml` | Model, effort, tool, quyền Jira, quyền git, file được ghi và skill nạp sẵn của từng vai trò; nguồn và commit của các skill chép vào kit |
 | `agents/prompts/<role>.md` | Cách làm việc của vai trò, viết tay bằng tiếng Anh |
 | `agents/rules.md` | Phần viết tay của file quy ước chung (mục 2.6) |
 | Hợp đồng và cấu hình của kit | Stage, artifact và template, transition kèm tên trên Jira, App GitHub, đường dẫn được bảo vệ, tên trong trường Agent |
@@ -42,7 +43,7 @@ Mỗi vai trò agent của hợp đồng có một subagent của Claude Code bi
 
 Mỗi file agent gồm ba phần:
 
-1. **Frontmatter:** `name` trùng id vai trò (hook lấy vai trò từ `agent_type`), `description`, `tools`, `model`, `effort`, `skills`, và `maxTurns` (mục 2.2). Không dùng `permissionMode`, vì trường này bị bỏ qua khi phiên ở chế độ auto. Không dùng `memory`: trạng thái nằm ở Jira, Git và ledger, còn trí nhớ riêng làm kết quả khó đoán. Không dùng `hooks`: hook nằm trong settings của dự án.
+1. **Frontmatter:** `name` trùng id vai trò (hook lấy vai trò từ `agent_type`), `description`, `tools`, `model`, `effort`, `skills`, và `maxTurns` (mục 2.2). Claude Code chỉ áp `skills`, `effort` và `maxTurns` khi agent chạy làm subagent; khi agent chạy làm phiên chính, `ao-agent.mjs` truyền chúng bằng cờ của `claude` (mục 2.5). Không dùng `permissionMode`, vì trường này bị bỏ qua khi phiên ở chế độ auto. Không dùng `memory`: trạng thái nằm ở Jira, Git và ledger, còn trí nhớ riêng làm kết quả khó đoán. Không dùng `hooks`: hook nằm trong settings của dự án.
 2. **Phần hợp đồng, sinh tự động:** vai trò và tên trong trường Agent; stage tham gia, đầu vào, đầu ra, điều kiện qua; artifact phải tạo, template và chỗ lưu; transition được làm; App GitHub và lệnh `ao-pr.mjs` được dùng; file được ghi.
 3. **Phần viết tay:** cách làm việc, chỗ hợp đồng thắng mặc định của skill, khi nào dừng.
 
@@ -59,13 +60,13 @@ Trong dự án, `node .ai-orchestrator/scripts/render-agents.mjs --project .` si
 | `pm` | Sonnet | `medium` |
 
 - Frontmatter ghi alias (`opus`, `sonnet`), nên agent dùng bản Opus, Sonnet mà Claude Code đang trỏ tới.
-- Effort trong frontmatter thắng setting của phiên (máy bạn đang đặt Opus và Sonnet ở `xhigh`). Biến môi trường `CLAUDE_CODE_EFFORT_LEVEL` thắng frontmatter, nên chạy lại một agent với `CLAUDE_CODE_EFFORT_LEVEL=xhigh` là cách nâng effort cho một item khó hoặc bị trả về lần hai. Khi nào nâng là việc của `dev-workflow`; module này kiểm cách đó chạy được.
-- `maxTurns` đặt sau kiểm thật: gấp đôi số lượt cao nhất đo được của vai trò, làm tròn lên hàng chục. Giới hạn này chặn agent chạy vòng tròn và đốt usage.
+- Khi agent chạy làm subagent, effort trong frontmatter thắng setting của phiên (máy bạn đang đặt Opus và Sonnet ở `xhigh`). Khi agent chạy làm phiên chính, frontmatter bị bỏ qua, nên `ao-agent.mjs` truyền `--effort` theo roster (T1). Ở cả hai cách, biến môi trường `CLAUDE_CODE_EFFORT_LEVEL` thắng, nên chạy lại một agent với `CLAUDE_CODE_EFFORT_LEVEL=xhigh` là cách nâng effort cho một item khó hoặc bị trả về lần hai. Khi nào nâng là việc của `dev-workflow`; module này kiểm cách đó chạy được.
+- `maxTurns` đặt sau kiểm thật: gấp đôi số lượt cao nhất đo được của vai trò, làm tròn lên hàng chục. Giới hạn này chặn agent chạy vòng tròn và đốt usage. Khi agent chạy làm phiên chính bằng `-p`, `ao-agent.mjs` truyền giới hạn này bằng `--max-turns`.
 
 **Phép so `high` với `max` cho `fe-dev`** (bạn yêu cầu ngày 2026-10-30):
 
 - Một Task nhỏ cho code của `ao-pilot`, checklist 4–5 mục, có trường hợp biên mà yêu cầu không nêu. Task có trên `DEMO` chỉ để lấy mã cho nhánh và commit. Claude ghi trước danh sách trường hợp biên dùng để chấm.
-- `fe-dev` làm Task đó hai lần, cùng commit gốc, cùng yêu cầu, mỗi lần trên một nhánh local: lần 1 ở `high` (frontmatter), lần 2 với `CLAUDE_CODE_EFFORT_LEVEL=max`. Lần 2 vì vậy kiểm luôn cách nâng effort. Cả hai lần không push, không mở PR, không gọi Jira, để đầu vào giống hệt nhau.
+- `fe-dev` làm Task đó hai lần, cùng commit gốc, cùng yêu cầu, mỗi lần trên một nhánh local: lần 1 ở `high` (mức của roster), lần 2 với `CLAUDE_CODE_EFFORT_LEVEL=max`. Lần 2 vì vậy kiểm luôn cách nâng effort. Cả hai lần không push, không mở PR, không gọi Jira, để đầu vào giống hệt nhau.
 - `reviewer` review hai diff mà không biết diff nào ở mức nào.
 - So: token vào và ra, chi phí quy đổi theo giá API, thời gian, số lượt; test có pass không; số mục checklist và trường hợp biên làm được; finding của `reviewer` theo mức.
 - Mỗi mức chỉ chạy một lần, và kết quả của LLM dao động giữa các lần chạy, nên phép so chỉ cho một hình dung. Bạn chọn mức ở checkpoint; nếu `max` không rõ ràng tốt hơn thì giữ `high`.
@@ -89,9 +90,9 @@ Trong dự án, `node .ai-orchestrator/scripts/render-agents.mjs --project .` si
 - Quyền Jira đổi ra tool của server `atlassian`: đọc là `getJiraIssue`, `searchJiraIssuesUsingJql`, `executeRead`; tạo là `createJiraIssue`; sửa là `editJiraIssue`; comment là `addOrEditJiraIssueComment`; chuyển trạng thái là `transitionJiraIssue`.
 - Chỉ vai trò có transition trong hợp đồng mới có `transitionJiraIssue`. `reviewer` và `security` có `request-changes` trong hợp đồng nhưng không có tool này, vì `jira-sync` đã đưa item về In Progress dựa trên review trên GitHub (T18 của `quality-gates`).
 - `fe-dev` chỉ được các tool Chrome DevTools thuộc nhóm điều hướng, nhập liệu, giả lập (cỡ màn hình, mạng chậm), debug (console, snapshot, ảnh chụp, chạy script), network và hiệu năng. Không có các nhóm memory, extension, bên thứ ba, WebMCP, PWA, WebAuthn.
-- Skill nạp sẵn được đọc toàn bộ vào ngữ cảnh lúc agent khởi động. Agent không có tool `Skill`, nên không tự nạp thêm skill; nhờ vậy chạy ổn định hơn và đỡ token. Skill chỉ cần trong vài trường hợp thì prompt bảo agent đọc file `SKILL.md` của nó: `security` đọc `gha-security-review` khi PR sửa workflow.
+- Skill nạp sẵn được đọc toàn bộ vào ngữ cảnh lúc agent khởi động: subagent nạp qua trường `skills`, phiên chính nạp qua file mà `ao-agent.mjs` truyền bằng `--append-system-prompt-file` (mục 2.5). Agent không có tool `Skill`, nên không tự nạp thêm skill; nhờ vậy chạy ổn định hơn và đỡ token. Skill chỉ cần trong vài trường hợp thì prompt bảo agent đọc file `SKILL.md` của nó: `security` đọc `gha-security-review` khi PR sửa workflow.
 - Prompt ghi rõ chỗ hợp đồng thắng mặc định của skill: SPEC và plan nằm ở `docs/specs/<EPIC-KEY>/`, danh sách task nằm trên Jira chứ không ở `tasks/`; mức finding là Critical, High, Medium, Low của template, không phải nhãn của `code-review-and-quality`; nhánh theo GitFlow, không theo trunk-based của `git-workflow-and-versioning`; không đính file vào PR bằng `gh` như skill `playwright-cli` hướng dẫn, vì agent làm việc với PR chỉ qua `ao-pr.mjs`.
-- agent-skills là phụ thuộc của dự án: `kit/.claude/settings.json` khai `enabledPlugins` và `extraKnownMarketplaces`.
+- Dự án không phụ thuộc plugin agent-skills: 13 skill của nó mà các vai trò dùng được chép vào kit (mục 2.7), vì settings của dự án không cài được plugin và không ghim được bản (T1).
 
 Ước lượng ngữ cảnh nạp sẵn, tính khoảng 4 byte một token: skill từ 0 (`pm`) tới khoảng 13.000 token (`fe-dev`), vì mỗi `SKILL.md` của agent-skills dài 9–21 KB; cộng prompt và file quy ước khoảng 3.000–5.000 token.
 
@@ -157,7 +158,18 @@ Chi tiết nằm trong `agents/prompts/<role>.md`. Mọi vai trò làm việc v�
 
 ### 2.5 Hai cách chạy, và khi nào dừng
 
-- `ba`, `ux`, `sa` làm việc trực tiếp với bạn: bạn mở `claude --agent ba`, và agent hỏi bạn từng câu. Khi được gọi mà không có bạn (subagent, `claude -p`), chúng ghi câu hỏi vào mục Open Questions của artifact rồi dừng.
+**Hai cách chạy:**
+
+- **Subagent:** phiên chính của bạn giao việc cho agent. Claude Code áp đủ frontmatter, gồm `skills`, `effort` và `maxTurns`.
+- **Phiên chính:** `node .ai-orchestrator/scripts/ao-agent.mjs <role>`, thêm `-p "<prompt>"` để chạy không cần hỏi. `claude --agent` chỉ lấy tool, model và system prompt của agent, bỏ qua `skills`, `effort` và `maxTurns` (T1). Vì vậy script dựng lệnh `claude --agent <role> --effort <effort> --append-system-prompt-file <file>`, và thêm `--max-turns <maxTurns>` khi có `-p` và roster có `maxTurns`.
+  - File ghép nội dung `SKILL.md` của các skill nạp sẵn của vai trò, kể cả skill theo stack trong `roster.local.yaml`. Mỗi skill mở đầu bằng một dòng ghi thư mục của nó, để agent tìm được file đi kèm.
+  - File được tạo lại ở `.ai/agents/<role>.skills.md` mỗi lần chạy.
+  - Cờ khác của người gọi được truyền nguyên cho `claude`. `CLAUDE_CODE_EFFORT_LEVEL` vẫn thắng `--effort`.
+  - Không dùng `initialPrompt`: trường này chỉ nạp được một skill.
+
+**Khi nào dừng:**
+
+- `ba`, `ux`, `sa` làm việc trực tiếp với bạn: bạn mở `node .ai-orchestrator/scripts/ao-agent.mjs ba`, và agent hỏi bạn từng câu. Khi được gọi mà không có bạn (subagent, `ao-agent.mjs -p`), chúng ghi câu hỏi vào mục Open Questions của artifact rồi dừng.
 - Bảy vai trò còn lại chạy không cần hỏi. Gặp chỗ phải quyết, hoặc thất bại hai lần liên tiếp ở cùng một bước (`retry.agent_failures_before_stop` trong `policies.yaml`), agent gắn cờ "Needs you" lên item (Flagged, nhãn `needs-you`, comment lý do) rồi dừng. Vai trò không có quyền sửa item thì nêu lý do trong kết quả trả về.
 - Hook từ chối thì agent không tìm đường khác: báo nguyên văn lý do rồi dừng.
 - Agent làm một item thì ghi tiến độ vào ledger `.ai/ledger/<KEY>.md` sau mỗi bước, để phiên sau làm tiếp khi chạm giới hạn usage.
@@ -198,21 +210,23 @@ Bản chép kit trong dự án có thêm thư mục `.ai-orchestrator/templates/
 - Server khai trong `kit/.mcp.json`, ghim bản, với `--isolated` (profile tạm, xóa khi đóng trình duyệt, không đụng profile Chrome của bạn), `--no-usage-statistics` và `--no-performance-crux` (mặc định server gửi thống kê dùng cho Google, và gửi URL trace tới CrUX khi đo hiệu năng), cùng biến `CHROME_DEVTOOLS_MCP_NO_UPDATE_CHECKS`. Bạn bật server này cho dự án như đã bật `atlassian`.
 - Microsoft cũng có Playwright MCP, nhưng README của `playwright-cli` khuyên coding agent dùng CLI: CLI không đưa schema tool lớn và cây accessibility dài vào ngữ cảnh. Chrome DevTools MCP theo nguyên tắc trả tóm tắt và để dữ liệu lớn ra file. Chưa ai đo chênh lệch token giữa hai cách trong kit này, nên token không phải lý do chọn.
 
-**Skill từ registry** được chép vào kit, không cài bằng `npx skills add`:
+**Skill chép vào kit.** 16 skill nằm ở `kit/.claude/skills/`, không cài bằng `npx skills add` hay bằng plugin:
 
 | Skill trong kit | Nguồn | Commit | Giấy phép | Vai trò |
 |---|---|---|---|---|
+| 13 skill của agent-skills: `spec-driven-development`, `interview-me`, `frontend-ui-engineering`, `planning-and-task-breakdown`, `api-and-interface-design`, `documentation-and-adrs`, `test-driven-development`, `incremental-implementation`, `browser-testing-with-devtools`, `code-review-and-quality`, `security-and-hardening`, `ci-cd-and-automation`, `shipping-and-launch` | `addyosmani/agent-skills`, `skills/<name>` | `aeac41d4d005` (tag 0.6.13) | MIT, file `LICENSE` ở gốc repo chép vào thư mục từng skill | Theo bảng mục 2.3 |
 | `playwright-cli` | `microsoft/playwright-cli`, `skills/playwright-cli` | `83368cb3bfc0` (2026-09-28) | Apache-2.0 | `qa` |
 | `sentry-security-review` | `getsentry/skills`, `skills/security-review`, đổi tên | `6d20de492725` (2026-10-19) | Apache-2.0; phần tham khảo lấy từ OWASP Cheat Sheet Series, CC BY-SA 4.0 | `security` |
 | `gha-security-review` | `getsentry/skills`, `skills/gha-security-review` | `b11ee5163295` (2026-09-29) | Apache-2.0 | `security` |
 
-Commit là commit cuối cùng sửa thư mục đó tính tới 2026-10-30; kit ghi SHA đầy đủ. Lý do chép thay vì cài:
+Với agent-skills, commit là commit của tag 0.6.13, đúng bản plugin đang cài trên máy bạn. Với ba skill từ registry, commit là commit cuối cùng sửa thư mục đó tính tới 2026-10-30. Kit ghi SHA đầy đủ. Lý do chép thay vì cài:
 
+- Agent có đủ skill ở cả hai cách chạy, và máy nào cũng dùng cùng một bản: settings của dự án không cài được plugin agent-skills, cũng không ghim được bản (T1).
 - Ghim theo commit; cập nhật là một PR có diff để đọc. Skill là chỉ dẫn mà agent làm theo, nên nội dung đổi ngầm là rủi ro chuỗi cung ứng.
 - Đổi được tên `security-review` thành `sentry-security-review`, vì tên cũ trùng skill có sẵn của Claude Code.
 - Không phải bật plugin 30 skill của Sentry, trong đó có `commit`, `create-branch`, `pr-writer` theo quy ước của Sentry.
 
-`npm run skills:vendor -- <name>` tải đúng commit ghim trong `agents/roster.yaml` (GitHub API đọc cây thư mục, file lấy từ `raw.githubusercontent.com`), đổi `name:` khi cần, và ghi `SOURCE.md` (repo, đường dẫn, commit, ngày, thay đổi) cạnh các file giấy phép. Trong dự án, ba skill nằm ở `.claude/skills/`, là đường dẫn được bảo vệ. Phiên chính của bạn cũng thấy và gọi được chúng.
+`npm run skills:vendor -- <name>` tải đúng commit ghim trong `agents/roster.yaml` (GitHub API đọc cây thư mục, file lấy từ `raw.githubusercontent.com`), đổi `name:` khi cần, và ghi `SOURCE.md` (repo, đường dẫn, commit, ngày, thay đổi) cạnh các file giấy phép. Trong dự án, 16 skill nằm ở `.claude/skills/`, là đường dẫn được bảo vệ. Phiên chính của bạn cũng thấy và gọi được chúng. 13 skill của agent-skills vì vậy có hai bản trên máy bạn: bản chép vào kit, không có tiền tố, và bản `agent-skills:` của plugin.
 
 `playwright-cli` cần lệnh `playwright-cli` cài toàn cục, hoặc Playwright cài trong dự án (khi đó dùng `npx playwright cli`). Dự án Next.js của Pilot 1 sẽ có Playwright cho E2E (`project-scaffold`). Ở module này, `qa` dùng trình duyệt hai lần: một lượt thử ở T17 và một lượt kiểm Story của Epic thử ở T19 (plan, quyết định 7). Cách cài chốt ở T2, và Claude hỏi bạn trước khi cài gì lên máy.
 
@@ -224,7 +238,7 @@ roles:
     skills: [vercel-react-best-practices]
 ```
 
-File này chỉ thêm skill, không đổi model, effort hay tool. Skill phải nằm ở `.claude/skills/` của dự án (chép vào repo, để máy khác cũng có) hoặc thuộc agent-skills. File nằm trong `.ai-orchestrator/`, nên PR sửa nó do bạn merge.
+File này chỉ thêm skill, không đổi model, effort hay tool. Skill phải nằm ở `.claude/skills/` của dự án (chép vào repo, để máy khác cũng có), vì `ao-agent.mjs` đọc file `SKILL.md` của nó. File nằm trong `.ai-orchestrator/`, nên PR sửa nó do bạn merge.
 
 ### 2.8 Artifact `design`
 
@@ -376,11 +390,19 @@ Spec dựa trên các điểm sau của Claude Code 2.1.312. T1 và T2 của pla
 6. `playwright-cli` chạy được trên máy bạn: cách cài bản cố định, dùng Chrome hoặc Edge có sẵn.
 7. Chrome DevTools MCP chạy được từ `.mcp.json` trên Windows, với các tham số ở mục 2.7.
 
+**Kết quả T1** (2026-10-30, Claude Code 2.1.314; chi tiết ở `tasks/verification.md`):
+
+- Điểm 3 và 4 đúng ở cả hai cách chạy.
+- Điểm 1 và 2 chỉ đúng khi agent chạy làm subagent. `claude --agent` bỏ qua `skills`, `effort` và cả `maxTurns`; còn `CLAUDE_CODE_EFFORT_LEVEL`, `--effort`, `--max-turns` và `--append-system-prompt-file` có hiệu lực.
+- Điểm 5 sai: settings của dự án không cài được plugin agent-skills và không ghim được bản.
+
+Bạn duyệt cách sửa ngày 2026-10-30 (Phiên 14 · Lượt 2): chép 13 skill của agent-skills vào kit (mục 2.7), và chạy agent làm phiên chính qua `ao-agent.mjs` (mục 2.5).
+
 ## 3. Tech stack
 
 - Node.js 24, ES module, như các module trước. YAML đọc bằng `yaml`, schema kiểm bằng `ajv`; không thêm dependency. Mermaid trong `design.md` được đọc bằng regex, chỉ lấy nút và mũi tên. Kích thước ảnh đọc từ header của PNG (chunk IHDR) và JPEG (marker SOF), không thêm dependency.
 - `skills:vendor` dùng `fetch`: GitHub API để đọc cây thư mục ở một commit, `raw.githubusercontent.com` để lấy file.
-- Ngoài kit: `@playwright/cli` 0.1.22 và `chrome-devtools-mcp` 1.12.0, cả hai ghim bản.
+- Ngoài kit: `@playwright/cli` 0.1.22 và `chrome-devtools-mcp` 1.12.0, cả hai ghim bản và chạy qua `npx`.
 - Test dùng `node:test` với dữ liệu ghi sẵn; test không gọi mạng.
 
 ## 4. Lệnh
@@ -400,9 +422,9 @@ Trong repo dự án, với bản chép ở `.ai-orchestrator/`:
 ```
 node .ai-orchestrator/scripts/render-agents.mjs --project .         # sinh .claude/agents và file quy ước, gộp roster.local.yaml
 node .ai-orchestrator/scripts/check-design.mjs docs/specs/DEMO-20/design.md
-claude --agent ba                                                   # làm việc trực tiếp với ba
-claude -p "Review PR #12" --agent reviewer --output-format json     # chạy không cần hỏi, có số đo
-CLAUDE_CODE_EFFORT_LEVEL=xhigh claude -p "..." --agent fe-dev       # nâng effort cho một lượt chạy
+node .ai-orchestrator/scripts/ao-agent.mjs ba                       # làm việc trực tiếp với ba
+node .ai-orchestrator/scripts/ao-agent.mjs reviewer -p "Review PR #12" --output-format json   # chạy không cần hỏi, có số đo
+CLAUDE_CODE_EFFORT_LEVEL=xhigh node .ai-orchestrator/scripts/ao-agent.mjs fe-dev -p "..."    # nâng effort cho một lượt chạy
 ```
 
 ## 5. Cấu trúc thư mục
@@ -417,19 +439,20 @@ ai-orchestrator-v1/
 ├── lib/agents/
 │   ├── roster.mjs                   # đọc, kiểm roster và roster.local.yaml
 │   ├── render.mjs                   # ghép agent và file quy ước (hàm thuần)
+│   ├── launch.mjs                   # dựng lệnh claude và file skill cho ao-agent (hàm thuần)
 │   ├── scope.mjs                    # luật ghi file và git theo vai trò, cho gh-guard
 │   └── vendor.mjs                   # chép skill theo commit
 ├── lib/quality/design.mjs           # kiểm design.md và ảnh đi kèm (hàm thuần)
 ├── scripts/
 │   ├── render-agents.mjs
+│   ├── ao-agent.mjs                 # chạy agent làm phiên chính
 │   ├── vendor-skills.mjs
 │   └── check-design.mjs
 ├── templates/design.md              # mới; spec.md, story.md, qa-report.md sửa
 ├── kit/
 │   ├── .claude/agents/<role>.md     # sinh ra, 10 file
 │   ├── .claude/rules/ai-orchestrator.md
-│   ├── .claude/skills/              # playwright-cli, sentry-security-review, gha-security-review
-│   ├── .claude/settings.json        # thêm enabledPlugins, extraKnownMarketplaces
+│   ├── .claude/skills/              # 13 skill của agent-skills, playwright-cli, sentry-security-review, gha-security-review
 │   └── .mcp.json                    # thêm chrome-devtools
 ├── docs/agents.md                   # bảng vai trò, cách chạy, nâng effort, skill theo stack, design.md,
 │                                    # export ảnh từ Figma, dung lượng repo và LFS
@@ -444,11 +467,8 @@ Giữ quy ước của các module trước: tên trường `snake_case`, id `ke
 
 ```yaml
 # agents/roster.yaml (trích)
-plugins:
-  agent-skills:
-    version: 0.6.13
-    skills: [api-and-interface-design, browser-testing-with-devtools, code-review-and-quality, ...]
 vendored_skills:
+  - { name: test-driven-development, repo: addyosmani/agent-skills, path: skills/test-driven-development, commit: aeac41d4d005999432bb7312f7ff06383a91d59d }
   - { name: sentry-security-review, repo: getsentry/skills, path: skills/security-review, commit: <sha>, upstream_name: security-review }
 roles:
   fe-dev:
@@ -460,8 +480,7 @@ roles:
     jira: [read, edit, comment, transition]
     git: write
     writes: ["**"]            # protected_paths của quality/gates.yaml vẫn áp dụng
-    skills: [agent-skills:test-driven-development, agent-skills:incremental-implementation,
-             agent-skills:frontend-ui-engineering, agent-skills:browser-testing-with-devtools]
+    skills: [test-driven-development, incremental-implementation, frontend-ui-engineering, browser-testing-with-devtools]
   reviewer:
     description: "Code Reviewer: reviews a PR on five axes and posts the report. Give it the PR number."
     model: opus
@@ -470,7 +489,7 @@ roles:
     jira: [read]
     git: read
     writes: [".ai/**"]
-    skills: [agent-skills:code-review-and-quality]
+    skills: [code-review-and-quality]
 ```
 
 Đầu file agent sinh ra:
@@ -484,7 +503,7 @@ tools: Read, Glob, Grep, Bash, Write, mcp__atlassian__getJiraIssue, mcp__atlassi
 model: opus
 effort: xhigh
 skills:
-  - agent-skills:code-review-and-quality
+  - code-review-and-quality
 ---
 
 You are `reviewer`, the Code Reviewer of the SDLC contract. Your value in the Agent field of Jira is "Code Reviewer".
@@ -496,7 +515,7 @@ You are `reviewer`, the Code Reviewer of the SDLC contract. Your value in the Ag
 - Files you may write: `.ai/**`. Git: read only.
 ```
 
-`render.mjs`, `scope.mjs` và `design.mjs` là hàm thuần. Chỉ `vendor.mjs` gọi mạng.
+`render.mjs`, `launch.mjs`, `scope.mjs` và `design.mjs` là hàm thuần. Chỉ `vendor.mjs` gọi mạng.
 
 ## 7. Chiến lược test
 
@@ -505,7 +524,7 @@ You are `reviewer`, the Code Reviewer of the SDLC contract. Your value in the Ag
 1. A1: `agents/roster.yaml` đúng schema: model là `haiku`, `sonnet` hoặc `opus`; effort là `low`, `medium`, `high`, `xhigh` hoặc `max`; tool, quyền Jira, nhóm tool MCP và quyền git chỉ lấy từ danh sách cho phép.
 2. A2: mỗi vai trò agent của hợp đồng có đúng một mục trong roster và một file prompt; không có mục thừa.
 3. A3: chỉ vai trò là actor của ít nhất một transition mới có quyền chuyển trạng thái.
-4. A4: mỗi skill nạp sẵn có thật: `agent-skills:<name>` nằm trong danh sách skill của bản agent-skills ghi trong roster; tên khác phải là skill chép vào kit, có `SKILL.md` với `name:` trùng.
+4. A4: mỗi skill nạp sẵn là skill chép vào kit: có mục trong `vendored_skills`, và thư mục `kit/.claude/skills/<name>/` có `SKILL.md` với `name:` trùng.
 5. A5: vai trò có App hoặc quyền git "Ghi" thì có Bash; vai trò có `Edit` hoặc `Write` thì có cột "Ghi được", và ngược lại.
 
 **Test đơn vị**, dùng dữ liệu ghi sẵn:
@@ -513,6 +532,7 @@ You are `reviewer`, the Code Reviewer of the SDLC contract. Your value in the Ag
 - `render`: frontmatter đúng từng trường; transition chỉ hiện với vai trò có quyền chuyển trạng thái; tên trường Agent, App và file được ghi đúng; comment HTML bị bỏ; chạy hai lần ra cùng kết quả, xuống dòng LF. `roster.local.yaml` thêm skill đúng vai trò; vai trò lạ hoặc skill không có thì báo lỗi.
 - `scope`: mỗi vai trò ghi trong và ngoài phạm vi; vai trò chỉ đọc chạy `git diff`, `git show`, `git fetch` thì qua, chạy `git checkout`, `commit`, `push`, `stash` thì bị chặn; lệnh gần giống như `git log --grep=commit` thì qua.
 - `check-design`: mỗi lỗi ở mục 2.8 có một file mẫu, kể cả màn hình kiểu Figma: ảnh PNG và JPG nhỏ do test tạo ra, ảnh quá 1 MB, ảnh dài quá 2.000 px, ảnh thiếu, ảnh thừa, file con trỏ của LFS; ví dụ trong template sạch.
+- `launch`: dựng đúng lệnh `claude` cho từng vai trò, có và không có `-p`; `--effort` lấy từ roster; `--max-turns` chỉ có khi chạy `-p` và roster có `maxTurns`; cờ của người gọi giữ nguyên; file skill ghép đúng thứ tự, mỗi skill có dòng thư mục; skill theo stack của `roster.local.yaml` được thêm; skill thiếu `SKILL.md` thì báo lỗi.
 - `qaReportResult`: PASS, FAIL, NOT TESTED; báo cáo NOT TESTED mới nhất che báo cáo FAIL cũ.
 - `vendor`: từ cây thư mục ghi sẵn ra đúng danh sách file; `name:` được đổi; `SOURCE.md` đủ nội dung.
 
@@ -526,7 +546,7 @@ You are `reviewer`, the Code Reviewer of the SDLC contract. Your value in the Ag
 6. **Phép so `high` với `max`** của `fe-dev` (mục 2.2).
 7. **Trình duyệt:** `qa` mở trang giỏ hàng tối thiểu mà T16 thêm vào `ao-pilot` bằng `playwright-cli`, chụp snapshot và ảnh; `fe-dev` mở trang đó bằng Chrome DevTools MCP và đọc console.
 
-Mỗi lượt chạy bằng `claude -p --agent <role> --output-format json`, ghi lại model, effort, token vào và ra, chi phí quy đổi theo giá API, thời gian và số lượt. Ước khoảng 30 lượt chạy, phần lớn bằng Opus, nên có thể cần ba đến bốn khung 5 giờ của gói Pro (bảng ở cuối plan).
+Mỗi lượt chạy bằng `ao-agent.mjs <role> -p "<prompt>" --output-format json`, ghi lại model, effort, token vào và ra, chi phí quy đổi theo giá API, thời gian và số lượt. Ước khoảng 30 lượt chạy, phần lớn bằng Opus, nên có thể cần ba đến bốn khung 5 giờ của gói Pro (bảng ở cuối plan).
 
 ## 8. Ranh giới
 
@@ -536,9 +556,9 @@ Mỗi lượt chạy bằng `claude -p --agent <role> --output-format json`, ghi
 
 ## 9. Tiêu chí hoàn thành
 
-1. `agents/roster.yaml`, mười prompt và `agents/rules.md` có trong repo; quy tắc A1–A5 có test; `npm run validate`, `npm test`, `npm run agents:check` và CI của kit đều xanh.
+1. `agents/roster.yaml`, mười prompt và `agents/rules.md` có trong repo; quy tắc A1–A5 và `ao-agent.mjs` có test; `npm run validate`, `npm test`, `npm run agents:check` và CI của kit đều xanh.
 2. Năm thay đổi ở mục 2.11 đã làm, và `docs/sdlc.md` được sinh lại.
-3. Ba skill được chép vào kit kèm `SOURCE.md` và giấy phép; chạy lại `skills:vendor` ra đúng các file đó.
+3. 16 skill (13 của agent-skills, ba từ registry) được chép vào kit kèm `SOURCE.md` và giấy phép; chạy lại `skills:vendor` ra đúng các file đó.
 4. `check-design.mjs` bắt được từng lỗi ở mục 2.8, cả với màn hình kiểu Figma (dữ liệu mẫu: ảnh PNG, JPG và file con trỏ của LFS); `design.md` của Epic thử sạch; job `policy` đỏ trên một PR có `design.md` sai, rồi xanh lại khi sửa.
 5. Bảy tiền đề ở mục 2.12 được kiểm và ghi kết quả.
 6. Bản chép kit vào `ao-pilot` đi qua một PR bạn merge tay: có template, agent, file quy ước, skill, `.mcp.json` mới, bản vá `gh-guard` của PR #70 và setting `attribution`; `.ai/` nằm trong `.gitignore`; bốn agent thử cũ được thay; `audit` xanh.
@@ -552,7 +572,7 @@ Mỗi lượt chạy bằng `claude -p --agent <role> --output-format json`, ghi
 
 ## 10. Câu hỏi đã trả lời
 
-Phiên 13 · Lượt 1–6 (2026-10-29 và 2026-10-30):
+Phiên 13 · Lượt 1–6 và Phiên 14 · Lượt 2 (2026-10-29 và 2026-10-30):
 
 1. **Model và effort:** bạn chọn Opus cho tám vai trò, Sonnet cho `pm` và `ux`; effort theo bảng mục 2.2; nâng effort bằng biến môi trường; làm phép so `high` với `max` cho `fe-dev`.
 2. **`ux` giao gì:** artifact mới `design`, theo Mermaid, ASCII có đánh số và YAML, với năm quy tắc và script kiểm (mục 2.8).
@@ -561,10 +581,11 @@ Phiên 13 · Lượt 1–6 (2026-10-29 và 2026-10-30):
 5. **Trình duyệt** (bạn hỏi lại ngày 2026-10-30): `qa` dùng `playwright-cli`, `fe-dev` dùng Chrome DevTools MCP (mục 2.7). Bạn duyệt cùng spec ngày 2026-10-30.
 6. Bạn không sửa giả định nào trong chín giả định ở Lượt 1.
 7. **Figma** (Lượt 4–6): `design.md` có hai kiểu màn hình, ASCII hoặc Figma kèm ảnh export. Ảnh đã duyệt nằm trong Git theo năm quy tắc do `check-design` kiểm; dự án nhiều ảnh bật LFS từ đầu. Bạn export ảnh vào `.ai/design-inbox/<EPIC-KEY>/`, rồi `ux` chuyển ảnh vào `docs/specs/<EPIC-KEY>/design/` (mục 2.8). Figma MCP và script REST thành module riêng.
+8. **Cách chạy agent làm phiên chính** (Phiên 14 · Lượt 2): sau kết quả T1, bạn duyệt chép 13 skill của agent-skills vào kit và script `ao-agent.mjs` (mục 2.5, 2.7, 2.12).
 
 ## 11. Câu hỏi mở
 
-Không còn câu hỏi mở. Bạn duyệt spec ngày 2026-10-30 (Phiên 13 · Lượt 7), gồm các điểm mới ở mục 2.7, 2.9, 2.10, 2.11, kịch bản kiểm thật ở mục 7, và ba chi tiết của mục 2.8 mà Claude tự chốt ở Lượt 6.
+Không còn câu hỏi mở. Bạn duyệt spec ngày 2026-10-30 (Phiên 13 · Lượt 7), gồm các điểm mới ở mục 2.7, 2.9, 2.10, 2.11, kịch bản kiểm thật ở mục 7, và ba chi tiết của mục 2.8 mà Claude tự chốt ở Lượt 6. Bản sửa theo kết quả T1 được duyệt ở Phiên 14 · Lượt 2.
 
 ## 12. Rủi ro
 
@@ -579,7 +600,8 @@ Không còn câu hỏi mở. Bạn duyệt spec ngày 2026-10-30 (Phiên 13 · L
 - **Alias model:** khi Claude Code trỏ alias sang bản mới, hành vi agent đổi theo; số đo của kiểm thật gắn với bản đang dùng.
 - **`playwright-cli` chưa tới bản 1.0,** nên lệnh có thể đổi giữa các bản. Kit ghim cả skill lẫn bản CLI, và cập nhật cả hai cùng lúc.
 - **Skill chép vào cũ dần so với bản gốc:** cập nhật có chủ đích bằng `skills:vendor`, qua PR.
-- **Plugin agent-skills đổi tên skill ở bản mới:** quy tắc A4 bắt lỗi khi danh sách trong roster được cập nhật; trên máy khác, plugin có thể là bản khác (tiền đề 5).
+- **Hai bản của cùng một skill:** trong dự án, phiên chính của bạn thấy cả bản agent-skills chép vào kit lẫn bản `agent-skills:` của plugin, và hai bản có thể khác nhau khi plugin lên bản mới. Agent chỉ dùng bản chép vào kit.
+- **Claude Code đổi cách áp frontmatter cho `--agent`:** nếu một bản sau nạp `skills` cho cả phiên chính thì skill bị nạp hai lần, tốn token nhưng không sai. Kiểm lại tiền đề 1 khi lên bản Claude Code mới.
 
 ## Nguồn
 
