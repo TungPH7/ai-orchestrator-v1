@@ -557,7 +557,7 @@ Prompt: "Review PR #11."
 
 | Lượt | Commit | Effort | Lượt model | Thời gian | Token ra | Cache đọc | Cache ghi | Quy ra USD | Kết quả |
 |---|---|---|---|---|---|---|---|---|---|
-| `security` 1 | `2e3689d` | max | 54 | 17 ph 49 s | 93.626 | 5.506.260 | 204.164 | 4,607 | COMMENT (`tungph7-ao-review[bot]`, 03:04:48): không có finding |
+| `security` 1 | `2e3689d` | max | 54 | 17 ph 42 s | 93.626 | 5.506.260 | 204.164 | 4,607 | COMMENT (`tungph7-ao-review[bot]`, 03:04:48): không có finding |
 
 **Agent làm gì:**
 
