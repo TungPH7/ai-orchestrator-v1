@@ -125,8 +125,8 @@ T19, T20, T21 ── T22 maxTurns, tài liệu, lưu trữ
 - [x] T17: Trình duyệt: `qa` và `fe-dev` chạy thử
 
 ### Checkpoint 3
-- [ ] Tiêu chí 6 và 12 của spec mục 9 đạt
-- [ ] Bạn xem số đo của các lượt chạy đầu tiên, rồi đồng ý chạy phần kiểm thật còn lại (khoảng 24 lượt)
+- [x] Tiêu chí 6 và 12 của spec mục 9 đạt
+- [x] Bạn xem số đo của các lượt chạy đầu tiên, rồi đồng ý chạy phần kiểm thật còn lại (khoảng 24 lượt) (bạn cho qua ngày 2026-10-31, Phiên 15 · Lượt 1: chạy tiếp theo plan, `security` giữ `max`)
 
 ### Giai đoạn 6: kiểm thật
 - [ ] T18: Epic thử: spec và plan [bạn]
