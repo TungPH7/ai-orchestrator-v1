@@ -120,7 +120,7 @@ T19, T20, T21 ── T22 maxTurns, tài liệu, lưu trữ
 - [x] Bạn đọc file quy ước và ít nhất hai agent sinh ra (đề xuất `fe-dev` và `qa`)
 
 ### Giai đoạn 5: lên `ao-pilot`
-- [ ] T15: Bản chép kit vào `ao-pilot` qua PR [bạn]
+- [x] T15: Bản chép kit vào `ao-pilot` qua PR [bạn]
 - [ ] T16: `ao-pilot`: trang giỏ hàng tối thiểu và Playwright [bạn]
 - [ ] T17: Trình duyệt: `qa` và `fe-dev` chạy thử
 

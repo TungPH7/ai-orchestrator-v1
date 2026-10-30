@@ -211,3 +211,12 @@ Cột USD là `total_cost_usd` của Claude Code, quy theo giá API; bạn dùng
 ### Điều quan sát thêm
 
 - **`chrome-devtools` khởi động trong `claude -p` dù chưa được bật:** `.claude/settings.local.json` chỉ bật `atlassian`, và `~/.claude.json` không ghi gì cho `ao-pilot`. Lượt đầu báo `pending`, các lượt sau báo `connected`. `reviewer` và `security` không có tool của server này. Cần xem lại ở T17.
+
+### Merge
+
+Bạn approve PR #8 trên `3e41cf0` lúc 22:24 và squash merge lúc 22:25 thành `5f030ae` trên `develop`. Deploy chạy job `audit` trước: `audit passed: 5f030ae on develop is the merge of PR #8, which met every gate`. Sau đó job `deploy` chạy, `jira-sync` xanh, và DEMO-9 vẫn ở New. Bạn cũng bật `chrome-devtools` cho dự án: `.claude/settings.local.json` của `ao-pilot` giờ có `enabledMcpjsonServers: [atlassian, chrome-devtools]`.
+
+Bạn đồng ý hai đề xuất (2026-10-30 22:29):
+
+- Agent tiếp tục chạy `gh` và `git` bằng login của bạn trong sandbox `ao-pilot`. Điều này được ghi thành rủi ro. Trước Pilot 1, agent sẽ có danh tính GitHub riêng, không nằm trong `AO_APPROVERS` (module `dev-workflow`). Các lỗ cụ thể của `gh-guard` được vá dần trong kit.
+- `.mcp.json` của kit thêm `--no-file-navigations` và vào `protected_paths`. Bản vá chưa chép vào `ao-pilot` trước T17.
