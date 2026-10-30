@@ -21,7 +21,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 11 | `318a4364-f1b9-4cc5-9744-ae8ff4f80c7d` | 2026-10-29 09:00 → khoảng 09:40 | Bạn cho qua Checkpoint 2; T14–T17 (lượt code): merge-gate, audit, gh:protect; Checkpoint 3, chờ bạn xóa repo thử |
 | 12 | `32807628-e04f-47b4-889d-f855a40dabce` | 2026-10-29 khoảng 11:04 → khoảng 23:06 | Bạn cho qua Checkpoint 3; T17 và Checkpoint 3 đóng (PR #65, #66); T18 (lượt code): cài kit mới lên `ao-pilot`, tạo `DEMO-6`, `gh-guard` chặn ba đường vòng; bạn chuyển `DEMO-6` sang Ready và tạo key thứ hai của `ao-dev`; T18 đóng (PR #67): `fe-dev` mở PR #4, `reviewer` yêu cầu sửa, kit tắt ghi công AI; T19: vòng sửa, tiêu chí 10; bạn approve PR #4 lần đầu; T19: approve trên commit cũ không còn được tính, `devops` mở PR #5 sửa workflow, `reviewer` và `security` đăng báo cáo, bạn approve PR #4 lần hai và PR #5; T19 đóng (PR #68): `merge-gate` merge PR #4, `DEMO-6` sang Ready for QA, vòng PR tốn 55 phút Actions; T20: `fe-dev` mở PR #6, chờ bạn merge tay; bạn báo đã merge nhưng PR #6 vẫn mở; bạn merge lại, `audit` chặn deploy và gắn cờ `DEMO-8`; `fe-dev` mở PR #7 revert; bạn approve PR #7; T20 đóng (PR #69): `merge-gate` merge PR #7, `develop` sạch trở lại, gỡ cờ `DEMO-8`; Checkpoint 4, chờ bạn; bạn hỏi về `gh` 2.16.1, mình đề xuất sửa `gh-guard` cho các lệnh `gh` mới rồi mới cập nhật `gh`; bạn đồng ý: vá `gh-guard` (PR #70), lên `gh` 2.103.3, tắt telemetry; bạn đăng nhập lại `gh`, token vào keyring; bạn thu hồi token cũ và cho qua Checkpoint 4; git mất quyền push vì Git Credential Manager giữ token cũ của `gh`; bạn đăng nhập lại git; Checkpoint 4 đóng (PR #71); T21 đóng (PR #72); checkpoint cuối, chờ bạn |
 | 13 | `2c3e5733-3a72-4ae6-b04c-ca09a16731cc` | 2026-10-29 khoảng 23:31 → 2026-10-30 khoảng 16:15 | Bạn chọn làm tiếp agent-roster; quality-gates đóng (PR #73); giả định và câu hỏi cho agent-roster: model cho từng vai trò, `ux` giao gì; bạn đề xuất model và effort, đồng ý artifact `design`; Claude đề xuất effort theo vai trò, quy tắc cho `design.md`, ba skill từ registry, chỉ lấy ý từ `agency-agents`; bạn duyệt bốn điểm, yêu cầu so `high` với `max` cho `fe-dev`, và hỏi lại nên dùng `playwright-cli` hay Chrome DevTools MCP; Claude đề xuất `qa` dùng `playwright-cli`, `fe-dev` dùng Chrome DevTools MCP, và viết bản nháp `SPEC-agent-roster.md`; bạn hỏi Story đã có Figma có cần `design.md` không; Claude đề xuất `design.md` có hai kiểu màn hình (ASCII hoặc Figma kèm ảnh PNG đã duyệt), Figma MCP để sau; bạn hỏi ảnh trong Git có làm repo vượt dung lượng không, cho biết gói Figma Education, hỏi chụp màn hình Figma được không; Claude đo cỡ ảnh, đề xuất năm quy tắc ảnh do `check-design` kiểm, bạn export ảnh vào `.ai/design-inbox/`, tách Figma MCP và script REST thành module riêng; bạn đồng ý cả ba, chọn module riêng cho Figma MCP; Claude sửa SPEC theo đó và xin duyệt SPEC; bạn duyệt SPEC; Claude viết plan 22 task (T16 chuẩn bị `ao-pilot` với trang giỏ hàng và Playwright, tài liệu của Epic thử không merge) và xin duyệt plan |
-| 14 | `cb0eafc3-b9fb-4ef7-9d75-cbacef12fa98` | 2026-10-30 khoảng 16:29 → | Bạn duyệt plan; spec và plan merge (PR #74); T1 kiểm năm tiền đề: `claude --agent` bỏ qua `skills`, `effort`, `maxTurns`, settings của dự án không cài được plugin; Claude đề xuất chép 13 skill của agent-skills vào kit và script `ao-agent.mjs`, xin bạn duyệt cùng cách chạy hai công cụ trình duyệt qua `npx` |
+| 14 | `cb0eafc3-b9fb-4ef7-9d75-cbacef12fa98` | 2026-10-30 khoảng 16:29 → | Bạn duyệt plan; spec và plan merge (PR #74); T1 kiểm năm tiền đề: `claude --agent` bỏ qua `skills`, `effort`, `maxTurns`, settings của dự án không cài được plugin; Claude đề xuất chép 13 skill của agent-skills vào kit và script `ao-agent.mjs`, xin bạn duyệt cùng cách chạy hai công cụ trình duyệt qua `npx`; bạn duyệt cả hai; T1–T4 đóng (PR #75–#78): spec sửa sau T1, kiểm `playwright-cli` và Chrome DevTools MCP, artifact `design`, NOT TESTED; Checkpoint 1, chờ bạn |
 
 ---
 
@@ -4968,3 +4968,76 @@ Mình không chọn hai cách khác:
 
 1. Bạn có duyệt đề xuất trên không? Nếu duyệt, mình sẽ sửa spec và plan, đóng T1, rồi làm T2.
 2. T2 cần chạy `@playwright/cli@0.1.22` và `chrome-devtools-mcp@1.12.0`. Mình đề xuất chạy cả hai qua `npx`, ghim đúng bản: gói chỉ được tải vào cache của npm, không cài toàn cục, và Chrome chạy bằng profile tạm. Bạn có đồng ý cách này không?
+
+---
+
+# Phiên 14 · Lượt 2 — 2026-10-30 khoảng 16:57
+
+**Bạn:**
+
+```markdown
+1. Duyệt nhé
+2. Đồng ý
+```
+
+**Claude:**
+
+Mình đã sửa spec và plan theo đề xuất, rồi làm xong T1–T4. Giờ mình dừng ở **Checkpoint 1** để bạn xem kết quả.
+
+## Đã merge
+
+| PR | Task | Nội dung |
+|---|---|---|
+| [#75](https://github.com/TungPH7/ai-orchestrator-v1/pull/75) | T1 | Kết quả năm tiền đề; spec và plan sửa theo phương án bạn duyệt |
+| [#76](https://github.com/TungPH7/ai-orchestrator-v1/pull/76) | T2 | Kiểm hai công cụ trình duyệt; `kit/.mcp.json` thêm `chrome-devtools` |
+| [#77](https://github.com/TungPH7/ai-orchestrator-v1/pull/77) | T3 | Artifact `design`, template `design.md`, AC đánh số `AC<n>` |
+| [#78](https://github.com/TungPH7/ai-orchestrator-v1/pull/78) | T4 | NOT TESTED trong báo cáo QA |
+
+Các lệnh `npm run validate`, `npm test` (511 test), `render:check`, `jira:checklist:check` và CI đều xanh.
+
+## Spec và plan sau T1
+
+- Spec:
+  - 13 skill của agent-skills được chép vào kit (mục 2.7).
+  - Agent chạy làm phiên chính qua `ao-agent.mjs` (mục 2.5).
+  - Kết quả T1 được ghi ở mục 2.12.
+- Plan:
+  - T9 chép 16 skill.
+  - T14 thêm `ao-agent.mjs` và thành cỡ M.
+  - Các lượt kiểm thật chạy bằng `ao-agent.mjs -p`.
+
+## T2: trình duyệt
+
+**`playwright-cli` 0.1.22** chạy qua `npx`.
+- Công cụ mở trang bằng Chrome có sẵn trên máy (headless, profile chỉ nằm trong bộ nhớ) và không tải thêm trình duyệt nào.
+- Snapshot, bấm nút, chụp ảnh và đọc console đều chạy.
+- Công cụ không mở được URL `file:`, nên trang phải được phục vụ qua HTTP. Server `serve` của T16 sẽ lo phần này.
+- Mỗi lần chạy, công cụ hỏi npm xem có bản mới không. Vì vậy kit đặt `NO_UPDATE_NOTIFIER=1` trong `env` của settings. Thay đổi này có test, và README đã ghi biến này.
+
+**Chrome DevTools MCP 1.12.0** chạy được từ `.mcp.json` trên Windows bằng `npx`, không cần `cmd /c`.
+- Một agent Haiku đọc được console, snapshot và network, bấm được nút và chụp được ảnh.
+- Chrome mở có cửa sổ và dùng profile tạm, nên không đụng tới profile Chrome của bạn. Sau phiên không còn tiến trình Chrome nào của server.
+- Mình đã ghi danh sách 31 tool thuộc sáu nhóm mà `fe-dev` được dùng, để T8 điền vào roster.
+- Nhóm Memory (14 tool) được server bật sẵn. `fe-dev` không nhận các tool này vì agent chỉ có những tool liệt kê trong `tools`. Riêng phiên chính của bạn thì vẫn thấy chúng.
+
+## T3 và T4
+
+- `design.md` có:
+  - bảng màn hình với cột kiểu;
+  - dòng `Figma version:`;
+  - luồng màn hình bằng Mermaid;
+  - mỗi màn hình một hình ASCII hoặc ảnh, kèm YAML.
+
+  Ví dụ trong template là Epic "Mã giảm giá cho giỏ hàng", có một màn hình cho mỗi kiểu.
+- `spec.md` và `story.md`: AC được đánh số `AC1`, `AC2`… trong cả Epic. Mục Design của Story ghi `S1, S2`, hoặc "Không đổi giao diện".
+- `qa-report.md` có thêm NOT TESTED. Báo cáo NOT TESTED mới nhất che báo cáo FAIL cũ hơn. Khi đó không guard QA nào thỏa.
+
+Chi tiết từng lượt chạy nằm trong `tasks/verification.md`.
+
+## Checkpoint 1
+
+1. Bốn lệnh và CI xanh: đạt.
+2. Bảy tiền đề đã có kết quả, và các tiền đề sai đã được sửa trong spec theo bản bạn duyệt: đạt.
+3. Bạn xem kết quả của T1–T2: đang chờ bạn.
+
+Khi bạn cho qua Checkpoint 1, mình sẽ đánh dấu checkpoint rồi làm tiếp Giai đoạn 2 (T5–T7: `check-design`).
