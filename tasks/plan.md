@@ -102,7 +102,7 @@ T19, T20, T21 ── T22 maxTurns, tài liệu, lưu trữ
 ### Giai đoạn 2: `design.md`
 - [x] T5: `check-design` cho màn hình kiểu ASCII
 - [x] T6: `check-design` cho màn hình kiểu Figma và ảnh
-- [ ] T7: Job `policy` chạy `check-design`
+- [x] T7: Job `policy` chạy `check-design`
 
 ### Giai đoạn 3: roster, skill, gh-guard
 - [ ] T8: `agents/roster.yaml`, schema, quy tắc A1–A5
