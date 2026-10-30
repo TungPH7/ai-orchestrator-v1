@@ -162,9 +162,14 @@ test('a review report names the role that posts it, reviewer or security, under 
   assert.match(section('review-report.md', 'Example'), /^# Review: .*\n\nRole: reviewer$/m);
 });
 
-test('a QA report says PASS or FAIL, and gives the result of each acceptance criterion', () => {
-  assert.match(section('qa-report.md', 'Result'), /PASS[\s\S]*FAIL|FAIL[\s\S]*PASS/);
-  assert.match(section('qa-report.md', 'Acceptance Criteria'), /^\| Acceptance criterion \| Result \| Evidence \|$/m);
+test('a QA report says PASS, FAIL or NOT TESTED, and gives the result and evidence of each acceptance criterion', () => {
+  assert.match(section('qa-report.md', 'Result'), /^PASS \| FAIL \| NOT TESTED$/m);
+  const criteria = section('qa-report.md', 'Acceptance Criteria');
+
+  assert.match(criteria, /^\| Acceptance criterion \| Result \| Evidence \|$/m);
+  assert.match(criteria, /\| PASS \/ FAIL \/ NOT TESTED \|/);
+  // agent-roster spec 2.9: evidence that fits the criterion, and a criterion without an E2E test is a FAIL.
+  for (const text of ['screenshot', 'test name', 'without an E2E test is FAIL']) assert.ok(criteria.includes(text), text);
 });
 
 test('a regression report counts open Bugs for every Severity level', () => {
