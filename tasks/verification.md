@@ -45,3 +45,56 @@ Tài liệu Claude Code khớp với kết quả: `--agent` chỉ áp "tool rest
 Theo plan, Claude dừng và đề xuất sửa spec (Phiên 14 · Lượt 1). Bạn duyệt đề xuất ở Phiên 14 · Lượt 2: chép 13 skill của agent-skills vào kit (T9), và viết script `ao-agent.mjs` chạy agent làm phiên chính với `--effort`, `--append-system-prompt-file` và `--max-turns` (T14). Spec mục 1, 2.1–2.3, 2.5, 2.7, 2.12, 3–7, 9, 10 và 12 đã sửa theo đó; `kit/.claude/settings.json` không thêm khóa plugin.
 
 Dọn dẹp: dự án tạm chỉ nằm trong scratchpad; file `.claude/settings.json` thử đã xóa. Claude Code ghi lịch sử các phiên thử vào `~/.claude/projects/` dưới tên thư mục của dự án tạm.
+
+## T2: Tiền đề về trình duyệt (điểm 6–7)
+
+**Cách cài (bạn đồng ý ở Phiên 14 · Lượt 2):** chạy cả hai gói bằng `npx -y <gói>@<bản>`. Gói chỉ được tải vào cache của npm (`%LOCALAPPDATA%\npm-cache\_npx\`); không cài gì toàn cục. Trang thử là một file HTML trong scratchpad, gồm một tiêu đề, dòng `Total: 0`, nút "Add item" (bấm thì thành `Total: 50000`), một `console.log` và một `console.error`. Một server `node:http` tạm phục vụ trang ở `http://127.0.0.1:47210/`.
+
+**Điểm 6, `playwright-cli` 0.1.22 (2026-10-30, khoảng 17:10): đúng.**
+
+- `npx -y @playwright/cli@0.1.22 --version` in `0.1.22`. Gói kéo theo `playwright-core` `1.64.0-alpha-1790635538000`.
+- `open --browser=chrome` mở Chrome có sẵn trên máy: `list` báo `browser-type: chrome`, `headed: false`, `user-data-dir: <in-memory>`. Không trình duyệt nào được tải về: thư mục `ms-playwright` không có thư mục trình duyệt mới.
+- URL `file:` bị chặn (`Access to "file:" protocol is blocked`), nên trang phải được phục vụ qua HTTP. Server `serve` của T16 đáp ứng điều này.
+- `goto`, `snapshot`, `click "getByRole('button', { name: 'Add item' })"`, `screenshot`, `console`, `close` đều chạy:
+  - Snapshot là YAML có `ref` (`button "Add item" [ref=e4]`).
+  - Ảnh PNG lưu ở `.playwright-cli/` của thư mục đang đứng. Claude mở ảnh và thấy `Total: 50000`.
+  - `console` liệt kê 3 dòng: log, error và lỗi 404 của `favicon.ico`.
+- Mỗi lần chạy, CLI hỏi npm có bản mới không (ghi `ms-playwright\cli-update-check.json`), trừ khi có biến `NO_UPDATE_NOTIFIER` hoặc `CI`. Kit vì vậy đặt `NO_UPDATE_NOTIFIER=1` trong `env` của `kit/.claude/settings.json`.
+- Gói có sẵn một bản skill ở `playwright-core/lib/tools/skills/playwright-cli/SKILL.md`. T9 so bản này với bản ở commit `83368cb3bfc0` của repo `microsoft/playwright-cli` mà spec định chép.
+
+**Điểm 7, Chrome DevTools MCP 1.12.0 (khoảng 17:12): đúng.**
+
+- Dự án tạm có `.mcp.json` với `"command": "npx"`, `args` `["-y", "chrome-devtools-mcp@1.12.0", "--isolated", "--no-usage-statistics", "--no-performance-crux"]` và `env` `CHROME_DEVTOOLS_MCP_NO_UPDATE_CHECKS=1`. Trên Windows không cần bọc bằng `cmd /c`.
+- Server được duyệt bằng `enabledMcpjsonServers` trong `.claude/settings.local.json` của dự án tạm. Sự kiện `init` báo `chrome-devtools` `connected`, nguồn `project`. Ở `ao-pilot`, bạn bật server này như đã bật `atlassian`.
+- Agent thử `probe-cdt` (Haiku, `effort: low`) chạy bằng `claude -p --agent` với `tools` là `Read` và 10 tool của server. Danh sách tool trong `init` đúng 11 tool đó.
+- Agent làm đủ 7 bước, 8 lượt, 0,003 USD:
+  - `new_page` mở trang thành page 2.
+  - `list_console_messages` trả 3 dòng: `[log] AO-PROBE log line`, `[error] AO-PROBE error line`, và lỗi 404 của `favicon.ico`.
+  - `take_snapshot` trả cây có `uid`.
+  - `click` bấm được nút.
+  - `take_screenshot` trả ảnh, trong đó có `Total: 50000`.
+  - `list_network_requests` trả `GET / [200]` và `GET /favicon.ico [404]`.
+  - `close_page` đóng page 2.
+- Chrome chạy có cửa sổ (mặc định của server). `--isolated` dùng profile tạm: không có thư mục `~/.cache/chrome-devtools-mcp/chrome-profile`, và sau phiên không còn tiến trình Chrome nào của server. Profile Chrome của bạn không bị đụng tới.
+- Biến `CHROME_DEVTOOLS_MCP_NO_UPDATE_CHECKS` có tác dụng. Lần chạy `--help` không có biến này đã ghi `~/.cache/chrome-devtools-mcp/latest.json` lúc 17:09. Lượt chạy của agent có biến thì không đụng tới file đó.
+- Chưa kiểm: khi client không khai MCP roots, các tool đọc ghi file của server chỉ được dùng thư mục tạm của hệ điều hành. Lần này ảnh được trả thẳng về agent nên không ảnh hưởng; T17 kiểm việc lưu ảnh vào thư mục dự án.
+
+**Tool của sáu nhóm mà `fe-dev` được dùng** (theo `docs/tool-reference.md` ở tag `chrome-devtools-mcp-v1.12.0`), để T8 điền vào roster:
+
+| Nhóm | Tool |
+|---|---|
+| Điều hướng | `close_page`, `list_pages`, `navigate_page`, `new_page`, `select_page`, `wait_for` |
+| Nhập liệu | `click`, `drag`, `fill`, `fill_form`, `handle_dialog`, `hover`, `press_key`, `type_text`, `upload_file`. `click_at` chỉ có khi bật `--experimentalVision`, kit không bật |
+| Giả lập | `emulate`, `resize_page` |
+| Debug | `evaluate_script`, `get_console_message`, `get_css_styles`, `lighthouse_audit`, `list_console_messages`, `screencast_start`, `screencast_stop`, `take_screenshot`, `take_snapshot` |
+| Network | `get_network_request`, `list_network_requests` |
+| Hiệu năng | `performance_analyze_insight`, `performance_start_trace`, `performance_stop_trace` |
+
+Các nhóm không cho `fe-dev`:
+
+- Memory: 14 tool, **bật sẵn** trên server.
+- Extensions, Third-party, WebMCP, PWA: tắt sẵn.
+
+Bản 1.12.0 không có nhóm WebAuthn như spec mục 2.3 nhắc. Vì `fe-dev` chỉ nhận tool liệt kê trong `tools`, nhóm Memory bật sẵn không ảnh hưởng tới agent. Phiên chính của bạn thì thấy đủ các tool đó.
+
+**Kết luận:** hai điểm đúng. `kit/.mcp.json` thêm server `chrome-devtools` đúng như đã kiểm, có test kiểm bản và các tham số. Dọn dẹp: phiên `playwright-cli` đã đóng; dự án tạm và server tạm chỉ nằm trong scratchpad, server tự dừng sau 30 phút.
