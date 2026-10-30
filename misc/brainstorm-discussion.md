@@ -20,7 +20,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 10 | `b645b669-931c-4d95-ba32-24fd3e090d67` | 2026-10-28 16:35 → 2026-10-29 khoảng 03:30 | Giả định và câu hỏi cho quality-gates: bảo vệ nhánh khi repo private ở gói Free, danh tính để agent mở PR; bạn chọn 1a, 2a; viết SPEC-quality-gates; bạn duyệt spec, lập plan 21 task; bạn duyệt plan, bắt đầu T1; vì sao bạn phải tự tạo App, script tạo App bằng manifest flow; T1–T5, Checkpoint 1; ba đề xuất được đồng ý, T6–T13, hết lượt dùng giữa T13, Checkpoint 2 |
 | 11 | `318a4364-f1b9-4cc5-9744-ae8ff4f80c7d` | 2026-10-29 09:00 → khoảng 09:40 | Bạn cho qua Checkpoint 2; T14–T17 (lượt code): merge-gate, audit, gh:protect; Checkpoint 3, chờ bạn xóa repo thử |
 | 12 | `32807628-e04f-47b4-889d-f855a40dabce` | 2026-10-29 khoảng 11:04 → khoảng 23:06 | Bạn cho qua Checkpoint 3; T17 và Checkpoint 3 đóng (PR #65, #66); T18 (lượt code): cài kit mới lên `ao-pilot`, tạo `DEMO-6`, `gh-guard` chặn ba đường vòng; bạn chuyển `DEMO-6` sang Ready và tạo key thứ hai của `ao-dev`; T18 đóng (PR #67): `fe-dev` mở PR #4, `reviewer` yêu cầu sửa, kit tắt ghi công AI; T19: vòng sửa, tiêu chí 10; bạn approve PR #4 lần đầu; T19: approve trên commit cũ không còn được tính, `devops` mở PR #5 sửa workflow, `reviewer` và `security` đăng báo cáo, bạn approve PR #4 lần hai và PR #5; T19 đóng (PR #68): `merge-gate` merge PR #4, `DEMO-6` sang Ready for QA, vòng PR tốn 55 phút Actions; T20: `fe-dev` mở PR #6, chờ bạn merge tay; bạn báo đã merge nhưng PR #6 vẫn mở; bạn merge lại, `audit` chặn deploy và gắn cờ `DEMO-8`; `fe-dev` mở PR #7 revert; bạn approve PR #7; T20 đóng (PR #69): `merge-gate` merge PR #7, `develop` sạch trở lại, gỡ cờ `DEMO-8`; Checkpoint 4, chờ bạn; bạn hỏi về `gh` 2.16.1, mình đề xuất sửa `gh-guard` cho các lệnh `gh` mới rồi mới cập nhật `gh`; bạn đồng ý: vá `gh-guard` (PR #70), lên `gh` 2.103.3, tắt telemetry; bạn đăng nhập lại `gh`, token vào keyring; bạn thu hồi token cũ và cho qua Checkpoint 4; git mất quyền push vì Git Credential Manager giữ token cũ của `gh`; bạn đăng nhập lại git; Checkpoint 4 đóng (PR #71); T21 đóng (PR #72); checkpoint cuối, chờ bạn |
-| 13 | `2c3e5733-3a72-4ae6-b04c-ca09a16731cc` | 2026-10-29 khoảng 23:31 → | Bạn chọn làm tiếp agent-roster; quality-gates đóng (PR #73); giả định và câu hỏi cho agent-roster: model cho từng vai trò, `ux` giao gì; bạn đề xuất model và effort, đồng ý artifact `design`; Claude đề xuất effort theo vai trò, quy tắc cho `design.md`, ba skill từ registry, chỉ lấy ý từ `agency-agents`; bạn duyệt bốn điểm, yêu cầu so `high` với `max` cho `fe-dev`, và hỏi lại nên dùng `playwright-cli` hay Chrome DevTools MCP; Claude đề xuất `qa` dùng `playwright-cli`, `fe-dev` dùng Chrome DevTools MCP, và viết bản nháp `SPEC-agent-roster.md`; bạn hỏi Story đã có Figma có cần `design.md` không; Claude đề xuất `design.md` có hai kiểu màn hình (ASCII hoặc Figma kèm ảnh PNG đã duyệt), Figma MCP để sau |
+| 13 | `2c3e5733-3a72-4ae6-b04c-ca09a16731cc` | 2026-10-29 khoảng 23:31 → | Bạn chọn làm tiếp agent-roster; quality-gates đóng (PR #73); giả định và câu hỏi cho agent-roster: model cho từng vai trò, `ux` giao gì; bạn đề xuất model và effort, đồng ý artifact `design`; Claude đề xuất effort theo vai trò, quy tắc cho `design.md`, ba skill từ registry, chỉ lấy ý từ `agency-agents`; bạn duyệt bốn điểm, yêu cầu so `high` với `max` cho `fe-dev`, và hỏi lại nên dùng `playwright-cli` hay Chrome DevTools MCP; Claude đề xuất `qa` dùng `playwright-cli`, `fe-dev` dùng Chrome DevTools MCP, và viết bản nháp `SPEC-agent-roster.md`; bạn hỏi Story đã có Figma có cần `design.md` không; Claude đề xuất `design.md` có hai kiểu màn hình (ASCII hoặc Figma kèm ảnh PNG đã duyệt), Figma MCP để sau; bạn hỏi ảnh trong Git có làm repo vượt dung lượng không, cho biết gói Figma Education, hỏi chụp màn hình Figma được không; Claude đo cỡ ảnh, đề xuất năm quy tắc ảnh do `check-design` kiểm, bạn export ảnh vào `.ai/design-inbox/`, tách Figma MCP và script REST thành module riêng |
 
 ---
 
@@ -4650,3 +4650,136 @@ Bạn trả lời xong, mình sửa mục 2.4, 2.8 và tiêu chí của SPEC the
 - [Figma Developer Docs: Tools and prompts (MCP server)](https://developers.figma.com/docs/figma-mcp-server/tools-and-prompts/)
 - [Figma Developer Docs: REST API rate limits](https://developers.figma.com/docs/rest-api/rate-limits/)
 - [Figma Developer Docs: File endpoints (GET image)](https://developers.figma.com/docs/rest-api/file-endpoints/)
+
+---
+
+# Phiên 13 · Lượt 5 — 2026-10-30 khoảng 15:05
+
+**Bạn:**
+
+```markdown
+1. Commit ảnh vào Github thì vượt storage lưu trữ của repo thì sao? Thảo luận thêm
+2.   Gói: Figma Pro Education 2 năm, mở khóa tính năng Make (Opus 4.7).
+• 💎 Đặc quyền: Tặng 3.000 credits/tháng
+3. Có thể chụp màn hình Figma được không?
+```
+
+**Claude:**
+
+**Ngắn gọn:**
+
+1. Nếu giữ vài quy tắc thì ảnh thiết kế không làm repo vượt giới hạn: export 1x, mỗi ảnh tối đa 1 MB và 2.000 px, chỉ commit bản đã duyệt. Theo số mình đo, một màn hình ở 1x nặng 25–125 KB, nên 100 Epic tốn khoảng 0,1–0,5 GB, dưới mức 1 GB mà GitHub coi là lý tưởng.
+2. File nằm trong team Education của bạn thì Figma MCP được gọi 200 lượt mỗi ngày. Nhưng hạn mức tính theo gói của nơi chứa file, và Figma nói gói Education chỉ dành cho việc phi thương mại. Vậy với dự án của khách, gói của khách mới là thứ quyết định.
+3. Chụp được, có năm cách. Đề xuất: trong module này, bạn export ảnh từ Figma; phần agent tự lấy ảnh (Figma MCP, script REST) tách thành một module riêng.
+
+## 1. Ảnh trong Git có làm repo vượt giới hạn không?
+
+**Không có chuyện "hết chỗ".** GitHub không tính tiền dung lượng Git thường. Các mức dưới đây chỉ là khuyến nghị, trừ giới hạn cho từng file và từng lần push:
+
+| | Khuyến nghị | Bị chặn |
+|---|---|---|
+| Một file | Tối đa 1 MB; từ 50 MiB Git đưa cảnh báo | Từ 100 MiB |
+| Một lần push | — | Từ 2 GB |
+| Cả repo | Lý tưởng dưới 1 GB, rất nên dưới 5 GB; thư mục `.git` tối đa 10 GB | Tài liệu không ghi con số. Repo càng lớn thì clone, fetch và CI càng chậm. Nếu repo ảnh hưởng tới hạ tầng của GitHub, GitHub Support sẽ gửi email đề nghị xử lý |
+
+**Rủi ro thật nằm ở lịch sử Git.** Thay một ảnh thì bản cũ vẫn nằm lại trong lịch sử, và xóa file cũng không làm repo nhỏ đi. Muốn repo nhỏ lại thì phải viết lại lịch sử, và mọi bản clone phải làm lại từ đầu. Thêm nữa, PNG đã được nén sẵn, nên Git gần như không nén được phần khác nhau giữa hai bản.
+
+**Số đo.** Mình dùng Chrome headless trên máy bạn để chụp vài trang web thật, ở 1x như khi export từ Figma:
+
+| Ảnh | Kích thước | PNG | JPG |
+|---|---|---|---|
+| Trang đăng nhập của GitHub | 1440×900 | 30 KB | 33 KB |
+| Dashboard mẫu của shadcn/ui | 1440×900 | 122 KB | 104 KB |
+| Dashboard đó, bản mobile | 390×844 | 33 KB | 45 KB |
+| Dashboard đó, export 2x | 2880×1800 | 273 KB | — |
+| Trang chủ nextjs.org, dài, có ảnh chụp | 1440×4000 | 653 KB | — |
+
+**Ước lượng.** Giả sử một Epic có 6 màn hình, mỗi màn hình có bản desktop và bản mobile, tức 12 ảnh, nặng khoảng 0,3–1,5 MB. Nếu mỗi Epic còn đổi thiết kế hai lần sau khi duyệt (ảnh cũ vẫn nằm trong lịch sử), thì 100 Epic chiếm khoảng 0,1–0,5 GB.
+
+- Ảnh nằm trong repo của từng dự án, không nằm trong repo kit.
+- Ảnh bằng chứng của `qa` nằm ở `.ai/qa/<KEY>/` và không được commit (SPEC đã chốt), nên chỉ có ảnh thiết kế đi vào Git.
+
+**Năm thứ làm repo phình, và quy tắc chặn từng thứ.** `check-design` kiểm các quy tắc này trong job `policy` của CI:
+
+| Thứ làm phình | Quy tắc |
+|---|---|
+| Export 2x, 3x. Ảnh 2x ở trên nặng gấp 2,2 lần, nhưng Claude Code thu ảnh về tối đa 2.000 px (trong phiên này, ảnh 2880×1800 được đưa vào ở cỡ 2000×1250), nên phần lớn chi tiết thêm bị bỏ đi | Export 1x; mỗi ảnh tối đa 1 MB, đúng mức GitHub khuyến nghị cho một file |
+| Frame dài. Ảnh 1440×4000 được đưa vào ở cỡ 720×2000, chữ nhỏ đi một nửa, agent đọc khó | Cạnh dài tối đa 2.000 px; frame dài hơn thì export theo từng phần (Slice tool của Figma, phím S) |
+| Export lại mỗi lần designer sửa một chút | Chỉ commit bản đã duyệt, cùng PR của SPEC ở cổng ①. Sau đó muốn đổi ảnh là đổi SPEC, qua PR |
+| Ảnh thừa: bản nháp, ảnh không ai dùng | Mọi ảnh trong thư mục `design/` phải được `design.md` nhắc tới |
+| Frame đầy ảnh chụp (sản phẩm, banner) mà lưu bằng PNG | PNG quá 1 MB thì export JPG |
+
+Trong các lần đo, WebP chỉ nặng bằng một nửa PNG hoặc ít hơn. Nhưng Figma không export WebP, và GitHub chỉ hiển thị và so sánh được PNG, JPG, GIF, PSD, SVG. Với PNG và JPG, khi PR đổi ảnh, GitHub có ba chế độ so hai bản (2-up, swipe, onion skin), nên bạn thấy ngay thiết kế đổi ở chỗ nào.
+
+**Có hai cách khác, nhưng mình không đề xuất dùng làm mặc định:**
+
+- **Git LFS:** Git chỉ giữ con trỏ, còn ảnh nằm ở kho LFS.
+  - Tài khoản Free và Pro được 10 GiB lưu trữ và 10 GiB băng thông mỗi tháng. Mỗi lần clone hay CI tải ảnh đều trừ vào băng thông.
+  - Vượt hạn mức mà không trả thêm thì LFS bị chặn. Vượt lưu trữ thì clone chỉ nhận về con trỏ và không push được ảnh mới; vượt băng thông thì LFS ngừng tới tháng sau.
+  - Máy chạy agent, VPS và Docker đều phải cài `git-lfs`.
+
+  Với 0,1–0,5 GB thì chưa cần LFS. Dự án nhiều ảnh (trang marketing, nhiều banner) thì nên bật LFS ngay từ đầu, vì muốn chuyển ảnh cũ sang LFS về sau thì phải viết lại lịch sử.
+- **Không lưu ảnh, chỉ lưu link và phiên bản Figma,** rồi khi cần thì dùng script render lại đúng phiên bản đã duyệt. Repo không lớn thêm, nhưng cách này có ba nhược điểm:
+  - Máy nào và CI nào đọc thiết kế cũng cần token Figma.
+  - File của khách ở gói Starter chỉ được gọi rất ít lượt mỗi tháng, và lịch sử phiên bản chỉ giữ 30 ngày, nên sau một tháng có thể không render lại được bản đã duyệt.
+  - PR không còn so sánh ảnh được nữa.
+
+`docs/agents.md` sẽ ghi cách xem dung lượng repo (`git count-objects -vH`) và khi nào nên chuyển sang LFS.
+
+## 2. Gói Figma của bạn
+
+- Gói Education có Make là gói cho bậc đại học hoặc bootcamp, có các tính năng của Professional. Tài liệu Figma MCP ghi rõ: hạn mức của gói Education bằng seat Full và Dev của Professional, tức 200 lượt gọi mỗi ngày và 10 lượt mỗi phút. Mỗi frame cần vài lượt gọi (ảnh, ngữ cảnh, biến), nên mỗi ngày agent đọc được khoảng 50 frame.
+- 3.000 credit mỗi tháng dùng cho các tính năng AI trong Figma, như Make. Tool đọc của MCP không tốn credit; chỉ `generate_image` và `send_prompt` (Make tạo hoặc sửa code) mới tốn. Kit không cần dùng credit.
+- **Hạn mức tính theo gói của nơi chứa file, không theo gói của bạn.** Tài liệu REST API ghi rõ: file nằm trong team gói Starter thì chịu giới hạn của Starter, dù bạn có seat Full ở gói khác. Trang MCP chỉ nói tài khoản của bạn phải thuộc gói sở hữu file.
+- **Lưu ý về gói Education:** bộ phận hỗ trợ của Figma đã trả lời trên diễn đàn (15/7/2026, được đánh dấu là lời giải) rằng gói Education "chỉ dành cho mục đích phi thương mại". Làm cho khách là việc thương mại, nên file thiết kế của khách nên nằm trong team của khách hoặc một gói trả phí.
+
+**Với kit:** mình không thiết kế dựa vào hạn mức của gói bạn đang dùng. Mỗi khách dùng một gói khác nhau, nên cách mặc định phải chạy được ở mọi gói, kể cả Starter: ảnh export đã duyệt nằm trong repo. Figma MCP là phần bổ sung, chỉ bật cho những dự án có file nằm ở gói có seat Full hoặc Dev.
+
+## 3. Chụp màn hình Figma được không?
+
+Được, có năm cách:
+
+| Cách | Đánh giá |
+|---|---|
+| Bạn tự chụp màn hình (Win+Shift+S) | Được, nhưng ảnh to nhỏ theo mức zoom đang xem, dễ lẫn giao diện Figma, frame dài thì không chụp trọn, và mỗi lần chụp ra một kích thước khác. Chỉ dùng khi chủ file đã tắt quyền export |
+| Bạn export từ Figma | Ảnh đúng kích thước frame, export được nhiều frame một lần, dùng được ở mọi gói. **Đề xuất cho module này** |
+| Script gọi REST API (`GET /v1/images`) | Một lần gọi render được nhiều frame, đúng phiên bản đã duyệt (tham số `version`). Cần token Figma có scope `file_content:read`. Link ảnh hết hạn sau 30 ngày, nên script phải tải ảnh về |
+| Agent gọi `get_screenshot` của Figma MCP | Agent tự xem được thiết kế trong lúc làm. Nhưng tool chỉ chụp trạng thái hiện tại của file, không chọn được phiên bản đã duyệt, mỗi lần chỉ chụp một node, và agent phải đăng nhập bằng tài khoản Figma của bạn |
+| Agent mở figma.com trong trình duyệt | Không nên. Agent phải đăng nhập Figma trong trình duyệt, tức là có toàn quyền trên tài khoản của bạn, kể cả sửa và xóa. Hơn nữa Figma vẽ trên canvas, nên công cụ đọc DOM không đọc được thiết kế |
+
+**Export từ Figma, từng bước:**
+
+1. Đặt tên frame theo mã màn hình, ví dụ `S1-dang-nhap-desktop`. File export sẽ lấy theo tên frame.
+2. Ở bảng Layers bên trái, giữ Shift rồi bấm chọn các frame của Epic.
+3. Ở bảng bên phải, kéo xuống mục **Export**, bấm **+**. Để nguyên **1x** và **PNG**.
+4. Bấm nút **Export** ở cuối mục đó, chọn thư mục `.ai/design-inbox/<EPIC-KEY>/` của dự án. Thư mục này không được commit.
+5. Lấy link của từng frame: chuột phải vào frame → **Copy/Paste as** → **Copy link to selection**. Link đã có sẵn `node-id`. Dán các link vào mô tả Epic trên Jira.
+6. Lưu phiên bản được duyệt: mở menu → **Save to version history** (Ctrl+Alt+S), đặt tên, ví dụ "Duyệt DEMO-12".
+
+Sau đó `ux` kiểm cỡ ảnh, đổi tên ảnh theo mã màn hình, chuyển ảnh vào `docs/specs/<EPIC-KEY>/design/`, và ghi tên phiên bản Figma ở đầu `design.md`.
+
+**Figma MCP và script REST: mình đề xuất tách thành một module riêng sau agent-roster,** vì ba lý do:
+
+- Cả hai đều dùng tài khoản Figma của bạn: MCP đăng nhập qua OAuth, script dùng token cá nhân. Với Jira, quy tắc là agent không bao giờ dùng tài khoản của bạn. Với Figma, muốn agent có tài khoản riêng thì tài khoản đó cần một seat trong gói chứa file, tức là khách phải trả thêm. Điểm này cần bạn quyết.
+- Hạn mức thay đổi theo gói của từng khách, nên kit phải bật, tắt được theo từng dự án.
+- Muốn kiểm thật thì cần một file Figma có vài frame cho Epic thử.
+
+Trong module agent-roster, `design.md` nhận màn hình kiểu Figma với ảnh do bạn export, `check-design` kiểm các quy tắc ảnh, và phần này được kiểm bằng dữ liệu mẫu.
+
+**Cách khác:** làm Figma MCP và script ngay trong module này. Như vậy thêm khoảng 2 task và 3–5 lượt chạy agent, và bạn cần dựng một file Figma vài frame cho Epic "Mã giảm giá cho giỏ hàng".
+
+## Bạn xác nhận giúp mình
+
+1. Ảnh thiết kế nằm trong Git theo năm quy tắc ở trên, do `check-design` kiểm; dự án nhiều ảnh thì bật LFS từ đầu. Bạn đồng ý không?
+2. `design.md` có hai kiểu màn hình (ASCII, hoặc Figma kèm ảnh export). Bạn export ảnh vào `.ai/design-inbox/<EPIC-KEY>/`, rồi `ux` chuyển ảnh vào `docs/specs/<EPIC-KEY>/design/`. Bạn đồng ý không?
+3. Figma MCP và script REST: tách thành module riêng (mình đề xuất), hay làm luôn trong module này?
+
+Khi bạn trả lời xong, mình sẽ sửa mục 2.4, 2.8, phần ranh giới và phần tiêu chí của SPEC theo đó, rồi bạn duyệt SPEC.
+
+## Nguồn
+
+- GitHub Docs: [About large files on GitHub](https://docs.github.com/en/repositories/working-with-files/managing-large-files/about-large-files-on-github), [Repository limits](https://docs.github.com/en/repositories/creating-and-managing-repositories/repository-limits), [Git LFS billing](https://docs.github.com/en/billing/concepts/product-billing/git-lfs), [Working with non-code files](https://docs.github.com/en/repositories/working-with-files/using-files/working-with-non-code-files)
+- Figma Developer Docs: [MCP rate limits & access](https://developers.figma.com/docs/figma-mcp-server/rate-limits-access/), [MCP tools and prompts](https://developers.figma.com/docs/figma-mcp-server/tools-and-prompts/), [REST API rate limits](https://developers.figma.com/docs/rest-api/rate-limits/), [File endpoints (GET image)](https://developers.figma.com/docs/rest-api/file-endpoints/)
+- Figma Help Center: [Figma for Education](https://help.figma.com/hc/en-us/articles/360041061214), [AI credits on the Education plan](https://help.figma.com/hc/en-us/articles/37611757713431-AI-credits-on-the-Education-plan%C2%A0), [View a file's version history](https://help.figma.com/hc/en-us/articles/360038006754)
+- Figma Forum: [Licensing question about Figma Education plan](https://forum.figma.com/report-a-problem-6/licensing-question-about-figma-education-plan-56050) (trả lời của Community Support ngày 15/7/2026); [Grida: How to get a shareable Figma design link](https://grida.co/docs/with-figma/guides/how-to-get-sharable-design-link) (đường dẫn Copy link to selection)
+- Số đo: chụp bằng Chrome headless trên máy bạn ngày 2026-10-30. Cỡ ảnh mà Claude Code đưa vào là do mình thấy trực tiếp khi đọc các ảnh đó trong phiên này.
