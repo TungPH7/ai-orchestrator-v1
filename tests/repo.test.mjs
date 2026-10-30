@@ -7,7 +7,7 @@ import { readGates } from '../lib/quality/gates.mjs';
 import { ROOT } from './helpers/kit.mjs';
 
 const WORKFLOW = join(ROOT, '.github', 'workflows', 'contract.yml');
-const COMMANDS = ['npm run validate', 'npm test', 'npm run render:check', 'npm run jira:checklist:check'];
+const COMMANDS = ['npm run validate', 'npm test', 'npm run render:check', 'npm run jira:checklist:check', 'npm run agents:check'];
 
 function readme() {
   return readFileSync(join(ROOT, 'README.md'), 'utf8');

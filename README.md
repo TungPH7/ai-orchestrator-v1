@@ -124,6 +124,9 @@ npm run jira:checklist  # sinh lại docs/jira-setup.md, checklist dựng Jira
 npm run jira:checklist:check  # báo lỗi nếu docs/jira-setup.md cũ hơn YAML
 npm run jira:check -- --space DEMO  # chỉ đọc: so cấu hình Jira thật của space với tracker/jira.yaml
 npm run gh:protect -- --repo <owner>/<name>  # áp ruleset khi repo hỗ trợ; repo private gói Free: chỉ báo soft mode
+npm run agents          # sinh lại kit/.claude/agents/ và kit/.claude/rules/ai-orchestrator.md từ agents/ và hợp đồng
+npm run agents:check    # báo lỗi nếu agent hay file quy ước sinh ra cũ hơn nguồn
+npm run skills:vendor -- <name>  # tải lại một skill chép vào kit, đúng commit ghim trong agents/roster.yaml
 ```
 
 Trong repo dự án, với bản chép ở `.ai-orchestrator/`:
@@ -136,7 +139,7 @@ node .ai-orchestrator/scripts/merge-gate.mjs --dry-run     # PR nào sẽ đư�
 node .ai-orchestrator/scripts/audit.mjs --sha <commit> --branch develop --dry-run  # commit có qua đủ cổng không; không gắn cờ
 ```
 
-CI ([.github/workflows/contract.yml](.github/workflows/contract.yml)) chạy `npm ci`, `npm run validate`, `npm test`, `npm run render:check` và `npm run jira:checklist:check` trên mọi PR và mỗi lần push vào `main`.
+CI ([.github/workflows/contract.yml](.github/workflows/contract.yml)) chạy `npm ci`, `npm run validate`, `npm test`, `npm run render:check`, `npm run jira:checklist:check` và `npm run agents:check` trên mọi PR và mỗi lần push vào `main`.
 
 `jira:check` không chạy trong CI, vì đọc cấu hình workflow cần quyền admin. Lệnh chạy trên máy bạn, chỉ gửi request đọc, và trả mã khác 0 khi có chỗ lệch. Lệnh kiểm status, transition và rule của transition (Restrict theo group, hỏi Resolution, đặt Resolution), workflow scheme, group và thành viên, resolution, field và giá trị, filter và cột của board. Những gì API không cho đọc, lệnh in thành dòng `Check by hand` để bạn xem tay; token sắp hết hạn (dưới 14 ngày, theo `tracker/jira.yaml`) chỉ được cảnh báo. Lệnh cần hai biến:
 

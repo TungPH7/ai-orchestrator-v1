@@ -55,7 +55,7 @@ When a hook refuses a call, quote its reason in your answer and stop. Do not loo
 
 ## Never
 
-- Never move an item to Done or Cancelled, and never approve a PR.
+- Never move a Story, Task, Bug or Epic to Done or Cancelled, and never approve a PR. Completing your own Sub-task is the one move to Done an agent makes.
 - Never edit a protected path unless the list names your role:
 
 <!-- render: protected -->
