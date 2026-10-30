@@ -35,7 +35,8 @@ test('skipping the git hooks is refused, while a message that only looks like a 
   ]) {
     denied(bash(command), /hook/, command);
   }
-  for (const command of ['git commit -m "-n"', 'git commit -am "fix(cli): handle the -n flag (DEMO-1)"', 'git config user.name tester']) {
+  // Reading where the hooks are is not moving them (security review of ao-pilot PR #8).
+  for (const command of ['git commit -m "-n"', 'git commit -am "fix(cli): handle the -n flag (DEMO-1)"', 'git config user.name tester', 'git config --get core.hooksPath', 'git config core.hooksPath', 'git config --show-origin --get core.hooksPath']) {
     allowed(bash(command), command);
   }
 });
@@ -112,6 +113,11 @@ test('taking your token, an App key, or changing the repository settings is refu
     'gh repo edit --visibility public',
     'gh repo autolink create TICKET- "https://example.com/t/<num>"',
     'gh repo autolink delete 3 --yes',
+    // Quotes and backslashes the shell removes (security review of ao-pilot PR #8).
+    'gh auth "token"',
+    'gh auth to\\ken',
+    'gh auth status "--show-token"',
+    "gh auth status '-t'",
   ]) {
     denied(bash(command), /token|key|repository settings|secret|variable/, command);
   }
@@ -148,6 +154,26 @@ test('agents do not edit protected paths, except devops on workflows', () => {
   allowed(edit('fe-dev', `${PROJECT}\\src\\app.ts`), 'code');
   allowed(edit('fe-dev', `${PROJECT}\\docs\\github-workflows.md`), 'a doc that only mentions workflows');
   allowed(edit('fe-dev', 'D:\\elsewhere\\.claude\\settings.json'), 'outside the project');
+  // A path with .. is read where it leads (security review of ao-pilot PR #8).
+  denied(edit('fe-dev', `${PROJECT}\\src\\..\\.claude\\settings.json`), /\.claude/, 'absolute path through ..');
+  denied(edit('fe-dev', 'src/../.githooks/pre-push'), /\.githooks/, 'relative path through ..');
+  denied(edit('fe-dev', 'D:\\work\\other\\..\\shop\\.claude\\settings.json'), /\.claude/, 'into the project through ..');
+});
+
+test('a command inside sh -c, bash -c, env, command or exec is checked like the command itself', () => {
+  for (const [command, reason] of [
+    ["sh -c 'git push origin develop'", /pull request/],
+    ['bash -c "git commit --no-verify -m x"', /hook/],
+    ["bash -lc 'gh pr merge 8 --admin'", /ao-pr\.mjs/],
+    ['env git push origin HEAD:main', /pull request/],
+    ['env -u HOME GIT_TRACE=1 git push --no-verify origin feature/DEMO-1-x', /hook/],
+    ['command gh auth token', /token/],
+    ['exec git push origin develop', /pull request/],
+    ["sh -c \"sh -c 'git push origin develop'\"", /pull request/],
+  ]) {
+    denied(bash(command), reason, command);
+  }
+  for (const command of ["sh -c 'npm test'", 'env NODE_ENV=test npm test', "bash -c 'git push origin feature/DEMO-1-x'"]) allowed(bash(command), command);
 });
 
 test('the main session and agents outside the contract are not checked by this hook', () => {

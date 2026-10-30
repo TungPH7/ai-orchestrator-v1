@@ -42,6 +42,9 @@ test('each role writes inside the paths of its roster entry, and is refused outs
   }
   denied(call('reviewer', 'Edit', { file_path: `${PROJECT}\\src\\cart.ts` }), /reviewer may write only \.ai\/\*\*/, 'Edit');
   denied(call('pm', 'NotebookEdit', { notebook_path: `${PROJECT}\\notebooks\\a.ipynb` }), /pm may write only/, 'NotebookEdit');
+  // A path with .. is read where it leads (security review of ao-pilot PR #8).
+  denied(write('reviewer', '.ai/../src/cart.ts'), /reviewer may write only \.ai\/\*\* \(agents\/roster\.yaml\), not src\/cart\.ts$/, '.ai/../src/cart.ts');
+  denied(call('qa', 'Write', { file_path: '.ai/../.claude/settings.json' }), /\.claude\/\*\* is protected/, 'relative .ai/../.claude/settings.json');
 });
 
 test('dev roles and devops write anywhere but the protected paths, and only devops edits workflows', () => {
