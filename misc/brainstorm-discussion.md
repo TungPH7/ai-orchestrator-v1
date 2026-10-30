@@ -21,7 +21,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 11 | `318a4364-f1b9-4cc5-9744-ae8ff4f80c7d` | 2026-10-29 09:00 → khoảng 09:40 | Bạn cho qua Checkpoint 2; T14–T17 (lượt code): merge-gate, audit, gh:protect; Checkpoint 3, chờ bạn xóa repo thử |
 | 12 | `32807628-e04f-47b4-889d-f855a40dabce` | 2026-10-29 khoảng 11:04 → khoảng 23:06 | Bạn cho qua Checkpoint 3; T17 và Checkpoint 3 đóng (PR #65, #66); T18 (lượt code): cài kit mới lên `ao-pilot`, tạo `DEMO-6`, `gh-guard` chặn ba đường vòng; bạn chuyển `DEMO-6` sang Ready và tạo key thứ hai của `ao-dev`; T18 đóng (PR #67): `fe-dev` mở PR #4, `reviewer` yêu cầu sửa, kit tắt ghi công AI; T19: vòng sửa, tiêu chí 10; bạn approve PR #4 lần đầu; T19: approve trên commit cũ không còn được tính, `devops` mở PR #5 sửa workflow, `reviewer` và `security` đăng báo cáo, bạn approve PR #4 lần hai và PR #5; T19 đóng (PR #68): `merge-gate` merge PR #4, `DEMO-6` sang Ready for QA, vòng PR tốn 55 phút Actions; T20: `fe-dev` mở PR #6, chờ bạn merge tay; bạn báo đã merge nhưng PR #6 vẫn mở; bạn merge lại, `audit` chặn deploy và gắn cờ `DEMO-8`; `fe-dev` mở PR #7 revert; bạn approve PR #7; T20 đóng (PR #69): `merge-gate` merge PR #7, `develop` sạch trở lại, gỡ cờ `DEMO-8`; Checkpoint 4, chờ bạn; bạn hỏi về `gh` 2.16.1, mình đề xuất sửa `gh-guard` cho các lệnh `gh` mới rồi mới cập nhật `gh`; bạn đồng ý: vá `gh-guard` (PR #70), lên `gh` 2.103.3, tắt telemetry; bạn đăng nhập lại `gh`, token vào keyring; bạn thu hồi token cũ và cho qua Checkpoint 4; git mất quyền push vì Git Credential Manager giữ token cũ của `gh`; bạn đăng nhập lại git; Checkpoint 4 đóng (PR #71); T21 đóng (PR #72); checkpoint cuối, chờ bạn |
 | 13 | `2c3e5733-3a72-4ae6-b04c-ca09a16731cc` | 2026-10-29 khoảng 23:31 → 2026-10-30 khoảng 16:15 | Bạn chọn làm tiếp agent-roster; quality-gates đóng (PR #73); giả định và câu hỏi cho agent-roster: model cho từng vai trò, `ux` giao gì; bạn đề xuất model và effort, đồng ý artifact `design`; Claude đề xuất effort theo vai trò, quy tắc cho `design.md`, ba skill từ registry, chỉ lấy ý từ `agency-agents`; bạn duyệt bốn điểm, yêu cầu so `high` với `max` cho `fe-dev`, và hỏi lại nên dùng `playwright-cli` hay Chrome DevTools MCP; Claude đề xuất `qa` dùng `playwright-cli`, `fe-dev` dùng Chrome DevTools MCP, và viết bản nháp `SPEC-agent-roster.md`; bạn hỏi Story đã có Figma có cần `design.md` không; Claude đề xuất `design.md` có hai kiểu màn hình (ASCII hoặc Figma kèm ảnh PNG đã duyệt), Figma MCP để sau; bạn hỏi ảnh trong Git có làm repo vượt dung lượng không, cho biết gói Figma Education, hỏi chụp màn hình Figma được không; Claude đo cỡ ảnh, đề xuất năm quy tắc ảnh do `check-design` kiểm, bạn export ảnh vào `.ai/design-inbox/`, tách Figma MCP và script REST thành module riêng; bạn đồng ý cả ba, chọn module riêng cho Figma MCP; Claude sửa SPEC theo đó và xin duyệt SPEC; bạn duyệt SPEC; Claude viết plan 22 task (T16 chuẩn bị `ao-pilot` với trang giỏ hàng và Playwright, tài liệu của Epic thử không merge) và xin duyệt plan |
-| 14 | `cb0eafc3-b9fb-4ef7-9d75-cbacef12fa98` | 2026-10-30 khoảng 16:29 → | Bạn duyệt plan; spec và plan merge (PR #74); T1 kiểm năm tiền đề: `claude --agent` bỏ qua `skills`, `effort`, `maxTurns`, settings của dự án không cài được plugin; Claude đề xuất chép 13 skill của agent-skills vào kit và script `ao-agent.mjs`, xin bạn duyệt cùng cách chạy hai công cụ trình duyệt qua `npx`; bạn duyệt cả hai; T1–T4 đóng (PR #75–#78): spec sửa sau T1, kiểm `playwright-cli` và Chrome DevTools MCP, artifact `design`, NOT TESTED; Checkpoint 1, chờ bạn; bạn hỏi xem kết quả T1–T2 ở đâu; bạn cho qua Checkpoint 1 (PR #79); T5–T14 đóng (PR #80–#89): `check-design`, roster và quy tắc A1–A5, 16 skill chép vào kit, `gh-guard` theo vai trò, mười prompt và file quy ước, sinh agent, `ao-agent.mjs`; Checkpoint 2, chờ bạn; bạn hỏi vì sao `fe-dev` không dùng `vercel-react-best-practices`: skill theo stack khai trong `roster.local.yaml` của từng dự án |
+| 14 | `cb0eafc3-b9fb-4ef7-9d75-cbacef12fa98` | 2026-10-30 khoảng 16:29 → | Bạn duyệt plan; spec và plan merge (PR #74); T1 kiểm năm tiền đề: `claude --agent` bỏ qua `skills`, `effort`, `maxTurns`, settings của dự án không cài được plugin; Claude đề xuất chép 13 skill của agent-skills vào kit và script `ao-agent.mjs`, xin bạn duyệt cùng cách chạy hai công cụ trình duyệt qua `npx`; bạn duyệt cả hai; T1–T4 đóng (PR #75–#78): spec sửa sau T1, kiểm `playwright-cli` và Chrome DevTools MCP, artifact `design`, NOT TESTED; Checkpoint 1, chờ bạn; bạn hỏi xem kết quả T1–T2 ở đâu; bạn cho qua Checkpoint 1 (PR #79); T5–T14 đóng (PR #80–#89): `check-design`, roster và quy tắc A1–A5, 16 skill chép vào kit, `gh-guard` theo vai trò, mười prompt và file quy ước, sinh agent, `ao-agent.mjs`; Checkpoint 2, chờ bạn; bạn hỏi vì sao `fe-dev` không dùng `vercel-react-best-practices`: skill theo stack khai trong `roster.local.yaml` của từng dự án; bạn cho qua Checkpoint 2 (PR #90); T15: DEMO-9, ao-pilot PR #8 chép kit, kit PR #91–#93 (coverage loại `.claude/**`, vá `gh-guard` theo finding của review, luật hook và mục Shell), `reviewer` hai lượt và `security` ba lượt (hai lần chạm giới hạn usage, Claude đăng báo cáo của lượt cuối), 14,30 USD quy đổi; chờ bạn approve, merge, bật `chrome-devtools` và quyết hai đề xuất về danh tính agent và `file:///` |
 
 ---
 
@@ -5207,3 +5207,107 @@ Khi chạy, `render-agents.mjs --project .` thêm skill vào cuối danh sách c
 Nếu mọi dự án của bạn đều làm frontend bằng Next.js, ta có thể đưa skill này vào kit như 16 skill kia: chép vào và ghim theo commit. Mình vẫn đề xuất giữ theo từng dự án, vì dự án Spring Boot có thể không có frontend React, và cơ chế theo dự án đã chạy được.
 
 Checkpoint 2 vẫn chờ bạn đọc file quy ước và hai agent `fe-dev`, `qa`.
+
+---
+
+# Phiên 14 · Lượt 6 — 2026-10-30 khoảng 19:53
+
+**Bạn:**
+
+```markdown
+Ok, qua Checkpoint 2 nhé
+```
+
+Trong lúc mình làm, phiên hai lần chạm giới hạn usage. Sau mỗi lần có tin nhắn:
+
+```markdown
+I hit my usage limit while you were working, but it has reset now. Please continue from where you left off.
+```
+
+**Claude:**
+
+Checkpoint 2 đã đóng ([PR #90](https://github.com/TungPH7/ai-orchestrator-v1/pull/90)). T15 đã tới bước cần bạn. PR chép kit [ao-pilot #8](https://github.com/TungPH7/ao-pilot/pull/8) có CI xanh, và đã có báo cáo của `reviewer` lẫn `security`. Chỉ còn chờ bạn approve rồi tự merge.
+
+## Đã làm
+
+- Task [DEMO-9](https://phunghuutung12b4.atlassian.net/browse/DEMO-9) trên `DEMO`, nhánh `feature/DEMO-9-agent-roster`. PR #8 do `tungph7-ao-dev[bot]` mở.
+- PR chép kit ở commit `d49aa51`, gồm:
+  - template;
+  - mười agent;
+  - file quy ước với space `DEMO`;
+  - 16 skill, giống từng byte bản trong kit;
+  - `.mcp.json` có `chrome-devtools`;
+  - setting `attribution`;
+  - `.ai/` trong `.gitignore`.
+- Ba lỗi của kit lộ ra trong lúc làm. Mình đã sửa từng lỗi bằng một PR ở kit:
+  - [#91](https://github.com/TungPH7/ai-orchestrator-v1/pull/91): CI của PR #8 đỏ, vì bước coverage đòi `.claude/hooks/gh-guard.mjs` có trong lcov của dự án. Giờ `quality/gates.yaml` loại `.claude/**` khỏi coverage, như đã loại `.ai-orchestrator/**`.
+  - [#92](https://github.com/TungPH7/ai-orchestrator-v1/pull/92): `reviewer` tìm ra `gh-guard` đọc sai lệnh con khi có `--namespace` hay `--git-dir`. Ví dụ `git --namespace log push --no-verify origin HEAD:develop` lọt qua với `be-dev`.
+  - [#93](https://github.com/TungPH7/ai-orchestrator-v1/pull/93): `security` tìm ra mấy lỗ:
+    - `gh auth "token"` và `.ai/../src/cart.ts` lọt qua;
+    - lệnh nằm trong `sh -c` hay sau `env` không được kiểm;
+    - `gh-guard` chặn nhầm lệnh đọc `git config --get core.hooksPath`.
+
+    PR này cũng sửa luật chung: lệnh bị chặn mà việc không cần thì agent làm tiếp. File quy ước có thêm mục Shell: trên Git Bash, đặt `MSYS_NO_PATHCONV=1` trước `git show <ref>:<path>`.
+- Trong `ao-pilot`, `eslint.config.mjs` giờ bỏ qua `.ai/`. Trước đó, các script thử mà agent viết vào `.ai/` làm hook `pre-commit` đỏ.
+
+## Lượt chạy và usage
+
+| Lượt | Thời gian | USD quy đổi | Kết quả |
+|---|---|---|---|
+| `reviewer` 1 | 6 ph 39 s | 2,07 | COMMENT: 2 Medium, 4 Low |
+| `security` 1 | 2 ph 43 s | 0,74 | Dừng vì bạn hết usage |
+| `security` 1b | 12 ph 55 s | 3,19 | Bị chặn nhầm và dừng theo luật lúc ấy, không đăng báo cáo |
+| `reviewer` 2 | 11 ph 7 s | 2,32 | COMMENT: 2 Medium, 6 Low |
+| `security` 2 | 22 ph 27 s | 5,98 | Ghi xong báo cáo thì chạm giới hạn usage, trước bước đăng |
+
+- Cột USD là số Claude Code tính theo giá API. Bạn dùng gói Pro, nên con số chỉ để so mức tốn usage giữa các lượt.
+- Tổng sáu lượt là 14,30 USD. Trong đó 3,93 USD thuộc về hai lượt `security` không ra báo cáo.
+- Báo cáo của `security` 2 đã đủ mọi mục của template, kết luận COMMENT. Mình đăng nguyên file đó bằng App `ao-review`, khỏi chạy lại thêm khoảng 6 USD. Việc này đã ghi trong `tasks/verification.md`.
+- `security` ở effort `max` tốn gấp 2 đến 3 lần `reviewer`. Bạn xem lại con số này ở Checkpoint 3.
+
+## Phần bạn làm
+
+**1. Approve PR #8**
+
+1. Mở https://github.com/TungPH7/ao-pilot/pull/8.
+2. Ở tab **Conversation**, đọc hai báo cáo mới nhất của `tungph7-ao-review[bot]`. Cả hai đều trên commit `3e41cf0`.
+3. Bấm tab **Files changed**, rồi bấm nút **Review changes** ở góc phải trên. Ở giao diện mới, nút này tên **Submit review**.
+4. Chọn **Approve**, rồi bấm **Submit review**.
+
+**2. Merge tay**
+
+1. Quay lại tab **Conversation** và kéo xuống cuối trang.
+2. Bấm mũi tên cạnh nút merge, chọn **Squash and merge**.
+3. Bấm **Squash and merge**, rồi **Confirm squash and merge**.
+
+**3. Bật `chrome-devtools`, sau khi merge**
+
+1. Mở PowerShell và chạy hai lệnh: `cd D:\Document\1Khoahoc\4LapTrinh\AI-for-coding\ao-pilot`, rồi `claude`.
+2. Khi Claude Code báo có server mới `chrome-devtools` trong `.mcp.json`, chọn **Use this MCP server**.
+3. Gõ `/mcp`. Dòng `chrome-devtools` phải báo connected. Nếu không có câu hỏi ở bước 2, chọn `chrome-devtools` trong danh sách `/mcp` rồi chọn **Enable**.
+4. Gõ `/exit`.
+
+Có một điều lạ: các lượt `claude -p` vừa rồi đã tự khởi động `chrome-devtools`, dù chưa ai bật nó. Mình sẽ xem kỹ ở T17.
+
+## Hai việc cần bạn quyết
+
+1. **Agent đang chạy `gh` và `git` bằng login của bạn.** Login này có quyền admin, và bạn là người approve duy nhất. Theo `security`, vẫn còn những cách lọt qua `gh-guard`:
+   - đặt biến `GIT_CONFIG_*` để push mà không chạy hook;
+   - lấy token bằng `gh auth git-credential get`;
+   - approve dưới tên bạn bằng `gh alias set`.
+
+   Repo private ở gói Free không có branch protection, nên GitHub không chặn được ở phía server.
+
+   Mình đề xuất:
+   - giữ nguyên cách này cho sandbox `ao-pilot`, và ghi lại thành một rủi ro;
+   - trước Pilot 1, cho agent một danh tính GitHub riêng, không nằm trong `AO_APPROVERS`. Việc này đổi cách agent push, nên hợp với module `dev-workflow`;
+   - trong lúc đó, mình vá dần trong kit các lỗ vừa kể.
+2. **`chrome-devtools` mở được file trên máy bạn qua `file:///`.** Option `fileNavigations` mặc định bật, và tool của server này không đi qua `gh-guard`.
+
+   Mình đề xuất:
+   - sửa ngay trong kit: thêm `--no-file-navigations` vào `.mcp.json`, và đưa `.mcp.json` vào `protected_paths`;
+   - chưa chép bản vá vào `ao-pilot` trước T17, vì trang mà T17 mở là trang giỏ hàng tĩnh do mình viết, chạy ở local. Lần chép kit sau sẽ mang theo bản vá. Mỗi lần chép kit tốn thêm hai lượt review.
+
+Ngoài ra, `reviewer` chỉ ra một chỗ hợp đồng chưa khớp với roster. Hợp đồng giao `qa` viết báo cáo regression vào `docs/releases/`, nhưng roster chỉ cho `qa` ghi vào `.ai/`. Việc này chỉ cần khi cắt release, nên mình để lại cho module `release-workflow`.
+
+Khi bạn đã approve, merge và bật server, kèm câu trả lời cho hai đề xuất trên, mình kiểm `audit` trên commit merge, đóng T15 rồi làm T16.
