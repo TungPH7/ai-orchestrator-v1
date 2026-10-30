@@ -21,7 +21,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 11 | `318a4364-f1b9-4cc5-9744-ae8ff4f80c7d` | 2026-10-29 09:00 → khoảng 09:40 | Bạn cho qua Checkpoint 2; T14–T17 (lượt code): merge-gate, audit, gh:protect; Checkpoint 3, chờ bạn xóa repo thử |
 | 12 | `32807628-e04f-47b4-889d-f855a40dabce` | 2026-10-29 khoảng 11:04 → khoảng 23:06 | Bạn cho qua Checkpoint 3; T17 và Checkpoint 3 đóng (PR #65, #66); T18 (lượt code): cài kit mới lên `ao-pilot`, tạo `DEMO-6`, `gh-guard` chặn ba đường vòng; bạn chuyển `DEMO-6` sang Ready và tạo key thứ hai của `ao-dev`; T18 đóng (PR #67): `fe-dev` mở PR #4, `reviewer` yêu cầu sửa, kit tắt ghi công AI; T19: vòng sửa, tiêu chí 10; bạn approve PR #4 lần đầu; T19: approve trên commit cũ không còn được tính, `devops` mở PR #5 sửa workflow, `reviewer` và `security` đăng báo cáo, bạn approve PR #4 lần hai và PR #5; T19 đóng (PR #68): `merge-gate` merge PR #4, `DEMO-6` sang Ready for QA, vòng PR tốn 55 phút Actions; T20: `fe-dev` mở PR #6, chờ bạn merge tay; bạn báo đã merge nhưng PR #6 vẫn mở; bạn merge lại, `audit` chặn deploy và gắn cờ `DEMO-8`; `fe-dev` mở PR #7 revert; bạn approve PR #7; T20 đóng (PR #69): `merge-gate` merge PR #7, `develop` sạch trở lại, gỡ cờ `DEMO-8`; Checkpoint 4, chờ bạn; bạn hỏi về `gh` 2.16.1, mình đề xuất sửa `gh-guard` cho các lệnh `gh` mới rồi mới cập nhật `gh`; bạn đồng ý: vá `gh-guard` (PR #70), lên `gh` 2.103.3, tắt telemetry; bạn đăng nhập lại `gh`, token vào keyring; bạn thu hồi token cũ và cho qua Checkpoint 4; git mất quyền push vì Git Credential Manager giữ token cũ của `gh`; bạn đăng nhập lại git; Checkpoint 4 đóng (PR #71); T21 đóng (PR #72); checkpoint cuối, chờ bạn |
 | 13 | `2c3e5733-3a72-4ae6-b04c-ca09a16731cc` | 2026-10-29 khoảng 23:31 → 2026-10-30 khoảng 16:15 | Bạn chọn làm tiếp agent-roster; quality-gates đóng (PR #73); giả định và câu hỏi cho agent-roster: model cho từng vai trò, `ux` giao gì; bạn đề xuất model và effort, đồng ý artifact `design`; Claude đề xuất effort theo vai trò, quy tắc cho `design.md`, ba skill từ registry, chỉ lấy ý từ `agency-agents`; bạn duyệt bốn điểm, yêu cầu so `high` với `max` cho `fe-dev`, và hỏi lại nên dùng `playwright-cli` hay Chrome DevTools MCP; Claude đề xuất `qa` dùng `playwright-cli`, `fe-dev` dùng Chrome DevTools MCP, và viết bản nháp `SPEC-agent-roster.md`; bạn hỏi Story đã có Figma có cần `design.md` không; Claude đề xuất `design.md` có hai kiểu màn hình (ASCII hoặc Figma kèm ảnh PNG đã duyệt), Figma MCP để sau; bạn hỏi ảnh trong Git có làm repo vượt dung lượng không, cho biết gói Figma Education, hỏi chụp màn hình Figma được không; Claude đo cỡ ảnh, đề xuất năm quy tắc ảnh do `check-design` kiểm, bạn export ảnh vào `.ai/design-inbox/`, tách Figma MCP và script REST thành module riêng; bạn đồng ý cả ba, chọn module riêng cho Figma MCP; Claude sửa SPEC theo đó và xin duyệt SPEC; bạn duyệt SPEC; Claude viết plan 22 task (T16 chuẩn bị `ao-pilot` với trang giỏ hàng và Playwright, tài liệu của Epic thử không merge) và xin duyệt plan |
-| 14 | `cb0eafc3-b9fb-4ef7-9d75-cbacef12fa98` | 2026-10-30 khoảng 16:29 → | Bạn duyệt plan; spec và plan merge (PR #74); T1 kiểm năm tiền đề: `claude --agent` bỏ qua `skills`, `effort`, `maxTurns`, settings của dự án không cài được plugin; Claude đề xuất chép 13 skill của agent-skills vào kit và script `ao-agent.mjs`, xin bạn duyệt cùng cách chạy hai công cụ trình duyệt qua `npx`; bạn duyệt cả hai; T1–T4 đóng (PR #75–#78): spec sửa sau T1, kiểm `playwright-cli` và Chrome DevTools MCP, artifact `design`, NOT TESTED; Checkpoint 1, chờ bạn; bạn hỏi xem kết quả T1–T2 ở đâu |
+| 14 | `cb0eafc3-b9fb-4ef7-9d75-cbacef12fa98` | 2026-10-30 khoảng 16:29 → | Bạn duyệt plan; spec và plan merge (PR #74); T1 kiểm năm tiền đề: `claude --agent` bỏ qua `skills`, `effort`, `maxTurns`, settings của dự án không cài được plugin; Claude đề xuất chép 13 skill của agent-skills vào kit và script `ao-agent.mjs`, xin bạn duyệt cùng cách chạy hai công cụ trình duyệt qua `npx`; bạn duyệt cả hai; T1–T4 đóng (PR #75–#78): spec sửa sau T1, kiểm `playwright-cli` và Chrome DevTools MCP, artifact `design`, NOT TESTED; Checkpoint 1, chờ bạn; bạn hỏi xem kết quả T1–T2 ở đâu; bạn cho qua Checkpoint 1 (PR #79); T5–T14 đóng (PR #80–#89): `check-design`, roster và quy tắc A1–A5, 16 skill chép vào kit, `gh-guard` theo vai trò, mười prompt và file quy ước, sinh agent, `ao-agent.mjs`; Checkpoint 2, chờ bạn |
 
 ---
 
@@ -5089,3 +5089,79 @@ Kết quả của T1 và T2 nằm trong file `tasks/verification.md`, ở hai m�
   - Phiên chính của bạn thấy cả 14 tool của nhóm Memory.
 
 Ảnh chụp và log thô của từng lượt chạy nằm trong scratchpad của phiên này, không có trong repo. Nếu bạn muốn xem, mình gửi.
+
+---
+
+# Phiên 14 · Lượt 4 — 2026-10-30 khoảng 17:33
+
+**Bạn:**
+
+```markdown
+Đã xem, cho qua Checkpoint 1, làm tiếp nhé
+```
+
+**Claude:**
+
+Checkpoint 1 đã đóng ([PR #79](https://github.com/TungPH7/ai-orchestrator-v1/pull/79)). Mình đã làm xong Giai đoạn 2–4 (T5–T14) và đang dừng ở **Checkpoint 2**.
+
+## Đã merge
+
+| PR | Task | Nội dung |
+|---|---|---|
+| [#80](https://github.com/TungPH7/ai-orchestrator-v1/pull/80) | T5 | `check-design` cho màn hình kiểu ASCII (D1–D6) |
+| [#81](https://github.com/TungPH7/ai-orchestrator-v1/pull/81) | T6 | Màn hình kiểu Figma và ảnh (D7, D8) |
+| [#82](https://github.com/TungPH7/ai-orchestrator-v1/pull/82) | T7 | Job `policy` chạy `check-design` trên `design.md` mà PR đụng tới |
+| [#83](https://github.com/TungPH7/ai-orchestrator-v1/pull/83) | T8 | `agents/roster.yaml`, schema, quy tắc A1–A5 |
+| [#84](https://github.com/TungPH7/ai-orchestrator-v1/pull/84) | T9 | Chép 16 skill vào kit |
+| [#85](https://github.com/TungPH7/ai-orchestrator-v1/pull/85) | T10 | `gh-guard` theo vai trò |
+| [#86](https://github.com/TungPH7/ai-orchestrator-v1/pull/86) | T11 | Prompt của `pm`, `ba`, `ux`, `sa` |
+| [#87](https://github.com/TungPH7/ai-orchestrator-v1/pull/87) | T12 | Prompt của sáu vai trò còn lại, `agents/rules.md` |
+| [#88](https://github.com/TungPH7/ai-orchestrator-v1/pull/88) | T13 | Sinh mười agent và file quy ước, `agents:check` |
+| [#89](https://github.com/TungPH7/ai-orchestrator-v1/pull/89) | T14 | Chế độ dự án, `roster.local.yaml`, `ao-agent.mjs` |
+
+Năm lệnh `validate`, `test` (620 test), `render:check`, `jira:checklist:check`, `agents:check` đều xanh, và CI của kit cũng xanh.
+
+## Những điểm đáng chú ý
+
+- **`check-design` bắt được lỗi thật:** ví dụ trong `templates/design.md` có một dòng YAML sai cú pháp. Mình đã sửa dòng đó ở T5.
+- **16 skill chép vào kit** (621 KB):
+  - 13 skill của agent-skills giống hệt từng byte bản plugin 0.6.13 bạn đang cài.
+  - `playwright-cli` giống hệt bản đi kèm gói npm 0.1.22.
+  - Chạy lại `skills:vendor` không đổi file nào.
+
+  Các dòng `curl | bash` trong `gha-security-review` là ví dụ tấn công để nhận diện, không phải chỉ dẫn cho agent. Bảng các chỗ skill trái quy ước của kit nằm trong `tasks/verification.md`, và prompt đã xử lý từng chỗ.
+- **`gh-guard` theo vai trò:**
+  - Mỗi vai trò chỉ ghi được file trong cột "Ghi được".
+  - `pm`, `reviewer`, `security`, `qa` chỉ chạy được lệnh git đọc: `git checkout`, `commit`, `push`, `stash` đều bị chặn, còn `git log --grep=commit` vẫn qua.
+- **Mười agent sinh ra**, mỗi file có ba phần: frontmatter, phần hợp đồng sinh từ YAML, và phần viết tay. Khi đọc lại cả mười, mình sửa một chỗ trái nhau: file quy ước cấm chuyển item sang Done, trong khi dev agent được `Complete` Sub-task của mình.
+- **`ao-agent.mjs` đã chạy thật một lượt bằng Haiku:** agent chạy làm phiên chính trích được nội dung skill, nghĩa là cách sửa sau T1 hoạt động.
+
+**Các chi tiết mình tự chốt, mời bạn soát:**
+
+1. File skill của `ao-agent.mjs` mở đầu bằng mục **Session**. Có `-p` thì ghi "chạy một mình, không ai trả lời"; không có `-p` thì ghi "làm trực tiếp với bạn". Prompt của `ba`, `ux`, `sa` dựa vào mục này để biết có được hỏi bạn không. Spec mục 2.5 đã ghi thêm.
+2. Phần hợp đồng trong file agent lấy nguyên văn chữ của YAML hợp đồng, nên là tiếng Việt nằm giữa file tiếng Anh, ví dụ "Input: PR có CI xanh". Mình không dịch, để khỏi có hai nguồn.
+3. Prompt `security` mở rộng threat model của `gha-security-review`: tính cả trường hợp nội dung PR hay comment dẫn dắt agent của repo này, vì agent có quyền ghi và đọc nội dung đó.
+4. Prompt `devops` dừng trước mọi bước cắt release, ship hay rollback, cho tới khi có module `release-workflow`.
+5. A2 kiểm thêm: mỗi vai trò có file prompt. A4 kiểm thêm: mỗi skill chép vào có thư mục với `SKILL.md` đúng tên.
+
+## Checkpoint 2: phần bạn xem
+
+1. Bốn lệnh và `agents:check` xanh, CI của kit xanh: đạt.
+2. Bạn đọc file quy ước và ít nhất hai agent (mình đề xuất `fe-dev` và `qa`). Trên GitHub, mở lần lượt:
+   - https://github.com/TungPH7/ai-orchestrator-v1/blob/main/kit/.claude/rules/ai-orchestrator.md
+   - https://github.com/TungPH7/ai-orchestrator-v1/blob/main/kit/.claude/agents/fe-dev.md
+   - https://github.com/TungPH7/ai-orchestrator-v1/blob/main/kit/.claude/agents/qa.md
+
+   Trong VS Code, các file này nằm ở `kit/.claude/rules/` và `kit/.claude/agents/` của thư mục `ai-orchestrator`. Nhấn `Ctrl+Shift+V` để xem dạng đã render. Muốn sửa chỗ nào thì sửa nguồn (`agents/prompts/<role>.md`, `agents/rules.md`, `agents/roster.yaml`), không sửa file sinh ra.
+
+## Sau Checkpoint 2
+
+Giai đoạn 5 lên `ao-pilot`, gồm ba task có phần cần bạn:
+
+- **T15:** chép kit vào `ao-pilot` qua một PR. `reviewer` và `security` chạy thật lần đầu trên PR đó, bằng Opus. Bạn approve rồi tự merge, vì PR sửa đường dẫn được bảo vệ. Bạn cũng bật server `chrome-devtools` cho dự án, như đã bật `atlassian`.
+- **T16:** trang giỏ hàng tối thiểu và `@playwright/test` cho `ao-pilot` (quyết định 7 bạn đã duyệt).
+- **T17:** `qa` và `fe-dev` thử trình duyệt.
+
+Sau đó là Checkpoint 3, nơi mình hỏi bạn trước phần kiểm thật tốn nhất.
+
+Bạn đọc xong và cho qua Checkpoint 2 thì mình làm tiếp T15.
