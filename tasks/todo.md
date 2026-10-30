@@ -231,7 +231,7 @@ Rồi chạy kiểm trên từng file. Lỗi được ghi vào job summary như 
 
 ## Giai đoạn 3: roster, skill, gh-guard
 
-### [ ] T8: `agents/roster.yaml`, schema, quy tắc A1–A5
+### [x] T8: `agents/roster.yaml`, schema, quy tắc A1–A5
 
 **Mô tả:** `agents/roster.yaml` viết theo spec mục 2.2, 2.3 và 6:
 
@@ -258,11 +258,11 @@ Năm quy tắc:
 | A5 | Vai trò có App hoặc quyền git "Ghi" thì có Bash; vai trò có `Edit` hoặc `Write` thì có cột "Ghi được", và ngược lại |
 
 **Tiêu chí chấp nhận:**
-- [ ] Roster thật qua cả năm quy tắc; mỗi quy tắc có fixture âm.
-- [ ] Giá trị trong roster khớp bảng ở spec mục 2.2 và 2.3; test so từng vai trò.
+- [x] Roster thật qua cả năm quy tắc; mỗi quy tắc có fixture âm.
+- [x] Giá trị trong roster khớp bảng ở spec mục 2.2 và 2.3; test so từng vai trò.
 
 **Kiểm chứng:**
-- [ ] `npm run validate` in "Roster OK"; `npm test` xanh
+- [x] `npm run validate` in "Roster OK"; `npm test` xanh
 
 **Phụ thuộc:** T1, T2
 

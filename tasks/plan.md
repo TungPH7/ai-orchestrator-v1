@@ -105,7 +105,7 @@ T19, T20, T21 ── T22 maxTurns, tài liệu, lưu trữ
 - [x] T7: Job `policy` chạy `check-design`
 
 ### Giai đoạn 3: roster, skill, gh-guard
-- [ ] T8: `agents/roster.yaml`, schema, quy tắc A1–A5
+- [x] T8: `agents/roster.yaml`, schema, quy tắc A1–A5
 - [ ] T9: Chép skill: `skills:vendor` và 16 skill
 - [ ] T10: `gh-guard` theo vai trò
 
