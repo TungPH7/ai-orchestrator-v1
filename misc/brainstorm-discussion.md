@@ -22,7 +22,8 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 12 | `32807628-e04f-47b4-889d-f855a40dabce` | 2026-10-29 khoảng 11:04 → khoảng 23:06 | Bạn cho qua Checkpoint 3; T17 và Checkpoint 3 đóng (PR #65, #66); T18 (lượt code): cài kit mới lên `ao-pilot`, tạo `DEMO-6`, `gh-guard` chặn ba đường vòng; bạn chuyển `DEMO-6` sang Ready và tạo key thứ hai của `ao-dev`; T18 đóng (PR #67): `fe-dev` mở PR #4, `reviewer` yêu cầu sửa, kit tắt ghi công AI; T19: vòng sửa, tiêu chí 10; bạn approve PR #4 lần đầu; T19: approve trên commit cũ không còn được tính, `devops` mở PR #5 sửa workflow, `reviewer` và `security` đăng báo cáo, bạn approve PR #4 lần hai và PR #5; T19 đóng (PR #68): `merge-gate` merge PR #4, `DEMO-6` sang Ready for QA, vòng PR tốn 55 phút Actions; T20: `fe-dev` mở PR #6, chờ bạn merge tay; bạn báo đã merge nhưng PR #6 vẫn mở; bạn merge lại, `audit` chặn deploy và gắn cờ `DEMO-8`; `fe-dev` mở PR #7 revert; bạn approve PR #7; T20 đóng (PR #69): `merge-gate` merge PR #7, `develop` sạch trở lại, gỡ cờ `DEMO-8`; Checkpoint 4, chờ bạn; bạn hỏi về `gh` 2.16.1, mình đề xuất sửa `gh-guard` cho các lệnh `gh` mới rồi mới cập nhật `gh`; bạn đồng ý: vá `gh-guard` (PR #70), lên `gh` 2.103.3, tắt telemetry; bạn đăng nhập lại `gh`, token vào keyring; bạn thu hồi token cũ và cho qua Checkpoint 4; git mất quyền push vì Git Credential Manager giữ token cũ của `gh`; bạn đăng nhập lại git; Checkpoint 4 đóng (PR #71); T21 đóng (PR #72); checkpoint cuối, chờ bạn |
 | 13 | `2c3e5733-3a72-4ae6-b04c-ca09a16731cc` | 2026-10-29 khoảng 23:31 → 2026-10-30 khoảng 16:15 | Bạn chọn làm tiếp agent-roster; quality-gates đóng (PR #73); giả định và câu hỏi cho agent-roster: model cho từng vai trò, `ux` giao gì; bạn đề xuất model và effort, đồng ý artifact `design`; Claude đề xuất effort theo vai trò, quy tắc cho `design.md`, ba skill từ registry, chỉ lấy ý từ `agency-agents`; bạn duyệt bốn điểm, yêu cầu so `high` với `max` cho `fe-dev`, và hỏi lại nên dùng `playwright-cli` hay Chrome DevTools MCP; Claude đề xuất `qa` dùng `playwright-cli`, `fe-dev` dùng Chrome DevTools MCP, và viết bản nháp `SPEC-agent-roster.md`; bạn hỏi Story đã có Figma có cần `design.md` không; Claude đề xuất `design.md` có hai kiểu màn hình (ASCII hoặc Figma kèm ảnh PNG đã duyệt), Figma MCP để sau; bạn hỏi ảnh trong Git có làm repo vượt dung lượng không, cho biết gói Figma Education, hỏi chụp màn hình Figma được không; Claude đo cỡ ảnh, đề xuất năm quy tắc ảnh do `check-design` kiểm, bạn export ảnh vào `.ai/design-inbox/`, tách Figma MCP và script REST thành module riêng; bạn đồng ý cả ba, chọn module riêng cho Figma MCP; Claude sửa SPEC theo đó và xin duyệt SPEC; bạn duyệt SPEC; Claude viết plan 22 task (T16 chuẩn bị `ao-pilot` với trang giỏ hàng và Playwright, tài liệu của Epic thử không merge) và xin duyệt plan |
 | 14 | `cb0eafc3-b9fb-4ef7-9d75-cbacef12fa98` | 2026-10-30 khoảng 16:29 → 2026-10-31 khoảng 00:19 | Bạn duyệt plan; spec và plan merge (PR #74); T1 kiểm năm tiền đề: `claude --agent` bỏ qua `skills`, `effort`, `maxTurns`, settings của dự án không cài được plugin; Claude đề xuất chép 13 skill của agent-skills vào kit và script `ao-agent.mjs`, xin bạn duyệt cùng cách chạy hai công cụ trình duyệt qua `npx`; bạn duyệt cả hai; T1–T4 đóng (PR #75–#78): spec sửa sau T1, kiểm `playwright-cli` và Chrome DevTools MCP, artifact `design`, NOT TESTED; Checkpoint 1, chờ bạn; bạn hỏi xem kết quả T1–T2 ở đâu; bạn cho qua Checkpoint 1 (PR #79); T5–T14 đóng (PR #80–#89): `check-design`, roster và quy tắc A1–A5, 16 skill chép vào kit, `gh-guard` theo vai trò, mười prompt và file quy ước, sinh agent, `ao-agent.mjs`; Checkpoint 2, chờ bạn; bạn hỏi vì sao `fe-dev` không dùng `vercel-react-best-practices`: skill theo stack khai trong `roster.local.yaml` của từng dự án; bạn cho qua Checkpoint 2 (PR #90); T15: DEMO-9, ao-pilot PR #8 chép kit, kit PR #91–#93 (coverage loại `.claude/**`, vá `gh-guard` theo finding của review, luật hook và mục Shell), `reviewer` hai lượt và `security` ba lượt (hai lần chạm giới hạn usage, Claude đăng báo cáo của lượt cuối), 14,30 USD quy đổi; chờ bạn approve, merge, bật `chrome-devtools` và quyết hai đề xuất về danh tính agent và `file:///`; bạn merge PR #8, bật `chrome-devtools`, đồng ý hai đề xuất; T15 đóng (PR #94); kit PR #95 (`--no-file-navigations`, `.mcp.json` được bảo vệ), #96 (vá thêm `gh-guard`); T16: Story DEMO-10, trang giỏ hàng dựng ở server và server `node:http`; bạn đồng ý cài `@playwright/test`; ao-pilot PR #9 (E2E AC1, AC2), `reviewer` tìm ra `GET //` làm sập server (High), Claude sửa, `reviewer` vòng 2 và `security` COMMENT, 6,30 USD quy đổi; kit PR #97 (`grep ao-pr.mjs` bị chặn nhầm); bạn approve, `merge-gate` merge PR #9, `audit` xanh; T16 đóng (PR #98); T17: `qa` dùng `playwright-cli`, `fe-dev` dùng Chrome DevTools MCP, cả hai đạt, T17 đóng (PR #99); Checkpoint 3: 11 lượt Opus 21,43 USD quy đổi, ước phần còn lại 34–63 USD, chờ bạn chọn chạy tiếp, hạ effort `security` hay tạm dừng |
-| 15 | `cd9b752d-fcc4-4808-a333-32579c26f257` | 2026-10-31 khoảng 00:20 → | Bạn chọn chạy tiếp T18–T21 theo plan, `security` giữ `max`; Checkpoint 3 đóng (PR #100); T18: Epic DEMO-11 "Mã giảm giá cho giỏ hàng", nhánh tài liệu `feature/DEMO-11-spec`, chờ bạn bấm `Start spec`; bạn bấm `Start spec`; stage spec: `ba`, `ux`, `sa` viết `spec.md` và `design.md`, Claude trả lời thay bạn 18 câu hỏi mở, job `policy` đỏ rồi xanh trên PR thử #10, 5,30 USD quy đổi; chờ bạn bấm `Approve spec`; bạn bấm `Approve spec`; stage plan: `sa` viết `plan.md` và ADR-0001, `ba` tạo Story DEMO-12 và hai Sub-task DEMO-13, DEMO-14, T18 tốn 11,81 USD quy đổi; chờ bạn bấm `Approve plan` |
+| 15 | `cd9b752d-fcc4-4808-a333-32579c26f257` | 2026-10-31 khoảng 00:20 → khoảng 01:45 | Bạn chọn chạy tiếp T18–T21 theo plan, `security` giữ `max`; Checkpoint 3 đóng (PR #100); T18: Epic DEMO-11 "Mã giảm giá cho giỏ hàng", nhánh tài liệu `feature/DEMO-11-spec`, chờ bạn bấm `Start spec`; bạn bấm `Start spec`; stage spec: `ba`, `ux`, `sa` viết `spec.md` và `design.md`, Claude trả lời thay bạn 18 câu hỏi mở, job `policy` đỏ rồi xanh trên PR thử #10, 5,30 USD quy đổi; chờ bạn bấm `Approve spec`; bạn bấm `Approve spec`; stage plan: `sa` viết `plan.md` và ADR-0001, `ba` tạo Story DEMO-12 và hai Sub-task DEMO-13, DEMO-14, T18 tốn 11,81 USD quy đổi; chờ bạn bấm `Approve plan` |
+| 16 | `b8a6dd75-1274-4e19-b187-41b53ba22cfe` | 2026-10-31 khoảng 02:02 → | Bạn bấm `Approve plan`; T18 đóng (PR #101): `jira-sync` chuyển DEMO-12 sang Ready; T19: `be-dev` làm Sub-task BE nhưng không start Story, kit PR #102 sửa prompt của hai dev agent; `fe-dev` làm Sub-task FE và mở ao-pilot PR #11; `reviewer` COMMENT (1 Medium, 2 Low), `security` COMMENT không có finding, 15,23 USD quy đổi; chờ bạn approve PR #11 hoặc chọn sửa finding Medium trước |
 
 ---
 
@@ -5767,3 +5768,144 @@ Hai điểm mình ghi lại cho `dev-workflow`:
 5. Nhắn "xong" cho mình.
 
 Sau đó mình chạy `jira-sync` cho DEMO-11, kiểm DEMO-12 sang Ready, rồi đóng T18. T19 (build tới QA) ước tính 14–25 USD quy đổi. Nếu bạn sắp chạm giới hạn 5 giờ, cứ nói; mình sẽ dừng sau T18.
+
+---
+
+# Phiên 16 · Lượt 1 — 2026-10-31 khoảng 02:02
+
+**Bạn:**
+
+````markdown
+Làm tiếp session id: cd9b752d-fcc4-4808-a333-32579c26f257
+
+Tôi đã Approve plan, bạn làm tiếp nhé
+
+đoạn chat của session id: cd9b752d-fcc4-4808-a333-32579c26f257
+```
+Stage plan của DEMO-11 đã xong. Story và hai Sub-task đã có trên Jira. Giờ mình chờ bạn đọc plan rồi bấm Approve plan.
+
+Kết quả
+
+- plan.md (đọc trên GitHub (https://github.com/TungPH7/ao-pilot/blob/feature/DEMO-11-spec/docs/specs/DEMO-11/plan.md)), do sa viết, có:
+  - 9 quyết định kiến trúc;
+  - hợp đồng của POST /: hai trường code và applied, thứ tự kiểm Host → path → method → Origin → cỡ body;
+  - Task List và 8 rủi ro.
+
+  sa còn viết ADR-0001 (https://github.com/TungPH7/ao-pilot/blob/feature/DEMO-11-spec/docs/adr/0001-host-and-origin-checks-for-post.md) cho cách chặn Host và Origin, đánh dấu spec.md và design.md là Approved 2026-10-31, rồi comment link plan lên Epic.
+- Jira, do ba tạo, tất cả đứng tên orchestratoragent:
+  - DEMO-12 (https://phunghuutung12b4.atlassian.net/browse/DEMO-12), Story "Áp mã giảm giá trên trang giỏ hàng", có AC1–AC11 nguyên văn từ SPEC, ở New;
+  - DEMO-13 (https://phunghuutung12b4.atlassian.net/browse/DEMO-13), Sub-task BE, 4 file code, ở To Do;
+  - DEMO-14 (https://phunghuutung12b4.atlassian.net/browse/DEMO-14), Sub-task FE, 1 file code, ở To Do.
+
+  ba cũng điền key vào plan và comment các key lên Epic.
+- Ba file spec.md, design.md, plan.md có đúng các heading của template, và AC1–AC11 đánh số liên tục trong cả Epic.
+
+sa chạy thử trên Node 24.17.0 và tìm ra một bẫy cho test: fetch của Node bỏ header Host tự đặt. Một test Host viết bằng fetch sẽ pass sai, dù server không chặn gì. Plan đã ghi: test Host phải dùng node:http. reviewer ở T19 sẽ kiểm điểm này.
+
+Câu trả lời mình đưa thay bạn
+
+┌─────────────────────────────────────┬─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│           Câu hỏi của sa            │                                                                          Mình chọn                                                                           │
+├─────────────────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ Q1: mở PR đưa tài liệu lên develop? │ Không. Theo quyết định 6 của plan module, tài liệu ở lại nhánh feature/DEMO-11-. Luồng PR cho tài liệu là việc của dev-workflow │
+├─────────────────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ Q2: giảm 0 ₫ hiện thế nào?          │ "0 ₫", không có dấu trừ                                                                                                                                      │
+└─────────────────────────────────────┴──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+Số đo
+
+┌───────────────────┬──────┬─────────────┐
+│       Stage       │ Lượt │ USD quy đổi │
+├───────────────────┼──────┼─────────────┤
+│ Spec (ba, ux, sa) │ 7    │ 5,30        │
+├───────────────────┼──────┼─────────────┤
+│ Plan (sa ×2, ba)  │ 3    │ 6,51        │
+├───────────────────┼──────┼─────────────┤
+│ T18               │ 10   │ 11,81       │
+└───────────────────┴──────┴─────────────┘
+
+T18 chạm mức trên của ước tính 6–12 USD. Riêng lượt sa viết plan tốn 3,51 USD và chạy 14 phút. Không lượt nào bị hook chặn.
+
+Hai điểm mình ghi lại cho dev-workflow:
+
+- Sau khi câu hỏi có trả lời, sa không sửa comment trên Epic, nên comment vẫn ghi hai câu hỏi như đang mở.
+- ADR-0001 còn ở Proposed. Không bước nào của hợp đồng gọi lại sa sau gate ② để đổi sang Accepted.
+
+Việc cần bạn: duyệt rồi bấm Approve plan
+
+1. Đọc plan.md qua link ở trên. Muốn đổi gì thì bạn nhắn mình; mình sẽ resume sa để sửa trước khi bạn duyệt.
+2. Mở https://phunghuutung12b4.atlassian.net/browse/DEMO-11.
+3. Bấm nút trạng thái Planning ở gần tiêu đề (đối chiếu giao diện).
+4. Chọn Approve plan. Epic sang In Progress.
+5. Nhắn "xong" cho mình.
+
+Sau đó mình chạy jira-sync cho DEMO-11, kiểm DEMO-12 sang Ready, rồi đóng T18. T19 (build tới QA) ước tính 14–25 USD quy đổi. Nếu bạn sắp chạm giới hạn 5 giờ, cứ nói; mình sẽ dừng sau T18.
+```
+````
+
+Trước khi trả lời, Claude chạy `jira-sync` cho DEMO-11, đóng T18 (PR #101), sửa prompt của hai dev agent (PR #102), rồi chạy `be-dev`, `fe-dev`, `reviewer` và `security` cho Story DEMO-12 (lượt code, không ghi).
+
+**Claude:**
+
+T18 đã đóng. T19 chạy tới gate ③: PR #11 của Story DEMO-12 đã qua cả hai review. Giờ chỉ còn chờ bạn approve.
+
+## Kết quả
+
+- **Gate ②:** `jira-sync` chuyển DEMO-12 sang Ready lúc 02:03. Hai Sub-task vẫn ở To Do, và đó là đúng hợp đồng: workflow `sub-task` không có trạng thái Ready. T18 đóng bằng kit PR #101.
+- **`be-dev` (DEMO-13, BE):**
+  - 10 commit trên `feature/DEMO-12-coupon-code`, đúng 8 bước TDD của plan;
+  - 75 unit test pass, 5 E2E pass (AC9–AC11 cùng hai E2E của DEMO-10), coverage dòng thay đổi 100%;
+  - sửa luôn hai finding Low còn treo từ PR #9.
+- **`fe-dev` (DEMO-14, FE):**
+  - start Story, làm 6 commit, rồi mở PR #11 (người mở `tungph7-ao-dev[bot]`);
+  - 95 unit test pass, 13 E2E pass trên Chrome (AC1–AC11, cộng AC1, AC2 của DEMO-10);
+  - soi trang bằng Chrome DevTools: console không lỗi, `autofocus` chạy dưới CSP;
+  - ở 320 px bảng sản phẩm tràn ngang. Plan để bảng ngoài Story này, nên nó comment nhờ `ba` tạo Task riêng.
+- **`jira-sync`:** CI xanh thì DEMO-12 sang In Review.
+- **`reviewer`:** COMMENT, gồm 1 Medium và 2 Low. Nó chạy 29 mutation, và test bắt được 27.
+- **`security`:** COMMENT, không có finding nào. Nó gửi khoảng 120 request thô (CSRF, DNS rebinding, injection, body lớn) và không request nào lọt qua.
+- **`merge-gate`:** `Waiting #11: approval on head 2e3689d`.
+
+Lỗi tìm ra: `be-dev` start Sub-task nhưng không start Story. Nếu Story không ở In Progress thì `submit` không chạy được. Mình đã sửa prompt của `be-dev` và `fe-dev` ở kit (PR #102). Bản chép kit trong `ao-pilot` chưa có bản sửa này, nên lượt này mình dặn thẳng `fe-dev` trong prompt.
+
+Hook chặn nhầm hai chỗ. Agent đều tự đi đường khác, nên mình chỉ ghi lại:
+
+- `gh-guard` chặn việc đọc `ao-pr.mjs` ở cả ba agent. Kit PR #97 đã sửa, nhưng `ao-pilot` chưa có bản chép mới.
+- `block-atlassian` chặn heredoc có link `atlassian.net`. Agent chuyển sang dùng Write tool. T22 sẽ ghi điều này vào tài liệu.
+
+Cả hai agent review đều nhắc bạn kiểm gate ②, vì ADR-0001 còn ở Proposed và dòng DoR "plan đã duyệt" trong mô tả DEMO-12 chưa được tick. Gate ② thật ra đã qua lúc 02:01:20. Đây chỉ là trạng thái tài liệu cũ; mình đã ghi lại cho `dev-workflow`.
+
+## Số đo
+
+| Lượt | Thời gian | USD quy đổi |
+|---|---|---|
+| `be-dev` | 12 ph 22 s | 3,59 |
+| `fe-dev` | 11 ph 51 s | 4,54 |
+| `reviewer` (xhigh) | 8 ph 1 s | 2,49 |
+| `security` (max) | 17 ph 42 s | 4,61 |
+| Cộng | | 15,23 |
+
+Ước tính cho T19 là 14–25 USD. Còn lượt `qa`; ở T17 lượt đó tốn 0,36 USD.
+
+Lúc 02:40, hệ thống dừng shell chạy `reviewer` vì máy thiếu RAM. Process vẫn chạy xong và mình không chạy lại. Ngoài phiên này, máy còn ba process `claude.exe` cũ (khoảng 600 MB). Nếu đó là phiên bạn không dùng nữa, đóng chúng sẽ đỡ nguy cơ bị dừng tiếp.
+
+## Bạn quyết: finding Medium
+
+Finding Medium này là thiếu test, không phải lỗi code. Trong `readBody` có một dòng chặn server sập. Bỏ dòng đó thì 95 test vẫn pass, và một body chunked nhiều mảnh sẽ làm sập server. Code hiện tại đúng; `reviewer` và `security` đều đã kiểm.
+
+- **A. Approve ngay (mình khuyên).** Sau khi merge, mình tạo một Task ở New cho hai test còn thiếu và finding Low, để bạn xếp vào backlog.
+- **B. Sửa trước rồi mới merge.** `be-dev` thêm test trên cùng nhánh. Sau đó `reviewer` và `security` phải review lại, vì `merge-gate` đòi cả hai báo cáo trên head mới. Cách này tốn thêm khoảng 8 USD quy đổi và khoảng 40 phút; riêng `security` ở effort max đã khoảng 4,6 USD. Mình cũng ghi điểm này cho `dev-workflow`: một commit chỉ thêm test vẫn bắt `security` chạy lại cả lượt.
+
+## Việc cần bạn (nếu chọn A)
+
+1. Mở https://github.com/TungPH7/ao-pilot/pull/11.
+2. Ở tab **Conversation**, đọc hai review của `tungph7-ao-review[bot]` (báo cáo `reviewer` và `security`).
+3. Bấm tab **Files changed**.
+4. Bấm nút xanh **Review changes** ở góc trên bên phải (đối chiếu giao diện; bản mới có thể ghi **Submit review**).
+5. Chọn **Approve**, rồi bấm **Submit review**.
+6. Đừng bấm Merge: `merge-gate` sẽ tự squash merge.
+7. Nhắn "xong" cho mình.
+
+Nếu chọn B, bạn nhắn "sửa trước".
+
+Sau khi bạn approve, `merge-gate` merge PR. Tiếp theo CI, `audit` và Deploy development chạy, rồi `jira-sync` chuyển DEMO-12 sang Ready for QA. Lúc đó mình chạy `qa`, rồi nhờ bạn bấm `Accept`.
