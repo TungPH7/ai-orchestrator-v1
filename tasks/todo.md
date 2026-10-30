@@ -270,7 +270,7 @@ Năm quy tắc:
 
 **Cỡ:** M
 
-### [ ] T9: Chép skill: `skills:vendor` và 16 skill (spec mục 2.7)
+### [x] T9: Chép skill: `skills:vendor` và 16 skill (spec mục 2.7)
 
 **Mô tả:** `lib/agents/vendor.mjs` làm bốn việc:
 
@@ -286,13 +286,13 @@ Claude tải 16 skill vào `kit/.claude/skills/`, kèm file giấy phép. Với 
 A4 kiểm thêm: mỗi skill chép vào có `SKILL.md`, và `name:` trùng tên skill.
 
 **Tiêu chí chấp nhận:**
-- [ ] Test `vendor` chạy với cây thư mục ghi sẵn và cho ra đúng danh sách file; `name:` được đổi; `SOURCE.md` đủ nội dung.
-- [ ] Chạy lại `skills:vendor` cho 16 skill thì `git diff` rỗng.
-- [ ] 13 skill của agent-skills giống hệt bản plugin 0.6.13 đang cài trên máy bạn, so từng file.
-- [ ] Có file giấy phép MIT và Apache-2.0, và ghi chú CC BY-SA 4.0 cho phần tham khảo lấy từ OWASP.
+- [x] Test `vendor` chạy với cây thư mục ghi sẵn và cho ra đúng danh sách file; `name:` được đổi; `SOURCE.md` đủ nội dung.
+- [x] Chạy lại `skills:vendor` cho 16 skill thì `git diff` rỗng.
+- [x] 13 skill của agent-skills giống hệt bản plugin 0.6.13 đang cài trên máy bạn, so từng file.
+- [x] Có file giấy phép MIT và Apache-2.0, và ghi chú CC BY-SA 4.0 cho phần tham khảo lấy từ OWASP.
 
 **Kiểm chứng:**
-- [ ] `npm run validate`, `npm test` xanh
+- [x] `npm run validate`, `npm test` xanh
 
 **Phụ thuộc:** T8
 
