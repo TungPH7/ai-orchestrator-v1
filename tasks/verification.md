@@ -550,3 +550,31 @@ Prompt: "Review PR #11." Lúc 02:40, hệ thống dừng shell nền chạy lư�
 - `gh-guard: reviewer uses the review App, which runs ao-pr.mjs review, not undefined` khi nó `grep` trong `ao-pr.mjs`. Đây là lỗi kit PR #97 đã sửa; bản chép trong `ao-pilot` chưa có bản sửa đó.
 
 Medium không chặn merge. Claude chạy `security` trên cùng head, và bạn quyết ở gate ③ có cần sửa trước không.
+
+### Review: `security`
+
+Prompt: "Review PR #11."
+
+| Lượt | Commit | Effort | Lượt model | Thời gian | Token ra | Cache đọc | Cache ghi | Quy ra USD | Kết quả |
+|---|---|---|---|---|---|---|---|---|---|
+| `security` 1 | `2e3689d` | max | 54 | 17 ph 49 s | 93.626 | 5.506.260 | 204.164 | 4,607 | COMMENT (`tungph7-ao-review[bot]`, 03:04:48): không có finding |
+
+**Agent làm gì:**
+
+- Lần theo nguồn của mọi input. Gửi khoảng 120 request thô tới một bản chép server của PR trên Node 24.17.0:
+  - `POST` không có `Origin` của server: 403, trước khi đọc body;
+  - `Host` lạ, kể cả cặp `Host` và `Origin` của một trang DNS rebinding: 400;
+  - 20 payload injection: mã chỉ hiện lại dạng text đã escape trong ô nhập;
+  - sửa trường ẩn `applied`, thêm trường số tiền, gửi `code` hai lần: tổng cộng không đổi;
+  - không request nào làm sập server, và không request nào khiến server giữ quá 1.024 byte body.
+- Xác nhận ba ghi chú của nó ở PR #9 (CSRF, `Host`, escape mã) đã được sửa.
+- Ghi chú không phải finding:
+  - Finding Medium của `reviewer`: code hiện tại an toàn. Nếu sau này dòng đó bị bỏ, chỉ một chương trình trên cùng máy làm sập được server, còn trang web thì không. Nó vẫn đồng ý nên thêm test.
+  - Body lớn sau 403 bị đọc rồi bỏ (200 MB mất 378 ms, không giữ trong bộ nhớ); plan đã chấp nhận ở mức Low.
+  - Mã nhìn giống: `gıam10` (chữ ı không chấm) được nhận là `GIAM10`. Vô hại khi mã công khai và không giới hạn lượt dùng.
+- Cùng ghi chú với `reviewer` về ADR-0001 ở Proposed và dòng DoR chưa đánh dấu.
+- Hook từ chối một lần (`cat .ai-orchestrator/scripts/ao-pr.mjs`): cùng lỗi kit PR #97 đã sửa.
+
+**Trên GitHub:** `merge-gate` sau review của `reviewer` in `Waiting #11: security report on head 2e3689d; approval on head 2e3689d`, sau review của `security` in `Waiting #11: approval on head 2e3689d`. `jira-sync` của hai review in `No change`.
+
+Bốn lượt chạy của T19 tới gate ③ tốn 15,23 USD quy đổi: `be-dev` 3,59, `fe-dev` 4,54, `reviewer` 2,49, `security` 4,61. Ước tính ở Checkpoint 3 cho cả T19 là 14–25 USD.
