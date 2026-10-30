@@ -500,7 +500,7 @@ Bạn làm: đồng ý cài `@playwright/test` vào `ao-pilot`; approve PR.
 
 **Cỡ:** M
 
-### [ ] T17: Trình duyệt: `qa` và `fe-dev` chạy thử (spec mục 7, kiểm thật 7)
+### [x] T17: Trình duyệt: `qa` và `fe-dev` chạy thử (spec mục 7, kiểm thật 7)
 
 **Mô tả:**
 
@@ -510,10 +510,10 @@ Bạn làm: đồng ý cài `@playwright/test` vào `ao-pilot`; approve PR.
 Hai lượt chạy ngắn, có số đo.
 
 **Tiêu chí chấp nhận:**
-- [ ] Tiêu chí 12 của spec mục 9.
+- [x] Tiêu chí 12 của spec mục 9.
 
 **Kiểm chứng:**
-- [ ] Ảnh, snapshot và output console được ghi lại trong `tasks/verification.md`
+- [x] Ảnh, snapshot và output console được ghi lại trong `tasks/verification.md`
 
 **Phụ thuộc:** T16
 

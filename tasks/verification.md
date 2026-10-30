@@ -286,3 +286,67 @@ Tổng ba lượt là 6,30 USD quy đổi, so với 14,30 USD của T15. `securi
 ### Merge
 
 Bạn approve PR #9 trên `df09e34` lúc 23:32:00. 34 giây sau, `merge-gate` squash merge PR bằng `tungph7-ao-dev[bot]` thành `6c25b8b` trên `develop`. Lần này bạn không phải merge tay, vì PR không sửa đường dẫn được bảo vệ. Deploy chạy `audit` trước: `audit passed: 6c25b8b on develop is the merge of PR #9, which met every gate`. Sau đó job deploy chạy, và `jira-sync` xanh. DEMO-10 vẫn ở New, vì Story chưa bao giờ được Start: không có Epic, không có plan.
+
+## T17: Trình duyệt: `qa` và `fe-dev` chạy thử
+
+Trang giỏ hàng của T16 chạy bằng `npm run serve` ở `http://127.0.0.1:3000/` (commit `6c25b8b`). Mỗi agent được dặn rằng đây là lượt thử tool trình duyệt: không đăng báo cáo QA, không đổi code, nhánh hay Jira.
+
+| Lượt | Effort | Lượt model | Thời gian | Token ra | Cache đọc | Cache ghi | Quy ra USD |
+|---|---|---|---|---|---|---|---|
+| `qa` (`playwright-cli`) | high | 9 | 59 s | 2.975 | 180.974 | 33.445 | 0,363 |
+| `fe-dev` (Chrome DevTools MCP) | high | 7 | 20 s | 902 | 200.812 | 50.812 | 0,465 |
+
+**`qa`:**
+
+- Agent đọc DEMO-10, thấy dự án đã có Playwright, nên chạy `npx --no-install playwright cli` của Playwright 1.64.1 trong dự án, thay cho `npx -y @playwright/cli@0.1.22`. Prompt của `qa` cho phép cách này. Không có gì được cài.
+- Các lệnh đã chạy: `open http://127.0.0.1:3000/ --browser=chrome`, `snapshot --filename=.ai/qa/DEMO-10/cart-snapshot.yml`, `screenshot --filename=.ai/qa/DEMO-10/cart.png`, `eval` đọc các `data-testid`. Sau cùng agent đóng trình duyệt.
+- Agent chấm AC1 và AC2 đều PASS. Mỗi kết luận trích ref và số dòng của snapshot, kèm locator `getByTestId(...)`.
+- Agent còn ghi chú rằng font vẽ ₫ giống chữ "đ" gạch dưới, nhưng text của trang vẫn là ₫, nên đó không phải lỗi.
+- Lệnh `open` tự ghi một snapshot vào `.playwright-cli/` ở gốc dự án. Thư mục này không có trong `.gitignore`. Claude đã xoá nó; T22 ghi vào hướng dẫn cài kit rằng dự án cần bỏ qua `.playwright-cli/` (cùng với `.ai/`).
+
+Snapshot `.ai/qa/DEMO-10/cart-snapshot.yml`:
+
+```yaml
+- main [ref=e2]:
+  - heading "Giỏ hàng" [level=1] [ref=e3]
+  - table [ref=e4]:
+    - rowgroup [ref=e5]:
+      - row [ref=e6]:
+        - columnheader "Sản phẩm" [ref=e7]
+        - columnheader "Đơn giá" [ref=e8]
+        - columnheader "Số lượng" [ref=e9]
+        - columnheader "Thành tiền" [ref=e10]
+    - rowgroup [ref=e11]:
+      - row [ref=e12]:
+        - cell "Bút bi" [ref=e13]
+        - cell "5.000 ₫" [ref=e14]
+        - cell "3" [ref=e15]
+        - cell "15.000 ₫" [ref=e16]
+      - row [ref=e17]:
+        - cell "Sổ tay" [ref=e18]
+        - cell "12.000 ₫" [ref=e19]
+        - cell "2" [ref=e20]
+        - cell "24.000 ₫" [ref=e21]
+  - generic [ref=e22]:
+    - term [ref=e23]: Tạm tính
+    - definition [ref=e24]: 39.000 ₫
+    - term [ref=e25]: Phí vận chuyển
+    - definition [ref=e26]: 3.000 ₫
+    - term [ref=e27]: Tổng cộng
+    - definition [ref=e28]: 42.000 ₫
+```
+
+![Ảnh của qa](images/t17-qa-cart.png)
+
+**`fe-dev`:**
+
+- Agent gọi lần lượt `new_page`, `list_console_messages`, `list_network_requests`, `take_screenshot` và `close_page`.
+- Console: `<no console messages found>`.
+- Network: `reqid=1 GET http://127.0.0.1:3000/ [200]`, đúng một request, vì trang không có script hay file ngoài.
+- Ảnh lưu thẳng vào `D:\...\ao-pilot\.ai\fe-dev\DEMO-10\cart.png`. Như vậy câu hỏi còn treo từ T2 đã có câu trả lời: với Claude Code 2.1.314, tool ghi file của server không bị giới hạn trong thư mục temp, và lưu được vào thư mục dự án.
+
+![Ảnh của fe-dev](images/t17-fe-dev-cart.png)
+
+**`chrome-devtools` trong `claude -p`:** lần này server đã được bật (`enabledMcpjsonServers` có `chrome-devtools`). Lúc khởi động, `fe-dev` thấy server `connected`, `qa` thấy `pending`. Ở T15, khi chưa bật, server cũng đã chạy trong các lượt `-p`. Vậy trong chế độ `-p`, Claude Code khởi động server của `.mcp.json` dù bạn chưa duyệt. Chỉ agent có tool của server mới gọi được server đó.
+
+Tiêu chí 12 của spec mục 9 đạt.
