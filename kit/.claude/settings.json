@@ -6,7 +6,8 @@
     "AO_DEV_APP": "<dev-app-slug>",
     "AO_DEV_APP_ID": "<dev-app-id>",
     "AO_REVIEW_APP": "<review-app-slug>",
-    "AO_REVIEW_APP_ID": "<review-app-id>"
+    "AO_REVIEW_APP_ID": "<review-app-id>",
+    "NO_UPDATE_NOTIFIER": "1"
   },
   "hooks": {
     "PreToolUse": [
