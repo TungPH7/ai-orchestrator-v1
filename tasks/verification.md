@@ -467,3 +467,7 @@ Made DEMO-12: Refine (new → ready)
 ```
 
 DEMO-12 sang Ready lúc 02:03:00, người chuyển là `orchestratorci`. DEMO-13 và DEMO-14 vẫn ở To Do. Điều này đúng hợp đồng: workflow `sub-task` bắt đầu ở `to-do` và không có trạng thái Ready, còn effect `refine-children` chỉ chuyển Story và Task con. Tiêu chí 2 của T18 đạt theo nghĩa đó.
+
+## T19: Epic thử: build tới QA
+
+Bạn bấm `Approve plan` và nhắn chạy tiếp (Phiên 16 · Lượt 1), nên T19 bắt đầu ngay sau T18. Mỗi lượt chạy bằng `ao-agent.mjs <role> -p` trong `ao-pilot`, bắt đầu từ `develop` `6c25b8b`. Bản chép kit trong `ao-pilot` vẫn là bản của T15: kit PR #95–#97 chưa có trong đó.
