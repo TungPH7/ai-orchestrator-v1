@@ -154,3 +154,60 @@ Test của script trong `tests/quality/policy.test.mjs` lặp lại việc này 
 - nêu đúng phần hợp đồng và phần viết tay của prompt reviewer.
 
 1 lượt, Haiku 5.5, 14.852 token vào, 868 token ra, 0,003 USD.
+
+## T15: Bản chép kit vào `ao-pilot` qua PR
+
+**PR:** [ao-pilot #8](https://github.com/TungPH7/ao-pilot/pull/8), Task [DEMO-9](https://phunghuutung12b4.atlassian.net/browse/DEMO-9) (tạo bằng token CI, để ở New), nhánh `feature/DEMO-9-agent-roster`. PR do `tungph7-ao-dev[bot]` mở bằng `ao-pr.mjs create`. `merge-gate` in `Needs you #8: it changes .ai-orchestrator/...`, vì PR sửa đường dẫn được bảo vệ.
+
+**Ba commit:**
+
+1. `a8a3b3f`: chép kit ở commit `0e9e12c` theo các bước của README: `.ai-orchestrator/` thêm `agents/`, `templates/`, `ao-agent.mjs`, `render-agents.mjs`, `check-design.mjs`; `.claude/agents/` (mười agent, thay bốn agent thử) và `.claude/rules/ai-orchestrator.md` sinh bằng `--project .`; 16 skill; settings có `attribution` và `NO_UPDATE_NOTIFIER`; `gh-guard` mới; `.mcp.json` có `chrome-devtools`; `.ai/` vào `.gitignore`. 150 file, phần ngoài skill là 60 file, 3.511 dòng thêm.
+2. `eef4af8`: CI đỏ ở bước Coverage of changed lines: `.claude/hooks/gh-guard.mjs is not in any lcov file`. Hook là mã của kit, có test ở kit. `quality/gates.yaml` loại `.claude/**` khỏi coverage như đã loại `.ai-orchestrator/**` (kit PR #91). Lỗi này chưa lộ ra trước đây vì lần chép kit của `quality-gates` T18 được push thẳng, không qua PR.
+3. `3e41cf0`: các bản vá `gh-guard` sau hai lượt review đầu (kit PR #92, #93), và `eslint.config.mjs` bỏ qua `.ai/`. Hai agent review viết script thử vào `.ai/`, làm lint của `precommit` đỏ.
+
+**Kiểm của Claude trước khi mở PR:** `render-agents.mjs --project . --check` báo 11 file mới; 90 file trong `.claude/skills/` giống từng byte bản trong kit; mười agent giống bản sinh của kit, file quy ước chỉ khác key của space; `ao-agent.mjs reviewer|security --ao-dry-run` ra `--effort xhigh` và `--effort max`; `.ai/agents/*.skills.md` bị git bỏ qua (21 KB cho `reviewer`, 30 KB cho `security`).
+
+### Lượt chạy
+
+Mọi lượt: `node .ai-orchestrator/scripts/ao-agent.mjs <role> -p "<prompt>" --output-format stream-json --verbose` trong `ao-pilot`, Opus 5.5, prompt "Review PR #8." kèm hai câu: 16 skill chép vào đã được so từng byte, chỉ liệt kê, không đọc; đọc diff bằng `git diff origin/develop...origin/feature/DEMO-9-agent-roster -- . ':!.claude/skills'` thay cho `gh pr diff 8` (khoảng 800 KB).
+
+| Lượt | Commit | Effort | Lượt model | Thời gian | Token ra | Cache đọc | Cache ghi | Quy ra USD | Kết quả |
+|---|---|---|---|---|---|---|---|---|---|
+| `reviewer` 1 | `eef4af8` | xhigh | 29 | 6 ph 39 s | 36.177 | 1.856.947 | 121.937 | 2,071 | COMMENT: 2 Medium, 4 Low |
+| `security` 1 | `eef4af8` | max | 16 | 2 ph 43 s | 14.251 | 264.664 | 49.931 | 0,737 | Dừng vì hết giới hạn 5 giờ của bạn |
+| `security` 1b | `eef4af8` | max | 34 | 12 ph 55 s | 74.238 | 2.250.576 | 156.824 | 3,190 | Dừng không đăng báo cáo: `gh-guard` chặn `git config --get core.hooksPath` |
+| `reviewer` 2 | `3e41cf0` | xhigh | 28 | 11 ph 7 s | 60.769 | 1.367.687 | 104.348 | 2,324 | COMMENT: 2 Medium, 6 Low |
+| `security` 2 | `3e41cf0` | max | 59 | 22 ph 27 s | 132.231 | 7.492.768 | 229.348 | 5,978 | Ghi xong báo cáo (2 Medium, 2 Low, kết luận COMMENT) rồi dừng vì hết giới hạn 5 giờ, trước bước đăng |
+
+**Báo cáo `security` do Claude đăng:** lượt `security` 2 dừng ngay sau lần `Write` cuối của `.ai/reviews/8-security.md`. File đủ mọi mục của template, có dòng `Role: security` và kết luận Approve, tức COMMENT. Claude đăng nguyên file bằng `ao-pr.mjs review 8 --event COMMENT` với App `ao-review` (2026-10-30 22:08), thay vì chạy lại thêm khoảng 6 USD. Sau đó `merge-gate --dry-run` chỉ còn thiếu `approval on head 3e41cf0`.
+
+Tổng sáu lượt: 14,30 USD quy đổi, trong đó 3,93 USD là hai lượt `security` không ra báo cáo.
+
+Cột USD là `total_cost_usd` của Claude Code, quy theo giá API; bạn dùng gói Pro, nên con số này chỉ để so mức tốn usage giữa các lượt.
+
+### Agent làm gì
+
+- **`reviewer`**: đọc PR, template, item, đọc diff theo từng nhóm file, rồi tự viết script thử `checkAgentCall` của `gh-guard` (17 lệnh ở lượt 1, 29 lệnh chặn và 18 lệnh đọc ở lượt 2) trong `.ai/reviews/tmp-8/`. Hai lượt đều đăng báo cáo bằng `tungph7-ao-review[bot]`, đúng template, có dòng `Role: reviewer`.
+- **Lượt 1 của `reviewer` làm trái luật chung:** `gh-guard` chặn một lệnh thử có chữ `gh auth token`, và agent bỏ lệnh đó rồi làm tiếp. Luật lúc ấy ghi "quote its reason in your answer and stop".
+- **`security` 1b làm đúng luật đó:** bị chặn một lệnh đọc nó tự thêm, agent dừng và không đăng báo cáo. Luật được sửa ở kit PR #93: việc không cần lệnh bị chặn thì làm tiếp; việc cần thì dừng. Ở lượt 2, `reviewer` bị chặn `git branch --show-cur` (viết tắt) và làm tiếp, đúng luật mới.
+- **Git Bash đổi `origin/<branch>:<path>`** thành danh sách đường dẫn Windows (`origin\feature\...;.ai-orchestrator\...`), làm `git show` lỗi. `reviewer` 1 tự tìm ra `MSYS_NO_PATHCONV=1`. Kit PR #93 thêm mục Shell vào file quy ước.
+
+### Finding và cách xử lý
+
+| Từ | Mức | Finding | Xử lý |
+|---|---|---|---|
+| `reviewer` 1 | Medium | `gh-guard` chỉ biết `-c`, `-C` nhận giá trị: `git --namespace log push --no-verify origin HEAD:develop` lọt với `be-dev`, `git --work-tree status checkout develop` lọt với `reviewer` | Sửa: kit PR #92 (`lib/quality/git-options.mjs`) |
+| `reviewer` 1 | Medium | Hợp đồng giao `qa` tạo `regression-report` trong Git (`docs/releases/vX.Y.Z.md`), nhưng roster cho `qa` chỉ ghi `.ai/**` và git chỉ đọc | Chưa sửa: hỏi bạn, liên quan module `release-workflow` |
+| `security` 1b | Medium | Lệnh bọc trong `sh -c`, `env` lọt qua; `gh` chạy bằng login admin của bạn | Sửa phần `sh -c`, `bash -c`, `env`, `command`, `exec`: kit PR #93. Phần còn lại là giới hạn đã biết |
+| `security` 1b | Medium | Kiểm token trên chuỗi thô: `gh auth "token"` lọt | Sửa: kit PR #93 |
+| `security` 1b | Low | Đường dẫn có `..` không được chuẩn hoá: `.ai/../src/cart.ts` | Sửa: kit PR #93, áp dụng cho cả đường dẫn được bảo vệ |
+| `security` 1b | (chặn nhầm) | `git config --get core.hooksPath` bị chặn | Sửa: kit PR #93 |
+| `reviewer` 2 | Medium | Còn những cách bọc khác lọt qua: `timeout`, `env -C`, `env -S`, `eval`, `bash -c --`, option viết tắt `--no-veri`, biến `GIT_CONFIG_*`, `-c alias.*`. `develop` và `main` không có branch protection (repo private gói Free) | Giới hạn đã biết của `gh-guard` (chú thích đầu `commands.mjs`); soft mode đã chốt ở `quality-gates`, `audit` bắt sau khi merge. Đề xuất cho kit: tìm `git`, `gh` ở mọi vị trí trong lệnh |
+| `security` 2 | Medium | Agent chạy `gh` và `git` bằng danh tính của bạn, người duy nhất trong `AO_APPROVERS`, có quyền ADMIN. Vẫn lọt: push không qua hook bằng biến `GIT_CONFIG_COUNT/KEY/VALUE`, lấy token bằng `gh auth git-credential get` hoặc `git credential fill`, approve qua `gh alias set` | Chưa sửa: hỏi bạn. Đề xuất của agent: `ao-agent.mjs` chạy agent với `GH_CONFIG_DIR` và `GH_TOKEN` riêng, không thuộc `AO_APPROVERS` |
+| `security` 2 | Medium | Needs verification: `fe-dev` (Chrome DevTools MCP) và `qa` (`playwright-cli`) đọc nội dung trang web và có Bash. Tool của `chrome-devtools` không đi qua `gh-guard`; `navigate_page` mở được `file:///` vì option `fileNavigations` mặc định bật; `.mcp.json` không nằm trong `protected_paths` | Chưa sửa: cần trước T17. Đề xuất: `--no-file-navigations` và mẫu URL cho phép trong `.mcp.json`, đưa `.mcp.json` vào `protected_paths` |
+| `security` 2 | Low | Đường dẫn `\\?\D:\...` và đường dẫn khác hoa thường qua được luật ghi; vai chỉ đọc ghi được mọi chỗ ngoài dự án; `bash -c -- '...'`, `eval`, `time` chưa được mở | Ghi lại, sửa ở lần chép kit sau |
+| `reviewer` 1, 2 | Low | Trên Windows, `.Claude/...` (khác hoa thường) lọt luật đường dẫn được bảo vệ; `git diff --output=<file>`, `git fetch origin x:develop` bị coi là lệnh đọc; `package.json` của bản chép có script `gh:protect`, `skills:vendor` không có file; `ao-agent.mjs` gọi `claude` không qua shell (cài bằng npm thì chỉ có `claude.cmd`) | Ghi lại, sửa ở lần chép kit sau |
+
+### Điều quan sát thêm
+
+- **`chrome-devtools` khởi động trong `claude -p` dù chưa được bật:** `.claude/settings.local.json` chỉ bật `atlassian`, và `~/.claude.json` không ghi gì cho `ao-pilot`. Lượt đầu báo `pending`, các lượt sau báo `connected`. `reviewer` và `security` không có tool của server này. Cần xem lại ở T17.
