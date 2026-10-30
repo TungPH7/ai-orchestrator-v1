@@ -113,3 +113,34 @@ FAIL  Design
 ```
 
 Test của script trong `tests/quality/policy.test.mjs` lặp lại việc này với một `design.md` sai D2. Phần kiểm trên PR thật làm ở T18 (tiêu chí 4).
+
+## T9: Chép skill
+
+**Tải (2026-10-30, khoảng 17:55):** `npm run skills:vendor` tải 16 skill vào `kit/.claude/skills/`: 90 file, 620.981 byte. Mỗi skill có `SOURCE.md` (repo, đường dẫn, commit, ngày của commit, thay đổi, danh sách file) và giấy phép:
+
+- 13 skill của agent-skills: `LICENSE` (MIT) chép từ gốc repo.
+- `playwright-cli`, `gha-security-review`: `LICENSE` (Apache-2.0) chép từ gốc repo.
+- `sentry-security-review`: `LICENSE` của chính thư mục (phần tham khảo lấy từ OWASP Cheat Sheet Series, CC BY-SA 4.0) và `REPO-LICENSE` (Apache-2.0) chép từ gốc repo. `name:` đổi từ `security-review`.
+
+**Kiểm nguồn gốc:**
+
+- Chạy lại `npm run skills:vendor` sau khi stage: không file nào đổi.
+- 14 file của 13 skill agent-skills giống hệt từng byte bản plugin 0.6.13 đang cài ở `~/.claude/plugins/cache/addy-agent-skills/agent-skills/0.6.13/skills/`; `LICENSE` giống hệt `LICENSE` của plugin.
+- 12 file của `playwright-cli` (commit `83368cb3bfc0`) giống hệt bản đi kèm gói npm `@playwright/cli` 0.1.22 (`playwright-core/lib/tools/skills/playwright-cli/`), tức skill khớp đúng bản CLI kit dùng.
+- `LICENSE` của `playwright-cli` dùng CRLF. `.gitattributes` thêm `kit/.claude/skills/** -text` để git giữ nguyên byte của file chép vào.
+
+**Rà nội dung trước khi commit:** Claude đọc hết `SKILL.md` của ba skill từ registry và tìm trong cả 90 file các mẫu đáng ngờ: `curl | sh`, `base64 -d`, "ignore previous", lệnh gửi dữ liệu ra ngoài, đọc `.env` hay khóa. Các chỗ khớp đều là ví dụ tấn công trong `gha-security-review/references/` (để nhận diện), không phải chỉ dẫn cho agent. 13 skill của agent-skills giống hệt bản plugin bạn đang dùng, nên Claude chỉ tìm các chỗ trái quy ước, không đọc lại từng dòng.
+
+**Chỗ trái quy ước của kit, để prompt ở T11–T12 xử lý:**
+
+| Skill | Skill nói | Kit làm |
+|---|---|---|
+| `spec-driven-development` | SPEC ở `SPEC.md` gốc repo; plan ở `tasks/plan.md` | `docs/specs/<EPIC-KEY>/spec.md` và `plan.md` |
+| `planning-and-task-breakdown` | Danh sách task ở `tasks/todo.md`, trừ khi quy ước dự án chỉ một tracker | Task nằm trên Jira; plan ghi rõ điều đó |
+| `code-review-and-quality` | Mức Critical, Required, Optional, Nit | Mức Critical, High, Medium, Low của `review-report.md` |
+| `incremental-implementation`, `shipping-and-launch` | Merge từng phần vào nhánh chính sau feature flag; rollback bằng `git revert && git push` | GitFlow: nhánh `feature/*` vào `develop` qua PR; không push lên `develop`, `main`, `release/*`; rollback là việc của `release-workflow` |
+| `ci-cd-and-automation` | Ví dụ deploy lên Vercel | Deploy bằng Docker lên VPS, theo `routing.yaml` |
+| `sentry-security-review` | Mẫu báo cáo riêng (`VULN-001`, Needs Verification); dùng skill `gha-security-review` hoặc `django-access-review` "nếu có" | Báo cáo theo `review-report.md`, dòng `Role: security`; agent không có tool `Skill`, nên prompt bảo đọc `gha-security-review/SKILL.md` khi PR sửa workflow |
+| `gha-security-review` | Chỉ tính kẻ tấn công không có quyền ghi repo; mẫu báo cáo riêng | Báo cáo theo `review-report.md`. T12 cân nhắc thêm trường hợp agent của repo bị nội dung PR dẫn dắt |
+| `playwright-cli` | Thiếu lệnh thì `npm install -g @playwright/cli@latest`; đính ảnh vào PR bằng `gh --attach`; ảnh lưu ở `.playwright-cli/` | Không cài gì: chạy `npx -y @playwright/cli@0.1.22` hoặc Playwright của dự án; không dùng `gh`; bằng chứng lưu ở `.ai/qa/<KEY>/`; không dùng `--persistent` hay `--profile` |
+| `sentry-security-review`, `gha-security-review` | `allowed-tools: Read Grep Glob Bash Task` | `allowed-tools` của skill không thêm tool cho agent; `security` không có tool `Agent` (tên cũ `Task`) |
