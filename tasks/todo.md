@@ -55,7 +55,7 @@ Chạy `claude -p --agent probe --output-format json` và một subagent gọi t
 
 **Cỡ:** M
 
-### [ ] T2: Tiền đề về trình duyệt (điểm 6–7) [bạn]
+### [x] T2: Tiền đề về trình duyệt (điểm 6–7) [bạn]
 
 **Mô tả:** Claude hỏi bạn trước khi cài (spec mục 8), rồi kiểm hai điểm:
 
@@ -67,12 +67,12 @@ Sau đó `kit/.mcp.json` thêm server `chrome-devtools` đúng như đã kiểm.
 Bạn làm: đồng ý cài. Nếu Windows hỏi quyền mạng cho Chrome thì bấm **Allow**.
 
 **Tiêu chí chấp nhận:**
-- [ ] Hai điểm có kết quả trong `tasks/verification.md`, cùng cách cài đã chốt.
-- [ ] `kit/.mcp.json` ghim bản và có đủ tham số; test kiểm các tham số đó.
-- [ ] Chrome chạy với profile tạm; profile Chrome của bạn không bị đụng tới.
+- [x] Hai điểm có kết quả trong `tasks/verification.md`, cùng cách cài đã chốt.
+- [x] `kit/.mcp.json` ghim bản và có đủ tham số; test kiểm các tham số đó.
+- [x] Chrome chạy với profile tạm; profile Chrome của bạn không bị đụng tới.
 
 **Kiểm chứng:**
-- [ ] `npm test` xanh
+- [x] `npm test` xanh
 
 **Phụ thuộc:** T1 (dùng lại dự án tạm)
 
