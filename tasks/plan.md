@@ -100,7 +100,7 @@ T19, T20, T21 ── T22 maxTurns, tài liệu, lưu trữ
 - [x] Bạn xem kết quả của T1–T2 (bạn cho qua ngày 2026-10-30, Phiên 14 · Lượt 4)
 
 ### Giai đoạn 2: `design.md`
-- [ ] T5: `check-design` cho màn hình kiểu ASCII
+- [x] T5: `check-design` cho màn hình kiểu ASCII
 - [ ] T6: `check-design` cho màn hình kiểu Figma và ảnh
 - [ ] T7: Job `policy` chạy `check-design`
 
