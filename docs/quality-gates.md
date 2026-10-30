@@ -123,7 +123,7 @@ Muốn xem trước ở máy, chạy `node .ai-orchestrator/scripts/merge-gate.m
 
 Bạn tự merge trong ba trường hợp. `audit` vẫn kiểm cả ba, nên hãy làm đủ các bước trước khi bấm Merge.
 
-1. **PR của agent sửa file được bảo vệ:** `.github/workflows/**`, `.githooks/**`, `.claude/**`, `.ai-orchestrator/**`. `merge-gate` in `Needs you`.
+1. **PR của agent sửa file được bảo vệ:** `.github/workflows/**`, `.githooks/**`, `.claude/**`, `.ai-orchestrator/**`, `.mcp.json`. `merge-gate` in `Needs you`.
    - Workflow chạy theo `pull_request` dùng bản nằm trong PR, nên một PR sửa `ci.yml` có thể tự làm `CI` của nó xanh. Vì vậy hãy đọc kỹ diff ở tab **Files changed**.
    - PR vẫn phải đủ mọi điều kiện khác: `CI` xanh, hai báo cáo không còn Critical hay High, và approve của bạn trên commit đầu.
    - Sau đó bấm **Squash and merge** **(đối chiếu giao diện)**. `audit` chỉ chấp nhận PR này khi người merge là một login trong `AO_APPROVERS`.
