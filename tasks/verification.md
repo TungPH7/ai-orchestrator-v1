@@ -456,3 +456,14 @@ Ba lượt của stage plan tốn 6,51 USD quy đổi. Cộng với stage spec, 
 
 - Comment của `sa` trên Epic vẫn ghi hai câu hỏi Q1, Q2 như đang mở. `sa` không sửa comment sau khi câu hỏi có trả lời.
 - ADR-0001 ở Proposed. `sa` ghi rằng ADR chuyển sang Accepted khi plan qua gate ②. Nhưng sau gate ②, không bước nào của hợp đồng gọi lại `sa`. `dev-workflow` cần quyết ai đổi trạng thái này.
+
+### Gate ② và `refine-children`
+
+Bạn bấm `Approve plan` lúc 02:01:20, và DEMO-11 sang In Progress. Lúc 02:02:39, Claude chạy `jira-sync` cho Epic bằng `workflow_dispatch` (`gh workflow run jira-sync.yml --ref develop -f item=DEMO-11`). Run 41111907997 xanh và in:
+
+```
+workflow_dispatch: DEMO-11
+Made DEMO-12: Refine (new → ready)
+```
+
+DEMO-12 sang Ready lúc 02:03:00, người chuyển là `orchestratorci`. DEMO-13 và DEMO-14 vẫn ở To Do. Điều này đúng hợp đồng: workflow `sub-task` bắt đầu ở `to-do` và không có trạng thái Ready, còn effect `refine-children` chỉ chuyển Story và Task con. Tiêu chí 2 của T18 đạt theo nghĩa đó.

@@ -529,7 +529,7 @@ Xem [plan.md](plan.md#checkpoint-3).
 
 ## Giai đoạn 6: kiểm thật
 
-### [ ] T18: Epic thử: spec và plan [bạn]
+### [x] T18: Epic thử: spec và plan [bạn]
 
 **Mô tả:** Claude tạo Epic "Mã giảm giá cho giỏ hàng" trên `DEMO`; Epic không có Figma. Tài liệu nằm trên nhánh `feature/<EPIC-KEY>-spec` (plan, quyết định 6). Các bước:
 
@@ -544,13 +544,13 @@ Xem [plan.md](plan.md#checkpoint-3).
 9. **Bạn** bấm `Approve plan`. Claude chạy `jira-sync` cho Epic bằng `workflow_dispatch`, để các item đạt DoR sang Ready.
 
 **Tiêu chí chấp nhận:**
-- [ ] `spec.md`, `design.md` và `plan.md` đúng template; AC đánh số trong cả Epic.
-- [ ] Story và hai Sub-task có trên Jira, sang Ready nhờ `refine-children`.
-- [ ] Job `policy` đỏ rồi xanh trên PR thử.
-- [ ] Mỗi lượt chạy có số đo.
+- [x] `spec.md`, `design.md` và `plan.md` đúng template; AC đánh số trong cả Epic.
+- [x] Story và hai Sub-task có trên Jira, sang Ready nhờ `refine-children`.
+- [x] Job `policy` đỏ rồi xanh trên PR thử.
+- [x] Mỗi lượt chạy có số đo.
 
 **Kiểm chứng:**
-- [ ] Các bước và kết quả ghi trong `tasks/verification.md`
+- [x] Các bước và kết quả ghi trong `tasks/verification.md`
 
 **Phụ thuộc:** T17
 
