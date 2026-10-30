@@ -95,9 +95,9 @@ T19, T20, T21 ── T22 maxTurns, tài liệu, lưu trữ
 - [x] T4: NOT TESTED trong báo cáo QA
 
 ### Checkpoint 1
-- [ ] `npm run validate`, `npm test`, `npm run render:check`, `npm run jira:checklist:check` xanh
-- [ ] Bảy tiền đề có kết quả trong `tasks/verification.md`. Tiền đề nào sai thì spec đã được sửa và bạn đã duyệt bản sửa
-- [ ] Bạn xem kết quả của T1–T2
+- [x] `npm run validate`, `npm test`, `npm run render:check`, `npm run jira:checklist:check` xanh
+- [x] Bảy tiền đề có kết quả trong `tasks/verification.md`. Tiền đề nào sai thì spec đã được sửa và bạn đã duyệt bản sửa
+- [x] Bạn xem kết quả của T1–T2 (bạn cho qua ngày 2026-10-30, Phiên 14 · Lượt 4)
 
 ### Giai đoạn 2: `design.md`
 - [ ] T5: `check-design` cho màn hình kiểu ASCII
