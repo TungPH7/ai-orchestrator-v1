@@ -524,3 +524,29 @@ Prompt: làm Sub-task DEMO-14; đọc comment bàn giao trên DEMO-13; DEMO-12 c
 - CI run 41116700893 xanh. `jira-sync` của PR in `Waiting DEMO-12: Submit needs ci-green`, vì CI chưa xong lúc nó chạy. Sau khi CI xanh, `merge-gate` in `Waiting #11: reviewer report on head 2e3689d; security report on head 2e3689d; approval on head 2e3689d`, và `jira-sync` theo sau in `Made DEMO-12: Submit (in-progress → in-review)` (02:37:42, `orchestratorci`).
 
 **Quan sát cho `dev-workflow`:** comment nhờ `ba` tạo Task chỉ nằm trên Jira. Chưa có gì gọi `ba` dậy để đọc nó; Level 1 cần bạn hoặc Claude chuyển lời.
+
+### Review: `reviewer`
+
+Prompt: "Review PR #11." Lúc 02:40, hệ thống dừng shell nền chạy lượt này vì máy thiếu RAM. Process `claude -p` vẫn chạy mồ côi và đi tới hết; Claude đợi nó thoát, không chạy lại.
+
+| Lượt | Commit | Effort | Lượt model | Thời gian | Token ra | Cache đọc | Cache ghi | Quy ra USD | Kết quả |
+|---|---|---|---|---|---|---|---|---|---|
+| `reviewer` 1 | `2e3689d` | xhigh | 33 | 8 ph 1 s | 39.736 | 2.562.790 | 148.135 | 2,493 | COMMENT (`tungph7-ao-review[bot]`, 02:46:40): 1 Medium, 2 Low |
+
+**Agent làm gì:**
+
+- Đọc PR, Story và tài liệu của Epic bằng `git show origin/feature/DEMO-11-spec:…`, rồi chép nhánh ra từng file bằng `git show` để chạy test. Kết quả trùng với PR: 95/95 unit, 13/13 E2E trên Chrome, lint và typecheck sạch.
+- Kiểm rủi ro mà plan nhờ nó kiểm: test `Host` dùng `node:http` và `node:net`, không dùng `fetch`.
+- Chạy 29 mutation; test bắt được 27. Hai mutation còn sống thành hai finding:
+  - **Medium:** bỏ dòng `if (size > BODY_LIMIT) return;` trong `readBody` thì cả 95 test vẫn pass. Khi đó, một body chunked gồm năm chunk 600 byte làm server sập (`ERR_HTTP_HEADERS_SENT`). Code hiện tại đúng; chỉ thiếu test hồi quy.
+  - **Low:** test "413 at once" không kiểm "at once". Bỏ bước kiểm `Content-Length` trước khi đọc body thì test vẫn pass.
+- Finding Low thứ ba: `(server.address() as AddressInfo).port` giấu `null` lúc server đang đóng. Nó thử cách sửa `request.socket.localPort` trên bản chép: 95/95 vẫn pass.
+- Xác nhận hai finding Low của nó ở PR #9 đã được sửa.
+- Báo ngoài finding: ADR-0001 vẫn ở Proposed, và dòng DoR "Thuộc Epic có plan đã duyệt" trong mô tả DEMO-12 chưa đánh dấu. Nó nhắc bạn kiểm gate ② trước khi duyệt. Mô tả Story do `ba` viết lúc tạo; không ai đánh dấu lại checklist khi `refine` chạy. Đây là việc của `dev-workflow`.
+
+**Hook từ chối hai lần:**
+
+- `gh-guard: reviewer has read-only git (agents/roster.yaml): git archive would change the shared checkout or the repository`. `git archive` không có trong danh sách lệnh đọc của `lib/agents/scope.mjs`. Chặn như vậy là chấp nhận được, vì `git archive -o` ghi file ra bất cứ đâu. Nó chuyển sang `git show`.
+- `gh-guard: reviewer uses the review App, which runs ao-pr.mjs review, not undefined` khi nó `grep` trong `ao-pr.mjs`. Đây là lỗi kit PR #97 đã sửa; bản chép trong `ao-pilot` chưa có bản sửa đó.
+
+Medium không chặn merge. Claude chạy `security` trên cùng head, và bạn quyết ở gate ③ có cần sửa trước không.
