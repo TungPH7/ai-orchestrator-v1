@@ -351,7 +351,7 @@ A4 kiểm thêm: mỗi skill chép vào có `SKILL.md`, và `name:` trùng tên 
 
 **Cỡ:** M
 
-### [ ] T12: Prompt của sáu vai trò còn lại, `agents/rules.md`
+### [x] T12: Prompt của sáu vai trò còn lại, `agents/rules.md`
 
 **Mô tả:**
 
@@ -360,11 +360,11 @@ A4 kiểm thêm: mỗi skill chép vào có `SKILL.md`, và `name:` trùng tên 
 - A2 kiểm thêm: mỗi vai trò có file prompt.
 
 **Tiêu chí chấp nhận:**
-- [ ] Như T11.
-- [ ] A2 có fixture âm cho trường hợp thiếu prompt và trường hợp thừa prompt.
+- [x] Như T11.
+- [x] A2 có fixture âm cho trường hợp thiếu prompt và trường hợp thừa prompt.
 
 **Kiểm chứng:**
-- [ ] `npm run validate`, `npm test` xanh
+- [x] `npm run validate`, `npm test` xanh
 
 **Phụ thuộc:** T11
 
