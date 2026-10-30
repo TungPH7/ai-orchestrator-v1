@@ -80,7 +80,7 @@ Bạn làm: đồng ý cài. Nếu Windows hỏi quyền mạng cho Chrome thì 
 
 **Cỡ:** S
 
-### [ ] T3: Thay đổi hợp đồng và template `design.md` (spec mục 2.11, điểm 1–3)
+### [x] T3: Thay đổi hợp đồng và template `design.md` (spec mục 2.11, điểm 1–3)
 
 **Mô tả:**
 
@@ -97,12 +97,12 @@ Bạn làm: đồng ý cài. Nếu Windows hỏi quyền mạng cho Chrome thì 
 Capability map trong `SPEC.md` đã được cập nhật lúc duyệt spec.
 
 **Tiêu chí chấp nhận:**
-- [ ] `npm run validate` nhận artifact mới cùng template của nó.
-- [ ] Test của hợp đồng và template phủ artifact `design` và cách đánh số AC.
-- [ ] `docs/sdlc.md` có artifact `design` và đầu ra mới của stage `spec`.
+- [x] `npm run validate` nhận artifact mới cùng template của nó.
+- [x] Test của hợp đồng và template phủ artifact `design` và cách đánh số AC.
+- [x] `docs/sdlc.md` có artifact `design` và đầu ra mới của stage `spec`.
 
 **Kiểm chứng:**
-- [ ] Bốn lệnh trong quy ước chung xanh
+- [x] Bốn lệnh trong quy ước chung xanh
 
 **Phụ thuộc:** không
 
