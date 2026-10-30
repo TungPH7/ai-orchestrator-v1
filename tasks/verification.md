@@ -422,3 +422,37 @@ Tiêu chí 4 của spec mục 9 đạt, cả phần kiểm trên PR thật. Nhá
 - **Chỉ dẫn của tổ chức đi vào phiên của agent.** Câu trả lời của `ba`, `ux` và `sa` gắn nhãn `[Unverified]` và `[Inference]` theo chỉ dẫn "Reality filter" của tài khoản. Nhãn cũng nằm trong tài liệu đã commit: 6 chỗ trong `spec.md`, 2 chỗ trong `design.md`. [Inference] Mọi dự án chạy bằng tài khoản này đều có hành vi đó; T22 ghi vào tài liệu.
 - **Connector của claude.ai cũng được nối.** Event `init` của mỗi lượt liệt kê cả connector của tài khoản: Claude Docs và Microsoft 365 ở `connected`; Figma, Notion, Google Sheets, Atlassian Rovo ở `needs-auth`. Agent không gọi được chúng: số tool của `ba` là 12, đúng bằng danh sách `tools` của nó.
 - **`docs/sdlc.md` không có trong dự án.** Template `spec.md` trỏ tới file này để lấy DoD, nhưng bản chép kit không có nó. `ba` lấy DoD từ `.ai-orchestrator/contract/work-items.yaml`. T22 sửa đường trỏ, hoặc chép file vào dự án.
+
+### Stage plan
+
+Bạn bấm `Approve spec` lúc 01:19:17, và DEMO-11 sang Planning. `sa` và `ba` chạy mỗi agent một phiên mới. Prompt dặn `sa` ghi Status Approved cho `spec.md` và `design.md`, rồi push nhánh tài liệu, để link plan comment lên Epic mở được.
+
+| Lượt | Model, effort | Lượt model | Thời gian | Token ra | Cache đọc | Cache ghi | Quy ra USD | Kết quả |
+|---|---|---|---|---|---|---|---|---|
+| `sa` 3 | Opus, xhigh | 36 | 14 ph 23 s | 85.757 | 3.189.596 | 144.656 | 3,511 | `b063d4c` Status Approved; `9a377a4` ADR-0001 (Proposed); `4c619ed` `plan.md`; comment link plan lên Epic; 2 câu hỏi mở |
+| `sa` 4 (`--resume`) | Opus, xhigh | 13 | 1 ph 43 s | 9.216 | 1.592.146 | 15.012 | 0,622 | `40b5091`: Q1, Q2 thành quyết định |
+| `ba` 3 | Opus, xhigh | 42 | 6 ph 24 s | 38.395 | 3.314.112 | 118.462 | 2,379 | DEMO-12 (Story), DEMO-13 và DEMO-14 (Sub-task); `feb4f06` điền key vào plan; comment các key lên Epic |
+
+Ba lượt của stage plan tốn 6,51 USD quy đổi. Cộng với stage spec, mười lượt của T18 tốn 11,81 USD, gần mức trên của ước tính 6–12 USD ở Checkpoint 3. `sa` 3 là lượt đắt nhất. Không lượt nào bị hook chặn.
+
+**Câu trả lời Claude đưa thay bạn:**
+
+- Q1 của plan: không mở PR tài liệu vào `develop`. Tài liệu ở lại trên `feature/DEMO-11-spec` (plan của module, quyết định 6), và agent đọc bằng `git show feature/DEMO-11-spec:<file>`.
+- Q2 của plan: số tiền giảm bằng 0 hiện "0 ₫", không có dấu trừ.
+
+**Agent làm gì:**
+
+- `sa` viết plan 389 dòng: 9 quyết định kiến trúc, hợp đồng của `POST /` (trường `code` và `applied`, kiểu `CouponState`, thứ tự kiểm `Host` → path → method → `Origin` → cỡ body), Task List, 8 rủi ro. Nó dựng prototype trong `.ai/sa/demo-11/` (không commit) và chạy thử trên Node 24.17.0:
+  - 413 có `Connection: close` thì server giữ tối đa 1.024 byte. Không có header đó, Node đọc rồi bỏ cả body 5 MB.
+  - `fetch` của Node bỏ header `Host` tự đặt và không gửi `Origin`. Vì vậy test của `Host` phải dùng `node:http` hoặc `node:net`; một test viết bằng `fetch` sẽ pass sai.
+  - Nó tái hiện finding Low của `reviewer` ở T16 (test treo khi server sập) và thử cách sửa.
+- `ba` tạo Story DEMO-12 với AC1–AC11 nguyên văn từ SPEC, và Sub-task DEMO-13 (BE, 4 file code), DEMO-14 (FE, 1 file code). Mô tả Story có lệnh `git show` để đọc tài liệu. Vài lựa chọn của nó:
+  - Không tạo link "Blocks" từ DEMO-13 sang DEMO-14. Lý do: guard của `start` đòi item chặn đã merge, mà Sub-task không bao giờ merge riêng. Phụ thuộc được ghi trong mô tả.
+  - Sub-task viết theo template `task.md`, vì kit không có template cho Sub-task.
+  - Phần chuyển markdown của Jira gộp hai khoảng trắng ở AC3 (`  giam10  `) thành một. `ba` thấy lỗi, gửi lại mô tả, rồi đọc lại để kiểm.
+- `spec.md`, `design.md`, `plan.md` có đúng các heading của template, và AC1–AC11 đánh số liên tục trong cả Epic.
+
+**Quan sát:**
+
+- Comment của `sa` trên Epic vẫn ghi hai câu hỏi Q1, Q2 như đang mở. `sa` không sửa comment sau khi câu hỏi có trả lời.
+- ADR-0001 ở Proposed. `sa` ghi rằng ADR chuyển sang Accepted khi plan qua gate ②. Nhưng sau gate ②, không bước nào của hợp đồng gọi lại `sa`. `dev-workflow` cần quyết ai đổi trạng thái này.
