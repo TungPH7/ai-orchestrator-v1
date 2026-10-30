@@ -54,8 +54,15 @@ test('dev roles and devops write anywhere but the protected paths, and only devo
   denied(write('fe-dev', '.claude/settings.json'), /\.claude\/\*\* is protected/, 'fe-dev edits the settings');
 });
 
-test('a file outside the project is not the roster\'s concern', () => {
-  allowed(call('reviewer', 'Write', { file_path: 'C:\\Users\\me\\AppData\\Local\\Temp\\notes.md' }), 'temp file');
+test('outside the project a role writes only in the temp folder', () => {
+  const tempDir = 'C:\\Users\\me\\AppData\\Local\\Temp';
+  allowed(call('reviewer', 'Write', { file_path: `${tempDir}\\notes.md` }, { roster, tempDir }), 'temp file');
+  denied(call('reviewer', 'Write', { file_path: 'C:\\Users\\me\\.gitconfig' }, { roster, tempDir }), /outside the project/, '~/.gitconfig');
+});
+
+test('the role paths ignore letter case, as Windows does', () => {
+  allowed(write('reviewer', '.AI/reviews/12.md'), '.AI/reviews');
+  denied(write('reviewer', 'SRC/cart.ts'), /reviewer may write only/, 'SRC/cart.ts');
 });
 
 const READS = [
@@ -108,6 +115,12 @@ const CHANGES = [
   ['git --git-dir log commit -m x', 'commit'],
   ['git --namespace show push origin HEAD', 'push'],
   ['git --config-env diff=HOME stash', 'stash'],
+  // Read commands in a form that writes, and more wrappers (second reviews of ao-pilot PR #8).
+  ['git diff --output=src/cart.ts origin/develop', 'diff'],
+  ['git log --output out.txt -1', 'log'],
+  ['git fetch origin develop:develop', 'fetch'],
+  ['time git checkout develop', 'checkout'],
+  ['timeout 30 git stash', 'stash'],
 ];
 
 test('read-only roles run the git commands that read, and are refused the ones that change the checkout or the repository', () => {

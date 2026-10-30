@@ -10,8 +10,9 @@ import { CONTRACT_DIR, ROOT } from '../helpers/kit.mjs';
 const contract = readContract(CONTRACT_DIR);
 const gates = readGates(join(ROOT, 'quality'));
 const PROJECT = 'D:\\work\\shop';
+const TEMP = 'C:\\Users\\me\\AppData\\Local\\Temp';
 
-const call = (agent, tool_name, tool_input) => checkAgentCall({ agent_type: agent, tool_name, tool_input }, { gates, contract, projectDir: PROJECT });
+const call = (agent, tool_name, tool_input) => checkAgentCall({ agent_type: agent, tool_name, tool_input }, { gates, contract, projectDir: PROJECT, tempDir: TEMP });
 const bash = (command, agent = 'fe-dev') => call(agent, 'Bash', { command });
 const denied = (result, pattern, label) => {
   assert.equal(result.allow, false, `${label} should be refused`);
@@ -153,7 +154,14 @@ test('agents do not edit protected paths, except devops on workflows', () => {
   denied(edit('fe-dev', 'D:/work/shop/.githooks/pre-push'), /\.githooks/, 'forward slashes');
   allowed(edit('fe-dev', `${PROJECT}\\src\\app.ts`), 'code');
   allowed(edit('fe-dev', `${PROJECT}\\docs\\github-workflows.md`), 'a doc that only mentions workflows');
-  allowed(edit('fe-dev', 'D:\\elsewhere\\.claude\\settings.json'), 'outside the project');
+  // Outside the project only the temp folder is open: a user setting such as ~/.gitconfig could move the hooks.
+  denied(edit('fe-dev', 'D:\\elsewhere\\.claude\\settings.json'), /outside the project/, 'outside the project');
+  denied(edit('fe-dev', 'C:\\Users\\me\\.gitconfig'), /outside the project/, 'a user setting');
+  allowed(edit('fe-dev', `${TEMP}\\notes.md`), 'the temp folder');
+  // The long path prefix and another letter case name the same file on Windows (second security review of PR #8).
+  denied(edit('fe-dev', `\\\\?\\${PROJECT}\\.claude\\settings.json`), /\.claude/, 'long path prefix');
+  denied(edit('fe-dev', `${PROJECT}\\.Claude\\hooks\\gh-guard.mjs`), /\.claude/, 'letter case');
+  denied(edit('fe-dev', `${PROJECT}\\.github\\Workflows\\ci.yml`), /\.github\/workflows/, 'letter case of a folder');
   // A path with .. is read where it leads (security review of ao-pilot PR #8).
   denied(edit('fe-dev', `${PROJECT}\\src\\..\\.claude\\settings.json`), /\.claude/, 'absolute path through ..');
   denied(edit('fe-dev', 'src/../.githooks/pre-push'), /\.githooks/, 'relative path through ..');
@@ -174,6 +182,40 @@ test('a command inside sh -c, bash -c, env, command or exec is checked like the 
     denied(bash(command), reason, command);
   }
   for (const command of ["sh -c 'npm test'", 'env NODE_ENV=test npm test', "bash -c 'git push origin feature/DEMO-1-x'"]) allowed(bash(command), command);
+});
+
+// The ways around gh-guard that the second reviews of ao-pilot PR #8 found (agent-roster T15).
+test('git settings from the environment, aliases, credentials and more wrappers are refused', () => {
+  for (const [command, reason] of [
+    ['GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=core.hooksPath GIT_CONFIG_VALUE_0=/x git push', /hook/],
+    ['GIT_CONFIG_PARAMETERS="\'core.hooksPath\'=\'/x\'" git commit -m x', /hook/],
+    ['env GIT_CONFIG_GLOBAL=/tmp/x.gitconfig git commit -m x', /hook/],
+    ['git -c include.path=/tmp/x.gitconfig commit -m x', /hook/],
+    ['git -c includeIf.gitdir:/repo/.path=/tmp/x.gitconfig push', /hook/],
+    ['git -c alias.p="!git push --no-verify" p', /alias/],
+    ['printf "protocol=https\\nhost=github.com\\n" | gh auth git-credential get', /token/],
+    ['git credential fill', /token/],
+    ['git credential-manager get', /token/],
+    ['gh alias set ap "pr review --approve"', /alias/],
+    ['gh alias import aliases.yml', /alias/],
+    ['timeout 60 git push --no-verify origin HEAD:develop', /hook/],
+    ['timeout -k 5 -s KILL 60 git push origin develop', /pull request/],
+    ['time git push origin develop', /pull request/],
+    ['nohup git push origin main', /pull request/],
+    ['nice -n 5 git push origin develop', /pull request/],
+    ['env -C . git push --no-verify origin HEAD:main', /hook/],
+    ["env -S 'git push origin develop'", /pull request/],
+    ["eval 'git push origin develop'", /pull request/],
+    ["bash -c -- 'git push origin develop'", /pull request/],
+    ['git push --no-veri origin feature/DEMO-1-x', /hook/],
+    ['git commit --no-verif -m x', /hook/],
+    ['xargs git push origin develop < /dev/null', /pull request/],
+  ]) {
+    denied(bash(command), reason, command);
+  }
+  for (const command of ['timeout 60 npm test', 'time npm run build', 'gh alias list', 'git config --get alias.co', 'git push --verbose origin feature/DEMO-1-x', 'echo "git is installed"']) {
+    allowed(bash(command), command);
+  }
 });
 
 test('the main session and agents outside the contract are not checked by this hook', () => {
