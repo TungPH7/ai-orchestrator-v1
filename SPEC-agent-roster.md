@@ -2,7 +2,7 @@
 
 > **Module:** `agent-roster`, xem capability map trong [SPEC.md](SPEC.md). **Phụ thuộc:** `sdlc-contract`; dùng hook, script và cấu hình của `tracker-integration` và `quality-gates` (mục 2.11). **Được dùng bởi:** `dev-workflow`, `release-workflow`, `project-scaffold`, và `ci-agents` ở Cấp 2.
 >
-> **Trạng thái:** bản nháp ngày 2026-10-30, chờ bạn duyệt. **Nguồn thảo luận:** [misc/brainstorm-discussion.md](misc/brainstorm-discussion.md), Phiên 13 · Lượt 1–6.
+> **Trạng thái:** đã duyệt ngày 2026-10-30; plan ở [tasks/plan.md](tasks/plan.md). **Nguồn thảo luận:** [misc/brainstorm-discussion.md](misc/brainstorm-discussion.md), Phiên 13 · Lượt 1–6.
 
 ## 1. Mục tiêu
 
@@ -354,19 +354,19 @@ blocks:
 
 Hook đọc lệnh theo mẫu nên không kín: Bash vẫn ghi được file, ví dụ bằng `echo >`. Lớp chặn thật vẫn là `merge-gate` và `audit`.
 
-### 2.11 Thay đổi hợp đồng và capability map (chờ duyệt)
+### 2.11 Thay đổi hợp đồng và capability map (đã duyệt)
 
 1. **Artifact `design`** trong `policies.yaml`: tên "Thiết kế màn hình", template `templates/design.md`, `created_by: [ux]`, lưu trong Git ở `docs/specs/<EPIC-KEY>/design.md`; ảnh của màn hình kiểu Figma ở `docs/specs/<EPIC-KEY>/design/`.
 2. **Stage `spec`:** đầu ra thành `[spec, design]`, thêm ghi chú "ux viết design khi Epic đụng tới giao diện".
 3. **Template `spec.md` và `story.md`:** AC đánh số `AC1`, `AC2`… không trùng trong Epic; Story giữ nguyên số khi tạo từ SPEC. Mục Design của `story.md` ghi màn hình của `design.md` mà Story phủ (`S1`, `S2`), hoặc "Không đổi giao diện". Lý do: YAML của `design.md` trỏ tới AC bằng mã, và lúc viết `design.md` thì Story chưa có trên Jira.
 4. **Template `qa-report.md`:** thêm NOT TESTED ở từng AC và ở kết quả chung, cùng hướng dẫn về bằng chứng (mục 2.9). `qaReportResult` đọc được NOT TESTED.
-5. **Capability map:** `agent-roster` phụ thuộc thêm `tracker-integration` và `quality-gates`, vì agent dùng hook Jira, `ao-pr.mjs`, `gh-guard` và hai App. Hai module đó đã xong, nên thứ tự build không đổi. Thêm module `figma-integration` (tên tạm, chưa có SPEC) sau `agent-roster`: agent đọc Figma qua MCP, script REST render ảnh đúng phiên bản đã duyệt.
+5. **Capability map:** `agent-roster` phụ thuộc thêm `tracker-integration` và `quality-gates`, vì agent dùng hook Jira, `ao-pr.mjs`, `gh-guard` và hai App. Hai module đó đã xong, nên thứ tự build không đổi. Thêm module `figma-integration` (tên tạm, chưa có SPEC) sau `agent-roster`: agent đọc Figma qua MCP, script REST render ảnh đúng phiên bản đã duyệt. Capability map trong `SPEC.md` được cập nhật ngay lúc duyệt spec, như các module trước.
 
 Sinh lại `docs/sdlc.md` sau các thay đổi trên.
 
 ### 2.12 Tiền đề kiểm ở task đầu
 
-Spec dựa trên các điểm sau của Claude Code 2.1.312. T1 kiểm từng điểm bằng agent thử chạy Haiku cho rẻ; điểm nào sai thì spec được sửa trước khi làm tiếp.
+Spec dựa trên các điểm sau của Claude Code 2.1.312. T1 và T2 của plan kiểm từng điểm bằng agent thử chạy Haiku cho rẻ; điểm nào sai thì spec được sửa trước khi làm tiếp.
 
 1. `skills` nhận skill của plugin dạng `agent-skills:<skill>` và nạp nội dung kèm đường dẫn thư mục skill, khi agent không có tool `Skill`. Nếu không: chép các skill cần dùng của agent-skills vào kit như skill registry (giấy phép MIT).
 2. `effort` trong frontmatter có hiệu lực, và `CLAUDE_CODE_EFFORT_LEVEL` thắng nó. Đo bằng cùng một prompt ở `low` và `max`, so số token ra.
@@ -558,13 +558,13 @@ Phiên 13 · Lượt 1–6 (2026-10-29 và 2026-10-30):
 2. **`ux` giao gì:** artifact mới `design`, theo Mermaid, ASCII có đánh số và YAML, với năm quy tắc và script kiểm (mục 2.8).
 3. **Skill:** `playwright-cli` cho `qa`; `security-review` và `gha-security-review` của Sentry cho `security`; skill theo stack khai trong file riêng của từng dự án. Spec chốt cách đưa vào: chép vào kit, ghim theo commit, đổi tên `security-review` (mục 2.7).
 4. **agency-agents:** chỉ lấy ý cho `qa` và `security`, và thêm NOT TESTED vào báo cáo QA.
-5. **Trình duyệt** (bạn hỏi lại ngày 2026-10-30): `qa` dùng `playwright-cli`, `fe-dev` dùng Chrome DevTools MCP (mục 2.7). Điểm này chờ bạn xác nhận cùng spec.
+5. **Trình duyệt** (bạn hỏi lại ngày 2026-10-30): `qa` dùng `playwright-cli`, `fe-dev` dùng Chrome DevTools MCP (mục 2.7). Bạn duyệt cùng spec ngày 2026-10-30.
 6. Bạn không sửa giả định nào trong chín giả định ở Lượt 1.
 7. **Figma** (Lượt 4–6): `design.md` có hai kiểu màn hình, ASCII hoặc Figma kèm ảnh export. Ảnh đã duyệt nằm trong Git theo năm quy tắc do `check-design` kiểm; dự án nhiều ảnh bật LFS từ đầu. Bạn export ảnh vào `.ai/design-inbox/<EPIC-KEY>/`, rồi `ux` chuyển ảnh vào `docs/specs/<EPIC-KEY>/design/` (mục 2.8). Figma MCP và script REST thành module riêng.
 
 ## 11. Câu hỏi mở
 
-Không còn câu hỏi mở. Các điểm mới của spec (mục 2.7, 2.9, 2.10, 2.11 và kịch bản kiểm thật ở mục 7) chờ bạn duyệt cùng spec.
+Không còn câu hỏi mở. Bạn duyệt spec ngày 2026-10-30 (Phiên 13 · Lượt 7), gồm các điểm mới ở mục 2.7, 2.9, 2.10, 2.11, kịch bản kiểm thật ở mục 7, và ba chi tiết của mục 2.8 mà Claude tự chốt ở Lượt 6.
 
 ## 12. Rủi ro
 

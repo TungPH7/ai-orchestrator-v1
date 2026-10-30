@@ -85,7 +85,8 @@ Staging và Production dùng cùng một Docker image build từ nhánh `release
 | Module id | Trách nhiệm | Phụ thuộc |
 |---|---|---|
 | `sdlc-contract` | Quy trình chuẩn ở dạng máy đọc được (YAML + Markdown). Mỗi giai đoạn ghi rõ agent phụ trách, đầu vào, đầu ra và điều kiện qua cổng. Module này còn chứa: state machine của task, DoR/DoD, các cổng duyệt, ánh xạ môi trường, artifact templates, và quy tắc xử lý lỗi (retry tối đa mấy lần, khi nào báo bạn). Bổ sung 2026-10-26: phân cấp work item, nhịp làm việc, release theo quyết định của bạn, giới hạn WIP | — |
-| `agent-roster` | Định nghĩa từng subagent: phạm vi, đầu vào/đầu ra, tool được phép, skill được dùng, model. Dựa trên 10 vai trò bạn đã chốt trong `misc/chat.md` | sdlc-contract |
+| `agent-roster` | Định nghĩa từng subagent: phạm vi, đầu vào/đầu ra, tool được phép, skill được dùng, model. Dựa trên 10 vai trò bạn đã chốt trong `misc/chat.md`. Bổ sung 2026-10-30: artifact `design` cho `ux`, NOT TESTED trong báo cáo QA, `gh-guard` theo vai trò | sdlc-contract, tracker-integration, quality-gates |
+| `figma-integration` | Agent đọc thiết kế Figma: Figma MCP cho `ux` và `fe-dev`, script gọi REST API render ảnh đúng phiên bản đã duyệt, tài khoản Figma của agent, bật tắt theo dự án. Thêm ngày 2026-10-30 | agent-roster |
 | `tracker-integration` | Workflow và board Jira khớp với state machine; cài Rovo MCP; quy ước gắn mã Jira vào nhánh, commit, PR; liên kết Jira với GitHub. Bổ sung 2026-10-26: Kanban board, giới hạn WIP cho từng cột, Fix Version cho từng bản release | sdlc-contract |
 | `quality-gates` | Pre-commit hook ở local; pipeline CI trên PR; branch protection; script kiểm tra đã có đủ artifact chưa. Bổ sung 2026-10-29: danh tính GitHub App cho agent, `merge-gate` và `audit` thay cho branch protection trên gói Free | sdlc-contract, tracker-integration |
 | `dev-workflow` | Lệnh điều phối vòng trong: spec → plan → build → review → merge vào `develop`. Mỗi lệnh gọi đúng agent, tạo artifact, kiểm tra cổng, cập nhật Jira | agent-roster, tracker-integration, quality-gates |
@@ -98,7 +99,10 @@ Staging và Production dùng cùng một Docker image build từ nhánh `release
 sdlc-contract → agent-roster, tracker-integration (làm song song được)
               → quality-gates (cần tracker-integration, đổi ngày 2026-10-29)
               → dev-workflow → release-workflow → project-scaffold
+agent-roster  → figma-integration (thêm ngày 2026-10-30; làm lúc nào do bạn chọn)
 ```
+
+`agent-roster` dùng hook, script và cấu hình của `tracker-integration` và `quality-gates` (đổi ngày 2026-10-30). Hai module đó đã xong trước, nên thứ tự build không đổi.
 
 - **Pilot 1**, sau khi xong `dev-workflow`: chạy thủ công một feature nhỏ trên dự án mẫu Next.js + NestJS, từ spec đến merge vào `develop`. Lúc này chưa có `project-scaffold`, nên kit được chép tay vào dự án pilot.
 - **Pilot 2**, sau khi xong `release-workflow`: đưa feature đó đi tiếp qua Development, Staging rồi Production.
@@ -124,7 +128,8 @@ sdlc-contract → agent-roster, tracker-integration (làm song song được)
 | Module id | File | Trạng thái |
 |---|---|---|
 | `sdlc-contract` | [`SPEC-sdlc-contract.md`](SPEC-sdlc-contract.md) | Hoàn thành 2026-10-27; plan lưu ở [`tasks/archive/sdlc-contract/`](tasks/archive/sdlc-contract/plan.md) |
-| `agent-roster` | [`SPEC-agent-roster.md`](SPEC-agent-roster.md) | Bản nháp 2026-10-30, chờ duyệt |
+| `agent-roster` | [`SPEC-agent-roster.md`](SPEC-agent-roster.md) | Đã duyệt 2026-10-30; plan ở [`tasks/plan.md`](tasks/plan.md) |
+| `figma-integration` | `SPEC-figma-integration.md` | Chưa viết |
 | `tracker-integration` | [`SPEC-tracker-integration.md`](SPEC-tracker-integration.md) | Hoàn thành 2026-10-28; plan lưu ở [`tasks/archive/tracker-integration/`](tasks/archive/tracker-integration/plan.md) |
 | `quality-gates` | [`SPEC-quality-gates.md`](SPEC-quality-gates.md) | Hoàn thành 2026-10-29; plan lưu ở [`tasks/archive/quality-gates/`](tasks/archive/quality-gates/plan.md) |
 | `dev-workflow` | `SPEC-dev-workflow.md` | Chưa viết |
