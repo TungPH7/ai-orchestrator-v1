@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { join } from 'node:path';
 import { readGates } from '../../lib/quality/gates.mjs';
-import { auditProblems, checkConventions } from '../../lib/quality/policy.mjs';
+import { auditProblems, checkConventions, designFilesToCheck } from '../../lib/quality/policy.mjs';
 import { addedLines, deletedTests, findSuppressions, loweredThresholds } from '../../lib/quality/suppressions.mjs';
 import { ROOT } from '../helpers/kit.mjs';
 
@@ -117,9 +117,21 @@ test('an exception hides its advisory until it expires', () => {
   ]);
 });
 
+// agent-roster spec 2.8: the design.md files a PR changes, and those next to a design/ folder whose images it changes.
+test('the policy job checks the design.md a PR changes, and the design.md next to the images it changes', () => {
+  const atHead = ['docs/specs/DEMO-20/design.md', 'docs/specs/DEMO-30/design.md'];
+  const pick = (...changes) => designFilesToCheck(changes.map((c) => ({ status: c[0], path: c.slice(2) })), (path) => atHead.includes(path));
+
+  assert.deepEqual(pick('M docs/specs/DEMO-20/design.md'), ['docs/specs/DEMO-20/design.md']);
+  assert.deepEqual(pick('A docs/specs/DEMO-30/design/S1-desktop.png', 'D docs/specs/DEMO-30/design/S1-old.png'), ['docs/specs/DEMO-30/design.md']);
+  assert.deepEqual(pick('M docs/specs/DEMO-20/design.md', 'A docs/specs/DEMO-20/design/S2-desktop.png'), ['docs/specs/DEMO-20/design.md']);
+  assert.deepEqual(pick('D docs/specs/DEMO-40/design.md', 'D docs/specs/DEMO-40/design/S1-desktop.png'), []);
+  assert.deepEqual(pick('M docs/design.md', 'A src/components/design/button.png', 'M README.md', 'M docs/specs/DEMO-20/spec.md'), []);
+});
+
 test('the check-policy script reports each step of a PR and fails on any problem', async (t) => {
   const { spawnSync } = await import('node:child_process');
-  const { mkdirSync, mkdtempSync, rmSync, writeFileSync } = await import('node:fs');
+  const { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } = await import('node:fs');
   const { tmpdir } = await import('node:os');
   const dir = mkdtempSync(join(tmpdir(), 'policy-'));
   t.after(() => rmSync(dir, { recursive: true, force: true }));
@@ -131,6 +143,10 @@ test('the check-policy script reports each step of a PR and fails on any problem
   git('commit', '-q', '-m', 'chore(repo): start (DEMO-1)');
   git('checkout', '-q', '-b', 'feature/DEMO-2-add');
   writeFileSync(join(dir, 'src', 'a.ts'), 'export const a = 1;\n// eslint-disable-next-line\nexport const b = 2;\n');
+  const fixture = (name) => readFileSync(join(ROOT, 'tests', 'fixtures', 'design', name), 'utf8');
+  mkdirSync(join(dir, 'docs', 'specs', 'DEMO-2'), { recursive: true });
+  writeFileSync(join(dir, 'docs', 'specs', 'DEMO-2', 'design.md'), fixture('invalid/d2-block-without-yaml.md'));
+  git('add', '.');
   git('commit', '-q', '-am', 'wip');
   const policy = (title) => spawnSync(process.execPath, [join(ROOT, 'scripts', 'check-policy.mjs'), '--base', 'develop', '--title', title], { cwd: dir, encoding: 'utf8', env: { ...process.env, GITHUB_STEP_SUMMARY: '' } });
 
@@ -140,9 +156,11 @@ test('the check-policy script reports each step of a PR and fails on any problem
   assert.match(bad.stdout, /^FAIL {2}Conventions\n {6}commit \w+ "wip": /m);
   assert.match(bad.stdout, /^FAIL {2}Suppressions\n {6}src\/a\.ts:2 eslint-disable needs "reason: <why>"/m);
   assert.match(bad.stdout, /^note {2}no package-lock\.json: npm audit skipped$/m);
+  assert.match(bad.stdout, /^FAIL {2}Design\n {6}docs\/specs\/DEMO-2\/design\.md:31 D2 \[5\] of S1 has no entry under blocks in its YAML$/m);
 
   git('commit', '-q', '--amend', '-m', 'feat(a): add b (DEMO-2)');
   writeFileSync(join(dir, 'src', 'a.ts'), 'export const a = 1;\n// eslint-disable-next-line -- reason: generated name\nexport const b = 2;\n');
+  writeFileSync(join(dir, 'docs', 'specs', 'DEMO-2', 'design.md'), fixture('valid.md'));
   git('commit', '-q', '-am', 'fix(a): give the reason (DEMO-2)');
   const good = policy('feat(a): add b (DEMO-2)');
   assert.equal(good.status, 0, good.stdout + good.stderr);
