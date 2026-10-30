@@ -363,3 +363,62 @@ Bạn chọn chạy tiếp theo plan ở Checkpoint 3, `security` giữ effort `
   - hai finding Low của `reviewer` ở T16 chưa sửa: test hồi quy treo, `engines` trong `package-lock.json`.
 - Nhánh tài liệu `feature/DEMO-11-spec` trên `ao-pilot`, tách từ `develop` `6c25b8b` (plan, quyết định 6).
 - Bản chép kit trong `ao-pilot` vẫn là bản của T15. Kit PR #95–#97 chưa có trong đó.
+
+### Stage spec
+
+Bạn bấm `Start spec` lúc 00:29:59, và DEMO-11 sang Specifying. Mỗi lượt chạy bằng `ao-agent.mjs <role> -p` trong `ao-pilot`, trên nhánh `feature/DEMO-11-spec`. Claude trả lời thay bạn các câu hỏi mở của `ba` và `ux`, bằng một lượt `--resume` (plan, quyết định 5).
+
+| Lượt | Model, effort | Lượt model | Thời gian | Token ra | Cache đọc | Cache ghi | Quy ra USD | Kết quả |
+|---|---|---|---|---|---|---|---|---|
+| `ba` 1 | Opus, xhigh | 19 | 7 ph 24 s | 40.268 | 1.092.407 | 100.015 | 1,824 | `spec.md` (`582c5dd`): 3 user story, AC1–AC11, 7 câu hỏi mở |
+| `ba` 2 (`--resume`) | Opus, xhigh | 4 | 2 ph 4 s | 15.272 | 433.298 | 16.768 | 0,526 | `490b252`: Open Questions trống |
+| `ux` 1 | Sonnet, xhigh | 26 | 3 ph 51 s | 30.368 | 657.735 | 86.868 | 0,717 | `design.md` (`e67e4a3`): S1, 9 khối, `Design OK` ngay lần đầu, 10 câu hỏi mở |
+| `ux` 2 (`--resume`) | Sonnet, xhigh | 14 | 1 ph 14 s | 9.732 | 472.423 | 15.995 | 0,209 | `1d81b10`: đã ghi câu trả lời, nhưng còn để lại danh sách câu hỏi cũ |
+| `ux` 3 (`--resume`) | Sonnet, xhigh | 7 | 37 s | 3.453 | 743.478 | 6.670 | 0,135 | `172df6d`: xóa danh sách cũ |
+| `sa` 1 | Opus, xhigh | 22 | 5 ph 36 s | 33.065 | 1.152.780 | 92.253 | 1,630 | `4484a0b`: yêu cầu phi chức năng, Tech Stack, 1 câu hỏi mở (Q8) |
+| `sa` 2 (`--resume`) | Opus, xhigh | 9 | 44 s | 4.027 | 572.507 | 7.595 | 0,256 | `aa38d59`: Q8 thành quyết định |
+
+Bảy lượt của stage spec tốn 5,30 USD quy đổi: `ba` 2,35, `ux` 1,06, `sa` 1,89. Không lượt nào bị hook chặn.
+
+**Số đo của lượt `--resume` là số cộng dồn.** Với `claude -p --resume`, event `result` (`total_cost_usd`, `modelUsage`, `duration_api_ms`) cộng cả các lượt trước của cùng phiên. Ví dụ, cache đọc của `ba` 2 cộng từ các message trong stream là 433.298, đúng bằng 1.525.705 trong `result` trừ 1.092.407 của `ba` 1. Bảng trên ghi hiệu số. `duration_api_ms` của `ux` 3 là 312 s, trong khi lượt đó chạy 37 s. T15–T17 không có lượt `--resume` nào, nên số đo của chúng không bị ảnh hưởng. Token ra của lượt `--resume` cũng lấy hiệu số của `result`, vì message trong stream chỉ ghi một phần số token ra.
+
+**Câu trả lời Claude đưa thay bạn:**
+
+- Q1–Q7 của `ba`: đồng ý cả bảy đề xuất (mã `GIAM10` và `GIAM20K`, làm tròn xuống, phí vận chuyển tính trên tạm tính trước giảm, kiểm `Origin`, body tối đa 1.024 byte, câu chữ, `test.describe('DEMO-11', …)`). Claude thêm hai điều:
+  - Cấm `Referrer-Policy: no-referrer`, vì khi đó Chrome gửi `Origin: null` và AC9 chặn chính form của trang.
+  - Ba user story gom vào một Story Jira có Sub-task BE và Sub-task FE, để T19 chỉ có một PR.
+- Q1–Q10 của `ux`: đồng ý cả mười đề xuất, gồm `maxlength="64"`, `autofocus` khi có lỗi, `POST /` trả thẳng 200.
+- Q8 của `sa`: tạo server với `createServer({ requireHostHeader: false })`. Nếu không có tùy chọn này, Node tự trả 400 với body rỗng cho request HTTP/1.1 thiếu `Host`, trước khi code của server chạy.
+
+**Agent làm gì:**
+
+- `ba` đọc Epic, code, hai báo cáo review của PR #9, và chạy thử `formatMoney(-3900)` để ghi đúng chuỗi trong AC. Nó đưa ba ghi chú của `security` thành AC8–AC11, và hai finding Low của `reviewer` vào Technical requirements. Nó cũng thấy tên E2E `AC1`, `AC2` của DEMO-10 sẽ trùng với AC1, AC2 của Epic.
+- `ux` vẽ S1 ở desktop và mobile, 9 khối trỏ tới AC1–AC8. Ở lượt 2, nó báo các câu hỏi đã rời Open Questions, trong khi danh sách cũ vẫn còn; lượt 3 xóa danh sách đó.
+- `sa` chạy thử từng hành vi của Node mà quy tắc mới dựa vào, trên Node 24.17.0:
+  - Handler `async` đọc body bằng `for await` mà không có `try/catch` làm sập cả server khi client ngắt giữa chừng (`Error: aborted`). Đọc bằng event `data` và `end` thì server vẫn chạy.
+  - Hai header `Host` thì Node giữ cái đầu, nên server đếm bằng `rawHeaders`.
+  - Hai header `Origin` thì Node nối bằng `", "`, nên phép so khớp chính xác đã từ chối.
+
+### Job `policy` trên PR thử (tiêu chí 4)
+
+1. Nhánh tạm `feature/DEMO-11-design-check` tách từ `aa38d59`. Commit `7837c26` đổi `[9] Tổng cộng` thành `[10]` trong bản vẽ desktop của S1. Pre-commit không kiểm `design.md`, nên commit đi qua ở máy.
+2. Claude mở PR #10 vào `develop` bằng `ao-pr.mjs create`; người mở là `tungph7-ao-dev[bot]`.
+3. CI run 41102589131: `policy` đỏ sau 11 s, với dòng:
+
+   ```
+   FAIL  Design
+         docs/specs/DEMO-11/design.md:45 D2 [10] of S1 has no entry under blocks in its YAML
+   ```
+
+   Conventions, Suppressions, Thresholds và Dependencies đều `ok`, kể cả bảy commit do agent viết.
+4. Commit `a1f8b36` đặt lại `[9]`. CI run 41103610563: bốn job xanh, có dòng `ok  Design`.
+5. `jira-sync` của PR in `pull_request: DEMO-11` và `No change`, vì từ Specifying, Epic chỉ có transition của người. `merge-gate` in `Waiting #10: reviewer report on head a1f8b36; security report on head a1f8b36; approval on head a1f8b36`.
+6. Claude đóng PR #10 kèm comment và xóa nhánh tạm. DEMO-11 vẫn ở Specifying.
+
+Tiêu chí 4 của spec mục 9 đạt, cả phần kiểm trên PR thật. Nhánh `feature/DEMO-11-spec` được push để bạn đọc; push nhánh `feature/*` không chạy CI.
+
+### Quan sát
+
+- **Chỉ dẫn của tổ chức đi vào phiên của agent.** Câu trả lời của `ba`, `ux` và `sa` gắn nhãn `[Unverified]` và `[Inference]` theo chỉ dẫn "Reality filter" của tài khoản. Nhãn cũng nằm trong tài liệu đã commit: 6 chỗ trong `spec.md`, 2 chỗ trong `design.md`. [Inference] Mọi dự án chạy bằng tài khoản này đều có hành vi đó; T22 ghi vào tài liệu.
+- **Connector của claude.ai cũng được nối.** Event `init` của mỗi lượt liệt kê cả connector của tài khoản: Claude Docs và Microsoft 365 ở `connected`; Figma, Notion, Google Sheets, Atlassian Rovo ở `needs-auth`. Agent không gọi được chúng: số tool của `ba` là 12, đúng bằng danh sách `tools` của nó.
+- **`docs/sdlc.md` không có trong dự án.** Template `spec.md` trỏ tới file này để lấy DoD, nhưng bản chép kit không có nó. `ba` lấy DoD từ `.ai-orchestrator/contract/work-items.yaml`. T22 sửa đường trỏ, hoặc chép file vào dự án.
