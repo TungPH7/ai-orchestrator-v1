@@ -409,7 +409,7 @@ Claude sinh mười agent vào `kit/.claude/agents/` và file `kit/.claude/rules
 
 **Cỡ:** M
 
-### [ ] T14: Chế độ dự án: `--project`, `roster.local.yaml` và `ao-agent.mjs`
+### [x] T14: Chế độ dự án: `--project`, `roster.local.yaml` và `ao-agent.mjs`
 
 **Mô tả:** `render-agents.mjs --project .` sinh agent vào `.claude/` của dự án, từ bản chép ở `.ai-orchestrator/`. Bản chép vì vậy cần có thêm `agents/` và `templates/`. Script làm thêm hai việc:
 
@@ -419,15 +419,15 @@ Claude sinh mười agent vào `kit/.claude/agents/` và file `kit/.claude/rules
 `scripts/ao-agent.mjs` chạy agent làm phiên chính (spec mục 2.5). `lib/agents/launch.mjs` là hàm thuần, dựng lệnh `claude` và nội dung file skill từ roster, `roster.local.yaml` và các file `SKILL.md`. Script ghi file skill vào `.ai/agents/<role>.skills.md`, chạy `claude` với stdin, stdout, stderr nối thẳng, rồi trả về mã thoát của `claude`.
 
 **Tiêu chí chấp nhận:**
-- [ ] Test:
+- [x] Test:
   - skill được thêm đúng vai trò;
   - vai trò lạ hoặc skill không có thì báo lỗi rõ;
   - model, effort và tool không đổi được qua file này;
   - key của space được điền.
-- [ ] Test `launch` theo spec mục 7.
+- [x] Test `launch` theo spec mục 7.
 
 **Kiểm chứng:**
-- [ ] `npm test` xanh
+- [x] `npm test` xanh
 
 **Phụ thuộc:** T13
 
