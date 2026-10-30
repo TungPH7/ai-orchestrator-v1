@@ -474,7 +474,7 @@ Bạn làm: approve PR, rồi tự merge, vì PR sửa đường dẫn được 
 
 **Cỡ:** M
 
-### [ ] T16: `ao-pilot`: trang giỏ hàng tối thiểu và Playwright [bạn]
+### [x] T16: `ao-pilot`: trang giỏ hàng tối thiểu và Playwright [bạn]
 
 **Mô tả:** Theo quyết định 7 của plan, Claude thêm vào `ao-pilot`:
 
@@ -488,11 +488,11 @@ E2E chưa chạy trong CI. PR đi qua cổng như mọi PR: `reviewer` và `secu
 Bạn làm: đồng ý cài `@playwright/test` vào `ao-pilot`; approve PR.
 
 **Tiêu chí chấp nhận:**
-- [ ] `npm run test:e2e` xanh ở máy bạn, và CI xanh.
-- [ ] PR được `merge-gate` merge; deploy giả chạy; `audit` xanh.
+- [x] `npm run test:e2e` xanh ở máy bạn, và CI xanh.
+- [x] PR được `merge-gate` merge; deploy giả chạy; `audit` xanh.
 
 **Kiểm chứng:**
-- [ ] Số đo của hai lượt review nằm trong `tasks/verification.md`
+- [x] Số đo của hai lượt review nằm trong `tasks/verification.md`
 
 **Phụ thuộc:** T15
 
