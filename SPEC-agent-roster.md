@@ -2,7 +2,7 @@
 
 > **Module:** `agent-roster`, xem capability map trong [SPEC.md](SPEC.md). **Phụ thuộc:** `sdlc-contract`; dùng hook, script và cấu hình của `tracker-integration` và `quality-gates` (mục 2.11). **Được dùng bởi:** `dev-workflow`, `release-workflow`, `project-scaffold`, và `ci-agents` ở Cấp 2.
 >
-> **Trạng thái:** bản nháp ngày 2026-10-30, chờ bạn duyệt. **Nguồn thảo luận:** [misc/brainstorm-discussion.md](misc/brainstorm-discussion.md), Phiên 13 · Lượt 1–3.
+> **Trạng thái:** bản nháp ngày 2026-10-30, chờ bạn duyệt. **Nguồn thảo luận:** [misc/brainstorm-discussion.md](misc/brainstorm-discussion.md), Phiên 13 · Lượt 1–6.
 
 ## 1. Mục tiêu
 
@@ -10,7 +10,7 @@ Mỗi vai trò agent của hợp đồng có một subagent của Claude Code bi
 
 - Mười agent nằm ở `kit/.claude/agents/<role>.md`, sinh từ `agents/roster.yaml`, prompt viết tay của từng vai trò và hợp đồng. Hợp đồng đổi thì agent đổi theo.
 - Mọi agent và phiên chính của bạn nạp chung một file quy ước, `kit/.claude/rules/ai-orchestrator.md`, cũng sinh từ hợp đồng.
-- Hợp đồng có thêm artifact `design`: luồng màn hình bằng Mermaid, bố cục bằng ASCII có đánh số, hành vi bằng YAML. Một script kiểm file này, và CI chạy script đó.
+- Hợp đồng có thêm artifact `design`: luồng màn hình bằng Mermaid; bố cục bằng ASCII có đánh số, hoặc bằng ảnh export từ Figma khi màn hình đã có thiết kế; hành vi bằng YAML. Một script kiểm file này cùng ảnh đi kèm, và CI chạy script đó.
 - Báo cáo QA có thêm trạng thái NOT TESTED.
 - `qa` lái trình duyệt bằng `playwright-cli`; `fe-dev` xem trang đang code bằng Chrome DevTools MCP.
 - Ba skill từ registry được chép vào kit, ghim theo commit, giữ giấy phép. Mỗi dự án khai thêm skill theo stack trong `.ai-orchestrator/roster.local.yaml`.
@@ -22,6 +22,7 @@ Mỗi vai trò agent của hợp đồng có một subagent của Claude Code bi
 - Lúc nào gọi agent nào, nối các bước thành lệnh, khi nào nâng effort: `dev-workflow`.
 - Luồng PR cho tài liệu (SPEC, design, plan): `dev-workflow`. Module này chỉ cho `ba`, `ux`, `sa` commit lên nhánh được giao.
 - Pipeline E2E, regression và deploy thật; cách `qa` lấy đúng commit đã deploy; ai commit báo cáo regression lên nhánh release; cách đưa ảnh bằng chứng của `qa` lên Jira hoặc CI: `release-workflow`.
+- Agent tự lấy thiết kế từ Figma: Figma MCP cho `ux` và `fe-dev`, script gọi REST API của Figma để render ảnh đúng phiên bản đã duyệt, agent dùng tài khoản Figma nào, bật tắt theo dự án. Phần này thành module riêng sau `agent-roster`, tên tạm `figma-integration` (bạn chọn ngày 2026-10-30). Ở module này, bạn export ảnh từ Figma.
 - Cấu hình stack Next.js + NestJS, cài Playwright vào dự án, script đồng bộ kit: `project-scaffold`. Bản chép kit vẫn làm tay, qua PR.
 - Số liệu cần lịch sử của nhiều item (cycle time, thời gian chờ release, thời gian chờ bạn): `orchestrator-cli` ở Cấp 2.
 - Agent chạy trong GitHub Actions: `ci-agents` ở Cấp 2.
@@ -110,8 +111,10 @@ Chi tiết nằm trong `agents/prompts/<role>.md`. Mọi vai trò làm việc v�
 - Commit tài liệu lên nhánh được giao; mở PR chỉ khi được yêu cầu.
 
 **`ux`**, stage `spec`, khi Epic đụng tới giao diện.
-- Đầu vào: `spec.md` đã có user story và AC.
-- Việc: viết `docs/specs/<EPIC-KEY>/design.md` theo template và năm quy tắc ở mục 2.8, chạy `check-design.mjs` tới khi sạch, rồi commit lên nhánh được giao.
+- Đầu vào: `spec.md` đã có user story và AC. Epic có thiết kế Figma thì có thêm link các frame trong mô tả Epic, và ảnh bạn export ở `.ai/design-inbox/<EPIC-KEY>/` (mục 2.8).
+- Việc: viết `docs/specs/<EPIC-KEY>/design.md` theo template và các quy tắc ở mục 2.8, chạy `check-design.mjs` tới khi sạch, rồi commit lên nhánh được giao.
+- Màn hình chưa có Figma thì vẽ hình ASCII. Màn hình có Figma thì không vẽ: đổi tên ảnh theo mã màn hình, chuyển ảnh vào `docs/specs/<EPIC-KEY>/design/`, ghi link frame và tên phiên bản Figma được duyệt, rồi ghi vào Open Questions những gì Figma còn thiếu (trạng thái lỗi, bản mobile, nội dung thông báo).
+- Ảnh không đạt quy tắc (quá 1 MB, cạnh dài quá 2.000 px, không phải PNG hay JPG): báo bạn ảnh nào sai gì để bạn export lại (mục 2.5). `ux` không tự sửa ảnh.
 - Không ghi Jira.
 
 **`sa`**, tham gia stage `spec`, chính ở stage `plan`.
@@ -123,6 +126,7 @@ Chi tiết nằm trong `agents/prompts/<role>.md`. Mọi vai trò làm việc v�
 - Đầu vào: item ở Ready, hoặc Sub-task ở To Do, đạt DoR; plan, design, hợp đồng API.
 - Việc: điền trường Agent; tạo nhánh từ đúng nhánh gốc theo bảng định tuyến và push nhánh; rồi `Start`. Làm theo TDD: unit và integration test cho từng hành vi; mỗi AC có một E2E test, tên test bắt đầu bằng mã AC. Commit nhỏ, đúng quy ước. Chạy lint, typecheck, test ở local. Sub-task xong thì `Complete`; `be-dev` làm Sub-task BE trước. Ai làm xong Sub-task cuối cùng thì mở PR bằng `ao-pr.mjs create`, mô tả theo template `pull-request.md`.
 - `fe-dev` mở trang đang code bằng Chrome DevTools MCP để xem lỗi console, request hỏng và bố cục, theo skill `browser-testing-with-devtools`.
+- Màn hình kiểu Figma: `fe-dev` dựng giao diện theo ảnh đã duyệt ở `docs/specs/<EPIC-KEY>/design/` và design system có sẵn trong code; hành vi theo YAML.
 - Review yêu cầu sửa: sửa, push, trả lời bằng `ao-pr.mjs comment`.
 - Spec mơ hồ: hỏi bằng comment trên item, gắn cờ "Needs you", rồi dừng.
 
@@ -141,6 +145,7 @@ Chi tiết nằm trong `agents/prompts/<role>.md`. Mọi vai trò làm việc v�
 **`qa`**, stage `qa-verify`, `staging-verify` và `hotfix`.
 - Đầu vào: item ở Ready for QA, đã deploy lên môi trường QA theo bảng định tuyến.
 - Việc: điền trường Agent, `Pick up`; chạy bộ E2E và regression đang có; kiểm từng AC. Mỗi kết luận có bằng chứng hợp với nó: ảnh chụp cho giao diện (bằng `playwright-cli`), tên test hoặc kết quả ghi lại cho hành vi. Trích AC cạnh điều quan sát được. Không thêm yêu cầu ngoài spec; không thấy lỗi cũng là kết quả hợp lệ. Các ý này lấy từ `Evidence Collector` và `Reality Checker` của agency-agents.
+- Màn hình kiểu Figma: so trang thật với ảnh đã duyệt; hành vi theo YAML và AC.
 - Đầu ra: báo cáo theo `qa-report.md`, comment lên item. FAIL thì `QA fail`. NOT TESTED thì gắn cờ "Needs you" rồi dừng (mục 2.9). PASS thì dừng; bạn `Accept`. Ảnh và file bằng chứng lưu ở `.ai/qa/<KEY>/`.
 - Lỗi nằm ngoài item thì tạo Bug theo `bug.md`, điền Found in và bằng chứng.
 - Không viết code, không commit: E2E test do dev agent viết trong PR của item.
@@ -223,27 +228,60 @@ File này chỉ thêm skill, không đổi model, effort hay tool. Skill phải 
 
 ### 2.8 Artifact `design`
 
-Template `templates/design.md`, lưu ở `docs/specs/<EPIC-KEY>/design.md`, do `ux` viết khi Epic đụng tới giao diện. File có bảng màn hình (mã, tên, route, user story), luồng màn hình bằng Mermaid, mỗi màn hình một mục với hình ASCII và YAML, và mục Open Questions.
+Template `templates/design.md`, lưu ở `docs/specs/<EPIC-KEY>/design.md`, do `ux` viết khi Epic đụng tới giao diện. File có bảng màn hình (mã, tên, route, user story, kiểu), luồng màn hình bằng Mermaid, mỗi màn hình một mục với hình ASCII hoặc ảnh, kèm YAML, và mục Open Questions.
 
-Năm quy tắc (bạn đồng ý ngày 2026-10-30):
+**Hai kiểu màn hình** (bạn đồng ý ngày 2026-10-30):
+
+| | Kiểu ASCII | Kiểu Figma |
+|---|---|---|
+| Dùng khi | Màn hình chưa có thiết kế Figma | Màn hình đã có thiết kế Figma |
+| Bố cục | Hình ASCII có đánh số | Ảnh export từ Figma: bản desktop, và bản mobile nếu có, ở `docs/specs/<EPIC-KEY>/design/` |
+| Hành vi | YAML | YAML, như kiểu ASCII |
+| Ghi thêm | | Link frame có `node-id`; đầu file có dòng `Figma version:` ghi tên phiên bản Figma được duyệt |
+
+Ở kiểu Figma, khối vẫn đánh số trong YAML và gọi theo tên nhìn thấy trên ảnh; biết node id của layer thì ghi vào khóa `figma` của khối. Ảnh và YAML trong Git là bản đã duyệt, còn Figma là chỗ designer làm việc. Sau cổng ①, đổi thiết kế là đổi SPEC, qua PR.
+
+**Năm quy tắc** (bạn đồng ý ngày 2026-10-30):
 
 1. **Mã ổn định.** Màn hình đánh `S1`, `S2`; khối trong một màn hình đánh `[1]`, `[2]` theo thứ tự đọc (trên xuống, trái sang phải), cũng là thứ tự phím Tab mong muốn. Story, AC và tên E2E test trỏ tới khối bằng mã đầy đủ, ví dụ `S1.4`. Sau khi SPEC được duyệt, số không đổi: bỏ khối thì để trống số đó, thêm khối thì lấy số kế tiếp.
-2. **Khung vẽ bằng ký tự ASCII** (`+`, `-`, `|`, `[ ]`, `_`), không dùng ký tự vẽ khung Unicode hay emoji, rộng tối đa 100 cột. Trong khung chỉ có số và nhãn ngắn; chi tiết nằm ở YAML. Chỉ vẽ thêm hình khi bố cục đổi theo cỡ màn hình, ví dụ trên mobile.
-3. **YAML nằm ngay dưới hình của màn hình đó.** Khóa tiếng Anh, giá trị tiếng Việt. Mỗi khối có `name`, `type`, và khi cần thì `content`, `behavior`, `validation`, `states`, `a11y`, `ac`.
+2. **Màn hình kiểu ASCII vẽ khung bằng ký tự ASCII** (`+`, `-`, `|`, `[ ]`, `_`), không dùng ký tự vẽ khung Unicode hay emoji, rộng tối đa 100 cột. Trong khung chỉ có số và nhãn ngắn; chi tiết nằm ở YAML. Chỉ vẽ thêm hình khi bố cục đổi theo cỡ màn hình, ví dụ trên mobile.
+3. **YAML nằm ngay dưới hình hoặc ảnh của màn hình đó.** Khóa tiếng Anh, giá trị tiếng Việt. Mỗi khối có `name`, `type`, và khi cần thì `content`, `behavior`, `validation`, `states`, `a11y`, `ac`, `figma`. Màn hình kiểu Figma có thêm khóa `figma` ở cấp màn hình, là link frame.
 4. **Mermaid dùng mã màn hình làm tên nút**, và ghi khối kích hoạt lên mũi tên.
 5. **`check-design.mjs` kiểm file**; `ux` chạy trước khi giao.
+
+**Ảnh của màn hình kiểu Figma** (bạn đồng ý ngày 2026-10-30). Ảnh bị thay vẫn nằm trong lịch sử Git, nên ảnh phải nhỏ và ít đổi:
+
+| Quy tắc | Lý do |
+|---|---|
+| Export 1x, PNG hoặc JPG | Ảnh 2x nặng gấp 2,2 lần, mà Claude Code thu ảnh về tối đa 2.000 px cạnh dài. Figma không export WebP, và GitHub chỉ hiển thị, so sánh PNG, JPG, GIF, PSD, SVG trong PR |
+| Mỗi ảnh tối đa 1 MB; PNG quá 1 MB thì export JPG | 1 MB là mức GitHub khuyến nghị cho một file. Frame đầy ảnh chụp nhẹ hơn khi lưu JPG |
+| Cạnh dài tối đa 2.000 px; frame dài hơn thì export theo từng phần (Slice tool của Figma) | Claude Code đưa ảnh 1440×4000 vào ở cỡ 720×2000, chữ nhỏ đi một nửa |
+| Chỉ commit bản đã duyệt, cùng PR của SPEC | Ảnh bị thay vẫn nằm trong lịch sử |
+| Mọi ảnh trong thư mục `design/` được `design.md` nhắc tới | Không có ảnh thừa |
+
+Số đo ngày 2026-10-30, chụp trang web thật ở 1x: một màn hình nặng 25–125 KB. Một Epic 6 màn hình, mỗi màn hình hai bản, khoảng 0,3–1,5 MB; 100 Epic, mỗi Epic đổi thiết kế hai lần sau khi duyệt, khoảng 0,1–0,5 GB. GitHub coi repo dưới 1 GB là lý tưởng.
+
+**Luồng ảnh:**
+
+1. Bạn export các frame vào `.ai/design-inbox/<EPIC-KEY>/` của dự án (thư mục không commit), dán link các frame vào mô tả Epic trên Jira, và lưu phiên bản được duyệt vào version history của Figma. `docs/agents.md` hướng dẫn từng bước.
+2. `ux` đổi tên ảnh theo mã màn hình, ví dụ `S2-desktop.png`, chuyển ảnh vào `docs/specs/<EPIC-KEY>/design/`, rồi commit cùng `design.md`.
+
+**Git LFS:** dự án nhiều ảnh (trang marketing, nhiều banner) bật LFS cho `docs/specs/**/design/**` ngay từ đầu, vì chuyển ảnh cũ sang LFS về sau phải viết lại lịch sử. `docs/agents.md` ghi cách xem dung lượng repo (`git count-objects -vH`) và cách bật LFS. Job CI không tải file LFS, nên với file con trỏ của LFS, `check-design` kiểm cỡ ghi trong con trỏ và bỏ qua kích thước ảnh.
 
 `node .ai-orchestrator/scripts/check-design.mjs <file>` kiểm:
 
 - Mỗi khối YAML đọc được; khóa thuộc danh sách ở quy tắc 3, khóa lạ là lỗi (bắt lỗi gõ như `behaviour`); `name` và `type` bắt buộc; `ac` gồm các mã `AC<n>`.
+- Mỗi màn hình đúng một kiểu: có hình ASCII, hoặc có ảnh; không có cả hai.
 - Mỗi `[n]` trong hình của một màn hình có đúng một mục trong YAML của màn hình đó, và ngược lại. `[ ]` và `[___]` không phải mã khối.
 - Mỗi nút `S<n>` trong Mermaid có mục màn hình, và mỗi màn hình có trong Mermaid. Khối ghi trên mũi tên có trong màn hình nguồn.
 - Hình không có ký tự vẽ khung Unicode hay emoji; mỗi dòng tối đa 100 cột. Dòng đầu của hình có dạng `S<n> · <tên> · <cỡ màn hình>`.
+- Màn hình kiểu Figma: khóa `figma` của màn hình là link figma.com có `node-id`; alt của ảnh có dạng `S<n> · <tên> · <cỡ màn hình>`, như dòng đầu của hình ASCII; đầu file có dòng `Figma version:`.
+- Ảnh nằm trong thư mục `design/` cạnh `design.md` và có thật; là PNG hoặc JPG theo nội dung file, không theo đuôi; tối đa 1 MB; cạnh dài tối đa 2.000 px. Mọi file trong `design/` được nhắc tới.
 - Mã màn hình không trùng.
 
-Job `policy` của CI chạy kiểm này cho mọi `design.md` mà PR thay đổi.
+Job `policy` của CI chạy kiểm này cho mọi `design.md` mà PR thay đổi, và cho `design.md` cạnh mọi thư mục `design/` có ảnh bị PR thay đổi.
 
-Ví dụ rút gọn:
+Ví dụ rút gọn, màn hình kiểu ASCII:
 
 ```mermaid
 flowchart LR
@@ -277,6 +315,27 @@ blocks:
   # [1], [2], [3], [5], [6] lược bớt ở đây; file thật phải có đủ.
 ```
 
+Màn hình kiểu Figma, trong `design.md` của một Epic khác (rút gọn):
+
+```markdown
+![S1 · Giỏ hàng · desktop](design/S1-desktop.png)
+![S1 · Giỏ hàng · mobile](design/S1-mobile.png)
+```
+
+```yaml
+screen: S1
+route: /cart
+figma: https://www.figma.com/design/<file-key>/Shop?node-id=12-345
+blocks:
+  3:
+    name: Ô nhập mã giảm giá
+    type: input
+    figma: "12:367"
+    validation: 6–12 ký tự chữ và số; sai thì hiện [4]
+    ac: [AC3]
+  # các khối khác lược bớt ở đây
+```
+
 ### 2.9 Báo cáo QA và NOT TESTED
 
 - Mỗi AC có kết quả PASS, FAIL hoặc NOT TESTED. NOT TESTED dùng khi `qa` không kiểm được vì lý do ngoài code: thiếu dữ liệu, cần dịch vụ ngoài, cần người nhìn. Cột Evidence ghi lý do.
@@ -297,11 +356,11 @@ Hook đọc lệnh theo mẫu nên không kín: Bash vẫn ghi được file, v�
 
 ### 2.11 Thay đổi hợp đồng và capability map (chờ duyệt)
 
-1. **Artifact `design`** trong `policies.yaml`: tên "Thiết kế màn hình", template `templates/design.md`, `created_by: [ux]`, lưu trong Git ở `docs/specs/<EPIC-KEY>/design.md`.
+1. **Artifact `design`** trong `policies.yaml`: tên "Thiết kế màn hình", template `templates/design.md`, `created_by: [ux]`, lưu trong Git ở `docs/specs/<EPIC-KEY>/design.md`; ảnh của màn hình kiểu Figma ở `docs/specs/<EPIC-KEY>/design/`.
 2. **Stage `spec`:** đầu ra thành `[spec, design]`, thêm ghi chú "ux viết design khi Epic đụng tới giao diện".
 3. **Template `spec.md` và `story.md`:** AC đánh số `AC1`, `AC2`… không trùng trong Epic; Story giữ nguyên số khi tạo từ SPEC. Mục Design của `story.md` ghi màn hình của `design.md` mà Story phủ (`S1`, `S2`), hoặc "Không đổi giao diện". Lý do: YAML của `design.md` trỏ tới AC bằng mã, và lúc viết `design.md` thì Story chưa có trên Jira.
 4. **Template `qa-report.md`:** thêm NOT TESTED ở từng AC và ở kết quả chung, cùng hướng dẫn về bằng chứng (mục 2.9). `qaReportResult` đọc được NOT TESTED.
-5. **Capability map:** `agent-roster` phụ thuộc thêm `tracker-integration` và `quality-gates`, vì agent dùng hook Jira, `ao-pr.mjs`, `gh-guard` và hai App. Hai module đó đã xong, nên thứ tự build không đổi.
+5. **Capability map:** `agent-roster` phụ thuộc thêm `tracker-integration` và `quality-gates`, vì agent dùng hook Jira, `ao-pr.mjs`, `gh-guard` và hai App. Hai module đó đã xong, nên thứ tự build không đổi. Thêm module `figma-integration` (tên tạm, chưa có SPEC) sau `agent-roster`: agent đọc Figma qua MCP, script REST render ảnh đúng phiên bản đã duyệt.
 
 Sinh lại `docs/sdlc.md` sau các thay đổi trên.
 
@@ -319,7 +378,7 @@ Spec dựa trên các điểm sau của Claude Code 2.1.312. T1 kiểm từng đ
 
 ## 3. Tech stack
 
-- Node.js 24, ES module, như các module trước. YAML đọc bằng `yaml`, schema kiểm bằng `ajv`; không thêm dependency. Mermaid trong `design.md` được đọc bằng regex, chỉ lấy nút và mũi tên.
+- Node.js 24, ES module, như các module trước. YAML đọc bằng `yaml`, schema kiểm bằng `ajv`; không thêm dependency. Mermaid trong `design.md` được đọc bằng regex, chỉ lấy nút và mũi tên. Kích thước ảnh đọc từ header của PNG (chunk IHDR) và JPEG (marker SOF), không thêm dependency.
 - `skills:vendor` dùng `fetch`: GitHub API để đọc cây thư mục ở một commit, `raw.githubusercontent.com` để lấy file.
 - Ngoài kit: `@playwright/cli` 0.1.22 và `chrome-devtools-mcp` 1.12.0, cả hai ghim bản.
 - Test dùng `node:test` với dữ liệu ghi sẵn; test không gọi mạng.
@@ -360,7 +419,7 @@ ai-orchestrator-v1/
 │   ├── render.mjs                   # ghép agent và file quy ước (hàm thuần)
 │   ├── scope.mjs                    # luật ghi file và git theo vai trò, cho gh-guard
 │   └── vendor.mjs                   # chép skill theo commit
-├── lib/quality/design.mjs           # kiểm design.md (hàm thuần)
+├── lib/quality/design.mjs           # kiểm design.md và ảnh đi kèm (hàm thuần)
 ├── scripts/
 │   ├── render-agents.mjs
 │   ├── vendor-skills.mjs
@@ -372,7 +431,8 @@ ai-orchestrator-v1/
 │   ├── .claude/skills/              # playwright-cli, sentry-security-review, gha-security-review
 │   ├── .claude/settings.json        # thêm enabledPlugins, extraKnownMarketplaces
 │   └── .mcp.json                    # thêm chrome-devtools
-├── docs/agents.md                   # bảng vai trò, cách chạy, nâng effort, skill theo stack, design.md
+├── docs/agents.md                   # bảng vai trò, cách chạy, nâng effort, skill theo stack, design.md,
+│                                    # export ảnh từ Figma, dung lượng repo và LFS
 └── tests/agents/                    # dữ liệu mẫu ở tests/fixtures/agents/
 ```
 
@@ -452,14 +512,14 @@ You are `reviewer`, the Code Reviewer of the SDLC contract. Your value in the Ag
 
 - `render`: frontmatter đúng từng trường; transition chỉ hiện với vai trò có quyền chuyển trạng thái; tên trường Agent, App và file được ghi đúng; comment HTML bị bỏ; chạy hai lần ra cùng kết quả, xuống dòng LF. `roster.local.yaml` thêm skill đúng vai trò; vai trò lạ hoặc skill không có thì báo lỗi.
 - `scope`: mỗi vai trò ghi trong và ngoài phạm vi; vai trò chỉ đọc chạy `git diff`, `git show`, `git fetch` thì qua, chạy `git checkout`, `commit`, `push`, `stash` thì bị chặn; lệnh gần giống như `git log --grep=commit` thì qua.
-- `check-design`: mỗi lỗi ở mục 2.8 có một file mẫu; ví dụ trong template sạch.
+- `check-design`: mỗi lỗi ở mục 2.8 có một file mẫu, kể cả màn hình kiểu Figma: ảnh PNG và JPG nhỏ do test tạo ra, ảnh quá 1 MB, ảnh dài quá 2.000 px, ảnh thiếu, ảnh thừa, file con trỏ của LFS; ví dụ trong template sạch.
 - `qaReportResult`: PASS, FAIL, NOT TESTED; báo cáo NOT TESTED mới nhất che báo cáo FAIL cũ.
 - `vendor`: từ cây thư mục ghi sẵn ra đúng danh sách file; `name:` được đổi; `SOURCE.md` đủ nội dung.
 
 **Kiểm thật** trên `ao-pilot` và space `DEMO`, kết quả ghi vào `tasks/verification.md`:
 
 1. **Bản chép kit** vào `ao-pilot` đi qua một PR gắn với một Task trên `DEMO`. `reviewer` và `security` mới review PR này (lượt chạy đầu của hai agent); file skill chép vào được kiểm bằng nguồn gốc (`skills:vendor` tải lại ra đúng file), không bắt agent đọc. Bạn approve rồi merge tay, vì PR sửa đường dẫn được bảo vệ; `audit` xanh.
-2. **Một Epic nhỏ trên `DEMO`**, ví dụ "Mã giảm giá cho giỏ hàng", dựa trên code giỏ hàng đã có trong `ao-pilot`. Bạn `Start spec`; `ba` viết SPEC, Claude trả lời câu hỏi của `ba` thay bạn vì Epic chỉ để thử; `ux` viết `design.md`; `sa` bổ sung yêu cầu phi chức năng; bạn `Approve spec`; `sa` viết plan; `ba` tạo một Story có Sub-task BE và FE; bạn `Approve plan`. `be-dev` làm Sub-task BE; `fe-dev` làm Sub-task FE rồi mở PR; `reviewer` và `security` review; bạn approve; `merge-gate` merge; deploy; `qa` kiểm và báo cáo; bạn `Accept`.
+2. **Một Epic nhỏ trên `DEMO`**, ví dụ "Mã giảm giá cho giỏ hàng", dựa trên code giỏ hàng đã có trong `ao-pilot`. Bạn `Start spec`; `ba` viết SPEC, Claude trả lời câu hỏi của `ba` thay bạn vì Epic chỉ để thử; `ux` viết `design.md`; `sa` bổ sung yêu cầu phi chức năng; bạn `Approve spec`; `sa` viết plan; `ba` tạo một Story có Sub-task BE và FE; bạn `Approve plan`. `be-dev` làm Sub-task BE; `fe-dev` làm Sub-task FE rồi mở PR; `reviewer` và `security` review; bạn approve; `merge-gate` merge; deploy; `qa` kiểm và báo cáo; bạn `Accept`. Epic này không có Figma nên `ux` vẽ ASCII; màn hình kiểu Figma chỉ được kiểm bằng dữ liệu mẫu ở test đơn vị.
 3. **`devops`** làm một Task sửa workflow, ví dụ thêm `timeout-minutes` cho job deploy; `merge-gate` báo bạn tự merge; bạn merge hoặc đóng PR.
 4. **`pm`** viết bản tổng hợp sáng của `DEMO`.
 5. **Năm việc ngoài vai trò** bị chặn: `qa` gọi `Start`; `reviewer` ghi vào `src/`; `security` chạy `ao-pr.mjs create`; `pm` chuyển trạng thái một item; `reviewer` chạy `git checkout`.
@@ -471,15 +531,15 @@ Mỗi lượt chạy bằng `claude -p --agent <role> --output-format json`, ghi
 ## 8. Ranh giới
 
 - **Luôn làm:** sinh agent và file quy ước bằng script, không sửa tay file sinh ra; chạy agent lần lượt; ghi số đo của mỗi lượt chạy thật; ghim skill chép vào theo commit, giữ giấy phép, ghi nguồn; ghi nguồn các ý lấy từ agency-agents trong comment của prompt.
-- **Hỏi bạn trước:** đổi hợp đồng; đổi model hoặc effort của một vai trò; thêm skill hoặc cập nhật skill chép vào; cài phần mềm lên máy (`playwright-cli`, trình duyệt); thêm MCP server.
-- **Không bao giờ:** cho agent `executeWrite`, `executeDestructive`, quyền chuyển item sang Done, hay quyền approve PR; cho agent trí nhớ riêng; bật cả plugin của Sentry hoặc cài Superpowers; chép nguyên một persona của agency-agents; cho Chrome DevTools MCP dùng profile Chrome của bạn; đưa token hay key vào prompt, repo, log hoặc chat.
+- **Hỏi bạn trước:** đổi hợp đồng; đổi model hoặc effort của một vai trò; thêm skill hoặc cập nhật skill chép vào; cài phần mềm lên máy (`playwright-cli`, trình duyệt); thêm MCP server; bật Git LFS cho một dự án.
+- **Không bao giờ:** cho agent `executeWrite`, `executeDestructive`, quyền chuyển item sang Done, hay quyền approve PR; cho agent trí nhớ riêng; bật cả plugin của Sentry hoặc cài Superpowers; chép nguyên một persona của agency-agents; cho Chrome DevTools MCP dùng profile Chrome của bạn; cho agent đăng nhập Figma hay dùng token Figma của bạn (việc của `figma-integration`); đưa token hay key vào prompt, repo, log hoặc chat.
 
 ## 9. Tiêu chí hoàn thành
 
 1. `agents/roster.yaml`, mười prompt và `agents/rules.md` có trong repo; quy tắc A1–A5 có test; `npm run validate`, `npm test`, `npm run agents:check` và CI của kit đều xanh.
 2. Năm thay đổi ở mục 2.11 đã làm, và `docs/sdlc.md` được sinh lại.
 3. Ba skill được chép vào kit kèm `SOURCE.md` và giấy phép; chạy lại `skills:vendor` ra đúng các file đó.
-4. `check-design.mjs` bắt được từng lỗi ở mục 2.8; `design.md` của Epic thử sạch; job `policy` đỏ trên một PR có `design.md` sai, rồi xanh lại khi sửa.
+4. `check-design.mjs` bắt được từng lỗi ở mục 2.8, cả với màn hình kiểu Figma (dữ liệu mẫu: ảnh PNG, JPG và file con trỏ của LFS); `design.md` của Epic thử sạch; job `policy` đỏ trên một PR có `design.md` sai, rồi xanh lại khi sửa.
 5. Bảy tiền đề ở mục 2.12 được kiểm và ghi kết quả.
 6. Bản chép kit vào `ao-pilot` đi qua một PR bạn merge tay: có template, agent, file quy ước, skill, `.mcp.json` mới, bản vá `gh-guard` của PR #70 và setting `attribution`; `.ai/` nằm trong `.gitignore`; bốn agent thử cũ được thay; `audit` xanh.
 7. Mười agent chạy thật ít nhất một lần, mỗi agent ra đúng đầu ra ở mục 2.4, theo kịch bản ở mục 7.
@@ -488,11 +548,11 @@ Mỗi lượt chạy bằng `claude -p --agent <role> --output-format json`, ghi
 10. Nâng effort bằng `CLAUDE_CODE_EFFORT_LEVEL` có hiệu lực, theo tiền đề 2 và lượt chạy `max` của phép so.
 11. Mọi lượt chạy thật có số đo trong `tasks/verification.md`; `maxTurns` của từng vai trò được đặt từ số đo.
 12. `qa` lái trình duyệt bằng `playwright-cli`, và `fe-dev` đọc console bằng Chrome DevTools MCP, mỗi việc một lần.
-13. README có mục về agent; có `docs/agents.md`; `SPEC.md` ghi module hoàn thành.
+13. README có mục về agent; có `docs/agents.md`, gồm cả các bước export ảnh từ Figma, cách xem dung lượng repo và cách bật LFS; `SPEC.md` ghi module hoàn thành.
 
 ## 10. Câu hỏi đã trả lời
 
-Phiên 13 · Lượt 1–3 (2026-10-29 và 2026-10-30):
+Phiên 13 · Lượt 1–6 (2026-10-29 và 2026-10-30):
 
 1. **Model và effort:** bạn chọn Opus cho tám vai trò, Sonnet cho `pm` và `ux`; effort theo bảng mục 2.2; nâng effort bằng biến môi trường; làm phép so `high` với `max` cho `fe-dev`.
 2. **`ux` giao gì:** artifact mới `design`, theo Mermaid, ASCII có đánh số và YAML, với năm quy tắc và script kiểm (mục 2.8).
@@ -500,6 +560,7 @@ Phiên 13 · Lượt 1–3 (2026-10-29 và 2026-10-30):
 4. **agency-agents:** chỉ lấy ý cho `qa` và `security`, và thêm NOT TESTED vào báo cáo QA.
 5. **Trình duyệt** (bạn hỏi lại ngày 2026-10-30): `qa` dùng `playwright-cli`, `fe-dev` dùng Chrome DevTools MCP (mục 2.7). Điểm này chờ bạn xác nhận cùng spec.
 6. Bạn không sửa giả định nào trong chín giả định ở Lượt 1.
+7. **Figma** (Lượt 4–6): `design.md` có hai kiểu màn hình, ASCII hoặc Figma kèm ảnh export. Ảnh đã duyệt nằm trong Git theo năm quy tắc do `check-design` kiểm; dự án nhiều ảnh bật LFS từ đầu. Bạn export ảnh vào `.ai/design-inbox/<EPIC-KEY>/`, rồi `ux` chuyển ảnh vào `docs/specs/<EPIC-KEY>/design/` (mục 2.8). Figma MCP và script REST thành module riêng.
 
 ## 11. Câu hỏi mở
 
@@ -513,6 +574,8 @@ Không còn câu hỏi mở. Các điểm mới của spec (mục 2.7, 2.9, 2.10
 - **Hook đọc lệnh theo mẫu nên không kín.** `merge-gate` và `audit` là hai lớp không phụ thuộc vào máy bạn.
 - **Agent dùng chung bản checkout:** chạy lần lượt; vai trò chỉ đọc không đổi checkout. `qa` cần đúng commit đã deploy; `release-workflow` chốt cách lấy, ví dụ bằng git worktree.
 - **Bằng chứng của `qa`:** tool Jira mà agent dùng không tải file lên được, nên ở module này ảnh nằm ở `.ai/qa/<KEY>/` trên máy bạn. `release-workflow` chốt cách đưa lên Jira hoặc CI.
+- **Repo lớn dần vì ảnh thiết kế:** năm quy tắc ảnh ở mục 2.8, do `check-design` kiểm trong CI. Theo số đo, 100 Epic tốn khoảng 0,1–0,5 GB. Dự án nhiều ảnh bật LFS từ đầu.
+- **Ảnh lệch với Figma** khi designer sửa Figma sau cổng ①: ảnh và YAML trong Git là bản đã duyệt, đầu `design.md` ghi tên phiên bản Figma được duyệt, và đổi thiết kế là đổi SPEC qua PR.
 - **Alias model:** khi Claude Code trỏ alias sang bản mới, hành vi agent đổi theo; số đo của kiểm thật gắn với bản đang dùng.
 - **`playwright-cli` chưa tới bản 1.0,** nên lệnh có thể đổi giữa các bản. Kit ghim cả skill lẫn bản CLI, và cập nhật cả hai cùng lúc.
 - **Skill chép vào cũ dần so với bản gốc:** cập nhật có chủ đích bằng `skills:vendor`, qua PR.
@@ -531,4 +594,7 @@ Không còn câu hỏi mở. Các điểm mới của spec (mục 2.7, 2.9, 2.10
 - [getsentry/skills](https://github.com/getsentry/skills): `skills/security-review`, `skills/gha-security-review`, `.claude-plugin/marketplace.json`
 - Registry skills.sh qua `npx skills find` (2026-10-30); số sao và giấy phép đọc từ GitHub API
 - agent-skills 0.6.13: `skills/*/SKILL.md`, nhất là `browser-testing-with-devtools`
+- GitHub Docs: [About large files on GitHub](https://docs.github.com/en/repositories/working-with-files/managing-large-files/about-large-files-on-github), [Repository limits](https://docs.github.com/en/repositories/creating-and-managing-repositories/repository-limits), [Git LFS billing](https://docs.github.com/en/billing/concepts/product-billing/git-lfs), [Working with non-code files](https://docs.github.com/en/repositories/working-with-files/using-files/working-with-non-code-files)
+- Figma: [MCP rate limits & access](https://developers.figma.com/docs/figma-mcp-server/rate-limits-access/), [REST API rate limits](https://developers.figma.com/docs/rest-api/rate-limits/), [File endpoints](https://developers.figma.com/docs/rest-api/file-endpoints/), [View a file's version history](https://help.figma.com/hc/en-us/articles/360038006754)
+- Cỡ ảnh: chụp trang web thật bằng Chrome headless ngày 2026-10-30; cỡ ảnh mà Claude Code đưa vào thấy trực tiếp khi đọc ảnh trong Phiên 13
 - `agency-agents` bản trên máy, commit `4e3ac3c`: `testing/testing-evidence-collector.md`, `testing/testing-reality-checker.md`, `security/security-ai-generated-code-auditor.md`
