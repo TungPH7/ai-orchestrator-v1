@@ -20,7 +20,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 10 | `b645b669-931c-4d95-ba32-24fd3e090d67` | 2026-10-28 16:35 → 2026-10-29 khoảng 03:30 | Giả định và câu hỏi cho quality-gates: bảo vệ nhánh khi repo private ở gói Free, danh tính để agent mở PR; bạn chọn 1a, 2a; viết SPEC-quality-gates; bạn duyệt spec, lập plan 21 task; bạn duyệt plan, bắt đầu T1; vì sao bạn phải tự tạo App, script tạo App bằng manifest flow; T1–T5, Checkpoint 1; ba đề xuất được đồng ý, T6–T13, hết lượt dùng giữa T13, Checkpoint 2 |
 | 11 | `318a4364-f1b9-4cc5-9744-ae8ff4f80c7d` | 2026-10-29 09:00 → khoảng 09:40 | Bạn cho qua Checkpoint 2; T14–T17 (lượt code): merge-gate, audit, gh:protect; Checkpoint 3, chờ bạn xóa repo thử |
 | 12 | `32807628-e04f-47b4-889d-f855a40dabce` | 2026-10-29 khoảng 11:04 → khoảng 23:06 | Bạn cho qua Checkpoint 3; T17 và Checkpoint 3 đóng (PR #65, #66); T18 (lượt code): cài kit mới lên `ao-pilot`, tạo `DEMO-6`, `gh-guard` chặn ba đường vòng; bạn chuyển `DEMO-6` sang Ready và tạo key thứ hai của `ao-dev`; T18 đóng (PR #67): `fe-dev` mở PR #4, `reviewer` yêu cầu sửa, kit tắt ghi công AI; T19: vòng sửa, tiêu chí 10; bạn approve PR #4 lần đầu; T19: approve trên commit cũ không còn được tính, `devops` mở PR #5 sửa workflow, `reviewer` và `security` đăng báo cáo, bạn approve PR #4 lần hai và PR #5; T19 đóng (PR #68): `merge-gate` merge PR #4, `DEMO-6` sang Ready for QA, vòng PR tốn 55 phút Actions; T20: `fe-dev` mở PR #6, chờ bạn merge tay; bạn báo đã merge nhưng PR #6 vẫn mở; bạn merge lại, `audit` chặn deploy và gắn cờ `DEMO-8`; `fe-dev` mở PR #7 revert; bạn approve PR #7; T20 đóng (PR #69): `merge-gate` merge PR #7, `develop` sạch trở lại, gỡ cờ `DEMO-8`; Checkpoint 4, chờ bạn; bạn hỏi về `gh` 2.16.1, mình đề xuất sửa `gh-guard` cho các lệnh `gh` mới rồi mới cập nhật `gh`; bạn đồng ý: vá `gh-guard` (PR #70), lên `gh` 2.103.3, tắt telemetry; bạn đăng nhập lại `gh`, token vào keyring; bạn thu hồi token cũ và cho qua Checkpoint 4; git mất quyền push vì Git Credential Manager giữ token cũ của `gh`; bạn đăng nhập lại git; Checkpoint 4 đóng (PR #71); T21 đóng (PR #72); checkpoint cuối, chờ bạn |
-| 13 | `2c3e5733-3a72-4ae6-b04c-ca09a16731cc` | 2026-10-29 khoảng 23:31 → | Bạn chọn làm tiếp agent-roster; quality-gates đóng (PR #73); giả định và câu hỏi cho agent-roster: model cho từng vai trò, `ux` giao gì; bạn đề xuất model và effort, đồng ý artifact `design`; Claude đề xuất effort theo vai trò, quy tắc cho `design.md`, ba skill từ registry, chỉ lấy ý từ `agency-agents` |
+| 13 | `2c3e5733-3a72-4ae6-b04c-ca09a16731cc` | 2026-10-29 khoảng 23:31 → | Bạn chọn làm tiếp agent-roster; quality-gates đóng (PR #73); giả định và câu hỏi cho agent-roster: model cho từng vai trò, `ux` giao gì; bạn đề xuất model và effort, đồng ý artifact `design`; Claude đề xuất effort theo vai trò, quy tắc cho `design.md`, ba skill từ registry, chỉ lấy ý từ `agency-agents`; bạn duyệt bốn điểm, yêu cầu so `high` với `max` cho `fe-dev`, và hỏi lại nên dùng `playwright-cli` hay Chrome DevTools MCP; Claude đề xuất `qa` dùng `playwright-cli`, `fe-dev` dùng Chrome DevTools MCP, và viết bản nháp `SPEC-agent-roster.md` |
 
 ---
 
@@ -4505,3 +4505,72 @@ Bạn xác nhận hoặc sửa từng điểm. Sau đó mình viết `SPEC-agent
 - SKILL.md của `microsoft/playwright-cli` (`skills/playwright-cli`), `getsentry/skills` (`skills/security-review`, `skills/gha-security-review`, `.claude-plugin/marketplace.json`), `vercel-labs/agent-skills` (`skills/web-design-guidelines`), `anthropics/skills` (`skills/webapp-testing`)
 - `agency-agents` bản trên máy, commit `4e3ac3c`: `testing/testing-evidence-collector.md`, `testing/testing-reality-checker.md`, `security/security-ai-generated-code-auditor.md`, `engineering/engineering-code-reviewer.md`, `engineering/engineering-minimal-change-engineer.md`, `project-management/project-management-jira-workflow-steward.md`
 - agent-skills 0.6.13: `skills/incremental-implementation/SKILL.md`, `skills/browser-testing-with-devtools/SKILL.md`
+
+---
+
+# Phiên 13 · Lượt 3 — 2026-10-30 khoảng 13:20
+
+**Bạn:**
+
+```markdown
+1. Làm như đề xuất. làm phép so high với max cho fe-dev
+2. OK
+3. OK
+4. OK
+```
+
+Trong lúc mình viết SPEC, bạn nhắn thêm:
+
+```markdown
+Giữa "microsoft/playwright-cli@playwright-cli" và "chrome-devtools" nên dùng cái nào? Cần thì cứ connect MCP server thôi chứ sao đưa lý do là cần MCP server, chẳng lẻ không cài được MCP server??
+```
+
+**Claude:**
+
+## Chọn công cụ trình duyệt
+
+Bạn đúng. Cài MCP server chỉ là thêm một mục vào `.mcp.json`, như đã làm với `atlassian`, nên "cần MCP server" không phải lý do. Mình viết lý do đó ở Lượt 2 là sai. Mình đã so lại hai công cụ trên tài liệu gốc:
+
+| | `playwright-cli` | Chrome DevTools MCP |
+|---|---|---|
+| Chủ, bản | Microsoft, 0.1.22 (chưa tới 1.0), 14,8K sao | Google (nhóm Chrome DevTools), 1.12.0, 54,5K sao |
+| Cách dùng | Lệnh Bash, kèm skill | MCP server, 60 tool chia 12 nhóm, kèm skill `browser-testing-with-devtools` của agent-skills |
+| Trình duyệt | Chrome, Edge, Firefox, WebKit | Google Chrome |
+| Engine | Playwright, cùng engine với bộ E2E | Puppeteer |
+| Mạnh nhất ở | Thao tác như người dùng, chụp bằng chứng, quay video, trace, sinh locator | Debug: console có stack trace trỏ về mã nguồn, network, trace hiệu năng kèm phân tích, Lighthouse, heap |
+| Phải chỉnh | Skill hướng dẫn đính file vào PR bằng `gh`, trái quy tắc của kit | Mặc định gửi thống kê dùng cho Google và gửi URL trace tới CrUX; tắt bằng tham số |
+
+**Đề xuất: dùng cả hai, mỗi vai trò một công cụ.**
+
+- `qa` giữ `playwright-cli`. Bộ E2E và regression của dự án viết bằng Playwright, nên locator mà `qa` ghi trong báo cáo chạy lại được trong test của dev, trace và video giống artifact của CI, và regression trước release kiểm được cả Edge, Firefox, WebKit.
+- `fe-dev` thêm Chrome DevTools MCP, cùng skill `browser-testing-with-devtools` của agent-skills. Lúc code giao diện, agent xem được lỗi console, request hỏng, bố cục và hiệu năng ngay trên trang chạy ở local. Đây là phần DevTools mạnh hơn hẳn.
+- Server khai trong `.mcp.json` của kit, ghim bản 1.12.0, chạy với `--isolated` (profile tạm, không đụng profile Chrome của bạn), `--no-usage-statistics` và `--no-performance-crux`. `fe-dev` chỉ được các nhóm tool cần dùng, không có nhóm memory, extension, PWA.
+- Token không phải lý do chọn: Microsoft nói CLI tiết kiệm hơn MCP, Chrome DevTools MCP cũng để dữ liệu lớn ra file, và chưa ai đo trong kit này.
+
+Máy bạn có cả Chrome và Edge, nên nhiều khả năng không phải tải thêm trình duyệt; T1 sẽ kiểm.
+
+## SPEC đã viết
+
+`SPEC-agent-roster.md` nằm trên nhánh `task/spec-agent-roster`. Mình chưa lập plan.
+
+Những điểm mới mình chưa hỏi bạn, cần bạn duyệt cùng SPEC:
+
+1. **Trình duyệt** như trên (mục 2.7).
+2. **Skill từ registry được chép vào kit**, không cài bằng `npx skills add`: ghim theo commit, giữ giấy phép, và đổi tên `security-review` thành `sentry-security-review` vì trùng skill có sẵn của Claude Code. Lệnh `npm run skills:vendor` tải lại đúng commit đã ghim (mục 2.7).
+3. **`gh-guard` theo vai trò** (mục 2.10): mỗi vai trò chỉ ghi được vào thư mục của mình; `pm`, `reviewer`, `security`, `qa` chỉ chạy lệnh git đọc, không `checkout`, `commit`, `push`. Lý do: mọi agent dùng chung một bản checkout, và `reviewer` không được sửa code.
+4. **AC đánh số `AC1`, `AC2`… trong cả Epic**, từ `spec.md` sang Story (mục 2.11). YAML của `design.md` trỏ tới AC bằng mã, mà lúc `ux` viết thì Story chưa có trên Jira.
+5. **NOT TESTED ở cả kết quả chung của báo cáo QA** (mục 2.9): không có AC FAIL nhưng còn AC chưa kiểm thì báo cáo là NOT TESTED, item đứng ở In QA, và `qa` gắn cờ "Needs you". AC thiếu E2E test thì là FAIL. Mình sửa thêm `qaReportResult` của `facts.mjs`, vì hiện hàm này bỏ qua báo cáo không phải PASS hay FAIL, nên sẽ tính nhầm một báo cáo FAIL cũ hơn.
+6. **CI kiểm `design.md`:** job `policy` chạy `check-design.mjs` cho mọi `design.md` mà PR thay đổi.
+7. **`maxTurns` đặt từ số đo:** gấp đôi số lượt cao nhất đo được của vai trò, để chặn agent chạy vòng tròn.
+8. **Kiểm thật** (mục 7): bản chép kit vào `ao-pilot` đi qua một PR mà `reviewer` và `security` mới review, rồi bạn merge tay. Sau đó một Epic nhỏ "Mã giảm giá cho giỏ hàng" đi từ SPEC tới QA; Claude trả lời câu hỏi của `ba` thay bạn. Bạn cần làm: merge PR bản chép kit, `Start spec`, `Approve spec`, `Approve plan`, approve PR của Story, `Accept`, và xử lý PR của `devops`. Ước khoảng 25 lượt chạy agent, phần lớn bằng Opus, nên có thể cần hai đến ba khung 5 giờ.
+
+Năm thay đổi hợp đồng nằm ở mục 2.11: artifact `design`, đầu ra của stage `spec`, AC đánh số trong `spec.md` và `story.md`, NOT TESTED trong `qa-report.md`, và capability map (`agent-roster` phụ thuộc thêm `tracker-integration` và `quality-gates`).
+
+Bạn duyệt SPEC, kể cả cách chia trình duyệt và tám điểm trên, hay muốn sửa chỗ nào? Sau khi bạn duyệt, mình lập plan rồi dừng lại để bạn duyệt plan.
+
+## Nguồn
+
+- `microsoft/playwright-cli`: README, mục "Playwright CLI vs Playwright MCP"; `skills/playwright-cli/SKILL.md`
+- `ChromeDevTools/chrome-devtools-mcp`: README (các mục Disclaimers, Usage statistics, Requirements), `docs/tool-reference.md`, `docs/design-principles.md`
+- agent-skills 0.6.13: `skills/browser-testing-with-devtools/SKILL.md`
+- Số sao, giấy phép và bản phát hành đọc từ GitHub API ngày 2026-10-30
