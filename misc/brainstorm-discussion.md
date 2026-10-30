@@ -20,7 +20,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 10 | `b645b669-931c-4d95-ba32-24fd3e090d67` | 2026-10-28 16:35 → 2026-10-29 khoảng 03:30 | Giả định và câu hỏi cho quality-gates: bảo vệ nhánh khi repo private ở gói Free, danh tính để agent mở PR; bạn chọn 1a, 2a; viết SPEC-quality-gates; bạn duyệt spec, lập plan 21 task; bạn duyệt plan, bắt đầu T1; vì sao bạn phải tự tạo App, script tạo App bằng manifest flow; T1–T5, Checkpoint 1; ba đề xuất được đồng ý, T6–T13, hết lượt dùng giữa T13, Checkpoint 2 |
 | 11 | `318a4364-f1b9-4cc5-9744-ae8ff4f80c7d` | 2026-10-29 09:00 → khoảng 09:40 | Bạn cho qua Checkpoint 2; T14–T17 (lượt code): merge-gate, audit, gh:protect; Checkpoint 3, chờ bạn xóa repo thử |
 | 12 | `32807628-e04f-47b4-889d-f855a40dabce` | 2026-10-29 khoảng 11:04 → khoảng 23:06 | Bạn cho qua Checkpoint 3; T17 và Checkpoint 3 đóng (PR #65, #66); T18 (lượt code): cài kit mới lên `ao-pilot`, tạo `DEMO-6`, `gh-guard` chặn ba đường vòng; bạn chuyển `DEMO-6` sang Ready và tạo key thứ hai của `ao-dev`; T18 đóng (PR #67): `fe-dev` mở PR #4, `reviewer` yêu cầu sửa, kit tắt ghi công AI; T19: vòng sửa, tiêu chí 10; bạn approve PR #4 lần đầu; T19: approve trên commit cũ không còn được tính, `devops` mở PR #5 sửa workflow, `reviewer` và `security` đăng báo cáo, bạn approve PR #4 lần hai và PR #5; T19 đóng (PR #68): `merge-gate` merge PR #4, `DEMO-6` sang Ready for QA, vòng PR tốn 55 phút Actions; T20: `fe-dev` mở PR #6, chờ bạn merge tay; bạn báo đã merge nhưng PR #6 vẫn mở; bạn merge lại, `audit` chặn deploy và gắn cờ `DEMO-8`; `fe-dev` mở PR #7 revert; bạn approve PR #7; T20 đóng (PR #69): `merge-gate` merge PR #7, `develop` sạch trở lại, gỡ cờ `DEMO-8`; Checkpoint 4, chờ bạn; bạn hỏi về `gh` 2.16.1, mình đề xuất sửa `gh-guard` cho các lệnh `gh` mới rồi mới cập nhật `gh`; bạn đồng ý: vá `gh-guard` (PR #70), lên `gh` 2.103.3, tắt telemetry; bạn đăng nhập lại `gh`, token vào keyring; bạn thu hồi token cũ và cho qua Checkpoint 4; git mất quyền push vì Git Credential Manager giữ token cũ của `gh`; bạn đăng nhập lại git; Checkpoint 4 đóng (PR #71); T21 đóng (PR #72); checkpoint cuối, chờ bạn |
-| 13 | `2c3e5733-3a72-4ae6-b04c-ca09a16731cc` | 2026-10-29 khoảng 23:31 → | Bạn chọn làm tiếp agent-roster; quality-gates đóng (PR #73); giả định và câu hỏi cho agent-roster: model cho từng vai trò, `ux` giao gì; bạn đề xuất model và effort, đồng ý artifact `design`; Claude đề xuất effort theo vai trò, quy tắc cho `design.md`, ba skill từ registry, chỉ lấy ý từ `agency-agents`; bạn duyệt bốn điểm, yêu cầu so `high` với `max` cho `fe-dev`, và hỏi lại nên dùng `playwright-cli` hay Chrome DevTools MCP; Claude đề xuất `qa` dùng `playwright-cli`, `fe-dev` dùng Chrome DevTools MCP, và viết bản nháp `SPEC-agent-roster.md`; bạn hỏi Story đã có Figma có cần `design.md` không; Claude đề xuất `design.md` có hai kiểu màn hình (ASCII hoặc Figma kèm ảnh PNG đã duyệt), Figma MCP để sau; bạn hỏi ảnh trong Git có làm repo vượt dung lượng không, cho biết gói Figma Education, hỏi chụp màn hình Figma được không; Claude đo cỡ ảnh, đề xuất năm quy tắc ảnh do `check-design` kiểm, bạn export ảnh vào `.ai/design-inbox/`, tách Figma MCP và script REST thành module riêng; bạn đồng ý cả ba, chọn module riêng cho Figma MCP; Claude sửa SPEC theo đó và xin duyệt SPEC |
+| 13 | `2c3e5733-3a72-4ae6-b04c-ca09a16731cc` | 2026-10-29 khoảng 23:31 → | Bạn chọn làm tiếp agent-roster; quality-gates đóng (PR #73); giả định và câu hỏi cho agent-roster: model cho từng vai trò, `ux` giao gì; bạn đề xuất model và effort, đồng ý artifact `design`; Claude đề xuất effort theo vai trò, quy tắc cho `design.md`, ba skill từ registry, chỉ lấy ý từ `agency-agents`; bạn duyệt bốn điểm, yêu cầu so `high` với `max` cho `fe-dev`, và hỏi lại nên dùng `playwright-cli` hay Chrome DevTools MCP; Claude đề xuất `qa` dùng `playwright-cli`, `fe-dev` dùng Chrome DevTools MCP, và viết bản nháp `SPEC-agent-roster.md`; bạn hỏi Story đã có Figma có cần `design.md` không; Claude đề xuất `design.md` có hai kiểu màn hình (ASCII hoặc Figma kèm ảnh PNG đã duyệt), Figma MCP để sau; bạn hỏi ảnh trong Git có làm repo vượt dung lượng không, cho biết gói Figma Education, hỏi chụp màn hình Figma được không; Claude đo cỡ ảnh, đề xuất năm quy tắc ảnh do `check-design` kiểm, bạn export ảnh vào `.ai/design-inbox/`, tách Figma MCP và script REST thành module riêng; bạn đồng ý cả ba, chọn module riêng cho Figma MCP; Claude sửa SPEC theo đó và xin duyệt SPEC; bạn duyệt SPEC; Claude viết plan 22 task (T16 chuẩn bị `ao-pilot` với trang giỏ hàng và Playwright, tài liệu của Epic thử không merge) và xin duyệt plan |
 
 ---
 
@@ -4829,3 +4829,53 @@ Bạn duyệt toàn bộ SPEC, gồm cả những điểm từ Lượt 3 chưa d
 Sau khi bạn duyệt, mình đổi trạng thái SPEC, cập nhật `SPEC.md` và lập plan (`tasks/plan.md`, `tasks/todo.md`; T1 kiểm bảy tiền đề), rồi dừng để bạn duyệt plan.
 
 Bạn duyệt SPEC, hay muốn sửa chỗ nào?
+
+---
+
+# Phiên 13 · Lượt 7 — 2026-10-30 khoảng 15:58
+
+**Bạn:**
+
+```markdown
+duyệt SPEC
+```
+
+**Claude:**
+
+SPEC đã được đánh dấu là đã duyệt, và plan đã viết xong, đang chờ bạn duyệt. Cả hai nằm trên nhánh `task/spec-agent-roster`:
+
+- `ed9f6a0`: SPEC chuyển sang trạng thái đã duyệt. `SPEC.md` cập nhật capability map: `agent-roster` phụ thuộc thêm `tracker-integration` và `quality-gates`, và có thêm module `figma-integration`.
+- `8a4de20`: [tasks/plan.md](https://github.com/TungPH7/ai-orchestrator-v1/blob/task/spec-agent-roster/tasks/plan.md) và [tasks/todo.md](https://github.com/TungPH7/ai-orchestrator-v1/blob/task/spec-agent-roster/tasks/todo.md).
+
+## Plan: 22 task, 4 checkpoint
+
+| Giai đoạn | Task | Bạn làm |
+|---|---|---|
+| 1. Tiền đề và hợp đồng | T1 kiểm năm tiền đề về Claude Code bằng Haiku; T2 kiểm `playwright-cli` và Chrome DevTools MCP; T3 artifact `design` và template; T4 NOT TESTED | Đồng ý cài hai công cụ ở T2 |
+| 2. `design.md` | T5 `check-design` cho kiểu ASCII; T6 cho kiểu Figma và ảnh; T7 job `policy` | |
+| 3. Roster, skill, gh-guard | T8 `roster.yaml` và quy tắc A1–A5; T9 chép ba skill; T10 `gh-guard` theo vai trò | |
+| 4. Prompt và sinh agent | T11–T12 prompt của mười vai trò; T13 sinh agent, `agents:check`; T14 chế độ dự án | Checkpoint 2: đọc thử hai agent sinh ra |
+| 5. Lên `ao-pilot` | T15 bản chép kit qua PR; T16 trang giỏ hàng và Playwright; T17 thử trình duyệt | Approve và merge PR; Checkpoint 3: đồng ý chạy phần tốn usage |
+| 6. Kiểm thật | T18 Epic thử, phần spec và plan; T19 Epic thử, từ build tới QA; T20 `devops`, `pm` và năm việc ngoài vai trò; T21 phép so `high` với `max` | `Start spec`, `Approve spec`, `Approve plan`, approve PR, `Accept`; Checkpoint 4: chọn effort cho `fe-dev` |
+| 7. Hoàn thiện | T22 đặt `maxTurns` theo số đo, viết tài liệu, lưu trữ plan | Xác nhận module xong |
+
+Kiểm thật tốn khoảng 30 lượt chạy agent, phần lớn bằng Opus, nên có thể cần ba đến bốn khung 5 giờ của gói Pro. Checkpoint 3 nằm ngay trước phần tốn nhất (khoảng 24 lượt): bạn xem số đo của sáu lượt đầu rồi mới quyết định chạy tiếp.
+
+## Hai điểm cần bạn đồng ý cùng plan
+
+Khi viết plan, mình phát hiện kịch bản kiểm thật trong spec vướng hai chỗ:
+
+1. **`ao-pilot` chưa có giao diện và chưa có E2E test** (quyết định 7). Repo hiện chỉ có `src/cart.ts`. Trong khi đó, DoD của Story đòi mỗi AC có một E2E test, và Epic thử có cả `ux` lẫn `fe-dev`. Mình đề xuất T16:
+   - thêm một trang giỏ hàng tĩnh, script `serve` viết bằng `node:http`, và `@playwright/test` ghim bản, chạy bằng Chrome có sẵn trên máy;
+   - không thêm framework nào; E2E chỉ chạy ở máy bạn.
+
+   Phương án này cài một package mới vào `ao-pilot`, và lệch với spec ở hai câu: kiểm thật 7 dùng trang này thay cho "một trang tĩnh", và `qa` dùng trình duyệt hai lần chứ không phải một lần. Bạn duyệt thì mình sửa hai câu đó trong spec.
+2. **Tài liệu của Epic thử không được merge** (quyết định 6). Luồng PR cho tài liệu là việc của `dev-workflow`. Trong module này:
+   - `ba`, `ux`, `sa` commit lên nhánh `feature/<EPIC-KEY>-spec`;
+   - dev agent, `reviewer` và `qa` đọc tài liệu từ nhánh đó bằng `git show`.
+
+   Nếu muốn merge, mình phải tự đặt ra luồng PR cho tài liệu ngay trong module này, và tốn thêm hai lượt review.
+
+## Bạn duyệt plan
+
+Bạn duyệt plan, kể cả hai điểm trên, hay muốn sửa chỗ nào? Khi bạn duyệt, mình đánh dấu plan là đã duyệt, merge PR của SPEC và plan vào `main` khi CI xanh, rồi bắt đầu T1.
