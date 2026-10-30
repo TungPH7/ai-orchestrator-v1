@@ -214,7 +214,7 @@ Commit là commit cuối cùng sửa thư mục đó tính tới 2026-10-30; kit
 
 `npm run skills:vendor -- <name>` tải đúng commit ghim trong `agents/roster.yaml` (GitHub API đọc cây thư mục, file lấy từ `raw.githubusercontent.com`), đổi `name:` khi cần, và ghi `SOURCE.md` (repo, đường dẫn, commit, ngày, thay đổi) cạnh các file giấy phép. Trong dự án, ba skill nằm ở `.claude/skills/`, là đường dẫn được bảo vệ. Phiên chính của bạn cũng thấy và gọi được chúng.
 
-`playwright-cli` cần lệnh `playwright-cli` cài toàn cục, hoặc Playwright cài trong dự án (khi đó dùng `npx playwright cli`). Dự án Next.js của Pilot 1 sẽ có Playwright cho E2E (`project-scaffold`). Ở module này, `qa` chỉ chạy thử một lần; cách cài chốt ở T1, và Claude hỏi bạn trước khi cài gì lên máy.
+`playwright-cli` cần lệnh `playwright-cli` cài toàn cục, hoặc Playwright cài trong dự án (khi đó dùng `npx playwright cli`). Dự án Next.js của Pilot 1 sẽ có Playwright cho E2E (`project-scaffold`). Ở module này, `qa` dùng trình duyệt hai lần: một lượt thử ở T17 và một lượt kiểm Story của Epic thử ở T19 (plan, quyết định 7). Cách cài chốt ở T2, và Claude hỏi bạn trước khi cài gì lên máy.
 
 **Skill theo stack** không nằm trong kit. Mỗi dự án khai trong `.ai-orchestrator/roster.local.yaml`:
 
@@ -524,9 +524,9 @@ You are `reviewer`, the Code Reviewer of the SDLC contract. Your value in the Ag
 4. **`pm`** viết bản tổng hợp sáng của `DEMO`.
 5. **Năm việc ngoài vai trò** bị chặn: `qa` gọi `Start`; `reviewer` ghi vào `src/`; `security` chạy `ao-pr.mjs create`; `pm` chuyển trạng thái một item; `reviewer` chạy `git checkout`.
 6. **Phép so `high` với `max`** của `fe-dev` (mục 2.2).
-7. **Trình duyệt:** `qa` mở một trang tĩnh bằng `playwright-cli`, chụp snapshot và ảnh; `fe-dev` mở trang đó bằng Chrome DevTools MCP và đọc console.
+7. **Trình duyệt:** `qa` mở trang giỏ hàng tối thiểu mà T16 thêm vào `ao-pilot` bằng `playwright-cli`, chụp snapshot và ảnh; `fe-dev` mở trang đó bằng Chrome DevTools MCP và đọc console.
 
-Mỗi lượt chạy bằng `claude -p --agent <role> --output-format json`, ghi lại model, effort, token vào và ra, chi phí quy đổi theo giá API, thời gian và số lượt. Ước khoảng 25 lượt chạy, phần lớn bằng Opus, nên có thể cần hai đến ba khung 5 giờ của gói Pro.
+Mỗi lượt chạy bằng `claude -p --agent <role> --output-format json`, ghi lại model, effort, token vào và ra, chi phí quy đổi theo giá API, thời gian và số lượt. Ước khoảng 30 lượt chạy, phần lớn bằng Opus, nên có thể cần ba đến bốn khung 5 giờ của gói Pro (bảng ở cuối plan).
 
 ## 8. Ranh giới
 
@@ -547,7 +547,7 @@ Mỗi lượt chạy bằng `claude -p --agent <role> --output-format json`, ghi
 9. Phép so `high` với `max` của `fe-dev` có số đo và nhận xét; bạn chọn mức cho `fe-dev`.
 10. Nâng effort bằng `CLAUDE_CODE_EFFORT_LEVEL` có hiệu lực, theo tiền đề 2 và lượt chạy `max` của phép so.
 11. Mọi lượt chạy thật có số đo trong `tasks/verification.md`; `maxTurns` của từng vai trò được đặt từ số đo.
-12. `qa` lái trình duyệt bằng `playwright-cli`, và `fe-dev` đọc console bằng Chrome DevTools MCP, mỗi việc một lần.
+12. `qa` lái trình duyệt bằng `playwright-cli`, và `fe-dev` đọc console bằng Chrome DevTools MCP, mỗi việc ít nhất một lần.
 13. README có mục về agent; có `docs/agents.md`, gồm cả các bước export ảnh từ Figma, cách xem dung lượng repo và cách bật LFS; `SPEC.md` ghi module hoàn thành.
 
 ## 10. Câu hỏi đã trả lời
