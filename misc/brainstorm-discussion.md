@@ -21,7 +21,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 11 | `318a4364-f1b9-4cc5-9744-ae8ff4f80c7d` | 2026-10-29 09:00 → khoảng 09:40 | Bạn cho qua Checkpoint 2; T14–T17 (lượt code): merge-gate, audit, gh:protect; Checkpoint 3, chờ bạn xóa repo thử |
 | 12 | `32807628-e04f-47b4-889d-f855a40dabce` | 2026-10-29 khoảng 11:04 → khoảng 23:06 | Bạn cho qua Checkpoint 3; T17 và Checkpoint 3 đóng (PR #65, #66); T18 (lượt code): cài kit mới lên `ao-pilot`, tạo `DEMO-6`, `gh-guard` chặn ba đường vòng; bạn chuyển `DEMO-6` sang Ready và tạo key thứ hai của `ao-dev`; T18 đóng (PR #67): `fe-dev` mở PR #4, `reviewer` yêu cầu sửa, kit tắt ghi công AI; T19: vòng sửa, tiêu chí 10; bạn approve PR #4 lần đầu; T19: approve trên commit cũ không còn được tính, `devops` mở PR #5 sửa workflow, `reviewer` và `security` đăng báo cáo, bạn approve PR #4 lần hai và PR #5; T19 đóng (PR #68): `merge-gate` merge PR #4, `DEMO-6` sang Ready for QA, vòng PR tốn 55 phút Actions; T20: `fe-dev` mở PR #6, chờ bạn merge tay; bạn báo đã merge nhưng PR #6 vẫn mở; bạn merge lại, `audit` chặn deploy và gắn cờ `DEMO-8`; `fe-dev` mở PR #7 revert; bạn approve PR #7; T20 đóng (PR #69): `merge-gate` merge PR #7, `develop` sạch trở lại, gỡ cờ `DEMO-8`; Checkpoint 4, chờ bạn; bạn hỏi về `gh` 2.16.1, mình đề xuất sửa `gh-guard` cho các lệnh `gh` mới rồi mới cập nhật `gh`; bạn đồng ý: vá `gh-guard` (PR #70), lên `gh` 2.103.3, tắt telemetry; bạn đăng nhập lại `gh`, token vào keyring; bạn thu hồi token cũ và cho qua Checkpoint 4; git mất quyền push vì Git Credential Manager giữ token cũ của `gh`; bạn đăng nhập lại git; Checkpoint 4 đóng (PR #71); T21 đóng (PR #72); checkpoint cuối, chờ bạn |
 | 13 | `2c3e5733-3a72-4ae6-b04c-ca09a16731cc` | 2026-10-29 khoảng 23:31 → 2026-10-30 khoảng 16:15 | Bạn chọn làm tiếp agent-roster; quality-gates đóng (PR #73); giả định và câu hỏi cho agent-roster: model cho từng vai trò, `ux` giao gì; bạn đề xuất model và effort, đồng ý artifact `design`; Claude đề xuất effort theo vai trò, quy tắc cho `design.md`, ba skill từ registry, chỉ lấy ý từ `agency-agents`; bạn duyệt bốn điểm, yêu cầu so `high` với `max` cho `fe-dev`, và hỏi lại nên dùng `playwright-cli` hay Chrome DevTools MCP; Claude đề xuất `qa` dùng `playwright-cli`, `fe-dev` dùng Chrome DevTools MCP, và viết bản nháp `SPEC-agent-roster.md`; bạn hỏi Story đã có Figma có cần `design.md` không; Claude đề xuất `design.md` có hai kiểu màn hình (ASCII hoặc Figma kèm ảnh PNG đã duyệt), Figma MCP để sau; bạn hỏi ảnh trong Git có làm repo vượt dung lượng không, cho biết gói Figma Education, hỏi chụp màn hình Figma được không; Claude đo cỡ ảnh, đề xuất năm quy tắc ảnh do `check-design` kiểm, bạn export ảnh vào `.ai/design-inbox/`, tách Figma MCP và script REST thành module riêng; bạn đồng ý cả ba, chọn module riêng cho Figma MCP; Claude sửa SPEC theo đó và xin duyệt SPEC; bạn duyệt SPEC; Claude viết plan 22 task (T16 chuẩn bị `ao-pilot` với trang giỏ hàng và Playwright, tài liệu của Epic thử không merge) và xin duyệt plan |
-| 14 | `cb0eafc3-b9fb-4ef7-9d75-cbacef12fa98` | 2026-10-30 khoảng 16:29 → | Bạn duyệt plan; spec và plan merge (PR #74); T1 kiểm năm tiền đề: `claude --agent` bỏ qua `skills`, `effort`, `maxTurns`, settings của dự án không cài được plugin; Claude đề xuất chép 13 skill của agent-skills vào kit và script `ao-agent.mjs`, xin bạn duyệt cùng cách chạy hai công cụ trình duyệt qua `npx`; bạn duyệt cả hai; T1–T4 đóng (PR #75–#78): spec sửa sau T1, kiểm `playwright-cli` và Chrome DevTools MCP, artifact `design`, NOT TESTED; Checkpoint 1, chờ bạn; bạn hỏi xem kết quả T1–T2 ở đâu; bạn cho qua Checkpoint 1 (PR #79); T5–T14 đóng (PR #80–#89): `check-design`, roster và quy tắc A1–A5, 16 skill chép vào kit, `gh-guard` theo vai trò, mười prompt và file quy ước, sinh agent, `ao-agent.mjs`; Checkpoint 2, chờ bạn; bạn hỏi vì sao `fe-dev` không dùng `vercel-react-best-practices`: skill theo stack khai trong `roster.local.yaml` của từng dự án; bạn cho qua Checkpoint 2 (PR #90); T15: DEMO-9, ao-pilot PR #8 chép kit, kit PR #91–#93 (coverage loại `.claude/**`, vá `gh-guard` theo finding của review, luật hook và mục Shell), `reviewer` hai lượt và `security` ba lượt (hai lần chạm giới hạn usage, Claude đăng báo cáo của lượt cuối), 14,30 USD quy đổi; chờ bạn approve, merge, bật `chrome-devtools` và quyết hai đề xuất về danh tính agent và `file:///`; bạn merge PR #8, bật `chrome-devtools`, đồng ý hai đề xuất; T15 đóng (PR #94); kit PR #95 (`--no-file-navigations`, `.mcp.json` được bảo vệ), #96 (vá thêm `gh-guard`); T16: Story DEMO-10, trang giỏ hàng dựng ở server và server `node:http`; chờ bạn đồng ý cài `@playwright/test` |
+| 14 | `cb0eafc3-b9fb-4ef7-9d75-cbacef12fa98` | 2026-10-30 khoảng 16:29 → | Bạn duyệt plan; spec và plan merge (PR #74); T1 kiểm năm tiền đề: `claude --agent` bỏ qua `skills`, `effort`, `maxTurns`, settings của dự án không cài được plugin; Claude đề xuất chép 13 skill của agent-skills vào kit và script `ao-agent.mjs`, xin bạn duyệt cùng cách chạy hai công cụ trình duyệt qua `npx`; bạn duyệt cả hai; T1–T4 đóng (PR #75–#78): spec sửa sau T1, kiểm `playwright-cli` và Chrome DevTools MCP, artifact `design`, NOT TESTED; Checkpoint 1, chờ bạn; bạn hỏi xem kết quả T1–T2 ở đâu; bạn cho qua Checkpoint 1 (PR #79); T5–T14 đóng (PR #80–#89): `check-design`, roster và quy tắc A1–A5, 16 skill chép vào kit, `gh-guard` theo vai trò, mười prompt và file quy ước, sinh agent, `ao-agent.mjs`; Checkpoint 2, chờ bạn; bạn hỏi vì sao `fe-dev` không dùng `vercel-react-best-practices`: skill theo stack khai trong `roster.local.yaml` của từng dự án; bạn cho qua Checkpoint 2 (PR #90); T15: DEMO-9, ao-pilot PR #8 chép kit, kit PR #91–#93 (coverage loại `.claude/**`, vá `gh-guard` theo finding của review, luật hook và mục Shell), `reviewer` hai lượt và `security` ba lượt (hai lần chạm giới hạn usage, Claude đăng báo cáo của lượt cuối), 14,30 USD quy đổi; chờ bạn approve, merge, bật `chrome-devtools` và quyết hai đề xuất về danh tính agent và `file:///`; bạn merge PR #8, bật `chrome-devtools`, đồng ý hai đề xuất; T15 đóng (PR #94); kit PR #95 (`--no-file-navigations`, `.mcp.json` được bảo vệ), #96 (vá thêm `gh-guard`); T16: Story DEMO-10, trang giỏ hàng dựng ở server và server `node:http`; bạn đồng ý cài `@playwright/test`; ao-pilot PR #9 (E2E AC1, AC2), `reviewer` tìm ra `GET //` làm sập server (High), Claude sửa, `reviewer` vòng 2 và `security` COMMENT, 6,30 USD quy đổi; kit PR #97 (`grep ao-pr.mjs` bị chặn nhầm); chờ bạn approve PR #9 |
 
 ---
 
@@ -5366,3 +5366,60 @@ Bạn đồng ý thì mình làm tiếp:
 5. Chạy `npm run test:e2e` ở máy bạn, rồi mở PR bằng `ao-dev`.
 6. `reviewer` và `security` review, lượt đo thứ hai. Diff lần này nhỏ hơn PR #8 nhiều, nên chắc sẽ tốn ít hơn mức 2–6 USD quy đổi mỗi lượt của T15.
 7. Bạn approve, và `merge-gate` tự merge.
+
+---
+
+# Phiên 14 · Lượt 8 — 2026-10-30 khoảng 22:44
+
+**Bạn:**
+
+```markdown
+đồng ý, làm tiếp đi
+```
+
+**Claude:**
+
+PR của T16, [ao-pilot #9](https://github.com/TungPH7/ao-pilot/pull/9), đã qua hai vòng review và đang chờ bạn approve. Sau khi bạn approve, `merge-gate` tự merge.
+
+## Đã làm
+
+- Đã cài `@playwright/test` 1.64.1, ghim bản, 0 lỗ hổng. Lệnh cài không tải trình duyệt nào.
+- Đã thêm:
+  - `playwright.config.ts`, chạy bằng Chrome có sẵn và tự bật server ở cổng 3100;
+  - `e2e/cart.spec.ts`, với hai test `AC1 …` và `AC2 …`;
+  - lệnh `npm run test:e2e`;
+  - README mới cho `ao-pilot`.
+- E2E 2/2 xanh trên máy bạn. Mình thử đổi giá trị mong đợi thành sai, và test AC2 đỏ đúng như phải đỏ.
+
+## Hai vòng review
+
+| Lượt | Thời gian | USD quy đổi | Kết quả |
+|---|---|---|---|
+| `reviewer` 1 | 5 ph 53 s | 1,57 | REQUEST_CHANGES: 1 High, 5 Low |
+| `reviewer` 2 | 6 ph 48 s | 1,34 | COMMENT: 3 Low |
+| `security` | 12 ph 6 s | 3,39 | COMMENT: không có finding |
+
+Tổng 6,30 USD quy đổi, chưa bằng một nửa T15 (14,30 USD).
+
+- **Finding High của `reviewer` là lỗi thật của mình.** Chỉ một request `GET //` là server sập. Mở `http://127.0.0.1:3100//` trong Chrome cũng sập. Còn `//evil.example/` lại trả trang thay vì 404.
+  - Mình sửa theo TDD ở commit `df09e34`. Test mới làm treo code cũ, còn với code mới thì xanh.
+  - Cùng commit đó sửa luôn năm finding Low: dựng trang một lần lúc khởi động, `engines` thành `>=24.2`, CSP chặt hơn, kiểm `nosniff` ở 404 và 405.
+- **`reviewer` vòng 2** xác nhận cả sáu finding đã sửa. Ba finding Low còn lại không chặn merge. Mình đã sửa luôn mô tả PR; hai finding kia để lại cho Epic sau:
+  - test hồi quy treo thay vì đỏ;
+  - `package-lock.json` còn ghi `engines` cũ.
+- **`security`** không thấy lỗi nào. Nó để lại ba ghi chú cho Epic mã giảm giá ở T18, mình đã ghi vào `tasks/verification.md`:
+  - form cần chống CSRF;
+  - server đang nhận mọi `Host`;
+  - mã giảm giá hiện lại trên trang phải được escape.
+- Cả hai agent bị `gh-guard` chặn nhầm khi `grep` file `ao-pr.mjs`, và đều làm tiếp theo luật mới. Mình đã sửa lỗi này trong kit ([PR #97](https://github.com/TungPH7/ai-orchestrator-v1/pull/97)).
+
+## Phần bạn làm: approve PR #9
+
+1. Mở https://github.com/TungPH7/ao-pilot/pull/9.
+2. Ở tab **Conversation**, đọc hai báo cáo mới nhất của `tungph7-ao-review[bot]`. Cả hai đều trên commit `df09e34`.
+3. Bấm tab **Files changed**, rồi bấm **Review changes** (giao diện mới: **Submit review**).
+4. Chọn **Approve**, rồi bấm **Submit review**.
+
+Lần này bạn không cần merge tay: PR không sửa đường dẫn được bảo vệ, nên `merge-gate` tự squash merge vào `develop` sau khi bạn approve.
+
+Khi bạn approve xong và báo mình, mình sẽ kiểm merge, `audit` và Deploy, đóng T16, rồi làm T17: `qa` lái trình duyệt bằng `playwright-cli`, `fe-dev` đọc console bằng Chrome DevTools MCP, trên trang giỏ hàng này.
