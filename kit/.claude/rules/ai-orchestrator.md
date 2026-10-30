@@ -9,7 +9,7 @@ These rules apply to every agent of the SDLC contract, and to the main session u
 - Site `https://phunghuutung12b4.atlassian.net`, cloud id `58b36210-6e4d-421a-adf4-e74a4e23b069`, space `<KEY>`.
 
 - Use only the `atlassian` MCP server for Jira, and pass the cloud id above on every call.
-- Every JQL query includes `project = <KEY>`. Never read or write another space.
+- Every JQL query includes `project = ` and the space key above. Never read or write another space.
 - Fill the Agent field with the value of your role:
 
 | Role | Agent field |
