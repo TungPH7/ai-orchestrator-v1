@@ -1,6 +1,8 @@
-// Checks design.md files (agent-roster spec 2.8): prints each error with its file, line and rule, and fails if any.
+// Checks design.md files (agent-roster spec 2.8), with the images in the design/ folder next to each file: prints each
+// error with its file, line and rule, and fails if any.
 // Usage: node scripts/check-design.mjs <design.md> [more files]
-import { readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
 import { checkDesign } from '../lib/quality/design.mjs';
 
 const files = process.argv.slice(2);
@@ -9,10 +11,18 @@ if (files.length === 0) {
   process.exit(2);
 }
 
+// The files of the design/ folder next to a design.md, as file name → bytes; none when the folder does not exist.
+function readImages(file) {
+  const dir = join(dirname(file), 'design');
+  if (!existsSync(dir)) return new Map();
+  const entries = readdirSync(dir, { withFileTypes: true }).filter((entry) => entry.isFile());
+  return new Map(entries.map(({ name }) => [name, readFileSync(join(dir, name))]));
+}
+
 for (const file of files) {
   let errors;
   try {
-    errors = checkDesign(readFileSync(file, 'utf8'));
+    errors = checkDesign(readFileSync(file, 'utf8'), { images: readImages(file) });
   } catch (error) {
     console.error(`${file}: ${error.message}`);
     process.exitCode = 1;
