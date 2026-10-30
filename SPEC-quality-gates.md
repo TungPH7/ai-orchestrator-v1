@@ -118,7 +118,7 @@ Giống `jira-sync`, `merge-gate` đối soát chứ không làm theo từng s�
 | Báo cáo review | Trên commit đầu PR, `ao-review` có báo cáo của cả `reviewer` lẫn `security` (phân biệt bằng dòng `Role:`, mục 2.9). Báo cáo mới nhất của mỗi vai trò không còn finding Critical hoặc High |
 | Không có yêu cầu sửa | Guard `changes-requested` không thỏa |
 | Approve | Quyết định mới nhất của một login trong `AO_APPROVERS` **trên commit đầu PR** là approve. Có push mới sau khi bạn approve thì phải approve lại |
-| File được bảo vệ | PR không sửa file nào khớp `protected_paths`: `.github/workflows/**`, `.githooks/**`, `.claude/**`, `.ai-orchestrator/**` (gồm cả `quality/gates.yaml` của dự án). PR có sửa thì `merge-gate` không merge, và báo bạn đọc diff rồi tự merge |
+| File được bảo vệ | PR không sửa file nào khớp `protected_paths`: `.github/workflows/**`, `.githooks/**`, `.claude/**`, `.ai-orchestrator/**`, `.mcp.json` (thêm ở `agent-roster` T15) (gồm cả `quality/gates.yaml` của dự án). PR có sửa thì `merge-gate` không merge, và báo bạn đọc diff rồi tự merge |
 
 Khi đủ điều kiện, `merge-gate` squash merge bằng token của `ao-dev`, truyền kèm SHA của commit đầu để GitHub từ chối nếu PR vừa có push mới. Commit squash có tiêu đề đúng bằng tiêu đề PR (không thêm `(#n)`, để vẫn đạt quy ước commit), và body liệt kê header các commit của PR, để giữ mã Sub-task. Merge bằng token App thì push vào nhánh đích vẫn kích hoạt CI, `audit` và deploy, khác với merge bằng `GITHUB_TOKEN`.
 
@@ -258,6 +258,7 @@ protected_paths:          # editors: vai trò agent được sửa, dù PR đó 
   - { path: ".githooks/**" }
   - { path: ".claude/**" }
   - { path: ".ai-orchestrator/**" }
+  - { path: ".mcp.json" }
 merge_method: { feature: squash, bugfix: squash, hotfix: squash }
 github_apps:
   dev: { env: AO_DEV_APP, roles: [ba, sa, fe-dev, be-dev, devops], commands: [create, edit, comment] }

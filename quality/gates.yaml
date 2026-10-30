@@ -52,6 +52,7 @@ protected_paths:
   - { path: ".githooks/**" }
   - { path: ".claude/**" }
   - { path: ".ai-orchestrator/**" }
+  - { path: ".mcp.json" }
 
 # The GitHub Apps of the agents: the variables that name each App, the roles that use it, and the ao-pr.mjs commands
 # those roles may run with it.

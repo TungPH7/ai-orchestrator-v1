@@ -69,15 +69,16 @@ test('docs/quality-gates.md covers every check of CI, the git hooks, merge-gate,
   }
 });
 
-// Spec agent-roster 2.7, checked in T2: a pinned server, a temporary Chrome profile, nothing sent to Google.
-test('the kit declares Chrome DevTools MCP pinned, isolated, without usage statistics, CrUX or update checks', () => {
+// Spec agent-roster 2.7, checked in T2: a pinned server, a temporary Chrome profile, nothing sent to Google; no file: URLs
+// since the T15 security review.
+test('the kit declares Chrome DevTools MCP pinned, isolated, without usage statistics, CrUX, update checks or file: URLs', () => {
   const { mcpServers } = JSON.parse(readFileSync(join(ROOT, 'kit', '.mcp.json'), 'utf8'));
   const server = mcpServers['chrome-devtools'];
 
   assert.ok(server, 'chrome-devtools is declared');
   assert.equal(server.type, 'stdio');
   assert.equal(server.command, 'npx');
-  assert.deepEqual(server.args, ['-y', 'chrome-devtools-mcp@1.12.0', '--isolated', '--no-usage-statistics', '--no-performance-crux']);
+  assert.deepEqual(server.args, ['-y', 'chrome-devtools-mcp@1.12.0', '--isolated', '--no-usage-statistics', '--no-performance-crux', '--no-file-navigations']);
   assert.deepEqual(server.env, { CHROME_DEVTOOLS_MCP_NO_UPDATE_CHECKS: '1' });
 });
 
