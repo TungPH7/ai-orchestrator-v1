@@ -116,8 +116,8 @@ T19, T20, T21 ── T22 maxTurns, tài liệu, lưu trữ
 - [x] T14: Chế độ dự án: `--project`, `roster.local.yaml` và `ao-agent.mjs`
 
 ### Checkpoint 2
-- [ ] `npm run validate`, `npm test`, `npm run render:check`, `npm run jira:checklist:check`, `npm run agents:check` và CI của kit xanh
-- [ ] Bạn đọc file quy ước và ít nhất hai agent sinh ra (đề xuất `fe-dev` và `qa`)
+- [x] `npm run validate`, `npm test`, `npm run render:check`, `npm run jira:checklist:check`, `npm run agents:check` và CI của kit xanh
+- [x] Bạn đọc file quy ước và ít nhất hai agent sinh ra (đề xuất `fe-dev` và `qa`)
 
 ### Giai đoạn 5: lên `ao-pilot`
 - [ ] T15: Bản chép kit vào `ao-pilot` qua PR [bạn]
