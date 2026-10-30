@@ -1,0 +1,18 @@
+{
+  "sha": "6d20de492725c78e805aa0741507bb90d1982cc7",
+  "truncated": false,
+  "tree": [
+    { "path": "LICENSE", "type": "blob", "size": 10785 },
+    { "path": "README.md", "type": "blob", "size": 4100 },
+    { "path": "skills", "type": "tree" },
+    { "path": "skills/code-review/SKILL.md", "type": "blob", "size": 2768 },
+    { "path": "skills/security-review", "type": "tree" },
+    { "path": "skills/security-review/LICENSE", "type": "blob", "size": 884 },
+    { "path": "skills/security-review/SKILL.md", "type": "blob", "size": 11808 },
+    { "path": "skills/security-review/references", "type": "tree" },
+    { "path": "skills/security-review/references/xss.md", "type": "blob", "size": 7599 },
+    { "path": "skills/security-review-extra/SKILL.md", "type": "blob", "size": 100 },
+    { "path": "skills/gha-security-review/SKILL.md", "type": "blob", "size": 8966 },
+    { "path": "skills/gha-security-review/references/pwn-request.md", "type": "blob", "size": 5902 }
+  ]
+}

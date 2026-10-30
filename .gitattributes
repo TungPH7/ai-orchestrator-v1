@@ -1,1 +1,3 @@
 * text=auto eol=lf
+# Vendored skills keep the bytes of their source, so `npm run skills:vendor` reproduces them exactly.
+kit/.claude/skills/** -text
