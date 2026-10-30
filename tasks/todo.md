@@ -205,7 +205,7 @@ Kích thước ảnh đọc từ header: chunk IHDR của PNG, marker SOF của 
 
 **Cỡ:** M
 
-### [ ] T7: Job `policy` chạy `check-design`
+### [x] T7: Job `policy` chạy `check-design`
 
 **Mô tả:** `check-policy.mjs` chọn ra:
 
@@ -215,11 +215,11 @@ Kích thước ảnh đọc từ header: chunk IHDR của PNG, marker SOF của 
 Rồi chạy kiểm trên từng file. Lỗi được ghi vào job summary như các lỗi policy khác, và làm job đỏ. Hàm chọn file là hàm thuần, đặt trong `lib/quality/policy.mjs`.
 
 **Tiêu chí chấp nhận:**
-- [ ] Test chọn file cho các trường hợp: đổi `design.md`; chỉ đổi ảnh; xóa `design.md`; đổi file nằm ngoài `docs/specs/`.
-- [ ] `check-policy.mjs --base <ref>` chạy ở máy, trên một nhánh tạm có `design.md` sai, ra lỗi D đúng mã.
+- [x] Test chọn file cho các trường hợp: đổi `design.md`; chỉ đổi ảnh; xóa `design.md`; đổi file nằm ngoài `docs/specs/`.
+- [x] `check-policy.mjs --base <ref>` chạy ở máy, trên một nhánh tạm có `design.md` sai, ra lỗi D đúng mã.
 
 **Kiểm chứng:**
-- [ ] `npm test` xanh. Phần kiểm trên PR thật làm ở T18 (tiêu chí 4)
+- [x] `npm test` xanh. Phần kiểm trên PR thật làm ở T18 (tiêu chí 4)
 
 **Phụ thuộc:** T6
 
