@@ -490,3 +490,37 @@ Prompt: làm Sub-task DEMO-13 của Story DEMO-12; tài liệu của Epic chỉ 
 - Lệnh dừng server thử bằng cách kill mọi `node.exe` bị bộ phân loại của chế độ `auto` từ chối ("Interfere With Workloads"). Nó chuyển sang một script tự mở rồi tự đóng server của mình. Sau lượt chạy không còn server nào lắng nghe.
 
 **Lỗi tìm ra: Story không được start.** `be-dev` điền Agent và chạy `Start` trên Sub-task, nhưng Story DEMO-12 vẫn ở Ready, trường Agent trống. Bước 2 trong prompt của `be-dev` và `fe-dev` chỉ ghi "make the Start transition", không nói item nào. Nếu Story không ở In Progress, `jira-sync` không chạy được `submit` khi PR mở. Kit PR #102 sửa prompt của cả hai: với Sub-task, nếu Story còn ở Ready thì agent điền Agent cho Story và start Story trước Sub-task. Guard `wip-available` không đếm Story có Sub-task, nên cả hai lần start đều qua. Bản chép kit trong `ao-pilot` chưa có bản sửa, nên prompt lượt chạy của `fe-dev` nói rõ điều đó.
+
+### Sub-task FE và PR: `fe-dev`
+
+Prompt: làm Sub-task DEMO-14; đọc comment bàn giao trên DEMO-13; DEMO-12 còn ở Ready vì `be-dev` chưa start nó, nên điền Agent và start Story trước DEMO-14 (thay cho bản sửa của kit PR #102); tự chạy `npm run serve` để soi trang, rồi chỉ dừng đúng process đó.
+
+| Lượt | Model, effort | Lượt model | Thời gian | Token ra | Cache đọc | Cache ghi | Quy ra USD | Kết quả |
+|---|---|---|---|---|---|---|---|---|
+| `fe-dev` 1 | Opus, high | 115 | 11 ph 51 s | 48.892 | 10.336.869 | 186.742 | 4,540 | 6 commit (`1229f57`..`2e3689d`), DEMO-12 sang In Progress, DEMO-14 sang Done, PR #11 |
+
+**Agent làm gì:**
+
+- Điền Agent của DEMO-12 rồi start Story (02:26:20), sau đó điền Agent và start DEMO-14 (02:26:30). Hook không chặn lần nào, đúng như guard `wip-available` bỏ qua Story có Sub-task.
+- Chỉ đổi `src/page.ts` cùng ba file test, theo bảng markup S1 trong plan: form `POST /` có trường ẩn `applied`, dòng giảm giá, thông báo lỗi, `flex-wrap`, màu và viền khi lỗi. "0 ₫" không có dấu trừ (Q2). Không thêm script, không đổi CSP.
+- Kết quả nó báo: lint, typecheck sạch; `npm test` 95/95 (thêm 20 test); coverage của dòng thay đổi 100% (172/172); `npm run test:e2e` 13/13 trên Chrome (AC1–AC11 của DEMO-11, AC1–AC2 của DEMO-10).
+- Soi trang bằng Chrome DevTools MCP ở cổng 3000, rồi dừng đúng process đó (PID 3300):
+  - `autofocus` chạy được dưới CSP;
+  - Enter gửi form, và Chrome gửi `Origin` của trang;
+  - console không có lỗi;
+  - ở 768, 1024, 1440 px không tràn.
+  
+  Ở 320 px, bảng sản phẩm tràn (305 px trong cột 256 px). Plan nói Story không sửa bảng, nên nó comment lên DEMO-12 nhờ `ba` tạo Task riêng.
+- Mở PR #11 bằng `ao-pr.mjs create`; người mở là `tungph7-ao-dev[bot]`. Mô tả theo template, và ghi rằng Chrome gợi ý thêm `autocomplete`, nhưng plan không có.
+- Không có trailer `Co-Authored-By` trong 16 commit của nhánh.
+
+**Hook từ chối hai lần, cả hai là chặn nhầm:**
+
+- `gh-guard: fe-dev uses the dev App, which runs ao-pr.mjs create, edit, comment, not undefined` khi nó chỉ `sed -n 1,80p .ai-orchestrator/scripts/ao-pr.mjs`. Kit PR #97 đã sửa lỗi này, nhưng bản chép trong `ao-pilot` chưa có. Nó đọc file bằng Read.
+- `jira: do not call Atlassian from Bash` khi nó ghi mô tả PR bằng heredoc có link `atlassian.net`. Luật Bash của `block-atlassian` chặn mọi lệnh có chữ "atlassian". Nó chuyển sang Write tool. Luật thô này có chủ ý; T22 nên ghi vào tài liệu rằng agent ghi file có link Jira bằng Write.
+
+**Trên GitHub và Jira:**
+
+- CI run 41116700893 xanh. `jira-sync` của PR in `Waiting DEMO-12: Submit needs ci-green`, vì CI chưa xong lúc nó chạy. Sau khi CI xanh, `merge-gate` in `Waiting #11: reviewer report on head 2e3689d; security report on head 2e3689d; approval on head 2e3689d`, và `jira-sync` theo sau in `Made DEMO-12: Submit (in-progress → in-review)` (02:37:42, `orchestratorci`).
+
+**Quan sát cho `dev-workflow`:** comment nhờ `ba` tạo Task chỉ nằm trên Jira. Chưa có gì gọi `ba` dậy để đọc nó; Level 1 cần bạn hoặc Claude chuyển lời.
