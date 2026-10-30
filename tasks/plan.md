@@ -1,6 +1,6 @@
 # Plan triển khai: agent-roster
 
-> **Spec:** [SPEC-agent-roster.md](../SPEC-agent-roster.md), đã duyệt 2026-10-30. **Trạng thái:** chờ duyệt. **Task chi tiết:** [todo.md](todo.md). **Kết quả kiểm thật:** [verification.md](verification.md), tạo ở T1.
+> **Spec:** [SPEC-agent-roster.md](../SPEC-agent-roster.md), đã duyệt 2026-10-30. **Trạng thái:** đã duyệt 2026-10-30, cùng quyết định 6 và 7. **Task chi tiết:** [todo.md](todo.md). **Kết quả kiểm thật:** [verification.md](verification.md), tạo ở T1.
 
 ## Tổng quan
 
@@ -50,7 +50,7 @@ Như hai module trước, plan kiểm tiền đề trước: T1–T2 thử bảy
      - `qa` và `fe-dev` thử trình duyệt trên trang giỏ hàng này, thay cho "một trang tĩnh" (kiểm thật 7).
      - `qa` dùng trình duyệt hai lần, ở T17 và T19, không phải "chỉ chạy thử một lần" như mục 2.7.
 
-     Duyệt plan thì Claude sửa hai câu đó trong spec.
+     Spec đã được sửa theo hai điểm này lúc duyệt plan.
 8. **Key và token không đi qua chat, log hay lịch sử lệnh.** Như các module trước, Claude đọc biến môi trường từ registry ngay trong lệnh.
 9. **Ghim phiên bản:**
    - `@playwright/cli` 0.1.22 và `chrome-devtools-mcp` 1.12.0.
@@ -178,7 +178,7 @@ Tổng cộng khoảng 30 lượt Opus hoặc Sonnet, có thể cần ba đến 
 
 ## Câu hỏi mở
 
-Không có, ngoài hai quyết định cần bạn đồng ý cùng plan:
+Không có. Bạn duyệt plan ngày 2026-10-30 (Phiên 14 · Lượt 1), gồm cả hai quyết định:
 
 - Quyết định 6: tài liệu của Epic thử nằm trên một nhánh riêng, không merge.
 - Quyết định 7: T16 chuẩn bị `ao-pilot`, và cài `@playwright/test` vào đó.
