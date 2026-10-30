@@ -121,7 +121,7 @@ T19, T20, T21 ── T22 maxTurns, tài liệu, lưu trữ
 
 ### Giai đoạn 5: lên `ao-pilot`
 - [x] T15: Bản chép kit vào `ao-pilot` qua PR [bạn]
-- [ ] T16: `ao-pilot`: trang giỏ hàng tối thiểu và Playwright [bạn]
+- [x] T16: `ao-pilot`: trang giỏ hàng tối thiểu và Playwright [bạn]
 - [ ] T17: Trình duyệt: `qa` và `fe-dev` chạy thử
 
 ### Checkpoint 3

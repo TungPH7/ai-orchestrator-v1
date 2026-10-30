@@ -282,3 +282,7 @@ Tổng ba lượt là 6,30 USD quy đổi, so với 14,30 USD của T15. `securi
 1. **CSRF:** `form-action 'self'` không chặn trang khác post vào server. Form mã giảm giá cần kiểm `Origin` hoặc dùng token CSRF, và giới hạn cỡ body.
 2. **Server nhận mọi `Host`:** một trang độc hại đọc được trang này qua DNS rebinding. Khi trang có dữ liệu thật hoặc nhận thay đổi, server chỉ nên trả lời đúng địa chỉ của nó.
 3. **`quantity` không được escape:** điều này an toàn chỉ vì giỏ được kiểm trước khi dựng trang. Mã giảm giá hiện lại cho người dùng phải được escape.
+
+### Merge
+
+Bạn approve PR #9 trên `df09e34` lúc 23:32:00. 34 giây sau, `merge-gate` squash merge PR bằng `tungph7-ao-dev[bot]` thành `6c25b8b` trên `develop`. Lần này bạn không phải merge tay, vì PR không sửa đường dẫn được bảo vệ. Deploy chạy `audit` trước: `audit passed: 6c25b8b on develop is the merge of PR #9, which met every gate`. Sau đó job deploy chạy, và `jira-sync` xanh. DEMO-10 vẫn ở New, vì Story chưa bao giờ được Start: không có Epic, không có plan.
