@@ -103,7 +103,7 @@ Bản 1.12.0 không có nhóm WebAuthn như spec mục 2.3 nhắc. Vì `fe-dev` 
 
 **T5–T6 (2026-10-30):** không có bước kiểm thật nào cần môi trường ngoài. `check-design` có 26 fixture âm (D1–D7) và các ca D8 do test tạo ảnh; mỗi fixture sai đúng một quy tắc. Khi chạy trên ví dụ của `templates/design.md`, `check-design` bắt được một dòng YAML sai cú pháp (`content: "Đã giảm 10%" hoặc "…"`); dòng đó đã được sửa ở T5.
 
-**T7, `check-policy.mjs --base` chạy ở máy (khoảng 18:10): đúng.** Repo tạm trong scratchpad, nhánh `feature/DEMO-2-design` tách từ `develop`, có `docs/specs/DEMO-2/design.md` (bản `tests/fixtures/design/figma.md`) cùng thư mục `design/` gồm một ảnh 1440×4000 và một ảnh thừa, thiếu ảnh mobile. Lệnh `node scripts/check-policy.mjs --base develop --title "docs(specs): add the design (DEMO-2)"` thoát mã 1, in:
+**T7, `check-policy.mjs --base` chạy ở máy (khoảng 17:45): đúng.** Repo tạm trong scratchpad, nhánh `feature/DEMO-2-design` tách từ `develop`, có `docs/specs/DEMO-2/design.md` (bản `tests/fixtures/design/figma.md`) cùng thư mục `design/` gồm một ảnh 1440×4000 và một ảnh thừa, thiếu ảnh mobile. Lệnh `node scripts/check-policy.mjs --base develop --title "docs(specs): add the design (DEMO-2)"` thoát mã 1, in:
 
 ```
 FAIL  Design
