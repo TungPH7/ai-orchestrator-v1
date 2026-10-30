@@ -20,7 +20,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 10 | `b645b669-931c-4d95-ba32-24fd3e090d67` | 2026-10-28 16:35 → 2026-10-29 khoảng 03:30 | Giả định và câu hỏi cho quality-gates: bảo vệ nhánh khi repo private ở gói Free, danh tính để agent mở PR; bạn chọn 1a, 2a; viết SPEC-quality-gates; bạn duyệt spec, lập plan 21 task; bạn duyệt plan, bắt đầu T1; vì sao bạn phải tự tạo App, script tạo App bằng manifest flow; T1–T5, Checkpoint 1; ba đề xuất được đồng ý, T6–T13, hết lượt dùng giữa T13, Checkpoint 2 |
 | 11 | `318a4364-f1b9-4cc5-9744-ae8ff4f80c7d` | 2026-10-29 09:00 → khoảng 09:40 | Bạn cho qua Checkpoint 2; T14–T17 (lượt code): merge-gate, audit, gh:protect; Checkpoint 3, chờ bạn xóa repo thử |
 | 12 | `32807628-e04f-47b4-889d-f855a40dabce` | 2026-10-29 khoảng 11:04 → khoảng 23:06 | Bạn cho qua Checkpoint 3; T17 và Checkpoint 3 đóng (PR #65, #66); T18 (lượt code): cài kit mới lên `ao-pilot`, tạo `DEMO-6`, `gh-guard` chặn ba đường vòng; bạn chuyển `DEMO-6` sang Ready và tạo key thứ hai của `ao-dev`; T18 đóng (PR #67): `fe-dev` mở PR #4, `reviewer` yêu cầu sửa, kit tắt ghi công AI; T19: vòng sửa, tiêu chí 10; bạn approve PR #4 lần đầu; T19: approve trên commit cũ không còn được tính, `devops` mở PR #5 sửa workflow, `reviewer` và `security` đăng báo cáo, bạn approve PR #4 lần hai và PR #5; T19 đóng (PR #68): `merge-gate` merge PR #4, `DEMO-6` sang Ready for QA, vòng PR tốn 55 phút Actions; T20: `fe-dev` mở PR #6, chờ bạn merge tay; bạn báo đã merge nhưng PR #6 vẫn mở; bạn merge lại, `audit` chặn deploy và gắn cờ `DEMO-8`; `fe-dev` mở PR #7 revert; bạn approve PR #7; T20 đóng (PR #69): `merge-gate` merge PR #7, `develop` sạch trở lại, gỡ cờ `DEMO-8`; Checkpoint 4, chờ bạn; bạn hỏi về `gh` 2.16.1, mình đề xuất sửa `gh-guard` cho các lệnh `gh` mới rồi mới cập nhật `gh`; bạn đồng ý: vá `gh-guard` (PR #70), lên `gh` 2.103.3, tắt telemetry; bạn đăng nhập lại `gh`, token vào keyring; bạn thu hồi token cũ và cho qua Checkpoint 4; git mất quyền push vì Git Credential Manager giữ token cũ của `gh`; bạn đăng nhập lại git; Checkpoint 4 đóng (PR #71); T21 đóng (PR #72); checkpoint cuối, chờ bạn |
-| 13 | `2c3e5733-3a72-4ae6-b04c-ca09a16731cc` | 2026-10-29 khoảng 23:31 → | Bạn chọn làm tiếp agent-roster; quality-gates đóng (PR #73); giả định và câu hỏi cho agent-roster: model cho từng vai trò, `ux` giao gì; bạn đề xuất model và effort, đồng ý artifact `design`; Claude đề xuất effort theo vai trò, quy tắc cho `design.md`, ba skill từ registry, chỉ lấy ý từ `agency-agents`; bạn duyệt bốn điểm, yêu cầu so `high` với `max` cho `fe-dev`, và hỏi lại nên dùng `playwright-cli` hay Chrome DevTools MCP; Claude đề xuất `qa` dùng `playwright-cli`, `fe-dev` dùng Chrome DevTools MCP, và viết bản nháp `SPEC-agent-roster.md` |
+| 13 | `2c3e5733-3a72-4ae6-b04c-ca09a16731cc` | 2026-10-29 khoảng 23:31 → | Bạn chọn làm tiếp agent-roster; quality-gates đóng (PR #73); giả định và câu hỏi cho agent-roster: model cho từng vai trò, `ux` giao gì; bạn đề xuất model và effort, đồng ý artifact `design`; Claude đề xuất effort theo vai trò, quy tắc cho `design.md`, ba skill từ registry, chỉ lấy ý từ `agency-agents`; bạn duyệt bốn điểm, yêu cầu so `high` với `max` cho `fe-dev`, và hỏi lại nên dùng `playwright-cli` hay Chrome DevTools MCP; Claude đề xuất `qa` dùng `playwright-cli`, `fe-dev` dùng Chrome DevTools MCP, và viết bản nháp `SPEC-agent-roster.md`; bạn hỏi Story đã có Figma có cần `design.md` không; Claude đề xuất `design.md` có hai kiểu màn hình (ASCII hoặc Figma kèm ảnh PNG đã duyệt), Figma MCP để sau |
 
 ---
 
@@ -4574,3 +4574,79 @@ Bạn duyệt SPEC, kể cả cách chia trình duyệt và tám điểm trên, 
 - `ChromeDevTools/chrome-devtools-mcp`: README (các mục Disclaimers, Usage statistics, Requirements), `docs/tool-reference.md`, `docs/design-principles.md`
 - agent-skills 0.6.13: `skills/browser-testing-with-devtools/SKILL.md`
 - Số sao, giấy phép và bản phát hành đọc từ GitHub API ngày 2026-10-30
+
+---
+
+# Phiên 13 · Lượt 4 — 2026-10-30 khoảng 14:00
+
+**Bạn:**
+
+```markdown
+Thảo luận 1 điểm nữa trước khi tôi quyết định duyệt. Đối với các task, story đã có Design Figma thì có cần artifact design nữa không?
+```
+
+Trước lượt này, bạn chạy `/context`.
+
+**Claude:**
+
+**Ngắn gọn:** vẫn cần `design.md`, nhưng mỏng hơn: Figma thay phần hình ASCII, không thay cả file.
+
+## Figma thay được gì, không thay được gì
+
+Figma là nguồn tốt nhất cho phần nhìn: bố cục, khoảng cách, màu, chữ, component, ảnh. Đã có Figma mà còn vẽ ASCII là làm hai lần, và hai bản sẽ lệch nhau. Nhưng một link Figma không thay được bốn thứ `design.md` đang giữ:
+
+1. **Hành vi.** Figma cho thấy màn hình trông ra sao, ít khi ghi đủ validation, nội dung thông báo lỗi, trạng thái đang tải, rỗng, lỗi, thứ tự Tab, nhãn accessibility. YAML của `design.md` ghi những thứ đó, và `ux` liệt kê chỗ Figma còn thiếu vào Open Questions.
+2. **Mã ổn định.** Story, AC và tên E2E test trỏ tới `S1.4`. Tên layer trong Figma đổi theo ý designer, nên không dùng làm mã được.
+3. **Bản đã duyệt.** File Figma đổi được bất cứ lúc nào, kể cả sau cổng ①. Nếu SPEC chỉ có link thì bạn duyệt một thứ còn đang đổi.
+4. **Agent nhìn được thiết kế.** Agent không mở được link Figma. Muốn đọc phải qua Figma MCP server, mà giới hạn phụ thuộc gói Figma (bảng dưới). Ảnh PNG trong repo thì agent nào cũng đọc được, vì Claude đọc được ảnh.
+
+## Giới hạn của Figma MCP server
+
+Theo tài liệu của Figma (đọc ngày 2026-10-30), số lượt gọi tool:
+
+| Gói Figma | Seat View, Collab | Seat Dev, Full |
+|---|---|---|
+| Starter (miễn phí) | 20 lượt mỗi tháng | — |
+| Professional | 20 lượt mỗi tháng | 200 lượt mỗi ngày, 10 lượt mỗi phút |
+| Organization | 20 lượt mỗi tháng | 200 lượt mỗi ngày, 15 lượt mỗi phút |
+| Enterprise | 20 lượt mỗi tháng | 600 lượt mỗi ngày, 20 lượt mỗi phút |
+
+- Mỗi người đăng nhập server bằng tài khoản Figma của mình, và chỉ đọc được file tài khoản đó có quyền. Agent vì vậy đọc Figma bằng tài khoản của bạn, tức đọc được mọi file bạn có quyền, kể cả file của khách khác.
+- Server có cả tool ghi, ví dụ `use_figma` tạo, sửa, xóa nội dung file. Nếu dùng thì agent chỉ được tool đọc: `get_design_context` (ngữ cảnh thiết kế kèm code, mặc định React + Tailwind), `get_screenshot`, `get_metadata`, `get_variable_defs`.
+- 20 lượt mỗi tháng không đủ cho agent: mỗi frame thường cần vài lần gọi (ảnh, ngữ cảnh, biến).
+
+## Đề xuất
+
+**`design.md` có hai kiểu màn hình:**
+
+- **Chưa có Figma:** như SPEC hiện tại, hình ASCII có đánh số và YAML.
+- **Đã có Figma:** không vẽ ASCII. Mục màn hình có link frame (kèm `node-id`), ảnh PNG của frame commit trong `docs/specs/<EPIC-KEY>/design/` (desktop, và mobile nếu có), và YAML như cũ. Khối vẫn đánh số trong YAML, gọi theo tên nhìn thấy trên ảnh; khi biết node id của layer thì ghi thêm vào khóa `figma`. Đầu file ghi phiên bản Figma được duyệt. Ảnh và YAML trong Git là bản đã duyệt; Figma là chỗ designer làm việc. Đổi thiết kế sau cổng ① là đổi SPEC, qua PR.
+- `check-design.mjs` kiểm thêm: mỗi màn hình có hình ASCII hoặc link Figma, không có cả hai; màn hình Figma có link kèm `node-id`, và ảnh có thật trong repo.
+
+**Việc của từng vai trò khi có Figma:**
+
+- `ux`: không vẽ; đọc ảnh, viết luồng và YAML, liệt kê chỗ Figma thiếu vào Open Questions (trạng thái lỗi, bản mobile, nội dung thông báo).
+- `fe-dev`: dựng giao diện theo ảnh đã duyệt và design system trong code.
+- `qa`: so trang thật với ảnh; hành vi theo YAML và AC.
+- Bạn: export PNG các frame khi bắt đầu Epic (trong Figma: chọn frame → Export → PNG) và gửi kèm link frame, rồi duyệt `design.md` cùng ảnh ở cổng ①. Muốn bỏ bước tay thì kit thêm một script gọi REST API của Figma: một lần gọi render được nhiều frame, nên gói Starter cũng đủ; link ảnh Figma trả về hết hạn sau 30 ngày, nên script tải ảnh về để commit.
+
+**Figma MCP để sau,** khi có dự án thật dùng Figma và bạn có seat Dev hoặc Full từ gói Professional trở lên. Lúc đó `fe-dev` và `ux` lấy được số đo, biến, component chính xác bằng tool đọc. Module này không kiểm thật được phần đó, vì Epic thử trên `ao-pilot` không có Figma.
+
+**Về Task:** theo hợp đồng, Task không đổi giao diện; Task đổi giao diện thì `reviewer` yêu cầu chuyển thành Story. Nên câu hỏi này chỉ áp dụng cho Story. Bug đụng giao diện thì trỏ tới màn hình đã có trong `design.md` của Epic cũ, không viết file mới.
+
+**Cách khác, mình không đề xuất:** bỏ hẳn `design.md` khi có Figma; mục Design của Story chỉ có link frame, hành vi dồn vào AC. Cách này đỡ một lượt chạy `ux`, nhưng mất mã khối, mất bản đã duyệt trong Git, và agent vẫn cần ảnh hoặc Figma MCP mới nhìn thấy thiết kế.
+
+## Bạn xác nhận giúp mình
+
+1. `design.md` có hai kiểu màn hình như trên, ảnh PNG đã duyệt commit vào Git?
+2. Bạn, và khách của bạn, thường dùng gói và seat Figma nào? Câu này quyết định có nên thêm Figma MCP ở module sau.
+3. Export PNG làm tay trước, script REST API để sau?
+
+Bạn trả lời xong, mình sửa mục 2.4, 2.8 và tiêu chí của SPEC theo đó; phần Figma được kiểm bằng dữ liệu mẫu, vì Epic thử không có Figma. Sau đó bạn duyệt SPEC.
+
+## Nguồn
+
+- [Figma Developer Docs: Rate limits & access (MCP server)](https://developers.figma.com/docs/figma-mcp-server/rate-limits-access/)
+- [Figma Developer Docs: Tools and prompts (MCP server)](https://developers.figma.com/docs/figma-mcp-server/tools-and-prompts/)
+- [Figma Developer Docs: REST API rate limits](https://developers.figma.com/docs/rest-api/rate-limits/)
+- [Figma Developer Docs: File endpoints (GET image)](https://developers.figma.com/docs/rest-api/file-endpoints/)
