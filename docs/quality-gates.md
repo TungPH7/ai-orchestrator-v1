@@ -61,7 +61,7 @@ Job summary có mục **Coverage of changed lines: N%**, với bảng gồm các
 - các dòng mà PR thêm hoặc sửa có coverage dưới 80% (`coverage.changed_lines_min`). Viết test chạy qua các dòng ở cột Lines not run.
 - một file nguồn thay đổi mà không có trong lcov. Cấu hình coverage của dự án phải gồm mọi file nguồn, kể cả file chưa có test.
 
-Bước này chỉ tính dòng thực thi được. File test, file cấu hình (`*.config.*`) và migration không được tính. Muốn kiểm trước khi push, chạy `npm run test:coverage`, rồi `node .ai-orchestrator/scripts/coverage-diff.mjs --base origin/develop`.
+Bước này chỉ tính dòng thực thi được. File test, file cấu hình (`*.config.*`), migration và bản chép kit (`.ai-orchestrator/`, `.claude/`, có test ở kit) không được tính. Muốn kiểm trước khi push, chạy `npm run test:coverage`, rồi `node .ai-orchestrator/scripts/coverage-diff.mjs --base origin/develop`.
 
 ### `secrets`
 

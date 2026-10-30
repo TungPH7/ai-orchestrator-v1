@@ -74,8 +74,9 @@ test('only executable changed lines of source files count, and the result says w
   assert.deepEqual(result.problems, ['changed lines covered: 50% (2 of 4), below 80%']);
 });
 
-test('a changed source file missing from lcov fails, and config files, migrations and type declarations do not count', () => {
-  const diff = ['src/new.ts', 'next.config.mjs', 'apps/api/src/migrations/1700-init.ts', 'src/types.d.ts', 'README.md']
+test('a changed source file missing from lcov fails; config files, migrations, type declarations and the kit copy do not count', () => {
+  const kitCopy = ['.ai-orchestrator/lib/contract.mjs', '.claude/hooks/gh-guard.mjs'];
+  const diff = ['src/new.ts', 'next.config.mjs', 'apps/api/src/migrations/1700-init.ts', 'src/types.d.ts', 'README.md', ...kitCopy]
     .map((file) => `diff --git a/${file} b/${file}\n--- /dev/null\n+++ b/${file}\n@@ -0,0 +1 @@\n+x\n`)
     .join('');
   const result = changedLineCoverage({ changed: changedLines(diff), lcov: new Map(), coverage: gates.coverage });
