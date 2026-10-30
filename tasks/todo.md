@@ -139,7 +139,7 @@ Xem [plan.md](plan.md#checkpoint-1).
 
 ## Giai đoạn 2: `design.md`
 
-### [ ] T5: `check-design` cho màn hình kiểu ASCII
+### [x] T5: `check-design` cho màn hình kiểu ASCII
 
 **Mô tả:** `lib/quality/design.mjs` là hàm thuần. Hàm tách `design.md` thành bảng màn hình, Mermaid (lấy nút, mũi tên, khối ghi trên mũi tên bằng regex), hình ASCII (khối `text` có dòng đầu `S<n> · <tên> · <cỡ>`) và các khối YAML, rồi kiểm:
 
@@ -155,12 +155,12 @@ Xem [plan.md](plan.md#checkpoint-1).
 `scripts/check-design.mjs <file>` in từng lỗi kèm mã và số dòng; có lỗi thì thoát với mã 1.
 
 **Tiêu chí chấp nhận:**
-- [ ] Mỗi mã lỗi có fixture âm; ví dụ trong `templates/design.md` sạch.
-- [ ] `[ ]` và `[___]` không bị tính là mã khối.
-- [ ] Đọc được file có xuống dòng CRLF.
+- [x] Mỗi mã lỗi có fixture âm; ví dụ trong `templates/design.md` sạch.
+- [x] `[ ]` và `[___]` không bị tính là mã khối.
+- [x] Đọc được file có xuống dòng CRLF.
 
 **Kiểm chứng:**
-- [ ] `npm test` xanh; `node scripts/check-design.mjs templates/design.md` sạch
+- [x] `npm test` xanh; `node scripts/check-design.mjs templates/design.md` sạch
 
 **Phụ thuộc:** T3
 
