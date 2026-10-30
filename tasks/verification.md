@@ -471,3 +471,22 @@ DEMO-12 sang Ready lúc 02:03:00, người chuyển là `orchestratorci`. DEMO-1
 ## T19: Epic thử: build tới QA
 
 Bạn bấm `Approve plan` và nhắn chạy tiếp (Phiên 16 · Lượt 1), nên T19 bắt đầu ngay sau T18. Mỗi lượt chạy bằng `ao-agent.mjs <role> -p` trong `ao-pilot`, bắt đầu từ `develop` `6c25b8b`. Bản chép kit trong `ao-pilot` vẫn là bản của T15: kit PR #95–#97 chưa có trong đó.
+
+### Sub-task BE: `be-dev`
+
+Prompt: làm Sub-task DEMO-13 của Story DEMO-12; tài liệu của Epic chỉ có trên `feature/DEMO-11-spec`, đọc bằng `git show`.
+
+| Lượt | Model, effort | Lượt model | Thời gian | Token ra | Cache đọc | Cache ghi | Quy ra USD | Kết quả |
+|---|---|---|---|---|---|---|---|---|
+| `be-dev` 1 | Opus, high | 82 | 12 ph 22 s | 49.927 | 7.042.839 | 147.533 | 3,588 | Nhánh `feature/DEMO-12-coupon-code` từ `develop`, 10 commit (`6cf5b82`..`0b52dd5`), DEMO-13 sang Done, comment bàn giao cho `fe-dev` |
+
+**Agent làm gì:**
+
+- Đi đúng thứ tự 8 bước của plan, mỗi bước một commit theo Conventional Commits có `(DEMO-13)`, không có trailer `Co-Authored-By`. 9 file đổi: `src/coupon.ts` (mới), `src/server.ts`, `src/page.ts`, `package-lock.json`, `README.md` và bốn file test.
+- Sửa hai finding Low của `reviewer` ở T16. Với một server ném lỗi, `npm test` trước đây treo hơn 30 s; giờ fail và kết thúc sau 1 s. Lockfile ghi `engines.node` `>=24.2`.
+- Kết quả nó báo: lint, typecheck sạch; `npm test` 75/75; coverage của dòng thay đổi 100% (132/132); `npm run test:e2e` 5/5 (AC9, AC10, AC11 và hai E2E của DEMO-10). Ba E2E mới fail trên server cũ của `develop`. Với test "client ngắt giữa body", nó thay tạm bộ đọc body bằng kiểu `for await` mà SPEC cảnh báo, và test fail với `Error: aborted`.
+- Trường `applied` được chuẩn hóa như mã gõ vào (bỏ khoảng trắng, viết hoa). Nó ghi điều này cho `fe-dev` trong comment bàn giao.
+- Pre-commit chặn một lần vì biến thừa (`no-unused-vars`); nó sửa rồi commit lại.
+- Lệnh dừng server thử bằng cách kill mọi `node.exe` bị bộ phân loại của chế độ `auto` từ chối ("Interfere With Workloads"). Nó chuyển sang một script tự mở rồi tự đóng server của mình. Sau lượt chạy không còn server nào lắng nghe.
+
+**Lỗi tìm ra: Story không được start.** `be-dev` điền Agent và chạy `Start` trên Sub-task, nhưng Story DEMO-12 vẫn ở Ready, trường Agent trống. Bước 2 trong prompt của `be-dev` và `fe-dev` chỉ ghi "make the Start transition", không nói item nào. Nếu Story không ở In Progress, `jira-sync` không chạy được `submit` khi PR mở. Kit PR #102 sửa prompt của cả hai: với Sub-task, nếu Story còn ở Ready thì agent điền Agent cho Story và start Story trước Sub-task. Guard `wip-available` không đếm Story có Sub-task, nên cả hai lần start đều qua. Bản chép kit trong `ao-pilot` chưa có bản sửa, nên prompt lượt chạy của `fe-dev` nói rõ điều đó.
