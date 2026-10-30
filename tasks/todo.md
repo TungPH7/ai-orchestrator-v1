@@ -328,7 +328,7 @@ A4 kiểm thêm: mỗi skill chép vào có `SKILL.md`, và `name:` trùng tên 
 
 ## Giai đoạn 4: prompt và sinh agent
 
-### [ ] T11: Prompt của `pm`, `ba`, `ux`, `sa`
+### [x] T11: Prompt của `pm`, `ba`, `ux`, `sa`
 
 **Mô tả:** Viết `agents/prompts/{pm,ba,ux,sa}.md` bằng tiếng Anh. File chỉ chứa phần viết tay (spec mục 2.1, 2.4, 2.5), gồm ba ý:
 
@@ -339,11 +339,11 @@ A4 kiểm thêm: mỗi skill chép vào có `SKILL.md`, và `name:` trùng tên 
 `ba`, `ux`, `sa` có hai cách chạy: làm trực tiếp với bạn; hoặc ghi câu hỏi vào Open Questions rồi dừng. `ux` làm theo luồng ảnh Figma ở spec mục 2.8. Nguồn của các ý lấy từ agency-agents được ghi trong comment HTML.
 
 **Tiêu chí chấp nhận:**
-- [ ] Mỗi prompt có đủ ba ý trên, và không lặp lại phần mà render sinh tự động (spec mục 2.1).
-- [ ] Prompt xử lý những chỗ trái quy ước kit đã ghi ở T9.
+- [x] Mỗi prompt có đủ ba ý trên, và không lặp lại phần mà render sinh tự động (spec mục 2.1).
+- [x] Prompt xử lý những chỗ trái quy ước kit đã ghi ở T9.
 
 **Kiểm chứng:**
-- [ ] Claude đọc lại từng prompt đối chiếu với spec mục 2.4
+- [x] Claude đọc lại từng prompt đối chiếu với spec mục 2.4
 
 **Phụ thuộc:** T8, T9
 
