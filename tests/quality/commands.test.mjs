@@ -26,6 +26,10 @@ test('skipping the git hooks is refused, while a message that only looks like a 
     'git commit -am "feat(api): x (DEMO-1)" -n',
     'git push --no-verify origin feature/DEMO-1-x',
     'git -c core.hooksPath=/dev/null commit -m "feat(api): x (DEMO-1)"',
+    'git --config-env=core.hooksPath=NO_HOOKS commit -m "feat(api): x (DEMO-1)"',
+    'git --config-env core.hooksPath=NO_HOOKS commit -m "feat(api): x (DEMO-1)"',
+    'git --namespace log push --no-verify origin feature/DEMO-1-x',
+    'git --git-dir .git commit -nm "feat(api): x (DEMO-1)"',
     'git config core.hooksPath .nohooks',
     'git config --unset core.hooksPath',
   ]) {
@@ -45,10 +49,15 @@ test('pushing to a protected branch is refused; pushing a work branch is not', (
     'git push origin --delete develop',
     'git push --all origin',
     'cd /repo && git push origin main',
+    // Options of git itself whose value is the next word, as git reads them.
+    'git --namespace x push origin HEAD:develop',
+    'git --work-tree status push origin main',
+    'git --git-dir .git --work-tree . push origin develop',
+    'git --attr-source HEAD push origin develop',
   ]) {
     denied(bash(command), /pull request/, command);
   }
-  for (const command of ['git push origin feature/DEMO-1-x', 'git push -u origin feature/DEMO-1-x', 'git push', 'git push origin HEAD:feature/DEMO-2-y']) {
+  for (const command of ['git push origin feature/DEMO-1-x', 'git push -u origin feature/DEMO-1-x', 'git push', 'git push origin HEAD:feature/DEMO-2-y', 'git --git-dir=.git push origin feature/DEMO-1-x']) {
     allowed(bash(command), command);
   }
 });

@@ -62,6 +62,8 @@ const READS = [
   'git fetch origin',
   'git log --oneline --grep=commit',
   'git -C D:\\work\\shop log -5',
+  'git --git-dir .git --work-tree . status',
+  'git --git-dir=.git log -1',
   'git rev-parse HEAD',
   'git ls-files src',
   'git ls-tree -r HEAD',
@@ -98,6 +100,11 @@ const CHANGES = [
   ['git config user.name reviewer', 'config'],
   ['git config --unset user.name', 'config'],
   ['npm test && git checkout -- src', 'checkout'],
+  // Options of git itself whose value is the next word: the subcommand is the word after the value.
+  ['git --work-tree status checkout develop', 'checkout'],
+  ['git --git-dir log commit -m x', 'commit'],
+  ['git --namespace show push origin HEAD', 'push'],
+  ['git --config-env diff=HOME stash', 'stash'],
 ];
 
 test('read-only roles run the git commands that read, and are refused the ones that change the checkout or the repository', () => {
