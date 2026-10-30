@@ -98,3 +98,18 @@ Các nhóm không cho `fe-dev`:
 Bản 1.12.0 không có nhóm WebAuthn như spec mục 2.3 nhắc. Vì `fe-dev` chỉ nhận tool liệt kê trong `tools`, nhóm Memory bật sẵn không ảnh hưởng tới agent. Phiên chính của bạn thì thấy đủ các tool đó.
 
 **Kết luận:** hai điểm đúng. `kit/.mcp.json` thêm server `chrome-devtools` đúng như đã kiểm, có test kiểm bản và các tham số. Dọn dẹp: phiên `playwright-cli` đã đóng; dự án tạm và server tạm chỉ nằm trong scratchpad, server tự dừng sau 30 phút.
+
+## T5–T7: `check-design` và job `policy`
+
+**T5–T6 (2026-10-30):** không có bước kiểm thật nào cần môi trường ngoài. `check-design` có 26 fixture âm (D1–D7) và các ca D8 do test tạo ảnh; mỗi fixture sai đúng một quy tắc. Khi chạy trên ví dụ của `templates/design.md`, `check-design` bắt được một dòng YAML sai cú pháp (`content: "Đã giảm 10%" hoặc "…"`); dòng đó đã được sửa ở T5.
+
+**T7, `check-policy.mjs --base` chạy ở máy (khoảng 18:10): đúng.** Repo tạm trong scratchpad, nhánh `feature/DEMO-2-design` tách từ `develop`, có `docs/specs/DEMO-2/design.md` (bản `tests/fixtures/design/figma.md`) cùng thư mục `design/` gồm một ảnh 1440×4000 và một ảnh thừa, thiếu ảnh mobile. Lệnh `node scripts/check-policy.mjs --base develop --title "docs(specs): add the design (DEMO-2)"` thoát mã 1, in:
+
+```
+FAIL  Design
+      docs/specs/DEMO-2/design.md:23 D8 design/S1-desktop.png is 1440×4000 px; the long side is at most 2000 px: export the frame in slices
+      docs/specs/DEMO-2/design.md:23 D8 design/S1-old.png is in design/ but design.md does not use it
+      docs/specs/DEMO-2/design.md:24 D8 design/S1-mobile.jpg does not exist
+```
+
+Test của script trong `tests/quality/policy.test.mjs` lặp lại việc này với một `design.md` sai D2. Phần kiểm trên PR thật làm ở T18 (tiêu chí 4).
