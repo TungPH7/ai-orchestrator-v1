@@ -62,7 +62,7 @@ Kết quả của điểm 7 quyết định ai gõ lệnh `/` ở kiểm thật 
 
 **Cỡ:** S
 
-### [ ] T2: Quyền mới cho hai App và tiền đề về GitHub (điểm 1–5, 8) [bạn]
+### [x] T2: Quyền mới cho hai App và tiền đề về GitHub (điểm 1–5, 8) [bạn]
 
 **Mô tả:**
 
@@ -95,14 +95,14 @@ Sáu điểm:
 Xong thì Claude đóng PR, xóa nhánh và bản clone tạm.
 
 **Tiêu chí chấp nhận:**
-- [ ] Sáu điểm có kết quả đúng hoặc sai, kèm bằng chứng, trong `tasks/verification.md`.
-- [ ] `docs/github-apps-setup.md` có mục mới với từng bước bấm; test của README và tài liệu vẫn xanh.
-- [ ] Test của `app-manifest.mjs` kiểm quyền mới của hai App.
-- [ ] PR thử đã đóng, nhánh thử đã xóa; Task thử để lại làm bằng chứng.
+- [x] Sáu điểm có kết quả đúng hoặc sai, kèm bằng chứng, trong `tasks/verification.md`.
+- [x] `docs/github-apps-setup.md` có mục mới với từng bước bấm; test của README và tài liệu vẫn xanh.
+- [x] Test của `app-manifest.mjs` kiểm quyền mới của hai App.
+- [x] PR thử đã đóng, nhánh thử đã xóa; Task thử để lại làm bằng chứng.
 
 **Kiểm chứng:**
-- [ ] `npm test` xanh
-- [ ] Không token nào được in ra; Claude chỉ in quyền và hạn của token
+- [x] `npm test` xanh
+- [x] Không token nào được in ra; Claude chỉ in quyền và hạn của token
 
 **Phụ thuộc:** không
 
