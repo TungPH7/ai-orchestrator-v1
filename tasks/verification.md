@@ -632,3 +632,11 @@ Ba tiêu chí của T19 đạt:
   - `qa`: báo cáo QA trên item.
 - Báo cáo QA đúng template, và mỗi kết luận có bằng chứng: tên E2E, ảnh, hoặc kết quả request đã ghi.
 - Mỗi lượt chạy có số đo.
+
+## T20: `devops`, `pm` và năm việc ngoài vai trò
+
+Chạy ngay sau T19 (Phiên 16 · Lượt 3). Bản chép kit trong `ao-pilot` vẫn là bản của T15.
+
+### Chuẩn bị
+
+- Task **DEMO-16** "Đặt timeout-minutes cho job deploy", do Claude tạo bằng token CI, ở New, không thuộc Epic, mô tả theo `task.md`. Task không thuộc Epic chỉ sang Ready khi bạn chạy `Refine` (hợp đồng, transition `refine`).
