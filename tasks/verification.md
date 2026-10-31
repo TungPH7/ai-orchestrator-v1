@@ -578,3 +578,44 @@ Prompt: "Review PR #11."
 **Trên GitHub:** `merge-gate` sau review của `reviewer` in `Waiting #11: security report on head 2e3689d; approval on head 2e3689d`, sau review của `security` in `Waiting #11: approval on head 2e3689d`. `jira-sync` của hai review in `No change`.
 
 Bốn lượt chạy của T19 tới gate ③ tốn 15,23 USD quy đổi: `be-dev` 3,59, `fe-dev` 4,54, `reviewer` 2,49, `security` 4,61. Ước tính ở Checkpoint 3 cho cả T19 là 14–25 USD.
+
+### Gate ③, merge và deploy
+
+Bạn chọn phương án A: approve ngay, còn finding Medium và hai finding Low thành một Task theo sau (Phiên 16 · Lượt 2). Bạn approve PR #11 trên `2e3689d` lúc 10:09:26.
+
+- `jira-sync` của review in `Waiting DEMO-12: Deploy to QA needs pr-merged, qa-deployed`.
+- `merge-gate` run 41163149036 in `Merged #11: feat(cart): apply a coupon code on the cart page (DEMO-12) (squash at 2e3689d)`. Commit squash là `26c8ddb` trên `develop`, người merge là `tungph7-ao-dev[bot]`, lúc 10:10:03.
+- Deploy run 41163171280: `audit passed: 26c8ddb on develop is the merge of PR #11, which met every gate`, rồi deploy development xanh. CI trên `develop` cũng xanh.
+- `jira-sync` của `deployment_status` in `Made DEMO-12: Deploy to QA (in-review → ready-for-qa)` (10:10:48, `orchestratorci`). Cùng run in `Waiting DEMO-3: Deploy to QA needs merge-approved` cho item cũ DEMO-3 của T15 tracker-integration.
+
+### QA: `qa`
+
+Deploy development của sandbox là deploy giả, nên giống T17, Claude checkout `develop` `26c8ddb` và chạy `npm run serve` ở cổng 3000 làm môi trường development. Prompt: làm QA cho DEMO-12; môi trường development là server đó, để nguyên server chạy; tài liệu của Epic đọc bằng `git show`.
+
+Lúc bắt đầu, máy chỉ còn 1,2 GB RAM trống. Claude chạy lượt này ở foreground, vì shell nền chỉ bị dừng khi phiên đang rảnh. Trong lúc lượt chạy, bạn đóng bớt Chrome; xong lượt, máy còn 7,9 GB trống.
+
+| Lượt | Model, effort | Lượt model | Thời gian | Token ra | Cache đọc | Cache ghi | Quy ra USD | Kết quả |
+|---|---|---|---|---|---|---|---|---|
+| `qa` 1 | Opus, high | 38 | 9 ph 7 s | 25.987 | 2.344.272 | 117.811 | 1,931 | PASS cả 11 AC; DEMO-12 sang In QA; báo cáo là comment 10039 |
+
+**Agent làm gì:**
+
+- Kiểm bản deploy trước khi làm: checkout ở `26c8ddb`, cây sạch, run Deploy 41163171280 xanh trên commit đó, cổng 3000 trả lời.
+- Điền Agent của DEMO-12 rồi chạy `Pick up` (Ready for QA → In QA).
+- Chạy lint, typecheck, `npm test` (95/95), và E2E hai lần, cả hai 13/13: lần đầu bằng `npm run test:e2e` trên server riêng ở cổng 3100, lần sau trỏ vào môi trường development ở cổng 3000 bằng một config tạm trong `.ai/qa/DEMO-12/`. Hai E2E của DEMO-10 là phần regression.
+- Kiểm từng AC bằng `playwright-cli`:
+  - AC1–AC8: mỗi AC một ảnh;
+  - AC9–AC11: kết quả request thô ghi vào file;
+  - bố cục S1: ảnh ở 320, 768, 1024, 1440 px.
+  
+  Tất cả nằm trong `.ai/qa/DEMO-12/`. Claude mở thử ảnh AC7 và ảnh 320 px: khớp AC và bản vẽ mobile.
+- Báo cáo theo `qa-report.md`. Hàm `qaReportResult` của kit và của bản chép trong `ao-pilot` đều đọc ra PASS. Mỗi dòng AC ghi nguyên văn tiêu chí, điều nó thấy, tên E2E và đường dẫn ảnh. Như ở `ba` T18, Jira gộp hai khoảng trắng quanh `giam10` khi nó trích AC3.
+- Không tạo Bug cho bảng tràn ở 320 px. Lý do: lỗi có từ DEMO-10, và design đã ghi là việc riêng. Nó nhắc rằng chưa có item nào trên Jira cho việc đó.
+- `playwright-cli` tạo thư mục `.playwright-cli/` ở gốc repo. `qa` dời nó vào `.ai/qa/DEMO-12/`, nên cây làm việc sạch.
+- Hook từ chối một lần: `gh-guard: qa has read-only git (agents/roster.yaml): git check-ignore would change the shared checkout or the repository`. `git check-ignore` chỉ đọc, nhưng không có trong danh sách lệnh đọc của `lib/agents/scope.mjs`, nên đây là chặn nhầm. T22 có thể thêm lệnh này vào danh sách.
+
+Sau lượt chạy, Claude dừng server ở cổng 3000 theo PID của cổng.
+
+**Task theo sau:** Claude tạo Task **DEMO-15** "Thêm test hồi quy cho giới hạn body của POST / và đọc port từ kết nối" bằng token CI, ở New, không thuộc Epic. Mô tả theo `task.md`, gồm finding Medium và hai finding Low của `reviewer`. Mục DoR "được bạn duyệt trực tiếp" để trống, chờ bạn.
+
+Năm lượt chạy của T19 tốn 17,16 USD quy đổi: `be-dev` 3,59, `fe-dev` 4,54, `reviewer` 2,49, `security` 4,61, `qa` 1,93. Ước tính là 14–25 USD.
