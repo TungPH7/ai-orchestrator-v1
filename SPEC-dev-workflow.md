@@ -2,7 +2,7 @@
 
 > **Module:** `dev-workflow`, xem capability map trong [SPEC.md](SPEC.md). **Phụ thuộc:** `sdlc-contract`, `tracker-integration`, `quality-gates`, `agent-roster`. **Được dùng bởi:** `release-workflow`, `project-scaffold`, và `orchestrator-cli` ở Cấp 2.
 >
-> **Trạng thái:** đã duyệt ngày 2026-10-31; plan đang viết. **Nguồn thảo luận:** [misc/brainstorm-discussion.md](misc/brainstorm-discussion.md), Phiên 16 · Lượt 9–10, Phiên 17 · Lượt 1.
+> **Trạng thái:** đã duyệt ngày 2026-10-31; plan ở [tasks/plan.md](tasks/plan.md), chờ bạn duyệt. **Nguồn thảo luận:** [misc/brainstorm-discussion.md](misc/brainstorm-discussion.md), Phiên 16 · Lượt 9–10, Phiên 17 · Lượt 1.
 
 ## 1. Mục tiêu
 
