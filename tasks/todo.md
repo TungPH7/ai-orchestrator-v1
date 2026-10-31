@@ -583,7 +583,7 @@ Xem [plan.md](plan.md#checkpoint-3).
 
 **Cỡ:** M (khoảng 6 lượt chạy agent)
 
-### [ ] T20: `devops`, `pm` và năm việc ngoài vai trò [bạn]
+### [x] T20: `devops`, `pm` và năm việc ngoài vai trò [bạn]
 
 **Mô tả:**
 
@@ -597,11 +597,11 @@ Xem [plan.md](plan.md#checkpoint-3).
    - `reviewer` chạy `git checkout`.
 
 **Tiêu chí chấp nhận:**
-- [ ] Tiêu chí 7 (phần `devops` và `pm`) và tiêu chí 8 của spec mục 9.
-- [ ] Mỗi việc ngoài vai trò bị chặn đúng lý do: tool không có, hoặc hook từ chối.
+- [x] Tiêu chí 7 (phần `devops` và `pm`) và tiêu chí 8 của spec mục 9.
+- [x] Mỗi việc ngoài vai trò bị chặn đúng lý do: tool không có, hoặc hook từ chối.
 
 **Kiểm chứng:**
-- [ ] Các bước và kết quả ghi trong `tasks/verification.md`
+- [x] Các bước và kết quả ghi trong `tasks/verification.md`
 
 **Phụ thuộc:** T15
 

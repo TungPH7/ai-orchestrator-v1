@@ -737,3 +737,30 @@ Plan T20 chỉ nhắc `security`. Nhưng `audit` xét PR đã merge bằng cùng
 **Quan sát cho `dev-workflow`:** `merge-gate` chỉ in `Needs you` vào log của Actions. Nó không comment lên PR và không gắn cờ `needs-you` trên Jira, nên bạn chỉ biết khi Claude hoặc `pm` báo.
 
 Ba lượt chạy phần `devops` tới gate ③ tốn 4,70 USD quy đổi: `devops` 0,65, `reviewer` 1,08, `security` 2,97.
+
+### Bạn merge, rồi deploy
+
+Bạn đọc diff, approve PR #12 trên `5f9327b` lúc 12:41:20, rồi tự squash merge lúc 12:42:04 (Phiên 16 · Lượt 5). Commit squash là `5956702` trên `develop`, người merge là `TungPH7`.
+
+- Deploy run 41173638407: `audit passed: 5956702 on develop is the merge of PR #12, which met every gate`, rồi job `deploy` xanh. Run này dùng chính `deploy.yml` mới, nên điểm cuối của checklist DEMO-16 đạt. CI run 41173638370 trên `develop` xanh.
+- `jira-sync` của `deployment_status` in `Made DEMO-16: Deploy to QA (in-review → ready-for-qa)` (12:42:51, `orchestratorci`), và vẫn in `Waiting DEMO-3: Deploy to QA needs merge-approved` cho item cũ DEMO-3.
+- DEMO-16 dừng ở Ready for QA, không mang cờ. T20 không chạy `qa` cho Task này. Dọn DEMO-15 và DEMO-16 là việc bạn quyết.
+
+Ngoài nhánh, tiêu đề và mô tả hợp lệ, `audit` đòi năm điều ở một PR sửa đường dẫn bảo vệ, và PR #12 có đủ: CI xanh, báo cáo `reviewer`, báo cáo `security` và approval của bạn, cả bốn trên head; người merge nằm trong `AO_APPROVERS`.
+
+### Kết quả T20
+
+Mười lăm lượt chạy của T20 tốn 5,30 USD quy đổi: `pm` 0,09, sáu lượt thử việc ngoài vai trò 0,52, `devops` 0,65, `reviewer` 1,08, `security` 2,97.
+
+- **Tiêu chí 7, phần `devops` và `pm`:** đạt, theo kịch bản 3 và 4 của spec mục 7.
+  - `devops` làm Task như dev agent: trường Agent, nhánh, `Start`, PR bằng `ao-pr.mjs`. Nó chỉ sửa `.github/workflows/**`, và bạn là người merge PR đó.
+  - `pm` chỉ đọc, và lưu bản tổng hợp ở `.ai/reports/2026-10-31.md`.
+
+  Đến đây cả mười agent đều đã chạy thật ít nhất một lần:
+  - `ba`, `ux`, `sa` ở T18;
+  - `be-dev`, `fe-dev`, `reviewer`, `security`, `qa` ở T19;
+  - `devops`, `pm` ở T20.
+
+  Phần cắt release, ship và rollback của `devops` chờ `release-workflow`, như spec mục 2.4 ghi.
+- **Tiêu chí 8:** đạt (mục "Năm việc ngoài vai trò").
+- **Mỗi việc ngoài vai trò bị chặn đúng lý do:** đạt. Bốn việc do hook từ chối, một việc do không có tool.
