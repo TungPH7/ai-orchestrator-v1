@@ -1,6 +1,6 @@
 # Plan triển khai: agent-roster
 
-> **Spec:** [SPEC-agent-roster.md](../SPEC-agent-roster.md), đã duyệt 2026-10-30. **Trạng thái:** đã duyệt 2026-10-30, cùng quyết định 6 và 7. **Task chi tiết:** [todo.md](todo.md). **Kết quả kiểm thật:** [verification.md](verification.md), tạo ở T1.
+> **Spec:** [SPEC-agent-roster.md](../../../SPEC-agent-roster.md), đã duyệt 2026-10-30. **Trạng thái:** đã duyệt 2026-10-30, cùng quyết định 6 và 7; hoàn thành 2026-10-31, đã lưu trữ. **Task chi tiết:** [todo.md](todo.md). **Kết quả kiểm thật:** [verification.md](verification.md), tạo ở T1.
 
 ## Tổng quan
 
@@ -140,11 +140,11 @@ T19, T20, T21 ── T22 maxTurns, tài liệu, lưu trữ
 - [x] Bạn chọn mức effort cho `fe-dev` (`high`, Phiên 16 · Lượt 7)
 
 ### Giai đoạn 7: hoàn thiện
-- [ ] T22: `maxTurns` theo số đo, tài liệu, lưu trữ plan
+- [x] T22: `maxTurns` theo số đo, tài liệu, lưu trữ plan
 
 ### Checkpoint cuối
-- [ ] Đạt 13 tiêu chí ở spec mục 9
-- [ ] Chuyển `tasks/plan.md`, `tasks/todo.md`, `tasks/verification.md` vào `tasks/archive/agent-roster/`
+- [x] Đạt 13 tiêu chí ở spec mục 9
+- [x] Chuyển `tasks/plan.md`, `tasks/todo.md`, `tasks/verification.md` vào `tasks/archive/agent-roster/`
 - [ ] Bạn xác nhận module hoàn thành
 
 ## Usage ước tính cho kiểm thật

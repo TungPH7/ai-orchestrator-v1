@@ -891,3 +891,75 @@ Bạn nhắn "tiếp tục" (Phiên 16 · Lượt 8).
 - Tiêu chí 7 đạt ở T18–T20.
 - Tiêu chí 8 đạt ở T20.
 - Tiêu chí 9 và 10 đạt ở T21.
+
+## T22: `maxTurns`, tài liệu, lưu trữ plan (tiêu chí 1, 11, 13)
+
+**Đạt (2026-10-31).**
+
+**`maxTurns`** bằng gấp đôi số lượt model cao nhất đo được, làm tròn lên hàng chục:
+
+| Vai trò | Lượt cao nhất | Ở đâu | `max_turns` |
+|---|---|---|---|
+| `pm` | 6 | T20 | 20 |
+| `ba` | 42 | T18, `ba` 3 (tạo item) | 90 |
+| `ux` | 26 | T18, `ux` 1 | 60 |
+| `sa` | 36 | T18, `sa` 3 (plan) | 80 |
+| `fe-dev` | 130 | T21, lượt `max`; ở `high` cao nhất là 115 (T19) | 260 |
+| `be-dev` | 82 | T19 | 170 |
+| `reviewer` | 33 | T19 | 70 |
+| `security` | 59 | T15, `security` 2 | 120 |
+| `qa` | 38 | T19 | 80 |
+| `devops` | 22 | T20 | 50 |
+
+- Các lượt thử việc ngoài vai trò ở effort `low` (tối đa 2 lượt) không làm thay đổi con số nào.
+- Với `fe-dev`, Claude lấy lượt `max` để giới hạn vẫn đủ khi effort được nâng cho một item khó.
+- Effort của `fe-dev` giữ `high`, theo lựa chọn của bạn.
+
+`npm run agents` thêm `maxTurns` vào frontmatter của mười agent, và `ao-agent.mjs` truyền `--max-turns` khi chạy với `-p`. Bốn test cũ được viết khi roster chưa có `max_turns`. Giờ chúng đọc giá trị từ roster, và vẫn kiểm trường hợp roster không có `max_turns`.
+
+**Các ghi chú để lại cho T22:**
+
+- `git check-ignore` bị `gh-guard` chặn nhầm ở `qa` (T19). Lệnh này giờ có trong danh sách lệnh git chỉ đọc của `lib/agents/scope.mjs`. Test mới đỏ khi chưa có bản sửa.
+- Template `spec.md` trỏ tới `docs/sdlc.md`, nhưng dự án không có file đó (T18). Template `spec.md`, `bug.md`, `qa-report.md` giờ trỏ tới `.ai-orchestrator/docs/sdlc.md`, và bước cài kit trong README chép file tới đó. Bản chép kit trong `ao-pilot` sẽ có file này ở lần cập nhật kit tới.
+- `.playwright-cli/` (T17) và `.ai/` vào bước `.gitignore` của README.
+- Nhãn của chỉ dẫn "Reality filter" (T18) và các hook chặn nhầm (T19, T21) được ghi ở mục "Những điều đã gặp khi chạy thật" của `docs/agents.md`.
+
+**Tài liệu:**
+
+- `docs/agents.md` mới, gồm:
+  - bảng mười vai trò, cách sinh agent;
+  - cách chạy, kèm prompt đã dùng thật;
+  - chi phí đo được;
+  - cách nâng effort, kèm kết quả của T21;
+  - skill chép vào kit và skill theo stack;
+  - trình duyệt và `design.md`;
+  - mười bước export ảnh từ Figma;
+  - dung lượng repo, cách bật Git LFS;
+  - những điều đã gặp khi chạy thật.
+- README có mục "Agent", và module `agent-roster` có trong danh sách module đã xong. Mục "Cài kit vào repo dự án" có thêm:
+  - `agents/`, `templates/` và `docs/sdlc.md`;
+  - ba script `ao-agent.mjs`, `check-design.mjs`, `render-agents.mjs`;
+  - bước `render-agents.mjs --project .`;
+  - `.ai/`, `.playwright-cli/` trong `.gitignore`;
+  - server `chrome-devtools`.
+
+  Mục "Lệnh" và "Cấu trúc thư mục" cũng có phần của agent.
+- `tests/repo.test.mjs` có hai test mới, đỏ khi chưa có tài liệu. Test thứ nhất kiểm mục Agent của README. Test thứ hai kiểm bảng vai trò của `docs/agents.md` khớp model, effort và `max_turns` của roster.
+- `SPEC-agent-roster.md` và `SPEC.md` ghi module hoàn thành. `plan.md`, `todo.md` và `verification.md` chuyển vào `tasks/archive/agent-roster/`.
+
+**Việc để lại cho module sau,** gom từ T18–T21:
+
+- `dev-workflow`:
+  - `merge-gate` chỉ in `Needs you` vào log;
+  - ADR còn ở Proposed sau gate ②, và dòng DoR trong mô tả Story không được đánh dấu;
+  - comment nhờ `ba` không có gì chuyển tới `ba`;
+  - commit chỉ thêm test vẫn bắt `security` chạy lại cả lượt;
+  - `sa` không sửa comment trên Epic sau khi câu hỏi có trả lời;
+  - chọn effort theo item.
+- `release-workflow`:
+  - `deploy.yml` của sandbox chèn thẳng `github.ref_name` vào lệnh shell;
+  - environment `production` không có người duyệt bắt buộc;
+  - job `audit` trong `kit/.github/workflows/audit.yml` chưa có `timeout-minutes`.
+- Cập nhật bản chép kit trong `ao-pilot`: bản chép còn ở bản của T15, thiếu kit PR #97, #102, #104 và các thay đổi của T22.
+
+Cả 13 tiêu chí của spec mục 9 đạt. T22 đóng.

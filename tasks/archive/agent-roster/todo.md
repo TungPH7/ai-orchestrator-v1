@@ -1,6 +1,6 @@
 # Task: agent-roster
 
-> **Plan:** [plan.md](plan.md). **Spec:** [SPEC-agent-roster.md](../SPEC-agent-roster.md). Làm theo thứ tự. Mỗi task viết test đỏ trước, commit riêng, rồi mới đánh dấu `[x]`.
+> **Plan:** [plan.md](plan.md). **Spec:** [SPEC-agent-roster.md](../../../SPEC-agent-roster.md). Làm theo thứ tự. Mỗi task viết test đỏ trước, commit riêng, rồi mới đánh dấu `[x]`.
 
 **Quy ước chung cho mọi task:**
 
@@ -638,7 +638,7 @@ Xem [plan.md](plan.md#checkpoint-4).
 
 ## Giai đoạn 7: hoàn thiện
 
-### [ ] T22: `maxTurns` theo số đo, tài liệu, lưu trữ plan
+### [x] T22: `maxTurns` theo số đo, tài liệu, lưu trữ plan
 
 **Mô tả:**
 
@@ -658,10 +658,10 @@ Xem [plan.md](plan.md#checkpoint-4).
 - Chuyển plan, todo và verification vào `tasks/archive/agent-roster/`.
 
 **Tiêu chí chấp nhận:**
-- [ ] Tiêu chí 1, 11 và 13 của spec mục 9; đủ 13 tiêu chí.
+- [x] Tiêu chí 1, 11 và 13 của spec mục 9; đủ 13 tiêu chí.
 
 **Kiểm chứng:**
-- [ ] Năm lệnh xanh; CI của kit xanh
+- [x] Năm lệnh xanh; CI của kit xanh
 
 **Phụ thuộc:** T19, T20, T21
 
