@@ -132,7 +132,7 @@ agent-roster  → figma-integration (thêm ngày 2026-10-30; làm lúc nào do b
 | `figma-integration` | `SPEC-figma-integration.md` | Chưa viết |
 | `tracker-integration` | [`SPEC-tracker-integration.md`](SPEC-tracker-integration.md) | Hoàn thành 2026-10-28; plan lưu ở [`tasks/archive/tracker-integration/`](tasks/archive/tracker-integration/plan.md) |
 | `quality-gates` | [`SPEC-quality-gates.md`](SPEC-quality-gates.md) | Hoàn thành 2026-10-29; plan lưu ở [`tasks/archive/quality-gates/`](tasks/archive/quality-gates/plan.md) |
-| `dev-workflow` | [`SPEC-dev-workflow.md`](SPEC-dev-workflow.md) | Đã duyệt 2026-10-31; plan ở [`tasks/plan.md`](tasks/plan.md), chờ duyệt |
+| `dev-workflow` | [`SPEC-dev-workflow.md`](SPEC-dev-workflow.md) | Đã duyệt 2026-10-31; plan ở [`tasks/plan.md`](tasks/plan.md) |
 | `release-workflow` | `SPEC-release-workflow.md` | Chưa viết |
 | `project-scaffold` | `SPEC-project-scaffold.md` | Chưa viết |
 
