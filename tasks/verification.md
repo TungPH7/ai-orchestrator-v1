@@ -874,3 +874,20 @@ Bốn lượt agent của T21 tốn 10,35 USD quy đổi: `fe-dev` 1,86 và 5,89
 
 - **Tiêu chí 10 đạt:** lượt `max` qua `ao-agent.mjs` ra gấp 3,8 lần token và chạy 130 lượt so với 55. Phép thử bằng Haiku cho thấy biến thắng cờ `--effort` mà `ao-agent.mjs` truyền.
 - **Tiêu chí 9:** có số đo và nhận xét. Trên Task này, `max` không cho kết quả tốt hơn rõ ràng: cùng cách làm, cùng điểm checklist và trường hợp biên, cùng mức finding. Phần hơn của `max` là tài liệu và kiểm thêm, đổi lại chi phí gấp 3,2 lần và thời gian gấp 3,9 lần. Theo spec mục 2.2, nếu `max` không rõ ràng tốt hơn thì giữ `high`. Mỗi mức chỉ chạy một lần, và lượt `max` đã thấy tiêu đề commit của lượt `high`, nên đây chỉ là một hình dung. Bạn chọn mức ở Checkpoint 4.
+
+### Bạn chọn
+
+Bạn chọn `high` cho `fe-dev` (Phiên 16 · Lượt 7), nên roster giữ nguyên mức này. Tiêu chí 9 của spec mục 9 đạt. Cùng lượt đó bạn hỏi dev agent có đổi được effort khi gặp item khó không. Claude trả lời:
+
+- Agent không tự đổi được effort của phiên mình.
+- Người khởi động đổi được cho từng lượt, bằng `CLAUDE_CODE_EFFORT_LEVEL` hoặc `ao-agent.mjs <role> --effort <mức>`.
+- Đề xuất: `sa` ghi mức cho item khó trong plan, bạn duyệt ở gate ②, `ba` gắn nhãn, và `ao-agent.mjs` đọc nhãn đó. Việc này để cho `dev-workflow`.
+
+## Checkpoint 4
+
+Bạn nhắn "tiếp tục" (Phiên 16 · Lượt 8).
+
+- Tiêu chí 4 đạt ở T18.
+- Tiêu chí 7 đạt ở T18–T20.
+- Tiêu chí 8 đạt ở T20.
+- Tiêu chí 9 và 10 đạt ở T21.

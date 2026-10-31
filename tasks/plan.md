@@ -132,12 +132,12 @@ T19, T20, T21 ── T22 maxTurns, tài liệu, lưu trữ
 - [x] T18: Epic thử: spec và plan [bạn]
 - [x] T19: Epic thử: build tới QA [bạn]
 - [x] T20: `devops`, `pm` và năm việc ngoài vai trò [bạn]
-- [ ] T21: Phép so `high` với `max` của `fe-dev` [bạn]
+- [x] T21: Phép so `high` với `max` của `fe-dev` [bạn]
 
 ### Checkpoint 4
-- [ ] Tiêu chí 4, 7, 8, 9 và 10 của spec mục 9 đạt
-- [ ] Bạn xem lịch sử Epic thử trên `DEMO` và các PR thử trên `ao-pilot`
-- [ ] Bạn chọn mức effort cho `fe-dev`
+- [x] Tiêu chí 4, 7, 8, 9 và 10 của spec mục 9 đạt
+- [x] Bạn xem lịch sử Epic thử trên `DEMO` và các PR thử trên `ao-pilot` (bạn cho qua ngày 2026-10-31, Phiên 16 · Lượt 8)
+- [x] Bạn chọn mức effort cho `fe-dev` (`high`, Phiên 16 · Lượt 7)
 
 ### Giai đoạn 7: hoàn thiện
 - [ ] T22: `maxTurns` theo số đo, tài liệu, lưu trữ plan
