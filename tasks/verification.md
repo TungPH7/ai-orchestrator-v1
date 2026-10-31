@@ -43,7 +43,7 @@ Vì vậy `runs.mjs` lấy chi phí từ `result` cuối, và cộng `usage` c�
 
 ### Kết luận
 
-Hai điểm đúng, nhưng điểm 6 cần một điều kiện mà spec chưa có. Đề xuất sửa spec, chờ bạn duyệt:
+Hai điểm đúng, nhưng điểm 6 cần một điều kiện mà spec chưa có. Claude đề xuất năm điểm sửa; bạn duyệt cả năm ở Phiên 17 · Lượt 5, và spec đã được sửa (mục 2.1, 2.3, 2.11, 4, 6, 10, 12):
 
 1. **Luật quyền cho dòng kiểm.** `kit/.claude/settings.json` thêm `permissions.allow: ["Bash(node .ai-orchestrator/scripts/ao-step.mjs:*)"]`, để dòng `!` chạy lúc nạp skill (spec mục 2.1, 6). Thiếu luật thì lệnh vẫn chạy, nhưng do model tự chạy: có thể chạy sai thư mục, và script hỏng không làm lệnh bị hủy.
 2. **Chặn lệnh điều phối trong phiên agent.** Luật trên cũng áp cho phiên agent trong cùng dự án. Vì vậy `gh-guard` từ chối `ao-step.mjs` và `ao-agent.mjs` trong phiên agent (T3). Nếu không, một agent chạy được `--go` và mở agent khác.
