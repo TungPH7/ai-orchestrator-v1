@@ -764,3 +764,44 @@ Mười lăm lượt chạy của T20 tốn 5,30 USD quy đổi: `pm` 0,09, sáu
   Phần cắt release, ship và rollback của `devops` chờ `release-workflow`, như spec mục 2.4 ghi.
 - **Tiêu chí 8:** đạt (mục "Năm việc ngoài vai trò").
 - **Mỗi việc ngoài vai trò bị chặn đúng lý do:** đạt. Bốn việc do hook từ chối, một việc do không có tool.
+
+## T21: Phép so `high` với `max` của `fe-dev`
+
+Chạy ngay sau T20 (Phiên 16 · Lượt 5), theo spec mục 2.2.
+
+### Chuẩn bị
+
+**Task DEMO-17** "Bỏ style-src 'unsafe-inline' khỏi CSP của trang giỏ hàng", do Claude tạo bằng token CI, để ở New. Task chỉ có trên Jira để lấy mã; hai lượt `fe-dev` không gọi Jira. Lý do chọn đề này: CSS của trang nằm trong thẻ `<style>`, nên CSP cần `'unsafe-inline'`. Bỏ nó đi có hai cách: hash của CSS, hoặc file CSS riêng. Giao diện thì không đổi.
+
+Checklist trong mô tả, cũng là phần đầu của prompt:
+
+- C1. Header `Content-Security-Policy` của trang (GET, HEAD và POST /) không còn `'unsafe-inline'`.
+- C2. Các chỉ thị khác của CSP giữ nguyên, và trang vẫn không có script.
+- C3. Trang hiển thị như cũ: các E2E hiện có vẫn pass.
+- C4. Test unit kiểm header CSP mới.
+- C5. Lint, typecheck, `npm test` và `npm run test:e2e` xanh.
+
+**Trường hợp biên dùng để chấm**, Claude ghi trước lượt chạy và không đưa vào prompt:
+
+- B1. CSS thật sự được áp dụng dưới CSP mới, và được kiểm trên trình duyệt thật (E2E đọc computed style, hoặc Chrome DevTools), không chỉ kiểm chuỗi header. Không E2E nào hiện có đọc style, nên một hash sai làm trang mất CSS mà E2E vẫn pass.
+- B2. Console của trang không có vi phạm CSP, kiểm bằng DevTools hoặc bằng E2E nghe console.
+- B3. CSS và CSP không thể lệch nhau mà không có test bắt. Có ba cách đạt: hash tính từ chính chuỗi CSS lúc chạy, một test so hash với CSS, hoặc CSS chỉ có một nguồn.
+- B4. Không thêm thuộc tính `style="…"` hay style inline nào khác: hash không phủ thuộc tính `style` (muốn phủ phải có `'unsafe-hashes'`).
+- B5. Chỉ chấm nếu agent thêm đường dẫn cho file CSS:
+  - đường dẫn đó qua kiểm `Host` trước (400);
+  - chỉ nhận GET và HEAD (405 với `Allow: GET, HEAD`);
+  - trả `text/css; charset=utf-8` kèm `nosniff`, và HEAD không có body;
+  - thứ tự kiểm của ADR-0001 với `/` không đổi.
+- B6. Comment "the style is inline" trên `PAGE_HEADERS`, và mọi chỗ khác nói tới `'unsafe-inline'`, được sửa cho đúng.
+
+**Thứ tự và tên nhánh:** lần 1 ở `high` (mức của roster), lần 2 với `CLAUDE_CODE_EFFORT_LEVEL=max`, cùng gốc `develop` `5956702`. Claude chọn ngẫu nhiên tên nhánh cho từng mức (`feature/DEMO-17-csp-style-a` hoặc `-b`) và chỉ ghi ở đây sau khi `reviewer` chấm xong. Hai prompt chỉ khác nhau ở tên nhánh. Giữa hai lượt, Claude dời các file lượt 1 để lại trong `.ai/` ra ngoài repo, để lượt 2 có cùng đầu vào.
+
+**Biến hay cờ thắng:** `ao-agent.mjs` luôn truyền `--effort <mức của roster>`. Tiền đề 2 chưa kiểm khi có cả biến lẫn cờ, nên Claude thử bằng Haiku trong một thư mục trống, cùng một bài đố tổ hợp:
+
+| Lệnh | Token ra | Quy ra USD | Đáp án |
+|---|---|---|---|
+| `--effort low` | 714 | 0,0045 | 1771620 |
+| `CLAUDE_CODE_EFFORT_LEVEL=max` và `--effort low` | 4.769 | 0,0096 | 1771620 |
+| `CLAUDE_CODE_EFFORT_LEVEL=max` và `--effort low`, lần 2 | 3.811 | 0,0038 | 1771620 |
+
+Biến thắng cờ, nên lượt `max` qua `ao-agent.mjs` có hiệu lực.
