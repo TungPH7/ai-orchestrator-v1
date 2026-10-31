@@ -2,7 +2,7 @@
 
 > **Module:** `dev-workflow`, xem capability map trong [SPEC.md](SPEC.md). **Phụ thuộc:** `sdlc-contract`, `tracker-integration`, `quality-gates`, `agent-roster`. **Được dùng bởi:** `release-workflow`, `project-scaffold`, và `orchestrator-cli` ở Cấp 2.
 >
-> **Trạng thái:** bản nháp, chờ bạn duyệt. **Nguồn thảo luận:** [misc/brainstorm-discussion.md](misc/brainstorm-discussion.md), Phiên 16 · Lượt 9–10.
+> **Trạng thái:** đã duyệt ngày 2026-10-31; plan đang viết. **Nguồn thảo luận:** [misc/brainstorm-discussion.md](misc/brainstorm-discussion.md), Phiên 16 · Lượt 9–10, Phiên 17 · Lượt 1.
 
 ## 1. Mục tiêu
 
@@ -393,14 +393,14 @@ Phiên 16 · Lượt 9–10 (2026-10-31). Bạn chọn đề xuất ở cả ba 
 2. **Tài liệu của Epic:** một PR tài liệu mỗi Epic, `merge-gate` merge sau gate ② (mục 2.4).
 3. **`security` sau commit sửa nhỏ:** chỉ review phần mới, ở `high` (mục 2.6).
 
-Khi viết spec, Claude đổi hai chỗ so với giả định đã duyệt, và nêu lý do để bạn duyệt lại:
+Khi viết spec, Claude đổi hai chỗ so với giả định đã duyệt, và nêu lý do. Bạn duyệt cả hai cùng spec ngày 2026-10-31 (Phiên 17 · Lượt 1):
 
 - **ADR không được đổi sang Accepted sau gate ②.** Nếu đổi thì phải có một commit push sau lúc bạn duyệt, và PR tài liệu khi đó không còn đúng thứ bạn đã đọc. ADR ghi rõ nó có hiệu lực khi plan được duyệt (mục 2.4).
 - **Bản chép kit vào `ao-pilot` làm một lần, ngay trước kiểm thật,** thay vì ở task đầu. Như vậy bạn chỉ merge tay một PR (mục 2.10).
 
 ## 11. Câu hỏi mở
 
-Không có. Hai điểm Claude tự chốt, bạn sửa được khi duyệt:
+Không có. Bạn giữ nguyên hai điểm Claude tự chốt khi duyệt:
 
 - ngưỡng 300 dòng của mục 2.6;
 - tên nhãn `ao-fe-dev`, `ao-be-dev`, `ao-devops`, `ao-effort-xhigh`, `ao-effort-max`.
