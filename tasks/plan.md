@@ -85,9 +85,9 @@ T16 ── T17 Epic: spec, plan ── T18 Epic: build, review, fix ── T19 t
 - [x] T2: Quyền mới cho hai App và tiền đề về GitHub (điểm 1–5, 8) [bạn]
 
 ### Checkpoint 1
-- [ ] `npm run validate`, `npm test`, `npm run render:check`, `npm run jira:checklist:check`, `npm run agents:check` xanh
-- [ ] Tám tiền đề có kết quả trong `tasks/verification.md`. Tiền đề nào sai thì spec đã được sửa và bạn đã duyệt bản sửa
-- [ ] Bạn xem kết quả của T1–T2
+- [x] `npm run validate`, `npm test`, `npm run render:check`, `npm run jira:checklist:check`, `npm run agents:check` xanh
+- [x] Tám tiền đề có kết quả trong `tasks/verification.md`. Tiền đề nào sai thì spec đã được sửa và bạn đã duyệt bản sửa
+- [x] Bạn xem kết quả của T1–T2
 
 ### Giai đoạn 2: danh tính và cổng
 - [ ] T3: Môi trường của phiên agent và `ao-git-credential.mjs`
