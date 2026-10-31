@@ -609,7 +609,7 @@ Xem [plan.md](plan.md#checkpoint-3).
 
 **Cỡ:** S (khoảng 8 lượt chạy agent, phần lớn ngắn)
 
-### [ ] T21: Phép so `high` với `max` của `fe-dev` [bạn]
+### [x] T21: Phép so `high` với `max` của `fe-dev` [bạn]
 
 **Mô tả:** Làm theo spec mục 2.2:
 
@@ -619,10 +619,10 @@ Xem [plan.md](plan.md#checkpoint-3).
 4. Claude lập bảng so sánh.
 
 **Tiêu chí chấp nhận:**
-- [ ] Tiêu chí 9 và 10 của spec mục 9: số đo, nhận xét, và mức effort bạn chọn ở Checkpoint 4.
+- [x] Tiêu chí 9 và 10 của spec mục 9: số đo, nhận xét, và mức effort bạn chọn ở Checkpoint 4.
 
 **Kiểm chứng:**
-- [ ] Bảng so sánh nằm trong `tasks/verification.md`
+- [x] Bảng so sánh nằm trong `tasks/verification.md`
 
 **Phụ thuộc:** T15
 
