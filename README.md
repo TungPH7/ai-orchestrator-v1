@@ -7,6 +7,7 @@ Module đã xong:
 - **`sdlc-contract`**: hợp đồng quy trình mà các module khác đọc theo ([SPEC-sdlc-contract.md](SPEC-sdlc-contract.md)).
 - **`tracker-integration`**: nối hợp đồng với Jira Cloud và GitHub, để trạng thái item đổi theo dữ kiện thật và mỗi transition chỉ do đúng vai trò thực hiện ([SPEC-tracker-integration.md](SPEC-tracker-integration.md)).
 - **`quality-gates`**: biến các cổng tự động của hợp đồng thành kiểm tra thật. Code chỉ vào `develop`, `main`, `release/*` và chỉ được deploy khi đã qua CI, có báo cáo review và có approve của bạn, kể cả khi repo private ở gói Free không có branch protection ([SPEC-quality-gates.md](SPEC-quality-gates.md)).
+- **`agent-roster`**: mười agent của Claude Code, mỗi vai trò của hợp đồng một agent. Mỗi agent biết đầu vào, đầu ra, tool, skill, model và effort của mình, và hook giới hạn file nó được ghi ([SPEC-agent-roster.md](SPEC-agent-roster.md)).
 
 ## Hợp đồng quy trình
 
@@ -72,13 +73,31 @@ Hai GitHub App giúp bạn approve được PR của agent, vì GitHub không ch
 
 [docs/quality-gates.md](docs/quality-gates.md) giải thích vòng của một PR, từng check, cách đọc job summary, cách xử lý khi một cổng đỏ, và khi nào bạn phải tự merge. [docs/github-apps-setup.md](docs/github-apps-setup.md) hướng dẫn tạo hai App.
 
+## Agent
+
+Mười agent nằm ở `kit/.claude/agents/<role>.md`: `pm`, `ba`, `ux`, `sa`, `fe-dev`, `be-dev`, `reviewer`, `security`, `qa`, `devops`. Chúng không được viết tay. `npm run agents` ghép `agents/roster.yaml` (model, effort, `max_turns`, tool, quyền, skill), prompt `agents/prompts/<role>.md` và hợp đồng thành file agent, cùng file quy ước chung `kit/.claude/rules/ai-orchestrator.md`.
+
+| Ai dùng | Dùng thế nào |
+|---|---|
+| Bạn, trong phiên Claude Code | Giao việc cho agent làm subagent, ví dụ "dùng agent `qa` để QA Story DEMO-12" |
+| Bạn hoặc một lệnh điều phối | `node .ai-orchestrator/scripts/ao-agent.mjs <role> -p "<prompt>"` chạy agent làm phiên chính, với skill, effort và `--max-turns` của roster |
+| Hook `gh-guard` và `jira-guard` | Đọc vai trò từ tên agent: file được ghi, quyền git, App GitHub, transition được làm |
+
+Skill của agent được chép vào kit, ghim theo commit (`kit/.claude/skills/`); mỗi dự án thêm skill theo stack trong `.ai-orchestrator/roster.local.yaml`. Agent `ux` viết `design.md` của Epic, và `check-design.mjs` kiểm file đó trong job `policy`. [docs/agents.md](docs/agents.md) giải thích các phần sau:
+
+- từng vai trò, cách chạy, chi phí đo được;
+- cách nâng effort và cách thêm skill;
+- `design.md`, các bước export ảnh từ Figma;
+- dung lượng repo và Git LFS;
+- những điều đã gặp khi chạy thật.
+
 ## Cài kit vào repo dự án
 
 Thư mục `kit/` chứa các file đặt vào repo dự án, giữ đúng đường dẫn tương đối. Tới khi có `project-scaffold`, bạn chép tay như đã làm với `ao-pilot`:
 
-1. Tạo `.ai-orchestrator/` ở gốc repo dự án. Chép vào đó `contract/`, `lib/`, `tracker/`, `quality/`, cùng `package.json` và `package-lock.json` của kit. Chép vào `.ai-orchestrator/scripts/` các script `ao-pr.mjs`, `audit.mjs`, `check-policy.mjs`, `commit-msg.mjs`, `coverage-diff.mjs`, `install-hooks.mjs`, `jira-sync.mjs`, `merge-gate.mjs`, `pre-commit.mjs`, `pre-push.mjs`. Chạy `npm ci --prefix .ai-orchestrator`, như các workflow.
-2. Chép `kit/.claude/`, `kit/.githooks/`, `kit/.mcp.json`, `kit/.jira/config.yml` và bốn workflow trong `kit/.github/workflows/` (`ci.yml`, `jira-sync.yml`, `merge-gate.yml`, `audit.yml`) vào gốc repo. Trong `.claude/settings.json`, thay các giá trị mẫu: `AO_JIRA_SPACE` bằng mã space, `AO_APPROVERS` bằng login GitHub của bạn, còn `AO_DEV_APP`, `AO_DEV_APP_ID`, `AO_REVIEW_APP`, `AO_REVIEW_APP_ID` bằng slug và App ID của hai App.
-3. Thêm `.ai-orchestrator/node_modules/` và `.claude/settings.local.json` vào `.gitignore`.
+1. Tạo `.ai-orchestrator/` ở gốc repo dự án. Chép vào đó `contract/`, `lib/`, `tracker/`, `quality/`, `agents/`, `templates/`, cùng `package.json` và `package-lock.json` của kit, và chép `docs/sdlc.md` thành `.ai-orchestrator/docs/sdlc.md`, vì template trỏ tới DoD trong đó. Chép vào `.ai-orchestrator/scripts/` các script `ao-agent.mjs`, `ao-pr.mjs`, `audit.mjs`, `check-design.mjs`, `check-policy.mjs`, `commit-msg.mjs`, `coverage-diff.mjs`, `install-hooks.mjs`, `jira-sync.mjs`, `merge-gate.mjs`, `pre-commit.mjs`, `pre-push.mjs`, `render-agents.mjs`. Chạy `npm ci --prefix .ai-orchestrator`, như các workflow.
+2. Chép `kit/.claude/`, `kit/.githooks/`, `kit/.mcp.json`, `kit/.jira/config.yml` và bốn workflow trong `kit/.github/workflows/` (`ci.yml`, `jira-sync.yml`, `merge-gate.yml`, `audit.yml`) vào gốc repo. Trong `.claude/settings.json`, thay các giá trị mẫu: `AO_JIRA_SPACE` bằng mã space, `AO_APPROVERS` bằng login GitHub của bạn, còn `AO_DEV_APP`, `AO_DEV_APP_ID`, `AO_REVIEW_APP`, `AO_REVIEW_APP_ID` bằng slug và App ID của hai App. Rồi chạy `node .ai-orchestrator/scripts/render-agents.mjs --project .`. Lệnh này điền mã space vào agent và gộp skill theo stack của `.ai-orchestrator/roster.local.yaml`, nếu có.
+3. Thêm `.ai-orchestrator/node_modules/`, `.claude/settings.local.json`, `.ai/` và `.playwright-cli/` vào `.gitignore`. `.ai/` giữ ledger, báo cáo và ảnh của agent; `.playwright-cli/` là snapshot mà `playwright-cli` tự ghi.
 4. Trong `package.json` của dự án, khai các script mà job `build-test` chạy: `lint`, `typecheck`, `test:coverage` (ghi lcov vào `coverage/lcov.info`) và `build`. Thêm `"prepare": "node .ai-orchestrator/scripts/install-hooks.mjs"` để `npm install` tự cài hook git. Script `precommit`, ví dụ lint các file đã stage, là tùy chọn; hook `pre-commit` gọi nó sau secretlint.
 5. Tạo hai GitHub App theo [docs/github-apps-setup.md](docs/github-apps-setup.md), cài vào repo, rồi đặt `AO_DEV_APP_KEY_FILE` và `AO_REVIEW_APP_KEY_FILE` trên máy bạn.
 6. Trên GitHub:
@@ -88,7 +107,7 @@ Thư mục `kit/` chứa các file đặt vào repo dự án, giữ đúng đư�
    - cho workflow deploy gọi `audit.yml` trước, và job deploy `needs: audit`. Mẫu nằm ở đầu `kit/.github/workflows/audit.yml`;
    - đưa mọi file lên nhánh mặc định, vì GitHub chỉ chạy trigger `workflow_run` và `deployment_status` từ nhánh đó. Workflow CI của kit tên `CI`, là tên `jira-sync` chờ để chạy lại.
 7. Nối app GitHub for Jira với repo. Lần đầu thêm `.jira/config.yml` thì ngắt rồi nối lại kết nối.
-8. Mở `claude` trong repo một lần: tin cậy thư mục, cho phép server `atlassian`, và `/mcp` phải báo connected.
+8. Mở `claude` trong repo một lần: tin cậy thư mục, cho phép hai server `atlassian` và `chrome-devtools`, và `/mcp` phải báo cả hai connected.
 9. Từ repo kit, chạy `npm run gh:protect -- --repo <owner>/<name>`. Repo private ở gói Free chỉ được báo soft mode.
 
 Về sau, cập nhật bản chép kit cũng phải đi qua PR, và PR đó do bạn merge, vì nó sửa file được bảo vệ. Push thẳng lên `develop` làm `audit` chặn deploy và gắn cờ item.
@@ -137,6 +156,9 @@ node .ai-orchestrator/scripts/install-hooks.mjs            # cài hook git; scri
 node .ai-orchestrator/scripts/coverage-diff.mjs --base origin/develop  # coverage của dòng thay đổi, chạy trước khi push
 node .ai-orchestrator/scripts/merge-gate.mjs --dry-run     # PR nào sẽ được merge, PR nào còn thiếu gì; không merge
 node .ai-orchestrator/scripts/audit.mjs --sha <commit> --branch develop --dry-run  # commit có qua đủ cổng không; không gắn cờ
+node .ai-orchestrator/scripts/ao-agent.mjs <role> -p "<prompt>"  # chạy một agent làm phiên chính; bỏ -p để làm trực tiếp với agent
+node .ai-orchestrator/scripts/render-agents.mjs --project .      # sinh lại agent của dự án: mã space, skill theo stack
+node .ai-orchestrator/scripts/check-design.mjs <design.md>       # kiểm design.md và ảnh của nó, như job policy
 ```
 
 CI ([.github/workflows/contract.yml](.github/workflows/contract.yml)) chạy `npm ci`, `npm run validate`, `npm test`, `npm run render:check`, `npm run jira:checklist:check` và `npm run agents:check` trên mọi PR và mỗi lần push vào `main`.
@@ -152,7 +174,8 @@ CI ([.github/workflows/contract.yml](.github/workflows/contract.yml)) chạy `np
 
 ```
 contract/           6 file YAML của hợp đồng; JSON Schema của từng file nằm trong contract/schema/
-templates/          12 template artifact: spec, plan, ADR, Story, Task, Bug, PR, các báo cáo, release note, ledger
+templates/          13 template artifact: spec, design, plan, ADR, Story, Task, Bug, PR, các báo cáo, release note, ledger
+agents/             roster.yaml (model, effort, max_turns, tool, quyền, skill), prompt của từng vai trò, rules.md; JSON Schema trong agents/schema/
 tracker/jira.yaml   ánh xạ hợp đồng sang Jira, cloud id, hạn token; JSON Schema trong tracker/schema/
 quality/gates.yaml  check bắt buộc, ngưỡng coverage, mẫu tắt kiểm tra, nhánh và file được bảo vệ, hai App; JSON Schema trong quality/schema/
 lib/contract.mjs    thư viện chỉ đọc: loadContract, validateContract, allowedTransitions, checkTransition, routeBug
@@ -160,12 +183,14 @@ lib/rules/          8 quy tắc kiểm tra hợp đồng, mỗi quy tắc một 
 lib/render.mjs      sinh nội dung docs/sdlc.md
 lib/tracker/        ánh xạ và quy tắc J1–J4, quy ước mã Jira, client Jira và GitHub, dữ kiện cho guard, hook, đối soát
 lib/quality/        đọc và kiểm quality/gates.yaml, token của App, coverage, mẫu tắt kiểm tra, mô tả PR, merge-gate, audit, luật của gh-guard
-scripts/            lệnh của kit: kiểm và sinh tài liệu, Jira, ao-pr.mjs, job policy, coverage, merge-gate, audit, gh-protect, hook git
-kit/                file đặt vào repo dự án: .mcp.json, .claude/ (hook), .githooks/, .jira/config.yml, workflow CI, jira-sync, merge-gate, audit
+lib/agents/         đọc roster và roster.local.yaml, sinh agent và file quy ước, dựng lệnh của ao-agent.mjs, luật ghi file và git theo vai trò, chép skill
+scripts/            lệnh của kit: kiểm và sinh tài liệu, Jira, ao-pr.mjs, ao-agent.mjs, job policy, check-design, coverage, merge-gate, audit, gh-protect, hook git
+kit/                file đặt vào repo dự án: .mcp.json, .claude/ (agent, file quy ước, skill, hook), .githooks/, .jira/config.yml, workflow CI, jira-sync, merge-gate, audit
 docs/sdlc.md        sinh tự động, không sửa tay
 docs/jira-setup.md  checklist dựng Jira, sinh tự động, không sửa tay
 docs/quality-gates.md      các lớp chốt, từng check, cách xử lý khi cổng đỏ
 docs/github-apps-setup.md  tạo hai GitHub App, từng bước bấm
+docs/agents.md      mười agent, cách chạy, nâng effort, skill, design.md, ảnh Figma, dung lượng repo và LFS
 tests/              test; tests/fixtures/invalid/ chứa các hợp đồng cố tình sai, mỗi file sai một quy tắc;
                     tests/fixtures/tracker/ chứa ánh xạ sai, dữ liệu API Jira ghi sẵn và sự kiện GitHub mẫu
 tasks/              plan và danh sách task của module đang làm; plan của module đã xong nằm trong tasks/archive/
