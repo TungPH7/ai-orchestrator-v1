@@ -23,7 +23,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 13 | `2c3e5733-3a72-4ae6-b04c-ca09a16731cc` | 2026-10-29 khoảng 23:31 → 2026-10-30 khoảng 16:15 | Bạn chọn làm tiếp agent-roster; quality-gates đóng (PR #73); giả định và câu hỏi cho agent-roster: model cho từng vai trò, `ux` giao gì; bạn đề xuất model và effort, đồng ý artifact `design`; Claude đề xuất effort theo vai trò, quy tắc cho `design.md`, ba skill từ registry, chỉ lấy ý từ `agency-agents`; bạn duyệt bốn điểm, yêu cầu so `high` với `max` cho `fe-dev`, và hỏi lại nên dùng `playwright-cli` hay Chrome DevTools MCP; Claude đề xuất `qa` dùng `playwright-cli`, `fe-dev` dùng Chrome DevTools MCP, và viết bản nháp `SPEC-agent-roster.md`; bạn hỏi Story đã có Figma có cần `design.md` không; Claude đề xuất `design.md` có hai kiểu màn hình (ASCII hoặc Figma kèm ảnh PNG đã duyệt), Figma MCP để sau; bạn hỏi ảnh trong Git có làm repo vượt dung lượng không, cho biết gói Figma Education, hỏi chụp màn hình Figma được không; Claude đo cỡ ảnh, đề xuất năm quy tắc ảnh do `check-design` kiểm, bạn export ảnh vào `.ai/design-inbox/`, tách Figma MCP và script REST thành module riêng; bạn đồng ý cả ba, chọn module riêng cho Figma MCP; Claude sửa SPEC theo đó và xin duyệt SPEC; bạn duyệt SPEC; Claude viết plan 22 task (T16 chuẩn bị `ao-pilot` với trang giỏ hàng và Playwright, tài liệu của Epic thử không merge) và xin duyệt plan |
 | 14 | `cb0eafc3-b9fb-4ef7-9d75-cbacef12fa98` | 2026-10-30 khoảng 16:29 → 2026-10-31 khoảng 00:19 | Bạn duyệt plan; spec và plan merge (PR #74); T1 kiểm năm tiền đề: `claude --agent` bỏ qua `skills`, `effort`, `maxTurns`, settings của dự án không cài được plugin; Claude đề xuất chép 13 skill của agent-skills vào kit và script `ao-agent.mjs`, xin bạn duyệt cùng cách chạy hai công cụ trình duyệt qua `npx`; bạn duyệt cả hai; T1–T4 đóng (PR #75–#78): spec sửa sau T1, kiểm `playwright-cli` và Chrome DevTools MCP, artifact `design`, NOT TESTED; Checkpoint 1, chờ bạn; bạn hỏi xem kết quả T1–T2 ở đâu; bạn cho qua Checkpoint 1 (PR #79); T5–T14 đóng (PR #80–#89): `check-design`, roster và quy tắc A1–A5, 16 skill chép vào kit, `gh-guard` theo vai trò, mười prompt và file quy ước, sinh agent, `ao-agent.mjs`; Checkpoint 2, chờ bạn; bạn hỏi vì sao `fe-dev` không dùng `vercel-react-best-practices`: skill theo stack khai trong `roster.local.yaml` của từng dự án; bạn cho qua Checkpoint 2 (PR #90); T15: DEMO-9, ao-pilot PR #8 chép kit, kit PR #91–#93 (coverage loại `.claude/**`, vá `gh-guard` theo finding của review, luật hook và mục Shell), `reviewer` hai lượt và `security` ba lượt (hai lần chạm giới hạn usage, Claude đăng báo cáo của lượt cuối), 14,30 USD quy đổi; chờ bạn approve, merge, bật `chrome-devtools` và quyết hai đề xuất về danh tính agent và `file:///`; bạn merge PR #8, bật `chrome-devtools`, đồng ý hai đề xuất; T15 đóng (PR #94); kit PR #95 (`--no-file-navigations`, `.mcp.json` được bảo vệ), #96 (vá thêm `gh-guard`); T16: Story DEMO-10, trang giỏ hàng dựng ở server và server `node:http`; bạn đồng ý cài `@playwright/test`; ao-pilot PR #9 (E2E AC1, AC2), `reviewer` tìm ra `GET //` làm sập server (High), Claude sửa, `reviewer` vòng 2 và `security` COMMENT, 6,30 USD quy đổi; kit PR #97 (`grep ao-pr.mjs` bị chặn nhầm); bạn approve, `merge-gate` merge PR #9, `audit` xanh; T16 đóng (PR #98); T17: `qa` dùng `playwright-cli`, `fe-dev` dùng Chrome DevTools MCP, cả hai đạt, T17 đóng (PR #99); Checkpoint 3: 11 lượt Opus 21,43 USD quy đổi, ước phần còn lại 34–63 USD, chờ bạn chọn chạy tiếp, hạ effort `security` hay tạm dừng |
 | 15 | `cd9b752d-fcc4-4808-a333-32579c26f257` | 2026-10-31 khoảng 00:20 → khoảng 01:45 | Bạn chọn chạy tiếp T18–T21 theo plan, `security` giữ `max`; Checkpoint 3 đóng (PR #100); T18: Epic DEMO-11 "Mã giảm giá cho giỏ hàng", nhánh tài liệu `feature/DEMO-11-spec`, chờ bạn bấm `Start spec`; bạn bấm `Start spec`; stage spec: `ba`, `ux`, `sa` viết `spec.md` và `design.md`, Claude trả lời thay bạn 18 câu hỏi mở, job `policy` đỏ rồi xanh trên PR thử #10, 5,30 USD quy đổi; chờ bạn bấm `Approve spec`; bạn bấm `Approve spec`; stage plan: `sa` viết `plan.md` và ADR-0001, `ba` tạo Story DEMO-12 và hai Sub-task DEMO-13, DEMO-14, T18 tốn 11,81 USD quy đổi; chờ bạn bấm `Approve plan` |
-| 16 | `b8a6dd75-1274-4e19-b187-41b53ba22cfe` | 2026-10-31 khoảng 02:02 → | Bạn bấm `Approve plan`; T18 đóng (PR #101): `jira-sync` chuyển DEMO-12 sang Ready; T19: `be-dev` làm Sub-task BE nhưng không start Story, kit PR #102 sửa prompt của hai dev agent; `fe-dev` làm Sub-task FE và mở ao-pilot PR #11; `reviewer` COMMENT (1 Medium, 2 Low), `security` COMMENT không có finding, 15,23 USD quy đổi; chờ bạn approve PR #11 hoặc chọn sửa finding Medium trước |
+| 16 | `b8a6dd75-1274-4e19-b187-41b53ba22cfe` | 2026-10-31 khoảng 02:02 → | Bạn bấm `Approve plan`; T18 đóng (PR #101): `jira-sync` chuyển DEMO-12 sang Ready; T19: `be-dev` làm Sub-task BE nhưng không start Story, kit PR #102 sửa prompt của hai dev agent; `fe-dev` làm Sub-task FE và mở ao-pilot PR #11; `reviewer` COMMENT (1 Medium, 2 Low), `security` COMMENT không có finding, 15,23 USD quy đổi; chờ bạn approve PR #11 hoặc chọn sửa finding Medium trước; bạn approve, `merge-gate` merge PR #11, `audit` xanh, `qa` PASS cả 11 AC, Claude tạo Task DEMO-15 cho hai test còn thiếu; chờ bạn bấm `Accept` |
 
 ---
 
@@ -5909,3 +5909,68 @@ Finding Medium này là thiếu test, không phải lỗi code. Trong `readBody`
 Nếu chọn B, bạn nhắn "sửa trước".
 
 Sau khi bạn approve, `merge-gate` merge PR. Tiếp theo CI, `audit` và Deploy development chạy, rồi `jira-sync` chuyển DEMO-12 sang Ready for QA. Lúc đó mình chạy `qa`, rồi nhờ bạn bấm `Accept`.
+
+---
+
+# Phiên 16 · Lượt 2 — 2026-10-31 khoảng 10:09
+
+**Bạn:**
+
+```markdown
+Xong
+```
+
+Trong lúc Claude làm, bạn nhắn thêm:
+
+```markdown
+Tôi đã tắt bớt Chrome để có thêm RAM
+```
+
+Trước khi trả lời, Claude kiểm approve, merge, `audit`, deploy, chạy `qa` cho DEMO-12, rồi tạo Task DEMO-15 (lượt code, không ghi).
+
+**Claude:**
+
+DEMO-12 đã qua QA, PASS cả 11 AC. Giờ chỉ còn chờ bạn bấm `Accept`.
+
+## Kết quả
+
+- **Merge:** bạn approve lúc 10:09:26. `merge-gate` squash merge PR #11 thành `26c8ddb` trên `develop` lúc 10:10:03, người merge là `tungph7-ao-dev[bot]`.
+- **Deploy:** `audit` in `audit passed: 26c8ddb on develop is the merge of PR #11, which met every gate`, rồi Deploy development xanh. `jira-sync` chuyển DEMO-12 sang Ready for QA lúc 10:10:48.
+- **`qa`:**
+  - PASS cả AC1–AC11;
+  - 95 unit test pass; E2E chạy hai lần, cả hai 13/13: một lần trên server riêng ở cổng 3100, một lần trên môi trường development ở cổng 3000;
+  - mỗi AC giao diện có ảnh, kèm ảnh S1 ở 320, 768, 1024, 1440 px, tất cả trong `.ai/qa/DEMO-12/`. Mình đã mở thử hai ảnh: khớp AC7 và bản vẽ mobile;
+  - báo cáo là comment mới nhất trên DEMO-12, viết đúng template; hàm `qaReportResult` của kit đọc ra PASS. DEMO-12 đang ở In QA.
+- **DEMO-15** (Task, ở New): thêm hai test hồi quy và sửa finding Low, như đã hứa ở phương án A. Mục DoR "được bạn duyệt trực tiếp" còn để trống: khi nào muốn làm thì bạn duyệt. Task này không thuộc module agent-roster.
+
+Cảm ơn bạn đã đóng bớt Chrome. `qa` bắt đầu khi máy chỉ còn 1,2 GB RAM trống. Mình chạy nó ở foreground để hệ thống không dừng giữa chừng, và lúc xong máy còn 7,9 GB.
+
+Hai điểm mình ghi lại:
+
+- Hook chặn nhầm `git check-ignore` của `qa`. Lệnh này chỉ đọc, nhưng chưa có trong danh sách lệnh đọc của kit. T22 có thể thêm vào.
+- Bảng sản phẩm tràn ở 320 px vẫn chưa có item nào trên Jira. Theo hợp đồng, sửa giao diện là Story chứ không phải Task. Đây là việc của `ba` khi có đợt làm sau, nên mình không tạo.
+
+## Số đo
+
+| Lượt | Thời gian | USD quy đổi |
+|---|---|---|
+| `qa` | 9 ph 7 s | 1,93 |
+| Cả T19 (5 lượt) | | 17,16 |
+
+Ước tính cho T19 là 14–25 USD.
+
+## Việc cần bạn: bấm Accept
+
+1. Mở https://phunghuutung12b4.atlassian.net/browse/DEMO-12.
+2. Nếu muốn, đọc báo cáo QA: comment mới nhất của `orchestratoragent`.
+3. Bấm nút trạng thái **In QA** gần tiêu đề (đối chiếu giao diện).
+4. Chọn **Accept**. Nếu Jira mở hộp thoại hỏi Resolution, chọn **Done**. Story sang Done.
+5. Nhắn "xong" cho mình.
+
+Sau đó mình kiểm DEMO-12 đã Done, đóng T19 bằng một PR ở kit, rồi sang T20:
+
+- `devops` thêm `timeout-minutes` cho job deploy, và `security` review. PR này sửa `.github/workflows/`, nên bạn phải tự merge hoặc đóng.
+- `pm` viết bản tổng hợp buổi sáng.
+- Thử năm việc ngoài vai trò ở effort low.
+
+Tổng cộng khoảng 8 lượt, phần lớn ngắn.
