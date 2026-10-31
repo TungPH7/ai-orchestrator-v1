@@ -145,7 +145,7 @@ T19, T20, T21 ── T22 maxTurns, tài liệu, lưu trữ
 ### Checkpoint cuối
 - [x] Đạt 13 tiêu chí ở spec mục 9
 - [x] Chuyển `tasks/plan.md`, `tasks/todo.md`, `tasks/verification.md` vào `tasks/archive/agent-roster/`
-- [ ] Bạn xác nhận module hoàn thành
+- [x] Bạn xác nhận module hoàn thành (2026-10-31, Phiên 16 · Lượt 9)
 
 ## Usage ước tính cho kiểm thật
 
