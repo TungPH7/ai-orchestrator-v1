@@ -23,7 +23,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 13 | `2c3e5733-3a72-4ae6-b04c-ca09a16731cc` | 2026-10-29 khoảng 23:31 → 2026-10-30 khoảng 16:15 | Bạn chọn làm tiếp agent-roster; quality-gates đóng (PR #73); giả định và câu hỏi cho agent-roster: model cho từng vai trò, `ux` giao gì; bạn đề xuất model và effort, đồng ý artifact `design`; Claude đề xuất effort theo vai trò, quy tắc cho `design.md`, ba skill từ registry, chỉ lấy ý từ `agency-agents`; bạn duyệt bốn điểm, yêu cầu so `high` với `max` cho `fe-dev`, và hỏi lại nên dùng `playwright-cli` hay Chrome DevTools MCP; Claude đề xuất `qa` dùng `playwright-cli`, `fe-dev` dùng Chrome DevTools MCP, và viết bản nháp `SPEC-agent-roster.md`; bạn hỏi Story đã có Figma có cần `design.md` không; Claude đề xuất `design.md` có hai kiểu màn hình (ASCII hoặc Figma kèm ảnh PNG đã duyệt), Figma MCP để sau; bạn hỏi ảnh trong Git có làm repo vượt dung lượng không, cho biết gói Figma Education, hỏi chụp màn hình Figma được không; Claude đo cỡ ảnh, đề xuất năm quy tắc ảnh do `check-design` kiểm, bạn export ảnh vào `.ai/design-inbox/`, tách Figma MCP và script REST thành module riêng; bạn đồng ý cả ba, chọn module riêng cho Figma MCP; Claude sửa SPEC theo đó và xin duyệt SPEC; bạn duyệt SPEC; Claude viết plan 22 task (T16 chuẩn bị `ao-pilot` với trang giỏ hàng và Playwright, tài liệu của Epic thử không merge) và xin duyệt plan |
 | 14 | `cb0eafc3-b9fb-4ef7-9d75-cbacef12fa98` | 2026-10-30 khoảng 16:29 → 2026-10-31 khoảng 00:19 | Bạn duyệt plan; spec và plan merge (PR #74); T1 kiểm năm tiền đề: `claude --agent` bỏ qua `skills`, `effort`, `maxTurns`, settings của dự án không cài được plugin; Claude đề xuất chép 13 skill của agent-skills vào kit và script `ao-agent.mjs`, xin bạn duyệt cùng cách chạy hai công cụ trình duyệt qua `npx`; bạn duyệt cả hai; T1–T4 đóng (PR #75–#78): spec sửa sau T1, kiểm `playwright-cli` và Chrome DevTools MCP, artifact `design`, NOT TESTED; Checkpoint 1, chờ bạn; bạn hỏi xem kết quả T1–T2 ở đâu; bạn cho qua Checkpoint 1 (PR #79); T5–T14 đóng (PR #80–#89): `check-design`, roster và quy tắc A1–A5, 16 skill chép vào kit, `gh-guard` theo vai trò, mười prompt và file quy ước, sinh agent, `ao-agent.mjs`; Checkpoint 2, chờ bạn; bạn hỏi vì sao `fe-dev` không dùng `vercel-react-best-practices`: skill theo stack khai trong `roster.local.yaml` của từng dự án; bạn cho qua Checkpoint 2 (PR #90); T15: DEMO-9, ao-pilot PR #8 chép kit, kit PR #91–#93 (coverage loại `.claude/**`, vá `gh-guard` theo finding của review, luật hook và mục Shell), `reviewer` hai lượt và `security` ba lượt (hai lần chạm giới hạn usage, Claude đăng báo cáo của lượt cuối), 14,30 USD quy đổi; chờ bạn approve, merge, bật `chrome-devtools` và quyết hai đề xuất về danh tính agent và `file:///`; bạn merge PR #8, bật `chrome-devtools`, đồng ý hai đề xuất; T15 đóng (PR #94); kit PR #95 (`--no-file-navigations`, `.mcp.json` được bảo vệ), #96 (vá thêm `gh-guard`); T16: Story DEMO-10, trang giỏ hàng dựng ở server và server `node:http`; bạn đồng ý cài `@playwright/test`; ao-pilot PR #9 (E2E AC1, AC2), `reviewer` tìm ra `GET //` làm sập server (High), Claude sửa, `reviewer` vòng 2 và `security` COMMENT, 6,30 USD quy đổi; kit PR #97 (`grep ao-pr.mjs` bị chặn nhầm); bạn approve, `merge-gate` merge PR #9, `audit` xanh; T16 đóng (PR #98); T17: `qa` dùng `playwright-cli`, `fe-dev` dùng Chrome DevTools MCP, cả hai đạt, T17 đóng (PR #99); Checkpoint 3: 11 lượt Opus 21,43 USD quy đổi, ước phần còn lại 34–63 USD, chờ bạn chọn chạy tiếp, hạ effort `security` hay tạm dừng |
 | 15 | `cd9b752d-fcc4-4808-a333-32579c26f257` | 2026-10-31 khoảng 00:20 → khoảng 01:45 | Bạn chọn chạy tiếp T18–T21 theo plan, `security` giữ `max`; Checkpoint 3 đóng (PR #100); T18: Epic DEMO-11 "Mã giảm giá cho giỏ hàng", nhánh tài liệu `feature/DEMO-11-spec`, chờ bạn bấm `Start spec`; bạn bấm `Start spec`; stage spec: `ba`, `ux`, `sa` viết `spec.md` và `design.md`, Claude trả lời thay bạn 18 câu hỏi mở, job `policy` đỏ rồi xanh trên PR thử #10, 5,30 USD quy đổi; chờ bạn bấm `Approve spec`; bạn bấm `Approve spec`; stage plan: `sa` viết `plan.md` và ADR-0001, `ba` tạo Story DEMO-12 và hai Sub-task DEMO-13, DEMO-14, T18 tốn 11,81 USD quy đổi; chờ bạn bấm `Approve plan` |
-| 16 | `b8a6dd75-1274-4e19-b187-41b53ba22cfe` | 2026-10-31 khoảng 02:02 → | Bạn bấm `Approve plan`; T18 đóng (PR #101): `jira-sync` chuyển DEMO-12 sang Ready; T19: `be-dev` làm Sub-task BE nhưng không start Story, kit PR #102 sửa prompt của hai dev agent; `fe-dev` làm Sub-task FE và mở ao-pilot PR #11; `reviewer` COMMENT (1 Medium, 2 Low), `security` COMMENT không có finding, 15,23 USD quy đổi; chờ bạn approve PR #11 hoặc chọn sửa finding Medium trước; bạn approve, `merge-gate` merge PR #11, `audit` xanh, `qa` PASS cả 11 AC, Claude tạo Task DEMO-15 cho hai test còn thiếu; chờ bạn bấm `Accept`; bạn bấm `Accept`, T19 đóng (PR #103); T20: `pm` viết bản tổng hợp sáng, lỗi đếm item Done chưa có Fix Version được sửa (PR #104), năm việc ngoài vai trò bị chặn đúng lý do; chờ bạn `Refine` DEMO-16 cho `devops`; bạn `Refine` DEMO-16; `devops` mở ao-pilot PR #12, `reviewer` COMMENT (1 Low), `security` COMMENT không có finding, 4,70 USD quy đổi; chờ bạn approve rồi tự merge PR #12; bạn merge PR #12, `audit` xanh, T20 đóng (PR #105); T21: Task DEMO-17, `fe-dev` ở `high` (1,86 USD) và `max` (5,89 USD) cùng đạt checklist và trường hợp biên, mỗi bản 1 Low; lượt `max` thấy tiêu đề commit của lượt `high`; bạn hết usage giữa lượt; Checkpoint 4, chờ bạn xem Epic, PR thử và chọn effort cho `fe-dev`; bạn chọn `high` và hỏi dev agent có đổi effort theo độ khó của task không; Claude trả lời: agent không tự đổi, người khởi động đổi được cho từng lượt, và đề xuất `sa` ghi mức trong plan để bạn duyệt ở gate ②, làm ở `dev-workflow`; chờ bạn xác nhận để tiếp tục; bạn nhắn tiếp tục; T21 và Checkpoint 4 đóng (PR #106); T22 (PR #107): `maxTurns` theo số đo, `gh-guard` cho phép `git check-ignore`, template trỏ tới `.ai-orchestrator/docs/sdlc.md`, `docs/agents.md` và mục Agent của README, module ghi hoàn thành, plan vào `tasks/archive/agent-roster/`; chờ bạn xác nhận module hoàn thành và chọn module tiếp theo |
+| 16 | `b8a6dd75-1274-4e19-b187-41b53ba22cfe` | 2026-10-31 khoảng 02:02 → | Bạn bấm `Approve plan`; T18 đóng (PR #101): `jira-sync` chuyển DEMO-12 sang Ready; T19: `be-dev` làm Sub-task BE nhưng không start Story, kit PR #102 sửa prompt của hai dev agent; `fe-dev` làm Sub-task FE và mở ao-pilot PR #11; `reviewer` COMMENT (1 Medium, 2 Low), `security` COMMENT không có finding, 15,23 USD quy đổi; chờ bạn approve PR #11 hoặc chọn sửa finding Medium trước; bạn approve, `merge-gate` merge PR #11, `audit` xanh, `qa` PASS cả 11 AC, Claude tạo Task DEMO-15 cho hai test còn thiếu; chờ bạn bấm `Accept`; bạn bấm `Accept`, T19 đóng (PR #103); T20: `pm` viết bản tổng hợp sáng, lỗi đếm item Done chưa có Fix Version được sửa (PR #104), năm việc ngoài vai trò bị chặn đúng lý do; chờ bạn `Refine` DEMO-16 cho `devops`; bạn `Refine` DEMO-16; `devops` mở ao-pilot PR #12, `reviewer` COMMENT (1 Low), `security` COMMENT không có finding, 4,70 USD quy đổi; chờ bạn approve rồi tự merge PR #12; bạn merge PR #12, `audit` xanh, T20 đóng (PR #105); T21: Task DEMO-17, `fe-dev` ở `high` (1,86 USD) và `max` (5,89 USD) cùng đạt checklist và trường hợp biên, mỗi bản 1 Low; lượt `max` thấy tiêu đề commit của lượt `high`; bạn hết usage giữa lượt; Checkpoint 4, chờ bạn xem Epic, PR thử và chọn effort cho `fe-dev`; bạn chọn `high` và hỏi dev agent có đổi effort theo độ khó của task không; Claude trả lời: agent không tự đổi, người khởi động đổi được cho từng lượt, và đề xuất `sa` ghi mức trong plan để bạn duyệt ở gate ②, làm ở `dev-workflow`; chờ bạn xác nhận để tiếp tục; bạn nhắn tiếp tục; T21 và Checkpoint 4 đóng (PR #106); T22 (PR #107): `maxTurns` theo số đo, `gh-guard` cho phép `git check-ignore`, template trỏ tới `.ai-orchestrator/docs/sdlc.md`, `docs/agents.md` và mục Agent của README, module ghi hoàn thành, plan vào `tasks/archive/agent-roster/`; chờ bạn xác nhận module hoàn thành và chọn module tiếp theo; bạn xác nhận và chọn `dev-workflow`; ô cuối của `agent-roster` đóng (PR #108); phạm vi, giả định và ba câu hỏi cho `dev-workflow`: danh tính GitHub của agent, PR tài liệu của Epic, `security` review lại sau commit chỉ thêm test |
 
 ---
 
@@ -6305,3 +6305,128 @@ Mình đã gom vào cuối `verification.md`:
    - Hoặc module khác bạn muốn.
 
 DEMO-15, DEMO-16, DEMO-17 và hai nhánh local của DEMO-17 vẫn để đó; dọn hay giữ là bạn quyết.
+
+---
+
+# Phiên 16 · Lượt 9 — 2026-10-31 khoảng 16:54
+
+**Bạn:**
+
+```markdown
+xác nhận, tiếp tục module dev-workflow
+```
+
+Trước khi trả lời, Claude đánh dấu ô cuối của `agent-roster` (PR #108), rồi đọc tài liệu Claude Code về skill và sandbox, điều khoản của GitHub về tài khoản máy, và quyền của hai App.
+
+**Claude:**
+
+Mình đã đánh dấu ô cuối của `agent-roster` (kit PR #108, đã merge) và tạo nhánh `task/spec-dev-workflow`. Dưới đây là phạm vi, những điều mình vừa kiểm, các giả định và ba câu hỏi. Mình chưa viết `SPEC-dev-workflow.md`.
+
+## Phạm vi của `dev-workflow`
+
+Theo capability map, module này làm các lệnh điều phối vòng trong: spec → plan → build → review → merge vào `develop`. Mỗi lệnh gọi đúng agent, tạo artifact, kiểm cổng và cập nhật Jira. Agent có danh tính GitHub riêng, không nằm trong `AO_APPROVERS`.
+
+Ở Cấp 1, bạn gõ từng lệnh và duyệt ở cổng. Tự chạy bước kế tiếp là việc của CLI ở Cấp 2.
+
+Các module trước để lại cho module này:
+
+- **Từ spec `agent-roster`:** lúc nào gọi agent nào; khi nào nâng effort; luồng PR cho tài liệu (SPEC, design, plan).
+- **Từ kiểm thật của `agent-roster`:**
+  - `merge-gate` chỉ báo "Needs you" trong log;
+  - ADR còn ở Proposed sau gate ②, và dòng DoR trong mô tả Story không được đánh dấu;
+  - comment nhờ `ba` không có gì chuyển tới `ba`;
+  - commit chỉ thêm test vẫn bắt `security` chạy lại cả lượt (4,6 USD ở T19);
+  - `sa` không sửa comment trên Epic sau khi câu hỏi có trả lời.
+- **Bản chép kit trong `ao-pilot`** vẫn là bản của T15.
+
+Ngoài phạm vi: QA, deploy và release (`release-workflow`); Figma (`figma-integration`); Pilot 1 làm sau module này.
+
+## Điều mình vừa kiểm
+
+- **Skill của dự án làm được lệnh `/`** (tài liệu Claude Code, máy bạn chạy bản 2.1.316):
+  - `.claude/skills/ao-build/SKILL.md` tạo lệnh `/ao-build`.
+  - `disable-model-invocation: true` làm lệnh chỉ chạy khi bạn gõ.
+  - `$ARGUMENTS` nhận mã item.
+  - Cú pháp `` !`lệnh` `` chạy lệnh shell trước khi prompt tới model, và lệnh đó thoát khác 0 thì cả lệnh `/` bị hủy. Nhờ vậy một script tất định kiểm được trạng thái trước khi gọi agent nào.
+  - `context: fork` cùng `agent: fe-dev` chạy skill trong đúng subagent đó.
+- **Sandbox của Claude Code không chạy trên Windows gốc.** Tài liệu ghi: "On native Windows, Claude Code runs commands unsandboxed." Muốn có sandbox phải chạy trong WSL2. Như vậy agent và bạn dùng chung một user Windows, chung keyring của `gh` và Git Credential Manager.
+- **GitHub cho mỗi người thêm đúng một tài khoản máy miễn phí** ("no more than one free machine account in addition to your free Personal Account"). Tài khoản này chỉ được dùng cho việc tự động.
+- **Hai App hiện có:**
+  - `ao-dev`: Contents đọc và ghi, Pull requests đọc và ghi;
+  - `ao-review`: Contents chỉ đọc, Pull requests đọc và ghi.
+
+  Hai App chưa có quyền đọc Actions và Checks, và `ao-dev` chưa có quyền Workflows để push file workflow. Hiện agent push và đọc CI bằng login `gh` và git của bạn.
+- **Những gì mình làm tay ở T18–T21** chính là việc của các lệnh: mở agent, chờ, đọc kết quả, xem CI và `merge-gate`, chuyển câu hỏi của agent cho bạn, rồi quyết bước tiếp theo.
+
+## Giả định (sửa ngay nếu sai)
+
+1. **Lệnh là skill trong `kit/.claude/skills/ao-*`, chỉ chạy khi bạn gõ.** Bạn gõ lệnh trong phiên Claude Code ở repo dự án. Mỗi lệnh mở đầu bằng script tất định `ao-step.mjs`, chạy qua cú pháp `!`. Script đọc Jira và GitHub, kiểm bước được phép bắt đầu chưa (trạng thái, guard, WIP, PR đang mở), rồi in dữ kiện. Bước chưa được phép thì lệnh dừng và nói lý do.
+
+   | Lệnh | Gọi agent | Dừng ở |
+   |---|---|---|
+   | `/ao-status [KEY]` | Không | In việc đang chờ bạn và bước kế tiếp của từng item, kể cả comment nhờ vai trò khác |
+   | `/ao-spec <EPIC>` | `ba`, rồi `ux` nếu có giao diện, rồi `sa` | Gate ① |
+   | `/ao-plan <EPIC>` | `sa` (plan, ADR), rồi `ba` (tạo item) | Gate ② |
+   | `/ao-build <KEY>` | `be-dev`, `fe-dev` theo Sub-task hoặc theo vai trò ghi trong plan | PR mở, CI xanh |
+   | `/ao-review <PR>` | `reviewer`, rồi `security` | Gate ③ |
+   | `/ao-fix <PR>` | Dev agent trả lời yêu cầu sửa, rồi review lại | Gate ③ |
+
+   Merge vẫn là việc của `merge-gate`. `pm` vẫn viết bản tổng hợp sáng, còn `/ao-status` chỉ chạy script, không gọi agent nào.
+2. **Agent chạy thành process riêng** bằng `ao-agent.mjs -p`, ở nền, do phiên của bạn mở và chờ. Cách này không dùng subagent, vì bốn lý do:
+   - mỗi lượt đặt được `--effort` riêng;
+   - ghi được số đo vào `.ai/runs/`;
+   - agent tách khỏi ngữ cảnh của phiên bạn;
+   - đây là cách đã chạy hơn 20 lượt ở `agent-roster`.
+
+   Câu hỏi của `ba`, `ux`, `sa` được phiên của bạn hiện ra. Bạn trả lời ngay trong chat, rồi phiên đó chạy lại agent bằng `--resume` kèm câu trả lời, như ở T18.
+3. **Effort theo item:**
+   - Task List của plan ghi vai trò của từng item, và ghi effort cho item khó, kèm lý do.
+   - Bạn duyệt cùng plan ở gate ②, và `ba` gắn nhãn `effort-xhigh` hoặc `effort-max`.
+   - `/ao-build` truyền `--effort` theo nhãn.
+   - Item bị yêu cầu sửa lần hai thì `/ao-fix` nâng lên `xhigh`, theo spec mục 2.2 của `agent-roster`.
+4. **Các ghi chú còn lại được xử lý trong các lệnh trên:**
+   - `merge-gate` comment một lần lên PR cần bạn tự merge, và gắn cờ `needs-you` trên Jira.
+   - `sa` chuyển ADR sang Accepted, và sửa comment trên Epic, khi `/ao-plan` kết thúc.
+   - Dòng DoR được đánh dấu khi `refine` chạy.
+   - Agent nhờ vai trò khác bằng comment có dạng `Cần ba: …`, và `/ao-status` liệt kê các comment đó.
+5. **Bản chép kit mới vào `ao-pilot` là task đầu,** qua một PR do bạn merge.
+6. **Kiểm thật trên `ao-pilot`** bằng một Epic nhỏ trên `DEMO`, đi từ `/ao-spec` tới merge. Mình gọi lệnh bằng `claude -p "/ao-build DEMO-…"` trong `ao-pilot`, còn bạn duyệt ở ba cổng. T18 và T19 cộng lại tốn khoảng 29 USD quy đổi, nên lượt kiểm thật này ước khoảng 30–40 USD.
+
+## Câu hỏi
+
+**1. Danh tính GitHub của agent?**
+
+- **(a) Dùng hai App cho mọi việc (mình đề xuất).**
+  - `ao-agent.mjs` lấy token của App rồi đưa vào phiên của agent: `GH_TOKEN` cho `gh`, và một credential helper cho `git`.
+  - Agent push và commit dưới tên bot của `ao-dev`, còn đọc CI bằng `ao-review`. Agent không dùng login của bạn nữa.
+  - Bạn phải thêm quyền cho App: `ao-dev` thêm Workflows ghi, Actions đọc, Checks đọc; `ao-review` thêm Actions đọc, Checks đọc.
+  - Còn hở một chỗ: đăng nhập của bạn vẫn nằm trên cùng user Windows. Agent cố tình đi vòng thì vẫn lấy được token của bạn; `gh-guard` chỉ chặn các đường đã biết.
+- **(b) Như (a), và chạy agent dưới một user Windows riêng,** không có đăng nhập `gh` và git của bạn. Cách này chặn hẳn việc agent lấy token của bạn. Đổi lại, bạn phải tạo user, đăng nhập Claude Code ở user đó, và chia quyền thư mục dự án.
+- **(c) Một tài khoản máy** như `tungph7-agent`, dùng PAT. Lịch sử ghi tên một tài khoản thay vì bot. Token sống lâu hơn token của App, mà không cách ly hơn (a).
+
+Mình không đề xuất chạy trong WSL2 để có sandbox: máy bạn ít RAM, và cả môi trường phải đổi theo.
+
+**2. Tài liệu của Epic (SPEC, design, plan, ADR) vào `develop` thế nào?**
+
+- **(a) Một PR tài liệu cho mỗi Epic, `merge-gate` tự merge sau gate ② (mình đề xuất).**
+  - `ba` mở PR từ `feature/<EPIC>-spec` khi xong stage spec, và `sa` thêm plan, ADR vào cùng nhánh.
+  - Job `policy` kiểm `design.md`.
+  - Khi Epic đã qua gate ② trên Jira và CI xanh, `merge-gate` merge PR đó. PR không cần báo cáo review hay approval trên GitHub, vì bạn đã duyệt ở Jira.
+  - Đây là thay đổi cổng: `merge-gate` và `audit` có thêm điều kiện cho PR chỉ sửa `docs/specs/**` và `docs/adr/**`.
+- **(b) PR tài liệu như PR code:** `reviewer` review, và bạn approve trên GitHub, tức là duyệt hai lần.
+- **(c) Không có PR riêng:** tài liệu đi vào `develop` cùng PR code đầu tiên của Epic, lẫn với code.
+
+**3. Commit chỉ thêm test có bắt `security` review lại cả lượt không?**
+
+- **(a) `security` chỉ review phần mới, ở effort `high` (mình đề xuất).** Lệnh `/ao-review` chuyển cho `security` diff kể từ commit nó đã review. Báo cáo vẫn nằm trên head, nên cổng không đổi. Chi phí khoảng 0,5–1 USD, thay cho 4,6 USD.
+- **(b) Báo cáo cũ được tính tiếp** khi mọi commit mới chỉ sửa file test. Cách này rẻ nhất, nhưng đổi cổng. Test lại chạy trong CI, nên `merge-gate` phải tin rằng test mới không làm gì nguy hiểm trong CI.
+- **(c) Giữ như hiện tại:** mỗi head mới cần một báo cáo đầy đủ ở `max`.
+
+Bạn trả lời ba câu và sửa giả định nếu cần. Sau đó mình viết `SPEC-dev-workflow.md` rồi dừng lại để bạn duyệt.
+
+## Nguồn
+
+- [Claude Code Docs: Skills](https://code.claude.com/docs/en/skills)
+- [Claude Code Docs: Sandboxing](https://code.claude.com/docs/en/sandboxing)
+- [GitHub Terms of Service, mục B.3](https://docs.github.com/en/site-policy/github-terms/github-terms-of-service)
+- `docs/github-apps-setup.md` và `tasks/archive/agent-roster/verification.md` trong repo kit
