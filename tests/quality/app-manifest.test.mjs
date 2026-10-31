@@ -4,17 +4,17 @@ import { appManifest, installUrl, registrationPage } from '../../lib/quality/app
 
 const BASE = 'http://127.0.0.1:47100';
 
-test('the ao-dev manifest asks for write access to contents and pull requests, nothing else', () => {
+test('the ao-dev manifest writes contents, pull requests and workflows, and reads Actions and checks, nothing else', () => {
   const manifest = appManifest('dev', { owner: 'TungPH7', baseUrl: BASE });
   assert.equal(manifest.name, 'tungph7-ao-dev');
-  assert.deepEqual(manifest.default_permissions, { contents: 'write', pull_requests: 'write' });
+  assert.deepEqual(manifest.default_permissions, { contents: 'write', pull_requests: 'write', workflows: 'write', actions: 'read', checks: 'read' });
   assert.deepEqual(manifest.default_events, []);
 });
 
-test('the ao-review manifest reads contents and writes pull requests', () => {
+test('the ao-review manifest reads contents, Actions and checks, and writes pull requests', () => {
   const manifest = appManifest('review', { owner: 'TungPH7', baseUrl: BASE });
   assert.equal(manifest.name, 'tungph7-ao-review');
-  assert.deepEqual(manifest.default_permissions, { contents: 'read', pull_requests: 'write' });
+  assert.deepEqual(manifest.default_permissions, { contents: 'read', pull_requests: 'write', actions: 'read', checks: 'read' });
 });
 
 test('both Apps are private, have no webhook and no user sign-in, and come back to the local server', () => {
