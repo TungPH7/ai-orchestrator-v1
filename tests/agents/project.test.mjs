@@ -83,6 +83,7 @@ test('ao-agent.mjs --ao-dry-run writes the skills file and prints the claude com
 
   assert.equal(result.status, 0, result.stderr);
   const file = join(dir, '.ai', 'agents', 'fe-dev.skills.md');
-  assert.match(result.stdout, /^claude --agent fe-dev --effort high --append-system-prompt-file .*fe-dev\.skills\.md -p "Build DEMO-12"$/m);
+  const limit = roster.roles['fe-dev'].max_turns;
+  assert.match(result.stdout, new RegExp(`^claude --agent fe-dev --effort high --append-system-prompt-file .*fe-dev\\.skills\\.md --max-turns ${limit} -p "Build DEMO-12"$`, 'm'));
   assert.match(readFileSync(file, 'utf8'), /^## Skill: vercel-react-best-practices$/m);
 });

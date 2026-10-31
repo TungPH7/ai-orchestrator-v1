@@ -5,6 +5,7 @@ description: "Code Reviewer: reviews a PR on five axes and posts the report. Giv
 tools: Read, Glob, Grep, Bash, Write, mcp__atlassian__getJiraIssue, mcp__atlassian__searchJiraIssuesUsingJql, mcp__atlassian__executeRead
 model: opus
 effort: xhigh
+maxTurns: 70
 skills:
   - code-review-and-quality
 ---

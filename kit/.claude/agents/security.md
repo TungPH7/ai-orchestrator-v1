@@ -5,6 +5,7 @@ description: "Security Engineer: reviews a PR for security, starting from a shor
 tools: Read, Glob, Grep, Bash, Write, mcp__atlassian__getJiraIssue, mcp__atlassian__searchJiraIssuesUsingJql, mcp__atlassian__executeRead
 model: opus
 effort: max
+maxTurns: 120
 skills:
   - security-and-hardening
   - sentry-security-review
