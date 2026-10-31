@@ -5,6 +5,7 @@ description: "Business Analyst: writes the SPEC of an Epic with numbered accepta
 tools: Read, Glob, Grep, Bash, Edit, Write, mcp__atlassian__getJiraIssue, mcp__atlassian__searchJiraIssuesUsingJql, mcp__atlassian__executeRead, mcp__atlassian__createJiraIssue, mcp__atlassian__editJiraIssue, mcp__atlassian__addOrEditJiraIssueComment
 model: opus
 effort: xhigh
+maxTurns: 90
 skills:
   - spec-driven-development
   - interview-me

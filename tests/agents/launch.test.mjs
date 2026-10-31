@@ -25,14 +25,15 @@ test('an unattended run with -p keeps the caller\'s arguments, and adds --max-tu
   const caller = ['-p', 'Review PR #12', '--output-format', 'json'];
   const { args, skillsFile } = plan('reviewer', caller);
 
-  assert.deepEqual(args, ['--agent', 'reviewer', '--effort', 'xhigh', '--append-system-prompt-file', skillsFile.path, ...caller]);
+  const limit = String(roster.roles.reviewer.max_turns);
+  assert.deepEqual(args, ['--agent', 'reviewer', '--effort', 'xhigh', '--append-system-prompt-file', skillsFile.path, '--max-turns', limit, ...caller]);
   assert.match(skillsFile.text, /^## Session\n\nYou run unattended/);
+  assert.ok(!plan('reviewer', []).args.includes('--max-turns'), 'not for an interactive run');
+  assert.deepEqual(plan('reviewer', ['--print', 'x']).args.slice(6, 8), ['--max-turns', limit], '--print is -p');
 
-  const limited = structuredClone(roster);
-  limited.roles.reviewer.max_turns = 40;
-  assert.deepEqual(plan('reviewer', caller, { roster: limited }).args.slice(6, 8), ['--max-turns', '40']);
-  assert.ok(!plan('reviewer', [], { roster: limited }).args.includes('--max-turns'), 'not for an interactive run');
-  assert.deepEqual(plan('reviewer', ['--print', 'x'], { roster: limited }).args.slice(6, 8), ['--max-turns', '40'], '--print is -p');
+  const unlimited = structuredClone(roster);
+  delete unlimited.roles.reviewer.max_turns;
+  assert.ok(!plan('reviewer', caller, { roster: unlimited }).args.includes('--max-turns'), 'not without max_turns');
 });
 
 test('the caller\'s own --effort or --max-turns replaces the roster\'s', () => {

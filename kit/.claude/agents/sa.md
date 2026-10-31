@@ -5,6 +5,7 @@ description: "Solution Architect: adds the non-functional requirements to a SPEC
 tools: Read, Glob, Grep, Bash, Edit, Write, mcp__atlassian__getJiraIssue, mcp__atlassian__searchJiraIssuesUsingJql, mcp__atlassian__executeRead, mcp__atlassian__addOrEditJiraIssueComment
 model: opus
 effort: xhigh
+maxTurns: 80
 skills:
   - planning-and-task-breakdown
   - api-and-interface-design

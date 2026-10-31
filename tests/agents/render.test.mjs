@@ -34,6 +34,7 @@ test('the frontmatter of an agent: name, description, tools, model, effort and s
     model: 'opus',
     effort: 'xhigh',
     skills: ['code-review-and-quality'],
+    maxTurns: sources.roster.roles.reviewer.max_turns,
   });
   assert.equal(frontmatter(renderAgent('pm', sources)).skills, undefined, 'no skills key without skills');
 });
@@ -53,7 +54,8 @@ test('max_turns of the roster becomes maxTurns', () => {
   const roster = structuredClone(sources.roster);
   roster.roles.pm.max_turns = 30;
   assert.equal(frontmatter(renderAgent('pm', { ...sources, roster })).maxTurns, 30);
-  assert.equal(frontmatter(renderAgent('pm', sources)).maxTurns, undefined);
+  delete roster.roles.pm.max_turns;
+  assert.equal(frontmatter(renderAgent('pm', { ...sources, roster })).maxTurns, undefined);
 });
 
 test('the opening line names the role and its value in the Agent field', () => {

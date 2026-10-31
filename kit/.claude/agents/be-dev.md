@@ -5,6 +5,7 @@ description: "Backend Developer: builds a ready item, or its BE Sub-task, with T
 tools: Read, Glob, Grep, Bash, Edit, Write, mcp__atlassian__getJiraIssue, mcp__atlassian__searchJiraIssuesUsingJql, mcp__atlassian__executeRead, mcp__atlassian__editJiraIssue, mcp__atlassian__addOrEditJiraIssueComment, mcp__atlassian__transitionJiraIssue
 model: opus
 effort: high
+maxTurns: 170
 skills:
   - test-driven-development
   - incremental-implementation
