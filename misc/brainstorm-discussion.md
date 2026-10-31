@@ -23,7 +23,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 13 | `2c3e5733-3a72-4ae6-b04c-ca09a16731cc` | 2026-10-29 khoảng 23:31 → 2026-10-30 khoảng 16:15 | Bạn chọn làm tiếp agent-roster; quality-gates đóng (PR #73); giả định và câu hỏi cho agent-roster: model cho từng vai trò, `ux` giao gì; bạn đề xuất model và effort, đồng ý artifact `design`; Claude đề xuất effort theo vai trò, quy tắc cho `design.md`, ba skill từ registry, chỉ lấy ý từ `agency-agents`; bạn duyệt bốn điểm, yêu cầu so `high` với `max` cho `fe-dev`, và hỏi lại nên dùng `playwright-cli` hay Chrome DevTools MCP; Claude đề xuất `qa` dùng `playwright-cli`, `fe-dev` dùng Chrome DevTools MCP, và viết bản nháp `SPEC-agent-roster.md`; bạn hỏi Story đã có Figma có cần `design.md` không; Claude đề xuất `design.md` có hai kiểu màn hình (ASCII hoặc Figma kèm ảnh PNG đã duyệt), Figma MCP để sau; bạn hỏi ảnh trong Git có làm repo vượt dung lượng không, cho biết gói Figma Education, hỏi chụp màn hình Figma được không; Claude đo cỡ ảnh, đề xuất năm quy tắc ảnh do `check-design` kiểm, bạn export ảnh vào `.ai/design-inbox/`, tách Figma MCP và script REST thành module riêng; bạn đồng ý cả ba, chọn module riêng cho Figma MCP; Claude sửa SPEC theo đó và xin duyệt SPEC; bạn duyệt SPEC; Claude viết plan 22 task (T16 chuẩn bị `ao-pilot` với trang giỏ hàng và Playwright, tài liệu của Epic thử không merge) và xin duyệt plan |
 | 14 | `cb0eafc3-b9fb-4ef7-9d75-cbacef12fa98` | 2026-10-30 khoảng 16:29 → 2026-10-31 khoảng 00:19 | Bạn duyệt plan; spec và plan merge (PR #74); T1 kiểm năm tiền đề: `claude --agent` bỏ qua `skills`, `effort`, `maxTurns`, settings của dự án không cài được plugin; Claude đề xuất chép 13 skill của agent-skills vào kit và script `ao-agent.mjs`, xin bạn duyệt cùng cách chạy hai công cụ trình duyệt qua `npx`; bạn duyệt cả hai; T1–T4 đóng (PR #75–#78): spec sửa sau T1, kiểm `playwright-cli` và Chrome DevTools MCP, artifact `design`, NOT TESTED; Checkpoint 1, chờ bạn; bạn hỏi xem kết quả T1–T2 ở đâu; bạn cho qua Checkpoint 1 (PR #79); T5–T14 đóng (PR #80–#89): `check-design`, roster và quy tắc A1–A5, 16 skill chép vào kit, `gh-guard` theo vai trò, mười prompt và file quy ước, sinh agent, `ao-agent.mjs`; Checkpoint 2, chờ bạn; bạn hỏi vì sao `fe-dev` không dùng `vercel-react-best-practices`: skill theo stack khai trong `roster.local.yaml` của từng dự án; bạn cho qua Checkpoint 2 (PR #90); T15: DEMO-9, ao-pilot PR #8 chép kit, kit PR #91–#93 (coverage loại `.claude/**`, vá `gh-guard` theo finding của review, luật hook và mục Shell), `reviewer` hai lượt và `security` ba lượt (hai lần chạm giới hạn usage, Claude đăng báo cáo của lượt cuối), 14,30 USD quy đổi; chờ bạn approve, merge, bật `chrome-devtools` và quyết hai đề xuất về danh tính agent và `file:///`; bạn merge PR #8, bật `chrome-devtools`, đồng ý hai đề xuất; T15 đóng (PR #94); kit PR #95 (`--no-file-navigations`, `.mcp.json` được bảo vệ), #96 (vá thêm `gh-guard`); T16: Story DEMO-10, trang giỏ hàng dựng ở server và server `node:http`; bạn đồng ý cài `@playwright/test`; ao-pilot PR #9 (E2E AC1, AC2), `reviewer` tìm ra `GET //` làm sập server (High), Claude sửa, `reviewer` vòng 2 và `security` COMMENT, 6,30 USD quy đổi; kit PR #97 (`grep ao-pr.mjs` bị chặn nhầm); bạn approve, `merge-gate` merge PR #9, `audit` xanh; T16 đóng (PR #98); T17: `qa` dùng `playwright-cli`, `fe-dev` dùng Chrome DevTools MCP, cả hai đạt, T17 đóng (PR #99); Checkpoint 3: 11 lượt Opus 21,43 USD quy đổi, ước phần còn lại 34–63 USD, chờ bạn chọn chạy tiếp, hạ effort `security` hay tạm dừng |
 | 15 | `cd9b752d-fcc4-4808-a333-32579c26f257` | 2026-10-31 khoảng 00:20 → khoảng 01:45 | Bạn chọn chạy tiếp T18–T21 theo plan, `security` giữ `max`; Checkpoint 3 đóng (PR #100); T18: Epic DEMO-11 "Mã giảm giá cho giỏ hàng", nhánh tài liệu `feature/DEMO-11-spec`, chờ bạn bấm `Start spec`; bạn bấm `Start spec`; stage spec: `ba`, `ux`, `sa` viết `spec.md` và `design.md`, Claude trả lời thay bạn 18 câu hỏi mở, job `policy` đỏ rồi xanh trên PR thử #10, 5,30 USD quy đổi; chờ bạn bấm `Approve spec`; bạn bấm `Approve spec`; stage plan: `sa` viết `plan.md` và ADR-0001, `ba` tạo Story DEMO-12 và hai Sub-task DEMO-13, DEMO-14, T18 tốn 11,81 USD quy đổi; chờ bạn bấm `Approve plan` |
-| 16 | `b8a6dd75-1274-4e19-b187-41b53ba22cfe` | 2026-10-31 khoảng 02:02 → | Bạn bấm `Approve plan`; T18 đóng (PR #101): `jira-sync` chuyển DEMO-12 sang Ready; T19: `be-dev` làm Sub-task BE nhưng không start Story, kit PR #102 sửa prompt của hai dev agent; `fe-dev` làm Sub-task FE và mở ao-pilot PR #11; `reviewer` COMMENT (1 Medium, 2 Low), `security` COMMENT không có finding, 15,23 USD quy đổi; chờ bạn approve PR #11 hoặc chọn sửa finding Medium trước; bạn approve, `merge-gate` merge PR #11, `audit` xanh, `qa` PASS cả 11 AC, Claude tạo Task DEMO-15 cho hai test còn thiếu; chờ bạn bấm `Accept` |
+| 16 | `b8a6dd75-1274-4e19-b187-41b53ba22cfe` | 2026-10-31 khoảng 02:02 → | Bạn bấm `Approve plan`; T18 đóng (PR #101): `jira-sync` chuyển DEMO-12 sang Ready; T19: `be-dev` làm Sub-task BE nhưng không start Story, kit PR #102 sửa prompt của hai dev agent; `fe-dev` làm Sub-task FE và mở ao-pilot PR #11; `reviewer` COMMENT (1 Medium, 2 Low), `security` COMMENT không có finding, 15,23 USD quy đổi; chờ bạn approve PR #11 hoặc chọn sửa finding Medium trước; bạn approve, `merge-gate` merge PR #11, `audit` xanh, `qa` PASS cả 11 AC, Claude tạo Task DEMO-15 cho hai test còn thiếu; chờ bạn bấm `Accept`; bạn bấm `Accept`, T19 đóng (PR #103); T20: `pm` viết bản tổng hợp sáng, lỗi đếm item Done chưa có Fix Version được sửa (PR #104), năm việc ngoài vai trò bị chặn đúng lý do; chờ bạn `Refine` DEMO-16 cho `devops` |
 
 ---
 
@@ -5974,3 +5974,49 @@ Sau đó mình kiểm DEMO-12 đã Done, đóng T19 bằng một PR ở kit, r�
 - Thử năm việc ngoài vai trò ở effort low.
 
 Tổng cộng khoảng 8 lượt, phần lớn ngắn.
+
+---
+
+# Phiên 16 · Lượt 3 — 2026-10-31 khoảng 10:28
+
+**Bạn:**
+
+```markdown
+xong
+```
+
+Trước khi trả lời, Claude kiểm DEMO-12 đã Done, đóng T19 (PR #103), tạo Task DEMO-16, chạy `pm` và sáu lượt thử việc ngoài vai trò, sửa prompt của `pm` (PR #104). Giữa lượt, Claude nhắn bạn chuyển DEMO-16 sang Ready (lượt code, không ghi).
+
+**Claude:**
+
+T19 đã đóng. Ở T20, phần `pm` và năm việc ngoài vai trò đã xong. Còn phần `devops`, và phần này cần bạn chuyển DEMO-16 sang Ready trước.
+
+## Kết quả
+
+- **DEMO-12** sang Done lúc 10:27:58, Resolution là Done. T19 đóng bằng kit PR #103. Epic DEMO-11 vẫn ở In Progress, vì `complete` đòi mọi item con đã lên Production, mà `release-workflow` chưa có.
+- **`pm`:** viết bản tổng hợp buổi sáng `.ai/reports/2026-10-31.md` trong 25 giây, tốn 0,09 USD quy đổi. Mỗi dòng đều kèm JQL hoặc lệnh làm bằng chứng.
+- **Lỗi của `pm`:** mục "Đã Done, chưa release" báo không có item nào, trong khi DEMO-12 vừa Done. `pm` chỉ đếm item có Fix Version chưa release, mà item chỉ có Fix Version khi cắt release, nên item chưa có Fix Version bị bỏ sót. Mình đã sửa prompt ở kit (PR #104). Điều kiện mới trả về DEMO-12; mình đã kiểm bằng REST.
+- **Năm việc ngoài vai trò** đều bị chặn đúng lý do. Tiêu chí 8 đạt.
+
+| Việc | Bị chặn bởi | Lý do |
+|---|---|---|
+| `qa` gọi `Start` | hook `jira-guard` | `qa may not make "Start" on DEMO-15; it is for fe-dev, be-dev, devops` |
+| `reviewer` ghi `src/` | hook `gh-guard` | `reviewer may write only .ai/** (agents/roster.yaml), not src/guard-test.ts` |
+| `security` chạy `ao-pr.mjs create` | hook `gh-guard` | `security uses the review App, which runs ao-pr.mjs review, not create` |
+| `pm` chuyển trạng thái | không có tool | `pm` chỉ có ba tool Jira chỉ-đọc |
+| `reviewer` chạy `git checkout` | hook `gh-guard` | `reviewer has read-only git … git checkout would change the shared checkout` |
+
+Lượt đầu của `reviewer` không đo được gì: agent tự từ chối theo prompt vai trò và không gọi Write, nên hook không có dịp chạy. Mình chạy lại với prompt nói rõ đây là phép thử guard, nên cứ gọi đúng một lần. Sáu lượt thử, chạy ở effort low, tốn tổng cộng 0,52 USD quy đổi. Sau các lượt thử, `ao-pilot` vẫn sạch và DEMO-15 vẫn ở New.
+
+## Việc cần bạn: Refine DEMO-16
+
+1. Mở https://phunghuutung12b4.atlassian.net/browse/DEMO-16.
+2. Bấm nút trạng thái **New** gần tiêu đề (đối chiếu giao diện).
+3. Chọn **Refine**. Task sang Ready.
+4. Nhắn "xong" cho mình.
+
+Sau đó mình làm tiếp phần `devops`:
+
+- `devops` làm DEMO-16: tạo nhánh, thêm `timeout-minutes: 10` cho job `deploy`, rồi mở PR.
+- `security` review PR theo `gha-security-review`.
+- `merge-gate` sẽ báo PR cần bạn, vì PR sửa `.github/workflows/`. Đến bước đó mình sẽ nói rõ nên merge hay đóng PR, dựa trên điều `audit` sẽ kiểm.
