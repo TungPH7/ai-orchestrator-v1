@@ -130,7 +130,7 @@ T19, T20, T21 ── T22 maxTurns, tài liệu, lưu trữ
 
 ### Giai đoạn 6: kiểm thật
 - [x] T18: Epic thử: spec và plan [bạn]
-- [ ] T19: Epic thử: build tới QA [bạn]
+- [x] T19: Epic thử: build tới QA [bạn]
 - [ ] T20: `devops`, `pm` và năm việc ngoài vai trò [bạn]
 - [ ] T21: Phép so `high` với `max` của `fe-dev` [bạn]
 
