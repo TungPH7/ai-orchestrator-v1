@@ -1,13 +1,15 @@
 # Tạo GitHub App cho agent
 
-Hướng dẫn này thuộc module `quality-gates` ([SPEC-quality-gates.md](../SPEC-quality-gates.md), mục 2.2). Agent mở PR và đăng báo cáo review bằng hai GitHub App, không bằng tài khoản của bạn, vì GitHub không cho tác giả PR approve PR của chính mình. Có hai App vì tác giả PR cũng không được request changes trên PR của mình, kể cả khi tác giả là bot.
+Hướng dẫn này thuộc module `quality-gates` ([SPEC-quality-gates.md](../SPEC-quality-gates.md), mục 2.2); `dev-workflow` thêm ba quyền ([SPEC-dev-workflow.md](../SPEC-dev-workflow.md), mục 2.3). Agent mở PR và đăng báo cáo review bằng hai GitHub App, không bằng tài khoản của bạn, vì GitHub không cho tác giả PR approve PR của chính mình. Có hai App vì tác giả PR cũng không được request changes trên PR của mình, kể cả khi tác giả là bot.
 
 | App | Tên | Repository permissions | Dùng cho |
 |---|---|---|---|
-| `ao-dev` | `tungph7-ao-dev` | Contents: Read and write; Pull requests: Read and write | `ba`, `sa`, `fe-dev`, `be-dev`, `devops` mở và sửa PR; `merge-gate` merge |
-| `ao-review` | `tungph7-ao-review` | Contents: Read-only; Pull requests: Read and write | `reviewer`, `security` đăng báo cáo review |
+| `ao-dev` | `tungph7-ao-dev` | Contents: Read and write; Pull requests: Read and write; Workflows: Read and write; Actions: Read-only; Checks: Read-only | `ba`, `sa`, `fe-dev`, `be-dev`, `devops` mở và sửa PR; agent push commit; `merge-gate` merge |
+| `ao-review` | `tungph7-ao-review` | Contents: Read-only; Pull requests: Read and write; Actions: Read-only; Checks: Read-only | `reviewer`, `security` đăng báo cáo review; mọi agent đọc PR và CI bằng token chỉ đọc |
 
-Bạn tạo hai App một lần cho tài khoản. Mỗi dự án mới chỉ cần cài thêm hai App vào repo của dự án (mục 3).
+Bạn tạo hai App một lần cho tài khoản. Mỗi dự án mới chỉ cần cài thêm hai App vào repo của dự án (mục 3). App tạo trước `dev-workflow` thiếu ba quyền mới: thêm theo mục 6.
+
+Mỗi token mà kit tạo chỉ xin phần quyền nó cần. Ví dụ, token để `git push` chỉ xin Workflows cho vai trò `devops`, và token đọc PR của agent chỉ có quyền đọc.
 
 Nhãn nút lấy từ tài liệu GitHub. Chỗ ghi **(đối chiếu giao diện)** là nhãn chưa đối chiếu được với màn hình thật: nếu màn hình của bạn khác, chụp màn hình gửi Claude.
 
@@ -45,7 +47,7 @@ Làm hai lần: lần đầu cho `ao-dev`, lần hai cho `ao-review`.
    - **Callback URL**: để trống.
    - **Expire user authorization tokens**, **Request user authorization (OAuth) during installation**, **Enable Device Flow**, **Setup URL**, **Redirect on update**: giữ nguyên mặc định. App không dùng đăng nhập của người dùng.
    - Mục **Webhook**: bỏ chọn ô **Active**. Không cần điền **Webhook URL** và **Webhook secret**.
-   - Mục **Permissions**: mở **Repository permissions**. Ở dòng **Contents**, bấm ô chọn quyền bên phải (đang ghi `No access`) và chọn **Read and write**; với `ao-review` chọn **Read-only** **(đối chiếu giao diện)**. Ở dòng **Pull requests**, chọn **Read and write** cho cả hai App. Dòng **Metadata** tự chuyển sang **Read-only**; giữ nguyên. Không đổi quyền nào khác, không mở **Organization permissions** hay **Account permissions**.
+   - Mục **Permissions**: mở **Repository permissions**. Ở dòng **Contents**, bấm ô chọn quyền bên phải (đang ghi `No access`) và chọn **Read and write**; với `ao-review` chọn **Read-only** **(đối chiếu giao diện)**. Ở dòng **Pull requests**, chọn **Read and write** cho cả hai App. Ở dòng **Actions** và dòng **Checks**, chọn **Read-only** cho cả hai App. Ở dòng **Workflows**, chọn **Read and write**, chỉ cho `ao-dev`. Dòng **Metadata** tự chuyển sang **Read-only**; giữ nguyên. Không đổi quyền nào khác, không mở **Organization permissions** hay **Account permissions**.
    - **Subscribe to events**: không chọn gì. Mục này có thể ẩn khi đã tắt webhook.
    - **Where can this GitHub App be installed?**: chọn **Only on this account**.
 5. Bấm **Create GitHub App**. GitHub mở trang cài đặt của App mới, ở mục **General**.
@@ -101,6 +103,36 @@ ao-review: tungph7-ao-review, 1234568
 ```
 
 Claude ghi bốn giá trị này vào mục `env` của `.claude/settings.json` của dự án (`AO_DEV_APP`, `AO_DEV_APP_ID`, `AO_REVIEW_APP`, `AO_REVIEW_APP_ID`), rồi kiểm từng App lấy được token cho repo của dự án.
+
+## 6. Thêm quyền cho dev-workflow
+
+Làm mục này một lần nếu hai App được tạo trước module `dev-workflow`. App tạo bằng script hay theo mục 1 từ nay đã có đủ quyền.
+
+| App | Thêm quyền |
+|---|---|
+| `ao-dev` | Workflows: Read and write; Actions: Read-only; Checks: Read-only |
+| `ao-review` | Actions: Read-only; Checks: Read-only |
+
+**Sửa quyền của App**, làm cho từng App, bắt đầu với `tungph7-ao-dev`:
+
+1. Trên GitHub, bấm ảnh đại diện ở góc trên bên phải, chọn **Settings**.
+2. Ở thanh bên trái, kéo xuống cuối, bấm **Developer settings**.
+3. Ở thanh bên trái, bấm **GitHub Apps**. Bấm **Edit** bên phải tên App.
+4. Ở thanh bên trái của trang App, bấm **Permissions & events**.
+5. Mở **Repository permissions**. Với mỗi dòng trong bảng trên, bấm ô chọn quyền bên phải (đang ghi `No access`) và chọn mức ghi trong bảng. Không đổi dòng nào khác.
+6. Ô **Add a note to users** có thể để trống.
+7. Kéo xuống cuối, bấm **Save changes**. GitHub có thể hỏi lại mật khẩu hoặc mã xác thực hai bước.
+8. Làm lại bước 3–7 cho `tungph7-ao-review`.
+
+**Chấp nhận quyền mới trên tài khoản của bạn.** Quyền mới chỉ có hiệu lực sau khi được chấp nhận ở nơi cài App:
+
+1. Bấm ảnh đại diện, chọn **Settings**.
+2. Ở thanh bên trái, mục **Integrations**, bấm **Applications**.
+3. Bấm tab **Installed GitHub Apps**. Bấm **Configure** bên phải `tungph7-ao-dev`.
+4. Đầu trang có thông báo App xin thêm quyền. Bấm **Review request**, xem danh sách quyền, rồi bấm **Accept new permissions** **(đối chiếu giao diện)**. GitHub cũng gửi email về yêu cầu này, và link trong email dẫn tới cùng trang.
+5. Quay lại tab **Installed GitHub Apps**, làm lại bước 3–4 cho `tungph7-ao-review`.
+
+Xong thì nhắn Claude. Claude kiểm mỗi App lấy được token có đúng các quyền mới cho repo của dự án.
 
 ## Giữ an toàn private key
 
