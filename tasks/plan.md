@@ -1,6 +1,6 @@
 # Plan triển khai: dev-workflow
 
-> **Spec:** [SPEC-dev-workflow.md](../SPEC-dev-workflow.md), đã duyệt 2026-10-31. **Trạng thái:** bản nháp ngày 2026-10-31, chờ bạn duyệt. **Task chi tiết:** [todo.md](todo.md). **Kết quả kiểm thật:** `tasks/verification.md`, tạo ở T1.
+> **Spec:** [SPEC-dev-workflow.md](../SPEC-dev-workflow.md), đã duyệt 2026-10-31. **Trạng thái:** đã duyệt 2026-10-31 (Phiên 17 · Lượt 2), cùng quyết định 8 và 9. **Task chi tiết:** [todo.md](todo.md). **Kết quả kiểm thật:** `tasks/verification.md`, tạo ở T1.
 
 ## Tổng quan
 
@@ -166,7 +166,7 @@ Tổng khoảng 18 lượt Opus hoặc Sonnet, 32–50 USD quy đổi. Riêng Ep
 
 ## Câu hỏi mở
 
-Không có. Hai quyết định cần bạn để ý khi duyệt:
+Không có. Bạn duyệt plan ngày 2026-10-31 (Phiên 17 · Lượt 2), gồm cả hai quyết định:
 
 - **Quyết định 8:** PR chép kit mới được review bằng chính `/ao-review`, lấy từ nhánh của PR. Đây là lần chạy thật đầu tiên của lệnh, trên PR tốn nhất của module (6–12 USD).
 - **Quyết định 9:** Story của Epic thử dừng ở Ready for QA, để dành cho `release-workflow`.
