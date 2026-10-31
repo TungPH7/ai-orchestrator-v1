@@ -805,3 +805,72 @@ Checklist trong mô tả, cũng là phần đầu của prompt:
 | `CLAUDE_CODE_EFFORT_LEVEL=max` và `--effort low`, lần 2 | 3.811 | 0,0038 | 1771620 |
 
 Biến thắng cờ, nên lượt `max` qua `ao-agent.mjs` có hiệu lực.
+
+### Hai lượt `fe-dev`
+
+Ngẫu nhiên chọn ra: `high` làm trên nhánh `b`, `max` trên nhánh `a`.
+
+| | Lượt 1: `high` (nhánh `b`) | Lượt 2: `max` (nhánh `a`) | `max` so với `high` |
+|---|---|---|---|
+| Lượt model | 55 | 130 | ×2,4 |
+| Thời gian | 4 ph 50 s | 18 ph 59 s | ×3,9 |
+| Token vào, không cache | 76 | 176 | |
+| Cache đọc | 3.062.153 | 14.070.867 | ×4,6 |
+| Cache ghi | 102.832 | 182.207 | ×1,8 |
+| Token ra | 21.187 | 80.915 | ×3,8 |
+| Quy ra USD | 1,859 | 5,891 | ×3,2 |
+| Commit | 2 (`4ae4361`, `7c12662`) | 3 (`20805b2`, `5c612cb`, `854ee0c`) | |
+| `npm test` (Claude chạy lại) | 98/98 | 97/97 | |
+| `npm run test:e2e` (Claude chạy lại) | 16/16 | 16/16 | |
+| Lint, typecheck (Claude chạy lại) | sạch | sạch | |
+| Checklist C1–C5 | 5/5 | 5/5 | |
+| Trường hợp biên B1–B4, B6 (B5 không áp dụng) | 5/5 | 5/5 | |
+| Finding của `reviewer` | 1 Low | 1 Low | |
+
+**Giống nhau:** hai lượt chọn cùng một cách và gần như cùng một thiết kế:
+
+- `src/page.ts` tính SHA-256 của `STYLE` lúc nạp module (`STYLE_SOURCE` ở `high`, `STYLE_HASH` ở `max`), và `src/server.ts` đưa giá trị đó vào `style-src`. Cả hai bỏ cách thêm route cho file CSS, cũng bỏ cách dùng nonce, vì trang GET chỉ dựng một lần.
+- Test unit tự tính hash từ HTML server trả về, rồi so cả chuỗi header của GET, HEAD và POST /. Một test unit kiểm mọi trạng thái của trang có đúng một thẻ `<style>` và không có thuộc tính `style`.
+- `e2e/csp.spec.ts` có ba test: style của trang áp dụng, đọc bằng computed style (B1), và không có lỗi CSP trên console (B2); trang của mã bị từ chối giữ viền 2 px và màu thông báo; style chèn vào dưới dạng markup không được áp dụng.
+- Comment trên `PAGE_HEADERS` được sửa (B6). Cả hai đều soi trang bằng Chrome DevTools, so ảnh trước và sau, rồi chỉ dừng đúng server của mình.
+
+**Chỉ `max` làm:**
+
+- Thêm một đoạn README về CSP: mọi rule phải nằm trong `STYLE`. Thêm cả cách đặt tên test E2E cho Task, vì Task không có AC.
+- Kiểm trang không có `<script>` trong test unit.
+- Đo coverage dòng thay đổi (100%, 10/10), chạy `build` và job `policy` tại máy.
+- Làm hỏng code hai cách để chắc test bắt được: policy chặn mọi style, và hash mã hoá hex thay cho base64.
+- Chụp ảnh ở 320, 768, 1024 và 1440 px: trước và sau giống từng byte. Kiểm `autofocus` vẫn chạy.
+- Commit test đặc tả (characterization test) trước commit sửa.
+
+**Chỉ `high` làm:**
+
+- Test "style chèn vào" còn kiểm Chrome báo ít nhất hai lỗi CSP.
+- Chạy ba E2E mới trên code cũ để thấy hai test fail.
+
+Ảnh trước và sau của `high` cũng giống từng byte.
+
+**Hook:** `high` bị `block-atlassian` chặn một lần khi ghi bản nháp mô tả PR bằng heredoc có link Jira, giống ở T19; nó bỏ bản nháp vì lượt này không mở PR. `max` bị `gh-guard` chặn một lần khi `sed` file `ao-pr.mjs` (lỗi kit PR #97 đã sửa).
+
+**Lượt `max` thấy một phần kết quả của lượt `high`.** Ở lời gọi thứ 65, lúc tìm quy ước đặt tên commit, nó chạy `git log --format='%h %s' -25 --all | grep -i -E 'csp|security|style'` và đọc được tiêu đề `fix(cart): allow the page style by its hash instead of unsafe-inline (DEMO-17)` của nhánh `b`. Lúc đó nó chưa viết plan (ledger, lời gọi 73) và chưa viết dòng code nào. Trong báo cáo cuối, nó tự kể việc này và nói đã chọn hash từ trước, nhưng không đoạn văn bản nào trước lời gọi 65 nhắc tới hash, nên lời đó không kiểm được. Như vậy cách làm (hash) của `max` có thể đã bị ảnh hưởng. Thiết kế chi tiết và test thì nó tự viết: nó không mở diff của nhánh `b`. Lần sau, một phép so phải giữ nhánh của lượt trước ngoài repo trong lúc chạy lượt sau, ví dụ cất vào `git bundle` rồi xoá nhánh. Claude đã dời file trong `.ai/` và `test-results/`, nhưng quên nhánh.
+
+### Hai lượt `reviewer`
+
+Mỗi lượt review một nhánh, trong phiên riêng, với cùng prompt chỉ khác tên nhánh. Prompt dặn không đọc nhánh khác của DEMO-17. Báo cáo của lượt trước được dời khỏi `.ai/reviews/` trong lúc chạy lượt sau.
+
+| Lượt | Effort | Lượt model | Thời gian | Token ra | Cache đọc | Cache ghi | Quy ra USD | Kết quả |
+|---|---|---|---|---|---|---|---|---|
+| `reviewer` nhánh `a` (`max`) | xhigh | 16 | 4 ph 46 s | 27.216 | 593.124 | 70.410 | 1,226 | 0 Critical, 0 High, 0 Medium, 1 Low |
+| `reviewer` nhánh `b` (`high`) | xhigh | 19 | 24 ph 51 s | 31.196 | 981.326 | 69.106 | 1,373 | 0 Critical, 0 High, 0 Medium, 1 Low |
+
+- **Low ở nhánh `a`:** hàm `refusals()` của E2E gom mọi lỗi CSP chứ không riêng lỗi style, và chỉ đọc mảng một lần. Ví dụ, khi Chrome có giao diện tự xin `/favicon.ico`, `default-src 'none'` chặn lần tải đó. Kết quả test vì vậy có thể tuỳ thời điểm. Nhận xét này cũng đúng với nhánh `b`, nơi E2E đòi console không có lỗi nào; `reviewer` của nhánh `b` không nêu.
+- **Low ở nhánh `b`:** tên `STYLE_SOURCE` đứng sau `STYLE` nên dễ đọc thành "mã nguồn CSS"; nó đề xuất `STYLE_HASH_SOURCE`.
+- **Không lượt nào chạy test.** Cả hai thử chép nhánh ra bằng `git archive` thì bị `gh-guard` chặn ("git archive would change the shared checkout or the repository. Read another branch with git show <ref>:<path> or git diff <ref>"), rồi dừng ở đó, không chép từng file bằng `git show` như ở T19. Không có PR nên cũng không có CI. Kết quả test trong bảng trên do Claude chạy.
+- Lượt nhánh `b` dài 24 ph 51 s chỉ với 19 lượt model: thời gian API là 1.477 s, trong khi số token gần bằng lượt nhánh `a`. Trong log không thấy vì sao.
+
+### Nhận xét
+
+Sáu lượt của T21 tốn 10,35 USD quy đổi: `fe-dev` 1,86 và 5,89, `reviewer` 1,23 và 1,37. Phép thử effort bằng Haiku không đáng kể.
+
+- **Tiêu chí 10 đạt:** lượt `max` qua `ao-agent.mjs` ra gấp 3,8 lần token và chạy 130 lượt so với 55. Phép thử bằng Haiku cho thấy biến thắng cờ `--effort` mà `ao-agent.mjs` truyền.
+- **Tiêu chí 9:** có số đo và nhận xét. Trên Task này, `max` không cho kết quả tốt hơn rõ ràng: cùng cách làm, cùng điểm checklist và trường hợp biên, cùng mức finding. Phần hơn của `max` là tài liệu và kiểm thêm, đổi lại chi phí gấp 3,2 lần và thời gian gấp 3,9 lần. Theo spec mục 2.2, nếu `max` không rõ ràng tốt hơn thì giữ `high`. Mỗi mức chỉ chạy một lần, và lượt `max` đã thấy tiêu đề commit của lượt `high`, nên đây chỉ là một hình dung. Bạn chọn mức ở Checkpoint 4.
