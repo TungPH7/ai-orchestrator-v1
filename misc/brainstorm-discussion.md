@@ -24,7 +24,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 14 | `cb0eafc3-b9fb-4ef7-9d75-cbacef12fa98` | 2026-10-30 khoảng 16:29 → 2026-10-31 khoảng 00:19 | Bạn duyệt plan; spec và plan merge (PR #74); T1 kiểm năm tiền đề: `claude --agent` bỏ qua `skills`, `effort`, `maxTurns`, settings của dự án không cài được plugin; Claude đề xuất chép 13 skill của agent-skills vào kit và script `ao-agent.mjs`, xin bạn duyệt cùng cách chạy hai công cụ trình duyệt qua `npx`; bạn duyệt cả hai; T1–T4 đóng (PR #75–#78): spec sửa sau T1, kiểm `playwright-cli` và Chrome DevTools MCP, artifact `design`, NOT TESTED; Checkpoint 1, chờ bạn; bạn hỏi xem kết quả T1–T2 ở đâu; bạn cho qua Checkpoint 1 (PR #79); T5–T14 đóng (PR #80–#89): `check-design`, roster và quy tắc A1–A5, 16 skill chép vào kit, `gh-guard` theo vai trò, mười prompt và file quy ước, sinh agent, `ao-agent.mjs`; Checkpoint 2, chờ bạn; bạn hỏi vì sao `fe-dev` không dùng `vercel-react-best-practices`: skill theo stack khai trong `roster.local.yaml` của từng dự án; bạn cho qua Checkpoint 2 (PR #90); T15: DEMO-9, ao-pilot PR #8 chép kit, kit PR #91–#93 (coverage loại `.claude/**`, vá `gh-guard` theo finding của review, luật hook và mục Shell), `reviewer` hai lượt và `security` ba lượt (hai lần chạm giới hạn usage, Claude đăng báo cáo của lượt cuối), 14,30 USD quy đổi; chờ bạn approve, merge, bật `chrome-devtools` và quyết hai đề xuất về danh tính agent và `file:///`; bạn merge PR #8, bật `chrome-devtools`, đồng ý hai đề xuất; T15 đóng (PR #94); kit PR #95 (`--no-file-navigations`, `.mcp.json` được bảo vệ), #96 (vá thêm `gh-guard`); T16: Story DEMO-10, trang giỏ hàng dựng ở server và server `node:http`; bạn đồng ý cài `@playwright/test`; ao-pilot PR #9 (E2E AC1, AC2), `reviewer` tìm ra `GET //` làm sập server (High), Claude sửa, `reviewer` vòng 2 và `security` COMMENT, 6,30 USD quy đổi; kit PR #97 (`grep ao-pr.mjs` bị chặn nhầm); bạn approve, `merge-gate` merge PR #9, `audit` xanh; T16 đóng (PR #98); T17: `qa` dùng `playwright-cli`, `fe-dev` dùng Chrome DevTools MCP, cả hai đạt, T17 đóng (PR #99); Checkpoint 3: 11 lượt Opus 21,43 USD quy đổi, ước phần còn lại 34–63 USD, chờ bạn chọn chạy tiếp, hạ effort `security` hay tạm dừng |
 | 15 | `cd9b752d-fcc4-4808-a333-32579c26f257` | 2026-10-31 khoảng 00:20 → khoảng 01:45 | Bạn chọn chạy tiếp T18–T21 theo plan, `security` giữ `max`; Checkpoint 3 đóng (PR #100); T18: Epic DEMO-11 "Mã giảm giá cho giỏ hàng", nhánh tài liệu `feature/DEMO-11-spec`, chờ bạn bấm `Start spec`; bạn bấm `Start spec`; stage spec: `ba`, `ux`, `sa` viết `spec.md` và `design.md`, Claude trả lời thay bạn 18 câu hỏi mở, job `policy` đỏ rồi xanh trên PR thử #10, 5,30 USD quy đổi; chờ bạn bấm `Approve spec`; bạn bấm `Approve spec`; stage plan: `sa` viết `plan.md` và ADR-0001, `ba` tạo Story DEMO-12 và hai Sub-task DEMO-13, DEMO-14, T18 tốn 11,81 USD quy đổi; chờ bạn bấm `Approve plan` |
 | 16 | `b8a6dd75-1274-4e19-b187-41b53ba22cfe` | 2026-10-31 khoảng 02:02 → khoảng 17:30 | Bạn bấm `Approve plan`; T18 đóng (PR #101): `jira-sync` chuyển DEMO-12 sang Ready; T19: `be-dev` làm Sub-task BE nhưng không start Story, kit PR #102 sửa prompt của hai dev agent; `fe-dev` làm Sub-task FE và mở ao-pilot PR #11; `reviewer` COMMENT (1 Medium, 2 Low), `security` COMMENT không có finding, 15,23 USD quy đổi; chờ bạn approve PR #11 hoặc chọn sửa finding Medium trước; bạn approve, `merge-gate` merge PR #11, `audit` xanh, `qa` PASS cả 11 AC, Claude tạo Task DEMO-15 cho hai test còn thiếu; chờ bạn bấm `Accept`; bạn bấm `Accept`, T19 đóng (PR #103); T20: `pm` viết bản tổng hợp sáng, lỗi đếm item Done chưa có Fix Version được sửa (PR #104), năm việc ngoài vai trò bị chặn đúng lý do; chờ bạn `Refine` DEMO-16 cho `devops`; bạn `Refine` DEMO-16; `devops` mở ao-pilot PR #12, `reviewer` COMMENT (1 Low), `security` COMMENT không có finding, 4,70 USD quy đổi; chờ bạn approve rồi tự merge PR #12; bạn merge PR #12, `audit` xanh, T20 đóng (PR #105); T21: Task DEMO-17, `fe-dev` ở `high` (1,86 USD) và `max` (5,89 USD) cùng đạt checklist và trường hợp biên, mỗi bản 1 Low; lượt `max` thấy tiêu đề commit của lượt `high`; bạn hết usage giữa lượt; Checkpoint 4, chờ bạn xem Epic, PR thử và chọn effort cho `fe-dev`; bạn chọn `high` và hỏi dev agent có đổi effort theo độ khó của task không; Claude trả lời: agent không tự đổi, người khởi động đổi được cho từng lượt, và đề xuất `sa` ghi mức trong plan để bạn duyệt ở gate ②, làm ở `dev-workflow`; chờ bạn xác nhận để tiếp tục; bạn nhắn tiếp tục; T21 và Checkpoint 4 đóng (PR #106); T22 (PR #107): `maxTurns` theo số đo, `gh-guard` cho phép `git check-ignore`, template trỏ tới `.ai-orchestrator/docs/sdlc.md`, `docs/agents.md` và mục Agent của README, module ghi hoàn thành, plan vào `tasks/archive/agent-roster/`; chờ bạn xác nhận module hoàn thành và chọn module tiếp theo; bạn xác nhận và chọn `dev-workflow`; ô cuối của `agent-roster` đóng (PR #108); phạm vi, giả định và ba câu hỏi cho `dev-workflow`: danh tính GitHub của agent, PR tài liệu của Epic, `security` review lại sau commit chỉ thêm test; bạn chọn cả ba đề xuất; Claude viết `SPEC-dev-workflow.md` (sáu lệnh, danh tính App, PR tài liệu, review phần mới, tám tiền đề), đổi hai chỗ so với giả định (ADR, lúc chép kit), chờ bạn duyệt |
-| 17 | `46e16bae-3275-482c-b001-11cf43108e28` | 2026-10-31 khoảng 23:25 → | Bạn duyệt `SPEC-dev-workflow.md`; spec merge (PR #109); Claude viết plan 19 task, bốn checkpoint (chặn gọi thẳng credential helper, effort đặt cả tham số lẫn biến môi trường, PR chép kit review bằng `/ao-review`, Story của Epic thử dừng ở Ready for QA), chờ bạn duyệt plan |
+| 17 | `46e16bae-3275-482c-b001-11cf43108e28` | 2026-10-31 khoảng 23:25 → | Bạn duyệt `SPEC-dev-workflow.md`; spec merge (PR #109); Claude viết plan 19 task, bốn checkpoint (chặn gọi thẳng credential helper, effort đặt cả tham số lẫn biến môi trường, PR chép kit review bằng `/ao-review`, Story của Epic thử dừng ở Ready for QA); bạn duyệt plan (PR #110); T1 kiểm skill `/` và lệnh nền bằng Haiku: dòng `!` chỉ tự chạy khi có luật `allow`, `$ARGUMENTS` được chèn nguyên văn, `claude -p` dừng lệnh nền sau 10 phút nếu không đặt `timeout`; T2: Task thử DEMO-18, PR nháp `ao-pilot` #13, push bằng token App, Git Credential Manager được thay, `gh` dùng token App; bạn hỏi vì sao lệnh 20 phút chạy quá 20 phút; bạn hỏi Haiku dùng ở đâu và chê Haiku kém; Claude thôi dùng Haiku, đề xuất năm điểm sửa spec và xin bạn thêm quyền cho hai App |
 
 ---
 
@@ -6639,3 +6639,136 @@ Lúc lập plan, mình thấy vài chỗ spec chưa nói tới:
 2. Nhắn **"duyệt"**, hoặc cho mình biết chỗ muốn sửa.
 
 Sau khi bạn duyệt, mình ghi trạng thái, merge plan rồi bắt đầu T1. T1 chỉ dùng Haiku. Tới T2 bạn cần thêm quyền cho hai App; lúc đó mình gửi từng bước bấm.
+
+---
+
+# Phiên 17 · Lượt 2 — 2026-10-31 khoảng 23:45
+
+**Bạn:**
+
+```markdown
+duyệt
+```
+
+Trước khi trả lời, Claude ghi plan là đã duyệt và merge (PR #110, `main` `b6b0914`), làm T1 trên nhánh `task/t1-skill-premises` (dự án tạm và các lượt Haiku trong scratchpad, kết quả trong `tasks/verification.md`), rồi bắt đầu T2 trên nhánh `task/t2-app-permissions` (commit `a86ce21`: quyền mới trong manifest và mục 6 của `docs/github-apps-setup.md`; Task thử `DEMO-18`; PR nháp `ao-pilot` #13).
+
+**Claude:**
+
+Mình đang chờ phép thử cuối của T1: một phiên `claude -p` được nhờ chờ lệnh nền dài 20 phút, dự kiến xong khoảng 00:36. Phần còn lại đã sẵn sàng: kết quả T1 đã ghi, T2 đã làm hết những gì làm được trước khi bạn thêm quyền cho App. Có kết quả là mình gửi bạn bản tổng hợp, kèm hai việc cần bạn.
+
+---
+
+# Phiên 17 · Lượt 3 — 2026-11-01 khoảng 00:37
+
+**Bạn:**
+
+```markdown
+tôi thấy 'phiên claude -p được nhờ chờ lệnh nền dài 20 phút' chạy quá 20 rồi mà, còn ouput unavailable nữa kìa??
+```
+
+Kèm một ảnh chụp màn hình: `misc/images/phien-17-luot-3-anh-1.png` (panel Background tasks: lệnh "Check whether claude -p waits for …" chạy 26 phút 21 giây, "Output unavailable").
+
+Trước khi trả lời, Claude đọc log `bg20.jsonl` của phiên `claude -p` và file output của lệnh nền trong phiên đó.
+
+**Claude:**
+
+Bạn nói đúng, đã quá 20 phút, và đây chính là một phát hiện của phép thử:
+
+- **Lần chạy đầu bị dừng sau đúng 10 phút.** Trong phiên `claude -p`, Claude Code dừng lệnh nền (trạng thái `killed`) sau 10 phút; dòng cuối nó in ra là `minute 9`. Có vẻ lệnh nền trong `-p` vẫn chịu giới hạn thời gian mặc định của tool Bash. Haiku thấy vậy và tự chạy lại lúc 00:20:51, lần này đặt `timeout` 2 giờ. Lần hai sẽ xong khoảng 00:41, tức thêm vài phút nữa.
+- **"Output unavailable" không phải lỗi.** Script `run.sh` của mình ghi toàn bộ log của `claude -p` vào file `bg20.jsonl` và chỉ in một dòng lúc thoát, nên panel chưa có gì để hiện.
+- **Phiên chính không bị giới hạn này.** Ở phiên này, lệnh nền 20 phút không đặt `timeout` vẫn chạy đủ 1200 giây.
+
+Hệ quả cho thiết kế: nếu lệnh `/ao-…` chạy qua `claude -p`, skill phải dặn Claude đặt `timeout` dài khi chạy `--go` ở nền. Mình sẽ đưa điều này vào đề xuất sửa spec. Khi lần chạy thứ hai xong, mình gửi bản tổng hợp T1, T2 cùng hai việc cần bạn.
+
+---
+
+# Phiên 17 · Lượt 4 — 2026-11-01 khoảng 00:40
+
+**Bạn:**
+
+```markdown
+mà haiku dùng cho những phần nào? Tôi thấy dùng haiku không ổn, xử lý kém và không được thông minh!!!
+```
+
+Trước khi trả lời, Claude ghi kết quả phép thử 20 phút vào `tasks/verification.md` (commit `7c39fb0` trên nhánh `task/t1-skill-premises`) và lưu nhận xét về Haiku vào bộ nhớ.
+
+**Claude:**
+
+## Haiku được dùng ở đâu
+
+Chỉ ở T1, trong một dự án tạm nằm trong scratchpad: 22 lượt ngắn, tổng 0,075 USD. Plan ghi việc này ở quyết định 1, giống T1 của `agent-roster`. Ngoài T1, module không dùng Haiku ở đâu cả:
+
+- mười agent chạy theo roster: Opus cho tám vai trò, Sonnet cho `pm` và `ux`;
+- các lệnh `/ao-*` chạy trong phiên Claude Code của bạn, với model bạn chọn (đang là Opus 5.5);
+- T16 (thử đi vòng) chạy agent thật bằng Opus, chỉ hạ effort xuống `low`.
+
+## Haiku có làm sai kết quả T1 không
+
+Bạn nhận xét đúng, Haiku xử lý kém ở hai chỗ:
+
+- Khi dòng `!` không tự chạy, Haiku tự chạy lệnh nhưng đứng sai thư mục, nên nửa số lượt bị lỗi.
+- Ở phép thử 20 phút, nó không đặt `timeout` ngay từ đầu, phải chạy lại.
+
+Nhưng kết luận của T1 không dựa vào việc Haiku trả lời đúng hay sai. Mình đọc thẳng các sự kiện mà Claude Code ghi trong log:
+
+- lệnh nền bị `killed` sau 600 giây;
+- `Shell command failed` khi script thoát 1;
+- tool `Skill` từ chối gọi skill có `disable-model-invocation`;
+- luật `allow` bị bỏ qua ở thư mục chưa tin cậy.
+
+Đó là hành vi của Claude Code, nên model nào cũng gặp. Chỉ một chỗ phụ thuộc model: model tự chạy lệnh có đứng đúng thư mục hay không. Đề xuất sửa spec dưới đây bỏ hẳn bước đó.
+
+Cái kém của Haiku lại cho thấy một điều có ích: lớp điều phối không được trông vào việc model tự đoán đúng. Vì vậy dòng kiểm phải do Claude Code chạy, và skill phải nói rõ `timeout`.
+
+**Từ giờ mình không dùng Haiku nữa.** Phép thử rẻ sẽ dùng Sonnet; giá khoảng gấp ba Haiku, nhưng cả T1 vẫn dưới 0,5 USD. Mình không chạy lại T1, vì kết luận không đổi. Nếu bạn muốn chắc hơn, mình chạy lại sáu phép thử chính bằng Sonnet.
+
+## Kết quả T1
+
+- **Điểm 6 đúng, kèm một điều kiện.** Dòng `!` chỉ tự chạy lúc nạp skill khi có luật `allow` cho đúng lệnh đó. Đây là cách chế độ `auto` của bạn làm việc từ Claude Code 2.1.271. Ngoài ra:
+  - `disable-model-invocation` chặn đúng: model không tự gọi được skill;
+  - script thoát 1 thì lệnh bị hủy trước khi model thấy gì;
+  - `$ARGUMENTS` được chèn nguyên văn, nên shell hiểu `;` và `$( )`, còn một dấu `'` lẻ làm hỏng lệnh.
+- **Điểm 7 đúng.** Phiên chính chờ được lệnh nền 20 phút. `claude -p` cũng chờ, nhưng lệnh nền không đặt `timeout` thì bị dừng sau 10 phút.
+
+Mình đề xuất sửa spec ở năm điểm:
+
+1. `kit/.claude/settings.json` thêm luật cho phép `node .ai-orchestrator/scripts/ao-step.mjs`.
+2. Luật đó cũng áp cho agent, nên `gh-guard` chặn `ao-step.mjs` và `ao-agent.mjs` trong phiên agent. Nhờ vậy agent không tự mở agent khác.
+3. Dòng `!` chỉ truyền mã item hoặc số PR (`$0`). Đoạn chữ tự do của `/ao-fix` nằm trong thân skill, và Claude chuyển nó cho `ao-step.mjs` qua một file.
+4. Skill dặn chạy `--go` ở nền với `timeout` 2 giờ.
+5. Tài liệu ghi `MSYS_NO_PATHCONV=1` khi gõ `claude -p "/ao-…"` trong Git Bash.
+
+Chi tiết: https://github.com/TungPH7/ai-orchestrator-v1/blob/task/t1-skill-premises/tasks/verification.md
+
+## T2: phần đã xong
+
+Mình làm trên PR nháp `ao-pilot` #13 và Task thử `DEMO-18`:
+
+- Push bằng token của `ao-dev` chạy được, chỉ qua credential helper, không qua Git Credential Manager của bạn.
+- Commit đứng tên bot, qua được hook `commit-msg` và job `policy`. GitHub for Jira đã nối PR vào `DEMO-18`.
+- Push file workflow bị GitHub từ chối khi token thiếu quyền Workflows.
+- `gh` dùng token của App thay cho login của bạn.
+- `gh pr checks` và `gh run list` còn bị từ chối, vì App chưa có quyền Actions và Checks.
+
+## Việc cần bạn
+
+1. Nhắn **"duyệt"** cho năm điểm sửa spec, hoặc cho mình biết chỗ muốn đổi.
+2. Thêm quyền cho App, làm lần lượt cho `tungph7-ao-dev` rồi `tungph7-ao-review`:
+   1. Trên GitHub, bấm ảnh đại diện ở góc trên bên phải, chọn **Settings**.
+   2. Ở thanh bên trái, kéo xuống cuối, bấm **Developer settings**, rồi bấm **GitHub Apps**.
+   3. Bấm **Edit** bên phải tên App.
+   4. Ở thanh bên trái của trang App, bấm **Permissions & events**, rồi mở **Repository permissions**.
+   5. Đặt quyền theo bảng dưới: bấm ô chọn quyền bên phải mỗi dòng (đang ghi `No access`) rồi chọn mức. Không đổi dòng nào khác.
+
+      | App | Actions | Checks | Workflows |
+      |---|---|---|---|
+      | `tungph7-ao-dev` | Read-only | Read-only | Read and write |
+      | `tungph7-ao-review` | Read-only | Read-only | giữ `No access` |
+
+   6. Kéo xuống cuối, bấm **Save changes**. GitHub có thể hỏi lại mật khẩu hoặc mã xác thực hai bước.
+3. Chấp nhận quyền mới, cũng cho từng App:
+   1. Bấm ảnh đại diện, chọn **Settings**.
+   2. Ở thanh bên trái, mục **Integrations**, bấm **Applications**, rồi bấm tab **Installed GitHub Apps**.
+   3. Bấm **Configure** bên phải tên App.
+   4. Đầu trang có thông báo App xin thêm quyền. Bấm **Review request**, rồi **Accept new permissions**. Hai nhãn nút này mình chưa đối chiếu được với giao diện; nếu màn hình khác, bạn chụp gửi mình. GitHub cũng gửi email về yêu cầu này, và link trong email dẫn tới cùng trang.
+4. Xong thì nhắn mình. Mình sẽ kiểm phần còn lại của T2: push file workflow khi có quyền, CI chạy cho lần push thứ hai, và các lệnh `gh` đọc CI. Sau đó mình đóng PR #13 và dừng ở Checkpoint 1.
