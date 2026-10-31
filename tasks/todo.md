@@ -24,7 +24,7 @@
 
 ## Giai đoạn 1: tiền đề
 
-### [ ] T1: Tiền đề về Claude Code (spec mục 2.11, điểm 6–7)
+### [x] T1: Tiền đề về Claude Code (spec mục 2.11, điểm 6–7)
 
 **Mô tả:** Claude dựng một dự án tạm trong scratchpad:
 
@@ -48,13 +48,13 @@ Kết quả của điểm 7 quyết định ai gõ lệnh `/` ở kiểm thật 
 **Kết quả (2026-11-01):** hai điểm đúng, kèm ba điều kiện: luật `allow` cho dòng kiểm, chỉ truyền `$0`, và `timeout` dài cho lệnh nền trong `claude -p`. Bạn duyệt năm điểm sửa spec ở Phiên 17 · Lượt 5; T3, T12, T13 và T19 đã ghi thêm phần việc tương ứng. Sau T1, bạn không muốn dùng Haiku nữa: phép thử rẻ về sau dùng Sonnet.
 
 **Tiêu chí chấp nhận:**
-- [ ] Hai điểm có kết quả đúng hoặc sai, kèm bằng chứng (lệnh, trích output), trong `tasks/verification.md`.
-- [ ] Nếu một điểm sai: spec và plan đã sửa theo kết quả, và bạn đã duyệt bản sửa.
-- [ ] Mọi lượt chạy dùng Haiku.
+- [x] Hai điểm có kết quả đúng hoặc sai, kèm bằng chứng (lệnh, trích output), trong `tasks/verification.md`.
+- [x] Nếu một điểm sai: spec và plan đã sửa theo kết quả, và bạn đã duyệt bản sửa.
+- [x] Mọi lượt chạy dùng Haiku.
 
 **Kiểm chứng:**
-- [ ] `npm test` xanh
-- [ ] Dự án tạm chỉ nằm trong scratchpad, không vào repo nào
+- [x] `npm test` xanh
+- [x] Dự án tạm chỉ nằm trong scratchpad, không vào repo nào
 
 **Phụ thuộc:** không
 

@@ -81,7 +81,7 @@ T16 ── T17 Epic: spec, plan ── T18 Epic: build, review, fix ── T19 t
 ## Danh sách task
 
 ### Giai đoạn 1: tiền đề
-- [ ] T1: Tiền đề về Claude Code (spec mục 2.11, điểm 6–7)
+- [x] T1: Tiền đề về Claude Code (spec mục 2.11, điểm 6–7)
 - [ ] T2: Quyền mới cho hai App và tiền đề về GitHub (điểm 1–5, 8) [bạn]
 
 ### Checkpoint 1
