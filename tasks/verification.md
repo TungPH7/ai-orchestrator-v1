@@ -52,3 +52,32 @@ Hai điểm đúng, nhưng điểm 6 cần một điều kiện mà spec chưa c
 5. **Tài liệu** ghi `MSYS_NO_PATHCONV=1` khi gõ `claude -p "/ao-…"` trong Git Bash (T19).
 
 Với điểm 4, Claude gõ được lệnh `/ao-…` qua `claude -p` ở kiểm thật (plan, quyết định 10).
+
+## T2: Quyền mới cho hai App và tiền đề về GitHub (điểm 1–5, 8)
+
+**Chuẩn bị (2026-11-01, khoảng 00:05–00:25):**
+
+- `docs/github-apps-setup.md` có mục 6 "Thêm quyền cho dev-workflow". Manifest của hai App có ba quyền mới, có test.
+- Task thử `DEMO-18` "Thử danh tính GitHub của agent (dev-workflow T2)", tạo bằng token CI, để ở New làm bằng chứng.
+- Bản clone tạm của `ao-pilot` trong scratchpad. Mọi lệnh git chạm GitHub, kể cả lúc clone, chỉ dùng token của App.
+- Credential helper tạm `t2/cred.mjs` (bản nháp của `ao-git-credential.mjs`) và `t2/agit.sh`: git với cấu hình chỉ lấy từ `GIT_CONFIG_*`:
+  - `credential.helper` rỗng, rồi `!node "<scratchpad>/t2/cred.mjs" <contents|workflows>`;
+  - `credential.useHttpPath=true`;
+  - `user.name=tungph7-ao-dev[bot]`, `user.email=349476619+tungph7-ao-dev[bot]@users.noreply.github.com`. Id 349476619 lấy từ `GET /users/tungph7-ao-dev%5Bbot%5D`;
+  - `GIT_TERMINAL_PROMPT=0`.
+- `t2/agh.mjs`: chạy `gh` với `GH_TOKEN` là token cài đặt, thu hẹp quyền theo tham số, không in token.
+
+Bạn thêm quyền cho hai App và chấp nhận quyền mới trên `ao-pilot` (khoảng 00:45–00:55). Claude kiểm bằng cách xin token có đúng các quyền đó: cả hai App đều được cấp.
+
+### Kết quả
+
+| Điểm | Kết quả |
+|---|---|
+| 1. Push bằng token của `ao-dev` qua HTTPS, và push đó chạy CI | **Đúng.** Clone và push nhánh `feature/DEMO-18-identity-probe` (commit `5f76e50`) bằng token `contents: write`. PR #13 do `app/tungph7-ao-dev` mở bằng `ao-pr.mjs create`, rồi chuyển sang nháp bằng login của bạn. CI (4 job) và `jira-sync` chạy cho sự kiện `pull_request`, actor `tungph7-ao-dev[bot]`, đều xanh. Lần push thứ hai lên PR (`738d000`) cũng chạy CI và `jira-sync`, đều xanh |
+| 2. Push file trong `.github/workflows/` cần quyền Workflows | **Đúng.** Trước khi App có quyền Workflows, token `contents: write` bị từ chối: `refusing to allow a GitHub App to create or update workflow .github/workflows/ci.yml without workflows permission`. Xin `workflows: write` lúc đó thì GitHub trả 422; helper không đưa được credential, và git chỉ báo `Repository not found`, nên helper thật phải in lý do ra stderr. Sau khi App có quyền: token `contents: write` + `workflows: write` push được `738d000`; token chỉ có `contents: write` vẫn bị từ chối như trên. Thu hẹp quyền theo vai trò vì vậy có hiệu lực |
+| 3. Token chỉ đọc làm được mọi lệnh `gh` của agent | **Đúng.** Với `contents`, `pull_requests`, `actions`, `checks` đều `read`: `gh pr view --json`, `gh pr diff`, `gh pr checks`, `gh run list`, `gh run view` và `gh api …/pulls/13/reviews` chạy được. `gh pr comment` (`addComment`) và `gh run rerun` bị từ chối `Resource not accessible by integration`. Trước khi App có Actions và Checks, `gh pr checks` (GraphQL `statusCheckRollup`) và `gh run list` bị từ chối 403 |
+| 4. `GIT_CONFIG_*` thay Git Credential Manager | **Đúng.** `git config --show-origin --get-all credential.helper` cho `manager` (file `C:/Program Files/Git/etc/gitconfig`), rồi giá trị rỗng và helper tạm (nguồn `command line`). Không có `credential.https://github.com.helper` nào. `GIT_TRACE=1` lúc push chỉ có `cred.mjs contents get` và `cred.mjs contents store`, không có `git credential-manager`. Commit `5f76e50` có author và committer là `tungph7-ao-dev[bot] <349476619+tungph7-ao-dev[bot]@users.noreply.github.com>` |
+| 5. `gh` dùng `GH_TOKEN` thay keyring | **Đúng.** `gh auth status` với `GH_TOKEN` của `ao-review` cho tài khoản đang dùng là `tungph7-ao-review[bot] (GH_TOKEN)`. `TungPH7 (keyring)` vẫn được liệt kê, nhưng `Active account: false`. `gh api user` trả 403 `Resource not accessible by integration`. `gh-guard` đã chặn `gh auth token`, `switch`, `login` và `status -t` |
+| 8. Commit của bot qua hook và `policy`, GitHub for Jira nối vào item | **Đúng.** Bản clone đặt `core.hooksPath=.githooks`. `commit-msg` chặn tiêu đề `bad header` và cho qua `chore(probe): add the identity probe file (DEMO-18)`; `pre-commit` (eslint) và `pre-push` đều chạy. Job `policy` xanh trên cả hai head của PR #13. Trường Development (`customfield_10000`) của `DEMO-18` có PR #13, trạng thái DRAFT, qua GitHub for Jira |
+
+**Dọn dẹp:** PR #13 được đóng kèm comment, nhánh đã xóa (GitHub trả `Branch not found`), bản clone tạm đã xóa. `merge-gate` sau lần push thứ hai chạy xanh, và bỏ qua PR nháp. Không token nào được in ra; Claude chỉ in quyền và hạn của token.
