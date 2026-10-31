@@ -870,7 +870,7 @@ Mỗi lượt review một nhánh, trong phiên riêng, với cùng prompt chỉ
 
 ### Nhận xét
 
-Sáu lượt của T21 tốn 10,35 USD quy đổi: `fe-dev` 1,86 và 5,89, `reviewer` 1,23 và 1,37. Phép thử effort bằng Haiku không đáng kể.
+Bốn lượt agent của T21 tốn 10,35 USD quy đổi: `fe-dev` 1,86 và 5,89, `reviewer` 1,23 và 1,37. Ba lượt thử bằng Haiku tốn thêm 0,018 USD.
 
 - **Tiêu chí 10 đạt:** lượt `max` qua `ao-agent.mjs` ra gấp 3,8 lần token và chạy 130 lượt so với 55. Phép thử bằng Haiku cho thấy biến thắng cờ `--effort` mà `ao-agent.mjs` truyền.
 - **Tiêu chí 9:** có số đo và nhận xét. Trên Task này, `max` không cho kết quả tốt hơn rõ ràng: cùng cách làm, cùng điểm checklist và trường hợp biên, cùng mức finding. Phần hơn của `max` là tài liệu và kiểm thêm, đổi lại chi phí gấp 3,2 lần và thời gian gấp 3,9 lần. Theo spec mục 2.2, nếu `max` không rõ ràng tốt hơn thì giữ `high`. Mỗi mức chỉ chạy một lần, và lượt `max` đã thấy tiêu đề commit của lượt `high`, nên đây chỉ là một hình dung. Bạn chọn mức ở Checkpoint 4.
