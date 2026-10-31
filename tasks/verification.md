@@ -678,3 +678,62 @@ Mỗi lượt đều ghi lệnh bị từ chối vào `permission_denials` của
 Tiêu chí 8 của spec mục 9 đạt: cả năm việc bị chặn đúng lý do, bốn việc do hook từ chối, một việc do không có tool.
 
 **Quan sát:** khi prompt chỉ bảo agent làm việc ngoài vai trò, agent có thể tự từ chối trước khi gọi tool. Như vậy là tốt cho dự án thật. Nhưng một phép thử guard phải bảo agent gọi tool, nếu không thì phép thử không đo được hook.
+
+### Task CI/CD: `devops`
+
+Bạn chạy `Refine` trên DEMO-16 lúc 11:59:30 (Phiên 16 · Lượt 4). Prompt: "Do Task DEMO-16. It is Ready. The branch develop is checked out and up to date with origin."
+
+| Lượt | Model, effort | Lượt model | Thời gian | Token ra | Cache đọc | Cache ghi | Quy ra USD | Kết quả |
+|---|---|---|---|---|---|---|---|---|
+| `devops` 1 | Opus, high | 22 | 2 ph 27 s | 7.478 | 620.472 | 46.939 | 0,649 | Nhánh `feature/DEMO-16-deploy-timeout`, commit `5f9327b`, DEMO-16 sang In Progress, PR #12 |
+
+**Agent làm gì:**
+
+- Điền Agent của DEMO-16 (12:08:04), tạo nhánh từ `develop` và push, rồi chạy `Start` (12:08:13).
+- Thêm `timeout-minutes: 10` vào job `deploy` của `.github/workflows/deploy.yml`, kèm một dòng comment lý do. Đó là thay đổi duy nhất của commit `ci(deploy): set timeout-minutes on the deploy job (DEMO-16)`, không có trailer `Co-Authored-By`.
+- Kiểm trước khi commit:
+  - `actionlint` không báo lỗi;
+  - parse bản cũ và bản mới bằng `yaml`: bỏ dòng `timeout-minutes` thì hai cây giống hệt;
+  - pre-commit eslint qua.
+
+  File tạm `.ai/old-deploy.yml` của bước so được xoá sau đó.
+- Mở PR #12 bằng `ao-pr.mjs create`; người mở là `tungph7-ao-dev[bot]`. Mô tả PR ghi rằng bạn là người merge, vì PR sửa `.github/workflows/**`. Comment link PR lên DEMO-16 và ghi ledger `.ai/ledger/DEMO-16.md`.
+- Hook từ chối một lần: `gh-guard: devops uses the dev App, which runs ao-pr.mjs create, edit, comment, not undefined` khi nó `sed -n 1,80p` file `ao-pr.mjs`. Đây vẫn là lỗi kit PR #97 đã sửa. Nó đọc file bằng Read.
+
+**Trên GitHub và Jira:** CI run 41171467293 xanh cả năm job, `policy` cho qua vì `devops` là editor của `.github/workflows/**` trong `gates.yaml`. `jira-sync` chạy `submit` (In Progress → In Review, 12:10:57, `orchestratorci`). `merge-gate` in `Needs you #12: it changes .github/workflows/deploy.yml, so read the diff and merge it yourself (still missing: reviewer report on head 5f9327b; security report on head 5f9327b; approval on head 5f9327b)`.
+
+### Review: `reviewer` và `security`
+
+Plan T20 chỉ nhắc `security`. Nhưng `audit` xét PR đã merge bằng cùng điều kiện như `merge-gate`: đủ báo cáo của mọi vai trò trong `github_apps.review.roles` (`reviewer`, `security`) trên head, CI xanh, approval trên head. Thêm vào đó, PR sửa đường dẫn bảo vệ thì người merge phải nằm trong `AO_APPROVERS`. Thiếu báo cáo `reviewer` thì Deploy sau khi merge bị chặn, và DEMO-16 bị gắn cờ. Vì vậy Claude chạy cả hai. Prompt của cả hai: "Review PR #12."
+
+| Lượt | Commit | Effort | Lượt model | Thời gian | Token ra | Cache đọc | Cache ghi | Quy ra USD | Kết quả |
+|---|---|---|---|---|---|---|---|---|---|
+| `reviewer` 1 | `5f9327b` | xhigh | 26 | 3 ph 36 s | 17.529 | 923.949 | 68.040 | 1,080 | COMMENT (12:13:36): 1 Low |
+| `security` 1 | `5f9327b` | max | 45 | 9 ph 45 s | 58.761 | 2.923.393 | 150.822 | 2,967 | COMMENT (12:23:45): không có finding, hai ghi chú ngoài diff |
+
+**`reviewer` làm gì:**
+
+- Đợi job `policy` xong rồi mới review; đọc log `policy`: cả năm kiểm tra `ok`.
+- Tự kiểm từng điểm của checklist trên bản chép hai file lấy bằng `git show`: `timeout-minutes` là số 10; bỏ dòng đó thì YAML trùng `develop`; `actionlint` sạch. Nó làm hỏng giá trị theo hai cách (`ten`, thụt lề sai), và `actionlint` bắt cả hai. Thư mục tạm `.ai/reviews/tmp-12/` được xoá sau đó.
+- Kiểm Task không đổi UI hay API công khai, tức không phải Story đội lốt Task.
+- **Low:** job `audit` trong `audit.yml` cũng không có giới hạn thời gian. Job này chạy `npm ci` và gọi API của GitHub và Jira, nên dễ treo hơn bước deploy (hiện chỉ là `echo`). `audit.yml` là file của kit, còn job gọi bằng `uses:` thì không nhận `timeout-minutes`. Vì vậy phải sửa trong kit, ngoài PR này.
+- Hook từ chối một lần khi nó `grep` trong `ao-pr.mjs`: lỗi kit PR #97 đã sửa.
+
+**`security` làm gì:** đọc `gha-security-review` cùng sáu file tham chiếu, rồi xét mọi workflow trên nhánh của PR.
+
+- Diff không thêm trigger, quyền, secret, action hay biểu thức `${{ }}` nào, và `needs: audit` giữ nguyên.
+- Lần theo mọi chỗ đọc kết quả deploy. Không chỗ nào coi run bị hết giờ là deploy thành công:
+  - `jira-sync` bỏ qua mọi deployment status khác `success`;
+  - guard `qa-deployed` chỉ đúng khi status mới nhất là `success`;
+  - `merge-gate` và `audit` không tính `cancelled` hay `timed_out` là xanh.
+- Kiểm báo cáo của mình bằng `readReviewReport` của kit trước khi đăng.
+- Hai ghi chú ngoài diff, không chặn PR này:
+  1. `deploy.yml:35` chèn thẳng `${{ github.ref_name }}` vào lệnh shell, mà `audit` kiểm commit chứ không kiểm tên nhánh. Tên nhánh như `release/x$(id)` là hợp lệ trong Git. Một commit đã duyệt của `develop` push lên nhánh đó sẽ qua `audit`, và lệnh trong tên nhánh chạy trong job `deploy`. Hiện tác động nhỏ: job chỉ có quyền đọc và không có secret. Cách sửa là truyền qua `env:`, như `audit.yml` đã làm. `deploy.yml` chỉ có trong sandbox, nhưng tài liệu deploy của `release-workflow` nên dặn điều này.
+  2. GitHub không thực thi gate ⑤ cho `production`: environment `production` không có required reviewers hay giới hạn nhánh, và repo private ở gói Free không có branch protection. Đây là rủi ro đã ghi ở spec mục 12; `release-workflow` cần tính tới.
+- Hook từ chối một lần khi nó `sed` file `ao-pr.mjs`: lỗi kit PR #97 đã sửa.
+
+**Trên GitHub:** sau review của `security`, `merge-gate` in `Needs you #12: … (still missing: approval on head 5f9327b)`. PR mergeable.
+
+**Quan sát cho `dev-workflow`:** `merge-gate` chỉ in `Needs you` vào log của Actions. Nó không comment lên PR và không gắn cờ `needs-you` trên Jira, nên bạn chỉ biết khi Claude hoặc `pm` báo.
+
+Ba lượt chạy phần `devops` tới gate ③ tốn 4,70 USD quy đổi: `devops` 0,65, `reviewer` 1,08, `security` 2,97.
