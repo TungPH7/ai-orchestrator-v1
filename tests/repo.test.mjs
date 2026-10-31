@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { parse } from 'yaml';
+import { readRoster } from '../lib/agents/roster.mjs';
 import { readGates } from '../lib/quality/gates.mjs';
 import { ROOT } from './helpers/kit.mjs';
 
@@ -86,4 +87,24 @@ test('the kit declares Chrome DevTools MCP pinned, isolated, without usage stati
 test('the kit settings turn off the update check of playwright-cli', () => {
   const { env } = JSON.parse(readFileSync(join(ROOT, 'kit', '.claude', 'settings.json'), 'utf8'));
   assert.equal(env.NO_UPDATE_NOTIFIER, '1');
+});
+
+test('README covers the agents: the section, the spec, the docs, the commands and what installing the kit adds', () => {
+  const texts = ['## Agent', '(SPEC-agent-roster.md)', '(docs/agents.md)', 'npm run agents', 'roster.local.yaml'];
+  const commands = ['ao-agent.mjs <role> -p', 'render-agents.mjs --project .', 'check-design.mjs <design.md>'];
+  const install = ['`agents/`', '`templates/`', '.ai-orchestrator/docs/sdlc.md', '`.ai/`', '`.playwright-cli/`', '`chrome-devtools`'];
+  for (const text of [...texts, ...commands, ...install, 'lib/agents/']) assert.ok(readme().includes(text), text);
+});
+
+test('docs/agents.md lists every role with the model, effort and maxTurns of the roster, and covers running, effort, skills, design.md, Figma and LFS', () => {
+  const doc = readFileSync(join(ROOT, 'docs', 'agents.md'), 'utf8');
+  const { roles } = readRoster(join(ROOT, 'agents'));
+  const models = { opus: 'Opus', sonnet: 'Sonnet' };
+  for (const [role, { model, effort, max_turns: turns }] of Object.entries(roles)) {
+    const row = doc.split('\n').find((line) => line.startsWith(`| \`${role}\` |`));
+    assert.ok(row, role);
+    assert.deepEqual(row.split('|').map((cell) => cell.trim()).slice(3, 6), [models[model], `\`${effort}\``, String(turns)], role);
+  }
+  const texts = ['ao-agent.mjs', 'CLAUDE_CODE_EFFORT_LEVEL', '--effort max', 'roster.local.yaml', 'check-design.mjs', '.ai/design-inbox/'];
+  for (const text of [...texts, 'Save to version history', 'git count-objects -vH', 'git lfs track', '.playwright-cli/']) assert.ok(doc.includes(text), text);
 });
