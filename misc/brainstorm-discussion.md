@@ -23,7 +23,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 13 | `2c3e5733-3a72-4ae6-b04c-ca09a16731cc` | 2026-10-29 khoảng 23:31 → 2026-10-30 khoảng 16:15 | Bạn chọn làm tiếp agent-roster; quality-gates đóng (PR #73); giả định và câu hỏi cho agent-roster: model cho từng vai trò, `ux` giao gì; bạn đề xuất model và effort, đồng ý artifact `design`; Claude đề xuất effort theo vai trò, quy tắc cho `design.md`, ba skill từ registry, chỉ lấy ý từ `agency-agents`; bạn duyệt bốn điểm, yêu cầu so `high` với `max` cho `fe-dev`, và hỏi lại nên dùng `playwright-cli` hay Chrome DevTools MCP; Claude đề xuất `qa` dùng `playwright-cli`, `fe-dev` dùng Chrome DevTools MCP, và viết bản nháp `SPEC-agent-roster.md`; bạn hỏi Story đã có Figma có cần `design.md` không; Claude đề xuất `design.md` có hai kiểu màn hình (ASCII hoặc Figma kèm ảnh PNG đã duyệt), Figma MCP để sau; bạn hỏi ảnh trong Git có làm repo vượt dung lượng không, cho biết gói Figma Education, hỏi chụp màn hình Figma được không; Claude đo cỡ ảnh, đề xuất năm quy tắc ảnh do `check-design` kiểm, bạn export ảnh vào `.ai/design-inbox/`, tách Figma MCP và script REST thành module riêng; bạn đồng ý cả ba, chọn module riêng cho Figma MCP; Claude sửa SPEC theo đó và xin duyệt SPEC; bạn duyệt SPEC; Claude viết plan 22 task (T16 chuẩn bị `ao-pilot` với trang giỏ hàng và Playwright, tài liệu của Epic thử không merge) và xin duyệt plan |
 | 14 | `cb0eafc3-b9fb-4ef7-9d75-cbacef12fa98` | 2026-10-30 khoảng 16:29 → 2026-10-31 khoảng 00:19 | Bạn duyệt plan; spec và plan merge (PR #74); T1 kiểm năm tiền đề: `claude --agent` bỏ qua `skills`, `effort`, `maxTurns`, settings của dự án không cài được plugin; Claude đề xuất chép 13 skill của agent-skills vào kit và script `ao-agent.mjs`, xin bạn duyệt cùng cách chạy hai công cụ trình duyệt qua `npx`; bạn duyệt cả hai; T1–T4 đóng (PR #75–#78): spec sửa sau T1, kiểm `playwright-cli` và Chrome DevTools MCP, artifact `design`, NOT TESTED; Checkpoint 1, chờ bạn; bạn hỏi xem kết quả T1–T2 ở đâu; bạn cho qua Checkpoint 1 (PR #79); T5–T14 đóng (PR #80–#89): `check-design`, roster và quy tắc A1–A5, 16 skill chép vào kit, `gh-guard` theo vai trò, mười prompt và file quy ước, sinh agent, `ao-agent.mjs`; Checkpoint 2, chờ bạn; bạn hỏi vì sao `fe-dev` không dùng `vercel-react-best-practices`: skill theo stack khai trong `roster.local.yaml` của từng dự án; bạn cho qua Checkpoint 2 (PR #90); T15: DEMO-9, ao-pilot PR #8 chép kit, kit PR #91–#93 (coverage loại `.claude/**`, vá `gh-guard` theo finding của review, luật hook và mục Shell), `reviewer` hai lượt và `security` ba lượt (hai lần chạm giới hạn usage, Claude đăng báo cáo của lượt cuối), 14,30 USD quy đổi; chờ bạn approve, merge, bật `chrome-devtools` và quyết hai đề xuất về danh tính agent và `file:///`; bạn merge PR #8, bật `chrome-devtools`, đồng ý hai đề xuất; T15 đóng (PR #94); kit PR #95 (`--no-file-navigations`, `.mcp.json` được bảo vệ), #96 (vá thêm `gh-guard`); T16: Story DEMO-10, trang giỏ hàng dựng ở server và server `node:http`; bạn đồng ý cài `@playwright/test`; ao-pilot PR #9 (E2E AC1, AC2), `reviewer` tìm ra `GET //` làm sập server (High), Claude sửa, `reviewer` vòng 2 và `security` COMMENT, 6,30 USD quy đổi; kit PR #97 (`grep ao-pr.mjs` bị chặn nhầm); bạn approve, `merge-gate` merge PR #9, `audit` xanh; T16 đóng (PR #98); T17: `qa` dùng `playwright-cli`, `fe-dev` dùng Chrome DevTools MCP, cả hai đạt, T17 đóng (PR #99); Checkpoint 3: 11 lượt Opus 21,43 USD quy đổi, ước phần còn lại 34–63 USD, chờ bạn chọn chạy tiếp, hạ effort `security` hay tạm dừng |
 | 15 | `cd9b752d-fcc4-4808-a333-32579c26f257` | 2026-10-31 khoảng 00:20 → khoảng 01:45 | Bạn chọn chạy tiếp T18–T21 theo plan, `security` giữ `max`; Checkpoint 3 đóng (PR #100); T18: Epic DEMO-11 "Mã giảm giá cho giỏ hàng", nhánh tài liệu `feature/DEMO-11-spec`, chờ bạn bấm `Start spec`; bạn bấm `Start spec`; stage spec: `ba`, `ux`, `sa` viết `spec.md` và `design.md`, Claude trả lời thay bạn 18 câu hỏi mở, job `policy` đỏ rồi xanh trên PR thử #10, 5,30 USD quy đổi; chờ bạn bấm `Approve spec`; bạn bấm `Approve spec`; stage plan: `sa` viết `plan.md` và ADR-0001, `ba` tạo Story DEMO-12 và hai Sub-task DEMO-13, DEMO-14, T18 tốn 11,81 USD quy đổi; chờ bạn bấm `Approve plan` |
-| 16 | `b8a6dd75-1274-4e19-b187-41b53ba22cfe` | 2026-10-31 khoảng 02:02 → | Bạn bấm `Approve plan`; T18 đóng (PR #101): `jira-sync` chuyển DEMO-12 sang Ready; T19: `be-dev` làm Sub-task BE nhưng không start Story, kit PR #102 sửa prompt của hai dev agent; `fe-dev` làm Sub-task FE và mở ao-pilot PR #11; `reviewer` COMMENT (1 Medium, 2 Low), `security` COMMENT không có finding, 15,23 USD quy đổi; chờ bạn approve PR #11 hoặc chọn sửa finding Medium trước; bạn approve, `merge-gate` merge PR #11, `audit` xanh, `qa` PASS cả 11 AC, Claude tạo Task DEMO-15 cho hai test còn thiếu; chờ bạn bấm `Accept`; bạn bấm `Accept`, T19 đóng (PR #103); T20: `pm` viết bản tổng hợp sáng, lỗi đếm item Done chưa có Fix Version được sửa (PR #104), năm việc ngoài vai trò bị chặn đúng lý do; chờ bạn `Refine` DEMO-16 cho `devops`; bạn `Refine` DEMO-16; `devops` mở ao-pilot PR #12, `reviewer` COMMENT (1 Low), `security` COMMENT không có finding, 4,70 USD quy đổi; chờ bạn approve rồi tự merge PR #12 |
+| 16 | `b8a6dd75-1274-4e19-b187-41b53ba22cfe` | 2026-10-31 khoảng 02:02 → | Bạn bấm `Approve plan`; T18 đóng (PR #101): `jira-sync` chuyển DEMO-12 sang Ready; T19: `be-dev` làm Sub-task BE nhưng không start Story, kit PR #102 sửa prompt của hai dev agent; `fe-dev` làm Sub-task FE và mở ao-pilot PR #11; `reviewer` COMMENT (1 Medium, 2 Low), `security` COMMENT không có finding, 15,23 USD quy đổi; chờ bạn approve PR #11 hoặc chọn sửa finding Medium trước; bạn approve, `merge-gate` merge PR #11, `audit` xanh, `qa` PASS cả 11 AC, Claude tạo Task DEMO-15 cho hai test còn thiếu; chờ bạn bấm `Accept`; bạn bấm `Accept`, T19 đóng (PR #103); T20: `pm` viết bản tổng hợp sáng, lỗi đếm item Done chưa có Fix Version được sửa (PR #104), năm việc ngoài vai trò bị chặn đúng lý do; chờ bạn `Refine` DEMO-16 cho `devops`; bạn `Refine` DEMO-16; `devops` mở ao-pilot PR #12, `reviewer` COMMENT (1 Low), `security` COMMENT không có finding, 4,70 USD quy đổi; chờ bạn approve rồi tự merge PR #12; bạn merge PR #12, `audit` xanh, T20 đóng (PR #105); T21: Task DEMO-17, `fe-dev` ở `high` (1,86 USD) và `max` (5,89 USD) cùng đạt checklist và trường hợp biên, mỗi bản 1 Low; lượt `max` thấy tiêu đề commit của lượt `high`; bạn hết usage giữa lượt; Checkpoint 4, chờ bạn xem Epic, PR thử và chọn effort cho `fe-dev` |
 
 ---
 
@@ -6091,3 +6091,100 @@ Khi đó Deploy development chạy bằng chính `deploy.yml` mới. Thế là k
 7. Nhắn "xong" cho mình.
 
 Sau đó mình sẽ kiểm `audit` và Deploy development, rồi kiểm `jira-sync` đã chuyển DEMO-16 sang Ready for QA. DEMO-16 sẽ dừng ở đó: T20 không cần `qa` cho Task này, và việc dọn DEMO-15, DEMO-16 vẫn để bạn quyết. Xong mình đóng T20 rồi sang T21, phép so `high` với `max` của `fe-dev`.
+
+---
+
+# Phiên 16 · Lượt 5 — 2026-10-31 khoảng 12:42
+
+**Bạn:**
+
+```markdown
+Xong
+```
+
+Trong lượt này, Claude kiểm `audit` và Deploy của PR #12, đóng T20 (PR #105), rồi chạy T21: tạo Task DEMO-17, thử bằng Haiku để biết biến effort có thắng cờ `--effort` không, chạy `fe-dev` ở `high` và ở `max`, rồi chạy `reviewer` trên hai nhánh (lượt code, không ghi). Bạn hết usage trước khi Claude kịp trả lời, nên lượt này không có câu trả lời.
+
+---
+
+# Phiên 16 · Lượt 6 — 2026-10-31 khoảng 15:21
+
+**Bạn:**
+
+```markdown
+I hit my usage limit while you were working, but it has reset now. Please continue from where you left off.
+```
+
+Trước khi trả lời, Claude sửa một câu trong `verification.md` rồi push nhánh của T21 (lượt code, không ghi).
+
+**Claude:**
+
+T20 đã đóng, và T21 đã có số đo. Giờ tới Checkpoint 4: mình dừng ở đây, vì bạn cần xem lại kết quả và chọn mức effort cho `fe-dev`. Mọi việc làm trước lúc bạn hết usage đều đã lưu; mình chỉ còn push nhánh và viết câu trả lời này.
+
+## T20: đã đóng (kit PR #105)
+
+- Bạn approve rồi squash merge PR #12. `audit` in `audit passed: 5956702 on develop is the merge of PR #12, which met every gate`.
+- Deploy development chạy bằng chính `deploy.yml` mới và xanh; CI trên `develop` cũng xanh.
+- `jira-sync` chuyển DEMO-16 sang Ready for QA. DEMO-16 dừng ở đó.
+- Cả mười agent đã chạy thật ít nhất một lần (tiêu chí 7). T20 tốn 5,30 USD quy đổi.
+
+## T21: phép so `high` với `max` của `fe-dev`
+
+Đề bài là Task DEMO-17: bỏ `style-src 'unsafe-inline'` khỏi CSP của trang giỏ hàng. Trước lượt chạy, mình ghi sẵn checklist C1–C5 và sáu trường hợp biên B1–B6 để chấm. `fe-dev` làm hai lần từ cùng commit gốc, mỗi lần trên một nhánh local, không push, không gọi Jira. Tên nhánh được chọn ngẫu nhiên, nên `reviewer` không biết nhánh nào ở mức nào.
+
+| | `high` | `max` |
+|---|---|---|
+| Thời gian | 4 ph 50 s | 18 ph 59 s |
+| Lượt model | 55 | 130 |
+| Token ra | 21.187 | 80.915 |
+| USD quy đổi | 1,86 | 5,89 |
+| Unit, E2E (mình chạy lại) | 98/98, 16/16 | 97/97, 16/16 |
+| Checklist C1–C5 | 5/5 | 5/5 |
+| Trường hợp biên (B5 không áp dụng) | 5/5 | 5/5 |
+| Finding của `reviewer` | 1 Low | 1 Low |
+
+- **Giống nhau:** hai lượt chọn cùng một cách. Hash của CSS được tính lúc chạy, nên sửa CSS thì CSP tự đúng theo. Test cũng gần như giống nhau, gồm một E2E đọc style mà Chrome thật sự áp dụng và một E2E chứng minh style chèn vào bị chặn.
+- **`max` làm thêm:** một đoạn README, đo coverage, cố ý làm hỏng code để chắc test bắt được, chụp ảnh ở bốn bề rộng.
+- **Kết luận:** chất lượng như nhau, còn chi phí gấp 3,2 lần và thời gian gấp 3,9 lần.
+- **Tiêu chí 10 (nâng effort bằng biến môi trường) đạt.** Mình thử thêm bằng Haiku: biến `CLAUDE_CODE_EFFORT_LEVEL` thắng cờ `--effort` mà `ao-agent.mjs` luôn truyền.
+
+Hai điểm làm phép so kém sạch, mình ghi rõ trong `verification.md`:
+
+- **Lượt `max` đã thấy tiêu đề commit của lượt `high`.** Lúc tìm quy ước đặt tên commit, nó chạy `git log --all` và đọc được tiêu đề `fix(cart): allow the page style by its hash instead of unsafe-inline`. Lúc đó nó chưa viết dòng code nào. Nó tự kể việc này, nhưng lời nó nói rằng đã chọn hash từ trước thì không kiểm được. Lỗi ở mình: mình dời file trong `.ai/` nhưng quên giấu nhánh của lượt trước.
+- **Cả hai lượt `reviewer` đều không chạy test.** `gh-guard` chặn `git archive`, và cả hai dừng ở đó, không chép từng file bằng `git show` như ở T19. Kết quả test trong bảng là do mình chạy.
+
+Bốn lượt agent của T21 tốn 10,35 USD quy đổi.
+
+## Checkpoint 4
+
+| Mục | Trạng thái |
+|---|---|
+| Tiêu chí 4: `check-design`, job `policy` đỏ rồi xanh trên PR #10 | Đạt (T18) |
+| Tiêu chí 7: mười agent chạy thật | Đạt (T18–T20) |
+| Tiêu chí 8: năm việc ngoài vai trò bị chặn | Đạt (T20) |
+| Tiêu chí 9: số đo, nhận xét, mức bạn chọn | Chờ bạn chọn |
+| Tiêu chí 10: nâng effort bằng biến môi trường | Đạt (T21) |
+
+## Việc cần bạn
+
+**1. Xem lịch sử Epic thử**
+
+1. Mở https://phunghuutung12b4.atlassian.net/browse/DEMO-11.
+2. Cuộn xuống mục **Activity**, chọn tab **History** (đối chiếu giao diện). Bạn sẽ thấy Epic đi qua Specifying, Planning, In Progress, kèm người làm từng bước.
+3. Nếu muốn, mở DEMO-12 (Story) và xem tab **History** cùng các comment của agent.
+
+**2. Xem các PR thử trên `ao-pilot`**
+
+- https://github.com/TungPH7/ao-pilot/pull/9: trang giỏ hàng (T16).
+- https://github.com/TungPH7/ao-pilot/pull/10: `policy` đỏ rồi xanh với `design.md` (T18, đã đóng).
+- https://github.com/TungPH7/ao-pilot/pull/11: Story mã giảm giá, có báo cáo của `reviewer` và `security` (T19).
+- https://github.com/TungPH7/ao-pilot/pull/12: PR sửa workflow của `devops` (T20).
+
+Hai nhánh của DEMO-17 chỉ có ở máy. Nếu bạn muốn đọc hai diff trên GitHub, nhắn mình để push chúng lên.
+
+**3. Chọn mức effort cho `fe-dev`.** Nhắn mình một trong ba:
+
+- **"high"** (mình khuyên): giữ mức của roster. Theo spec, nếu `max` không rõ ràng tốt hơn thì giữ `high`.
+- **"max"**: đổi `fe-dev` sang `max` trong `roster.yaml`. Mỗi lượt `fe-dev` sẽ tốn khoảng gấp ba.
+- **"chạy lại max"**: mình chạy lại lượt `max` trong một bản clone riêng không có nhánh của lượt `high`, rồi review lại. Tốn khoảng 7 USD quy đổi và 25 phút.
+
+Sau khi bạn chọn, mình đóng T21 và Checkpoint 4 bằng một PR ở kit, rồi sang T22: đặt `maxTurns` theo số đo, viết tài liệu (kể cả các hook chặn nhầm đã ghi), rồi lưu trữ plan. DEMO-15, DEMO-16, DEMO-17 vẫn để đó; dọn hay giữ là bạn quyết.
