@@ -47,12 +47,17 @@ Lệnh là skill của kit ở `kit/.claude/skills/ao-<lệnh>/SKILL.md`, với 
 
 **Một lệnh chạy thế nào.** Mọi lệnh có cùng ba bước:
 
-1. **Kiểm.** Dòng `` !`node .ai-orchestrator/scripts/ao-step.mjs <lệnh> $ARGUMENTS` `` chạy trước khi prompt tới model. Script đọc Jira và GitHub, rồi in dữ kiện cùng một trong hai kết luận:
+1. **Kiểm.** Dòng `` !`node .ai-orchestrator/scripts/ao-step.mjs <lệnh> $0` `` chạy trước khi prompt tới model. Script đọc Jira và GitHub, rồi in dữ kiện cùng một trong hai kết luận:
    - `GO`, kèm danh sách lượt chạy sẽ làm;
    - `STOP`, kèm lý do và lệnh nên chạy thay.
 
    Script thoát 0 trong cả hai trường hợp, để Claude đọc được lý do và nói lại với bạn. Chỉ khi script hỏng, ví dụ thiếu token, thì nó thoát khác 0, và Claude Code hủy lệnh.
-2. **Chạy.** Có `GO` thì Claude chạy `ao-step.mjs <lệnh> <đối số> --go` ở nền và chờ thông báo xong. Script chạy lần lượt các agent bằng `ao-agent.mjs <role> -p`, ghi log stream-json và số đo vào `.ai/runs/<KEY>/`. Script dừng sớm khi:
+
+   Dòng này chạy đúng nhờ ba điều, rút ra ở T1 (mục 2.11):
+   - `kit/.claude/settings.json` có luật `permissions.allow: ["Bash(node .ai-orchestrator/scripts/ao-step.mjs:*)"]`. Ở chế độ `auto`, dòng `!` chỉ chạy lúc nạp skill khi có luật quyết định lệnh đó. Không có luật thì model phải tự chạy lệnh: nó có thể chạy sai thư mục, và script hỏng không làm lệnh bị hủy. Luật của dự án chỉ có hiệu lực ở thư mục bạn đã tin cậy.
+   - Dòng `!` chỉ nhận `$0`, tức mã item hoặc số PR. Claude Code chèn đối số nguyên văn vào lệnh shell, nên đoạn chữ tự do không bao giờ đi qua dòng này. `ao-step.mjs` từ chối đối số sai dạng.
+   - Với `/ao-fix <PR> <việc cần sửa>`, đoạn chữ nằm trong thân skill. Claude ghi nó vào `.ai/runs/<KEY>/note.md`, rồi truyền cho `--go` bằng `--note`.
+2. **Chạy.** Có `GO` thì Claude chạy `ao-step.mjs <lệnh> <đối số> --go` ở nền, với `timeout` 2 giờ, và chờ thông báo xong. Trong `claude -p`, lệnh nền không đặt `timeout` bị dừng sau 10 phút (T1). Script chạy lần lượt các agent bằng `ao-agent.mjs <role> -p`, ghi log stream-json và số đo vào `.ai/runs/<KEY>/`. Script dừng sớm khi:
    - một agent để lại câu hỏi;
    - một agent gắn cờ "Needs you";
    - một agent thất bại hai lần liên tiếp (`retry.agent_failures_before_stop`);
@@ -100,6 +105,7 @@ Bạn chọn dùng hai App cho mọi việc của agent trên GitHub (Phiên 16 
   - `user.name` và `user.email` là của bot, `tungph7-ao-dev[bot]` và `<id>+tungph7-ao-dev[bot]@users.noreply.github.com`.
 
   `gh-guard` vẫn chặn agent tự đặt `GIT_CONFIG_*` trong lệnh. Vai trò chỉ đọc không có credential helper ghi, nên `git push` của nó không có quyền.
+- Trong phiên agent, `gh-guard` từ chối lệnh gọi `ao-step.mjs`, `ao-agent.mjs` và `ao-git-credential.mjs`. Luật `allow` của mục 2.1 cũng áp cho agent, mà agent thì không được tự mở agent khác hay tự lấy token.
 - Commit của agent đứng tên bot. Lịch sử Git, PR và GitHub for Jira đều ghi rõ việc nào do agent làm.
 - **Bạn thêm quyền cho hai App** (`docs/github-apps-setup.md` sẽ có từng bước bấm):
   - `ao-dev`: Workflows ghi, Actions đọc, Checks đọc;
@@ -211,6 +217,8 @@ Spec dựa vào tám điều chưa ai thử trên máy bạn. Task đầu kiểm
 
 Điều nào sai thì mình dừng và đề xuất sửa spec, như ở T1 của `agent-roster`.
 
+**Kết quả của T1 (2026-11-01):** điểm 6 và 7 đúng, kèm ba điều kiện đã đưa vào mục 2.1 và 2.3: luật `allow` cho dòng kiểm, chỉ truyền `$0`, và `timeout` dài cho `--go`. Bạn duyệt các sửa đổi này ở Phiên 17 · Lượt 5. Chi tiết trong `tasks/verification.md`.
+
 ## 3. Tech stack
 
 - Node.js 24, ES module, `yaml` và `ajv` như các module trước; không thêm dependency.
@@ -238,6 +246,7 @@ Trong terminal ở repo dự án, cùng code mà các lệnh gọi:
 ```
 node .ai-orchestrator/scripts/ao-step.mjs build DEMO-21          # chỉ kiểm, in GO hoặc STOP
 node .ai-orchestrator/scripts/ao-step.mjs build DEMO-21 --go     # kiểm rồi chạy các agent
+node .ai-orchestrator/scripts/ao-step.mjs fix 15 --go --note .ai/runs/DEMO-21/note.md   # sửa theo ghi chú của bạn
 ```
 
 Trong repo kit: `npm run validate`, `npm test`, `npm run render:check`, `npm run jira:checklist:check`, `npm run agents:check`, như trước.
@@ -283,11 +292,12 @@ disable-model-invocation: true
 ---
 
 ## Check
-!`node .ai-orchestrator/scripts/ao-step.mjs build $ARGUMENTS`
+!`node .ai-orchestrator/scripts/ao-step.mjs build $0`
 
 ## What to do
 - On STOP, tell the human the reason and the command it names, in Vietnamese, and stop.
-- On GO, run `node .ai-orchestrator/scripts/ao-step.mjs build $ARGUMENTS --go` in the background and wait for it to finish.
+- On GO, run `node .ai-orchestrator/scripts/ao-step.mjs build $0 --go` with the Bash tool in the background, with a
+  timeout of 7200000 ms, and wait for its notification. Do not poll.
   Do not run any agent yourself, and do not change Jira or GitHub yourself.
 - Then read `.ai/runs/<KEY>/last.md` and report: what each agent did and cost, the questions left, what the human
   must do at a gate (numbered clicks), and the next command.
@@ -398,6 +408,8 @@ Khi viết spec, Claude đổi hai chỗ so với giả định đã duyệt, v�
 - **ADR không được đổi sang Accepted sau gate ②.** Nếu đổi thì phải có một commit push sau lúc bạn duyệt, và PR tài liệu khi đó không còn đúng thứ bạn đã đọc. ADR ghi rõ nó có hiệu lực khi plan được duyệt (mục 2.4).
 - **Bản chép kit vào `ao-pilot` làm một lần, ngay trước kiểm thật,** thay vì ở task đầu. Như vậy bạn chỉ merge tay một PR (mục 2.10).
 
+Phiên 17 · Lượt 5 (2026-11-01): bạn duyệt năm điểm sửa sau T1: luật `allow` cho dòng kiểm; `gh-guard` chặn lệnh điều phối trong phiên agent; dòng `!` chỉ truyền `$0`, đoạn chữ của `/ao-fix` đi qua file; `timeout` 2 giờ cho `--go`; tài liệu ghi `MSYS_NO_PATHCONV=1` khi gõ `claude -p "/ao-…"` trong Git Bash.
+
 ## 11. Câu hỏi mở
 
 Không có. Bạn giữ nguyên hai điểm Claude tự chốt khi duyệt:
@@ -415,6 +427,7 @@ Không có. Bạn giữ nguyên hai điểm Claude tự chốt khi duyệt:
 - **Model của phiên chính không làm đúng skill:** việc quyết định và chạy agent nằm trong `ao-step.mjs`, nên Claude chỉ đọc kết quả và nói lại. Skill cấm Claude tự mở agent hay tự đổi Jira và GitHub.
 - **Usage của gói Pro:** một Epic đầy đủ tốn khoảng 30–40 USD quy đổi. `/ao-status` cho biết chi phí đã tốn của từng item.
 - **Máy ít RAM:** lệnh chạy agent lần lượt. Shell nền có thể bị dừng khi máy thiếu RAM; `state.json` cho phép chạy tiếp lượt dở.
+- **Đối số đi thẳng vào shell:** Claude Code chèn `$0` nguyên văn vào dòng `!`. Nếu bạn gõ `/ao-fix "15; …"`, phần sau dấu `;` cũng chạy. Đây là lệnh do chính bạn gõ trong phiên của bạn. Luật `allow` chỉ cho `ao-step.mjs`, nên phần lạ không chạy lúc nạp skill mà thành một lời gọi tool được duyệt.
 
 ## Nguồn
 

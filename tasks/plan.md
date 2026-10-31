@@ -48,7 +48,7 @@ Như các module trước, plan kiểm tám tiền đề trước (T1–T2, spec
 9. **Story của Epic thử dừng ở Ready for QA.** QA thuộc `release-workflow` (spec mục 1). Story để nguyên đó, làm item thử đầu tiên cho `release-workflow`.
 10. **Gõ lệnh `/` thật.**
     - Claude gọi phần lớn các bước bằng `ao-step.mjs … --go` trong `ao-pilot`, cùng code mà skill gọi.
-    - Mỗi lệnh `/` được gõ thật ít nhất một lần: hoặc bạn gõ trong phiên Claude Code của bạn ở `ao-pilot`, hoặc Claude gõ qua `claude -p "/ao-…"` nếu T1 cho thấy `claude -p` chờ được lệnh nền.
+    - Mỗi lệnh `/` được gõ thật ít nhất một lần: hoặc bạn gõ trong phiên Claude Code của bạn ở `ao-pilot`, hoặc Claude gõ qua `claude -p "/ao-…"`. T1 cho thấy `claude -p` chờ được lệnh nền khi lệnh có `timeout` dài, nên Claude gõ được.
     - Bạn vẫn là người bấm ở mọi cổng.
 11. **Key và token không đi qua chat, log hay lịch sử lệnh.** Như các module trước, Claude đọc biến môi trường từ registry ngay trong lệnh.
 12. **Quy trình nhánh như các module trước.**

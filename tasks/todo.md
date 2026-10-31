@@ -45,6 +45,8 @@ Rồi kiểm hai điểm, bằng Haiku:
 
 Kết quả của điểm 7 quyết định ai gõ lệnh `/` ở kiểm thật (plan, quyết định 10).
 
+**Kết quả (2026-11-01):** hai điểm đúng, kèm ba điều kiện: luật `allow` cho dòng kiểm, chỉ truyền `$0`, và `timeout` dài cho lệnh nền trong `claude -p`. Bạn duyệt năm điểm sửa spec ở Phiên 17 · Lượt 5; T3, T12, T13 và T19 đã ghi thêm phần việc tương ứng. Sau T1, bạn không muốn dùng Haiku nữa: phép thử rẻ về sau dùng Sonnet.
+
 **Tiêu chí chấp nhận:**
 - [ ] Hai điểm có kết quả đúng hoặc sai, kèm bằng chứng (lệnh, trích output), trong `tasks/verification.md`.
 - [ ] Nếu một điểm sai: spec và plan đã sửa theo kết quả, và bạn đã duyệt bản sửa.
@@ -129,13 +131,14 @@ Xem [plan.md](plan.md#checkpoint-1).
   - Với `get` cho `github.com` và đúng repo, script in `username=x-access-token` và token của `ao-dev`: `contents: write`, thêm `workflows: write` cho riêng `devops`.
   - Vai trò chỉ đọc hay vai trò lạ: script không in gì, và git báo lỗi.
   - `store` và `erase`: bỏ qua.
-- `gh-guard` từ chối lệnh gọi thẳng `ao-git-credential.mjs` (plan, quyết định 5).
+- Trong phiên agent, `gh-guard` từ chối lệnh gọi thẳng `ao-git-credential.mjs` (plan, quyết định 5), `ao-step.mjs` và `ao-agent.mjs` (T1: luật `allow` của dòng kiểm cũng áp cho agent).
+- Helper không lấy được token thì in lý do ra stderr. T2 cho thấy git khi đó chỉ báo `Repository not found`.
 
 **Tiêu chí chấp nhận:**
 - [ ] Test của `launchPlan` cho từng loại vai trò: vai trò ghi có helper, vai trò chỉ đọc không có; `devops` xin thêm Workflows.
 - [ ] Test cho thấy tham số dòng lệnh và file skills không chứa token.
 - [ ] Test giao thức credential: `get` đúng repo, repo khác, vai trò chỉ đọc, `store`, `erase`.
-- [ ] Test `gh-guard` từ chối gọi thẳng helper, kể cả khi bọc trong `sh -c` hay `env`.
+- [ ] Test `gh-guard` từ chối gọi thẳng helper, `ao-step.mjs` và `ao-agent.mjs` trong phiên agent, kể cả khi bọc trong `sh -c` hay `env`; phiên chính của bạn vẫn chạy được `ao-step.mjs`.
 
 **Kiểm chứng:**
 - [ ] Năm lệnh trong quy ước chung xanh
@@ -380,7 +383,9 @@ Xem [plan.md](plan.md#checkpoint-1).
 
 **Mô tả:**
 
-- `scripts/ao-step.mjs <lệnh> <đối số> [--go] [--answers <file>]`:
+- `scripts/ao-step.mjs <lệnh> <đối số> [--go] [--answers <file>] [--note <file>]`:
+  - đối số phải là mã item của space hoặc số PR; sai dạng thì script dừng và nói rõ;
+  - `--note <file>`: việc cần sửa mà bạn ghi sau mã PR của `/ao-fix`, chuyển vào prompt của dev agent;
   - không có `--go`: in dữ kiện và kết luận theo mẫu ở spec mục 6, rồi thoát 0;
   - chỉ thoát khác 0 khi script hỏng, ví dụ thiếu token hay không đọc được Jira.
 - `lib/workflow/runner.mjs` (plan, quyết định 3), vòng chạy của `--go`:
@@ -418,11 +423,16 @@ Xem [plan.md](plan.md#checkpoint-1).
 
 **Mô tả:**
 
-- `kit/.claude/skills/ao-status/`, `ao-spec/`, `ao-plan/`, `ao-build/`, `ao-review/`, `ao-fix/`, mỗi thư mục một `SKILL.md` theo mẫu ở spec mục 6. Cách truyền đối số theo kết quả của T1, nhất là đoạn chữ tự do của `/ao-fix`.
+- `kit/.claude/skills/ao-status/`, `ao-spec/`, `ao-plan/`, `ao-build/`, `ao-review/`, `ao-fix/`, mỗi thư mục một `SKILL.md` theo mẫu ở spec mục 6:
+  - dòng `!` chỉ truyền `$0`;
+  - `--go` chạy ở nền với `timeout` 7200000;
+  - `/ao-fix` ghi đoạn chữ sau mã PR vào `.ai/runs/<KEY>/note.md`, rồi truyền `--note`.
+- `kit/.claude/settings.json` thêm `permissions.allow: ["Bash(node .ai-orchestrator/scripts/ao-step.mjs:*)"]` (spec mục 2.1).
 - `skills:vendor`, quy tắc `A4` và các test của chúng bỏ qua thư mục `ao-*`.
 
 **Tiêu chí chấp nhận:**
-- [ ] Test: frontmatter của sáu skill có `disable-model-invocation: true` và `argument-hint`, và dòng `!` gọi đúng lệnh của `ao-step.mjs`.
+- [ ] Test: frontmatter của sáu skill có `disable-model-invocation: true` và `argument-hint`; dòng `!` gọi đúng lệnh của `ao-step.mjs` và chỉ dùng `$0`; skill nào chạy `--go` cũng nêu `timeout`.
+- [ ] Test: `kit/.claude/settings.json` có luật `allow` cho `ao-step.mjs`, và không có luật `allow` nào khác.
 - [ ] Test: `skills:vendor` không đụng tới thư mục `ao-*`, và `A4` không báo chúng là skill lạ.
 
 **Kiểm chứng:**
@@ -430,7 +440,7 @@ Xem [plan.md](plan.md#checkpoint-1).
 
 **Phụ thuộc:** T1, T12
 
-**File dự kiến:** sáu file `kit/.claude/skills/ao-*/SKILL.md`, `lib/agents/vendor.mjs`, `lib/agents/roster.mjs`
+**File dự kiến:** sáu file `kit/.claude/skills/ao-*/SKILL.md`, `kit/.claude/settings.json`, `lib/agents/vendor.mjs`, `lib/agents/roster.mjs`
 
 **Cỡ:** S
 
@@ -634,7 +644,8 @@ Xem [plan.md](plan.md#checkpoint-4).
   - một vòng Epic từ đầu tới cuối;
   - cách đọc `.ai/runs/`;
   - khi nào lệnh dừng;
-  - chạy tiếp sau khi hết usage.
+  - chạy tiếp sau khi hết usage;
+  - `MSYS_NO_PATHCONV=1` khi gõ `claude -p "/ao-…"` trong Git Bash (T1).
 - `docs/github-apps-setup.md`: soát lại mục của T2.
 - `SPEC-dev-workflow.md` và `SPEC.md` ghi module hoàn thành.
 - Các việc để lại cho `release-workflow` và Pilot 1 ghi ở cuối `tasks/verification.md`.
