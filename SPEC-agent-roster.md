@@ -2,7 +2,7 @@
 
 > **Module:** `agent-roster`, xem capability map trong [SPEC.md](SPEC.md). **Phụ thuộc:** `sdlc-contract`; dùng hook, script và cấu hình của `tracker-integration` và `quality-gates` (mục 2.11). **Được dùng bởi:** `dev-workflow`, `release-workflow`, `project-scaffold`, và `ci-agents` ở Cấp 2.
 >
-> **Trạng thái:** đã duyệt ngày 2026-10-30, sửa theo kết quả T1 cùng ngày (mục 2.12); plan ở [tasks/plan.md](tasks/plan.md). **Nguồn thảo luận:** [misc/brainstorm-discussion.md](misc/brainstorm-discussion.md), Phiên 13 · Lượt 1–6 và Phiên 14 · Lượt 1–2.
+> **Trạng thái:** đã duyệt ngày 2026-10-30, sửa theo kết quả T1 cùng ngày (mục 2.12); hoàn thành 2026-10-31. **Plan:** [tasks/archive/agent-roster/plan.md](tasks/archive/agent-roster/plan.md). **Kết quả kiểm thật:** [tasks/archive/agent-roster/verification.md](tasks/archive/agent-roster/verification.md). **Tài liệu:** [docs/agents.md](docs/agents.md). **Nguồn thảo luận:** [misc/brainstorm-discussion.md](misc/brainstorm-discussion.md), Phiên 13 · Lượt 1–6 và Phiên 14 · Lượt 1–2.
 
 ## 1. Mục tiêu
 
@@ -570,6 +570,8 @@ Mỗi lượt chạy bằng `ao-agent.mjs <role> -p "<prompt>" --output-format j
 11. Mọi lượt chạy thật có số đo trong `tasks/verification.md`; `maxTurns` của từng vai trò được đặt từ số đo.
 12. `qa` lái trình duyệt bằng `playwright-cli`, và `fe-dev` đọc console bằng Chrome DevTools MCP, mỗi việc ít nhất một lần.
 13. README có mục về agent; có `docs/agents.md`, gồm cả các bước export ảnh từ Figma, cách xem dung lượng repo và cách bật LFS; `SPEC.md` ghi module hoàn thành.
+
+Cả 13 tiêu chí đạt ngày 2026-10-31. Bằng chứng ghi trong [tasks/archive/agent-roster/verification.md](tasks/archive/agent-roster/verification.md). Bạn chọn giữ `fe-dev` ở `high` sau phép so (tiêu chí 9).
 
 ## 10. Câu hỏi đã trả lời
 
