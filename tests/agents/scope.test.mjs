@@ -84,6 +84,7 @@ const READS = [
   'git describe --tags',
   'git shortlog -sn',
   'git for-each-ref refs/heads',
+  'git check-ignore -v .playwright-cli',
   'git branch -a',
   'git branch --list "feature/*"',
   'git branch --contains 3f2a9c1',
