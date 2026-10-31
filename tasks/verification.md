@@ -619,3 +619,16 @@ Sau lượt chạy, Claude dừng server ở cổng 3000 theo PID của cổng.
 **Task theo sau:** Claude tạo Task **DEMO-15** "Thêm test hồi quy cho giới hạn body của POST / và đọc port từ kết nối" bằng token CI, ở New, không thuộc Epic. Mô tả theo `task.md`, gồm finding Medium và hai finding Low của `reviewer`. Mục DoR "được bạn duyệt trực tiếp" để trống, chờ bạn.
 
 Năm lượt chạy của T19 tốn 17,16 USD quy đổi: `be-dev` 3,59, `fe-dev` 4,54, `reviewer` 2,49, `security` 4,61, `qa` 1,93. Ước tính là 14–25 USD.
+
+### Accept
+
+Bạn bấm `Accept` lúc 10:27:58. DEMO-12 sang Done, Resolution Done. Epic DEMO-11 vẫn ở In Progress: transition `complete` của Epic đòi mọi item con Done và đã lên Production (`children-released`), mà `release-workflow` chưa có.
+
+Ba tiêu chí của T19 đạt:
+
+- Mỗi agent cho ra đầu ra ở spec mục 2.4:
+  - `be-dev`, `fe-dev`: nhánh, commit, test, PR;
+  - `reviewer`, `security`: báo cáo review trên PR;
+  - `qa`: báo cáo QA trên item.
+- Báo cáo QA đúng template, và mỗi kết luận có bằng chứng: tên E2E, ảnh, hoặc kết quả request đã ghi.
+- Mỗi lượt chạy có số đo.

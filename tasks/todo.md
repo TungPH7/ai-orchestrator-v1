@@ -558,7 +558,7 @@ Xem [plan.md](plan.md#checkpoint-3).
 
 **Cỡ:** M (khoảng 6 lượt chạy agent)
 
-### [ ] T19: Epic thử: build tới QA [bạn]
+### [x] T19: Epic thử: build tới QA [bạn]
 
 **Mô tả:** Các agent đọc tài liệu từ nhánh tài liệu (plan, quyết định 6).
 
@@ -570,12 +570,12 @@ Xem [plan.md](plan.md#checkpoint-3).
 6. **Bạn** bấm `Accept`.
 
 **Tiêu chí chấp nhận:**
-- [ ] Mỗi agent cho ra đúng đầu ra ở spec mục 2.4.
-- [ ] Báo cáo QA đúng template; mỗi kết luận có bằng chứng.
-- [ ] Mỗi lượt chạy có số đo.
+- [x] Mỗi agent cho ra đúng đầu ra ở spec mục 2.4.
+- [x] Báo cáo QA đúng template; mỗi kết luận có bằng chứng.
+- [x] Mỗi lượt chạy có số đo.
 
 **Kiểm chứng:**
-- [ ] Các bước và kết quả ghi trong `tasks/verification.md`
+- [x] Các bước và kết quả ghi trong `tasks/verification.md`
 
 **Phụ thuộc:** T18
 
