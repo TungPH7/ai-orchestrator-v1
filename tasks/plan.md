@@ -101,7 +101,7 @@ T16 ── T17 Epic: spec, plan ── T18 Epic: build, review, fix ── T19 t
 - [x] T9: `facts.mjs` và nhãn trong `tracker/jira.yaml`
 - [x] T10: `decideStep` cho `status`, `spec`, `plan`
 - [x] T11: `decideStep` cho `build`, `review`, `fix`
-- [ ] T12: `ao-step.mjs` và `runner.mjs`
+- [x] T12: `ao-step.mjs` và `runner.mjs`
 - [ ] T13: Sáu skill `/ao-*`
 
 ### Giai đoạn 4: template, hợp đồng, prompt
