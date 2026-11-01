@@ -1,0 +1,10 @@
+description: a docs PR path that is also a protected path
+rule: Q5
+expect:
+  - "docs_pull_requests.paths[1]"
+patch:
+  - op: set
+    path: "protected_paths"
+    value:
+      - { path: ".github/workflows/**", editors: [devops] }
+      - { path: "docs/adr/0001-*.md" }

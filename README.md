@@ -135,7 +135,7 @@ Cần Node.js 24. `gh:protect` và các bước cài đặt dùng GitHub CLI; n�
 
 ```
 npm install             # trong CI dùng npm ci
-npm run validate        # kiểm hợp đồng (quy tắc R1–R8), ánh xạ Jira (J1–J4) và quality/gates.yaml (Q1–Q4)
+npm run validate        # kiểm hợp đồng (quy tắc R1–R8), ánh xạ Jira (J1–J4) và quality/gates.yaml (Q1–Q5)
 npm test                # test của validator, thư viện, kịch bản và template
 npm run render          # sinh lại docs/sdlc.md từ YAML
 npm run render:check    # báo lỗi nếu docs/sdlc.md cũ hơn YAML
