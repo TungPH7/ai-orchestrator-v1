@@ -177,7 +177,7 @@ PR sửa đường dẫn được bảo vệ cần bạn tự merge. Khi PR như
 - comment lên PR bằng `ao-dev`: đường dẫn được bảo vệ, điều còn thiếu, và nhắc approve trước rồi mới merge;
 - gắn cờ "Needs you" lên item trên Jira bằng token CI, kèm comment cùng nội dung.
 
-Khi PR được merge hoặc đóng, `jira-sync` gỡ cờ mà `merge-gate` đã gắn. `jira-sync` nhận ra cờ đó nhờ dấu trong comment.
+Khi PR được merge hoặc đóng, `jira-sync` gỡ cờ mà `merge-gate` đã gắn. `jira-sync` nhận ra cờ đó nhờ dấu trong comment. Ai comment được trên item cũng viết được dấu đó, nên `merge-gate` và `jira-sync` chỉ tính comment của tài khoản token CI (`account_id` của identity `automation` trong `tracker/jira.yaml`), và `merge-gate` chỉ tính comment trên PR của bot `ao-dev` (T15a).
 
 ### 2.8 Yêu cầu giữa các vai trò
 

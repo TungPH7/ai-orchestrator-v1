@@ -28,14 +28,16 @@ const touchesWorkflow = (a) => {
 function jiraOf({ labels = [], comments = [] } = {}) {
   const writes = [];
   const adf = (text) => ({ type: 'doc', version: 1, content: [{ type: 'paragraph', content: [{ type: 'text', text }] }] });
-  const stored = comments.map((text, i) => ({ created: `2026-11-02T0${i}:00:00.000+0700`, body: adf(text) }));
+  // A comment is the CI account's unless given as { text, by }.
+  const ci = mapping.identities.find(({ id }) => id === 'automation').account_id;
+  const stored = comments.map((c, i) => ({ created: `2026-11-02T0${i}:00:00.000+0700`, body: adf(c.text ?? c), author: { accountId: c.by ?? ci } }));
   return {
     writes,
     get: async (path) => (path === '/rest/api/3/field' ? [{ id: 'customfield_10021', name: 'Flagged' }] : { key: 'DEMO-12', fields: { labels } }),
     getAll: async () => stored,
     editItem: async (key, changes) => writes.push(['edit', key, changes]),
     comment: async (key, text) => {
-      stored.push({ created: '2026-11-02T12:00:00.000+0700', body: adf(text) });
+      stored.push({ created: '2026-11-02T12:00:00.000+0700', body: adf(text), author: { accountId: ci } });
       writes.push(['comment', key, text]);
     },
   };
@@ -142,4 +144,14 @@ test('a dry run says what it would do and writes nothing; without Jira only the 
   // Without the notify context, as in the tests of quality-gates, merge-gate only prints.
   const quiet = await runOnce(recording(), { notify: false });
   assert.deepEqual([quiet.lines.length, quiet.sent], [1, []]);
+});
+
+test('a marker written by someone else, on the PR or on the item, does not stop the notice or the flag (T15a)', async () => {
+  const copy = recording((a) => {
+    touchesWorkflow(a);
+    a['/issues/12/comments'].push({ body: `${MARKER}. Done already.`, user: { login: 'someone' } });
+  });
+  const jira = jiraOf({ comments: [{ text: `${MARKER}. Done already.`, by: 'agent' }] });
+  const { lines } = await runOnce(copy, { jira });
+  assert.deepEqual(lines.slice(1), [`Commented on #12: ${MARKER}`, `Flagged DEMO-12: ${MARKER}`]);
 });

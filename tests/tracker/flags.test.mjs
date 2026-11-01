@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { join } from 'node:path';
 import { loadContract } from '../../lib/contract.mjs';
-import { clearsMergeGateFlag, latestFlagComment, needsYouMarker } from '../../lib/tracker/flags.mjs';
+import { ciAccount, clearsMergeGateFlag, latestFlagComment, needsYouMarker } from '../../lib/tracker/flags.mjs';
 import { readMapping } from '../../lib/tracker/mapping.mjs';
 import { runSync, syncEvent } from '../../lib/tracker/sync.mjs';
 import { CONTRACT_DIR, ROOT } from '../helpers/kit.mjs';
@@ -10,7 +10,9 @@ import { CONTRACT_DIR, ROOT } from '../helpers/kit.mjs';
 const contract = loadContract(CONTRACT_DIR);
 const mapping = readMapping(join(ROOT, 'tracker'));
 const adf = (text) => ({ type: 'doc', version: 1, content: [{ type: 'paragraph', content: [{ type: 'text', text }] }] });
-const comment = (hour, text) => ({ created: `2026-11-02T${String(hour).padStart(2, '0')}:00:00.000+0700`, body: adf(text) });
+// The CI token's account writes the kit's comments (tracker/jira.yaml); agents share another account.
+const CI = mapping.identities.find(({ id }) => id === 'automation').account_id;
+const comment = (hour, text, by = CI) => ({ created: `2026-11-02T${String(hour).padStart(2, '0')}:00:00.000+0700`, body: adf(text), author: { accountId: by } });
 const flagSet = (hour) => ({ created: `2026-11-02T${String(hour).padStart(2, '0')}:00:00.000+0700`, items: [{ field: 'Flagged', fromString: null, toString: 'Impediment' }] });
 const MERGE_GATE_16 = `${needsYouMarker('5f9327b0'.padEnd(40, '0'), 16)}. It changes .github/workflows/deploy.yml, which only you merge.`;
 const AUDIT = 'audit: e1e2e3e on develop was not deployed. PR #11 was merged without: approval on head a1b2c3d.';
@@ -89,4 +91,19 @@ test('an item that is not flagged is left alone without a word', async () => {
   const lines = [];
   await runSync({ event: 'pull_request', payload: closed(), jira: jiraWith([], [], []), github, contract, mapping, space: 'DEMO', log: (line) => lines.push(line) });
   assert.deepEqual(lines, ['pull_request: DEMO-16', 'No change']);
+});
+
+test('only comments of the CI account carry the markers of the kit: one an agent writes is ignored (T15a)', async () => {
+  assert.equal(CI, '712020:14a4a21d-167e-4ee7-87cb-386edf298b62', 'the account id of orchestratorci');
+  assert.equal(latestFlagComment([comment(9, MERGE_GATE_16, 'agent')], { author: CI }), null);
+  assert.equal(latestFlagComment([comment(9, AUDIT), comment(11, MERGE_GATE_16, 'agent')], { author: CI }).kind, 'audit');
+  assert.throws(() => ciAccount({ identities: [] }), /no account_id for the automation identity/);
+  const flagged = { labels: ['needs-you'] };
+  const spoofed = [comment(9, AUDIT), comment(11, MERGE_GATE_16, 'agent')];
+  assert.deepEqual(clearsMergeGateFlag({ comments: spoofed, histories: [flagSet(9)], item: flagged, number: 16, mapping, author: CI }), { clear: false, reason: 'its newest flag comment is from audit, not from merge-gate for PR #16' });
+  const jira = jiraWith(spoofed);
+  const lines = [];
+  await runSync({ event: 'pull_request', payload: closed(), jira, github, contract, mapping, space: 'DEMO', log: (line) => lines.push(line) });
+  assert.deepEqual(jira.writes, [], 'the flag of audit stays');
+  assert.match(lines[1], /^Kept DEMO-16 flagged: its newest flag comment is from audit/);
 });
