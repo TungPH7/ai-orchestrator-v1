@@ -103,3 +103,18 @@ Kiểm trong `ao-pilot` ngày 2026-11-01 bằng code của kit, chỉ đọc:
 - `audit.mjs --sha 5956702 --branch develop --dry-run` (commit merge của PR #12, sửa workflow, bạn merge): `audit passed`, như trước.
 
 Việc để lại cho T15: workflow deploy của `ao-pilot` gọi `audit.yml` phải cấp thêm `actions: read`, vì workflow được gọi không nâng được quyền của token bên gọi. Thiếu quyền này thì `audit` không đọc được lượt `CI` của PR tài liệu.
+
+## T12: `ao-step.mjs` và `runner.mjs`
+
+Chạy `ao-step.mjs` ở chế độ chỉ kiểm trong `ao-pilot` ngày 2026-11-01, bằng code của kit (`AO_KIT_DIR`), không agent nào chạy:
+
+| Lệnh | Kết quả |
+|---|---|
+| `status` | Liệt kê 13 item chưa xong của `DEMO`, lệnh kế tiếp của từng item, và "Waiting for you: DEMO-5" (cờ của `audit`). Thoát 0 |
+| `build DEMO-15` | `STOP: DEMO-15 is New, not Ready`. Thoát 0 |
+| `spec DEMO-11`, `plan DEMO-11` | `STOP`: Epic đã In Progress; Epic này không có PR tài liệu, vì làm trước module này. Thoát 0 |
+| `review 11` lần đầu | Thoát 1: `GET /commits/<sha>/status` trả 403 với token chỉ đọc của `ao-review` |
+| `review 11` sau khi sửa | `STOP: PR #11 is merged`. Thoát 0 |
+| `fix "15; ls"` | `STOP: /ao-fix takes a PR number`, không request nào được gửi. Thoát 0 |
+
+Phát hiện: App `ao-review` không có quyền Commit statuses, nên token chỉ đọc không đọc được commit status kiểu cũ. GitHub Actions báo kết quả bằng check run, nên `facts.mjs` đọc CI từ check run khi status trả 403; `merge-gate` và `audit` vẫn đọc cả hai bằng token của workflow. Không xin thêm quyền cho App.

@@ -162,3 +162,9 @@ test('/ao-fix after its fix is pushed reviews the new head; with nothing to fix 
   assert.deepEqual([nothing.go, nothing.reason], [false, 'PR #15 has nothing to fix: no request for changes, no red CI, no blocking finding']);
   assert.match(nothing.next, /approve it/);
 });
+
+test('a Done or Cancelled item has no next command', async () => {
+  const { nextFor } = await import('../../lib/workflow/steps.mjs');
+  assert.equal(nextFor({ key: 'DEMO-12', workType: 'story', state: 'done' }, null), 'done');
+  assert.equal(nextFor({ key: 'DEMO-12', workType: 'task', state: 'cancelled' }, null), 'cancelled');
+});
