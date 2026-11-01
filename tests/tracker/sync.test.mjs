@@ -167,9 +167,14 @@ test('a change that fails is reported, and the others are still made', async () 
     failOn: ['DEMO-15'],
   });
   const { lines, failures } = await runEvent('workflow_dispatch', jira);
-  assert.deepEqual(lines, ['workflow_dispatch: DEMO-10', 'Failed DEMO-15: Refine (new → ready): Jira refused transition on DEMO-15', 'Made DEMO-18: Refine (new → ready)']);
+  // The children's descriptions have no Definition of Ready line, so jira-sync comments instead of ticking it (T7).
+  assert.deepEqual(lines, [
+    'workflow_dispatch: DEMO-10',
+    'Failed DEMO-15: Refine (new → ready): Jira refused transition on DEMO-15',
+    'Made DEMO-18: Refine (new → ready); its description has no DoR line to tick, so it got a comment',
+  ]);
   assert.deepEqual(failures, ['DEMO-15: Jira refused transition on DEMO-15']);
-  assert.deepEqual(jira.writes, [['transition', 'DEMO-18', 'Refine']]);
+  assert.deepEqual(jira.writes.map(([kind, key]) => `${kind} ${key}`), ['transition DEMO-18', 'comment DEMO-18']);
 });
 
 test('an item that cannot be reconciled is reported, and the others go on', async () => {
