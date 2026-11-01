@@ -88,6 +88,7 @@ PR sửa đường dẫn được bảo vệ (`.github/workflows/**`, `.claude/*
 
 - Trong phiên Claude Code: gõ `/ao-status`, `/ao-spec DEMO-20` … như mọi lệnh `/`.
 - Từ Git Bash, không mở phiên tương tác: `MSYS_NO_PATHCONV=1 claude -p "/ao-spec DEMO-20"`. Thiếu `MSYS_NO_PATHCONV=1`, Git Bash biến `/ao-spec` thành một đường dẫn Windows (T1).
+- Repo dự án phải được tin cậy: mở `claude` trong repo một lần và chấp nhận hộp thoại tin cậy thư mục. Nếu chưa, `claude -p` bỏ qua luật `allow` trong `.claude/settings.json` của dự án, và `enabledMcpjsonServers` trong `.claude/settings.local.json` không bật được server MCP (Pilot 1, T1).
 - Gọi thẳng script, như skill gọi: `node .ai-orchestrator/scripts/ao-step.mjs spec DEMO-20` để kiểm, thêm `--go` để chạy. Đặt `AO_KIT_DIR` để chạy bằng một bản kit khác bản chép trong `.ai-orchestrator/`; Epic thử đã chạy bằng repo kit theo cách này.
 - `ao-step.mjs` đọc Jira bằng `ATLASSIAN_AGENT_TOKEN`, và đọc GitHub bằng token chỉ đọc của App `ao-review`. Lần dispatch `jira-sync` sau gate ② dùng login `gh` của bạn.
 

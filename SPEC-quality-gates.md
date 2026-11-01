@@ -99,7 +99,7 @@ Workflow `kit/.github/workflows/ci.yml` tên `CI`, là tên `jira-sync` đang ch
 
 - **Bốn job thay vì mười check**, vì mỗi job tính tròn lên một phút Actions. Từng bước vẫn hiện riêng trong log và trong job summary. Khi push (không có PR), `policy` chỉ chạy `npm audit`.
 - **Coverage của dòng thay đổi:** script đọc lcov (đường dẫn trong `quality/gates.yaml`) và `git diff` tính từ merge base, rồi chỉ tính các dòng có trong lcov, tức dòng thực thi được. File nguồn thay đổi mà không có trong lcov thì đỏ, kèm lời nhắc cấu hình coverage phải gồm mọi file nguồn, kể cả file chưa có test. PR không đổi dòng thực thi nào thì bước này đạt. File cấu hình (`*.config.*`) và migration không được tính (Checkpoint 1).
-- **Mẫu tắt kiểm tra** cấu hình trong `quality/gates.yaml`: `eslint-disable`, `@ts-ignore`, `@ts-nocheck`, `.skip(`, `xit(`, `xdescribe(`, `istanbul ignore`, `c8 ignore`, `nosemgrep`, `gitleaks:allow`, `secretlint-disable`. Dòng có `reason: <lý do>` thì cho qua, để reviewer đọc lý do. `.only(` luôn đỏ. PR xóa file test không làm đỏ, nhưng được liệt kê trong job summary cho reviewer.
+- **Mẫu tắt kiểm tra** cấu hình trong `quality/gates.yaml`: `eslint-disable`, `oxlint-disable` (thêm ở Pilot 1), `@ts-ignore`, `@ts-nocheck`, `.skip(`, `xit(`, `xdescribe(`, `istanbul ignore`, `c8 ignore`, `nosemgrep`, `gitleaks:allow`, `secretlint-disable`. Dòng có `reason: <lý do>` thì cho qua, để reviewer đọc lý do. `.only(` luôn đỏ. PR xóa file test không làm đỏ, nhưng được liệt kê trong job summary cho reviewer.
 - **Ngoại lệ của `npm audit`:** mỗi ngoại lệ ghi mã advisory, lý do và ngày hết hạn; hết hạn thì tự đỏ lại. Thêm ngoại lệ là sửa một file được bảo vệ (mục 2.5), nên PR đó do bạn merge.
 - Guard `ci-green` của `tracker-integration` tính mọi check run trên commit đầu của PR, trừ `jira-sync`, nên bốn job này được tính mà không phải sửa `facts.mjs`.
 
@@ -249,7 +249,7 @@ dependencies:
   exceptions: []   # { advisory: GHSA-xxxx-xxxx-xxxx, reason: "...", expires: 2026-12-31 }
 suppressions:
   reason_marker: "reason:"
-  patterns: ["eslint-disable", "@ts-ignore", "@ts-nocheck", ".skip(", "xit(", "xdescribe(", "istanbul ignore",
+  patterns: ["eslint-disable", "oxlint-disable", "@ts-ignore", "@ts-nocheck", ".skip(", "xit(", "xdescribe(", "istanbul ignore",
              "c8 ignore", "nosemgrep", "gitleaks:allow", "secretlint-disable"]
   never: [".only("]
 protected_branches: [develop, main, "release/*"]
