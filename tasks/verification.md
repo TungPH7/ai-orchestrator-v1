@@ -160,3 +160,15 @@ Cả hai được nhận theo giấy phép MIT mà tác giả khai; `SOURCE.md` 
 | `.claude/settings.local.json` bật hai server MCP | Claude | `claude mcp list`: `atlassian` và `chrome-devtools` Connected |
 | `npm run gh:protect -- --repo TungPH7/ao-sample` | Claude | `soft mode: merge-gate and audit enforce the gates` |
 | `MSYS_NO_PATHCONV=1 claude -p --model sonnet "/ao-status"` | Claude | Thoát 0, 2 turn, 0,11 USD, không bị từ chối quyền nào. In `SMP-1` ở New |
+| Run sau lần push đầu | GitHub | **Không có run nào** sau 11 phút, dù năm workflow đều `active`, Actions bật, GitHub báo hoạt động bình thường, và `ao-pilot` vẫn chạy run như thường. Repo activity ghi hai `branch_creation` lúc 18:20Z. [Inference] GitHub có thể không kích hoạt workflow cho lần push đầu tạo nội dung của repo; ở `ao-pilot`, commit đầu được tạo trên giao diện, trước khi có workflow |
+| `merge-gate` chạy tay (`workflow_dispatch`, `develop`) | Claude | Run 41337132300 xanh, in `No open PR` |
+| `Deploy` chạy tay (`workflow_dispatch`, `develop`, `development`) | Claude | Run 41337135836: `audit` đỏ "6f5831d on develop is not the merge of a PR into develop: it was pushed without one", job deploy bị bỏ qua, `audit` in "Flagged SMP-1". `SMP-1` có cờ Impediment, nhãn `needs-you` và comment của `audit`, đúng cách (b) |
+
+Ghi chú: đọc `SMP-1` bằng token CI, tên status trả về là `全新` (tiếng Trung của "New"); đọc bằng token admin thì là `New`. [Inference] Ngôn ngữ của tài khoản `orchestratorci` là tiếng Trung. Script của kit so status theo id, và `jira-sync` đã chạy đúng ở `ao-pilot`, nên chưa thấy ảnh hưởng.
+
+## Checkpoint 2 (2026-11-02)
+
+- **Tiêu chí 1** (đổi, xem spec mục 9): `develop` là nhánh mặc định; `main` và `develop` cùng ở `6f5831d`, nên `main` là tổ tiên của `develop`. CI chưa chạy trên commit đầu (bảng trên), nên phần "CI xanh" được kiểm trên PR đầu tiên và trên `develop` sau lần merge đầu, ở T7.
+- **Tiêu chí 2:** `jira:check -- --space SMP` không còn chỗ lệch.
+- **`/ao-status`** chạy trong `ao-sample`, thoát 0.
+- **Bạn duyệt trước** việc chạy Epic thử (Phiên 21 · Lượt 6), nên Claude làm tiếp T7: Epic `SMP-2` "Ghi chú: tạo và xem danh sách" tạo bằng token CI (201). `ao-step.mjs spec SMP-2`: `STOP: Epic SMP-2 is New`, bước kế tiếp là bạn bấm `Start spec`.

@@ -69,12 +69,12 @@ T9 ── T10 bản sửa kit còn lại, tài liệu, lưu trữ
 - [x] T3: Space `SMP`: bước 9–10 của `docs/jira-setup.md` [bạn]
 - [x] T4: Khung app `ao-sample` ở máy
 - [x] T5: Bản chép kit, skill theo stack và commit đầu
-- [ ] T6: Lên GitHub và nối Jira: bước 11–13 [bạn]
+- [x] T6: Lên GitHub và nối Jira: bước 11–13 [bạn]
 
 ### Checkpoint 2
-- [ ] Tiêu chí 1 và 2 của spec mục 9 đạt
-- [ ] `MSYS_NO_PATHCONV=1 claude -p --model sonnet "/ao-status"` chạy trong `ao-sample`, thoát 0
-- [ ] Bạn xem repo, board `SMP` và bảng các bước cài, rồi đồng ý chạy Epic thử (ước 30–45 USD)
+- [x] Tiêu chí 1 và 2 của spec mục 9 đạt (phần `CI` xanh của tiêu chí 1 kiểm ở T7)
+- [x] `MSYS_NO_PATHCONV=1 claude -p --model sonnet "/ao-status"` chạy trong `ao-sample`, thoát 0
+- [x] Bạn xem repo, board `SMP` và bảng các bước cài, rồi đồng ý chạy Epic thử (ước 30–45 USD): bạn duyệt trước ở Phiên 21 · Lượt 6
 
 ### Giai đoạn 3: Epic thử
 - [ ] T7: Epic "Ghi chú": `/ao-spec`, `/ao-plan` tới lúc PR tài liệu được merge [bạn]

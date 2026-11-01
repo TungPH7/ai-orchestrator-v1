@@ -237,7 +237,7 @@ export class HealthController {
 
 ## 9. Tiêu chí hoàn thành
 
-1. Repo `ao-sample` có `develop` là nhánh mặc định, và `main` là tổ tiên của `develop` (`git merge-base --is-ancestor origin/main origin/develop`). `CI` xanh trên commit đầu ở cả `main` và `develop`.
+1. Repo `ao-sample` có `develop` là nhánh mặc định, và `main` là tổ tiên của `develop` (`git merge-base --is-ancestor origin/main origin/develop`). `CI` xanh trên PR đầu tiên và trên `develop` sau lần merge đầu. (Đổi ở Checkpoint 2: GitHub không chạy workflow nào cho lần push đầu của repo, nên commit đầu không có run `CI`.)
 2. `npm run jira:check -- --space SMP` không còn chỗ lệch.
 3. Epic thử đi từ New tới khi mọi Story sang Ready for QA. PR tài liệu do `merge-gate` merge sau gate ②. Mỗi PR code do `merge-gate` merge sau gate ③. `audit` xanh trên mọi commit merge vào `develop`.
 4. Sáu lệnh `/ao-*` đều chạy qua `claude -p`, mỗi lệnh ít nhất một lần. Nếu review không có yêu cầu sửa nào, mình chạy `/ao-fix <PR> <ghi chú>` với một sửa nhỏ do bạn nêu.

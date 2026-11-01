@@ -163,7 +163,7 @@ Chưa commit.
 
 **Cỡ:** M
 
-### [ ] T6: Lên GitHub và nối Jira: bước 11–13 [bạn]
+### [x] T6: Lên GitHub và nối Jira: bước 11–13 [bạn]
 
 **Mô tả:**
 
@@ -177,15 +177,15 @@ Chưa commit.
 8. Claude chạy `MSYS_NO_PATHCONV=1 claude -p --model sonnet "/ao-status"` trong `ao-sample`.
 
 **Tiêu chí chấp nhận:**
-- [ ] Tiêu chí 1 của spec mục 9: `develop` là nhánh mặc định, `main` là tổ tiên của `develop`, `CI` xanh trên commit đầu ở cả `main` và `develop`.
-- [ ] Tiêu chí 2: `jira:check` không còn chỗ lệch.
-- [ ] Run `Deploy` trên `develop` có `audit` đỏ vì commit không qua PR, và không item nào bị gắn cờ. Run và lý do ghi vào `verification.md`.
-- [ ] `/ao-status` thoát 0.
-- [ ] Không file key nào còn trên máy ngoài file key đầu của hai App.
+- [x] Tiêu chí 1 của spec mục 9: `develop` là nhánh mặc định, `main` là tổ tiên của `develop`. Phần `CI` xanh chuyển sang T7, vì GitHub không chạy workflow cho lần push đầu.
+- [x] Tiêu chí 2: `jira:check` không còn chỗ lệch.
+- [x] Run `Deploy` trên `develop` có `audit` đỏ vì commit không qua PR. Theo cách (b), `audit` gắn cờ `SMP-1`. Run và lý do ghi vào `verification.md`.
+- [x] `/ao-status` thoát 0.
+- [x] Không file key nào còn trên máy ngoài file key đầu của hai App.
 
 **Kiểm chứng:**
-- [ ] `git merge-base --is-ancestor origin/main origin/develop` thoát 0
-- [ ] `gh api repos/TungPH7/ao-sample/environments` có bốn environment; rule của `merge-gate` chỉ có `develop`
+- [x] `git merge-base --is-ancestor origin/main origin/develop` thoát 0 (cùng commit `6f5831d`)
+- [x] `gh api repos/TungPH7/ao-sample/environments` có bốn environment; rule của `merge-gate` chỉ có `develop`
 
 **Phụ thuộc:** T3, T5
 
@@ -194,9 +194,9 @@ Chưa commit.
 **Cỡ:** S
 
 ### Checkpoint 2
-- [ ] Tiêu chí 1 và 2 của spec mục 9 đạt
-- [ ] `MSYS_NO_PATHCONV=1 claude -p --model sonnet "/ao-status"` chạy trong `ao-sample`, thoát 0
-- [ ] Bạn xem repo, board `SMP` và bảng các bước cài, rồi đồng ý chạy Epic thử (ước 30–45 USD)
+- [x] Tiêu chí 1 và 2 của spec mục 9 đạt (phần `CI` xanh của tiêu chí 1 kiểm ở T7)
+- [x] `MSYS_NO_PATHCONV=1 claude -p --model sonnet "/ao-status"` chạy trong `ao-sample`, thoát 0
+- [x] Bạn xem repo, board `SMP` và bảng các bước cài, rồi đồng ý chạy Epic thử (ước 30–45 USD): bạn duyệt trước ở Phiên 21 · Lượt 6
 
 ---
 
@@ -222,6 +222,7 @@ Chưa commit.
 - [ ] `/ao-status`, `/ao-spec`, `/ao-plan` đã chạy qua `claude -p`.
 
 **Kiểm chứng:**
+- [ ] `CI` xanh trên PR tài liệu và trên `develop` sau khi PR này được merge (phần chuyển từ T6)
 - [ ] Lịch sử của Epic trên Jira: mỗi lần đổi trạng thái do `automation` hoặc bạn
 - [ ] `ADR` của `sa` chốt cách `apps/web` gọi `apps/api` (spec mục 2.1), hoặc plan ghi rõ vì sao không cần ADR
 
