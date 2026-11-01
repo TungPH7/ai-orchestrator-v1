@@ -356,3 +356,83 @@ Hai lượt `claude -p` trong `ao-pilot` (bản chép kit của PR #14), chạy 
 4. `gh-guard` bỏ qua phần chuyển hướng (`2>&1`, `>file`, `<<EOF` …) khi tách lệnh. `ao-pr.mjs` không có lệnh con thì chỉ in cách dùng, nên được phép.
 
 `npm test`: 777 pass.
+
+## T18: Epic thử: `/ao-build`, `/ao-review`, `/ao-fix` tới merge (2026-11-01)
+
+Mọi lượt chạy đều bằng `ao-step.mjs` của kit (`AO_KIT_DIR`), như ở T17.
+
+**Diễn biến:**
+
+- **17:00, `/ao-build DEMO-21`.** Bước kiểm trả GO: `be-dev` làm DEMO-22 ở `xhigh` (theo nhãn `ao-effort-xhigh`), rồi `fe-dev` làm DEMO-23 ở `high` (mặc định của vai trò).
+  - `jira-guard` chặn hai lần việc `be-dev` chuyển DEMO-21 sang In Progress: GitHub trả 401.
+  - Nguyên nhân: token cài đặt của App giờ dài 390 ký tự và có dấu `.`, mà `readGitHubToken` cắt token ở dấu chấm đầu tiên. Kit PR #135 sửa.
+  - `be-dev` gắn cờ cho DEMO-22, và bạn gỡ cờ.
+- **17:14, chạy lại.** `be-dev` làm DEMO-22 xong, với 7 commit. Rồi `ao-step` dừng, báo "DEMO-21 has no ledger": agent ghi ledger theo từng Sub-task. Kit PR #136 sửa.
+- **17:31, `fe-dev`.** Code và test xong, nhưng kiểm tay không đạt: ở 320 px, bấm Tab tới nút Xóa thì khung bảng không cuộn tới nút. `fe-dev` gắn cờ DEMO-23 và hỏi bạn chọn A hay B. Bạn comment "chọn B", rồi gỡ cờ lúc 18:46.
+- **18:47, PR code.** `fe-dev` thêm `scroll-padding-inline-end:3rem`, chuyển DEMO-23 sang Done, rồi mở ao-pilot PR #16: 13 commit, CI xanh. DEMO-21 sang In Review.
+- **`/ao-status` giữa vòng:** 4 lượt, 12,51 USD.
+- **19:05, `/ao-review 16`.** `reviewer` chạm giới hạn 5 giờ sau 2 turn. Sau khi reset, lúc 20:22, `reviewer` chạy tiếp trong cùng session:
+  - `reviewer` COMMENT với 3 Low;
+  - `security` ở `max` không có finding.
+- **20:57, `/ao-fix 16` với `--note`.** Ghi chú là câu trả lời của bạn: sửa Low 1 và Low 2 của `reviewer`.
+  - `be-dev` sửa và push hai commit, `eb50b47` và `474b375`; CI xanh.
+  - Lượt `reviewer` sau đó bị Claude Code tắt vì thiếu RAM, lần thứ ba trong T17–T18.
+  - Bạn mở lại Claude Code với `CLAUDE_CODE_DISABLE_BG_SHELL_PRESSURE_REAP=1`.
+- **21:38, `/ao-review 16` lần hai.**
+  - `reviewer` review lại cả PR: 1 Medium, 2 Low.
+  - `security` chỉ review phần mới, ở `high`, với dòng `Scope: changes since 752f9de`, và không có finding nào.
+  - `merge-gate` (run `41318103199`, chạy từ `develop`) ghi `Waiting #16: approval on head 474b375`.
+- **21:53, gate ③.** Bạn approve.
+  - `merge-gate` squash merge PR #16 bằng `ao-dev`, commit `22327a5`.
+  - Deploy run `41318451522`: `audit passed: 22327a5 on develop is the merge of PR #16, which met every gate`.
+  - `jira-sync` (run `41318480925`) ghi `Made DEMO-21: Deploy to QA (in-review → ready-for-qa)`, lúc 21:54:38. Story dừng ở đó (plan, quyết định 9).
+- **Finding chưa sửa:** bạn chọn merge trước, và chuyển finding Medium cùng một finding Low sang Task DEMO-24. Claude tạo Task này bằng token CI, thuộc DEMO-20, ở trạng thái New.
+- **`/ao-status` cuối vòng:** DEMO-20 có 11 lượt, 14,92 USD; DEMO-21 có 10 lượt, 21,27 USD.
+
+**Số đo** (từ `.ai/runs/DEMO-21/state.json`; mọi lượt dùng Opus 5.5):
+
+| # | Lượt | Bước | Effort | Kết quả | Turn | Thời gian | Token vào / ra | Cache đọc / ghi | Chi phí quy đổi | Bị từ chối |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 1 | `be-dev` | DEMO-22 build | xhigh | done (gắn cờ) | 29 | 3,3 phút | 48 / 10.733 | 2.266.641 / 133.136 | 1,73 USD | 2 |
+| 2 | `be-dev` | DEMO-22 build | xhigh | done | 83 | 12,6 phút | 114 / 59.965 | 7.894.386 / 165.412 | 4,10 USD | 0 |
+| 3 | `fe-dev` | DEMO-23 build | high | done (gắn cờ) | 104 | 11,2 phút | 154 / 52.837 | 11.636.397 / 203.235 | 5,01 USD | 0 |
+| 4 | `fe-dev` | DEMO-23 build | high | done | 57 | 4,6 phút | 68 / 21.099 | 2.298.765 / 97.840 | 1,66 USD | 2 |
+| 5 | `reviewer` | review | xhigh | usage-limit | 2 | 0,2 phút | 2 / 172 | 0 / 21.242 | 0,17 USD | 0 |
+| 6 | `reviewer` | review, chạy tiếp | xhigh | done | 33 | 6,4 phút | 60 / 28.588 | 2.903.827 / 153.305 | 2,38 USD | 1 |
+| 7 | `security` | review | max | done | 41 | 8,1 phút | 58 / 47.146 | 3.294.467 / 164.511 | 2,92 USD | 0 |
+| 8 | `be-dev` | fix | high | done | 12 | 1,8 phút | 22 / 5.789 | 451.361 / 49.863 | 0,61 USD | 0 |
+| 9 | `reviewer` | review | xhigh | done | 34 | 8,6 phút | 54 / 25.780 | 2.641.851 / 131.925 | 2,10 USD | 0 |
+| 10 | `security` | review-delta | high | done | 14 | 1,7 phút | 24 / 6.033 | 462.471 / 45.875 | 0,58 USD | 0 |
+| | Tổng | | | | 409 | 58,3 phút | | | 21,27 USD | 5 |
+
+Các lần bị từ chối:
+- lượt 1: `jira-guard` chặn hai lần (lỗi token ở trên);
+- lượt 4: hook `block-atlassian` chặn một lệnh Bash có chữ "atlassian", và bộ phân loại của chế độ `auto` (theo `defaultMode` trong `~/.claude/settings.json`) chặn một lệnh;
+- lượt 6: `gh-guard` chặn `git archive` của `reviewer`, một vai trò chỉ đọc.
+
+Epic thử tốn tổng cộng 36,19 USD quy đổi (T17: 14,92; T18: 21,27), cộng 0,10 USD cho `/ao-status`. Plan ước 25–36 USD. Con số này chưa tính ba lượt bị Claude Code tắt.
+
+**Tiêu chí:**
+
+- Tiêu chí 5 đạt: `security` review phần mới ở `high` trên PR #16, báo cáo có dòng `Scope`, và `merge-gate` nhận báo cáo đó (chỉ còn chờ approve).
+- Tiêu chí 7 đạt:
+  - DEMO-22 mang nhãn `ao-effort-xhigh` và chạy ở `xhigh` ở cả hai lượt, theo `state.json`;
+  - DEMO-23 không có nhãn, nên chạy ở `high`, mức của roster;
+  - Task List của plan ghi vai trò và effort (T17).
+- Tiêu chí 8 đạt, với hai chỗ lệch:
+  - Mọi lượt agent của Epic đều do `ao-step.mjs` mở, qua `spec`, `plan`, `build`, `review` và `fix`: 21 lượt trong `state.json` của DEMO-20 và DEMO-21, cùng ba lượt bị Claude Code tắt.
+  - Claude không mở lượt agent nào bên ngoài lệnh. Mọi lượt chạy xong đều có số đo.
+  - Lệch 1: Claude gọi `ao-step.mjs` thay vì gõ lệnh `/`. Chỉ `/ao-status` và `/ao-spec` được gõ thật qua `claude -p`.
+  - Lệch 2: ba lượt bị tắt không có số đo.
+- Kiểm chứng:
+  - 15 commit của PR #16 đều đứng tên `tungph7-ao-dev[bot]`.
+  - Panel Development của Jira không đọc được bằng token có scope (`/rest/dev-status` trả 401), nên bạn xem tay ở Checkpoint 4.
+
+**Finding cho kit:**
+
+1. Token App bị cắt ở dấu chấm: đã sửa (PR #135).
+2. Ledger theo Sub-task: đã sửa (PR #136).
+3. Còn mở: `ao-step` không dừng khi Sub-task sắp làm đang mang cờ, và khi agent gắn cờ, lời dừng chỉ báo "still has to run".
+4. Claude Code tắt lệnh nền vì thiếu RAM ba lần trong T17–T18. Cách tránh: chạy ít phiên Claude Code cùng lúc, hoặc mở Claude Code với `CLAUDE_CODE_DISABLE_BG_SHELL_PRESSURE_REAP=1`.
+5. Phiên agent nhận `defaultMode: auto` của bạn, nên bộ phân loại của chế độ `auto` chặn một lệnh của `fe-dev`.
+6. Gói Pro chạm giới hạn 5 giờ hai lần (`ux` ở T17, `reviewer` ở T18). Cả hai lần, lượt chạy tiếp trong cùng session sau khi reset.

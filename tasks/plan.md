@@ -124,7 +124,7 @@ T16 ── T17 Epic: spec, plan ── T18 Epic: build, review, fix ── T19 t
 
 ### Giai đoạn 6: kiểm thật
 - [x] T17: Epic thử: `/ao-spec`, `/ao-plan` tới lúc PR tài liệu được merge [bạn]
-- [ ] T18: Epic thử: `/ao-build`, `/ao-review`, `/ao-fix` tới merge [bạn]
+- [x] T18: Epic thử: `/ao-build`, `/ao-review`, `/ao-fix` tới merge [bạn]
 
 ### Checkpoint 4
 - [ ] Tiêu chí 4, 5, 7 và 8 của spec mục 9 đạt
