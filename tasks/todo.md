@@ -118,7 +118,7 @@ Xem [plan.md](plan.md#checkpoint-1).
 
 ## Giai đoạn 2: danh tính và cổng
 
-### [ ] T3: Môi trường của phiên agent và `ao-git-credential.mjs` (spec mục 2.3)
+### [x] T3: Môi trường của phiên agent và `ao-git-credential.mjs` (spec mục 2.3)
 
 **Mô tả:**
 
@@ -135,14 +135,14 @@ Xem [plan.md](plan.md#checkpoint-1).
 - Helper không lấy được token thì in lý do ra stderr. T2 cho thấy git khi đó chỉ báo `Repository not found`.
 
 **Tiêu chí chấp nhận:**
-- [ ] Test của `launchPlan` cho từng loại vai trò: vai trò ghi có helper ghi, vai trò chỉ đọc chỉ có token đọc để `git fetch` (điều chỉnh ở T3, ghi trong `tasks/verification.md`); `devops` xin thêm Workflows.
-- [ ] Test cho thấy tham số dòng lệnh và file skills không chứa token.
-- [ ] Test giao thức credential: `get` đúng repo, repo khác, vai trò chỉ đọc, `store`, `erase`.
-- [ ] Test `gh-guard` từ chối gọi thẳng helper, `ao-step.mjs` và `ao-agent.mjs` trong phiên agent, kể cả khi bọc trong `sh -c` hay `env`; phiên chính của bạn vẫn chạy được `ao-step.mjs`.
+- [x] Test của `launchPlan` cho từng loại vai trò: vai trò ghi có helper ghi, vai trò chỉ đọc chỉ có token đọc để `git fetch` (điều chỉnh ở T3, ghi trong `tasks/verification.md`); `devops` xin thêm Workflows.
+- [x] Test cho thấy tham số dòng lệnh và file skills không chứa token.
+- [x] Test giao thức credential: `get` đúng repo, repo khác, vai trò chỉ đọc, `store`, `erase`.
+- [x] Test `gh-guard` từ chối gọi thẳng helper, `ao-step.mjs` và `ao-agent.mjs` trong phiên agent, kể cả khi bọc trong `sh -c` hay `env`; phiên chính của bạn vẫn chạy được `ao-step.mjs`.
 
 **Kiểm chứng:**
-- [ ] Năm lệnh trong quy ước chung xanh
-- [ ] `ao-agent.mjs fe-dev --ao-dry-run` trong `ao-pilot` in đúng tên biến, không in token
+- [x] Năm lệnh trong quy ước chung xanh
+- [x] `ao-agent.mjs fe-dev --ao-dry-run` trong `ao-pilot` in đúng tên biến, không in token
 
 **Phụ thuộc:** T2
 
