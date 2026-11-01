@@ -27,7 +27,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 17 | `46e16bae-3275-482c-b001-11cf43108e28` | 2026-10-31 khoảng 23:25 → 2026-11-01 khoảng 01:05 | Bạn duyệt `SPEC-dev-workflow.md`; spec merge (PR #109); Claude viết plan 19 task, bốn checkpoint (chặn gọi thẳng credential helper, effort đặt cả tham số lẫn biến môi trường, PR chép kit review bằng `/ao-review`, Story của Epic thử dừng ở Ready for QA); bạn duyệt plan (PR #110); T1 kiểm skill `/` và lệnh nền bằng Haiku: dòng `!` chỉ tự chạy khi có luật `allow`, `$ARGUMENTS` được chèn nguyên văn, `claude -p` dừng lệnh nền sau 10 phút nếu không đặt `timeout`; T2: Task thử DEMO-18, PR nháp `ao-pilot` #13, push bằng token App, Git Credential Manager được thay, `gh` dùng token App; bạn hỏi vì sao lệnh 20 phút chạy quá 20 phút; bạn hỏi Haiku dùng ở đâu và chê Haiku kém; Claude thôi dùng Haiku, đề xuất năm điểm sửa spec và xin bạn thêm quyền cho hai App; bạn duyệt năm điểm sửa, T1 đóng (PR #111); bạn đã thêm quyền cho hai App, T2 đóng (PR #112): cả sáu tiền đề về GitHub đúng; Checkpoint 1, chờ bạn |
 | 18 | `184d78d1-4600-4c36-8279-005a105c9216` | 2026-11-01 khoảng 01:08 → | Bạn cho qua Checkpoint 1 (PR #113); T3–T14 đóng (PR #114–#125): phiên agent dùng danh tính App và credential helper theo vai trò, PR tài liệu và quy tắc Q5, `merge-gate` báo PR chỉ còn chờ bạn và `jira-sync` gỡ cờ, đánh dấu dòng DoR, `ao-step.mjs` và vòng chạy `--go`, sáu skill `/ao-*`, template và prompt; chạy chỉ kiểm trong `ao-pilot` tìm ra lỗi 403 khi đọc commit status; Checkpoint 2 (PR #126), chờ bạn |
 | 19 | `44d6269e-f8c5-4052-a81c-f0f6385e00ed` | 2026-11-01 khoảng 10:35 → khoảng 11:30 | Bạn cho qua Checkpoint 2 (PR #127); T15: Task DEMO-19, ao-pilot PR #14 chép kit bằng danh tính bot `ao-dev`, `/ao-review`: `reviewer` COMMENT, `security` chạm giới hạn 5 giờ rồi chạy tiếp và COMMENT, 11,69 USD quy đổi; `merge-gate` bản mới chạy ở máy comment và gắn cờ một lần; trả lời cuối của Claude bị bộ lọc an toàn chặn hai lần, nên phiên này không có lượt nào trong log |
-| 20 | `bc6dea4e-d395-4a5d-b439-2a337292b2e7` | 2026-11-01 khoảng 11:45 → | Bạn dán đoạn cuối của Phiên 19 để làm tiếp; Claude báo kết quả T15 và hỏi về nhánh `main` và các finding của kit; bạn merge PR #14 và chọn cả hai đề xuất: nhánh mặc định của `ao-pilot` sang `develop`, sửa finding ở kit không chạy agent; T15 đóng (PR #128), T15a (PR #129), T15b (PR #130); T16 đóng (PR #131): agent dùng danh tính App, vai trò chỉ đọc không push được; Checkpoint 3, bạn đồng ý chạy Epic thử; T17: Epic DEMO-20, `/ao-status`, chờ bạn bấm `Start spec` |
+| 20 | `bc6dea4e-d395-4a5d-b439-2a337292b2e7` | 2026-11-01 khoảng 11:45 → | Bạn dán đoạn cuối của Phiên 19 để làm tiếp; Claude báo kết quả T15 và hỏi về nhánh `main` và các finding của kit; bạn merge PR #14 và chọn cả hai đề xuất: nhánh mặc định của `ao-pilot` sang `develop`, sửa finding ở kit không chạy agent; T15 đóng (PR #128), T15a (PR #129), T15b (PR #130); T16 đóng (PR #131): agent dùng danh tính App, vai trò chỉ đọc không push được; Checkpoint 3, bạn đồng ý chạy Epic thử; T17: Epic DEMO-20, `/ao-status`, chờ bạn bấm `Start spec`; bạn bấm `Start spec`; `/ao-spec` bị Claude Code tắt vì máy thiếu RAM; bạn bảo chạy lại; `ba` viết SPEC, `ao-step` dừng vì không thấy nhánh tài liệu chưa push, kit PR #132 sửa; chờ bạn chọn chạy bằng code của kit hay chép kit lần hai, và trả lời ba câu hỏi của `ba` |
 
 ---
 
@@ -7183,3 +7183,95 @@ Mình gõ thật `/ao-status DEMO-20` qua `claude -p`, dùng Sonnet, tốn 0,10 
 - Ở module trước, stage spec của một Epic nhỏ tốn 5,30 USD quy đổi.
 
 Mình đã ghi các lượt quyết định của phiên này vào `misc/brainstorm-discussion.md`. Phiên 19 không có lượt nào trong log, vì câu trả lời cuối của phiên đó bị bộ lọc an toàn chặn. Bảng phiên có thêm một dòng tóm tắt cho Phiên 19.
+
+# Phiên 20 · Lượt 5 — 2026-11-01 khoảng 12:55
+
+**Bạn:**
+
+````markdown
+đã bấm
+````
+
+Trước khi trả lời, Claude chạy bước chỉ kiểm của `ao-spec` (GO với bốn lượt), rồi gõ `/ao-spec DEMO-20` qua `claude -p` ở nền.
+
+**Claude:**
+
+`/ao-spec DEMO-20` đang chạy ở nền: phiên `claude -p` trong `ao-pilot` chạy skill, rồi skill chạy `ao-step.mjs spec DEMO-20 --go`. Bốn lượt agent sẽ chạy lần lượt: `ba` viết SPEC, `ux` viết design, `sa` thêm phần kiến trúc, rồi `ba` mở PR tài liệu, tổng có thể mất 20–40 phút. Mình đang theo dõi `.ai/runs/DEMO-20/state.json` và sẽ báo khi có kết quả. Nếu `ba` để lại câu hỏi, mình sẽ chuyển cho bạn ngay.
+
+Khoảng 13:02, Claude Code tắt lệnh nền vì máy thiếu RAM. Claude kiểm lại, đưa `ao-pilot` về `develop`, rồi trả lời tiếp:
+
+**Claude:**
+
+Lần chạy `/ao-spec DEMO-20` đã bị dừng: khoảng 13:02, Claude Code tắt lệnh nền của mình vì máy thiếu RAM. Theo quy định của Claude Code, mình không được tự chạy lại, nên đang chờ bạn.
+
+**Lúc bị dừng:**
+- Lượt `ba` mới chạy 4 phút, gồm 15 lệnh đọc code và Jira. `ba` chưa viết SPEC, chưa commit, chưa push gì.
+- Lệnh bị tắt kéo theo cả `ao-step.mjs` và lượt `ba`. Hiện không còn tiến trình nào của Epic này.
+- Máy còn trống khoảng 2,8 GB RAM trên 16 GB, và đang có 4 phiên `claude.exe` cùng mở. Mỗi lượt agent còn tự mở thêm các server MCP (`atlassian`, `chrome-devtools`).
+
+**Mình đã dọn lại:**
+- `ao-pilot` đã về `develop`. Nhánh `feature/DEMO-20-spec` rỗng chỉ có ở máy, mình đã xóa.
+- Trên Jira và GitHub không có gì đổi. DEMO-20 vẫn ở Specifying.
+- Phần chạy dở của `ba` bị mất, chưa đo được chi phí vì log không có dòng kết quả cuối. Ước chừng dưới 1 USD quy đổi.
+
+**Để chạy lại:**
+1. Đóng bớt các phiên Claude Code khác và các ứng dụng nặng (trình duyệt nhiều tab chẳng hạn), chỉ giữ phiên này.
+2. Nhắn mình "chạy lại".
+
+Lần này mình sẽ chạy thẳng `ao-step.mjs spec DEMO-20 --go` ở nền, không qua `claude -p`, để bớt một phiên Claude. Lệnh `/ao-spec` đã được gõ thật một lần, và bước kiểm của nó trả GO đúng.
+
+Nếu bạn muốn Claude Code không bao giờ tắt lệnh nền khi thiếu RAM, hãy mở Claude Code với biến môi trường `CLAUDE_CODE_DISABLE_BG_SHELL_PRESSURE_REAP=1`. Đổi lại, khi RAM cạn hẳn, máy có thể treo hoặc tiến trình bị Windows tắt.
+
+# Phiên 20 · Lượt 6 — 2026-11-01 khoảng 13:06
+
+**Bạn:**
+
+````markdown
+chạy lại
+````
+
+Trước khi trả lời, Claude kiểm RAM (còn trống khoảng 6 GB) rồi chạy `ao-step.mjs spec DEMO-20 --go` ở nền.
+
+**Claude:**
+
+Stage spec của DEMO-20 đang chạy lại ở nền: `ba` viết SPEC, `ux` viết design, `sa` thêm phần kiến trúc, rồi `ba` mở PR tài liệu. Lần này mình chạy thẳng `ao-step.mjs spec DEMO-20 --go`, không qua `claude -p`, và không bật monitor, để bớt tốn RAM.
+
+Cả bốn lượt có thể mất 20–40 phút. Khi lệnh xong, mình sẽ báo kết quả và chi phí từng lượt. Nếu agent để lại câu hỏi, mình sẽ chuyển cho bạn.
+
+Lệnh xong lúc 13:12, sau một lượt `ba`. Claude tìm ra lỗi của kit, sửa nó (kit PR #132), chạy bước chỉ kiểm bằng code của kit, rồi trả lời tiếp:
+
+**Claude:**
+
+`ba` đã viết xong SPEC của DEMO-20. Lần chạy này cũng lộ ra một lỗi của kit, mình đã sửa. Giờ mình cần bạn trả lời hai việc.
+
+**Kết quả lượt `ba`** (13:06–13:12, 22 turn, 1,63 USD quy đổi):
+- `docs/specs/DEMO-20/spec.md` có 3 user story với AC1–AC11:
+  - xóa từng dòng, tới khi giỏ trống;
+  - tính lại mã giảm giá và tổng cộng;
+  - hai AC bảo vệ phía server: từ chối form gửi từ trang khác, và bỏ qua giá gửi kèm trong form.
+- `ba` tính mọi con số bằng `renderCart` thật, và chạy thử trong Chrome. Lần thử cho thấy: nếu nút "Xóa" nằm chung form với ô mã giảm giá, bấm Enter ở ô mã sẽ xóa một dòng. Vì vậy mỗi nút "Xóa" có form riêng.
+- SPEC nằm ở commit `6d8cb7b` trên nhánh `feature/DEMO-20-spec` ở máy, chưa push.
+
+**Lỗi của kit, đã sửa trong kit PR #132:**
+- `ao-step` đọc tài liệu của Epic trên GitHub, trong khi ở stage spec các agent chỉ commit ở máy, tới bước mở PR tài liệu mới push.
+- Vì vậy sau lượt `ba`, nó không thấy SPEC và dừng.
+- Giờ nó đọc nhánh tài liệu ở máy khi nhánh đó có. Lỗi này lọt qua vì test của runner dùng dữ liệu giả.
+- Chạy lại bước chỉ kiểm bằng code đã sửa, `ao-step` thấy SPEC, và dừng đúng như thiết kế: `ba` có câu hỏi cho bạn.
+
+**Câu 1: chạy phần còn lại bằng code nào?** Bản chép kit trong `ao-pilot` vẫn còn lỗi này, nên với bản đó `/ao-spec` sẽ dừng sau mỗi lượt.
+- **(a) Mình khuyên chọn cách này:** từ giờ tới hết T18, mình chạy `ao-step.mjs` bằng code của kit (`AO_KIT_DIR` trỏ vào repo kit), như đã làm ở T3 và Checkpoint 2. Không tốn thêm. Có hai điều nên biết:
+  - các agent, hook `gh-guard` và helper git sẽ dùng code của kit, có cả các bản sửa T15a, T15b;
+  - `merge-gate`, `jira-sync` và `audit` trên GitHub vẫn chạy bản chép trong `ao-pilot`.
+- **(b)** Mở PR chép kit lần hai vào `ao-pilot` trước. `reviewer` và `security` review hết khoảng 10 USD quy đổi, rồi bạn tự merge.
+
+**Câu 2: ba câu hỏi mở của `ba`.** SPEC đang viết theo đề xuất của `ba`. Bạn đổi câu nào thì `ba` sửa SPEC theo.
+1. **Có hỏi xác nhận trước khi xóa không?** `ba` đề xuất: không. Trang không có script, nên muốn hỏi xác nhận phải thêm một trang, hoặc thêm một lần gửi form. Giỏ cũng không được lưu: mở lại `/` là có lại giỏ mẫu.
+2. **Có hiện câu báo sau khi xóa, như "Đã xóa Bút bi khỏi giỏ hàng.", không?** `ba` đề xuất: không, vì dòng biến mất và các con số đổi là đủ. Nếu `ux` thấy người dùng trình đọc màn hình cần một câu báo, `ux` sẽ đề xuất câu chữ trong `design.md`, để bạn duyệt ở gate ①.
+3. **Kiểm việc tính lại phí giao hàng trên giỏ nào?** Giỏ mẫu luôn dưới ngưỡng miễn phí 50.000 ₫, nên xóa trên giỏ mẫu không bao giờ làm đổi phí. `ba` đề xuất: test E2E tự dựng một giỏ riêng 55.000 ₫, và giữ nguyên giỏ mẫu. Lý do: đổi giỏ mẫu làm hỏng E2E của DEMO-10 và DEMO-11.
+
+Bạn trả lời gọn được, ví dụ "1a, câu hỏi theo đề xuất". Sau đó mình ghi câu trả lời vào `.ai/runs/DEMO-20/answers.md`, rồi chạy tiếp các bước:
+
+1. `ba` sửa SPEC theo câu trả lời.
+2. `ux` viết `design.md`.
+3. `sa` thêm phần kiến trúc.
+4. `ba` mở PR tài liệu.
