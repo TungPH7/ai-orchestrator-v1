@@ -28,8 +28,10 @@ Pilot 1 kiểm kit Cấp 1 trên một dự án thật: repo mới, stack Next.j
 
 - Repo private `TungPH7/ao-sample`, gói Free. Nhánh mặc định là `develop` (README, bước cài 6).
 - Monorepo dùng npm workspaces, khai `"workspaces": ["apps/*"]` ở `package.json` gốc.
-- `apps/web`: tạo bằng `create-next-app` 16.4.3, App Router, TypeScript, ESLint, theo lựa chọn mặc định của công cụ. Có một trang chủ đơn giản. Cổng 3000.
-- `apps/api`: tạo bằng `nest new` của `@nestjs/cli` 12.0.11, Express, Jest. Có `GET /health` trả `{ "status": "ok" }`. Cổng 3001.
+- `apps/web`: tạo bằng `create-next-app` 16.4.3, App Router, TypeScript, ESLint, Tailwind CSS, thư mục `src/`, theo lựa chọn mặc định của công cụ (flag ghi ở `tasks/verification.md`, T1). Unit test bằng Vitest và React Testing Library, theo hướng dẫn kèm trong gói Next.js. Giữ `AGENTS.md` mà Next.js sinh ra. Có một trang chủ đơn giản. Cổng 3000.
+- `apps/api`: tạo bằng `nest new` của `@nestjs/cli` 12.0.11, Express, ESM, Vitest và oxlint, theo mặc định của NestJS 12. Có `GET /health` trả `{ "status": "ok" }`. Cổng 3001. Hai chỗ bỏ khỏi khung (bạn duyệt ở Checkpoint 1):
+  - gỡ `@nestjs/mau` và script `deploy`: gói này mang 2 lỗ hổng mức high, và dự án không deploy lên nền tảng của NestJS;
+  - xóa `apps/api/AGENTS.md`: file này quảng cáo dịch vụ NestJS Observe và chỉ agent cài MCP server của họ.
 - Cách `apps/web` gọi `apps/api` không chốt ở đây (gọi từ server của Next.js hay từ trình duyệt, có CORS hay không). `sa` chốt việc này trong plan của Epic, kèm ADR. Đây là một phần của việc kiểm agent.
 - Không có cơ sở dữ liệu (A2): `apps/api` giữ dữ liệu trong bộ nhớ, và dữ liệu mất khi app khởi động lại.
 - E2E: Playwright ở thư mục `e2e/` tại gốc repo. `playwright.config.ts` chạy cả hai app bằng `webServer`. Khung có một test smoke: trang chủ mở được và `GET /health` trả 200.
@@ -40,7 +42,7 @@ Pilot 1 kiểm kit Cấp 1 trên một dự án thật: repo mới, stack Next.j
 | Script | Ai cần | Ghi chú |
 |---|---|---|
 | `lint`, `typecheck`, `build` | Job `build-test` của CI | |
-| `test:coverage` | Job `build-test` | Mỗi app ghi `apps/<app>/coverage/lcov.info`, khớp mẫu `lcov` trong `quality/gates.yaml`. Coverage tính mọi file nguồn, kể cả file chưa test nào import (`collectCoverageFrom`) |
+| `test:coverage` | Job `build-test` | Mỗi app ghi `apps/<app>/coverage/lcov.info`, khớp mẫu `lcov` trong `quality/gates.yaml`. Coverage tính mọi file nguồn, kể cả file chưa test nào import (`coverage.include` của Vitest) |
 | `prepare` | `npm install` | `node .ai-orchestrator/scripts/install-hooks.mjs` (README, bước cài 4) |
 | `test:e2e`, `dev` | Agent và bạn, ở máy | Job `build-test` của kit không chạy E2E |
 
@@ -61,7 +63,8 @@ Trước khi chép skill của bên thứ ba, mình đọc hết nội dung và 
 
 - Key `SMP` còn trống: ngày 2026-11-01, `GET /rest/api/3/project/SMP` trả 404. Site đang có `DEMO` (company-managed) và `SCRUM` (team-managed).
 - Làm bước 9–13 của `docs/jira-setup.md`: space, board, GitHub for Jira, môi trường, kiểm lại. Bước 1–8 (group, service account, Rovo MCP, resolution, status, workflow, work type, workflow scheme, trường) dùng chung cho cả site, không làm lại.
-- Mình làm qua REST API, bằng `JIRA_ADMIN_EMAIL` và `JIRA_ADMIN_TOKEN`, mọi bước API cho phép: tạo space company-managed, gán `AO workflow scheme`, gán scheme work type, thêm trường vào screen. Bước nào API không làm được thì bạn bấm theo checklist, có từng bước bấm. `verification.md` ghi bước nào làm bằng gì.
+- Token admin Jira chỉ có scope đọc, nên không tạo được space (T2: 401). Bạn tạo space trên giao diện theo từng bước bấm. `verification.md` ghi bước nào làm bằng gì.
+- `SMP` dùng chung cấu hình với `DEMO` (bạn chọn ở Checkpoint 1): `AO workflow scheme`, issue type scheme và issue type screen scheme của `DEMO`, nên các trường trên screen của bước 9 có sẵn. Đổi lại, sửa một scheme cho `SMP` sẽ đổi luôn cho `DEMO`.
 - Xong khi `npm run jira:check -- --space SMP` không còn chỗ lệch, và bạn đã xem tay các dòng `Check by hand`.
 
 ### 2.4 GitHub
@@ -71,16 +74,15 @@ Trước khi chép skill của bên thứ ba, mình đọc hết nội dung và 
 - Tạo repo, push commit đầu, tạo `develop`, đặt `develop` làm nhánh mặc định.
 - Environment `merge-gate` chỉ cho nhánh `develop`, và environment `development` cho deploy giả.
 - `npm run gh:protect -- --repo TungPH7/ao-sample`. Repo private ở gói Free chỉ được báo soft mode.
-- Thêm repo vào bản cài của hai App bằng API (`PUT /user/installations/{installation_id}/repositories/{repository_id}`), nếu token của `gh` được phép.
-- `.claude/settings.local.json` của repo ở máy bật hai server `atlassian` và `chrome-devtools` (`enabledMcpjsonServers`), thay cho README bước cài 8.
+- Đặt secret `JIRA_CI_TOKEN` của repo bằng cách pipe biến môi trường cùng tên, để token không nằm trong lệnh.
+- `.claude/settings.local.json` của repo ở máy bật hai server `atlassian` và `chrome-devtools` (`enabledMcpjsonServers`). File này chỉ có hiệu lực khi thư mục đã được tin cậy (T1).
 
 **Bạn làm** (mình ghi từng bước bấm khi tới lúc):
 
-- Đặt secret `JIRA_CI_TOKEN` cho repo bằng `! gh secret set …`. Mình không đọc được giá trị này.
 - Tạo một private key mới cho `ao-dev` trên trang của App (bạn chọn ngày 2026-11-01, Phiên 21 · Lượt 4). Mình đặt key đó làm secret `AO_DEV_APP_KEY` của environment `merge-gate` bằng cách pipe file, rồi xóa file khỏi máy (`docs/quality-gates.md`, mục "Environment `merge-gate`").
-- Thêm repo vào hai App bằng giao diện, nếu API từ chối.
+- Thêm repo vào ba App trên giao diện: `tungph7-ao-dev`, `tungph7-ao-review` và app GitHub của Atlassian. API từ chối token của `gh` (T2: 403).
 - Nối app GitHub for Jira với repo. Lần đầu có `.jira/config.yml` thì ngắt rồi nối lại (README bước cài 7).
-- Mở `claude` trong repo một lần, nếu Claude Code vẫn hỏi tin cậy thư mục hoặc hỏi bật server MCP.
+- Mở `claude` trong repo một lần và chấp nhận hộp thoại tin cậy thư mục (README bước cài 8). Nếu chưa tin cậy, `claude -p` bỏ qua luật `allow` của dự án và không bật server MCP qua `settings.local.json` (T1).
 
 ### 2.5 Commit đầu và nhánh (A3)
 
@@ -106,7 +108,7 @@ Số Story và Sub-task do `sa` và `ba` quyết trong plan. Một Story đụng
 
 ### 2.7 Cách chạy lệnh (A1)
 
-- Mỗi lệnh chạy bằng `claude -p --model sonnet "/ao-<lệnh> <đối số>"` trong thư mục `ao-sample`, ở nền, như T17 của `dev-workflow`. Phiên này chỉ điều phối; agent chạy với model và effort của vai trò.
+- Mỗi lệnh chạy bằng `MSYS_NO_PATHCONV=1 claude -p --model sonnet "/ao-<lệnh> <đối số>"` trong thư mục `ao-sample`, ở nền, như T17 của `dev-workflow`. Thiếu `MSYS_NO_PATHCONV=1`, Git Bash đổi `/ao-…` thành đường dẫn Windows, và model đi vòng qua script thay cho skill (T1). Phiên này chỉ điều phối; agent chạy với model và effort của vai trò.
 - Lệnh đi qua skill `/ao-*` và script trong `.ai-orchestrator/` của dự án. Không đặt `AO_KIT_DIR`.
 - Các lượt agent chạy lần lượt (A7). Khi chạm giới hạn 5 giờ hoặc máy thiếu RAM, mình chờ rồi chạy lại, và ghi vào `verification.md`.
 - Khi lệnh dừng để chờ bạn (gate ①②③, câu hỏi của agent, cờ "Needs you"), mình báo bạn bằng tiếng Việt và chờ.
@@ -124,13 +126,17 @@ Spec dựa vào sáu điều chưa ai thử trên máy bạn. Giai đoạn đầ
 
 Điều nào sai thì mình dừng và đề xuất sửa spec.
 
+**Kết quả (2026-11-02, Checkpoint 1):** điểm 1 đúng một phần (NestJS 12 dùng Vitest và oxlint; `@nestjs/mau` mang 2 lỗ hổng high), điểm 2 đúng khi dùng Vitest, điểm 3 và 4 sai (API từ chối token), điểm 5 đúng kèm `MSYS_NO_PATHCONV=1` và việc tin cậy thư mục. Bạn duyệt sáu chỗ sửa ở Phiên 21 · Lượt 6; mục 2.1, 2.3, 2.4, 2.7, 3, 6, 7 đã sửa theo. Chi tiết trong `tasks/verification.md`.
+
 ## 3. Tech stack
 
 Phiên bản lấy bằng `npm view` ngày 2026-11-01:
 
 - Node.js 24 (máy: 24.17.0), npm 11.13.0.
 - Next.js 16.4.3, React 19.3.1. NestJS 12.3.2, `@nestjs/cli` 12.0.11. Playwright 1.64.1.
-- TypeScript và Jest: dùng bản mà hai công cụ sinh khung chọn. npm đang có TypeScript 7.0.2; chưa kiểm Next.js và NestJS đã hỗ trợ bản này chưa.
+- TypeScript theo bản mà hai công cụ sinh khung chọn: `apps/web` 5.9.3, `apps/api` 6.0.3 (T1). npm đang có TypeScript 7.0.2, nhưng không công cụ nào chọn bản này.
+- Unit test: Vitest 4 và `@vitest/coverage-v8` cho cả hai app; `apps/web` thêm `@vitejs/plugin-react`, `jsdom`, `@testing-library/react`, `@testing-library/dom`.
+- Lint: ESLint 9 với `eslint-config-next` cho `apps/web`; oxlint (`--type-aware`) cho `apps/api`.
 - Kit: commit `main` lúc dựng.
 
 ## 4. Lệnh
@@ -150,12 +156,12 @@ npm run test:e2e             # Playwright tự chạy hai app
 Các lệnh `/ao-*`, chạy từ phiên này:
 
 ```
-claude -p --model sonnet "/ao-status"
-claude -p --model sonnet "/ao-spec SMP-1"
-claude -p --model sonnet "/ao-plan SMP-1"
-claude -p --model sonnet "/ao-build SMP-2"
-claude -p --model sonnet "/ao-review 3"
-claude -p --model sonnet "/ao-fix 3"
+MSYS_NO_PATHCONV=1 claude -p --model sonnet "/ao-status"
+MSYS_NO_PATHCONV=1 claude -p --model sonnet "/ao-spec SMP-1"
+MSYS_NO_PATHCONV=1 claude -p --model sonnet "/ao-plan SMP-1"
+MSYS_NO_PATHCONV=1 claude -p --model sonnet "/ao-build SMP-2"
+MSYS_NO_PATHCONV=1 claude -p --model sonnet "/ao-review 3"
+MSYS_NO_PATHCONV=1 claude -p --model sonnet "/ao-fix 3"
 ```
 
 Mã item và số PR ở trên chỉ là ví dụ. Trong repo kit:
@@ -198,7 +204,7 @@ ai-orchestrator-v1/
 
 ## 6. Code style
 
-- Khung giữ quy ước mặc định của công cụ sinh: ESLint của Next.js; ESLint và Prettier của NestJS.
+- Khung giữ quy ước mặc định của công cụ sinh: ESLint của Next.js; oxlint và Prettier của NestJS. Chú thích tắt lint (`eslint-disable`, `oxlint-disable`) cần `reason:` trên cùng dòng, như job `policy` kiểm.
 - Code, commit và PR viết tiếng Anh. Tài liệu cho người đọc (SPEC, plan, báo cáo, ticket Jira) viết tiếng Việt (`SPEC.md`, nguyên tắc 6).
 - Commit theo `type(scope): subject`, có mã Jira khi thuộc một item, như các module trước.
 
@@ -218,7 +224,7 @@ export class HealthController {
 
 ## 7. Chiến lược test
 
-- **Khung:** unit test cho `HealthController` (Jest, `@nestjs/testing`), test render trang chủ (Jest với `next/jest` và React Testing Library), và test smoke E2E. Cả năm script ở mục 4 phải xanh ở máy trước commit đầu, và `CI` phải xanh trên `main` và `develop` sau khi push.
+- **Khung:** unit test cho `HealthController` (Vitest, `@nestjs/testing`), test render trang chủ (Vitest với React Testing Library), và test smoke E2E. Cả năm script ở mục 4 phải xanh ở máy trước commit đầu, và `CI` phải xanh trên `main` và `develop` sau khi push.
 - **Epic:** agent viết test theo TDD như prompt của vai trò. Coverage của dòng thay đổi ít nhất 80% (`quality/gates.yaml`).
 - **Lỗi của kit:** sửa ở kit kèm test `node:test`, như các module trước. Năm lệnh kiểm của kit phải xanh.
 - **Kiểm thật:** `verification.md` có bảng các lượt agent (vai trò, effort, turn, thời gian, chi phí quy đổi), bảng các bước cài, và danh sách lỗi kit với PR sửa.
@@ -246,18 +252,17 @@ export class HealthController {
 2. **Space Jira:** space mới `SMP`, không dùng `DEMO`.
 3. **Feature của Epic thử:** Ghi chú (tạo và xem danh sách).
 4. **Giả định A1–A8:** bạn duyệt cả tám. A1 cách chạy lệnh, A2 không có cơ sở dữ liệu, A3 commit đầu, A4 deploy giả, A5 ai làm gì, A6 phiên bản, A7 chi phí và tải máy, A8 cách làm.
+5. **Sáu chỗ sửa sau T1–T2 (Checkpoint 1, Phiên 21 · Lượt 6):** Vitest cho cả hai app; oxlint cho `apps/api`; gỡ `@nestjs/mau` và script `deploy`; xóa `apps/api/AGENTS.md`; thêm `oxlint-disable` vào mẫu tắt kiểm tra của kit (T1a); gõ lệnh với `MSYS_NO_PATHCONV=1`.
+6. **Cấu hình Jira:** `SMP` dùng chung scheme với `DEMO`.
 
 ## 11. Câu hỏi mở
 
-Không có. Hai mặc định bạn có thể đổi khi duyệt:
-
-1. `be-dev` dùng skill `nestjs-best-practices` của bên thứ ba, nếu qua được việc kiểm ở mục 2.2.
-2. Unit test của cả hai app dùng Jest, để agent chỉ cần một cách viết test. Next.js cũng có hướng dẫn cho Vitest.
+Không có. Một mặc định bạn có thể đổi: `be-dev` dùng skill `nestjs-best-practices` của bên thứ ba, nếu qua được việc kiểm ở mục 2.2.
 
 ## 12. Rủi ro
 
 - **Giới hạn 5 giờ của gói Pro và RAM 16 GB** làm Epic kéo dài qua nhiều lượt. Epic DEMO-20 chạm giới hạn 5 giờ hai lần và bị tắt vì thiếu RAM ba lần.
-- **Phiên bản mới** (Next.js 16, NestJS 12, TypeScript 7) có thể chưa khớp nhau. Cách giảm: dùng bản mà công cụ sinh khung chọn, và kiểm ở task đầu (mục 2.8, điểm 1).
+- **Phiên bản mới** (Next.js 16, NestJS 12) có thể chưa khớp nhau. T1 đã build, lint, typecheck và test được cả hai app trong một workspace; hai app dùng hai bản TypeScript khác nhau.
 - **Skill của bên thứ ba** là rủi ro chuỗi cung ứng. Cách giảm: đọc trước khi chép, ghim theo commit, và PR sửa skill do bạn merge.
 - **Agent chưa từng làm Next.js và NestJS trong kit.** Plan đặt một Checkpoint ngay sau lượt build đầu tiên.
 - **`audit` đỏ trên commit đầu** (mục 2.5). Đây là lần đỏ dự kiến.
