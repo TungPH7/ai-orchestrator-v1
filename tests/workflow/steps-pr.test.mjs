@@ -69,10 +69,23 @@ test('/ao-build of a Task by its role label; the roster effort when there is no 
   assert.equal(decide('build', storyFacts({ item: { ...task.item, effort: 'max', labels: ['ao-devops', 'ao-effort-max'] }, wip: task.wip })).runs[0].effort, 'max');
 });
 
+// The agents of a split Story keep the ledgers of its Sub-tasks, not of the Story (dev-workflow T18: /ao-build stopped
+// after be-dev finished DEMO-22, saying DEMO-21 had no ledger).
 test('/ao-build goes on after the BE Sub-task is done, and an In Progress item with a ledger is built again', () => {
-  const half = storyFacts({ item: { state: 'in-progress', status: 'In Progress', agent: 'be-dev', subtasks: [sub('DEMO-22', 'be-dev', { state: 'done' }), sub('DEMO-23', 'fe-dev')] }, ledger: true });
-  // In Progress with a ledger and no run state: the agent of the item reads its ledger.
-  assert.deepEqual(decide('build', half).runs.map(({ role, purpose, prompt }) => [role, purpose, prompt]), [['be-dev', 'build', PURPOSES['build-again']({ key: 'DEMO-21', status: 'In Progress' })]]);
+  const half = storyFacts({ item: { state: 'in-progress', status: 'In Progress', agent: 'be-dev', subtasks: [sub('DEMO-22', 'be-dev', { state: 'done' }), sub('DEMO-23', 'fe-dev')] }, subtaskLedgers: ['DEMO-22'] });
+  // BE is done: FE goes on on the branch BE left, and opens the PR.
+  assert.deepEqual(decide('build', half).runs.map(({ role, key, purpose, prompt, checkout }) => [role, key, purpose, prompt, checkout]), [
+    ['fe-dev', 'DEMO-23', 'build', PURPOSES['build-next']({ key: 'DEMO-23', story: 'DEMO-21', role: 'fe-dev', previous: 'DEMO-22', last: true }), undefined],
+  ]);
+  // BE stopped half way with its ledger: be-dev reads it and goes on, then FE.
+  const midway = storyFacts({ item: { state: 'in-progress', status: 'In Progress', agent: 'be-dev', subtasks: [sub('DEMO-22', 'be-dev', { state: 'in-progress', status: 'In Progress' }), sub('DEMO-23', 'fe-dev')] }, subtaskLedgers: ['DEMO-22'] });
+  assert.deepEqual(decide('build', midway).runs.map(({ role, key, prompt }) => [role, key, prompt]), [
+    ['be-dev', 'DEMO-22', PURPOSES['build-again']({ key: 'DEMO-22', status: 'In Progress' })],
+    ['fe-dev', 'DEMO-23', PURPOSES['build-next']({ key: 'DEMO-23', story: 'DEMO-21', role: 'fe-dev', previous: 'DEMO-22', last: true })],
+  ]);
+  // A Task with no Sub-task keeps its own ledger.
+  const task = storyFacts({ item: { key: 'DEMO-24', type: 'Task', workType: 'task', state: 'in-progress', status: 'In Progress', agent: 'devops', subtasks: [], labels: ['ao-devops'], role: 'devops', roles: ['devops'] }, ledger: true });
+  assert.deepEqual(decide('build', task).runs.map(({ role, prompt }) => [role, prompt]), [['devops', PURPOSES['build-again']({ key: 'DEMO-24', status: 'In Progress' })]]);
   const resumed = { ...half, run: { key: 'DEMO-21', runs: [{ n: 1, command: 'build', role: 'fe-dev', purpose: 'build', session: 's-fe', outcome: 'usage-limit', effort: 'xhigh' }] } };
   assert.deepEqual(decide('build', resumed).runs, [{ role: 'fe-dev', key: 'DEMO-21', effort: 'xhigh', purpose: 'build', resume: 's-fe', prompt: resumePrompt('DEMO-21'), checkout: undefined }]);
 });
