@@ -316,7 +316,7 @@ Xem [plan.md](plan.md#checkpoint-1).
 
 **Cỡ:** M
 
-### [ ] T10: `decideStep` cho `status`, `spec`, `plan` (spec mục 2.1, 2.2, 2.4)
+### [x] T10: `decideStep` cho `status`, `spec`, `plan` (spec mục 2.1, 2.2, 2.4)
 
 **Mô tả:**
 
@@ -328,12 +328,12 @@ Xem [plan.md](plan.md#checkpoint-1).
 - `lib/workflow/prompts.mjs`: prompt của `ba`, `ux`, `sa` cho hai stage, và prompt `--resume` kèm câu trả lời của bạn.
 
 **Tiêu chí chấp nhận:**
-- [ ] Mỗi lệnh có một trường hợp `GO`. Mỗi điều kiện dừng có một trường hợp `STOP`, kèm lý do và lệnh nên chạy thay.
-- [ ] Có lượt dở dang trong `state.json` thì lượt đó được chạy tiếp bằng `--resume`, kèm lời nhắc đọc ledger.
-- [ ] Prompt không lặp lại phần agent đã có trong định nghĩa của nó; test so với file agent sinh ra.
+- [x] Mỗi lệnh có một trường hợp `GO`. Mỗi điều kiện dừng có một trường hợp `STOP`, kèm lý do và lệnh nên chạy thay.
+- [x] Có lượt dở dang trong `state.json` thì lượt đó được chạy tiếp bằng `--resume`, kèm lời nhắc đọc ledger.
+- [x] Prompt không lặp lại phần agent đã có trong định nghĩa của nó; test so với file agent sinh ra.
 
 **Kiểm chứng:**
-- [ ] Năm lệnh trong quy ước chung xanh
+- [x] Năm lệnh trong quy ước chung xanh
 
 **Phụ thuộc:** T8, T9
 
