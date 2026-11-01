@@ -145,3 +145,43 @@ Phát hiện: App `ao-review` không có quyền Commit statuses, nên token ch�
 7. T10, T14: `ux` chạy khi SPEC nhắc `design.md`; bước của `sa` được tính là xong khi SPEC có mục `### Non-functional requirements`. Prompt của `ba` và `sa` đã ghi hai điều này.
 
 **Bạn duyệt (2026-11-01, Phiên 19 · Lượt 1):** "qua checkpoint 2". Bảy chỗ đổi được giữ nguyên.
+
+## T15: Bản chép kit mới vào `ao-pilot` (2026-11-01)
+
+**Chuẩn bị:**
+
+- Task `DEMO-19` (tạo bằng token CI, ở New).
+- Nhánh `feature/DEMO-19-dev-workflow-kit` tách từ `develop` (`5956702`). Commit `6152cff` chép kit tại `86331a9` theo các bước cài của README, và thêm `actions: read` vào `deploy.yml`.
+- Commit và push bằng cấu hình git của phiên `devops`: tác giả `tungph7-ao-dev[bot]`, credential qua `ao-git-credential.mjs devops` của bản chép. GitHub nhận push, kể cả các file trong `.github/workflows/`.
+- `ao-dev` mở ao-pilot PR #14 bằng `ao-pr.mjs create`. CI xanh (run `41270368919`, 4 phút tính tiền).
+
+**Kiểm trước khi review:** `render-agents.mjs --project . --check` báo 11 file đúng. `.claude/skills/` (96 file), `.claude/hooks/` và sáu thư mục của `.ai-orchestrator/` giống hệt kit. `ao-step.mjs status DEMO-19` chạy từ bản chép, thoát 0.
+
+**`/ao-review` bằng `ao-step.mjs review 14`, từ nhánh của PR (quyết định 8):**
+
+| Lượt | Effort | Kết quả | Turn | Thời gian | Chi phí quy đổi | Bị từ chối |
+|---|---|---|---|---|---|---|
+| `reviewer` | xhigh | COMMENT trên `6152cff`: 0 Critical/High, 2 Medium, 8 Low | 41 | 14 phút | 4,43 USD | 3 |
+| `security`, lượt 1 | max | Chạm giới hạn 5 giờ của tài khoản, chưa có báo cáo | 39 | 16 phút | 4,55 USD | 0 |
+| `security`, chạy tiếp | max | Cùng session (`--resume`), COMMENT trên `6152cff`: 0 Critical/High, 2 Medium, 4 Low | 6 | 3 phút | 2,71 USD | 0 |
+| Tổng | | | 86 | 33 phút | 11,69 USD | 3 |
+
+- Lần chạy lại sau giới hạn dùng đúng lệnh cũ. `state.json` ghi lượt dở với `usage-limit`, nên `ao-step.mjs` chỉ chạy tiếp `security` trong session cũ, không chạy lại `reviewer`.
+- Lệnh bị từ chối của `reviewer`: một lệnh đọc registry (`gh-guard` chặn đúng, vì liên quan tới key của App) và hai lần ghi file thử bằng heredoc. Ở hai lần sau, `gh-guard` đọc nội dung heredoc như lệnh thật, tức là chặn nhầm theo hướng an toàn.
+- Báo cáo nằm ở `.ai/reviews/14-reviewer.md` và `.ai/reviews/14-security.md` của `ao-pilot`, và là review trên PR.
+
+**Finding cần đưa vào kit** (không chặn PR này, vì không có Critical/High; ghi tên, chi tiết trong hai báo cáo):
+
+- Medium, `security`: chế độ review phần mới không xét báo cáo trước có finding chặn, nên một finding High chưa sửa có thể không còn chặn merge. Ảnh hưởng tiêu chí 5, nên sửa trước T18.
+- Medium, cả hai: ranh giới "mỗi vai trò một token" chỉ dựa vào `gh-guard` so khớp chuỗi lệnh; key của App đọc được bởi chính user chạy agent. Spec mục 12 đã ghi rủi ro này. Hai báo cáo đề xuất giữ key ngoài phiên agent.
+- Medium, `reviewer`: `gh-guard` còn sót một số dạng lệnh.
+- Low: PR tài liệu được tính ngày theo lượt CI sớm nhất của SHA, kể cả lượt từ nhánh khác (cả hai). Ảnh hưởng tiêu chí 4, nên sửa trước T17.
+- Low: hồi quy của `checkAoPr`; thư mục temp dạng tên 8.3 bị từ chối; `GH_TOKEN` hết hạn sau 1 giờ; luật `allow` cho cả `--go`, và `--note`/`--answers` đọc file ngoài `.ai/runs/`; khóa `active.json` không nguyên tử; key lấy từ tên nhánh không kiểm space; dấu của cờ có thể bị người khác viết; chi phí poll khi chờ CI.
+
+**`merge-gate` báo PR chỉ còn chờ bạn (tiêu chí 6, phần trước merge):**
+
+- Workflow `merge-gate` chạy từ nhánh mặc định `main`, mà `main` của `ao-pilot` (`354f02c`) vẫn là bản kit của `quality-gates`: không có code báo PR cần bạn, không có PR tài liệu, không có `JIRA_CI_TOKEN`. Vì vậy workflow chỉ in `Needs you #14`.
+- Claude chạy `merge-gate.mjs` của nhánh PR ở máy, cùng token như workflow (đọc bằng `gh`, ghi bằng App `ao-dev` và token CI):
+  - lần 1: comment `6553409891` trên PR #14 của `tungph7-ao-dev[bot]`; DEMO-19 có Flagged Impediment, nhãn `needs-you` và comment cùng nội dung của `orchestratorci`;
+  - lần 2: không comment, không gắn cờ thêm.
+- Comment dài 2.908 ký tự, vì liệt kê đủ 72 đường dẫn được bảo vệ. Nên gom theo mẫu đường dẫn ở kit.
