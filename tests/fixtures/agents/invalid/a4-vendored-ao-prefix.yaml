@@ -1,0 +1,9 @@
+description: a vendored skill named with the ao- prefix of the kit commands
+rule: A4
+expect:
+  - "vendored_skills"
+  - "roles.sa.skills"
+patch:
+  - op: set
+    path: "vendored_skills.3.name"
+    value: ao-plan
