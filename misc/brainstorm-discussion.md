@@ -24,7 +24,8 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 14 | `cb0eafc3-b9fb-4ef7-9d75-cbacef12fa98` | 2026-10-30 khoảng 16:29 → 2026-10-31 khoảng 00:19 | Bạn duyệt plan; spec và plan merge (PR #74); T1 kiểm năm tiền đề: `claude --agent` bỏ qua `skills`, `effort`, `maxTurns`, settings của dự án không cài được plugin; Claude đề xuất chép 13 skill của agent-skills vào kit và script `ao-agent.mjs`, xin bạn duyệt cùng cách chạy hai công cụ trình duyệt qua `npx`; bạn duyệt cả hai; T1–T4 đóng (PR #75–#78): spec sửa sau T1, kiểm `playwright-cli` và Chrome DevTools MCP, artifact `design`, NOT TESTED; Checkpoint 1, chờ bạn; bạn hỏi xem kết quả T1–T2 ở đâu; bạn cho qua Checkpoint 1 (PR #79); T5–T14 đóng (PR #80–#89): `check-design`, roster và quy tắc A1–A5, 16 skill chép vào kit, `gh-guard` theo vai trò, mười prompt và file quy ước, sinh agent, `ao-agent.mjs`; Checkpoint 2, chờ bạn; bạn hỏi vì sao `fe-dev` không dùng `vercel-react-best-practices`: skill theo stack khai trong `roster.local.yaml` của từng dự án; bạn cho qua Checkpoint 2 (PR #90); T15: DEMO-9, ao-pilot PR #8 chép kit, kit PR #91–#93 (coverage loại `.claude/**`, vá `gh-guard` theo finding của review, luật hook và mục Shell), `reviewer` hai lượt và `security` ba lượt (hai lần chạm giới hạn usage, Claude đăng báo cáo của lượt cuối), 14,30 USD quy đổi; chờ bạn approve, merge, bật `chrome-devtools` và quyết hai đề xuất về danh tính agent và `file:///`; bạn merge PR #8, bật `chrome-devtools`, đồng ý hai đề xuất; T15 đóng (PR #94); kit PR #95 (`--no-file-navigations`, `.mcp.json` được bảo vệ), #96 (vá thêm `gh-guard`); T16: Story DEMO-10, trang giỏ hàng dựng ở server và server `node:http`; bạn đồng ý cài `@playwright/test`; ao-pilot PR #9 (E2E AC1, AC2), `reviewer` tìm ra `GET //` làm sập server (High), Claude sửa, `reviewer` vòng 2 và `security` COMMENT, 6,30 USD quy đổi; kit PR #97 (`grep ao-pr.mjs` bị chặn nhầm); bạn approve, `merge-gate` merge PR #9, `audit` xanh; T16 đóng (PR #98); T17: `qa` dùng `playwright-cli`, `fe-dev` dùng Chrome DevTools MCP, cả hai đạt, T17 đóng (PR #99); Checkpoint 3: 11 lượt Opus 21,43 USD quy đổi, ước phần còn lại 34–63 USD, chờ bạn chọn chạy tiếp, hạ effort `security` hay tạm dừng |
 | 15 | `cd9b752d-fcc4-4808-a333-32579c26f257` | 2026-10-31 khoảng 00:20 → khoảng 01:45 | Bạn chọn chạy tiếp T18–T21 theo plan, `security` giữ `max`; Checkpoint 3 đóng (PR #100); T18: Epic DEMO-11 "Mã giảm giá cho giỏ hàng", nhánh tài liệu `feature/DEMO-11-spec`, chờ bạn bấm `Start spec`; bạn bấm `Start spec`; stage spec: `ba`, `ux`, `sa` viết `spec.md` và `design.md`, Claude trả lời thay bạn 18 câu hỏi mở, job `policy` đỏ rồi xanh trên PR thử #10, 5,30 USD quy đổi; chờ bạn bấm `Approve spec`; bạn bấm `Approve spec`; stage plan: `sa` viết `plan.md` và ADR-0001, `ba` tạo Story DEMO-12 và hai Sub-task DEMO-13, DEMO-14, T18 tốn 11,81 USD quy đổi; chờ bạn bấm `Approve plan` |
 | 16 | `b8a6dd75-1274-4e19-b187-41b53ba22cfe` | 2026-10-31 khoảng 02:02 → khoảng 17:30 | Bạn bấm `Approve plan`; T18 đóng (PR #101): `jira-sync` chuyển DEMO-12 sang Ready; T19: `be-dev` làm Sub-task BE nhưng không start Story, kit PR #102 sửa prompt của hai dev agent; `fe-dev` làm Sub-task FE và mở ao-pilot PR #11; `reviewer` COMMENT (1 Medium, 2 Low), `security` COMMENT không có finding, 15,23 USD quy đổi; chờ bạn approve PR #11 hoặc chọn sửa finding Medium trước; bạn approve, `merge-gate` merge PR #11, `audit` xanh, `qa` PASS cả 11 AC, Claude tạo Task DEMO-15 cho hai test còn thiếu; chờ bạn bấm `Accept`; bạn bấm `Accept`, T19 đóng (PR #103); T20: `pm` viết bản tổng hợp sáng, lỗi đếm item Done chưa có Fix Version được sửa (PR #104), năm việc ngoài vai trò bị chặn đúng lý do; chờ bạn `Refine` DEMO-16 cho `devops`; bạn `Refine` DEMO-16; `devops` mở ao-pilot PR #12, `reviewer` COMMENT (1 Low), `security` COMMENT không có finding, 4,70 USD quy đổi; chờ bạn approve rồi tự merge PR #12; bạn merge PR #12, `audit` xanh, T20 đóng (PR #105); T21: Task DEMO-17, `fe-dev` ở `high` (1,86 USD) và `max` (5,89 USD) cùng đạt checklist và trường hợp biên, mỗi bản 1 Low; lượt `max` thấy tiêu đề commit của lượt `high`; bạn hết usage giữa lượt; Checkpoint 4, chờ bạn xem Epic, PR thử và chọn effort cho `fe-dev`; bạn chọn `high` và hỏi dev agent có đổi effort theo độ khó của task không; Claude trả lời: agent không tự đổi, người khởi động đổi được cho từng lượt, và đề xuất `sa` ghi mức trong plan để bạn duyệt ở gate ②, làm ở `dev-workflow`; chờ bạn xác nhận để tiếp tục; bạn nhắn tiếp tục; T21 và Checkpoint 4 đóng (PR #106); T22 (PR #107): `maxTurns` theo số đo, `gh-guard` cho phép `git check-ignore`, template trỏ tới `.ai-orchestrator/docs/sdlc.md`, `docs/agents.md` và mục Agent của README, module ghi hoàn thành, plan vào `tasks/archive/agent-roster/`; chờ bạn xác nhận module hoàn thành và chọn module tiếp theo; bạn xác nhận và chọn `dev-workflow`; ô cuối của `agent-roster` đóng (PR #108); phạm vi, giả định và ba câu hỏi cho `dev-workflow`: danh tính GitHub của agent, PR tài liệu của Epic, `security` review lại sau commit chỉ thêm test; bạn chọn cả ba đề xuất; Claude viết `SPEC-dev-workflow.md` (sáu lệnh, danh tính App, PR tài liệu, review phần mới, tám tiền đề), đổi hai chỗ so với giả định (ADR, lúc chép kit), chờ bạn duyệt |
-| 17 | `46e16bae-3275-482c-b001-11cf43108e28` | 2026-10-31 khoảng 23:25 → | Bạn duyệt `SPEC-dev-workflow.md`; spec merge (PR #109); Claude viết plan 19 task, bốn checkpoint (chặn gọi thẳng credential helper, effort đặt cả tham số lẫn biến môi trường, PR chép kit review bằng `/ao-review`, Story của Epic thử dừng ở Ready for QA); bạn duyệt plan (PR #110); T1 kiểm skill `/` và lệnh nền bằng Haiku: dòng `!` chỉ tự chạy khi có luật `allow`, `$ARGUMENTS` được chèn nguyên văn, `claude -p` dừng lệnh nền sau 10 phút nếu không đặt `timeout`; T2: Task thử DEMO-18, PR nháp `ao-pilot` #13, push bằng token App, Git Credential Manager được thay, `gh` dùng token App; bạn hỏi vì sao lệnh 20 phút chạy quá 20 phút; bạn hỏi Haiku dùng ở đâu và chê Haiku kém; Claude thôi dùng Haiku, đề xuất năm điểm sửa spec và xin bạn thêm quyền cho hai App; bạn duyệt năm điểm sửa, T1 đóng (PR #111); bạn đã thêm quyền cho hai App, T2 đóng (PR #112): cả sáu tiền đề về GitHub đúng; Checkpoint 1, chờ bạn |
+| 17 | `46e16bae-3275-482c-b001-11cf43108e28` | 2026-10-31 khoảng 23:25 → 2026-11-01 khoảng 01:05 | Bạn duyệt `SPEC-dev-workflow.md`; spec merge (PR #109); Claude viết plan 19 task, bốn checkpoint (chặn gọi thẳng credential helper, effort đặt cả tham số lẫn biến môi trường, PR chép kit review bằng `/ao-review`, Story của Epic thử dừng ở Ready for QA); bạn duyệt plan (PR #110); T1 kiểm skill `/` và lệnh nền bằng Haiku: dòng `!` chỉ tự chạy khi có luật `allow`, `$ARGUMENTS` được chèn nguyên văn, `claude -p` dừng lệnh nền sau 10 phút nếu không đặt `timeout`; T2: Task thử DEMO-18, PR nháp `ao-pilot` #13, push bằng token App, Git Credential Manager được thay, `gh` dùng token App; bạn hỏi vì sao lệnh 20 phút chạy quá 20 phút; bạn hỏi Haiku dùng ở đâu và chê Haiku kém; Claude thôi dùng Haiku, đề xuất năm điểm sửa spec và xin bạn thêm quyền cho hai App; bạn duyệt năm điểm sửa, T1 đóng (PR #111); bạn đã thêm quyền cho hai App, T2 đóng (PR #112): cả sáu tiền đề về GitHub đúng; Checkpoint 1, chờ bạn |
+| 18 | `184d78d1-4600-4c36-8279-005a105c9216` | 2026-11-01 khoảng 01:08 → | Bạn cho qua Checkpoint 1 (PR #113); T3–T14 đóng (PR #114–#125): phiên agent dùng danh tính App và credential helper theo vai trò, PR tài liệu và quy tắc Q5, `merge-gate` báo PR chỉ còn chờ bạn và `jira-sync` gỡ cờ, đánh dấu dòng DoR, `ao-step.mjs` và vòng chạy `--go`, sáu skill `/ao-*`, template và prompt; chạy chỉ kiểm trong `ao-pilot` tìm ra lỗi 403 khi đọc commit status; Checkpoint 2 (PR #126), chờ bạn |
 
 ---
 
@@ -6823,3 +6824,128 @@ PR #13 đã đóng, nhánh thử đã xóa. `DEMO-18` để ở New làm bằng 
 2. Nhắn **"qua checkpoint 1"**, hoặc hỏi mình chỗ nào chưa rõ.
 
 Sau đó mình đánh dấu Checkpoint 1, rồi làm liền T3–T14: phần code của module, chưa chạy agent nào. Mình dừng lại ở Checkpoint 2.
+
+# Phiên 18 · Lượt 1 — 2026-11-01 khoảng 01:08
+
+**Bạn:**
+
+````markdown
+Làm tiếp session id: 46e16bae-3275-482c-b001-11cf43108e28
+
+qua checkpoint 1, làm tiếp nhé
+
+đoạn chat của session id: 46e16bae-3275-482c-b001-11cf43108e28
+```
+Bạn đã duyệt năm điểm sửa. Mình đưa chúng vào spec và todo, đóng T1, rồi kiểm xem hai App đã có quyền mới chưa.
+
+Lệnh heredoc dài lại gặp lỗi dấu nháy của Bash. Mình viết script bằng tool Write cho chắc.
+
+T1 đã vào `main` (PR #111). Giờ mình kiểm xem hai App đã có quyền mới chưa: thử xin token có quyền Actions và Checks.
+
+Đã thêm quyền mới: `ao-review` đọc được `gh pr checks`, `ao-dev` có quyền Workflows. Giờ mình làm T2: push thay đổi workflow, thử lần lượt với token có và không có quyền Workflows.
+
+Push file workflow bằng token có `workflows: write` đã được chấp nhận (`738d000`), nhưng token chỉ có `contents: write` vẫn bị từ chối dù App có quyền Workflows - quyền thực tế bị thu hẹp theo vai trò. Giờ tôi sẽ chờ CI chạy trên commit mới.
+
+Lần push thứ hai của App cũng chạy CI và `jira-sync` cho head mới, vậy điểm 1 đã đạt. Giờ mình kiểm tiếp điểm 3: xem đủ lệnh `gh` agent dùng chưa, với token chỉ đọc cộng thêm quyền Actions và Checks.
+
+Xác nhận điểm 3: token chỉ đọc đủ dùng cho mọi lệnh `gh` mà agent cần (xem PR, diff, checks, run, review), còn comment và chạy lại CI bị từ chối đúng như mong đợi. Tám tiền đề đã đủ kết quả, giờ mình dọn PR thử nghiệm và ghi lại kết quả T2.
+
+Bạn đã thêm quyền cho App trước cả khi mình kịp hỏi, nên mình làm xong luôn T2. Giờ mình ghi lượt này vào lịch sử và dừng ở Checkpoint 1.
+
+Năm điểm sửa spec đã vào `SPEC-dev-workflow.md` và `tasks/todo.md`, và T1 đã đóng (PR #111). Lúc kiểm, mình thấy bạn đã thêm và chấp nhận quyền mới cho hai App, nên mình làm luôn phần còn lại của T2 và đóng nó (PR #112). Giờ mình dừng ở **Checkpoint 1** để bạn xem kết quả.
+
+Chi tiết: https://github.com/TungPH7/ai-orchestrator-v1/blob/main/tasks/verification.md
+
+## Kết quả T2: cả sáu điểm đúng
+
+Mình kiểm trên PR nháp `ao-pilot` #13 và Task thử `DEMO-18`:
+
+1. **Push bằng token của `ao-dev` qua HTTPS chạy được CI.** Cả lần mở PR lẫn lần push thứ hai đều chạy CI và `jira-sync`, actor là bot.
+2. **Quyền Workflows giữ được ranh giới giữa các vai trò.** Token có `workflows: write` push được thay đổi trong `.github/workflows/`. Token chỉ có `contents: write` thì bị GitHub từ chối, kể cả khi App đã có quyền Workflows. Vì vậy chỉ `devops` sửa được workflow.
+3. **Token chỉ đọc đủ cho mọi lệnh `gh` của agent:** `pr view`, `pr diff`, `pr checks`, `run list`, `run view`, đọc review. Comment và chạy lại CI thì bị từ chối.
+4. **Git Credential Manager của bạn không được gọi.** `GIT_TRACE` chỉ cho thấy helper của kit. Commit đứng tên `tungph7-ao-dev[bot]`.
+5. **`gh` dùng token của App thay login của bạn.** Login `TungPH7` trong keyring chuyển sang không hoạt động, và `gh api user` bị từ chối.
+6. **Commit của bot qua được hook `commit-msg` và job `policy`.** GitHub for Jira đã nối PR vào `DEMO-18`.
+
+Mình cũng ghi lại một chi tiết cho T3: khi helper không lấy được token, git chỉ báo `Repository not found`, nên helper thật phải in rõ lý do.
+
+PR #13 đã đóng, nhánh thử đã xóa. `DEMO-18` để ở New làm bằng chứng; bạn có thể Cancel nó bất cứ lúc nào. T2 không chạy agent nào, nên không tốn usage.
+
+## Checkpoint 1
+
+- [x] `npm run validate`, `npm test` (625 test), `npm run render:check`, `npm run jira:checklist:check`, `npm run agents:check` đều xanh.
+- [x] Tám tiền đề có kết quả trong `tasks/verification.md`. Điểm 6 và 7 cần thêm điều kiện, spec đã sửa theo năm điểm bạn duyệt.
+- [ ] Bạn xem kết quả của T1–T2.
+
+## Việc cần bạn
+
+1. Đọc `tasks/verification.md` qua link ở trên. Nếu chỉ muốn đọc nhanh, xem hai bảng "Kết quả" của T1 và T2.
+2. Nhắn **"qua checkpoint 1"**, hoặc hỏi mình chỗ nào chưa rõ.
+
+Sau đó mình đánh dấu Checkpoint 1, rồi làm liền T3–T14: phần code của module, chưa chạy agent nào. Mình dừng lại ở Checkpoint 2.
+```
+````
+
+Trước khi trả lời, Claude:
+
+- đánh dấu Checkpoint 1 (PR #113);
+- làm T3–T14, mỗi task một PR có test, merge khi CI xanh (PR #114–#125), không chạy agent nào;
+- chạy `ao-step.mjs` ở chế độ chỉ kiểm trong `ao-pilot`, sửa lỗi 403 khi đọc commit status, và ghi kết quả Checkpoint 2 (PR #126).
+
+**Claude:**
+
+Checkpoint 1 đã đóng (PR #113). Mình làm liền T3–T14, mỗi task một PR (#114–#125), không chạy agent nào, rồi dừng ở **Checkpoint 2**.
+
+Chi tiết: https://github.com/TungPH7/ai-orchestrator-v1/blob/main/tasks/verification.md (mục T3, T5, T12 và Checkpoint 2)
+
+## Đã làm
+
+| Task | PR | Nội dung |
+|---|---|---|
+| T3 | #114 | Phiên agent dùng danh tính App: `GH_TOKEN` chỉ đọc, `ao-git-credential.mjs` cấp token theo vai trò, commit đứng tên bot. `gh-guard` chặn agent gọi `ao-step.mjs`, `ao-agent.mjs` và helper |
+| T4 | #115 | Mục `docs_pull_requests` trong `quality/gates.yaml`, quy tắc Q5 |
+| T5 | #116 | `merge-gate` và `audit` nhận PR tài liệu |
+| T6 | #117 | `merge-gate` comment và gắn cờ khi PR chỉ còn chờ bạn; `jira-sync` gỡ cờ khi PR đóng |
+| T7 | #118 | `jira-sync` đánh dấu dòng DoR "Thuộc Epic có plan đã duyệt" |
+| T8–T9 | #119, #120 | Đọc log stream-json, yêu cầu `Cần <role>:`, gom dữ kiện từ Jira, GitHub và `.ai/` |
+| T10–T11 | #121, #122 | `decideStep` cho sáu lệnh; `security` chỉ review phần mới |
+| T12 | #123 | `ao-step.mjs` và vòng chạy của `--go` |
+| T13 | #124 | Sáu skill `/ao-*` và luật `allow` |
+| T14 | #125 | Template, hợp đồng, prompt và `agents/rules.md` |
+
+Số test tăng từ 625 lên 755.
+
+## Kết quả chạy chỉ kiểm trong `ao-pilot`
+
+`status`, `build DEMO-15`, `review 12` và `status DEMO-16` đều in đúng dữ kiện, dừng đúng lý do và thoát 0. Không agent nào chạy, `ao-pilot` không đổi. `ao-pilot` chưa có item Ready có nhãn vai trò, cũng chưa có PR đang mở, nên nhánh `GO` chạy thật lần đầu ở T15.
+
+Lần chạy đầu tìm ra một lỗi thật: token chỉ đọc của `ao-review` không đọc được commit status kiểu cũ (GitHub trả 403). Mình cho `ao-step.mjs` đọc CI từ check run, nơi GitHub Actions báo kết quả, và không xin thêm quyền cho App.
+
+## Bảy chỗ đổi so với plan, bạn xem giúp
+
+1. Vai trò chỉ đọc (`reviewer`, `security`, `qa`, `pm`) nhận token `contents: read` để `git fetch`, còn push thì GitHub vẫn từ chối. Khi đã bỏ Git Credential Manager, thiếu token này thì agent không fetch được repo private.
+2. `gh-guard` chặn thêm `git -c credential.*`, `git config credential.*`, và việc sửa file trong `.git/`.
+3. `merge-gate` chỉ báo (comment lên PR, gắn cờ trên Jira) khi PR chỉ còn chờ bạn, để cờ không nằm trên item trong lúc agent còn review. Spec mục 2.7 đã ghi điều này.
+4. CI đọc từ check run, như ở trên.
+5. Quy tắc A4 cấm skill chép về có tên bắt đầu bằng `ao-`.
+6. Ở T15, workflow deploy của `ao-pilot` phải cấp thêm `actions: read` khi gọi `audit.yml`.
+7. `ux` chạy khi SPEC nhắc `design.md`; bước của `sa` được tính là xong khi SPEC có mục `### Non-functional requirements`. Prompt của `ba` và `sa` đã ghi hai điều này.
+
+Thêm một điều về chi phí: ở stage spec, `ba` mở PR tài liệu trong một lượt riêng sau `sa` (lượt thứ tư), vì spec giao việc này cho `ba`. [Inference] Lượt này ngắn, nhưng vẫn chạy ở effort `xhigh` của roster.
+
+## Checkpoint 2
+
+- [x] Năm lệnh kiểm và CI của kit xanh.
+- [x] Chạy `ao-step.mjs` ở chế độ chỉ kiểm trong `ao-pilot`.
+- [ ] Bạn đọc kết quả, skill `ao-build`, và phần prompt đã sửa.
+
+## Việc cần bạn
+
+1. Đọc mục "Checkpoint 2" trong `tasks/verification.md`, qua link ở trên.
+2. Đọc skill `ao-build`: https://github.com/TungPH7/ai-orchestrator-v1/blob/main/kit/.claude/skills/ao-build/SKILL.md
+3. Đọc phần prompt đã sửa ở tab **Files changed** của PR #125: https://github.com/TungPH7/ai-orchestrator-v1/pull/125/files. Xem bốn file trong `agents/prompts/` và `agents/rules.md`.
+4. Nhắn **"qua checkpoint 2"**, hoặc cho mình biết điểm nào trong bảy điểm trên bạn muốn đổi.
+
+Sau đó mình làm T15: PR chép kit mới vào `ao-pilot`, rồi `reviewer` và `security` chạy bằng `/ao-review` (ước 6–12 USD quy đổi). Tiếp theo là T16, thử đi vòng (dưới 1 USD), rồi mình dừng ở Checkpoint 3. Ở T15 bạn cần approve, rồi tự merge PR đó.
+
+Lưu ý nhỏ: lúc tìm chuỗi trong repo kit, mình thấy file ghi chú riêng `todo.md` ở gốc repo (không commit) có một token Atlassian để dạng chữ thường. File không vào Git, nhưng nếu token đó còn dùng, bạn nên chuyển nó sang biến môi trường.
