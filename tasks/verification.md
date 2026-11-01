@@ -282,3 +282,68 @@ Hai lượt `claude -p` trong `ao-pilot` (bản chép kit của PR #14), chạy 
 - Tiêu chí 3 (T16), 6 và 9 (T15) đạt.
 - Chi phí T15–T16: 12,42 USD quy đổi, trong ước tính của plan.
 - Bạn đồng ý chạy Epic thử T17–T18 ("ok tiếp tục nhé", Phiên 20 · Lượt 4). `ao-pilot` vẫn dùng bản kit của PR #14: các bản sửa T15a, T15b và `ls-remote` vào ở lần chép kit sau.
+
+## T17: Epic thử: `/ao-spec`, `/ao-plan` tới lúc PR tài liệu được merge (2026-11-01)
+
+**Chuẩn bị:** Claude tạo Epic DEMO-20 "Xóa sản phẩm khỏi giỏ hàng" bằng token CI. Mô tả ghi giỏ hàng hiện có gì, "xóa" nghĩa là gì, phạm vi và ràng buộc. Claude gõ thật `/ao-status DEMO-20` qua `claude -p` (Sonnet, 1 turn, 0,10 USD). Lệnh báo Epic đang chờ `Start spec`.
+
+**Diễn biến:**
+
+- **12:55, stage spec.** Bạn bấm `Start spec`. Claude gõ `/ao-spec DEMO-20` qua `claude -p`; bước kiểm trả GO với bốn lượt, và skill chạy `--go`.
+  - 13:02, Claude Code tắt lệnh nền vì máy thiếu RAM (còn trống 2,8 GB). Lệnh này kéo theo `ao-step` và lượt `ba` đầu, khi đó mới chạy 4 phút và chưa commit gì. Log của lượt này bị lượt sau ghi đè, nên không đo được chi phí.
+- **13:06, chạy lại thẳng `ao-step.mjs spec DEMO-20 --go`.** `ba` viết SPEC và commit, rồi `ao-step` dừng với lý do "ba ran spec-write and it still has to run".
+  - Nguyên nhân: `readDocs` chỉ đọc nhánh tài liệu trên GitHub, trong khi stage spec chỉ push ở bước mở PR.
+  - Kit PR #132 sửa lỗi này: đọc nhánh tài liệu ở máy khi nhánh đó có trên máy.
+  - Bản chép trong `ao-pilot` vẫn còn lỗi, nên bạn chọn chạy phần còn lại của T17–T18 bằng code của kit (`AO_KIT_DIR` trỏ vào repo kit). Workflow trên GitHub (`merge-gate`, `jira-sync`, `audit`) vẫn chạy bản chép.
+- **Ba vòng câu hỏi:** `ba` 3 câu, `ux` 6 câu, `sa` 2 câu. Cả ba vòng bạn đều chọn theo đề xuất. Mỗi lần, Claude ghi câu trả lời vào `.ai/runs/DEMO-20/answers.md` rồi chạy với `--answers`, và agent làm tiếp trong session của nó.
+- **Giới hạn usage:** `ux` chạm giới hạn 5 giờ của gói Pro lúc 13:35. Sau khi reset, lúc 15:21, `ux` chạy tiếp trong cùng session.
+- **15:45, PR tài liệu.** `ba` push nhánh và mở PR tài liệu #15 bằng `ao-dev`. CI xanh, kể cả job `policy` kiểm `design.md`. `merge-gate`, nay chạy từ `develop`, in `Waiting #15: the docs PR of DEMO-20: … DEMO-20 past gate plan-approval (it is Specifying)`.
+- **15:58, stage plan.** Bạn bấm `Approve spec`. `sa` viết plan và ADR-0002, rồi push lên PR #15. `ba` tạo Story DEMO-21 và hai Sub-task: DEMO-22 (BE, `ao-be-dev`) và DEMO-23 (FE, `ao-fe-dev`).
+- **Nhãn effort và dòng `Status`.** Theo quyết định 11 của plan, không item nào có nhãn effort.
+  - Claude báo bạn trước gate ②. Bạn chọn cho DEMO-22 chạy ở `xhigh`, và đổi `Status` của SPEC và design thành Approved trước khi duyệt plan.
+  - Lượt `ba` nhận câu trả lời bị Claude Code tắt lần hai vì thiếu RAM (còn trống 1,9 GB), lúc đã gắn nhãn trên Jira.
+  - Chỗ sửa dở trong `plan.md` được cất vào `git stash` của `ao-pilot`. Lượt chạy lại làm nốt phần còn lại (commit `24f600a` và `8b7f944`).
+- **16:46, sau gate ②.** Bạn bấm `Approve plan`. `/ao-plan DEMO-20` lần hai không chạy agent nào:
+  - `ao-step` dispatch `jira-sync` bằng login `gh` của bạn;
+  - DEMO-21 sang Ready lúc 16:47:39, bởi `orchestratorci`;
+  - `merge-gate` squash merge PR #15 bằng `ao-dev` lúc 16:48:01, commit `3fdd514`, với log "Merged #15 … the docs PR of DEMO-20".
+- **Deploy.** Run `41294680675` trên `3fdd514`: job `audit` và `deploy` đều xanh, và audit ghi "audit passed: 3fdd514 on develop is the merge of PR #15, the docs PR of DEMO-20, which met every gate".
+
+**Số đo** (từ `.ai/runs/DEMO-20/state.json`; `ba` và `sa` dùng Opus 5.5, `ux` dùng Sonnet 5.5):
+
+| # | Lượt | Bước | Effort | Kết quả | Turn | Thời gian | Token vào / ra | Cache đọc / ghi | Chi phí quy đổi | Bị từ chối |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 1 | `ba` | spec-write | xhigh | done | 22 | 6,0 phút | 42 / 35.328 | 1.450.047 / 78.713 | 1,63 USD | 0 |
+| 2 | `ba` | spec-write, trả lời | xhigh | done | 12 | 1,1 phút | 16 / 5.872 | 780.524 / 12.161 | 0,37 USD | 0 |
+| 3 | `ux` | design | xhigh | usage-limit | 29 | 6,3 phút | 34 / 44.877 | 946.528 / 99.012 | 0,94 USD | 0 |
+| 4 | `ux` | design, chạy tiếp | xhigh | done | 11 | 2,4 phút | 20 / 17.166 | 907.597 / 123.215 | 0,76 USD | 0 |
+| 5 | `ux` | design, trả lời | xhigh | done | 13 | 1,2 phút | 18 / 8.157 | 1.051.692 / 15.286 | 0,25 USD | 0 |
+| 6 | `sa` | spec-nfr | xhigh | done | 34 | 8,3 phút | 60 / 43.379 | 2.549.071 / 128.168 | 2,40 USD | 0 |
+| 7 | `sa` | spec-nfr, trả lời | xhigh | done | 12 | 1,7 phút | 18 / 8.571 | 1.101.273 / 17.167 | 0,53 USD | 0 |
+| 8 | `ba` | docs-pr | xhigh | done | 24 | 2,8 phút | 38 / 11.197 | 1.012.454 / 67.397 | 0,97 USD | 0 |
+| 9 | `sa` | plan-write | xhigh | done | 47 | 14,3 phút | 80 / 83.736 | 5.237.534 / 182.880 | 4,19 USD | 0 |
+| 10 | `ba` | plan-items | xhigh | done | 32 | 5,4 phút | 48 / 31.772 | 2.253.129 / 108.167 | 1,95 USD | 0 |
+| 11 | `ba` | plan-items, trả lời | xhigh | done | 21 | 3,1 phút | 30 / 15.310 | 2.274.777 / 23.452 | 0,95 USD | 0 |
+| | Tổng | | | | 257 | 52,4 phút | | | 14,92 USD | 0 |
+
+- Stage spec tốn 7,84 USD, stage plan 7,09 USD, cộng thêm 0,10 USD cho `/ao-status`. Con số này chưa tính hai lượt bị tắt vì thiếu RAM. Plan ước 10–14 USD cho T17.
+- Cả 11 lượt đều có log trong `.ai/runs/DEMO-20/`, và không lượt nào bị hook từ chối. Lượt `ba` bị tắt lần hai có một lần bị chặn nhầm (finding 4 bên dưới); lượt này không được ghi vào `state.json`.
+
+**Tiêu chí:**
+
+- Tiêu chí 4, phần chạy thật, đạt: `merge-gate` merge PR tài liệu sau gate ② mà không cần approval trên GitHub, và `audit` xanh khi deploy commit đó. Phần test đơn vị đã có từ T5 và T15a.
+- Task List của plan ghi vai trò cho mọi item, và DEMO-22 có effort `xhigh` (phần plan của tiêu chí 7).
+- Mô tả của DEMO-21 có mọi dòng DoR đã được đánh dấu sau khi refine, kể cả dòng "Thuộc Epic có plan đã duyệt".
+
+**Lệch so với plan:**
+
+- Quyết định 10: `/ao-status` và `/ao-spec` được gõ thật qua `claude -p`. Nhưng `/ao-spec` bị tắt vì thiếu RAM, nên phần báo cáo cuối của skill chưa được thử. `/ao-plan` chưa được gõ thật lần nào. Các bước còn lại Claude gọi thẳng `ao-step.mjs`, để bớt một phiên Claude, và vì bản chép trong `ao-pilot` còn lỗi của kit PR #132.
+- Mọi lượt agent chạy bằng code của kit (`AO_KIT_DIR`), không bằng bản chép trong `ao-pilot`.
+
+**Finding cho kit:**
+
+1. Sau gate ①, không bước nào đổi `Status` của SPEC và design. Prompt `plan-write` nên bảo `sa` đổi thành `Approved <ngày qua gate ①>`.
+2. `openQuestions` đếm mọi gạch đầu dòng cấp một trong mục Open Questions. `sa` viết câu hỏi dạng đoạn in đậm kèm gạch đầu dòng, nên `ao-step` báo 10 câu thay vì 2.
+3. Lời dừng trước gate ② chỉ đếm nhãn effort của item con trực tiếp của Epic, không đếm Sub-task. Vì vậy nó báo "none has an effort label", dù DEMO-22 có nhãn.
+4. `gh-guard` đọc `2>` trong `ao-pr.mjs 2>&1` thành lệnh con của `ao-pr.mjs`, nên chặn nhầm một lần.
+5. Máy 16 GB thiếu RAM hai lần khi agent chạy cùng ba phiên Claude Code khác. Claude Code tắt lệnh nền khi RAM trống xuống dưới khoảng 2–3 GB.

@@ -615,7 +615,7 @@ Xem [plan.md](plan.md#checkpoint-3).
 
 ## Giai đoạn 6: kiểm thật
 
-### [ ] T17: Epic thử: `/ao-spec`, `/ao-plan` tới lúc PR tài liệu được merge [bạn] (kiểm thật 4)
+### [x] T17: Epic thử: `/ao-spec`, `/ao-plan` tới lúc PR tài liệu được merge [bạn] (kiểm thật 4)
 
 **Mô tả:**
 
@@ -641,12 +641,12 @@ Xem [plan.md](plan.md#checkpoint-3).
 Bạn làm: bấm `Start spec`, `Approve spec`, `Approve plan`; trả lời câu hỏi của agent; gõ lệnh `/` theo plan, quyết định 10.
 
 **Tiêu chí chấp nhận:**
-- [ ] Tiêu chí 4 của spec mục 9 đạt.
-- [ ] Mọi lượt agent của T17 có trong `.ai/runs/`, kèm số đo trong `tasks/verification.md`.
-- [ ] Task List của plan có vai trò cho mọi item, và ít nhất một item có effort.
+- [x] Tiêu chí 4 của spec mục 9 đạt.
+- [x] Mọi lượt agent của T17 có trong `.ai/runs/`, kèm số đo trong `tasks/verification.md`.
+- [x] Task List của plan có vai trò cho mọi item, và ít nhất một item có effort.
 
 **Kiểm chứng:**
-- [ ] Mô tả của item mới có dòng DoR đã được đánh dấu sau khi refine
+- [x] Mô tả của item mới có dòng DoR đã được đánh dấu sau khi refine
 
 **Phụ thuộc:** T16, Checkpoint 3
 
