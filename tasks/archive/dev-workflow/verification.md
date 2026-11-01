@@ -441,3 +441,35 @@ Epic thử tốn tổng cộng 36,19 USD quy đổi (T17: 14,92; T18: 21,27), c�
 
 - Tiêu chí 4 (T17), 5, 7 và 8 (T18) đạt. Tiêu chí 8 có hai chỗ lệch, đã ghi ở T18.
 - Bạn xem lịch sử Epic thử trên `DEMO`, PR #15 và PR #16 trên `ao-pilot`, và `.ai/runs/`, rồi cho qua checkpoint ("qua checkpoint 4, làm tiếp như đề xuất nhé", Phiên 20 · Lượt 24). T19 làm thêm việc sửa lỗi còn mở của T18: `ao-step` không dừng khi Sub-task mang cờ.
+
+## T19: Tài liệu, `SPEC.md` và lưu trữ plan (2026-11-01)
+
+- Sửa lỗi còn mở của T18: `/ao-build` dừng khi một Sub-task chưa xong mang cờ Needs you. Lời dừng bảo bạn trả lời trên Sub-task đó, gỡ cờ và nhãn, rồi chạy lại. Test viết trước; `npm test` 779 pass.
+- README có module `dev-workflow` trong danh sách đã xong, mục "Sáu lệnh `/ao-*`", và dòng `ao-step.mjs` trong các lệnh của repo dự án.
+- `docs/dev-workflow.md`:
+  - sáu lệnh;
+  - một vòng Epic từ đầu tới cuối, theo DEMO-20;
+  - cách đọc `.ai/runs/`;
+  - khi nào lệnh dừng;
+  - chạy tiếp sau khi bị ngắt;
+  - Git Bash và `MSYS_NO_PATHCONV=1`;
+  - chi phí đo được;
+  - những điều đã gặp khi chạy thật.
+- `tests/repo.test.mjs` kiểm hai tài liệu trên.
+- `docs/github-apps-setup.md`: soát lại mục 6 của T2. Quyền của hai App vẫn khớp, không cần sửa.
+- `SPEC-dev-workflow.md` và `SPEC.md` ghi module hoàn thành. Plan, todo và file này chuyển vào `tasks/archive/dev-workflow/`.
+
+## Việc để lại cho `release-workflow` và Pilot 1
+
+- **Bản chép kit trong `ao-pilot`** vẫn là bản của PR #14 (kit `86331a9`). Các bản sửa từ T15a tới T19, cùng `account_id` trong `tracker/jira.yaml`, chỉ vào dự án qua một PR chép kit lần hai. PR đó cần `reviewer` và `security` (khoảng 10 USD quy đổi), và do bạn merge. Nên làm trước khi dùng `/ao-*` bằng bản chép, không qua `AO_KIT_DIR`.
+- **Bốn lệnh chưa được gõ thật trong một phiên Claude Code:** `/ao-plan`, `/ao-build`, `/ao-review`, `/ao-fix`. `/ao-spec` cũng chưa chạy hết phần báo cáo cuối. Pilot 1 nên đi trọn vòng bằng lệnh `/`.
+- **DEMO-21** ở Ready for QA: phần QA và release thuộc `release-workflow`. **DEMO-24** (hai test còn thiếu) ở New, chờ bạn refine.
+- **Năm việc chờ bạn quyết,** ghi trong `docs/quality-gates.md`:
+  - ruleset phía server, cần repo public hoặc GitHub Pro;
+  - App riêng cho quyền Workflows;
+  - đưa `--go` ra khỏi luật `allow`;
+  - chạy agent dưới user Windows riêng;
+  - `GH_TOKEN` hết hạn sau 1 giờ.
+- **RAM:** mỗi lượt agent là một phiên Claude Code kèm các server MCP. Trên máy 16 GB, nên chạy ít phiên cùng lúc, hoặc mở Claude Code với `CLAUDE_CODE_DISABLE_BG_SHELL_PRESSURE_REAP=1`.
+- **Phiên agent nhận `defaultMode: auto` của bạn.** Nếu muốn agent chỉ bị hook chặn, đổi `defaultMode` hoặc truyền chế độ quyền riêng cho phiên agent.
+- **Panel Development của Jira** không đọc được bằng token có scope. Khi cần kiểm tự động, phải dùng token có scope đọc dev-status.
