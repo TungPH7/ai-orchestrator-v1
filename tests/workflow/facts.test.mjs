@@ -103,3 +103,11 @@ test('status without a key lists the items not done, with their flags and reques
   assert.ok(!('DEMO-12' in byKey), 'a Done item is left out');
   assert.deepEqual(facts.pulls, []);
 });
+
+test('the read-only App token cannot read the older commit statuses: CI is read from the check runs then (T12)', async () => {
+  const statusless = (a) => (a.github['/commits/2e3689d23cc9ab587355836551a4fa3f5231d4bc/status'] = { $status: 403 });
+  const facts = await gather('review', '11', { change: statusless });
+  assert.deepEqual(facts.pr.ci, { green: true, failed: false, pending: false });
+  const otherError = (a) => (a.github['/commits/2e3689d23cc9ab587355836551a4fa3f5231d4bc/check-runs'] = { $status: 403 });
+  await assert.rejects(gather('review', '11', { change: otherError }), /returned 403/, 'only the statuses are read around');
+});
