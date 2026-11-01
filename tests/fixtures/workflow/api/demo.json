@@ -408,6 +408,34 @@
     }
    ]
   },
+  "/rest/api/3/search/jql?fields=summary,issuetype,status,labels&jql=parent = \"DEMO-11\"": {
+   "issues": [
+    {
+     "key": "DEMO-12",
+     "fields": {
+      "summary": "Áp mã giảm giá trên trang giỏ hàng",
+      "issuetype": {
+       "id": "10005",
+       "description": "Stories track functionality or features expressed as user goals.",
+       "name": "Story",
+       "subtask": false
+      },
+      "status": {
+       "description": "",
+       "name": "Done",
+       "id": "10012",
+       "statusCategory": {
+        "id": 3,
+        "key": "done",
+        "colorName": "green",
+        "name": "Done"
+       }
+      },
+      "labels": []
+     }
+    }
+   ]
+  },
   "/rest/api/3/search/jql?fields=status&jql=project = \"DEMO\" AND issuetype = \"Epic\" AND status in (\"Specifying\", \"Planning\")": {
    "issues": []
   },

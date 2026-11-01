@@ -51,6 +51,7 @@ test('a Story with Sub-tasks: its state, Agent, parent Epic, each Sub-task, its 
 
   assert.deepEqual([epic.key, epic.state], ['DEMO-11', 'in-progress']);
   assert.ok(epic.gates['spec-approval'] < epic.gates['plan-approval'], 'both gates passed, the spec first');
+  assert.deepEqual(epic.children.map(({ key, workType, state }) => [key, workType, state]), [['DEMO-12', 'story', 'done']], 'the items ba created in stage plan');
 
   assert.deepEqual([docs.branch, docs.exists, docs.pr], ['feature/DEMO-11-spec', true, null]);
   assert.match(docs.spec, /^# Spec: /);
