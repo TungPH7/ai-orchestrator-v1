@@ -185,3 +185,23 @@ Phát hiện: App `ao-review` không có quyền Commit statuses, nên token ch�
   - lần 1: comment `6553409891` trên PR #14 của `tungph7-ao-dev[bot]`; DEMO-19 có Flagged Impediment, nhãn `needs-you` và comment cùng nội dung của `orchestratorci`;
   - lần 2: không comment, không gắn cờ thêm.
 - Comment dài 2.908 ký tự, vì liệt kê đủ 72 đường dẫn được bảo vệ. Nên gom theo mẫu đường dẫn ở kit.
+
+**Sau khi bạn merge:**
+
+- Bạn approve rồi squash merge PR #14 lúc 12:01: commit `d8a67f7` trên `develop`.
+- Deploy run `41275298464` trên `d8a67f7`: job `audit` xanh, job `deploy` (development) xanh.
+- `jira-sync` (run `41275299039`, sự kiện `pull_request` closed, chạy code của PR) gỡ cờ DEMO-19: bỏ Flagged và nhãn `needs-you`, và comment "PR #14 was merged, so the Needs you flag merge-gate raised for it is cleared" (`orchestratorci`, 12:01:48).
+- `ao-pilot` trên `develop` có sáu skill `/ao-*` và `ao-step.mjs`; `git status` sạch.
+- DEMO-19 ở lại New, như DEMO-17: Task chỉ để lấy mã, và T16 dùng lại mã này.
+
+**Nhánh mặc định của `ao-pilot` (bạn chọn cách 2):**
+
+- Environment `merge-gate`: thêm rule cho nhánh `develop`, rồi bỏ rule `main`. Nhánh mặc định đổi sang `develop`.
+- Chạy tay `merge-gate` trên `develop` (run `41275568901`, `d8a67f7`): job chạy, đọc được `AO_DEV_APP_KEY` và `JIRA_CI_TOKEN`, in `No open PR`.
+- Từ nay trigger `workflow_run` và `deployment_status` chạy bản trên `develop`. Một bản sửa workflow của kit có hiệu lực ngay khi bạn merge PR vào `develop`, không phải chờ release. Tài liệu của kit đổi theo, ở cùng PR với phần ghi này.
+
+**Tiêu chí của spec mục 9:**
+
+- Tiêu chí 6 đạt: `merge-gate` bản mới comment trên PR và gắn cờ Task, chỉ một lần mỗi head; `jira-sync` gỡ cờ sau khi merge. Phần comment và gắn cờ chạy ở máy, bằng cùng danh tính với workflow, vì lúc đó workflow còn chạy bản cũ trên `main`. Từ T17, workflow tự chạy bản mới.
+- Tiêu chí 9 đạt: bản chép kit mới vào `ao-pilot` qua PR #14 do bạn merge tay; `audit` xanh trên commit merge.
+- Bạn chọn sửa các finding ở kit ngay, không chạy agent. Bản sửa vào `ao-pilot` ở lần chép kit sau, nên T16–T18 chạy với các chỗ hở đã biết ở trên.

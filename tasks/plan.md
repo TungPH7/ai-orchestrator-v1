@@ -113,7 +113,9 @@ T16 ── T17 Epic: spec, plan ── T18 Epic: build, review, fix ── T19 t
 - [x] Bạn đọc kết quả đó, skill `ao-build`, và phần prompt đã sửa
 
 ### Giai đoạn 5: lên `ao-pilot`
-- [ ] T15: Bản chép kit mới vào `ao-pilot` qua PR [bạn]
+- [x] T15: Bản chép kit mới vào `ao-pilot` qua PR [bạn]
+- [ ] T15a: Sửa finding của PR #14: cổng và Jira
+- [ ] T15b: Sửa finding của PR #14: `gh-guard` và script ở máy
 - [ ] T16: Thử đi vòng
 
 ### Checkpoint 3
