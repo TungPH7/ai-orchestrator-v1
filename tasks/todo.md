@@ -150,7 +150,7 @@ Xem [plan.md](plan.md#checkpoint-1).
 
 **Cỡ:** M
 
-### [ ] T4: `docs_pull_requests` trong `quality/gates.yaml`, schema và Q5 (spec mục 2.4, 7)
+### [x] T4: `docs_pull_requests` trong `quality/gates.yaml`, schema và Q5 (spec mục 2.4, 7)
 
 **Mô tả:**
 
@@ -166,11 +166,11 @@ Xem [plan.md](plan.md#checkpoint-1).
 - `npm run validate` in `Gates OK` như trước.
 
 **Tiêu chí chấp nhận:**
-- [ ] Q5 có test dương và ít nhất ba fixture âm, mỗi fixture một điều kiện.
-- [ ] `lib/quality/gates.mjs` đọc được mục mới, có test.
+- [x] Q5 có test dương và ít nhất ba fixture âm, mỗi fixture một điều kiện.
+- [x] `lib/quality/gates.mjs` đọc được mục mới, có test.
 
 **Kiểm chứng:**
-- [ ] Năm lệnh trong quy ước chung xanh
+- [x] Năm lệnh trong quy ước chung xanh
 
 **Phụ thuộc:** không
 
