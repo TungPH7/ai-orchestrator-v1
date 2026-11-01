@@ -119,6 +119,25 @@ Muốn xem trước ở máy, chạy `node .ai-orchestrator/scripts/merge-gate.m
 
 `merge-gate.yml` chỉ có hiệu lực khi nằm trên nhánh mặc định (`main`). Một bản sửa của nó vì vậy chỉ chạy sau lần release kế tiếp.
 
+### PR tài liệu của Epic
+
+Từ `dev-workflow` (spec mục 2.4), tài liệu của một Epic (SPEC, design, plan, ADR) vào `develop` qua một PR riêng. Bạn duyệt chúng trên Jira, ở gate ① và ②, nên PR này không cần báo cáo review hay approve trên GitHub. `merge-gate` coi một PR là PR tài liệu khi:
+
+- head là nhánh `feature/<EPIC>-spec`, và App `ao-dev` mở PR;
+- mọi file PR sửa, kể cả tên cũ của file đổi tên, nằm trong `docs/specs/<EPIC>/**` hoặc `docs/adr/**` (mục `docs_pull_requests` của `quality/gates.yaml`);
+- `<EPIC>` là Epic trên Jira.
+
+`merge-gate` squash merge PR tài liệu khi Epic đã qua gate ② (In Progress hoặc Done), `CI` xanh trên head, và lượt `CI` sớm nhất của head bắt đầu trước lúc bạn bấm `Approve plan`. Thời điểm duyệt lấy từ changelog của Epic. Các dòng trong log:
+
+| Dòng | Nghĩa |
+|---|---|
+| `Merged #14: …, the docs PR of DEMO-20` | Đã merge PR tài liệu |
+| `Waiting #14: the docs PR of DEMO-20: DEMO-20 past gate plan-approval (it is Planning)` | Chờ bạn bấm `Approve plan` |
+| `Waiting #14: … (head … came after Approve plan of DEMO-20 at …, so it is reviewed like any PR)` | Có commit push sau lúc bạn duyệt: PR thành PR thường, cần hai báo cáo và approve của bạn |
+| `Waiting #14: the docs PR of DEMO-20: JIRA_CI_TOKEN, for merge-gate to read DEMO-20` | `merge-gate.yml` chưa có `JIRA_CI_TOKEN` |
+
+`merge-gate` đọc Epic bằng `JIRA_CI_TOKEN`, chỉ để đọc, và đọc lượt `CI` bằng quyền `actions: read` của token workflow. `audit` dùng đúng các điều kiện này cho commit merge của PR tài liệu.
+
 ## Khi nào bạn tự merge
 
 Bạn tự merge trong ba trường hợp. `audit` vẫn kiểm cả ba, nên hãy làm đủ các bước trước khi bấm Merge.
@@ -137,7 +156,7 @@ Merge tay một PR chưa đủ cổng thì `audit` đỏ ở lần deploy kế t
 Workflow deploy của dự án gọi `audit.yml` trước, và job deploy có `needs: audit`:
 
 ```yaml
-permissions: { contents: read, pull-requests: read, checks: read, statuses: read }
+permissions: { contents: read, pull-requests: read, checks: read, statuses: read, actions: read }
 jobs:
   audit:
     uses: ./.github/workflows/audit.yml

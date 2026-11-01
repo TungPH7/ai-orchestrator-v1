@@ -94,3 +94,12 @@ Kiểm trong `ao-pilot` ngày 2026-11-01, bằng code của kit (`AO_KIT_DIR` tr
 | Gọi thẳng helper cho `fe-dev`, `devops`, `reviewer` | Mỗi lần trả `username=x-access-token` và một token chỉ dùng được trên `TungPH7/ao-pilot` (`GET /installation/repositories`) |
 
 Điều chỉnh so với todo: vai trò chỉ đọc vẫn có helper, nhưng helper chỉ cho nó token `contents: read` của `ao-review`. Lý do: `reviewer` và `security` chạy `git fetch origin` để đọc nhánh của PR, và khi Git Credential Manager bị bỏ thì repo private không fetch được nếu không có credential. Push bằng token này bị GitHub từ chối; T16 kiểm điều đó trên phiên agent thật. Spec mục 2.3 đã ghi thêm câu này.
+
+## T5: `merge-gate` và `audit` nhận PR tài liệu
+
+Kiểm trong `ao-pilot` ngày 2026-11-01 bằng code của kit, chỉ đọc:
+
+- `merge-gate.mjs --dry-run`, có và không có `JIRA_CI_TOKEN`: `No open PR`, như bản trong `ao-pilot`.
+- `audit.mjs --sha 5956702 --branch develop --dry-run` (commit merge của PR #12, sửa workflow, bạn merge): `audit passed`, như trước.
+
+Việc để lại cho T15: workflow deploy của `ao-pilot` gọi `audit.yml` phải cấp thêm `actions: read`, vì workflow được gọi không nâng được quyền của token bên gọi. Thiếu quyền này thì `audit` không đọc được lượt `CI` của PR tài liệu.

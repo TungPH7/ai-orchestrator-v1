@@ -28,7 +28,9 @@ test('audit is a reusable workflow: the commit and branch default to those of th
 
 test('no expression reaches a shell line, the token only reads, and every action is pinned to a commit', () => {
   for (const { run } of job.steps.filter((step) => step.run)) assert.doesNotMatch(run, /\$\{\{/, run);
-  assert.deepEqual(job.permissions, { contents: 'read', 'pull-requests': 'read', checks: 'read', statuses: 'read' });
+  assert.deepEqual(job.permissions, { contents: 'read', 'pull-requests': 'read', checks: 'read', statuses: 'read', actions: 'read' });
+  // The caller grants the same: a called workflow cannot raise the permissions of the caller's token.
+  assert.match(text, /^#   permissions: { contents: read, pull-requests: read, checks: read, statuses: read, actions: read }$/m);
   // The steps only: the header comment shows how a deploy workflow calls this one.
   for (const { uses } of job.steps.filter((step) => step.uses)) assert.match(uses, /@[0-9a-f]{40}$/, uses);
 });
