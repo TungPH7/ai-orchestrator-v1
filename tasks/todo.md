@@ -493,7 +493,7 @@ Xem [plan.md](plan.md#checkpoint-2).
 
 ## Giai đoạn 5: lên `ao-pilot`
 
-### [ ] T15: Bản chép kit mới vào `ao-pilot` qua PR [bạn] (spec mục 2.10, kiểm thật 3)
+### [x] T15: Bản chép kit mới vào `ao-pilot` qua PR [bạn] (spec mục 2.10, kiểm thật 3)
 
 **Mô tả:**
 
@@ -511,16 +511,77 @@ Xem [plan.md](plan.md#checkpoint-2).
 Bạn làm: đọc diff của PR, approve, rồi bấm **Squash and merge**.
 
 **Tiêu chí chấp nhận:**
-- [ ] Tiêu chí 6 và 9 của spec mục 9 đạt.
-- [ ] Commit của PR đứng tên bot `ao-dev`.
-- [ ] Số đo của hai lượt review có trong `tasks/verification.md`.
+- [x] Tiêu chí 6 và 9 của spec mục 9 đạt.
+- [x] Commit của PR đứng tên bot `ao-dev`.
+- [x] Số đo của hai lượt review có trong `tasks/verification.md`.
 
 **Kiểm chứng:**
-- [ ] `ao-pilot` có sáu skill `/ao-*` và `ao-step.mjs`; `git status` sạch sau khi merge
+- [x] `ao-pilot` có sáu skill `/ao-*` và `ao-step.mjs`; `git status` sạch sau khi merge
 
 **Phụ thuộc:** T3, T5, T6, T7, T13, T14
 
 **File dự kiến:** `tasks/verification.md` (repo kit); bản chép trong `ao-pilot`
+
+**Cỡ:** M
+
+### [ ] T15a: Sửa finding của PR #14: cổng và Jira (spec mục 2.4, 2.6, 2.7)
+
+**Mô tả:** Sửa các finding mà `reviewer` và `security` nêu ở ao-pilot PR #14 (T15), ở phần chạy trong CI và phần đọc Jira. Bạn chọn sửa ở kit ngay, không chạy agent; bản sửa vào `ao-pilot` ở lần chép kit sau.
+
+- `securityScope` (spec 2.6): khi báo cáo `security` mới nhất còn finding Critical hay High, `security` review lại cả PR. Mốc của phần mới là báo cáo đầy đủ cuối cùng, không phải một báo cáo phần mới.
+- PR tài liệu (spec 2.4): chỉ tính các lượt `CI` của sự kiện `pull_request` trên nhánh tài liệu. Lượt mới nhất phải chạy trên head hiện tại, và bắt đầu trước lúc bạn duyệt. Một lần push sau lúc duyệt, kể cả force-push về commit cũ, đưa PR về luồng review thường.
+- Key lấy từ tên nhánh phải thuộc space của dự án, ở `ao-step.mjs`, `merge-gate` và `audit`. JQL đọc con của Epic có `project =`.
+- Cờ Needs you (spec 2.7): `merge-gate` và `jira-sync` chỉ tin comment trên Jira của tài khoản token CI, và comment trên PR của bot `ao-dev`.
+- Khi PR đổi nhiều file, comment "Needs you" của `merge-gate` gom đường dẫn theo thư mục.
+
+**Tiêu chí chấp nhận:**
+- [ ] Mỗi điểm có test đỏ trước, kể cả: báo cáo có finding chặn; force-push về commit có CI trước lúc duyệt; commit có CI ở nhánh khác; key của space khác; comment giả dấu của `merge-gate`.
+- [ ] Spec mục 2.4, 2.6, 2.7 và `docs/quality-gates.md` ghi điều kiện mới.
+
+**Kiểm chứng:**
+- [ ] Năm lệnh kiểm trong quy ước chung xanh
+
+**Phụ thuộc:** T15
+
+**File dự kiến:** `lib/workflow/security-scope.mjs`, `lib/workflow/facts.mjs`, `lib/quality/docs-pr.mjs`, `lib/quality/merge-gate.mjs`, `lib/quality/audit.mjs`, `lib/tracker/flags.mjs`, `scripts/jira-sync.mjs`, `SPEC-dev-workflow.md`, `docs/quality-gates.md`
+
+**Cỡ:** M
+
+### [ ] T15b: Sửa finding của PR #14: `gh-guard` và script ở máy (spec mục 2.1, 2.3)
+
+**Mô tả:** Phần còn lại của các finding ở PR #14, ở những gì chạy trên máy bạn:
+
+- `gh-guard` từ chối thêm các lệnh sau:
+  - đặt, export hay xóa các biến danh tính của phiên (`GIT_CONFIG_*`, `GIT_ASKPASS`, `GH_TOKEN` và các biến cùng loại), bằng mọi cách của shell, kể cả `env -i`;
+  - đổi các biến đó trong lệnh PowerShell;
+  - chạy chương trình `git-credential-*`.
+- `gh-guard` kiểm thêm:
+  - lệnh trong `powershell -Command`, `pwsh -Command` và `cmd /c`, như một lệnh lồng nhau;
+  - shell đọc lệnh từ stdin;
+  - tên các script điều phối, không phân biệt hoa thường.
+- `checkAoPr` bỏ qua giá trị của các option của `node` (`-r`, `--require`, `--import` …) khi tìm script.
+- Thư mục temp: `gh-guard` so được cả tên ngắn (8.3) lẫn tên dài của `os.tmpdir()`.
+- `ao-step.mjs`: khóa `active.json` nguyên tử; `--note` và `--answers` chỉ đọc file trong `.ai/runs/`.
+- Sửa comment ở `launch.mjs`, và ghi rõ trong tài liệu: phiên agent chạy dưới user Windows của bạn và đọc được key của App, nên `gh-guard` chỉ chặn nhầm lẫn, không phải ranh giới quyền.
+
+**Không làm ở task này,** vì cần bạn quyết, hoặc đã là rủi ro biết trước:
+
+- lớp chặn phía server (ruleset) cho `develop` và `main`: cần repo public hoặc GitHub Pro;
+- một App riêng cho quyền Workflows, chỉ `devops` dùng;
+- đưa `--go` ra khỏi luật `allow`, để Claude Code hỏi bạn trước khi chạy agent;
+- đưa key ra khỏi tầm của user chạy agent (spec mục 12);
+- `GH_TOKEN` hết hạn sau 1 giờ (T17–T18 ghi thời gian từng lượt), và số lời gọi API khi chờ CI.
+
+**Tiêu chí chấp nhận:**
+- [ ] Mỗi dạng lệnh ở trên có test bị từ chối, và các lệnh agent thường chạy vẫn qua.
+- [ ] `docs/quality-gates.md` ghi giới hạn của `gh-guard` và các việc để sau.
+
+**Kiểm chứng:**
+- [ ] Năm lệnh kiểm trong quy ước chung xanh
+
+**Phụ thuộc:** T15
+
+**File dự kiến:** `lib/quality/commands.mjs`, `kit/.claude/hooks/gh-guard.mjs`, `scripts/ao-step.mjs`, `lib/agents/launch.mjs`, `docs/quality-gates.md`
 
 **Cỡ:** M
 
