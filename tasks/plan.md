@@ -66,9 +66,9 @@ T9 ── T10 bản sửa kit còn lại, tài liệu, lưu trữ
 - [x] Bạn xem kết quả của T1–T2
 
 ### Giai đoạn 2: dựng
-- [ ] T3: Space `SMP`: bước 9–10 của `docs/jira-setup.md` [bạn]
+- [x] T3: Space `SMP`: bước 9–10 của `docs/jira-setup.md` [bạn]
 - [x] T4: Khung app `ao-sample` ở máy
-- [ ] T5: Bản chép kit, skill theo stack và commit đầu
+- [x] T5: Bản chép kit, skill theo stack và commit đầu
 - [ ] T6: Lên GitHub và nối Jira: bước 11–13 [bạn]
 
 ### Checkpoint 2

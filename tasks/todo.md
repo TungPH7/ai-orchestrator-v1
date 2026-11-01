@@ -94,17 +94,17 @@ Nếu API từ chối một bước, Claude dừng bước đó, ghi lỗi, và 
 
 ## Giai đoạn 2: dựng
 
-### [ ] T3: Space `SMP`: bước 9–10 của `docs/jira-setup.md` [bạn]
+### [x] T3: Space `SMP`: bước 9–10 của `docs/jira-setup.md` [bạn]
 
 **Mô tả:** Token admin Jira không tạo được space (T2), nên **[bạn]** tạo space `SMP` trên giao diện, dùng chung cấu hình với `DEMO` (bạn chọn ở Checkpoint 1), rồi sửa board theo bước 10: filter `project = SMP AND issuetype != Epic ORDER BY Rank ASC`, cột và giới hạn WIP. Claude ghi từng bước bấm, kiểm lại bằng API và `jira:check`, và ghi thời gian vào `verification.md`. Trong lúc chờ, Claude làm T4 và T5, vì hai task này không cần space.
 
 **Tiêu chí chấp nhận:**
-- [ ] Mọi ô `- [ ]` của bước 9–10 đạt.
-- [ ] `npm run jira:check -- --space SMP` chỉ còn báo các mục của bước 11–13.
-- [ ] `verification.md` ghi mục nào làm bằng API, mục nào bạn bấm, và thời gian.
+- [x] Mọi ô `- [ ]` của bước 9–10 đạt.
+- [x] `npm run jira:check -- --space SMP` chỉ còn báo các mục của bước 11–13.
+- [x] `verification.md` ghi mục nào làm bằng API, mục nào bạn bấm, và thời gian.
 
 **Kiểm chứng:**
-- [ ] Bảng kết quả của `jira:check` dán vào `verification.md`
+- [x] Bảng kết quả của `jira:check` dán vào `verification.md`
 
 **Phụ thuộc:** T2
 
@@ -138,7 +138,7 @@ Chưa commit.
 
 **Cỡ:** M
 
-### [ ] T5: Bản chép kit, skill theo stack và commit đầu
+### [x] T5: Bản chép kit, skill theo stack và commit đầu
 
 **Mô tả:** Claude làm trong `ao-sample`:
 
@@ -149,13 +149,13 @@ Chưa commit.
 5. `npm install` cài hook git. Commit đầu bằng login của bạn, header không có mã Jira, ví dụ `chore(repo): scaffold the sample app with the kit copy`. Chưa push.
 
 **Tiêu chí chấp nhận:**
-- [ ] `render-agents.mjs --project . --check` báo mọi file đúng.
-- [ ] `.claude/skills/` và thư mục con của `.ai-orchestrator/` giống hệt kit ở SHA đã ghi, trừ hai skill theo stack và `roster.local.yaml`.
-- [ ] Sáu lệnh của T4 vẫn xanh. Hook `pre-commit` và `commit-msg` chạy và qua khi commit.
-- [ ] Nếu skill NestJS có điểm đáng ngờ: Claude đã hỏi bạn, và kết quả ghi trong `verification.md`.
+- [x] `render-agents.mjs --project . --check` báo mọi file đúng.
+- [x] `.claude/skills/` và thư mục con của `.ai-orchestrator/` giống hệt kit ở SHA đã ghi, trừ hai skill theo stack và `roster.local.yaml`.
+- [x] Sáu lệnh của T4 vẫn xanh. Hook `pre-commit` và `commit-msg` chạy và qua khi commit (commit mang mã `SMP-1`, bạn chọn cách (b)).
+- [x] Nếu skill NestJS có điểm đáng ngờ: Claude đã hỏi bạn, và kết quả ghi trong `verification.md` (không có điểm đáng ngờ; thiếu file LICENSE được ghi trong `SOURCE.md`).
 
 **Kiểm chứng:**
-- [ ] So sánh thư mục với kit bằng `git diff --no-index --stat`, kết quả ghi vào `verification.md`
+- [x] So sánh thư mục với kit bằng `git diff --no-index --stat`, kết quả ghi vào `verification.md`
 
 **Phụ thuộc:** T1a, T4
 

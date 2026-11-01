@@ -131,3 +131,32 @@ Cả hai được nhận theo giấy phép MIT mà tác giả khai; `SOURCE.md` 
 
 - Environment `development`, `staging`, `production`, và `merge-gate` với rule nhánh chỉ cho `develop`: tạo bằng `gh api`. Repo chưa có nhánh `develop`; rule vẫn nhận tên nhánh.
 - Secret `JIRA_CI_TOKEN` của repo: đặt bằng `printenv JIRA_CI_TOKEN | gh secret set JIRA_CI_TOKEN -R TungPH7/ao-sample`, nên token không nằm trong lệnh. Token là biến môi trường trên máy (`docs/jira-setup.md`, bước 1).
+
+## T3 (tiếp): board của `SMP` (2026-11-02)
+
+- `SMP` dùng **board mới** của Jira ("This space uses the modern Jira board"). Board settings của board mới không có mục **Columns**; cột được cấu hình trên trang board: **More actions (•••) → Configure columns** (ảnh `misc/images/phien-21-luot-10-anh-1.png`, `phien-21-luot-11-anh-1.png`). `DEMO` dùng board cũ, nên bước 10 của `docs/jira-setup.md` chỉ ghi đường của board cũ.
+- Sau khi gán `AO workflow scheme`, hai cột của template (Backlog, Selected for development) chỉ còn status cũ, nên trang board ẩn chúng (`phien-21-luot-9-anh-1.png`).
+- Lần đọc API thứ nhất sau khi bạn bấm Publish: `New` nằm trong cột `In Review`, cột Backlog trống. Bạn sửa lại; lần đọc thứ hai: Backlog `New`; Ready `To Do`, `Ready`; In Progress; In Review `In Review` (tối đa 2); QA `In QA`, `Ready for QA`; Done. Giống hệt board 2 của `DEMO`.
+- `npm run jira:check -- --space SMP`: "Jira space SMP matches tracker/jira.yaml". Bốn dòng `Check by hand`: Kanban backlog giữ `New` (API xác nhận); MCP nhận API token (cấu hình của site, như `DEMO`); GitHub for Atlassian nối với repo (kiểm ở Checkpoint 2); trường trên screen (dùng chung screen scheme của `DEMO`).
+- Thời gian: tạo space, gán scheme và sửa board mất khoảng 40 phút, phần lớn vì giao diện khác tài liệu (gói Free không có "share settings"; board mới).
+
+## T5 (tiếp): commit đầu (2026-11-02)
+
+- Bạn chọn cách (b): commit đầu mang mã của một Task, không đi vòng hook.
+- Task `SMP-1` "Dựng khung app và bản chép kit" tạo bằng token CI (`POST /rest/api/3/issue`, 201). Lần gọi đầu bằng `curl -d "$BODY"` bị Jira báo JSON lỗi vì chữ tiếng Việt đi qua tham số dòng lệnh của Git Bash; gọi bằng `fetch` của Node thì được.
+- Commit `6f5831d` `chore(repo): scaffold the sample app with the kit copy (SMP-1)`, tác giả là bạn, 404 file. Hook `pre-commit` và `commit-msg` đều qua.
+
+## T6 (tiếp): lên GitHub (2026-11-02)
+
+| Bước | Ai, bằng gì | Kết quả |
+|---|---|---|
+| Push `main` | Claude, `git push -u origin main` | Hook `pre-push` cho qua, vì nhánh chưa có trên remote |
+| Tạo `develop` từ cùng commit | Claude, `git push origin main:develop` | Xong; `main` và `develop` cùng ở `6f5831d` |
+| Nhánh mặc định `develop` | Claude, `PATCH /repos/TungPH7/ao-sample` | Xong |
+| Thêm repo vào `ao-dev`, `ao-review` | Bạn, giao diện | Token cài đặt của cả hai App đọc được repo (200) |
+| Thêm repo vào app GitHub của Atlassian | Bạn, giao diện | Kiểm ở Checkpoint 2, qua panel Development của `SMP-1` |
+| Key thứ hai của `ao-dev` | Bạn tạo (Credentials → Key pairs → New key); Claude kiểm bằng `GET /app` (200, `tungph7-ao-dev`), đặt secret `AO_DEV_APP_KEY` của environment `merge-gate` bằng cách pipe file, rồi xóa file | Xong. Trong `ao-keys` còn hai key đầu của hai App |
+| Tin cậy thư mục `ao-sample` | Bạn, mở `claude` một lần | `hasTrustDialogAccepted: true` |
+| `.claude/settings.local.json` bật hai server MCP | Claude | `claude mcp list`: `atlassian` và `chrome-devtools` Connected |
+| `npm run gh:protect -- --repo TungPH7/ao-sample` | Claude | `soft mode: merge-gate and audit enforce the gates` |
+| `MSYS_NO_PATHCONV=1 claude -p --model sonnet "/ao-status"` | Claude | Thoát 0, 2 turn, 0,11 USD, không bị từ chối quyền nào. In `SMP-1` ở New |
