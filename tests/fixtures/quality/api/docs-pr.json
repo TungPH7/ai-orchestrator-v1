@@ -57,12 +57,12 @@
     ]
   },
   "/commits/d0c5d0c5d0c5d0c5d0c5d0c5d0c5d0c5d0c5d0c5/status": { "state": "pending", "total_count": 0, "statuses": [] },
-  "/actions/runs?head_sha=d0c5d0c5d0c5d0c5d0c5d0c5d0c5d0c5d0c5d0c5": {
+  "/actions/runs?branch=feature/DEMO-20-spec&event=pull_request": {
     "total_count": 3,
     "workflow_runs": [
-      { "id": 9003, "name": "CI", "event": "workflow_dispatch", "head_sha": "d0c5d0c5d0c5d0c5d0c5d0c5d0c5d0c5d0c5d0c5", "created_at": "2026-11-04T05:00:00Z", "run_attempt": 1 },
-      { "id": 9002, "name": "jira-sync", "event": "workflow_run", "head_sha": "d0c5d0c5d0c5d0c5d0c5d0c5d0c5d0c5d0c5d0c5", "created_at": "2026-11-04T02:47:00Z", "run_attempt": 1 },
-      { "id": 9001, "name": "CI", "event": "pull_request", "head_sha": "d0c5d0c5d0c5d0c5d0c5d0c5d0c5d0c5d0c5d0c5", "created_at": "2026-11-04T02:40:00Z", "run_attempt": 2 }
+      { "id": 9002, "name": "jira-sync", "event": "pull_request", "head_branch": "feature/DEMO-20-spec", "head_sha": "d0c5d0c5d0c5d0c5d0c5d0c5d0c5d0c5d0c5d0c5", "created_at": "2026-11-04T02:47:00Z", "run_attempt": 1 },
+      { "id": 9001, "name": "CI", "event": "pull_request", "head_branch": "feature/DEMO-20-spec", "head_sha": "d0c5d0c5d0c5d0c5d0c5d0c5d0c5d0c5d0c5d0c5", "created_at": "2026-11-04T02:40:00Z", "run_attempt": 2 },
+      { "id": 9000, "name": "CI", "event": "pull_request", "head_branch": "feature/DEMO-20-spec", "head_sha": "c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0", "created_at": "2026-11-04T02:10:00Z", "run_attempt": 1 }
     ]
   },
   "jira": {
