@@ -1,6 +1,6 @@
 # Plan triển khai: Pilot 1
 
-> **Spec:** [SPEC-pilot-1.md](../SPEC-pilot-1.md), đã duyệt 2026-11-01 (Phiên 21 · Lượt 4). **Trạng thái:** chờ bạn duyệt. **Task chi tiết:** [todo.md](todo.md). **Kết quả kiểm thật:** `tasks/verification.md`, tạo ở T1.
+> **Spec:** [SPEC-pilot-1.md](../SPEC-pilot-1.md), đã duyệt 2026-11-01 (Phiên 21 · Lượt 4). **Trạng thái:** đã duyệt 2026-11-01 (Phiên 21 · Lượt 5), cùng quyết định 6 và 8. **Task chi tiết:** [todo.md](todo.md). **Kết quả kiểm thật:** `tasks/verification.md`, tạo ở T1.
 
 ## Tổng quan
 
@@ -124,4 +124,4 @@ T9 ── T10 bản sửa kit còn lại, tài liệu, lưu trữ
 
 ## Câu hỏi mở
 
-Không có. Bạn duyệt plan cùng quyết định 6 (cách đưa bản sửa kit vào `ao-sample` giữa Epic) và quyết định 8 (Checkpoint 3 sau lượt build đầu).
+Không có. Bạn duyệt plan ngày 2026-11-01 (Phiên 21 · Lượt 5), gồm cả quyết định 6 (cách đưa bản sửa kit vào `ao-sample` giữa Epic) và quyết định 8 (Checkpoint 3 sau lượt build đầu).
