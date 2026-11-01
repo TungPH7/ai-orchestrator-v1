@@ -41,7 +41,8 @@ test('jira-sync stops with a message when the event, the CI token or the project
 test('the kit has the workflow that runs jira-sync on the events of spec section 2.7, with read-only GitHub rights', () => {
   const workflow = parse(readFileSync(join(ROOT, 'kit', '.github', 'workflows', 'jira-sync.yml'), 'utf8'));
   assert.deepEqual(Object.keys(workflow.on), ['pull_request', 'pull_request_review', 'workflow_run', 'deployment_status', 'workflow_dispatch']);
-  assert.deepEqual(workflow.on.pull_request.types, ['opened', 'reopened', 'synchronize', 'ready_for_review']);
+  // closed only clears the flag merge-gate raised (dev-workflow spec 2.7).
+  assert.deepEqual(workflow.on.pull_request.types, ['opened', 'reopened', 'synchronize', 'ready_for_review', 'closed']);
   assert.deepEqual(workflow.on.workflow_run.types, ['completed']);
   assert.equal(workflow.on.workflow_dispatch.inputs.item.required, true);
   assert.ok(Object.values(workflow.permissions).every((right) => right === 'read'));

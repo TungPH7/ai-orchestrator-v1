@@ -171,7 +171,7 @@ Thiếu một trong ba điều thì `security` review đầy đủ ở `max`. `r
 
 ### 2.7 `merge-gate` báo PR cần bạn
 
-PR sửa đường dẫn được bảo vệ cần bạn tự merge. Khi gặp PR như vậy, `merge-gate` làm thêm hai việc, mỗi việc một lần cho mỗi head:
+PR sửa đường dẫn được bảo vệ cần bạn tự merge. Khi PR như vậy chỉ còn chờ bạn, tức không thiếu gì hoặc chỉ thiếu approve của bạn, `merge-gate` làm thêm hai việc, mỗi việc một lần cho mỗi head (T6: báo sớm hơn thì cờ "Needs you" nằm trên item trong lúc agent còn review):
 
 - comment lên PR bằng `ao-dev`: đường dẫn được bảo vệ, điều còn thiếu, và nhắc approve trước rồi mới merge;
 - gắn cờ "Needs you" lên item trên Jira bằng token CI, kèm comment cùng nội dung.

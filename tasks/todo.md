@@ -216,7 +216,7 @@ Xem [plan.md](plan.md#checkpoint-1).
 
 **Mô tả:**
 
-- Khi gặp PR cần bạn tự merge, `runMergeGate` làm hai việc, mỗi việc một lần cho mỗi head, nhận ra nhờ dấu `merge-gate: needs you at <sha>` trong comment:
+- Khi PR cần bạn tự merge chỉ còn chờ bạn (không thiếu gì, hoặc chỉ thiếu approve), `runMergeGate` làm hai việc, mỗi việc một lần cho mỗi head, nhận ra nhờ dấu `merge-gate: needs you at <sha> on PR #<n>` trong comment (điều chỉnh ở T6, spec mục 2.7):
   - comment lên PR bằng `ao-dev`: đường dẫn được bảo vệ, điều còn thiếu, và nhắc approve trước rồi mới merge;
   - gắn cờ "Needs you" lên item của nhánh bằng token CI, kèm comment cùng nội dung.
 - `jira-sync.yml` nghe thêm sự kiện `closed` của PR. Sự kiện này chỉ dùng để gỡ cờ. Khi PR được merge hoặc đóng, `jira-sync` gỡ cờ và nhãn `needs-you`, nhưng chỉ khi comment cờ mới nhất của item là comment của `merge-gate` cho đúng PR đó.
