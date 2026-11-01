@@ -27,7 +27,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 17 | `46e16bae-3275-482c-b001-11cf43108e28` | 2026-10-31 khoảng 23:25 → 2026-11-01 khoảng 01:05 | Bạn duyệt `SPEC-dev-workflow.md`; spec merge (PR #109); Claude viết plan 19 task, bốn checkpoint (chặn gọi thẳng credential helper, effort đặt cả tham số lẫn biến môi trường, PR chép kit review bằng `/ao-review`, Story của Epic thử dừng ở Ready for QA); bạn duyệt plan (PR #110); T1 kiểm skill `/` và lệnh nền bằng Haiku: dòng `!` chỉ tự chạy khi có luật `allow`, `$ARGUMENTS` được chèn nguyên văn, `claude -p` dừng lệnh nền sau 10 phút nếu không đặt `timeout`; T2: Task thử DEMO-18, PR nháp `ao-pilot` #13, push bằng token App, Git Credential Manager được thay, `gh` dùng token App; bạn hỏi vì sao lệnh 20 phút chạy quá 20 phút; bạn hỏi Haiku dùng ở đâu và chê Haiku kém; Claude thôi dùng Haiku, đề xuất năm điểm sửa spec và xin bạn thêm quyền cho hai App; bạn duyệt năm điểm sửa, T1 đóng (PR #111); bạn đã thêm quyền cho hai App, T2 đóng (PR #112): cả sáu tiền đề về GitHub đúng; Checkpoint 1, chờ bạn |
 | 18 | `184d78d1-4600-4c36-8279-005a105c9216` | 2026-11-01 khoảng 01:08 → | Bạn cho qua Checkpoint 1 (PR #113); T3–T14 đóng (PR #114–#125): phiên agent dùng danh tính App và credential helper theo vai trò, PR tài liệu và quy tắc Q5, `merge-gate` báo PR chỉ còn chờ bạn và `jira-sync` gỡ cờ, đánh dấu dòng DoR, `ao-step.mjs` và vòng chạy `--go`, sáu skill `/ao-*`, template và prompt; chạy chỉ kiểm trong `ao-pilot` tìm ra lỗi 403 khi đọc commit status; Checkpoint 2 (PR #126), chờ bạn |
 | 19 | `44d6269e-f8c5-4052-a81c-f0f6385e00ed` | 2026-11-01 khoảng 10:35 → khoảng 11:30 | Bạn cho qua Checkpoint 2 (PR #127); T15: Task DEMO-19, ao-pilot PR #14 chép kit bằng danh tính bot `ao-dev`, `/ao-review`: `reviewer` COMMENT, `security` chạm giới hạn 5 giờ rồi chạy tiếp và COMMENT, 11,69 USD quy đổi; `merge-gate` bản mới chạy ở máy comment và gắn cờ một lần; trả lời cuối của Claude bị bộ lọc an toàn chặn hai lần, nên phiên này không có lượt nào trong log |
-| 20 | `bc6dea4e-d395-4a5d-b439-2a337292b2e7` | 2026-11-01 khoảng 11:45 → | Bạn dán đoạn cuối của Phiên 19 để làm tiếp; Claude báo kết quả T15 và hỏi về nhánh `main` và các finding của kit; bạn merge PR #14 và chọn cả hai đề xuất: nhánh mặc định của `ao-pilot` sang `develop`, sửa finding ở kit không chạy agent; T15 đóng (PR #128), T15a (PR #129), T15b (PR #130); T16 đóng (PR #131): agent dùng danh tính App, vai trò chỉ đọc không push được; Checkpoint 3, bạn đồng ý chạy Epic thử; T17: Epic DEMO-20, `/ao-status`, chờ bạn bấm `Start spec`; bạn bấm `Start spec`; `/ao-spec` bị Claude Code tắt vì máy thiếu RAM; bạn bảo chạy lại; `ba` viết SPEC, `ao-step` dừng vì không thấy nhánh tài liệu chưa push, kit PR #132 sửa; bạn chọn chạy bằng code của kit và trả lời theo đề xuất; `ux` chạm giới hạn 5 giờ; bạn bảo làm tiếp; `ux` hỏi sáu câu, `sa` hỏi hai câu, bạn trả lời theo đề xuất; `ba` mở PR tài liệu #15, CI xanh, stage spec 7,84 USD quy đổi; bạn duyệt spec; stage plan: `sa` viết plan và ADR-0002, `ba` tạo DEMO-21, DEMO-22, DEMO-23; bạn chọn DEMO-22 ở `xhigh` và đổi `Status` thành Approved, hỏi vì sao `Status` còn Draft; lượt `ba` bị tắt vì thiếu RAM, bạn bảo chạy lại; bạn duyệt plan; `merge-gate` merge PR #15, `audit` xanh, T17 đóng (PR #133), 14,92 USD quy đổi; bạn đồng ý; bốn lỗi nhỏ sửa (PR #134); T18: `be-dev` bị `jira-guard` chặn vì token App bị cắt ở dấu chấm, kit PR #135 sửa; chờ bạn gỡ cờ trên DEMO-22 |
+| 20 | `bc6dea4e-d395-4a5d-b439-2a337292b2e7` | 2026-11-01 khoảng 11:45 → | Bạn dán đoạn cuối của Phiên 19 để làm tiếp; Claude báo kết quả T15 và hỏi về nhánh `main` và các finding của kit; bạn merge PR #14 và chọn cả hai đề xuất: nhánh mặc định của `ao-pilot` sang `develop`, sửa finding ở kit không chạy agent; T15 đóng (PR #128), T15a (PR #129), T15b (PR #130); T16 đóng (PR #131): agent dùng danh tính App, vai trò chỉ đọc không push được; Checkpoint 3, bạn đồng ý chạy Epic thử; T17: Epic DEMO-20, `/ao-status`, chờ bạn bấm `Start spec`; bạn bấm `Start spec`; `/ao-spec` bị Claude Code tắt vì máy thiếu RAM; bạn bảo chạy lại; `ba` viết SPEC, `ao-step` dừng vì không thấy nhánh tài liệu chưa push, kit PR #132 sửa; bạn chọn chạy bằng code của kit và trả lời theo đề xuất; `ux` chạm giới hạn 5 giờ; bạn bảo làm tiếp; `ux` hỏi sáu câu, `sa` hỏi hai câu, bạn trả lời theo đề xuất; `ba` mở PR tài liệu #15, CI xanh, stage spec 7,84 USD quy đổi; bạn duyệt spec; stage plan: `sa` viết plan và ADR-0002, `ba` tạo DEMO-21, DEMO-22, DEMO-23; bạn chọn DEMO-22 ở `xhigh` và đổi `Status` thành Approved, hỏi vì sao `Status` còn Draft; lượt `ba` bị tắt vì thiếu RAM, bạn bảo chạy lại; bạn duyệt plan; `merge-gate` merge PR #15, `audit` xanh, T17 đóng (PR #133), 14,92 USD quy đổi; bạn đồng ý; bốn lỗi nhỏ sửa (PR #134); T18: `be-dev` bị `jira-guard` chặn vì token App bị cắt ở dấu chấm, kit PR #135 sửa; bạn gỡ cờ; `be-dev` xong DEMO-22 ở `xhigh`, kit PR #136 sửa việc làm tiếp Sub-task; bạn hỏi `be-dev` có bị tắc không; `fe-dev` code xong DEMO-23 nhưng gắn cờ vì Tab không cuộn khung bảng ở 320 px; chờ bạn chọn A hoặc B trên DEMO-23 và gỡ cờ |
 
 ---
 
@@ -7725,3 +7725,126 @@ Lượt `be-dev` đầu tiên của T18 bị chặn do một lỗi của kit. M�
 2. `fe-dev` làm DEMO-23 và mở PR.
 
 Mình còn ghi lại một lỗi nhỏ nữa để sửa sau: `ao-step` vẫn trả GO khi Sub-task sắp làm đang mang cờ, thay vì dừng và nhắc bạn gỡ cờ.
+
+# Phiên 20 · Lượt 16 — 2026-11-01 khoảng 17:14
+
+**Bạn:**
+
+````markdown
+đã gỡ cờ
+````
+
+Trước khi trả lời, Claude kiểm DEMO-22 trên Jira (cờ và nhãn `needs-you` đã gỡ), kiểm RAM, rồi chạy lại `ao-step.mjs build DEMO-21 --go` ở nền bằng code của kit.
+
+**Claude:**
+
+`/ao-build DEMO-21` đang chạy lại ở nền:
+
+1. `be-dev` làm DEMO-22 ở `xhigh`: phần server của việc xóa dòng, test viết trước.
+2. `fe-dev` làm DEMO-23 ở `high`: nút Xóa và bố cục, rồi mở PR code.
+
+Hai lượt này có thể mất 30–60 phút. Mình sẽ báo khi xong, hoặc ngay khi có lượt dừng giữa chừng.
+
+# Phiên 20 · Lượt 17 — 2026-11-01 khoảng 17:22
+
+**Bạn:**
+
+````markdown
+be-dev có đang làm DEMO-22 không vậy? Hay đang bị tắc chỗ nào? TÔi check thì thấy source code chưa tạo nhánh mới, jira thì thấy đổi sang In Progress rồi.
+
+$ git status
+On branch feature/DEMO-21-remove-from-cart
+Your branch is ahead of 'origin/feature/DEMO-21-remove-from-cart' by 4 commits.
+  (use "git push" to publish your local commits)
+
+nothing to commit, working tree clean
+
+admin@LAPTOP-MEPN303I MINGW64 /d/Document/1Khoahoc/4LapTrinh/AI-for-coding/ao-pilot (feature/DEMO-21-remove-from-cart)
+````
+
+Trước khi trả lời, Claude đọc log của lượt `be-dev` đang chạy, các commit trên nhánh, và trạng thái của DEMO-21, DEMO-22 trên Jira.
+
+**Claude:**
+
+`be-dev` đang làm DEMO-22 bình thường, không bị tắc. Nó đã gọi 56 tool và có 4 commit, và đang viết tiếp test cho `POST /`.
+
+**Vì sao không có nhánh mới:** theo plan, hai Sub-task cùng commit lên nhánh của Story là `feature/DEMO-21-remove-from-cart`, BE làm trước. Nhánh này do `be-dev` tạo và push ở lượt đầu lúc 17:02, khi đó chưa có commit nào. Nhánh bạn đang thấy chính là nhánh đó.
+
+**4 commit "ahead" là của `be-dev`**, đều đứng tên `tungph7-ao-dev[bot]`:
+
+| Giờ | Commit |
+|---|---|
+| 17:17 | `85d4ba1` kiểm mỗi dòng của giỏ có mã riêng |
+| 17:18 | `0d0e3c2` bỏ khỏi giỏ các dòng theo mã |
+| 17:18 | `58f8af3` giữ mã giảm giá đang áp khi form không gửi mã |
+| 17:20 | `40aea1f` gắn mã cố định cho mỗi dòng của giỏ, kiểm khi tạo server |
+
+Agent commit ở máy theo từng bước TDD. Nó sẽ push khi xong Sub-task, nên lúc này nhánh trên GitHub chưa có các commit đó.
+
+**Jira khớp với code:** DEMO-21 và DEMO-22 sang In Progress lúc 17:16. Như vậy bản sửa token (kit PR #135) đã chạy đúng, và `jira-guard` không còn chặn.
+
+**Đang làm:** `be-dev` vừa gắn mã dòng cho dữ liệu test hiện có, kiểm `tsc`, `npm test` và lint, và đang viết thêm test cho `src/server.test.ts`. Sau `be-dev`, `fe-dev` sẽ làm DEMO-23 rồi mở PR.
+
+Một lưu ý: trong lúc agent chạy, bạn chỉ nên đọc trong `ao-pilot` (như `git status`, `git log`). Đừng sửa file hay đổi nhánh, vì agent đang dùng chung bản checkout này.
+
+Lệnh xong lúc 17:27: `be-dev` xong DEMO-22, rồi `ao-step` dừng vì không thấy ledger của Story. Claude sửa lỗi đó (kit PR #136), chạy `fe-dev`, rồi trả lời tiếp:
+
+**Claude:**
+
+`be-dev` đã xong DEMO-22: 83 turn, 12,6 phút, 4,10 USD quy đổi ở `xhigh`.
+
+**Kết quả của `be-dev`:**
+- 7 commit đã được push lên `feature/DEMO-21-remove-from-cart`, tất cả đứng tên bot `ao-dev`.
+- Nội dung: mã dòng của giỏ, việc bỏ dòng khỏi giỏ, phần `POST /` đọc yêu cầu xóa, test E2E cho AC10 và AC11, và README.
+- DEMO-22 đã sang Done.
+
+**Lỗi thứ ba của kit ở T18, đã sửa trong kit PR #136:**
+- `ao-step` dừng trước khi chạy `fe-dev`, báo DEMO-21 "không có ledger".
+- Lý do: agent ghi ledger theo từng Sub-task (`DEMO-22.md`), trong khi `ao-step` tìm ledger của Story.
+- Giờ một Story có Sub-task sẽ làm tiếp lần lượt qua các Sub-task chưa xong.
+- Bước kiểm sau khi sửa trả đúng: `fe-dev` làm DEMO-23 ở `high`.
+
+**Đang chạy ở nền:** `fe-dev` làm DEMO-23: nút Xóa, trường ẩn, bố cục, sửa bốn test cũ, rồi mở PR code. DEMO-21 tới giờ tốn 5,84 USD quy đổi.
+
+Mình sẽ báo khi PR được mở, rồi chạy tiếp `/ao-review`.
+
+Lệnh xong lúc 17:43: `fe-dev` code xong nhưng gắn cờ DEMO-23 và chưa mở PR. Claude trả lời tiếp:
+
+**Claude:**
+
+`fe-dev` đã code xong DEMO-23 nhưng chưa mở PR. Một kiểm tra trên trình duyệt không đạt, nên `fe-dev` gắn cờ Needs you cho DEMO-23 và hỏi bạn.
+
+**Kết quả** (104 turn, 11,2 phút, 5,01 USD quy đổi):
+- 5 commit đã được push lên `feature/DEMO-21-remove-from-cart`:
+  - mỗi dòng có nút "Xóa" trong form riêng;
+  - các trường ẩn giữ những dòng đã xóa và mã giảm giá đang áp;
+  - bảng có cột thứ năm với tiêu đề ẩn "Thao tác", nằm trong một khung cuộn ngang, kèm một luật cho màn hình hẹp;
+  - sửa bốn test cũ và AC1 của DEMO-10, đúng như SPEC cho phép;
+  - thêm test E2E cho AC1–AC9.
+- Lint và typecheck sạch. 154/154 test đơn vị và tích hợp pass. 24/24 test E2E pass trên Chrome, gồm các test của DEMO-20, DEMO-11 và DEMO-10.
+- DEMO-21 tới giờ tốn 10,85 USD quy đổi.
+
+**Chỗ không đạt:**
+- Ở bề rộng 320 px, khi bấm Tab tới nút "Xóa", khung bảng không tự cuộn tới nút. Nút được focus, nhưng chỉ hiện 7 trên 47 px.
+- Nguyên nhân: Chrome chỉ cuộn khung khi nút nằm hẳn ngoài khung, mà với CSS plan đã chốt thì nút vẫn còn 7 px nằm trong khung.
+- `fe-dev` thấy lỗi này trên cả Playwright lẫn DevTools.
+
+**`fe-dev` hỏi bạn** (comment trên DEMO-23):
+- **A.** Giữ CSS của plan và bỏ kiểm tra này. Người dùng vẫn tự cuộn khung được.
+- **B. `fe-dev` đề xuất cách này, và mình cũng khuyên chọn nó:** thêm `scroll-padding-inline-end:3rem` vào luật `.scroll`. `fe-dev` đã thử:
+  - ở 320 px, bấm Tab là khung cuộn và hiện đủ nút;
+  - ở 360 px, khung dịch 7 px;
+  - từ 768 px trở lên, không có gì thay đổi.
+
+  Plan không ghi luật CSS này, nên `fe-dev` không tự thêm.
+
+**Việc cần bạn trên DEMO-23.** Agent đọc câu trả lời của bạn trên Jira, còn hook không cho làm tiếp khi item còn cờ, nên bạn làm các bước sau:
+1. Mở https://phunghuutung12b4.atlassian.net/browse/DEMO-23
+2. Ở ô comment, gõ câu trả lời, ví dụ `Chọn B: thêm scroll-padding-inline-end:3rem vào .scroll.`, rồi bấm **Save**.
+3. Bấm nút **…** (More actions), rồi chọn **Remove flag** **(đối chiếu giao diện)**.
+4. Ở trường **Labels**, xóa nhãn `needs-you`, giữ nhãn `ao-fe-dev`.
+5. Nhắn mình "đã trả lời".
+
+Sau đó mình chạy lại `/ao-build DEMO-21`. `fe-dev` sẽ đọc ledger và câu trả lời của bạn, làm theo, rồi mở PR. Tiếp theo là `/ao-review`.
+
+Thêm một lỗi nhỏ của kit: khi `fe-dev` gắn cờ, `ao-step` chỉ báo chung chung "fe-dev ran build and it still has to run", chứ không nói DEMO-23 đang chờ bạn. Mình gộp lỗi này với lỗi Sub-task mang cờ đã ghi lúc trước.
