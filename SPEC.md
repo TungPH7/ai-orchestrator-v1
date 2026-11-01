@@ -104,7 +104,7 @@ agent-roster  → figma-integration (thêm ngày 2026-10-30; làm lúc nào do b
 
 `agent-roster` dùng hook, script và cấu hình của `tracker-integration` và `quality-gates` (đổi ngày 2026-10-30). Hai module đó đã xong trước, nên thứ tự build không đổi.
 
-- **Pilot 1**, sau khi xong `dev-workflow`: chạy thủ công một feature nhỏ trên dự án mẫu Next.js + NestJS, từ spec đến merge vào `develop`. Lúc này chưa có `project-scaffold`, nên kit được chép tay vào dự án pilot.
+- **Pilot 1**, sau khi xong `dev-workflow`: chạy thủ công một feature nhỏ trên dự án mẫu Next.js + NestJS, từ spec đến merge vào `develop`. Lúc này chưa có `project-scaffold`, nên kit được chép tay vào dự án pilot. Spec: [`SPEC-pilot-1.md`](SPEC-pilot-1.md) (repo `TungPH7/ao-sample`, space `SMP`, Epic "Ghi chú").
 - **Pilot 2**, sau khi xong `release-workflow`: đưa feature đó đi tiếp qua Development, Staging rồi Production.
 - **Cuối cùng**, `project-scaffold` đóng gói những gì đã chạy được để dùng cho các dự án sau.
 
