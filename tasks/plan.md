@@ -94,7 +94,7 @@ T16 ── T17 Epic: spec, plan ── T18 Epic: build, review, fix ── T19 t
 - [x] T4: `docs_pull_requests` trong `quality/gates.yaml`, schema và Q5
 - [x] T5: `merge-gate` và `audit` nhận PR tài liệu
 - [x] T6: `merge-gate` báo PR cần bạn, `jira-sync` gỡ cờ
-- [ ] T7: `jira-sync` đánh dấu dòng DoR
+- [x] T7: `jira-sync` đánh dấu dòng DoR
 
 ### Giai đoạn 3: `ao-step.mjs`
 - [ ] T8: `runs.mjs` và `requests.mjs`
