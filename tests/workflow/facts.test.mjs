@@ -111,3 +111,9 @@ test('the read-only App token cannot read the older commit statuses: CI is read 
   const otherError = (a) => (a.github['/commits/2e3689d23cc9ab587355836551a4fa3f5231d4bc/check-runs'] = { $status: 403 });
   await assert.rejects(gather('review', '11', { change: otherError }), /returned 403/, 'only the statuses are read around');
 });
+
+test('ba labels items with the prefixes the facts read (tracker/jira.yaml work_labels)', () => {
+  const ba = readFileSync(join(ROOT, 'agents', 'prompts', 'ba.md'), 'utf8');
+  const { role_prefix: role, effort_prefix: effort } = mapping.work_labels;
+  for (const label of [`${role}be-dev`, `${role}fe-dev`, `${role}devops`, `${effort}xhigh`, `${effort}max`]) assert.ok(ba.includes(`\`${label}\``), label);
+});
