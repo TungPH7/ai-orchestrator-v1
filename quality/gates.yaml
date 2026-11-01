@@ -26,6 +26,7 @@ suppressions:
   reason_marker: "reason:"
   patterns:
     - "eslint-disable"
+    - "oxlint-disable"   # oxlint, the linter of NestJS 12, honours both (Pilot 1 T1)
     - "@ts-ignore"
     - "@ts-nocheck"
     - ".skip("

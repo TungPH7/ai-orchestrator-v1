@@ -45,6 +45,18 @@ test('a suppression needs a reason on its line, .only( never passes, and Markdow
   ]);
 });
 
+test('an oxlint-disable comment needs a reason, as eslint-disable does (oxlint honours both)', () => {
+  const lines = [
+    { file: 'apps/api/src/a.ts', line: 2, text: '// oxlint-disable-next-line no-debugger' },
+    { file: 'apps/api/src/a.ts', line: 7, text: '/* oxlint-disable */' },
+    { file: 'apps/api/src/b.ts', line: 3, text: '// oxlint-disable-next-line no-console -- reason: the CLI prints its result' },
+  ];
+  assert.deepEqual(findSuppressions(lines, gates.suppressions), [
+    'apps/api/src/a.ts:2 oxlint-disable needs "reason: <why>" on the same line',
+    'apps/api/src/a.ts:7 oxlint-disable needs "reason: <why>" on the same line',
+  ]);
+});
+
 test('deleted test files are listed for the reviewer', () => {
   assert.deepEqual(deletedTests(DIFF), ['src/old.test.ts']);
 });
