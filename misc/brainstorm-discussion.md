@@ -27,7 +27,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 17 | `46e16bae-3275-482c-b001-11cf43108e28` | 2026-10-31 khoảng 23:25 → 2026-11-01 khoảng 01:05 | Bạn duyệt `SPEC-dev-workflow.md`; spec merge (PR #109); Claude viết plan 19 task, bốn checkpoint (chặn gọi thẳng credential helper, effort đặt cả tham số lẫn biến môi trường, PR chép kit review bằng `/ao-review`, Story của Epic thử dừng ở Ready for QA); bạn duyệt plan (PR #110); T1 kiểm skill `/` và lệnh nền bằng Haiku: dòng `!` chỉ tự chạy khi có luật `allow`, `$ARGUMENTS` được chèn nguyên văn, `claude -p` dừng lệnh nền sau 10 phút nếu không đặt `timeout`; T2: Task thử DEMO-18, PR nháp `ao-pilot` #13, push bằng token App, Git Credential Manager được thay, `gh` dùng token App; bạn hỏi vì sao lệnh 20 phút chạy quá 20 phút; bạn hỏi Haiku dùng ở đâu và chê Haiku kém; Claude thôi dùng Haiku, đề xuất năm điểm sửa spec và xin bạn thêm quyền cho hai App; bạn duyệt năm điểm sửa, T1 đóng (PR #111); bạn đã thêm quyền cho hai App, T2 đóng (PR #112): cả sáu tiền đề về GitHub đúng; Checkpoint 1, chờ bạn |
 | 18 | `184d78d1-4600-4c36-8279-005a105c9216` | 2026-11-01 khoảng 01:08 → | Bạn cho qua Checkpoint 1 (PR #113); T3–T14 đóng (PR #114–#125): phiên agent dùng danh tính App và credential helper theo vai trò, PR tài liệu và quy tắc Q5, `merge-gate` báo PR chỉ còn chờ bạn và `jira-sync` gỡ cờ, đánh dấu dòng DoR, `ao-step.mjs` và vòng chạy `--go`, sáu skill `/ao-*`, template và prompt; chạy chỉ kiểm trong `ao-pilot` tìm ra lỗi 403 khi đọc commit status; Checkpoint 2 (PR #126), chờ bạn |
 | 19 | `44d6269e-f8c5-4052-a81c-f0f6385e00ed` | 2026-11-01 khoảng 10:35 → khoảng 11:30 | Bạn cho qua Checkpoint 2 (PR #127); T15: Task DEMO-19, ao-pilot PR #14 chép kit bằng danh tính bot `ao-dev`, `/ao-review`: `reviewer` COMMENT, `security` chạm giới hạn 5 giờ rồi chạy tiếp và COMMENT, 11,69 USD quy đổi; `merge-gate` bản mới chạy ở máy comment và gắn cờ một lần; trả lời cuối của Claude bị bộ lọc an toàn chặn hai lần, nên phiên này không có lượt nào trong log |
-| 20 | `bc6dea4e-d395-4a5d-b439-2a337292b2e7` | 2026-11-01 khoảng 11:45 → | Bạn dán đoạn cuối của Phiên 19 để làm tiếp; Claude báo kết quả T15 và hỏi về nhánh `main` và các finding của kit; bạn merge PR #14 và chọn cả hai đề xuất: nhánh mặc định của `ao-pilot` sang `develop`, sửa finding ở kit không chạy agent; T15 đóng (PR #128), T15a (PR #129), T15b (PR #130); T16 đóng (PR #131): agent dùng danh tính App, vai trò chỉ đọc không push được; Checkpoint 3, bạn đồng ý chạy Epic thử; T17: Epic DEMO-20, `/ao-status`, chờ bạn bấm `Start spec`; bạn bấm `Start spec`; `/ao-spec` bị Claude Code tắt vì máy thiếu RAM; bạn bảo chạy lại; `ba` viết SPEC, `ao-step` dừng vì không thấy nhánh tài liệu chưa push, kit PR #132 sửa; bạn chọn chạy bằng code của kit và trả lời theo đề xuất; `ux` chạm giới hạn 5 giờ; bạn bảo làm tiếp; `ux` hỏi sáu câu, `sa` hỏi hai câu, bạn trả lời theo đề xuất; `ba` mở PR tài liệu #15, CI xanh, stage spec 7,84 USD quy đổi; bạn duyệt spec; stage plan: `sa` viết plan và ADR-0002, `ba` tạo DEMO-21, DEMO-22, DEMO-23; bạn chọn DEMO-22 ở `xhigh` và đổi `Status` thành Approved, hỏi vì sao `Status` còn Draft; lượt `ba` bị tắt vì thiếu RAM, bạn bảo chạy lại; bạn duyệt plan; `merge-gate` merge PR #15, `audit` xanh, T17 đóng (PR #133), 14,92 USD quy đổi; bạn đồng ý; bốn lỗi nhỏ sửa (PR #134); T18: `be-dev` bị `jira-guard` chặn vì token App bị cắt ở dấu chấm, kit PR #135 sửa; bạn gỡ cờ; `be-dev` xong DEMO-22 ở `xhigh`, kit PR #136 sửa việc làm tiếp Sub-task; bạn hỏi `be-dev` có bị tắc không; `fe-dev` code xong DEMO-23 nhưng gắn cờ vì Tab không cuộn khung bảng ở 320 px; bạn chọn B và gỡ cờ; `fe-dev` mở PR #16, CI xanh; `reviewer` chạm giới hạn 5 giờ, chạy lại sau khi reset; `reviewer` 3 Low, `security` không có finding; chờ bạn chọn việc cần sửa cho `/ao-fix` |
+| 20 | `bc6dea4e-d395-4a5d-b439-2a337292b2e7` | 2026-11-01 khoảng 11:45 → | Bạn dán đoạn cuối của Phiên 19 để làm tiếp; Claude báo kết quả T15 và hỏi về nhánh `main` và các finding của kit; bạn merge PR #14 và chọn cả hai đề xuất: nhánh mặc định của `ao-pilot` sang `develop`, sửa finding ở kit không chạy agent; T15 đóng (PR #128), T15a (PR #129), T15b (PR #130); T16 đóng (PR #131): agent dùng danh tính App, vai trò chỉ đọc không push được; Checkpoint 3, bạn đồng ý chạy Epic thử; T17: Epic DEMO-20, `/ao-status`, chờ bạn bấm `Start spec`; bạn bấm `Start spec`; `/ao-spec` bị Claude Code tắt vì máy thiếu RAM; bạn bảo chạy lại; `ba` viết SPEC, `ao-step` dừng vì không thấy nhánh tài liệu chưa push, kit PR #132 sửa; bạn chọn chạy bằng code của kit và trả lời theo đề xuất; `ux` chạm giới hạn 5 giờ; bạn bảo làm tiếp; `ux` hỏi sáu câu, `sa` hỏi hai câu, bạn trả lời theo đề xuất; `ba` mở PR tài liệu #15, CI xanh, stage spec 7,84 USD quy đổi; bạn duyệt spec; stage plan: `sa` viết plan và ADR-0002, `ba` tạo DEMO-21, DEMO-22, DEMO-23; bạn chọn DEMO-22 ở `xhigh` và đổi `Status` thành Approved, hỏi vì sao `Status` còn Draft; lượt `ba` bị tắt vì thiếu RAM, bạn bảo chạy lại; bạn duyệt plan; `merge-gate` merge PR #15, `audit` xanh, T17 đóng (PR #133), 14,92 USD quy đổi; bạn đồng ý; bốn lỗi nhỏ sửa (PR #134); T18: `be-dev` bị `jira-guard` chặn vì token App bị cắt ở dấu chấm, kit PR #135 sửa; bạn gỡ cờ; `be-dev` xong DEMO-22 ở `xhigh`, kit PR #136 sửa việc làm tiếp Sub-task; bạn hỏi `be-dev` có bị tắc không; `fe-dev` code xong DEMO-23 nhưng gắn cờ vì Tab không cuộn khung bảng ở 320 px; bạn chọn B và gỡ cờ; `fe-dev` mở PR #16, CI xanh; `reviewer` chạm giới hạn 5 giờ, chạy lại sau khi reset; `reviewer` 3 Low, `security` không có finding; bạn chọn sửa hai Low; `be-dev` sửa và push, `reviewer` bị tắt vì thiếu RAM lần ba; chờ bạn bảo chạy lại |
 
 ---
 
@@ -7953,3 +7953,54 @@ Review của PR #16 đã xong, không có finding nào chặn, và PR đang ch�
 Low 3 (ảnh chụp màn hình) không phải code, nên mình để ngoài vòng này.
 
 Bạn trả lời gọn được, ví dụ "a". Mình sẽ ghi câu trả lời vào `.ai/runs/DEMO-21/note.md`, rồi chạy `/ao-fix 16` với `--note`. Sau vòng sửa, mình sẽ gửi các bước để bạn approve PR #16.
+
+# Phiên 20 · Lượt 21 — 2026-11-01 khoảng 20:56
+
+**Bạn:**
+
+````markdown
+a
+````
+
+Trước khi trả lời, Claude ghi hai finding Low vào `.ai/runs/DEMO-21/note.md`, chạy bước chỉ kiểm của `/ao-fix 16` (GO: `be-dev` sửa, `reviewer` và `security` review lại), rồi chạy `--go --note` ở nền bằng code của kit.
+
+**Claude:**
+
+`/ao-fix 16` đang chạy ở nền, theo câu trả lời "a" của bạn (ghi trong `.ai/runs/DEMO-21/note.md`):
+
+1. `be-dev` viết lại chú thích của `cartServer`, bỏ assertion về thứ tự luật CSS, rồi push.
+2. `ao-step` chờ CI xanh. Sau đó `reviewer` review lại cả PR.
+3. `security` review riêng phần mới ở `high`, và báo cáo có dòng `Scope` (tiêu chí 5).
+
+Khi xong, mình sẽ kiểm `merge-gate` có nhận báo cáo phần mới không, rồi gửi bạn các bước approve PR #16.
+
+Khoảng 21:07, Claude Code tắt lệnh nền vì máy thiếu RAM. Claude kiểm lại tiến độ, rồi trả lời tiếp:
+
+**Claude:**
+
+Vòng `/ao-fix 16` bị Claude Code tắt lúc 21:07 vì máy thiếu RAM. Đây là lần thứ ba trong ngày. Theo quy định của Claude Code, mình không tự chạy lại.
+
+**Đã xong trước khi bị tắt:** `be-dev` sửa cả hai finding theo câu trả lời "a" của bạn (12 turn, 0,61 USD quy đổi):
+- commit `eb50b47` viết lại chú thích của `cartServer`;
+- commit `474b375` bỏ assertion về thứ tự luật CSS.
+
+Cả hai commit đã được push lên PR #16, và CI xanh trên head mới `474b375`.
+
+**Còn dở:**
+- `reviewer` đang review lại cả PR thì bị tắt, nên chưa đăng báo cáo.
+- `security` chưa chạy.
+
+Khi chạy lại, `reviewer` sẽ review từ đầu (khoảng 2–3 USD), rồi `security` chỉ review phần mới ở `high`.
+
+**Về RAM:** lúc này máy còn trống khoảng 5,1 GB. Nhưng trong lúc agent chạy, RAM xuống thấp và Claude Code tắt lệnh nền. Cả ba lần bị tắt đều xảy ra khi agent chạy cùng lúc với các phiên Claude Code khác.
+
+**Để chạy lại,** bạn chọn một trong hai cách:
+1. Đóng bớt ứng dụng nặng, như các phiên Claude Code khác hay trình duyệt nhiều tab, rồi nhắn "chạy lại". Mình sẽ kiểm RAM rồi chạy.
+2. Nếu muốn Claude Code thôi tắt lệnh nền:
+   - thoát phiên này;
+   - mở lại Claude Code với biến môi trường `CLAUDE_CODE_DISABLE_BG_SHELL_PRESSURE_REAP=1`. Trong Git Bash, gõ `CLAUDE_CODE_DISABLE_BG_SHELL_PRESSURE_REAP=1 claude --continue`;
+   - nhắn "chạy lại".
+
+   Đổi lại, khi RAM cạn hẳn, máy có thể chậm hoặc treo.
+
+Mình khuyên cách 1. Vòng còn lại chỉ có hai lượt review, khoảng 15 phút.
