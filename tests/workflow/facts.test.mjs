@@ -135,6 +135,21 @@ test('the newest report of each role, and the newest full security report the ne
   assert.equal(reviewReports(reviews.slice(2, 3), { roles: ['reviewer', 'security'], bot, head: Z }).securityFull, null, 'only a report of the new part');
 });
 
+// Stage spec commits on the docs branch of this checkout and pushes only with the docs PR (spec 2.4): ba's SPEC is not
+// on GitHub yet when ux and sa come next (T17 of dev-workflow, Epic DEMO-20).
+test('the docs of an Epic are read from the docs branch of this checkout when it is here, before GitHub has it', async () => {
+  const notPushed = (a) => {
+    a.github['/branches/feature%2FDEMO-11-spec'] = { $status: 404 };
+    for (const name of ['spec', 'design', 'plan']) a.github[`/contents/docs/specs/DEMO-11/${name}.md?ref=feature/DEMO-11-spec`] = { $status: 404 };
+  };
+  const here = { 'docs/specs/DEMO-11/spec.md': '# Spec: committed here\n' };
+  const local = { ...noLocal, branch: (name) => name === 'feature/DEMO-11-spec', file: (branch, path) => (branch === 'feature/DEMO-11-spec' ? (here[path] ?? null) : null) };
+  const { docs } = await gather('build', 'DEMO-11', { change: notPushed, local });
+  assert.deepEqual([docs.exists, docs.spec, docs.design, docs.plan], [true, '# Spec: committed here\n', null, null]);
+  const remote = await gather('build', 'DEMO-11', { change: notPushed });
+  assert.deepEqual([remote.docs.exists, remote.docs.spec], [false, null], 'without the branch here, GitHub is read as before');
+});
+
 test('a PR on the branch of an item outside the space reads no item, and the children of an Epic are read in the space only (T15a)', async () => {
   const foreign = (a) => (a.github['/pulls/11'].head.ref = 'feature/SHOP-5-coupon-code');
   const facts = await gather('review', '11', { change: foreign });
