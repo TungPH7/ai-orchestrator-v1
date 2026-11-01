@@ -205,3 +205,17 @@ Phát hiện: App `ao-review` không có quyền Commit statuses, nên token ch�
 - Tiêu chí 6 đạt: `merge-gate` bản mới comment trên PR và gắn cờ Task, chỉ một lần mỗi head; `jira-sync` gỡ cờ sau khi merge. Phần comment và gắn cờ chạy ở máy, bằng cùng danh tính với workflow, vì lúc đó workflow còn chạy bản cũ trên `main`. Từ T17, workflow tự chạy bản mới.
 - Tiêu chí 9 đạt: bản chép kit mới vào `ao-pilot` qua PR #14 do bạn merge tay; `audit` xanh trên commit merge.
 - Bạn chọn sửa các finding ở kit ngay, không chạy agent. Bản sửa vào `ao-pilot` ở lần chép kit sau, nên T16–T18 chạy với các chỗ hở đã biết ở trên.
+
+## T15a: Sửa finding của PR #14: cổng và Jira (2026-11-01)
+
+Không chạy agent. Mỗi điểm có test đỏ trước, một commit riêng.
+
+- **`security` review phần mới (finding Medium của `security`):** báo cáo `security` mới nhất, hay báo cáo đầy đủ mà phần mới tính từ đó, còn finding Critical/High thì `security` review lại cả PR. Mốc của phần mới là báo cáo đầy đủ cuối cùng (không có dòng `Scope`), không phải báo cáo phần mới. Spec mục 2.6 đổi theo: bốn điều kiện thay vì ba.
+- **PR tài liệu (finding Low của cả hai):** `readDocsFacts` đọc các lượt `pull_request` của nhánh tài liệu, không đọc theo SHA. Lượt `CI` mới nhất của nhánh phải chạy trên head và bắt đầu trước lúc duyệt. Có test cho các trường hợp: force-push về commit đã đọc sau lúc duyệt; head mới chưa có lượt CI; lượt của cùng commit ở nhánh khác, chạy tay, hay của workflow khác. Spec mục 2.4 và `docs/quality-gates.md` đổi theo.
+- **Space (finding Low của cả hai):** `docsPullRequest` nhận `space`. `merge-gate` và `audit` coi nhánh tài liệu của Epic ngoài space là PR thường, và không đọc Jira cho nó. `/ao-review` và `/ao-fix` dừng khi nhánh mang key của space khác. JQL đọc con của Epic có `project =`.
+- **Dấu của cờ (finding Low của `security`):** `merge-gate` và `jira-sync` chỉ tính comment trên Jira của tài khoản token CI, và comment trên PR của bot `ao-dev`.
+  - Lúc đầu Claude định hỏi Jira bằng `/rest/api/3/myself`. Kiểm thật thì cả token CI lẫn token agent đều bị từ chối ("scope does not match"), vì token có scope.
+  - Vì vậy identity trong `tracker/jira.yaml` có thêm `account_id`: `orchestratorci` là `712020:14a4…8b62`, `orchestratoragent` là `712020:3c1a…1f31`. Hai id này lấy từ comment của hai tài khoản trên DEMO-19 và DEMO-16. Id không phải bí mật.
+- **Comment "Needs you":** quá tám đường dẫn thì comment đếm số file theo từng đường dẫn được bảo vệ. Chạy hàm mới trên danh sách file thật của PR #14 (74 file, 73 file được bảo vệ, tính cả tên cũ của file đổi tên): "73 protected files: .ai-orchestrator/** (49), .claude/** (19), .github/workflows/** (4), .mcp.json (1)".
+
+`npm test`: 764 pass. Bốn lệnh kiểm còn lại xanh.
