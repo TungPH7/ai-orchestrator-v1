@@ -101,11 +101,12 @@ Thư mục `kit/` chứa các file đặt vào repo dự án, giữ đúng đư�
 4. Trong `package.json` của dự án, khai các script mà job `build-test` chạy: `lint`, `typecheck`, `test:coverage` (ghi lcov vào `coverage/lcov.info`) và `build`. Thêm `"prepare": "node .ai-orchestrator/scripts/install-hooks.mjs"` để `npm install` tự cài hook git. Script `precommit`, ví dụ lint các file đã stage, là tùy chọn; hook `pre-commit` gọi nó sau secretlint.
 5. Tạo hai GitHub App theo [docs/github-apps-setup.md](docs/github-apps-setup.md), cài vào repo, rồi đặt `AO_DEV_APP_KEY_FILE` và `AO_REVIEW_APP_KEY_FILE` trên máy bạn.
 6. Trên GitHub:
+   - đặt `develop` làm nhánh mặc định: **Settings** → **General** → mục **Default branch**, bấm nút hai mũi tên, chọn `develop`, rồi bấm **Update** **(đối chiếu giao diện)**. `merge-gate` và `jira-sync` chạy bằng bản trên nhánh mặc định, nên một bản sửa của kit có hiệu lực ngay khi PR của nó vào `develop`;
    - tạo ba environment `development`, `staging`, `production`;
-   - tạo environment `merge-gate` chỉ cho nhánh mặc định, với secret `AO_DEV_APP_KEY`; từng bước ở mục "Environment `merge-gate`" của [docs/quality-gates.md](docs/quality-gates.md);
+   - tạo environment `merge-gate` chỉ cho `develop`, với secret `AO_DEV_APP_KEY`; từng bước ở mục "Environment `merge-gate`" của [docs/quality-gates.md](docs/quality-gates.md);
    - đặt secret `JIRA_CI_TOKEN`;
    - cho workflow deploy gọi `audit.yml` trước, và job deploy `needs: audit`. Mẫu nằm ở đầu `kit/.github/workflows/audit.yml`;
-   - đưa mọi file lên nhánh mặc định, vì GitHub chỉ chạy trigger `workflow_run` và `deployment_status` từ nhánh đó. Workflow CI của kit tên `CI`, là tên `jira-sync` chờ để chạy lại.
+   - đưa mọi file lên `develop`, vì GitHub chỉ chạy trigger `workflow_run` và `deployment_status` từ nhánh đó. Workflow CI của kit tên `CI`, là tên `jira-sync` chờ để chạy lại.
 7. Nối app GitHub for Jira với repo. Lần đầu thêm `.jira/config.yml` thì ngắt rồi nối lại kết nối.
 8. Mở `claude` trong repo một lần: tin cậy thư mục, cho phép hai server `atlassian` và `chrome-devtools`, và `/mcp` phải báo cả hai connected.
 9. Từ repo kit, chạy `npm run gh:protect -- --repo <owner>/<name>`. Repo private ở gói Free chỉ được báo soft mode.

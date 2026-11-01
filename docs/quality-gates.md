@@ -117,7 +117,7 @@ Các điều kiện hay thiếu, và cách xử lý:
 
 Muốn xem trước ở máy, chạy `node .ai-orchestrator/scripts/merge-gate.mjs --dry-run`. Lệnh in đúng các dòng trên và không merge gì.
 
-`merge-gate.yml` chỉ có hiệu lực khi nằm trên nhánh mặc định (`main`). Một bản sửa của nó vì vậy chỉ chạy sau lần release kế tiếp.
+`merge-gate.yml` chỉ có hiệu lực khi nằm trên nhánh mặc định. Kit đặt nhánh mặc định là `develop` (README, bước cài 6), nên một bản sửa của nó chạy ngay khi bạn merge PR của bản sửa. Nếu nhánh mặc định là `main`, bản sửa chỉ chạy sau lần release kế tiếp.
 
 ### PR tài liệu của Epic
 
@@ -189,11 +189,11 @@ Cập nhật bản chép kit trong dự án cũng phải đi qua PR, và PR đó
 
 ## Environment `merge-gate`
 
-`merge-gate` merge bằng một private key thứ hai của App `ao-dev`, lưu ở secret `AO_DEV_APP_KEY` của environment `merge-gate`. Environment này chỉ cho nhánh mặc định, nên workflow chạy trên nhánh khác không đọc được key (đã kiểm ở T3 và T19). Cài một lần cho mỗi repo:
+`merge-gate` merge bằng một private key thứ hai của App `ao-dev`, lưu ở secret `AO_DEV_APP_KEY` của environment `merge-gate`. Environment này chỉ cho nhánh mặc định (`develop`), nên workflow chạy trên nhánh khác không đọc được key (đã kiểm ở T3 và T19). Cài một lần cho mỗi repo:
 
 1. Tạo key thứ hai cho `ao-dev`, theo mục 2 của [github-apps-setup.md](github-apps-setup.md). Key đầu tiên, dùng cho `ao-pr.mjs` ở máy bạn, giữ nguyên.
 2. Trên trang repo: **Settings** → **Environments** → **New environment**. Đặt tên `merge-gate`, rồi bấm **Configure environment** **(đối chiếu giao diện)**.
-3. Ở **Deployment branches and tags**, chọn **Selected branches and tags**, bấm **Add deployment branch or tag rule**, gõ tên nhánh mặc định (thường là `main`), rồi bấm **Add rule** **(đối chiếu giao diện)**.
+3. Ở **Deployment branches and tags**, chọn **Selected branches and tags**, bấm **Add deployment branch or tag rule**, gõ tên nhánh mặc định (`develop`), rồi bấm **Add rule** **(đối chiếu giao diện)**. Về sau nếu đổi nhánh mặc định, hãy đổi rule này theo; nếu không, `merge-gate` sẽ không đọc được key.
 4. Đặt secret bằng cách pipe file key, để key không nằm trong lịch sử lệnh: `gh secret set AO_DEV_APP_KEY --env merge-gate -R <owner>/<repo> < path/to/key.pem`. Xong thì xóa file key thứ hai khỏi máy.
 
 Job của `merge-gate` khai `environment: { name: merge-gate, deployment: false }`. Bỏ `deployment: false` thì mỗi lần chạy tạo một deployment, và sự kiện của nó kích hoạt `jira-sync`, rồi lại `merge-gate`, thành vòng lặp.
