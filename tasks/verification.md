@@ -347,3 +347,12 @@ Hai lượt `claude -p` trong `ao-pilot` (bản chép kit của PR #14), chạy 
 3. Lời dừng trước gate ② chỉ đếm nhãn effort của item con trực tiếp của Epic, không đếm Sub-task. Vì vậy nó báo "none has an effort label", dù DEMO-22 có nhãn.
 4. `gh-guard` đọc `2>` trong `ao-pr.mjs 2>&1` thành lệnh con của `ao-pr.mjs`, nên chặn nhầm một lần.
 5. Máy 16 GB thiếu RAM hai lần khi agent chạy cùng ba phiên Claude Code khác. Claude Code tắt lệnh nền khi RAM trống xuống dưới khoảng 2–3 GB.
+
+**Sửa finding 1–4 của T17 (2026-11-01):** không chạy agent, test viết trước.
+
+1. Prompt `plan-write` bảo `sa` đổi `Status` của `spec.md` và `design.md` thành `Approved <ngày qua gate ①>`. Ngày lấy từ changelog của Epic, theo UTC.
+2. `openQuestions`: khi mục Open Questions có các dòng bắt đầu bằng `Q<n>` (gạch đầu dòng hay đoạn in đậm), chỉ các dòng đó là câu hỏi. Chạy trên đoạn câu hỏi của `sa` ở DEMO-20 thì ra 2 câu.
+3. `readChildren` đọc thêm Sub-task của mỗi Story bằng một JQL, nên lời dừng trước gate ② đếm cả nhãn effort của Sub-task.
+4. `gh-guard` bỏ qua phần chuyển hướng (`2>&1`, `>file`, `<<EOF` …) khi tách lệnh. `ao-pr.mjs` không có lệnh con thì chỉ in cách dùng, nên được phép.
+
+`npm test`: 777 pass.
