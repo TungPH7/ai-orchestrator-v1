@@ -136,7 +136,7 @@ T16 ── T17 Epic: spec, plan ── T18 Epic: build, review, fix ── T19 t
 ### Checkpoint cuối
 - [x] Đạt 10 tiêu chí ở spec mục 9
 - [x] Chuyển `tasks/plan.md`, `tasks/todo.md`, `tasks/verification.md` vào `tasks/archive/dev-workflow/`
-- [ ] Bạn xác nhận module hoàn thành
+- [x] Bạn xác nhận module hoàn thành
 
 ## Usage ước tính cho kiểm thật
 

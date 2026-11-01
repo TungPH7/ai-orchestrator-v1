@@ -473,3 +473,8 @@ Epic thử tốn tổng cộng 36,19 USD quy đổi (T17: 14,92; T18: 21,27), c�
 - **RAM:** mỗi lượt agent là một phiên Claude Code kèm các server MCP. Trên máy 16 GB, nên chạy ít phiên cùng lúc, hoặc mở Claude Code với `CLAUDE_CODE_DISABLE_BG_SHELL_PRESSURE_REAP=1`.
 - **Phiên agent nhận `defaultMode: auto` của bạn.** Nếu muốn agent chỉ bị hook chặn, đổi `defaultMode` hoặc truyền chế độ quyền riêng cho phiên agent.
 - **Panel Development của Jira** không đọc được bằng token có scope. Khi cần kiểm tự động, phải dùng token có scope đọc dev-status.
+
+## Checkpoint cuối (2026-11-01)
+
+- Đạt 10 tiêu chí ở spec mục 9. Plan, todo và file này đã nằm trong `tasks/archive/dev-workflow/` (kit PR #139).
+- Bạn xác nhận module hoàn thành ("xác nhận module hoàn thành", Phiên 20 · Lượt 25).
