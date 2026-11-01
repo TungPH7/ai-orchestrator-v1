@@ -9,11 +9,14 @@ export function requestKey(path, query = {}) {
   return params.length > 0 ? `${path}?${params.join('&')}` : path;
 }
 
-// Same interface as lib/tracker/jira-client.mjs; each recorded list is a single page.
+// Same interface as lib/tracker/jira-client.mjs; each recorded list is a single page. An answer { "$status": 404 }
+// is an error with that status, as the real clients throw it.
 export function recordedClient(recording) {
   const answer = (path, query) => {
     const key = requestKey(path, query);
     if (!(key in recording)) throw new Error(`no recorded answer for GET ${key}`);
+    const status = recording[key]?.$status;
+    if (status) throw Object.assign(new Error(`GET ${key} returned ${status}`), { status });
     return structuredClone(recording[key]);
   };
   return {
