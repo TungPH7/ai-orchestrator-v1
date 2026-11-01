@@ -168,3 +168,11 @@ test('a Done or Cancelled item has no next command', async () => {
   assert.equal(nextFor({ key: 'DEMO-12', workType: 'story', state: 'done' }, null), 'done');
   assert.equal(nextFor({ key: 'DEMO-12', workType: 'task', state: 'cancelled' }, null), 'cancelled');
 });
+
+test('/ao-review and /ao-fix stop on a PR whose branch names an item outside the space (T15a)', () => {
+  for (const command of ['review', 'fix']) {
+    const decision = decide(command, { ...prFacts(command, { headRef: 'feature/SHOP-5-x' }), item: null, outside: 'SHOP-5' });
+    assert.equal(decision.go, false);
+    assert.match(decision.reason ?? JSON.stringify(decision), /SHOP-5 .*not in DEMO|not in DEMO/);
+  }
+});

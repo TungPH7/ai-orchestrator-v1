@@ -134,3 +134,10 @@ test('the newest report of each role, and the newest full security report the ne
   assert.deepEqual(securityFull, { sha: X, at: '2026-11-04T08:00:00Z', ok: true, blocking: 0, state: 'COMMENTED', onHead: false });
   assert.equal(reviewReports(reviews.slice(2, 3), { roles: ['reviewer', 'security'], bot, head: Z }).securityFull, null, 'only a report of the new part');
 });
+
+test('a PR on the branch of an item outside the space reads no item, and the children of an Epic are read in the space only (T15a)', async () => {
+  const foreign = (a) => (a.github['/pulls/11'].head.ref = 'feature/SHOP-5-coupon-code');
+  const facts = await gather('review', '11', { change: foreign });
+  assert.deepEqual([facts.item, facts.outside], [null, 'SHOP-5']);
+  assert.ok(Object.keys(recording.jira).some((key) => key.includes('jql=project = "DEMO" AND parent = "DEMO-11"')), 'the recorded JQL names the space');
+});

@@ -220,3 +220,16 @@ test('a run of audit reads the docs facts of a docs PR with the Jira client', as
   assert.equal(result.ok, true, lines.join('\n'));
   assert.deepEqual(lines, ['audit passed: e9e9e9e on develop is the merge of PR #14, the docs PR of DEMO-20, which met every gate']);
 });
+
+test('the docs branch of an Epic outside the space is not a docs PR: merge-gate and audit review it like any PR (T15a)', async () => {
+  const { pr, files } = facts();
+  assert.equal(docsPullRequest({ pr, files, gates, apps, space: 'DEMO' }), 'DEMO-20');
+  assert.equal(docsPullRequest({ pr, files, gates, apps, space: 'SHOP' }), null);
+  assert.deepEqual(decide(undefined, { space: 'SHOP' }), { action: 'wait', missing: ['reviewer report on head d0c5d0c', 'security report on head d0c5d0c', 'approval on head d0c5d0c'] });
+  assert.equal(decideAudit({ ...auditFacts(), space: 'SHOP' }).ok, false);
+  const { jira: jiraAnswers, ...github } = structuredClone(answers);
+  const lines = [];
+  await runMergeGate({ github: recordedClient(github), mergeClient: async () => assert.fail('no merge'), docs: { jira: recordedClient({}), passage, space: 'SHOP' }, gates, apps, approvers: ['approver'], log: (line) => lines.push(line) });
+  assert.deepEqual(lines, ['Waiting #14: reviewer report on head d0c5d0c; security report on head d0c5d0c; approval on head d0c5d0c'], 'and Jira is not read');
+  assert.ok(jiraAnswers);
+});
