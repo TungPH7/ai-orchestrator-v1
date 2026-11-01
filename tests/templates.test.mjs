@@ -234,3 +234,20 @@ test('design.md draws the flow in Mermaid, and its example has one ASCII screen 
   assert.match(text, /!\[S2 · .+ · desktop\]\(design\/S2-desktop\.png\)/);
   assert.equal(text.match(/```yaml\nscreen: S\d+/g)?.length, 2);
 });
+
+// dev-workflow spec 2.4, 2.5, 2.6.
+test('the plan names the roles of each item and the effort of a hard one, in the template and its example', () => {
+  const list = section('plan.md', 'Task List');
+  assert.match(list, /^- \[ \] <KEY>: <Story or Task title> · <roles> · effort <xhigh \| max>: <reason, only for a hard item>$/m);
+  // The example is the part of the file after its Example heading; section() stops at the example's own headings.
+  const example = read('plan.md').split('## Example')[1];
+  assert.match(example, /^- \[ \] DEMO-12: .+ · be-dev, fe-dev \(Sub-task\) · effort xhigh: .+$/m);
+  assert.match(example, /^- \[ \] DEMO-11: .+ · be-dev$/m);
+});
+
+test('an ADR of an Epic is Proposed with its plan and takes effect at gate ②; a security review of the new part has a Scope line', () => {
+  assert.match(section('adr.md', 'Status'), /Proposed with the plan of <EPIC-KEY>; it takes effect when you approve\s+the plan at gate ②/);
+  assert.match(read('adr.md').split('## Example')[1], /^Proposed with the plan of DEMO-10; it takes effect when you approve the plan at gate ②$/m);
+  assert.match(read('review-report.md'), /^Scope: changes since <short SHA of the commit of that report>$/m);
+  assert.match(read('review-report.md').split('## Example')[1], /^Role: security\nScope: changes since 0f1e2d3$/m);
+});

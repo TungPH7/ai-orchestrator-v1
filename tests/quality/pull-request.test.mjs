@@ -85,3 +85,10 @@ test('a report needs its Findings section; text that is not a report has no role
   assert.equal(notReport.ok, false);
   assert.equal(notReport.role, undefined);
 });
+
+test('a security report of the new part only gives the commit it starts from (dev-workflow spec 2.6)', () => {
+  const delta = report('Không có finding.\n').replace('Role: security\n', 'Role: security\nScope: changes since 0f1e2d3\n');
+  assert.deepEqual(readReviewReport(delta, ROLES), { ok: true, role: 'security', findings: [], blocking: [], problems: [], scope: { since: '0f1e2d3' } });
+  assert.equal(readReviewReport(report('Không có finding.\n'), ROLES).scope, undefined, 'a full review has no Scope line');
+  assert.equal(readReviewReport(delta.replace('0f1e2d3', 'HEAD~1'), ROLES).scope, undefined, 'only a commit SHA');
+});

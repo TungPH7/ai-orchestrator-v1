@@ -1,7 +1,9 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { readContract } from '../lib/contract.mjs';
-import { CONTRACT_DIR } from './helpers/kit.mjs';
+import { CONTRACT_DIR, ROOT } from './helpers/kit.mjs';
 
 const contract = readContract(CONTRACT_DIR);
 
@@ -63,4 +65,10 @@ test('cadence: Monday, daily, when you decide, Friday (spec 2.7)', () => {
 
 test('4 release rules: release on your decision, the cut point, one open release branch, Fix Version (spec 2.7)', () => {
   assert.equal(contract.release_rules.length, 4);
+});
+
+test('stage spec gives the docs PR of the Epic, merged by merge-gate after gate ② (dev-workflow spec 2.4, 2.9)', () => {
+  const sdlc = readFileSync(join(ROOT, 'docs', 'sdlc.md'), 'utf8');
+  assert.ok(sdlc.includes('PR tài liệu của Epic vào develop, từ nhánh feature/<EPIC-KEY>-spec'));
+  assert.ok(sdlc.includes('merge-gate merge PR đó sau cổng ②'));
 });

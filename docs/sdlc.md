@@ -25,8 +25,8 @@ Bản đọc của hợp đồng trong `contract/`. Nội dung và lý do của 
 
 | Stage id | Giai đoạn | Người làm | Đầu vào | Đầu ra | Điều kiện để qua |
 | --- | --- | --- | --- | --- | --- |
-| `spec` | Viết SPEC cho Epic | `ba` (chính), `ux`, `sa`; ux viết design khi Epic đụng tới giao diện | Epic ở new | SPEC của Epic (`spec`); Thiết kế màn hình (`design`) | Cổng ① `spec-approval`: Bạn duyệt SPEC của Epic |
-| `plan` | Lập plan, tạo Story/Task | `sa` (chính), `ba` | SPEC đã duyệt | Plan (`plan`); Story (`story`); Task (`task`); Plan gồm hợp đồng API cho Story có cả FE và BE; các Story/Task nằm trên Jira | Cổng ② `plan-approval`: Bạn duyệt plan của Epic |
+| `spec` | Viết SPEC cho Epic | `ba` (chính), `ux`, `sa`; ux viết design khi Epic đụng tới giao diện | Epic ở new | SPEC của Epic (`spec`); Thiết kế màn hình (`design`); PR tài liệu của Epic vào develop, từ nhánh feature/<EPIC-KEY>-spec; bạn đọc diff của nó trước cổng ① | Cổng ① `spec-approval`: Bạn duyệt SPEC của Epic |
+| `plan` | Lập plan, tạo Story/Task | `sa` (chính), `ba` | SPEC đã duyệt | Plan (`plan`); Story (`story`); Task (`task`); Plan gồm hợp đồng API cho Story có cả FE và BE, vai trò của từng item và effort của item khó; các Story/Task nằm trên Jira. Plan và ADR vào cùng PR tài liệu, và merge-gate merge PR đó sau cổng ② mà không cần review hay approve trên GitHub | Cổng ② `plan-approval`: Bạn duyệt plan của Epic |
 | `build` | Code theo TDD | `fe-dev`, `be-dev` | Item ready | Nhánh, commit, test | Unit và integration test pass ở local; pre-commit pass |
 | `ci-gate` | Quality gate tự động | `automation` | PR | Kết quả CI | Mọi check CI xanh |
 | `review` | Review code và security | `reviewer`, `security`, `human`; human duyệt sau reviewer và security | PR có CI xanh | Báo cáo review (`review-report`) | Không còn finding Critical/High; Cổng ③ `merge-approval`: Bạn approve PR |
