@@ -107,6 +107,12 @@ async function main() {
     ledger: (key) => existsSync(join(projectDir, '.ai', 'ledger', `${key}.md`)),
     runState: (key) => readJson(join(runsDir, key, 'state.json')),
     runStates: () => (existsSync(runsDir) ? readdirSync(runsDir).map((key) => readJson(join(runsDir, key, 'state.json'))).filter(Boolean) : []),
+    // The docs branch of an Epic on this checkout, where stage spec commits before it pushes.
+    branch: (name) => git('rev-parse', '--verify', '--quiet', `refs/heads/${name}`).status === 0,
+    file: (branch, path) => {
+      const shown = git('show', `refs/heads/${branch}:${path}`);
+      return shown.status === 0 ? shown.stdout : null;
+    },
   };
   const gather = () => gatherFacts({ command, arg, jira, github, local: files, contract, mapping, roster, gates, apps, approvers, space });
   const read = (file) => readFileSync(runsFile(projectDir, file), 'utf8');
