@@ -1,6 +1,6 @@
 # Task: dev-workflow
 
-> **Plan:** [plan.md](plan.md). **Spec:** [SPEC-dev-workflow.md](../SPEC-dev-workflow.md). Làm theo thứ tự. Mỗi task viết test đỏ trước, commit riêng, rồi mới đánh dấu `[x]`.
+> **Plan:** [plan.md](plan.md). **Spec:** [SPEC-dev-workflow.md](../../../SPEC-dev-workflow.md). Làm theo thứ tự. Mỗi task viết test đỏ trước, commit riêng, rồi mới đánh dấu `[x]`.
 
 **Quy ước chung cho mọi task:**
 
@@ -696,7 +696,7 @@ Xem [plan.md](plan.md#checkpoint-4).
 
 ## Giai đoạn 7: hoàn thiện
 
-### [ ] T19: Tài liệu, `SPEC.md` và lưu trữ plan (spec mục 9, tiêu chí 10)
+### [x] T19: Tài liệu, `SPEC.md` và lưu trữ plan (spec mục 9, tiêu chí 10)
 
 **Mô tả:**
 
@@ -714,11 +714,11 @@ Xem [plan.md](plan.md#checkpoint-4).
 - `plan.md`, `todo.md`, `verification.md` và ảnh chuyển vào `tasks/archive/dev-workflow/`.
 
 **Tiêu chí chấp nhận:**
-- [ ] Tiêu chí 1 và 10 của spec mục 9 đạt.
-- [ ] Link trong các file đã chuyển vẫn đúng.
+- [x] Tiêu chí 1 và 10 của spec mục 9 đạt.
+- [x] Link trong các file đã chuyển vẫn đúng.
 
 **Kiểm chứng:**
-- [ ] Năm lệnh trong quy ước chung và CI của kit xanh
+- [x] Năm lệnh trong quy ước chung và CI của kit xanh
 
 **Phụ thuộc:** T18, Checkpoint 4
 

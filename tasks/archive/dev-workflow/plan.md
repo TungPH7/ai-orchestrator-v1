@@ -1,6 +1,6 @@
 # Plan triển khai: dev-workflow
 
-> **Spec:** [SPEC-dev-workflow.md](../SPEC-dev-workflow.md), đã duyệt 2026-10-31. **Trạng thái:** đã duyệt 2026-10-31 (Phiên 17 · Lượt 2), cùng quyết định 8 và 9. **Task chi tiết:** [todo.md](todo.md). **Kết quả kiểm thật:** `tasks/verification.md`, tạo ở T1.
+> **Spec:** [SPEC-dev-workflow.md](../../../SPEC-dev-workflow.md), đã duyệt 2026-10-31. **Trạng thái:** đã duyệt 2026-10-31 (Phiên 17 · Lượt 2), cùng quyết định 8 và 9. **Task chi tiết:** [todo.md](todo.md). **Kết quả kiểm thật:** `tasks/verification.md`, tạo ở T1.
 
 ## Tổng quan
 
@@ -131,11 +131,11 @@ T16 ── T17 Epic: spec, plan ── T18 Epic: build, review, fix ── T19 t
 - [x] Bạn xem lịch sử Epic thử trên `DEMO`, PR tài liệu và PR code trên `ao-pilot`, và `.ai/runs/`
 
 ### Giai đoạn 7: hoàn thiện
-- [ ] T19: Tài liệu, `SPEC.md` và lưu trữ plan
+- [x] T19: Tài liệu, `SPEC.md` và lưu trữ plan
 
 ### Checkpoint cuối
-- [ ] Đạt 10 tiêu chí ở spec mục 9
-- [ ] Chuyển `tasks/plan.md`, `tasks/todo.md`, `tasks/verification.md` vào `tasks/archive/dev-workflow/`
+- [x] Đạt 10 tiêu chí ở spec mục 9
+- [x] Chuyển `tasks/plan.md`, `tasks/todo.md`, `tasks/verification.md` vào `tasks/archive/dev-workflow/`
 - [ ] Bạn xác nhận module hoàn thành
 
 ## Usage ước tính cho kiểm thật
