@@ -7375,3 +7375,61 @@ Bạn trả lời gọn được, ví dụ "theo đề xuất" hoặc "theo đ�
 1. `ux` sửa design theo câu trả lời.
 2. `sa` thêm phần kiến trúc.
 3. `ba` mở PR tài liệu.
+
+# Phiên 20 · Lượt 9 — 2026-11-01 khoảng 15:25
+
+**Bạn:**
+
+````markdown
+Theo đề xuất
+````
+
+Trước khi trả lời, Claude ghi câu trả lời vào `.ai/runs/DEMO-20/answers.md`, chạy bước chỉ kiểm (GO: `ux` chạy tiếp trong session cũ), rồi chạy `--go --answers` ở nền bằng code của kit.
+
+**Claude:**
+
+Stage spec đang chạy tiếp ở nền, bằng code của kit:
+
+1. `ux` sửa `design.md` theo câu trả lời của bạn.
+2. `sa` thêm phần kiến trúc vào SPEC.
+3. `ba` push nhánh tài liệu và mở PR tài liệu.
+
+Khi lệnh xong, mình sẽ báo kết quả, chi phí từng lượt, và các bước bạn cần bấm ở gate ①.
+
+Lệnh xong lúc 15:36: `ux` xong, `sa` xong, rồi `ao-step` dừng vì `sa` để lại câu hỏi. Claude trả lời tiếp:
+
+**Claude:**
+
+`ux` và `sa` đã xong phần của mình. `sa` để lại hai câu hỏi cho bạn, nên stage spec lại dừng chờ.
+
+**Kết quả:**
+- `ux` đưa sáu câu trả lời của bạn vào `design.md`: 1,2 phút, 0,25 USD quy đổi, commit `79e425a`, `check-design` báo Design OK.
+- `sa` thêm mục yêu cầu phi chức năng vào SPEC: 8,3 phút, 2,40 USD, commit `d022577`. Nội dung chính:
+  - giữ giới hạn 1.024 byte cho body của request;
+  - kiểm mã dòng chặt: so khớp chính xác, tra bằng `Set`;
+  - không lưu gì ở server;
+  - thêm năm test tích hợp.
+- Để tìm chỗ vỡ, `sa` dựng thử `renderCart` theo design và chạy các test hiện có.
+- DEMO-20 tới giờ tốn 6,34 USD quy đổi.
+
+**Hai câu hỏi của `sa`.** Cả hai đụng tới việc sửa test hiện có, mà SPEC xếp vào mục phải hỏi trước, nên cần bạn trả lời trước gate ①.
+
+**Q4. Ba test hiện có của `src/page.test.ts` sẽ fail vì chính design, không phải vì lỗi.** Chúng kiểm những điều mà design đã đổi:
+- form đầu tiên của trang là form mã giảm giá. Nay form đầu tiên là form của nút "Xóa", nằm trong bảng;
+- trang có đúng một trường ẩn `applied`. Nay mỗi form có một;
+- CSS không có media query nào. Design thêm đúng một, cho màn hình dưới 30 rem.
+
+Đề xuất của `sa`: cho sửa ba test này, nhưng giữ đúng ý nghĩa của từng test:
+- form mã vẫn nằm giữa bảng và các con số;
+- mã đang áp đi theo mọi form, mỗi form đúng một lần;
+- hàng ô mã vẫn xuống dòng mà không cần media query.
+
+**Q5. Mỗi dòng của giỏ cần một mã, để nút "Xóa" chỉ đúng dòng.**
+- **(A) `sa` đề xuất cách này:** thêm trường `id` cho mỗi dòng, ví dụ `but-bi`. Khi đó phải thêm `id` vào dữ liệu của 8 dòng trong các test hiện có. Chỉ dữ liệu đổi, còn điều mà các test kiểm thì giữ nguyên.
+- **(B)** Dùng vị trí của dòng (0, 1…) làm mã. Cách này không bắt test hiện có nào phải đổi. Nhưng nếu thứ tự của giỏ đổi giữa hai lần tải trang, chẳng hạn khi sửa giỏ mẫu hoặc sau này khi giỏ được lưu, thì một trang đang mở sẽ xóa nhầm dòng mà không ai thấy lỗi. Với (A), mã cũ chỉ bị bỏ qua.
+
+Mình khuyên theo cả hai đề xuất của `sa`. Ở Q5, cách (A) an toàn hơn hẳn cách (B).
+
+**Một lỗi nhỏ của kit:** `ao-step` báo "10 câu hỏi", vì nó đếm mọi gạch đầu dòng trong mục Open Questions, trong khi `sa` viết câu hỏi thành đoạn in đậm kèm gạch đầu dòng con. Mình ghi lại để sửa sau. Lỗi này không cản việc chạy tiếp.
+
+Bạn trả lời gọn được, ví dụ "theo đề xuất". Sau đó `sa` sửa SPEC theo câu trả lời, rồi `ba` push nhánh và mở PR tài liệu.
