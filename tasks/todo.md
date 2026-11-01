@@ -212,7 +212,7 @@ Xem [plan.md](plan.md#checkpoint-1).
 
 **Cỡ:** M
 
-### [ ] T6: `merge-gate` báo PR cần bạn, `jira-sync` gỡ cờ (spec mục 2.7)
+### [x] T6: `merge-gate` báo PR cần bạn, `jira-sync` gỡ cờ (spec mục 2.7)
 
 **Mô tả:**
 
@@ -223,12 +223,12 @@ Xem [plan.md](plan.md#checkpoint-1).
 - `--dry-run` của cả hai script in việc sẽ làm, không làm.
 
 **Tiêu chí chấp nhận:**
-- [ ] Test: chạy hai lần trên cùng head chỉ comment và gắn cờ một lần; head mới thì comment lại.
-- [ ] Test: `jira-sync` gỡ cờ của `merge-gate`. Nó không gỡ khi comment cờ mới nhất là của `audit` hay của giới hạn Rework.
-- [ ] Test: sự kiện `closed` không gây chuyển trạng thái nào.
+- [x] Test: chạy hai lần trên cùng head chỉ comment và gắn cờ một lần; head mới thì comment lại.
+- [x] Test: `jira-sync` gỡ cờ của `merge-gate`. Nó không gỡ khi comment cờ mới nhất là của `audit` hay của giới hạn Rework.
+- [x] Test: sự kiện `closed` không gây chuyển trạng thái nào.
 
 **Kiểm chứng:**
-- [ ] Năm lệnh trong quy ước chung xanh
+- [x] Năm lệnh trong quy ước chung xanh
 
 **Phụ thuộc:** T5 (`merge-gate.yml` đã có `JIRA_CI_TOKEN`)
 
