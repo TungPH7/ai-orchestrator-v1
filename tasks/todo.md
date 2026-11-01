@@ -524,7 +524,7 @@ Bạn làm: đọc diff của PR, approve, rồi bấm **Squash and merge**.
 
 **Cỡ:** M
 
-### [ ] T15a: Sửa finding của PR #14: cổng và Jira (spec mục 2.4, 2.6, 2.7)
+### [x] T15a: Sửa finding của PR #14: cổng và Jira (spec mục 2.4, 2.6, 2.7)
 
 **Mô tả:** Sửa các finding mà `reviewer` và `security` nêu ở ao-pilot PR #14 (T15), ở phần chạy trong CI và phần đọc Jira. Bạn chọn sửa ở kit ngay, không chạy agent; bản sửa vào `ao-pilot` ở lần chép kit sau.
 
@@ -535,11 +535,11 @@ Bạn làm: đọc diff của PR, approve, rồi bấm **Squash and merge**.
 - Khi PR đổi nhiều file, comment "Needs you" của `merge-gate` gom đường dẫn theo thư mục.
 
 **Tiêu chí chấp nhận:**
-- [ ] Mỗi điểm có test đỏ trước, kể cả: báo cáo có finding chặn; force-push về commit có CI trước lúc duyệt; commit có CI ở nhánh khác; key của space khác; comment giả dấu của `merge-gate`.
-- [ ] Spec mục 2.4, 2.6, 2.7 và `docs/quality-gates.md` ghi điều kiện mới.
+- [x] Mỗi điểm có test đỏ trước, kể cả: báo cáo có finding chặn; force-push về commit có CI trước lúc duyệt; commit có CI ở nhánh khác; key của space khác; comment giả dấu của `merge-gate`.
+- [x] Spec mục 2.4, 2.6, 2.7 và `docs/quality-gates.md` ghi điều kiện mới.
 
 **Kiểm chứng:**
-- [ ] Năm lệnh kiểm trong quy ước chung xanh
+- [x] Năm lệnh kiểm trong quy ước chung xanh
 
 **Phụ thuộc:** T15
 

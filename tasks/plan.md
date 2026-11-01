@@ -114,7 +114,7 @@ T16 ── T17 Epic: spec, plan ── T18 Epic: build, review, fix ── T19 t
 
 ### Giai đoạn 5: lên `ao-pilot`
 - [x] T15: Bản chép kit mới vào `ao-pilot` qua PR [bạn]
-- [ ] T15a: Sửa finding của PR #14: cổng và Jira
+- [x] T15a: Sửa finding của PR #14: cổng và Jira
 - [ ] T15b: Sửa finding của PR #14: `gh-guard` và script ở máy
 - [ ] T16: Thử đi vòng
 
