@@ -28,7 +28,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 18 | `184d78d1-4600-4c36-8279-005a105c9216` | 2026-11-01 khoảng 01:08 → | Bạn cho qua Checkpoint 1 (PR #113); T3–T14 đóng (PR #114–#125): phiên agent dùng danh tính App và credential helper theo vai trò, PR tài liệu và quy tắc Q5, `merge-gate` báo PR chỉ còn chờ bạn và `jira-sync` gỡ cờ, đánh dấu dòng DoR, `ao-step.mjs` và vòng chạy `--go`, sáu skill `/ao-*`, template và prompt; chạy chỉ kiểm trong `ao-pilot` tìm ra lỗi 403 khi đọc commit status; Checkpoint 2 (PR #126), chờ bạn |
 | 19 | `44d6269e-f8c5-4052-a81c-f0f6385e00ed` | 2026-11-01 khoảng 10:35 → khoảng 11:30 | Bạn cho qua Checkpoint 2 (PR #127); T15: Task DEMO-19, ao-pilot PR #14 chép kit bằng danh tính bot `ao-dev`, `/ao-review`: `reviewer` COMMENT, `security` chạm giới hạn 5 giờ rồi chạy tiếp và COMMENT, 11,69 USD quy đổi; `merge-gate` bản mới chạy ở máy comment và gắn cờ một lần; trả lời cuối của Claude bị bộ lọc an toàn chặn hai lần, nên phiên này không có lượt nào trong log |
 | 20 | `bc6dea4e-d395-4a5d-b439-2a337292b2e7` | 2026-11-01 khoảng 11:45 → khoảng 22:15 | Bạn dán đoạn cuối của Phiên 19 để làm tiếp; Claude báo kết quả T15 và hỏi về nhánh `main` và các finding của kit; bạn merge PR #14 và chọn cả hai đề xuất: nhánh mặc định của `ao-pilot` sang `develop`, sửa finding ở kit không chạy agent; T15 đóng (PR #128), T15a (PR #129), T15b (PR #130); T16 đóng (PR #131): agent dùng danh tính App, vai trò chỉ đọc không push được; Checkpoint 3, bạn đồng ý chạy Epic thử; T17: Epic DEMO-20, `/ao-status`, chờ bạn bấm `Start spec`; bạn bấm `Start spec`; `/ao-spec` bị Claude Code tắt vì máy thiếu RAM; bạn bảo chạy lại; `ba` viết SPEC, `ao-step` dừng vì không thấy nhánh tài liệu chưa push, kit PR #132 sửa; bạn chọn chạy bằng code của kit và trả lời theo đề xuất; `ux` chạm giới hạn 5 giờ; bạn bảo làm tiếp; `ux` hỏi sáu câu, `sa` hỏi hai câu, bạn trả lời theo đề xuất; `ba` mở PR tài liệu #15, CI xanh, stage spec 7,84 USD quy đổi; bạn duyệt spec; stage plan: `sa` viết plan và ADR-0002, `ba` tạo DEMO-21, DEMO-22, DEMO-23; bạn chọn DEMO-22 ở `xhigh` và đổi `Status` thành Approved, hỏi vì sao `Status` còn Draft; lượt `ba` bị tắt vì thiếu RAM, bạn bảo chạy lại; bạn duyệt plan; `merge-gate` merge PR #15, `audit` xanh, T17 đóng (PR #133), 14,92 USD quy đổi; bạn đồng ý; bốn lỗi nhỏ sửa (PR #134); T18: `be-dev` bị `jira-guard` chặn vì token App bị cắt ở dấu chấm, kit PR #135 sửa; bạn gỡ cờ; `be-dev` xong DEMO-22 ở `xhigh`, kit PR #136 sửa việc làm tiếp Sub-task; bạn hỏi `be-dev` có bị tắc không; `fe-dev` code xong DEMO-23 nhưng gắn cờ vì Tab không cuộn khung bảng ở 320 px; bạn chọn B và gỡ cờ; `fe-dev` mở PR #16, CI xanh; `reviewer` chạm giới hạn 5 giờ, chạy lại sau khi reset; `reviewer` 3 Low, `security` không có finding; bạn chọn sửa hai Low; `be-dev` sửa và push, `reviewer` bị tắt vì thiếu RAM lần ba; bạn mở lại Claude Code với chế độ không tắt lệnh nền; `security` review phần mới ở `high`, `merge-gate` chỉ còn chờ approve (tiêu chí 5); bạn approve, `merge-gate` merge PR #16, `audit` xanh, DEMO-21 sang Ready for QA, Task DEMO-24 cho hai test còn thiếu, T18 đóng (PR #137), Epic thử 36,19 USD quy đổi; Checkpoint 4; bạn cho qua Checkpoint 4 (PR #138); T19 đóng (PR #139): sửa lỗi Sub-task mang cờ, `docs/dev-workflow.md`, README, module ghi hoàn thành, plan vào `tasks/archive/dev-workflow/`; bạn xác nhận module hoàn thành (PR #140); chờ bạn chọn việc tiếp theo |
-| 21 | `3ead2782-314d-4ae8-981b-96f6ed83a60e` | 2026-11-01 khoảng 22:50 → | Bạn dán đoạn cuối của Phiên 20, hỏi vì sao `main` và `develop` của `ao-pilot` lệch nhau, cách xử lý, và lựa chọn 3 có giải quyết được không; Claude kiểm hai nhánh và code của `audit`: `develop` đi trước 10 là đúng GitFlow, 4 commit chỉ có trên `main` là dấu vết lối tắt sandbox và không đổi nội dung; lựa chọn 3 không giải quyết; đề xuất ghi quy tắc merge commit và back-merge từ `main` vào spec `release-workflow`; bạn chọn Pilot 1; Claude nêu phạm vi, giả định A1–A8 và ba câu hỏi (repo, space Jira, feature); bạn duyệt và chọn theo đề xuất: repo mới `ao-sample`, space mới `SMP`, Epic "Ghi chú"; Claude viết `SPEC-pilot-1.md` (nhánh `task/spec-pilot-1`); bạn chọn tạo key mới cho `ao-dev` và duyệt spec; Claude viết plan 10 task, 5 checkpoint, cùng quyết định 6 (lỗi kit giữa Epic) và 8 (Checkpoint 3 sau lượt build đầu); chờ bạn duyệt plan |
+| 21 | `3ead2782-314d-4ae8-981b-96f6ed83a60e` | 2026-11-01 khoảng 22:50 → | Bạn dán đoạn cuối của Phiên 20, hỏi vì sao `main` và `develop` của `ao-pilot` lệch nhau, cách xử lý, và lựa chọn 3 có giải quyết được không; Claude kiểm hai nhánh và code của `audit`: `develop` đi trước 10 là đúng GitFlow, 4 commit chỉ có trên `main` là dấu vết lối tắt sandbox và không đổi nội dung; lựa chọn 3 không giải quyết; đề xuất ghi quy tắc merge commit và back-merge từ `main` vào spec `release-workflow`; bạn chọn Pilot 1; Claude nêu phạm vi, giả định A1–A8 và ba câu hỏi (repo, space Jira, feature); bạn duyệt và chọn theo đề xuất: repo mới `ao-sample`, space mới `SMP`, Epic "Ghi chú"; Claude viết `SPEC-pilot-1.md` (nhánh `task/spec-pilot-1`); bạn chọn tạo key mới cho `ao-dev` và duyệt spec; Claude viết plan 10 task, 5 checkpoint, cùng quyết định 6 (lỗi kit giữa Epic) và 8 (Checkpoint 3 sau lượt build đầu); bạn duyệt plan; kit PR #141; T1–T2: tạo repo `ao-sample`, điểm 1 đúng một phần (NestJS 12 dùng Vitest và oxlint, `@nestjs/mau` mang 2 lỗ hổng high), điểm 2 đúng nếu dùng Vitest, điểm 3 và 4 sai (API từ chối), điểm 5 đúng kèm `MSYS_NO_PATHCONV=1` và tin cậy thư mục; Checkpoint 1: chờ bạn duyệt sáu chỗ sửa |
 
 ---
 
@@ -8449,3 +8449,49 @@ Mình đã ghi lần duyệt spec và viết plan trên nhánh `task/spec-pilot-
 **Usage:** T1–T6 dưới 1 USD (hai lượt `/ao-status` bằng Sonnet). Epic thử khoảng 30–45 USD quy đổi, ước theo Epic DEMO-20 (36,19 USD). Checkpoint 2 hỏi bạn trước khi chạy Epic.
 
 Bạn duyệt plan (kèm quyết định 6 và 8), hoặc nêu chỗ cần sửa. Sau khi bạn duyệt, mình mở PR cho spec và plan trên kit, merge khi CI xanh, rồi bắt đầu T1.
+
+---
+# Phiên 21 · Lượt 5 — 2026-11-01 khoảng 23:45 → 02/11 khoảng 00:25
+
+**Bạn:**
+
+````markdown
+duyệt plan
+````
+
+Trước khi trả lời, Claude ghi lần duyệt vào plan và spec, mở kit PR #141 (spec, plan, log Lượt 1–4), merge khi CI xanh, rồi làm T1 và T2 trên nhánh `task/t1-premises`: sinh khung hai app trong scratchpad, cài bằng npm workspaces, chạy build, lint, typecheck, Vitest có lcov, `npm audit`; dựng một thư mục mới có bản chép kit và chạy `claude -p "/ao-status"` ba lượt (0,35 USD); tạo repo trống `TungPH7/ao-sample`; thử thêm repo vào bản cài App và tạo space `SMP` qua API. Kết quả ghi ở `tasks/verification.md`.
+
+**Claude:**
+
+**Nhãn:** Câu nào là suy luận thì có nhãn [Inference]. Phần còn lại đã chạy thử, bằng chứng nằm trong `tasks/verification.md`.
+
+Kit PR #141 (spec, plan) đã merge. T1 và T2 đã chạy xong. Mình dừng ở **Checkpoint 1**: hai điểm đúng, ba điểm sai, và cần bạn duyệt vài chỗ sửa spec trước khi dựng.
+
+**Kết quả năm tiền đề**
+
+| Điểm | Kết quả | Tóm tắt |
+|---|---|---|
+| 1. Công cụ sinh khung | Đúng một phần | Cả hai chạy được trên Node 24.17. `npm audit` báo 2 lỗ hổng high, cả hai đến từ `@nestjs/mau`; gỡ gói này thì sạch. NestJS 12 sinh khung với **Vitest** và **oxlint**, không phải Jest và ESLint |
+| 2. Workspaces, lcov | Đúng, nếu dùng Vitest | `npm ci` ở gốc mất 1 phút 24 giây. Mỗi app ghi `apps/<app>/coverage/lcov.info`, tính cả file chưa có test, và kit đọc đúng đường dẫn |
+| 3. Thêm repo vào App qua API | Sai | Token `gh` bị từ chối (403) → bạn thêm trên giao diện ở T6 |
+| 4. Tạo space qua API | Sai | Token admin Jira thiếu scope (401) → bạn tạo trên giao diện ở T3 |
+| 5. `claude -p "/ao-status"` ở thư mục mới | Đúng, kèm hai điều kiện | Từ Git Bash phải đặt `MSYS_NO_PATHCONV=1`, vì Git Bash đổi `/ao-status` thành đường dẫn. Thư mục chưa tin cậy thì Claude Code bỏ qua luật `allow` của dự án → bạn mở `claude` trong `ao-sample` một lần ở T6 |
+
+Repo `TungPH7/ao-sample` đã được tạo (private, trống). Space `SMP` chưa có.
+
+**Sáu chỗ sửa cần bạn duyệt**
+
+1. **Vitest thay cho Jest, cho cả hai app.** NestJS 12 mặc định dùng Vitest. Next.js có hướng dẫn Vitest kèm trong gói. `apps/web` thêm `vitest`, `@vitest/coverage-v8`, `@vitejs/plugin-react`, `jsdom`, `@testing-library/react`, `@testing-library/dom`. Mình đã chạy thử, xanh.
+2. **`apps/api` lint bằng oxlint**, theo mặc định của NestJS 12. `apps/web` giữ ESLint của Next.js. Spec mục 6 đổi theo.
+3. **Gỡ `@nestjs/mau` và script `deploy`** khỏi `apps/api`: gói này mang 2 lỗ hổng high, và dự án không deploy lên nền tảng của NestJS.
+4. **Xóa `apps/api/AGENTS.md`.** File này quảng cáo dịch vụ telemetry trả phí NestJS Observe, và chỉ agent cài MCP server của họ. `apps/web/AGENTS.md` giữ lại: file của Next.js dặn agent đọc tài liệu đúng phiên bản trong `node_modules`.
+5. **Sửa kit trước T5 (task T1a):** thêm `oxlint-disable` vào `suppressions.patterns` của `quality/gates.yaml`, kèm test. Mình đã thử: oxlint nhận cả `oxlint-disable` lẫn `eslint-disable`, mà kit chỉ bắt `eslint-disable`. Nếu không sửa, agent tắt được lint của `apps/api` mà job `policy` không thấy.
+6. **Cách gõ lệnh:** plan và spec mục 2.7 ghi `MSYS_NO_PATHCONV=1 claude -p …`. `docs/dev-workflow.md` thêm một dòng cho người dùng Git Bash.
+
+**Việc của bạn vì điểm 3 và 4** (không đổi spec, vì spec mục 2.3 và 2.4 đã cho phép):
+- **T3:** tạo space `SMP` và gán scheme trên giao diện Jira, theo `docs/jira-setup.md` bước 9–10. Mình sẽ ghi từng bước bấm.
+- **T6:** thêm `ao-sample` vào ba App (`tungph7-ao-dev`, `tungph7-ao-review`, app GitHub của Atlassian), và mở `claude` trong `ao-sample` một lần để tin cậy thư mục.
+
+Một gợi ý, không bắt buộc: space `SMP` có thể dùng chung issue type scheme và screen scheme với `DEMO`. Như vậy các trường trên screen (bước 9) có sẵn, bạn bấm ít hơn. Đổi lại, sửa scheme cho dự án này sẽ đổi luôn cho `DEMO`.
+
+Bạn duyệt sáu chỗ sửa, và chọn có dùng chung scheme với `DEMO` hay không. Sau đó mình sửa spec, làm T1a, rồi gửi bạn các bước bấm của T3.
