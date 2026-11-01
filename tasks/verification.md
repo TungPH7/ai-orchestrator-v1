@@ -143,3 +143,5 @@ Phát hiện: App `ao-review` không có quyền Commit statuses, nên token ch�
 5. T13: quy tắc A4 cấm skill chép về mang tiền tố `ao-`, để không ghi đè lệnh của kit.
 6. T5, cho T15: workflow deploy của `ao-pilot` phải cấp thêm `actions: read` khi gọi `audit.yml`.
 7. T10, T14: `ux` chạy khi SPEC nhắc `design.md`; bước của `sa` được tính là xong khi SPEC có mục `### Non-functional requirements`. Prompt của `ba` và `sa` đã ghi hai điều này.
+
+**Bạn duyệt (2026-11-01, Phiên 19 · Lượt 1):** "qua checkpoint 2". Bảy chỗ đổi được giữ nguyên.
