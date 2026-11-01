@@ -325,7 +325,7 @@ Cả 9 tiêu chí đạt ngày 2026-10-28. Bằng chứng của tiêu chí 3 đ�
 
 1. **Gói Jira:** bạn đã chuyển site về Free trước khi dựng Jira.
 2. **Tài khoản:** hai service account, `orchestratoragent` và `orchestratorci`; bạn đã tạo cả hai cùng token của chúng.
-3. **Nơi kiểm thật:** space `DEMO` của dự án pilot, và repo private `TungPH7/ao-pilot` làm sandbox. Tới Pilot 1, repo này nhận code mẫu Next.js + NestJS và trở thành repo pilot.
+3. **Nơi kiểm thật:** space `DEMO` của dự án pilot, và repo private `TungPH7/ao-pilot` làm sandbox. Tới Pilot 1, repo này nhận code mẫu Next.js + NestJS và trở thành repo pilot. (Đổi ngày 2026-11-01, Phiên 21: Pilot 1 dùng repo mới `TungPH7/ao-sample` và space mới `SMP`; `ao-pilot` và `DEMO` vẫn là sandbox. Xem [SPEC-pilot-1.md](SPEC-pilot-1.md).)
 4. **Thay đổi hợp đồng:** bạn đồng ý cả hai thay đổi ở mục 2.4.
 
 ## 11. Rủi ro chuyển sang module khác
