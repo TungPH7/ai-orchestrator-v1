@@ -7574,3 +7574,54 @@ Lượt `ba` cập nhật plan theo câu trả lời của bạn lại bị Clau
 Trước khi chạy, mình sẽ kiểm RAM trống. Nếu còn dưới 4 GB, mình sẽ báo bạn thay vì chạy.
 
 Nếu bạn muốn Claude Code không tắt lệnh nền khi thiếu RAM, hãy mở Claude Code với biến môi trường `CLAUDE_CODE_DISABLE_BG_SHELL_PRESSURE_REAP=1`. Đổi lại, khi RAM cạn hẳn, máy có thể treo.
+
+# Phiên 20 · Lượt 13 — 2026-11-01 khoảng 16:35
+
+**Bạn:**
+
+````markdown
+chạy lại
+````
+
+Trước khi trả lời, Claude kiểm RAM (còn trống khoảng 4,3 GB) rồi chạy lại `ao-step.mjs plan DEMO-20 --go --answers …` ở nền, bằng code của kit.
+
+**Claude:**
+
+Lượt `ba` đang chạy lại ở nền, tiếp tục trong session cũ. `ba` sẽ:
+
+- ghi effort `xhigh` của DEMO-22 vào plan (nhãn trên Jira đã có);
+- đổi dòng `Status` của SPEC và design thành `Approved 2026-11-01`;
+- commit, rồi push lên PR #15.
+
+Khi xong, mình sẽ báo kết quả, kèm các bước bạn cần bấm ở gate ②.
+
+Lệnh xong lúc 16:39. Claude đọc kết quả, kiểm PR #15 và log của các lượt, rồi trả lời tiếp:
+
+**Claude:**
+
+Stage plan đã sẵn sàng cho gate ②. `ba` đã làm xong cả hai việc theo câu trả lời của bạn (3,1 phút, 0,95 USD quy đổi) và push lên PR #15:
+
+- **Effort:** DEMO-22 mang nhãn `ao-effort-xhigh` trên Jira. Quyết định 11 và Task List của plan ghi DEMO-22 chạy ở `xhigh`, còn DEMO-23 giữ mức mặc định.
+- **Status:** `spec.md` và `design.md` ghi `Approved 2026-11-01`.
+- `ba` cũng sửa mô tả PR #15, comment của mình trên DEMO-20, và mô tả DEMO-22 cho khớp.
+
+**PR #15** giờ có 4 file: `spec.md`, `design.md`, `plan.md` và ADR-0002. Cả bốn job CI đều xanh trên head `8b7f944`.
+
+**Chi phí:** stage plan tốn 7,09 USD quy đổi qua ba lượt: `sa` 4,19 USD, `ba` 1,95 USD và 0,95 USD. Con số này chưa tính lượt `ba` bị tắt vì thiếu RAM. DEMO-20 tới giờ tốn 14,92 USD.
+
+**Ba lỗi nhỏ của kit, ghi lại để sửa sau.** Không lỗi nào cản Epic:
+- `ao-step` vẫn báo "không item nào có nhãn effort", vì nó chỉ đếm Story và Task con của Epic, không đếm Sub-task. Riêng `/ao-build` thì đọc nhãn của Sub-task, nên DEMO-22 vẫn sẽ chạy ở `xhigh`.
+- `gh-guard` chặn nhầm một lệnh của `ba`: lệnh `ao-pr.mjs` có `2>&1` ở cuối, và nó đọc nhầm `2>` thành tên lệnh con.
+- Lỗi dòng `Status` mà bạn hỏi, cùng lỗi đếm câu hỏi ở mục Open Questions.
+
+**Việc cần bạn ở gate ②:**
+1. Mở https://github.com/TungPH7/ao-pilot/pull/15, rồi bấm tab **Files changed**.
+2. Đọc `docs/specs/DEMO-20/plan.md`, nhất là mục Architecture Decisions và Task List, và đọc `docs/adr/0002-remaining-cart-travels-in-the-form-by-line-id.md`.
+3. Nếu muốn sửa gì, nhắn mình **trước** khi bấm duyệt. Sau khi bạn duyệt, mọi commit mới sẽ làm PR #15 thành PR thường, cần review và approve.
+4. Nếu đồng ý, mở https://phunghuutung12b4.atlassian.net/browse/DEMO-20, bấm nút trạng thái **Planning**, rồi chọn **Approve plan** **(đối chiếu giao diện)**. Khi trạng thái đổi thành **In Progress** là xong.
+5. Nhắn mình "đã duyệt plan".
+
+**Sau đó mình chạy `/ao-plan DEMO-20` lần hai.** Lần này không có agent nào chạy:
+- `jira-sync` chuyển DEMO-21 sang Ready;
+- `merge-gate` tự merge PR #15, không cần bạn approve trên GitHub;
+- `audit` phải xanh khi Deploy development chạy (tiêu chí 4).
