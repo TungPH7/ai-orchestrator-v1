@@ -104,7 +104,7 @@ Bạn chọn dùng hai App cho mọi việc của agent trên GitHub (Phiên 16 
   - `credential.helper` đặt rỗng, để bỏ Git Credential Manager, rồi đặt `ao-git-credential.mjs`;
   - `user.name` và `user.email` là của bot, `tungph7-ao-dev[bot]` và `<id>+tungph7-ao-dev[bot]@users.noreply.github.com`.
 
-  `gh-guard` vẫn chặn agent tự đặt `GIT_CONFIG_*` trong lệnh. Vai trò chỉ đọc không có credential helper ghi, nên `git push` của nó không có quyền.
+  `gh-guard` vẫn chặn agent tự đặt `GIT_CONFIG_*` trong lệnh. Vai trò chỉ đọc không có credential helper ghi, nên `git push` của nó không có quyền. Nó vẫn cần `git fetch`, vì `reviewer` và `security` đọc nhánh của PR, nên helper cho nó token `contents: read` của `ao-review`; GitHub từ chối push bằng token đó (T3).
 - Trong phiên agent, `gh-guard` từ chối lệnh gọi `ao-step.mjs`, `ao-agent.mjs` và `ao-git-credential.mjs`. Luật `allow` của mục 2.1 cũng áp cho agent, mà agent thì không được tự mở agent khác hay tự lấy token.
 - Commit của agent đứng tên bot. Lịch sử Git, PR và GitHub for Jira đều ghi rõ việc nào do agent làm.
 - **Bạn thêm quyền cho hai App** (`docs/github-apps-setup.md` sẽ có từng bước bấm):

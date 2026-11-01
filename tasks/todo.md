@@ -135,7 +135,7 @@ Xem [plan.md](plan.md#checkpoint-1).
 - Helper không lấy được token thì in lý do ra stderr. T2 cho thấy git khi đó chỉ báo `Repository not found`.
 
 **Tiêu chí chấp nhận:**
-- [ ] Test của `launchPlan` cho từng loại vai trò: vai trò ghi có helper, vai trò chỉ đọc không có; `devops` xin thêm Workflows.
+- [ ] Test của `launchPlan` cho từng loại vai trò: vai trò ghi có helper ghi, vai trò chỉ đọc chỉ có token đọc để `git fetch` (điều chỉnh ở T3, ghi trong `tasks/verification.md`); `devops` xin thêm Workflows.
 - [ ] Test cho thấy tham số dòng lệnh và file skills không chứa token.
 - [ ] Test giao thức credential: `get` đúng repo, repo khác, vai trò chỉ đọc, `store`, `erase`.
 - [ ] Test `gh-guard` từ chối gọi thẳng helper, `ao-step.mjs` và `ao-agent.mjs` trong phiên agent, kể cả khi bọc trong `sh -c` hay `env`; phiên chính của bạn vẫn chạy được `ao-step.mjs`.

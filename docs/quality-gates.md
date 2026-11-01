@@ -187,7 +187,8 @@ Job của `merge-gate` khai `environment: { name: merge-gate, deployment: false 
 - làm việc với PR bằng tài khoản của bạn: `gh pr merge`, `review`, `create`, `revert`, `update-branch` và các lệnh ghi khác, hay `gh api` với method khác GET;
 - lấy token hoặc key: `gh auth token`, `gh auth status -t`, đọc `hosts.yml` của `gh` hay file PEM của App;
 - đổi cấu hình repo, như `gh secret set`, `gh repo edit`, `gh repo autolink create`; hoặc xóa lần chạy workflow bằng `gh run delete`;
-- sửa file được bảo vệ bằng `Edit`, `Write`, `NotebookEdit`. Riêng `devops` được sửa `.github/workflows/**`, nhưng PR đó vẫn do bạn merge.
+- sửa file được bảo vệ bằng `Edit`, `Write`, `NotebookEdit`. Riêng `devops` được sửa `.github/workflows/**`, nhưng PR đó vẫn do bạn merge;
+- từ `dev-workflow`: tự mở agent hay tự lấy token, tức chạy `ao-step.mjs`, `ao-agent.mjs`, `ao-git-credential.mjs`; đặt credential helper cho git (`git -c credential.*`, `git config credential.*`); sửa file trong `.git/`.
 
 Khi bị chặn, agent nhận lý do bắt đầu bằng `gh-guard:`, kèm cách làm đúng, ví dụ dùng `ao-pr.mjs`.
 

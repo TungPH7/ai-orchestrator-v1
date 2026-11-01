@@ -86,4 +86,17 @@ test('ao-agent.mjs --ao-dry-run writes the skills file and prints the claude com
   const limit = roster.roles['fe-dev'].max_turns;
   assert.match(result.stdout, new RegExp(`^claude --agent fe-dev --effort high --append-system-prompt-file .*fe-dev\\.skills\\.md --max-turns ${limit} -p "Build DEMO-12"$`, 'm'));
   assert.match(readFileSync(file, 'utf8'), /^## Skill: vercel-react-best-practices$/m);
+  // The folder is no GitHub clone, so there is no App identity: the dry run says so, and shows the variables anyway.
+  assert.match(result.stderr, /no GitHub App identity \(the origin remote is not a GitHub repository: none\); a real run stops here/);
+  assert.match(result.stdout, /^ {2}GH_TOKEN=<read-only token of ao-review>$/m);
+  assert.match(result.stdout, /^ {2}GIT_CONFIG_VALUE_1=!node ".*\/\.ai-orchestrator\/scripts\/ao-git-credential\.mjs" fe-dev owner\/name$/m);
+  assert.match(result.stdout, /^ {2}unset GIT_CONFIG_PARAMETERS GIT_ASKPASS/m);
+});
+
+test('ao-agent.mjs does not start an agent without the GitHub App identity', (t) => {
+  const dir = project(t);
+  const result = spawnSync(process.execPath, [join(ROOT, 'scripts', 'ao-agent.mjs'), 'reviewer', '-p', 'Review PR #12.'], { cwd: dir, encoding: 'utf8', env: { ...process.env, AO_KIT_DIR: join(dir, '.ai-orchestrator') } });
+
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /^ao-agent: no GitHub App identity for the agent, so it does not start: the origin remote is not a GitHub repository/);
 });

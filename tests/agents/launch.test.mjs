@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { join } from 'node:path';
-import { launchPlan } from '../../lib/agents/launch.mjs';
+import { CLEARED_ENV, READ_PERMISSIONS, credentialHelper, launchPlan } from '../../lib/agents/launch.mjs';
 import { readRoster } from '../../lib/agents/roster.mjs';
 import { ROOT } from '../helpers/kit.mjs';
 
@@ -10,7 +10,17 @@ const PROJECT = 'D:\\work\\shop';
 const skillDir = (name) => join(PROJECT, '.claude', 'skills', name);
 // The SKILL.md of every vendored skill and of one stack skill, as the script reads them from .claude/skills/.
 const skills = new Map([...roster.vendored_skills.map(({ name }) => name), 'vercel-react-best-practices'].map((name) => [name, { dir: skillDir(name), text: `---\nname: ${name}\ndescription: d\n---\n\n# ${name}\n` }]));
-const plan = (role, args = [], options = {}) => launchPlan({ role, roster, args, skills, projectDir: PROJECT, ...options });
+// What ao-agent.mjs resolves before the session starts (dev-workflow spec 2.3). The token is a marker to look for.
+const TOKEN = 'ghs_READ_TOKEN_MARKER';
+const identity = {
+  repo: 'TungPH7/ao-pilot',
+  readToken: TOKEN,
+  helper: 'node "D:/work/shop/.ai-orchestrator/scripts/ao-git-credential.mjs"',
+  bot: { name: 'tungph7-ao-dev[bot]', email: '349476619+tungph7-ao-dev[bot]@users.noreply.github.com' },
+};
+const plan = (role, args = [], options = {}) => launchPlan({ role, roster, args, skills, projectDir: PROJECT, identity, ...options });
+// The git settings of GIT_CONFIG_*, in order, as [key, value].
+const gitConfig = (env) => Array.from({ length: Number(env.GIT_CONFIG_COUNT) }, (_, n) => [env[`GIT_CONFIG_KEY_${n}`], env[`GIT_CONFIG_VALUE_${n}`]]);
 
 test('an interactive run: claude --agent <role> with the effort of the roster and the skills file (spec 2.5)', () => {
   const { command, args, skillsFile } = plan('ba');
@@ -62,8 +72,52 @@ test('a role without skills gets a skills file with only the session', () => {
 test('a stack skill added by roster.local.yaml is loaded too; a missing SKILL.md or an unknown role is an error', () => {
   const local = structuredClone(roster);
   local.roles['fe-dev'].skills.push('vercel-react-best-practices');
-  assert.match(launchPlan({ role: 'fe-dev', roster: local, args: [], skills, projectDir: PROJECT }).skillsFile.text, /^## Skill: vercel-react-best-practices$/m);
+  assert.match(launchPlan({ role: 'fe-dev', roster: local, args: [], skills, projectDir: PROJECT, identity }).skillsFile.text, /^## Skill: vercel-react-best-practices$/m);
 
   assert.throws(() => plan('fe-dev', [], { skills: new Map() }), /skill test-driven-development of fe-dev has no SKILL\.md in \.claude\/skills\/test-driven-development/);
   assert.throws(() => plan('qa-lead'), /qa-lead is not a role of agents\/roster\.yaml/);
+});
+
+test('every agent session reads GitHub with the read-only token and runs git with the bot, never your login (dev-workflow spec 2.3)', () => {
+  const { env, clear } = plan('fe-dev', ['-p', 'Build DEMO-12']);
+
+  assert.equal(env.GH_TOKEN, TOKEN);
+  assert.equal(env.GH_PROMPT_DISABLED, '1');
+  assert.equal(env.GIT_TERMINAL_PROMPT, '0', 'git fails at once instead of asking for a password');
+  assert.deepEqual(gitConfig(env), [
+    ['credential.helper', ''],
+    ['credential.helper', '!node "D:/work/shop/.ai-orchestrator/scripts/ao-git-credential.mjs" fe-dev TungPH7/ao-pilot'],
+    ['credential.useHttpPath', 'true'],
+    ['user.name', 'tungph7-ao-dev[bot]'],
+    ['user.email', '349476619+tungph7-ao-dev[bot]@users.noreply.github.com'],
+  ]);
+  assert.deepEqual(clear, CLEARED_ENV);
+  for (const name of ['GIT_CONFIG_PARAMETERS', 'GIT_ASKPASS', 'SSH_ASKPASS', 'GITHUB_TOKEN']) assert.ok(clear.includes(name), name);
+  assert.deepEqual(READ_PERMISSIONS, { contents: 'read', pull_requests: 'read', actions: 'read', checks: 'read' });
+});
+
+test('the role is in the value of credential.helper, for every role: the helper decides what each role gets', () => {
+  for (const role of Object.keys(roster.roles)) {
+    const helpers = gitConfig(plan(role).env).filter(([key]) => key === 'credential.helper');
+    assert.deepEqual(helpers.map(([, value]) => value), ['', `!${identity.helper} ${role} TungPH7/ao-pilot`], role);
+  }
+});
+
+test('the token is only in the environment: not in the arguments of claude nor in the skills file', () => {
+  for (const role of Object.keys(roster.roles)) {
+    const { args, skillsFile, env } = plan(role, ['-p', 'x']);
+    assert.ok(!args.some((arg) => arg.includes(TOKEN)), `${role} args`);
+    assert.ok(!skillsFile.text.includes(TOKEN), `${role} skills file`);
+    assert.deepEqual(Object.entries(env).filter(([, value]) => value.includes(TOKEN)).map(([name]) => name), ['GH_TOKEN'], role);
+  }
+});
+
+test('a session never starts without the App identity', () => {
+  assert.throws(() => plan('fe-dev', [], { identity: undefined }), /GitHub App identity/);
+  assert.throws(() => plan('fe-dev', [], { identity: { ...identity, repo: 'TungPH7/ao-pilot; rm -rf /' } }), /owner\/name/);
+});
+
+test('the helper command quotes the kit folder with forward slashes, and refuses a folder the shell would read', () => {
+  assert.equal(credentialHelper('D:\\Document\\My Projects\\shop\\.ai-orchestrator'), 'node "D:/Document/My Projects/shop/.ai-orchestrator/scripts/ao-git-credential.mjs"');
+  for (const dir of ['D:\\a"b', 'D:\\$HOME', 'D:\\`x`', 'D:\\a\nb']) assert.throws(() => credentialHelper(dir), /cannot be quoted/, dir);
 });
