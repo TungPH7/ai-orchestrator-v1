@@ -102,7 +102,7 @@ T16 ── T17 Epic: spec, plan ── T18 Epic: build, review, fix ── T19 t
 - [x] T10: `decideStep` cho `status`, `spec`, `plan`
 - [x] T11: `decideStep` cho `build`, `review`, `fix`
 - [x] T12: `ao-step.mjs` và `runner.mjs`
-- [ ] T13: Sáu skill `/ao-*`
+- [x] T13: Sáu skill `/ao-*`
 
 ### Giai đoạn 4: template, hợp đồng, prompt
 - [ ] T14: Template, hợp đồng, prompt và `agents/rules.md`
