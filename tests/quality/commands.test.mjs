@@ -394,6 +394,26 @@ test('the temp folder counts by its short (8.3) name and its long name alike', (
   denied(check('C:\\Users\\Huu Tung\\.gitconfig'), /outside the project/, 'the home folder');
 });
 
+// ba on DEMO-20 (dev-workflow T17) ran ao-pr.mjs with 2>&1 to read its usage, and gh-guard took 2> for its command.
+test('a redirection is not a word of the command, and ao-pr.mjs with no command only prints its usage', () => {
+  for (const command of [
+    'node .ai-orchestrator/scripts/ao-pr.mjs 2>&1 | head -20',
+    'node .ai-orchestrator/scripts/ao-pr.mjs --help',
+    'node .ai-orchestrator/scripts/ao-pr.mjs edit 15 --body-file pr.md 2>&1',
+    'node .ai-orchestrator/scripts/ao-pr.mjs comment 15 --body-file c.md >/tmp/out.txt 2>/dev/null',
+  ]) {
+    allowed(bash(command, 'ba'), command);
+  }
+  for (const [command, reason, role] of [
+    ['node .ai-orchestrator/scripts/ao-pr.mjs review 15 --event COMMENT --body-file r.md 2>&1', /ba uses the dev App/, 'ba'],
+    ['git push origin develop 2>&1 | tail -1', /pull request/, 'fe-dev'],
+    ['git push origin feature/DEMO-1-x --no-verify >/dev/null 2>&1', /hook/, 'fe-dev'],
+    ['git log -1 >out.txt; git push origin main', /pull request/, 'fe-dev'],
+  ]) {
+    denied(bash(command, role), reason, command);
+  }
+});
+
 // Without it, Claude Code tells agents to end their commits with a Co-Authored-By trailer (seen in T18).
 test('the kit settings hide the attribution Claude Code adds to commits and PRs', async () => {
   const { default: settings } = await import('../../kit/.claude/settings.json', { with: { type: 'json' } });
