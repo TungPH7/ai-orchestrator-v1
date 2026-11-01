@@ -112,7 +112,7 @@ Nếu API từ chối một bước, Claude dừng bước đó, ghi lỗi, và 
 
 **Cỡ:** XS
 
-### [ ] T4: Khung app `ao-sample` ở máy
+### [x] T4: Khung app `ao-sample` ở máy
 
 **Mô tả:** Claude dựng khung trong `D:\Document\1Khoahoc\4LapTrinh\AI-for-coding\ao-sample` (clone của repo trống), theo flag đã kiểm ở T1:
 
@@ -125,12 +125,12 @@ Nếu API từ chối một bước, Claude dừng bước đó, ghi lỗi, và 
 Chưa commit.
 
 **Tiêu chí chấp nhận:**
-- [ ] `npm ci`, `npm run lint`, `npm run typecheck`, `npm run test:coverage`, `npm run build`, `npm run test:e2e` đều xanh ở máy.
-- [ ] Hai file lcov nằm đúng chỗ, khớp mẫu `lcov` của `quality/gates.yaml`.
-- [ ] `npm audit --audit-level=high` không báo lỗi.
+- [x] `npm ci`, `npm run lint`, `npm run typecheck`, `npm run test:coverage`, `npm run build`, `npm run test:e2e` đều xanh ở máy.
+- [x] Hai file lcov nằm đúng chỗ, khớp mẫu `lcov` của `quality/gates.yaml`.
+- [x] `npm audit --audit-level=high` không báo lỗi.
 
 **Kiểm chứng:**
-- [ ] Output của sáu lệnh ghi tóm tắt vào `verification.md`
+- [x] Output của sáu lệnh ghi tóm tắt vào `verification.md`
 
 **Phụ thuộc:** T1, T2
 

@@ -67,7 +67,7 @@ T9 ── T10 bản sửa kit còn lại, tài liệu, lưu trữ
 
 ### Giai đoạn 2: dựng
 - [ ] T3: Space `SMP`: bước 9–10 của `docs/jira-setup.md` [bạn]
-- [ ] T4: Khung app `ao-sample` ở máy
+- [x] T4: Khung app `ao-sample` ở máy
 - [ ] T5: Bản chép kit, skill theo stack và commit đầu
 - [ ] T6: Lên GitHub và nối Jira: bước 11–13 [bạn]
 
