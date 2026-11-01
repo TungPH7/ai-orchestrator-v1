@@ -118,3 +118,28 @@ Chạy `ao-step.mjs` ở chế độ chỉ kiểm trong `ao-pilot` ngày 2026-11
 | `fix "15; ls"` | `STOP: /ao-fix takes a PR number`, không request nào được gửi. Thoát 0 |
 
 Phát hiện: App `ao-review` không có quyền Commit statuses, nên token chỉ đọc không đọc được commit status kiểu cũ. GitHub Actions báo kết quả bằng check run, nên `facts.mjs` đọc CI từ check run khi status trả 403; `merge-gate` và `audit` vẫn đọc cả hai bằng token của workflow. Không xin thêm quyền cho App.
+
+## Checkpoint 2 (2026-11-01)
+
+**Năm lệnh kiểm và CI của kit:** xanh trên `main` sau PR #125 (`a3a8c34`): `npm run validate`, `npm test` (755 test), `npm run render:check`, `npm run jira:checklist:check`, `npm run agents:check`, và workflow `contract`.
+
+**`ao-step.mjs` chỉ kiểm trong `ao-pilot`,** bằng code của kit trên `main` (`AO_KIT_DIR`). Không agent nào chạy, không file nào trong `ao-pilot` đổi, `.ai/runs/` không được tạo:
+
+| Lệnh | In ra | Thoát |
+|---|---|---|
+| `status` | "Waiting for you: DEMO-5" (cờ của `audit`), rồi 13 item chưa xong, mỗi item một lệnh kế tiếp | 0 |
+| `build DEMO-15` | `DEMO-15 Task …: New; no role label; no PR`, rồi `STOP: DEMO-15 is New, not Ready` | 0 |
+| `review 12` | `DEMO-16 Task …: Ready for QA; no role label; PR #12 merged`, rồi `STOP: PR #12 is merged` | 0 |
+| `status DEMO-16` | Dòng của item, rồi `Next: QA (release-workflow)` | 0 |
+
+`ao-pilot` chưa có item nào ở Ready có nhãn vai trò, và chưa có PR nào đang mở, nên nhánh `GO` của lệnh thật chỉ chạy lần đầu ở T15. Test của `runner.mjs` đã đi qua nhánh đó với agent giả.
+
+**Các chỗ đổi so với plan, ghi lại để bạn xem:**
+
+1. T3: vai trò chỉ đọc vẫn có credential helper, nhưng chỉ nhận token `contents: read`, để `reviewer` và `security` `git fetch` được nhánh của PR. Spec mục 2.3 đã ghi.
+2. T3: `gh-guard` chặn thêm `git -c credential.*`, `git config credential.*` và việc sửa file trong `.git/`. Nếu không, một agent đặt được credential helper của riêng nó, kể cả trong cấu hình git chung của bạn.
+3. T6: `merge-gate` chỉ comment và gắn cờ khi PR chỉ còn chờ bạn (không thiếu gì, hoặc chỉ thiếu approve). Báo sớm hơn thì cờ "Needs you" nằm trên item trong lúc agent còn review. Spec mục 2.7 đã ghi.
+4. T12: token chỉ đọc của `ao-review` không đọc được commit status kiểu cũ, nên `ao-step.mjs` đọc CI từ check run. Không xin thêm quyền cho App.
+5. T13: quy tắc A4 cấm skill chép về mang tiền tố `ao-`, để không ghi đè lệnh của kit.
+6. T5, cho T15: workflow deploy của `ao-pilot` phải cấp thêm `actions: read` khi gọi `audit.yml`.
+7. T10, T14: `ux` chạy khi SPEC nhắc `design.md`; bước của `sa` được tính là xong khi SPEC có mục `### Non-functional requirements`. Prompt của `ba` và `sa` đã ghi hai điều này.
