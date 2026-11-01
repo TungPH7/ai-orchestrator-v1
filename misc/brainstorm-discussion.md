@@ -7275,3 +7275,47 @@ Bạn trả lời gọn được, ví dụ "1a, câu hỏi theo đề xuất". S
 2. `ux` viết `design.md`.
 3. `sa` thêm phần kiến trúc.
 4. `ba` mở PR tài liệu.
+
+# Phiên 20 · Lượt 7 — 2026-11-01 khoảng 13:27
+
+**Bạn:**
+
+````markdown
+1a, câu hỏi theo đề xuất
+````
+
+Trước khi trả lời, Claude ghi câu trả lời vào `.ai/runs/DEMO-20/answers.md` của `ao-pilot`, chạy bước chỉ kiểm với `--answers` (GO: `ba` chạy tiếp trong session cũ), rồi chạy `ao-step.mjs spec DEMO-20 --go --answers …` ở nền, bằng code của kit (`AO_KIT_DIR`).
+
+**Claude:**
+
+Stage spec đang chạy tiếp ở nền bằng code của kit, như bạn chọn:
+
+1. `ba` sửa SPEC theo câu trả lời.
+2. `ux` viết `design.md`.
+3. `sa` thêm phần kiến trúc.
+4. `ba` mở PR tài liệu.
+
+Mình sẽ báo khi lệnh xong. Nếu có lượt dừng giữa chừng hoặc agent hỏi thêm, mình cũng báo ngay.
+
+Lệnh xong lúc 13:35: `ba` xong, `ux` chạm giới hạn 5 giờ. Phiên của Claude cũng chạm giới hạn, nên Claude lưu tiến độ vào memory rồi trả lời tiếp:
+
+**Claude:**
+
+Đã hết hạn mức sử dụng: cả gói Pro của các agent lẫn phiên này của mình. Mình dừng tại đây.
+
+**Đã xong:**
+- `ba` đã đưa câu trả lời của bạn vào SPEC (commit `7ff28e3`, 0,37 USD quy đổi). Ba câu hỏi đều thành quyết định trong SPEC, và SPEC không còn câu hỏi mở.
+- `ux` đã chạy được 6 phút (0,94 USD) rồi chạm giới hạn 5 giờ. Lượt này chưa commit gì.
+- DEMO-20 tới giờ tốn 2,94 USD quy đổi, chưa tính lượt `ba` đầu tiên bị tắt vì thiếu RAM.
+- Mình đã ghi tiến độ vào memory, nên phiên sau làm tiếp được.
+
+**Còn lại của stage spec:**
+1. `ux` chạy tiếp trong chính session cũ.
+2. `sa` thêm phần kiến trúc.
+3. `ba` mở PR tài liệu.
+
+Sau đó tới lượt bạn duyệt ở gate ①.
+
+**Khi giới hạn reset (14:40):** bạn nhắn mình "làm tiếp". Mình sẽ chạy lại `ao-step.mjs spec DEMO-20 --go` bằng code của kit, như bạn đã chọn.
+
+Có một việc mình chưa kịp làm: ghi lượt này ("1a, câu hỏi theo đề xuất") vào log thảo luận. Mình sẽ ghi bù ở lượt sau.
