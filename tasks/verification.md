@@ -75,3 +75,44 @@ Chi phí T1: 0,35 USD quy đổi (3 lượt Sonnet).
 | Đọc cấu hình của `DEMO` | `GET` các scheme | Workflow scheme 10002 `AO workflow scheme`; issue type scheme 10149; issue type screen scheme 10001; permission scheme 10001 `Default software scheme` |
 
 Kết quả: điểm 3 và 4 chuyển cho bạn làm trên giao diện (plan, quyết định 1): thêm repo vào ba App ở T6, tạo space và gán scheme ở T3.
+
+## Checkpoint 1 (2026-11-02)
+
+Bạn duyệt sáu chỗ sửa và chọn cho `SMP` dùng chung scheme với `DEMO` ("duyệt, có dùng chung scheme với DEMO", Phiên 21 · Lượt 6). Cũng ở lượt đó, bạn duyệt trước các đề xuất của Claude trong Pilot 1: Claude chỉ hỏi khi cần bạn bấm, cần quyền hoặc cần thêm thông tin. T1a (kit PR #142) thêm `oxlint-disable` vào mẫu tắt kiểm tra.
+
+## T4: Khung app `ao-sample` ở máy (2026-11-02)
+
+Clone repo trống vào `D:\Document\1Khoahoc\4LapTrinh\AI-for-coding\ao-sample`, sinh khung bằng đúng flag của T1, rồi:
+
+- `apps/api`: bỏ `AppController`, `AppService` và `AGENTS.md`; thêm `HealthController` (`GET /health`) cùng unit test; e2e của Nest đổi sang `/health`; cổng mặc định 3001; gỡ `@nestjs/mau` và script `deploy`; thêm script `typecheck`, `test:coverage`; coverage `lcovonly` cho mọi file trong `src/`.
+- `apps/web`: Vitest theo hướng dẫn kèm Next.js, một test render trang chủ; script `typecheck` là `next typegen && tsc --noEmit`.
+- Gốc: `package.json` có workspaces và các script; `scripts/dev.mjs` chạy hai app cùng lúc; `playwright.config.ts` chạy hai app bằng `webServer`; `e2e/smoke.spec.ts`.
+
+| Lệnh | Kết quả |
+|---|---|
+| `npm install` | 618 gói, 3 phút; thêm gói test của web: 47 gói, 21 giây |
+| `npm run lint` | Xanh |
+| `npm run typecheck` | **Đỏ lần đầu:** `layout.tsx: Cannot find name 'LayoutProps'`. Kiểu này do Next.js sinh lúc `next dev` hay `next build`; CI chạy typecheck trước build. Sửa: chạy `next typegen` trước `tsc`. Sau đó xanh |
+| `npm run test:coverage` | Xanh; `apps/web/coverage/lcov.info`, `apps/api/coverage/lcov.info` |
+| `npm run build` | Xanh |
+| `npm run test:e2e` | **Đỏ lần đầu:** Playwright 1.64.1 cần Chromium bản 1248, máy chỉ có 1223 và 1228. `npx playwright install chromium` (39 giây). Sau đó 2 test xanh |
+| `npm audit --audit-level=high` | Thoát 0; còn 16 moderate |
+| e2e của Nest (`vitest --config vitest.config.e2e.ts`) | Xanh |
+
+## T5: Bản chép kit, skill theo stack và commit đầu (2026-11-02)
+
+- Kit chép từ `main` `2cdb268` (sau kit PR #142), bằng script tạm `install-kit.mjs` theo README bước 1–2. `git diff --no-index` giữa kit và bản chép: không khác ở `contract`, `lib`, `tracker`, `quality`, `agents`, `templates`, `.claude/hooks`, `.githooks`. `.claude/skills/` chỉ thêm hai skill theo stack (121 file).
+- `render-agents.mjs --project .`: ghi 3 trên 11 file; `--check` báo 11 file đúng. Rules ghi space `SMP`; `be-dev` có `nestjs-best-practices`, `fe-dev` có `vercel-react-best-practices`.
+- `deploy.yml` chép từ `ao-pilot`. `.jira/config.yml` của kit đã đúng bước 12. `.gitignore` gốc theo README bước 3. Script `prepare` cài hook: `core.hooksPath` là `.githooks`.
+- Sau khi chép, `npm ci` (2 phút 32 giây) và năm lệnh `lint`, `typecheck`, `test:coverage`, `build`, `test:e2e` đều xanh; `npm audit --audit-level=high` thoát 0.
+
+**Skill theo stack** (spec mục 2.2). Claude đọc `SKILL.md` của cả hai và quét các file `rules/` tìm URL lạ, lệnh shell, `npx`, `curl`, `child_process`, MCP, telemetry. Chỉ có hướng dẫn và ví dụ code; lệnh duy nhất là `npx svgo` trong một ví dụ tối ưu SVG của Vercel.
+
+| Skill | Nguồn | Commit | Giấy phép |
+|---|---|---|---|
+| `nestjs-best-practices` | `kadajett/agent-nestjs-skills`, `skills/nestjs-best-practices` (291 sao) | `9c553c7b217e` (2026-07-23) | Repo không có file LICENSE; frontmatter khai `license: MIT` |
+| `vercel-react-best-practices` | `vercel-labs/agent-skills`, `skills/react-best-practices` (33 nghìn sao) | `dc8367e6f91c` (2026-04-14) | Repo không có file LICENSE; frontmatter khai `license: MIT`, README ghi "MIT" |
+
+Cả hai được nhận theo giấy phép MIT mà tác giả khai; `SOURCE.md` của từng skill ghi việc thiếu file LICENSE.
+
+**Commit đầu bị hook từ chối:** `commit-msg: end the header with the Jira key in parentheses`. Hook của kit không có ngoại lệ cho commit không mang mã Jira, còn spec mục 2.5 định commit đầu không có mã. Hook `pre-commit` (quét secret) chạy tay trên 404 file đã stage: thoát 0. Chờ bạn chọn cách làm.
