@@ -408,6 +408,64 @@
     }
    ]
   },
+  "/rest/api/3/search/jql?fields=summary,issuetype,status,labels,parent&jql=project = \"DEMO\" AND parent in (\"DEMO-12\")": {
+   "issues": [
+    {
+     "key": "DEMO-13",
+     "fields": {
+      "summary": "BE: tính giảm giá và bảo vệ POST / bằng Host, Origin và cỡ body",
+      "issuetype": {
+       "id": "10008",
+       "description": "",
+       "name": "Sub-task",
+       "subtask": true
+      },
+      "status": {
+       "description": "",
+       "name": "Done",
+       "id": "10012",
+       "statusCategory": {
+        "id": 3,
+        "key": "done",
+        "colorName": "green",
+        "name": "Done"
+       }
+      },
+      "labels": [],
+      "parent": {
+       "key": "DEMO-12"
+      }
+     }
+    },
+    {
+     "key": "DEMO-14",
+     "fields": {
+      "summary": "FE: form mã giảm giá, dòng giảm giá và thông báo lỗi trên S1",
+      "issuetype": {
+       "id": "10008",
+       "description": "",
+       "name": "Sub-task",
+       "subtask": true
+      },
+      "status": {
+       "description": "",
+       "name": "Done",
+       "id": "10012",
+       "statusCategory": {
+        "id": 3,
+        "key": "done",
+        "colorName": "green",
+        "name": "Done"
+       }
+      },
+      "labels": [],
+      "parent": {
+       "key": "DEMO-12"
+      }
+     }
+    }
+   ]
+  },
   "/rest/api/3/search/jql?fields=summary,issuetype,status,labels&jql=project = \"DEMO\" AND parent = \"DEMO-11\"": {
    "issues": [
     {

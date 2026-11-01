@@ -133,6 +133,16 @@ test('/ao-plan: sa writes the plan and pushes it to the docs PR, then ba creates
   assert.match(decide('plan', planning({ plan: PLAN }, { children: children.slice(0, 1) })).reason, /none has an effort label/);
 });
 
+// dev-workflow T17, Epic DEMO-20: nobody set the Status of the SPEC and design after gate ①, and the stop before gate ②
+// said no item had an effort label while Sub-task DEMO-22 had one.
+test('/ao-plan: sa marks the SPEC and design approved on the day of gate ①, and Sub-tasks count for effort labels', () => {
+  const planning = (docs, item) => epicFacts('planning', { docs: { spec: WITH_NFR, design: DESIGN, pr: openPr(), ...docs }, item });
+  const gated = decide('plan', planning({}, { gates: { 'spec-approval': Date.parse('2026-11-01T08:58:53Z'), 'plan-approval': null } }));
+  assert.match(gated.runs[0].prompt, /set the Status line of docs\/specs\/DEMO-20\/spec\.md and design\.md, where there is one, to Approved 2026-11-01/);
+  const story = { key: 'DEMO-21', state: 'new', effort: null, subtasks: [{ key: 'DEMO-22', effort: 'xhigh' }, { key: 'DEMO-23', effort: null }] };
+  assert.equal(decide('plan', planning({ plan: PLAN }, { children: [story] })).reason, 'the plan and the 3 items of DEMO-20 are done; 1 of them have an effort label. They wait for you at gate ② plan-approval');
+});
+
 test('/ao-plan stops before gate ①, without an open docs PR, or on an item that is not an Epic', () => {
   assert.match(decide('plan', epicFacts('specifying', { docs: { pr: openPr() } })).next, /Read the diff of the docs PR #14, click Approve spec/);
   assert.match(decide('plan', epicFacts('specifying')).next, /^Run \/ao-spec first/);

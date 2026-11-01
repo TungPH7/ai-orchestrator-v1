@@ -150,6 +150,14 @@ test('the docs of an Epic are read from the docs branch of this checkout when it
   assert.deepEqual([remote.docs.exists, remote.docs.spec], [false, null], 'without the branch here, GitHub is read as before');
 });
 
+test('the children of an Epic come with their Sub-tasks, each with its role and effort labels (T17)', async () => {
+  const labelled = (a) => {
+    a.jira['/rest/api/3/search/jql?fields=summary,issuetype,status,labels,parent&jql=project = "DEMO" AND parent in ("DEMO-12")'].issues[1].fields.labels = ['ao-fe-dev', 'ao-effort-xhigh'];
+  };
+  const { epic } = await gather('build', 'DEMO-11', { change: labelled });
+  assert.deepEqual(epic.children[0].subtasks.map(({ key, role, effort }) => [key, role, effort]), [['DEMO-13', null, null], ['DEMO-14', 'fe-dev', 'xhigh']]);
+});
+
 test('a PR on the branch of an item outside the space reads no item, and the children of an Epic are read in the space only (T15a)', async () => {
   const foreign = (a) => (a.github['/pulls/11'].head.ref = 'feature/SHOP-5-coupon-code');
   const facts = await gather('review', '11', { change: foreign });
