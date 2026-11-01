@@ -7528,3 +7528,49 @@ Stage plan đã xong, và trước gate ② mình cần bạn chọn một việ
 **Câu 2: dòng `Status` của SPEC và design.** `spec.md` và `design.md` vẫn ghi `Status: Draft`, dù gate ① đã qua. Nếu đổi thành `Approved 2026-11-01`, phải đổi ngay bây giờ, trước khi bạn duyệt plan. Lý do: mọi commit đến sau lúc bạn duyệt sẽ làm PR #15 thành PR thường, cần review và approve. Mình khuyên đổi luôn trong lượt sửa này.
 
 Bạn trả lời gọn được, ví dụ "1a, 2 có". Sau đó `ba` chạy tiếp với câu trả lời: gắn nhãn effort trên Jira, ghi effort vào Task List của plan, đổi dòng `Status`, rồi push lên PR #15. Lúc đó mới tới lượt bạn duyệt plan ở gate ②.
+
+# Phiên 20 · Lượt 12 — 2026-11-01 khoảng 16:27
+
+**Bạn:**
+
+````markdown
+1a, 2 đổi luôn trong lượt sửa này. Mà vì sao lại bị lỗi "spec.md và design.md vẫn ghi Status: Draft, dù gate ① đã qua"?
+````
+
+Trước khi trả lời, Claude tìm trong prompt của kit, ghi câu trả lời vào `.ai/runs/DEMO-20/answers.md`, chạy bước chỉ kiểm (GO: `ba` chạy tiếp trong session cũ), rồi chạy `--go --answers` ở nền.
+
+**Claude:**
+
+Lượt `ba` đang chạy ở nền: gắn nhãn `ao-effort-xhigh` cho DEMO-22, ghi effort vào plan, đổi dòng `Status` của SPEC và design, rồi push lên PR #15.
+
+**Vì sao dòng `Status` vẫn là Draft:** quy trình mới không giao việc này cho ai.
+- Template của SPEC và design có dòng `Status: Draft | Approved <ngày>`. Nhưng gate ① chỉ là việc bạn bấm `Approve spec` trên Jira. `jira-sync` chuyển Epic sang Planning, chứ không sửa file nào trong repo.
+- Prompt của bước `plan-write` mà `ao-step` đưa cho `sa` chỉ nói "SPEC đã được duyệt", không bảo đổi dòng `Status`. Prompt riêng của `sa`, `ba` và `ux` cũng không nhắc việc này.
+- Ở Epic trước (DEMO-11), SPEC có ghi "Approved 2026-10-31" vì lúc đó mình tự viết prompt cho từng lượt agent. Khi chuyển sang `ao-step` với prompt cố định, bước này bị rơi mất. Không test nào kiểm dòng `Status`, nên không ai phát hiện.
+
+**Cách sửa trong kit:** prompt `plan-write` sẽ bảo `sa` đổi `Status` của `spec.md` và `design.md` thành `Approved <ngày qua gate ①>`, ngay trong commit đầu của stage plan. Ngày này lấy từ changelog của Epic, và có test kèm theo. Mình sẽ sửa sau khi lượt `ba` này xong, để không đụng vào code của kit trong lúc agent đang chạy.
+
+Khi `ba` xong, mình sẽ báo kết quả, kèm các bước bạn cần bấm ở gate ②.
+
+Khoảng 16:30, Claude Code tắt lệnh nền vì máy thiếu RAM. Claude kiểm lại, cất chỗ sửa dở vào `git stash`, rồi trả lời tiếp:
+
+**Claude:**
+
+Lượt `ba` cập nhật plan theo câu trả lời của bạn lại bị Claude Code tắt, khoảng 16:30, vì máy thiếu RAM. Theo quy định của Claude Code, mình không tự chạy lại.
+
+**Lúc bị tắt:**
+- `ba` đã gắn nhãn `ao-effort-xhigh` cho DEMO-22 trên Jira.
+- `ba` chưa đổi dòng `Status`, chưa commit, và chưa push gì lên PR #15.
+- Chỗ sửa dở trong `plan.md` mình đã cất vào `git stash` của `ao-pilot`, vì `ao-step` không chạy trên bản checkout có thay đổi chưa commit. Khi chạy lại, `ba` tiếp tục trong session cũ, thấy nhãn đã có, rồi làm nốt phần còn lại.
+- Ngoài nhãn trên DEMO-22, PR #15 và các item trên Jira không đổi gì khác.
+
+**RAM:** máy giờ chỉ còn trống khoảng 1,9 GB trên 16 GB, thấp hơn cả lần bị tắt trước (2,8 GB). Có vẻ một ứng dụng khác trên máy đang dùng nhiều RAM.
+
+**Để chạy lại:**
+1. Mở Task Manager (Ctrl+Shift+Esc), chọn tab **Processes**, rồi bấm cột **Memory** để xếp theo RAM.
+2. Đóng các ứng dụng nặng không cần: trình duyệt nhiều tab, các phiên Claude Code khác, IDE thừa.
+3. Nhắn mình "chạy lại".
+
+Trước khi chạy, mình sẽ kiểm RAM trống. Nếu còn dưới 4 GB, mình sẽ báo bạn thay vì chạy.
+
+Nếu bạn muốn Claude Code không tắt lệnh nền khi thiếu RAM, hãy mở Claude Code với biến môi trường `CLAUDE_CODE_DISABLE_BG_SHELL_PRESSURE_REAP=1`. Đổi lại, khi RAM cạn hẳn, máy có thể treo.
