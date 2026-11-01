@@ -97,7 +97,7 @@ T16 ── T17 Epic: spec, plan ── T18 Epic: build, review, fix ── T19 t
 - [x] T7: `jira-sync` đánh dấu dòng DoR
 
 ### Giai đoạn 3: `ao-step.mjs`
-- [ ] T8: `runs.mjs` và `requests.mjs`
+- [x] T8: `runs.mjs` và `requests.mjs`
 - [ ] T9: `facts.mjs` và nhãn trong `tracker/jira.yaml`
 - [ ] T10: `decideStep` cho `status`, `spec`, `plan`
 - [ ] T11: `decideStep` cho `build`, `review`, `fix`
