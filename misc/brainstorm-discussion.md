@@ -28,7 +28,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 18 | `184d78d1-4600-4c36-8279-005a105c9216` | 2026-11-01 khoảng 01:08 → | Bạn cho qua Checkpoint 1 (PR #113); T3–T14 đóng (PR #114–#125): phiên agent dùng danh tính App và credential helper theo vai trò, PR tài liệu và quy tắc Q5, `merge-gate` báo PR chỉ còn chờ bạn và `jira-sync` gỡ cờ, đánh dấu dòng DoR, `ao-step.mjs` và vòng chạy `--go`, sáu skill `/ao-*`, template và prompt; chạy chỉ kiểm trong `ao-pilot` tìm ra lỗi 403 khi đọc commit status; Checkpoint 2 (PR #126), chờ bạn |
 | 19 | `44d6269e-f8c5-4052-a81c-f0f6385e00ed` | 2026-11-01 khoảng 10:35 → khoảng 11:30 | Bạn cho qua Checkpoint 2 (PR #127); T15: Task DEMO-19, ao-pilot PR #14 chép kit bằng danh tính bot `ao-dev`, `/ao-review`: `reviewer` COMMENT, `security` chạm giới hạn 5 giờ rồi chạy tiếp và COMMENT, 11,69 USD quy đổi; `merge-gate` bản mới chạy ở máy comment và gắn cờ một lần; trả lời cuối của Claude bị bộ lọc an toàn chặn hai lần, nên phiên này không có lượt nào trong log |
 | 20 | `bc6dea4e-d395-4a5d-b439-2a337292b2e7` | 2026-11-01 khoảng 11:45 → khoảng 22:15 | Bạn dán đoạn cuối của Phiên 19 để làm tiếp; Claude báo kết quả T15 và hỏi về nhánh `main` và các finding của kit; bạn merge PR #14 và chọn cả hai đề xuất: nhánh mặc định của `ao-pilot` sang `develop`, sửa finding ở kit không chạy agent; T15 đóng (PR #128), T15a (PR #129), T15b (PR #130); T16 đóng (PR #131): agent dùng danh tính App, vai trò chỉ đọc không push được; Checkpoint 3, bạn đồng ý chạy Epic thử; T17: Epic DEMO-20, `/ao-status`, chờ bạn bấm `Start spec`; bạn bấm `Start spec`; `/ao-spec` bị Claude Code tắt vì máy thiếu RAM; bạn bảo chạy lại; `ba` viết SPEC, `ao-step` dừng vì không thấy nhánh tài liệu chưa push, kit PR #132 sửa; bạn chọn chạy bằng code của kit và trả lời theo đề xuất; `ux` chạm giới hạn 5 giờ; bạn bảo làm tiếp; `ux` hỏi sáu câu, `sa` hỏi hai câu, bạn trả lời theo đề xuất; `ba` mở PR tài liệu #15, CI xanh, stage spec 7,84 USD quy đổi; bạn duyệt spec; stage plan: `sa` viết plan và ADR-0002, `ba` tạo DEMO-21, DEMO-22, DEMO-23; bạn chọn DEMO-22 ở `xhigh` và đổi `Status` thành Approved, hỏi vì sao `Status` còn Draft; lượt `ba` bị tắt vì thiếu RAM, bạn bảo chạy lại; bạn duyệt plan; `merge-gate` merge PR #15, `audit` xanh, T17 đóng (PR #133), 14,92 USD quy đổi; bạn đồng ý; bốn lỗi nhỏ sửa (PR #134); T18: `be-dev` bị `jira-guard` chặn vì token App bị cắt ở dấu chấm, kit PR #135 sửa; bạn gỡ cờ; `be-dev` xong DEMO-22 ở `xhigh`, kit PR #136 sửa việc làm tiếp Sub-task; bạn hỏi `be-dev` có bị tắc không; `fe-dev` code xong DEMO-23 nhưng gắn cờ vì Tab không cuộn khung bảng ở 320 px; bạn chọn B và gỡ cờ; `fe-dev` mở PR #16, CI xanh; `reviewer` chạm giới hạn 5 giờ, chạy lại sau khi reset; `reviewer` 3 Low, `security` không có finding; bạn chọn sửa hai Low; `be-dev` sửa và push, `reviewer` bị tắt vì thiếu RAM lần ba; bạn mở lại Claude Code với chế độ không tắt lệnh nền; `security` review phần mới ở `high`, `merge-gate` chỉ còn chờ approve (tiêu chí 5); bạn approve, `merge-gate` merge PR #16, `audit` xanh, DEMO-21 sang Ready for QA, Task DEMO-24 cho hai test còn thiếu, T18 đóng (PR #137), Epic thử 36,19 USD quy đổi; Checkpoint 4; bạn cho qua Checkpoint 4 (PR #138); T19 đóng (PR #139): sửa lỗi Sub-task mang cờ, `docs/dev-workflow.md`, README, module ghi hoàn thành, plan vào `tasks/archive/dev-workflow/`; bạn xác nhận module hoàn thành (PR #140); chờ bạn chọn việc tiếp theo |
-| 21 | `3ead2782-314d-4ae8-981b-96f6ed83a60e` | 2026-11-01 khoảng 22:50 → | Bạn dán đoạn cuối của Phiên 20, hỏi vì sao `main` và `develop` của `ao-pilot` lệch nhau, cách xử lý, và lựa chọn 3 có giải quyết được không; Claude kiểm hai nhánh và code của `audit`: `develop` đi trước 10 là đúng GitFlow, 4 commit chỉ có trên `main` là dấu vết lối tắt sandbox và không đổi nội dung; lựa chọn 3 không giải quyết; đề xuất ghi quy tắc merge commit và back-merge từ `main` vào spec `release-workflow`; bạn chọn Pilot 1; Claude nêu phạm vi, giả định A1–A8 và ba câu hỏi (repo, space Jira, feature); bạn duyệt và chọn theo đề xuất: repo mới `ao-sample`, space mới `SMP`, Epic "Ghi chú"; Claude viết `SPEC-pilot-1.md` (nhánh `task/spec-pilot-1`); chờ bạn duyệt spec |
+| 21 | `3ead2782-314d-4ae8-981b-96f6ed83a60e` | 2026-11-01 khoảng 22:50 → | Bạn dán đoạn cuối của Phiên 20, hỏi vì sao `main` và `develop` của `ao-pilot` lệch nhau, cách xử lý, và lựa chọn 3 có giải quyết được không; Claude kiểm hai nhánh và code của `audit`: `develop` đi trước 10 là đúng GitFlow, 4 commit chỉ có trên `main` là dấu vết lối tắt sandbox và không đổi nội dung; lựa chọn 3 không giải quyết; đề xuất ghi quy tắc merge commit và back-merge từ `main` vào spec `release-workflow`; bạn chọn Pilot 1; Claude nêu phạm vi, giả định A1–A8 và ba câu hỏi (repo, space Jira, feature); bạn duyệt và chọn theo đề xuất: repo mới `ao-sample`, space mới `SMP`, Epic "Ghi chú"; Claude viết `SPEC-pilot-1.md` (nhánh `task/spec-pilot-1`); bạn chọn tạo key mới cho `ao-dev` và duyệt spec; Claude viết plan 10 task, 5 checkpoint, cùng quyết định 6 (lỗi kit giữa Epic) và 8 (Checkpoint 3 sau lượt build đầu); chờ bạn duyệt plan |
 
 ---
 
@@ -8408,3 +8408,44 @@ Mình đã viết `SPEC-pilot-1.md` trên nhánh `task/spec-pilot-1` của kit (
 **Một câu cần trả lời trước task GitHub** (không chặn việc duyệt spec): file private key thứ hai của `ao-dev`, tức giá trị của secret `AO_DEV_APP_KEY` trên `ao-pilot`, còn trên máy bạn không? Nếu không, tới task đó bạn tạo key mới trên trang của App, mình ghi từng bước bấm.
 
 Bạn duyệt spec, hoặc nêu chỗ cần sửa. Sau khi duyệt, mình viết plan (`tasks/plan.md`, `tasks/todo.md`) rồi chờ bạn duyệt plan.
+
+---
+# Phiên 21 · Lượt 4 — 2026-11-01 khoảng 23:40
+
+**Bạn:**
+
+````markdown
+tạo key mới trên trang của App. duyệt spec
+````
+
+Trước khi trả lời, Claude chạy `/agent-skills:plan`, ghi lần duyệt và lựa chọn key mới vào `SPEC-pilot-1.md`, đọc plan và todo của `dev-workflow` để giữ cùng khuôn, đọc bước 10–13 của `docs/jira-setup.md` và mục "Environment `merge-gate`" của `docs/quality-gates.md`, kiểm scope của token `gh` (`repo`, `workflow`), rồi viết `tasks/plan.md` và `tasks/todo.md` trên nhánh `task/spec-pilot-1`. `npm test` của kit: 781 test xanh; `npm run validate` xanh.
+
+**Claude:**
+
+**Nhãn:** Câu nào là ước lượng hoặc suy luận thì có nhãn [Inference].
+
+Mình đã ghi lần duyệt spec và viết plan trên nhánh `task/spec-pilot-1` (đã push). `npm test` của kit: 781 test xanh; `npm run validate` xanh.
+
+**Hai chỗ sửa nhỏ trong spec:**
+- **Mục 2.4:** bạn tạo private key mới cho `ao-dev` trên trang của App. Mình đặt key đó làm secret `AO_DEV_APP_KEY` bằng cách pipe file, rồi xóa file khỏi máy.
+- **Mục 2.8:** điểm 6 (GitHub for Jira thấy nhánh và PR) cần repo và space đã nối, nên không kiểm ở task đầu. T6 kiểm repo đã vào GitHub for Atlassian; T7 kiểm panel Development trên PR tài liệu đầu tiên.
+
+**Plan: 10 task, 5 checkpoint**
+
+| Giai đoạn | Task | Phần bạn làm |
+|---|---|---|
+| 1. Tiền đề | T1: sinh khung hai app và chạy thử `claude -p "/ao-status"`, trong scratchpad. T2: tạo repo `ao-sample` trống, thêm repo vào ba App, tạo space `SMP`, đều qua API | Chỉ khi API từ chối |
+| 2. Dựng | T3: space bước 9–10. T4: khung app. T5: bản chép kit, skill theo stack, commit đầu. T6: lên GitHub, nối Jira, bước 11–13 | Cột board (nếu API không làm được), secret `JIRA_CI_TOKEN`, tạo key mới cho `ao-dev`, kiểm Backfill |
+| 3. Epic thử | T7: spec và plan. T8: lượt build đầu. T9: build, review, fix tới Ready for QA | Bấm `Start spec`, trả lời câu hỏi của agent, duyệt ở ba gate |
+| 4. Hoàn thiện | T10: bản sửa kit còn lại, đầu vào cho `project-scaffold`, lưu trữ | Xác nhận hoàn thành |
+
+**Hai quyết định cần bạn duyệt cùng plan:**
+- **Quyết định 6, lỗi kit giữa Epic:**
+  - Lỗi chặn Epic: mình sửa ở kit, rồi đưa bản sửa vào `ao-sample` bằng một PR chép kit nhỏ. PR này được review bằng `/ao-review`, và bạn merge. [Inference] Mỗi PR như vậy tốn khoảng 1–5 USD quy đổi.
+  - Lỗi không chặn: mình sửa ở kit, gom lại, chép một lần ở T10.
+  - Không dùng `AO_KIT_DIR` để đi vòng.
+- **Quyết định 8, Checkpoint 3 sau lượt build đầu:** bạn xem code NestJS của Sub-task đầu trước khi chạy phần còn lại.
+
+**Usage:** T1–T6 dưới 1 USD (hai lượt `/ao-status` bằng Sonnet). Epic thử khoảng 30–45 USD quy đổi, ước theo Epic DEMO-20 (36,19 USD). Checkpoint 2 hỏi bạn trước khi chạy Epic.
+
+Bạn duyệt plan (kèm quyết định 6 và 8), hoặc nêu chỗ cần sửa. Sau khi bạn duyệt, mình mở PR cho spec và plan trên kit, merge khi CI xanh, rồi bắt đầu T1.
