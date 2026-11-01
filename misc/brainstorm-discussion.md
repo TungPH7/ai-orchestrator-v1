@@ -7319,3 +7319,59 @@ Sau đó tới lượt bạn duyệt ở gate ①.
 **Khi giới hạn reset (14:40):** bạn nhắn mình "làm tiếp". Mình sẽ chạy lại `ao-step.mjs spec DEMO-20 --go` bằng code của kit, như bạn đã chọn.
 
 Có một việc mình chưa kịp làm: ghi lượt này ("1a, câu hỏi theo đề xuất") vào log thảo luận. Mình sẽ ghi bù ở lượt sau.
+
+# Phiên 20 · Lượt 8 — 2026-11-01 khoảng 15:20
+
+**Bạn:**
+
+````markdown
+Làm tiếp
+````
+
+Trước khi trả lời, Claude kiểm RAM và hai repo, chạy bước chỉ kiểm (GO: `ux` chạy tiếp trong session cũ), chạy `ao-step.mjs spec DEMO-20 --go` ở nền bằng code của kit, và ghi bù Lượt 7 vào log.
+
+**Claude:**
+
+Stage spec của DEMO-20 đang chạy tiếp ở nền, bằng code của kit. Các lượt còn lại:
+
+1. `ux` viết tiếp `design.md` trong session cũ.
+2. `sa` thêm phần kiến trúc.
+3. `ba` push nhánh tài liệu và mở PR tài liệu.
+
+Trong lúc chờ, mình đã ghi bù Lượt 7 vào log thảo luận.
+
+Khi lệnh xong, mình sẽ báo kết quả và chi phí từng lượt, kèm các bước bạn cần bấm ở gate ①: đọc PR tài liệu, rồi bấm `Approve spec`. Nếu có lượt dừng giữa chừng, mình báo ngay.
+
+Lệnh xong lúc 15:23: `ux` xong, rồi `ao-step` dừng vì `ux` để lại câu hỏi. Claude trả lời tiếp:
+
+**Claude:**
+
+`ux` đã viết xong `design.md`, nhưng để lại 6 câu hỏi cho bạn, nên stage spec dừng chờ bạn trả lời.
+
+**Kết quả:**
+- `ux` chạy tiếp trong session cũ thêm 2,4 phút, tốn 0,76 USD quy đổi. Cộng cả lần trước, `ux` tốn 1,70 USD.
+- `docs/specs/DEMO-20/design.md` có một màn hình, S1 · Giỏ hàng, vẽ bằng ASCII vì Epic không có Figma. Commit `1af1eba`; `check-design` báo Design OK.
+- DEMO-20 tới giờ tốn 3,69 USD quy đổi.
+
+**Sáu câu hỏi của `ux`.** Design đang viết theo đề xuất của `ux`. Bạn đổi câu nào thì `ux` sửa theo câu đó.
+
+1. **Tiêu đề cột thứ năm, cột chứa nút Xóa.** Bảng thêm một cột mới, và tiêu đề cột để trống thì công cụ kiểm trợ năng báo lỗi. Đề xuất: chữ "Thao tác", chỉ trình đọc màn hình đọc, không hiện trên trang. Đây là câu chữ mới, nên cần bạn duyệt.
+2. **Bảng năm cột trên màn hình hẹp.**
+   - Ở bề rộng 320 px, bảng tràn 87 px và nút Xóa nằm ngoài màn hình. Ở 360 và 390 px, nút chỉ hiện một phần.
+   - Đề xuất: cho bảng cuộn ngang, và thêm hai luật CSS cho màn hình hẹp dưới 30 rem (lề và đệm ô).
+   - Hai luật này dùng media query, trong khi ở DEMO-11, hàng mã giảm giá đã chọn không dùng media query.
+   - Cách khác: trên màn hình hẹp, xếp mỗi dòng thành một khối dọc. `ux` đề xuất tách cách này thành một Task riêng, nếu bạn muốn.
+3. **Câu báo cho trình đọc màn hình sau khi xóa.**
+   - Đề xuất: không thêm, giữ quyết định Q2 của SPEC. Trang tải mới thì trình đọc đọc tiêu đề trang. Khi vào bảng, nó báo số dòng. Giỏ trống thì đã có sẵn câu "Giỏ hàng trống.".
+   - `ux` chưa thử với trình đọc màn hình nào, nên đề xuất `qa` hoặc bạn nghe thử một lần.
+4. **Focus sau khi xóa.** Đề xuất: không tự đặt focus. Trang tải mới thì focus về đầu trang, và bấm Tab một lần là tới nút Xóa của dòng đầu.
+5. **Bấm đúp có thể xóa hai dòng.** Nếu trang mới hiện ra giữa hai lần bấm, lần bấm thứ hai sẽ xóa dòng vừa dời lên. Đề xuất: chấp nhận, vì SPEC đã chọn không hỏi xác nhận, và mở lại `/` là có lại giỏ mẫu.
+6. **Giỏ trống không còn việc gì để làm.** Bấm tải lại trang thì trình duyệt gửi lại form xóa, nên trang vẫn ra giỏ trống. Muốn có lại giỏ mẫu, phải mở `/` như một lần vào trang mới. Đề xuất: giữ nguyên, vì Epic không lưu giỏ.
+
+Mình thấy cả sáu đề xuất đều hợp lý. Câu đáng cân nhắc nhất là câu 2, vì nó thêm media query.
+
+Bạn trả lời gọn được, ví dụ "theo đề xuất" hoặc "theo đề xuất, riêng câu 2 …". Sau đó mình chạy tiếp các bước:
+
+1. `ux` sửa design theo câu trả lời.
+2. `sa` thêm phần kiến trúc.
+3. `ba` mở PR tài liệu.
