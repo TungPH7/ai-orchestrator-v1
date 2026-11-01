@@ -31,7 +31,8 @@ Có hai cách:
 - **Phiên chính:** chạy `node .ai-orchestrator/scripts/ao-agent.mjs <role>` từ gốc repo dự án. `claude --agent` tự nó bỏ qua skill, effort và `maxTurns` của agent, nên script truyền chúng bằng cờ của `claude`.
   - Không có `-p`: agent làm trực tiếp với bạn. Dùng cách này cho `ba`, `ux`, `sa` khi bạn muốn trả lời câu hỏi ngay.
   - Có `-p "<prompt>"`: agent chạy một mình, có `--max-turns`. Câu hỏi của `ba`, `ux`, `sa` được ghi vào mục Open Questions của artifact.
-  - `--ao-dry-run` in lệnh `claude` mà không chạy. Các cờ khác, như `--output-format stream-json --verbose`, được truyền nguyên cho `claude`.
+  - `--ao-dry-run` in lệnh `claude` và các biến môi trường của phiên mà không chạy; token không bao giờ được in. Các cờ khác, như `--output-format stream-json --verbose`, được truyền nguyên cho `claude`.
+  - Phiên của agent làm việc trên GitHub bằng hai App, không bằng login `gh` và git của bạn (`dev-workflow`, spec mục 2.3). `GH_TOKEN` là token chỉ đọc của `ao-review`. `git` lấy token qua `ao-git-credential.mjs`: vai trò có git ghi nhận token của `ao-dev` (riêng `devops` có thêm quyền Workflows), vai trò chỉ đọc nhận token chỉ đọc để `git fetch`. Commit đứng tên bot `ao-dev`. Không lấy được token thì agent không chạy.
 
 Prompt ngắn là đủ, vì agent tự đọc item, hợp đồng và template. Đây là các prompt đã dùng khi chạy thật:
 

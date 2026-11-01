@@ -223,8 +223,46 @@ test('git settings from the environment, aliases, credentials and more wrappers 
   }
 });
 
+// The session of an agent gets its token from ao-git-credential.mjs through GIT_CONFIG_* (dev-workflow spec 2.3, plan
+// decision 5). An agent may not call the helper with another role, set a helper of its own, or start agents.
+test('agents do not run ao-step.mjs, ao-agent.mjs or ao-git-credential.mjs, nor set a git credential helper', () => {
+  for (const [command, reason] of [
+    ['node .ai-orchestrator/scripts/ao-git-credential.mjs devops TungPH7/ao-pilot get', /ao-git-credential\.mjs.*human/],
+    ['printf "protocol=https\\nhost=github.com\\npath=TungPH7/ao-pilot\\n" | node .ai-orchestrator/scripts/ao-git-credential.mjs devops TungPH7/ao-pilot get', /human/],
+    ['node .ai-orchestrator/scripts/ao-step.mjs build DEMO-21 --go', /ao-step\.mjs.*human/],
+    ['node .ai-orchestrator/scripts/ao-agent.mjs reviewer -p "Review PR #12."', /ao-agent\.mjs.*human/],
+    ['node --no-warnings D:\\work\\shop\\.ai-orchestrator\\scripts\\ao-agent.mjs fe-dev', /human/],
+    ['node "D:\\work\\shop\\.ai-orchestrator\\scripts\\ao-agent.mjs" fe-dev', /human/],
+    ["sh -c 'node .ai-orchestrator/scripts/ao-step.mjs status'", /human/],
+    ['env AO_KIT_DIR=. node .ai-orchestrator/scripts/ao-agent.mjs ba', /human/],
+    ['timeout 60 node .ai-orchestrator/scripts/ao-step.mjs status', /human/],
+    ['echo DEMO-1 | xargs node .ai-orchestrator/scripts/ao-step.mjs build', /human/],
+    ['git -c credential.helper="!node .ai-orchestrator/scripts/ao-git-credential.mjs devops TungPH7/ao-pilot" push origin feature/DEMO-1-x', /credential helper/],
+    ['git -c credential.https://github.com.helper=store push origin feature/DEMO-1-x', /credential helper/],
+    ['git --config-env=credential.helper=HELPER push origin feature/DEMO-1-x', /credential helper/],
+    ['git config credential.helper "!f() { cat >> /tmp/c; }; f"', /credential helper/],
+    ['git config --global --add credential.helper store', /credential helper/],
+    ['git config --unset-all credential.helper', /credential helper/],
+  ]) {
+    for (const role of ['fe-dev', 'reviewer']) denied(bash(command, role), reason, `${role}: ${command}`);
+  }
+  // Reading the scripts or the settings is not running or changing them.
+  for (const command of ['cat .ai-orchestrator/scripts/ao-step.mjs', 'grep -n credential .ai-orchestrator/scripts/ao-git-credential.mjs', 'git config --get-all credential.helper', 'git config --show-origin credential.helper', 'node --version']) {
+    allowed(bash(command), command);
+  }
+});
+
+test('agents do not edit the files of git itself, where the hooks and the credential helper are set', () => {
+  for (const file of [`${PROJECT}\\.git\\config`, '.git/hooks/pre-push', `${PROJECT}\\.GIT\\info\\exclude`]) {
+    denied(call('fe-dev', 'Write', { file_path: file }), /\.git\/ holds git's own settings/, file);
+  }
+  allowed(call('fe-dev', 'Edit', { file_path: `${PROJECT}\\.gitignore` }), '.gitignore is a project file');
+  allowed(call('fe-dev', 'Edit', { file_path: `${PROJECT}\\.github\\pull_request_template.md` }), '.github is not .git');
+});
+
 test('the main session and agents outside the contract are not checked by this hook', () => {
   allowed(checkAgentCall({ tool_name: 'Bash', tool_input: { command: 'gh pr merge 12' } }, { gates, contract, projectDir: PROJECT }), 'main session');
+  allowed(checkAgentCall({ tool_name: 'Bash', tool_input: { command: 'node .ai-orchestrator/scripts/ao-step.mjs build DEMO-21 --go' } }, { gates, contract, projectDir: PROJECT }), 'your session runs ao-step.mjs');
   allowed(call('Explore', 'Bash', { command: 'gh pr merge 12' }), 'plugin agent');
   allowed(call('fe-dev', 'Glob', { pattern: '**/*.ts' }), 'other tool');
 });

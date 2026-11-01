@@ -81,3 +81,16 @@ Bạn thêm quyền cho hai App và chấp nhận quyền mới trên `ao-pilot`
 | 8. Commit của bot qua hook và `policy`, GitHub for Jira nối vào item | **Đúng.** Bản clone đặt `core.hooksPath=.githooks`. `commit-msg` chặn tiêu đề `bad header` và cho qua `chore(probe): add the identity probe file (DEMO-18)`; `pre-commit` (eslint) và `pre-push` đều chạy. Job `policy` xanh trên cả hai head của PR #13. Trường Development (`customfield_10000`) của `DEMO-18` có PR #13, trạng thái DRAFT, qua GitHub for Jira |
 
 **Dọn dẹp:** PR #13 được đóng kèm comment, nhánh đã xóa (GitHub trả `Branch not found`), bản clone tạm đã xóa. `merge-gate` sau lần push thứ hai chạy xanh, và bỏ qua PR nháp. Không token nào được in ra; Claude chỉ in quyền và hạn của token.
+
+## T3: Môi trường của phiên agent và `ao-git-credential.mjs`
+
+Kiểm trong `ao-pilot` ngày 2026-11-01, bằng code của kit (`AO_KIT_DIR` trỏ vào repo kit), không chạy agent nào.
+
+| Bước | Kết quả |
+|---|---|
+| `ao-agent.mjs fe-dev --ao-dry-run -p "Build DEMO-12"` | In lệnh `claude` như trước, rồi các biến của phiên: `GH_TOKEN=<read-only token of tungph7-ao-review, expires …>` (không in token), `GH_PROMPT_DISABLED=1`, `GIT_TERMINAL_PROMPT=0`, năm cặp `GIT_CONFIG_*` (`credential.helper` rỗng, helper `ao-git-credential.mjs fe-dev TungPH7/ao-pilot`, `credential.useHttpPath`, `user.name=tungph7-ao-dev[bot]`, `user.email=349476619+tungph7-ao-dev[bot]@users.noreply.github.com`), và danh sách biến bị bỏ. Id bot lấy từ GitHub lúc mở phiên, khớp với T2 |
+| `git ls-remote origin develop` với cấu hình git của `fe-dev`, `devops`, `reviewer` | Cả ba chạy được. `GIT_TRACE` chỉ có `ao-git-credential.mjs <role> TungPH7/ao-pilot get` và `store`, không có Git Credential Manager |
+| Cùng lệnh với vai trò lạ `qa-lead` | Thoát 128. Helper in `ao-git-credential: qa-lead is not a role of agents/roster.yaml`, rồi git báo `terminal prompts disabled`, không hỏi mật khẩu |
+| Gọi thẳng helper cho `fe-dev`, `devops`, `reviewer` | Mỗi lần trả `username=x-access-token` và một token chỉ dùng được trên `TungPH7/ao-pilot` (`GET /installation/repositories`) |
+
+Điều chỉnh so với todo: vai trò chỉ đọc vẫn có helper, nhưng helper chỉ cho nó token `contents: read` của `ao-review`. Lý do: `reviewer` và `security` chạy `git fetch origin` để đọc nhánh của PR, và khi Git Credential Manager bị bỏ thì repo private không fetch được nếu không có credential. Push bằng token này bị GitHub từ chối; T16 kiểm điều đó trên phiên agent thật. Spec mục 2.3 đã ghi thêm câu này.

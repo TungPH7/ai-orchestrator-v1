@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createVerify, generateKeyPairSync } from 'node:crypto';
-import { appCredentials, appJwt, installationToken } from '../../lib/quality/github-app.mjs';
+import { appCredentials, appJwt, botIdentity, githubRepoOf, installationToken } from '../../lib/quality/github-app.mjs';
 
 const { privateKey, publicKey } = generateKeyPairSync('rsa', {
   modulusLength: 2048,
@@ -90,4 +90,32 @@ test('a variable set after Claude Code started is read from the user environment
     /AO_REVIEW_APP_KEY or AO_REVIEW_APP_KEY_FILE/,
   );
   assert.throws(() => appCredentials('admin', { env }), /unknown App kind 'admin'/);
+});
+
+test('a token that asks for a permission the App lacks says so (dev-workflow T2: GitHub answers 422)', async () => {
+  const lacking = fakeFetch([{ body: { id: 1 } }, { status: 422, body: { message: 'The permissions requested are not granted to this installation.' } }]);
+  await assert.rejects(
+    installationToken({ appId: 1, privateKey, repo: 'TungPH7/ao-pilot', permissions: { workflows: 'write' }, fetch: lacking.fetch, now: NOW }),
+    /App 1 on TungPH7\/ao-pilot lacks a permission of \{"workflows":"write"\}: add it to the App, then accept it on the installation/,
+  );
+});
+
+test('the bot of an App commits as <slug>[bot] with the noreply address of its user id', async () => {
+  const { fetch, calls } = fakeFetch([{ body: { login: 'tungph7-ao-dev[bot]', id: 349476619, type: 'Bot' } }]);
+  assert.deepEqual(await botIdentity({ slug: 'tungph7-ao-dev', token: 'ghs_read', fetch }), {
+    name: 'tungph7-ao-dev[bot]',
+    email: '349476619+tungph7-ao-dev[bot]@users.noreply.github.com',
+  });
+  assert.equal(calls[0].url.href, 'https://api.github.com/users/tungph7-ao-dev%5Bbot%5D');
+  assert.equal(calls[0].init.headers.Authorization, 'Bearer ghs_read');
+
+  const missing = fakeFetch([{ status: 404, body: { message: 'Not Found' } }]);
+  await assert.rejects(botIdentity({ slug: 'nobody', token: 't', fetch: missing.fetch }), /GitHub has no user nobody\[bot\]: check AO_DEV_APP/);
+});
+
+test('the repository of a GitHub remote, by HTTPS or SSH', () => {
+  assert.equal(githubRepoOf('https://github.com/TungPH7/ao-pilot.git'), 'TungPH7/ao-pilot');
+  assert.equal(githubRepoOf('https://github.com/TungPH7/ao-pilot'), 'TungPH7/ao-pilot');
+  assert.equal(githubRepoOf('git@github.com:TungPH7/ao-pilot.git'), 'TungPH7/ao-pilot');
+  for (const url of ['', 'https://gitlab.com/a/b.git', 'https://github.com/a/b;rm.git']) assert.throws(() => githubRepoOf(url), /not a GitHub repository/, url);
 });
