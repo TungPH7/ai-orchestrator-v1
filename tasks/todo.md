@@ -236,7 +236,7 @@ Xem [plan.md](plan.md#checkpoint-1).
 
 **Cỡ:** M
 
-### [ ] T7: `jira-sync` đánh dấu dòng DoR (spec mục 2.9)
+### [x] T7: `jira-sync` đánh dấu dòng DoR (spec mục 2.9)
 
 **Mô tả:**
 
@@ -246,11 +246,11 @@ Xem [plan.md](plan.md#checkpoint-1).
 - `refine` và `refine-children` của `jira-sync` sửa mô tả sau khi chuyển trạng thái. Không tìm thấy dòng đó thì `jira-sync` comment thay.
 
 **Tiêu chí chấp nhận:**
-- [ ] Test cho hai dạng, cho dòng đã đánh dấu sẵn (không sửa), và cho mô tả không có dòng đó (comment).
-- [ ] Test cho `refine-children`: mỗi item con được sửa một lần.
+- [x] Test cho hai dạng, cho dòng đã đánh dấu sẵn (không sửa), và cho mô tả không có dòng đó (comment).
+- [x] Test cho `refine-children`: mỗi item con được sửa một lần.
 
 **Kiểm chứng:**
-- [ ] Năm lệnh trong quy ước chung xanh
+- [x] Năm lệnh trong quy ước chung xanh
 
 **Phụ thuộc:** không
 
