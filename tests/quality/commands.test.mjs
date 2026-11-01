@@ -295,6 +295,105 @@ test('the kit settings run gh-guard before Bash, Read, Edit, Write and NotebookE
   assert.deepEqual(entry.matcher.split('|').sort(), ['Bash', 'Edit', 'NotebookEdit', 'Read', 'Write']);
 });
 
+// The ways around gh-guard that the reviews of ao-pilot PR #14 found (dev-workflow T15b). The session of an agent holds
+// its GitHub identity in its environment (lib/agents/launch.mjs): an agent may not set, export or clear those variables.
+test('the variables of the session identity cannot be set, exported or cleared, in any shell', () => {
+  for (const command of [
+    'export GIT_CONFIG_COUNT=6 GIT_CONFIG_KEY_5=core.hooksPath GIT_CONFIG_VALUE_5=/dev/null; git commit -m x',
+    'export GIT_CONFIG_VALUE_1',
+    'GIT_CONFIG_VALUE_1="!node x.mjs devops o/r"; git push origin feature/DEMO-1-x',
+    'declare -x GIT_CONFIG_COUNT=0',
+    'typeset -x GH_TOKEN=x',
+    'readonly GIT_ASKPASS=/tmp/x',
+    'unset GIT_CONFIG_COUNT && git push origin feature/DEMO-1-x',
+    'unset -v GH_TOKEN; gh api user',
+    'set -a; GIT_CONFIG_COUNT=0; git push',
+    'env -i PATH=/usr/bin git push origin feature/DEMO-1-x',
+    'env --ignore-environment git push',
+    'env - git push',
+    'env -u GIT_CONFIG_COUNT git push origin feature/DEMO-1-x',
+    'env --unset=GH_TOKEN gh api user',
+    'GH_TOKEN= node .ai-orchestrator/scripts/ao-pr.mjs create --base develop --title x --body-file pr.md',
+    'GIT_ASKPASS=/tmp/x npm run deploy',
+    'powershell -Command "$env:GIT_CONFIG_COUNT = 0; git push"',
+    'pwsh -c "Remove-Item Env:GIT_CONFIG_COUNT; git push"',
+    'powershell -c "[Environment]::SetEnvironmentVariable(\'GH_TOKEN\', $null)"',
+    'cmd /c "set GIT_CONFIG_COUNT=0 && git push"',
+  ]) {
+    denied(bash(command), /session|hooks/, command);
+  }
+  for (const command of ['export NODE_ENV=test', 'FOO=1; npm test', 'unset FOO', 'env -u NODE_ENV npm test', 'echo $GIT_CONFIG_COUNT', 'printenv GH_PROMPT_DISABLED', 'GIT_PAGER=cat git log -1']) {
+    allowed(bash(command), command);
+  }
+});
+
+test('a command inside powershell, pwsh or cmd is checked like the command itself; an encoded one is refused', () => {
+  for (const [command, reason] of [
+    ['powershell -Command "git push --no-verify origin feature/DEMO-1-x"', /hook/],
+    ['powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "git push origin develop"', /pull request/],
+    ['PowerShell -c "gh pr merge 8"', /ao-pr\.mjs/],
+    ['pwsh -NoLogo -Command git push origin main', /pull request/],
+    ['powershell "git push origin develop"', /pull request/],
+    ['cmd /c "git push --no-verify origin feature/DEMO-1-x"', /hook/],
+    ['cmd //c git push origin develop', /pull request/],
+    ['cmd.exe /S /C "gh auth token"', /token/],
+    ['powershell -EncodedCommand ZwBpAHQA', /encoded/],
+    ['pwsh -enc ZwBpAHQA', /encoded/],
+  ]) {
+    denied(bash(command), reason, command);
+  }
+  for (const command of ['powershell -NoProfile -Command "Get-ChildItem"', 'cmd /c dir', 'pwsh -File scripts/build.ps1', 'powershell -Command "git push origin feature/DEMO-1-x"']) {
+    allowed(bash(command), command);
+  }
+});
+
+test('a shell that reads its commands from stdin is refused; a shell running a script file or -c is not', () => {
+  for (const command of [
+    "echo 'git push --no-verify origin feature/DEMO-1-x' | bash",
+    'printf "git push origin develop" | sh -s',
+    'cat cmds.txt | zsh',
+    'echo "git push" | powershell -Command -',
+    'echo "git push" | powershell',
+    'echo "git push" | cmd',
+  ]) {
+    denied(bash(command), /stdin/, command);
+  }
+  for (const command of ['bash scripts/build.sh', "bash -c 'npm test'", 'bash --version', 'sh ./x.sh arg']) allowed(bash(command), command);
+});
+
+test('git credential programs and the orchestration scripts in any letter case are refused', () => {
+  for (const [command, reason] of [
+    ['git-credential-manager get', /token/],
+    ['printf "protocol=https\\nhost=github.com\\n" | git-credential-manager.exe get', /token/],
+    ['"C:/Program Files/Git/mingw64/bin/git-credential-manager.exe" get', /token/],
+    ['echo x | xargs git-credential-wincred get', /token/],
+    ['node .ai-orchestrator/scripts/AO-GIT-CREDENTIAL.MJS devops TungPH7/ao-pilot get', /human/],
+    ['NODE .ai-orchestrator/scripts/Ao-Step.mjs build DEMO-1 --go', /human/],
+  ]) {
+    denied(bash(command), reason, command);
+  }
+});
+
+test('the options of node that take a value are skipped when ao-pr.mjs is looked for', () => {
+  for (const command of [
+    'node -r ./x.cjs .ai-orchestrator/scripts/ao-pr.mjs review 14 --event COMMENT --body-file f',
+    'node --require ./x.cjs .ai-orchestrator/scripts/ao-pr.mjs review 14 --event COMMENT --body-file f',
+    'node --import ./x.mjs .ai-orchestrator/scripts/ao-pr.mjs review 14 --event COMMENT --body-file f',
+    'node --loader ./x.mjs .ai-orchestrator/scripts/ao-pr.mjs review 14 --event COMMENT --body-file f',
+    'node -C dev .ai-orchestrator/scripts/ao-pr.mjs review 14 --event COMMENT --body-file f',
+  ]) {
+    denied(bash(command, 'be-dev'), /be-dev uses the dev App/, command);
+  }
+  allowed(bash('node --require=./x.cjs .ai-orchestrator/scripts/ao-pr.mjs create --base develop --title x --body-file pr.md', 'be-dev'), 'an option with = keeps its value');
+});
+
+test('the temp folder counts by its short (8.3) name and its long name alike', () => {
+  const check = (file) => checkAgentCall({ agent_type: 'reviewer', tool_name: 'Write', tool_input: { file_path: file } }, { gates, contract, projectDir: PROJECT, tempDir: ['C:\\Users\\HUUTUN~1\\AppData\\Local\\Temp', 'C:\\Users\\Huu Tung\\AppData\\Local\\Temp'] });
+  allowed(check('C:\\Users\\Huu Tung\\AppData\\Local\\Temp\\probe\\x.md'), 'long name');
+  allowed(check('C:/Users/HUUTUN~1/AppData/Local/Temp/probe/x.md'), 'short name');
+  denied(check('C:\\Users\\Huu Tung\\.gitconfig'), /outside the project/, 'the home folder');
+});
+
 // Without it, Claude Code tells agents to end their commits with a Co-Authored-By trailer (seen in T18).
 test('the kit settings hide the attribution Claude Code adds to commits and PRs', async () => {
   const { default: settings } = await import('../../kit/.claude/settings.json', { with: { type: 'json' } });
