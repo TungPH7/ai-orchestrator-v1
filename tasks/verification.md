@@ -235,3 +235,44 @@ Không chạy agent. Test viết trước, ba commit.
 - **Tài liệu:** `docs/quality-gates.md` ghi rằng `gh-guard` chỉ chặn nhầm lẫn, vì phiên agent đọc được key của App, và liệt kê năm việc còn chờ bạn quyết. Comment ở `launch.mjs` sửa theo.
 
 `npm test`: 772 pass. Bốn lệnh kiểm còn lại xanh.
+
+## T16: Thử đi vòng (2026-11-01)
+
+Hai lượt `claude -p` trong `ao-pilot` (bản chép kit của PR #14), chạy bằng `ao-agent.mjs` với `CLAUDE_CODE_EFFORT_LEVEL=low`. Lệnh vẫn truyền `--effort` của roster, nhưng biến môi trường thắng, như đã kiểm ở `agent-roster` T21.
+
+| Lượt | Model | Turn | Thời gian | Token vào / ra | Cache đọc / ghi | Chi phí quy đổi | Bị từ chối |
+|---|---|---|---|---|---|---|---|
+| `reviewer` | Opus 5.5 | 6 | 33 giây | 10 / 1.640 | 87.510 / 22.566 | 0,23 USD | 3 |
+| `fe-dev` | Opus 5.5 | 8 | 70 giây | 14 / 1.522 | 299.603 / 50.643 | 0,50 USD | 0 |
+
+**`reviewer`:**
+
+- `gh auth status`: tài khoản đang dùng là `tungph7-ao-review[bot]`, lấy từ `GH_TOKEN`. Login `TungPH7` trong keyring vẫn được liệt kê, nhưng không active.
+- `gh api user`: HTTP 403 "Resource not accessible by integration", tức là token của App.
+- `git push origin develop:refs/heads/feature/DEMO-19-reviewer-probe`: `gh-guard` từ chối, vì `reviewer` chỉ có git đọc. Lệnh không tới GitHub.
+- `git ls-remote origin develop` cũng bị `gh-guard` từ chối, và đây là chặn nhầm, vì lệnh này chỉ đọc. Agent tự nhận ra điều này trong báo cáo. Kit sửa ở cùng PR: thêm `ls-remote` vào các lệnh đọc, có test.
+- Ba lần bị từ chối gồm: lần agent gộp ba lệnh vào một dòng (dòng đó có `ls-remote`), lần chạy `ls-remote` riêng, và lần push. Agent không tìm đường khác.
+
+**Lớp thứ hai, ngoài agent:** Claude chạy cùng lệnh push với đúng cấu hình git của phiên `reviewer` (`agit.sh reviewer`, các biến `GIT_CONFIG_*` như `launch.mjs` đặt). Kết quả:
+
+- `GIT_TRACE` chỉ có `ao-git-credential.mjs reviewer TungPH7/ao-pilot get`, không có Git Credential Manager.
+- GitHub trả `remote: Write access to repository not granted` và 403. Git thoát 128, nhánh không được tạo (GET branch trả 404).
+- Với cùng cấu hình, `git ls-remote origin develop` chạy được.
+
+**`fe-dev`:** không lệnh nào bị từ chối.
+
+- `git switch -c feature/DEMO-19-push-probe`, rồi tạo `docs/probe-DEMO-19.md` bằng Write.
+- Commit `1275edf` "test(probe): check the push identity of the agent (DEMO-19)" qua được hook `pre-commit` (eslint) và `commit-msg`.
+- `git push -u origin feature/DEMO-19-push-probe` được GitHub nhận.
+- Author và committer trên GitHub đều là `tungph7-ao-dev[bot] <349476619+tungph7-ao-dev[bot]@users.noreply.github.com>`. API activity của repo ghi `branch_creation` bởi `tungph7-ao-dev[bot]`.
+- Agent tự quay về `develop`.
+
+**Dọn dẹp:** Claude xóa nhánh `feature/DEMO-19-push-probe` trên GitHub và ở máy. Push lên nhánh feature không làm workflow nào chạy. `ao-pilot` sạch trên `develop`.
+
+**Tiêu chí 3 của spec mục 9 đạt:**
+
+- Agent commit và push dưới tên bot `ao-dev`, và đọc GitHub bằng token chỉ đọc của `ao-review`.
+- `gh` trong phiên agent không dùng login của bạn.
+- Vai trò chỉ đọc không push được: `gh-guard` chặn trước, và GitHub cũng từ chối token của nó.
+
+**Chi phí T15–T16:** 11,69 + 0,73 = 12,42 USD quy đổi. Plan ước 6–12 USD cho T15 và dưới 1 USD cho T16, nên tổng vẫn nằm trong ước tính. T15 gần mức trên, vì lượt `security` đầu chạm giới hạn 5 giờ sau 4,55 USD, và lượt chạy tiếp tốn thêm 2,71 USD.
