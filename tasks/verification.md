@@ -116,3 +116,18 @@ Clone repo trống vào `D:\Document\1Khoahoc\4LapTrinh\AI-for-coding\ao-sample`
 Cả hai được nhận theo giấy phép MIT mà tác giả khai; `SOURCE.md` của từng skill ghi việc thiếu file LICENSE.
 
 **Commit đầu bị hook từ chối:** `commit-msg: end the header with the Jira key in parentheses`. Hook của kit không có ngoại lệ cho commit không mang mã Jira, còn spec mục 2.5 định commit đầu không có mã. Hook `pre-commit` (quét secret) chạy tay trên 404 file đã stage: thoát 0. Chờ bạn chọn cách làm.
+
+## T3: Space `SMP` (2026-11-02)
+
+| Bước | Ai, bằng gì | Kết quả |
+|---|---|---|
+| Tạo space có "share settings" với `DEMO` | Bạn, giao diện | Không làm được: tùy chọn này nằm trong khung "Customize project settings … Try it free for 14 days", tức chỉ có ở gói trả phí (`misc/images/phien-21-luot-7-anh-2.png`) |
+| Tạo space company-managed, Kanban, `AO Sample`, key `SMP` | Bạn, giao diện | Xong, id 10034 |
+| Gán `DEMO: Kanban Issue Type Scheme`, `DEMO: Kanban Issue Type Screen Scheme`, `AO workflow scheme` | Bạn, Space settings | Xong. API xác nhận: 10149, 10001, 10002; work type `Sub-task`, `Epic`, `Story`, `Bug`, `Task`; permission scheme `Default software scheme` như `DEMO` |
+| Quyền của hai service account trên `SMP` | Claude, `GET /mypermissions` bằng `JIRA_CI_TOKEN` và `ATLASSIAN_AGENT_TOKEN` | Cả hai có `BROWSE_PROJECTS`, `CREATE_ISSUES`, `EDIT_ISSUES`, `TRANSITION_ISSUES`, `ADD_COMMENTS` |
+| `npm run jira:check -- --space SMP` (lần 1) | Claude | 3 chỗ lệch, đều thuộc board (bước 10): filter, tên cột, status của cột Backlog. Bước 9 không còn chỗ lệch |
+
+## T6: phần làm trước trên repo trống (2026-11-02)
+
+- Environment `development`, `staging`, `production`, và `merge-gate` với rule nhánh chỉ cho `develop`: tạo bằng `gh api`. Repo chưa có nhánh `develop`; rule vẫn nhận tên nhánh.
+- Secret `JIRA_CI_TOKEN` của repo: đặt bằng `printenv JIRA_CI_TOKEN | gh secret set JIRA_CI_TOKEN -R TungPH7/ao-sample`, nên token không nằm trong lệnh. Token là biến môi trường trên máy (`docs/jira-setup.md`, bước 1).
