@@ -69,6 +69,18 @@ test('/ao-build of a Task by its role label; the roster effort when there is no 
   assert.equal(decide('build', storyFacts({ item: { ...task.item, effort: 'max', labels: ['ao-devops', 'ao-effort-max'] }, wip: task.wip })).runs[0].effort, 'max');
 });
 
+// dev-workflow T18: be-dev and fe-dev each flagged their Sub-task Needs you, and /ao-build still went ahead (jira-guard then
+// refused the Start) or stopped saying only that the run "still has to run".
+test('/ao-build stops when a Sub-task still to build is flagged Needs you, and says what to do on it', () => {
+  const held = storyFacts({ item: { state: 'in-progress', status: 'In Progress', subtasks: [sub('DEMO-22', 'be-dev', { state: 'done' }), sub('DEMO-23', 'fe-dev', { state: 'in-progress', status: 'In Progress', flagged: true })] }, subtaskLedgers: ['DEMO-22', 'DEMO-23'] });
+  const decision = decide('build', held);
+  assert.equal(decision.go, false);
+  assert.equal(decision.reason, 'Sub-task DEMO-23 of DEMO-21 is flagged Needs you');
+  assert.equal(decision.next, 'Read the newest comment on DEMO-23 and answer it there, remove the flag and the needs-you label, then /ao-build DEMO-21');
+  const done = storyFacts({ item: { state: 'in-progress', status: 'In Progress', subtasks: [sub('DEMO-22', 'be-dev', { state: 'done', flagged: true }), sub('DEMO-23', 'fe-dev')] }, subtaskLedgers: ['DEMO-22'] });
+  assert.equal(decide('build', done).go, true, 'a done Sub-task with a flag left on it does not hold the build');
+});
+
 // The agents of a split Story keep the ledgers of its Sub-tasks, not of the Story (dev-workflow T18: /ao-build stopped
 // after be-dev finished DEMO-22, saying DEMO-21 had no ledger).
 test('/ao-build goes on after the BE Sub-task is done, and an In Progress item with a ledger is built again', () => {
