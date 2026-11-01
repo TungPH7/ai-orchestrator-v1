@@ -1,0 +1,8 @@
+description: a docs PR branch without the Epic key
+rule: Q1
+expect:
+  - "docs_pull_requests.branch"
+patch:
+  - op: set
+    path: "docs_pull_requests.branch"
+    value: "feature/spec"

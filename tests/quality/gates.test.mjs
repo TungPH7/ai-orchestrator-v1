@@ -5,7 +5,7 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { parse } from 'yaml';
 import { readContract } from '../../lib/contract.mjs';
-import { readCiJobs, readGates, validateGates } from '../../lib/quality/gates.mjs';
+import { docsRule, epicOfDocsBranch, readCiJobs, readGates, validateGates } from '../../lib/quality/gates.mjs';
 import { CONTRACT_DIR, ROOT, makeKit } from '../helpers/kit.mjs';
 import { applyPatch } from '../helpers/patch.mjs';
 
@@ -39,6 +39,19 @@ test('only devops may edit workflows; no agent may edit the hooks, the Claude se
     gates.protected_paths.map(({ path, editors = [] }) => `${path} ${editors.join(',')}`.trim()),
     ['.github/workflows/** devops', '.githooks/**', '.claude/**', '.ai-orchestrator/**', '.mcp.json'],
   );
+});
+
+test('the docs PR of an Epic changes only its specs and the ADRs, from its spec branch, past the plan gate (dev-workflow spec 2.4)', () => {
+  assert.deepEqual(gates.docs_pull_requests, { paths: ['docs/specs/<EPIC>/**', 'docs/adr/**'], branch: 'feature/<EPIC>-spec', gate: 'plan-approval' });
+  assert.deepEqual(docsRule(gates, 'DEMO-20'), { branch: 'feature/DEMO-20-spec', paths: ['docs/specs/DEMO-20/**', 'docs/adr/**'], gate: 'plan-approval' });
+});
+
+test('the Epic of a docs branch, and no Epic for any other branch', () => {
+  assert.equal(epicOfDocsBranch(gates, 'feature/DEMO-20-spec'), 'DEMO-20');
+  assert.equal(epicOfDocsBranch(gates, 'feature/AB2-7-spec'), 'AB2-7');
+  for (const branch of ['feature/DEMO-20-coupon', 'feature/DEMO-20-spec-r2', 'feature/demo-20-spec', 'bugfix/DEMO-20-spec', 'feature/DEMO-spec', 'xfeature/DEMO-20-spec']) {
+    assert.equal(epicOfDocsBranch(gates, branch), null, branch);
+  }
 });
 
 test('readGates names the file it cannot read', () => {

@@ -1,0 +1,8 @@
+description: a docs PR path that climbs out of docs/ with ..
+rule: Q5
+expect:
+  - "docs_pull_requests.paths[0]"
+patch:
+  - op: set
+    path: "docs_pull_requests.paths"
+    value: ["docs/../.claude/**", "docs/adr/**"]

@@ -1,0 +1,8 @@
+description: a docs PR gate that is not a gate of the contract
+rule: Q5
+expect:
+  - "docs_pull_requests.gate"
+patch:
+  - op: set
+    path: "docs_pull_requests.gate"
+    value: plan-signoff
