@@ -7487,3 +7487,44 @@ Con số này chưa tính lượt `ba` đầu tiên bị tắt vì thiếu RAM. 
 - `ba` tạo Story và Sub-task trên Jira.
 
 Ở module trước, stage plan tốn 6,51 USD quy đổi.
+
+# Phiên 20 · Lượt 11 — 2026-11-01 khoảng 15:58
+
+**Bạn:**
+
+````markdown
+đã duyệt spec
+````
+
+Trước khi trả lời, Claude chạy bước chỉ kiểm của `plan` (GO: `sa` plan-write, `ba` plan-items), rồi chạy `--go` ở nền bằng code của kit.
+
+**Claude:**
+
+Stage plan của DEMO-20 đang chạy ở nền, bằng code của kit:
+
+1. `sa` viết plan, ghi vai trò và effort cho từng item, viết ADR nếu cần, rồi push lên PR #15.
+2. `ba` tạo Story và Sub-task trên Jira, có nhãn vai trò và nhãn effort.
+
+Khi lệnh xong, mình sẽ báo kết quả và chi phí. Nếu không item nào có nhãn effort, mình sẽ báo bạn trước gate ② theo tiêu chí 7, kèm các bước để bạn duyệt plan.
+
+Lệnh xong lúc 16:20: plan và ba item đã có, nhưng không item nào có nhãn effort. Claude đọc plan rồi trả lời tiếp:
+
+**Claude:**
+
+Stage plan đã xong, và trước gate ② mình cần bạn chọn một việc theo tiêu chí 7.
+
+**Kết quả:**
+- `sa` (14,3 phút, 4,19 USD quy đổi) viết `plan.md` và ADR-0002, rồi push lên PR #15. ADR-0002 ghi rằng server không lưu gì, và trang gửi lại mã các dòng đã xóa cùng mỗi form. `sa` còn dựng thử code theo plan để kiểm: 95 test hiện có vẫn pass, chỉ cần thêm `id` vào dữ liệu test, và mọi con số của AC1–AC11 đều khớp SPEC.
+- `ba` (5,4 phút, 1,95 USD) tạo ba item trên Jira:
+  - Story **DEMO-21** "Xóa sản phẩm khỏi giỏ hàng";
+  - Sub-task **DEMO-22** cho phần BE, nhãn `ao-be-dev`, làm trước;
+  - Sub-task **DEMO-23** cho phần FE, nhãn `ao-fe-dev`, làm sau.
+- Stage plan tốn 6,14 USD; DEMO-20 tới giờ tốn 13,98 USD quy đổi.
+
+**Câu 1: nhãn effort (tiêu chí 7).** Theo quyết định 11 của plan, `sa` cho rằng không item nào cần `xhigh` hay `max`, nên không item nào có nhãn effort. Lý do: không có tiền thật đi qua, không lưu dữ liệu, và ranh giới tin cậy mới đã có AC11 cùng các test giữ. Nhưng tiêu chí 7 cần ít nhất một item có nhãn effort, để kiểm việc `/ao-build` chạy đúng mức đó.
+- **(a) Mình khuyên chọn cách này:** DEMO-22 (BE) chạy ở `xhigh`. Đây là phần server đọc dữ liệu từ form mà người dùng gửi lên, tức ranh giới tin cậy mới, nên là chỗ đáng nâng effort nhất. Lượt `be-dev` sẽ tốn hơn mức `high` mặc định, ước thêm 1–3 USD.
+- **(b)** DEMO-23 (FE) chạy ở `medium`. Cách này rẻ hơn mức mặc định, nhưng phần FE phải sửa bốn test cũ và bố cục, nên dễ phải sửa lại.
+
+**Câu 2: dòng `Status` của SPEC và design.** `spec.md` và `design.md` vẫn ghi `Status: Draft`, dù gate ① đã qua. Nếu đổi thành `Approved 2026-11-01`, phải đổi ngay bây giờ, trước khi bạn duyệt plan. Lý do: mọi commit đến sau lúc bạn duyệt sẽ làm PR #15 thành PR thường, cần review và approve. Mình khuyên đổi luôn trong lượt sửa này.
+
+Bạn trả lời gọn được, ví dụ "1a, 2 có". Sau đó `ba` chạy tiếp với câu trả lời: gắn nhãn effort trên Jira, ghi effort vào Task List của plan, đổi dòng `Status`, rồi push lên PR #15. Lúc đó mới tới lượt bạn duyệt plan ở gate ②.
