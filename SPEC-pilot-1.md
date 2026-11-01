@@ -2,7 +2,7 @@
 
 > **Loại:** pilot, không phải module. Xem tiêu chí thành công 1 và mục "Thứ tự build" trong [SPEC.md](SPEC.md). **Dùng:** `sdlc-contract`, `tracker-integration`, `quality-gates`, `agent-roster`, `dev-workflow`. **Là đầu vào cho:** `release-workflow` và Pilot 2 (cùng repo, cùng feature), `project-scaffold` (các bước cài làm tay ở đây).
 >
-> **Trạng thái:** đã duyệt ngày 2026-11-01 (Phiên 21 · Lượt 4). Plan: [tasks/plan.md](tasks/plan.md), chờ bạn duyệt. **Nguồn thảo luận:** [misc/brainstorm-discussion.md](misc/brainstorm-discussion.md), Phiên 21 · Lượt 1–4.
+> **Trạng thái:** đã duyệt ngày 2026-11-01 (Phiên 21 · Lượt 4). Plan: [tasks/plan.md](tasks/plan.md), đã duyệt ngày 2026-11-01 (Phiên 21 · Lượt 5). **Nguồn thảo luận:** [misc/brainstorm-discussion.md](misc/brainstorm-discussion.md), Phiên 21 · Lượt 1–4.
 
 ## 1. Mục tiêu
 
