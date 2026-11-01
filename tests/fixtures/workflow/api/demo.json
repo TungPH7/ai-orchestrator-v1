@@ -1,0 +1,1333 @@
+{
+ "jira": {
+  "/rest/api/3/field": [
+   {
+    "id": "customfield_10021",
+    "name": "Flagged"
+   },
+   {
+    "id": "customfield_10046",
+    "name": "Agent"
+   }
+  ],
+  "/rest/api/3/issue/DEMO-12?fields=summary,issuetype,status,labels,parent,subtasks,issuelinks,customfield_10046": {
+   "expand": "renderedFields,names,schema,operations,editmeta,changelog,versionedRepresentations",
+   "id": "10015",
+   "key": "DEMO-12",
+   "fields": {
+    "summary": "Áp mã giảm giá trên trang giỏ hàng",
+    "issuetype": {
+     "id": "10005",
+     "description": "Stories track functionality or features expressed as user goals.",
+     "name": "Story",
+     "subtask": false
+    },
+    "parent": {
+     "id": "10014",
+     "key": "DEMO-11",
+     "fields": {
+      "summary": "Mã giảm giá cho giỏ hàng",
+      "status": {
+       "description": "This issue is being actively worked on at the moment by the assignee.",
+       "name": "In Progress",
+       "id": "3",
+       "statusCategory": {
+        "id": 4,
+        "key": "indeterminate",
+        "colorName": "yellow",
+        "name": "In Progress"
+       }
+      },
+      "priority": {
+       "name": "Medium",
+       "id": "3"
+      },
+      "issuetype": {
+       "id": "10000",
+       "description": "A big user story that needs to be broken down. Created by Jira Software - do not edit or delete.",
+       "name": "Epic",
+       "subtask": false
+      }
+     }
+    },
+    "subtasks": [
+     {
+      "id": "10016",
+      "key": "DEMO-13",
+      "fields": {
+       "summary": "BE: tính giảm giá và bảo vệ POST / bằng Host, Origin và cỡ body",
+       "status": {
+        "description": "",
+        "name": "Done",
+        "id": "10012",
+        "statusCategory": {
+         "id": 3,
+         "key": "done",
+         "colorName": "green",
+         "name": "Done"
+        }
+       },
+       "priority": {
+        "name": "Medium",
+        "id": "3"
+       },
+       "issuetype": {
+        "id": "10008",
+        "description": "",
+        "name": "Sub-task",
+        "subtask": true
+       }
+      }
+     },
+     {
+      "id": "10017",
+      "key": "DEMO-14",
+      "fields": {
+       "summary": "FE: form mã giảm giá, dòng giảm giá và thông báo lỗi trên S1",
+       "status": {
+        "description": "",
+        "name": "Done",
+        "id": "10012",
+        "statusCategory": {
+         "id": 3,
+         "key": "done",
+         "colorName": "green",
+         "name": "Done"
+        }
+       },
+       "priority": {
+        "name": "Medium",
+        "id": "3"
+       },
+       "issuetype": {
+        "id": "10008",
+        "description": "",
+        "name": "Sub-task",
+        "subtask": true
+       }
+      }
+     }
+    ],
+    "issuelinks": [],
+    "customfield_10046": {
+     "value": "Tester/QA Engineer",
+     "id": "10035"
+    },
+    "status": {
+     "description": "",
+     "name": "Done",
+     "id": "10012",
+     "statusCategory": {
+      "id": 3,
+      "key": "done",
+      "colorName": "green",
+      "name": "Done"
+     }
+    },
+    "labels": []
+   }
+  },
+  "/rest/api/3/issue/DEMO-12/changelog": {
+   "isLast": true,
+   "values": [
+    {
+     "created": "2026-10-31T02:03:00.900+0700",
+     "items": [
+      {
+       "field": "status",
+       "fromString": "New",
+       "toString": "Ready"
+      }
+     ]
+    },
+    {
+     "created": "2026-10-31T02:26:11.843+0700",
+     "items": [
+      {
+       "field": "Agent",
+       "fromString": null,
+       "toString": "Frontend Developer"
+      }
+     ]
+    },
+    {
+     "created": "2026-10-31T02:26:20.665+0700",
+     "items": [
+      {
+       "field": "status",
+       "fromString": "Ready",
+       "toString": "In Progress"
+      }
+     ]
+    },
+    {
+     "created": "2026-10-31T02:37:42.828+0700",
+     "items": [
+      {
+       "field": "status",
+       "fromString": "In Progress",
+       "toString": "In Review"
+      }
+     ]
+    },
+    {
+     "created": "2026-10-31T10:10:48.560+0700",
+     "items": [
+      {
+       "field": "status",
+       "fromString": "In Review",
+       "toString": "Ready for QA"
+      }
+     ]
+    },
+    {
+     "created": "2026-10-31T10:13:35.893+0700",
+     "items": [
+      {
+       "field": "Agent",
+       "fromString": "Frontend Developer",
+       "toString": "Tester/QA Engineer"
+      }
+     ]
+    },
+    {
+     "created": "2026-10-31T10:13:41.034+0700",
+     "items": [
+      {
+       "field": "status",
+       "fromString": "Ready for QA",
+       "toString": "In QA"
+      }
+     ]
+    },
+    {
+     "created": "2026-10-31T10:27:58.092+0700",
+     "items": [
+      {
+       "field": "status",
+       "fromString": "In QA",
+       "toString": "Done"
+      }
+     ]
+    }
+   ]
+  },
+  "/rest/api/3/issue/DEMO-12/comment": {
+   "comments": [
+    {
+     "created": "2026-10-31T02:35:19.236+0700",
+     "body": {
+      "type": "doc",
+      "version": 1,
+      "content": [
+       {
+        "type": "paragraph",
+        "content": [
+         {
+          "type": "text",
+          "text": "Cho  ba : kiểm tay S1 trên Chrome ở 320 px, bảng sản phẩm [2] tràn ngang: bảng rộng 305 px trong cột nội dung 256 px (lề  body  2rem), nên trang rộng 337 px. Form [3] [4] và danh sách [6]–[9] không tràn. Theo design S1.2 và mục Risks của pl"
+         }
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "created": "2026-10-31T10:21:21.436+0700",
+     "body": {
+      "type": "doc",
+      "version": 1,
+      "content": [
+       {
+        "type": "paragraph",
+        "content": [
+         {
+          "type": "text",
+          "text": "QA report: DEMO-12 Áp mã giảm giá trên trang giỏ hàng Result PASS Environment development:   ( npm run serve  trên máy QA, Chrome cài trên máy (channel  chrome ) qua Playwright 1.64.1). Commit 26c8ddb  trên  develop , từ PR #11, deploy bằng"
+         }
+        ]
+       }
+      ]
+     }
+    }
+   ]
+  },
+  "/rest/api/3/issue/DEMO-13?fields=summary,issuetype,status,labels": {
+   "expand": "renderedFields,names,schema,operations,editmeta,changelog,versionedRepresentations",
+   "id": "10016",
+   "key": "DEMO-13",
+   "fields": {
+    "summary": "BE: tính giảm giá và bảo vệ POST / bằng Host, Origin và cỡ body",
+    "issuetype": {
+     "id": "10008",
+     "description": "",
+     "name": "Sub-task",
+     "subtask": true
+    },
+    "status": {
+     "description": "",
+     "name": "Done",
+     "id": "10012",
+     "statusCategory": {
+      "id": 3,
+      "key": "done",
+      "colorName": "green",
+      "name": "Done"
+     }
+    },
+    "labels": []
+   }
+  },
+  "/rest/api/3/issue/DEMO-14?fields=summary,issuetype,status,labels": {
+   "expand": "renderedFields,names,schema,operations,editmeta,changelog,versionedRepresentations",
+   "id": "10017",
+   "key": "DEMO-14",
+   "fields": {
+    "summary": "FE: form mã giảm giá, dòng giảm giá và thông báo lỗi trên S1",
+    "issuetype": {
+     "id": "10008",
+     "description": "",
+     "name": "Sub-task",
+     "subtask": true
+    },
+    "status": {
+     "description": "",
+     "name": "Done",
+     "id": "10012",
+     "statusCategory": {
+      "id": 3,
+      "key": "done",
+      "colorName": "green",
+      "name": "Done"
+     }
+    },
+    "labels": []
+   }
+  },
+  "/rest/api/3/issue/DEMO-11?fields=summary,issuetype,status,labels,parent,subtasks,issuelinks,customfield_10046": {
+   "expand": "renderedFields,names,schema,operations,editmeta,changelog,versionedRepresentations",
+   "id": "10014",
+   "key": "DEMO-11",
+   "fields": {
+    "summary": "Mã giảm giá cho giỏ hàng",
+    "issuetype": {
+     "id": "10000",
+     "description": "A big user story that needs to be broken down. Created by Jira Software - do not edit or delete.",
+     "name": "Epic",
+     "subtask": false
+    },
+    "subtasks": [],
+    "issuelinks": [],
+    "customfield_10046": null,
+    "status": {
+     "description": "This issue is being actively worked on at the moment by the assignee.",
+     "name": "In Progress",
+     "id": "3",
+     "statusCategory": {
+      "id": 4,
+      "key": "indeterminate",
+      "colorName": "yellow",
+      "name": "In Progress"
+     }
+    },
+    "labels": []
+   }
+  },
+  "/rest/api/3/issue/DEMO-11/changelog": {
+   "isLast": true,
+   "values": [
+    {
+     "created": "2026-10-31T00:29:59.078+0700",
+     "items": [
+      {
+       "field": "status",
+       "fromString": "New",
+       "toString": "Specifying"
+      }
+     ]
+    },
+    {
+     "created": "2026-10-31T01:19:17.978+0700",
+     "items": [
+      {
+       "field": "status",
+       "fromString": "Specifying",
+       "toString": "Planning"
+      }
+     ]
+    },
+    {
+     "created": "2026-10-31T02:01:20.894+0700",
+     "items": [
+      {
+       "field": "status",
+       "fromString": "Planning",
+       "toString": "In Progress"
+      }
+     ]
+    }
+   ]
+  },
+  "/rest/api/3/issue/DEMO-11/comment": {
+   "comments": [
+    {
+     "created": "2026-10-31T01:33:36.578+0700",
+     "body": {
+      "type": "doc",
+      "version": 1,
+      "content": [
+       {
+        "type": "paragraph",
+        "content": [
+         {
+          "type": "text",
+          "text": "Plan của Epic đã sẵn sàng cho gate ② plan-approval  (Solution Architect) Plan:  ADR-0001 (Proposed):  Nhánh  feature/DEMO-11-spec , commit  4c619ed . SPEC và design đã ghi Status: Approved 2026-10-31. Nội dung chính: Một Story (AC1–AC11, S1"
+         }
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "created": "2026-10-31T01:42:53.265+0700",
+     "body": {
+      "type": "doc",
+      "version": 1,
+      "content": [
+       {
+        "type": "paragraph",
+        "content": [
+         {
+          "type": "text",
+          "text": "Item của Epic đã tạo theo mục Task List của plan  (Business Analyst) DEMO-12 (Story): Áp mã giảm giá trên trang giỏ hàng. AC1–AC11, S1. Nhánh  feature/DEMO-12-coupon-code  từ  develop . DEMO-13 (Sub-task BE): tính giảm giá và bảo vệ  POST /"
+         }
+        ]
+       }
+      ]
+     }
+    }
+   ]
+  },
+  "/rest/api/3/search/jql?fields=status&jql=project = \"DEMO\" AND issuetype = \"Epic\" AND status in (\"Specifying\", \"Planning\")": {
+   "issues": []
+  },
+  "/rest/api/3/issue/DEMO-15?fields=summary,issuetype,status,labels,parent,subtasks,issuelinks,customfield_10046": {
+   "expand": "renderedFields,names,schema,operations,editmeta,changelog,versionedRepresentations",
+   "id": "10048",
+   "key": "DEMO-15",
+   "fields": {
+    "summary": "Thêm test hồi quy cho giới hạn body của POST / và đọc port từ kết nối",
+    "issuetype": {
+     "id": "10006",
+     "description": "",
+     "name": "Task",
+     "subtask": false
+    },
+    "subtasks": [],
+    "issuelinks": [],
+    "customfield_10046": null,
+    "status": {
+     "description": "",
+     "name": "New",
+     "id": "10004",
+     "statusCategory": {
+      "id": 2,
+      "key": "new",
+      "colorName": "blue-gray",
+      "name": "To Do"
+     }
+    },
+    "labels": []
+   }
+  },
+  "/rest/api/3/issue/DEMO-15/changelog": {
+   "isLast": true,
+   "values": []
+  },
+  "/rest/api/3/issue/DEMO-15/comment": {
+   "comments": []
+  },
+  "/rest/api/3/search/jql?fields=summary,issuetype,status,labels,parent,comment&jql=project = \"DEMO\" AND statusCategory != Done ORDER BY Rank ASC": {
+   "issues": [
+    {
+     "key": "DEMO-3",
+     "fields": {
+      "summary": "T15 live test: agent and hooks",
+      "issuetype": {
+       "id": "10005",
+       "description": "Stories track functionality or features expressed as user goals.",
+       "name": "Story",
+       "subtask": false
+      },
+      "comment": {
+       "comments": []
+      },
+      "status": {
+       "description": "",
+       "name": "In Review",
+       "id": "10009",
+       "statusCategory": {
+        "id": 4,
+        "key": "indeterminate",
+        "colorName": "yellow",
+        "name": "In Progress"
+       }
+      },
+      "labels": []
+     }
+    },
+    {
+     "key": "DEMO-4",
+     "fields": {
+      "summary": "T15 live test: Jira rule without the hook",
+      "issuetype": {
+       "id": "10005",
+       "description": "Stories track functionality or features expressed as user goals.",
+       "name": "Story",
+       "subtask": false
+      },
+      "comment": {
+       "comments": []
+      },
+      "status": {
+       "description": "",
+       "name": "New",
+       "id": "10004",
+       "statusCategory": {
+        "id": 2,
+        "key": "new",
+        "colorName": "blue-gray",
+        "name": "To Do"
+       }
+      },
+      "labels": []
+     }
+    },
+    {
+     "key": "DEMO-5",
+     "fields": {
+      "summary": "quality-gates T13: kiểm thật CI và hook git",
+      "issuetype": {
+       "id": "10006",
+       "description": "",
+       "name": "Task",
+       "subtask": false
+      },
+      "comment": {
+       "comments": [
+        {
+         "created": "2026-10-29T11:17:38.918+0700",
+         "body": {
+          "type": "doc",
+          "version": 1,
+          "content": [
+           {
+            "type": "paragraph",
+            "content": [
+             {
+              "type": "text",
+              "text": "audit: 2830053 on develop was not deployed. 2830053 on develop is not the merge of a PR into develop: it was pushed without one. It is flagged with the label needs-you and waits for you."
+             }
+            ]
+           }
+          ]
+         }
+        }
+       ]
+      },
+      "status": {
+       "description": "",
+       "name": "New",
+       "id": "10004",
+       "statusCategory": {
+        "id": 2,
+        "key": "new",
+        "colorName": "blue-gray",
+        "name": "To Do"
+       }
+      },
+      "labels": [
+       "needs-you"
+      ]
+     }
+    },
+    {
+     "key": "DEMO-6",
+     "fields": {
+      "summary": "quality-gates T18–T19: phí vận chuyển của giỏ hàng",
+      "issuetype": {
+       "id": "10006",
+       "description": "",
+       "name": "Task",
+       "subtask": false
+      },
+      "comment": {
+       "comments": []
+      },
+      "status": {
+       "description": "",
+       "name": "Ready for QA",
+       "id": "10010",
+       "statusCategory": {
+        "id": 4,
+        "key": "indeterminate",
+        "colorName": "yellow",
+        "name": "In Progress"
+       }
+      },
+      "labels": []
+     }
+    },
+    {
+     "key": "DEMO-7",
+     "fields": {
+      "summary": "quality-gates T19: PR của devops sửa workflow",
+      "issuetype": {
+       "id": "10006",
+       "description": "",
+       "name": "Task",
+       "subtask": false
+      },
+      "comment": {
+       "comments": []
+      },
+      "status": {
+       "description": "",
+       "name": "New",
+       "id": "10004",
+       "statusCategory": {
+        "id": 2,
+        "key": "new",
+        "colorName": "blue-gray",
+        "name": "To Do"
+       }
+      },
+      "labels": []
+     }
+    },
+    {
+     "key": "DEMO-8",
+     "fields": {
+      "summary": "quality-gates T20: test cho quantity là Infinity",
+      "issuetype": {
+       "id": "10006",
+       "description": "",
+       "name": "Task",
+       "subtask": false
+      },
+      "comment": {
+       "comments": [
+        {
+         "created": "2026-10-29T16:47:19.568+0700",
+         "body": {
+          "type": "doc",
+          "version": 1,
+          "content": [
+           {
+            "type": "paragraph",
+            "content": [
+             {
+              "type": "text",
+              "text": "audit: 2e16d25 on develop was not deployed. PR #6 was merged without: reviewer report on head 451523d; security report on head 451523d; approval on head 451523d. It is flagged with the label needs-you and waits for you."
+             }
+            ]
+           }
+          ]
+         }
+        },
+        {
+         "created": "2026-10-29T17:12:22.136+0700",
+         "body": {
+          "type": "doc",
+          "version": 1,
+          "content": [
+           {
+            "type": "paragraph",
+            "content": [
+             {
+              "type": "text",
+              "text": "Flag removed after the cleanup of quality-gates T20: PR #7 reverted 2e16d25 through every gate, and the audit passed for 0e55963 on develop. develop again holds only commits that came through the gates."
+             }
+            ]
+           }
+          ]
+         }
+        }
+       ]
+      },
+      "status": {
+       "description": "",
+       "name": "New",
+       "id": "10004",
+       "statusCategory": {
+        "id": 2,
+        "key": "new",
+        "colorName": "blue-gray",
+        "name": "To Do"
+       }
+      },
+      "labels": []
+     }
+    },
+    {
+     "key": "DEMO-9",
+     "fields": {
+      "summary": "agent-roster T15: chép kit có agent vào ao-pilot",
+      "issuetype": {
+       "id": "10006",
+       "description": "",
+       "name": "Task",
+       "subtask": false
+      },
+      "comment": {
+       "comments": []
+      },
+      "status": {
+       "description": "",
+       "name": "New",
+       "id": "10004",
+       "statusCategory": {
+        "id": 2,
+        "key": "new",
+        "colorName": "blue-gray",
+        "name": "To Do"
+       }
+      },
+      "labels": []
+     }
+    },
+    {
+     "key": "DEMO-10",
+     "fields": {
+      "summary": "ao-pilot: trang giỏ hàng tối thiểu",
+      "issuetype": {
+       "id": "10005",
+       "description": "Stories track functionality or features expressed as user goals.",
+       "name": "Story",
+       "subtask": false
+      },
+      "comment": {
+       "comments": []
+      },
+      "status": {
+       "description": "",
+       "name": "New",
+       "id": "10004",
+       "statusCategory": {
+        "id": 2,
+        "key": "new",
+        "colorName": "blue-gray",
+        "name": "To Do"
+       }
+      },
+      "labels": []
+     }
+    },
+    {
+     "key": "DEMO-11",
+     "fields": {
+      "summary": "Mã giảm giá cho giỏ hàng",
+      "issuetype": {
+       "id": "10000",
+       "description": "A big user story that needs to be broken down. Created by Jira Software - do not edit or delete.",
+       "name": "Epic",
+       "subtask": false
+      },
+      "comment": {
+       "comments": [
+        {
+         "created": "2026-10-31T01:33:36.578+0700",
+         "body": {
+          "type": "doc",
+          "version": 1,
+          "content": [
+           {
+            "type": "paragraph",
+            "content": [
+             {
+              "type": "text",
+              "text": "Plan của Epic đã sẵn sàng cho gate ② plan-approval  (Solution Architect) Plan:  ADR-0001 (Proposed):  Nhánh  feature/DEMO-11-spec , commit  4c619ed . SPEC và design đã ghi Status: Approved 2026-10-31. Nội dung chính: Một Story (AC1–AC11, S1"
+             }
+            ]
+           }
+          ]
+         }
+        },
+        {
+         "created": "2026-10-31T01:42:53.265+0700",
+         "body": {
+          "type": "doc",
+          "version": 1,
+          "content": [
+           {
+            "type": "paragraph",
+            "content": [
+             {
+              "type": "text",
+              "text": "Item của Epic đã tạo theo mục Task List của plan  (Business Analyst) DEMO-12 (Story): Áp mã giảm giá trên trang giỏ hàng. AC1–AC11, S1. Nhánh  feature/DEMO-12-coupon-code  từ  develop . DEMO-13 (Sub-task BE): tính giảm giá và bảo vệ  POST /"
+             }
+            ]
+           }
+          ]
+         }
+        }
+       ]
+      },
+      "status": {
+       "description": "This issue is being actively worked on at the moment by the assignee.",
+       "name": "In Progress",
+       "id": "3",
+       "statusCategory": {
+        "id": 4,
+        "key": "indeterminate",
+        "colorName": "yellow",
+        "name": "In Progress"
+       }
+      },
+      "labels": []
+     }
+    },
+    {
+     "key": "DEMO-15",
+     "fields": {
+      "summary": "Thêm test hồi quy cho giới hạn body của POST / và đọc port từ kết nối",
+      "issuetype": {
+       "id": "10006",
+       "description": "",
+       "name": "Task",
+       "subtask": false
+      },
+      "comment": {
+       "comments": []
+      },
+      "status": {
+       "description": "",
+       "name": "New",
+       "id": "10004",
+       "statusCategory": {
+        "id": 2,
+        "key": "new",
+        "colorName": "blue-gray",
+        "name": "To Do"
+       }
+      },
+      "labels": []
+     }
+    },
+    {
+     "key": "DEMO-16",
+     "fields": {
+      "summary": "Đặt timeout-minutes cho job deploy",
+      "issuetype": {
+       "id": "10006",
+       "description": "",
+       "name": "Task",
+       "subtask": false
+      },
+      "comment": {
+       "comments": [
+        {
+         "created": "2026-10-31T12:09:49.402+0700",
+         "body": {
+          "type": "doc",
+          "version": 1,
+          "content": [
+           {
+            "type": "paragraph",
+            "content": [
+             {
+              "type": "text",
+              "text": "DevOps Engineer: Đã mở PR #12 ( ) vào  develop  trên nhánh  feature/DEMO-16-deploy-timeout , commit  5f9327b . Job  deploy  có thêm  timeout-minutes: 10 ; job  audit , các trigger và permissions không đổi. Đã kiểm bằng actionlint (không có "
+             }
+            ]
+           }
+          ]
+         }
+        }
+       ]
+      },
+      "status": {
+       "description": "",
+       "name": "Ready for QA",
+       "id": "10010",
+       "statusCategory": {
+        "id": 4,
+        "key": "indeterminate",
+        "colorName": "yellow",
+        "name": "In Progress"
+       }
+      },
+      "labels": []
+     }
+    },
+    {
+     "key": "DEMO-17",
+     "fields": {
+      "summary": "Bỏ style-src 'unsafe-inline' khỏi CSP của trang giỏ hàng",
+      "issuetype": {
+       "id": "10006",
+       "description": "",
+       "name": "Task",
+       "subtask": false
+      },
+      "comment": {
+       "comments": []
+      },
+      "status": {
+       "description": "",
+       "name": "New",
+       "id": "10004",
+       "statusCategory": {
+        "id": 2,
+        "key": "new",
+        "colorName": "blue-gray",
+        "name": "To Do"
+       }
+      },
+      "labels": []
+     }
+    },
+    {
+     "key": "DEMO-18",
+     "fields": {
+      "summary": "Thử danh tính GitHub của agent (dev-workflow T2)",
+      "issuetype": {
+       "id": "10006",
+       "description": "",
+       "name": "Task",
+       "subtask": false
+      },
+      "comment": {
+       "comments": []
+      },
+      "status": {
+       "description": "",
+       "name": "New",
+       "id": "10004",
+       "statusCategory": {
+        "id": 2,
+        "key": "new",
+        "colorName": "blue-gray",
+        "name": "To Do"
+       }
+      },
+      "labels": []
+     }
+    }
+   ]
+  }
+ },
+ "github": {
+  "/branches/feature%2FDEMO-11-spec": {
+   "name": "feature/DEMO-11-spec"
+  },
+  "/pulls?direction=desc&sort=created&state=all": [
+   {
+    "number": 13,
+    "title": "chore(probe): check the agent identity (DEMO-18)",
+    "state": "closed",
+    "draft": true,
+    "merged_at": null,
+    "user": {
+     "login": "tungph7-ao-dev[bot]"
+    },
+    "head": {
+     "ref": "feature/DEMO-18-identity-probe",
+     "sha": "738d000115f4813bfe8f2e0c005f2095156481a0"
+    },
+    "base": {
+     "ref": "develop"
+    }
+   },
+   {
+    "number": 12,
+    "title": "ci(deploy): set timeout-minutes on the deploy job (DEMO-16)",
+    "state": "closed",
+    "draft": false,
+    "merged_at": "2026-10-31T05:42:04Z",
+    "user": {
+     "login": "tungph7-ao-dev[bot]"
+    },
+    "head": {
+     "ref": "feature/DEMO-16-deploy-timeout",
+     "sha": "5f9327b3001ddcd2f25565b6251353bd65ea25a3"
+    },
+    "base": {
+     "ref": "develop"
+    }
+   },
+   {
+    "number": 11,
+    "title": "feat(cart): apply a coupon code on the cart page (DEMO-12)",
+    "state": "closed",
+    "draft": false,
+    "merged_at": "2026-10-31T03:10:03Z",
+    "user": {
+     "login": "tungph7-ao-dev[bot]"
+    },
+    "head": {
+     "ref": "feature/DEMO-12-coupon-code",
+     "sha": "2e3689d23cc9ab587355836551a4fa3f5231d4bc"
+    },
+    "base": {
+     "ref": "develop"
+    }
+   },
+   {
+    "number": 10,
+    "title": "docs(design): check the design.md policy (DEMO-11)",
+    "state": "closed",
+    "draft": false,
+    "merged_at": null,
+    "user": {
+     "login": "tungph7-ao-dev[bot]"
+    },
+    "head": {
+     "ref": "feature/DEMO-11-design-check",
+     "sha": "a1f8b3687b4693ace3e9696e6b0ff19e126025e6"
+    },
+    "base": {
+     "ref": "develop"
+    }
+   },
+   {
+    "number": 9,
+    "title": "feat(cart): add the cart page with its server and E2E tests (DEMO-10)",
+    "state": "closed",
+    "draft": false,
+    "merged_at": "2026-10-30T16:32:34Z",
+    "user": {
+     "login": "tungph7-ao-dev[bot]"
+    },
+    "head": {
+     "ref": "feature/DEMO-10-cart-page",
+     "sha": "df09e346857fb7577a85450d9765ddc2c2c5601b"
+    },
+    "base": {
+     "ref": "develop"
+    }
+   },
+   {
+    "number": 8,
+    "title": "chore(kit): copy the kit with the agent roster (DEMO-9)",
+    "state": "closed",
+    "draft": false,
+    "merged_at": "2026-10-30T15:25:00Z",
+    "user": {
+     "login": "tungph7-ao-dev[bot]"
+    },
+    "head": {
+     "ref": "feature/DEMO-9-agent-roster",
+     "sha": "3e41cf0574cf75b19de8eded84c0e113f3d7e85f"
+    },
+    "base": {
+     "ref": "develop"
+    }
+   },
+   {
+    "number": 7,
+    "title": "revert(cart): undo the unapproved merge of PR #6 (DEMO-8)",
+    "state": "closed",
+    "draft": false,
+    "merged_at": "2026-10-29T10:07:58Z",
+    "user": {
+     "login": "tungph7-ao-dev[bot]"
+    },
+    "head": {
+     "ref": "feature/DEMO-8-revert-unapproved-merge",
+     "sha": "6eb5c4e1bbd9ed92906b21f412caa23b6f7d4fcf"
+    },
+    "base": {
+     "ref": "develop"
+    }
+   },
+   {
+    "number": 6,
+    "title": "test(cart): cover a quantity of Infinity (DEMO-8)",
+    "state": "closed",
+    "draft": false,
+    "merged_at": "2026-10-29T09:47:01Z",
+    "user": {
+     "login": "tungph7-ao-dev[bot]"
+    },
+    "head": {
+     "ref": "feature/DEMO-8-infinity-quantity-test",
+     "sha": "451523db6dc196b9093852ff8a6d0933217026f3"
+    },
+    "base": {
+     "ref": "develop"
+    }
+   },
+   {
+    "number": 5,
+    "title": "ci(workflows): stop a hung CI job after 15 minutes (DEMO-7)",
+    "state": "closed",
+    "draft": false,
+    "merged_at": null,
+    "user": {
+     "login": "tungph7-ao-dev[bot]"
+    },
+    "head": {
+     "ref": "feature/DEMO-7-ci-job-timeout",
+     "sha": "a8e842eccd5f012c18bdfe2b4f57b4d5bbb207f9"
+    },
+    "base": {
+     "ref": "develop"
+    }
+   },
+   {
+    "number": 4,
+    "title": "feat(cart): add the shipping fee of a cart (DEMO-6)",
+    "state": "closed",
+    "draft": false,
+    "merged_at": "2026-10-29T09:22:04Z",
+    "user": {
+     "login": "tungph7-ao-dev[bot]"
+    },
+    "head": {
+     "ref": "feature/DEMO-6-shipping-fee",
+     "sha": "8924767757b15722fd530d348458124047ae10d3"
+    },
+    "base": {
+     "ref": "develop"
+    }
+   },
+   {
+    "number": 3,
+    "title": "feat(cart): add discounts (DEMO-5)",
+    "state": "closed",
+    "draft": false,
+    "merged_at": null,
+    "user": {
+     "login": "tungph7-ao-dev[bot]"
+    },
+    "head": {
+     "ref": "feature/DEMO-5-ci-live-test",
+     "sha": "df44b9e2f0fbba95473e4d0b013ceaf60669db90"
+    },
+    "base": {
+     "ref": "develop"
+    }
+   },
+   {
+    "number": 2,
+    "title": "chore(probe): check the GitHub App identities",
+    "state": "closed",
+    "draft": false,
+    "merged_at": "2026-10-28T18:39:22Z",
+    "user": {
+     "login": "tungph7-ao-dev[bot]"
+    },
+    "head": {
+     "ref": "probe/t3-app-identity",
+     "sha": "3a1272756dbe8f32d330834dce3902d52714564b"
+    },
+    "base": {
+     "ref": "develop"
+    }
+   },
+   {
+    "number": 1,
+    "title": "feat(demo): live test of jira-sync (DEMO-3)",
+    "state": "closed",
+    "draft": false,
+    "merged_at": "2026-10-28T04:58:31Z",
+    "user": {
+     "login": "TungPH7"
+    },
+    "head": {
+     "ref": "feature/DEMO-3-t15-live-test",
+     "sha": "fb52d9b0e9e3c28bfaee355b713ffdd4b2f3ceb2"
+    },
+    "base": {
+     "ref": "develop"
+    }
+   }
+  ],
+  "/contents/docs/specs/DEMO-11/spec.md?ref=feature/DEMO-11-spec": {
+   "name": "spec.md",
+   "content": "IyBTcGVjOiBNw6MgZ2nhuqNtIGdpw6EgY2hvIGdp4buPIGjDoG5nCgo+ICoqRXBpYzoqKiBERU1PLTExIMK3ICoqSmlyYToqKiBodHRwczovL3BodW5naHV1dHVuZzEyYjQuYXRsYXNzaWFuLm5ldC9icm93c2UvREVNTy0xMSDCtyAqKlN0YXR1czoqKiBBcHByb3ZlZCAyMDI2LTEwLTMxCgojIyBPYmplY3RpdmUKCk5nxrDhu51pIG11YSBuaOG6rXAgbeG7mXQgbcOjIGdp4bqjbSBnacOhIHRyw6puIHRyYW5nIGdp4buPIGjDoG5nIChERU1PLTEwKSB2w6AgdGjhuqV5IG5nYXkgc+G7kSB0aeG7gW4gxJHGsOG7o2MgZ2nhuqNtIGPDuW5nIHThu5VuZyBj4buZbmcgbeG7m2kuIE3DoyBraMO0bmcgaOG7o3AgbOG7hyB0aMOsIHRyYW5nIGLDoW8gbOG7l2kgdsOgIHThu5VuZyBj4buZbmcgZ2nhu68gbmd1ecOqbi4KCsSQw6J5IGzDoCBs4bqnbiDEkeG6p3UgdHJhbmcgbmjhuq1uIGThu68gbGnhu4d1IHThu6sgbmfGsOG7nWkgZMO5bmcuIFbDrCB24bqteSBFcGljIGfhu5NtIGPhuqMgYmEgZ2hpIGNow7ogc2VjdXJpdHkgdsOgIGhhaSBmaW5kaW5nIExvdyBj4bunYSByZXZpZXdlciB04burIHJldmlldyBQUiAjOSAoREVNTy0xMCkuCgpUaMOgbmggY8O0bmcgbmdoxKlhIGzDoCwgdHLDqm4gZ2nhu48gaMOgbmcgbeG6q3U6CgotIG5nxrDhu51pIG11YSDDoXAgxJHGsOG7o2MgbcOjIMSRw7puZyB2w6AgdGjhuqV5IHThu5VuZyBj4buZbmcgbeG7m2k7Ci0gbcOjIHNhaSBraMO0bmcgbMOgbSDEkeG7lWkgdOG7lW5nIGPhu5luZzsKLSBzZXJ2ZXIgdOG7qyBjaOG7kWkgcmVxdWVzdCDEkeG6v24gdOG7qyB0cmFuZyBraMOhYyBob+G6t2MgZ+G7rWkgdOG7m2kgbeG7mXQgYEhvc3RgIGzhuqEuCgojIyMgU2NvcGUKClRyb25nIHBo4bqhbSB2aSAodGhlbyBFcGljKToKCi0gTeG7mXQgw7Qgbmjhuq1wIG3DoyB2w6AgbeG7mXQgbsO6dCAiw4FwIGThu6VuZyIgdHLDqm4gdHJhbmcgZ2nhu48gaMOgbmcuCi0gRGFuaCBzw6FjaCBtw6MgY+G7kSDEkeG7i25oIHRyb25nIGNvZGUuIEtow7RuZyBjw7MgY8ahIHPhu58gZOG7ryBsaeG7h3UsIGtow7RuZyBjw7MgdHJhbmcgcXXhuqNuIHRy4buLIG3Doy4KLSBN4buXaSBnaeG7jyBkw7luZyB04buRaSDEkWEgbeG7mXQgbcOjOiDDoXAgbcOjIG3hu5tpIHRow6wgbcOjIGPFqSBi4buLIHRoYXkuCgpOZ2/DoGkgcGjhuqFtIHZpOgoKLSBUaGVvIEVwaWM6IMSRxINuZyBuaOG6rXAsIGzGsHUgZ2nhu48gaMOgbmcsIHRoYW5oIHRvw6FuLgotIEdp4buvIG3DoyDEkcOjIMOhcCBraGkgdOG6o2kgbOG6oWkgdHJhbmcsIHbDoCBuw7p0IGLhu48gbcOjLgotIMSQaeG7gXUga2nhu4duIMSRxqFuIHThu5FpIHRoaeG7g3UsIGjhuqFuIGTDuW5nIHbDoCBz4buRIGzGsOG7o3QgZMO5bmcgY+G7p2EgbcOjLgoKIyMjIEJ1c2luZXNzIHJ1bGVzCgpEYW5oIHPDoWNoIG3DozoKCnwgTcOjIHwgTG/huqFpIHwgTeG7qWMgZ2nhuqNtIHwKfC0tLXwtLS18LS0tfAp8IGBHSUFNMTBgIHwgUGjhuqduIHRyCgo8IS0tIHRyaW1tZWQgZm9yIHRoZSBmaXh0dXJlIC0tPgoKIyMgT3BlbiBRdWVzdGlvbnMKCktow7RuZyBjw7JuIGPDonUgaOG7j2kgbeG7ny4KCi0gQ8OhYyBjw6J1IFEx4oCTUTcgY+G7p2EgYuG6o24gdHLGsOG7m2MgxJHGsOG7o2MgdHLhuqMgbOG7nWkgbmfDoHkgMjAyNi0xMC0zMSwgdGhheSBuZ8aw4budaSBkdXnhu4d0LiBDw6FjIGPDonUgdHLhuqMgbOG7nWkgxJHDoyB0aMOgbmggcXV54bq/dCDEkeG7i25oIHRyb25nIGPDoWMgbeG7pWMgU2NvcGUsIEJ1c2luZXNzIHJ1bGVzLCBVc2VyIHN0b3JpZXMsIFRlY2huaWNhbCByZXF1aXJlbWVudHMsIFRlc3RpbmcgU3RyYXRlZ3kgdsOgIEJvdW5kYXJpZXMuCi0gQ8OidSBROCBj4bunYSBgc2FgIMSRxrDhu6NjIHRy4bqjIGzhu51pIG5nw6B5IDIwMjYtMTAtMzEsIHRoYXkgbmfGsOG7nWkgZHV54buHdDogc2VydmVyIMSRxrDhu6NjIHThuqFvIHbhu5tpIGBjcmVhdGVTZXJ2ZXIoeyByZXF1aXJlSG9zdEhlYWRlcjogZmFsc2UgfSlgLCDEkeG7gyBjb2RlIGPhu6dhIHNlcnZlciB0cuG6oyA0MDAgIkJhZCByZXF1ZXN0IiBjaG8gcmVxdWVzdCBIVFRQLzEuMSBraMO0bmcgY8OzIGBIb3N0YC4gQ8OidSB0cuG6oyBs4budaSDEkcOjIHRow6BuaCBxdXnhur90IMSR4buLbmggdHJvbmcgbeG7pWMgTm9uLWZ1bmN0aW9uYWwgcmVxdWlyZW1lbnRzIChTZWN1cml0eSksIFRlY2ggU3RhY2sgdsOgIFRlc3RpbmcgU3RyYXRlZ3kuCg=="
+  },
+  "/contents/docs/specs/DEMO-11/design.md?ref=feature/DEMO-11-spec": {
+   "name": "design.md",
+   "content": "IyBEZXNpZ246IE3DoyBnaeG6o20gZ2nDoSBjaG8gZ2nhu48gaMOgbmcKCj4gKipFcGljOioqIERFTU8tMTEgwrcgKipKaXJhOioqIGh0dHBzOi8vcGh1bmdodXV0dW5nMTJiNC5hdGxhc3NpYW4ubmV0L2Jyb3dzZS9ERU1PLTExIMK3ICoqU3BlYzoqKiBkb2NzL3NwZWNzL0RFTU8tMTEvc3BlYy5tZCDCtyAqKlN0YXR1czoqKiBBcHByb3ZlZCAyMDI2LTEwLTMxCj4KPiAqKkZpZ21hIHZlcnNpb246Kiogbm9uZQoKIyMgU2NyZWVucwoKfCBDb2RlIHwgTmFtZSB8IFJvdXRlIHwgVXNlciBzdG9yeSB8IEtpbmQgfAp8LS0tfC0tLXwtLS18LS0tfC0tLXwKfCBTMSB8IEdp4buPIGjDoG5nIHwgLyAoR0VULCBQT1NUKSB8IEzDoCBuZ8aw4budaSBtdWEsIHTDtGkgbXXhu5FuIG5o4bqtcCBtw6MgZ2nhuqNtIGdpw6EgdHLDqm4gdHJhbmcgZ2nhu48gaMOgbmcgxJHhu4MgdGjhuqV5IG5nYXkgc+G7kSB0aeG7gW4gxJHGsOG7o2MgZ2nhuqNtIHbDoCB04buVbmcgY+G7mW5nIG3hu5tpICh1c2VyIHN0b3J5IDEpLCB2w6AgxJHGsOG7o2MgYsOhbyByw7Uga2hpIG3DoyBraMO0bmcgZMO5bmcgxJHGsOG7o2MgKHVzZXIgc3RvcnkgMikgfCBBU0NJSSB8CgpVc2VyIHN0b3J5IDMgKEFDOeKAk0FDMTEpIGtow7RuZyBjw7MgbcOgbiBow6xuaC4gQ8OhYyBjw6J1IDQwMCwgNDAzIHbDoCA0MTMgbMOgIGB0ZXh0L3BsYWluYCwgbmjGsCA0MDQgdsOgIDQwNSBoaeG7h24gY8OzIChib2R5ICJOb3QgZm91bmQiIHbDoCAiTWV0aG9kIG5vdCBhbGxvd2VkIiB0cm9uZyBgc3JjL3NlcnZlci50c2ApLCBraMO0bmcgdGh14buZYyBTMS4gQm9keSBj4bunYSBiYSBjw6J1IG3hu5tpIGzDoCAiQmFkIHJlcXVlc3QiICg0MDApLCAiRm9yYmlkZGVuIiAoNDAzKSB2w6AgIlBheWxvYWQgdG9vIGxhcmdlIiAoNDEzKTsgYHNhYCBnaGkgdsOgbyBwbGFuLgoKIyMgRmxvdwoKYGBgbWVybWFpZApmbG93Y2hhcnQgTFIKICBTMVtTMSBHaeG7jyBow6BuZ10gLS0+fCJbNF0gw4FwIGThu6VuZywgbcOjIMSRw7puZzogaGnhu4duIFs3XSJ8IFMxCiAgUzEgLS0+fCJbNF0gw4FwIGThu6VuZywgbcOjIHNhaSBob+G6t2MgdHLhu5FuZzogaGnhu4duIFs1XSJ8IFMxCmBgYAoKIyMgU2NyZWVuIERldGFpbHMKCiMjIyBTMSDCtyBHaeG7jyBow6BuZwoKQuG6o24gduG6vSB24bq9IHRy4bqhbmcgdGjDoWkgY+G7p2EgQUM3OiDEkcOjIMOhcCBgR0lBTTEwYCwgcuG7k2kgbmjhuq1wIGBTQUlNQWAuIFRy4bqhbmcgdGjDoWkgbsOgeSBjw7MgxJHhu6cgY8OhYyBraOG7kWk7IFs1XSB2w6AgWzddIGNo4buJIGhp4buHbiBraGkgY+G6p24uCgpgYGB0ZXh0ClMxIMK3IEdp4buPIGjDoG5nIMK3IGRlc2t0b3AKKy0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCgo8IS0tIHRyaW1tZWQgZm9yIHRoZSBmaXh0dXJlIC0tPgoKIyMgT3BlbiBRdWVzdGlvbnMKCktow7RuZyBjw7JuIGPDonUgaOG7j2kgbeG7ny4gQ8OhYyBjw6J1IFEx4oCTUTEwIGPhu6dhIGLhuqNuIHRyxrDhu5tjIMSRxrDhu6NjIHRy4bqjIGzhu51pIG5nw6B5IDIwMjYtMTAtMzEsIHRoYXkgbmfGsOG7nWkgZHV54buHdC4gQ8OhYyBjw6J1IHRy4bqjIGzhu51pIMSRw6MgdGjDoG5oIHF1eeG6v3QgxJHhu4tuaCDhu58gbeG7pWMgU2NyZWVucyAodXNlciBzdG9yeSAzIHbDoCBib2R5IGPhu6dhIDQwMCwgNDAzLCA0MTMpLCB0cm9uZyBZQU1MIGPhu6dhIGPDoWMga2jhu5FpIFsyXSDEkeG6v24gWzVdIHbDoCBbN10sIHbDoCB0cm9uZyBt4bulYyBC4buRIGPhu6VjIHRoZW8gY+G7oSBtw6BuIGjDrG5oIGPhu6dhIFMxLgo="
+  },
+  "/contents/docs/specs/DEMO-11/plan.md?ref=feature/DEMO-11-spec": {
+   "name": "plan.md",
+   "content": "IyBJbXBsZW1lbnRhdGlvbiBQbGFuOiBNw6MgZ2nhuqNtIGdpw6EgY2hvIGdp4buPIGjDoG5nCgo+ICoqRXBpYzoqKiBERU1PLTExIMK3ICoqSmlyYToqKiBodHRwczovL3BodW5naHV1dHVuZzEyYjQuYXRsYXNzaWFuLm5ldC9icm93c2UvREVNTy0xMSDCtyAqKlNwZWM6KiogW3NwZWMubWRdKHNwZWMubWQpIMK3ICoqVGFza3M6KiogdHJhY2tlZCBpbiBKaXJhIHVuZGVyIERFTU8tMTEKCiMjIE92ZXJ2aWV3CgpFcGljIGdpYW8gbeG7mXQgU3RvcnkgSmlyYSwgZ+G7k20gQUMx4oCTQUMxMSB2w6AgbcOgbiBow6xuaCBTMSBj4bunYSBbZGVzaWduLm1kXShkZXNpZ24ubWQpLiBTdG9yeSBjaGlhIGhhaSBTdWItdGFzaywgY8O5bmcgY29tbWl0IGzDqm4gbmjDoW5oIGPhu6dhIFN0b3J5OiBTdWItdGFzayBCRSBsw6BtIHRyxrDhu5tjLCBy4buTaSB04bubaSBTdWItdGFzayBGRS4KCi0gU3ViLXRhc2sgQkUgbMOgbSBwaOG6p24gc2VydmVyOgogIC0gZGFuaCBzw6FjaCBtw6MgdsOgIGPDoWNoIHTDrW5oIGdp4bqjbSAoYHNyYy9jb3Vwb24udHNgKTsKICAtIGBQT1NUIC9gIHbhu5tpIGPDoWMgYsaw4bubYyBraeG7g20gYEhvc3RgLCBgT3JpZ2luYCB2w6AgY+G7oSBib2R5OwogIC0gY8O0bmcgdGjhu6ljIHThu5VuZyBj4buZbmcgY8OzIHRy4burIGdp4bqjbSBnacOhOwogIC0gaGFpIGZpbmRpbmcgTG93IGPhu6dhIHJldmlld2VyIHRyw6puIFBSICM5LgoKICBLaGkgQkUgeG9uZywgYFBPU1QgL2AgxJHDoyB0w61uaCDEkcO6bmcgdOG7lW5nIGPhu5luZyB2w6AgQUM54oCTQUMxMSDEkcOjIHBhc3MsIGTDuSB0cmFuZyBjaMawYSBjw7MgZm9ybS4KLSBTdWItdGFzayBGRSBsw6BtIHBo4bqnbiB0cmFuZzogZm9ybSBbM10gWzRdLCB0aMO0bmcgYsOhbyBbNV0sIGTDsm5nIGdp4bqjbSBnacOhIFs3XSwgYuG7kSBj4bulYywgdsOgIEUyRSBj4bunYSBBQzHigJNBQzguCgpQUiBj4bunYSBTdG9yeSBjaOG7iSBt4bufIGtoaSBj4bqjIGhhaSBTdWItdGFzayDEkcOjIHhvbmcuCgojIyBBcmNoaXRlY3R1cmUgRGVjaXNpb25zCgoxLiAqKk3hu5l0IFN0b3J5LCBraMO0bmcgdMOhY2ggVGFzay4qKgogICAtIFNQRUMgxJHDoyBjaOG7kXQgZ29tIGJhIHVzZXIgc3RvcnkgdsOgbyBt4buZdCBTdG9yeSwgZ+G7k20gU3ViLXRhc2sgQkUgcuG7k2kgU3ViLXRhc2sgRkUuCiAgIC0gYHdvcmstaXRlbXMueWFtbGAgY2jhu4kgY2hvIHTDoWNoIFRhc2sgduG7m2kgcGjhuqduIG7hu4FuIGTDuW5nIGNodW5nIGNobyBuaGnhu4F1IFN0b3J5LiBFcGljIG7DoHkgY2jhu4kgY8OzIG3hu5l0IFN0b3J5LCBuw6puIGPDoWMgcGjhuqduIGvhu7kgdGh14bqtdCAodGltZW91dCBj4bunYSB0ZXN0LCBgcGFja2FnZS1sb2NrLmpzCgo8IS0tIHRyaW1tZWQgZm9yIHRoZSBmaXh0dXJlIC0tPgoKIyMgT3BlbiBRdWVzdGlvbnMKCktow7RuZyBjw7JuIGPDonUgaOG7j2kgbeG7ny4KCi0gUTEgdsOgIFEyIMSRxrDhu6NjIHRy4bqjIGzhu51pIG5nw6B5IDIwMjYtMTAtMzEsIHRoYXkgbmfGsOG7nWkgZHV54buHdC4KLSBRMSB0aMOgbmggcXV54bq/dCDEkeG7i25oIDkgY+G7p2EgbeG7pWMgQXJjaGl0ZWN0dXJlIERlY2lzaW9ucyB2w6AgxJFv4bqhbiDEkeG6p3UgY+G7p2EgbeG7pWMgVGFzayBMaXN0OiB0w6BpIGxp4buHdSDhu58gbOG6oWkgdHLDqm4gYGZlYXR1cmUvREVNTy0xMS1zcGVjYCwga2jDtG5nIGPDsyBQUiB0w6BpIGxp4buHdSwgdsOgIGPDoWMgYWdlbnQgxJHhu41jIHTDoGkgbGnhu4d1IGLhurFuZyBgZ2l0IHNob3dgLgotIFEyIHRow6BuaCBkw7JuZyBbN10gY+G7p2EgYuG6o25nIG1hcmt1cCBTMSB2w6AgbeG7mXQgdGVzdCBj4bunYSBTdWItdGFzayBGRTogc+G7kSB0aeG7gW4gZ2nhuqNtIGLhurFuZyAwIGhp4buHbiAiMCDigqsiLCBraMO0bmcgY8OzIGThuqV1IHRy4burLgo="
+  },
+  "/pulls/11": {
+   "number": 11,
+   "title": "feat(cart): apply a coupon code on the cart page (DEMO-12)",
+   "state": "closed",
+   "draft": false,
+   "merged_at": "2026-10-31T03:10:03Z",
+   "user": {
+    "login": "tungph7-ao-dev[bot]"
+   },
+   "head": {
+    "ref": "feature/DEMO-12-coupon-code",
+    "sha": "2e3689d23cc9ab587355836551a4fa3f5231d4bc"
+   },
+   "base": {
+    "ref": "develop"
+   }
+  },
+  "/pulls/11/reviews": [
+   {
+    "id": 5717859826,
+    "user": {
+     "login": "tungph7-ao-review[bot]"
+    },
+    "state": "COMMENTED",
+    "commit_id": "2e3689d23cc9ab587355836551a4fa3f5231d4bc",
+    "submitted_at": "2026-10-30T19:46:40Z",
+    "body": "# Review: feat(cart): apply a coupon code on the cart page (DEMO-12)\n\nRole: reviewer\n\n## Context\n\nĐây là lượt review đầu của PR #11, trên commit mới nhất `2e3689d`. PR làm Story DEMO-12 của Epic DEMO-11. Tôi đối chiếu PR với SPEC, `design.md`, plan và ADR-0001, đọc từ `origin/feature/DEMO-11-spec` theo quyết định 9 của plan:\n\n- Sub-task BE DEMO-13 (Done), theo các mục *API Contract › POST /*, *Thứ tự kiểm và câu trả lời lỗi* và *Module `src/coupon.ts`* của plan:\n  - `src/coupon.ts` mới;\n  - `POST /` trong `src/server.ts`, với các bước kiểm `Host`, `Origin` và cỡ body;\n  - công thức tổng cộng trong `src/page.ts`;\n  - hai finding Low của tôi trên PR #9.\n- Sub-task FE DEMO-14 (Done), theo mục *`renderCart` và markup của S1* của plan và các khối S1.3, S1.4, S1.5, S1.7 của design: form [3] [4], trường ẩn `applied`, thông báo [5], dòng giảm giá [7] và bố cục `flex-wrap`.\n\nHành vi muốn đổi: `GET /` vẫn như DEMO-10; `POST /` áp mã và trả trang với tổng cộng mới; request có `Host` lạ, `Origin` lạ hay body lớn bị từ chối.\n\nMột điểm về quy trình, không phải finding: ADR-0001 trên `feature/DEMO-11-spec` vẫn ở **Proposed**. Plan ghi ADR \"chuyển sang Accepted khi plan qua gate ②\", và dòng DoR \"Thuộc Epic có plan đã duyệt\" trong mô tả DEMO-12 vẫn chưa đánh dấu. Bạn nên kiểm gate ② đã qua chưa trước khi duyệt ở gate ③.\n\n- [x] I understand what this change does and why\n- [x] A Task's PR does not change the UI or a public API; if it does, the Task must become a Story. DEMO-12 là Story, nên việc thêm form và `POST /` là đúng loại item.\n\n## Findings\n\n| Severity | Axis | Where | Finding | Suggested fix |\n|---|---|---|---|---|\n| Medium | Correctness (test) | `src/server.ts:80`, `src/server.test.ts:252-261` | **Không test nào giữ dòng chặn crash của `readBody`.** Dòng `if (size > BODY_LIMIT) return;` ngăn `tooLarge()` chạy lần hai sau 413. Tôi bỏ dòng này (mutation M6), và cả 95 test vẫn pass. Tôi gửi một body chunked gồm năm chunk 600 byte trong một lần ghi tới bản mutant. Server trả 413, rồi ném `ERR_HTTP_HEADERS_SENT: Cannot write headers after they are sent to the client` trong listener `data`. Đó là một uncaught exception, nên process của `npm run serve` thoát. Code hiện tại đúng: cùng request đó trả 413 và không có exception. Nhưng một lần sửa sau có thể bỏ dòng này mà CI vẫn xanh. Khi đó một request làm sập server, trái mục Security của SPEC (\"Một request không làm sập server\"). Test hiện có không bắt được vì body 1.025 và 5.000 byte đi thành một chunk, nên chỉ có một sự kiện `data`. | Thêm một case vào test \"without a Content-Length\": gửi bằng `wire()` (`node:net`) một body `Transfer-Encoding: chunked` gồm vài chunk trong một lần ghi, như `'258\\r\\n' + 'A'.repeat(600) + '\\r\\n'` lặp năm lần rồi `'0\\r\\n\\r\\n'`. Kiểm câu trả lời là 413, rồi `GET /` nhận 200. Server chạy trong process của test, nên uncaught exception làm test fail. Probe của tôi nằm ở `.ai/reviews/tmp-11/probe2.mjs`. |\n| Low | Correctness (test) | `src/server.test.ts:238-250`, `src/server.ts:76` | **Test tên \"413 at once\" không kiểm \"at once\".** Tôi bỏ bước kiểm `Content-Length` trước khi đọc body (mutation M5), và test vẫn pass: test gửi đủ body, nên server đọc tới byte 1.025 rồi vẫn trả 413. Hai bản khác nhau rõ khi request chỉ gửi header `Content-Length: 2000` mà không gửi body. Code hiện tại trả 413 sau 13 ms; bản mutant không trả lời sau 1.500 ms, vì nó chờ body. SPEC (Performance) đòi \"Content-Length lớn hơn 1.024 thì server trả 413 ngay, không đọc body\". | Thêm một case gửi bằng `wire()` chỉ phần header `POST / HTTP/1.1` với `Host`, `Origin` và `Content-Length: 2000`, không gửi body. Kiểm câu trả lời bắt đầu bằng `HTTP/1.1 413`. Bản mutant không trả lời, nên test fail sau `TIMEOUT`. |\n| Low | Correctness (error path) | `src/server.ts:39` | **Phép ép kiểu `(server.address() as AddressInfo).port` giấu một giá trị `null`.** Sau `server.close()`, `server.address()` trả `null`. Một request pipelined đến trên kết nối còn mở làm handler ném `TypeError: Cannot read properties of null (reading 'port')`, và đó là uncaught exception. Probe P3 tái hiện được: một `POST /` đang gửi body, rồi `server.close()`, rồi một `GET /` pipelined. Chỉ xảy ra lúc tắt server: `npm run serve` không gọi `close()`, còn test gọi `closeAllConnections()` trước `close()`. Vì vậy finding chỉ ở mức Low. Dòng này lấy từ phác thảo trong plan. | Đọc port từ kết nối của request: `ownHost(request, request.socket.localPort ?? 0)`, rồi bỏ import `AddressInfo`. Đó đúng là port server nghe cho kết nối này, nên vẫn khớp `listen(0)`. Tôi đã thử trên bản chép: 95/95 test pass, và P3 trả 200 cho cả hai request, không có exception. |\n\nKhông có finding Critical hay High.\n\n## Correctness\n\n- [x] Change matches spec/task requirements:\n  - Các bước kiểm chạy đúng thứ tự trong bảng của plan: `Host` 400, path 404, `GET`/`HEAD` 200, method khác 405 với `Allow: GET, HEAD, POST`, `Origin` 403, 413 trước và trong lúc đọc body, rồi 200.\n  - `discount` dùng đúng công thức của plan: `Math.floor` cho phần trăm và `Math.min(subtotal, …)` cho cả hai loại mã. `applyCoupon` theo đúng bảng kết quả của `POST /`.\n  - Markup khớp bảng S1 của plan:\n    - `label for=\"coupon-code\"`; ô `maxlength=\"64\"`, không `required`;\n    - ba thuộc tính `autofocus aria-invalid=\"true\" aria-describedby=\"coupon-error\"` chỉ có khi có lỗi;\n    - trường ẩn `applied` chỉ có khi đang áp mã;\n    - dòng [7] nằm giữa [6] và [8];\n    - \"0 ₫\" khi số tiền giảm bằng 0 (Q2).\n  - Câu chữ đúng như SPEC và design.\n- [x] Edge cases handled. Integration test phủ các trường hợp sau, và tôi đã đọc lại từng trường hợp:\n  - Body sai mã hóa (`code=%FF`, `code=%E0%A4%A`) và mã 65 ký tự.\n  - `applied=GIAM99` bị sửa tay, và trường `code` lặp lại (lấy giá trị đầu).\n  - Query string của `POST /` bị bỏ qua; `Content-Type: text/plain` vẫn đọc như form.\n  - Hai header `Origin` cho 403; hai header `Host` cho 400.\n  - Request HTTP/1.0 và HTTP/1.1 không có `Host` cho 400, dạng text.\n  - Body đúng 1.024 byte nhận 200, có và không có `Content-Length`.\n  - Giỏ trống bỏ qua coupon và không có form.\n- [x] Error paths handled:\n  - Client ngắt giữa body chỉ kết thúc request đó. `readBody` không gắn listener `error`, và comment giải thích vì sao. Theo `IncomingMessage._destroy` của Node, request chỉ phát `error` khi có listener.\n  - 413 có `Connection: close`.\n  - Finding Low của PR #9 đã được sửa. Tôi chèn một `throw` vào đầu listener: `npm test` kết thúc ngay với 24/95 test fail, không treo nữa.\n  - Đường lỗi duy nhất còn lại lúc tắt server là finding Low ở `src/server.ts:39`.\n- [x] Tests cover the change adequately, ngoài hai chỗ ở mục Findings:\n  - AC1–AC11 đều có E2E trong `test.describe('DEMO-11', …)` của `e2e/coupon.spec.ts`, và tên mỗi test bắt đầu bằng mã AC.\n  - AC1–AC8 đi qua form thật trên Chrome. AC9–AC11 gửi request thô bằng `node:http`, không dùng `fetch` (quyết định 7 của plan).\n  - Test `Host` không dùng `fetch`, đúng rủi ro mà plan nhờ reviewer kiểm.\n  - E2E AC1 và AC2 của DEMO-10 vẫn pass.\n  - Mutation test: 27/29 mutation bị bắt (xem mục Verification). Hai mutation còn sống là finding Medium và finding Low thứ nhất.\n\n## Readability\n\n- [x] Names are clear and consistent. `ownHost`, `readBody`, `BODY_LIMIT`, `findCoupon`, `applyCoupon`, `CouponState`, `NO_COUPON`, `couponForm` và `discountLine` đều tự giải thích, và khớp tên trong plan.\n- [x] Logic is straightforward:\n  - Handler là một chuỗi `if`/`else if` phẳng, theo đúng thứ tự kiểm của plan.\n  - Comment nói vì sao, không nói cái gì: đếm `Host` trong `rawHeaders`, dùng `data`/`end` chứ không dùng `for await`, và `Connection: close` sau 413.\n  - 16 commit nhỏ, mỗi commit một bước, header đúng dạng `type(scope): subject (<KEY>)`.\n- [x] No unnecessary complexity:\n  - `coupon.ts` có 54 dòng, gồm hàm thuần và hai hằng số đóng băng.\n  - `page.ts` thêm hai hàm nhỏ. `cartTable` kiểm `coupon.applied === null` hai lần, một lần cho `off` và một lần cho dòng [7]. Chỗ này chấp nhận được, nên không thành finding.\n\n## Architecture\n\n- [x] Follows existing patterns:\n  - Ba lớp theo quyết định 2 của plan. `coupon.ts` không biết HTTP hay HTML; `server.ts` lo HTTP; `page.ts` dựng HTML và giữ câu chữ của [5].\n  - Import có đuôi `.ts`; loại mã là union, không dùng `enum`.\n  - `discount` ném `RangeError` như `total()`.\n- [x] No unnecessary coupling or dependencies:\n  - Phụ thuộc theo một chiều: `server.ts → page.ts → coupon.ts, cart.ts`, và `server.ts → coupon.ts`. Không có vòng.\n  - Không thêm dependency nào. `package-lock.json` chỉ đổi đúng dòng `engines.node` thành `>=24.2`, như finding Low của PR #9.\n- [x] Appropriate abstraction level. `CouponState` là hợp đồng giữa hai Sub-task, đúng như plan. Ngoài kiểu đó, PR không thêm lớp nào.\n- [x] Refactors reduce complexity rather than relocate it. PR không có refactor. `renderCart` chỉ thêm một tham số có giá trị mặc định, nên `GET /` dựng đúng trang cũ, và có test `renderCart(items, NO_COUPON) === renderCart(items)`.\n- [x] No feature logic in shared modules; file stays within a healthy size:\n  - `server.ts` 98 dòng, `page.ts` 100 dòng, `coupon.ts` 54 dòng; file lớn nhất là `server.test.ts` với 368 dòng.\n  - Diff có 899 dòng thêm, nhưng phần code chỉ khoảng 190 dòng; còn lại là test và README.\n  - Đây là một Story, chia theo hai Sub-task, nên vẫn là một thay đổi logic.\n\n## Security\n\n- [x] No secrets in code. Job `secrets` (gitleaks) xanh. Danh sách mã không phải bí mật, theo SPEC.\n- [x] Input validated at boundaries:\n  - `Host` được so nguyên chuỗi, và số header `Host` được đếm trong `rawHeaders`.\n  - `Origin` được so nguyên chuỗi với `http://<Host>` trước khi đọc body. Có test: body 5.000 byte từ origin lạ nhận 403.\n  - Server giữ tối đa 1.024 byte body.\n  - Server không đọc số tiền nào từ form; có test với `total`, `discount` và `percent` gửi lên.\n- [x] No injection vulnerabilities:\n  - `escapeHtml` được dùng cho mã đã gõ trong `value`, và cho mã của danh sách trong nhãn [7] và trong trường ẩn. Mutation M21, M25 và M26 bị bắt.\n  - Thuộc tính luôn có dấu nháy kép, và thông báo [5] không lặp lại mã đã gõ.\n  - CSP không đổi; trang không có script, không có `Referrer-Policy` hay `Set-Cookie`, và có test cho cả hai header này.\n- [x] Auth checks in place. Không áp dụng: trang không có đăng nhập. Lớp chống CSRF là bước kiểm `Origin` (ADR-0001).\n- [x] External data sources treated as untrusted:\n  - Body, header và request target đều được coi là dữ liệu không tin cậy.\n  - Body được đọc bằng `URLSearchParams`, không dùng `decodeURIComponent`.\n  - Server không log mã, body hay header.\n\n  Phần đánh giá sâu thuộc về `security`.\n\n## Performance\n\n- [x] No N+1 patterns. Không có I/O nào ngoài socket. Tra mã là tra một hằng số hai phần tử.\n- [x] No unbounded operations:\n  - Trang của `GET /` và `HEAD /` vẫn dựng một lần.\n  - `POST /` dựng trang ở mỗi request, với body tối đa 1.024 byte.\n  - `Content-Length` lớn hơn giới hạn bị từ chối trước khi đọc body (probe P1: 413 sau 13 ms).\n  - Body chunked bị cắt ở byte 1.025, và `Connection: close` tránh việc Node đọc hết phần còn lại.\n- [x] Pagination on list endpoints. Không áp dụng.\n\n## Verification\n\n- [x] Tests pass:\n  - Năm check của head `2e3689d` đều xanh: `policy`, `build-test`, `secrets`, `sast` (run CI `41116700893`, `HEAD_SHA` đúng head của PR) và `jira-sync`.\n  - CI báo 95/95 test pass, và 100% dòng thay đổi được phủ (172/172).\n  - Job `policy` báo `ok` cho Conventions, Suppressions, Thresholds, Design và Dependencies, và không liệt kê test nào bị xoá.\n  - Diff có 15 dòng test bị bỏ, nhưng không mất test nào: test 405 đổi từ `POST` sang `PUT`, đúng yêu cầu của SPEC, và các `fetch` cũ được thay bằng `send()` có timeout.\n  - Diff không có `eslint-disable`, `@ts-ignore`, `nosemgrep`, `.skip` hay `.only`, nên không có check nào bị tắt.\n- [x] Build succeeds. `npm run build` trong CI xanh. Trên bản chép, `tsc --noEmit` và `eslint --max-warnings=0` cũng đạt.\n- [x] Manual verification done (if applicable). Tôi chạy trên một bản chép của nhánh trong `.ai/reviews/tmp-11/head/`, lấy bằng `git show origin/feature/DEMO-12-coupon-code:<path>`, nên không đụng tới checkout:\n  - Unit và integration test: 95/95 pass (Node v24.17.0).\n  - E2E: `playwright test` với Chrome có sẵn, 13/13 pass, gồm AC1–AC11 của DEMO-11 và AC1, AC2 của DEMO-10. E2E chưa chạy trong CI; plan ghi điều này.\n  - Mutation test, 29 mutation, mỗi lần đổi một chỗ (`.ai/reviews/tmp-11/mutate.mjs`):\n    - 27 mutation bị bắt. Phía server: chấp nhận hai `Host`; từ chối `localhost`; chấp nhận `POST` không có `Origin`; đổi `>` thành `>=` hoặc giới hạn thành 1.025; gọi `done` sau 413; bỏ `Connection: close`; kiểm `Host` sau path; bỏ `applied`; lấy giá trị cuối của `code`. Phía coupon: `Math.round`; không chặn trên tạm tính; bỏ `trim` hoặc `toUpperCase`; bỏ mã đang áp khi mã mới bị từ chối; mã toàn khoảng trắng là \"invalid\"; bỏ `Object.freeze`; cho tạm tính âm. Phía trang: bỏ escape ở ba chỗ; hiện \"-0 ₫\"; bỏ `autofocus`; không trừ giảm giá khỏi tổng cộng; thông báo lặp lại mã; viền lỗi không dày hơn; giỏ trống có form.\n    - 2 mutation còn sống: M5, bỏ bước kiểm `Content-Length` (finding Low thứ nhất), và M6, bỏ dòng chặn sau 413 (finding Medium).\n  - Probe server (`.ai/reviews/tmp-11/probe.mjs`, `probe2.mjs`):\n    - P1: chỉ header với `Content-Length: 2000` nhận 413 sau 13 ms.\n    - P2: body chunked 3.000 byte trong năm lần ghi cách nhau nhận 413, rồi `GET /` nhận 200.\n    - P2b: năm chunk trong một lần ghi nhận 413, không có exception.\n    - P3: request pipelined lúc `close()` gây `TypeError` (finding Low thứ hai).\n  - Tôi không kiểm lại bố cục S1 ở 320, 768, 1024 và 1440 px. `fe-dev` ghi đã kiểm trên Chrome 156 trong mô tả PR. Bảng [2] tràn ngang ở 320 px; theo design S1.2, việc này thuộc một Task riêng, và mô tả PR ghi đã nhờ `ba` tạo Task đó. `qa` kiểm lại khi verify.\n\n## Verdict\n\n- [x] **Approve**: ready for your approval at gate ③ merge-approval. Không có finding Critical hay High:\n  - Code đạt AC1–AC11 và theo đúng hợp đồng của plan.\n  - Hai finding Low của PR #9 đã được sửa.\n  - Mọi kết quả trong mô tả PR đều tái hiện được trên bản chép.\n\n  Nên sửa finding Medium trong PR này, vì nó chỉ là một test giữ cho một request không làm sập server; nếu không, cần một item theo sau. Hai finding Low có thể sửa cùng lúc hoặc để sau.\n- [ ] **Request changes**: the item goes back to in-progress through request-changes\n"
+   },
+   {
+    "id": 5718037587,
+    "user": {
+     "login": "tungph7-ao-review[bot]"
+    },
+    "state": "COMMENTED",
+    "commit_id": "2e3689d23cc9ab587355836551a4fa3f5231d4bc",
+    "submitted_at": "2026-10-30T20:04:48Z",
+    "body": "# Review: feat(cart): apply a coupon code on the cart page (DEMO-12)\n\nRole: security\n\n## Context\n\nPR làm Story DEMO-12 của Epic DEMO-11: form mã giảm giá trên trang giỏ hàng, `POST /` với các bước kiểm `Host`, `Origin` và cỡ body, và module `src/coupon.ts`. Commit được review là `2e3689d`, commit mới nhất của PR. Đây là báo cáo security đầu tiên trên PR #11. Tôi đối chiếu PR với SPEC (mục Security và Boundaries), plan (mục API Contract và Thứ tự kiểm) và ADR-0001, đọc từ `origin/feature/DEMO-11-spec` (commit `feb4f06`).\n\nADR-0001 là thiết kế security của Epic, và vẫn ở **Proposed**. Mục DoR \"Thuộc Epic có plan đã duyệt\" của DEMO-12 cũng chưa đánh dấu. Đây là việc quy trình, không phải finding, và `reviewer` đã nêu. Báo cáo này xác nhận code làm đúng ADR-0001 như đang viết; chấp nhận ADR vẫn là việc của bạn.\n\n**Threat model**\n\n- **Tài sản:**\n  - Số tiền trên trang. Lần đầu, số tiền giảm và tổng cộng phụ thuộc dữ liệu người dùng gửi. Kẻ tấn công muốn một khoản giảm ngoài danh sách, chồng hai mã, hoặc tổng cộng âm.\n  - Trang mà trình duyệt của người mua hiển thị, vì mã đã gõ được in lại vào HTML.\n  - Tiến trình server. Theo SPEC, một request không được làm sập server, và bộ nhớ cho mỗi request phải có giới hạn.\n  - Máy của bạn và máy của `qa`, nơi `npm run serve` và `npm run test:e2e` chạy server.\n  - Không có cookie, session, secret hay thanh toán. Người mua gõ được bất kỳ chuỗi nào vào ô mã, nên mã là dữ liệu không tin cậy và không được ghi log.\n- **Điểm vào:**\n  - `POST /` (mới): body tối đa 1.024 byte, đọc như form. Hai trường: `code` (nguyên văn) và `applied` (trường ẩn, người mua sửa được).\n  - Header `Host` của mọi request. Với `POST`: `Origin`, `Content-Length` và `Transfer-Encoding`.\n  - Không đổi:\n    - `GET /` và `HEAD /` trả trang dựng sẵn;\n    - `PORT` do người chạy lệnh đặt;\n    - `items` là hằng `SAMPLE_CART`;\n    - danh sách mã là hằng trong `src/coupon.ts`.\n- **Ranh giới tin cậy:**\n  - Trang web khác → server, qua trình duyệt của người mua: form `POST` cross-site, `fetch` `no-cors`, hoặc DNS rebinding. Lớp chặn là bước kiểm `Origin` (403) và allowlist `Host` (400).\n  - Process trên cùng máy → server. Process đó gửi được mọi byte, kể cả `Host` và `Origin` đúng, và vốn đã có nhiều quyền hơn trên máy. Ở ranh giới này, server chỉ cần không sập và có giới hạn bộ nhớ.\n  - Body → HTML. Chuỗi tự do duy nhất vào trang là `rejected.typed`, trong `value=\"…\"`. Mọi thứ khác là hằng hoặc số.\n  - Trường ẩn `applied` → tính tiền. Giá trị do client gửi, nên server tra lại nó trong danh sách mã.\n- **PR thay đổi bề mặt tấn công thế nào:**\n  - Mới: server lần đầu đọc body, và in lại dữ liệu người dùng.\n  - Hẹp lại: request có `Host` lạ nhận 400, thay vì 200 như trước.\n  - Không đổi: CSP và header của trang, địa chỉ nghe `127.0.0.1`, và các dependency. `package-lock.json` chỉ đổi `engines.node`.\n  - PR không sửa `.github/workflows/**` hay `action.yml`, nên `gha-security-review` không áp dụng.\n\nBa ghi chú security của tôi trên PR #9 đã được xử lý:\n\n1. CSRF và cỡ body: AC9, AC10. Probe O1–O14 và B1–B17.\n2. DNS rebinding: AC11. Probe H1–H20 và R1–R3.\n3. Escape mã: AC8. Probe X1–X22.\n   - `item.quantity` vẫn vào HTML mà không escape (`src/page.ts:82`), nhưng dòng này không đổi trong PR.\n   - Điều kiện an toàn của ghi chú vẫn đúng: `items` vẫn là hằng, và `total()` kiểm chúng trước khi trang được trả.\n\n- [x] I understand what this change does and why\n- [x] A Task's PR does not change the UI or a public API; if it does, the Task must become a Story. DEMO-12 là Story, nên việc thêm form và `POST /` là đúng loại item.\n\n## Findings\n\n| Severity | Axis | Where | Finding | Suggested fix |\n|---|---|---|---|---|\n\nKhông có finding nào, ở cả bốn mức Critical, High, Medium và Low.\n\nTôi lần nguồn của từng input trên toàn codebase, rồi thử khai thác từng input bằng request thô (mục Verification). Không cách nào qua được:\n\n- Trang khác không gửi được `POST /`. Mọi `Origin` khác `http://<Host>` nhận 403, trước khi body được đọc.\n- DNS rebinding không đọc hay gửi được gì. Cặp `Host` và `Origin` của một trang rebinding nhận 400.\n- Mã đã gõ chỉ thành chữ. Với 20 payload, trang trả về giống hệt trang tham chiếu, chỉ khác giá trị đã escape trong `value=\"…\"`.\n- Số tiền chỉ lấy từ danh sách mã. Sửa `applied`, gửi thêm trường số tiền, hay lặp trường `code` đều không đổi được tổng cộng.\n- Không request nào làm sập server: 0 uncaught exception qua toàn bộ probe.\n\n### Ghi chú (không phải finding)\n\n1. **Finding Medium của `reviewer`:** thiếu test cho dòng `if (size > BODY_LIMIT) return;` (`src/server.ts:80`).\n   - Code hiện tại an toàn: body chunked đến trong nhiều sự kiện `data` nhận 413, không có exception (B3, B4, B5, M10).\n   - Nếu một lần sửa sau bỏ dòng này, chỉ body chunked không có `Content-Length` mới chạm tới lỗi. Form của trình duyệt luôn gửi `Content-Length`, và request còn phải qua `Host` và `Origin`. Vì vậy chỉ một process trên máy làm sập được server, không phải một trang khác.\n   - Đây không phải finding security. Dù vậy, tôi đồng ý nên thêm test này, vì SPEC đòi một request không làm sập server.\n2. **Finding Low của `reviewer`:** `server.address()` trả `null` (`src/server.ts:39`). Lỗi chỉ xảy ra sau `server.close()`, và không kẻ tấn công nào gọi được hàm đó. Không phải finding security.\n3. **Body bị đọc rồi bỏ sau 400, 403, 404 và 405.** Một trang khác có thể khiến server đọc một body lớn.\n   - Probe `drain.mjs` gửi 200 MB với `Origin` lạ. Server trả 403, đọc rồi bỏ hết body trong 378 ms, và vẫn trả 200 cho request sau trên cùng kết nối.\n   - Server không giữ body đó: RSS của process chỉ tăng từ 70 lên 123 MB, và phần tăng gồm cả bộ đệm của client chạy trong cùng process.\n   - Tác động chỉ là CPU trên loopback. Mục Risks and Mitigations của plan đã chấp nhận rủi ro này ở mức Low.\n4. **Chuẩn hóa mã theo Unicode.** `toUpperCase()` của JavaScript đổi `gıam10` (chữ ı không chấm) thành `GIAM10`, và `trim()` bỏ cả NBSP hay khoảng trắng chữ Hán ở hai đầu (L8, L9).\n   - Hôm nay việc này không có tác động: mã công khai, không giới hạn lượt dùng, và không có thanh toán.\n   - Khi một Epic sau có mã bí mật, mã theo người dùng hay giới hạn lượt dùng, nên kiểm chuỗi đã gõ là ASCII trước khi đổi sang chữ hoa, ví dụ `/^[A-Za-z0-9]+$/` sau khi bỏ khoảng trắng ASCII ở hai đầu.\n\n## Correctness\n\nPhần này ngoài trọng tâm của `security`; độ đúng chung có trong báo cáo `Role: reviewer`. Tôi chỉ đánh dấu những gì đã kiểm từ góc security.\n\n- [x] Change matches spec/task requirements:\n  - Thứ tự kiểm khớp bảng của plan: `Host` 400 trước 404, `Origin` 403 trước khi đọc body, và 413 kèm `Connection: close`.\n  - Câu trả lời lỗi là `text/plain; charset=utf-8`, có `nosniff` và body cố định.\n  - CSP không đổi. Trang không có `Referrer-Policy`, `Set-Cookie` hay script.\n- [x] Edge cases handled. Body mã hóa sai, byte không phải UTF-8, NUL, trường lặp, body JSON và multipart đều chỉ cho mã không hợp lệ hoặc mã rỗng (F1–F15).\n- [x] Error paths handled. Client ngắt kết nối giữa body chỉ kết thúc request đó (B16). Không đường lỗi nào trả stack trace.\n- [x] Tests cover the change adequately, ngoài finding Medium của `reviewer`. Có test cho hai `Host`, hai `Origin`, `Origin: null`, request HTTP/1.0 và HTTP/1.1 không có `Host`, body có và không có `Content-Length`, và escape trong `value`.\n\n## Readability\n\nNgoài phạm vi của `security`; xem báo cáo `Role: reviewer`.\n\n- [ ] Names are clear and consistent\n- [ ] Logic is straightforward\n- [ ] No unnecessary complexity\n\n## Architecture\n\nNgoài phạm vi của `security`, trừ phần dependency.\n\n- [ ] Follows existing patterns\n- [x] No unnecessary coupling or dependencies:\n  - PR không thêm dependency.\n  - `package-lock.json` chỉ đổi một dòng: `engines.node` thành `\">=24.2\"`.\n  - Không `resolved` hay `integrity` nào đổi, nên `npm ci` cài đúng các gói như trên `develop`.\n- [ ] Appropriate abstraction level\n- [ ] Refactors reduce complexity rather than relocate it\n- [ ] No feature logic in shared modules; file stays within a healthy size\n\n## Security\n\n- [x] No secrets in code:\n  - Job `secrets` (gitleaks 8.30.1) quét 16 commit của PR: không có leak.\n  - Các dòng thêm mới không có mẫu token, khóa hay mật khẩu, và không đọc thêm biến môi trường nào.\n  - Danh sách mã không phải bí mật, theo SPEC.\n- [x] Input validated at boundaries:\n  - `Host`: số header được đếm trong `rawHeaders`, và giá trị được so nguyên chuỗi với `127.0.0.1:<port>` và `localhost:<port>`.\n  - `Origin`: so nguyên chuỗi với `http://<Host>`, sau khi `Host` đã qua allowlist. Vì vậy kẻ tấn công không tự chọn được cả hai giá trị.\n  - Body: `Content-Length` lớn hơn 1.024 bị từ chối trước khi đọc. Body chunked được đếm và bị cắt ở byte 1.025.\n  - Form: `URLSearchParams` không ném lỗi với mọi body tôi đã thử, kể cả body mã hóa sai.\n  - Mã: tra trong một danh sách hằng, cả `code` lẫn `applied`.\n- [x] No injection vulnerabilities:\n  - XSS: chuỗi tự do duy nhất là `rejected.typed`.\n    - Nó đi qua `escapeHtml`, hàm đổi `& < > \" '` thành tham chiếu số, và nằm trong thuộc tính có dấu nháy kép. Vì vậy nó không thoát được khỏi `value`.\n    - Thông báo [5] là hằng và không lặp lại mã. Trường ẩn `applied` và dòng [7] chỉ in mã của danh sách.\n  - CSP vẫn là lớp thứ hai: `default-src 'none'` không cho script. `base-uri 'none'`, `form-action 'self'` và `frame-ancestors 'none'` không đổi.\n  - Response splitting: mọi header là hằng số.\n  - Code không có SQL, shell, `eval`, đọc file hay `fetch` ra ngoài.\n- [x] Auth checks in place. Trang không có đăng nhập. Chính sách ở đây là `Origin` và `Host`, và cả hai mặc định từ chối: giá trị thiếu, `null`, lặp, khác hoa thường, khác scheme, thêm `/` hay khác port đều bị từ chối.\n- [x] External data sources treated as untrusted:\n  - Body, header và trường ẩn đều được coi là không tin cậy.\n  - Server không log mã, body hay header. Dòng log duy nhất vẫn là dòng lúc khởi động, không đổi.\n\nCác lỗi mà code do agent viết hay mắc:\n\n- **Secret trong bundle phía client, hay trong biến `NEXT_PUBLIC_*`:** không có. Trang không có script, và không in biến môi trường nào.\n- **Authorization \"bật\" nhưng policy cho mọi thứ qua:** chính sách ở đây là `Origin` và `Host`. Tôi thử 33 biến thể (H1–H20, O1–O13) và ba cặp của trang DNS rebinding (R1–R3): chỉ request mang đúng `Host` và đúng `Origin` của server mới qua.\n- **Input của người dùng ghép vào prompt gửi LLM:** không có lời gọi LLM nào.\n- **Văn bản dẫn dắt agent:** tôi đã đọc mô tả PR, 16 commit message, README, comment trong code, mô tả DEMO-12, và các comment trên DEMO-12 và DEMO-11.\n  - Không câu nào yêu cầu agent chạy hay commit gì. Lệnh duy nhất là `git show`, để đọc tài liệu của Epic.\n  - Diff, mô tả PR và commit message không có ký tự Unicode ẩn (bidi, zero-width). Ký tự U+FFFD duy nhất là input của một unit test trong `src/coupon.test.ts`.\n  - Trang chỉ in lại mã cho chính người gửi. Một trang khác không gửi được form (403), nên không đưa được chữ của nó vào trang mà `qa` đọc qua Playwright.\n\n## Performance\n\nNgoài phạm vi của `security`, trừ phần từ chối dịch vụ.\n\n- [ ] No N+1 patterns\n- [x] No unbounded operations:\n  - Server giữ tối đa 1.024 byte body cho một request.\n  - `Content-Length: 1025` không kèm body nhận 413 sau 3 ms, với `Connection: close` (B1).\n  - Body 5 MB gửi từng khúc 64 KB nhận 413, và server đóng kết nối (B17).\n  - Request mà parser của Node từ chối, như `Content-Length` lạ hay chunk extension 20 KB, nhận 400 hoặc 413 (B7–B15).\n  - Regex duy nhất chạy trên input là `/[&<>\"']/g` của `escapeHtml`, có thời gian tuyến tính.\n  - Body bị đọc rồi bỏ sau 403: xem ghi chú 3.\n- [ ] Pagination on list endpoints\n\n## Verification\n\n- [x] Tests pass:\n  - Run CI `41116700893` trên `2e3689d` xanh cả bốn job `policy`, `build-test`, `secrets` và `sast`; `jira-sync` cũng xanh.\n  - Job `sast` (Semgrep 1.180.0, `p/default` và `p/owasp-top-ten`) quét 9 file thay đổi: 0 finding.\n- [x] Build succeeds. Job `build-test` xanh.\n- [x] Manual verification done (if applicable). Tôi không đổi checkout:\n  - Bản chép `src/` của nhánh nằm trong `.ai/security/pr11/head/`. sha1 của từng file trùng với `origin/feature/DEMO-12-coupon-code`.\n  - Script ở `.ai/security/pr11/probe/`: `probe.mjs`, `rebind.mjs` và `drain.mjs`. Kết quả của `probe.mjs` ở `probe.log`. Tôi chạy trên Node 24.17.0.\n  - Mỗi script chạy `cartServer()` trên một port tự do của `127.0.0.1` và gửi request thô qua TCP. `probe.mjs` đếm uncaught exception trong suốt lần chạy.\n\n| Nhóm | Request | Kết quả |\n|---|---|---|\n| `Host` (H1–H20) | `Host` lạ; khác hoa thường; không có port; dấu chấm cuối; số 0 ở đầu port; `@evil.example`; hai `Host` theo mọi thứ tự; `Host` rỗng; HTTP/1.0 và HTTP/1.1 không có `Host`; `Host :`; obs-fold | 400, kể cả với path không tồn tại (H18) và với `POST` có `Origin` đúng (H19) |\n| | Khoảng trắng và tab quanh `Host` đúng; `X-Forwarded-Host` lạ; `localhost:<port>` | 200: Node bỏ khoảng trắng, và header kia bị bỏ qua |\n| | Request target dạng tuyệt đối `http://evil.example/`, với `Host` đúng | 404 |\n| DNS rebinding (R1–R3) | `Host` và `Origin` cùng là `evil.example:<port>`, `127.0.0.1.nip.io:<port>` hoặc `foo.localhost:<port>` | 400 cho cả `GET` và `POST` |\n| `Origin` (O1–O14) | `Origin` lạ; không có `Origin`; `null`; chéo giữa `localhost` và `127.0.0.1`; `HTTP://`; thêm `/`; `https://`; hai `Origin` theo mọi thứ tự; port khác | 403 |\n| | `Origin` đúng kèm `Referer` lạ; cặp `localhost` đúng | 200 |\n| | Khai báo 5 MB, chưa gửi byte nào, `Origin` lạ | 403 sau 2 ms |\n| Cỡ body (B1–B17) | `Content-Length: 1025`, không kèm body | 413 sau 3 ms, `Connection: close` |\n| | Đúng 1.024 byte; 1.014 chunk một byte | 200 |\n| | Chunked 5 × 600 byte trong một lần ghi; 1.100 × 1 byte; 6 × 600 byte cách nhau 30 ms; 5 MB | 413, kết nối đóng, không có exception |\n| | `Content-Length` cùng `Transfer-Encoding`; hai `Content-Length`; `+11`, `0x10`, `1e3`, `-1`, 23 chữ số; chunk size 18 chữ số hex | 400 từ parser của Node |\n| | Chunk extension 20 KB | 413 từ parser của Node |\n| | Client ngắt sau 8 trong 500 byte | Không có câu trả lời; server vẫn chạy |\n| Form (F1–F15) | `%`, `%%`, `%G0`, `%uD800`; surrogate mã hóa UTF-8; điểm mã trên U+10FFFF; overlong; 1.000 dấu `&`; `code` không có `=`; JSON; multipart; NUL, byte không phải UTF-8, `\"` và `<` thô | 200, mã không hợp lệ hoặc rỗng; `\"` và `<` thành `&#34;&#60;` |\n| Phản chiếu (X1–X22) | 20 payload, như `\"><script>`, `' autofocus onfocus=…`, `</form><form action=…>`, `<!--`, `&#34;` và `&#x22;` mã hóa sẵn, CRLF, U+2028, NUL, 900 ký tự rồi `\"><b>` | Trang giống hệt trang tham chiếu, chỉ khác giá trị đã escape trong `value` |\n| | Payload trong `applied`; chuỗi đánh dấu trong path, header, `Origin`, `Host` và body của 400, 403, 404, 405 | Không được in lại |\n| Quy tắc tiền (L1–L9) | `SAIMA` kèm `applied=GIAM10`; `applied` lặp; gửi thêm `total`, `discount`, `price`, `value`, `kind`; `code` lặp; `applied=GIAM99` | Tổng cộng đúng như bảng của plan; tối đa một dòng giảm giá |\n| Giao thức (M1–M13) | `CONNECT`; `Upgrade: websocket`; preface HTTP/2; `PUT`; `POST /x`; preflight `OPTIONS` từ origin lạ; `Expect: 100-continue`; `Expect: foo`; pipelining; HTTP/0.9; `TRACE` | Mã trả lời đúng; không có header `Access-Control-Allow-*` nào |\n| Drain | 200 MB với `Origin` lạ, rồi `GET /` trên cùng kết nối | 403, rồi 200; server không giữ body |\n\nSau toàn bộ probe, `GET /` vẫn nhận 200 với CSP, `nosniff` và `text/html; charset=utf-8`, và không có uncaught exception nào.\n\n## Verdict\n\n- [x] **Approve**: ready for your approval at gate ③ merge-approval.\n  - Không có finding nào, ở cả bốn mức.\n  - Ba ghi chú security của PR #9 đã được xử lý.\n  - Nên thêm test cho finding Medium của `reviewer`, vì test đó giữ cho một request không làm sập server. Từ góc security, việc này không chặn merge.\n- [ ] **Request changes**: the item goes back to in-progress through request-changes\n"
+   },
+   {
+    "id": 5720782307,
+    "user": {
+     "login": "TungPH7"
+    },
+    "state": "APPROVED",
+    "commit_id": "2e3689d23cc9ab587355836551a4fa3f5231d4bc",
+    "submitted_at": "2026-10-31T03:09:26Z",
+    "body": ""
+   }
+  ],
+  "/pulls/11/files": [
+   {
+    "filename": "README.md",
+    "status": "modified",
+    "additions": 35,
+    "deletions": 1
+   },
+   {
+    "filename": "e2e/coupon.spec.ts",
+    "status": "added",
+    "additions": 157,
+    "deletions": 0
+   },
+   {
+    "filename": "package-lock.json",
+    "status": "modified",
+    "additions": 1,
+    "deletions": 1
+   },
+   {
+    "filename": "src/coupon.test.ts",
+    "status": "added",
+    "additions": 89,
+    "deletions": 0
+   },
+   {
+    "filename": "src/coupon.ts",
+    "status": "added",
+    "additions": 54,
+    "deletions": 0
+   },
+   {
+    "filename": "src/page.test.ts",
+    "status": "modified",
+    "additions": 149,
+    "deletions": 0
+   },
+   {
+    "filename": "src/page.ts",
+    "status": "modified",
+    "additions": 50,
+    "deletions": 8
+   },
+   {
+    "filename": "src/server.test.ts",
+    "status": "modified",
+    "additions": 296,
+    "deletions": 15
+   },
+   {
+    "filename": "src/server.ts",
+    "status": "modified",
+    "additions": 68,
+    "deletions": 9
+   }
+  ],
+  "/commits/2e3689d23cc9ab587355836551a4fa3f5231d4bc/check-runs": {
+   "total_count": 8,
+   "check_runs": [
+    {
+     "name": "jira-sync",
+     "status": "completed",
+     "conclusion": "success"
+    },
+    {
+     "name": "jira-sync",
+     "status": "completed",
+     "conclusion": "success"
+    },
+    {
+     "name": "jira-sync",
+     "status": "completed",
+     "conclusion": "success"
+    },
+    {
+     "name": "build-test",
+     "status": "completed",
+     "conclusion": "success"
+    },
+    {
+     "name": "secrets",
+     "status": "completed",
+     "conclusion": "success"
+    },
+    {
+     "name": "jira-sync",
+     "status": "completed",
+     "conclusion": "success"
+    },
+    {
+     "name": "sast",
+     "status": "completed",
+     "conclusion": "success"
+    },
+    {
+     "name": "policy",
+     "status": "completed",
+     "conclusion": "success"
+    }
+   ]
+  },
+  "/commits/2e3689d23cc9ab587355836551a4fa3f5231d4bc/status": {
+   "state": "pending",
+   "statuses": [],
+   "sha": "2e3689d23cc9ab587355836551a4fa3f5231d4bc",
+   "total_count": 0,
+   "repository": {
+    "id": 1435285071,
+    "name": "ao-pilot",
+    "full_name": "TungPH7/ao-pilot",
+    "private": true,
+    "owner": {
+     "login": "TungPH7",
+     "id": 100083837,
+     "gravatar_id": "",
+     "type": "User",
+     "user_view_type": "public",
+     "site_admin": false
+    },
+    "description": "Sandbox and pilot project for ai-orchestrator",
+    "fork": false
+   }
+  },
+  "/pulls?direction=asc&sort=created&state=open": []
+ }
+}

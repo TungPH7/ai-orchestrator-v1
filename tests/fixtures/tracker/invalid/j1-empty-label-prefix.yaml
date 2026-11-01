@@ -1,0 +1,8 @@
+description: a work label prefix that is empty
+rule: J1
+expect:
+  - "work_labels.role_prefix"
+patch:
+  - op: set
+    path: "work_labels.role_prefix"
+    value: ""
