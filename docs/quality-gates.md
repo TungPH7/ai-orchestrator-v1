@@ -146,6 +146,7 @@ Bạn tự merge trong ba trường hợp. `audit` vẫn kiểm cả ba, nên h�
    - Workflow chạy theo `pull_request` dùng bản nằm trong PR, nên một PR sửa `ci.yml` có thể tự làm `CI` của nó xanh. Vì vậy hãy đọc kỹ diff ở tab **Files changed**.
    - PR vẫn phải đủ mọi điều kiện khác: `CI` xanh, hai báo cáo không còn Critical hay High, và approve của bạn trên commit đầu.
    - Sau đó bấm **Squash and merge** **(đối chiếu giao diện)**. `audit` chỉ chấp nhận PR này khi người merge là một login trong `AO_APPROVERS`.
+   - Từ `dev-workflow` (spec mục 2.7), khi PR chỉ còn chờ bạn (không thiếu gì, hoặc chỉ thiếu approve của bạn), `merge-gate` comment lên PR bằng `ao-dev` và gắn cờ "Needs you" lên item, kèm comment cùng nội dung bắt đầu bằng `merge-gate: needs you at <sha> on PR #<n>`. Mỗi head chỉ một lần. Item đã bị cổng khác gắn cờ thì `merge-gate` để nguyên trên Jira. Khi PR được merge hoặc đóng, `jira-sync` gỡ cờ đó, trừ khi sau đó có ai gắn cờ lại.
 2. **PR do bạn mở.** `merge-gate` bỏ qua PR của bạn. `audit` tính bạn là đã approve, nhưng PR vẫn cần `CI` xanh, hai báo cáo trên commit đầu, cùng tiêu đề và mô tả đúng mẫu.
 3. **PR từ `release/*`** vào `main`, hoặc merge ngược vào `develop`. `audit` chỉ cần `CI` xanh và approve của bạn trên commit đầu, vì từng item trong bản release đã qua review. Phần này thuộc `release-workflow`.
 
