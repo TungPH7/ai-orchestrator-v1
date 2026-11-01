@@ -75,6 +75,37 @@ test('the questions left in the Open Questions section: one per item of its top-
   assert.deepEqual(openQuestions(asked), ['Q1 — Danh sách mã. Epic không nêu mã nào.', 'Q2 — Làm tròn và phí vận chuyển.', 'Q8 của `sa`: server có cần trả 400 khi thiếu `Host` không?']);
 });
 
+// As sa wrote them on DEMO-20 (dev-workflow T17): each question a bold Q paragraph, its details as top-level bullets and a
+// table; ao-step counted 10 questions where there were 2.
+test('when the section names its questions Q1, Q2…, only those count, not the bullets that explain them', () => {
+  const asked = doc(
+    [
+      'Các câu Q1–Q3 của `ba` được trả lời ngày 2026-11-01.',
+      '',
+      'Câu Q4 và Q5 dưới đây là của `sa`, ngày 2026-11-01.',
+      '',
+      '**Q4. Ba test hiện có nữa của `src/page.test.ts` phải đổi theo design.**',
+      '',
+      'Tôi dựng một prototype của `renderCart` theo `design.md`:',
+      '',
+      '- mỗi nút "Xóa" có form riêng trong ô thứ năm;',
+      '- `STYLE` có một media query dưới 30 rem.',
+      '',
+      '| Test | Điều nó kiểm |',
+      '|---|---|',
+      '| "a cart has a coupon form" | `<form` đầu tiên |',
+      '',
+      '**Q5. Thêm mã dòng vào dữ liệu của các test hiện có.**',
+      '',
+      '- (A) Thêm `id` vào các dòng dữ liệu đó.',
+      '- (B) Không thêm `id`.',
+    ].join('\n'),
+  );
+  assert.deepEqual(openQuestions(asked), ['Q4. Ba test hiện có nữa của `src/page.test.ts` phải đổi theo design.', 'Q5. Thêm mã dòng vào dữ liệu của các test hiện có.']);
+  const listed = doc(['- **Q1. Có hỏi xác nhận trước khi xóa không?**', '  - Đề xuất: không.', '- **Q2. Có hiện thông báo sau khi xóa không?**'].join('\n'));
+  assert.deepEqual(openQuestions(listed), ['Q1. Có hỏi xác nhận trước khi xóa không?', 'Q2. Có hiện thông báo sau khi xóa không?']);
+});
+
 test('no question: an empty section, the template comment only, "Không có", or "Không còn câu hỏi mở" with notes after it', () => {
   assert.deepEqual(openQuestions(doc('')), []);
   assert.deepEqual(openQuestions(doc('<!-- What still needs your decision before gate ① spec-approval. -->')), []);
