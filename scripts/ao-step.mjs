@@ -9,7 +9,7 @@
 // root; the kit is in AO_KIT_DIR when set.
 import { spawn, spawnSync } from 'node:child_process';
 import { appendFileSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
-import { join, resolve } from 'node:path';
+import { join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 import { parse } from 'yaml';
@@ -45,6 +45,33 @@ export function checkArgument(command, arg, space) {
 }
 
 const secret = (name) => process.env[name] || userVariable(name);
+
+// The file of --note or --answers, which the skills write in .ai/runs/<KEY>/. Its text goes to the agent as the human's
+// words, so a file anywhere else is refused.
+export function runsFile(projectDir, file) {
+  const path = resolve(projectDir, file);
+  const inside = relative(join(projectDir, '.ai', 'runs'), path);
+  if (inside === '' || inside.startsWith('..') || resolve(inside) === inside) throw new Error(`--note and --answers read only a file in .ai/runs/, not ${file}`);
+  return path;
+}
+
+// Takes the lock of the runs (one agent at a time) for `holder`, or returns the live holder that has it. The file is
+// created only if it is not there, so two runs started at once cannot both take it; a holder whose process is gone is
+// replaced.
+export function takeLock(lock, holder, alive) {
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      writeFileSync(lock, JSON.stringify(holder), { flag: 'wx' });
+      return null;
+    } catch (error) {
+      if (error.code !== 'EEXIST') throw error;
+      const current = readJson(lock);
+      if (current && alive(current.pid)) return current;
+      rmSync(lock, { force: true });
+    }
+  }
+  throw new Error(`cannot take the lock ${lock}`);
+}
 
 async function main() {
   const { values, positionals } = parseArgs({ allowPositionals: true, options: { go: { type: 'boolean', default: false }, answers: { type: 'string' }, note: { type: 'string' } } });
@@ -82,7 +109,7 @@ async function main() {
     runStates: () => (existsSync(runsDir) ? readdirSync(runsDir).map((key) => readJson(join(runsDir, key, 'state.json'))).filter(Boolean) : []),
   };
   const gather = () => gatherFacts({ command, arg, jira, github, local: files, contract, mapping, roster, gates, apps, approvers, space });
-  const read = (file) => readFileSync(resolve(projectDir, file), 'utf8');
+  const read = (file) => readFileSync(runsFile(projectDir, file), 'utf8');
   const options = { roster, contract, gates, mapping, ...(values.answers && { answers: read(values.answers) }), ...(values.note && { note: read(values.note) }) };
 
   const facts = await gather();
@@ -92,13 +119,12 @@ async function main() {
 
   const key = facts.item.key;
   const lock = join(runsDir, 'active.json');
-  const holder = readJson(lock);
-  if (holder && alive(holder.pid)) {
+  mkdirSync(join(runsDir, key), { recursive: true });
+  const holder = takeLock(lock, { pid: process.pid, command, arg, startedAt: new Date().toISOString() }, alive);
+  if (holder) {
     console.log(`STOP: ao-step is already running ${holder.command} ${holder.arg} (process ${holder.pid}); agents run one at a time`);
     return;
   }
-  mkdirSync(join(runsDir, key), { recursive: true });
-  writeFileSync(lock, JSON.stringify({ pid: process.pid, command, arg, startedAt: new Date().toISOString() }));
   try {
     console.log('');
     const { decision: final } = await runGo({

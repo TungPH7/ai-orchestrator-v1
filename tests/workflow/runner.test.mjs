@@ -8,7 +8,9 @@ import { answersPrompt, resumePrompt } from '../../lib/workflow/prompts.mjs';
 import { agentCommand, formatDecision, lastReport, runGo } from '../../lib/workflow/runner.mjs';
 import { decideStep } from '../../lib/workflow/steps.mjs';
 import { CONTRACT_DIR, ROOT } from '../helpers/kit.mjs';
-import { checkArgument } from '../../scripts/ao-step.mjs';
+import { checkArgument, runsFile, takeLock } from '../../scripts/ao-step.mjs';
+import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 
 const contract = readContract(CONTRACT_DIR);
 const roster = readRoster(join(ROOT, 'agents'));
@@ -234,4 +236,25 @@ test('the argument is a key of the space or a PR number; anything else stops bef
   assert.match(checkArgument('fix', '15; rm -rf .', 'DEMO'), /takes a PR number/);
   assert.match(checkArgument('spec', 'DEMO-20 && echo', 'DEMO'), /takes a Jira key/);
   assert.match(checkArgument('deploy', 'DEMO-1', 'DEMO'), /unknown command deploy/);
+});
+
+// Reviews of ao-pilot PR #14 (dev-workflow T15b).
+test('--note and --answers read only a file in .ai/runs/ of the project', () => {
+  const project = join(tmpdir(), 'ao-step-note');
+  assert.equal(runsFile(project, '.ai/runs/DEMO-21/note.md'), join(project, '.ai', 'runs', 'DEMO-21', 'note.md'));
+  assert.equal(runsFile(project, join(project, '.ai', 'runs', 'DEMO-21', 'answers.md')), join(project, '.ai', 'runs', 'DEMO-21', 'answers.md'));
+  for (const file of ['.ai/runs/../../.env', '../secrets.txt', 'C:/Users/me/.ssh/id_ed25519', '.ai/ledger/DEMO-21.md', '.ai/runs']) {
+    assert.throws(() => runsFile(project, file), /only a file in \.ai\/runs\//, file);
+  }
+});
+
+test('the lock of ao-step is taken atomically: a second run sees the first, a stale one is replaced', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'ao-step-lock-'));
+  const lock = join(dir, 'active.json');
+  const first = { pid: 101, command: 'build', arg: 'DEMO-21' };
+  assert.equal(takeLock(lock, first, () => true), null, 'free');
+  assert.deepEqual(takeLock(lock, { pid: 102, command: 'review', arg: '15' }, (pid) => pid === 101), first, 'held by a live process');
+  assert.equal(takeLock(lock, { pid: 103, command: 'fix', arg: '15' }, () => false), null, 'the holder is gone');
+  assert.equal(JSON.parse(readFileSync(lock, 'utf8')).pid, 103);
+  rmSync(dir, { recursive: true, force: true });
 });
