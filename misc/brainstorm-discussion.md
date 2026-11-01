@@ -27,7 +27,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 17 | `46e16bae-3275-482c-b001-11cf43108e28` | 2026-10-31 khoảng 23:25 → 2026-11-01 khoảng 01:05 | Bạn duyệt `SPEC-dev-workflow.md`; spec merge (PR #109); Claude viết plan 19 task, bốn checkpoint (chặn gọi thẳng credential helper, effort đặt cả tham số lẫn biến môi trường, PR chép kit review bằng `/ao-review`, Story của Epic thử dừng ở Ready for QA); bạn duyệt plan (PR #110); T1 kiểm skill `/` và lệnh nền bằng Haiku: dòng `!` chỉ tự chạy khi có luật `allow`, `$ARGUMENTS` được chèn nguyên văn, `claude -p` dừng lệnh nền sau 10 phút nếu không đặt `timeout`; T2: Task thử DEMO-18, PR nháp `ao-pilot` #13, push bằng token App, Git Credential Manager được thay, `gh` dùng token App; bạn hỏi vì sao lệnh 20 phút chạy quá 20 phút; bạn hỏi Haiku dùng ở đâu và chê Haiku kém; Claude thôi dùng Haiku, đề xuất năm điểm sửa spec và xin bạn thêm quyền cho hai App; bạn duyệt năm điểm sửa, T1 đóng (PR #111); bạn đã thêm quyền cho hai App, T2 đóng (PR #112): cả sáu tiền đề về GitHub đúng; Checkpoint 1, chờ bạn |
 | 18 | `184d78d1-4600-4c36-8279-005a105c9216` | 2026-11-01 khoảng 01:08 → | Bạn cho qua Checkpoint 1 (PR #113); T3–T14 đóng (PR #114–#125): phiên agent dùng danh tính App và credential helper theo vai trò, PR tài liệu và quy tắc Q5, `merge-gate` báo PR chỉ còn chờ bạn và `jira-sync` gỡ cờ, đánh dấu dòng DoR, `ao-step.mjs` và vòng chạy `--go`, sáu skill `/ao-*`, template và prompt; chạy chỉ kiểm trong `ao-pilot` tìm ra lỗi 403 khi đọc commit status; Checkpoint 2 (PR #126), chờ bạn |
 | 19 | `44d6269e-f8c5-4052-a81c-f0f6385e00ed` | 2026-11-01 khoảng 10:35 → khoảng 11:30 | Bạn cho qua Checkpoint 2 (PR #127); T15: Task DEMO-19, ao-pilot PR #14 chép kit bằng danh tính bot `ao-dev`, `/ao-review`: `reviewer` COMMENT, `security` chạm giới hạn 5 giờ rồi chạy tiếp và COMMENT, 11,69 USD quy đổi; `merge-gate` bản mới chạy ở máy comment và gắn cờ một lần; trả lời cuối của Claude bị bộ lọc an toàn chặn hai lần, nên phiên này không có lượt nào trong log |
-| 20 | `bc6dea4e-d395-4a5d-b439-2a337292b2e7` | 2026-11-01 khoảng 11:45 → | Bạn dán đoạn cuối của Phiên 19 để làm tiếp; Claude báo kết quả T15 và hỏi về nhánh `main` và các finding của kit; bạn merge PR #14 và chọn cả hai đề xuất: nhánh mặc định của `ao-pilot` sang `develop`, sửa finding ở kit không chạy agent; T15 đóng (PR #128), T15a (PR #129), T15b (PR #130); T16 đóng (PR #131): agent dùng danh tính App, vai trò chỉ đọc không push được; Checkpoint 3, bạn đồng ý chạy Epic thử; T17: Epic DEMO-20, `/ao-status`, chờ bạn bấm `Start spec`; bạn bấm `Start spec`; `/ao-spec` bị Claude Code tắt vì máy thiếu RAM; bạn bảo chạy lại; `ba` viết SPEC, `ao-step` dừng vì không thấy nhánh tài liệu chưa push, kit PR #132 sửa; bạn chọn chạy bằng code của kit và trả lời theo đề xuất; `ux` chạm giới hạn 5 giờ; bạn bảo làm tiếp; `ux` hỏi sáu câu, `sa` hỏi hai câu, bạn trả lời theo đề xuất; `ba` mở PR tài liệu #15, CI xanh, stage spec 7,84 USD quy đổi; bạn duyệt spec; stage plan: `sa` viết plan và ADR-0002, `ba` tạo DEMO-21, DEMO-22, DEMO-23; bạn chọn DEMO-22 ở `xhigh` và đổi `Status` thành Approved, hỏi vì sao `Status` còn Draft; lượt `ba` bị tắt vì thiếu RAM, bạn bảo chạy lại; bạn duyệt plan; `merge-gate` merge PR #15, `audit` xanh, T17 đóng (PR #133), 14,92 USD quy đổi; bạn đồng ý; bốn lỗi nhỏ sửa (PR #134); T18: `be-dev` bị `jira-guard` chặn vì token App bị cắt ở dấu chấm, kit PR #135 sửa; bạn gỡ cờ; `be-dev` xong DEMO-22 ở `xhigh`, kit PR #136 sửa việc làm tiếp Sub-task; bạn hỏi `be-dev` có bị tắc không; `fe-dev` code xong DEMO-23 nhưng gắn cờ vì Tab không cuộn khung bảng ở 320 px; chờ bạn chọn A hoặc B trên DEMO-23 và gỡ cờ |
+| 20 | `bc6dea4e-d395-4a5d-b439-2a337292b2e7` | 2026-11-01 khoảng 11:45 → | Bạn dán đoạn cuối của Phiên 19 để làm tiếp; Claude báo kết quả T15 và hỏi về nhánh `main` và các finding của kit; bạn merge PR #14 và chọn cả hai đề xuất: nhánh mặc định của `ao-pilot` sang `develop`, sửa finding ở kit không chạy agent; T15 đóng (PR #128), T15a (PR #129), T15b (PR #130); T16 đóng (PR #131): agent dùng danh tính App, vai trò chỉ đọc không push được; Checkpoint 3, bạn đồng ý chạy Epic thử; T17: Epic DEMO-20, `/ao-status`, chờ bạn bấm `Start spec`; bạn bấm `Start spec`; `/ao-spec` bị Claude Code tắt vì máy thiếu RAM; bạn bảo chạy lại; `ba` viết SPEC, `ao-step` dừng vì không thấy nhánh tài liệu chưa push, kit PR #132 sửa; bạn chọn chạy bằng code của kit và trả lời theo đề xuất; `ux` chạm giới hạn 5 giờ; bạn bảo làm tiếp; `ux` hỏi sáu câu, `sa` hỏi hai câu, bạn trả lời theo đề xuất; `ba` mở PR tài liệu #15, CI xanh, stage spec 7,84 USD quy đổi; bạn duyệt spec; stage plan: `sa` viết plan và ADR-0002, `ba` tạo DEMO-21, DEMO-22, DEMO-23; bạn chọn DEMO-22 ở `xhigh` và đổi `Status` thành Approved, hỏi vì sao `Status` còn Draft; lượt `ba` bị tắt vì thiếu RAM, bạn bảo chạy lại; bạn duyệt plan; `merge-gate` merge PR #15, `audit` xanh, T17 đóng (PR #133), 14,92 USD quy đổi; bạn đồng ý; bốn lỗi nhỏ sửa (PR #134); T18: `be-dev` bị `jira-guard` chặn vì token App bị cắt ở dấu chấm, kit PR #135 sửa; bạn gỡ cờ; `be-dev` xong DEMO-22 ở `xhigh`, kit PR #136 sửa việc làm tiếp Sub-task; bạn hỏi `be-dev` có bị tắc không; `fe-dev` code xong DEMO-23 nhưng gắn cờ vì Tab không cuộn khung bảng ở 320 px; bạn chọn B và gỡ cờ; `fe-dev` mở PR #16, CI xanh; `reviewer` chạm giới hạn 5 giờ, chạy lại sau khi reset; `reviewer` 3 Low, `security` không có finding; chờ bạn chọn việc cần sửa cho `/ao-fix` |
 
 ---
 
@@ -7848,3 +7848,108 @@ Lệnh xong lúc 17:43: `fe-dev` code xong nhưng gắn cờ DEMO-23 và chưa m
 Sau đó mình chạy lại `/ao-build DEMO-21`. `fe-dev` sẽ đọc ledger và câu trả lời của bạn, làm theo, rồi mở PR. Tiếp theo là `/ao-review`.
 
 Thêm một lỗi nhỏ của kit: khi `fe-dev` gắn cờ, `ao-step` chỉ báo chung chung "fe-dev ran build and it still has to run", chứ không nói DEMO-23 đang chờ bạn. Mình gộp lỗi này với lỗi Sub-task mang cờ đã ghi lúc trước.
+
+# Phiên 20 · Lượt 18 — 2026-11-01 khoảng 18:43
+
+**Bạn:**
+
+````markdown
+đã trả lời
+````
+
+Trước khi trả lời, Claude kiểm DEMO-23 trên Jira và chạy bước chỉ kiểm của `/ao-build`.
+
+**Claude:**
+
+Câu trả lời "chọn B" của bạn đã có trên DEMO-23, lúc 18:42. Nhưng DEMO-23 vẫn còn cờ (Flagged: Impediment) và nhãn `needs-you`. Còn hai thứ đó thì hook `jira-guard` sẽ chặn `fe-dev` khi nó chuyển trạng thái item, và lượt chạy sẽ hỏng như lần trước. Vì vậy mình chưa chạy.
+
+Bạn làm nốt hai bước này trên https://phunghuutung12b4.atlassian.net/browse/DEMO-23:
+
+1. Bấm nút **…** (More actions) ở góc trên bên phải, rồi chọn **Remove flag** **(đối chiếu giao diện)**.
+2. Ở trường **Labels**, bấm dấu **x** trên nhãn `needs-you` để xóa nhãn đó. Giữ nguyên nhãn `ao-fe-dev`.
+3. Nhắn mình "đã gỡ cờ".
+
+Bước kiểm đã trả GO: `fe-dev` làm tiếp DEMO-23 ở `high`. Máy còn trống khoảng 5,7 GB RAM. Ngay khi cờ được gỡ, mình chạy luôn.
+
+# Phiên 20 · Lượt 19 — 2026-11-01 khoảng 18:47
+
+**Bạn:**
+
+````markdown
+đã gỡ cờ
+````
+
+Trước khi trả lời, Claude kiểm DEMO-23 rồi chạy `ao-step.mjs build DEMO-21 --go` ở nền bằng code của kit.
+
+**Claude:**
+
+Cờ trên DEMO-23 đã được gỡ lúc 18:46, chỉ còn nhãn `ao-fe-dev`. `fe-dev` đang chạy tiếp ở nền:
+
+1. Đọc ledger và câu trả lời "chọn B" của bạn.
+2. Thêm `scroll-padding-inline-end:3rem` vào luật `.scroll`, rồi kiểm lại ở 320 px.
+3. Đóng DEMO-23 và mở PR code của Story DEMO-21.
+
+Khi PR mở và CI chạy xong, mình sẽ báo bạn, rồi chạy tiếp `/ao-review`.
+
+Lệnh xong lúc 19:03, với PR #16 đã mở. Claude kiểm PR, chạy `/ao-status` giữa vòng và bước chỉ kiểm của review, chạy `/ao-review 16` ở nền, rồi trả lời tiếp:
+
+**Claude:**
+
+`/ao-build` đã xong: Story DEMO-21 có **PR #16** (https://github.com/TungPH7/ao-pilot/pull/16).
+
+- PR có 13 commit, sửa 11 file (+869/−53).
+- Mọi commit đều do bot `ao-dev` viết và commit.
+- CI xanh.
+- DEMO-21 đã sang In Review.
+- Bốn lượt dev tốn 12,51 USD quy đổi.
+
+`/ao-review 16` đang chạy ở nền:
+
+1. `reviewer` review PR ở `xhigh`.
+2. `security` review đầy đủ ở `max`. Đây thường là lượt đắt nhất, khoảng 3–6 USD.
+
+Khi hai báo cáo có trên PR, mình sẽ báo các finding. Nếu không có finding nào chặn, T18 vẫn cần một vòng `/ao-fix` để kiểm tiêu chí 5. Lúc đó mình sẽ nhờ bạn ghi một việc cần sửa.
+
+# Phiên 20 · Lượt 20 — 2026-11-01 khoảng 20:21
+
+Lượt chạy `/ao-review` dừng lúc 19:05, vì `reviewer` chạm giới hạn 5 giờ ngay khi bắt đầu. Phiên của Claude cũng chạm giới hạn.
+
+**Bạn:**
+
+````markdown
+I hit my usage limit while you were working, but it has reset now. Please continue from where you left off.
+````
+
+Trước khi trả lời, Claude kiểm RAM rồi chạy lại `/ao-review 16` ở nền (`reviewer` làm tiếp trong session cũ).
+
+**Claude:**
+
+`/ao-review 16` đang chạy tiếp ở nền. Máy còn trống khoảng 4,5 GB RAM.
+
+1. `reviewer` làm tiếp trong session cũ, ở `xhigh`.
+2. Sau đó `security` review đầy đủ ở `max`.
+
+Khi hai báo cáo có trên PR #16, mình sẽ báo các finding, rồi chuẩn bị vòng `/ao-fix` để kiểm tiêu chí 5.
+
+Lệnh xong lúc 20:37, với cả hai báo cáo trên head `752f9de`. Claude đọc hai báo cáo rồi trả lời tiếp:
+
+**Claude:**
+
+Review của PR #16 đã xong, không có finding nào chặn, và PR đang chờ bạn ở gate ③. Nhưng trước khi bạn approve, T18 cần một vòng `/ao-fix` để kiểm tiêu chí 5. Vì vậy mình cần bạn chọn việc cần sửa.
+
+**Hai báo cáo trên head `752f9de`:**
+- **`reviewer`** chạy ở `xhigh`, tốn 2,55 USD. Nó chạy hai lần, vì lần đầu chạm giới hạn 5 giờ ngay khi bắt đầu. Không có finding Critical, High hay Medium, chỉ có 3 finding Low:
+  1. Chú thích của `cartServer` trong `src/server.ts` khó đọc. Một câu bị ngắt giữa chừng, một câu đọc ra nghĩa ngược, và "AC11" mang hai nghĩa: của DEMO-11 và của DEMO-20.
+  2. Một assertion trong `src/page.test.ts` ghim thứ tự của hai luật CSS, trong khi thứ tự đó không quyết định hành vi. Lời giải thích kèm assertion cũng sai.
+  3. Mô tả PR thiếu ảnh chụp màn hình S1, mà template yêu cầu.
+- **`security`** chạy ở `max`, tốn 2,92 USD, và không có finding nào. Nó đã lần theo năm hướng tấn công, và không hướng nào khai thác được: XSS qua các trường mới, CSRF, sửa giá hay số lượng, khóa `__proto__`, và làm sập server.
+- DEMO-21 tới giờ tốn 17,98 USD quy đổi.
+
+**Câu hỏi: vòng `/ao-fix` sửa gì?** Vòng này cần một thay đổi code nhỏ. Sau đó `reviewer` review lại cả PR, còn `security` chỉ review phần mới ở `high` và ghi dòng `Scope` (tiêu chí 5).
+- **(a) Mình khuyên chọn cách này:** sửa Low 1 và Low 2 của `reviewer`, tức viết lại chú thích của `cartServer` và bỏ assertion về thứ tự luật CSS. Cả hai đều là code, diff nhỏ, và không đụng đường dẫn được bảo vệ.
+- **(b)** Chỉ sửa Low 1.
+- **(c)** Bạn tự ghi một việc khác.
+
+Low 3 (ảnh chụp màn hình) không phải code, nên mình để ngoài vòng này.
+
+Bạn trả lời gọn được, ví dụ "a". Mình sẽ ghi câu trả lời vào `.ai/runs/DEMO-21/note.md`, rồi chạy `/ao-fix 16` với `--note`. Sau vòng sửa, mình sẽ gửi các bước để bạn approve PR #16.
