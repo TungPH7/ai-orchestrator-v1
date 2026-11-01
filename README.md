@@ -8,6 +8,7 @@ Module đã xong:
 - **`tracker-integration`**: nối hợp đồng với Jira Cloud và GitHub, để trạng thái item đổi theo dữ kiện thật và mỗi transition chỉ do đúng vai trò thực hiện ([SPEC-tracker-integration.md](SPEC-tracker-integration.md)).
 - **`quality-gates`**: biến các cổng tự động của hợp đồng thành kiểm tra thật. Code chỉ vào `develop`, `main`, `release/*` và chỉ được deploy khi đã qua CI, có báo cáo review và có approve của bạn, kể cả khi repo private ở gói Free không có branch protection ([SPEC-quality-gates.md](SPEC-quality-gates.md)).
 - **`agent-roster`**: mười agent của Claude Code, mỗi vai trò của hợp đồng một agent. Mỗi agent biết đầu vào, đầu ra, tool, skill, model và effort của mình, và hook giới hạn file nó được ghi ([SPEC-agent-roster.md](SPEC-agent-roster.md)).
+- **`dev-workflow`**: sáu lệnh `/ao-*` đưa một Epic từ spec tới merge vào `develop`, chỉ dừng ở cổng cần bạn. Agent làm việc với GitHub bằng hai App, không bằng login của bạn ([SPEC-dev-workflow.md](SPEC-dev-workflow.md)).
 
 ## Hợp đồng quy trình
 
@@ -91,6 +92,27 @@ Skill của agent được chép vào kit, ghim theo commit (`kit/.claude/skills
 - dung lượng repo và Git LFS;
 - những điều đã gặp khi chạy thật.
 
+## Sáu lệnh `/ao-*`
+
+Trong phiên Claude Code của bạn, ở repo dự án, sáu lệnh đưa một Epic đi hết vòng trong. Mỗi lệnh trước hết chạy `ao-step.mjs` để kiểm trạng thái trên Jira, GitHub và `.ai/`, rồi in GO hoặc STOP. Khi là GO, lệnh mở đúng agent theo đúng thứ tự, và dừng ở cổng cần bạn.
+
+| Lệnh | Làm gì |
+|---|---|
+| `/ao-status [KEY]` | Việc đang chờ bạn, lệnh tiếp theo của từng item, chi phí |
+| `/ao-spec <EPIC>` | `ba`, `ux`, `sa` viết SPEC và design, rồi mở PR tài liệu; dừng ở gate ① |
+| `/ao-plan <EPIC>` | `sa` viết plan, `ba` tạo item; dừng ở gate ②. Chạy lần nữa sau gate ② để refine item và merge PR tài liệu |
+| `/ao-build <KEY>` | Dev agent của từng Sub-task, BE trước FE, tới khi PR mở và CI chạy xong |
+| `/ao-review <PR>` | `reviewer`, rồi `security` (đầy đủ, hoặc chỉ phần mới); dừng ở gate ③ |
+| `/ao-fix <PR> [việc cần sửa]` | Dev agent sửa, rồi review lại |
+
+Câu hỏi của agent được chuyển cho bạn trong chat. Kết quả và chi phí của mỗi lượt nằm ở `.ai/runs/<KEY>/`. [docs/dev-workflow.md](docs/dev-workflow.md) giải thích các phần sau:
+
+- một vòng Epic từ đầu tới cuối;
+- cách đọc `.ai/runs/`;
+- khi nào lệnh dừng;
+- cách chạy tiếp sau khi hết usage hay bị ngắt;
+- chi phí đo được.
+
 ## Cài kit vào repo dự án
 
 Thư mục `kit/` chứa các file đặt vào repo dự án, giữ đúng đường dẫn tương đối. Tới khi có `project-scaffold`, bạn chép tay như đã làm với `ao-pilot`:
@@ -158,6 +180,7 @@ node .ai-orchestrator/scripts/coverage-diff.mjs --base origin/develop  # coverag
 node .ai-orchestrator/scripts/merge-gate.mjs --dry-run     # PR nào sẽ được merge, PR nào còn thiếu gì; không merge
 node .ai-orchestrator/scripts/audit.mjs --sha <commit> --branch develop --dry-run  # commit có qua đủ cổng không; không gắn cờ
 node .ai-orchestrator/scripts/ao-agent.mjs <role> -p "<prompt>"  # chạy một agent làm phiên chính; bỏ -p để làm trực tiếp với agent
+node .ai-orchestrator/scripts/ao-step.mjs <status|spec|plan|build|review|fix> [<KEY>|<PR>] [--go]  # bước của lệnh /ao-*: kiểm, rồi chạy với --go
 node .ai-orchestrator/scripts/render-agents.mjs --project .      # sinh lại agent của dự án: mã space, skill theo stack
 node .ai-orchestrator/scripts/check-design.mjs <design.md>       # kiểm design.md và ảnh của nó, như job policy
 ```

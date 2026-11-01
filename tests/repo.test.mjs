@@ -96,6 +96,24 @@ test('README covers the agents: the section, the spec, the docs, the commands an
   for (const text of [...texts, ...commands, ...install, 'lib/agents/']) assert.ok(readme().includes(text), text);
 });
 
+const AO_COMMANDS = ['ao-status', 'ao-spec', 'ao-plan', 'ao-build', 'ao-review', 'ao-fix'];
+
+test('README covers the six commands: the module, the section, the spec, the docs and ao-step.mjs', () => {
+  const texts = ['**`dev-workflow`**', '## Sáu lệnh `/ao-*`', '(SPEC-dev-workflow.md)', '(docs/dev-workflow.md)', 'ao-step.mjs <status|spec|plan|build|review|fix>', '.ai/runs/<KEY>/'];
+  for (const text of [...texts, ...AO_COMMANDS.map((command) => `\`/${command}`)]) assert.ok(readme().includes(text), text);
+});
+
+test('docs/dev-workflow.md covers each command, an Epic round, .ai/runs, the stops, resuming, Git Bash and the costs', () => {
+  const doc = readFileSync(join(ROOT, 'docs', 'dev-workflow.md'), 'utf8');
+  for (const command of AO_COMMANDS) {
+    assert.ok(doc.split('\n').some((line) => line.startsWith(`| \`/${command}\` |`)), command);
+    assert.ok(existsSync(join(ROOT, 'kit', '.claude', 'skills', command, 'SKILL.md')), `${command} is a skill of the kit`);
+  }
+  const headings = ['## Một vòng Epic từ đầu tới cuối', '## Đọc `.ai/runs/`', '## Khi nào lệnh dừng', '## Chạy tiếp sau khi bị ngắt', '## Chi phí đo được'];
+  const texts = ['state.json', 'last.md', 'answers.md', 'note.md', 'active.json', '--answers', '--note', 'usage-limit', 'MSYS_NO_PATHCONV=1 claude -p "/ao-spec', 'AO_KIT_DIR', 'CLAUDE_CODE_DISABLE_BG_SHELL_PRESSURE_REAP=1'];
+  for (const text of [...headings, ...texts]) assert.ok(doc.includes(text), text);
+});
+
 test('docs/agents.md lists every role with the model, effort and maxTurns of the roster, and covers running, effort, skills, design.md, Figma and LFS', () => {
   const doc = readFileSync(join(ROOT, 'docs', 'agents.md'), 'utf8');
   const { roles } = readRoster(join(ROOT, 'agents'));
