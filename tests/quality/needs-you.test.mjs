@@ -155,3 +155,13 @@ test('a marker written by someone else, on the PR or on the item, does not stop 
   const { lines } = await runOnce(copy, { jira });
   assert.deepEqual(lines.slice(1), [`Commented on #12: ${MARKER}`, `Flagged DEMO-12: ${MARKER}`]);
 });
+
+test('past eight paths, the notice counts them under each protected path instead of listing them (T15a)', () => {
+  const pr = answers['/pulls/12'];
+  const paths = [...Array.from({ length: 7 }, (_, i) => `.ai-orchestrator/lib/m${i}.mjs`), '.claude/settings.json', '.claude/hooks/gh-guard.mjs', '.mcp.json'];
+  assert.equal(
+    needsYouText({ pr, paths, missing: [], gates }),
+    `${MARKER}. It changes 10 protected files: .ai-orchestrator/** (7), .claude/** (2), .mcp.json (1), which only you merge. You approved its head commit: read the diff, then Squash and merge it yourself: merge-gate does not merge it.`,
+  );
+  assert.match(needsYouText({ pr, paths: paths.slice(0, 8), missing: [], gates }), /It changes \.ai-orchestrator\/lib\/m0\.mjs, .*\.claude\/settings\.json, which only you merge/, 'eight are still listed');
+});
