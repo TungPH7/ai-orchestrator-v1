@@ -119,8 +119,8 @@ T16 ── T17 Epic: spec, plan ── T18 Epic: build, review, fix ── T19 t
 - [x] T16: Thử đi vòng
 
 ### Checkpoint 3
-- [ ] Tiêu chí 3, 6 và 9 của spec mục 9 đạt
-- [ ] Bạn xem chi phí của T15–T16, rồi đồng ý chạy Epic thử (ước 25–36 USD)
+- [x] Tiêu chí 3, 6 và 9 của spec mục 9 đạt
+- [x] Bạn xem chi phí của T15–T16, rồi đồng ý chạy Epic thử (ước 25–36 USD)
 
 ### Giai đoạn 6: kiểm thật
 - [ ] T17: Epic thử: `/ao-spec`, `/ao-plan` tới lúc PR tài liệu được merge [bạn]
