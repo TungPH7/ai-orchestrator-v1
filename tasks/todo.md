@@ -654,7 +654,7 @@ Bạn làm: bấm `Start spec`, `Approve spec`, `Approve plan`; trả lời câu
 
 **Cỡ:** M
 
-### [ ] T18: Epic thử: `/ao-build`, `/ao-review`, `/ao-fix` tới merge [bạn] (kiểm thật 4)
+### [x] T18: Epic thử: `/ao-build`, `/ao-review`, `/ao-fix` tới merge [bạn] (kiểm thật 4)
 
 **Mô tả:**
 
@@ -675,12 +675,12 @@ Bạn làm: bấm `Start spec`, `Approve spec`, `Approve plan`; trả lời câu
 Bạn làm: approve PR; ghi việc cần sửa nếu cần; gõ lệnh `/` theo plan, quyết định 10.
 
 **Tiêu chí chấp nhận:**
-- [ ] Tiêu chí 5, 7 và 8 của spec mục 9 đạt.
-- [ ] Số đo của mọi lượt có trong `tasks/verification.md`.
+- [x] Tiêu chí 5, 7 và 8 của spec mục 9 đạt.
+- [x] Số đo của mọi lượt có trong `tasks/verification.md`.
 
 **Kiểm chứng:**
-- [ ] `git log --format='%an %ae'` của PR chỉ có bot `ao-dev`
-- [ ] GitHub for Jira hiện commit và PR trên Story
+- [x] `git log --format='%an %ae'` của PR chỉ có bot `ao-dev`
+- [x] GitHub for Jira hiện commit và PR trên Story
 
 **Phụ thuộc:** T17
 
