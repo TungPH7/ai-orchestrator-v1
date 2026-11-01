@@ -2,7 +2,7 @@
 
 > **Plan:** [plan.md](plan.md). **Task:** [todo.md](todo.md). **Spec:** [SPEC-pilot-1.md](../SPEC-pilot-1.md). Giờ theo giờ Việt Nam (UTC+7).
 
-## T1: Tiền đề về khung app và `claude -p` (2026-11-01, khoảng 23:45 → 02/11 00:20)
+## T1: Tiền đề về khung app và `claude -p` (2026-11-01, khoảng 23:45 → 23:55)
 
 Làm trong scratchpad, không đụng repo nào. Kit ở `main` `5603882`.
 
@@ -63,7 +63,7 @@ Kết quả:
 
 Chi phí T1: 0,35 USD quy đổi (3 lượt Sonnet).
 
-## T2: Tiền đề về GitHub và Jira (2026-11-02, khoảng 00:05 → 00:20)
+## T2: Tiền đề về GitHub và Jira (2026-11-01, khoảng 23:50 → 23:56)
 
 | Bước | Cách | Kết quả |
 |---|---|---|
