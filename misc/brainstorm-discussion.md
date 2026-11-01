@@ -28,7 +28,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 18 | `184d78d1-4600-4c36-8279-005a105c9216` | 2026-11-01 khoảng 01:08 → | Bạn cho qua Checkpoint 1 (PR #113); T3–T14 đóng (PR #114–#125): phiên agent dùng danh tính App và credential helper theo vai trò, PR tài liệu và quy tắc Q5, `merge-gate` báo PR chỉ còn chờ bạn và `jira-sync` gỡ cờ, đánh dấu dòng DoR, `ao-step.mjs` và vòng chạy `--go`, sáu skill `/ao-*`, template và prompt; chạy chỉ kiểm trong `ao-pilot` tìm ra lỗi 403 khi đọc commit status; Checkpoint 2 (PR #126), chờ bạn |
 | 19 | `44d6269e-f8c5-4052-a81c-f0f6385e00ed` | 2026-11-01 khoảng 10:35 → khoảng 11:30 | Bạn cho qua Checkpoint 2 (PR #127); T15: Task DEMO-19, ao-pilot PR #14 chép kit bằng danh tính bot `ao-dev`, `/ao-review`: `reviewer` COMMENT, `security` chạm giới hạn 5 giờ rồi chạy tiếp và COMMENT, 11,69 USD quy đổi; `merge-gate` bản mới chạy ở máy comment và gắn cờ một lần; trả lời cuối của Claude bị bộ lọc an toàn chặn hai lần, nên phiên này không có lượt nào trong log |
 | 20 | `bc6dea4e-d395-4a5d-b439-2a337292b2e7` | 2026-11-01 khoảng 11:45 → khoảng 22:15 | Bạn dán đoạn cuối của Phiên 19 để làm tiếp; Claude báo kết quả T15 và hỏi về nhánh `main` và các finding của kit; bạn merge PR #14 và chọn cả hai đề xuất: nhánh mặc định của `ao-pilot` sang `develop`, sửa finding ở kit không chạy agent; T15 đóng (PR #128), T15a (PR #129), T15b (PR #130); T16 đóng (PR #131): agent dùng danh tính App, vai trò chỉ đọc không push được; Checkpoint 3, bạn đồng ý chạy Epic thử; T17: Epic DEMO-20, `/ao-status`, chờ bạn bấm `Start spec`; bạn bấm `Start spec`; `/ao-spec` bị Claude Code tắt vì máy thiếu RAM; bạn bảo chạy lại; `ba` viết SPEC, `ao-step` dừng vì không thấy nhánh tài liệu chưa push, kit PR #132 sửa; bạn chọn chạy bằng code của kit và trả lời theo đề xuất; `ux` chạm giới hạn 5 giờ; bạn bảo làm tiếp; `ux` hỏi sáu câu, `sa` hỏi hai câu, bạn trả lời theo đề xuất; `ba` mở PR tài liệu #15, CI xanh, stage spec 7,84 USD quy đổi; bạn duyệt spec; stage plan: `sa` viết plan và ADR-0002, `ba` tạo DEMO-21, DEMO-22, DEMO-23; bạn chọn DEMO-22 ở `xhigh` và đổi `Status` thành Approved, hỏi vì sao `Status` còn Draft; lượt `ba` bị tắt vì thiếu RAM, bạn bảo chạy lại; bạn duyệt plan; `merge-gate` merge PR #15, `audit` xanh, T17 đóng (PR #133), 14,92 USD quy đổi; bạn đồng ý; bốn lỗi nhỏ sửa (PR #134); T18: `be-dev` bị `jira-guard` chặn vì token App bị cắt ở dấu chấm, kit PR #135 sửa; bạn gỡ cờ; `be-dev` xong DEMO-22 ở `xhigh`, kit PR #136 sửa việc làm tiếp Sub-task; bạn hỏi `be-dev` có bị tắc không; `fe-dev` code xong DEMO-23 nhưng gắn cờ vì Tab không cuộn khung bảng ở 320 px; bạn chọn B và gỡ cờ; `fe-dev` mở PR #16, CI xanh; `reviewer` chạm giới hạn 5 giờ, chạy lại sau khi reset; `reviewer` 3 Low, `security` không có finding; bạn chọn sửa hai Low; `be-dev` sửa và push, `reviewer` bị tắt vì thiếu RAM lần ba; bạn mở lại Claude Code với chế độ không tắt lệnh nền; `security` review phần mới ở `high`, `merge-gate` chỉ còn chờ approve (tiêu chí 5); bạn approve, `merge-gate` merge PR #16, `audit` xanh, DEMO-21 sang Ready for QA, Task DEMO-24 cho hai test còn thiếu, T18 đóng (PR #137), Epic thử 36,19 USD quy đổi; Checkpoint 4; bạn cho qua Checkpoint 4 (PR #138); T19 đóng (PR #139): sửa lỗi Sub-task mang cờ, `docs/dev-workflow.md`, README, module ghi hoàn thành, plan vào `tasks/archive/dev-workflow/`; bạn xác nhận module hoàn thành (PR #140); chờ bạn chọn việc tiếp theo |
-| 21 | `3ead2782-314d-4ae8-981b-96f6ed83a60e` | 2026-11-01 khoảng 22:50 → | Bạn dán đoạn cuối của Phiên 20, hỏi vì sao `main` và `develop` của `ao-pilot` lệch nhau, cách xử lý, và lựa chọn 3 có giải quyết được không; Claude kiểm hai nhánh và code của `audit`: `develop` đi trước 10 là đúng GitFlow, 4 commit chỉ có trên `main` là dấu vết lối tắt sandbox và không đổi nội dung; lựa chọn 3 không giải quyết; đề xuất ghi quy tắc merge commit và back-merge từ `main` vào spec `release-workflow`; bạn chọn Pilot 1; Claude nêu phạm vi, giả định A1–A8 và ba câu hỏi (repo, space Jira, feature); bạn duyệt và chọn theo đề xuất: repo mới `ao-sample`, space mới `SMP`, Epic "Ghi chú"; Claude viết `SPEC-pilot-1.md` (nhánh `task/spec-pilot-1`); bạn chọn tạo key mới cho `ao-dev` và duyệt spec; Claude viết plan 10 task, 5 checkpoint, cùng quyết định 6 (lỗi kit giữa Epic) và 8 (Checkpoint 3 sau lượt build đầu); bạn duyệt plan; kit PR #141; T1–T2: tạo repo `ao-sample`, điểm 1 đúng một phần (NestJS 12 dùng Vitest và oxlint, `@nestjs/mau` mang 2 lỗ hổng high), điểm 2 đúng nếu dùng Vitest, điểm 3 và 4 sai (API từ chối), điểm 5 đúng kèm `MSYS_NO_PATHCONV=1` và tin cậy thư mục; Checkpoint 1: bạn duyệt sáu chỗ sửa, dùng chung scheme với `DEMO`, và duyệt trước mọi đề xuất trong Pilot 1; T1a (kit PR #142, `oxlint-disable`); T4 khung app xanh sáu lệnh; T5 bản chép kit và hai skill theo stack; commit đầu bị hook `commit-msg` từ chối vì thiếu mã Jira; bạn gửi ảnh: tùy chọn share settings lúc tạo space cần gói trả phí; Claude đổi cách: tạo space như thường rồi gán ba scheme của `DEMO` trong Space settings; bạn tạo xong `SMP` và gán ba scheme; Claude kiểm bằng API, `jira:check` còn 3 chỗ lệch của board, tạo bốn environment và đặt secret `JIRA_CI_TOKEN`; chờ bạn làm B–E và chọn cách commit |
+| 21 | `3ead2782-314d-4ae8-981b-96f6ed83a60e` | 2026-11-01 khoảng 22:50 → | Bạn dán đoạn cuối của Phiên 20, hỏi vì sao `main` và `develop` của `ao-pilot` lệch nhau, cách xử lý, và lựa chọn 3 có giải quyết được không; Claude kiểm hai nhánh và code của `audit`: `develop` đi trước 10 là đúng GitFlow, 4 commit chỉ có trên `main` là dấu vết lối tắt sandbox và không đổi nội dung; lựa chọn 3 không giải quyết; đề xuất ghi quy tắc merge commit và back-merge từ `main` vào spec `release-workflow`; bạn chọn Pilot 1; Claude nêu phạm vi, giả định A1–A8 và ba câu hỏi (repo, space Jira, feature); bạn duyệt và chọn theo đề xuất: repo mới `ao-sample`, space mới `SMP`, Epic "Ghi chú"; Claude viết `SPEC-pilot-1.md` (nhánh `task/spec-pilot-1`); bạn chọn tạo key mới cho `ao-dev` và duyệt spec; Claude viết plan 10 task, 5 checkpoint, cùng quyết định 6 (lỗi kit giữa Epic) và 8 (Checkpoint 3 sau lượt build đầu); bạn duyệt plan; kit PR #141; T1–T2: tạo repo `ao-sample`, điểm 1 đúng một phần (NestJS 12 dùng Vitest và oxlint, `@nestjs/mau` mang 2 lỗ hổng high), điểm 2 đúng nếu dùng Vitest, điểm 3 và 4 sai (API từ chối), điểm 5 đúng kèm `MSYS_NO_PATHCONV=1` và tin cậy thư mục; Checkpoint 1: bạn duyệt sáu chỗ sửa, dùng chung scheme với `DEMO`, và duyệt trước mọi đề xuất trong Pilot 1; T1a (kit PR #142, `oxlint-disable`); T4 khung app xanh sáu lệnh; T5 bản chép kit và hai skill theo stack; commit đầu bị hook `commit-msg` từ chối vì thiếu mã Jira; bạn gửi ảnh: tùy chọn share settings lúc tạo space cần gói trả phí; Claude đổi cách: tạo space như thường rồi gán ba scheme của `DEMO` trong Space settings; bạn tạo xong `SMP` và gán ba scheme; Claude kiểm bằng API, `jira:check` còn 3 chỗ lệch của board, tạo bốn environment và đặt secret `JIRA_CI_TOKEN`; bạn tắc ở B3 (board thiếu cột); Claude đọc cấu hình board bằng API và ghi từng bước sửa cột trong Board settings; chờ bạn làm B–E và chọn cách commit |
 
 ---
 
@@ -8653,3 +8653,48 @@ Mục A đã đạt. Mình đã kiểm bằng API và làm trước một phần
 - D: đường dẫn file key mới của `ao-dev`;
 - E: mở `claude` trong `ao-sample` một lần để tin cậy thư mục;
 - chọn (a) hoặc (b) cho commit đầu. Chưa có câu trả lời này thì mình chưa push được, nên các bước còn lại của T6 phải chờ.
+
+---
+# Phiên 21 · Lượt 9 — 2026-11-02 khoảng 02:20
+
+**Bạn:**
+
+````markdown
+tôi đang tắc tại B. 3, board hiển thị thiếu cột [Image #4]
+````
+
+Ảnh đính kèm: `misc/images/phien-21-luot-9-anh-1.png` (trang board "SMP board" chỉ có hai cột In Progress và Done).
+
+Trước khi trả lời, Claude đọc cấu hình board 35 bằng Agile API.
+
+**Claude:**
+
+**Nhãn:** Tên nút mình chưa kiểm được có ghi "(đối chiếu giao diện)".
+
+Board thiếu cột là đúng với trạng thái hiện tại, không phải lỗi. Mình đã đọc cấu hình board bằng API:
+
+| Cột hiện có | Status đang gắn |
+|---|---|
+| Kanban backlog | (trống) |
+| Backlog | `Backlog`: status của template cũ, không có trong `AO workflow scheme` |
+| Selected for development | `Selected for development`: cũng của template cũ |
+| In Progress | `In Progress` |
+| Done | `Done` |
+
+Sau khi bạn đổi sang `AO workflow scheme`, hai cột Backlog và Selected for development chỉ còn status cũ mà space không dùng nữa, nên trang board ẩn chúng. Các status mới (`New`, `Ready`, `To Do`, `In Review`, `Ready for QA`, `In QA`…) chưa gắn vào cột nào. Việc sửa cột làm trong **Board settings**, không làm trên trang board bạn đang xem.
+
+**B3. Sửa cột**
+1. Trên trang board, bấm **•••** ngay bên phải chữ **SMP board** (cạnh biểu tượng hai người) → **Board settings** (đối chiếu giao diện: có thể là **Configure board**).
+2. Menu bên trái: **Columns**. Nếu menu thu gọn, bấm **Layout** để mở thêm.
+3. Trang Columns có các cột ở trên, và ô **Unmapped statuses** ở bên phải hoặc bên dưới. Ô này đang chứa `New`, `Ready`, `To Do`, `Planning`, `Specifying`, `In Review`, `Ready for QA`, `In QA`, `Cancelled`.
+4. Kéo hai status cũ `Backlog` và `Selected for development` ra khỏi cột của chúng, thả vào **Unmapped statuses**.
+5. Đổi tên cột **Backlog** thành `Ready`: bấm vào tên cột, gõ tên mới, nhấn Enter. Kéo `Ready` và `To Do` vào cột này.
+6. Đổi tên cột **Selected for development** thành `In Review`. Kéo `In Review` vào cột này.
+7. Bấm **+** bên phải các cột để thêm cột `QA`. Kéo `Ready for QA` và `In QA` vào cột này.
+8. Kéo `New` vào ô **Kanban backlog**.
+9. Kéo tiêu đề các cột để có đúng thứ tự: `Ready`, `In Progress`, `In Review`, `QA`, `Done`.
+10. Để nguyên `Planning`, `Specifying`, `Cancelled` ở **Unmapped statuses**. Hai status đầu chỉ Epic dùng, mà board đã bỏ Epic qua filter.
+
+**B4. Giới hạn WIP:** phần **Column constraints** chọn **Work item count**, rồi gõ `2` dưới cột `In Review`.
+
+Xong thì nhắn mình. Mình chạy lại `jira:check` để kiểm filter và cột.
