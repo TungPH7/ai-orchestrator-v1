@@ -276,3 +276,9 @@ Hai lượt `claude -p` trong `ao-pilot` (bản chép kit của PR #14), chạy 
 - Vai trò chỉ đọc không push được: `gh-guard` chặn trước, và GitHub cũng từ chối token của nó.
 
 **Chi phí T15–T16:** 11,69 + 0,73 = 12,42 USD quy đổi. Plan ước 6–12 USD cho T15 và dưới 1 USD cho T16, nên tổng vẫn nằm trong ước tính. T15 gần mức trên, vì lượt `security` đầu chạm giới hạn 5 giờ sau 4,55 USD, và lượt chạy tiếp tốn thêm 2,71 USD.
+
+## Checkpoint 3 (2026-11-01)
+
+- Tiêu chí 3 (T16), 6 và 9 (T15) đạt.
+- Chi phí T15–T16: 12,42 USD quy đổi, trong ước tính của plan.
+- Bạn đồng ý chạy Epic thử T17–T18 ("ok tiếp tục nhé", Phiên 20 · Lượt 4). `ao-pilot` vẫn dùng bản kit của PR #14: các bản sửa T15a, T15b và `ls-remote` vào ở lần chép kit sau.
