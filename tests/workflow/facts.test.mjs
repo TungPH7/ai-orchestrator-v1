@@ -6,7 +6,7 @@ import { readRoster } from '../../lib/agents/roster.mjs';
 import { readContract } from '../../lib/contract.mjs';
 import { readGates } from '../../lib/quality/gates.mjs';
 import { readMapping } from '../../lib/tracker/mapping.mjs';
-import { agentNames, gatherFacts, workLabels } from '../../lib/workflow/facts.mjs';
+import { agentNames, gatherFacts, reviewReports, workLabels } from '../../lib/workflow/facts.mjs';
 import { recordedClient } from '../helpers/jira.mjs';
 import { CONTRACT_DIR, ROOT } from '../helpers/kit.mjs';
 
@@ -116,4 +116,21 @@ test('ba labels items with the prefixes the facts read (tracker/jira.yaml work_l
   const ba = readFileSync(join(ROOT, 'agents', 'prompts', 'ba.md'), 'utf8');
   const { role_prefix: role, effort_prefix: effort } = mapping.work_labels;
   for (const label of [`${role}be-dev`, `${role}fe-dev`, `${role}devops`, `${effort}xhigh`, `${effort}max`]) assert.ok(ba.includes(`\`${label}\``), label);
+});
+
+test('the newest report of each role, and the newest full security report the new part counts from (spec 2.6)', () => {
+  const body = (role, scope = '') => `# Review: fix(cart): x (DEMO-12)\n\nRole: ${role}\n${scope}\n## Findings\n\nKhông có finding.\n\n## Verdict\n- [x] **Approve**\n`;
+  const bot = 'tungph7-ao-review[bot]';
+  const [X, Y, Z] = ['a'.repeat(40), 'b'.repeat(40), 'c'.repeat(40)];
+  const review = (role, sha, at, scope) => ({ user: { login: bot }, commit_id: sha, submitted_at: at, state: 'COMMENTED', body: body(role, scope) });
+  const reviews = [
+    review('security', X, '2026-11-04T08:00:00Z'),
+    review('reviewer', Y, '2026-11-05T08:00:00Z'),
+    review('security', Y, '2026-11-05T09:00:00Z', `Scope: changes since ${X.slice(0, 7)}\n`),
+    { ...review('security', Z, '2026-11-05T10:00:00Z'), user: { login: 'someone' } },
+  ];
+  const { reports, securityFull } = reviewReports(reviews, { roles: ['reviewer', 'security'], bot, head: Z });
+  assert.deepEqual([reports.reviewer.sha, reports.security.sha, reports.security.onHead], [Y, Y, false], 'a report of another login does not count');
+  assert.deepEqual(securityFull, { sha: X, at: '2026-11-04T08:00:00Z', ok: true, blocking: 0, state: 'COMMENTED', onHead: false });
+  assert.equal(reviewReports(reviews.slice(2, 3), { roles: ['reviewer', 'security'], bot, head: Z }).securityFull, null, 'only a report of the new part');
 });

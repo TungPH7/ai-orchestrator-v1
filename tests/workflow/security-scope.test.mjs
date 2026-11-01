@@ -32,3 +32,17 @@ test('the whole PR again at 301 lines, after a rebase, on a protected path, or w
 test('a report already on the head needs no new review', () => {
   assert.equal(scope(report({ onHead: true }), null).mode, 'none');
 });
+
+test('the whole PR again while the newest report, or the full one the new part counts from, has Critical or High findings', () => {
+  assert.deepEqual(scope(report({ blocking: 2 }), compare(10)), { mode: 'full', reason: 'the security report on a1b2c3d has 2 Critical or High findings open: only a full review clears them' });
+  const Y = 'b1b2c3d4e5f60718293a4b5c6d7e8f9012345678';
+  const newest = report({ sha: Y, at: '2026-11-05T08:00:00Z' });
+  assert.deepEqual(securityScope({ report: newest, full: report({ blocking: 1 }), compare: compare(10), gates }), { mode: 'full', reason: 'the full security report on a1b2c3d has 1 Critical or High finding open: only a full review clears it' });
+  assert.deepEqual(securityScope({ report: newest, full: null, compare: null, gates }), { mode: 'full', reason: 'no full security report on this PR yet' });
+});
+
+test('after a report of the new part, the next one still counts from the last full report (spec 2.6)', () => {
+  const Y = 'b1b2c3d4e5f60718293a4b5c6d7e8f9012345678';
+  const newest = report({ sha: Y, at: '2026-11-05T08:00:00Z' });
+  assert.deepEqual(securityScope({ report: newest, full: report(), compare: compare(40), gates }), { mode: 'delta', reason: '40 lines changed since a1b2c3d', since: X, at: '2026-11-04T08:00:00Z', lines: 40 });
+});
