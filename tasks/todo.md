@@ -585,7 +585,7 @@ Bạn làm: đọc diff của PR, approve, rồi bấm **Squash and merge**.
 
 **Cỡ:** M
 
-### [ ] T16: Thử đi vòng (kiểm thật 5)
+### [x] T16: Thử đi vòng (kiểm thật 5)
 
 **Mô tả:** Hai lượt ngắn, ở `CLAUDE_CODE_EFFORT_LEVEL=low`, trong `ao-pilot`:
 
@@ -595,11 +595,11 @@ Bạn làm: đọc diff của PR, approve, rồi bấm **Squash and merge**.
 Xong thì Claude xóa nhánh tạm trên GitHub.
 
 **Tiêu chí chấp nhận:**
-- [ ] Tiêu chí 3 của spec mục 9 đạt, có bằng chứng trong `tasks/verification.md`.
-- [ ] Nhánh tạm đã xóa.
+- [x] Tiêu chí 3 của spec mục 9 đạt, có bằng chứng trong `tasks/verification.md`.
+- [x] Nhánh tạm đã xóa.
 
 **Kiểm chứng:**
-- [ ] `permission_denials` và output của hai lượt được ghi lại
+- [x] `permission_denials` và output của hai lượt được ghi lại
 
 **Phụ thuộc:** T15
 
