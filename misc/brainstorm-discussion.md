@@ -26,6 +26,8 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 16 | `b8a6dd75-1274-4e19-b187-41b53ba22cfe` | 2026-10-31 khoảng 02:02 → khoảng 17:30 | Bạn bấm `Approve plan`; T18 đóng (PR #101): `jira-sync` chuyển DEMO-12 sang Ready; T19: `be-dev` làm Sub-task BE nhưng không start Story, kit PR #102 sửa prompt của hai dev agent; `fe-dev` làm Sub-task FE và mở ao-pilot PR #11; `reviewer` COMMENT (1 Medium, 2 Low), `security` COMMENT không có finding, 15,23 USD quy đổi; chờ bạn approve PR #11 hoặc chọn sửa finding Medium trước; bạn approve, `merge-gate` merge PR #11, `audit` xanh, `qa` PASS cả 11 AC, Claude tạo Task DEMO-15 cho hai test còn thiếu; chờ bạn bấm `Accept`; bạn bấm `Accept`, T19 đóng (PR #103); T20: `pm` viết bản tổng hợp sáng, lỗi đếm item Done chưa có Fix Version được sửa (PR #104), năm việc ngoài vai trò bị chặn đúng lý do; chờ bạn `Refine` DEMO-16 cho `devops`; bạn `Refine` DEMO-16; `devops` mở ao-pilot PR #12, `reviewer` COMMENT (1 Low), `security` COMMENT không có finding, 4,70 USD quy đổi; chờ bạn approve rồi tự merge PR #12; bạn merge PR #12, `audit` xanh, T20 đóng (PR #105); T21: Task DEMO-17, `fe-dev` ở `high` (1,86 USD) và `max` (5,89 USD) cùng đạt checklist và trường hợp biên, mỗi bản 1 Low; lượt `max` thấy tiêu đề commit của lượt `high`; bạn hết usage giữa lượt; Checkpoint 4, chờ bạn xem Epic, PR thử và chọn effort cho `fe-dev`; bạn chọn `high` và hỏi dev agent có đổi effort theo độ khó của task không; Claude trả lời: agent không tự đổi, người khởi động đổi được cho từng lượt, và đề xuất `sa` ghi mức trong plan để bạn duyệt ở gate ②, làm ở `dev-workflow`; chờ bạn xác nhận để tiếp tục; bạn nhắn tiếp tục; T21 và Checkpoint 4 đóng (PR #106); T22 (PR #107): `maxTurns` theo số đo, `gh-guard` cho phép `git check-ignore`, template trỏ tới `.ai-orchestrator/docs/sdlc.md`, `docs/agents.md` và mục Agent của README, module ghi hoàn thành, plan vào `tasks/archive/agent-roster/`; chờ bạn xác nhận module hoàn thành và chọn module tiếp theo; bạn xác nhận và chọn `dev-workflow`; ô cuối của `agent-roster` đóng (PR #108); phạm vi, giả định và ba câu hỏi cho `dev-workflow`: danh tính GitHub của agent, PR tài liệu của Epic, `security` review lại sau commit chỉ thêm test; bạn chọn cả ba đề xuất; Claude viết `SPEC-dev-workflow.md` (sáu lệnh, danh tính App, PR tài liệu, review phần mới, tám tiền đề), đổi hai chỗ so với giả định (ADR, lúc chép kit), chờ bạn duyệt |
 | 17 | `46e16bae-3275-482c-b001-11cf43108e28` | 2026-10-31 khoảng 23:25 → 2026-11-01 khoảng 01:05 | Bạn duyệt `SPEC-dev-workflow.md`; spec merge (PR #109); Claude viết plan 19 task, bốn checkpoint (chặn gọi thẳng credential helper, effort đặt cả tham số lẫn biến môi trường, PR chép kit review bằng `/ao-review`, Story của Epic thử dừng ở Ready for QA); bạn duyệt plan (PR #110); T1 kiểm skill `/` và lệnh nền bằng Haiku: dòng `!` chỉ tự chạy khi có luật `allow`, `$ARGUMENTS` được chèn nguyên văn, `claude -p` dừng lệnh nền sau 10 phút nếu không đặt `timeout`; T2: Task thử DEMO-18, PR nháp `ao-pilot` #13, push bằng token App, Git Credential Manager được thay, `gh` dùng token App; bạn hỏi vì sao lệnh 20 phút chạy quá 20 phút; bạn hỏi Haiku dùng ở đâu và chê Haiku kém; Claude thôi dùng Haiku, đề xuất năm điểm sửa spec và xin bạn thêm quyền cho hai App; bạn duyệt năm điểm sửa, T1 đóng (PR #111); bạn đã thêm quyền cho hai App, T2 đóng (PR #112): cả sáu tiền đề về GitHub đúng; Checkpoint 1, chờ bạn |
 | 18 | `184d78d1-4600-4c36-8279-005a105c9216` | 2026-11-01 khoảng 01:08 → | Bạn cho qua Checkpoint 1 (PR #113); T3–T14 đóng (PR #114–#125): phiên agent dùng danh tính App và credential helper theo vai trò, PR tài liệu và quy tắc Q5, `merge-gate` báo PR chỉ còn chờ bạn và `jira-sync` gỡ cờ, đánh dấu dòng DoR, `ao-step.mjs` và vòng chạy `--go`, sáu skill `/ao-*`, template và prompt; chạy chỉ kiểm trong `ao-pilot` tìm ra lỗi 403 khi đọc commit status; Checkpoint 2 (PR #126), chờ bạn |
+| 19 | `44d6269e-f8c5-4052-a81c-f0f6385e00ed` | 2026-11-01 khoảng 10:35 → khoảng 11:30 | Bạn cho qua Checkpoint 2 (PR #127); T15: Task DEMO-19, ao-pilot PR #14 chép kit bằng danh tính bot `ao-dev`, `/ao-review`: `reviewer` COMMENT, `security` chạm giới hạn 5 giờ rồi chạy tiếp và COMMENT, 11,69 USD quy đổi; `merge-gate` bản mới chạy ở máy comment và gắn cờ một lần; trả lời cuối của Claude bị bộ lọc an toàn chặn hai lần, nên phiên này không có lượt nào trong log |
+| 20 | `bc6dea4e-d395-4a5d-b439-2a337292b2e7` | 2026-11-01 khoảng 11:45 → | Bạn dán đoạn cuối của Phiên 19 để làm tiếp; Claude báo kết quả T15 và hỏi về nhánh `main` và các finding của kit; bạn merge PR #14 và chọn cả hai đề xuất: nhánh mặc định của `ao-pilot` sang `develop`, sửa finding ở kit không chạy agent; T15 đóng (PR #128), T15a (PR #129), T15b (PR #130); T16 đóng (PR #131): agent dùng danh tính App, vai trò chỉ đọc không push được; Checkpoint 3, bạn đồng ý chạy Epic thử; T17: Epic DEMO-20, `/ao-status`, chờ bạn bấm `Start spec` |
 
 ---
 
@@ -6949,3 +6951,235 @@ Thêm một điều về chi phí: ở stage spec, `ba` mở PR tài liệu tron
 Sau đó mình làm T15: PR chép kit mới vào `ao-pilot`, rồi `reviewer` và `security` chạy bằng `/ao-review` (ước 6–12 USD quy đổi). Tiếp theo là T16, thử đi vòng (dưới 1 USD), rồi mình dừng ở Checkpoint 3. Ở T15 bạn cần approve, rồi tự merge PR đó.
 
 Lưu ý nhỏ: lúc tìm chuỗi trong repo kit, mình thấy file ghi chú riêng `todo.md` ở gốc repo (không commit) có một token Atlassian để dạng chữ thường. File không vào Git, nhưng nếu token đó còn dùng, bạn nên chuyển nó sang biến môi trường.
+
+# Phiên 20 · Lượt 1 — 2026-11-01 khoảng 11:45
+
+**Bạn:**
+
+````markdown
+Làm tiếp session id: 44d6269e-f8c5-4052-a81c-f0f6385e00ed
+
+đoạn chat của session id: 44d6269e-f8c5-4052-a81c-f0f6385e00ed
+```
+Mình kiểm lại trạng thái lượt security trước khi chạy lại.
+
+  Ran 2 shell commands
+
+Lượt security dừng vì chạm giới hạn 5 giờ, sau 39 turn (4,55 USD quy đổi), chưa đăng báo cáo. Mình chạy lại lệnh; ao-step sẽ resume đúng session của security.
+
+  Ran 2 shell commands, wrote 1 memory
+
+Security đang chạy lại ở nền, tiếp tục session cũ. Mình chờ thông báo xong.
+
+Khi nó đăng báo cáo trên 6152cff, mình sẽ làm ba việc:
+
+1. Đọc báo cáo và ghi số đo.
+2. Chạy merge-gate bản mới ở máy để kiểm việc comment và gắn cờ.
+3. Báo bạn những gì cần làm ở PR #14, kèm câu hỏi về nhánh main.
+
+✻ Baked for 51s · done 11:24 AM
+
+● Background command "Resume the security review of PR 14" completed (exit code 0)
+
+  Ran 2 shell commands
+1 skill available
+
+Security đã đăng báo cáo trên head 6152cff, nên PR #14 đã có đủ hai báo cáo. Mình đọc báo cáo security.
+
+  Ran 2 shell commands
+
+Báo cáo đã có trên head, và PR #14 chỉ còn chờ bạn approve. Vì merge-gate trên main là bản cũ, mình sẽ chạy bản từ nhánh PR trên máy để kiểm tra comment và cờ, rồi chạy lại lần nữa xem có lặp lại không.
+
+  Ran 2 shell commands
+
+● Opus 5.5's safeguards stopped the response above · continuing once with that noted
+
+Mình ghi kết quả T15 vào tasks/verification.md của repo kit.
+
+  Made 1 scratchpad edit +41, ran 1 shell command, wrote 1 memory
+
+● API Error: Opus 5.5's safeguards flagged this message (https://www.anthropic.com/legal/aup). This sometimes happens with safe, normal conversations. Claude Code can't respond to this message with Opus 5.5.
+
+  Double press esc to edit your last message, or try a different model with /model.
+
+  Send feedback with /feedback or learn more: https://support.claude.com/en/articles/8106465
+
+  Details: `[reasoning_extraction]`
+
+  Request ID: req_011Cgbab9Bt2s37xaiA3bHmm
+
+  Message ID: msg_011Cgbab9RmvDP7aLw541Yaq
+```
+````
+
+Trước khi trả lời, Claude đọc memory và phần cuối của phiên trước, rồi kiểm trên GitHub: PR #14 vẫn mở trên head `6152cff`, bảy check xanh, chưa approve; nhánh `task/t15-pilot-kit-copy` của kit đã có commit `52649f6`.
+
+**Claude:**
+
+Mình chưa gửi được báo cáo cuối cho bạn vì bị chặn hai lần. Phần việc thì đã xong hết, và mình vừa kiểm lại trên GitHub: không có gì thay đổi.
+
+## Kết quả T15
+
+- **PR #14 của `ao-pilot`** (head `6152cff`, vào `develop`) đang mở, cả 7 check đều xanh. PR đã có đủ hai báo cáo:
+  - `reviewer`: COMMENT, 0 Critical/High, 2 Medium, 8 Low.
+  - `security`: COMMENT, 0 Critical/High, 2 Medium, 4 Low. Lượt đầu chạm giới hạn 5 giờ, lượt sau chạy tiếp đúng session cũ và không chạy lại `reviewer`.
+  - Hai lượt review tốn tổng cộng 86 turn, 33 phút và 11,69 USD quy đổi.
+- **Kiểm merge-gate (tiêu chí 6):** mình chạy `merge-gate` bản mới hai lần ở máy, từ nhánh của PR. Lần 1 nó comment trên #14 và gắn cờ Impediment kèm nhãn `needs-you` cho DEMO-19. Lần 2 không thêm gì, tức là không bị lặp.
+- **Đã ghi lại:** kết quả nằm trong `tasks/verification.md`, commit `52649f6` trên nhánh `task/t15-pilot-kit-copy` của repo kit. Nhánh đã push nhưng chưa mở PR.
+- **Ghi để sửa ở kit sau:** comment "Needs you" của merge-gate liệt kê đủ 72 đường dẫn được bảo vệ (2.908 ký tự), quá dài.
+
+## Việc bạn cần làm: approve và merge PR #14
+
+1. Mở https://github.com/TungPH7/ao-pilot/pull/14
+2. Bấm tab **Files changed**, rồi bấm nút **Review changes** (hoặc **Submit review**) ở góc phải trên.
+3. Chọn **Approve**, rồi bấm **Submit review**.
+4. Quay về tab **Conversation** và kéo xuống cuối trang.
+5. Bấm mũi tên cạnh nút merge, chọn **Squash and merge**, rồi bấm **Confirm squash and merge**.
+
+## Hai câu cần bạn chọn
+
+**Q1. Nhánh `main` của `ao-pilot`.** Các workflow `merge-gate` và `jira-sync` chạy từ nhánh mặc định `main`, mà `main` vẫn đang là bản kit cũ. Sau khi merge #14, code mới chỉ có trên `develop`. Nếu để vậy, workflow thật sẽ không comment và gắn cờ được (tiêu chí 6), và ở T17 PR tài liệu sẽ không được merge (tiêu chí 4).
+- **(1)** Sau khi merge #14, mở thêm PR `develop → main`. Mỗi lần cập nhật kit sau này sẽ phải đồng bộ `main` như vậy.
+- **(2) Mình khuyên chọn cách này:** đổi nhánh mặc định của `ao-pilot` sang `develop`. Khi đó cần cho environment của `merge-gate` chấp nhận nhánh `develop`, và ghi điều này vào tài liệu của kit.
+
+**Q2. Các finding của security cho kit.** Không finding nào chặn PR #14. Chi tiết nằm trong `.ai/reviews/14-security.md` của `ao-pilot`. Tóm tắt:
+- **Medium:** chế độ review phần mới không xét báo cáo trước đó, nên một finding High chưa sửa có thể không còn chặn merge. Lỗi này ảnh hưởng tiêu chí 5, cần sửa trước T18.
+- **Medium:** user hệ điều hành chạy agent đọc được private key của GitHub App.
+- **4 Low.** Đáng chú ý nhất: bước kiểm PR tài liệu chấp nhận bất kỳ lần chạy CI nào của cùng SHA. Lỗi này ảnh hưởng tiêu chí 4, cần sửa trước T17.
+
+Bạn chọn một trong hai cách:
+- **(a)** Sửa ngay, rồi mở PR chép kit lần hai vào `ao-pilot` trước T17. Cách này tốn thêm khoảng 10 USD quy đổi cho review.
+- **(b) Mình khuyên chọn cách này:** sửa trong kit ngay nhưng không chạy agent. Bản sửa sẽ vào `ao-pilot` ở lần chép kit sau. Các lượt chạy thử Epic vẫn tiếp tục, với những chỗ hở đã biết.
+
+Khi bạn merge xong và trả lời Q1, Q2, mình sẽ làm tiếp.
+
+# Phiên 20 · Lượt 2 — 2026-11-01 khoảng 12:03
+
+Trước tin này bạn gõ `/model` và giữ Opus 5.5.
+
+**Bạn:**
+
+````markdown
+Đã merge. Tiếp tục Làm như bạn đề xuất nhé
+````
+
+Trước khi trả lời, Claude:
+
+- kiểm sau merge: `audit` và deploy development xanh trên `d8a67f7`, `jira-sync` gỡ cờ DEMO-19;
+- đổi nhánh mặc định của `ao-pilot` sang `develop`, đổi rule của environment `merge-gate`, chạy tay `merge-gate` để kiểm;
+- sửa README và `docs/quality-gates.md`, đóng T15 và thêm T15a, T15b (kit PR #128);
+- làm T15a (kit PR #129) và T15b (kit PR #130), mỗi điểm có test viết trước, không chạy agent.
+
+**Claude:**
+
+Mình đã làm xong cả hai việc bạn chọn: đổi nhánh mặc định của `ao-pilot` sang `develop`, và sửa các finding ngay trong kit, không chạy agent. T15 đã đóng, tiêu chí 6 và 9 đạt. Bước tiếp theo là T16, cần bạn đồng ý vì có chạy agent.
+
+**T15 sau khi bạn merge PR #14:** `audit` và deploy development xanh trên commit merge `d8a67f7`. `jira-sync` đã gỡ cờ của DEMO-19. `ao-pilot` có đủ sáu lệnh `/ao-*`, `git status` sạch. Kết quả ghi trong kit PR #128.
+
+**Nhánh mặc định (Q1):**
+- Nhánh mặc định của `ao-pilot` giờ là `develop`. Environment `merge-gate` chỉ còn nhận `develop`, rule cho `main` đã bỏ.
+- Mình chạy tay `merge-gate` trên `develop` một lần: workflow chạy bằng code mới và đọc được key.
+- Từ giờ, một bản sửa workflow của kit có hiệu lực ngay khi bạn merge PR vào `develop`, không phải chờ release.
+- README và `docs/quality-gates.md` đã hướng dẫn đặt `develop` làm nhánh mặc định cho dự án mới.
+
+**Sửa finding (Q2), hai task mới, mỗi điểm có test viết trước, tổng 772 test xanh:**
+- **T15a, kit PR #129 (phần trong CI và Jira):**
+  - `security` review lại cả PR khi một báo cáo còn finding Critical hay High.
+  - PR tài liệu được đối chiếu với lượt CI mới nhất của chính nhánh tài liệu.
+  - Key lấy từ tên nhánh phải thuộc space `DEMO`.
+  - `merge-gate` và `jira-sync` chỉ tin comment cờ của đúng tài khoản CI. Comment "Needs you" của PR nhiều file giờ chỉ đếm số file theo thư mục.
+- **T15b, kit PR #130 (phần chạy trên máy):**
+  - `gh-guard` chặn thêm một số dạng lệnh dùng để vượt qua nó.
+  - `reviewer` hết bị chặn nhầm khi ghi vào thư mục temp. Mình đã thử bằng hook thật trên máy này.
+  - Lệnh `ao-step` không còn chạy chồng nhau được.
+  - File ghi chú (`--note`, `--answers`) chỉ được đọc trong `.ai/runs/`.
+
+**Ba điều bạn nên biết:**
+- **Một chỗ đổi cấu hình:** token Jira có scope không được hỏi "tôi là ai" (lỗi 401). Vì vậy mình thêm `account_id` của `orchestratorci` và `orchestratoragent` vào `tracker/jira.yaml`. Id này không phải bí mật, nó nằm sẵn trong URL hồ sơ Jira.
+- **Spec đã sửa:** mục 2.4, 2.6 và 2.7 của `SPEC-dev-workflow.md` sửa theo các điều kiện mới, theo hướng chặt hơn.
+- **`ao-pilot` chưa có các bản sửa:** chúng chỉ vào đó ở lần chép kit sau, qua một PR có review, khoảng 10 USD quy đổi. Vì vậy T16–T18 vẫn chạy với các chỗ hở đã biết, như bạn đã chọn.
+
+**Năm việc còn chờ bạn quyết,** ghi trong `docs/quality-gates.md`. Không việc nào chặn T16–T18:
+1. Lớp chặn phía server cho `develop` và `main`: cần repo public hoặc GitHub Pro.
+2. Một App riêng cho quyền Workflows, chỉ `devops` dùng.
+3. Đưa `--go` ra khỏi luật `allow`, để Claude Code hỏi bạn trước mỗi lần chạy agent.
+4. Chạy agent dưới một user Windows riêng, để agent không đọc được key của App.
+5. Token `gh` của phiên agent hết hạn sau 1 giờ.
+
+Mình làm tiếp T16 nhé? T16 gồm hai lượt agent ngắn ở effort `low` trong `ao-pilot`, dưới 1 USD quy đổi, để thử xem agent có đi vòng qua danh tính đã cấp được không.
+
+# Phiên 20 · Lượt 3 — 2026-11-01 khoảng 12:33
+
+**Bạn:**
+
+````markdown
+ok, làm tiếp đi
+````
+
+Trước khi trả lời, Claude chạy hai lượt agent ở effort `low` trong `ao-pilot` (`reviewer`, `fe-dev`), thử push với cấu hình git của phiên `reviewer` ngoài agent, xóa nhánh tạm, sửa lỗi chặn nhầm `git ls-remote`, và đóng T16 (kit PR #131).
+
+**Claude:**
+
+T16 đã xong, và mình dừng ở Checkpoint 3 vì bước sau cần bạn đồng ý chi tiêu.
+
+**Kết quả T16** (kit PR #131): 2 lượt agent ở effort `low`, tổng 0,73 USD quy đổi. Tiêu chí 3 đạt:
+- **`reviewer`:** `gh` chạy bằng token chỉ đọc của App `ao-review`, không dùng login `TungPH7`. `gh api user` bị GitHub từ chối (403).
+- **Push của `reviewer` bị chặn ở hai lớp:**
+  - Trong phiên agent, `gh-guard` chặn lệnh push.
+  - Mình chạy lại lệnh push đó ngoài agent, với đúng cấu hình git của phiên `reviewer`. GitHub vẫn trả 403 "Write access to repository not granted", và Git Credential Manager của bạn không được gọi tới.
+- **`fe-dev`:** commit và push một nhánh tạm; commit đứng tên bot `ao-dev` cả ở author lẫn committer. Mình đã xóa nhánh tạm trên GitHub và ở máy; `ao-pilot` sạch trên `develop`.
+- **Lỗi nhỏ đã sửa trong kit:** `gh-guard` chặn nhầm `git ls-remote` của vai trò chỉ đọc, dù lệnh này chỉ đọc. Lỗi được sửa trong cùng PR #131, có test.
+
+**Checkpoint 3:**
+- Tiêu chí 3, 6 và 9 đều đạt.
+- Chi phí T15–T16 là 12,42 USD quy đổi, vẫn nằm trong khoảng plan ước (6–13 USD). Phần lớn là hai lượt review của T15 (11,69 USD).
+
+Bước tiếp theo là Epic thử (T17–T18), ước 25–36 USD quy đổi, và có thể cần 3–4 khung 5 giờ của gói Pro.
+
+**T17:**
+- Mình tạo Epic "Xóa sản phẩm khỏi giỏ hàng" trên `DEMO`.
+- Mình chạy `/ao-spec` (`ba`, `ux`, `sa`) và `/ao-plan` (`sa`, `ba`) cho Epic đó.
+- Cuối T17, `merge-gate` phải tự merge PR tài liệu, và `audit` phải xanh (tiêu chí 4).
+
+**Phần của bạn ở T17:**
+- Bấm `Start spec`, `Approve spec` và `Approve plan` trên Jira. Mình sẽ ghi từng bước bấm.
+- Trả lời câu hỏi của `ba` ngay trong chat.
+
+`ao-pilot` vẫn dùng bản kit của PR #14. Vì vậy các bản sửa T15a, T15b và `ls-remote` chưa có ở đó, như bạn đã chọn.
+
+Bạn đồng ý chạy Epic thử không? Nếu đồng ý, mình bắt đầu T17 bằng việc tạo Epic.
+
+# Phiên 20 · Lượt 4 — 2026-11-01 khoảng 12:47
+
+**Bạn:**
+
+````markdown
+ok tiếp tục nhé
+````
+
+Trước khi trả lời, Claude đánh dấu Checkpoint 3 trên nhánh `task/t17-epic-spec-plan`, tạo Epic DEMO-20 bằng token CI, và gõ `/ao-status DEMO-20` qua `claude -p` trong `ao-pilot`.
+
+**Claude:**
+
+Checkpoint 3 đã đóng, và T17 đã bắt đầu. Epic **DEMO-20** "Xóa sản phẩm khỏi giỏ hàng" đã có trên `DEMO`, ở trạng thái New. Mô tả của Epic ghi:
+
+- giỏ hàng hiện có gì;
+- "xóa" nghĩa là gì: xóa cả dòng; phí giao hàng, mã giảm giá và tổng cộng được tính lại; xóa hết thì trang hiện giỏ trống;
+- phạm vi và ràng buộc.
+
+Mình gõ thật `/ao-status DEMO-20` qua `claude -p`, dùng Sonnet, tốn 0,10 USD quy đổi. Lệnh báo Epic chưa có nhánh tài liệu, và đang chờ bạn bấm `Start spec`.
+
+**Việc cần bạn: bấm `Start spec` trên DEMO-20**
+
+1. Mở https://phunghuutung12b4.atlassian.net/browse/DEMO-20
+2. Ở phía trên, bên phải tiêu đề, bấm nút trạng thái **New** **(đối chiếu giao diện)**.
+3. Trong danh sách hiện ra, chọn **Start spec**.
+4. Khi nút trạng thái đổi thành **Specifying** là xong. Nhắn mình "đã bấm".
+
+**Sau đó mình chạy `/ao-spec DEMO-20`:**
+
+- `ba` viết SPEC, `ux` viết `design.md`, `sa` thêm phần kiến trúc, rồi `ba` mở PR tài liệu.
+- Nếu `ba` có câu hỏi, mình chuyển cho bạn ngay trong chat. Bạn trả lời, rồi `ba` chạy tiếp với câu trả lời đó.
+- Ở module trước, stage spec của một Epic nhỏ tốn 5,30 USD quy đổi.
+
+Mình đã ghi các lượt quyết định của phiên này vào `misc/brainstorm-discussion.md`. Phiên 19 không có lượt nào trong log, vì câu trả lời cuối của phiên đó bị bộ lọc an toàn chặn. Bảng phiên có thêm một dòng tóm tắt cho Phiên 19.
