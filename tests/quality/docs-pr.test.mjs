@@ -17,10 +17,12 @@ const mapping = readMapping(join(ROOT, 'tracker'));
 const apps = { dev: 'tungph7-ao-dev', review: 'tungph7-ao-review' };
 const passage = gatePassage(contract, mapping, gates.docs_pull_requests.gate);
 // The docs PR #14 of Epic DEMO-20 (dev-workflow spec 2.4): the ao-dev App opened it from feature/DEMO-20-spec, it changes
-// only the Epic's documents and an ADR, and its CI run started at 09:40 (+07:00), before you approved the plan at 10:00.
+// only the Epic's documents and an ADR, and the CI run of its head started at 09:40 (+07:00), before you approved the plan
+// at 10:00. An older head had a CI run at 09:10.
 const answers = JSON.parse(readFileSync(join(ROOT, 'tests/fixtures/quality/api/docs-pr.json'), 'utf8'));
 const HEAD = answers['/pulls/14'].head.sha;
-const RUNS = `/actions/runs?head_sha=${HEAD}`;
+const BRANCH = answers['/pulls/14'].head.ref;
+const RUNS = `/actions/runs?branch=${BRANCH}&event=pull_request`;
 const EPIC = '/rest/api/3/issue/DEMO-20?fields=issuetype,status';
 const CHANGELOG = '/rest/api/3/issue/DEMO-20/changelog';
 const epicOf = (a) => ({
@@ -109,10 +111,19 @@ test('a docs PR whose head came after you approved the plan is reviewed like any
   assert.match(decision.note, /^head d0c5d0c came after Approve plan of DEMO-20 at 2026-11-04T03:00:00\.000Z, so it is reviewed like any PR$/);
 });
 
-test('the earliest CI run of the head counts: a run started again later, or another workflow, does not move it', () => {
-  // The fixture already holds a later workflow_dispatch run of CI, and a jira-sync run; drop the first CI run.
-  const onlyLater = (a) => a[RUNS].workflow_runs.splice(2, 1);
-  assert.match(decide(onlyLater).note, /came after Approve plan of DEMO-20/);
+test('the newest CI run of the docs branch counts: it must be on the head and start before you approved', () => {
+  const run = (more) => ({ id: 9100, name: 'CI', event: 'pull_request', head_branch: BRANCH, head_sha: HEAD, created_at: '2026-11-04T03:20:00Z', run_attempt: 1, ...more });
+  // A push after you approved, even back to the commit you read, starts a new run of that commit.
+  const pushedBack = (a) => a[RUNS].workflow_runs.unshift(run());
+  assert.match(decide(pushedBack).note, /^head d0c5d0c came after Approve plan of DEMO-20/);
+  // The head moved and its run has not started yet: the newest run is of another commit, so it waits.
+  const moved = (a) => a[RUNS].workflow_runs.unshift(run({ head_sha: 'c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0', created_at: '2026-11-04T02:50:00Z' }));
+  assert.deepEqual(decide(moved), { action: 'wait', missing: ['a CI run on head d0c5d0c'], docs: 'DEMO-20' });
+  // Only a run of the docs branch for its PR counts: a run of the same commit elsewhere, or by hand, does not.
+  for (const [label, more] of [['another branch', { head_branch: 'feature/DEMO-21-x' }], ['a manual run', { event: 'workflow_dispatch' }], ['another workflow', { name: 'jira-sync' }]]) {
+    const only = (a) => (a[RUNS].workflow_runs = [run({ created_at: '2026-11-04T02:30:00Z', ...more })]);
+    assert.deepEqual(decide(only), { action: 'wait', missing: ['a CI run on head d0c5d0c'], docs: 'DEMO-20' }, label);
+  }
   const noCi = (a) => (a[RUNS].workflow_runs = a[RUNS].workflow_runs.filter(({ name }) => name !== 'CI'));
   assert.deepEqual(decide(noCi), { action: 'wait', missing: ['a CI run on head d0c5d0c'], docs: 'DEMO-20' });
 });
@@ -176,11 +187,11 @@ test('a run says what a docs PR waits for, and why a late one is reviewed like a
   assert.deepEqual((await runOnce({ jira: false })).lines, ['Waiting #14: the docs PR of DEMO-20: JIRA_CI_TOKEN, for merge-gate to read DEMO-20']);
 });
 
-test('readDocsFacts reads the Epic, its changelog and the workflow runs of the head', async () => {
+test('readDocsFacts reads the Epic, its changelog and the pull_request runs of the docs branch', async () => {
   const { jira: jiraAnswers, ...github } = structuredClone(answers);
-  const read = await readDocsFacts({ github: recordedClient(github), jira: recordedClient(jiraAnswers), key: 'DEMO-20', sha: HEAD });
+  const read = await readDocsFacts({ github: recordedClient(github), jira: recordedClient(jiraAnswers), key: 'DEMO-20', branch: BRANCH });
   assert.deepEqual(read.epic, epicOf(answers));
-  assert.deepEqual(read.runs.map(({ id }) => id), [9003, 9002, 9001]);
+  assert.deepEqual(read.runs.map(({ id }) => id), [9002, 9001, 9000]);
 });
 
 // audit of the squash commit of PR #14 on develop.

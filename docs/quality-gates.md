@@ -127,7 +127,7 @@ Từ `dev-workflow` (spec mục 2.4), tài liệu của một Epic (SPEC, design
 - mọi file PR sửa, kể cả tên cũ của file đổi tên, nằm trong `docs/specs/<EPIC>/**` hoặc `docs/adr/**` (mục `docs_pull_requests` của `quality/gates.yaml`);
 - `<EPIC>` là Epic trên Jira.
 
-`merge-gate` squash merge PR tài liệu khi Epic đã qua gate ② (In Progress hoặc Done), `CI` xanh trên head, và lượt `CI` sớm nhất của head bắt đầu trước lúc bạn bấm `Approve plan`. Thời điểm duyệt lấy từ changelog của Epic. Các dòng trong log:
+`merge-gate` squash merge PR tài liệu khi Epic đã qua gate ② (In Progress hoặc Done), `CI` xanh trên head, và lượt `CI` mới nhất của nhánh tài liệu (sự kiện `pull_request`) chạy trên head và bắt đầu trước lúc bạn bấm `Approve plan`. Mỗi lần push lên PR tạo một lượt mới, nên push sau lúc duyệt, kể cả force-push về commit cũ, làm PR thành PR thường. Lượt của cùng commit ở nhánh khác hay chạy tay không được tính. Thời điểm duyệt lấy từ changelog của Epic. Các dòng trong log:
 
 | Dòng | Nghĩa |
 |---|---|

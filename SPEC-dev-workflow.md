@@ -135,7 +135,7 @@ Tài liệu của Epic vào `develop` qua đúng một PR. Bạn chỉ duyệt t
 
 - Epic đã qua gate ②, tức đang ở In Progress hoặc Done;
 - CI xanh trên head;
-- lượt CI của head bắt đầu trước lúc bạn bấm `Approve plan`. Thời điểm của lượt CI do server GitHub ghi; thời điểm duyệt lấy từ changelog của Epic trên Jira.
+- lượt CI mới nhất của nhánh tài liệu, trong các lượt của sự kiện `pull_request`, chạy trên head và bắt đầu trước lúc bạn bấm `Approve plan`. Mỗi lần push lên PR tạo một lượt mới, nên một lần push sau lúc duyệt, kể cả force-push về commit bạn đã đọc, làm điều kiện này sai. Lượt CI của cùng commit ở nhánh khác hay chạy tay không được tính (T15a). Thời điểm của lượt CI do server GitHub ghi; thời điểm duyệt lấy từ changelog của Epic trên Jira.
 
 PR tài liệu không cần báo cáo của `reviewer` hay `security`, và không cần approval trên GitHub. Điều kiện cuối bảo đảm thứ được merge chính là thứ bạn đã đọc lúc duyệt. Commit nào push sau lúc duyệt sẽ làm PR thành PR thường, cần báo cáo và approval như mọi PR khác. Đổi SPEC sau khi duyệt cũng đi theo đường đó.
 
@@ -159,15 +159,16 @@ PR tài liệu không cần báo cáo của `reviewer` hay `security`, và khôn
 
 ### 2.6 `security` review phần mới
 
-`/ao-review` tìm báo cáo `security` gần nhất trên PR, của bot `ao-review`, đọc được, trên một commit X. `security` chỉ review phần mới, ở effort `high`, khi đủ ba điều:
+`/ao-review` tìm báo cáo `security` đầy đủ gần nhất trên PR, tức báo cáo không có dòng `Scope`, của bot `ao-review`, đọc được, trên một commit X. `security` chỉ review phần mới, ở effort `high`, khi đủ bốn điều:
 
+- cả báo cáo `security` mới nhất lẫn báo cáo đầy đủ trên X không còn finding Critical hay High. Báo cáo phần mới không nêu lại finding cũ, mà `merge-gate` chỉ đọc báo cáo mới nhất, nên một finding chặn chỉ được gỡ bằng một lượt review đầy đủ (T15a);
 - X là tổ tiên của head, tức không có rebase hay force-push sau đó;
 - diff từ X tới head có tối đa 300 dòng thêm và xóa;
 - diff không đụng đường dẫn được bảo vệ.
 
 Khi đó prompt là "Review PR #<n>, only the changes since <X>; your full report on <X> is the review of <ngày>". Báo cáo vẫn đăng trên head, theo template, có thêm dòng `Scope: changes since <X>`. Vì vậy `merge-gate` và `audit` không đổi.
 
-Thiếu một trong ba điều thì `security` review đầy đủ ở `max`. `reviewer` luôn review đầy đủ PR trên head.
+Thiếu một trong bốn điều thì `security` review đầy đủ ở `max`. `reviewer` luôn review đầy đủ PR trên head.
 
 ### 2.7 `merge-gate` báo PR cần bạn
 
