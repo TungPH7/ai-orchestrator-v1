@@ -2,7 +2,7 @@
 
 > **Loại:** pilot, không phải module. Xem tiêu chí thành công 1 và mục "Thứ tự build" trong [SPEC.md](SPEC.md). **Dùng:** `sdlc-contract`, `tracker-integration`, `quality-gates`, `agent-roster`, `dev-workflow`. **Là đầu vào cho:** `release-workflow` và Pilot 2 (cùng repo, cùng feature), `project-scaffold` (các bước cài làm tay ở đây).
 >
-> **Trạng thái:** bản nháp ngày 2026-11-01, chờ bạn duyệt. **Nguồn thảo luận:** [misc/brainstorm-discussion.md](misc/brainstorm-discussion.md), Phiên 21 · Lượt 1–3.
+> **Trạng thái:** đã duyệt ngày 2026-11-01 (Phiên 21 · Lượt 4). Plan: [tasks/plan.md](tasks/plan.md), chờ bạn duyệt. **Nguồn thảo luận:** [misc/brainstorm-discussion.md](misc/brainstorm-discussion.md), Phiên 21 · Lượt 1–4.
 
 ## 1. Mục tiêu
 
@@ -76,7 +76,8 @@ Trước khi chép skill của bên thứ ba, mình đọc hết nội dung và 
 
 **Bạn làm** (mình ghi từng bước bấm khi tới lúc):
 
-- Đặt secret `JIRA_CI_TOKEN` cho repo, và secret `AO_DEV_APP_KEY` cho environment `merge-gate`, bằng `! gh secret set …`. Mình không đọc được hai giá trị này. Nếu file private key thứ hai của `ao-dev` không còn trên máy, bạn tạo key mới trên trang của App.
+- Đặt secret `JIRA_CI_TOKEN` cho repo bằng `! gh secret set …`. Mình không đọc được giá trị này.
+- Tạo một private key mới cho `ao-dev` trên trang của App (bạn chọn ngày 2026-11-01, Phiên 21 · Lượt 4). Mình đặt key đó làm secret `AO_DEV_APP_KEY` của environment `merge-gate` bằng cách pipe file, rồi xóa file khỏi máy (`docs/quality-gates.md`, mục "Environment `merge-gate`").
 - Thêm repo vào hai App bằng giao diện, nếu API từ chối.
 - Nối app GitHub for Jira với repo. Lần đầu có `.jira/config.yml` thì ngắt rồi nối lại (README bước cài 7).
 - Mở `claude` trong repo một lần, nếu Claude Code vẫn hỏi tin cậy thư mục hoặc hỏi bật server MCP.
@@ -112,7 +113,7 @@ Số Story và Sub-task do `sa` và `ba` quyết trong plan. Một Story đụng
 
 ### 2.8 Tiền đề kiểm ở task đầu
 
-Spec dựa vào sáu điều chưa ai thử trên máy bạn. Task đầu kiểm cả sáu, trước khi dựng:
+Spec dựa vào sáu điều chưa ai thử trên máy bạn. Giai đoạn đầu của plan kiểm điểm 1–5, trước khi dựng. Điểm 6 cần repo và space đã nối với nhau, nên được kiểm sau bước nối: T6 kiểm repo đã vào GitHub for Atlassian, T7 kiểm panel Development trên PR tài liệu đầu tiên (plan):
 
 1. `create-next-app` 16.4.3 và `nest new` 12.0.11 chạy được với Node 24.17 trên Windows. `npm audit --audit-level=high` của khung không báo lỗi, vì job `policy` chạy `npm audit`.
 2. Trong npm workspaces, `npm ci` ở gốc cài đủ cho cả hai app, và Jest của từng app ghi lcov đúng chỗ.
