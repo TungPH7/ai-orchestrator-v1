@@ -110,7 +110,7 @@ T16 ── T17 Epic: spec, plan ── T18 Epic: build, review, fix ── T19 t
 ### Checkpoint 2
 - [x] Năm lệnh kiểm trong quy ước chung và CI của kit xanh
 - [x] Claude chạy `ao-step.mjs` ở chế độ chỉ kiểm trong `ao-pilot`, bằng code của kit: `status`, `build` cho một item, `review` cho một PR. Không agent nào chạy
-- [ ] Bạn đọc kết quả đó, skill `ao-build`, và phần prompt đã sửa
+- [x] Bạn đọc kết quả đó, skill `ao-build`, và phần prompt đã sửa
 
 ### Giai đoạn 5: lên `ao-pilot`
 - [ ] T15: Bản chép kit mới vào `ao-pilot` qua PR [bạn]
