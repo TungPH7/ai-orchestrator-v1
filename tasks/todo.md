@@ -379,7 +379,7 @@ Xem [plan.md](plan.md#checkpoint-1).
 
 **Cỡ:** M
 
-### [ ] T12: `ao-step.mjs` và `runner.mjs` (spec mục 2.1, 2.2)
+### [x] T12: `ao-step.mjs` và `runner.mjs` (spec mục 2.1, 2.2)
 
 **Mô tả:**
 
@@ -399,19 +399,19 @@ Xem [plan.md](plan.md#checkpoint-1).
 - Lần chạy thứ hai của `/ao-plan`: gọi `gh workflow run jira-sync -f item=<EPIC>` bằng login của bạn, chờ lượt `merge-gate` theo sau, rồi báo PR tài liệu đã merge hay còn chờ gì.
 
 **Tiêu chí chấp nhận:**
-- [ ] Test `runner` với hàm mở process giả và dữ kiện ghi sẵn:
+- [x] Test `runner` với hàm mở process giả và dữ kiện ghi sẵn:
   - thứ tự lượt;
   - `state.json` sau từng lượt;
   - mỗi điều kiện dừng;
   - chạy tiếp lượt dở;
   - `--answers`;
   - nội dung `last.md`.
-- [ ] Test: hai agent không bao giờ chạy cùng lúc.
-- [ ] Test: lệnh của mỗi lượt không chứa token.
+- [x] Test: hai agent không bao giờ chạy cùng lúc.
+- [x] Test: lệnh của mỗi lượt không chứa token.
 
 **Kiểm chứng:**
-- [ ] Năm lệnh trong quy ước chung xanh
-- [ ] `ao-step.mjs status` chạy được trong `ao-pilot` với code của kit, chỉ đọc
+- [x] Năm lệnh trong quy ước chung xanh
+- [x] `ao-step.mjs status` chạy được trong `ao-pilot` với code của kit, chỉ đọc
 
 **Phụ thuộc:** T3, T11
 
