@@ -219,6 +219,22 @@ Hai điều nên biết khi chạy agent:
 
 `gh-guard` đọc lệnh theo mẫu, nên một agent cố tình vẫn có thể lách. Các lớp không phụ thuộc vào máy bạn là Restrict của Jira, environment `merge-gate`, `merge-gate` và `audit`.
 
+**`gh-guard` chặn nhầm lẫn, không phải ranh giới quyền.** Phiên agent chạy dưới user Windows của bạn. Vì vậy nó đọc được file key của hai App, và một script do agent tự viết vẫn mua được token `ao-dev`, kể cả quyền Workflows. Từ T15b (review của ao-pilot PR #14), `gh-guard` từ chối thêm:
+
+- lệnh đặt, export hay xóa các biến danh tính của phiên (`GIT_CONFIG_*`, `GIT_ASKPASS`, `GH_TOKEN` …), cả `env -i` và các biến đó trong PowerShell;
+- chương trình `git-credential-*`;
+- shell đọc lệnh từ stdin, và lệnh PowerShell đã mã hóa.
+
+Lệnh trong `powershell -Command`, `pwsh -Command` và `cmd /c` được kiểm như lệnh thường. Script do agent tự viết rồi chạy (`bash x.sh`, `node x.mjs`) thì `gh-guard` không đọc.
+
+Các việc sau còn để ngỏ, vì cần bạn quyết:
+
+- **Lớp chặn phía server cho `develop` và `main`:** ruleset cần repo public hoặc GitHub Pro. Khi chưa có, `merge-gate`, `audit` và hook `pre-push` là các lớp chặn còn lại.
+- **App riêng cho quyền Workflows,** chỉ `devops` dùng. Khi đó key của `ao-dev` không còn mở được workflow.
+- **Đưa `--go` ra khỏi luật `allow`** của `.claude/settings.json`. Khi đó Claude Code hỏi bạn trước mỗi lần chạy agent, kể cả khi model của phiên chính bị văn bản trên Jira hay PR dẫn dắt.
+- **Đưa key ra khỏi tầm của user chạy agent:** chạy agent dưới một user Windows riêng, hoặc trong WSL2 có sandbox (spec dev-workflow mục 12).
+- **`GH_TOKEN` của phiên hết hạn sau 1 giờ.** Lượt dài hơn sẽ hỏng ở các lệnh `gh` sau giờ đầu; `git` và `ao-pr.mjs` thì không, vì chúng mua token mỗi lần.
+
 ## Ruleset
 
 `npm run gh:protect -- --repo <owner>/<name>` chạy từ repo kit, bằng `gh` của bạn. Lệnh áp ruleset `ao-protected` cho `develop`, `main` và `release/*`: chặn xóa nhánh và force push, bắt buộc qua PR, bắt buộc bốn check của `CI`, cần một approve, và bỏ approve cũ khi có push mới. Chạy lại thì cập nhật ruleset đang có, không tạo bản trùng.
