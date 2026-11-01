@@ -27,7 +27,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 17 | `46e16bae-3275-482c-b001-11cf43108e28` | 2026-10-31 khoảng 23:25 → 2026-11-01 khoảng 01:05 | Bạn duyệt `SPEC-dev-workflow.md`; spec merge (PR #109); Claude viết plan 19 task, bốn checkpoint (chặn gọi thẳng credential helper, effort đặt cả tham số lẫn biến môi trường, PR chép kit review bằng `/ao-review`, Story của Epic thử dừng ở Ready for QA); bạn duyệt plan (PR #110); T1 kiểm skill `/` và lệnh nền bằng Haiku: dòng `!` chỉ tự chạy khi có luật `allow`, `$ARGUMENTS` được chèn nguyên văn, `claude -p` dừng lệnh nền sau 10 phút nếu không đặt `timeout`; T2: Task thử DEMO-18, PR nháp `ao-pilot` #13, push bằng token App, Git Credential Manager được thay, `gh` dùng token App; bạn hỏi vì sao lệnh 20 phút chạy quá 20 phút; bạn hỏi Haiku dùng ở đâu và chê Haiku kém; Claude thôi dùng Haiku, đề xuất năm điểm sửa spec và xin bạn thêm quyền cho hai App; bạn duyệt năm điểm sửa, T1 đóng (PR #111); bạn đã thêm quyền cho hai App, T2 đóng (PR #112): cả sáu tiền đề về GitHub đúng; Checkpoint 1, chờ bạn |
 | 18 | `184d78d1-4600-4c36-8279-005a105c9216` | 2026-11-01 khoảng 01:08 → | Bạn cho qua Checkpoint 1 (PR #113); T3–T14 đóng (PR #114–#125): phiên agent dùng danh tính App và credential helper theo vai trò, PR tài liệu và quy tắc Q5, `merge-gate` báo PR chỉ còn chờ bạn và `jira-sync` gỡ cờ, đánh dấu dòng DoR, `ao-step.mjs` và vòng chạy `--go`, sáu skill `/ao-*`, template và prompt; chạy chỉ kiểm trong `ao-pilot` tìm ra lỗi 403 khi đọc commit status; Checkpoint 2 (PR #126), chờ bạn |
 | 19 | `44d6269e-f8c5-4052-a81c-f0f6385e00ed` | 2026-11-01 khoảng 10:35 → khoảng 11:30 | Bạn cho qua Checkpoint 2 (PR #127); T15: Task DEMO-19, ao-pilot PR #14 chép kit bằng danh tính bot `ao-dev`, `/ao-review`: `reviewer` COMMENT, `security` chạm giới hạn 5 giờ rồi chạy tiếp và COMMENT, 11,69 USD quy đổi; `merge-gate` bản mới chạy ở máy comment và gắn cờ một lần; trả lời cuối của Claude bị bộ lọc an toàn chặn hai lần, nên phiên này không có lượt nào trong log |
-| 20 | `bc6dea4e-d395-4a5d-b439-2a337292b2e7` | 2026-11-01 khoảng 11:45 → | Bạn dán đoạn cuối của Phiên 19 để làm tiếp; Claude báo kết quả T15 và hỏi về nhánh `main` và các finding của kit; bạn merge PR #14 và chọn cả hai đề xuất: nhánh mặc định của `ao-pilot` sang `develop`, sửa finding ở kit không chạy agent; T15 đóng (PR #128), T15a (PR #129), T15b (PR #130); T16 đóng (PR #131): agent dùng danh tính App, vai trò chỉ đọc không push được; Checkpoint 3, bạn đồng ý chạy Epic thử; T17: Epic DEMO-20, `/ao-status`, chờ bạn bấm `Start spec`; bạn bấm `Start spec`; `/ao-spec` bị Claude Code tắt vì máy thiếu RAM; bạn bảo chạy lại; `ba` viết SPEC, `ao-step` dừng vì không thấy nhánh tài liệu chưa push, kit PR #132 sửa; chờ bạn chọn chạy bằng code của kit hay chép kit lần hai, và trả lời ba câu hỏi của `ba` |
+| 20 | `bc6dea4e-d395-4a5d-b439-2a337292b2e7` | 2026-11-01 khoảng 11:45 → | Bạn dán đoạn cuối của Phiên 19 để làm tiếp; Claude báo kết quả T15 và hỏi về nhánh `main` và các finding của kit; bạn merge PR #14 và chọn cả hai đề xuất: nhánh mặc định của `ao-pilot` sang `develop`, sửa finding ở kit không chạy agent; T15 đóng (PR #128), T15a (PR #129), T15b (PR #130); T16 đóng (PR #131): agent dùng danh tính App, vai trò chỉ đọc không push được; Checkpoint 3, bạn đồng ý chạy Epic thử; T17: Epic DEMO-20, `/ao-status`, chờ bạn bấm `Start spec`; bạn bấm `Start spec`; `/ao-spec` bị Claude Code tắt vì máy thiếu RAM; bạn bảo chạy lại; `ba` viết SPEC, `ao-step` dừng vì không thấy nhánh tài liệu chưa push, kit PR #132 sửa; bạn chọn chạy bằng code của kit và trả lời theo đề xuất; `ux` chạm giới hạn 5 giờ; bạn bảo làm tiếp; `ux` hỏi sáu câu, `sa` hỏi hai câu, bạn trả lời theo đề xuất; `ba` mở PR tài liệu #15, CI xanh, stage spec 7,84 USD quy đổi; chờ bạn duyệt ở gate ① |
 
 ---
 
@@ -7433,3 +7433,57 @@ Mình khuyên theo cả hai đề xuất của `sa`. Ở Q5, cách (A) an toàn 
 **Một lỗi nhỏ của kit:** `ao-step` báo "10 câu hỏi", vì nó đếm mọi gạch đầu dòng trong mục Open Questions, trong khi `sa` viết câu hỏi thành đoạn in đậm kèm gạch đầu dòng con. Mình ghi lại để sửa sau. Lỗi này không cản việc chạy tiếp.
 
 Bạn trả lời gọn được, ví dụ "theo đề xuất". Sau đó `sa` sửa SPEC theo câu trả lời, rồi `ba` push nhánh và mở PR tài liệu.
+
+# Phiên 20 · Lượt 10 — 2026-11-01 khoảng 15:39
+
+**Bạn:**
+
+````markdown
+theo đề xuất
+````
+
+Trước khi trả lời, Claude ghi câu trả lời vào `.ai/runs/DEMO-20/answers.md`, chạy bước chỉ kiểm (GO: `sa` chạy tiếp trong session cũ), rồi chạy `--go --answers` ở nền bằng code của kit.
+
+**Claude:**
+
+Stage spec đang chạy tiếp ở nền, bằng code của kit:
+
+1. `sa` sửa SPEC theo câu trả lời của bạn.
+2. `ba` push nhánh tài liệu và mở PR tài liệu.
+
+Khi lệnh xong, mình sẽ báo kết quả và chi phí. Nếu PR tài liệu đã mở và CI xanh, mình sẽ gửi kèm các bước bạn cần bấm ở gate ①: đọc PR, rồi bấm `Approve spec`.
+
+Lệnh xong lúc 15:45, với PR tài liệu #15 đã mở. Claude kiểm CI và log của `merge-gate`, rồi trả lời tiếp:
+
+**Claude:**
+
+Stage spec của DEMO-20 đã xong. `ba` đã push nhánh tài liệu và mở **PR tài liệu #15**. CI xanh, và giờ tới lượt bạn duyệt ở gate ①.
+
+**Lượt cuối:**
+- `sa` đưa câu trả lời Q4, Q5 vào SPEC: 1,7 phút, 0,53 USD quy đổi, commit `2109853`. SPEC và design không còn câu hỏi mở.
+- `ba` push nhánh `feature/DEMO-20-spec` và mở PR #15 bằng App `ao-dev`: 2,8 phút, 0,97 USD.
+
+**PR #15:**
+- Chỉ sửa hai file: `docs/specs/DEMO-20/spec.md` và `docs/specs/DEMO-20/design.md`.
+- Bốn job CI đều xanh, kể cả `policy`, job kiểm `design.md`.
+- `merge-gate`, nay chạy từ `develop`, nhận ra đây là PR tài liệu và ghi "chờ DEMO-20 qua gate ②". Sau khi bạn duyệt plan, nó sẽ tự merge PR, không cần bạn approve trên GitHub.
+
+**Chi phí stage spec:** 7,84 USD quy đổi cho 7 lượt:
+- `ba`: 2,97 USD, ba lượt;
+- `ux`: 1,95 USD, ba lượt, có một lần chạm giới hạn 5 giờ;
+- `sa`: 2,93 USD, hai lượt.
+
+Con số này chưa tính lượt `ba` đầu tiên bị tắt vì thiếu RAM. Ở module trước, stage spec tốn 5,30 USD. Lần này tốn hơn vì có nhiều câu hỏi hơn (ba lần hỏi bạn), và vì `sa` dựng thử code để tìm những test sẽ fail.
+
+**Việc cần bạn ở gate ①:**
+1. Mở https://github.com/TungPH7/ao-pilot/pull/15, rồi bấm tab **Files changed**.
+2. Đọc `spec.md` và `design.md`. Muốn xem dạng đã định dạng, bấm nút **…** ở đầu mỗi file rồi chọn **View file** **(đối chiếu giao diện)**.
+3. Nếu muốn sửa gì, nhắn mình, mình sẽ chuyển cho `ba`, `ux` hoặc `sa`. Bạn không cần approve hay comment trên GitHub.
+4. Nếu đồng ý, mở https://phunghuutung12b4.atlassian.net/browse/DEMO-20, bấm nút trạng thái **Specifying**, rồi chọn **Approve spec** **(đối chiếu giao diện)**. Khi trạng thái đổi thành **Planning** là xong.
+5. Nhắn mình "đã duyệt spec".
+
+**Sau đó mình chạy `/ao-plan DEMO-20`:**
+- `sa` viết plan, ghi vai trò và effort cho từng item, viết ADR nếu cần, rồi push lên PR #15.
+- `ba` tạo Story và Sub-task trên Jira.
+
+Ở module trước, stage plan tốn 6,51 USD quy đổi.
