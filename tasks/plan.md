@@ -1,6 +1,6 @@
 # Plan triển khai: Pilot 1
 
-> **Spec:** [SPEC-pilot-1.md](../SPEC-pilot-1.md), đã duyệt 2026-11-01 (Phiên 21 · Lượt 4). **Trạng thái:** đã duyệt 2026-11-01 (Phiên 21 · Lượt 5), cùng quyết định 6 và 8. **Task chi tiết:** [todo.md](todo.md). **Kết quả kiểm thật:** `tasks/verification.md`, tạo ở T1.
+> **Spec:** [SPEC-pilot-1.md](../SPEC-pilot-1.md), đã duyệt 2026-11-01 (Phiên 21 · Lượt 4). **Trạng thái:** đã duyệt 2026-11-01 (Phiên 21 · Lượt 5), cùng quyết định 6 và 8. Từ Phiên 21 · Lượt 6, bạn duyệt trước các đề xuất của Claude trong Pilot 1: Claude không dừng hỏi duyệt spec hay plan, chỉ hỏi khi cần bạn bấm, cần quyền hoặc cần thêm thông tin; ở mỗi checkpoint Claude ghi kết quả, báo ngắn rồi làm tiếp. **Task chi tiết:** [todo.md](todo.md). **Kết quả kiểm thật:** `tasks/verification.md`, tạo ở T1.
 
 ## Tổng quan
 
@@ -20,6 +20,7 @@ Pilot không viết tính năng mới cho kit. Code của kit chỉ đổi khi c
    - T1 làm trong scratchpad: sinh khung hai app, kiểm `npm ci`, lcov và `npm audit` (điểm 1–2). Rồi chạy `claude -p --model sonnet "/ao-status"` trong một thư mục chưa từng mở bằng Claude Code, có bản chép kit và `settings.local.json` bật hai server MCP, đọc space `DEMO` (điểm 5). Đây là lượt duy nhất của T1 tốn usage.
    - T2 làm trên đối tượng thật: tạo repo `ao-sample` trống, thêm repo vào ba bản cài App (`ao-dev`, `ao-review`, GitHub for Atlassian) bằng API (điểm 3); tạo space `SMP` và gán `AO workflow scheme` bằng API (điểm 4).
    - Điểm 1, 2 hoặc 5 sai thì Claude dừng, đề xuất sửa spec và chờ bạn duyệt. Điểm 3 hoặc 4 sai thì không cần sửa spec: bạn làm bước đó trên giao diện theo từng bước bấm (spec mục 2.3, 2.4).
+   - **Kết quả (Checkpoint 1):** điểm 3 và 4 sai, điểm 1, 2, 5 cần sáu chỗ sửa; bạn duyệt cả sáu ở Phiên 21 · Lượt 6, kèm việc dùng chung scheme của `DEMO`. Lỗ `oxlint-disable` của kit được sửa ở T1a, trước khi chép kit ở T5.
 2. **Commit đầu chứa mọi thứ cần cho lần chạy đầu.** Khung app, bản chép kit, skill theo stack, `deploy.yml`, `.jira/config.yml`, README của dự án đều nằm trong commit đầu (spec mục 2.5). Nhờ vậy, sau commit đầu không cần PR dựng nào khác trước Epic.
 3. **Bản chép kit lấy từ một commit cố định của kit.** T5 ghi SHA của `main` kit lúc chép vào `verification.md`. Từ đó tới hết Epic, bản chép chỉ đổi qua PR (quyết định 6).
 4. **Skill theo stack chép tay, như `npm run skills:vendor` làm cho skill của kit.** Mỗi skill có `SOURCE.md` (repo, đường dẫn, commit, ngày, thay đổi) và file giấy phép. Claude đọc hết nội dung trước khi chép (spec mục 2.2).
@@ -30,7 +31,7 @@ Pilot không viết tính năng mới cho kit. Code của kit chỉ đổi khi c
    - Lỗi chặn Epic: sửa ở kit (kit PR, có test), rồi đưa bản sửa vào `ao-sample` bằng một PR chép kit nhỏ. PR này gắn một Task của `SMP`, được review bằng `/ao-review`, và bạn tự merge vì sửa đường dẫn được bảo vệ.
    - Lỗi không chặn: sửa ở kit, gom lại, chép một lần ở T10.
    - Không dùng `AO_KIT_DIR` để đi vòng (spec mục 2.7).
-7. **Gõ lệnh `/` thật.** Mọi lệnh `/ao-*` chạy bằng `claude -p --model sonnet "/ao-…"` trong `ao-sample`, ở shell nền với `timeout` dài (kết quả T1 của `dev-workflow`). Claude đọc `.ai/runs/<KEY>/state.json` trước mỗi lần chạy lại. Bạn vẫn là người bấm ở mọi cổng.
+7. **Gõ lệnh `/` thật.** Mọi lệnh `/ao-*` chạy bằng `MSYS_NO_PATHCONV=1 claude -p --model sonnet "/ao-…"` trong `ao-sample` (thư mục đã được bạn tin cậy), ở shell nền với `timeout` dài (kết quả T1 của `dev-workflow`). Claude đọc `.ai/runs/<KEY>/state.json` trước mỗi lần chạy lại. Bạn vẫn là người bấm ở mọi cổng.
 8. **Checkpoint ngay sau lượt build đầu (T8).** Agent chưa từng làm Next.js và NestJS trong kit (spec mục 12). Bạn xem code của Sub-task đầu trước khi chạy phần còn lại.
 9. **Key và token không đi qua chat, log hay lịch sử lệnh.** Claude đọc biến môi trường từ registry ngay trong lệnh. Secret của GitHub được đặt bằng cách pipe từ file hoặc nhập ở dấu nhắc của `gh`.
 10. **Quy trình nhánh của kit như các module trước.** Mỗi task có thay đổi ở kit dùng nhánh `task/t<N>-<slug>` tách từ `main`, merge qua PR khi CI xanh. Claude dừng ở các checkpoint để bạn soát.
@@ -56,12 +57,13 @@ T9 ── T10 bản sửa kit còn lại, tài liệu, lưu trữ
 ## Danh sách task
 
 ### Giai đoạn 1: tiền đề
-- [ ] T1: Tiền đề về khung app và `claude -p` (spec mục 2.8, điểm 1, 2, 5)
-- [ ] T2: Tiền đề về GitHub và Jira (điểm 3, 4)
+- [x] T1: Tiền đề về khung app và `claude -p` (spec mục 2.8, điểm 1, 2, 5)
+- [x] T2: Tiền đề về GitHub và Jira (điểm 3, 4)
+- [x] T1a: Kit bắt `oxlint-disable` (thêm sau T1)
 
 ### Checkpoint 1
-- [ ] Năm điểm có kết quả trong `tasks/verification.md`. Điểm nào sai thì spec đã được sửa và bạn đã duyệt bản sửa, hoặc bước đó đã chuyển cho bạn làm trên giao diện
-- [ ] Bạn xem kết quả của T1–T2
+- [x] Năm điểm có kết quả trong `tasks/verification.md`. Điểm nào sai thì spec đã được sửa và bạn đã duyệt bản sửa, hoặc bước đó đã chuyển cho bạn làm trên giao diện
+- [x] Bạn xem kết quả của T1–T2
 
 ### Giai đoạn 2: dựng
 - [ ] T3: Space `SMP`: bước 9–10 của `docs/jira-setup.md` [bạn]
@@ -71,7 +73,7 @@ T9 ── T10 bản sửa kit còn lại, tài liệu, lưu trữ
 
 ### Checkpoint 2
 - [ ] Tiêu chí 1 và 2 của spec mục 9 đạt
-- [ ] `claude -p --model sonnet "/ao-status"` chạy trong `ao-sample`, thoát 0
+- [ ] `MSYS_NO_PATHCONV=1 claude -p --model sonnet "/ao-status"` chạy trong `ao-sample`, thoát 0
 - [ ] Bạn xem repo, board `SMP` và bảng các bước cài, rồi đồng ý chạy Epic thử (ước 30–45 USD)
 
 ### Giai đoạn 3: Epic thử

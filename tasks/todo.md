@@ -20,7 +20,7 @@
 
 ## Giai đoạn 1: tiền đề
 
-### [ ] T1: Tiền đề về khung app và `claude -p` (spec mục 2.8, điểm 1, 2, 5)
+### [x] T1: Tiền đề về khung app và `claude -p` (spec mục 2.8, điểm 1, 2, 5)
 
 **Mô tả:** Claude làm trong một thư mục mới ở scratchpad, không đụng repo nào:
 
@@ -28,14 +28,16 @@
 2. Điểm 2: thêm `package.json` gốc khai `workspaces`, xóa `package-lock.json` riêng của từng app, chạy `npm install` rồi `npm ci` ở gốc. Thêm Jest vào `apps/web` theo `next/jest`. Chạy `test:coverage` của từng app, kiểm `apps/web/coverage/lcov.info` và `apps/api/coverage/lcov.info` có mặt và tính cả file chưa được test import.
 3. Điểm 5: trong một thư mục mới khác, chép bản chép kit (README bước 1–2), đặt `AO_JIRA_SPACE=DEMO`, viết `.claude/settings.local.json` bật `atlassian` và `chrome-devtools`. Chạy `claude -p --model sonnet "/ao-status"` ở shell nền. Kiểm: lệnh không dừng ở hộp thoại nào, in danh sách item của `DEMO`, thoát 0.
 
+**Kết quả (2026-11-02):** điểm 1 đúng một phần, điểm 2 đúng khi dùng Vitest, điểm 5 đúng kèm `MSYS_NO_PATHCONV=1` và việc tin cậy thư mục. Bạn duyệt sáu chỗ sửa spec ở Phiên 21 · Lượt 6. Chi phí 0,35 USD (3 lượt Sonnet).
+
 **Tiêu chí chấp nhận:**
-- [ ] Ba điểm có kết quả đúng hoặc sai, kèm bằng chứng (lệnh, trích output), trong `tasks/verification.md`.
-- [ ] Flag sinh khung và phiên bản thật được ghi lại để T4 dùng.
-- [ ] Nếu một điểm sai: spec và plan đã sửa theo kết quả, và bạn đã duyệt bản sửa.
+- [x] Ba điểm có kết quả đúng hoặc sai, kèm bằng chứng (lệnh, trích output), trong `tasks/verification.md`.
+- [x] Flag sinh khung và phiên bản thật được ghi lại để T4 dùng.
+- [x] Nếu một điểm sai: spec và plan đã sửa theo kết quả, và bạn đã duyệt bản sửa.
 
 **Kiểm chứng:**
-- [ ] Thư mục thử chỉ nằm trong scratchpad
-- [ ] Lượt `/ao-status` chỉ đọc `DEMO`, không đổi gì trên Jira
+- [x] Thư mục thử chỉ nằm trong scratchpad
+- [x] Lượt `/ao-status` chỉ đọc `DEMO`, không đổi gì trên Jira
 
 **Phụ thuộc:** không
 
@@ -43,7 +45,7 @@
 
 **Cỡ:** S
 
-### [ ] T2: Tiền đề về GitHub và Jira (điểm 3, 4)
+### [x] T2: Tiền đề về GitHub và Jira (điểm 3, 4)
 
 **Mô tả:** Claude làm trên đối tượng thật:
 
@@ -53,14 +55,16 @@
 
 Nếu API từ chối một bước, Claude dừng bước đó, ghi lỗi, và chuyển bước đó cho bạn làm ở T3 hoặc T6 theo từng bước bấm.
 
+**Kết quả (2026-11-02):** repo `ao-sample` đã tạo. Điểm 3 sai (403), điểm 4 sai (401): thêm repo vào App chuyển sang T6, tạo space chuyển sang T3, đều do bạn bấm.
+
 **Tiêu chí chấp nhận:**
-- [ ] Repo `ao-sample` tồn tại, private, nằm trong ba bản cài App (bằng API hoặc chuyển cho bạn).
-- [ ] Space `SMP` tồn tại, company-managed, dùng `AO workflow scheme` (bằng API hoặc chuyển cho bạn).
-- [ ] Hai điểm có kết quả và bằng chứng trong `tasks/verification.md`.
+- [x] Repo `ao-sample` tồn tại, private, nằm trong ba bản cài App (bằng API hoặc chuyển cho bạn).
+- [x] Space `SMP` tồn tại, company-managed, dùng `AO workflow scheme` (bằng API hoặc chuyển cho bạn).
+- [x] Hai điểm có kết quả và bằng chứng trong `tasks/verification.md`.
 
 **Kiểm chứng:**
-- [ ] `gh api repos/TungPH7/ao-sample` trả `private: true`
-- [ ] `GET /rest/api/3/project/SMP` trả 200, `style: classic`
+- [x] `gh api repos/TungPH7/ao-sample` trả `private: true`
+- [x] `GET /rest/api/3/project/SMP`: chuyển sang T3, vì space do bạn tạo
 
 **Phụ thuộc:** không
 
@@ -68,9 +72,23 @@ Nếu API từ chối một bước, Claude dừng bước đó, ghi lỗi, và 
 
 **Cỡ:** XS
 
+### [x] T1a: Kit bắt `oxlint-disable` (thêm sau T1)
+
+**Mô tả:** T1 cho thấy oxlint nhận cả `oxlint-disable` lẫn `eslint-disable`, nhưng `suppressions.patterns` của kit chỉ có `eslint-disable`. Thêm `oxlint-disable` vào `quality/gates.yaml`, `SPEC-quality-gates.md` và `docs/quality-gates.md`. `docs/dev-workflow.md` thêm dòng về việc tin cậy thư mục dự án.
+
+**Tiêu chí chấp nhận:**
+- [x] Test mới trong `tests/quality/policy.test.mjs` đỏ trước khi sửa, xanh sau khi sửa.
+- [x] Năm lệnh kiểm của kit xanh (782 test).
+
+**Phụ thuộc:** T1
+
+**File:** `quality/gates.yaml`, `SPEC-quality-gates.md`, `docs/quality-gates.md`, `docs/dev-workflow.md`
+
+**Cỡ:** XS
+
 ### Checkpoint 1
-- [ ] Năm điểm có kết quả trong `tasks/verification.md`. Điểm nào sai thì spec đã được sửa và bạn đã duyệt bản sửa, hoặc bước đó đã chuyển cho bạn làm trên giao diện
-- [ ] Bạn xem kết quả của T1–T2
+- [x] Năm điểm có kết quả trong `tasks/verification.md`. Điểm nào sai thì spec đã được sửa và bạn đã duyệt bản sửa, hoặc bước đó đã chuyển cho bạn làm trên giao diện
+- [x] Bạn xem kết quả của T1–T2 (Phiên 21 · Lượt 6)
 
 ---
 
@@ -78,7 +96,7 @@ Nếu API từ chối một bước, Claude dừng bước đó, ghi lỗi, và 
 
 ### [ ] T3: Space `SMP`: bước 9–10 của `docs/jira-setup.md` [bạn]
 
-**Mô tả:** Claude làm qua API mọi mục của bước 9–10 mà T2 chưa làm và API cho phép: work type (`Epic`, `Story`, `Sub-task`, `Task`, `Bug`), trường trên screen (`Found in`, `Affects versions`, `Severity`, `Fix versions`, `Agent`, `Flagged`), filter của board (`project = SMP AND issuetype != Epic ORDER BY Rank ASC`). Quyền của hai service account theo bước 9. Mục API không làm được, như cột của board và giới hạn WIP, Claude ghi từng bước bấm cho bạn rồi chờ.
+**Mô tả:** Token admin Jira không tạo được space (T2), nên **[bạn]** tạo space `SMP` trên giao diện, dùng chung cấu hình với `DEMO` (bạn chọn ở Checkpoint 1), rồi sửa board theo bước 10: filter `project = SMP AND issuetype != Epic ORDER BY Rank ASC`, cột và giới hạn WIP. Claude ghi từng bước bấm, kiểm lại bằng API và `jira:check`, và ghi thời gian vào `verification.md`. Trong lúc chờ, Claude làm T4 và T5, vì hai task này không cần space.
 
 **Tiêu chí chấp nhận:**
 - [ ] Mọi ô `- [ ]` của bước 9–10 đạt.
@@ -139,7 +157,7 @@ Chưa commit.
 **Kiểm chứng:**
 - [ ] So sánh thư mục với kit bằng `git diff --no-index --stat`, kết quả ghi vào `verification.md`
 
-**Phụ thuộc:** T4
+**Phụ thuộc:** T1a, T4
 
 **File:** `ao-sample/.claude/settings.json`, `ao-sample/.ai-orchestrator/roster.local.yaml`, `ao-sample/.github/workflows/deploy.yml`, `ao-sample/.jira/config.yml`, `ao-sample/README.md` (cùng các file chép từ kit)
 
@@ -151,12 +169,12 @@ Chưa commit.
 
 1. Claude push commit đầu lên `main`, tạo `develop` từ đúng commit đó, đặt `develop` làm nhánh mặc định.
 2. Claude tạo environment `merge-gate` (chỉ nhánh `develop`), `development`, `staging`, `production`.
-3. **[bạn]** Đặt secret `JIRA_CI_TOKEN`: gõ `! gh secret set JIRA_CI_TOKEN -R TungPH7/ao-sample` rồi dán token ở dấu nhắc.
+3. Claude đặt secret `JIRA_CI_TOKEN` bằng cách pipe biến môi trường cùng tên vào `gh secret set`. **[bạn]** Thêm `ao-sample` vào ba App trên giao diện (T2: API từ chối).
 4. **[bạn]** Tạo private key mới cho `ao-dev` trên trang của App (mục 2 của `docs/github-apps-setup.md`), báo Claude đường dẫn file. Claude đặt secret `AO_DEV_APP_KEY` của environment `merge-gate` bằng cách pipe file, rồi xóa file.
-5. Claude chạy `npm run gh:protect -- --repo TungPH7/ao-sample`, và viết `.claude/settings.local.json` bật hai server MCP ở máy.
+5. Claude chạy `npm run gh:protect -- --repo TungPH7/ao-sample`, và viết `.claude/settings.local.json` bật hai server MCP ở máy. **[bạn]** Mở `claude` trong `ao-sample` một lần, chấp nhận hộp thoại tin cậy thư mục, rồi thoát (T1, điểm 5).
 6. Bước 11: kiểm repo đã nằm trong bản cài GitHub for Atlassian (T2). Vì `.jira/config.yml` có từ commit đầu, **[bạn]** ngắt rồi nối lại kết nối nếu Backfill chưa đọc file này. Bạn kiểm **Backfill status** là **FINISHED**.
 7. Bước 13: `npm run jira:check -- --space SMP` không còn chỗ lệch; bạn xem các dòng `Check by hand`.
-8. Claude chạy `claude -p --model sonnet "/ao-status"` trong `ao-sample`.
+8. Claude chạy `MSYS_NO_PATHCONV=1 claude -p --model sonnet "/ao-status"` trong `ao-sample`.
 
 **Tiêu chí chấp nhận:**
 - [ ] Tiêu chí 1 của spec mục 9: `develop` là nhánh mặc định, `main` là tổ tiên của `develop`, `CI` xanh trên commit đầu ở cả `main` và `develop`.
@@ -177,7 +195,7 @@ Chưa commit.
 
 ### Checkpoint 2
 - [ ] Tiêu chí 1 và 2 của spec mục 9 đạt
-- [ ] `claude -p --model sonnet "/ao-status"` chạy trong `ao-sample`, thoát 0
+- [ ] `MSYS_NO_PATHCONV=1 claude -p --model sonnet "/ao-status"` chạy trong `ao-sample`, thoát 0
 - [ ] Bạn xem repo, board `SMP` và bảng các bước cài, rồi đồng ý chạy Epic thử (ước 30–45 USD)
 
 ---
