@@ -27,7 +27,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 17 | `46e16bae-3275-482c-b001-11cf43108e28` | 2026-10-31 khoảng 23:25 → 2026-11-01 khoảng 01:05 | Bạn duyệt `SPEC-dev-workflow.md`; spec merge (PR #109); Claude viết plan 19 task, bốn checkpoint (chặn gọi thẳng credential helper, effort đặt cả tham số lẫn biến môi trường, PR chép kit review bằng `/ao-review`, Story của Epic thử dừng ở Ready for QA); bạn duyệt plan (PR #110); T1 kiểm skill `/` và lệnh nền bằng Haiku: dòng `!` chỉ tự chạy khi có luật `allow`, `$ARGUMENTS` được chèn nguyên văn, `claude -p` dừng lệnh nền sau 10 phút nếu không đặt `timeout`; T2: Task thử DEMO-18, PR nháp `ao-pilot` #13, push bằng token App, Git Credential Manager được thay, `gh` dùng token App; bạn hỏi vì sao lệnh 20 phút chạy quá 20 phút; bạn hỏi Haiku dùng ở đâu và chê Haiku kém; Claude thôi dùng Haiku, đề xuất năm điểm sửa spec và xin bạn thêm quyền cho hai App; bạn duyệt năm điểm sửa, T1 đóng (PR #111); bạn đã thêm quyền cho hai App, T2 đóng (PR #112): cả sáu tiền đề về GitHub đúng; Checkpoint 1, chờ bạn |
 | 18 | `184d78d1-4600-4c36-8279-005a105c9216` | 2026-11-01 khoảng 01:08 → | Bạn cho qua Checkpoint 1 (PR #113); T3–T14 đóng (PR #114–#125): phiên agent dùng danh tính App và credential helper theo vai trò, PR tài liệu và quy tắc Q5, `merge-gate` báo PR chỉ còn chờ bạn và `jira-sync` gỡ cờ, đánh dấu dòng DoR, `ao-step.mjs` và vòng chạy `--go`, sáu skill `/ao-*`, template và prompt; chạy chỉ kiểm trong `ao-pilot` tìm ra lỗi 403 khi đọc commit status; Checkpoint 2 (PR #126), chờ bạn |
 | 19 | `44d6269e-f8c5-4052-a81c-f0f6385e00ed` | 2026-11-01 khoảng 10:35 → khoảng 11:30 | Bạn cho qua Checkpoint 2 (PR #127); T15: Task DEMO-19, ao-pilot PR #14 chép kit bằng danh tính bot `ao-dev`, `/ao-review`: `reviewer` COMMENT, `security` chạm giới hạn 5 giờ rồi chạy tiếp và COMMENT, 11,69 USD quy đổi; `merge-gate` bản mới chạy ở máy comment và gắn cờ một lần; trả lời cuối của Claude bị bộ lọc an toàn chặn hai lần, nên phiên này không có lượt nào trong log |
-| 20 | `bc6dea4e-d395-4a5d-b439-2a337292b2e7` | 2026-11-01 khoảng 11:45 → | Bạn dán đoạn cuối của Phiên 19 để làm tiếp; Claude báo kết quả T15 và hỏi về nhánh `main` và các finding của kit; bạn merge PR #14 và chọn cả hai đề xuất: nhánh mặc định của `ao-pilot` sang `develop`, sửa finding ở kit không chạy agent; T15 đóng (PR #128), T15a (PR #129), T15b (PR #130); T16 đóng (PR #131): agent dùng danh tính App, vai trò chỉ đọc không push được; Checkpoint 3, bạn đồng ý chạy Epic thử; T17: Epic DEMO-20, `/ao-status`, chờ bạn bấm `Start spec`; bạn bấm `Start spec`; `/ao-spec` bị Claude Code tắt vì máy thiếu RAM; bạn bảo chạy lại; `ba` viết SPEC, `ao-step` dừng vì không thấy nhánh tài liệu chưa push, kit PR #132 sửa; bạn chọn chạy bằng code của kit và trả lời theo đề xuất; `ux` chạm giới hạn 5 giờ; bạn bảo làm tiếp; `ux` hỏi sáu câu, `sa` hỏi hai câu, bạn trả lời theo đề xuất; `ba` mở PR tài liệu #15, CI xanh, stage spec 7,84 USD quy đổi; bạn duyệt spec; stage plan: `sa` viết plan và ADR-0002, `ba` tạo DEMO-21, DEMO-22, DEMO-23; bạn chọn DEMO-22 ở `xhigh` và đổi `Status` thành Approved, hỏi vì sao `Status` còn Draft; lượt `ba` bị tắt vì thiếu RAM, bạn bảo chạy lại; bạn duyệt plan; `merge-gate` merge PR #15, `audit` xanh, T17 đóng (PR #133), 14,92 USD quy đổi; bạn đồng ý; bốn lỗi nhỏ sửa (PR #134); T18: `be-dev` bị `jira-guard` chặn vì token App bị cắt ở dấu chấm, kit PR #135 sửa; bạn gỡ cờ; `be-dev` xong DEMO-22 ở `xhigh`, kit PR #136 sửa việc làm tiếp Sub-task; bạn hỏi `be-dev` có bị tắc không; `fe-dev` code xong DEMO-23 nhưng gắn cờ vì Tab không cuộn khung bảng ở 320 px; bạn chọn B và gỡ cờ; `fe-dev` mở PR #16, CI xanh; `reviewer` chạm giới hạn 5 giờ, chạy lại sau khi reset; `reviewer` 3 Low, `security` không có finding; bạn chọn sửa hai Low; `be-dev` sửa và push, `reviewer` bị tắt vì thiếu RAM lần ba; bạn mở lại Claude Code với chế độ không tắt lệnh nền; `security` review phần mới ở `high`, `merge-gate` chỉ còn chờ approve (tiêu chí 5); bạn approve, `merge-gate` merge PR #16, `audit` xanh, DEMO-21 sang Ready for QA, Task DEMO-24 cho hai test còn thiếu, T18 đóng (PR #137), Epic thử 36,19 USD quy đổi; Checkpoint 4, chờ bạn |
+| 20 | `bc6dea4e-d395-4a5d-b439-2a337292b2e7` | 2026-11-01 khoảng 11:45 → | Bạn dán đoạn cuối của Phiên 19 để làm tiếp; Claude báo kết quả T15 và hỏi về nhánh `main` và các finding của kit; bạn merge PR #14 và chọn cả hai đề xuất: nhánh mặc định của `ao-pilot` sang `develop`, sửa finding ở kit không chạy agent; T15 đóng (PR #128), T15a (PR #129), T15b (PR #130); T16 đóng (PR #131): agent dùng danh tính App, vai trò chỉ đọc không push được; Checkpoint 3, bạn đồng ý chạy Epic thử; T17: Epic DEMO-20, `/ao-status`, chờ bạn bấm `Start spec`; bạn bấm `Start spec`; `/ao-spec` bị Claude Code tắt vì máy thiếu RAM; bạn bảo chạy lại; `ba` viết SPEC, `ao-step` dừng vì không thấy nhánh tài liệu chưa push, kit PR #132 sửa; bạn chọn chạy bằng code của kit và trả lời theo đề xuất; `ux` chạm giới hạn 5 giờ; bạn bảo làm tiếp; `ux` hỏi sáu câu, `sa` hỏi hai câu, bạn trả lời theo đề xuất; `ba` mở PR tài liệu #15, CI xanh, stage spec 7,84 USD quy đổi; bạn duyệt spec; stage plan: `sa` viết plan và ADR-0002, `ba` tạo DEMO-21, DEMO-22, DEMO-23; bạn chọn DEMO-22 ở `xhigh` và đổi `Status` thành Approved, hỏi vì sao `Status` còn Draft; lượt `ba` bị tắt vì thiếu RAM, bạn bảo chạy lại; bạn duyệt plan; `merge-gate` merge PR #15, `audit` xanh, T17 đóng (PR #133), 14,92 USD quy đổi; bạn đồng ý; bốn lỗi nhỏ sửa (PR #134); T18: `be-dev` bị `jira-guard` chặn vì token App bị cắt ở dấu chấm, kit PR #135 sửa; bạn gỡ cờ; `be-dev` xong DEMO-22 ở `xhigh`, kit PR #136 sửa việc làm tiếp Sub-task; bạn hỏi `be-dev` có bị tắc không; `fe-dev` code xong DEMO-23 nhưng gắn cờ vì Tab không cuộn khung bảng ở 320 px; bạn chọn B và gỡ cờ; `fe-dev` mở PR #16, CI xanh; `reviewer` chạm giới hạn 5 giờ, chạy lại sau khi reset; `reviewer` 3 Low, `security` không có finding; bạn chọn sửa hai Low; `be-dev` sửa và push, `reviewer` bị tắt vì thiếu RAM lần ba; bạn mở lại Claude Code với chế độ không tắt lệnh nền; `security` review phần mới ở `high`, `merge-gate` chỉ còn chờ approve (tiêu chí 5); bạn approve, `merge-gate` merge PR #16, `audit` xanh, DEMO-21 sang Ready for QA, Task DEMO-24 cho hai test còn thiếu, T18 đóng (PR #137), Epic thử 36,19 USD quy đổi; Checkpoint 4; bạn cho qua Checkpoint 4 (PR #138); T19 đóng (PR #139): sửa lỗi Sub-task mang cờ, `docs/dev-workflow.md`, README, module ghi hoàn thành, plan vào `tasks/archive/dev-workflow/`; checkpoint cuối, chờ bạn xác nhận |
 
 ---
 
@@ -8100,3 +8100,48 @@ T18 đã xong (kit PR #137). PR #16 được `merge-gate` tự merge sau khi b�
 - lưu trữ plan.
 
 Mình đề xuất sửa luôn lỗi nhỏ còn mở trong T19. Các bản sửa của kit chỉ vào `ao-pilot` ở lần chép kit sau.
+
+# Phiên 20 · Lượt 24 — 2026-11-01 khoảng 22:05
+
+**Bạn:**
+
+````markdown
+qua checkpoint 4, làm tiếp như đề xuất nhé
+````
+
+Trước khi trả lời, Claude:
+
+- đánh dấu Checkpoint 4 (kit PR #138);
+- làm T19 (kit PR #139): sửa lỗi Sub-task mang cờ, viết `docs/dev-workflow.md` và mục README cùng test, ghi module hoàn thành trong hai file SPEC, ghi các việc để lại, rồi chuyển plan vào `tasks/archive/dev-workflow/` và kiểm link.
+
+**Claude:**
+
+T19 đã xong. Module `dev-workflow` giờ chỉ còn chờ bạn xác nhận ở Checkpoint cuối.
+
+**T19 (kit PR #139):**
+- **Sửa lỗi còn mở:** `/ao-build` giờ dừng khi một Sub-task chưa xong đang mang cờ Needs you. Lời dừng bảo bạn trả lời trên Sub-task đó, gỡ cờ, rồi chạy lại.
+- **`docs/dev-workflow.md` mới,** gồm:
+  - sáu lệnh;
+  - một vòng Epic từ đầu tới cuối, theo DEMO-20;
+  - cách đọc `.ai/runs/`;
+  - khi nào lệnh dừng;
+  - cách chạy tiếp sau khi bị ngắt;
+  - cách gõ lệnh từ Git Bash;
+  - chi phí đo được;
+  - những điều đã gặp khi chạy thật.
+- **README** có mục "Sáu lệnh `/ao-*`", và thêm `dev-workflow` vào danh sách module đã xong. Có test kiểm cả hai tài liệu.
+- **`SPEC.md` và `SPEC-dev-workflow.md`** ghi module hoàn thành. Plan, todo và kết quả kiểm thật đã chuyển vào `tasks/archive/dev-workflow/`, và mình đã kiểm lại link.
+- **Việc để lại** cho `release-workflow` và Pilot 1 nằm ở cuối `verification.md`. Quan trọng nhất là bản chép kit trong `ao-pilot` vẫn là bản của PR #14. Muốn dùng `/ao-*` bằng bản chép, trước hết cần một PR chép kit lần hai, review hết khoảng 10 USD.
+- 781 test xanh, và năm lệnh kiểm đều xanh.
+
+**Checkpoint cuối:**
+- [x] Đạt 10 tiêu chí ở spec mục 9.
+- [x] Plan, todo và kết quả kiểm thật đã chuyển vào `tasks/archive/dev-workflow/`.
+- [ ] Bạn xác nhận module hoàn thành.
+
+**Việc cần bạn:**
+1. Đọc `docs/dev-workflow.md`: https://github.com/TungPH7/ai-orchestrator-v1/blob/main/docs/dev-workflow.md
+2. Đọc mục "Việc để lại cho `release-workflow` và Pilot 1" ở cuối `tasks/archive/dev-workflow/verification.md`.
+3. Nhắn "xác nhận module hoàn thành", hoặc cho mình biết chỗ nào bạn muốn đổi.
+
+Sau đó mình đánh dấu ô cuối, rồi hỏi bạn chọn việc tiếp theo. Có ba hướng: module `release-workflow` theo `SPEC.md`, Pilot 1, hoặc chép kit lần hai vào `ao-pilot` trước.
