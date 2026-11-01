@@ -70,6 +70,8 @@ const READS = [
   'git --no-pager diff --stat origin/develop...HEAD',
   'git show origin/feature/DEMO-12-cart:src/cart.ts',
   'git fetch origin',
+  // ls-remote only lists the refs of the remote (refused by mistake in the T16 probe of dev-workflow).
+  'git ls-remote origin develop',
   'git log --oneline --grep=commit',
   'git -C D:\\work\\shop log -5',
   'git --git-dir .git --work-tree . status',
