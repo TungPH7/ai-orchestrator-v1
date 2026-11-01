@@ -498,6 +498,7 @@ Xem [plan.md](plan.md#checkpoint-2).
 **Mô tả:**
 
 - Claude tạo một Task trên `DEMO` bằng token CI, rồi chép kit theo các bước cài của README vào nhánh `feature/<KEY>-dev-workflow-kit`, tách từ `develop`.
+- Workflow deploy của `ao-pilot` cấp thêm `actions: read` cho lần gọi `audit.yml` (T5).
 - Commit và push bằng credential helper, vai trò `devops` (plan, quyết định 8). `ao-dev` mở PR bằng `ao-pr.mjs create`.
 - Claude kiểm `merge-gate`: một comment lên PR và một cờ trên Task, không lặp lại ở lượt `merge-gate` sau.
 - `ao-step.mjs review <PR>` chạy ở chế độ chỉ kiểm, rồi với `--go`, từ nhánh của PR: `reviewer`, rồi `security` đầy đủ ở `max`.

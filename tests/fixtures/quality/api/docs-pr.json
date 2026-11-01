@@ -1,0 +1,82 @@
+{
+  "/pulls?direction=asc&sort=created&state=open": [
+    {
+      "number": 14,
+      "state": "open",
+      "draft": false,
+      "title": "docs(spec): remove a product from the cart (DEMO-20)",
+      "user": { "login": "tungph7-ao-dev[bot]", "type": "Bot" },
+      "head": { "ref": "feature/DEMO-20-spec", "sha": "d0c5d0c5d0c5d0c5d0c5d0c5d0c5d0c5d0c5d0c5" },
+      "base": { "ref": "develop" }
+    }
+  ],
+  "/pulls/14": {
+    "number": 14,
+    "state": "open",
+    "draft": false,
+    "title": "docs(spec): remove a product from the cart (DEMO-20)",
+    "body": "## Jira\n[DEMO-20](https://example.atlassian.net/browse/DEMO-20): Xóa sản phẩm khỏi giỏ hàng. Tài liệu của Epic.\n\n## What Changed\n- `docs/specs/DEMO-20/spec.md`, `design.md`: SPEC và thiết kế màn hình (stage spec).\n- `docs/specs/DEMO-20/plan.md`, `docs/adr/0002-cart-line-removal.md`: plan và ADR (stage plan).\n\n## How It Was Tested\nNot applicable: documents only. The `policy` job checks `design.md`.\n\n## Acceptance Criteria Coverage\nNot applicable: the criteria are in the SPEC; their tests come with the Story.\n\n## Risks\nNone: documents only.\n\n## Definition of Done\nNot applicable to the docs PR of an Epic.\n",
+    "user": { "login": "tungph7-ao-dev[bot]", "type": "Bot" },
+    "head": { "ref": "feature/DEMO-20-spec", "sha": "d0c5d0c5d0c5d0c5d0c5d0c5d0c5d0c5d0c5d0c5" },
+    "base": { "ref": "develop" },
+    "mergeable": true,
+    "merged_at": null
+  },
+  "/pulls/14/commits": [
+    {
+      "sha": "a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0",
+      "commit": { "message": "docs(spec): write the SPEC of DEMO-20 (DEMO-20)" },
+      "parents": [{ "sha": "c0c1c2c3c4c5c6c7c8c9cacbcccdcecfd0d1d2d3" }]
+    },
+    {
+      "sha": "b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0",
+      "commit": { "message": "docs(spec): add the screens of DEMO-20 (DEMO-20)" },
+      "parents": [{ "sha": "a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0" }]
+    },
+    {
+      "sha": "d0c5d0c5d0c5d0c5d0c5d0c5d0c5d0c5d0c5d0c5",
+      "commit": { "message": "docs(spec): add the plan and ADR-0002 of DEMO-20 (DEMO-20)" },
+      "parents": [{ "sha": "b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0" }]
+    }
+  ],
+  "/pulls/14/files": [
+    { "filename": "docs/specs/DEMO-20/spec.md", "status": "added" },
+    { "filename": "docs/specs/DEMO-20/design.md", "status": "added" },
+    { "filename": "docs/specs/DEMO-20/plan.md", "status": "added" },
+    { "filename": "docs/adr/0002-cart-line-removal.md", "status": "added" }
+  ],
+  "/pulls/14/reviews": [],
+  "/commits/d0c5d0c5d0c5d0c5d0c5d0c5d0c5d0c5d0c5d0c5/check-runs": {
+    "total_count": 5,
+    "check_runs": [
+      { "name": "policy", "status": "completed", "conclusion": "success", "head_sha": "d0c5d0c5d0c5d0c5d0c5d0c5d0c5d0c5d0c5d0c5" },
+      { "name": "build-test", "status": "completed", "conclusion": "success", "head_sha": "d0c5d0c5d0c5d0c5d0c5d0c5d0c5d0c5d0c5d0c5" },
+      { "name": "secrets", "status": "completed", "conclusion": "success", "head_sha": "d0c5d0c5d0c5d0c5d0c5d0c5d0c5d0c5d0c5d0c5" },
+      { "name": "sast", "status": "completed", "conclusion": "success", "head_sha": "d0c5d0c5d0c5d0c5d0c5d0c5d0c5d0c5d0c5d0c5" },
+      { "name": "jira-sync", "status": "completed", "conclusion": "success", "head_sha": "d0c5d0c5d0c5d0c5d0c5d0c5d0c5d0c5d0c5d0c5" }
+    ]
+  },
+  "/commits/d0c5d0c5d0c5d0c5d0c5d0c5d0c5d0c5d0c5d0c5/status": { "state": "pending", "total_count": 0, "statuses": [] },
+  "/actions/runs?head_sha=d0c5d0c5d0c5d0c5d0c5d0c5d0c5d0c5d0c5d0c5": {
+    "total_count": 3,
+    "workflow_runs": [
+      { "id": 9003, "name": "CI", "event": "workflow_dispatch", "head_sha": "d0c5d0c5d0c5d0c5d0c5d0c5d0c5d0c5d0c5d0c5", "created_at": "2026-11-04T05:00:00Z", "run_attempt": 1 },
+      { "id": 9002, "name": "jira-sync", "event": "workflow_run", "head_sha": "d0c5d0c5d0c5d0c5d0c5d0c5d0c5d0c5d0c5d0c5", "created_at": "2026-11-04T02:47:00Z", "run_attempt": 1 },
+      { "id": 9001, "name": "CI", "event": "pull_request", "head_sha": "d0c5d0c5d0c5d0c5d0c5d0c5d0c5d0c5d0c5d0c5", "created_at": "2026-11-04T02:40:00Z", "run_attempt": 2 }
+    ]
+  },
+  "jira": {
+    "/rest/api/3/issue/DEMO-20?fields=issuetype,status": {
+      "key": "DEMO-20",
+      "fields": { "issuetype": { "name": "Epic" }, "status": { "name": "In Progress", "statusCategory": { "key": "indeterminate" } } }
+    },
+    "/rest/api/3/issue/DEMO-20/changelog": {
+      "isLast": true,
+      "values": [
+        { "id": "1", "created": "2026-11-03T09:00:00.000+0700", "author": { "displayName": "Tung" }, "items": [{ "field": "status", "fromString": "New", "toString": "Specifying" }] },
+        { "id": "2", "created": "2026-11-03T15:00:00.000+0700", "author": { "displayName": "Tung" }, "items": [{ "field": "status", "fromString": "Specifying", "toString": "Planning" }] },
+        { "id": "3", "created": "2026-11-04T10:00:00.000+0700", "author": { "displayName": "Tung" }, "items": [{ "field": "status", "fromString": "Planning", "toString": "In Progress" }] }
+      ]
+    }
+  }
+}
