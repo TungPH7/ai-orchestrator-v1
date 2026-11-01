@@ -419,7 +419,7 @@ Xem [plan.md](plan.md#checkpoint-1).
 
 **Cỡ:** M
 
-### [ ] T13: Sáu skill `/ao-*` (spec mục 2.1, 2.9, 6)
+### [x] T13: Sáu skill `/ao-*` (spec mục 2.1, 2.9, 6)
 
 **Mô tả:**
 
@@ -431,12 +431,12 @@ Xem [plan.md](plan.md#checkpoint-1).
 - `skills:vendor`, quy tắc `A4` và các test của chúng bỏ qua thư mục `ao-*`.
 
 **Tiêu chí chấp nhận:**
-- [ ] Test: frontmatter của sáu skill có `disable-model-invocation: true` và `argument-hint`; dòng `!` gọi đúng lệnh của `ao-step.mjs` và chỉ dùng `$0`; skill nào chạy `--go` cũng nêu `timeout`.
-- [ ] Test: `kit/.claude/settings.json` có luật `allow` cho `ao-step.mjs`, và không có luật `allow` nào khác.
-- [ ] Test: `skills:vendor` không đụng tới thư mục `ao-*`, và `A4` không báo chúng là skill lạ.
+- [x] Test: frontmatter của sáu skill có `disable-model-invocation: true` và `argument-hint`; dòng `!` gọi đúng lệnh của `ao-step.mjs` và chỉ dùng `$0`; skill nào chạy `--go` cũng nêu `timeout`.
+- [x] Test: `kit/.claude/settings.json` có luật `allow` cho `ao-step.mjs`, và không có luật `allow` nào khác.
+- [x] Test: `skills:vendor` không đụng tới thư mục `ao-*`, và `A4` không báo chúng là skill lạ.
 
 **Kiểm chứng:**
-- [ ] Năm lệnh trong quy ước chung xanh
+- [x] Năm lệnh trong quy ước chung xanh
 
 **Phụ thuộc:** T1, T12
 
