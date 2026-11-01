@@ -72,6 +72,17 @@ test('the token comes from GITHUB_TOKEN first, then from the GitHub CLI', () => 
   assert.equal(readGitHubToken({ env: {}, gh: () => ({ stdout: '', stderr: '' }) }), null);
 });
 
+// The installation token of a GitHub App is now 390 characters with dots in it; cut at the first dot it got 401 Bad
+// credentials, and jira-guard refused be-dev's Start of DEMO-21 (dev-workflow T18).
+test('an App token with dots, from GH_TOKEN of an agent session or from gh, is read whole', () => {
+  const token = `ghs_${'a'.repeat(44)}.${'b'.repeat(200)}.${'c'.repeat(141)}`;
+  const noGh = () => assert.fail('gh should not run');
+  assert.equal(readGitHubToken({ env: { GH_TOKEN: token }, gh: noGh }), token);
+  assert.equal(readGitHubToken({ env: {}, gh: (args) => (args[1] === 'token' ? { stdout: `${token}\n`, stderr: '' } : assert.fail('no status')) }), token);
+  const status = (args) => (args[1] === 'token' ? { stdout: '', stderr: '' } : { stdout: '', stderr: `  ✓ Token: ${token}\n` });
+  assert.equal(readGitHubToken({ env: {}, gh: status }), token);
+});
+
 test('with gh before 2.17 the token comes from auth status, which prints on stderr', () => {
   // gh 2.16 has no `auth token`, and `auth status` writes to stderr even when it exits 0 (found in T15).
   const gh = (args) =>
