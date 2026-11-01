@@ -287,7 +287,7 @@ Xem [plan.md](plan.md#checkpoint-1).
 
 **Cỡ:** S
 
-### [ ] T9: `facts.mjs` và nhãn trong `tracker/jira.yaml` (spec mục 2.2, 2.5)
+### [x] T9: `facts.mjs` và nhãn trong `tracker/jira.yaml` (spec mục 2.2, 2.5)
 
 **Mô tả:**
 
@@ -299,16 +299,16 @@ Xem [plan.md](plan.md#checkpoint-1).
 - Guard của hợp đồng (`wip-available`, `dependencies-merged`…) dùng lại `jiraGuards` và `githubGuards`.
 
 **Tiêu chí chấp nhận:**
-- [ ] Test trên dữ liệu ghi sẵn từ `DEMO` và `ao-pilot`:
+- [x] Test trên dữ liệu ghi sẵn từ `DEMO` và `ao-pilot`:
   - Epic DEMO-11 có nhánh tài liệu;
   - Story DEMO-12 có hai Sub-task;
   - PR #11.
-- [ ] Test cho item không có PR, và cho `.ai/runs/` trống.
-- [ ] Schema của `jira.yaml` từ chối tiền tố rỗng.
+- [x] Test cho item không có PR, và cho `.ai/runs/` trống.
+- [x] Schema của `jira.yaml` từ chối tiền tố rỗng.
 
 **Kiểm chứng:**
-- [ ] Năm lệnh trong quy ước chung xanh
-- [ ] Bản ghi dữ liệu không chứa token
+- [x] Năm lệnh trong quy ước chung xanh
+- [x] Bản ghi dữ liệu không chứa token
 
 **Phụ thuộc:** không
 
