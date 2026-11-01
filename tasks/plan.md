@@ -105,7 +105,7 @@ T16 ── T17 Epic: spec, plan ── T18 Epic: build, review, fix ── T19 t
 - [x] T13: Sáu skill `/ao-*`
 
 ### Giai đoạn 4: template, hợp đồng, prompt
-- [ ] T14: Template, hợp đồng, prompt và `agents/rules.md`
+- [x] T14: Template, hợp đồng, prompt và `agents/rules.md`
 
 ### Checkpoint 2
 - [ ] Năm lệnh kiểm trong quy ước chung và CI của kit xanh

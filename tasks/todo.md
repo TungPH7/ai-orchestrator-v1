@@ -448,7 +448,7 @@ Xem [plan.md](plan.md#checkpoint-1).
 
 ## Giai đoạn 4: template, hợp đồng, prompt
 
-### [ ] T14: Template, hợp đồng, prompt và `agents/rules.md` (spec mục 2.4, 2.8, 2.9)
+### [x] T14: Template, hợp đồng, prompt và `agents/rules.md` (spec mục 2.4, 2.8, 2.9)
 
 **Mô tả:**
 
@@ -471,13 +471,13 @@ Xem [plan.md](plan.md#checkpoint-1).
 - `npm run agents` sinh lại `kit/.claude/agents/` và file quy ước.
 
 **Tiêu chí chấp nhận:**
-- [ ] Test của template: ví dụ của `plan.md` có vai trò và effort; ví dụ của `review-report.md` có `Scope`.
-- [ ] Test `readReviewReport` với báo cáo có dòng `Scope` và không có.
-- [ ] `docs/sdlc.md` có đầu ra mới của stage `spec`.
-- [ ] `npm run agents:check` xanh sau khi sinh lại.
+- [x] Test của template: ví dụ của `plan.md` có vai trò và effort; ví dụ của `review-report.md` có `Scope`.
+- [x] Test `readReviewReport` với báo cáo có dòng `Scope` và không có.
+- [x] `docs/sdlc.md` có đầu ra mới của stage `spec`.
+- [x] `npm run agents:check` xanh sau khi sinh lại.
 
 **Kiểm chứng:**
-- [ ] Năm lệnh trong quy ước chung xanh
+- [x] Năm lệnh trong quy ước chung xanh
 
 **Phụ thuộc:** không
 
