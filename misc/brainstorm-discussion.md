@@ -28,7 +28,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 18 | `184d78d1-4600-4c36-8279-005a105c9216` | 2026-11-01 khoảng 01:08 → | Bạn cho qua Checkpoint 1 (PR #113); T3–T14 đóng (PR #114–#125): phiên agent dùng danh tính App và credential helper theo vai trò, PR tài liệu và quy tắc Q5, `merge-gate` báo PR chỉ còn chờ bạn và `jira-sync` gỡ cờ, đánh dấu dòng DoR, `ao-step.mjs` và vòng chạy `--go`, sáu skill `/ao-*`, template và prompt; chạy chỉ kiểm trong `ao-pilot` tìm ra lỗi 403 khi đọc commit status; Checkpoint 2 (PR #126), chờ bạn |
 | 19 | `44d6269e-f8c5-4052-a81c-f0f6385e00ed` | 2026-11-01 khoảng 10:35 → khoảng 11:30 | Bạn cho qua Checkpoint 2 (PR #127); T15: Task DEMO-19, ao-pilot PR #14 chép kit bằng danh tính bot `ao-dev`, `/ao-review`: `reviewer` COMMENT, `security` chạm giới hạn 5 giờ rồi chạy tiếp và COMMENT, 11,69 USD quy đổi; `merge-gate` bản mới chạy ở máy comment và gắn cờ một lần; trả lời cuối của Claude bị bộ lọc an toàn chặn hai lần, nên phiên này không có lượt nào trong log |
 | 20 | `bc6dea4e-d395-4a5d-b439-2a337292b2e7` | 2026-11-01 khoảng 11:45 → khoảng 22:15 | Bạn dán đoạn cuối của Phiên 19 để làm tiếp; Claude báo kết quả T15 và hỏi về nhánh `main` và các finding của kit; bạn merge PR #14 và chọn cả hai đề xuất: nhánh mặc định của `ao-pilot` sang `develop`, sửa finding ở kit không chạy agent; T15 đóng (PR #128), T15a (PR #129), T15b (PR #130); T16 đóng (PR #131): agent dùng danh tính App, vai trò chỉ đọc không push được; Checkpoint 3, bạn đồng ý chạy Epic thử; T17: Epic DEMO-20, `/ao-status`, chờ bạn bấm `Start spec`; bạn bấm `Start spec`; `/ao-spec` bị Claude Code tắt vì máy thiếu RAM; bạn bảo chạy lại; `ba` viết SPEC, `ao-step` dừng vì không thấy nhánh tài liệu chưa push, kit PR #132 sửa; bạn chọn chạy bằng code của kit và trả lời theo đề xuất; `ux` chạm giới hạn 5 giờ; bạn bảo làm tiếp; `ux` hỏi sáu câu, `sa` hỏi hai câu, bạn trả lời theo đề xuất; `ba` mở PR tài liệu #15, CI xanh, stage spec 7,84 USD quy đổi; bạn duyệt spec; stage plan: `sa` viết plan và ADR-0002, `ba` tạo DEMO-21, DEMO-22, DEMO-23; bạn chọn DEMO-22 ở `xhigh` và đổi `Status` thành Approved, hỏi vì sao `Status` còn Draft; lượt `ba` bị tắt vì thiếu RAM, bạn bảo chạy lại; bạn duyệt plan; `merge-gate` merge PR #15, `audit` xanh, T17 đóng (PR #133), 14,92 USD quy đổi; bạn đồng ý; bốn lỗi nhỏ sửa (PR #134); T18: `be-dev` bị `jira-guard` chặn vì token App bị cắt ở dấu chấm, kit PR #135 sửa; bạn gỡ cờ; `be-dev` xong DEMO-22 ở `xhigh`, kit PR #136 sửa việc làm tiếp Sub-task; bạn hỏi `be-dev` có bị tắc không; `fe-dev` code xong DEMO-23 nhưng gắn cờ vì Tab không cuộn khung bảng ở 320 px; bạn chọn B và gỡ cờ; `fe-dev` mở PR #16, CI xanh; `reviewer` chạm giới hạn 5 giờ, chạy lại sau khi reset; `reviewer` 3 Low, `security` không có finding; bạn chọn sửa hai Low; `be-dev` sửa và push, `reviewer` bị tắt vì thiếu RAM lần ba; bạn mở lại Claude Code với chế độ không tắt lệnh nền; `security` review phần mới ở `high`, `merge-gate` chỉ còn chờ approve (tiêu chí 5); bạn approve, `merge-gate` merge PR #16, `audit` xanh, DEMO-21 sang Ready for QA, Task DEMO-24 cho hai test còn thiếu, T18 đóng (PR #137), Epic thử 36,19 USD quy đổi; Checkpoint 4; bạn cho qua Checkpoint 4 (PR #138); T19 đóng (PR #139): sửa lỗi Sub-task mang cờ, `docs/dev-workflow.md`, README, module ghi hoàn thành, plan vào `tasks/archive/dev-workflow/`; bạn xác nhận module hoàn thành (PR #140); chờ bạn chọn việc tiếp theo |
-| 21 | `3ead2782-314d-4ae8-981b-96f6ed83a60e` | 2026-11-01 khoảng 22:50 → | Bạn dán đoạn cuối của Phiên 20, hỏi vì sao `main` và `develop` của `ao-pilot` lệch nhau, cách xử lý, và lựa chọn 3 có giải quyết được không; Claude kiểm hai nhánh và code của `audit`: `develop` đi trước 10 là đúng GitFlow, 4 commit chỉ có trên `main` là dấu vết lối tắt sandbox và không đổi nội dung; lựa chọn 3 không giải quyết; đề xuất ghi quy tắc merge commit và back-merge từ `main` vào spec `release-workflow`; bạn chọn Pilot 1; Claude nêu phạm vi, giả định A1–A8 và ba câu hỏi (repo, space Jira, feature); chờ bạn duyệt |
+| 21 | `3ead2782-314d-4ae8-981b-96f6ed83a60e` | 2026-11-01 khoảng 22:50 → | Bạn dán đoạn cuối của Phiên 20, hỏi vì sao `main` và `develop` của `ao-pilot` lệch nhau, cách xử lý, và lựa chọn 3 có giải quyết được không; Claude kiểm hai nhánh và code của `audit`: `develop` đi trước 10 là đúng GitFlow, 4 commit chỉ có trên `main` là dấu vết lối tắt sandbox và không đổi nội dung; lựa chọn 3 không giải quyết; đề xuất ghi quy tắc merge commit và back-merge từ `main` vào spec `release-workflow`; bạn chọn Pilot 1; Claude nêu phạm vi, giả định A1–A8 và ba câu hỏi (repo, space Jira, feature); bạn duyệt và chọn theo đề xuất: repo mới `ao-sample`, space mới `SMP`, Epic "Ghi chú"; Claude viết `SPEC-pilot-1.md` (nhánh `task/spec-pilot-1`); chờ bạn duyệt spec |
 
 ---
 
@@ -8364,3 +8364,47 @@ Bước đầu của Pilot 1: phạm vi, giả định và ba câu hỏi. Bạn 
 - **(c)** Bạn tự nêu feature.
 
 Bạn trả lời Q1–Q3 và duyệt (hoặc sửa) A1–A8. Sau đó mình viết `SPEC-pilot-1.md` trên nhánh `task/spec-pilot-1` của kit.
+
+---
+# Phiên 21 · Lượt 3 — 2026-11-01 khoảng 23:20
+
+**Bạn:**
+
+````markdown
+duyệt, 3 câu hỏi làm như bạn đề xuất nhé.
+````
+
+Trước khi trả lời, Claude chạy `/agent-skills:spec`, lấy phiên bản bằng `npm view`, kiểm tên repo `TungPH7/ao-sample` (404, còn trống) và key `SMP` trên Jira (404, còn trống), tìm skill NestJS bằng `npx skills find nestjs`, đọc `ci.yml`, `quality/gates.yaml` và `deploy.yml` của `ao-pilot`. Claude viết `SPEC-pilot-1.md`, sửa `SPEC.md` và `SPEC-tracker-integration.md` trên nhánh `task/spec-pilot-1`; `npm test` của kit: 781 test xanh.
+
+**Claude:**
+
+**Nhãn:** Câu nào là suy luận thì có nhãn [Inference]. Phiên bản, tên repo và key Jira đã kiểm lúc viết spec.
+
+Mình đã viết `SPEC-pilot-1.md` trên nhánh `task/spec-pilot-1` của kit (đã push, chưa mở PR). `npm test` của kit: 781 test xanh.
+
+**Tóm tắt spec**
+
+| Mục | Nội dung |
+|---|---|
+| Repo | `TungPH7/ao-sample`, private. Tên còn trống (đã kiểm) |
+| Khung app | `apps/web` Next.js 16.4.3 (cổng 3000), `apps/api` NestJS 12.3.2 (cổng 3001, có `GET /health`), npm workspaces, Jest cho cả hai app, một test smoke Playwright |
+| Space Jira | `SMP`. Key còn trống (đã kiểm). Mình dựng bước 9–13 qua API khi API cho phép |
+| Epic thử | "Ghi chú": tạo ghi chú và xem danh sách. Mô tả Epic ở mục 2.6 |
+| Cách chạy lệnh | `claude -p --model sonnet "/ao-…"` trong `ao-sample`, không dùng `AO_KIT_DIR` |
+| Tiêu chí hoàn thành | 8 tiêu chí ở mục 9 |
+
+**Điểm mới so với Lượt 2** (bạn nên đọc kỹ các mục này):
+1. **Mục 2.1:** cách `apps/web` gọi `apps/api` không chốt trong spec. `sa` chốt trong plan của Epic, kèm ADR. Đây là một phần của việc kiểm agent.
+2. **Mục 2.2:** skill theo stack: `vercel-react-best-practices` cho `fe-dev`, và `nestjs-best-practices` của bên thứ ba cho `be-dev`. Mình đọc hết nội dung và kiểm giấy phép trước khi chép; có điểm đáng ngờ thì bỏ.
+3. **Mục 2.5:** `audit` sẽ đỏ một lần trên commit đầu. Đây là lần đỏ dự kiến, không gắn cờ item nào.
+4. **Mục 2.8:** sáu tiền đề kiểm ở task đầu, trước khi dựng. Điều nào sai thì mình dừng và đề xuất sửa spec.
+5. **Mục 2.4:** việc của bạn: đặt hai secret (`JIRA_CI_TOKEN`, `AO_DEV_APP_KEY`), nối GitHub for Jira, và có thể phải thêm repo vào hai App bằng giao diện.
+6. **Sửa hai file khác:** `SPEC.md` trỏ tới spec mới; `SPEC-tracker-integration.md` mục 10 ghi repo pilot là `ao-sample`, `ao-pilot` vẫn là sandbox.
+
+**Câu hỏi mở:** không có. Hai mặc định bạn có thể đổi khi duyệt:
+- skill NestJS của bên thứ ba cho `be-dev`;
+- Jest cho cả hai app (Next.js cũng có hướng dẫn cho Vitest).
+
+**Một câu cần trả lời trước task GitHub** (không chặn việc duyệt spec): file private key thứ hai của `ao-dev`, tức giá trị của secret `AO_DEV_APP_KEY` trên `ao-pilot`, còn trên máy bạn không? Nếu không, tới task đó bạn tạo key mới trên trang của App, mình ghi từng bước bấm.
+
+Bạn duyệt spec, hoặc nêu chỗ cần sửa. Sau khi duyệt, mình viết plan (`tasks/plan.md`, `tasks/todo.md`) rồi chờ bạn duyệt plan.
