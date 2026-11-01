@@ -127,8 +127,8 @@ T16 ── T17 Epic: spec, plan ── T18 Epic: build, review, fix ── T19 t
 - [x] T18: Epic thử: `/ao-build`, `/ao-review`, `/ao-fix` tới merge [bạn]
 
 ### Checkpoint 4
-- [ ] Tiêu chí 4, 5, 7 và 8 của spec mục 9 đạt
-- [ ] Bạn xem lịch sử Epic thử trên `DEMO`, PR tài liệu và PR code trên `ao-pilot`, và `.ai/runs/`
+- [x] Tiêu chí 4, 5, 7 và 8 của spec mục 9 đạt
+- [x] Bạn xem lịch sử Epic thử trên `DEMO`, PR tài liệu và PR code trên `ao-pilot`, và `.ai/runs/`
 
 ### Giai đoạn 7: hoàn thiện
 - [ ] T19: Tài liệu, `SPEC.md` và lưu trữ plan

@@ -436,3 +436,8 @@ Epic thử tốn tổng cộng 36,19 USD quy đổi (T17: 14,92; T18: 21,27), c�
 4. Claude Code tắt lệnh nền vì thiếu RAM ba lần trong T17–T18. Cách tránh: chạy ít phiên Claude Code cùng lúc, hoặc mở Claude Code với `CLAUDE_CODE_DISABLE_BG_SHELL_PRESSURE_REAP=1`.
 5. Phiên agent nhận `defaultMode: auto` của bạn, nên bộ phân loại của chế độ `auto` chặn một lệnh của `fe-dev`.
 6. Gói Pro chạm giới hạn 5 giờ hai lần (`ux` ở T17, `reviewer` ở T18). Cả hai lần, lượt chạy tiếp trong cùng session sau khi reset.
+
+## Checkpoint 4 (2026-11-01)
+
+- Tiêu chí 4 (T17), 5, 7 và 8 (T18) đạt. Tiêu chí 8 có hai chỗ lệch, đã ghi ở T18.
+- Bạn xem lịch sử Epic thử trên `DEMO`, PR #15 và PR #16 trên `ao-pilot`, và `.ai/runs/`, rồi cho qua checkpoint ("qua checkpoint 4, làm tiếp như đề xuất nhé", Phiên 20 · Lượt 24). T19 làm thêm việc sửa lỗi còn mở của T18: `ao-step` không dừng khi Sub-task mang cờ.
