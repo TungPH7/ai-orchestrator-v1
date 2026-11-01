@@ -27,7 +27,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 17 | `46e16bae-3275-482c-b001-11cf43108e28` | 2026-10-31 khoảng 23:25 → 2026-11-01 khoảng 01:05 | Bạn duyệt `SPEC-dev-workflow.md`; spec merge (PR #109); Claude viết plan 19 task, bốn checkpoint (chặn gọi thẳng credential helper, effort đặt cả tham số lẫn biến môi trường, PR chép kit review bằng `/ao-review`, Story của Epic thử dừng ở Ready for QA); bạn duyệt plan (PR #110); T1 kiểm skill `/` và lệnh nền bằng Haiku: dòng `!` chỉ tự chạy khi có luật `allow`, `$ARGUMENTS` được chèn nguyên văn, `claude -p` dừng lệnh nền sau 10 phút nếu không đặt `timeout`; T2: Task thử DEMO-18, PR nháp `ao-pilot` #13, push bằng token App, Git Credential Manager được thay, `gh` dùng token App; bạn hỏi vì sao lệnh 20 phút chạy quá 20 phút; bạn hỏi Haiku dùng ở đâu và chê Haiku kém; Claude thôi dùng Haiku, đề xuất năm điểm sửa spec và xin bạn thêm quyền cho hai App; bạn duyệt năm điểm sửa, T1 đóng (PR #111); bạn đã thêm quyền cho hai App, T2 đóng (PR #112): cả sáu tiền đề về GitHub đúng; Checkpoint 1, chờ bạn |
 | 18 | `184d78d1-4600-4c36-8279-005a105c9216` | 2026-11-01 khoảng 01:08 → | Bạn cho qua Checkpoint 1 (PR #113); T3–T14 đóng (PR #114–#125): phiên agent dùng danh tính App và credential helper theo vai trò, PR tài liệu và quy tắc Q5, `merge-gate` báo PR chỉ còn chờ bạn và `jira-sync` gỡ cờ, đánh dấu dòng DoR, `ao-step.mjs` và vòng chạy `--go`, sáu skill `/ao-*`, template và prompt; chạy chỉ kiểm trong `ao-pilot` tìm ra lỗi 403 khi đọc commit status; Checkpoint 2 (PR #126), chờ bạn |
 | 19 | `44d6269e-f8c5-4052-a81c-f0f6385e00ed` | 2026-11-01 khoảng 10:35 → khoảng 11:30 | Bạn cho qua Checkpoint 2 (PR #127); T15: Task DEMO-19, ao-pilot PR #14 chép kit bằng danh tính bot `ao-dev`, `/ao-review`: `reviewer` COMMENT, `security` chạm giới hạn 5 giờ rồi chạy tiếp và COMMENT, 11,69 USD quy đổi; `merge-gate` bản mới chạy ở máy comment và gắn cờ một lần; trả lời cuối của Claude bị bộ lọc an toàn chặn hai lần, nên phiên này không có lượt nào trong log |
-| 20 | `bc6dea4e-d395-4a5d-b439-2a337292b2e7` | 2026-11-01 khoảng 11:45 → | Bạn dán đoạn cuối của Phiên 19 để làm tiếp; Claude báo kết quả T15 và hỏi về nhánh `main` và các finding của kit; bạn merge PR #14 và chọn cả hai đề xuất: nhánh mặc định của `ao-pilot` sang `develop`, sửa finding ở kit không chạy agent; T15 đóng (PR #128), T15a (PR #129), T15b (PR #130); T16 đóng (PR #131): agent dùng danh tính App, vai trò chỉ đọc không push được; Checkpoint 3, bạn đồng ý chạy Epic thử; T17: Epic DEMO-20, `/ao-status`, chờ bạn bấm `Start spec`; bạn bấm `Start spec`; `/ao-spec` bị Claude Code tắt vì máy thiếu RAM; bạn bảo chạy lại; `ba` viết SPEC, `ao-step` dừng vì không thấy nhánh tài liệu chưa push, kit PR #132 sửa; bạn chọn chạy bằng code của kit và trả lời theo đề xuất; `ux` chạm giới hạn 5 giờ; bạn bảo làm tiếp; `ux` hỏi sáu câu, `sa` hỏi hai câu, bạn trả lời theo đề xuất; `ba` mở PR tài liệu #15, CI xanh, stage spec 7,84 USD quy đổi; chờ bạn duyệt ở gate ① |
+| 20 | `bc6dea4e-d395-4a5d-b439-2a337292b2e7` | 2026-11-01 khoảng 11:45 → | Bạn dán đoạn cuối của Phiên 19 để làm tiếp; Claude báo kết quả T15 và hỏi về nhánh `main` và các finding của kit; bạn merge PR #14 và chọn cả hai đề xuất: nhánh mặc định của `ao-pilot` sang `develop`, sửa finding ở kit không chạy agent; T15 đóng (PR #128), T15a (PR #129), T15b (PR #130); T16 đóng (PR #131): agent dùng danh tính App, vai trò chỉ đọc không push được; Checkpoint 3, bạn đồng ý chạy Epic thử; T17: Epic DEMO-20, `/ao-status`, chờ bạn bấm `Start spec`; bạn bấm `Start spec`; `/ao-spec` bị Claude Code tắt vì máy thiếu RAM; bạn bảo chạy lại; `ba` viết SPEC, `ao-step` dừng vì không thấy nhánh tài liệu chưa push, kit PR #132 sửa; bạn chọn chạy bằng code của kit và trả lời theo đề xuất; `ux` chạm giới hạn 5 giờ; bạn bảo làm tiếp; `ux` hỏi sáu câu, `sa` hỏi hai câu, bạn trả lời theo đề xuất; `ba` mở PR tài liệu #15, CI xanh, stage spec 7,84 USD quy đổi; bạn duyệt spec; stage plan: `sa` viết plan và ADR-0002, `ba` tạo DEMO-21, DEMO-22, DEMO-23; bạn chọn DEMO-22 ở `xhigh` và đổi `Status` thành Approved, hỏi vì sao `Status` còn Draft; lượt `ba` bị tắt vì thiếu RAM, bạn bảo chạy lại; bạn duyệt plan; `merge-gate` merge PR #15, `audit` xanh, T17 đóng (PR #133), 14,92 USD quy đổi; chờ bạn đồng ý sửa bốn lỗi nhỏ của kit rồi làm T18 |
 
 ---
 
@@ -7625,3 +7625,48 @@ Stage plan đã sẵn sàng cho gate ②. `ba` đã làm xong cả hai việc th
 - `jira-sync` chuyển DEMO-21 sang Ready;
 - `merge-gate` tự merge PR #15, không cần bạn approve trên GitHub;
 - `audit` phải xanh khi Deploy development chạy (tiêu chí 4).
+
+# Phiên 20 · Lượt 14 — 2026-11-01 khoảng 16:46
+
+**Bạn:**
+
+````markdown
+đã duyệt plan
+````
+
+Trước khi trả lời, Claude:
+
+- chạy `ao-step.mjs plan DEMO-20 --go` lần hai bằng code của kit: dispatch `jira-sync`, rồi chờ `merge-gate` merge PR #15;
+- chờ lượt Deploy chạy xong, rồi kiểm `audit`, Jira và dòng DoR;
+- ghi T17 vào `tasks/verification.md` và đóng T17 (kit PR #133);
+- đưa `ao-pilot` về `develop`.
+
+**Claude:**
+
+T17 đã xong: PR tài liệu #15 được `merge-gate` tự merge sau khi bạn duyệt plan, và `audit` xanh. Tiêu chí 4 đạt ở phần chạy thật.
+
+**Sau gate ②,** không agent nào chạy:
+- `jira-sync` chuyển Story DEMO-21 sang Ready lúc 16:47. Mọi dòng DoR trong mô tả DEMO-21 đều đã được đánh dấu.
+- `merge-gate` squash merge PR #15 bằng App `ao-dev` lúc 16:48, ra commit `3fdd514` trên `develop`, không cần approve trên GitHub.
+- Deploy development trên `3fdd514` xanh. `audit` ghi rằng commit này là merge của PR tài liệu của DEMO-20, và PR đó đạt mọi cổng.
+
+**T17 tổng cộng** (kit PR #133, chi tiết trong `tasks/verification.md`):
+- 11 lượt agent, 257 turn, 52 phút, 14,92 USD quy đổi, so với plan ước 10–14 USD. Con số này chưa tính hai lượt bị tắt vì thiếu RAM.
+- Có hai chỗ lệch so với plan:
+  - mọi lượt chạy bằng code của kit (`AO_KIT_DIR`), như bạn đã chọn;
+  - `/ao-plan` chưa được gõ thật lần nào, còn `/ao-spec` thì bị tắt giữa chừng.
+
+**Năm finding cho kit,** ghi trong `verification.md`:
+- bốn lỗi nhỏ: không ai đổi dòng `Status`, đếm sai câu hỏi mở, đếm sai nhãn effort, và `gh-guard` chặn nhầm `2>&1`;
+- chuyện máy thiếu RAM.
+
+**Mình đề xuất làm tiếp theo thứ tự này:**
+1. Sửa bốn lỗi nhỏ của kit trước. Việc này không chạy agent, nên không tốn usage của agent. Vì T18 chạy bằng code của kit, bản sửa có hiệu lực ngay. Riêng lỗi `gh-guard` có thể chặn nhầm agent ở T18.
+2. Sau đó làm T18, ước 15–22 USD quy đổi:
+   - `/ao-build DEMO-21`: `be-dev` làm DEMO-22 ở `xhigh`, rồi `fe-dev` làm DEMO-23 và mở PR;
+   - `/ao-review`: `reviewer` và `security` review PR;
+   - `/ao-fix` nếu có finding chặn. Vòng này lặp tới khi bạn approve và `merge-gate` merge.
+
+Ở T18, bạn sẽ cần approve PR code trên GitHub (gate ③). Trước mỗi lượt agent, mình kiểm RAM; nếu còn dưới 4 GB, mình sẽ báo bạn.
+
+Bạn đồng ý làm theo thứ tự này không?
