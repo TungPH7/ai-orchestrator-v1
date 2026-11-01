@@ -178,7 +178,7 @@ Xem [plan.md](plan.md#checkpoint-1).
 
 **Cỡ:** S
 
-### [ ] T5: `merge-gate` và `audit` nhận PR tài liệu (spec mục 2.4)
+### [x] T5: `merge-gate` và `audit` nhận PR tài liệu (spec mục 2.4)
 
 **Mô tả:**
 
@@ -194,17 +194,17 @@ Xem [plan.md](plan.md#checkpoint-1).
   - `audit.yml` thêm `actions: read` nếu thiếu.
 
 **Tiêu chí chấp nhận:**
-- [ ] Test theo spec mục 7:
+- [x] Test theo spec mục 7:
   - merge khi đủ điều kiện;
   - chờ khi Epic chưa qua gate ②;
   - không merge khi lượt CI của head bắt đầu sau lúc duyệt;
   - không phải PR tài liệu khi có một file ngoài hai đường dẫn, khi head không phải nhánh spec của Epic, hoặc khi PR không do `ao-dev` mở.
-- [ ] `audit` qua với commit merge của PR tài liệu hợp lệ, và trượt với PR có commit sau lúc duyệt.
-- [ ] Dữ liệu ghi sẵn ở `tests/fixtures/quality/api/docs-pr.json`.
+- [x] `audit` qua với commit merge của PR tài liệu hợp lệ, và trượt với PR có commit sau lúc duyệt.
+- [x] Dữ liệu ghi sẵn ở `tests/fixtures/quality/api/docs-pr.json`.
 
 **Kiểm chứng:**
-- [ ] Năm lệnh trong quy ước chung xanh
-- [ ] `merge-gate.mjs --dry-run` trên `ao-pilot` vẫn in đúng như trước cho các PR đang mở
+- [x] Năm lệnh trong quy ước chung xanh
+- [x] `merge-gate.mjs --dry-run` trên `ao-pilot` vẫn in đúng như trước cho các PR đang mở
 
 **Phụ thuộc:** T4
 
