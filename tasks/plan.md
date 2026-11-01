@@ -123,7 +123,7 @@ T16 ── T17 Epic: spec, plan ── T18 Epic: build, review, fix ── T19 t
 - [x] Bạn xem chi phí của T15–T16, rồi đồng ý chạy Epic thử (ước 25–36 USD)
 
 ### Giai đoạn 6: kiểm thật
-- [ ] T17: Epic thử: `/ao-spec`, `/ao-plan` tới lúc PR tài liệu được merge [bạn]
+- [x] T17: Epic thử: `/ao-spec`, `/ao-plan` tới lúc PR tài liệu được merge [bạn]
 - [ ] T18: Epic thử: `/ao-build`, `/ao-review`, `/ao-fix` tới merge [bạn]
 
 ### Checkpoint 4
