@@ -547,7 +547,7 @@ Bạn làm: đọc diff của PR, approve, rồi bấm **Squash and merge**.
 
 **Cỡ:** M
 
-### [ ] T15b: Sửa finding của PR #14: `gh-guard` và script ở máy (spec mục 2.1, 2.3)
+### [x] T15b: Sửa finding của PR #14: `gh-guard` và script ở máy (spec mục 2.1, 2.3)
 
 **Mô tả:** Phần còn lại của các finding ở PR #14, ở những gì chạy trên máy bạn:
 
@@ -573,11 +573,11 @@ Bạn làm: đọc diff của PR, approve, rồi bấm **Squash and merge**.
 - `GH_TOKEN` hết hạn sau 1 giờ (T17–T18 ghi thời gian từng lượt), và số lời gọi API khi chờ CI.
 
 **Tiêu chí chấp nhận:**
-- [ ] Mỗi dạng lệnh ở trên có test bị từ chối, và các lệnh agent thường chạy vẫn qua.
-- [ ] `docs/quality-gates.md` ghi giới hạn của `gh-guard` và các việc để sau.
+- [x] Mỗi dạng lệnh ở trên có test bị từ chối, và các lệnh agent thường chạy vẫn qua.
+- [x] `docs/quality-gates.md` ghi giới hạn của `gh-guard` và các việc để sau.
 
 **Kiểm chứng:**
-- [ ] Năm lệnh kiểm trong quy ước chung xanh
+- [x] Năm lệnh kiểm trong quy ước chung xanh
 
 **Phụ thuộc:** T15
 

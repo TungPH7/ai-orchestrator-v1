@@ -219,3 +219,19 @@ Không chạy agent. Mỗi điểm có test đỏ trước, một commit riêng.
 - **Comment "Needs you":** quá tám đường dẫn thì comment đếm số file theo từng đường dẫn được bảo vệ. Chạy hàm mới trên danh sách file thật của PR #14 (74 file, 73 file được bảo vệ, tính cả tên cũ của file đổi tên): "73 protected files: .ai-orchestrator/** (49), .claude/** (19), .github/workflows/** (4), .mcp.json (1)".
 
 `npm test`: 764 pass. Bốn lệnh kiểm còn lại xanh.
+
+## T15b: Sửa finding của PR #14: `gh-guard` và script ở máy (2026-11-01)
+
+Không chạy agent. Test viết trước, ba commit.
+
+- **`gh-guard`:**
+  - Từ chối đặt, export hay xóa các biến danh tính của phiên: `GIT_CONFIG_*`, `GIT_ASKPASS`, `SSH_ASKPASS`, `GIT_TERMINAL_PROMPT`, `GIT_EXEC_PATH`, `GH_TOKEN`, `GITHUB_TOKEN` và các biến cùng loại. Từ chối bằng mọi cách: dòng chỉ có phép gán, gán trước bất kỳ lệnh nào (trước đây chỉ trước `git`), `export`/`declare`/`typeset`/`readonly`/`local`/`unset`/`set`, `env -i`, `env -`, `env -u`, và qua `$env:`, `Env:` hay `SetEnvironmentVariable` trong PowerShell.
+  - Kiểm lệnh trong `powershell`/`pwsh -Command` (kể cả dạng viết tắt của option) và `cmd /c`, `//c`, `/k` như lệnh lồng nhau. Từ chối `-EncodedCommand`.
+  - Từ chối shell đọc lệnh từ stdin: `| bash`, `sh -s`, `powershell -Command -`, `cmd` không có `/c`. `bash x.sh` vẫn chạy được: `gh-guard` không đọc file script, như trước.
+  - Từ chối chương trình `git-credential-*`, ở đầu lệnh hay ở sau `xargs`. Tên chương trình và tên script điều phối không phân biệt hoa thường.
+  - `checkAoPr` bỏ qua giá trị của `-r`, `--require`, `--import`, `--loader`, `-C` và các option cùng loại của `node`, nên `be-dev` không còn chạy được `ao-pr.mjs review` theo cách đó.
+- **Thư mục temp:** hook truyền cả `os.tmpdir()` (tên 8.3 `C:\Users\HUUTUN~1\…`) lẫn tên dài từ `realpathSync.native`. Chạy hook thật trên máy này với agent `reviewer`: ghi vào `C:\Users\Huu Tung\AppData\Local\Temp\probe\x.md` và vào tên ngắn đều được; ghi `~/.gitconfig` vẫn bị từ chối.
+- **`ao-step.mjs`:** khóa `active.json` tạo bằng cờ `wx`; holder đã chết thì bị thay. `--note` và `--answers` chỉ đọc file trong `.ai/runs/`.
+- **Tài liệu:** `docs/quality-gates.md` ghi rằng `gh-guard` chỉ chặn nhầm lẫn, vì phiên agent đọc được key của App, và liệt kê năm việc còn chờ bạn quyết. Comment ở `launch.mjs` sửa theo.
+
+`npm test`: 772 pass. Bốn lệnh kiểm còn lại xanh.
