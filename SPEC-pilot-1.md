@@ -64,7 +64,7 @@ Trước khi chép skill của bên thứ ba, mình đọc hết nội dung và 
 - Key `SMP` còn trống: ngày 2026-11-01, `GET /rest/api/3/project/SMP` trả 404. Site đang có `DEMO` (company-managed) và `SCRUM` (team-managed).
 - Làm bước 9–13 của `docs/jira-setup.md`: space, board, GitHub for Jira, môi trường, kiểm lại. Bước 1–8 (group, service account, Rovo MCP, resolution, status, workflow, work type, workflow scheme, trường) dùng chung cho cả site, không làm lại.
 - Token admin Jira chỉ có scope đọc, nên không tạo được space (T2: 401). Bạn tạo space trên giao diện theo từng bước bấm. `verification.md` ghi bước nào làm bằng gì.
-- `SMP` dùng chung cấu hình với `DEMO` (bạn chọn ở Checkpoint 1): `AO workflow scheme`, issue type scheme và issue type screen scheme của `DEMO`, nên các trường trên screen của bước 9 có sẵn. Đổi lại, sửa một scheme cho `SMP` sẽ đổi luôn cho `DEMO`.
+- `SMP` dùng chung cấu hình với `DEMO` (bạn chọn ở Checkpoint 1): `AO workflow scheme`, issue type scheme và issue type screen scheme của `DEMO`, nên các trường trên screen của bước 9 có sẵn. Đổi lại, sửa một scheme cho `SMP` sẽ đổi luôn cho `DEMO`. Tùy chọn "share settings" lúc tạo space chỉ có ở gói trả phí (ảnh `misc/images/phien-21-luot-7-anh-2.png`), nên space được tạo như thường, rồi gán ba scheme của `DEMO` trong Space settings.
 - Xong khi `npm run jira:check -- --space SMP` không còn chỗ lệch, và bạn đã xem tay các dòng `Check by hand`.
 
 ### 2.4 GitHub
