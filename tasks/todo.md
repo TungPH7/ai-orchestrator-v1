@@ -262,7 +262,7 @@ Xem [plan.md](plan.md#checkpoint-1).
 
 ## Giai đoạn 3: `ao-step.mjs`
 
-### [ ] T8: `runs.mjs` và `requests.mjs` (spec mục 2.2, 2.8)
+### [x] T8: `runs.mjs` và `requests.mjs` (spec mục 2.2, 2.8)
 
 **Mô tả:**
 
@@ -273,13 +273,13 @@ Xem [plan.md](plan.md#checkpoint-1).
 - `lib/workflow/requests.mjs`: `openRequests(comments, agentNames)`. Một comment mở đầu bằng `Cần <role>:` là yêu cầu còn mở, cho tới khi vai trò đó comment lên cùng item sau nó.
 
 **Tiêu chí chấp nhận:**
-- [ ] Test `readRun` trên log thật của `agent-roster`, cắt gọn và bỏ nội dung không cần: một lượt xong, và một cặp lượt đầu với lượt `--resume`. Trường hợp không có log thật (hết lượt, hết usage) thì dựng tay theo dạng của log thật.
-- [ ] Test `openQuestions`: mục trống, mục ghi "Không có", mục có câu hỏi.
-- [ ] Test `openRequests`: yêu cầu còn mở, đã xong, và comment của vai trò khác không tính là xong.
+- [x] Test `readRun` trên log thật của `agent-roster`, cắt gọn và bỏ nội dung không cần: một lượt xong, và một cặp lượt đầu với lượt `--resume`. Trường hợp không có log thật (hết lượt, hết usage) thì dựng tay theo dạng của log thật.
+- [x] Test `openQuestions`: mục trống, mục ghi "Không có", mục có câu hỏi.
+- [x] Test `openRequests`: yêu cầu còn mở, đã xong, và comment của vai trò khác không tính là xong.
 
 **Kiểm chứng:**
-- [ ] Năm lệnh trong quy ước chung xanh
-- [ ] Fixture không chứa token, email hay đường dẫn của máy bạn
+- [x] Năm lệnh trong quy ước chung xanh
+- [x] Fixture không chứa token, email hay đường dẫn của máy bạn
 
 **Phụ thuộc:** không
 
