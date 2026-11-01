@@ -341,7 +341,7 @@ Xem [plan.md](plan.md#checkpoint-1).
 
 **Cỡ:** M
 
-### [ ] T11: `decideStep` cho `build`, `review`, `fix` (spec mục 2.1, 2.5, 2.6)
+### [x] T11: `decideStep` cho `build`, `review`, `fix` (spec mục 2.1, 2.5, 2.6)
 
 **Mô tả:**
 
@@ -359,19 +359,19 @@ Xem [plan.md](plan.md#checkpoint-1).
 - Prompt của dev agent, `reviewer`, `security` đầy đủ và `security` phần mới.
 
 **Tiêu chí chấp nhận:**
-- [ ] Test theo spec mục 7 cho ba lệnh:
+- [x] Test theo spec mục 7 cho ba lệnh:
   - `GO`, và từng điều kiện `STOP`;
   - thứ tự BE trước FE;
   - effort theo nhãn;
   - Rework từ 2 thì `xhigh`.
-- [ ] Test `securityScope`:
+- [x] Test `securityScope`:
   - X là tổ tiên, hay đã rebase;
   - đúng 300 dòng, và 301 dòng;
   - diff đụng đường dẫn được bảo vệ;
   - không có báo cáo đọc được.
 
 **Kiểm chứng:**
-- [ ] Năm lệnh trong quy ước chung xanh
+- [x] Năm lệnh trong quy ước chung xanh
 
 **Phụ thuộc:** T10
 
