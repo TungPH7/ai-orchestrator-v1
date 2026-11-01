@@ -91,7 +91,7 @@ T16 ── T17 Epic: spec, plan ── T18 Epic: build, review, fix ── T19 t
 
 ### Giai đoạn 2: danh tính và cổng
 - [x] T3: Môi trường của phiên agent và `ao-git-credential.mjs`
-- [ ] T4: `docs_pull_requests` trong `quality/gates.yaml`, schema và Q5
+- [x] T4: `docs_pull_requests` trong `quality/gates.yaml`, schema và Q5
 - [ ] T5: `merge-gate` và `audit` nhận PR tài liệu
 - [ ] T6: `merge-gate` báo PR cần bạn, `jira-sync` gỡ cờ
 - [ ] T7: `jira-sync` đánh dấu dòng DoR
