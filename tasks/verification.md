@@ -285,3 +285,25 @@ Stage plan tốn 7,97 USD (`DEMO-20`: 7,09 USD), trong đó lượt 7 bị dừn
 - `ba` không có cách tạo link Blocks. Server `atlassian` hiện có tool `addGraphContext` với `relationshipType: jira-work-item-blocks-jira-work-item` (Claude đọc `tools/list` của server lúc khoảng 22:10). Cách sửa: cho `ba` tool này, và hook `jira-guard` chỉ cho loại `blocks` với hai key thuộc space dự án. Cần thử trước xem tool có tạo link Jira thật không.
 - Hook `block-atlassian` chặn nhầm hai lệnh Bash của `sa` ở lượt 8: một lệnh ghi thân PR vào `.ai/pr/`, một lệnh sửa ledger. Cả hai chỉ chứa link `atlassian.net` trong chữ, không gọi mạng. Cách sửa: hook chỉ chặn khi lệnh gọi mạng (`curl`, `wget`, `fetch`, `Invoke-WebRequest`) tới Atlassian.
 - Agent để lại server của spike sau khi lượt kết thúc. Cách sửa: dặn trong luật chung tắt mọi tiến trình đã bật trước khi trả lời, hoặc runner tắt cây tiến trình của lượt khi lượt kết thúc.
+
+## T7: gate ② và lần chạy thứ hai của `/ao-plan` (2026-11-02)
+
+- Bạn bấm `Approve plan` lúc 22:20 (Phiên 23 · Lượt 2). `SMP-2` ở In Progress. `ao-step.mjs plan SMP-2`: `GO`, chỉ có `jira-sync` rồi `merge-gate` cho PR #1.
+- **`/ao-plan SMP-2` lần 3** (22:22–22:24): `MSYS_NO_PATHCONV=1 claude -p --model sonnet --output-format stream-json --verbose "/ao-plan SMP-2"` trong `ao-sample`, ở nền, kèm watcher. Không agent nào chạy. Phiên Sonnet điều phối: hai kết quả, 5 turn, 0,13 USD, thoát 0.
+
+| Lúc | Việc | Kết quả |
+|---|---|---|
+| 22:22 | `jira-sync` #18 (`workflow_dispatch`, login `gh` của bạn) | xanh; `SMP-4`, `SMP-5`, `SMP-6`, `SMP-7`, `SMP-10`, `SMP-11` sang Ready do `orchestratorci`; `SMP-8`, `SMP-9` vẫn To Do |
+| 22:23 | `merge-gate` #19 merge PR #1 | `2fc61a1` trên `develop`, người merge `app/tungph7-ao-dev` |
+| 22:24 | `Deploy` #3 trên `2fc61a1` | xanh: `audit` xanh, `deploy` xanh |
+| 22:24 | `jira-sync` #20, #21 (`deployment_status`) | xanh |
+| khoảng 22:30 | `CI` #6 trên `2fc61a1` | xanh: `build-test`, `policy`, `secrets`, `sast` (run 41471186763) |
+
+- `develop` có `docs/specs/SMP-2/` (`spec.md`, `design.md`, `plan.md`) và `docs/adr/0001`–`0003`.
+- Lịch sử trạng thái của `SMP-2`: New → Specifying (14:40), Specifying → Planning (17:36), Planning → In Progress (22:20), cả ba do bạn. Item con đổi trạng thái do `orchestratorci`.
+- Điểm 6 của spec mục 2.8 (panel Development của Epic thấy nhánh và PR tài liệu): API `rest/dev-status` trả 401 với token CI, nên Claude không tự kiểm được. Bạn xem trên giao diện.
+- Chi phí của T7: agent 15,14 USD (ước 12–18 USD; `DEMO-20` tới lúc này: 14,92 USD). Phiên Sonnet điều phối: 0,49 USD cho stage spec, 0,37 USD cho stage plan.
+
+**Lỗi kit, không chặn Epic:**
+- Lý do dừng gợi ý `Next: /ao-build SMP-11`, nhưng `SMP-11` bị `SMP-7` block. `afterPlanGate` trong `lib/workflow/steps.mjs` lấy item Ready đầu tiên trong danh sách con của Epic, không xét `blockedBy` hay thứ tự của plan. Lệnh `/ao-build SMP-11` sẽ tự dừng vì phụ thuộc chưa merge, nên chỉ tốn một lượt hỏi. Cách sửa: gợi ý item Ready đầu tiên không bị item nào chưa xong block, theo thứ tự key.
+- Phiên Sonnet điều phối báo "Báo cáo cũng không nói gì về việc bấm Approve plan", dù lần chạy này chỉ có được sau gate ②. Cách sửa: lý do dừng nói rõ gate ② đã qua.

@@ -77,7 +77,7 @@ T9 ── T10 bản sửa kit còn lại, tài liệu, lưu trữ
 - [x] Bạn xem repo, board `SMP` và bảng các bước cài, rồi đồng ý chạy Epic thử (ước 30–45 USD): bạn duyệt trước ở Phiên 21 · Lượt 6
 
 ### Giai đoạn 3: Epic thử
-- [ ] T7: Epic "Ghi chú": `/ao-spec`, `/ao-plan` tới lúc PR tài liệu được merge [bạn]
+- [x] T7: Epic "Ghi chú": `/ao-spec`, `/ao-plan` tới lúc PR tài liệu được merge [bạn]
 - [ ] T8: `/ao-build` lượt đầu [bạn]
 
 ### Checkpoint 3
