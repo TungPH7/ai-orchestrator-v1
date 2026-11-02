@@ -29,7 +29,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 19 | `44d6269e-f8c5-4052-a81c-f0f6385e00ed` | 2026-11-01 khoảng 10:35 → khoảng 11:30 | Bạn cho qua Checkpoint 2 (PR #127); T15: Task DEMO-19, ao-pilot PR #14 chép kit bằng danh tính bot `ao-dev`, `/ao-review`: `reviewer` COMMENT, `security` chạm giới hạn 5 giờ rồi chạy tiếp và COMMENT, 11,69 USD quy đổi; `merge-gate` bản mới chạy ở máy comment và gắn cờ một lần; trả lời cuối của Claude bị bộ lọc an toàn chặn hai lần, nên phiên này không có lượt nào trong log |
 | 20 | `bc6dea4e-d395-4a5d-b439-2a337292b2e7` | 2026-11-01 khoảng 11:45 → khoảng 22:15 | Bạn dán đoạn cuối của Phiên 19 để làm tiếp; Claude báo kết quả T15 và hỏi về nhánh `main` và các finding của kit; bạn merge PR #14 và chọn cả hai đề xuất: nhánh mặc định của `ao-pilot` sang `develop`, sửa finding ở kit không chạy agent; T15 đóng (PR #128), T15a (PR #129), T15b (PR #130); T16 đóng (PR #131): agent dùng danh tính App, vai trò chỉ đọc không push được; Checkpoint 3, bạn đồng ý chạy Epic thử; T17: Epic DEMO-20, `/ao-status`, chờ bạn bấm `Start spec`; bạn bấm `Start spec`; `/ao-spec` bị Claude Code tắt vì máy thiếu RAM; bạn bảo chạy lại; `ba` viết SPEC, `ao-step` dừng vì không thấy nhánh tài liệu chưa push, kit PR #132 sửa; bạn chọn chạy bằng code của kit và trả lời theo đề xuất; `ux` chạm giới hạn 5 giờ; bạn bảo làm tiếp; `ux` hỏi sáu câu, `sa` hỏi hai câu, bạn trả lời theo đề xuất; `ba` mở PR tài liệu #15, CI xanh, stage spec 7,84 USD quy đổi; bạn duyệt spec; stage plan: `sa` viết plan và ADR-0002, `ba` tạo DEMO-21, DEMO-22, DEMO-23; bạn chọn DEMO-22 ở `xhigh` và đổi `Status` thành Approved, hỏi vì sao `Status` còn Draft; lượt `ba` bị tắt vì thiếu RAM, bạn bảo chạy lại; bạn duyệt plan; `merge-gate` merge PR #15, `audit` xanh, T17 đóng (PR #133), 14,92 USD quy đổi; bạn đồng ý; bốn lỗi nhỏ sửa (PR #134); T18: `be-dev` bị `jira-guard` chặn vì token App bị cắt ở dấu chấm, kit PR #135 sửa; bạn gỡ cờ; `be-dev` xong DEMO-22 ở `xhigh`, kit PR #136 sửa việc làm tiếp Sub-task; bạn hỏi `be-dev` có bị tắc không; `fe-dev` code xong DEMO-23 nhưng gắn cờ vì Tab không cuộn khung bảng ở 320 px; bạn chọn B và gỡ cờ; `fe-dev` mở PR #16, CI xanh; `reviewer` chạm giới hạn 5 giờ, chạy lại sau khi reset; `reviewer` 3 Low, `security` không có finding; bạn chọn sửa hai Low; `be-dev` sửa và push, `reviewer` bị tắt vì thiếu RAM lần ba; bạn mở lại Claude Code với chế độ không tắt lệnh nền; `security` review phần mới ở `high`, `merge-gate` chỉ còn chờ approve (tiêu chí 5); bạn approve, `merge-gate` merge PR #16, `audit` xanh, DEMO-21 sang Ready for QA, Task DEMO-24 cho hai test còn thiếu, T18 đóng (PR #137), Epic thử 36,19 USD quy đổi; Checkpoint 4; bạn cho qua Checkpoint 4 (PR #138); T19 đóng (PR #139): sửa lỗi Sub-task mang cờ, `docs/dev-workflow.md`, README, module ghi hoàn thành, plan vào `tasks/archive/dev-workflow/`; bạn xác nhận module hoàn thành (PR #140); chờ bạn chọn việc tiếp theo |
 | 21 | `3ead2782-314d-4ae8-981b-96f6ed83a60e` | 2026-11-01 khoảng 22:50 → 2026-11-02 khoảng 01:40 | Bạn dán đoạn cuối của Phiên 20, hỏi vì sao `main` và `develop` của `ao-pilot` lệch nhau, cách xử lý, và lựa chọn 3 có giải quyết được không; Claude kiểm hai nhánh và code của `audit`: `develop` đi trước 10 là đúng GitFlow, 4 commit chỉ có trên `main` là dấu vết lối tắt sandbox và không đổi nội dung; lựa chọn 3 không giải quyết; đề xuất ghi quy tắc merge commit và back-merge từ `main` vào spec `release-workflow`; bạn chọn Pilot 1; Claude nêu phạm vi, giả định A1–A8 và ba câu hỏi (repo, space Jira, feature); bạn duyệt và chọn theo đề xuất: repo mới `ao-sample`, space mới `SMP`, Epic "Ghi chú"; Claude viết `SPEC-pilot-1.md` (nhánh `task/spec-pilot-1`); bạn chọn tạo key mới cho `ao-dev` và duyệt spec; Claude viết plan 10 task, 5 checkpoint, cùng quyết định 6 (lỗi kit giữa Epic) và 8 (Checkpoint 3 sau lượt build đầu); bạn duyệt plan; kit PR #141; T1–T2: tạo repo `ao-sample`, điểm 1 đúng một phần (NestJS 12 dùng Vitest và oxlint, `@nestjs/mau` mang 2 lỗ hổng high), điểm 2 đúng nếu dùng Vitest, điểm 3 và 4 sai (API từ chối), điểm 5 đúng kèm `MSYS_NO_PATHCONV=1` và tin cậy thư mục; Checkpoint 1: bạn duyệt sáu chỗ sửa, dùng chung scheme với `DEMO`, và duyệt trước mọi đề xuất trong Pilot 1; T1a (kit PR #142, `oxlint-disable`); T4 khung app xanh sáu lệnh; T5 bản chép kit và hai skill theo stack; commit đầu bị hook `commit-msg` từ chối vì thiếu mã Jira; bạn gửi ảnh: tùy chọn share settings lúc tạo space cần gói trả phí; Claude đổi cách: tạo space như thường rồi gán ba scheme của `DEMO` trong Space settings; bạn tạo xong `SMP` và gán ba scheme; Claude kiểm bằng API, `jira:check` còn 3 chỗ lệch của board, tạo bốn environment và đặt secret `JIRA_CI_TOKEN`; bạn tắc ở B3 (board thiếu cột); Claude đọc cấu hình board bằng API và ghi từng bước sửa cột trong Board settings; bạn gửi ảnh: board của `SMP` là board mới, Board settings không có Columns; Claude tìm tài liệu Atlassian: cột cấu hình ở More actions → Configure columns trên board; bạn gửi ảnh hộp Configure columns đã sửa đúng, chờ bấm Publish; bạn tắc ở D2 (không có Private keys); Claude đính chính: đường đúng là Credentials → Key pairs → New key, như `docs/github-apps-setup.md` đã ghi; bạn xong B–E và chọn cách (b); Claude đặt secret `AO_DEV_APP_KEY`, tạo `SMP-1`, commit đầu `6f5831d` lên `main` và `develop`; GitHub không chạy workflow cho lần push đầu, Claude chạy tay `merge-gate` (xanh) và `Deploy` (`audit` đỏ, gắn cờ `SMP-1`); Checkpoint 2 đạt, tiêu chí 1 đổi; Epic `SMP-2`; chờ bạn dọn `SMP-1` và bấm Start spec |
-| 22 | `d714399c-65d0-4f98-bbbb-720338ff6bea` | 2026-11-02 khoảng 10:50 → | Bạn dán đoạn cuối của Phiên 21 kèm ảnh panel Development của `SMP-1`, hỏi `Deploy` đỏ có đúng dự kiến không; Claude đọc run và log của `audit`: đúng dự kiến (commit đầu không qua PR), và ảnh cho thấy GitHub for Atlassian đã gắn run vào `SMP-1`; bạn dọn `SMP-1` và bấm Start spec; Claude merge kit PR #143 (T3–T6, Checkpoint 2), chạy `/ao-spec SMP-2` qua `claude -p`: `ba` viết SPEC (1,49 USD) và để lại 4 câu hỏi; Claude chuyển câu hỏi cho bạn, khuyên đồng ý cả bốn |
+| 22 | `d714399c-65d0-4f98-bbbb-720338ff6bea` | 2026-11-02 khoảng 10:50 → | Bạn dán đoạn cuối của Phiên 21 kèm ảnh panel Development của `SMP-1`, hỏi `Deploy` đỏ có đúng dự kiến không; Claude đọc run và log của `audit`: đúng dự kiến (commit đầu không qua PR), và ảnh cho thấy GitHub for Atlassian đã gắn run vào `SMP-1`; bạn dọn `SMP-1` và bấm Start spec; Claude merge kit PR #143 (T3–T6, Checkpoint 2), chạy `/ao-spec SMP-2` qua `claude -p`: `ba` viết SPEC (1,49 USD) và để lại 4 câu hỏi; Claude chuyển câu hỏi cho bạn, khuyên đồng ý cả bốn; bạn đồng ý cả bốn; Claude nối lại phiên `claude -p` với câu trả lời: `ba`, `ux`, `sa` chạy (3,36 USD), `sa` để lại 2 câu hỏi (đếm emoji, chuẩn hóa NFC và xuống dòng); Claude khuyên đồng ý cả hai |
 
 ---
 
@@ -8973,3 +8973,54 @@ Mình khuyên đồng ý cả bốn: các con số và hành vi này vừa với
 **Việc cần bạn làm:** trả lời "đồng ý cả bốn", hoặc ghi câu nào muốn đổi kèm giá trị mới. Mình sẽ ghi nguyên văn câu trả lời vào `.ai/runs/SMP-2/answers.md` rồi chạy lại `/ao-spec SMP-2`. Lần chạy lại gồm `ba` sửa theo câu trả lời, `ux`, `sa`, rồi `ba` mở PR tài liệu. Sau đó mới tới gate ①.
 
 Có một lỗi nhỏ của kit, không chặn Epic: `last.md` cắt câu trả lời của agent ở 2000 ký tự mà không báo. Bốn câu hỏi vẫn có đủ ở phần Questions. Mình đã ghi lỗi này vào `verification.md` và sẽ sửa cùng các lỗi khác ở T10.
+
+# Phiên 22 · Lượt 3 — 2026-11-02 khoảng 15:25 → 15:46
+
+**Bạn:**
+
+````markdown
+đồng ý cả bốn
+````
+
+Trước khi trả lời, Claude nối lại phiên `claude -p` của lần chạy trước (`--resume`), đưa câu trả lời qua stdin, thêm `--permission-mode acceptEdits` để phiên đó ghi được `answers.md` (15:25–15:42). Claude đọc `answers.md`, `state.json`, `last.md`, model của từng lượt, rồi ghi lượt chạy và bốn lỗi kit không chặn vào `tasks/verification.md`.
+
+**Claude:**
+
+`/ao-spec SMP-2` chạy tiếp được ba lượt rồi lại dừng: `sa` để lại 2 câu hỏi kỹ thuật. PR tài liệu chưa mở, nên chưa tới gate ①.
+
+**Lần chạy này** (15:25–15:42)
+
+| # | Agent | Bước | Kết quả | Thời gian | Chi phí |
+|---|---|---|---|---|---|
+| 2 | `ba` (Opus) | đưa câu trả lời của bạn vào SPEC | xong | 1,0 phút | 0,34 USD |
+| 3 | `ux` (Sonnet) | vẽ màn hình, `design.md` | xong | 6,9 phút | 0,99 USD |
+| 4 | `sa` (Opus) | NFR và Tech Stack | xong, 2 câu hỏi | 7,4 phút | 2,03 USD |
+
+- Chi phí agent của SMP-2 tới giờ là 4,85 USD. Phiên Sonnet điều phối tốn thêm 0,44 USD ở lần này. Ở DEMO-20, cả stage spec tốn 7,84 USD.
+- `ux` vẽ một màn hình `/notes` cho desktop và mobile. Nút Lưu dùng `aria-disabled` để chặn bấm đôi (AC7) mà vẫn giữ focus.
+- `sa` thêm NFR:
+  - API trả lời trong 200 ms (p95) khi có 1.000 ghi chú.
+  - Web chờ API tối đa 10 giây, quá thì báo lỗi.
+  - API chỉ nhận JSON tối đa 100 kB, và bỏ qua `id`, `createdAt` do client gửi.
+- Bốn commit nằm trên `feature/SMP-2-spec`, chưa push.
+
+**Hai câu hỏi của `sa`**
+
+1. **Q1, đếm emoji thế nào?** Với chữ Việt, đếm điểm mã Unicode sau NFC cho kết quả đúng ("ệ" là 1). Emoji ghép thì khác: 👍🏽 là 2 điểm mã, 👨‍👩‍👧 là 5, dù mắt thấy là 1. Muốn đếm đúng như mắt thấy thì phải dùng `Intl.Segmenter`. Nhưng kết quả của nó tùy phiên bản trình duyệt và Node.js, nên form và API có thể đếm lệch nhau ở giới hạn.
+   **Đề xuất:** đếm điểm mã sau NFC. Cách này cho cùng kết quả ở mọi nơi, đổi lại emoji ghép tính hơn 1 ký tự. Ghi rõ vào Rules và thêm một ca emoji vào unit test.
+2. **Q2, chuẩn hóa trước khi đếm và lưu?** Ô nhập của trình duyệt dùng `\n` cho mỗi lần xuống dòng, còn request gửi thẳng tới API có thể dùng `\r\n` (2 ký tự). Vì vậy hai bên đếm lệch nhau ở giới hạn 1000.
+   **Đề xuất:** form và API chuẩn hóa giống nhau trước khi kiểm, và API lưu dạng đã chuẩn hóa:
+   - đổi sang NFC;
+   - đổi `\r\n` và `\r` thành `\n`;
+   - bỏ khoảng trắng đầu và cuối của tiêu đề;
+   - giữ nguyên khoảng trắng của nội dung.
+
+   Câu này cũng trả lời luôn câu hỏi về xuống dòng mà `ux` để lại.
+
+Mình khuyên đồng ý cả hai. Hai đề xuất giúp form và API luôn đếm giống nhau. Người dùng không thấy khác biệt nào, trừ việc emoji ghép bị tính hơn 1 ký tự.
+
+**Việc cần bạn làm:** trả lời "đồng ý cả hai", hoặc nêu câu nào muốn đổi. Mình sẽ chạy tiếp: `ba` ghi câu trả lời vào SPEC rồi mở PR tài liệu. Lúc đó mới tới gate ①.
+
+`design.md` còn vài câu hỏi mở không chặn quy trình, ví dụ có thêm dòng "Đã lưu ghi chú." cho trình đọc màn hình hay không. Bạn xem chúng khi đọc PR tài liệu.
+
+Mình cũng ghi thêm ba lỗi nhỏ của kit vào `verification.md`, đều không chặn Epic. Đáng kể nhất là trong `claude -p` không ai duyệt được việc ghi `answers.md`, nên mình phải thêm `--permission-mode acceptEdits` khi chạy lại.
