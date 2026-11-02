@@ -10224,3 +10224,21 @@ Cả hai mức đều chưa tính PR chép kit (khoảng 5,5 USD).
 - **Giữ C, chép ở T10 (Recommended)**: Pilot 1 dừng ở SMP-4 như đã chọn ở Checkpoint 3. Sửa kit xong thì gom mọi bản sửa vào một PR chép ở T10. Không build thêm item nào.
 - **B: build tới Story đầu**: Sửa kit, chép ngay một PR gom vào ao-sample, rồi build SMP-5, SMP-6 và Story SMP-7 (BE + FE). Ước 18–28 USD cộng khoảng 5,5 USD cho PR chép.
 - **A: build hết 5 item**: Sửa kit, chép ngay, rồi build SMP-5, 6, 7, 10, 11. Ước 30–45 USD cộng khoảng 5,5 USD cho PR chép.
+
+**Bạn trả lời trong hộp câu hỏi (ô tự nhập):**
+
+````markdown
+Tôi đang hỏi nếu "chép vào ao-sample trong PR gom ở T10", nhưng T9 cần làm 7-9 task/story và vẫn bị tính nhiều token thì sao? Tại sao không chép vào bây giờ luôn mà phải đợi tới T10? Bạn trả lời cho tôi, sao lại đi hỏi ngược lại tôi???
+````
+
+Claude ghi một memory mới: trả lời câu hỏi bằng chữ, không đặt hộp câu hỏi ngay dưới câu trả lời.
+
+**Claude:**
+
+Xin lỗi bạn. Câu trả lời của mình đã bị hộp câu hỏi che mất, và lẽ ra mình không nên hỏi lại. Trả lời thẳng:
+
+**Đúng, nên chép ngay, không đợi T10.** Mình đổi kế hoạch: sửa kit xong (cách 1, 3, 2) là chép ngay vào `ao-sample` bằng một PR gom, trước mọi lượt `/ao-build` sau này. Vẫn là cách A, chỉ chép sớm hơn.
+
+**Vì sao trước đó mình ghi T10:** ở Checkpoint 3 bạn chọn C, nên T9 chỉ còn `SMP-4`, và `SMP-4` đã xong. Năm item còn lại (7 item trên Jira) nằm ngoài Pilot 1, nên mình coi như không còn PR nào trong `ao-sample`. Nhưng nếu sau này build tiếp các item đó mà `ao-sample` vẫn giữ bản kit cũ, mỗi PR sẽ tốn khoảng 5,5 USD cho review thay vì khoảng 2–3 USD. Chép ngay không tốn thêm gì, vì đằng nào cũng chỉ một lần review PR chép, mà lại tránh được rủi ro đó.
+
+Mình bắt đầu sửa kit ngay, cách 1 trước.
