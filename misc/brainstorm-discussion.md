@@ -10342,3 +10342,37 @@ ok, giờ làm cách 1, 3, 2 rồi chép ngay vào ao-sample
 **Claude:**
 
 Mình làm theo thứ tự: cách 1, rồi cách 3, rồi cách 2, mỗi cách một kit PR có test. Xong thì chép ngay vào `ao-sample` bằng một PR gom. Trước hết mình ghi các lượt vừa rồi vào nhật ký.
+
+Claude sửa kit theo thứ tự đã nói: kit PR #149 (cách 1: `CLAUDE_CODE_PROMPT_CACHE_TTL=5m` trong `agentCommand`, 792 test), #150 (cách 3: khối `security_review` trong `quality/gates.yaml`, `fullReviewEffort`, 795 test), #151 (cách 2: `lib/workflow/review-pack.mjs`, `reviewPackWriter` trong `ao-step.mjs`, hook `pack` của runner, hướng dẫn của `reviewer` và `security`, 804 test). Bạn nhắn giữa chừng "Phản hồi chat bằng tiếng việt nhé"; Claude trả lời "Vâng, từ giờ mình nhắn bằng tiếng Việt hết. Mấy câu tiếng Anh xen giữa lúc nãy là sơ suất của mình." Claude chạy thử phần dựng gói trên PR #4 với git thật (gói 1.040 dòng), tạo Task `SMP-13`, chép 11 file và render lại hai agent review, commit `d049513` bằng bot `ao-dev`, mở PR #6. `CI` xanh. `/ao-review 6`: `reviewer` 45 turn, 8,6 phút, 2,58 USD; `security` 48 turn, 15,5 phút, 4,33 USD; cả hai Approve.
+
+**Claude:**
+
+**Kết quả review PR #6** (6,91 USD, 24 phút: `reviewer` 2,58 USD, `security` 4,33 USD). Không có finding Critical hay High, cả hai đều Approve. Nhưng có 3 Medium, đều ở phần gói bối cảnh mình vừa thêm:
+
+1. **Gói có thể phình to** (`reviewer`). Gói chép nguyên văn mọi file bị sửa, không giới hạn. Một PR nâng dependency sẽ kéo cả `package-lock.json` (415 nghìn ký tự) vào gói, ngược với mục tiêu giảm token.
+2. **Prompt injection** (`security`). Gói đặt nguyên văn mô tả PR, mô tả Jira, nội dung file và diff vào giữa các tiêu đề do `ao-step` viết, không có dấu phân cách. `security` đã dựng bản thử: một mô tả PR có tiêu đề giả `## Jira item…` và một ADR giả, và gói in mục giả đó trước mục thật.
+3. **Tài liệu Epic đọc ở head của PR** (`security`). Dev agent sửa được `docs/specs/**` và `docs/adr/**` trong PR của nó, nên một PR có thể tự thêm ADR "cho phép" chỗ hở của chính nó, và gói sẽ trình bày ADR đó như tài liệu đã duyệt. Cách sửa: đọc tài liệu ở nhánh gốc của PR.
+
+Ngoài ra có 6 Low:
+- fence ```` ``` ```` trong file làm vỡ khung của gói;
+- lượt `review-delta` nhận diff của cả PR thay vì phần mới;
+- phần đọc git, GitHub, Jira chưa có unit test, và lỗi `git fetch` không được kiểm;
+- một chú thích đặt sai chỗ;
+- luật effort bỏ sót tầng dữ liệu (repository, migration);
+- đổi tên file ra khỏi đường dẫn rủi ro thì `security` tụt xuống `high`.
+
+**Hai cách đi tiếp**
+
+| | A. Sửa trước rồi mới merge | B. Merge PR #6 bây giờ, sửa sau |
+|---|---|---|
+| Làm gì | Sửa 3 Medium và các Low trong kit, đẩy bản sửa lên PR #6, review lại, rồi bạn merge | Bạn merge PR #6, mình sửa trong kit, rồi chép bằng một PR mới |
+| Chi phí review thêm | [Ước] 5,5–7 USD: lượt review lại vẫn chạy bằng kit cũ đang có trên `develop` | [Ước] 3–4 USD: PR mới được review bằng kit mới (gói, cache 5 phút); `security` vẫn ở `max` vì PR chạm đường dẫn được bảo vệ |
+| Rủi ro | Không có | Trong lúc chờ, chỉ lượt review của PR sửa là dùng gói còn lỗ hổng, và nội dung PR đó do mình viết, không phải văn bản lạ |
+
+**Mình khuyên B:** rẻ hơn khoảng 2–3 USD. Rủi ro của B chỉ có thật khi có người lạ viết mô tả PR hay item, mà `ao-sample` không có ai như vậy. Nếu bạn muốn sạch theo nguyên tắc, không merge thứ còn Medium bảo mật, thì chọn A.
+
+Bạn chọn A hay B? Nếu chọn B, các bước bấm để approve và merge PR #6:
+1. Mở https://github.com/TungPH7/ao-sample/pull/6.
+2. Tab **Files changed**, bấm **Review changes**, chọn **Approve**, bấm **Submit review**.
+3. Tab **Conversation**, kéo xuống cuối, bấm **Squash and merge**, rồi **Confirm squash and merge**.
+4. Nhắn mình "đã merge".
