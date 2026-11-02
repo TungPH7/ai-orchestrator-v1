@@ -29,7 +29,8 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 19 | `44d6269e-f8c5-4052-a81c-f0f6385e00ed` | 2026-11-01 khoảng 10:35 → khoảng 11:30 | Bạn cho qua Checkpoint 2 (PR #127); T15: Task DEMO-19, ao-pilot PR #14 chép kit bằng danh tính bot `ao-dev`, `/ao-review`: `reviewer` COMMENT, `security` chạm giới hạn 5 giờ rồi chạy tiếp và COMMENT, 11,69 USD quy đổi; `merge-gate` bản mới chạy ở máy comment và gắn cờ một lần; trả lời cuối của Claude bị bộ lọc an toàn chặn hai lần, nên phiên này không có lượt nào trong log |
 | 20 | `bc6dea4e-d395-4a5d-b439-2a337292b2e7` | 2026-11-01 khoảng 11:45 → khoảng 22:15 | Bạn dán đoạn cuối của Phiên 19 để làm tiếp; Claude báo kết quả T15 và hỏi về nhánh `main` và các finding của kit; bạn merge PR #14 và chọn cả hai đề xuất: nhánh mặc định của `ao-pilot` sang `develop`, sửa finding ở kit không chạy agent; T15 đóng (PR #128), T15a (PR #129), T15b (PR #130); T16 đóng (PR #131): agent dùng danh tính App, vai trò chỉ đọc không push được; Checkpoint 3, bạn đồng ý chạy Epic thử; T17: Epic DEMO-20, `/ao-status`, chờ bạn bấm `Start spec`; bạn bấm `Start spec`; `/ao-spec` bị Claude Code tắt vì máy thiếu RAM; bạn bảo chạy lại; `ba` viết SPEC, `ao-step` dừng vì không thấy nhánh tài liệu chưa push, kit PR #132 sửa; bạn chọn chạy bằng code của kit và trả lời theo đề xuất; `ux` chạm giới hạn 5 giờ; bạn bảo làm tiếp; `ux` hỏi sáu câu, `sa` hỏi hai câu, bạn trả lời theo đề xuất; `ba` mở PR tài liệu #15, CI xanh, stage spec 7,84 USD quy đổi; bạn duyệt spec; stage plan: `sa` viết plan và ADR-0002, `ba` tạo DEMO-21, DEMO-22, DEMO-23; bạn chọn DEMO-22 ở `xhigh` và đổi `Status` thành Approved, hỏi vì sao `Status` còn Draft; lượt `ba` bị tắt vì thiếu RAM, bạn bảo chạy lại; bạn duyệt plan; `merge-gate` merge PR #15, `audit` xanh, T17 đóng (PR #133), 14,92 USD quy đổi; bạn đồng ý; bốn lỗi nhỏ sửa (PR #134); T18: `be-dev` bị `jira-guard` chặn vì token App bị cắt ở dấu chấm, kit PR #135 sửa; bạn gỡ cờ; `be-dev` xong DEMO-22 ở `xhigh`, kit PR #136 sửa việc làm tiếp Sub-task; bạn hỏi `be-dev` có bị tắc không; `fe-dev` code xong DEMO-23 nhưng gắn cờ vì Tab không cuộn khung bảng ở 320 px; bạn chọn B và gỡ cờ; `fe-dev` mở PR #16, CI xanh; `reviewer` chạm giới hạn 5 giờ, chạy lại sau khi reset; `reviewer` 3 Low, `security` không có finding; bạn chọn sửa hai Low; `be-dev` sửa và push, `reviewer` bị tắt vì thiếu RAM lần ba; bạn mở lại Claude Code với chế độ không tắt lệnh nền; `security` review phần mới ở `high`, `merge-gate` chỉ còn chờ approve (tiêu chí 5); bạn approve, `merge-gate` merge PR #16, `audit` xanh, DEMO-21 sang Ready for QA, Task DEMO-24 cho hai test còn thiếu, T18 đóng (PR #137), Epic thử 36,19 USD quy đổi; Checkpoint 4; bạn cho qua Checkpoint 4 (PR #138); T19 đóng (PR #139): sửa lỗi Sub-task mang cờ, `docs/dev-workflow.md`, README, module ghi hoàn thành, plan vào `tasks/archive/dev-workflow/`; bạn xác nhận module hoàn thành (PR #140); chờ bạn chọn việc tiếp theo |
 | 21 | `3ead2782-314d-4ae8-981b-96f6ed83a60e` | 2026-11-01 khoảng 22:50 → 2026-11-02 khoảng 01:40 | Bạn dán đoạn cuối của Phiên 20, hỏi vì sao `main` và `develop` của `ao-pilot` lệch nhau, cách xử lý, và lựa chọn 3 có giải quyết được không; Claude kiểm hai nhánh và code của `audit`: `develop` đi trước 10 là đúng GitFlow, 4 commit chỉ có trên `main` là dấu vết lối tắt sandbox và không đổi nội dung; lựa chọn 3 không giải quyết; đề xuất ghi quy tắc merge commit và back-merge từ `main` vào spec `release-workflow`; bạn chọn Pilot 1; Claude nêu phạm vi, giả định A1–A8 và ba câu hỏi (repo, space Jira, feature); bạn duyệt và chọn theo đề xuất: repo mới `ao-sample`, space mới `SMP`, Epic "Ghi chú"; Claude viết `SPEC-pilot-1.md` (nhánh `task/spec-pilot-1`); bạn chọn tạo key mới cho `ao-dev` và duyệt spec; Claude viết plan 10 task, 5 checkpoint, cùng quyết định 6 (lỗi kit giữa Epic) và 8 (Checkpoint 3 sau lượt build đầu); bạn duyệt plan; kit PR #141; T1–T2: tạo repo `ao-sample`, điểm 1 đúng một phần (NestJS 12 dùng Vitest và oxlint, `@nestjs/mau` mang 2 lỗ hổng high), điểm 2 đúng nếu dùng Vitest, điểm 3 và 4 sai (API từ chối), điểm 5 đúng kèm `MSYS_NO_PATHCONV=1` và tin cậy thư mục; Checkpoint 1: bạn duyệt sáu chỗ sửa, dùng chung scheme với `DEMO`, và duyệt trước mọi đề xuất trong Pilot 1; T1a (kit PR #142, `oxlint-disable`); T4 khung app xanh sáu lệnh; T5 bản chép kit và hai skill theo stack; commit đầu bị hook `commit-msg` từ chối vì thiếu mã Jira; bạn gửi ảnh: tùy chọn share settings lúc tạo space cần gói trả phí; Claude đổi cách: tạo space như thường rồi gán ba scheme của `DEMO` trong Space settings; bạn tạo xong `SMP` và gán ba scheme; Claude kiểm bằng API, `jira:check` còn 3 chỗ lệch của board, tạo bốn environment và đặt secret `JIRA_CI_TOKEN`; bạn tắc ở B3 (board thiếu cột); Claude đọc cấu hình board bằng API và ghi từng bước sửa cột trong Board settings; bạn gửi ảnh: board của `SMP` là board mới, Board settings không có Columns; Claude tìm tài liệu Atlassian: cột cấu hình ở More actions → Configure columns trên board; bạn gửi ảnh hộp Configure columns đã sửa đúng, chờ bấm Publish; bạn tắc ở D2 (không có Private keys); Claude đính chính: đường đúng là Credentials → Key pairs → New key, như `docs/github-apps-setup.md` đã ghi; bạn xong B–E và chọn cách (b); Claude đặt secret `AO_DEV_APP_KEY`, tạo `SMP-1`, commit đầu `6f5831d` lên `main` và `develop`; GitHub không chạy workflow cho lần push đầu, Claude chạy tay `merge-gate` (xanh) và `Deploy` (`audit` đỏ, gắn cờ `SMP-1`); Checkpoint 2 đạt, tiêu chí 1 đổi; Epic `SMP-2`; chờ bạn dọn `SMP-1` và bấm Start spec |
-| 22 | `d714399c-65d0-4f98-bbbb-720338ff6bea` | 2026-11-02 khoảng 10:50 → | Bạn dán đoạn cuối của Phiên 21 kèm ảnh panel Development của `SMP-1`, hỏi `Deploy` đỏ có đúng dự kiến không; Claude đọc run và log của `audit`: đúng dự kiến (commit đầu không qua PR), và ảnh cho thấy GitHub for Atlassian đã gắn run vào `SMP-1`; bạn dọn `SMP-1` và bấm Start spec; Claude merge kit PR #143 (T3–T6, Checkpoint 2), chạy `/ao-spec SMP-2` qua `claude -p`: `ba` viết SPEC (1,49 USD) và để lại 4 câu hỏi; Claude chuyển câu hỏi cho bạn, khuyên đồng ý cả bốn; bạn đồng ý cả bốn; Claude nối lại phiên `claude -p` với câu trả lời: `ba`, `ux`, `sa` chạy (3,36 USD), `sa` để lại 2 câu hỏi (đếm emoji, chuẩn hóa NFC và xuống dòng); Claude khuyên đồng ý cả hai; bạn đồng ý cả hai; `sa` ghi câu trả lời, `ba` mở PR tài liệu #1, nhưng GitHub không chạy CI và `ao-step` chờ 30 phút; bạn hỏi vì sao không dừng; Claude dùng nhánh và PR thử tìm ra nguyên nhân (workflow từ lần push đầu chưa được ghi nhận trigger; một push đụng `.github/workflows/` gỡ được), `CI` của PR #1 xanh; tìm thêm lỗi kit `openQuestions` bỏ sót 10 câu hỏi của `ux`; tới gate ①, Claude khuyên không thêm dòng "Đã lưu ghi chú." và gửi các bước Approve spec; bạn hỏi vì sao có hai lỗi nặng và yêu cầu sửa; Claude sửa ở kit (PR #144), chép vào `ao-sample` (Task `SMP-3`, PR #3), `/ao-review 3` Approve (1 Medium, 2 Low ở kit, sửa ở kit PR #145); bạn approve và merge PR #3, hỏi có cần chép kit vào `ao-pilot` (chưa cần); bạn đã bấm Approve spec, chọn chạy `/ao-plan` |
+| 22 | `d714399c-65d0-4f98-bbbb-720338ff6bea` | 2026-11-02 khoảng 10:50 → khoảng 20:08 | Bạn dán đoạn cuối của Phiên 21 kèm ảnh panel Development của `SMP-1`, hỏi `Deploy` đỏ có đúng dự kiến không; Claude đọc run và log của `audit`: đúng dự kiến (commit đầu không qua PR), và ảnh cho thấy GitHub for Atlassian đã gắn run vào `SMP-1`; bạn dọn `SMP-1` và bấm Start spec; Claude merge kit PR #143 (T3–T6, Checkpoint 2), chạy `/ao-spec SMP-2` qua `claude -p`: `ba` viết SPEC (1,49 USD) và để lại 4 câu hỏi; Claude chuyển câu hỏi cho bạn, khuyên đồng ý cả bốn; bạn đồng ý cả bốn; Claude nối lại phiên `claude -p` với câu trả lời: `ba`, `ux`, `sa` chạy (3,36 USD), `sa` để lại 2 câu hỏi (đếm emoji, chuẩn hóa NFC và xuống dòng); Claude khuyên đồng ý cả hai; bạn đồng ý cả hai; `sa` ghi câu trả lời, `ba` mở PR tài liệu #1, nhưng GitHub không chạy CI và `ao-step` chờ 30 phút; bạn hỏi vì sao không dừng; Claude dùng nhánh và PR thử tìm ra nguyên nhân (workflow từ lần push đầu chưa được ghi nhận trigger; một push đụng `.github/workflows/` gỡ được), `CI` của PR #1 xanh; tìm thêm lỗi kit `openQuestions` bỏ sót 10 câu hỏi của `ux`; tới gate ①, Claude khuyên không thêm dòng "Đã lưu ghi chú." và gửi các bước Approve spec; bạn hỏi vì sao có hai lỗi nặng và yêu cầu sửa; Claude sửa ở kit (PR #144), chép vào `ao-sample` (Task `SMP-3`, PR #3), `/ao-review 3` Approve (1 Medium, 2 Low ở kit, sửa ở kit PR #145); bạn approve và merge PR #3, hỏi có cần chép kit vào `ao-pilot` (chưa cần); bạn đã bấm Approve spec, chọn chạy `/ao-plan`; `sa` chạm giới hạn 5 giờ giữa lượt viết plan; bạn bảo làm tiếp; `sa` viết xong plan và ba ADR, `ba` tạo 8 item nhưng không tạo được link Blocks; phiên dừng vì Claude chạm giới hạn tuần |
+| 23 | `6d4fa505-b003-47c3-bad3-14958ad7ae83` | 2026-11-02 khoảng 22:10 → | Bạn dán đoạn cuối của Phiên 22 để làm tiếp; Claude tạo 5 link Blocks bằng token CI, tắt server spike `sa` để lại, ghi stage plan và 3 lỗi kit vào `verification.md`, gửi các bước duyệt plan (gate ②) |
 
 ---
 
@@ -9263,3 +9264,198 @@ Claude chạy bước kiểm `ao-step.mjs plan SMP-2` (`GO`: `sa` plan-write, `b
 **Claude:**
 
 Mình chạy `/ao-plan SMP-2` qua `claude -p`, kèm watcher.
+
+# Phiên 22 · Lượt 11 — 2026-11-02 khoảng 19:52 → 20:08
+
+Giữa Lượt 10 và lượt này, lượt 7 của `sa` dừng lúc 19:10 vì chạm giới hạn 5 giờ, và phiên Claude cũng dừng vì giới hạn đó. Phần trả lời dưới đây chép từ đoạn terminal bạn dán ở Phiên 23 · Lượt 1, nên mất định dạng Markdown.
+
+**Bạn:**
+
+````markdown
+I hit my usage limit while you were working, but it has reset now. Please continue from where you left off.
+````
+
+**Claude:**
+
+sa chạm giới hạn 5 giờ giữa lượt viết plan. Giới hạn đã reset, nên mình kiểm trạng thái rồi chạy lại đúng lệnh: sa sẽ làm tiếp trong cùng session.
+
+Claude kiểm cây làm việc của `ao-sample` và chạy bước kiểm `ao-step.mjs plan SMP-2`.
+
+**Claude:**
+
+Cây làm việc sạch, sa chưa commit gì. Bước kiểm trả GO: sa làm tiếp trong session cũ. Mình chạy lại /ao-plan SMP-2, kèm watcher.
+
+Claude chạy lại `/ao-plan SMP-2` qua `claude -p` ở nền và bật watcher "/ao-plan SMP-2 rerun: agent runs, PR #1 CI, stalls".
+
+**Claude:**
+
+Mình đã chạy lại /ao-plan SMP-2 lúc 19:52, ngay sau khi giới hạn 5 giờ reset lúc 19:50. Watcher đang bật và sẽ báo khi có gì thay đổi.
+
+- Lần trước dừng ở đâu: lượt 7 của sa (viết plan) dừng vì chạm giới hạn 5 giờ, sau 12,9 phút và 3,00 USD. Lúc đó sa chưa commit gì.
+- Lần này: sa làm tiếp trong cùng session, rồi tới ba tạo Story và Sub-task. Lệnh sẽ dừng ở gate ②.
+
+Watcher báo: run started: 8-sa.jsonl.
+
+**Claude:**
+
+sa đã làm tiếp trong session cũ (lượt 8).
+
+Watcher báo: CI on PR #1: 172b539 queued.
+
+**Claude:**
+
+sa đã push plan lên PR #1 (commit 172b539), và CI đã bắt đầu chạy trên PR.
+
+Watcher báo: CI on PR #1: 172b539 in_progress.
+
+**Claude:**
+
+CI trên PR #1 (172b539) đang chạy.
+
+Watcher báo: CI on PR #1: 172b539 completed success.
+
+**Claude:**
+
+CI của plan trên PR #1 (172b539) đã xanh. sa vẫn đang chạy nốt lượt 8 trước khi tới ba.
+
+Watcher báo: run done: 8 sa plan-write done, 29 turns, 8.8 min, 2.60 USD.
+
+**Claude:**
+
+sa đã viết xong plan ở lượt 8 (8,8 phút, 2,60 USD). Tính cả lượt 7 bị dừng vì giới hạn, plan tốn 5,60 USD. Lệnh đang chờ để tới lượt ba tạo Story và Sub-task.
+
+Watcher báo: run started: 9-ba.jsonl.
+
+**Claude:**
+
+ba đã bắt đầu tạo Story và Sub-task từ plan (lượt 9).
+
+Watcher báo: run done: 9 ba plan-items done, 31 turns, 6.4 min, 2.37 USD.
+
+**Claude:**
+
+ba đã tạo xong các item (lượt 9: 6,4 phút, 2,37 USD). Mình đọc kết quả để chuẩn bị các bước cho gate ②.
+
+Claude đọc lý do dừng trong `last.md`, các commit của `feature/SMP-2-spec`, cấu trúc `plan.md` và `ao-step.mjs status SMP-2`. Lệnh nền thoát 0 lúc khoảng 20:08. Phiên dừng ở đây vì Claude chạm giới hạn tuần ("You've hit your weekly limit · resets 3pm (Asia/Bangkok)"), nên lượt này không có câu trả lời cuối.
+
+# Phiên 23 · Lượt 1 — 2026-11-02 khoảng 22:10 → 22:30
+
+**Bạn:**
+
+````markdown
+Làm tiếp session id: d714399c-65d0-4f98-bbbb-720338ff6bea
+
+I hit my usage limit while you were working, but it has reset now. Please continue from where you left off.
+
+đoạn chat của session id: d714399c-65d0-4f98-bbbb-720338ff6bea
+```
+sa chạm giới hạn 5 giờ giữa lượt viết plan. Giới hạn đã reset, nên mình kiểm trạng thái rồi chạy lại đúng lệnh: sa sẽ làm tiếp trong cùng session.
+
+  Ran 2 shell commands
+
+Cây làm việc sạch, sa chưa commit gì. Bước kiểm trả GO: sa làm tiếp trong session cũ. Mình chạy lại /ao-plan SMP-2, kèm watcher.
+
+  Ran 1 shell command
+
+● Monitor(/ao-plan SMP-2 rerun: agent runs, PR #1 CI, stalls)
+Monitor started · task bbur0lq0c · timeout 1800s
+Allowed by auto mode
+
+Mình đã chạy lại /ao-plan SMP-2 lúc 19:52, ngay sau khi giới hạn 5 giờ reset lúc 19:50. Watcher đang bật và sẽ báo khi có gì thay đổi.
+
+- Lần trước dừng ở đâu: lượt 7 của sa (viết plan) dừng vì chạm giới hạn 5 giờ, sau 12,9 phút và 3,00 USD. Lúc đó sa chưa commit gì.
+- Lần này: sa làm tiếp trong cùng session, rồi tới ba tạo Story và Sub-task. Lệnh sẽ dừng ở gate ②.
+
+✻ Worked for 38s · done 7:52 PM
+
+● Monitor event: run started: 8-sa.jsonl · /ao-plan SMP-2 rerun: agent runs, PR #1 CI, stalls
+
+sa đã làm tiếp trong session cũ (lượt 8).
+
+✻ Churned for 2s · done 7:53 PM
+
+● Monitor event: CI on PR #1: 172b539 queued · /ao-plan SMP-2 rerun: agent runs, PR #1 CI, stalls
+
+sa đã push plan lên PR #1 (commit 172b539), và CI đã bắt đầu chạy trên PR.
+
+✻ Cogitated for 3s · done 8:00 PM
+
+● Monitor event: CI on PR #1: 172b539 in_progress · /ao-plan SMP-2 rerun: agent runs, PR #1 CI, stalls
+
+CI trên PR #1 (172b539) đang chạy.
+
+✻ Worked for 2s · done 8:00 PM
+
+● Monitor event: CI on PR #1: 172b539 completed success · /ao-plan SMP-2 rerun: agent runs, PR #1 CI, stalls
+
+CI của plan trên PR #1 (172b539) đã xanh. sa vẫn đang chạy nốt lượt 8 trước khi tới ba.
+
+✻ Churned for 2s · done 8:01 PM
+
+● Monitor event: run done: 8 sa plan-write done, 29 turns, 8.8 min, 2.60 USD · /ao-plan SMP-2 rerun: agent runs, PR #1 CI, stalls
+
+sa đã viết xong plan ở lượt 8 (8,8 phút, 2,60 USD). Tính cả lượt 7 bị dừng vì giới hạn, plan tốn 5,60 USD. Lệnh đang chờ để tới lượt ba tạo Story và Sub-task.
+
+✻ Sautéed for 2s · done 8:01 PM
+
+● Monitor event: run started: 9-ba.jsonl · /ao-plan SMP-2 rerun: agent runs, PR #1 CI, stalls
+
+ba đã bắt đầu tạo Story và Sub-task từ plan (lượt 9).
+
+✻ Worked for 2s · done 8:02 PM
+
+● Monitor event: run done: 9 ba plan-items done, 31 turns, 6.4 min, 2.37 USD · /ao-plan SMP-2 rerun: agent runs, PR #1 CI, stalls
+
+ba đã tạo xong các item (lượt 9: 6,4 phút, 2,37 USD). Mình đọc kết quả để chuẩn bị các bước cho gate ②.
+
+  Ran 1 shell command
+
+● Monitor "/ao-plan SMP-2 rerun: agent runs, PR #1 CI, stalls" stream ended
+
+  Searched for 1 pattern, ran 1 shell command
+
+● Background command "Rerun /ao-plan SMP-2 through claude -p in background" completed (exit code 0)
+You've hit your weekly limit · resets 3pm (Asia/Bangkok)
+/upgrade or /usage-credits to finish what you’re working on.
+
+✻ Crunched for 24s · done 8:08 PM
+
+● Remote Control disconnected — signed-in claude.ai account or organization changed on this machine — run /remote-control to start a session for the current account, or /login to switch back, then /remote-control
+
+╭───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ ✻ Bug report drafted: Waited passively 30+ min on a stalled background agent run instead of checking progress                                                 │
+│ │ - What happened: Claude ran a long background command, a claude -p "/ao-…" orchestration that waits for CI on a PR. It waited only for the completion noti… │
+│ 1 to review · 2 to send · 0 to dismiss                                                                                                                        │
+╰───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+```
+````
+
+Claude đọc trạng thái: `last.md` và `state.json` của `SMP-2`, plan, các item trên Jira (token CI), PR #1 (`CI` xanh trên `172b539`). `ba` đã tạo 8 item nhưng không tạo được 5 link Blocks, vì danh sách tool của `ba` không có tool tạo link. Claude tạo 5 link bằng token CI và đọc lại chiều của link. Claude đọc `tools/list` của server `atlassian`: có tool `addGraphContext` tạo được quan hệ "blocks". Claude tìm ra hai lệnh Bash của `sa` bị hook `block-atlassian` chặn nhầm, và một server `next dev` của spike còn chạy từ 19:09; Claude tắt server đó. Claude ghi stage plan vào `tasks/verification.md`.
+
+**Claude:**
+
+Mình đã làm tiếp từ chỗ dừng. `/ao-plan SMP-2` đã chạy xong và đang chờ bạn ở **gate ② (duyệt plan)**.
+
+**Đã xong**
+- `sa` viết plan (`docs/specs/SMP-2/plan.md`) và 3 ADR, push lên PR tài liệu #1 (commit `172b539`). `CI` xanh.
+  - ADR-0001: quy tắc của ghi chú nằm ở một file trong API, web import file đó qua alias.
+  - ADR-0002: trình duyệt gọi `/api/notes` trên web, web chuyển tiếp sang API, API không bật CORS.
+  - ADR-0003: mọi lỗi của API có cùng một dạng JSON, câu báo lỗi cố định theo mã lỗi.
+- `ba` tạo 8 item: Task `SMP-4`, `SMP-5`, `SMP-6`; Story `SMP-7` với Sub-task BE `SMP-8` và FE `SMP-9`; Story `SMP-10`, `SMP-11`.
+- Stage plan tốn 7,97 USD (`DEMO-20`: 7,09 USD), trong đó 3,00 USD là lượt bị dừng vì giới hạn 5 giờ. Cả Epic tới giờ: 15,14 USD.
+
+**Mình đã làm thay, bạn không cần làm**
+- `ba` không tạo được 5 link Blocks và nhờ bạn tạo bằng tay. Mình đã tạo bằng token CI: `SMP-4`, `SMP-5`, `SMP-6` block `SMP-7`; `SMP-7` block `SMP-10` và `SMP-11`. Mình đọc lại và thấy link đúng chiều mà `/ao-build` đọc.
+- `sa` để lại một server `next dev` (cổng 3902) chạy từ 19:09. Mình đã tắt nó.
+- Effort: chỉ `SMP-4` ở `xhigh`, vì dạng lỗi chung liên quan bảo mật. Mình giữ nguyên như `sa` đề xuất, theo duyệt trước của bạn ở Phiên 21 · Lượt 6.
+- 3 lỗi kit mới, không chặn Epic: `ba` không có tool tạo link; hook chặn nhầm lệnh Bash chỉ chứa link Jira trong chữ; agent để lại server sau khi lượt kết thúc. Mình sửa ở kit sau, rồi chép vào `ao-sample` ở T10. Tất cả đã ghi trong `tasks/verification.md`.
+
+**Việc của bạn: duyệt plan (gate ②)**
+1. (Nên đọc) Mở https://github.com/TungPH7/ao-sample/pull/1, chọn tab **Files changed**, đọc `docs/specs/SMP-2/plan.md` và 3 file trong `docs/adr/`.
+2. Mở Epic: https://phunghuutung12b4.atlassian.net/browse/SMP-2.
+3. Bấm nút trạng thái **Planning** của Epic, chỗ bạn đã bấm `Approve spec` lần trước.
+4. Chọn **Approve plan**. Epic chuyển sang **In Progress**.
+5. Từ lúc này, đừng push hay sửa gì trên PR #1. Có commit mới thì PR tài liệu thành PR thường, cần review và approve.
+6. Nhắn mình "đã duyệt".
+
+**Sau khi bạn nhắn:** mình chạy lại `/ao-plan SMP-2` qua `claude -p`. Lần này không agent nào chạy: `jira-sync` chuyển các item sang Ready, `merge-gate` merge PR #1. Mình kiểm `audit` xanh trên commit merge và panel Development của Epic, rồi đóng T7. Tiếp theo là T8: `/ao-build` lượt đầu.
