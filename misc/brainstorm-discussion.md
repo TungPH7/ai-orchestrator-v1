@@ -9894,3 +9894,69 @@ Watcher báo: run done: 4 security review done, 41 turns, 10.9 min, 3.17 USD. Cl
 **Chi phí của `SMP-4`:** 10,23 USD (build 2,47, sửa 2,36, review 5,40). Lượt `be-dev` thừa đã dừng sớm, chưa sửa gì.
 
 **Lỗi kit mới:** `/ao-fix` giao lại việc cho `be-dev` với cùng ghi chú. Mình đã sửa ở kit PR #148, có test đỏ trước. Ngoài ra `gh-guard` chặn nhầm lệnh `git archive` (chỉ đọc) của `reviewer` và `security`; lỗi này không chặn gì.
+
+# Phiên 23 · Lượt 6 — 2026-11-03 khoảng 01:25
+
+Trước tin nhắn, bạn chạy lệnh `/context` trong Claude Code (405,6k trên 1M token, 41%).
+
+**Bạn:**
+
+````markdown
+đã approve. Chuyển SMP-4 sang Ready for QA thì dừng lại, chưa làm Giai đoạn 3 (tiếp) T9 nhé. Tôi cần thảo luận 1 vài điểm.
+````
+
+Claude kiểm PR #4: còn OPEN, có approve của bạn lúc 01:25. `merge-gate` #39 đang chạy (khởi động lúc 01:25:58, sau `jira-sync` của review). Claude chạy ở nền một vòng chờ tới khi `SMP-4` sang Ready for QA.
+
+**Claude:**
+
+Bạn đã approve, nhưng PR #4 chưa merge. Mình xem `merge-gate` đã chạy sau lượt approve chưa.
+
+**Claude:**
+
+`merge-gate` #39 đang chạy, khởi động ngay sau lượt approve của bạn. Mình chờ PR merge và `SMP-4` sang Ready for QA.
+
+**Claude:**
+
+Mình sẽ báo khi `SMP-4` sang Ready for QA, rồi dừng ở đó để thảo luận với bạn, chưa làm tiếp T9.
+
+# Phiên 23 · Lượt 7 — 2026-11-03 khoảng 01:27
+
+**Bạn:**
+
+````markdown
+PR merge rồi mà
+````
+
+Claude kiểm: `merge-gate` merge PR #4 lúc 01:26 thành `750c6e1`; `SMP-4` vẫn In Review; `CI` #11 và `Deploy` #5 trên `750c6e1` đang chạy. Hợp đồng: bước `deploy-to-qa` (In Review → Ready for QA) có guard `merge-approved`, `pr-merged`, `qa-deployed`.
+
+**Claude:**
+
+Đúng, PR #4 đã merge: `merge-gate` merge lúc 01:26 thành `750c6e1`. Mình kiểm lại hơi muộn nên lúc đầu còn thấy nó chưa merge.
+
+`SMP-4` vẫn ở **In Review**, và như vậy là đúng hợp đồng. Bước `deploy-to-qa` chỉ chuyển item sang Ready for QA khi đủ ba điều kiện: PR đã được duyệt, PR đã merge, và bản mới đã lên môi trường Development (`qa-deployed`). Điều kiện cuối chỉ đạt khi `Deploy` #5 trên `750c6e1` xong. Run này đang chạy, cùng với `CI` #11.
+
+Khi `Deploy` xanh, `jira-sync` sẽ chuyển `SMP-4` sang Ready for QA. Lệnh chờ của mình sẽ báo lúc đó. Rồi mình dừng để thảo luận với bạn.
+
+Vòng chờ xong: `SMP-4` ở Ready for QA. Claude kiểm các run trên `750c6e1` và lịch sử trạng thái của `SMP-4`, đọc bước `start` trong `contract/workflows.yaml` (actor `fe-dev`, `be-dev`, `devops`), rồi ghi vào `tasks/verification.md`.
+
+**Claude:**
+
+`SMP-4` đã sang **Ready for QA** lúc 01:28, do `automation` chuyển. Mình dừng ở đây, chưa làm tiếp T9.
+
+**Trạng thái**
+- PR #4: `merge-gate` merge lúc 01:26 thành `750c6e1`.
+- Trên `750c6e1`: `CI` #11 xanh; `Deploy` #5 xanh, cả `audit` lẫn `deploy`.
+- Lịch sử của `SMP-4`:
+
+| Lúc | Ai | Đổi |
+|---|---|---|
+| 22:23 | `automation` | New → Ready |
+| 22:30 | agent (`be-dev`) | Ready → In Progress |
+| 23:42 | `automation` | In Progress → In Review |
+| 01:28 | `automation` | In Review → Ready for QA |
+
+**Một điểm bạn có thể muốn bàn:** lần Ready → In Progress do agent chuyển. Hợp đồng cho phép việc này: bước `start` có actor là `fe-dev`, `be-dev`, `devops`. Nhưng tiêu chí 5 của spec Pilot 1 ghi "không từ agent". Mình nghĩ nên sửa spec cho khớp hợp đồng; mình chưa sửa.
+
+**Chi phí:** `SMP-4` tốn 10,23 USD. Cả Pilot tới giờ khoảng 38 USD quy đổi: agent khoảng 36,3 USD, các phiên Sonnet điều phối khoảng 2 USD.
+
+Mời bạn nêu các điểm cần thảo luận.
