@@ -232,6 +232,27 @@ Chưa commit.
 
 **Cỡ:** S
 
+### [ ] T7a: Sửa lỗi kit tìm được ở stage spec của `SMP-2` (thêm giữa T7)
+
+**Mô tả:** Bạn yêu cầu sửa ngay (Phiên 22 · Lượt 7). Bốn lỗi:
+1. `openQuestions` coi mọi dòng mở đầu bằng "Không có" là "không có câu hỏi", nên bỏ sót 10 câu hỏi của `ux` ("**Không có Figma.** …"). Sửa: chỉ dòng đầu của mục, và chỉ khi dòng đó chỉ nói vậy.
+2. Câu hỏi còn mở bị bỏ qua khi PR tài liệu đã mở, và câu trả lời luôn về lượt cuối. Sửa: câu hỏi xét trước PR tài liệu; câu trả lời về đúng vai trò đã hỏi; khi PR đã mở, agent push sau khi commit.
+3. `ao-step` chờ đủ 30 phút khi CI chưa từng bắt đầu, rồi báo "CI is still running". Sửa: sau 5 phút head chưa có check run hay status nào thì dừng, với lý do riêng.
+4. `last.md` cắt câu trả lời ở 2000 ký tự mà không báo; skill viết lại câu trả lời thay vì chép nguyên văn; tài liệu chưa ghi cách trả lời khi chạy bằng `claude -p`.
+
+Sau khi kit PR merge: một PR chép kit vào `ao-sample` (plan, quyết định 6), gắn Task của `SMP`, `/ao-review`, bạn merge. Rồi chạy lại `/ao-spec SMP-2`: lệnh phải dừng với 10 câu hỏi của `ux`.
+
+**Tiêu chí chấp nhận:**
+- [ ] Mỗi lỗi có test đỏ trước khi sửa, xanh sau khi sửa; năm lệnh kiểm của kit xanh.
+- [ ] Bản sửa vào `ao-sample` qua PR chép kit.
+- [ ] `/ao-spec SMP-2` dừng với câu hỏi của `ux`; câu trả lời của bạn vào `design.md` trên PR #1.
+
+**Phụ thuộc:** T7 (đang dở ở gate ①)
+
+**File:** `lib/workflow/runs.mjs`, `lib/workflow/steps.mjs`, `lib/workflow/prompts.mjs`, `lib/workflow/runner.mjs`, `lib/workflow/facts.mjs`, `lib/tracker/facts.mjs`, `kit/.claude/skills/ao-spec/SKILL.md`, `kit/.claude/skills/ao-plan/SKILL.md`, `docs/dev-workflow.md`, test
+
+**Cỡ:** S
+
 ### [ ] T8: `/ao-build` lượt đầu [bạn]
 
 **Mô tả:** Claude chạy `/ao-build` cho item đầu tiên theo plan, thường là Sub-task BE của Story đầu. Câu hỏi hay cờ của agent được chuyển cho bạn. Lệnh dừng khi Sub-task xong và đã push.
