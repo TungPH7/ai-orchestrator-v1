@@ -9773,3 +9773,124 @@ Mình khuyên B. Cách này đủ để thử cả `be-dev` lẫn `fe-dev` trên
 - **C. Chỉ SMP-4**: Sửa, review, bạn approve và merge PR #4. Đủ sáu lệnh /ao-*, nhưng chưa thử fe-dev và Story có Sub-task. Ước thêm 6–10 USD.
 
 **Bạn chọn:** C. Chỉ SMP-4.
+
+Claude ghi lựa chọn vào `SPEC-pilot-1.md` (tiêu chí 3), `tasks/plan.md` và `tasks/todo.md` (Checkpoint 3, T9). Claude viết ghi chú cho `be-dev` bằng tiếng Anh, toàn ký tự ASCII, rồi chạy `/ao-fix 4 <ghi chú>` qua `claude -p` ở nền, với một watcher.
+
+**Claude:**
+
+Mình đã ghi lựa chọn C vào kit: tiêu chí 3 của spec giờ chỉ cần `SMP-4` sang Ready for QA, còn 5 item kia ở lại Ready, ngoài Pilot 1.
+
+`/ao-fix 4` đang chạy qua `claude -p`, theo thứ tự:
+1. `be-dev` sửa hai việc: cho CI chạy integration test của API, và đổi tên hằng mà gitleaks báo nhầm rồi viết lại commit.
+2. Khi CI xanh, `reviewer` rồi `security` review PR #4.
+
+Watcher báo mỗi khi một lượt bắt đầu hay xong, khi PR có commit mới, khi CI đổi trạng thái, và khi 10 phút không có log mới. Lệnh dừng ở gate ③. Lúc đó mình gửi bạn các bước approve PR #4.
+
+Watcher báo: run started: `2-be-dev.jsonl`. Claude so `.ai/runs/SMP-4/note.md` với ghi chú đã viết: giống hệt.
+
+**Claude:**
+
+`be-dev` đã bắt đầu lượt sửa (lượt 2 của `SMP-4`). Ghi chú nó nhận được giống hệt ghi chú mình đã viết.
+
+# Phiên 23 · Lượt 5 — 2026-11-02 khoảng 23:38
+
+**Bạn:**
+
+Một ảnh, không kèm chữ: `misc/images/phien-23-luot-5-anh-1.png` (ảnh chụp dòng báo "be-dev đã bắt đầu lượt sửa (lượt 2 của SMP-4). Ghi chú nó nhận được giống hệt ghi chú mình đã viết.").
+
+Watcher báo: `jira-sync` #34 và `CI` #10 trên `467b5d0`; `jira-sync` #34 xanh; `CI` #10 xanh.
+
+**Claude:**
+
+Bạn gửi ảnh chụp dòng báo của mình mà không kèm chữ, nên mình giải thích dòng đó và báo luôn tiến độ. Nếu bạn muốn hỏi điều khác, cứ nhắn.
+
+**"Ghi chú" trong dòng đó là gì:** đó là hai việc mình giao cho `be-dev` qua `/ao-fix 4`:
+1. Cho CI chạy integration test của API, để CI đỏ khi `app.e2e-spec.ts` đỏ.
+2. Đổi tên hằng `SECRET` mà gitleaks báo nhầm, rồi viết lại commit của nhánh.
+
+Mình viết ghi chú bằng tiếng Anh không dấu, vì chữ tiếng Việt truyền qua Git Bash có thể bị lỗi. "Giống hệt" nghĩa là phiên `claude -p` đã chép ghi chú vào `.ai/runs/SMP-4/note.md` đúng nguyên văn, không tự viết lại. Lần trước phiên này từng viết lại câu trả lời của bạn; đó là lỗi kit đã sửa ở T7a.
+
+**Tiến độ:** `be-dev` đã push head mới `467b5d0` lên PR #4, và `CI` #10 trên commit này đã **xanh**. Vậy cả hai lỗi `build-test` và `secrets` đã hết. Giờ đang chờ `be-dev` xong lượt, rồi tới `reviewer` và `security`.
+
+Watcher báo: run done: 2 be-dev fix done, 54 turns, 8.4 min, 2.36 USD. Claude kiểm nhánh: ba commit, không commit nào còn `secret-fragment`.
+
+**Claude:**
+
+`be-dev` đã xong lượt sửa (54 turn, 8,4 phút, 2,36 USD). Mình đã kiểm nhánh:
+- Hai commit cũ đã được viết lại (`e37c496`, `f3e7d43`). Không commit nào còn chuỗi `secret-fragment`.
+- Commit mới `467b5d0` sửa `apps/api/vitest.config.ts`, để `test:coverage` chạy cả integration test.
+- `CI` trên `467b5d0` xanh.
+
+Tiếp theo `reviewer` rồi `security` sẽ review PR #4.
+
+**Claude:**
+
+`reviewer` đã bắt đầu review PR #4.
+
+**Claude:**
+
+`jira-sync` #36 đã vào hàng đợi trên PR #4, có lẽ vì `reviewer` vừa đăng báo cáo. Mình chờ lượt `reviewer` xong.
+
+Watcher báo: run started: `4-be-dev.jsonl`; run done: 3 reviewer review done, 38 turns, 7.3 min, 2.23 USD. Claude đọc báo cáo của `reviewer` (Approve, 2 Low).
+
+**Claude:**
+
+`reviewer` kết luận **Approve**, chỉ có 2 Low. Nhưng ngay sau đó `be-dev` lại chạy thêm lượt 4, điều mình không chờ. Mình đang xem `be-dev` được giao gì ở lượt này.
+
+Claude đọc `state.json` và `decideFix` trong `lib/workflow/steps.mjs`.
+
+**Claude:**
+
+Mình tìm ra một lỗi của kit trong `decideFix`. Sau lượt `reviewer`, lệnh lại dùng ghi chú cũ và giao việc lần nữa cho `be-dev`: nó chỉ xem lượt cuối của lệnh `fix` (lúc này là lượt review), không xem lượt sửa cuối. Nếu `be-dev` không push gì mới, vòng này lặp tới giới hạn 8 lượt và tốn khoảng 2 USD mỗi lượt. Mình dừng lệnh ngay.
+
+Claude dừng `ao-step`, agent `be-dev` và phiên `claude -p` bằng `taskkill /T`. Lượt 4 mới gọi 8 tool, chưa sửa gì; head vẫn là `467b5d0`. Bước kiểm `ao-step.mjs review 4`: `GO`, chỉ `security` ở max.
+
+**Claude:**
+
+Đã dừng hết: `be-dev` lượt 4 chưa sửa hay push gì (head vẫn là `467b5d0`), và không còn tiến trình nào chạy. Phần còn thiếu chỉ là báo cáo của `security`, nên mình chạy `/ao-review 4` thay cho `/ao-fix`. Lệnh này không đi qua chỗ lỗi trên.
+
+Claude chạy `/ao-review 4` qua `claude -p` ở nền, với một watcher, rồi sửa lỗi ở kit: test đỏ trước, `noteKey` trong `steps.mjs`, `note` trong `runner.mjs`, năm lệnh kiểm xanh (792 test), kit PR #148 merge.
+
+**Claude:**
+
+Trong lúc `security` chạy (khoảng 15 phút), mình sửa lỗi `decideFix` ở kit, viết test đỏ trước.
+
+**Claude:**
+
+Kit PR #148 đã merge (sửa lỗi `/ao-fix` giao lại việc cho `be-dev` với cùng ghi chú). `security` vẫn đang review PR #4. Mình chờ kết quả.
+
+**Claude:**
+
+`jira-sync` #37 đã vào hàng đợi trên PR #4, có lẽ vì `security` vừa đăng báo cáo. Mình chờ lượt `security` xong.
+
+Watcher báo: run done: 4 security review done, 41 turns, 10.9 min, 3.17 USD. Claude đọc báo cáo (không có finding) và chạy `merge-gate.mjs --dry-run`: `Waiting #4: approval on head 467b5d0`. Claude ghi T9 vào `tasks/verification.md`.
+
+**Claude:**
+
+`security` không có finding nào trên PR #4. `merge-gate` chỉ còn chờ approve của bạn ("Waiting #4: approval on head 467b5d0"). Mình ghi kết quả rồi gửi các bước.
+
+**Claude:**
+
+**Cần bạn approve PR #4 (gate ③).** Lần này bạn không cần tự merge: PR không chạm đường dẫn được bảo vệ, nên `merge-gate` sẽ tự merge sau khi bạn approve.
+
+**Kết quả review**
+- `reviewer`: Approve, 2 Low:
+  - Một integration test đặt ngoài thư mục `test/` sẽ không chạy trong CI.
+  - Một chú thích trong filter dễ làm người đọc hiểu sai về việc log stack.
+
+  Mình không sửa hai Low này trong PR, vì theo cách C, một vòng sửa và review nữa tốn khoảng 5–7 USD. Mình đã ghi lại để làm khi Epic chạy tiếp.
+- `security`: không có finding nào.
+- `CI` trên head `467b5d0` xanh cả 5 check.
+
+**Việc của bạn**
+1. Mở https://github.com/TungPH7/ao-sample/pull/4.
+2. (Nên đọc) Tab **Files changed** có 6 file, 502 dòng thêm. Tab **Conversation** có hai báo cáo của `tungph7-ao-review`.
+3. Ở tab **Files changed**, bấm **Review changes**, chọn **Approve**, rồi bấm **Submit review**.
+4. **Đừng bấm merge.** `merge-gate` tự merge trong vài phút.
+5. Nhắn mình "đã approve".
+
+**Sau khi bạn nhắn**, mình kiểm `merge-gate` đã merge, `audit` xanh trên commit merge, và `SMP-4` sang **Ready for QA**. Sau đó mình kiểm các tiêu chí của T9 rồi tới Checkpoint 4.
+
+**Chi phí của `SMP-4`:** 10,23 USD (build 2,47, sửa 2,36, review 5,40). Lượt `be-dev` thừa đã dừng sớm, chưa sửa gì.
+
+**Lỗi kit mới:** `/ao-fix` giao lại việc cho `be-dev` với cùng ghi chú. Mình đã sửa ở kit PR #148, có test đỏ trước. Ngoài ra `gh-guard` chặn nhầm lệnh `git archive` (chỉ đọc) của `reviewer` và `security`; lỗi này không chặn gì.
