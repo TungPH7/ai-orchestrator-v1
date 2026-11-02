@@ -4,7 +4,7 @@ import { join } from 'node:path';
 import { readRoster } from '../../lib/agents/roster.mjs';
 import { readContract } from '../../lib/contract.mjs';
 import { readGates } from '../../lib/quality/gates.mjs';
-import { answersPrompt, resumePrompt } from '../../lib/workflow/prompts.mjs';
+import { answersPrompt, packNote, resumePrompt } from '../../lib/workflow/prompts.mjs';
 import { agentCommand, formatDecision, lastReport, runGo } from '../../lib/workflow/runner.mjs';
 import { decideStep } from '../../lib/workflow/steps.mjs';
 import { CONTRACT_DIR, ROOT } from '../helpers/kit.mjs';
@@ -86,7 +86,7 @@ function harness(world, effects, { outcomes = [], texts = [] } = {}) {
     last,
     checkouts,
     run: (more = {}) =>
-      runGo({ command: 'spec', arg: 'DEMO-20', options: { ...options, ...more.options }, gather: more.gather, decide: more.decide, agent, git: async (c) => (checkouts.push(c), { ok: true }), dispatch: async () => {}, store, sleep: async (ms) => (clock += ms), now: () => clock, limits: { maxRuns: 8, ciWaitMs: 120000, syncWaitMs: 60000, pollMs: 30000, ...more.limits } }),
+      runGo({ command: 'spec', arg: 'DEMO-20', options: { ...options, ...more.options }, gather: more.gather, decide: more.decide, pack: more.pack, agent, git: async (c) => (checkouts.push(c), { ok: true }), dispatch: async () => {}, store, sleep: async (ms) => (clock += ms), now: () => clock, limits: { maxRuns: 8, ciWaitMs: 120000, syncWaitMs: 60000, pollMs: 30000, ...more.limits } }),
   };
 }
 const SPEC_EFFECTS = {
@@ -132,6 +132,29 @@ test('a fix run keeps in state.json the head it started from and which note it w
   await h.run({ gather, decide });
   const [run] = h.states[0].runs;
   assert.deepEqual({ purpose: run.purpose, head: run.head, note: run.note }, { purpose: 'fix', head: 'd1d2d3d', note: '0123456789ab' });
+});
+
+// Pilot 1, review cost (option 2): the review agents start from a pack the runner writes, not from many fetches.
+test('a review run starts from the context pack the runner asks for; a build run does not', async () => {
+  const one = (run) => { let decided = 0; return () => (decided++ === 0 ? { go: true, runs: [run], lines: [] } : { go: false, reason: 'nothing left', next: '-', lines: [] }); };
+  const review = { role: 'reviewer', key: 'DEMO-20', effort: 'xhigh', purpose: 'review', prompt: 'Review PR #15.' };
+  const packed = [];
+  const pack = async (run, facts) => (packed.push([run.purpose, Boolean(facts)]), '.ai/reviews/15-context.md');
+  const first = specWorld();
+  const h = harness(first.world, {});
+  await h.run({ gather: first.gather, decide: one(review), pack });
+  assert.deepEqual(packed, [['review', true]]);
+  assert.equal(h.calls[0].prompt, `Review PR #15.\n\n${packNote('.ai/reviews/15-context.md')}`);
+  assert.match(packNote('.ai/reviews/15-context.md'), /^The orchestrator wrote a context pack for this review: \.ai\/reviews\/15-context\.md\. .*list in your report what you read beyond it and why\.$/);
+  const second = specWorld();
+  const built = harness(second.world, {});
+  await built.run({ gather: second.gather, decide: one({ ...review, role: 'fe-dev', purpose: 'build', prompt: 'Build DEMO-23.' }), pack });
+  assert.equal(built.calls[0].prompt, 'Build DEMO-23.');
+  assert.equal(packed.length, 1, 'no pack for a build');
+  const third = specWorld();
+  const none = harness(third.world, {});
+  await none.run({ gather: third.gather, decide: one(review), pack: async () => null });
+  assert.equal(none.calls[0].prompt, 'Review PR #15.', 'without a pack the prompt is the plain one');
 });
 
 test('an open question stops the runs; --answers resumes the session that asked, once', async () => {
