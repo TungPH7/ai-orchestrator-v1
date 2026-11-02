@@ -10113,3 +10113,79 @@ Ngoài ra còn hai điểm:
 **Mình khuyên:** làm A ngay, vì không đổi hợp đồng. Sau đó làm C khi sửa kit, vì càng nhiều dự án dùng kit thì càng tiết kiệm. B chỉ cần nếu chưa làm C. Cách 1 (cache 5 phút) áp dụng cho cả PR chép.
 
 Sau khi bạn trả lời điểm này, mình đo thật như đã nói: chạy lại `reviewer` trên PR #4 với cách 1 và 2, rồi so chi phí và finding với lần trước.
+
+# Phiên 23 · Lượt 11 — 2026-11-03 khoảng 02:00 → 02:15
+
+**Bạn:**
+
+````markdown
+Chọn A, làm tiếp cách 1, 2 đi nhé
+````
+
+Claude đọc cách runner khởi chạy agent (`agentCommand` trong `runner.mjs`: `ao-agent.mjs`, `CLAUDE_CODE_EFFORT_LEVEL`) và prompt gốc của lượt review ("Review PR #4."). Claude viết script `build-review-pack.mjs` trong scratchpad, dựng `.ai/reviews/4-context.md` cho PR #4 (1.171 dòng), chạy thử khô `ao-agent.mjs reviewer --ao-dry-run`, rồi chạy `reviewer` thật với `CLAUDE_CODE_PROMPT_CACHE_TTL=5m` và một prompt bảo bắt đầu từ gói, chỉ lưu báo cáo vào `.ai/reviews/4-reviewer-exp.md`. Có một watcher theo dõi log. Claude so số liệu và finding với lượt 3, rồi ghi phép đo vào `tasks/verification.md`.
+
+**Claude:**
+
+Bạn chọn A (gom bản sửa kit vào một PR chép), và bảo làm tiếp phép đo của cách 1 và 2. Mình xem runner khởi chạy agent thế nào để dựng lại đúng điều kiện cũ.
+
+**Claude:**
+
+Prompt gốc của lượt review chỉ là "Review PR #4.". Giờ mình viết script dựng gói bối cảnh (cách 2) cho PR #4.
+
+**Claude:**
+
+Gói bối cảnh có 1.171 dòng, khoảng 54 nghìn ký tự: PR, item Jira, đoạn plan của Task 1, mục lỗi chung của API Contract, ADR-0003, NFR của SPEC, mẫu báo cáo, file sửa và toàn bộ diff. Mình chạy thử khô (`--ao-dry-run`) trước để chắc agent khởi động đúng.
+
+**Claude:**
+
+Lệnh khởi chạy đúng như runner dùng. Giờ mình chạy `reviewer` thật trên PR #4 với cách 1 (cache 5 phút) và cách 2 (gói bối cảnh). Báo cáo chỉ lưu vào file, không đăng lên GitHub.
+
+**Claude:**
+
+Lượt thử đang chạy. Watcher báo khi có kết quả, hoặc khi log đứng yên 5 phút. Lượt cũ (lượt 3) tốn 7,3 phút và 2,23 USD, có 2 Low. Khi xong, mình so ba thứ với lượt đó: chi phí, thời gian và finding.
+
+**Claude:**
+
+Kết quả lượt thử: 10 turn, 4,1 phút, **0,95 USD**, so với lượt cũ 38 turn, 7,3 phút, 2,23 USD. Cache ghi toàn bộ theo loại 5 phút. Giờ mình so finding của hai lượt.
+
+**Claude:**
+
+Mình đã có đủ số liệu để so. Mình ghi phép đo vào `verification.md` trước, rồi báo bạn.
+
+**Claude:**
+
+Đã đo xong. Mình chạy lại `reviewer` trên PR #4 với cách 1 (cache 5 phút) và cách 2 (gói bối cảnh dựng sẵn). Báo cáo chỉ lưu vào file, không đăng lên GitHub.
+
+| | Lượt cũ | Lượt thử | Thay đổi |
+|---|---|---|---|
+| Turn | 38 | 10 | −74% |
+| Thời gian | 7,3 phút | 4,1 phút | −44% |
+| Chi phí | 2,23 USD | 0,95 USD | −57% |
+| Finding | 2 Low | 1 Medium, 3 Low | tìm lại cả 2 Low cũ, thêm 2 Low mới |
+
+**Mỗi cách góp bao nhiêu**
+- Cách 2 (gói bối cảnh): 2,23 → 1,18 USD. Agent không phải tự kéo PR, Jira, SPEC và plan qua nhiều lượt gọi, nên bối cảnh cuối nhỏ hơn (76 nghìn so với 124 nghìn token). Đọc cache giảm từ 2,66 triệu xuống 0,29 triệu token.
+- Cách 1 (cache 5 phút): 1,18 → 0,95 USD. Mọi lần ghi cache đều là loại 5 phút; giá suy ra là 5 USD cho 1 triệu token, so với 8 USD của loại 1 giờ.
+- Thời gian suy nghĩ không đổi (3,0 phút cả hai lần), vì nó do effort quyết định. Phần đó là việc của cách 3.
+
+**Chất lượng:** lượt thử tìm lại cả hai Low của lượt cũ. Chuyện log stack chứa `message` của lỗi được nâng lên Medium. Lượt thử còn thêm 2 Low mới: filter không kiểm header đã gửi chưa, và tên biến `code` bị che. Agent tự đọc thêm 3 thứ ngoài gói và ghi rõ lý do.
+
+**Hai lưu ý:**
+- Lượt thử chạy ít thực nghiệm hơn: 1 lệnh chạy test, so với 11 lệnh dựng thử ở lượt cũ. Lần này không mất finding nào, nhưng ở PR khác thì có thể mất.
+- [Inference] Đây mới là một mẫu. Độ dao động giữa hai lượt của cùng một agent thì chưa đo.
+
+Kết quả đã ghi vào `tasks/verification.md`.
+
+**Đề xuất đưa vào kit** (mỗi việc một kit PR có test, rồi chép vào `ao-sample` trong PR gom ở T10, theo cách A):
+1. **Cách 1 (rất nhỏ):** `runner.mjs` đặt `CLAUDE_CODE_PROMPT_CACHE_TTL=5m` cho mọi lượt agent. Phiên Sonnet điều phối thì giữ cache 1 giờ, vì nó ngồi chờ lệnh nền hàng chục phút.
+2. **Cách 3 (nhỏ):** `ao-step` chọn effort của `security` theo luật trong `quality/gates.yaml`:
+   - `max` khi diff chạm protected path, manifest dependency, hay code nhận input hoặc xác thực;
+   - `high` cho các trường hợp còn lại;
+   - nhãn `ao-effort-*` của item vẫn thắng.
+3. **Cách 2 (vừa):**
+   - `ao-step` dựng gói bối cảnh trước lượt `reviewer` và `security`, từ dữ liệu nó đã đọc;
+   - hướng dẫn của hai agent đổi thành: bắt đầu từ gói, đọc thêm khi cần, ghi lại đã đọc gì.
+
+   Phần khó là tìm đúng đoạn plan và mục SPEC của từng item một cách tất định. Mình sẽ đọc cách `ba` ghi liên kết giữa item và plan trước khi viết code.
+
+Mình làm theo thứ tự 1 → 3 → 2. Bạn muốn mình bắt đầu luôn, hay còn điểm nào cần bàn trước?
