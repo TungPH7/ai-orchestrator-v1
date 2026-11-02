@@ -9547,3 +9547,148 @@ Cảm ơn bạn. Ảnh cho thấy **điểm 6 đạt**:
 - Mình đã ghi kết quả và hai ảnh vào kit, trên nhánh `task/t8-first-build`.
 
 Ảnh cũng cho thấy `SMP-4` đã sang In Progress, tức `be-dev` đang làm. Mình sẽ báo khi PR mở hoặc khi lượt này xong.
+
+Watcher báo: PR #4 (`feature/SMP-4-api-error-shape`) OPEN.
+
+**Claude:**
+
+`be-dev` đã mở PR #4 (`feature/SMP-4-api-error-shape`). CI phải chạy trên PR này trong khoảng 2 phút; nếu không thấy, watcher sẽ báo cho mình.
+
+Watcher báo: `jira-sync` #23 và `CI` #7 trên `cafdf4d` in_progress.
+
+**Claude:**
+
+`CI` #7 và `jira-sync` #23 đã bắt đầu chạy trên PR #4 (head `cafdf4d`).
+
+Watcher báo: run done: 1 be-dev build done, 52 turns, 10.0 min, 2.47 USD.
+
+**Claude:**
+
+`be-dev` đã xong lượt 1 cho `SMP-4`: 52 turn, 10,0 phút, 2,47 USD. Lệnh đang chờ `CI` trên PR #4 chạy xong.
+
+Watcher báo: `jira-sync` #23 xanh.
+
+**Claude:**
+
+`jira-sync` #23 trên PR #4 đã xanh. Còn chờ `CI` #7.
+
+Lệnh `claude -p` thoát 0. Claude đọc `last.md` của `SMP-4`: `be-dev` gắn cờ Needs you vì mẫu loại file test của kit không khớp `app.e2e-spec.ts`. Claude xem các check của PR #4 và `coverage.exclude` của kit.
+
+**Claude:**
+
+`be-dev` đã xong `SMP-4` và mở PR #4, nhưng đã gắn cờ Needs you: theo `be-dev`, bước coverage của CI sẽ đỏ vì mẫu loại file test trong kit không khớp `app.e2e-spec.ts`. Mình đang kiểm kết quả CI và file cấu hình của kit.
+
+Watcher báo: `CI` #7 trên `cafdf4d` failure.
+
+**Claude:**
+
+`CI` đỏ ở hai job: `build-test` (đúng như `be-dev` nói) và `secrets`. Job `secrets` đỏ thì `be-dev` không nhắc tới, nên mình đọc log của cả hai job.
+
+Claude đọc log: gitleaks "leaks found: 1"; coverage 100% (27/27) nhưng `app.e2e-spec.ts is not in any lcov file`. Claude tìm trong diff chuỗi có dạng secret.
+
+**Claude:**
+
+Job `secrets` đỏ vì gitleaks bắt hằng số `SECRET = 'secret-fragment-7f3a9c'` trong test. Đây là báo nhầm: chuỗi đó chỉ là dữ liệu thử để chứng minh lỗi không lộ thân yêu cầu. Mình đang xem kit hướng dẫn xử lý ca này thế nào.
+
+Claude đọc `docs/quality-gates.md` (secret: viết lại commit rồi force push; `gitleaks:allow` chỉ khi chắc chắn không phải secret, kèm `reason:`).
+
+**Claude:**
+
+Hai lỗi, mình đã rõ nguyên nhân:
+- `build-test` đỏ do lỗi của kit: mẫu loại trừ coverage không khớp `*.e2e-spec.ts`, kiểu đặt tên mặc định của NestJS. Lỗi này chặn Epic, nên theo quyết định 6 mình sửa ở kit rồi chép vào `ao-sample`.
+- `secrets` đỏ là báo nhầm: `be-dev` cần đổi tên hằng số trong test và viết lại commit.
+
+Mình bắt đầu sửa ở kit.
+
+Claude viết hai test đỏ trước (`tests/quality/coverage.test.mjs`, `tests/quality/policy.test.mjs`), thêm `**/*.e2e-spec.*` vào `coverage.exclude` của `quality/gates.yaml`, `SPEC-quality-gates.md` và `TEST_FILE` của `lib/quality/suppressions.mjs`. Năm lệnh kiểm xanh (790 test). Kit PR #147 merge sau khi CI xanh.
+
+**Claude:**
+
+Năm lệnh kiểm của kit xanh (790 test). Mình commit, mở kit PR rồi merge.
+
+**Claude:**
+
+Kit PR #147 đã merge. Giờ mình chép bản sửa vào `ao-sample`. Trước hết mình so bản chép kit trong `ao-sample` với kit hiện tại.
+
+**Claude:**
+
+Bản chép trong `ao-sample` lệch kit ở 4 file: 2 file của bản sửa vừa rồi, và 2 file của kit PR #145 (T7b), chưa chép. Mình chép cả 4 file trong cùng một PR, vì diff nhỏ và sau đó bản chép giống hệt kit. Giờ mình đọc lại cách chép của T7a (`SMP-3`).
+
+Claude tạo Task `SMP-12` bằng token CI, chép 4 file, commit `c2b772d` bằng bot `ao-dev`, push, và `ao-dev` mở PR #5.
+
+**Claude:**
+
+Đã mở PR #5 (`SMP-12`) chép 4 file của kit vào `ao-sample`. Giờ mình chạy `/ao-review 5` (`reviewer` rồi `security`) kèm watcher; PR này chạm đường dẫn được bảo vệ nên sau đó bạn sẽ là người merge.
+
+**Claude:**
+
+Mình đang chờ `CI` trên PR #5 chạy xong, rồi mới chạy `/ao-review 5`. Sẽ báo bạn khi có kết quả.
+
+**Claude:**
+
+`CI` trên PR #5 xanh cả 5 check. Mình đã chạy `/ao-review 5` qua `claude -p`: `reviewer` (xhigh) chạy trước, rồi tới `security` (max). Watcher báo mỗi khi một lượt bắt đầu hay xong, và báo nếu 10 phút không thấy log mới.
+
+**Claude:**
+
+Watcher đã bắt được PR #5: `CI` #8 và `jira-sync` #25 trên `c2b772d` đều xanh. Còn chờ lượt `reviewer` bắt đầu.
+
+**Claude:**
+
+`reviewer` đã bắt đầu review PR #5.
+
+Bạn chạy lệnh `/upgrade` trong Claude Code (gói trả qua App Store; lệnh chỉ in hướng dẫn).
+
+**Claude:**
+
+`jira-sync` #27 đang chạy trên PR #5, có lẽ vì `reviewer` vừa đăng báo cáo. `reviewer` vẫn đang chạy.
+
+**Claude:**
+
+`reviewer` đã xong (36 turn, 6,4 phút, 1,59 USD). `security` bắt đầu lượt của mình ở effort `max`.
+
+**Claude:**
+
+`jira-sync` #27 xanh. `security` vẫn đang review PR #5.
+
+Watcher báo: run done: 2 security review done, 53 turns, 14.3 min, 3.91 USD. Claude đọc hai báo cáo trên PR #5 và ghi T8 vào `tasks/verification.md`.
+
+**Claude:**
+
+Cả hai báo cáo đã có trên PR #5. Không có finding Critical hay High, và `reviewer` kết luận PR sẵn sàng để bạn duyệt. Mình đọc nốt phần "Outside the diff" của `security`.
+
+**Claude:**
+
+Mình đã ghi kết quả T8 vào kit. Giờ mình soạn các bước để bạn duyệt và merge PR #5.
+
+**Claude:**
+
+**Cần bạn duyệt và merge PR #5.** PR này chép bản sửa kit vào `ao-sample`. Nó chạm đường dẫn được bảo vệ, nên `merge-gate` không tự merge.
+
+**Chuyện gì đã xảy ra**
+- `be-dev` xong `SMP-4` (dạng lỗi chung của API) trong 10 phút, 2,47 USD. Ở máy, sáu lệnh kiểm đều xanh. PR #4 đã mở.
+- `CI` trên PR #4 đỏ ở hai job:
+  - `build-test`: lỗi của kit. Mẫu loại trừ coverage không khớp `app.e2e-spec.ts`, kiểu đặt tên integration test của NestJS. `be-dev` đã tự thấy lỗi này và gắn cờ Needs you, vì agent không được sửa kit.
+  - `secrets`: gitleaks báo nhầm hằng `SECRET = 'secret-fragment-7f3a9c'` trong test.
+- Mình sửa kit (kit PR #147, có test đỏ trước) và chép vào `ao-sample` qua PR #5 (Task `SMP-12`). PR #5 cũng chép luôn 2 file của kit PR #145 chưa chép, nên bản chép giờ giống hệt kit.
+- Review PR #5 (5,51 USD): không có Critical hay High.
+  - `reviewer` tìm ra một chỗ hở thật: **CI không chạy integration test của API**, nên nếu `app.e2e-spec.ts` đỏ thì CI vẫn xanh. `security` cũng nêu điều này.
+  - Còn 1 Medium, 1 Low ở code runner, và 1 chỗ hở cũ ở bước `policy` (tên file có dấu như `ghi-chú.ts`). Mình sửa ở kit sau, chép vào `ao-sample` ở T10.
+
+**Việc của bạn: duyệt và merge PR #5**
+1. Mở https://github.com/TungPH7/ao-sample/pull/5.
+2. (Nên đọc) Tab **Files changed** có 4 file, 9 dòng thêm, 7 dòng xóa. Tab **Conversation** có hai báo cáo của `tungph7-ao-review`.
+3. Ở tab **Files changed**, bấm **Review changes** (góc trên bên phải), chọn **Approve**, rồi bấm **Submit review**.
+4. Về tab **Conversation**, kéo xuống cuối, bấm **Squash and merge**, rồi **Confirm squash and merge**.
+5. Nhắn mình "đã merge".
+
+**Sau khi bạn nhắn**, mình làm tiếp, không cần bạn bấm gì:
+1. Kiểm `Deploy` (gồm `audit`) xanh trên commit merge.
+2. Gỡ cờ và nhãn `needs-you` trên `SMP-4` bằng token CI, kèm comment lý do.
+3. Chạy `/ao-fix 4` với ghi chú cho `be-dev`:
+   - cho `test:coverage` của API chạy cả integration test, để CI bắt được khi chúng đỏ;
+   - đổi tên hằng `SECRET`, viết lại commit của nhánh rồi force push.
+
+   Ước 2–4 USD.
+4. Khi `CI` trên PR #4 xanh, T8 xong. Mình dừng ở **Checkpoint 3** để bạn xem code, test và chi phí.
+
+Chi phí từ đầu Epic tới giờ: 15,14 USD (spec, plan) + 2,47 USD (build) + 5,51 USD (review bản chép kit) = 23,12 USD.
