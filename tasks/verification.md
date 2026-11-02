@@ -347,3 +347,29 @@ Stage plan tốn 7,97 USD (`DEMO-20`: 7,09 USD), trong đó lượt 7 bị dừn
 - Sáu lệnh ở máy trên `cafdf4d` (Claude chạy, `npm ci` trước): lint, typecheck, `test:coverage` (API 26 test, web 1 test), `test:e2e -w api` (4 test), build, `test:e2e` (2 test) đều thoát 0. Không còn tiến trình nào sau đó.
 - `git log origin/develop..feature/SMP-4-api-error-shape`: `33c75f7`, `cafdf4d`, tác giả `tungph7-ao-dev[bot]`, header có `(SMP-4)`.
 - `/ao-fix 4` chưa chạy: bước kiểm cho thấy lệnh chạy `be-dev` rồi `reviewer` và `security`, tức việc của T9, nên Claude dừng ở Checkpoint 3 trước. Ghi chú cho `be-dev` đã viết sẵn ở `.ai/runs/SMP-4/note.md` của `ao-sample`.
+
+## Checkpoint 3 (2026-11-02, Phiên 23 · Lượt 4)
+
+Bạn xem PR #4 và bảng chi phí (khoảng 30 USD tới lúc đó), rồi chọn cách C: chỉ làm tiếp `SMP-4`. Làm hết 6 item ước thêm 50–70 USD, so với mức ước 30–45 USD cho cả Epic. Tiêu chí 3 của spec mục 9 và T9 đã đổi theo. `SMP-5`, `SMP-6`, `SMP-7`, `SMP-10`, `SMP-11` ở lại Ready, ngoài Pilot 1.
+
+## T9: `/ao-fix`, `/ao-review` cho `SMP-4` (2026-11-02, 2026-11-03)
+
+- **`/ao-fix 4 <ghi chú>`** (23:35–23:52): `MSYS_NO_PATHCONV=1 claude -p --model sonnet --output-format stream-json --verbose "/ao-fix 4 $(cat fix-note.txt)"`. Ghi chú viết bằng tiếng Anh, toàn ký tự ASCII, để Git Bash không làm hỏng chữ khi truyền đối số. Phiên Sonnet ghi `.ai/runs/SMP-4/note.md` giống hệt ghi chú.
+  - Lượt 2, `be-dev`: viết lại hai commit (`e37c496`, `f3e7d43`, hằng `BODY_MARKER`), thêm `467b5d0` (`vitest.config.ts` có hai project, `test:coverage` của API chạy cả `test/**/*.e2e-spec.ts`), rồi force push. Không commit nào của nhánh còn chuỗi `secret-fragment`. `CI` #10 trên `467b5d0` xanh cả 5 check.
+  - Lượt 3, `reviewer`: Approve, 2 Low. (1) Project `integration` chỉ gom `test/**/*.e2e-spec.ts`, còn `test:e2e` gom `**/*.e2e-spec.ts`, nên một integration test đặt ngoài `test/` chạy ở máy nhưng CI bỏ qua. (2) Chú thích ở `api-exception.filter.ts:84-85` dễ làm người đọc hiểu là log stack của `Error` luôn an toàn, trong khi stack có chứa `message`.
+  - Sau lượt 3, `ao-step` lại chạy `be-dev` với cùng ghi chú (lỗi kit, xem dưới). Claude thấy `4-be-dev.jsonl` mới, đọc lý do trong code, rồi dừng runner, agent và phiên `claude -p` bằng `taskkill /T` lúc 23:53. Lượt đó mới gọi 8 tool, chưa sửa hay push gì; `state.json` không ghi lượt này, nên không có số đo chi phí.
+- **`/ao-review 4`** (23:54–00:06): `GO`, chỉ còn `security` ở max, vì báo cáo của `reviewer` đã nằm trên head. Phiên Sonnet điều phối: 0,19 USD. `security`: không có finding nào. `merge-gate --dry-run`: `Waiting #4: approval on head 467b5d0`.
+
+| # | Item | Lượt | Model | Bước | Effort | Kết quả | Turn | Thời gian | Token vào / ra | Cache đọc / ghi | Chi phí quy đổi | Bị từ chối |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 2 | `SMP-4` | `be-dev` | Opus 5.5 | fix | xhigh | done | 54 | 8,4 phút | 92 / 31.826 | 3.889.066 / 118.572 | 2,36 USD | 0 |
+| 3 | `SMP-4` | `reviewer` | Opus 5.5 | review | xhigh | done, Approve | 38 | 7,3 phút | 68 / 35.266 | 2.662.029 / 124.135 | 2,23 USD | 1 |
+| (4) | `SMP-4` | `be-dev` | Opus 5.5 | fix, lặp do lỗi kit | xhigh | Claude dừng | 8 tool call | khoảng 1 phút | không đo | không đo | không đo | 0 |
+| 4 | `SMP-4` | `security` | Opus 5.5 | review | max | done, Approve | 41 | 10,9 phút | 56 / 63.795 | 3.142.558 / 158.189 | 3,17 USD | 1 |
+
+Chi phí agent của `SMP-4` tới gate ③: 10,23 USD (build 2,47, fix 2,36, review 5,40).
+
+**Lỗi kit:**
+- **`/ao-fix` giao lại cho dev agent cùng một ghi chú** (chặn, vì tốn tới 8 lượt): `decideFix` chỉ xem lượt mới nhất của lệnh `fix`. Sau lượt `reviewer`, lượt đó là review, nên ghi chú lại được tính là việc cần sửa. Kit PR #148 (`854e2ed`): lượt sửa ghi `note` (12 ký tự hex đầu của SHA-256 của ghi chú); cùng ghi chú thì chỉ còn review, ghi chú mới thì sửa tiếp. Hai test mới, đỏ trước khi sửa; `npm test` 792 test và bốn lệnh kiểm còn lại xanh. Bản sửa chưa chép vào `ao-sample`; ở đây Claude tránh lỗi bằng `/ao-review 4`.
+- `gh-guard` từ chối `git archive` của `reviewer` và `security` ("would change the shared checkout"), dù `git archive … | tar -x` vào `.ai/reviews/` không đổi repo. Hai agent đọc bằng `git show` thay thế. Không chặn.
+- Hai Low của `reviewer` ở PR #4 là việc của code dự án, không phải lỗi kit. Claude không sửa trong PR này (cách C; một vòng sửa và review nữa tốn khoảng 5–7 USD) và ghi lại để làm cùng `SMP-7`.
