@@ -9024,3 +9024,53 @@ Mình khuyên đồng ý cả hai. Hai đề xuất giúp form và API luôn đ�
 `design.md` còn vài câu hỏi mở không chặn quy trình, ví dụ có thêm dòng "Đã lưu ghi chú." cho trình đọc màn hình hay không. Bạn xem chúng khi đọc PR tài liệu.
 
 Mình cũng ghi thêm ba lỗi nhỏ của kit vào `verification.md`, đều không chặn Epic. Đáng kể nhất là trong `claude -p` không ai duyệt được việc ghi `answers.md`, nên mình phải thêm `--permission-mode acceptEdits` khi chạy lại.
+
+# Phiên 22 · Lượt 4 — 2026-11-02 khoảng 15:53
+
+**Bạn:**
+
+````markdown
+đồng ý cả hai
+````
+
+**Claude:**
+
+Mình nối lại phiên `claude -p` đó và đưa câu trả lời "đồng ý cả hai" vào, như lần trước.
+
+Lệnh đang chạy ở nền: `ba` ghi hai câu trả lời vào SPEC rồi mở PR tài liệu. Xong mình sẽ báo bạn các bước cần bấm ở gate ①.
+
+# Phiên 22 · Lượt 5 — 2026-11-02 khoảng 16:17 → 16:23
+
+**Bạn:**
+
+````markdown
+các có đang chạy không? có đang bị tắc ở đâu không? hơn 20 phút rồi tôi chưa thấy phản hồi, hay do task phức tạp nên cần thời gian?
+````
+
+Trước khi trả lời, Claude đọc `state.json`, `active.json` và tiến trình của `ao-step`, danh sách PR và run của `ao-sample`, quyền Actions, trạng thái năm workflow, check suite trên commit mới nhất của PR #1, sự kiện của repo, thông điệp commit, và trang trạng thái của GitHub.
+
+**Claude:**
+
+Lệnh vẫn chạy nhưng đang tắc, không phải vì task phức tạp. Phần việc của agent đã xong từ 15:59:
+
+| # | Agent | Bước | Thời gian | Chi phí |
+|---|---|---|---|---|
+| 5 | `sa` (Opus) | ghi hai câu trả lời vào SPEC | 1,9 phút | 1,52 USD |
+| 6 | `ba` (Opus) | đẩy nhánh, mở PR tài liệu #1 | 2,3 phút | 0,80 USD |
+
+Chi phí agent của SMP-2 tới giờ là 7,17 USD.
+
+**Chỗ tắc:** sau khi mở PR, `ao-step` chờ CI trên PR #1, nhưng GitHub không tạo run nào, cả `CI` lẫn `jira-sync`. Mình đã kiểm:
+- Actions đang bật, năm workflow đều `active`, trang trạng thái của GitHub báo mọi dịch vụ bình thường.
+- Không commit nào có `[skip ci]`.
+- Repo kit, cũng private, vẫn chạy CI cho PR #143 lúc 14:45 hôm nay.
+- `ao-sample` có sự kiện mở PR lúc 15:58, nhưng commit mới nhất của PR (`9caa18a`) không có check suite nào.
+
+Vậy ở `ao-sample`, GitHub chưa từng chạy workflow theo sự kiện, cả push lẫn pull_request. Chỉ hai lần chạy tay hôm qua là chạy được. Giả thuyết "chỉ lần push đầu không chạy" mà mình ghi ở Checkpoint 2 là sai.
+
+**Mình làm tiếp:**
+1. `ao-step` tự dừng sau 30 phút chờ CI, tức khoảng 16:29. Mình để nó dừng sạch, không tắt ngang.
+2. Sau đó mình đóng rồi mở lại PR #1 để GitHub phát lại sự kiện. Nếu CI chạy, đây chỉ là lỗi một lần của GitHub, và mình chạy lại `/ao-spec SMP-2` để tới gate ①.
+3. Nếu CI vẫn không chạy, mình tìm tiếp nguyên nhân trong cài đặt của repo. Việc nào cần bạn bấm trên GitHub, mình sẽ ghi từng bước.
+
+Bạn chưa cần làm gì lúc này.
