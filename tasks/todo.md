@@ -234,7 +234,7 @@ Chưa commit.
 
 **Cỡ:** S
 
-### [ ] T7a: Sửa lỗi kit tìm được ở stage spec của `SMP-2` (thêm giữa T7)
+### [x] T7a: Sửa lỗi kit tìm được ở stage spec của `SMP-2` (thêm giữa T7)
 
 **Mô tả:** Bạn yêu cầu sửa ngay (Phiên 22 · Lượt 7). Bốn lỗi:
 1. `openQuestions` coi mọi dòng mở đầu bằng "Không có" là "không có câu hỏi", nên bỏ sót 10 câu hỏi của `ux` ("**Không có Figma.** …"). Sửa: chỉ dòng đầu của mục, và chỉ khi dòng đó chỉ nói vậy.
@@ -244,10 +244,12 @@ Chưa commit.
 
 Sau khi kit PR merge: một PR chép kit vào `ao-sample` (plan, quyết định 6), gắn Task của `SMP`, `/ao-review`, bạn merge. Rồi chạy lại `/ao-spec SMP-2`: lệnh phải dừng với 10 câu hỏi của `ux`.
 
+**Kết quả (2026-11-02):** kit PR #144, chép vào `ao-sample` qua PR #3 (`SMP-3`); các finding của review sửa ở kit PR #145 (T7b), chép ở T10.
+
 **Tiêu chí chấp nhận:**
-- [ ] Mỗi lỗi có test đỏ trước khi sửa, xanh sau khi sửa; năm lệnh kiểm của kit xanh.
-- [ ] Bản sửa vào `ao-sample` qua PR chép kit.
-- [ ] `/ao-spec SMP-2` dừng với câu hỏi của `ux`; câu trả lời của bạn vào `design.md` trên PR #1.
+- [x] Mỗi lỗi có test đỏ trước khi sửa, xanh sau khi sửa; năm lệnh kiểm của kit xanh.
+- [x] Bản sửa vào `ao-sample` qua PR chép kit.
+- [x] ~~`/ao-spec SMP-2` dừng với câu hỏi của `ux`; câu trả lời của bạn vào `design.md` trên PR #1.~~ Không chạy: bạn duyệt spec trước và nhận đề xuất của `ux` (Phiên 22 · Lượt 10).
 
 **Phụ thuộc:** T7 (đang dở ở gate ①)
 

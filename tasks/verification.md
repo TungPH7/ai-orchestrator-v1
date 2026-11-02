@@ -243,6 +243,11 @@ Bạn yêu cầu sửa ngay, không để sau (Phiên 22 · Lượt 7). Lỗi th
   - `ao-step.mjs review 3`: `GO`, `reviewer` xhigh rồi `security` max.
 - Lần này Claude bật một watcher theo dõi `.ai/runs/SMP-3/` (lượt mới, lượt xong, 10 phút không đổi), thay vì chỉ chờ thông báo cuối.
 
+- **Review PR #3:** `reviewer` (xhigh, 34 turn, 7,8 phút, 2,00 USD) rồi `security` (max, 50 turn, 11,4 phút, 3,39 USD), cả hai đăng báo cáo COMMENT trên `1c2df75` lúc 17:05 và 17:16; tổng 5,39 USD. Kết luận Approve; 1 Medium và 2 Low đều nằm ở code của kit.
+- **Kit PR #145** (T7b, merge 17:20): ba commit sửa theo các finding đó (`89f9bf7` test chốt thời gian chờ trước khi báo "no CI run started", `c8e2527` đọc thêm các cách nói "không có câu hỏi", `617712d` gộp giới hạn của runner một lần). Bản sửa này chưa vào `ao-sample`, chép ở T10.
+- Bạn approve PR #3 lúc 17:37 và merge lúc 17:37 (`bcecbde`, bạn tự merge vì PR chạm protected path). `CI` và `Deploy` của `bcecbde` xanh.
+- Tiêu chí 3 của T7a không chạy: bạn bấm `Approve spec` lúc 17:36, trước khi `/ao-spec` được chạy lại, rồi chọn nhận các đề xuất của `ux` như `design.md` hiện có (Phiên 22 · Lượt 10). Bản sửa `openQuestions` đã có test đỏ trước khi sửa.
+
 ## T7: Epic `SMP-2`, stage plan (2026-11-02)
 
 - Bạn bấm `Approve spec` lúc 17:36 và chọn chạy `/ao-plan` (Phiên 22 · Lượt 10). `ao-step.mjs plan SMP-2`: `GO`, `sa` plan-write rồi `ba` plan-items, cả hai effort xhigh.
