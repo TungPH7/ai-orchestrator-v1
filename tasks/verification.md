@@ -340,3 +340,10 @@ Stage plan tốn 7,97 USD (`DEMO-20`: 7,09 USD), trong đó lượt 7 bị dừn
 - Medium 1 và chỗ hở (2): sửa ngay trong PR #4 bằng `/ao-fix 4` kèm ghi chú: `test:coverage` của `apps/api` chạy cả `test/**/*.e2e-spec.ts`, để CI chạy integration test và lcov tính cả dòng chúng phủ. Cùng ghi chú: đổi tên hằng `SECRET` sang tên không giống secret, viết lại commit của nhánh và force push (theo `docs/quality-gates.md`), không dùng `gitleaks:allow`.
 - Medium 2, Low và chỗ hở (1): sửa ở kit sau, chép ở T10.
 - Ghi vào kit: `docs/quality-gates.md` nói rõ `test:coverage` phải chạy cả integration test, chỉ E2E trên trình duyệt chạy ở bước QA.
+
+**Đóng T8** (khoảng 23:35):
+- PR #5 do bạn approve và merge lúc 23:20 (`50d47f3`); `Deploy` #4 trên `50d47f3` xanh (`audit` xanh).
+- Claude gỡ cờ và nhãn `needs-you` của `SMP-4` bằng token CI (204), comment 10090 nêu lý do.
+- Sáu lệnh ở máy trên `cafdf4d` (Claude chạy, `npm ci` trước): lint, typecheck, `test:coverage` (API 26 test, web 1 test), `test:e2e -w api` (4 test), build, `test:e2e` (2 test) đều thoát 0. Không còn tiến trình nào sau đó.
+- `git log origin/develop..feature/SMP-4-api-error-shape`: `33c75f7`, `cafdf4d`, tác giả `tungph7-ao-dev[bot]`, header có `(SMP-4)`.
+- `/ao-fix 4` chưa chạy: bước kiểm cho thấy lệnh chạy `be-dev` rồi `reviewer` và `security`, tức việc của T9, nên Claude dừng ở Checkpoint 3 trước. Ghi chú cho `be-dev` đã viết sẵn ở `.ai/runs/SMP-4/note.md` của `ao-sample`.

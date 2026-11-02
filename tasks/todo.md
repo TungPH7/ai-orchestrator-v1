@@ -257,17 +257,19 @@ Sau khi kit PR merge: một PR chép kit vào `ao-sample` (plan, quyết định
 
 **Cỡ:** S
 
-### [ ] T8: `/ao-build` lượt đầu [bạn]
+### [x] T8: `/ao-build` lượt đầu [bạn]
 
 **Mô tả:** Claude chạy `/ao-build` cho item đầu tiên theo plan, thường là Sub-task BE của Story đầu. Câu hỏi hay cờ của agent được chuyển cho bạn. Lệnh dừng khi Sub-task xong và đã push.
 
+**Kết quả (2026-11-02):** item đầu là Task `SMP-4` (Task 1 của plan, không có Sub-task). `be-dev` ở xhigh, 2,47 USD; PR #4. Claude chạy lại sáu lệnh ở máy trên `cafdf4d`: xanh. `CI` của PR #4 đỏ vì lỗi kit (T8a, đã sửa qua kit PR #147 và PR #5) và một báo nhầm của gitleaks; hai việc này cùng việc cho CI chạy integration test của API sẽ giao qua `/ao-fix 4` ở T9.
+
 **Tiêu chí chấp nhận:**
-- [ ] Sub-task đầu xong: code và test trên nhánh `feature/<KEY>-…`, push bằng bot `ao-dev`.
-- [ ] Sáu lệnh của T4 xanh trên nhánh đó, chạy ở máy.
-- [ ] `/ao-build` đã chạy qua `claude -p`.
+- [x] Sub-task đầu xong: code và test trên nhánh `feature/<KEY>-…`, push bằng bot `ao-dev`.
+- [x] Sáu lệnh của T4 xanh trên nhánh đó, chạy ở máy.
+- [x] `/ao-build` đã chạy qua `claude -p`.
 
 **Kiểm chứng:**
-- [ ] `git log` của nhánh: tác giả là `tungph7-ao-dev[bot]`, header có mã Jira
+- [x] `git log` của nhánh: tác giả là `tungph7-ao-dev[bot]`, header có mã Jira
 
 **Phụ thuộc:** T7
 
