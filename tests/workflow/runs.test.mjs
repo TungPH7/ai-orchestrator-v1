@@ -122,6 +122,10 @@ test('a question that begins like "Không có" or "None" is still a question; on
   assert.deepEqual(openQuestions(doc('- Q1: có cần nút xóa không?\n- Không có.')), ['Q1: có cần nút xóa không?']);
   assert.deepEqual(openQuestions(doc('Không có câu hỏi mở.')), []);
   assert.deepEqual(openQuestions(doc('Không có: Q1–Q4 đã được trả lời ở mục Rules.')), []);
+  // Other ways an agent says there is none (review of SMP-3).
+  for (const none of ['Không có, mọi câu đã được trả lời.', 'Không có — đã trả lời hết.', 'Không có (đã trả lời hết).', 'Không có câu hỏi mở nào cả.']) {
+    assert.deepEqual(openQuestions(doc(none)), [], none);
+  }
 });
 
 test('text without a list is still a question, so a run never passes over it', () => {
