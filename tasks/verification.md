@@ -225,3 +225,20 @@ So với `DEMO-20`: lượt spec-write của `ba` ở đó tốn 1,63 USD, 22 tu
 - **`openQuestions` bỏ sót câu hỏi của `ux`** (`lib/workflow/runs.mjs`). Câu hỏi đầu trong `design.md` là "**Không có Figma.** …". Hàm coi dòng bắt đầu bằng "Không có" là câu "không có câu hỏi", nên trả 0 câu hỏi; bỏ dòng đó đi thì trả 9. Vì vậy lệnh không dừng để hỏi bạn 10 câu hỏi mở của `ux`. Chúng vẫn nằm trong `design.md` trên PR #1, mỗi câu có đề xuất. Sửa: chỉ coi là "không có câu hỏi" khi cả mục chỉ có câu đó, kèm test đỏ trước.
 - **`ao-step` chờ CI đủ 30 phút khi CI chưa từng bắt đầu**, rồi báo "CI is still running", sai với thực tế. Sửa: nếu sau vài phút head của PR vẫn chưa có check suite hay run nào, dừng sớm với lý do "no CI run started for <sha>".
 - Cả hai không chặn Epic nếu bạn nhận đề xuất của `ux` như `design.md` hiện có, bạn chọn ở gate ①. Sửa ở kit, chép ở T10.
+
+## T7a: sửa lỗi kit tìm được ở stage spec của `SMP-2` (2026-11-02)
+
+Bạn yêu cầu sửa ngay, không để sau (Phiên 22 · Lượt 7). Lỗi thứ hai chặn Epic: không sửa thì 10 câu hỏi của `ux` không có đường về `ux`, vì PR tài liệu đã mở.
+
+- **Kit PR #144** (`111b410` trên `main`), 5 commit:
+  - `openQuestions`: chỉ dòng đầu của mục, và chỉ khi dòng đó chỉ nói "Không có", "Không còn câu hỏi mở" hay "None", mới nghĩa là không có câu hỏi.
+  - `/ao-spec`, `/ao-plan`: câu hỏi xét trước PR tài liệu; câu trả lời về lượt mới nhất của vai trò đã hỏi; khi PR tài liệu đã mở, agent push sau khi commit.
+  - Runner: dừng sau 5 phút nếu head của PR chưa có check run hay status nào (`no CI run started on PR #… after 5 minutes`); `readChecks` có thêm `started`. Câu trả lời bị cắt ở 2000 ký tự có ghi chú và tên file log.
+  - Skill `ao-spec`, `ao-plan`: chép nguyên văn câu trả lời. `docs/dev-workflow.md`: lý do dừng mới và cách trả lời khi chạy bằng `claude -p`.
+  - 5 test mới, đỏ trước khi sửa. `npm test` 787 test và bốn lệnh kiểm còn lại xanh; CI của kit xanh.
+- **PR chép kit vào `ao-sample`** (plan, quyết định 6):
+  - Task `SMP-3` tạo bằng token CI (201), ở New, chỉ để lấy mã.
+  - 8 file của kit tại `111b410`; trước khi chép, cả 8 giống hệt kit tại `2cdb268`. Commit `1c2df75` trên `feature/SMP-3-kit-fixes`, tác giả `tungph7-ao-dev[bot]` (cấu hình git của phiên `devops`).
+  - `ao-dev` mở PR #3 bằng `ao-pr.mjs create`. `CI` và `jira-sync` chạy ngay khi PR mở; `CI` xanh sau 2 phút 18 giây.
+  - `ao-step.mjs review 3`: `GO`, `reviewer` xhigh rồi `security` max.
+- Lần này Claude bật một watcher theo dõi `.ai/runs/SMP-3/` (lượt mới, lượt xong, 10 phút không đổi), thay vì chỉ chờ thông báo cuối.
