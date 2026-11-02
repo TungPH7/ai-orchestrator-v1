@@ -115,6 +115,15 @@ test('no question: an empty section, the template comment only, "Không có", or
   assert.deepEqual(openQuestions('# Plan\n\n## Task List\n\n- T1\n'), [], 'no section at all');
 });
 
+test('a question that begins like "Không có" or "None" is still a question; only a first line that says just that means none (SMP-2)', () => {
+  const ux = doc('Các câu hỏi dưới đây chưa có người trả lời, nên mỗi câu có đề xuất của `ux`.\n\n- **Không có Figma.** Epic không có link khung Figma. Đề xuất: không cần.\n- **Đánh dấu ô bắt buộc.** Đề xuất: không thêm dấu sao.');
+  assert.deepEqual(openQuestions(ux), ['Không có Figma. Epic không có link khung Figma. Đề xuất: không cần.', 'Đánh dấu ô bắt buộc. Đề xuất: không thêm dấu sao.']);
+  assert.deepEqual(openQuestions(doc('None of the screens has a Figma frame: is one needed?')), ['None of the screens has a Figma frame: is one needed?']);
+  assert.deepEqual(openQuestions(doc('- Q1: có cần nút xóa không?\n- Không có.')), ['Q1: có cần nút xóa không?']);
+  assert.deepEqual(openQuestions(doc('Không có câu hỏi mở.')), []);
+  assert.deepEqual(openQuestions(doc('Không có: Q1–Q4 đã được trả lời ở mục Rules.')), []);
+});
+
 test('text without a list is still a question, so a run never passes over it', () => {
   assert.deepEqual(openQuestions(doc('Có cần lưu giỏ hàng khi đăng xuất không?')), ['Có cần lưu giỏ hàng khi đăng xuất không?']);
 });
