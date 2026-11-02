@@ -306,7 +306,7 @@ Stage plan tốn 7,97 USD (`DEMO-20`: 7,09 USD), trong đó lượt 7 bị dừn
 
 - `develop` có `docs/specs/SMP-2/` (`spec.md`, `design.md`, `plan.md`) và `docs/adr/0001`–`0003`.
 - Lịch sử trạng thái của `SMP-2`: New → Specifying (14:40), Specifying → Planning (17:36), Planning → In Progress (22:20), cả ba do bạn. Item con đổi trạng thái do `orchestratorci`.
-- Điểm 6 của spec mục 2.8 (panel Development của Epic thấy nhánh và PR tài liệu): API `rest/dev-status` trả 401 với token CI, nên Claude không tự kiểm được. Bạn xem trên giao diện.
+- Điểm 6 của spec mục 2.8 (panel Development của Epic thấy nhánh và PR tài liệu): API `rest/dev-status` trả 401 với token CI, nên Claude không tự kiểm được. Bạn xem trên giao diện và gửi ảnh lúc khoảng 22:35 (`misc/images/phien-23-luot-3-anh-1.png`, `anh-2.png`): mục Development của `SMP-2` có 1 nhánh `feature/SMP-2-spec`, 8 commit, 2 PR đều MERGED, 4 build xanh, 1 deployment, và môi trường Development xanh ở mục Releases. Điểm 6 đạt. Panel có cả PR #3 (`SMP-3`), vì thân PR đó nhắc tới `SMP-2` và GitHub for Atlassian gắn PR theo mọi key nó thấy trong thân PR. Không ảnh hưởng gì, nhưng thân PR chép kit sau này nên tránh nhắc key của item khác.
 - Chi phí của T7: agent 15,14 USD (ước 12–18 USD; `DEMO-20` tới lúc này: 14,92 USD). Phiên Sonnet điều phối: 0,49 USD cho stage spec, 0,37 USD cho stage plan.
 
 **Lỗi kit, không chặn Epic:**
