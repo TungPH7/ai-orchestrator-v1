@@ -6,7 +6,7 @@ import { readContract } from '../../lib/contract.mjs';
 import { readGates } from '../../lib/quality/gates.mjs';
 import { readMapping } from '../../lib/tracker/mapping.mjs';
 import { PURPOSES, resumePrompt } from '../../lib/workflow/prompts.mjs';
-import { decideStep } from '../../lib/workflow/steps.mjs';
+import { decideStep, noteKey } from '../../lib/workflow/steps.mjs';
 import { CONTRACT_DIR, ROOT } from '../helpers/kit.mjs';
 
 const contract = readContract(CONTRACT_DIR);
@@ -180,12 +180,30 @@ test('/ao-fix with your note, at Rework 2 at least xhigh; red CI is a reason too
 
 test('/ao-fix after its fix is pushed reviews the new head; with nothing to fix it says so', () => {
   const pushed = prFacts('fix', { reports: { reviewer: report({ sha: OLD, onHead: false }), security: report({ sha: OLD, onHead: false }) }, securityCompare: { base: OLD, status: 'ahead', files: [{ filename: 'apps/web/cart.tsx', additions: 5, deletions: 1 }] } }, {
-    run: { key: 'DEMO-21', runs: [{ n: 1, command: 'fix', role: 'fe-dev', purpose: 'fix', outcome: 'done', head: OLD, session: 's' }] },
+    run: { key: 'DEMO-21', runs: [{ n: 1, command: 'fix', role: 'fe-dev', purpose: 'fix', outcome: 'done', head: OLD, session: 's', note: noteKey('the note was for the fix already made') }] },
   });
   assert.deepEqual(decide('fix', pushed, { note: 'the note was for the fix already made' }).runs.map(({ role, purpose }) => `${role} ${purpose}`), ['reviewer review', 'security review-delta']);
   const nothing = decide('fix', prFacts('fix', { reports: { reviewer: report(), security: report() } }));
   assert.deepEqual([nothing.go, nothing.reason], [false, 'PR #15 has nothing to fix: no request for changes, no red CI, no blocking finding']);
   assert.match(nothing.next, /approve it/);
+});
+
+// Pilot 1, PR #4 of ao-sample: after the fix and the reviewer's run of the same /ao-fix, the note sent be-dev to fix
+// again, because only the newest run of the command was read, and it was the review.
+test('/ao-fix with your note runs the dev agent once: after its fix and a review, only the missing review is left', () => {
+  const run = { key: 'DEMO-21', runs: [
+    { n: 1, command: 'fix', role: 'fe-dev', purpose: 'fix', outcome: 'done', head: OLD, session: 's1' },
+    { n: 2, command: 'fix', role: 'reviewer', purpose: 'review', outcome: 'done', session: 's2' },
+  ] };
+  run.runs[0].note = noteKey('the note was for the fix already made');
+  const reviewed = prFacts('fix', { reports: { reviewer: report(), security: null } }, { run });
+  const decision = decide('fix', reviewed, { note: 'the note was for the fix already made' });
+  assert.equal(decision.go, true);
+  assert.deepEqual(decision.runs.map(({ role, purpose }) => `${role} ${purpose}`), ['security review']);
+  // A new note, on a later /ao-fix, is a new fix.
+  const again = decide('fix', prFacts('fix', { reports: { reviewer: report(), security: report() } }, { run }), { note: 'Đổi tên biến cho rõ hơn.' });
+  assert.deepEqual(again.runs.map(({ role, purpose }) => `${role} ${purpose}`), ['fe-dev fix', 'reviewer review', 'security review']);
+  assert.equal(again.runs[0].note, noteKey('Đổi tên biến cho rõ hơn.'), 'the runner keeps which note the fix was for');
 });
 
 test('a Done or Cancelled item has no next command', async () => {

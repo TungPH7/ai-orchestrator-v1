@@ -86,7 +86,7 @@ function harness(world, effects, { outcomes = [], texts = [] } = {}) {
     last,
     checkouts,
     run: (more = {}) =>
-      runGo({ command: 'spec', arg: 'DEMO-20', options: { ...options, ...more.options }, gather: more.gather, agent, git: async (c) => (checkouts.push(c), { ok: true }), dispatch: async () => {}, store, sleep: async (ms) => (clock += ms), now: () => clock, limits: { maxRuns: 8, ciWaitMs: 120000, syncWaitMs: 60000, pollMs: 30000, ...more.limits } }),
+      runGo({ command: 'spec', arg: 'DEMO-20', options: { ...options, ...more.options }, gather: more.gather, decide: more.decide, agent, git: async (c) => (checkouts.push(c), { ok: true }), dispatch: async () => {}, store, sleep: async (ms) => (clock += ms), now: () => clock, limits: { maxRuns: 8, ciWaitMs: 120000, syncWaitMs: 60000, pollMs: 30000, ...more.limits } }),
   };
 }
 const SPEC_EFFECTS = {
@@ -121,6 +121,17 @@ test('state.json is written after every run, before the next one starts', async 
     { n: 1, command: 'spec', role: 'ba', key: 'DEMO-20', purpose: 'spec-write', effort: roster.roles.ba.effort, session: 's-ba-1', outcome: 'done', turns: 5, costUsd: 0.25, log: '1-ba.jsonl' },
   );
   assert.deepEqual(first.checkout, { branch: BRANCH, from: 'develop' });
+});
+
+test('a fix run keeps in state.json the head it started from and which note it was for', async () => {
+  const { world, gather } = specWorld();
+  const h = harness(world, {});
+  let decided = 0;
+  const fix = { role: 'fe-dev', key: 'DEMO-20', effort: 'high', purpose: 'fix', prompt: 'Fix PR #15.', head: 'd1d2d3d', note: '0123456789ab' };
+  const decide = () => (decided++ === 0 ? { go: true, runs: [fix], lines: [] } : { go: false, reason: 'nothing left', next: '/ao-status DEMO-20', lines: [] });
+  await h.run({ gather, decide });
+  const [run] = h.states[0].runs;
+  assert.deepEqual({ purpose: run.purpose, head: run.head, note: run.note }, { purpose: 'fix', head: 'd1d2d3d', note: '0123456789ab' });
 });
 
 test('an open question stops the runs; --answers resumes the session that asked, once', async () => {
