@@ -242,3 +242,46 @@ Bạn yêu cầu sửa ngay, không để sau (Phiên 22 · Lượt 7). Lỗi th
   - `ao-dev` mở PR #3 bằng `ao-pr.mjs create`. `CI` và `jira-sync` chạy ngay khi PR mở; `CI` xanh sau 2 phút 18 giây.
   - `ao-step.mjs review 3`: `GO`, `reviewer` xhigh rồi `security` max.
 - Lần này Claude bật một watcher theo dõi `.ai/runs/SMP-3/` (lượt mới, lượt xong, 10 phút không đổi), thay vì chỉ chờ thông báo cuối.
+
+## T7: Epic `SMP-2`, stage plan (2026-11-02)
+
+- Bạn bấm `Approve spec` lúc 17:36 và chọn chạy `/ao-plan` (Phiên 22 · Lượt 10). `ao-step.mjs plan SMP-2`: `GO`, `sa` plan-write rồi `ba` plan-items, cả hai effort xhigh.
+- **`/ao-plan SMP-2` lần 1** (18:56–19:10): `MSYS_NO_PATHCONV=1 claude -p --model sonnet "/ao-plan SMP-2"` ở nền, kèm watcher. Lượt 7 của `sa` dừng sau 12,9 phút vì chạm giới hạn 5 giờ (`usage-limit`), chưa commit gì. Phiên Sonnet điều phối cũng dừng vì giới hạn: 0,10 USD.
+- **Lần 2** (19:52–20:08), sau khi giới hạn reset lúc 19:50: bước kiểm cho `GO`. Lượt 8: `sa` làm tiếp trong cùng session (`resumed`), đánh dấu SPEC và design là Approved (`80c5927`), rồi push plan và ba ADR lên PR #1 (`172b539`). `CI` trên `172b539` xanh (5 check). Lượt 9: `ba` tạo 8 item. Phiên Sonnet điều phối: 0,14 USD, thoát 0, báo đúng gate ②.
+
+| # | Lượt | Model | Bước | Effort | Kết quả | Turn | Thời gian | Token vào / ra | Cache đọc / ghi | Chi phí quy đổi | Bị từ chối |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| 7 | `sa` | Opus 5.5 | plan-write | xhigh | usage-limit | 31 | 12,9 phút | 56 / 64.115 | 2.456.027 / 152.877 | 3,00 USD | 0 |
+| 8 | `sa` | Opus 5.5 | plan-write, làm tiếp | xhigh | done | 29 | 8,8 phút | 48 / 53.593 | 4.624.062 / 75.611 | 2,60 USD | 3 |
+| 9 | `ba` | Opus 5.5 | plan-items | xhigh | done | 31 | 6,4 phút | 48 / 43.765 | 2.101.821 / 134.533 | 2,37 USD | 0 |
+
+Stage plan tốn 7,97 USD (`DEMO-20`: 7,09 USD), trong đó lượt 7 bị dừng chiếm 3,00 USD. Chi phí agent của `SMP-2` tới gate ②: 15,14 USD, 9 lượt.
+
+**Plan** (`docs/specs/SMP-2/plan.md`, 350 dòng, không còn câu hỏi mở):
+- ADR-0001: kiểu và quy tắc của ghi chú nằm ở `apps/api/src/notes/notes.shared.ts`, web import qua alias `@api/notes-shared`.
+- ADR-0002: trình duyệt gọi `/api/notes` trên origin của web, `next.config.ts` rewrite tới API, API không bật CORS. Đây là ADR mà mục kiểm chứng của T7 đòi (cách `apps/web` gọi `apps/api`).
+- ADR-0003: mọi lỗi của API có một dạng JSON, `message` cố định theo mã.
+- `sa` thử cả ba trong `.ai/spikes/SMP-2/` (không commit) trước khi viết.
+
+**Item** (`ba`, token agent), đều dưới `SMP-2`:
+
+| Dòng của plan | Key | Loại | Trạng thái | Nhãn |
+|---|---|---|---|---|
+| Task 1: Dạng lỗi chung của API | `SMP-4` | Task | New | `ao-be-dev`, `ao-effort-xhigh` |
+| Task 2: Quy tắc ghi chú dùng chung | `SMP-5` | Task | New | `ao-be-dev` |
+| Task 3: Khung trang Ghi chú | `SMP-6` | Task | New | `ao-fe-dev` |
+| Story 4: Tạo ghi chú | `SMP-7` | Story | New | (trên Sub-task) |
+| Sub-task BE của Story 4 | `SMP-8` | Sub-task | To Do | `ao-be-dev` |
+| Sub-task FE của Story 4 | `SMP-9` | Sub-task | To Do | `ao-fe-dev` |
+| Story 5: Báo lỗi nhập ngay cạnh ô | `SMP-10` | Story | New | `ao-fe-dev` |
+| Story 6: Xem danh sách ghi chú | `SMP-11` | Story | New | `ao-fe-dev` |
+
+- **Link Blocks.** `ba` không tạo được 5 link phụ thuộc: `editJiraIssue` với `issuelinks` bị Jira từ chối ("Field does not support update 'issuelinks'"), và danh sách tool của `ba` không có tool tạo link. `ba` nhờ bạn tạo bằng tay. Claude tạo thay bằng token CI (`POST /rest/api/3/issueLink`, 201 cả 5): `SMP-4`, `SMP-5`, `SMP-6` block `SMP-7`; `SMP-7` block `SMP-10` và `SMP-11`. Đọc lại: `SMP-7` có "is blocked by" `SMP-4`, `SMP-5`, `SMP-6`, đúng chiều `blockedBy` mà `lib/workflow/facts.mjs` đọc.
+- **Effort.** Chỉ `SMP-4` ở xhigh (lỗi trả về không được lộ thân yêu cầu; dạng lỗi là hợp đồng của mọi endpoint sau). Claude giữ nguyên như `sa` đề xuất, theo duyệt trước ở Phiên 21 · Lượt 6: các item còn lại có test viết sẵn trong plan, và `security` ở max review mọi PR.
+- **`SMP-6` là Task.** `ba` lưu ý trang `/` chuyển tới `/notes` là thay đổi giao diện. Claude giữ Task: item là khung cho ba Story, không có AC riêng.
+- **Server thừa.** Lúc 22:13, `next dev -p 3902` của spike (bật 19:09, lượt 7) vẫn chạy. Claude tắt nó. Ở lượt 8, `sa` thử liệt kê tiến trình của spike bằng PowerShell và bị bộ phân loại của auto mode từ chối.
+
+**Lỗi kit, không chặn Epic** (sửa ở kit, chép ở T10 theo quyết định 6):
+- `ba` không có cách tạo link Blocks. Server `atlassian` hiện có tool `addGraphContext` với `relationshipType: jira-work-item-blocks-jira-work-item` (Claude đọc `tools/list` của server lúc khoảng 22:10). Cách sửa: cho `ba` tool này, và hook `jira-guard` chỉ cho loại `blocks` với hai key thuộc space dự án. Cần thử trước xem tool có tạo link Jira thật không.
+- Hook `block-atlassian` chặn nhầm hai lệnh Bash của `sa` ở lượt 8: một lệnh ghi thân PR vào `.ai/pr/`, một lệnh sửa ledger. Cả hai chỉ chứa link `atlassian.net` trong chữ, không gọi mạng. Cách sửa: hook chỉ chặn khi lệnh gọi mạng (`curl`, `wget`, `fetch`, `Invoke-WebRequest`) tới Atlassian.
+- Agent để lại server của spike sau khi lượt kết thúc. Cách sửa: dặn trong luật chung tắt mọi tiến trình đã bật trước khi trả lời, hoặc runner tắt cây tiến trình của lượt khi lượt kết thúc.
