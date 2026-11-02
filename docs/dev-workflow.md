@@ -66,11 +66,12 @@ PR sửa đường dẫn được bảo vệ (`.github/workflows/**`, `.claude/*
 
 | Lý do dừng | Làm gì |
 |---|---|
-| `… left N open questions in docs/specs/<EPIC>/…` | Trả lời trong chat |
+| `… left N open questions in docs/specs/<EPIC>/…` | Trả lời trong chat. Câu hỏi còn mở trong SPEC hay `design.md` vẫn dừng lệnh khi PR tài liệu đã mở; agent đã hỏi ghi câu trả lời rồi push lên PR (Pilot 1, `SMP-2`) |
 | `… waits for you at gate ①/②/③` | Bấm duyệt theo các bước Claude gửi |
 | `… is flagged Needs you by …`, `Sub-task … is flagged Needs you` | Đọc comment mới nhất trên item, trả lời ở đó, gỡ cờ và nhãn `needs-you`, rồi chạy lại. `jira-guard` không cho chuyển trạng thái của item còn nhãn đó |
 | `… hit the usage limit … Run the same command again after it resets` | Chờ giới hạn reset, rồi chạy lại đúng lệnh (mục sau) |
 | `… ran <step> on <KEY> and it still has to run` | Agent xong lượt mà dữ kiện chưa đổi như mong đợi. Đọc câu trả lời của nó trong `last.md` |
+| `no CI run started on PR #… after 5 minutes` | GitHub Actions không chạy workflow nào trên head của PR. Mở tab Actions của repo. Ở `ao-sample`, các workflow vào repo cùng lần push đầu lên repo trống và không chạy theo sự kiện, tới khi một push đụng `.github/workflows/` (Pilot 1, `SMP-2`). Sửa xong thì đóng rồi mở lại PR, và chạy lại lệnh |
 | `CI is still running …`, `… not merged yet`, WIP đầy, thiếu nhãn vai trò | Làm theo lệnh tiếp theo mà lý do ghi |
 | `ao-step is already running …` | Chờ lần chạy kia xong |
 
@@ -89,6 +90,7 @@ PR sửa đường dẫn được bảo vệ (`.github/workflows/**`, `.claude/*
 - Trong phiên Claude Code: gõ `/ao-status`, `/ao-spec DEMO-20` … như mọi lệnh `/`.
 - Từ Git Bash, không mở phiên tương tác: `MSYS_NO_PATHCONV=1 claude -p "/ao-spec DEMO-20"`. Thiếu `MSYS_NO_PATHCONV=1`, Git Bash biến `/ao-spec` thành một đường dẫn Windows (T1).
 - Repo dự án phải được tin cậy: mở `claude` trong repo một lần và chấp nhận hộp thoại tin cậy thư mục. Nếu chưa, `claude -p` bỏ qua luật `allow` trong `.claude/settings.json` của dự án, và `enabledMcpjsonServers` trong `.claude/settings.local.json` không bật được server MCP (Pilot 1, T1).
+- Trả lời câu hỏi của agent khi chạy bằng `claude -p`: nối lại đúng phiên đó và đưa câu trả lời qua stdin, `MSYS_NO_PATHCONV=1 claude -p --resume <session> --permission-mode acceptEdits < answer.txt`. Không có `--permission-mode acceptEdits`, không ai duyệt được lệnh ghi `answers.md` (Pilot 1, `SMP-2`).
 - Gọi thẳng script, như skill gọi: `node .ai-orchestrator/scripts/ao-step.mjs spec DEMO-20` để kiểm, thêm `--go` để chạy. Đặt `AO_KIT_DIR` để chạy bằng một bản kit khác bản chép trong `.ai-orchestrator/`; Epic thử đã chạy bằng repo kit theo cách này.
 - `ao-step.mjs` đọc Jira bằng `ATLASSIAN_AGENT_TOKEN`, và đọc GitHub bằng token chỉ đọc của App `ao-review`. Lần dispatch `jira-sync` sau gate ② dùng login `gh` của bạn.
 
