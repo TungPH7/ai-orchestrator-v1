@@ -10064,3 +10064,52 @@ Review tốn gấp đôi build vì có 2 agent, mỗi agent trả phần bối c
 Trước khi sửa kit, có thể đo thật bằng cách chạy lại `reviewer` trên PR #4 với cách 1 và 2, rồi so chi phí và finding với lần trước. Lần đo này tốn khoảng 1,5–2,5 USD.
 
 Mời bạn nêu điểm tiếp theo, hoặc cho mình biết bạn chọn cách nào để mình đưa vào kit.
+
+# Phiên 23 · Lượt 10 — 2026-11-03 khoảng 02:10
+
+**Bạn:**
+
+````markdown
+Tôi chọn cách 1, 2 và 3 nhé. trước khi làm "đo thật bằng cách chạy lại reviewer trên PR #4 với cách 1 và 2, rồi so chi phí và finding với lần trước" tôi muốn hỏi thêm 1 điểm nữa.
+
+3. chép bản sửa kit vào ao-sample hay ao-pilot thì stage /ao-review vẫn bị issue làm lâu và tốn token. Có bị lỗi chung với issue số 2 tôi vừa hỏi không?
+````
+
+Claude đọc log review của PR #3 (`SMP-3`), PR #5 (`SMP-12`) và PR #4 (`SMP-4`): số lệnh Bash, số lệnh chạy trong repo kit, số lần đọc tài liệu Epic, số thực nghiệm, token suy nghĩ.
+
+**Claude:**
+
+Mình đã ghi lựa chọn của bạn: cách 1, 2 và 3. Về điểm 3:
+
+**Có, cùng nguyên nhân với điểm 2, và còn thêm một nguyên nhân riêng của PR chép kit.**
+
+| PR | Nội dung | Cỡ diff | Chi phí review | Suy nghĩ của `security` |
+|---|---|---|---|---|
+| #3 | chép kit (`SMP-3`) | 8 file, +60 −34 | 5,39 USD | 47.448 token |
+| #5 | chép kit (`SMP-12`) | 4 file, +9 −7 | 5,50 USD | 60.962 token |
+| #4 | code của `SMP-4` | 6 file, +502 −2 | 5,40 USD | 49.734 token |
+
+**Phần chung với điểm 2.** Ba PR tốn gần bằng nhau, dù diff chênh nhau hơn 30 lần. Đó là chi phí cố định: `security` ở `max` nghĩ khoảng 50–60 nghìn token, mỗi agent kéo bối cảnh riêng, và cache ghi loại 1 giờ.
+
+**Phần riêng của PR chép kit.** Code được chép là code của chính kit. Test của nó nằm trong repo kit, không nằm trong `ao-sample`. Vì vậy, để kiểm, hai agent sang repo kit trên máy, mỗi lượt chạy 5–13 lệnh ở đó:
+- so cây file với commit của kit;
+- chạy test của kit;
+- với `reviewer` PR #5, sửa thử code runner để xem test có bắt được không.
+
+Ngoài ra còn hai điểm:
+- Các lệnh đó chỉ chạy được vì repo kit tình cờ nằm cạnh `ao-sample`. Trên máy khác, hoặc khi dự án ở chỗ khác, agent sẽ không có nó.
+- PR chép kit luôn chạm protected path. Với cách 3 như mình mô tả, `security` của các PR này vẫn chạy `max`.
+
+**Review ở đây có tìm ra lỗi thật không?** Có. PR #3 ra 1 Medium và 2 Low; PR #5 ra 2 Medium, 1 Low và 1 chỗ hở của bước `policy`. Tất cả đều là lỗi của kit. Vậy kit cần được review, câu hỏi là review ở đâu và bao nhiêu lần.
+
+**Cách giảm riêng cho PR chép kit**
+
+| # | Cách | Giảm (ước) | Đánh đổi |
+|---|---|---|---|
+| A | Gom nhiều bản sửa vào một PR chép (như kế hoạch ở T10) | Mỗi lần chép bớt đi khoảng 5,5 USD | Bản sửa không chặn vào dự án chậm hơn |
+| B | Gói bối cảnh của cách 2, bản cho PR chép: SHA của kit, link kit PR, diff của kit, kết quả test của kit. Agent không cần sang repo kit | Bớt các lệnh chạy ở repo kit, khoảng 15–30% của lượt review | Agent tin kết quả test do gói ghi lại thay vì tự chạy |
+| C | Review một lần ở kit: hai agent review thay đổi của kit một lần. PR chép vào mỗi dự án chỉ cần một bước kiểm tự động: file chép giống từng byte với commit của kit đã được review và CI xanh. Bạn vẫn tự merge | Bỏ hẳn 5,5 USD mỗi lần chép, nhân với số dự án (`ao-sample`, `ao-pilot`, dự án sau) | Đổi hợp đồng: `merge-gate` và `audit` cần một luật mới, giống luật PR tài liệu. Kit cũng cần chỗ để chạy review agent. Code kit không còn được nhìn lại trong bối cảnh từng dự án; nhưng protected path không cho dự án sửa các file đó, nên bản ở dự án giống hệt bản đã review |
+
+**Mình khuyên:** làm A ngay, vì không đổi hợp đồng. Sau đó làm C khi sửa kit, vì càng nhiều dự án dùng kit thì càng tiết kiệm. B chỉ cần nếu chưa làm C. Cách 1 (cache 5 phút) áp dụng cho cả PR chép.
+
+Sau khi bạn trả lời điểm này, mình đo thật như đã nói: chạy lại `reviewer` trên PR #4 với cách 1 và 2, rồi so chi phí và finding với lần trước.
