@@ -9692,3 +9692,82 @@ Mình đã ghi kết quả T8 vào kit. Giờ mình soạn các bước để b�
 4. Khi `CI` trên PR #4 xanh, T8 xong. Mình dừng ở **Checkpoint 3** để bạn xem code, test và chi phí.
 
 Chi phí từ đầu Epic tới giờ: 15,14 USD (spec, plan) + 2,47 USD (build) + 5,51 USD (review bản chép kit) = 23,12 USD.
+
+# Phiên 23 · Lượt 4 — 2026-11-02 khoảng 23:21 → 23:40
+
+**Bạn:**
+
+````markdown
+đã merge
+````
+
+Claude kiểm PR #5: bạn approve rồi merge lúc 23:20 (`50d47f3`); `Deploy` #4 trên `50d47f3` xanh.
+
+**Claude:**
+
+PR #5 đã merge thành `50d47f3`, và `Deploy` #4 (gồm `audit`) đã xanh. Giờ mình gỡ cờ trên `SMP-4`.
+
+Claude gỡ Flagged và nhãn `needs-you` của `SMP-4` bằng token CI, comment 10090.
+
+**Claude:**
+
+Đã gỡ cờ và nhãn `needs-you` trên `SMP-4` (comment 10090). Giờ mình viết ghi chú cho `be-dev` và chạy bước kiểm của `/ao-fix 4`.
+
+Claude viết ghi chú vào `.ai/runs/SMP-4/note.md` (CI chưa chạy integration test của API; gitleaks báo nhầm hằng `SECRET`, viết lại commit rồi force push). Bước kiểm `ao-step.mjs fix 4 --note …`: `GO`, `be-dev` fix, rồi `reviewer` và `security` khi CI xanh.
+
+**Claude:**
+
+T8 đã đạt: code và test của `SMP-4` nằm trên nhánh `feature/SMP-4-api-error-shape`, do bot `ao-dev` push, và `/ao-build` đã chạy qua `claude -p`. Bước kiểm cho thấy `/ao-fix 4` sẽ chạy thêm cả `reviewer` và `security` sau khi sửa, tức là việc của T9. Vì vậy mình dừng ở Checkpoint 3 trước, như plan đã định, chứ không chạy `/ao-fix` luôn như đã nói. Trước khi báo bạn, mình tự chạy lại sáu lệnh kiểm trên nhánh đó ở máy (không tốn tiền agent).
+
+Claude chạy `npm ci`, lint, typecheck, `test:coverage`, `test:e2e -w api`, build, `test:e2e` trên `cafdf4d`: tất cả thoát 0.
+
+**Claude:**
+
+Sáu lệnh kiểm đều xanh ở máy: API 26 unit test và 4 integration test, web 1 test, smoke 2 test; không còn tiến trình nào sót lại. Trước khi gửi Checkpoint 3, mình xem các tiêu chí còn lại của Pilot để ước chi phí phần còn lại.
+
+**Claude:**
+
+T8 đạt cả ba tiêu chí. Mình ghi kết quả vào kit, rồi gửi bạn Checkpoint 3.
+
+**Claude:**
+
+**Checkpoint 3: bạn xem kết quả build đầu tiên và chi phí, rồi chọn cách đi tiếp**
+
+Mình chưa chạy `/ao-fix 4` như đã nói. Bước kiểm cho thấy lệnh này cho `be-dev` sửa, rồi chạy luôn `reviewer` và `security`, tốn thêm khoảng 5 USD. Phần review là việc của T9, nên mình dừng ở Checkpoint 3 trước, đúng theo plan.
+
+**Đã xong**
+- PR #5 đã merge, `audit` xanh. Mình đã gỡ cờ trên `SMP-4`.
+- T8 đạt. Mình tự chạy lại sáu lệnh kiểm trên nhánh của `SMP-4`, tất cả đều xanh: API 26 unit test và 4 integration test, web 1 test, smoke 2 test.
+
+**Bạn xem code ở đâu**
+1. Mở https://github.com/TungPH7/ao-sample/pull/4, tab **Files changed**: 5 file, 478 dòng thêm.
+   - `apps/api/src/common/api-error.ts` và `api-exception.filter.ts`: mọi lỗi của API có cùng một dạng JSON, câu báo lỗi cố định theo mã, không trích lại thân yêu cầu.
+   - `apps/api/src/app.module.ts`: gắn filter cho cả app.
+   - `api-exception.filter.spec.ts` (300 dòng) và `apps/api/test/app.e2e-spec.ts`: test, viết trước code.
+2. `CI` của PR đang đỏ vì 2 lý do đã nói. Cả hai sẽ được sửa ở `/ao-fix 4`.
+
+**Chi phí tới giờ (quy đổi)**
+
+| Phần | Chi phí | Ước trong plan |
+|---|---|---|
+| T7: spec, plan (`SMP-2`) | 15,14 USD | 12–18 USD |
+| T8: build `SMP-4` | 2,47 USD | 2–5 USD |
+| Hai PR chép bản sửa kit (`SMP-3`, `SMP-12`), chủ yếu là review | 10,90 USD | 1–5 USD mỗi PR |
+| Phiên Sonnet điều phối | khoảng 1,6 USD | |
+| **Tổng** | **khoảng 30 USD** | |
+
+**Vấn đề: phần còn lại tốn hơn plan nhiều.** Plan ước cả Epic 30–45 USD, dựa trên `DEMO-20` vốn chỉ có 1 Story. `SMP-2` có 6 item: 3 Task, 3 Story. Tiêu chí 3 đòi mọi Story sang Ready for QA, mà các Story bị 3 Task chặn, nên phải làm cả 6. Mỗi PR tốn khoảng 5–6 USD cho review (riêng `security` ở `max` khoảng 3,5–4 USD), cộng 2–8 USD build. Mình ước:
+
+| Cách | Làm gì | Ước thêm |
+|---|---|---|
+| A. Làm hết | Cả 6 item | 50–70 USD |
+| B. Tới Story đầu (khuyên dùng) | `SMP-4`, `SMP-5`, `SMP-6`, rồi Story `SMP-7` có Sub-task BE và FE. `SMP-10`, `SMP-11` để ở Ready, làm sau | 35–45 USD |
+| C. Chỉ `SMP-4` | Sửa, review, bạn approve, merge. Đủ sáu lệnh `/ao-*`, nhưng chưa thử `fe-dev` và Story có Sub-task | 6–10 USD |
+
+Mình khuyên B. Cách này đủ để thử cả `be-dev` lẫn `fe-dev` trên stack mới, thử Story có Sub-task BE trước FE trong một PR, và thử thứ tự chặn giữa các item, mà tốn ít hơn A khoảng 20 USD. Với B, tiêu chí 3 đổi thành "các item tới `SMP-7` sang Ready for QA". [Ước] Mỗi khung 5 giờ của gói Pro chạy được khoảng 15 USD (Phiên 22 chạm giới hạn sau khoảng 15,6 USD lượt agent), nên B cần khoảng 3 khung.
+
+**Claude hỏi** (câu hỏi trắc nghiệm): "Checkpoint 3: phần còn lại của Epic SMP-2 ước tốn hơn plan (plan ước cả Epic 30–45 USD; đã tiêu khoảng 30 USD). Bạn muốn đi tiếp thế nào?"
+
+- **B. Tới Story đầu (Recommended)**: Làm SMP-4 (sửa + review), SMP-5, SMP-6, rồi Story SMP-7 có Sub-task BE và FE. SMP-10 và SMP-11 để ở Ready, làm sau Pilot 1. Ước thêm 35–45 USD, khoảng 3 khung 5 giờ. Tiêu chí 3 của spec đổi theo.
+- **A. Làm hết 6 item**: Đúng tiêu chí 3 như spec: mọi Story sang Ready for QA. Ước thêm 50–70 USD, khoảng 4–5 khung 5 giờ.
+- **C. Chỉ SMP-4**: Sửa, review, bạn approve và merge PR #4. Đủ sáu lệnh /ao-*, nhưng chưa thử fe-dev và Story có Sub-task. Ước thêm 6–10 USD.
