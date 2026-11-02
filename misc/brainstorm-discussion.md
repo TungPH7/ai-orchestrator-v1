@@ -10189,3 +10189,38 @@ Kết quả đã ghi vào `tasks/verification.md`.
    Phần khó là tìm đúng đoạn plan và mục SPEC của từng item một cách tất định. Mình sẽ đọc cách `ba` ghi liên kết giữa item và plan trước khi viết code.
 
 Mình làm theo thứ tự 1 → 3 → 2. Bạn muốn mình bắt đầu luôn, hay còn điểm nào cần bàn trước?
+
+# Phiên 23 · Lượt 12 — 2026-11-03 khoảng 02:20
+
+**Bạn:**
+
+````markdown
+nếu "chép vào ao-sample trong PR gom ở T10", nhưng T9 cần làm 7-9 task/story và vẫn bị tính nhiều token thì sao? Tại sao không chép vào bây giờ luôn mà phải đợi tới T10?
+````
+
+**Claude:**
+
+Bạn nói đúng: nếu còn build các item khác thì chép ngay sau khi sửa kit là hợp lý hơn. Như vậy vẫn là cách A (một PR gom), chỉ đổi thời điểm chép.
+
+**Vì sao mình nói T10:** ở Checkpoint 3 bạn chọn C, nên T9 chỉ còn `SMP-4`, và `SMP-4` đã xong. Năm item còn lại (`SMP-5`, `SMP-6`, `SMP-7` với hai Sub-task `SMP-8`, `SMP-9`, `SMP-10`, `SMP-11`, tổng 7 item trên Jira) đã nằm ngoài Pilot 1. Không còn PR nào trong `ao-sample`, nên chép bây giờ hay ở T10 đều tốn như nhau: một lần review PR chép.
+
+**Nếu bạn muốn build tiếp các item đó**, thứ tự nên là:
+1. Sửa kit: cách 1, 3, rồi 2.
+2. Một PR gom chép vào `ao-sample`, gồm cả kit PR #148 và các bản sửa không chặn còn lại.
+3. Rồi mới `/ao-build` item tiếp theo.
+
+Một lưu ý: chính PR chép đó vẫn được review bằng bản kit cũ đang có trong `ao-sample` (khoảng 5,5 USD), vì runner chạy từ bản chép. Từ PR sau mới rẻ hơn.
+
+**Ước lại chi phí với kit đã sửa** [Inference: dựa trên một phép đo của `reviewer`; phần `security` và build chưa đo]:
+- Review mỗi PR từ 5,4–5,5 xuống khoảng 2–3 USD.
+- Mỗi item còn khoảng 5–10 USD thay vì 10–15 USD.
+- Tới Story đầu (`SMP-5`, `SMP-6`, `SMP-7`): khoảng 18–28 USD.
+- Làm hết 5 item: khoảng 30–45 USD.
+
+Cả hai mức đều chưa tính PR chép kit (khoảng 5,5 USD).
+
+**Claude hỏi** (câu hỏi trắc nghiệm): "Sau khi sửa kit (cách 1, 3, 2), bạn muốn làm gì với 5 item còn lại của SMP-2?"
+
+- **Giữ C, chép ở T10 (Recommended)**: Pilot 1 dừng ở SMP-4 như đã chọn ở Checkpoint 3. Sửa kit xong thì gom mọi bản sửa vào một PR chép ở T10. Không build thêm item nào.
+- **B: build tới Story đầu**: Sửa kit, chép ngay một PR gom vào ao-sample, rồi build SMP-5, SMP-6 và Story SMP-7 (BE + FE). Ước 18–28 USD cộng khoảng 5,5 USD cho PR chép.
+- **A: build hết 5 item**: Sửa kit, chép ngay, rồi build SMP-5, 6, 7, 10, 11. Ước 30–45 USD cộng khoảng 5,5 USD cho PR chép.
