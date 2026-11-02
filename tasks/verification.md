@@ -312,3 +312,31 @@ Stage plan tốn 7,97 USD (`DEMO-20`: 7,09 USD), trong đó lượt 7 bị dừn
 **Lỗi kit, không chặn Epic:**
 - Lý do dừng gợi ý `Next: /ao-build SMP-11`, nhưng `SMP-11` bị `SMP-7` block. `afterPlanGate` trong `lib/workflow/steps.mjs` lấy item Ready đầu tiên trong danh sách con của Epic, không xét `blockedBy` hay thứ tự của plan. Lệnh `/ao-build SMP-11` sẽ tự dừng vì phụ thuộc chưa merge, nên chỉ tốn một lượt hỏi. Cách sửa: gợi ý item Ready đầu tiên không bị item nào chưa xong block, theo thứ tự key.
 - Phiên Sonnet điều phối báo "Báo cáo cũng không nói gì về việc bấm Approve plan", dù lần chạy này chỉ có được sau gate ②. Cách sửa: lý do dừng nói rõ gate ② đã qua.
+
+## T8: `/ao-build` lượt đầu (2026-11-02)
+
+- Item đầu: `SMP-4` (Task 1 của plan, `ao-be-dev`, `ao-effort-xhigh`), vì nó đứng đầu plan và không bị item nào block. `ao-step.mjs build SMP-4`: `GO`, `be-dev` build, effort xhigh.
+- **`/ao-build SMP-4`** (22:29–22:41): `MSYS_NO_PATHCONV=1 claude -p --model sonnet --output-format stream-json --verbose "/ao-build SMP-4"` trong `ao-sample`, ở nền, kèm watcher (lượt agent, PR, CI, 10 phút không có log mới). Phiên Sonnet điều phối: 0,14 USD, thoát 0.
+- `be-dev` cắt `feature/SMP-4-api-error-shape` từ `develop`, viết test trước rồi code: `33c75f7` (`api-error.ts`, `api-exception.filter.ts` và unit test), `cafdf4d` (`APP_FILTER` trong `app.module.ts` và integration test `apps/api/test/app.e2e-spec.ts`). Push bằng bot, `ao-dev` mở PR #4. Ở máy: lint, typecheck, `test:coverage` (26 unit test của API), `test:e2e -w api` (4 test), build, smoke (2 test) đều pass.
+- `be-dev` chạy `coverage-diff.mjs` ở máy, thấy nó báo lỗi `app.e2e-spec.ts`, rồi gắn cờ Needs you lên `SMP-4` (comment 10087). Lý do: `.ai-orchestrator/**` là protected path.
+- `CI` #7 trên `cafdf4d` đỏ ở hai job:
+  - `build-test`, bước **Coverage of changed lines**: 100% (27 trên 27 dòng), nhưng `apps/api/test/app.e2e-spec.ts is not in any lcov file`. Đây là lỗi kit: mẫu `**/*.{test,spec}.*` không khớp `.e2e-spec.`, cách NestJS đặt tên integration test.
+  - `secrets`: gitleaks "leaks found: 1". Trong diff chỉ có `const SECRET = 'secret-fragment-7f3a9c';` trong `api-exception.filter.spec.ts` có dạng secret. Đây là báo nhầm: chuỗi chỉ dùng để chứng minh câu trả lời lỗi không trích lại thân yêu cầu. Hook `pre-commit` (secretlint) ở máy không bắt chuỗi này, nên agent chỉ biết khi CI chạy.
+
+| # | Item | Lượt | Model | Bước | Effort | Kết quả | Turn | Thời gian | Token vào / ra | Cache đọc / ghi | Chi phí quy đổi | Bị từ chối |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 1 | `SMP-4` | `be-dev` | Opus 5.5 | build | xhigh | done, gắn cờ | 52 | 10,0 phút | 86 / 34.943 | 3.882.970 / 124.900 | 2,47 USD | 0 |
+| 1 | `SMP-12` | `reviewer` | Opus 5.5 | review PR #5 | xhigh | done, COMMENT | 36 | 6,4 phút | 68 / 28.829 | 1.718.051 / 84.210 | 1,59 USD | 0 |
+| 2 | `SMP-12` | `security` | Opus 5.5 | review PR #5 | max | done, COMMENT | 53 | 14,3 phút | 72 / 87.358 | 3.857.093 / 174.355 | 3,91 USD | 0 |
+
+**T8a: sửa lỗi kit chặn Epic** (plan, quyết định 6; duyệt trước ở Phiên 21 · Lượt 6):
+- Kit PR #147 (`8daca1b`): `coverage.exclude` của `quality/gates.yaml` (và bản trong `SPEC-quality-gates.md`) thêm `**/*.e2e-spec.*`; `deletedTests` trong `lib/quality/suppressions.mjs` liệt kê cả file `*.e2e-spec.*` bị xóa. Hai test mới, đỏ trước khi sửa. `npm test` 790 test và bốn lệnh kiểm còn lại xanh; CI của kit xanh.
+- Chép vào `ao-sample`: Task `SMP-12` tạo bằng token CI (201). Bốn file của kit tại `8daca1b`: hai file của T8a và hai file của kit PR #145 (T7b) chưa chép. Sau khi chép, `.ai-orchestrator/lib/` và `.ai-orchestrator/quality/` giống hệt kit. Commit `c2b772d` trên `feature/SMP-12-kit-fixes`, tác giả `tungph7-ao-dev[bot]`. `ao-dev` mở PR #5; `CI` #8 xanh. Thân PR không nhắc key của item khác (bài học từ PR #3).
+- **`/ao-review 5`** (22:48–23:09): Phiên Sonnet điều phối 0,16 USD. Tổng hai lượt review: 5,51 USD.
+  - `reviewer`: không có Critical hay High; 2 Medium, 1 Low. Medium 1: CI không chạy integration test của API. `test:coverage` của `apps/api` chỉ gồm `**/*.spec.ts`, và `ci.yml` không có bước `test:e2e`, nên `app.e2e-spec.ts` đỏ thì CI vẫn xanh. Medium 2: hai thay đổi runner của T7b chưa có test giữ (bỏ `Math.min` hay bỏ phép trộn `limits` thì 45/45 test vẫn xanh). Low: `NONE` của `runs.mjs` nhận `,` `(` `-` sau "Không có", nên một câu hỏi thật mở đầu như vậy bị bỏ sót.
+  - `security`: không có finding trong diff. Hai chỗ hở có từ trước: (1) `addedLines`, `deletedTests`, `changedLines` không đọc tên file ngoài ASCII mà git đặt trong ngoặc kép, nên suppression trong file như `ghi-chú.ts` lọt khỏi `policy`; (2) giống Medium 1 của `reviewer`: việc filter được gắn vào app và giới hạn thân yêu cầu chỉ có `app.e2e-spec.ts` giữ.
+
+**Cách xử lý** (Claude chọn theo duyệt trước ở Phiên 21 · Lượt 6):
+- Medium 1 và chỗ hở (2): sửa ngay trong PR #4 bằng `/ao-fix 4` kèm ghi chú: `test:coverage` của `apps/api` chạy cả `test/**/*.e2e-spec.ts`, để CI chạy integration test và lcov tính cả dòng chúng phủ. Cùng ghi chú: đổi tên hằng `SECRET` sang tên không giống secret, viết lại commit của nhánh và force push (theo `docs/quality-gates.md`), không dùng `gitleaks:allow`.
+- Medium 2, Low và chỗ hở (1): sửa ở kit sau, chép ở T10.
+- Ghi vào kit: `docs/quality-gates.md` nói rõ `test:coverage` phải chạy cả integration test, chỉ E2E trên trình duyệt chạy ở bước QA.
