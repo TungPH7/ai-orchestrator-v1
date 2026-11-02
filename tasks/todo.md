@@ -278,9 +278,11 @@ Sau khi kit PR merge: một PR chép kit vào `ao-sample` (plan, quyết định
 **Cỡ:** XS
 
 ### Checkpoint 3
-- [ ] Bạn xem code và test của Sub-task đầu, cùng chi phí từ đầu Epic, rồi đồng ý chạy tiếp
+- [x] Bạn xem code và test của Sub-task đầu, cùng chi phí từ đầu Epic, rồi đồng ý chạy tiếp: bạn chọn cách C, chỉ làm tiếp `SMP-4` (Phiên 23 · Lượt 4), vì phần còn lại ước 50–70 USD, vượt xa mức ước 30–45 USD của cả Epic
 
-### [ ] T9: `/ao-build`, `/ao-review`, `/ao-fix` tới khi mọi Story sang Ready for QA [bạn]
+### [ ] T9: `/ao-fix`, `/ao-review` tới khi `SMP-4` sang Ready for QA [bạn]
+
+**Đổi ở Checkpoint 3** (Phiên 23 · Lượt 4, bạn chọn cách C): chỉ làm tiếp `SMP-4`. `SMP-5`, `SMP-6`, `SMP-7`, `SMP-10`, `SMP-11` ở lại Ready, ngoài Pilot 1. Bước 1 dưới đây không chạy; bước 3 chạy `/ao-fix 4` với ghi chú của Claude (CI chạy integration test của API, gitleaks báo nhầm).
 
 **Mô tả:**
 

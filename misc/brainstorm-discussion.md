@@ -9771,3 +9771,5 @@ Mình khuyên B. Cách này đủ để thử cả `be-dev` lẫn `fe-dev` trên
 - **B. Tới Story đầu (Recommended)**: Làm SMP-4 (sửa + review), SMP-5, SMP-6, rồi Story SMP-7 có Sub-task BE và FE. SMP-10 và SMP-11 để ở Ready, làm sau Pilot 1. Ước thêm 35–45 USD, khoảng 3 khung 5 giờ. Tiêu chí 3 của spec đổi theo.
 - **A. Làm hết 6 item**: Đúng tiêu chí 3 như spec: mọi Story sang Ready for QA. Ước thêm 50–70 USD, khoảng 4–5 khung 5 giờ.
 - **C. Chỉ SMP-4**: Sửa, review, bạn approve và merge PR #4. Đủ sáu lệnh /ao-*, nhưng chưa thử fe-dev và Story có Sub-task. Ước thêm 6–10 USD.
+
+**Bạn chọn:** C. Chỉ SMP-4.
