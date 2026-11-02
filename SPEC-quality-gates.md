@@ -243,7 +243,7 @@ coverage:
   changed_lines_min: 80
   lcov: ["coverage/lcov.info", "apps/*/coverage/lcov.info"]
   source: ["**/*.{ts,tsx,js,jsx,mjs,cjs}"]
-  exclude: ["**/*.{test,spec}.*", "**/*.d.ts", "**/*.config.*", "**/migrations/**", "e2e/**", ".ai-orchestrator/**", ".claude/**"]
+  exclude: ["**/*.{test,spec}.*", "**/*.e2e-spec.*", "**/*.d.ts", "**/*.config.*", "**/migrations/**", "e2e/**", ".ai-orchestrator/**", ".claude/**"]
 dependencies:
   audit_level: high
   exceptions: []   # { advisory: GHSA-xxxx-xxxx-xxxx, reason: "...", expires: 2026-12-31 }

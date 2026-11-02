@@ -84,6 +84,14 @@ test('a changed source file missing from lcov fails; config files, migrations, t
   assert.deepEqual(result.problems, ['src/new.ts is not in any lcov file: the coverage of the tests must include every source file']);
 });
 
+test('NestJS end-to-end tests named *.e2e-spec.ts are tests, not source (Pilot 1, PR #4 of ao-sample)', () => {
+  const diff = ['apps/api/test/app.e2e-spec.ts', 'apps/api/test/notes.e2e-spec.ts']
+    .map((file) => `diff --git a/${file} b/${file}\n--- /dev/null\n+++ b/${file}\n@@ -0,0 +1 @@\n+x\n`)
+    .join('');
+  const result = changedLineCoverage({ changed: changedLines(diff), lcov: new Map(), coverage: gates.coverage });
+  assert.deepEqual({ ok: result.ok, problems: result.problems }, { ok: true, problems: [] });
+});
+
 test('a PR that changes no executable line passes', () => {
   const result = changedLineCoverage({ changed: changedLines('diff --git a/README.md b/README.md\n+++ b/README.md\n@@ -1 +1 @@\n+text\n'), lcov: new Map(), coverage: gates.coverage });
   assert.deepEqual({ ok: result.ok, percent: result.percent, problems: result.problems }, { ok: true, percent: 100, problems: [] });
