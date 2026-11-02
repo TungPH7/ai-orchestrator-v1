@@ -59,7 +59,7 @@ test('a Story with Sub-tasks: its state, Agent, parent Epic, each Sub-task, its 
   assert.match(docs.plan, /^# /);
 
   assert.deepEqual([pr.number, pr.state, pr.merged, pr.headRef, pr.base, pr.docsEpic], [11, 'closed', true, 'feature/DEMO-12-coupon-code', 'develop', null]);
-  assert.deepEqual(pr.ci, { green: true, failed: false, pending: false });
+  assert.deepEqual(pr.ci, { green: true, failed: false, pending: false, started: true });
   assert.deepEqual(pr.reports.reviewer, { sha: pr.headSha, at: '2026-10-30T19:46:40Z', ok: true, blocking: 0, state: 'COMMENTED', onHead: true });
   assert.equal(pr.reports.security.onHead, true);
   assert.deepEqual([pr.changesRequested, pr.approved, pr.protectedPaths], [false, true, []]);
@@ -107,7 +107,7 @@ test('status without a key lists the items not done, with their flags and reques
 test('the read-only App token cannot read the older commit statuses: CI is read from the check runs then (T12)', async () => {
   const statusless = (a) => (a.github['/commits/2e3689d23cc9ab587355836551a4fa3f5231d4bc/status'] = { $status: 403 });
   const facts = await gather('review', '11', { change: statusless });
-  assert.deepEqual(facts.pr.ci, { green: true, failed: false, pending: false });
+  assert.deepEqual(facts.pr.ci, { green: true, failed: false, pending: false, started: true });
   const otherError = (a) => (a.github['/commits/2e3689d23cc9ab587355836551a4fa3f5231d4bc/check-runs'] = { $status: 403 });
   await assert.rejects(gather('review', '11', { change: otherError }), /returned 403/, 'only the statuses are read around');
 });

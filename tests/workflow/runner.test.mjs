@@ -42,7 +42,7 @@ function specWorld(start = {}) {
     command: 'spec',
     space: 'DEMO',
     item: { key: 'DEMO-20', type: 'Epic', workType: 'epic', state: 'specifying', status: 'Specifying', summary: 'Xóa sản phẩm', labels: [], flagged: world.flagged, flag: world.flagged ? 'other' : null, children: [], requests: [], subtasks: [] },
-    docs: { branch: BRANCH, exists: Boolean(world.spec), pr: world.pr && { ...world.pr, ci: { pending: world.ciPendingFor > 0, green: world.ciPendingFor === 0, failed: false } }, spec: world.spec, design: world.design, plan: null },
+    docs: { branch: BRANCH, exists: Boolean(world.spec), pr: world.pr && { ...world.pr, ci: { pending: world.ciPendingFor > 0, green: world.ciPendingFor === 0, failed: false, started: world.ciStarted ?? true } }, spec: world.spec, design: world.design, plan: null },
     pr: null,
     wip: { epicShaping: { used: 1, limit: 1 }, devAgent: {} },
     ledger: false,
@@ -55,7 +55,7 @@ function specWorld(start = {}) {
 }
 
 // A harness: fake agents that do what `effects` says per purpose, a store in memory, git and time that do nothing.
-function harness(world, effects, { outcomes = [] } = {}) {
+function harness(world, effects, { outcomes = [], texts = [] } = {}) {
   const calls = [];
   const states = [];
   const last = {};
@@ -77,7 +77,7 @@ function harness(world, effects, { outcomes = [] } = {}) {
     const outcome = outcomes.shift() ?? 'success';
     if (outcome === 'success') effects[run.purpose]?.(world, run);
     active -= 1;
-    return { lines: runLines({ session: `s-${run.role}-${calls.length}`, outcome, cost: 0.25 * calls.length }) };
+    return { lines: runLines({ session: `s-${run.role}-${calls.length}`, outcome, cost: 0.25 * calls.length, text: texts.shift() ?? 'Done.' }) };
   };
   const checkouts = [];
   return {
@@ -184,6 +184,23 @@ test('CI that does not finish in time stops the runner; so does the most runs pe
   const many = specWorld();
   const h2 = harness(many.world, SPEC_EFFECTS);
   assert.match((await h2.run({ gather: many.gather, limits: { maxRuns: 2 } })).decision.reason, /^2 runs in one command/);
+});
+
+test('a PR whose CI has not started stops the runner after the start limit, not the whole CI wait (SMP-2)', async () => {
+  const { world, gather } = specWorld({ spec: NFR, design: DESIGN });
+  const h = harness(world, { 'docs-pr': (w) => ((w.pr = { number: 14, state: 'open', merged: false }), (w.ciPendingFor = 999), (w.ciStarted = false)) });
+  const idle = await h.run({ gather, limits: { ciWaitMs: 30 * 60000, ciStartMs: 5 * 60000 } });
+  assert.match(idle.decision.reason, /^no CI run started on PR #14 after 5 minutes/);
+  assert.ok(world.ciPendingFor > 999 - 30, 'it stopped long before the 30 minutes of the CI wait');
+});
+
+test('an answer longer than state.json keeps says where it was cut and where the whole of it is', async () => {
+  const { world, gather } = specWorld({ spec: NFR, design: DESIGN });
+  const h = harness(world, { 'docs-pr': (w) => (w.pr = { number: 14, state: 'open', merged: false }) }, { texts: ['x'.repeat(2500)] });
+  await h.run({ gather });
+  const [record] = world.run.runs;
+  assert.match(record.text, /^x{2000} … \[cut at 2000 characters; the whole answer is in 1-ba\.jsonl\]$/);
+  assert.match(h.last['DEMO-20'], /cut at 2000 characters/);
 });
 
 test('the second /ao-plan asks for jira-sync and waits for the docs PR to be merged; no agent runs', async () => {
