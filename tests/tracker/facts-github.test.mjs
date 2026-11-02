@@ -159,7 +159,7 @@ test('guards from other sources are left out, and the PR list is read once', asy
 });
 
 test('merge-gate shares the reading of checks and reviews: readChecks, the latest deciding review, changes requested on a commit', async () => {
-  assert.deepEqual(await readChecks(recordedClient(answers), 'c5'), { green: true, failed: false });
+  assert.deepEqual(await readChecks(recordedClient(answers), 'c5'), { green: true, failed: false, started: true });
   const reviews = [
     { user: { login: 'TungPH7' }, state: 'CHANGES_REQUESTED', commit_id: 'c4' },
     { user: { login: 'reviewer-bot' }, state: 'COMMENTED', commit_id: 'c5' },
@@ -169,4 +169,9 @@ test('merge-gate shares the reading of checks and reviews: readChecks, the lates
   assert.equal(lastDecision(reviews, 'reviewer-bot'), undefined);
   assert.equal(changesRequestedOn(reviews, 'c4'), true);
   assert.equal(changesRequestedOn(reviews, 'c5'), false);
+});
+
+test('readChecks says whether CI started on a commit: no check run and no status means not yet (SMP-2)', async () => {
+  const github = { getAll: async () => [], get: async () => ({ total_count: 0, state: 'pending', statuses: [] }) };
+  assert.deepEqual(await readChecks(github, 'c9'), { green: false, failed: false, started: false });
 });
