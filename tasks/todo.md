@@ -215,7 +215,7 @@ Chưa commit.
 7. Claude chạy lại `/ao-plan`: item sang Ready, `merge-gate` merge PR tài liệu.
 8. Claude kiểm điểm 6 của spec mục 2.8: panel Development của Epic thấy nhánh và PR tài liệu.
 
-**Kết quả (2026-11-02):** PR tài liệu #1 do `merge-gate` merge (`2fc61a1`, App `ao-dev`); `CI` và `Deploy` xanh trên `develop`. Chi phí agent 15,14 USD (ước 12–18 USD). Điểm 6: API dev-status trả 401 với token CI, nên bạn xem panel Development của `SMP-2`.
+**Kết quả (2026-11-02):** PR tài liệu #1 do `merge-gate` merge (`2fc61a1`, App `ao-dev`); `CI` và `Deploy` xanh trên `develop`. Chi phí agent 15,14 USD (ước 12–18 USD). Điểm 6 đạt: bạn xem panel Development của `SMP-2` (API dev-status trả 401 với token CI).
 
 **Tiêu chí chấp nhận:**
 - [x] SPEC, design (nếu có), plan và ADR (nếu có) nằm trong `docs/specs/<EPIC>/` trên `develop`, vào qua PR tài liệu do `merge-gate` merge.
