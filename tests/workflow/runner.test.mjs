@@ -192,6 +192,20 @@ test('a PR whose CI has not started stops the runner after the start limit, not 
   const idle = await h.run({ gather, limits: { ciWaitMs: 30 * 60000, ciStartMs: 5 * 60000 } });
   assert.match(idle.decision.reason, /^no CI run started on PR #14 after 5 minutes/);
   assert.ok(world.ciPendingFor > 999 - 30, 'it stopped long before the 30 minutes of the CI wait');
+  assert.ok(world.ciPendingFor <= 999 - 10, 'it waited the 5 minutes, 10 polls of 30 s, before it stopped');
+});
+
+test('CI that starts a few polls after the PR opens does not stop the runner: it waits and goes on to gate ① (review of SMP-3)', async () => {
+  const { world, gather } = specWorld({ spec: NFR, design: DESIGN });
+  let polls = 0;
+  const late = async () => {
+    polls += 1;
+    if (polls > 3) world.ciStarted = true;
+    return gather();
+  };
+  const h = harness(world, { 'docs-pr': (w) => ((w.pr = { number: 14, state: 'open', merged: false }), (w.ciPendingFor = 6), (w.ciStarted = false)) });
+  const { decision } = await h.run({ gather: late, limits: { ciWaitMs: 30 * 60000, ciStartMs: 5 * 60000 } });
+  assert.match(decision.reason, /docs PR #14 of DEMO-20 is open: stage spec is done/);
 });
 
 test('an answer longer than state.json keeps says where it was cut and where the whole of it is', async () => {
