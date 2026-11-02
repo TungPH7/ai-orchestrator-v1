@@ -178,7 +178,7 @@ Ghi chú: đọc `SMP-1` bằng token CI, tên status trả về là `全新` (t
 - Bạn dọn `SMP-1` và bấm `Start spec` trên `SMP-2`. Claude kiểm bằng token CI: `SMP-1` ở Cancelled, resolution Won't Do, không cờ, không nhãn; `SMP-2` ở Specifying.
 - Ảnh panel Development của `SMP-1` (`misc/images/phien-22-luot-1-anh-1.png`): tab Builds có `Deploy` #1 đỏ và `merge-gate` #1 xanh. GitHub for Atlassian đã gắn run của commit `6f5831d` vào `SMP-1`, nên phần GitHub for Atlassian của Checkpoint 2 đạt. Phần thấy nhánh và PR (điểm 6) vẫn kiểm trên PR tài liệu.
 - `node .ai-orchestrator/scripts/ao-step.mjs spec SMP-2`: `GO`, bốn lượt (`ba` spec-write, `ux` design, `sa` spec-nfr, `ba` docs-pr), tất cả effort xhigh.
-- **`/ao-spec SMP-2` lần 1** (14:43–14:48): `MSYS_NO_PATHCONV=1 claude -p --model sonnet --output-format stream-json --verbose "/ao-spec SMP-2"` trong `ao-sample`, ở nền. Skill chạy `--go` ở nền, rồi `claude -p` chờ thông báo của lệnh nền, đọc `last.md` và báo bằng tiếng Việt, rồi thoát 0. Phiên Sonnet điều phối có hai kết quả, tổng 5 turn, 0,25 USD. Lệnh dừng sau lượt 1, vì `ba` để lại 4 câu hỏi (Q1 giới hạn độ dài, Q2 vị trí trang, Q3 sắp xếp và cách hiện, Q4 lúc hiện lỗi). SPEC nằm ở `docs/specs/SMP-2/spec.md`, commit `7e70fcb` trên `feature/SMP-2-spec`, chưa push.
+- **`/ao-spec SMP-2` lần 1** (14:43–14:48): `MSYS_NO_PATHCONV=1 claude -p --model sonnet --output-format stream-json --verbose "/ao-spec SMP-2"` trong `ao-sample`, ở nền. Skill chạy `--go` ở nền, rồi `claude -p` chờ thông báo của lệnh nền, đọc `last.md` và báo bằng tiếng Việt, rồi thoát 0. Phiên Sonnet điều phối có hai kết quả, tổng 5 turn, 0,14 USD. `total_cost_usd` của `claude -p` cộng dồn cả phiên, kể cả các lần `--resume`. Lệnh dừng sau lượt 1, vì `ba` để lại 4 câu hỏi (Q1 giới hạn độ dài, Q2 vị trí trang, Q3 sắp xếp và cách hiện, Q4 lúc hiện lỗi). SPEC nằm ở `docs/specs/SMP-2/spec.md`, commit `7e70fcb` trên `feature/SMP-2-spec`, chưa push.
 
 | # | Lượt | Model | Bước | Effort | Kết quả | Turn | Thời gian | Token vào / ra | Cache đọc / ghi | Chi phí quy đổi | Bị từ chối |
 |---|---|---|---|---|---|---|---|---|---|---|---|
@@ -186,10 +186,12 @@ Ghi chú: đọc `SMP-1` bằng token CI, tên status trả về là `全新` (t
 | 2 | `ba` | Opus 5.5 | spec-write, trả lời | xhigh | done | 11 | 1,0 phút | 14 / 5.527 | 727.460 / 10.324 | 0,34 USD | 0 |
 | 3 | `ux` | Sonnet 5.5 | design | xhigh | done | 28 | 6,9 phút | 39 / 48.219 | 1.315.880 / 93.693 | 0,99 USD | 0 |
 | 4 | `sa` | Opus 5.5 | spec-nfr | xhigh | done, 2 câu hỏi | 29 | 7,4 phút | 52 / 38.825 | 1.806.741 / 111.375 | 2,03 USD | 0 |
+| 5 | `sa` | Opus 5.5 | spec-nfr, trả lời | xhigh | done | 16 | 1,9 phút | 24 / 9.258 | 1.361.831 / 133.327 | 1,52 USD | 0 |
+| 6 | `ba` | Opus 5.5 | docs-pr | xhigh | done | 20 | 2,3 phút | 28 / 9.400 | 641.627 / 60.112 | 0,80 USD | 0 |
 
 So với `DEMO-20`: lượt spec-write của `ba` ở đó tốn 1,63 USD, 22 turn.
 
-- **`/ao-spec SMP-2` lần 2** (15:25–15:42): bạn trả lời "đồng ý cả bốn". Claude nối lại phiên `claude -p` của lần 1 (`--resume`), đưa câu trả lời qua stdin, thêm `--permission-mode acceptEdits`. Phiên đó ghi `.ai/runs/SMP-2/answers.md`, rồi chạy `--go --answers` ở nền. Lệnh chạy lượt 2–4, rồi dừng vì `sa` để lại 2 câu hỏi: Q1 cách đếm emoji, Q2 chuẩn hóa NFC và xuống dòng trước khi đếm và lưu. Phiên Sonnet điều phối: hai kết quả, 7 turn, 0,44 USD, 1 lần bị từ chối. Bốn commit trên `feature/SMP-2-spec` (`7e70fcb`, `9dab82b`, `f4ce2a9`, `ced52e7`), chưa push. Chi phí agent của `SMP-2` tới đây: 4,85 USD.
+- **`/ao-spec SMP-2` lần 2** (15:25–15:42): bạn trả lời "đồng ý cả bốn". Claude nối lại phiên `claude -p` của lần 1 (`--resume`), đưa câu trả lời qua stdin, thêm `--permission-mode acceptEdits`. Phiên đó ghi `.ai/runs/SMP-2/answers.md`, rồi chạy `--go --answers` ở nền. Lệnh chạy lượt 2–4, rồi dừng vì `sa` để lại 2 câu hỏi: Q1 cách đếm emoji, Q2 chuẩn hóa NFC và xuống dòng trước khi đếm và lưu. Phiên Sonnet điều phối: hai kết quả, 7 turn, 0,12 USD (cộng dồn 0,26 USD), 1 lần bị từ chối. Bốn commit trên `feature/SMP-2-spec` (`7e70fcb`, `9dab82b`, `f4ce2a9`, `ced52e7`), chưa push. Chi phí agent của `SMP-2` tới đây: 4,85 USD.
 - **Lỗi kit, không chặn Epic:**
   - Skill bảo Claude ghi câu trả lời vào `.ai/runs/<KEY>/answers.md`, nhưng luật `allow` của kit chỉ có `Bash(node .ai-orchestrator/scripts/ao-step.mjs:*)`. Trong `claude -p` không ai bấm duyệt được tool Write, nên Claude thêm `--permission-mode acceptEdits` khi nối lại phiên. Cách sửa: thêm luật cho Write vào `.ai/runs/`, hoặc ghi cờ này vào `docs/dev-workflow.md`.
   - Skill dặn ghi câu trả lời "as they are". Phiên Sonnet ghi nguyên văn "đồng ý cả bốn", rồi chép thêm đề xuất của từng câu. Nội dung đúng với SPEC, nhưng không còn là nguyên văn.
@@ -197,3 +199,29 @@ So với `DEMO-20`: lượt spec-write của `ba` ở đó tốn 1,63 USD, 22 tu
   - `last.md` cắt câu trả lời của `ux` và `sa` ở 2000 ký tự, như ở lần 1.
 
 **Lỗi kit, không chặn Epic:** phần "its answer" của `last.md` dừng giữa câu ("would redire"), không có dấu báo bị cắt. `lib/workflow/runner.mjs` dòng 91 cắt câu trả lời của agent ở 2000 ký tự khi ghi `state.json`, và `last.md` lấy chữ từ đó. Phần "Questions" của `last.md` vẫn đủ cả bốn câu. Sửa ở kit cùng các lỗi không chặn khác, chép một lần ở T10 (plan, quyết định 6).
+
+- **`/ao-spec SMP-2` lần 3** (15:54–16:29): bạn trả lời "đồng ý cả hai". Claude nối lại phiên `claude -p` như lần 2. Lượt 5: `sa` ghi hai câu trả lời vào SPEC (`9caa18a`). Lượt 6: `ba` push nhánh và mở PR tài liệu #1 bằng App `ao-dev` (15:58:44, 2 file, 502 dòng). Sau đó `ao-step` chờ CI trên PR #1 đủ 30 phút rồi dừng: "CI is still running after 30 minutes". Phiên Sonnet điều phối: 0,23 USD (cộng dồn 0,49 USD cho cả ba lần). Chi phí agent của `SMP-2` tới gate ①: 7,17 USD, 6 lượt (`DEMO-20`: 7,84 USD).
+
+**GitHub không chạy workflow theo sự kiện ở `ao-sample` (16:20–16:34).** Bạn hỏi vì sao lệnh không dừng sau hơn 20 phút.
+
+| Bước | Kết quả |
+|---|---|
+| Run của repo | Chỉ có hai run `workflow_dispatch` hôm qua. Không có run nào cho push đầu (`main`, `develop`), cũng không có run nào cho sự kiện mở PR #1 |
+| Actions của repo | `enabled: true`, `allowed_actions: all`; năm workflow `active`; trang trạng thái của GitHub: "All Systems Operational" |
+| Check suite trên `9caa18a` (head của PR #1) | Không có |
+| Thông điệp commit | Không có `[skip ci]` hay `skip-checks` |
+| So với `ao-pilot` | Năm file workflow giống hệt bản trên `develop` của `ao-pilot`, nơi chúng vẫn chạy. Repo kit (private) chạy CI cho PR #143 hôm nay |
+| Đóng rồi mở lại PR #1 (16:30:12) | Không có run |
+| Push nhánh tạm `probe/actions-trigger` có workflow mới `probe.yml` (`on: push`) (16:31:57) | `probe` chạy ngay |
+| Sửa nhẹ `ci.yml` trên nhánh tạm, mở PR nháp #2 (16:32:40) | `CI` và `jira-sync` đều chạy, kể cả `jira-sync.yml` không bị sửa |
+| Đóng rồi mở lại PR #1 lần nữa (16:33:20) | `jira-sync` và `CI` chạy; `CI` xanh (run 41421626447) |
+| Dọn | Đóng PR #2, xóa nhánh `probe/actions-trigger` |
+
+[Inference] Các file workflow vào repo cùng lần push đầu lên repo trống, và GitHub chưa ghi nhận trigger sự kiện của chúng. `workflow_dispatch` vẫn chạy được vì đọc thẳng file. Lần push đầu tiên đụng tới `.github/workflows/` (nhánh tạm) làm GitHub ghi nhận lại, và từ đó mọi workflow chạy theo sự kiện. Ở `ao-pilot`, commit đầu được tạo trên giao diện, trước khi có workflow, nên không gặp lỗi này. Ghi vào đầu vào cho `project-scaffold`: dựng repo bằng một commit đầu không có workflow, hoặc sau push đầu thì push thêm một commit đụng `.github/workflows/`, rồi kiểm có run trước khi chạy agent.
+
+- Sau khi `CI` xanh, `ao-step.mjs spec SMP-2` báo: "the docs PR #1 of SMP-2 is open: stage spec is done and waits for you at gate ① spec-approval". Claude không gõ lại `/ao-spec` qua `claude -p`, vì bước kiểm đã cho cùng kết quả.
+
+**Lỗi kit:**
+- **`openQuestions` bỏ sót câu hỏi của `ux`** (`lib/workflow/runs.mjs`). Câu hỏi đầu trong `design.md` là "**Không có Figma.** …". Hàm coi dòng bắt đầu bằng "Không có" là câu "không có câu hỏi", nên trả 0 câu hỏi; bỏ dòng đó đi thì trả 9. Vì vậy lệnh không dừng để hỏi bạn 10 câu hỏi mở của `ux`. Chúng vẫn nằm trong `design.md` trên PR #1, mỗi câu có đề xuất. Sửa: chỉ coi là "không có câu hỏi" khi cả mục chỉ có câu đó, kèm test đỏ trước.
+- **`ao-step` chờ CI đủ 30 phút khi CI chưa từng bắt đầu**, rồi báo "CI is still running", sai với thực tế. Sửa: nếu sau vài phút head của PR vẫn chưa có check suite hay run nào, dừng sớm với lý do "no CI run started for <sha>".
+- Cả hai không chặn Epic nếu bạn nhận đề xuất của `ux` như `design.md` hiện có, bạn chọn ở gate ①. Sửa ở kit, chép ở T10.
