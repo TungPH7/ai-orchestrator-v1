@@ -77,6 +77,10 @@ node .ai-orchestrator/scripts/ao-agent.mjs fe-dev --effort max -p "..."
 - **Có đáng nâng không:** ở phép so của T21, `fe-dev` ở `max` tốn gấp 3,2 lần và chạy lâu gấp 3,9 lần so với `high`. Kết quả thì như nhau: cùng cách làm, cùng đạt checklist và trường hợp biên, cùng mức finding. Vì vậy roster giữ `high`. Chỉ nâng cho item thật sự khó, hoặc item bị trả về lần hai.
 - Chọn effort theo từng item (`sa` ghi mức trong plan, bạn duyệt ở gate ②, script đọc nhãn của item) là việc của `dev-workflow`.
 
+## Cache của lượt chạy
+
+`ao-step` chạy mỗi agent với `CLAUDE_CODE_PROMPT_CACHE_TTL=5m`. Trên gói subscription, `claude -p` mặc định ghi cache loại 1 giờ. Một lượt agent gọi API cách nhau vài giây, nên cache 5 phút là đủ, mà giá ghi rẻ hơn: với Opus 5.5 là 5 USD cho 1 triệu token, so với 8 USD của loại 1 giờ. Ở phép đo trên PR #4 của `ao-sample` (Pilot 1), chỉ riêng việc này đã giảm lượt `reviewer` từ 1,18 xuống 0,95 USD. Biến cần Claude Code từ v2.1.242. Chạy tiếp một lượt sau hơn 5 phút, ví dụ sau giới hạn 5 giờ, thì lượt đó ghi lại cache một lần.
+
 ## Skill
 
 - **16 skill chép vào kit** nằm ở `.claude/skills/` của dự án, ghim theo commit trong `agents/roster.yaml`. Đó là 13 skill của agent-skills, cộng `playwright-cli`, `sentry-security-review` và `gha-security-review`. Cập nhật một skill: chạy `npm run skills:vendor -- <name>` trong repo kit sau khi đổi commit trong roster, rồi đọc diff trong PR.

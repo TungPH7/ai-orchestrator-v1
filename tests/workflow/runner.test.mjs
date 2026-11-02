@@ -261,12 +261,14 @@ test('the printout: the facts, then GO and the runs, or STOP with the reason and
   assert.equal(formatDecision({ go: true, lines: [], runs: [{ action: 'jira-sync', key: 'DEMO-20', then: { mergeGate: 14 } }] }), 'GO\n1. jira-sync for DEMO-20, with your gh login; then merge-gate merges the docs PR #14');
 });
 
-test('the command of a run: ao-agent.mjs, stream-json, the effort as flag and variable, and never a token', () => {
+test('the command of a run: ao-agent.mjs, stream-json, the effort as flag and variable, the five-minute cache, and never a token', () => {
   const run = { role: 'fe-dev', key: 'DEMO-23', effort: 'xhigh', prompt: 'Build Sub-task DEMO-23.', resume: 's-fe' };
   const { command, args, env } = agentCommand(run, 'D:\\work\\shop\\.ai-orchestrator');
   assert.equal(command, process.execPath);
   assert.deepEqual(args, ['D:/work/shop/.ai-orchestrator/scripts/ao-agent.mjs', 'fe-dev', '-p', 'Build Sub-task DEMO-23.', '--output-format', 'stream-json', '--verbose', '--effort', 'xhigh', '--resume', 's-fe']);
-  assert.deepEqual(env, { CLAUDE_CODE_EFFORT_LEVEL: 'xhigh' });
+  // A run sends its requests seconds apart, so the five-minute cache is enough and its writes cost 5 USD per million
+  // tokens on Opus 5.5 instead of 8 for the one-hour cache that claude -p on a subscription asks for (Pilot 1, PR #4).
+  assert.deepEqual(env, { CLAUDE_CODE_EFFORT_LEVEL: 'xhigh', CLAUDE_CODE_PROMPT_CACHE_TTL: '5m' });
   assert.ok(![...args, ...Object.values(env)].some((word) => /gh[sopu]_|ATATT|token/i.test(word)));
 });
 
