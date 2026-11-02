@@ -78,7 +78,7 @@ T9 ── T10 bản sửa kit còn lại, tài liệu, lưu trữ
 
 ### Giai đoạn 3: Epic thử
 - [x] T7: Epic "Ghi chú": `/ao-spec`, `/ao-plan` tới lúc PR tài liệu được merge [bạn]
-- [ ] T8: `/ao-build` lượt đầu [bạn]
+- [x] T8: `/ao-build` lượt đầu [bạn]
 
 ### Checkpoint 3
 - [ ] Bạn xem code và test của Sub-task đầu, cùng chi phí từ đầu Epic, rồi đồng ý chạy tiếp
