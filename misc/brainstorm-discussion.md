@@ -9984,3 +9984,83 @@ Claude so `.ai-orchestrator/lib` và `.ai-orchestrator/quality` trên `develop` 
 **Mình khuyên:** để tới T10 và chép một lần cùng các bản sửa kit còn lại. Với cách C, Pilot 1 không còn lượt `/ao-fix` nào trên `ao-sample`, nên lỗi này không gặp lại. Nếu bạn muốn `ao-sample` khớp kit ngay, mình chép bây giờ theo cách của PR #5.
 
 Mời bạn nêu điểm tiếp theo.
+
+# Phiên 23 · Lượt 9 — 2026-11-03 khoảng 01:40 → 02:05
+
+**Bạn:**
+
+````markdown
+2. Trong các lượt bên dưới:
+
+/ao-spec, /ao-plan, /ao-build, /ao-review, /ao-fix
+
+Tôi tôi quan sát thì thấy /ao-review (gồm reviewer và security), 2 agent này chạy khá là lâu (từ 10 - 15 phút cho SMP-4) và cực kỳ tốn token, trong khi PR chỉ có 6 files changed (https://github.com/TungPH7/ao-sample/pull/4/changes), vậy nguyên nhân là gì? SA, BA, UX chạy lâu thì có thể hiểu được vì 3 agent đó làm nguyên 1 epic, còn reviewer và security chỉ chạy ở mỗi Task, Sub-task, Story (đã được chia nhỏ từ Epic), task nhỏ mà chạy reviewer và security cứ mất khoảng 20 - 30 phút như này thì không thể chấp nhận được, theo như bạn báo cáo thì Chi phí của SMP-4: 10,23 USD (build 2,47, sửa 2,36, review 5,40) review hơn gấp đôi build. Task SMP-4 chỉ có 6 file changed đã mất khoảng 10 - 15 phút cho mỗi agent reviewer/security, thì những task có cả 100 file changed thì tôi nghĩ sẽ mất hàng giờ để review và security? Hay reviewer và security review cả codebase thay vì review những file changed
+
+Có thể giảm thời gian và lượng token tiêu thụ xuống mà không giảm chất lượng output được không? Hay nếu giảm thì có đánh đổi gì?
+````
+
+Claude đọc log của bốn lượt review (`SMP-4` lượt 3–4, `SMP-12` lượt 1–2) và lượt build của `SMP-4`: thời gian suy nghĩ, thời gian chạy tool, cỡ bối cảnh từng lượt gọi, các tool đã gọi. Claude khớp token và chi phí của 14 lượt Opus để ra giá mỗi loại token, đọc hướng dẫn của `reviewer` và roster, rồi đọc trang "How Claude Code uses prompt caching" của tài liệu Claude Code (TTL của `claude -p`, biến `CLAUDE_CODE_PROMPT_CACHE_TTL`).
+
+**Claude:**
+
+Mình đọc log của 4 lượt review (PR #4 của `SMP-4` và PR #5 của `SMP-12`) và lượt build của `SMP-4` để xem thời gian và token đã đi vào đâu.
+
+**Trả lời ngắn**
+- **Không, `reviewer` và `security` không review cả codebase.** Chúng mở 0–1 file bằng tool Read. Phần còn lại là `gh pr diff`, `git show` các file của PR, cộng SPEC, plan, ADR của Epic và item trên Jira. Riêng `security` có lúc truy ra ngoài diff, vì mẫu báo cáo có mục "Outside the diff".
+- **Chi phí gần như không theo số file.** PR #5 chỉ có 4 file, 16 dòng, mà review vẫn tốn 5,50 USD và 20,5 phút. PR #4 có 6 file, 502 dòng, tốn 5,40 USD và 18,1 phút. Phần lớn là chi phí cố định của mỗi lượt review.
+
+**Thời gian đi đâu** (phút)
+
+| Lượt | Tổng | Suy nghĩ | Chạy tool | Còn lại (sinh chữ, chờ API) |
+|---|---|---|---|---|
+| `reviewer` PR #4 | 7,2 | 3,0 | 1,9 | 2,3 |
+| `security` PR #4 | 10,9 | 8,0 | 1,8 | 1,1 |
+| `reviewer` PR #5 | 6,3 | 2,3 | 1,2 | 2,8 |
+| `security` PR #5 | 14,2 | 10,2 | 2,2 | 1,8 |
+| `be-dev` build `SMP-4` | 9,9 | 2,0 | 5,0 | 2,9 |
+
+`security` dành 70–75% thời gian để suy nghĩ, vì chạy ở effort `max`. `be-dev` thì ngược lại: phần lớn thời gian là chạy test.
+
+**Tiền đi đâu.** Mình khớp số liệu của 14 lượt Opus đã chạy và ra đúng một bảng giá, không sai lệch: input 4 USD, output 20 USD, đọc cache 0,20 USD, ghi cache 8 USD cho mỗi 1 triệu token.
+
+| Lượt | Chi phí | Output (phần lớn là suy nghĩ) | Ghi cache | Đọc cache |
+|---|---|---|---|---|
+| `security` PR #4 | 3,17 USD | 40% (63.795 token, 49.734 là suy nghĩ) | 40% | 20% |
+| `reviewer` PR #4 | 2,23 USD | 32% | 45% | 24% |
+
+Mỗi lượt gọi API gửi lại toàn bộ bối cảnh. Lúc đầu bối cảnh chỉ có định nghĩa agent, skill và tool, khoảng 22–26 nghìn token. Agent kéo thêm diff, file đầy đủ, SPEC (hơn 500 dòng), plan (350 dòng), ADR, item Jira, mẫu báo cáo, nên tới cuối bối cảnh lên 124–182 nghìn token, qua 28–36 lượt gọi. Phần mới mỗi lượt bị ghi vào cache loại 1 giờ, giá gấp đôi input.
+
+**Nguyên nhân, xếp theo mức ảnh hưởng**
+1. **Effort `max` của `security`**: 8–10 phút và khoảng 50 nghìn token suy nghĩ mỗi lượt. `reviewer` chạy ở `xhigh`.
+2. **Bối cảnh cố định của mỗi PR**: hướng dẫn của `reviewer` bảo đọc SPEC, design và plan của cả Epic, dù item chỉ dính một phần nhỏ. `security` cũng đọc lại gần như cùng những thứ đó.
+3. **Kiểm bằng thực nghiệm**:
+   - `reviewer` dựng bản sao để chạy mutation test, hoặc thêm file thử.
+   - `security` truy các hàm ra ngoài diff.
+
+   Đây chính là cách tìm ra finding đáng giá nhất (CI không chạy integration test), nhưng tốn nhiều lượt.
+4. **Cache 1 giờ**: theo tài liệu Claude Code, `claude -p` trên gói subscription mặc định dùng cache 1 giờ. Các lượt agent chạy liền mạch, nên cache 5 phút là đủ. Tài liệu ghi rõ cache 1 giờ "costs more on short bursts of work that never idle past five minutes".
+
+Review tốn gấp đôi build vì có 2 agent, mỗi agent trả phần bối cảnh cố định riêng, và một agent chạy ở `max`. Build chỉ có 1 agent, và nó dành nhiều thời gian chạy test, phần này không tốn token.
+
+**Còn PR 100 file?** [Inference] Phần cố định (khoảng 4–5 USD và 15 phút cho 2 agent) giữ nguyên, phần còn lại tăng theo cỡ diff. Diff 100 file có thể tới 100–200 nghìn token, nên mỗi lượt gọi đắt hơn và cần nhiều lượt hơn. Mình đoán khoảng 30–60 phút và 15–30 USD, nhưng chưa đo. Mặt khác, plan của kit giữ item nhỏ (mỗi Task hay Sub-task 1–5 file code), nên một PR 100 file thường là dấu hiệu item cần chia nhỏ.
+
+**Có giảm được mà không giảm chất lượng không?** Có, một phần. Mức giảm dưới đây là ước tính, chưa đo:
+
+| # | Cách | Giảm (ước) | Đánh đổi |
+|---|---|---|---|
+| 1 | Cache 5 phút cho mọi lượt agent: thêm `CLAUDE_CODE_PROMPT_CACHE_TTL=5m` vào env mà `runner.mjs` đặt cho agent (cạnh `CLAUDE_CODE_EFFORT_LEVEL`; cần Claude Code từ 2.1.242, agent đang chạy 2.1.316) | Khoảng 15% chi phí mọi lượt, cả build lẫn review | Gần như không có. Chỉ khi chạy tiếp một lượt sau hơn 5 phút (ví dụ sau giới hạn 5 giờ) thì phải ghi lại cache một lần. [Unverified] Hạn mức của gói Pro có tính ghi cache theo cùng tỷ lệ với giá không thì mình chưa kiểm |
+| 2 | Gói bối cảnh dựng sẵn: `ao-step` ghi trước một file cho mỗi PR, gồm diff, file đầy đủ, AC của item, và chỉ đoạn plan và SPEC mà item dính tới. Agent vẫn được đọc thêm khi cần | 25–40% tiền và thời gian review, vì ít lượt gọi và bối cảnh nhỏ hơn | Agent có thể bỏ sót vấn đề xuyên Epic nếu không tự đọc thêm |
+| 3 | Effort của `security` theo rủi ro: `ao-step` chọn `max` khi diff chạm input, xác thực, secret, dependency, workflow hay protected path; còn lại `high` | 30–50% của `security` ở PR rủi ro thấp | Phân tích nông hơn ở PR bị xếp "rủi ro thấp"; luật xếp sai thì lỗi có thể lọt. PR #4 vẫn sẽ chạy `max` |
+| 4 | Chạy `reviewer` và `security` song song | Thời gian chờ từ khoảng 18 xuống khoảng 11 phút; không giảm token | Tốn RAM gấp đôi (máy từng tắt lượt vì thiếu RAM); `security` không đọc được báo cáo của `reviewer` trước |
+| 5 | Chỉ dựng thực nghiệm khi nghi Critical, High hoặc khi chưa chắc | Ít lượt gọi hơn | Ít finding có chứng cứ. Finding Medium về CI của PR #5 đến từ kiểu kiểm này |
+| 6 | `reviewer` dùng Sonnet ở PR nhỏ | Rẻ hơn (chưa đo) | Dễ bỏ sót lỗi tinh vi |
+
+**Mình khuyên** làm 1, rồi 2, rồi 3:
+- Cách 1 gần như không đánh đổi gì.
+- Cách 2 và 3 giảm nhiều mà vẫn giữ cách review hiện tại.
+- Cách 4 chỉ đáng làm nếu bạn coi thời gian chờ quan trọng hơn RAM.
+- Mình không khuyên cách 5 và 6, vì chúng đổi thẳng chất lượng lấy tiền.
+
+Trước khi sửa kit, có thể đo thật bằng cách chạy lại `reviewer` trên PR #4 với cách 1 và 2, rồi so chi phí và finding với lần trước. Lần đo này tốn khoảng 1,5–2,5 USD.
+
+Mời bạn nêu điểm tiếp theo, hoặc cho mình biết bạn chọn cách nào để mình đưa vào kit.
