@@ -168,7 +168,9 @@ PR tài liệu không cần báo cáo của `reviewer` hay `security`, và khôn
 
 Khi đó prompt là "Review PR #<n>, only the changes since <X>; your full report on <X> is the review of <ngày>". Báo cáo vẫn đăng trên head, theo template, có thêm dòng `Scope: changes since <X>`. Vì vậy `merge-gate` và `audit` không đổi.
 
-Thiếu một trong bốn điều thì `security` review đầy đủ ở `max`. `reviewer` luôn review đầy đủ PR trên head.
+Thiếu một trong bốn điều thì `security` review đầy đủ. `reviewer` luôn review đầy đủ PR trên head.
+
+Effort của lượt review đầy đủ (đổi ở Pilot 1, Phiên 23 · Lượt 9–16, vì `security` ở `max` nghĩ 8–10 phút trên mọi PR, kể cả PR chép kit 16 dòng): `max` khi item hoặc một Sub-task của nó có nhãn effort, hoặc khi PR chạm đường dẫn được bảo vệ hay một mẫu của `security_review.roster_effort_paths` trong `quality/gates.yaml`; `security_review.lower_effort` (`high`) khi không.
 
 ### 2.7 `merge-gate` báo PR cần bạn
 

@@ -17,7 +17,7 @@ Claude của phiên chính không tự mở agent, cũng không tự sửa Jira 
 | `/ao-spec` | `<EPIC>` ở Specifying | `ba` viết SPEC, `ux` viết `design.md` khi SPEC có màn hình, `sa` thêm yêu cầu phi chức năng, rồi `ba` push nhánh tài liệu và mở PR tài liệu | Câu hỏi mở, hoặc gate ① `spec-approval` |
 | `/ao-plan` | `<EPIC>` ở Planning, rồi lần nữa sau gate ② | `sa` viết plan và ADR, `sa` đánh dấu SPEC và design là Approved, rồi `ba` tạo Story, Task và Sub-task có nhãn. Lần thứ hai không chạy agent: `jira-sync` refine các item, `merge-gate` merge PR tài liệu | Câu hỏi mở, gate ② `plan-approval`, rồi lúc các item sang Ready |
 | `/ao-build` | `<KEY>` của Story, Task hay Bug ở Ready | Dev agent của mỗi Sub-task, BE trước FE, hoặc dev agent theo nhãn vai trò của item. Agent cuối mở PR. Effort theo nhãn `ao-effort-*` | PR mở với CI chạy xong, hoặc một item mang cờ Needs you |
-| `/ao-review` | `<PR>` có CI xanh | `reviewer`, rồi `security` (đầy đủ ở `max`, hoặc chỉ phần mới ở `high`) | Hai báo cáo trên head, chờ bạn ở gate ③ |
+| `/ao-review` | `<PR>` có CI xanh | `reviewer`, rồi `security` (đầy đủ ở `max` khi PR có rủi ro, ở `high` khi không; hoặc chỉ phần mới ở `high`) | Hai báo cáo trên head, chờ bạn ở gate ③ |
 | `/ao-fix` | `<PR> [việc cần sửa]` | Dev agent sửa, rồi `reviewer` và `security` review lại | Hai báo cáo mới trên head, chờ bạn ở gate ③ |
 
 **`/ao-fix` khi không có gì chặn.** Bạn ghi việc cần sửa ngay sau số PR, ví dụ `/ao-fix 16 sửa hai finding Low đầu của reviewer`. Claude ghi đoạn chữ đó vào `.ai/runs/<KEY>/note.md` và truyền bằng `--note`, không bao giờ đưa nó vào dòng lệnh.
@@ -40,7 +40,7 @@ Claude của phiên chính không tự mở agent, cũng không tự sửa Jira 
    - `be-dev` làm Sub-task BE, rồi `fe-dev` làm Sub-task FE. Cả hai commit lên nhánh của Story `feature/DEMO-21-<slug>`.
    - `fe-dev` mở PR và lệnh chờ CI.
    - Nếu một agent gắn cờ Needs you lên Sub-task của nó, **[bạn]** trả lời trên item, gỡ cờ và nhãn `needs-you`, rồi chạy lại lệnh.
-7. `/ao-review <PR>`: `reviewer` rồi `security`.
+7. `/ao-review <PR>`: `reviewer` rồi `security`. `security` review đầy đủ ở `max` khi item hoặc một Sub-task của nó có nhãn effort, hoặc khi PR chạm đường dẫn được bảo vệ hay một mẫu của `security_review.roster_effort_paths` trong `quality/gates.yaml` (dependency, cấu hình chạy app, controller, guard, filter, middleware, route, auth, secret…). Các PR còn lại ở `high`. Dòng của lượt `security` trong bản in của `ao-step` ghi lý do, ví dụ `effort high: no protected path, no path of security_review, no effort label`.
 8. `/ao-fix <PR>` khi có finding chặn hoặc khi bạn muốn sửa thêm. `security` chỉ review phần mới, ở `high`, khi:
    - báo cáo `security` trước không còn Critical hay High;
    - phần đổi dưới 300 dòng;
