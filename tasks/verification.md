@@ -376,3 +376,34 @@ Chi phí agent của `SMP-4` tới gate ③: 10,23 USD (build 2,47, fix 2,36, re
 - **Gate ③ của PR #4:** bạn approve lúc 01:25 (2026-11-03). `merge-gate` #39 merge lúc 01:26 thành `750c6e1`, người merge `app/tungph7-ao-dev`. Trên `750c6e1`: `CI` #11 xanh, `Deploy` #5 xanh (`audit` xanh, `deploy` xanh). `jira-sync` (`deployment_status`) chuyển `SMP-4` sang Ready for QA lúc 01:28.
 - Lịch sử trạng thái của `SMP-4`: New → Ready (22:23, `orchestratorci`), Ready → In Progress (22:30, `orchestratoragent`, bước `start` của `be-dev`), In Progress → In Review (23:42, `orchestratorci`), In Review → Ready for QA (01:28, `orchestratorci`). Hợp đồng cho `fe-dev`, `be-dev`, `devops` làm bước `start` (`contract/workflows.yaml`), nhưng tiêu chí 5 của spec mục 9 viết "không từ agent". Spec cần sửa cho khớp hợp đồng; chưa sửa, chờ bạn.
 - Bạn bảo dừng khi `SMP-4` sang Ready for QA để thảo luận (Phiên 23 · Lượt 6), nên phần kiểm tiêu chí của T9 chưa làm.
+
+## Thảo luận sau khi `SMP-4` sang Ready for QA (2026-11-03, Phiên 23 · Lượt 8–11)
+
+- **Kit PR #148 chưa vào `ao-sample`** (Lượt 8). Bạn chọn cách A ở Lượt 11: gom mọi bản sửa kit còn lại vào một PR chép ở T10.
+- **Thời gian và chi phí của `/ao-review`** (Lượt 9). Log của bốn lượt review cho thấy:
+  - Agent không review cả codebase: chúng mở 0–1 file bằng Read, còn lại là `gh pr diff`, `git show` các file của PR, và tài liệu Epic.
+  - Chi phí gần như không theo cỡ diff: PR #5 có 16 dòng, review tốn 5,50 USD; PR #4 có 502 dòng, tốn 5,40 USD.
+  - `security` dành 70–75% thời gian để suy nghĩ (effort `max`, khoảng 50–60 nghìn token suy nghĩ mỗi lượt).
+  - Khớp token với chi phí của 14 lượt Opus cho đúng một bảng giá (USD cho 1 triệu token): input 4, output 20, đọc cache 0,20, ghi cache 1 giờ 8. Ghi cache chiếm 36–45% chi phí một lượt review.
+  - Theo tài liệu Claude Code ("How Claude Code uses prompt caching"), `claude -p` trên gói subscription mặc định ghi cache 1 giờ; `CLAUDE_CODE_PROMPT_CACHE_TTL=5m` đổi sang 5 phút (từ v2.1.242; agent chạy v2.1.316).
+  - Bạn chọn cách 1 (cache 5 phút cho lượt agent), 2 (gói bối cảnh dựng sẵn cho review) và 3 (effort của `security` theo rủi ro).
+- **PR chép kit** (Lượt 10): cùng nguyên nhân, cộng thêm việc agent sang repo kit trên máy (5–13 lệnh mỗi lượt) để so cây file và chạy test của kit.
+
+**Phép đo cách 1 và 2 trên PR #4** (Lượt 11, 02:03–02:07):
+- Gói bối cảnh `.ai/reviews/4-context.md` (1.171 dòng, 54.303 ký tự) do script `build-review-pack.mjs` trong scratchpad dựng. Gói gồm: PR, check run của head, item `SMP-4`, đoạn Task 1 của plan, mục "Dạng lỗi chung" của API Contract, quyết định 3 của plan, NFR của SPEC, ADR-0003, mẫu báo cáo, toàn văn hai file sửa, cả diff `50d47f3..467b5d0`.
+- `ao-agent.mjs reviewer` chạy với `CLAUDE_CODE_EFFORT_LEVEL=xhigh`, `CLAUDE_CODE_PROMPT_CACHE_TTL=5m`. Prompt bảo agent bắt đầu từ gói, không đọc lại thứ gói đã có, và chỉ lưu báo cáo vào `.ai/reviews/4-reviewer-exp.md`, không đăng lên GitHub.
+
+| | Lượt 3 (cũ) | Lượt thử |
+|---|---|---|
+| Turn | 38 | 10 |
+| Thời gian | 7,3 phút | 4,1 phút |
+| Suy nghĩ | 3,0 phút, 17.591 token | 3,0 phút, 18.008 token |
+| Bối cảnh cuối | 124.137 token | 75.906 token |
+| Đọc / ghi cache | 2.662.029 / 124.135 (1 giờ) | 288.995 / 75.904 (5 phút) |
+| Chi phí | 2,23 USD | 0,95 USD |
+| Finding | 2 Low | 1 Medium, 3 Low |
+
+- Cách 1 chạy đúng: mọi lần ghi cache là `ephemeral_5m`, giá suy ra 5 USD cho 1 triệu token. Cùng lượt đó mà ghi cache 1 giờ thì tốn 1,18 USD. Vậy cách 2 giảm 2,23 → 1,18 USD, cách 1 giảm tiếp 1,18 → 0,95 USD.
+- Finding: lượt thử tìm lại cả hai Low của lượt cũ. Chuyện log stack chứa `message` được nâng lên Medium. Lượt thử còn thêm hai Low mới: filter không kiểm header đã gửi chưa; tên biến `code` bị che.
+- Agent đọc thêm ngoài gói ba thứ, có ghi lý do: `vitest.config.e2e.ts`, phần `scripts` của hai `package.json`, và trạng thái của `SMP-2`.
+- Lượt thử chạy ít thực nghiệm hơn (1 lệnh chạy test, lượt cũ có 11 lệnh dựng thử). [Inference] Đây là một mẫu đơn; độ dao động giữa hai lượt của cùng agent thì chưa đo.
