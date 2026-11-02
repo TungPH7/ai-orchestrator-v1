@@ -202,7 +202,7 @@ Chưa commit.
 
 ## Giai đoạn 3: Epic thử
 
-### [ ] T7: Epic "Ghi chú": `/ao-spec`, `/ao-plan` tới lúc PR tài liệu được merge [bạn]
+### [x] T7: Epic "Ghi chú": `/ao-spec`, `/ao-plan` tới lúc PR tài liệu được merge [bạn]
 
 **Mô tả:**
 
@@ -215,16 +215,18 @@ Chưa commit.
 7. Claude chạy lại `/ao-plan`: item sang Ready, `merge-gate` merge PR tài liệu.
 8. Claude kiểm điểm 6 của spec mục 2.8: panel Development của Epic thấy nhánh và PR tài liệu.
 
+**Kết quả (2026-11-02):** PR tài liệu #1 do `merge-gate` merge (`2fc61a1`, App `ao-dev`); `CI` và `Deploy` xanh trên `develop`. Chi phí agent 15,14 USD (ước 12–18 USD). Điểm 6: API dev-status trả 401 với token CI, nên bạn xem panel Development của `SMP-2`.
+
 **Tiêu chí chấp nhận:**
-- [ ] SPEC, design (nếu có), plan và ADR (nếu có) nằm trong `docs/specs/<EPIC>/` trên `develop`, vào qua PR tài liệu do `merge-gate` merge.
-- [ ] `audit` xanh trên commit merge của PR tài liệu.
-- [ ] Mỗi lượt agent có dòng trong bảng của `verification.md`.
-- [ ] `/ao-status`, `/ao-spec`, `/ao-plan` đã chạy qua `claude -p`.
+- [x] SPEC, design (nếu có), plan và ADR (nếu có) nằm trong `docs/specs/<EPIC>/` trên `develop`, vào qua PR tài liệu do `merge-gate` merge.
+- [x] `audit` xanh trên commit merge của PR tài liệu.
+- [x] Mỗi lượt agent có dòng trong bảng của `verification.md`.
+- [x] `/ao-status`, `/ao-spec`, `/ao-plan` đã chạy qua `claude -p`.
 
 **Kiểm chứng:**
-- [ ] `CI` xanh trên PR tài liệu và trên `develop` sau khi PR này được merge (phần chuyển từ T6)
-- [ ] Lịch sử của Epic trên Jira: mỗi lần đổi trạng thái do `automation` hoặc bạn
-- [ ] `ADR` của `sa` chốt cách `apps/web` gọi `apps/api` (spec mục 2.1), hoặc plan ghi rõ vì sao không cần ADR
+- [x] `CI` xanh trên PR tài liệu và trên `develop` sau khi PR này được merge (phần chuyển từ T6)
+- [x] Lịch sử của Epic trên Jira: mỗi lần đổi trạng thái do `automation` hoặc bạn
+- [x] `ADR` của `sa` chốt cách `apps/web` gọi `apps/api` (spec mục 2.1), hoặc plan ghi rõ vì sao không cần ADR
 
 **Phụ thuộc:** T6, Checkpoint 2
 
