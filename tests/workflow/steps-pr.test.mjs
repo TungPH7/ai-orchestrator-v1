@@ -124,12 +124,20 @@ test('/ao-build stops: not Ready, a dependency not merged, the docs PR not merge
   }
 });
 
-test('/ao-review: reviewer on the whole PR, then security on the whole PR at the roster effort', () => {
-  const decision = decide('review', prFacts('review'));
+test('/ao-review: reviewer on the whole PR, then security on the whole PR at the roster effort when the PR touches a path of security_review', () => {
+  const decision = decide('review', prFacts('review', { files: ['apps/api/src/cart/cart.controller.ts'] }));
   assert.deepEqual(plan(decision), [`reviewer DEMO-21 ${roster.roles.reviewer.effort} review`, `security DEMO-21 ${roster.roles.security.effort} review`]);
   assert.deepEqual(decision.runs.map(({ prompt }) => prompt), ['Review PR #15.', 'Review PR #15.']);
   assert.equal(decision.runs[1].scope, 'no security report on this PR yet');
-  assert.deepEqual(plan(decide('review', prFacts('review', { reports: { reviewer: report(), security: null } }))), [`security DEMO-21 ${roster.roles.security.effort} review`]);
+  assert.equal(decision.runs[1].effortWhy, 'the PR touches apps/api/src/cart/cart.controller.ts');
+  assert.deepEqual(plan(decide('review', prFacts('review', { files: ['apps/api/src/cart/cart.controller.ts'], reports: { reviewer: report(), security: null } }))), [`security DEMO-21 ${roster.roles.security.effort} review`]);
+});
+
+test('/ao-review of a low-risk PR: security reviews the whole PR at high, and the printout says why', () => {
+  const item = { subtasks: [sub('DEMO-22', 'be-dev', { state: 'done' }), sub('DEMO-23', 'fe-dev', { state: 'done' })] };
+  const decision = decide('review', prFacts('review', { files: ['apps/web/src/app/cart/cart-line.tsx'] }, { item }));
+  const security = decision.runs[1];
+  assert.deepEqual([security.effort, security.purpose, security.effortWhy], ['high', 'review', 'no protected path, no path of security_review, no effort label']);
 });
 
 test('/ao-review after a small fix: security reviews only the changes since its last report, at high', () => {

@@ -29,6 +29,11 @@ test('the gates hold the values of the spec: four checks, 80% of changed lines, 
   assert.deepEqual(gates.protected_branches, ['develop', 'main', 'release/*']);
 });
 
+test('a full security review is at high unless the PR touches a path of security_review (Pilot 1, review cost)', () => {
+  assert.equal(gates.security_review.lower_effort, 'high');
+  for (const glob of ['**/package.json', '**/*.controller.*', '**/next.config.*', '**/auth/**']) assert.ok(gates.security_review.roster_effort_paths.includes(glob), glob);
+});
+
 test('dev roles open PRs with ao-dev and review roles post reports with ao-review (spec 2.2)', () => {
   assert.deepEqual(gates.github_apps.dev, { env: 'AO_DEV_APP', roles: ['ba', 'sa', 'fe-dev', 'be-dev', 'devops'], commands: ['create', 'edit', 'comment'] });
   assert.deepEqual(gates.github_apps.review, { env: 'AO_REVIEW_APP', roles: ['reviewer', 'security'], commands: ['review'] });

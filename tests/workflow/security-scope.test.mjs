@@ -46,3 +46,17 @@ test('after a report of the new part, the next one still counts from the last fu
   const newest = report({ sha: Y, at: '2026-11-05T08:00:00Z' });
   assert.deepEqual(securityScope({ report: newest, full: report(), compare: compare(40), gates }), { mode: 'delta', reason: '40 lines changed since a1b2c3d', since: X, at: '2026-11-04T08:00:00Z', lines: 40 });
 });
+
+// Pilot 1, review cost (option 3): security at max thought for 8–10 minutes on every PR, a 16-line kit copy included.
+test('a full review keeps the roster effort on a protected path, a path of security_review or an item with an effort label; high otherwise', async () => {
+  const { fullReviewEffort } = await import('../../lib/workflow/security-scope.mjs');
+  const effort = (files, more = {}) => fullReviewEffort({ files, protectedPaths: [], item: { key: 'SMP-5', effort: null, subtasks: [] }, gates, rosterEffort: 'max', ...more });
+  assert.deepEqual(effort(['apps/api/src/notes/notes.shared.ts', 'apps/api/src/notes/notes.shared.spec.ts']), { effort: 'high', reason: 'no protected path, no path of security_review, no effort label' });
+  assert.deepEqual(effort(['apps/api/src/notes/notes.controller.ts', 'README.md']), { effort: 'max', reason: 'the PR touches apps/api/src/notes/notes.controller.ts' });
+  for (const file of ['package-lock.json', 'apps/web/next.config.ts', 'apps/web/src/middleware.ts', 'apps/api/src/auth/jwt.strategy.ts', 'apps/api/src/main.ts', 'apps/web/.env.local', 'Dockerfile']) {
+    assert.equal(effort([file]).effort, 'max', file);
+  }
+  assert.deepEqual(effort(['.ai-orchestrator/lib/x.mjs'], { protectedPaths: ['.ai-orchestrator/lib/x.mjs'] }), { effort: 'max', reason: 'the PR touches the protected path .ai-orchestrator/lib/x.mjs' });
+  const labelled = { key: 'SMP-7', effort: null, subtasks: [{ key: 'SMP-8', effort: 'xhigh' }] };
+  assert.deepEqual(effort(['apps/web/src/app/notes/note-list.tsx'], { item: labelled }), { effort: 'max', reason: 'SMP-8 has the effort label xhigh' });
+});
