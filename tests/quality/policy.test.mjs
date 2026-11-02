@@ -61,6 +61,11 @@ test('deleted test files are listed for the reviewer', () => {
   assert.deepEqual(deletedTests(DIFF), ['src/old.test.ts']);
 });
 
+test('a deleted NestJS end-to-end test (*.e2e-spec.ts) is listed too', () => {
+  const diff = 'diff --git a/apps/api/test/app.e2e-spec.ts b/apps/api/test/app.e2e-spec.ts\n--- a/apps/api/test/app.e2e-spec.ts\n+++ /dev/null\n@@ -1 +0,0 @@\n-x\n';
+  assert.deepEqual(deletedTests(diff), ['apps/api/test/app.e2e-spec.ts']);
+});
+
 test('lowering a threshold of quality/gates.yaml is caught; raising one or adding a pattern is not', () => {
   const lower = structuredClone(gates);
   lower.coverage.changed_lines_min = 60;
