@@ -79,6 +79,24 @@ test('open questions stop the command with the questions; your answers go to the
   assert.equal(decide('spec', epicFacts('specifying'), { answers: 'Q1: có' }).go, false, 'answers with no run that asked');
 });
 
+test('questions left in the design stop /ao-spec even once the docs PR is open; the answers go to ux, which pushes (SMP-2)', () => {
+  const asking = DESIGN.replace('Không còn câu hỏi mở.', '- **Không có Figma.** Có cần khung Figma không?');
+  const runs = runState(
+    { role: 'ba', purpose: 'spec-write', session: 's-ba', outcome: 'done' },
+    { role: 'ux', purpose: 'design', session: 's-ux', outcome: 'done' },
+    { role: 'sa', purpose: 'spec-nfr', session: 's-sa', outcome: 'done' },
+    { role: 'ba', purpose: 'docs-pr', session: 's-ba2', outcome: 'done' },
+  );
+  const facts = epicFacts('specifying', { docs: { spec: WITH_NFR, design: asking, pr: openPr() }, run: runs });
+  const stopped = decide('spec', facts);
+  assert.equal(stopped.reason, 'ux left 1 open question in docs/specs/DEMO-20/design.md');
+  assert.deepEqual(stopped.questions, ['Không có Figma. Có cần khung Figma không?']);
+  const answered = decide('spec', facts, { answers: 'Không cần Figma.' });
+  assert.deepEqual(answered.runs, [{ role: 'ux', key: 'DEMO-20', effort: 'xhigh', purpose: 'design', resume: 's-ux', prompt: answersPrompt('DEMO-20', 'Không cần Figma.', { pr: 14 }), checkout: CHECKOUT }]);
+  assert.match(answersPrompt('DEMO-20', 'x', { pr: 14 }), /The docs PR #14 is open: push the branch/);
+  assert.doesNotMatch(answersPrompt('DEMO-20', 'x'), /push/);
+});
+
 test('a run that stopped before its end goes on in its session, with the ledger', () => {
   for (const outcome of ['unfinished', 'usage-limit']) {
     const facts = epicFacts('specifying', { docs: { spec: SPEC }, run: runState({ role: 'ux', purpose: 'design', session: 's-ux', outcome, effort: 'xhigh' }) });
