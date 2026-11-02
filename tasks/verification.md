@@ -172,3 +172,18 @@ Ghi chú: đọc `SMP-1` bằng token CI, tên status trả về là `全新` (t
 - **Tiêu chí 2:** `jira:check -- --space SMP` không còn chỗ lệch.
 - **`/ao-status`** chạy trong `ao-sample`, thoát 0.
 - **Bạn duyệt trước** việc chạy Epic thử (Phiên 21 · Lượt 6), nên Claude làm tiếp T7: Epic `SMP-2` "Ghi chú: tạo và xem danh sách" tạo bằng token CI (201). `ao-step.mjs spec SMP-2`: `STOP: Epic SMP-2 is New`, bước kế tiếp là bạn bấm `Start spec`.
+
+## T7: Epic `SMP-2`, stage spec (2026-11-02)
+
+- Bạn dọn `SMP-1` và bấm `Start spec` trên `SMP-2`. Claude kiểm bằng token CI: `SMP-1` ở Cancelled, resolution Won't Do, không cờ, không nhãn; `SMP-2` ở Specifying.
+- Ảnh panel Development của `SMP-1` (`misc/images/phien-22-luot-1-anh-1.png`): tab Builds có `Deploy` #1 đỏ và `merge-gate` #1 xanh. GitHub for Atlassian đã gắn run của commit `6f5831d` vào `SMP-1`, nên phần GitHub for Atlassian của Checkpoint 2 đạt. Phần thấy nhánh và PR (điểm 6) vẫn kiểm trên PR tài liệu.
+- `node .ai-orchestrator/scripts/ao-step.mjs spec SMP-2`: `GO`, bốn lượt (`ba` spec-write, `ux` design, `sa` spec-nfr, `ba` docs-pr), tất cả effort xhigh.
+- **`/ao-spec SMP-2` lần 1** (14:43–14:48): `MSYS_NO_PATHCONV=1 claude -p --model sonnet --output-format stream-json --verbose "/ao-spec SMP-2"` trong `ao-sample`, ở nền. Skill chạy `--go` ở nền, rồi `claude -p` chờ thông báo của lệnh nền, đọc `last.md` và báo bằng tiếng Việt, rồi thoát 0. Phiên Sonnet điều phối có hai kết quả, tổng 5 turn, 0,25 USD. Lệnh dừng sau lượt 1, vì `ba` để lại 4 câu hỏi (Q1 giới hạn độ dài, Q2 vị trí trang, Q3 sắp xếp và cách hiện, Q4 lúc hiện lỗi). SPEC nằm ở `docs/specs/SMP-2/spec.md`, commit `7e70fcb` trên `feature/SMP-2-spec`, chưa push.
+
+| # | Lượt | Model | Bước | Effort | Kết quả | Turn | Thời gian | Token vào / ra | Cache đọc / ghi | Chi phí quy đổi | Bị từ chối |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| 1 | `ba` | Opus 5.5 | spec-write | xhigh | done, 4 câu hỏi | 19 | 4,4 phút | 30 / 25.128 | 991.587 / 98.619 | 1,49 USD | 0 |
+
+So với `DEMO-20`: lượt spec-write của `ba` ở đó tốn 1,63 USD, 22 turn.
+
+**Lỗi kit, không chặn Epic:** phần "its answer" của `last.md` dừng giữa câu ("would redire"), không có dấu báo bị cắt. `lib/workflow/runner.mjs` dòng 91 cắt câu trả lời của agent ở 2000 ký tự khi ghi `state.json`, và `last.md` lấy chữ từ đó. Phần "Questions" của `last.md` vẫn đủ cả bốn câu. Sửa ở kit cùng các lỗi không chặn khác, chép một lần ở T10 (plan, quyết định 6).
