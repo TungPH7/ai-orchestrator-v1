@@ -548,3 +548,21 @@ Chi phí `SMP-6`: 8,09 USD cho agent (build 3,37, review 4,72), 0,26 USD cho hai
   - **Gate ③ của PR #10:** bạn approve (tài khoản `TungPH7`). `merge-gate` merge lúc 15:39 UTC (22:39 giờ Việt Nam) thành `2554714`, người merge `app/tungph7-ao-dev`. `jira-sync` chuyển `SMP-7` sang Ready for QA.
   - **Cách xử lý 4 Low** (bạn chọn sau khi submit review, "đồng cách làm cho 4 low findings", như PR #9): không chạy `/ao-fix 10`. Claude thêm mục "Follow-ups from the review of PR #10" vào cuối mô tả của `SMP-10` (3 việc: bỏ `name` của hai ô form; sửa hai mutation còn sống trong `notes-api.test.ts`; ghi rủi ro đã chấp nhận vào Consequences của ADR-0002) và `SMP-11` (1 việc: `role="list"` cho `ul`), bằng token CI. Bản mô tả cũ lưu ở scratchpad (`smp10-desc-before.json`, `smp11-desc-before.json`). Comment 10100 trên `SMP-7` chỉ chỗ sửa. Việc ghi ADR-0002 để `fe-dev` làm trong PR của `SMP-10`, vì một PR chỉ-tài-liệu cần Jira item riêng và thêm một lần bấm cổng ③.
   - **Việc còn lại cho sau Pilot 1:** item chặn Low của `security`: API nghe ở loopback (host lấy từ biến môi trường), từ chối `Host` ngoài danh sách; web tự kiểm `Host` cho `/api/notes`, vì rewrite làm API luôn thấy `Host` của chính nó.
+
+### `SMP-10` Báo lỗi nhập ngay cạnh ô (đợt 3, `fe-dev`)
+
+- `ao-step build SMP-10`: GO, `fe-dev`, effort `high`. Mô tả của `SMP-10` có thêm mục "Follow-ups from the review of PR #10" (3 việc).
+- **`/ao-build SMP-10`** (22:44–23:01). `fe-dev` mở PR #11 (`feature/SMP-10-field-errors`, +704 −15, 5 file, 4 commit: `d44c0f4`, `5204a56`, `ed75ce7`, `a7a2685`). `CI` #23 xanh. Đủ 3 việc follow-up: sửa `notes-api.test.ts`, dòng rủi ro đã chấp nhận trong ADR-0002, bỏ `name` của hai ô (cùng commit `ed75ce7` với phần lỗi từng ô).
+  - **Lại lỗi "server bị bỏ chạy" (lần 3):** `npm run dev` (`node scripts/dev.mjs` và `nest start --watch`) còn sống sau khi `fe-dev` có kết quả. Watcher báo sau 1 phút ("has its result but the run is not recorded"). Claude lần ra gốc là một `bash.exe` mở lúc 22:55:18, trong lúc agent chạy, rồi tắt cả cây (9 tiến trình) bằng `taskkill /T`. Cổng 3000 và 3001 đã trống trước đó. Lượt tỉnh lại không tốn thêm đáng kể.
+- **`/ao-review 11`** trên checkout `develop` (Claude chuyển `ao-sample` từ nhánh `feature/SMP-10-field-errors` của agent về `develop` trước khi chạy). `reviewer` ở `xhigh`, `security` ở `high` (PR không đụng đường dẫn được bảo vệ hay đường dẫn của `security_review`).
+  - `reviewer`: COMMENT, 0 Critical, 0 High, **1 Medium**, 1 Low. Medium: thiếu test cho một dòng của bảng hành vi trong Story: ô Tiêu đề đang trống, gõ một ký tự rồi xóa đi thì lỗi "Vui lòng nhập tiêu đề" không được hiện lại. Code hiện đúng, nhưng xóa dòng xử lý (`note-form.tsx:45`) thì mọi test vẫn xanh, vì 100% nhánh che mất chỗ này. Cần thêm 2 test. `reviewer` không chạy thử việc xóa dòng đó: hook `gh-guard` chặn `git archive` (lỗi đã có trong danh sách T10). Low: dòng rủi ro trong ADR-0002 chỉ nêu cổng 3001; `next dev` cũng nghe ở mọi giao diện mạng, nên cổng 3000 và `/api/notes` cũng lộ.
+  - `security`: COMMENT, 0 Critical, 0 High, 0 Medium, 1 Low, trùng Low của `reviewer` (dòng ADR-0002 nói nhẹ mức lộ của cổng 3000, kể cả DNS rebinding). Đã kiểm: bỏ `name` có tác dụng (form gửi sớm đi tới `/notes?` không kèm chữ), thông báo lỗi là chuỗi cố định hiển thị dạng chữ, không có `dangerouslySetInnerHTML`, `innerHTML` hay `NEXT_PUBLIC_*`, API vẫn tự kiểm mọi quy tắc. Review đầu tiên của `security` trên PR này, nên xem cả PR.
+  - CI không chạy E2E; bằng chứng E2E đạt là lần chạy cục bộ của `fe-dev` (26/26). QA chạy lại ở Development.
+
+| # | Item | Lượt | Model | Bước | Effort | Kết quả | Turn | Thời gian | Chi phí quy đổi | Bị từ chối |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 1 | `SMP-10` | `fe-dev` | Opus 5.5 | build | high | done | 77 | 14,7 phút | 3,36 USD | 0 |
+| 2 | `SMP-10` | `reviewer` | Opus 5.5 | review PR #11 | xhigh | done, COMMENT | 32 | 7,2 phút | 1,93 USD | 1 (`git archive`) |
+| 3 | `SMP-10` | `security` | Opus 5.5 | review PR #11 | high | done, COMMENT | 19 | 2,4 phút | 0,81 USD | 0 |
+
+Chi phí `SMP-10` tới giờ: 6,11 USD. PR #11 chờ bạn ở cổng ③: cả hai báo cáo nằm trên head `a7a2685`, CI xanh.
