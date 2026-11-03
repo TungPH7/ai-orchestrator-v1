@@ -570,3 +570,24 @@ Chi phí `SMP-10` tới giờ: 6,11 USD. PR #11 chờ bạn ở cổng ③: cả
 - **Cách xử lý Medium và Low của PR #11** (bạn chọn: "theo đề xuất"): không chạy `/ao-fix 11`.
   - **Medium** (thiếu test cho dòng reset `titleRequiredShown`, `note-form.tsx:45`): Claude thêm mục "Follow-ups from the review of PR #11" vào cuối mô tả của `SMP-11` (2 test trong `note-form.test.tsx`, kèm cách kiểm bằng việc phá dòng 45 rồi thấy test đỏ), bằng token CI. Bản mô tả trước đó lưu ở scratchpad (`smp11-desc-before-pr11.json`). Comment 10101 trên `SMP-10` chỉ chỗ sửa. **Thứ tự:** `note-form.test.tsx` do PR #11 thêm, nên `SMP-11` chỉ được build sau khi PR #11 merge. Giữa `SMP-10` và `SMP-11` không có link Blocks (plan cho làm song song), nên kit không chặn việc này; Claude tự giữ thứ tự.
   - **Low** (dòng rủi ro trong ADR-0002 chỉ nêu cổng 3001): gộp vào item hardening sau Pilot 1. Item đó phải viết lại dòng 53 và nêu cả cổng 3000: `next dev` không có `-H` nên nghe ở `0.0.0.0`; máy cùng mạng gọi được `http://<IP máy dev>:3000/api/notes` nhờ rewrite, kể cả khi API đã chuyển sang loopback; DNS rebinding trên cổng 3000 cũng được. Cách chặn "web tự kiểm `Host` cho `/api/notes`" chỉ đúng nếu danh sách `Host` cho phép chỉ gồm tên loopback, hoặc web cũng chuyển sang nghe ở loopback.
+
+### `SMP-11` Xem danh sách ghi chú (đợt 3, `fe-dev`)
+
+- `ao-step build SMP-11`: GO, `fe-dev`, effort `high`. Mô tả của `SMP-11` có hai mục follow-up: PR #10 (`role="list"`) và PR #11 (2 test cho dòng reset `titleRequiredShown`). Claude chỉ build sau khi PR #11 merge (`85c61b1`), vì `note-form.test.tsx` do PR #11 thêm.
+- **`/ao-build SMP-11`**, hai lượt.
+  - Lượt 1 (23:32–23:43): `fe-dev` làm 6 commit rồi chạm giới hạn gói (`usage-limit`) sau 92 turn, 11,3 phút, 2,93 USD, chưa mở PR. Claude tắt các server `next dev` và `nest start --watch` agent bỏ lại để `ao-step` thoát.
+  - Lượt 2: chạy tiếp trong phiên cũ, 23 turn, 3,2 phút, 1,68 USD. `ao-dev` mở PR #12 (`feature/SMP-11-list-notes`, +403 −19, 10 file). `CI` #25 xanh. Lượt này không bỏ server nào.
+  - Đủ 2 follow-up: `role="list"` kèm test; 2 test mới cho dòng 45 của `note-form.tsx` (xóa dòng thì cả hai đỏ, đổi thành `=== null` thì test thứ hai đỏ). `fe-dev` ghi trong PR 3 thay đổi ngoài danh sách file của Story, gồm việc export `ErrorIcon` từ `note-form.tsx`.
+  - Số liệu E2E (31/31) và hiệu năng (1000 ghi chú hiện trong 132–275 ms) là do `fe-dev` tự chạy và báo; CI không chạy E2E.
+- **`/ao-review 12`** trên checkout `develop`. `reviewer` ở `xhigh`, `security` ở `high`. Cả hai COMMENT trên head `2483779`.
+  - `reviewer`: 0 Critical, 0 High, 0 Medium, **3 Low**. (1) `notes-view.tsx:116`: khung xương lúc tải cao cố định 52 px (`h-13`); dưới 768 px một mục cao khoảng 72 px (suy ra từ line-height mặc định của Tailwind 4, chưa đo), nên bố cục xê dịch nhẹ; gợi ý `h-18 md:h-13`. (2) `notes-view.tsx:5` và `note-form.tsx:163`: `notes-view` phụ thuộc `note-form` chỉ vì `ErrorIcon`; gợi ý tách thành `error-icon.tsx`, không bắt buộc. (3) `note-list.test.tsx:48`: test `keeps every line break of the content` chỉ kiểm dữ liệu; bỏ `whitespace-pre-wrap` thì unit test vẫn xanh, chỉ E2E AC11 bắt được; gợi ý đổi tên test. `reviewer` không chạy lại test và không làm kiểm đột biến bằng cách sửa code (vai chỉ ghi được vào `.ai/**`).
+  - `security`: 0 finding. Tên, nội dung ghi chú chỉ đi vào trang dưới dạng chữ React đã escape; không có `dangerouslySetInnerHTML`, `innerHTML`, `eval(`, `NEXT_PUBLIC`; `createdAt` do API đặt; thông báo lỗi là chuỗi cố định, thân lỗi không bao giờ được đọc. `security` không lặp lại phép thử `<b>` và `<script>` tay của tác giả. Review đầu tiên của `security` trên PR này, nên xem cả PR.
+
+| # | Item | Lượt | Model | Bước | Effort | Kết quả | Turn | Thời gian | Chi phí quy đổi |
+|---|---|---|---|---|---|---|---|---|---|
+| 1 | `SMP-11` | `fe-dev` | Opus 5.5 | build | high | usage-limit | 92 | 11,3 phút | 2,93 USD |
+| 2 | `SMP-11` | `fe-dev` | Opus 5.5 | build (tiếp) | high | done | 23 | 3,2 phút | 1,68 USD |
+| 3 | `SMP-11` | `reviewer` | Opus 5.5 | review PR #12 | xhigh | done, COMMENT | 21 | 4,6 phút | 1,36 USD |
+| 4 | `SMP-11` | `security` | Opus 5.5 | review PR #12 | high | done, COMMENT | 10 | 1,2 phút | 0,56 USD |
+
+Chi phí `SMP-11` tới giờ: 6,52 USD. PR #12 chờ bạn ở cổng ③: cả hai báo cáo nằm trên head `2483779`, CI xanh.
