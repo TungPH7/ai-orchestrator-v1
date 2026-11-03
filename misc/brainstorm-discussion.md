@@ -10918,3 +10918,110 @@ Sau khi bạn mở lại, mình chạy `echo $CLAUDE_CODE_DISABLE_BG_SHELL_PRESS
 - Bạn đóng giúp các cửa sổ VS Code, phiên Claude Code và tab Chrome không dùng tới ngay bây giờ, vì `be-dev` đang build `SMP-5`.
 
 Bạn chọn cách 1, cách 2, hay cả hai, mình làm theo. Trong lúc chờ, mình chỉ theo dõi lượt build đang chạy.
+
+**Claude** (tin báo khi có sự kiện, sau câu trả lời):
+
+`be-dev` đã mở PR #8 (`feature/SMP-5-note-rules`) cho `SMP-5`. Mình đang chờ CI chạy xong.
+
+CI #16 và `jira-sync` #61 đã vào hàng đợi trên commit `7ae155b` của PR #8. Mình tiếp tục theo dõi.
+
+`jira-sync` #61 đã xanh. CI #16 đang chạy.
+
+`be-dev` đã build xong `SMP-5`: 54 turn, 10,8 phút, 2,01 USD. CI #16 vẫn đang chạy. Theo lời mình đã nói, mình chưa chạy review, chờ bạn chọn cách xử lý RAM.
+
+Build của `SMP-5` đã xong, và CI #16 trên PR #8 xanh.
+
+- `be-dev` viết `apps/api/src/notes/notes.shared.ts` và file test của nó: 2 file, thêm 500 dòng. Agent viết test trước rồi mới code, qua 4 commit.
+- `SMP-5` đã sang In Progress. Lần chuyển này do `be-dev` làm bằng transition `start`, đúng như contract cho phép.
+- Chi phí build: 2,01 USD. Lượt chạy đã nhả khóa.
+
+Mình đã tắt watcher cho đỡ tốn RAM. Mình chưa chạy `/ao-review 8`: review chạy `reviewer` rồi `security`, khá nặng, mà RAM lúc nãy chỉ còn 1,4 GB trống. Bạn chọn cách xử lý RAM (cách 1, cách 2, hay cả hai) thì mình chạy tiếp.
+
+`/ao-build SMP-5` chạy xong lúc 13:30 và thoát 0.
+
+| Phần | Chi phí |
+|---|---|
+| Phiên Sonnet điều phối | 0,14 USD |
+| Lượt `be-dev` | 2,01 USD |
+| **Tổng cho `SMP-5`** | **2,15 USD** |
+
+PR #8 đã có CI xanh và đang chờ review. Bạn chọn cách xử lý RAM (cách 1, cách 2, hay cả hai) thì mình chạy `/ao-review 8`.
+
+# Phiên 23 · Lượt 28 — 2026-11-03 khoảng 13:45
+
+**Bạn:**
+
+````markdown
+chọn cách 1, tôi đã set bằng PowerShell, làm tiếp ao-reivew 8 đi nhé
+````
+
+Claude kiểm biến (có trong tài khoản Windows, chưa có trong phiên này), RAM (2,9 GB trống), đưa `ao-sample` về `develop`, chạy bước kiểm của review (GO), rồi chạy `/ao-review 8` qua `claude -p` ở nền, kèm watcher. Sau đó Claude ghi kết quả vào `tasks/verification.md`.
+
+**Claude** (các tin báo tiến độ trong lượt):
+
+Biến đã có trong tài khoản Windows (`1`), nhưng phiên này mở từ trước nên chưa nhận biến. Biến chỉ có tác dụng sau khi bạn mở lại Claude Code. RAM giờ còn 2,9 GB trống. `ao-sample` đã về `develop`, và bước kiểm báo GO: `reviewer` ở xhigh, `security` ở high. Mình chạy `/ao-review 8`.
+
+`/ao-review 8` đang chạy ở nền: `reviewer` chạy trước, rồi tới `security`. [Ước] Cả hai mất khoảng 15–25 phút. Có kết quả hay lượt chạy nào đứng yên thì mình báo.
+
+`reviewer` đã bắt đầu review PR #8.
+
+`reviewer` đã review xong PR #8: 26 turn, 7,8 phút, 1,62 USD. Giờ `security` chạy tiếp.
+
+`reviewer` không thấy finding Critical, High hay Medium, và đề xuất Approve. Có một finding Low:
+- Test của `notes.shared.ts` mới giữ hai trong ba ràng buộc của file lá: không import và không decorator.
+- Ràng buộc thứ ba, "không dùng API chỉ có ở Node.js hay chỉ có ở trình duyệt", chưa có test.
+- Cách sửa `reviewer` đề xuất: thêm một test quét source, tìm `process`, `Buffer`, `window`… và `/// <reference`.
+
+`security` đang chạy.
+
+`security` đã bắt đầu review PR #8 ở mức effort high.
+
+`jira-sync` #64 đã vào hàng đợi. `security` vẫn đang chạy.
+
+Cả `reviewer` và `security` đều đề xuất Approve PR #8. Mình đang ghi kết quả vào `tasks/verification.md` và nhật ký, rồi báo bạn.
+
+**Claude:**
+
+**Review PR #8 (`SMP-5`) xong: cả `reviewer` và `security` đều đề xuất Approve.**
+
+| Lượt | Effort | Kết quả | Thời gian | Chi phí |
+|---|---|---|---|---|
+| `reviewer` | xhigh | Approve, 1 Low | 7,8 phút | 1,62 USD |
+| `security` | high | Approve, không có finding | 1,5 phút | 0,45 USD |
+
+- `SMP-5` tới giờ tốn 4,37 USD (build 2,01, review 2,07, hai phiên điều phối 0,28). Mức ước là 5–9 USD.
+- `security` ở `high` rẻ hơn nhiều so với ở `max`: PR #7 ở `max` tốn 2,78 USD và 12,7 phút.
+- `security` để lại một ghi chú cho `SMP-7`: nếu thân yêu cầu là `null`, `checkNote` ném lỗi và API trả 500. Endpoint của `SMP-7` phải kiểm thân yêu cầu là object trước, như SPEC đã đòi. Mình sẽ để ý điểm này khi review `SMP-7`.
+
+**Finding Low của `reviewer`:**
+- `notes.shared.ts` là file dùng chung cho cả API lẫn web, nên phải giữ ba ràng buộc. Test hiện chỉ giữ hai: không import và không decorator.
+- Ràng buộc thứ ba, "không dùng API chỉ có ở Node.js hay chỉ có ở trình duyệt", chưa có gì giữ. Ví dụ, một lần sửa sau này thêm `Buffer` hay `window` vẫn qua lint, typecheck và test, rồi chỉ hỏng khi chạy thật ở một trong hai app.
+- Cách sửa: thêm một test quét source của file.
+
+**Mình đề xuất sửa ngay trong PR này** bằng `/ao-fix 8`, rồi `security` review phần mới.
+- Lý do: `SMP-6`, `SMP-7`, `SMP-10` và `SMP-11` đều sẽ import hoặc sửa file này. Có test thì agent sau không lỡ tay phá ràng buộc.
+- [Ước] 1,5–3 USD, 15–25 phút.
+- Lưu ý: `/ao-fix` cho review chạy luôn trên nhánh của PR, không qua `develop` (điểm 3). PR #8 không đụng tới `.claude/**`, nên lần này không sao.
+
+Cách khác: bạn approve luôn, và test này để cho Task web đầu tiên import file. Cách này rẻ hơn, nhưng dễ bị quên.
+
+**Việc của bạn:**
+1. Chọn: **A** là sửa bằng `/ao-fix 8` (mình đề xuất), **B** là approve luôn.
+2. **Mở lại Claude Code để phiên mới nhận biến môi trường.** Lúc này không có lượt nào đang chạy, nên mở lại an toàn.
+   1. Trong cửa sổ Claude Code này, gõ `/exit` rồi Enter.
+   2. Mở một terminal mới (PowerShell hay Git Bash đều được).
+   3. Gõ `cd "D:\Document\1Khoahoc\4LapTrinh\AI-for-coding"` rồi Enter.
+   4. Gõ `claude --continue` rồi Enter. Phiên này sẽ mở lại, đủ lịch sử.
+   5. Nhắn mình A hoặc B.
+3. Nếu chọn B, approve PR #8 như sau:
+   1. Mở https://github.com/TungPH7/ao-sample/pull/8.
+   2. (Nên đọc) Tab **Files changed** có 2 file, 500 dòng thêm. Tab **Conversation** có hai báo cáo của `tungph7-ao-review`.
+   3. Ở tab **Files changed**, bấm **Review changes** (góc trên bên phải), chọn **Approve**, rồi bấm **Submit review**.
+   4. Bạn không cần merge: PR không chạm đường dẫn được bảo vệ, nên `merge-gate` tự merge.
+
+   Nếu chọn A, bạn chờ mình báo xong lượt sửa rồi mới approve.
+
+**Sau khi bạn nhắn, mình sẽ:**
+1. Chạy `echo` để kiểm biến môi trường, kết quả phải là `1`.
+2. Nếu bạn chọn A: chạy `/ao-fix 8` trước.
+3. Build `SMP-6` (`fe-dev`) trong lúc PR #8 chờ bạn approve.
