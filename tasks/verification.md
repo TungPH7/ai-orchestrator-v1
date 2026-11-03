@@ -514,3 +514,11 @@ Chi phí `SMP-5` tới gate ③: 6,25 USD cho agent (build 2,01, review 2,07, fi
 | # | Item | Lượt | Model | Bước | Effort | Kết quả | Turn | Thời gian | Token vào / ra | Cache đọc / ghi | Chi phí quy đổi | Bị từ chối |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 1 | `SMP-6` | `fe-dev` | Opus 5.5 | build | high | done | 62 + 1 (tỉnh lại) | 8,3 + 0,1 phút | 116 / 29.376 | 6.463.719 / 297.626 | 3,37 USD (0,74 do treo) | 1 |
+- **`/ao-review 9`** (14:56–) trên checkout `develop`. `security` ở `max` vì PR sửa `apps/web/next.config.ts`.
+  - `reviewer`: Approve, 5 Low. (1) `API_URL=""` làm đích rewrite thành `/notes` (trang của web: `GET /api/notes` trả HTML 200 có cache một năm, lỗi im lặng); `API_URL` có `/` cuối thì API nhận `//notes`. (2) Không test tự động nào đi qua rewrite; 5 mutation đổi bố cục khung trang đều sống. (3) Geist và Geist Mono được tải trước, nhưng `body` dùng Arial, nên không chữ nào dùng. (4) 5 SVG mẫu của create-next-app không còn ai dùng. (5) Hai import cùng từ `@testing-library/react`. Agent tự build production và gọi thử để chứng minh (1).
+  - `security` ở `max`: Approve, không có finding. Đã lần theo: `API_URL` không vào bundle client (đích rewrite chỉ nằm trong `routes-manifest.json`), không SSRF (`ignorePath`, regex neo hai đầu), không thêm đường CSRF hay CORS, lỗi 500 khi API tắt không lộ chi tiết.
+
+| # | Item | Lượt | Model | Bước | Effort | Kết quả | Turn | Thời gian | Token vào / ra | Cache đọc / ghi | Chi phí quy đổi | Bị từ chối |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 2 | `SMP-6` | `reviewer` | Opus 5.5 | review PR #9 | xhigh | done, COMMENT (Approve) | 37 | 14,1 phút | 64 / 58.136 | 3.059.901 / 145.566 | 2,50 USD | 0 |
+| 3 | `SMP-6` | `security` | Opus 5.5 | review PR #9 | max | done, COMMENT (Approve) | 28 | 10,7 phút | 52 / 56.725 | 2.214.449 / 129.246 | 2,22 USD | 0 |
