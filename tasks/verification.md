@@ -522,3 +522,8 @@ Chi phí `SMP-5` tới gate ③: 6,25 USD cho agent (build 2,01, review 2,07, fi
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 2 | `SMP-6` | `reviewer` | Opus 5.5 | review PR #9 | xhigh | done, COMMENT (Approve) | 37 | 14,1 phút | 64 / 58.136 | 3.059.901 / 145.566 | 2,50 USD | 0 |
 | 3 | `SMP-6` | `security` | Opus 5.5 | review PR #9 | max | done, COMMENT (Approve) | 28 | 10,7 phút | 52 / 56.725 | 2.214.449 / 129.246 | 2,22 USD | 0 |
+- **Cách xử lý 5 Low** (bạn chọn ở Phiên 23 · Lượt 31): không chạy `/ao-fix 9`, mà sửa trong PR của `SMP-7`, để một vòng review xem luôn. Claude thêm mục "Follow-ups from the review of PR #9" (5 dòng checklist) vào cuối mô tả của Sub-task `SMP-9` bằng token CI. Bản mô tả cũ được lưu ở scratchpad. Claude cũng comment lên `SMP-6` (comment 10097) để chỉ chỗ sửa. Đây là phần thêm vào item sau gate ②, do bạn quyết. Phần kích thước khung trang của Low 2 không đưa vào.
+- **Gate ③ của PR #9:** bạn approve. `merge-gate` merge lúc 16:51 thành `533578a`, người merge `app/tungph7-ao-dev`. Trên `533578a`: `CI`, `Deploy` (`audit`, `deploy`), `jira-sync` ×3 và `merge-gate` ×4 đều xanh. `jira-sync` chuyển `SMP-6` sang Ready for QA lúc 16:52.
+- Lịch sử trạng thái của `SMP-6`: New → Ready (02/11 22:23, `orchestratorci`), Ready → In Progress (14:32, `orchestratoragent`, `start` của `fe-dev`), In Progress → In Review (14:41, `orchestratorci`), In Review → Ready for QA (16:52, `orchestratorci`).
+
+Chi phí `SMP-6`: 8,09 USD cho agent (build 3,37, review 4,72), 0,26 USD cho hai phiên điều phối. Đợt 1 (`SMP-5`, `SMP-6`): 15,04 USD.
