@@ -486,3 +486,17 @@ Chi phí agent của `SMP-4` tới gate ③: 10,23 USD (build 2,47, fix 2,36, re
 | 3 | `SMP-5` | `security` | Opus 5.5 | review PR #8 | high | done, COMMENT (Approve) | 7 | 1,5 phút | 14 / 6.695 | 275.890 / 52.667 | 0,45 USD | 0 |
 
 Chi phí `SMP-5` tới đây: 4,09 USD cho agent, 0,28 USD cho hai phiên điều phối.
+
+- **`/ao-fix 8 <ghi chú>`** (14:16–14:30), bạn chọn A (Phiên 23 · Lượt 29). Ghi chú bằng tiếng Anh, toàn ASCII. Ghi chú sửa một chỗ trong đề xuất của `reviewer`: tìm `/// <reference` trên source gốc, vì bỏ chú thích trước thì dòng `///` cũng mất. Phiên Sonnet điều phối: 0,16 USD, thoát 0. Biến `CLAUDE_CODE_DISABLE_BG_SHELL_PRESSURE_REAP` vẫn rỗng trong phiên mới. [Inference] Phiên mở từ VS Code, vốn mở trước lúc `setx`.
+  - `be-dev` chạy đúng một lần (`state.json` ghi `note` `51187a859659`). Commit `e3cff41` thêm một test (13 dòng): tìm `/// <reference` trên source gốc, bỏ chú thích `/* */` và `//`, rồi tìm 9 tên API chỉ có ở một nơi. `CI` #17 xanh. Bản sửa lỗi kit PR #148 (chép qua PR #6) chạy đúng: sau `reviewer`, `ao-step` không giao lại ghi chú.
+  - `reviewer` review lại cả PR: Approve, 2 Low. (1) Danh sách còn lọt `self`, `location`, `__dirname`, `setImmediate`… (2) Chú thích "line 9 names crypto.randomUUID()" lấy từ ghi chú của Claude: `crypto` không có trong danh sách, và số dòng sẽ sai khi file thêm dòng.
+  - `security` chỉ review phần mới (`review-delta`, `high`): Approve, không có finding.
+  - `ao-step review 8`: "both reports are on the head e3cff41 of PR #8: it waits for you at gate ③".
+
+| # | Item | Lượt | Model | Bước | Effort | Kết quả | Turn | Thời gian | Token vào / ra | Cache đọc / ghi | Chi phí quy đổi | Bị từ chối |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 4 | `SMP-5` | `be-dev` | Opus 5.5 | fix PR #8 | high | done | 17 | 4,5 phút | 26 / 7.017 | 630.644 / 59.592 | 0,56 USD | 0 |
+| 5 | `SMP-5` | `reviewer` | Opus 5.5 | review PR #8 | xhigh | done, COMMENT (Approve) | 25 | 5,3 phút | 48 / 24.671 | 1.521.241 / 90.637 | 1,25 USD | 0 |
+| 6 | `SMP-5` | `security` | Opus 5.5 | review-delta PR #8 | high | done, COMMENT (Approve) | 10 | 1,7 phút | 14 / 5.657 | 230.040 / 37.384 | 0,35 USD | 0 |
+
+Chi phí `SMP-5` tới gate ③: 6,25 USD cho agent (build 2,01, review 2,07, fix 0,56, review lại 1,60), 0,44 USD cho ba phiên điều phối.
