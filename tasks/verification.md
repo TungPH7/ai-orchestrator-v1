@@ -604,7 +604,7 @@ Chi phí `SMP-11` tới giờ: 6,52 USD. PR #12 chờ bạn ở cổng ③: cả
 
 - **Chi phí agent** (cộng các bảng ở trên, Claude tự cộng, chưa tính các phiên Sonnet điều phối): đợt 1 (`SMP-5`, `SMP-6`) 15,04 USD; `SMP-7` 13,53; `SMP-10` 6,11; `SMP-11` 6,52. Tổng khoảng 41 USD, cộng phần của `SMP-4` ở các lượt trước, khoảng 45 USD, dưới mức dừng 60 USD.
 - **Giới hạn gói:** hai lần `usage-limit` (`security` trên PR #10, `fe-dev` của `SMP-11`). Cả hai lần chạy lại cùng lệnh và `ao-step` tiếp tục đúng phiên cũ của agent; lượt `security` chỉ tốn thêm 1,32 USD, lượt `fe-dev` thêm 1,68 USD.
-- **Cổng ③:** 8 PR của agent (#4, #8–#12 và các PR trước) qua cổng bằng approve của bạn; `merge-gate` tự merge.
+- **Cổng ③:** 7 PR do `merge-gate` merge sau approve của bạn (#1, #4, #8, #9, #10, #11, #12); 4 PR chép kit (#3, #5, #6, #7) do bạn tự merge.
 - **Lỗi kit tìm thêm hoặc xảy ra lại, đưa vào T10:**
   - Agent bỏ server `npm run dev` (`dev.mjs`, `nest start --watch`) chạy sau khi có kết quả, nên lượt chạy treo: `SMP-6`, `SMP-7`, `SMP-10`, và lượt 1 của `SMP-11` (4 lần). Cách sửa: agent tắt đúng tiến trình mình bật, theo cả cây; `ao-step` không chờ lệnh nền của agent sau khi agent có kết quả.
   - Hook `gh-guard` chặn `git archive` của `reviewer` (nên `reviewer` không chạy thử code của PR được).
