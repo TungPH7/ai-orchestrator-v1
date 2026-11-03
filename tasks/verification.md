@@ -502,3 +502,15 @@ Chi phí `SMP-5` tới đây: 4,09 USD cho agent, 0,28 USD cho hai phiên điề
 Chi phí `SMP-5` tới gate ③: 6,25 USD cho agent (build 2,01, review 2,07, fix 0,56, review lại 1,60), 0,44 USD cho ba phiên điều phối.
 - **Gate ③ của PR #8:** bạn approve lúc 14:35. `merge-gate` merge lúc 14:35 thành `6e71048`, người merge `app/tungph7-ao-dev`. Trên `6e71048`: `CI` xanh (secrets, sast, build-test, policy), `Deploy` xanh (`audit` xanh, `deploy` xanh), `jira-sync` và `merge-gate` xanh. `jira-sync` (`deployment_status`) chuyển `SMP-5` sang Ready for QA lúc 14:35.
 - Lịch sử trạng thái của `SMP-5`: New → Ready (02/11 22:23, `orchestratorci`), Ready → In Progress (13:19, `orchestratoragent`, bước `start` của `be-dev`), In Progress → In Review (13:30, `orchestratorci`), In Review → Ready for QA (14:35, `orchestratorci`). Đúng tiêu chí 5 mới.
+
+### `SMP-6` Khung trang Ghi chú (đợt 1, `fe-dev`)
+
+- `ao-step build SMP-6` không có `--go`: GO, `fe-dev`, effort `high`.
+- **`/ao-build SMP-6`** (14:31–14:52), cùng lệnh như `SMP-5`, chạy trong lúc PR #8 chờ bạn. Phiên Sonnet điều phối: 0,11 USD, thoát 0.
+  - `fe-dev` chuyển `SMP-6` Ready → In Progress (14:32, `orchestratoragent`, bước `start`). Agent rebase lên `6e71048` khi `SMP-5` merge giữa chừng. 5 commit (`fabf475`, `c81e548`, `4ab5b93`, `4b1874b`, `58b4e2a`): token màu, khung trang `/notes` và chuyển `/` sang đó, chuyển tiếp `/api/notes` sang API trong `next.config.ts`, E2E smoke. `ao-dev` mở PR #9 (+179 −76, 11 file). `CI` #19 xanh. `jira-sync` chuyển `SMP-6` sang In Review lúc 14:41.
+  - 1 lệnh bị từ chối: heredoc `cat >` vào `.ai/pr/`.
+- **Lỗi kit "server bị bỏ chạy", lần này làm lượt chạy treo:** để kiểm trên trình duyệt, `fe-dev` chạy `npm run dev` ở nền. Xong việc, agent tắt các tiến trình đang nghe cổng 3000 và 3001, nhưng `nest start --watch` vẫn sống: nó không nghe cổng nào sau khi API thoát lỗi, chỉ chờ file đổi. Lệnh nền của agent vì thế không kết thúc, và `claude -p` của agent không thoát dù đã có kết quả lúc 14:40. `ao-step` giữ khóa thêm 12 phút. Watcher báo "đứng yên 10 phút". Claude tìm ra tiến trình và tắt nó bằng `taskkill /T` lúc 14:52. Lệnh nền kết thúc, phiên agent tỉnh lại thêm 1 turn, và vì cache đã hết hạn nên phải ghi lại 146.752 token cache: **0,74 USD** thêm (2,63 → 3,37 USD). Đưa vào T10: agent phải tắt đúng các tiến trình mình bật, theo cả cây; `ao-step` không chờ lệnh nền của agent sau khi agent có kết quả. Từ giờ watcher của Claude báo ngay khi agent có kết quả mà khóa vẫn còn.
+
+| # | Item | Lượt | Model | Bước | Effort | Kết quả | Turn | Thời gian | Token vào / ra | Cache đọc / ghi | Chi phí quy đổi | Bị từ chối |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 1 | `SMP-6` | `fe-dev` | Opus 5.5 | build | high | done | 62 + 1 (tỉnh lại) | 8,3 + 0,1 phút | 116 / 29.376 | 6.463.719 / 297.626 | 3,37 USD (0,74 do treo) | 1 |
