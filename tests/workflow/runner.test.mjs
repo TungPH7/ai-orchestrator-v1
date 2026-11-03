@@ -55,7 +55,7 @@ function specWorld(start = {}) {
 }
 
 // A harness: fake agents that do what `effects` says per purpose, a store in memory, git and time that do nothing.
-function harness(world, effects, { outcomes = [], texts = [], throws = false } = {}) {
+function harness(world, effects, { outcomes = [], texts = [], throws = false, stopped = false } = {}) {
   const calls = [];
   const states = [];
   const last = {};
@@ -78,7 +78,7 @@ function harness(world, effects, { outcomes = [], texts = [], throws = false } =
     const outcome = outcomes.shift() ?? 'success';
     if (outcome === 'success') effects[run.purpose]?.(world, run);
     active -= 1;
-    return { lines: runLines({ session: `s-${run.role}-${calls.length}`, outcome, cost: 0.25 * calls.length, text: texts.shift() ?? 'Done.' }) };
+    return { stopped, lines: runLines({ session: `s-${run.role}-${calls.length}`, outcome, cost: 0.25 * calls.length, text: texts.shift() ?? 'Done.' }) };
   };
   const checkouts = [];
   return {
@@ -87,7 +87,7 @@ function harness(world, effects, { outcomes = [], texts = [], throws = false } =
     last,
     checkouts,
     run: (more = {}) =>
-      runGo({ command: 'spec', arg: 'DEMO-20', options: { ...options, ...more.options }, gather: more.gather, decide: more.decide, pack: more.pack, worktree: more.worktree, agent, git: async (c) => (checkouts.push(c), { ok: true }), dispatch: async () => {}, store, sleep: async (ms) => (clock += ms), now: () => clock, limits: { maxRuns: 8, ciWaitMs: 120000, syncWaitMs: 60000, pollMs: 30000, ...more.limits } }),
+      runGo({ command: 'spec', arg: 'DEMO-20', options: { ...options, ...more.options }, gather: more.gather, decide: more.decide, pack: more.pack, worktree: more.worktree, log: more.log, agent, git: async (c) => (checkouts.push(c), { ok: true }), dispatch: async () => {}, store, sleep: async (ms) => (clock += ms), now: () => clock, limits: { maxRuns: 8, ciWaitMs: 120000, syncWaitMs: 60000, pollMs: 30000, ...more.limits } }),
   };
 }
 const SPEC_EFFECTS = {
@@ -199,6 +199,24 @@ test('a review run gets the worktree of its PR before it starts and loses it whe
   const w = harness(without.world, {});
   await w.run({ gather: without.gather, decide: one(review) });
   assert.equal(w.calls[0].prompt, 'Review PR #15.');
+});
+
+// Pilot 1, T10: an agent that stays alive after its result (a dev server it left running) is stopped by ao-step; the
+// run keeps its answer, and state.json and the report of the command say what happened.
+test('a run whose agent was stopped after its result is recorded as that; one that exited by itself is not', async () => {
+  const one = (run) => { let decided = 0; return () => (decided++ === 0 ? { go: true, runs: [run], lines: [] } : { go: false, reason: 'nothing left', next: '-', lines: [] }); };
+  const build = { role: 'fe-dev', key: 'DEMO-20', effort: 'high', purpose: 'build', prompt: 'Build DEMO-20.' };
+  const said = [];
+  const held = specWorld();
+  const a = harness(held.world, {}, { stopped: true });
+  await a.run({ gather: held.gather, decide: one(build), log: (line) => said.push(line) });
+  assert.equal(a.states.at(-1).runs[0].stoppedAfterResult, true);
+  assert.equal(a.states.at(-1).runs[0].outcome, 'done', 'its answer counts');
+  assert.ok(said.some((line) => line === 'fe-dev stayed alive after its result and was stopped with what it left running'), said.join(' | '));
+  const free = specWorld();
+  const b = harness(free.world, {});
+  await b.run({ gather: free.gather, decide: one(build) });
+  assert.equal('stoppedAfterResult' in b.states.at(-1).runs[0], false);
 });
 
 test('an open question stops the runs; --answers resumes the session that asked, once', async () => {

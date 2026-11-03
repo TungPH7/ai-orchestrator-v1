@@ -22,6 +22,7 @@ import { appCredentials, githubRepoOf, installationToken, userVariable } from '.
 import { createGitHubClient } from '../lib/tracker/github-client.mjs';
 import { bearerAuth, createJiraClient } from '../lib/tracker/jira-client.mjs';
 import { readMapping } from '../lib/tracker/mapping.mjs';
+import { startAgentProcess, killTree } from '../lib/workflow/agent-process.mjs';
 import { gatherFacts } from '../lib/workflow/facts.mjs';
 import { adfText, buildReviewPack } from '../lib/workflow/review-pack.mjs';
 import { agentCommand, formatDecision, runGo } from '../lib/workflow/runner.mjs';
@@ -179,23 +180,14 @@ function alive(pid) {
 // One run: ao-agent.mjs with its stream-json output appended to the log as it comes; resolves with the lines.
 function startAgent(run, logFile) {
   const { command, args, env } = agentCommand(run, kitDir);
-  return new Promise((done) => {
-    const lines = [];
-    let rest = '';
-    const child = spawn(command, args, { cwd: projectDir, env: { ...process.env, ...env }, stdio: ['ignore', 'pipe', 'pipe'] });
-    child.stdout.on('data', (chunk) => {
-      appendFileSync(logFile, chunk);
-      const text = rest + chunk.toString('utf8');
-      const parts = text.split('\n');
-      rest = parts.pop();
-      lines.push(...parts);
-    });
-    child.stderr.on('data', (chunk) => appendFileSync(`${logFile}.stderr`, chunk));
-    child.on('error', (error) => {
-      appendFileSync(`${logFile}.stderr`, `cannot start the agent: ${error.message}\n`);
-      done({ lines });
-    });
-    child.on('close', () => done({ lines: rest ? [...lines, rest] : lines }));
+  return startAgentProcess({
+    spawn,
+    command,
+    args,
+    env: { ...process.env, ...env },
+    cwd: projectDir,
+    append: (stream, chunk) => appendFileSync(stream === 'stdout' ? logFile : `${logFile}.stderr`, chunk),
+    kill: (pid) => killTree(pid, { spawnSync, kill: (target, signal) => process.kill(target, signal) }),
   });
 }
 
