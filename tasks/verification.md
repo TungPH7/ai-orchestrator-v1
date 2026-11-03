@@ -566,3 +566,7 @@ Chi phí `SMP-6`: 8,09 USD cho agent (build 3,37, review 4,72), 0,26 USD cho hai
 | 3 | `SMP-10` | `security` | Opus 5.5 | review PR #11 | high | done, COMMENT | 19 | 2,4 phút | 0,81 USD | 0 |
 
 Chi phí `SMP-10` tới giờ: 6,11 USD. PR #11 chờ bạn ở cổng ③: cả hai báo cáo nằm trên head `a7a2685`, CI xanh.
+
+- **Cách xử lý Medium và Low của PR #11** (bạn chọn: "theo đề xuất"): không chạy `/ao-fix 11`.
+  - **Medium** (thiếu test cho dòng reset `titleRequiredShown`, `note-form.tsx:45`): Claude thêm mục "Follow-ups from the review of PR #11" vào cuối mô tả của `SMP-11` (2 test trong `note-form.test.tsx`, kèm cách kiểm bằng việc phá dòng 45 rồi thấy test đỏ), bằng token CI. Bản mô tả trước đó lưu ở scratchpad (`smp11-desc-before-pr11.json`). Comment 10101 trên `SMP-10` chỉ chỗ sửa. **Thứ tự:** `note-form.test.tsx` do PR #11 thêm, nên `SMP-11` chỉ được build sau khi PR #11 merge. Giữa `SMP-10` và `SMP-11` không có link Blocks (plan cho làm song song), nên kit không chặn việc này; Claude tự giữ thứ tự.
+  - **Low** (dòng rủi ro trong ADR-0002 chỉ nêu cổng 3001): gộp vào item hardening sau Pilot 1. Item đó phải viết lại dòng 53 và nêu cả cổng 3000: `next dev` không có `-H` nên nghe ở `0.0.0.0`; máy cùng mạng gọi được `http://<IP máy dev>:3000/api/notes` nhờ rewrite, kể cả khi API đã chuyển sang loopback; DNS rebinding trên cổng 3000 cũng được. Cách chặn "web tự kiểm `Host` cho `/api/notes`" chỉ đúng nếu danh sách `Host` cho phép chỉ gồm tên loopback, hoặc web cũng chuyển sang nghe ở loopback.
