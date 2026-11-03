@@ -11143,3 +11143,84 @@ PR #8 đã merge và mọi check đều xanh. Mình đang ghi vào nhật ký r�
 **Đang chạy:** `fe-dev` build `SMP-6`, và `SMP-6` đã sang In Progress. Khi có PR và CI, mình chuyển `ao-sample` về `develop` rồi chạy `/ao-review`. Theo dự kiến, `security` của PR này sẽ chạy ở `max`, vì PR có `next.config.ts`.
 
 Ba việc mình đã ghi vào `tasks/verification.md` trên nhánh kit `task/t9-remaining-items`: merge, kết quả các check, lịch sử trạng thái.
+
+**Claude** (tin báo khi có sự kiện, sau câu trả lời):
+
+`fe-dev` đã mở PR #9 (`feature/SMP-6-notes-page-shell`) cho `SMP-6`. Mình đang chờ CI.
+
+CI #19 và `jira-sync` #74 đang chạy trên commit `58b4e2a` của PR #9.
+
+`jira-sync` #74 đã xanh, còn CI #19 vẫn đang chạy.
+
+CI #19 trên PR #9 đã xanh. Đang chờ `fe-dev` kết thúc lượt build.
+
+`fe-dev` đã xong việc từ 14:40, nhưng lượt chạy chưa đóng được: một tiến trình `nest start --watch` do agent bật lên vẫn còn chạy, nên `claude -p` của agent không thoát. Đây là lỗi kit "server bị bỏ chạy" đã có trong danh sách T10. Mình tắt tiến trình đó để lượt chạy đóng lại.
+
+Build `SMP-6` đã xong. PR #9 sửa 11 file (+179 −76), CI xanh, và `fe-dev` tốn 3,37 USD. `ao-sample` đã về `develop`, bước kiểm báo GO: `reviewer` ở xhigh, `security` ở max vì PR sửa `next.config.ts`. RAM còn 3,8 GB trống. Mình chạy `/ao-review 9`.
+
+Review PR #9 vẫn đang chạy. Trong lúc chờ, mình sửa watcher: khi agent đã có kết quả mà khóa chạy vẫn chưa nhả, watcher báo ngay, để lần sau không mất 12 phút và 0,74 USD như lần này.
+
+Watcher mới đã sẵn sàng, và mình sẽ dùng nó từ lượt chạy sau. Review PR #9 vẫn đang chạy.
+
+`reviewer` đã bắt đầu review PR #9.
+
+`reviewer` đề xuất Approve PR #9, không có finding Critical, High hay Medium. Có 5 Low:
+1. `API_URL=""` làm rewrite trỏ về chính trang web, mà lỗi không hiện ra. `API_URL` có `/` ở cuối thì API nhận `//notes`.
+2. Không test tự động nào đi qua rewrite, và các kích thước của khung trang không có test.
+3. Hai font Geist được tải về, nhưng không chữ nào dùng.
+4. Còn 5 file SVG mẫu không ai dùng.
+5. Hai dòng import trùng nguồn.
+
+Lượt `reviewer` mất 14,1 phút, 2,50 USD. `security` đang chạy ở `max`.
+
+`jira-sync` #77 đang chạy. [Ước] Có lẽ `security` vừa đăng báo cáo.
+
+Mình đang ghi kết quả review PR #9 vào nhật ký, xong là gửi bạn.
+
+**Claude:**
+
+**Review PR #9 (`SMP-6`) xong: cả `reviewer` và `security` (ở `max`) đều đề xuất Approve.** Không có finding Critical, High hay Medium.
+
+| Lượt | Effort | Kết quả | Thời gian | Chi phí |
+|---|---|---|---|---|
+| `fe-dev` build | high | PR #9: 11 file, +179 −76, CI xanh | 8,4 phút (khóa giữ thêm 12 phút) | 3,37 USD |
+| `reviewer` | xhigh | Approve, 5 Low | 14,1 phút | 2,50 USD |
+| `security` | max | Approve, không có finding | 10,7 phút | 2,22 USD |
+
+- `SMP-6` tới giờ tốn 8,35 USD, kể cả hai phiên điều phối. Mức ước là 6–11 USD. Cả đợt T9 tới giờ tốn 15,0 USD.
+- `security` đã lần theo các điểm sau và kết luận an toàn:
+  - `API_URL` không lọt vào bundle của trình duyệt;
+  - rewrite không mở đường SSRF, CSRF hay CORS mới;
+  - khi API tắt, lỗi 500 không lộ chi tiết.
+
+**Lỗi kit, lượt build bị treo 12 phút:**
+- `fe-dev` bật `npm run dev` để kiểm trên trình duyệt. Xong việc, agent tắt các tiến trình đang nghe cổng, nhưng sót `nest start --watch`.
+- Vì tiến trình đó còn sống, lượt chạy không đóng được. Mình tìm ra và tắt nó lúc 14:52.
+- Phiên agent tỉnh lại, mà cache đã hết hạn, nên tốn thêm 0,74 USD.
+- Lỗi này đã có trong danh sách T10. Mình đã sửa watcher: khi agent có kết quả mà lượt chạy chưa đóng sau 1 phút, watcher báo ngay. Như vậy các lần build FE sau (`SMP-9`, `SMP-10`, `SMP-11`) không mất thời gian và tiền như lần này.
+
+**5 Low của `reviewer`:**
+
+| # | Finding | Mình đề xuất |
+|---|---|---|
+| 1 | `API_URL=""` (ví dụ dòng `API_URL=` trong `.env`) làm `/api/notes` trỏ về chính trang web. Lỗi không hiện ra: build xanh, chỉ hỏng khi Story đọc JSON. `API_URL` có `/` ở cuối thì API nhận `//notes` | Sửa: dùng `\|\|` thay `??`, rồi bỏ `/` ở cuối |
+| 2 | Không test tự động nào đi qua rewrite. Các kích thước của khung trang cũng không có test | Sửa phần rewrite: thêm vào smoke một lệnh gọi `/api/notes` (phải ra JSON) và `/api/health` (phải ra 404 của web). Phần kích thước để sau |
+| 3 | Hai font Geist được tải về mà không chữ nào dùng | Sửa: bỏ Geist, vì design không có font này |
+| 4 | 5 file SVG mẫu không còn ai dùng | Sửa: xóa |
+| 5 | Hai dòng import cùng một nguồn | Sửa: gộp làm một |
+
+**Mình đề xuất A: một lượt `/ao-fix 9` cho các điểm trên.**
+- Lý do: điểm 1 và 2 nằm trên đường gọi từ web sang API, mà mọi Story sau đều đi qua. Các điểm 3–5 gần như không tốn thêm gì, vì đằng nào cũng có một vòng review.
+- [Ước] 4–6 USD và 25–35 phút. Phần lớn là review lại: `reviewer` review cả PR, còn `security` review phần mới ở `max`, vì phần đó sửa `next.config.ts`.
+- Ngân sách: [Ước] cả T9 sẽ vào khoảng 40–59 USD, vẫn dưới mức dừng 60 USD, nhưng còn ít chỗ dư.
+
+**B: approve luôn**, và ghi 5 Low lại để làm sau. Cách này đỡ 4–6 USD, nhưng điểm 1 sẽ nằm đó cho tới khi có người sửa.
+
+**Việc của bạn:** chọn A hoặc B.
+- Nếu chọn B, approve PR #9 như sau:
+  1. Mở https://github.com/TungPH7/ao-sample/pull/9.
+  2. Ở tab **Files changed**, bấm **Review changes**, chọn **Approve**, rồi bấm **Submit review**.
+  3. `merge-gate` sẽ tự merge.
+- Lúc này không có lượt nào chạy. Nếu muốn bật biến môi trường, bạn đóng hết mọi cửa sổ VS Code, mở lại, rồi gõ `claude --continue`.
+
+**Sau `SMP-6`:** đợt 2 là `SMP-7`. `SMP-7` bắt đầu được khi `SMP-4`, `SMP-5` và `SMP-6` đều đã merge.
