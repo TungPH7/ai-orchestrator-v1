@@ -164,3 +164,11 @@ test('a PR on the branch of an item outside the space reads no item, and the chi
   assert.deepEqual([facts.item, facts.outside], [null, 'SHOP-5']);
   assert.ok(Object.keys(recording.jira).some((key) => key.includes('jql=project = "DEMO" AND parent = "DEMO-11"')), 'the recorded JQL names the space');
 });
+
+// Pilot 1, review of ao-sample PR #6: a file renamed out of a path of security_review counted only by its new name, so a
+// full security review fell to high.
+test('the files of a PR name a renamed file by its old name and its new one', async () => {
+  const renamed = { filename: 'src/common/jwt.ts', previous_filename: 'src/auth/jwt.guard.ts', status: 'renamed', additions: 3, deletions: 1 };
+  const facts = await gather('review', '11', { change: (copy) => copy.github['/pulls/11/files'].push(renamed) });
+  assert.deepEqual(facts.pr.files.slice(-2), ['src/auth/jwt.guard.ts', 'src/common/jwt.ts']);
+});
