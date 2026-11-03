@@ -407,3 +407,14 @@ Chi phí agent của `SMP-4` tới gate ③: 10,23 USD (build 2,47, fix 2,36, re
 - Finding: lượt thử tìm lại cả hai Low của lượt cũ. Chuyện log stack chứa `message` được nâng lên Medium. Lượt thử còn thêm hai Low mới: filter không kiểm header đã gửi chưa; tên biến `code` bị che.
 - Agent đọc thêm ngoài gói ba thứ, có ghi lý do: `vitest.config.e2e.ts`, phần `scripts` của hai `package.json`, và trạng thái của `SMP-2`.
 - Lượt thử chạy ít thực nghiệm hơn (1 lệnh chạy test, lượt cũ có 11 lệnh dựng thử). [Inference] Đây là một mẫu đơn; độ dao động giữa hai lượt của cùng agent thì chưa đo.
+
+## Cách 1, 3, 2 và PR chép `SMP-13` (2026-11-03, Phiên 23 · Lượt 16–17)
+
+- Kit PR #149 (cách 1): `agentCommand` đặt `CLAUDE_CODE_PROMPT_CACHE_TTL=5m` cho mọi lượt agent; 792 test.
+- Kit PR #150 (cách 3): khối `security_review` trong `quality/gates.yaml` và schema của nó; `fullReviewEffort` giữ `max` của roster khi item hay Sub-task có nhãn effort, khi PR chạm đường dẫn được bảo vệ hay đường dẫn rủi ro, còn lại là `high`; 795 test.
+- Kit PR #151 (cách 2): `lib/workflow/review-pack.mjs`, `reviewPackWriter` trong `scripts/ao-step.mjs`, hook `pack` của runner cho `review` và `review-delta`, hướng dẫn mới của `reviewer` và `security`; 804 test.
+- Chép vào `ao-sample`: Task `SMP-13`, nhánh `feature/SMP-13-kit-fixes`, commit `d049513` bằng bot `ao-dev` (11 file kit, hai agent review render lại), PR #6. `CI` xanh.
+- `/ao-review 6` (kit cũ trên `develop`): `reviewer` 45 turn, 8,6 phút, 2,58 USD; `security` 48 turn, 15,5 phút, 4,33 USD; cả hai Approve, không có Critical hay High. Ba Medium, đều ở gói bối cảnh: gói chép nguyên văn mọi file sửa, không giới hạn; văn bản không tin cậy nằm giữa các tiêu đề của gói, không có dấu phân cách; tài liệu Epic đọc ở head của PR. Sáu Low: fence trong file làm vỡ gói; `review-delta` nhận diff của cả PR; `reviewPackWriter` chưa có unit test và không kiểm `git fetch`; chú thích của `prepareCheckout` lệch chỗ; luật effort bỏ sót tầng dữ liệu; file đổi tên ra khỏi đường dẫn rủi ro làm `security` tụt xuống `high`.
+- Bạn chọn cách B ở Lượt 17: merge PR #6 trước, sửa các finding trong kit sau, rồi chép bằng một PR mới.
+- Bạn merge PR #6 lúc 09:24 (`066cc1d`). Trên commit merge: `CI` (sast, build-test, secrets, policy) xanh, `Deploy` (audit, deploy) xanh, hai lượt `jira-sync` theo `deployment_status` báo "no work item of SMP", ba lượt `merge-gate` xanh.
+- `SMP-13` vẫn ở New, như `SMP-3` và `SMP-12`: không agent nào chuyển nó, và `jira-sync` khi deploy chỉ tìm item ở trạng thái mà một deployment chuyển tiếp được.
