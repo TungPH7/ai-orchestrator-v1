@@ -10730,3 +10730,24 @@ Sau `SMP-7`, Sub-task `SMP-8` và `SMP-9` phải sang Done, do chính dev agent 
 **Thay đổi so với đề xuất ở lượt trước:** ở điểm 2, mình nói nên chép kit trước khi build `SMP-5`. Theo thứ tự bạn muốn, mình build với bản kit `ao-sample` đang có. Bản đó đã có mọi sửa của gói bối cảnh (PR #7). Các lỗi kit còn lại đều không chặn và chỉ ở mức Low. Điểm 3 thì có cách tạm ở bước 4.
 
 Bạn xem, cần đổi chỗ nào thì nói. Bạn xác nhận thì mình bắt đầu từ bước 0.
+
+# Phiên 23 · Lượt 23 — 2026-11-03 khoảng 11:07
+
+**Bạn:**
+
+````markdown
+Bước 0 bạn nói "Gộp các sửa này vào nhánh kit task/t9-review-pack-copy, mở kit PR rồi merge." nghĩa là sẽ chạy reviewer và securit à? Mất khoảng 20 - 30 phút à?
+````
+
+Claude xem thời gian của các lượt CI kit gần đây.
+
+**Claude:**
+
+Không. Kit PR không chạy `reviewer` hay `security`, nên không tốn tiền agent và không mất 20–30 phút.
+
+- Agent review chỉ chạy trên PR của `ao-sample`, qua `/ao-review`. Repo kit (`ai-orchestrator-v1`) không có bước đó.
+- Kit PR chỉ chạy CI của kit (workflow `contract`: test, validate, render…). Các lần gần đây mất khoảng 1 phút: PR #152 mất 60 giây, PR #153 mất 62 giây.
+- Khi CI xanh, mình merge bằng script `merge-pr.sh`, như mọi kit PR trước đây.
+- Bước 0 chỉ sửa tài liệu: `SPEC-pilot-1.md`, `tasks/todo.md`, nhật ký. [Ước] Tổng cộng khoảng 5–10 phút, phần lớn là thời gian mình sửa chữ.
+
+Plan vẫn chờ bạn xác nhận.
