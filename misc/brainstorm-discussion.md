@@ -10460,3 +10460,41 @@ Mình chưa làm gì thêm. PR #7 chờ bạn ở gate ③. Vì PR chạm đư�
 3. Ở tab **Conversation**, kéo xuống cuối, bấm **Squash and merge**, rồi **Confirm squash and merge**.
 
 6 Low có thể sửa trong kit sau, gom vào đợt chép kit tiếp theo. Bạn quyết định khi nào làm.
+
+# Phiên 23 · Lượt 19 — 2026-11-03 khoảng 10:25
+
+**Bạn:**
+
+````markdown
+đã merge, bạn cần kiểm tra gì không? Phần tiếp theo là gì? Tôi cần thảo luận 1 số điều trước khi đi qua phần tiếp đó.
+````
+
+**Claude:**
+
+**Có, mình cần kiểm mấy việc sau.** Đều là đọc, mất khoảng 2 phút, không chạy agent. Mình chưa làm, chờ bạn bảo.
+1. Trên commit merge của PR #7: `CI`, `Deploy` (gồm `audit`), `jira-sync`, `merge-gate` xanh. Tiêu chí 3 của spec yêu cầu `audit` xanh trên mọi commit merge vào `develop`.
+2. `SMP-14` vẫn ở New, như `SMP-13`.
+3. Ghi kết quả vào `tasks/verification.md`.
+
+**Phần tiếp theo**
+
+1. **Đóng T9.** Đối chiếu tiêu chí 3–7 của spec mục 9 với bằng chứng:
+   - Tiêu chí 3, Epic tới khi `SMP-4` sang Ready for QA: đạt, chỉ còn kiểm `audit` của commit merge PR #7.
+   - Tiêu chí 4, sáu lệnh `/ao-*` chạy qua `claude -p`: đạt. `/ao-status` chạy ở T6, `/ao-spec` và `/ao-plan` ở T7, `/ao-build` ở T8, `/ao-review` và `/ao-fix 4 <ghi chú>` ở T9.
+   - Tiêu chí 5, mọi lần đổi trạng thái đến từ `automation` hoặc từ bạn: **chưa đạt theo đúng câu chữ.** Lần chuyển `SMP-4` từ Ready sang In Progress do `orchestratoragent` làm, vì contract cho dev agent tự `start`. Cần bạn chọn: sửa câu của spec cho khớp contract, hay coi đây là lỗi kit.
+   - Tiêu chí 6 (artifact ở mỗi cổng) và 7 (agent không push thẳng, không approve, không chuyển Done): mình đọc lịch sử item và danh sách PR để xác nhận.
+   - Thêm hai phần kiểm chứng của T9: mọi commit vào `develop` đến từ PR, và không review nào đứng tên bạn ngoài approve của bạn.
+2. **Checkpoint 4:** bạn xem lịch sử Epic `SMP-2` trên Jira, các PR trên `ao-sample`, và `.ai/runs/`.
+3. **T10:**
+   - Nhánh kit `task/t9-review-pack-copy` (nhật ký và sổ kiểm chứng) cần một kit PR.
+   - `verification.md` thêm mục "Đầu vào cho `project-scaffold`": bước cài nào tự động được, bước nào cần bạn, thời gian, chỗ vướng.
+   - `SPEC.md` và `SPEC-pilot-1.md` ghi trạng thái.
+   - Chuyển `tasks/*` vào `tasks/archive/pilot-1/`.
+4. **Checkpoint cuối:** bạn xác nhận Pilot 1 hoàn thành.
+
+**Những điểm mình thấy cần bạn quyết** (bạn có thể thêm điểm của bạn):
+- Tiêu chí 5 như nói ở trên.
+- Các lỗi kit còn mở: 6 Low của PR #7, và các finding không chặn từ trước. Ví dụ: `ba` không có công cụ tạo link Blocks, hook chặn nhầm chữ `atlassian.net`, gợi ý bước tiếp bỏ qua Blocks, tên file không phải ASCII lách được policy. Sửa trong Pilot 1 thì mỗi lần chép kit tốn thêm khoảng 5 USD và 20 phút review. Để sau Pilot 1 thì T10 không cần PR chép kit.
+- Lượt review chạy trên checkout của nhánh PR, nên chỉ dẫn của agent lấy từ chính PR. `security` đã nêu điểm này hai lần.
+
+Bạn muốn thảo luận điều gì trước?
