@@ -239,9 +239,9 @@ export class HealthController {
 
 1. Repo `ao-sample` có `develop` là nhánh mặc định, và `main` là tổ tiên của `develop` (`git merge-base --is-ancestor origin/main origin/develop`). `CI` xanh trên PR đầu tiên và trên `develop` sau lần merge đầu. (Đổi ở Checkpoint 2: GitHub không chạy workflow nào cho lần push đầu của repo, nên commit đầu không có run `CI`.)
 2. `npm run jira:check -- --space SMP` không còn chỗ lệch.
-3. Epic thử đi từ New tới khi Task `SMP-4` sang Ready for QA. (Đổi ở Checkpoint 3, Phiên 23 · Lượt 4: trước đây là mọi Story. Epic có 3 Task và 3 Story, nên làm hết ước thêm 50–70 USD; bạn chọn chỉ làm `SMP-4`. Các item còn lại ở Ready, ngoài Pilot 1.) PR tài liệu do `merge-gate` merge sau gate ②. Mỗi PR code do `merge-gate` merge sau gate ③. `audit` xanh trên mọi commit merge vào `develop`.
+3. Epic thử đi từ New tới khi mọi Story sang Ready for QA, cùng các Task chặn chúng: cả 6 item `SMP-4`, `SMP-5`, `SMP-6`, `SMP-7`, `SMP-10`, `SMP-11`. (Ở Checkpoint 3, Phiên 23 · Lượt 4, bạn chọn chỉ làm `SMP-4`, vì phần còn lại ước thêm 50–70 USD. Ở Phiên 23 · Lượt 22, sau khi review rẻ đi, bạn đổi lại như ban đầu.) PR tài liệu do `merge-gate` merge sau gate ②. Mỗi PR code do `merge-gate` merge sau gate ③. `audit` xanh trên mọi commit merge vào `develop`.
 4. Sáu lệnh `/ao-*` đều chạy qua `claude -p`, mỗi lệnh ít nhất một lần. Nếu review không có yêu cầu sửa nào, mình chạy `/ao-fix <PR> <ghi chú>` với một sửa nhỏ do bạn nêu.
-5. Mỗi lần đổi trạng thái item trên Jira đến từ tài khoản `automation` hoặc từ bạn, không từ agent (đọc lịch sử thay đổi của item).
+5. Mỗi lần đổi trạng thái item trên Jira do đúng actor mà `contract/workflows.yaml` cho phép (đọc lịch sử thay đổi của item). Các cổng (`start-spec`, `approve-spec`, `approve-plan`, `accept`, `cancel`) chỉ do bạn. Agent chỉ dùng transition có vai trò của nó, như `start` của dev agent. (Đổi ở Phiên 23 · Lượt 22: câu cũ "không từ agent" trái với contract, vốn cho dev agent `start`, `reviewer` và `security` `request-changes`, `qa` `pick-up` và `qa-fail`.)
 6. Mỗi cổng có artifact: SPEC, design (nếu có), plan, ADR (nếu có), báo cáo của `reviewer` và `security` trên PR, log lượt chạy trong `.ai/runs/`.
 7. Không lần nào agent push thẳng, approve thay bạn, hay chuyển item sang Done.
 8. `verification.md` có đủ các bảng ở mục 7. Mỗi lỗi kit có PR sửa và test.
