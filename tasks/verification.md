@@ -527,3 +527,16 @@ Chi phí `SMP-5` tới gate ③: 6,25 USD cho agent (build 2,01, review 2,07, fi
 - Lịch sử trạng thái của `SMP-6`: New → Ready (02/11 22:23, `orchestratorci`), Ready → In Progress (14:32, `orchestratoragent`, `start` của `fe-dev`), In Progress → In Review (14:41, `orchestratorci`), In Review → Ready for QA (16:52, `orchestratorci`).
 
 Chi phí `SMP-6`: 8,09 USD cho agent (build 3,37, review 4,72), 0,26 USD cho hai phiên điều phối. Đợt 1 (`SMP-5`, `SMP-6`): 15,04 USD.
+
+### `SMP-7` Tạo ghi chú (đợt 2, Story có Sub-task `SMP-8` BE rồi `SMP-9` FE)
+
+- `ao-step build SMP-7` không có `--go`: GO, `be-dev` `SMP-8` rồi `fe-dev` `SMP-9`, cả hai effort `high`.
+- **`/ao-build SMP-7`** (16:55–17:22). Phiên Sonnet điều phối: 0,14 USD, thoát 0. Lần đầu Pilot 1 chạy luồng Story có hai Sub-task.
+  - `be-dev` cắt `feature/SMP-7-create-note` từ `develop` (`533578a`). Agent chuyển `SMP-7` sang In Progress, rồi viết test trước, qua 4 commit (`ca3d342`, `19d610c`, `2e10f8b`, `8080aaf`): store trong bộ nhớ, service, controller `GET`/`POST /notes`, integration test. Sau đó agent tự chuyển `SMP-8` sang Done (`complete` của Sub-task) và để lại comment bàn giao.
+  - `fe-dev` làm tiếp trên cùng nhánh, qua 8 commit. Ba commit đầu là 5 việc sửa thêm từ PR #9: `5ba25c2` (`API_URL` rỗng và `/` cuối, có `next.config.test.ts`), `37442c5` (bỏ Geist, 5 SVG, import trùng), `d3e46a4` (smoke đi qua rewrite). Năm commit sau (`66afe84`…`3bd9185`) làm lớp gọi API, danh sách, form, và E2E cho AC1, AC2, AC7, AC8. Agent chuyển `SMP-9` sang Done, rồi `ao-dev` mở PR #10 (+2061 −38, 32 file). `CI` #21 xanh. `jira-sync` chuyển `SMP-7` sang In Review.
+  - **Lại lỗi "server bị bỏ chạy":** `node scripts/dev.mjs` và `nest start --watch` còn sống sau khi `fe-dev` có kết quả. Watcher mới báo sau 1 phút, và Claude tắt cây tiến trình bằng `taskkill /T`. Lần này cache còn hạn, nên lượt tỉnh lại chỉ tốn 0,05 USD (đọc 204.099 token cache, ghi 1.497), so với 0,74 USD ở `SMP-6`.
+
+| # | Item | Lượt | Model | Bước | Effort | Kết quả | Turn | Thời gian | Token vào / ra | Cache đọc / ghi | Chi phí quy đổi | Bị từ chối |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 1 | `SMP-8` | `be-dev` | Opus 5.5 | build | high | done | 52 | 7,8 phút | 76 / 32.818 | 3.213.198 / 114.258 | 1,87 USD | 0 |
+| 2 | `SMP-9` | `fe-dev` | Opus 5.5 | build | high | done | 104 + 1 (tỉnh lại) | 16,2 phút | 148 / 64.646 | 11.257.457 / 205.596 | 4,57 USD (0,05 do treo) | 0 |
