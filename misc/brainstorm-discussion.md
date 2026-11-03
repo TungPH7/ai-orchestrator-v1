@@ -10376,3 +10376,56 @@ Bạn chọn A hay B? Nếu chọn B, các bước bấm để approve và merge
 2. Tab **Files changed**, bấm **Review changes**, chọn **Approve**, bấm **Submit review**.
 3. Tab **Conversation**, kéo xuống cuối, bấm **Squash and merge**, rồi **Confirm squash and merge**.
 4. Nhắn mình "đã merge".
+
+
+# Phiên 23 · Lượt 17 — 2026-11-03 khoảng 09:25
+
+**Bạn:**
+
+````markdown
+đã merge
+````
+
+**Claude:**
+
+Claude kiểm commit merge `066cc1d` của PR #6: `CI`, `Deploy` (audit, deploy), `jira-sync`, `merge-gate` đều xanh; `SMP-13` vẫn ở New như `SMP-3` và `SMP-12`. Claude ghi vào `tasks/verification.md`, mở và merge kit PR #152 (sổ ghi T8, T9 và phần giảm chi phí review). Rồi Claude sửa 3 Medium và 6 Low của lượt review PR #6 trong kit PR #153: gói bọc văn bản không tin cậy trong fence mà nội dung không đóng được và liệt kê các mục do `ao-step` viết; tài liệu Epic và mẫu báo cáo đọc ở merge base; diff đứng trước toàn văn, toàn văn có giới hạn; `review-delta` không có gói; `reviewPackWriter` nhận git, GitHub, Jira làm tham số và có 3 test; luật effort thêm tầng dữ liệu và tính file đổi tên theo cả tên cũ; 811 test. Claude chạy thử phần dựng gói với git thật trên PR #4 và #6, tạo Task `SMP-14`, chép 8 file và render lại hai agent review (commit `8c61d90` bằng bot `ao-dev`), mở PR #7. `CI` xanh. `/ao-review 7` chạy bằng kit mới: gói 138 KB; `reviewer` 36 turn, 9,7 phút, 2,37 USD, Approve với 4 Low. Giữa chừng Claude nhắn ngắn: "PR #6 đã vào `develop`; `CI`, `Deploy`/`audit`, `jira-sync`, `merge-gate` đều xanh." và "`reviewer` Approve, không có Medium trở lên, chỉ có 4 Low. Giờ chờ `security` (effort max)."
+
+# Phiên 23 · Lượt 18 — 2026-11-03 khoảng 10:00
+
+**Bạn:**
+
+````markdown
+Vì sao đã update lại kit để giảm thời gian chạy reviewer,security rồi mà lần ao-step review 7 đang chạy vẫn mất khoảng 15 - 25 phút, vậy thì thời gian đâu có giảm so với lúc trước khi update kit???
+````
+
+**Claude:**
+
+Bạn nói đúng: với PR #7, thời gian không giảm. Ba cách bạn chọn nhắm vào chi phí (USD) chứ không nhắm vào thời gian, và với PR #7 cả ba gần như không chạm tới phần ngốn thời gian nhất.
+
+**Số đo của lượt `reviewer`** (đọc từ log của hai lượt)
+
+| | PR #6 (kit cũ) | PR #7 (kit mới) |
+|---|---|---|
+| Turn | 40 | 31 |
+| Thời gian | 8,5 phút | 9,6 phút |
+| Trong đó suy nghĩ | 3,9 phút | 3,9 phút |
+| Trong đó chạy tool | 2,1 phút | 1,6 phút |
+| Bối cảnh mỗi turn (trung vị) | 101 nghìn token | 132 nghìn token |
+| Chi phí | 2,58 USD | 2,37 USD |
+
+**Ba lý do**
+
+1. **Thời gian suy nghĩ không đổi.** `reviewer` suy nghĩ 3,9 phút ở cả hai lần. Ở PR #6, `security` suy nghĩ 10,7 trong 15,4 phút. Cache 5 phút (cách 1) chỉ đổi giá, không đổi tốc độ. Gói bối cảnh (cách 2) chỉ bỏ bớt các turn đi lấy dữ liệu: số lệnh git giảm từ 25 xuống 11, và phần chạy tool chỉ ngắn đi 0,5 phút.
+2. **PR chép kit là trường hợp xấu nhất cho gói.**
+   - Gói của PR #7 nặng 138 KB, vì chứa diff và toàn văn 8 file kit. Mỗi turn phải đọc bối cảnh lớn hơn khoảng 30%, nên chậm hơn. Phần chậm thêm đó ăn hết phần gói tiết kiệm.
+   - Lần này `reviewer` còn tự kiểm thêm: so bản chép với kit, chạy test của kit, chạy 26 mutation (ở PR #6 là 14). Gói không thay được những việc đó.
+   - Phép đo duy nhất cho thấy thời gian giảm là trên PR #4, một PR code app: 7,3 phút xuống 4,1 phút.
+3. **Cách 3 không áp dụng cho PR #7.** PR chạm đường dẫn được bảo vệ (`.ai-orchestrator/**`, `.claude/**`), nên theo luật, `security` vẫn chạy ở `max`. Phần lớn của 15–25 phút nằm ở lượt này.
+
+**Mình ước sai một chỗ.** Ở Lượt 16, mình ước review PR mới tốn 3–4 USD. Mình lấy số từ phép đo trên PR code app, nên số đó sai với PR chép kit. `reviewer` đã tốn 2,37 USD. [Ước] `security` ở `max` thêm khoảng 4 USD, nên tổng khoảng 6–6,5 USD, gần bằng lần trước (6,91 USD).
+
+**Khi nào thời gian giảm thật:** ở PR code app không chạm đường dẫn rủi ro. Khi đó `security` chạy ở `high` và gói nhỏ hơn. Mình chưa đo thời gian của `security` ở `high`; PR code app tiếp theo sẽ cho số thật.
+
+**Với PR chép kit, mình khuyên giữ review.** Lượt review dài là cái giá của lớp review độc lập duy nhất cho mã kit. Hai lần vừa rồi, nó tìm ra lỗi thật: 3 Medium ở PR #6, 4 Low ở PR #7. Cách giảm hợp lý là chép kit theo đợt, đúng cách A bạn đã chọn, để lượt dài này ít xảy ra. Nếu bạn muốn giảm hẳn, có thể hạ `security` của PR chép kit xuống `high`, nhưng khi đó các PR đổi chỉ dẫn của agent sẽ được soi kém hơn.
+
+Lượt `security` của PR #7 vẫn đang chạy. Khi nó xong, mình chỉ báo kết quả, không làm gì thêm cho tới khi bạn bảo.
