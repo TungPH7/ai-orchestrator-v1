@@ -11224,3 +11224,36 @@ Mình đang ghi kết quả review PR #9 vào nhật ký, xong là gửi bạn.
 - Lúc này không có lượt nào chạy. Nếu muốn bật biến môi trường, bạn đóng hết mọi cửa sổ VS Code, mở lại, rồi gõ `claude --continue`.
 
 **Sau `SMP-6`:** đợt 2 là `SMP-7`. `SMP-7` bắt đầu được khi `SMP-4`, `SMP-5` và `SMP-6` đều đã merge.
+
+# Phiên 23 · Lượt 31 — 2026-11-03 khoảng 15:25
+
+**Bạn:**
+
+````markdown
+thực hiện fix 5 finding của ao-fix 9 khi làm SMP-7 có được không?
+````
+
+Claude đọc lệnh build của Sub-task trong `prompts.mjs` của kit trong `ao-sample` để biết `fe-dev` đọc gì, rồi trả lời.
+
+**Claude:**
+
+**Được, và cách này rẻ hơn.** Chi phí của một lượt sửa chủ yếu nằm ở vòng review lại. Nếu gộp vào `SMP-7`, phần sửa được review luôn trong vòng review của PR `SMP-7`, nên bớt được một vòng riêng. [Ước] Tiết kiệm khoảng 3–5 USD, đổi lại build và review của `SMP-7` tốn thêm chừng 0,5–1 USD.
+
+**Cách làm:**
+1. Bạn approve PR #9 ngay bây giờ (cách B). Đằng nào cũng phải làm bước này, vì `SMP-7` chỉ bắt đầu được khi `SMP-6` đã merge.
+2. Trước khi build `SMP-7`, mình thêm một mục "Sửa thêm từ review PR #9" vào mô tả của Sub-task FE `SMP-9` trên Jira. Mục này liệt kê 5 điểm, riêng điểm 2 chỉ lấy phần test đi qua rewrite. Mình sửa bằng API Jira, như lúc tạo `SMP-12` tới `SMP-14`.
+   - `fe-dev` nhận lệnh "Build Sub-task `SMP-9`…" (`prompts.mjs`), nên sẽ đọc mô tả của `SMP-9`.
+   - `fe-dev` viết mô tả PR của `SMP-7`, và mô tả này phải kể cả phần sửa thêm. `reviewer` và `security` đọc mô tả PR nên sẽ kiểm luôn phần đó. [Chưa kiểm chứng] Mình chưa biết gói bối cảnh có chép mô tả của Sub-task hay chỉ chép của Story.
+3. Mình comment lên `SMP-6`: 5 Low của PR #9 được sửa trong PR của `SMP-7`. Nhờ vậy, ai đọc lịch sử `SMP-6` vẫn tìm được phần sửa.
+
+**Điểm cần biết:**
+- Điểm 1 và 2 hợp với `SMP-7`, vì form tạo ghi chú gọi `/api/notes` qua rewrite. Điểm 3–5 là việc dọn không liên quan tới Story. Chúng nhỏ, nhưng `reviewer` có thể ghi chú là PR lẫn việc ngoài phạm vi.
+- Sửa mô tả `SMP-9` là thêm việc vào item sau khi bạn đã duyệt plan ở gate ②. Việc thêm nhỏ, nhưng quyết định là của bạn. Mình sẽ ghi việc này vào `tasks/verification.md`.
+- Nếu `fe-dev` bỏ sót điểm nào, mình sẽ thấy khi đọc diff trước lúc review. Nếu `SMP-7` cần thêm một lượt `/ao-fix`, mình gộp điểm sót vào ghi chú của lượt đó.
+
+**Việc của bạn:** nếu đồng ý, approve PR #9:
+1. Mở https://github.com/TungPH7/ao-sample/pull/9.
+2. Ở tab **Files changed**, bấm **Review changes**, chọn **Approve**, rồi bấm **Submit review**.
+3. Nhắn mình "đã approve".
+
+Sau đó mình kiểm commit merge của PR #9, sửa mô tả `SMP-9`, comment lên `SMP-6`, rồi chạy `/ao-build SMP-7`.
