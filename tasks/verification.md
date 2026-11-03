@@ -540,3 +540,4 @@ Chi phí `SMP-6`: 8,09 USD cho agent (build 3,37, review 4,72), 0,26 USD cho hai
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 1 | `SMP-8` | `be-dev` | Opus 5.5 | build | high | done | 52 | 7,8 phút | 76 / 32.818 | 3.213.198 / 114.258 | 1,87 USD | 0 |
 | 2 | `SMP-9` | `fe-dev` | Opus 5.5 | build | high | done | 104 + 1 (tỉnh lại) | 16,2 phút | 148 / 64.646 | 11.257.457 / 205.596 | 4,57 USD (0,05 do treo) | 0 |
+- **`/ao-review 10`** (17:24–17:49) trên checkout `develop`. `reviewer`: Approve, 3 Low (form tự gửi trước khi hydrate làm chữ lên URL; `ul` thiếu `role="list"` cho VoiceOver; 2 mutation còn sống trong `notes-api`). Đã kiểm đủ 5 follow-up của PR #9. 41 turn, 14,0 phút, 3,08 USD. `security` ở `max` chạm giới hạn gói (`usage-limit`) sau 27 turn, 10,2 phút, 2,69 USD, chưa đăng báo cáo. Chạy lại `/ao-review 10` khi có hạn mức.
