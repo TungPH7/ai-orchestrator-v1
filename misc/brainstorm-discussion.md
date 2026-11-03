@@ -10617,3 +10617,116 @@ Lượt review luôn chạy trên checkout của `develop`, tức bản đã đ�
 - Đổi lại: PR chép kit sau này được review bằng kit cũ trên `develop`, như PR #6. Mình thấy chấp nhận được, vì kit mới đã có test trong kit trước khi chép.
 
 Nếu bạn đồng ý cả ba, T10 sẽ lớn hơn (vài kit PR), nhưng không tốn tiền agent. Mình chờ bạn quyết rồi mới làm.
+
+# Phiên 23 · Lượt 22 — 2026-11-03 khoảng 10:55
+
+**Bạn:**
+
+````markdown
+đồng ý cả 3 điểm. Nhưng giờ cần làm all task trong T9 trước, tôi muốn làm hết các task trong SMP-2. Đưa lại tôi plan bạn sẽ làm, tôi xem rồi xác nhận thì bạn mới làm nhe
+````
+
+**Bạn** (nhắn thêm giữa chừng):
+
+````markdown
+Plan ban đầu là phải làm hết các task trong SMP-2 phải không?
+````
+
+Claude đọc nhãn, link Blocks và Sub-task của `SMP-5` tới `SMP-11`, effort trong roster, giới hạn WIP, plan của `SMP-2`, và câu ban đầu của tiêu chí 3 trong lịch sử git.
+
+**Claude:**
+
+**Câu bạn hỏi thêm: plan ban đầu có phải làm hết các task của `SMP-2` không?** Đúng.
+- Câu ban đầu của tiêu chí 3 trong `SPEC-pilot-1.md` là "Epic thử đi từ New tới khi mọi Story sang Ready for QA". `SMP-7`, Story đầu tiên, bị `SMP-4`, `SMP-5` và `SMP-6` chặn. Vì vậy, trên thực tế phải làm cả 6 item.
+- Ở Checkpoint 3 (Phiên 23 · Lượt 4–5), mình ước phần còn lại tốn thêm 50–70 USD, và bạn chọn cách C. Mình đã thu hẹp tiêu chí lại còn `SMP-4` (commit kit `3f98efd`).
+- Plan dưới đây đưa phạm vi về như ban đầu.
+
+Bạn đồng ý cả 3 điểm, và muốn làm hết các item của `SMP-2` trong T9 trước. Dưới đây là plan. Mình chưa làm gì, đang chờ bạn xác nhận.
+
+## Bước 0: sửa giấy tờ theo quyết định mới (không tốn tiền agent)
+
+- `SPEC-pilot-1.md` mục 9, tiêu chí 3: dùng lại câu ban đầu "tới khi mọi Story sang Ready for QA", ghi rõ là bạn đổi lại ở Phiên 23 · Lượt 22, và ghi thêm rằng các Task chặn Story cũng phải làm.
+- Cũng trong mục 9, tiêu chí 5: đổi sang câu chữ mới (điểm 1 bạn vừa đồng ý).
+- `tasks/todo.md`, T9: bước 1 chạy lại, với danh sách item và thứ tự bên dưới.
+- Gộp vào nhánh kit `task/t9-review-pack-copy`, mở kit PR rồi merge.
+
+## Thứ tự làm, theo link Blocks
+
+| Đợt | Item | Loại, vai trò | Phụ thuộc | Effort `security` dự kiến |
+|---|---|---|---|---|
+| 1 | `SMP-5` Quy tắc ghi chú dùng chung | Task, `be-dev` (high) | không | `high` (chỉ `notes.shared.ts`) |
+| 1 | `SMP-6` Khung trang Ghi chú | Task, `fe-dev` (high) | không | `max` (có `next.config.ts`) |
+| 2 | `SMP-7` Tạo ghi chú | Story: `SMP-8` BE (`be-dev`), rồi `SMP-9` FE (`fe-dev`), một nhánh, một PR | `SMP-4`, `SMP-5`, `SMP-6` đã merge | `max` (có controller) |
+| 3 | `SMP-10` Báo lỗi nhập ngay cạnh ô | Story, `fe-dev` | `SMP-7` đã merge | `high` |
+| 3 | `SMP-11` Xem danh sách ghi chú | Story, `fe-dev` | `SMP-7` đã merge | `high` |
+
+- Mỗi lúc chỉ một agent chạy, vì `ao-step` giữ khóa. Mỗi dev agent chỉ làm một item một lúc (WIP 1). Cột In Review chứa tối đa 2 PR.
+- Để đỡ thời gian chờ: trong lúc PR của một item chờ bạn approve, mình build item kế tiếp trong cùng đợt.
+
+## Các bước cho mỗi item
+
+1. Chạy `ao-step build <KEY>` không có `--go` để xem GO hay STOP. Bước này miễn phí.
+2. Chạy `/ao-build <KEY>` qua `claude -p`, Sonnet điều phối, Monitor theo dõi `ao-step` tới khi xong. Dev agent viết test trước, rồi code, mở PR và chờ CI.
+3. Nếu CI đỏ:
+   - Lỗi do code của agent: chạy `/ao-fix <PR>` với ghi chú nêu lỗi.
+   - Lỗi kit làm item bị chặn: mình dừng và báo bạn, rồi sửa kit kèm test, và chép vào `ao-sample` bằng một PR chép kit, như T8a.
+   - Lỗi kit không chặn: mình ghi vào danh sách của T10.
+4. Chuyển thư mục `ao-sample` về `develop`, rồi chạy `/ao-review <PR>`. Đây là cách tạm cho điểm 3: chỉ dẫn của agent review lấy từ `develop`. Cách sửa thật nằm ở T10.
+5. Xử lý finding:
+   - Có Critical hay High: `/ao-fix <PR>`, rồi `security` review lại phần mới.
+   - Medium và Low: mình liệt kê, nói finding nào nên sửa, và bạn quyết.
+6. **[bạn]** Approve PR ở gate ③. Mình gửi các bước bấm như mọi lần. Sau đó `merge-gate` merge, `audit` chạy, và `jira-sync` chuyển item sang Ready for QA.
+7. Mình kiểm commit merge (`CI`, `Deploy` với `audit`, `jira-sync`, `merge-gate`) và trạng thái trên Jira, rồi ghi vào `tasks/verification.md` và nhật ký.
+
+Sau `SMP-7`, Sub-task `SMP-8` và `SMP-9` phải sang Done, do chính dev agent chuyển. Đây là lần đầu Pilot 1 chạy luồng Story có Sub-task BE rồi FE.
+
+## Việc của bạn
+
+- Approve 5 PR, của `SMP-5`, `SMP-6`, `SMP-7`, `SMP-10` và `SMP-11`.
+- Quyết finding Medium và Low, nếu có.
+- Trả lời khi một agent gắn cờ Needs you lên item.
+
+## Khi nào mình dừng lại báo bạn
+
+- Mỗi khi có PR chờ bạn approve.
+- Khi item bị gắn cờ Needs you, hoặc một bước lỗi 2 lần liên tiếp.
+- Khi có lỗi kit chặn.
+- Khi một lượt đứng yên (Monitor báo), hoặc khi hết hạn mức gói Claude. Phiên 22 đã dừng vì hết hạn mức tuần, và các lượt agent cũng ăn vào hạn mức đó. Nếu hết giữa chừng, `ao-step` ghi `usage-limit`, và mình chạy tiếp khi có hạn mức lại.
+- Khi tổng chi phí của đợt này vượt 60 USD.
+
+## Ước lượng
+
+[Ước] Chi phí và thời gian, tính theo từng item:
+
+| Item | Build | Review | Một lượt sửa (nếu có) | Cộng |
+|---|---|---|---|---|
+| `SMP-5` | 1,5–3 USD | 2,5–4 USD | 1–2 USD | 5–9 USD |
+| `SMP-6` | 2–4 USD | 3,5–5 USD | 1–2 USD | 6–11 USD |
+| `SMP-7` (2 dev agent) | 5–8 USD | 4–6 USD | 2–4 USD | 11–18 USD |
+| `SMP-10` | 2–4 USD | 2,5–4 USD | 1–2 USD | 5–10 USD |
+| `SMP-11` | 2–4 USD | 2,5–4 USD | 1–2 USD | 5–10 USD |
+| **Tổng** | | | | **khoảng 35–55 USD** |
+
+- Cơ sở của ước lượng:
+  - `SMP-4` tốn 2,47 USD cho build ở xhigh. Các item này chạy ở high.
+  - Review của PR #7 tốn 5,14 USD, với `security` ở `max`.
+  - `reviewer` trên PR #4 với gói bối cảnh tốn 0,95 USD.
+  - `security` ở `high` chưa có số đo.
+- Thời gian: [Ước] mỗi item 40–75 phút chạy, chưa tính lúc chờ bạn. Cả 5 item khoảng 4–7 giờ.
+
+## Sau T9
+
+1. Đóng T9 theo tiêu chí mới, kể cả đọc lịch sử item theo câu mới của tiêu chí 5.
+2. Checkpoint 4: bạn xem lại toàn bộ lịch sử.
+3. T10:
+   - sửa điểm 3 trước (review chạy trên `develop`, code của PR nằm trong worktree);
+   - rồi sửa các lỗi kit của điểm 2, mỗi bản sửa kèm test;
+   - viết mục "Đầu vào cho `project-scaffold`";
+   - chuyển `tasks/*` vào `tasks/archive/pilot-1/`.
+
+   Theo điểm 2, bản chép các sửa này vào `ao-sample` để tới khi `ao-sample` được dùng lại.
+4. Checkpoint cuối.
+
+**Thay đổi so với đề xuất ở lượt trước:** ở điểm 2, mình nói nên chép kit trước khi build `SMP-5`. Theo thứ tự bạn muốn, mình build với bản kit `ao-sample` đang có. Bản đó đã có mọi sửa của gói bối cảnh (PR #7). Các lỗi kit còn lại đều không chặn và chỉ ở mức Low. Điểm 3 thì có cách tạm ở bước 4.
+
+Bạn xem, cần đổi chỗ nào thì nói. Bạn xác nhận thì mình bắt đầu từ bước 0.
