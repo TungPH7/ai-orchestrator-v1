@@ -418,3 +418,49 @@ Chi phí agent của `SMP-4` tới gate ③: 10,23 USD (build 2,47, fix 2,36, re
 - Bạn chọn cách B ở Lượt 17: merge PR #6 trước, sửa các finding trong kit sau, rồi chép bằng một PR mới.
 - Bạn merge PR #6 lúc 09:24 (`066cc1d`). Trên commit merge: `CI` (sast, build-test, secrets, policy) xanh, `Deploy` (audit, deploy) xanh, hai lượt `jira-sync` theo `deployment_status` báo "no work item of SMP", ba lượt `merge-gate` xanh.
 - `SMP-13` vẫn ở New, như `SMP-3` và `SMP-12`: không agent nào chuyển nó, và `jira-sync` khi deploy chỉ tìm item ở trạng thái mà một deployment chuyển tiếp được.
+
+## Sửa finding của PR #6 và PR chép `SMP-14` (2026-11-03, Phiên 23 · Lượt 17–20)
+
+- Kit PR #152: sổ ghi T8, T9 và phần giảm chi phí review.
+- Kit PR #153 sửa 3 Medium và 6 Low của lượt review PR #6:
+  - gói bọc văn bản không tin cậy trong fence mà nội dung không đóng được, và liệt kê các mục do `ao-step` viết;
+  - tài liệu Epic và mẫu báo cáo đọc ở merge base;
+  - diff đứng trước toàn văn; toàn văn có giới hạn;
+  - `review-delta` không có gói;
+  - `reviewPackWriter` có 3 test;
+  - luật effort thêm tầng dữ liệu và tính file đổi tên theo cả tên cũ.
+  Kit có 811 test. Chạy thử với git thật trên PR #4 và #6: mỗi gói có đúng các mục do `ao-step` viết.
+- Chép vào `ao-sample`: Task `SMP-14`, commit `8c61d90` bằng bot `ao-dev`, PR #7. `CI` xanh.
+- `/ao-review 7` bằng kit mới. Gói 138 KB, đúng 6 mục, fence nào cũng đóng.
+
+| | PR #6 (kit cũ) | PR #7 (kit mới) |
+|---|---|---|
+| `reviewer` | 40 API turn, 8,5 phút (suy nghĩ 3,9), 2,58 USD | 31 API turn, 9,6 phút (suy nghĩ 3,9), 2,37 USD |
+| `security` ở `max` | 40 API turn, 15,4 phút (suy nghĩ 10,7), 4,33 USD | 27 API turn, 12,7 phút (suy nghĩ 8,6), 2,78 USD |
+| Bối cảnh mỗi turn của `reviewer` (trung vị) | 101 nghìn token | 132 nghìn token |
+| Tổng | khoảng 24 phút, 6,91 USD | khoảng 22,5 phút, 5,14 USD |
+
+- Thời gian gần như không giảm, vì ba lý do:
+  - thời gian suy nghĩ chiếm phần lớn;
+  - gói của một PR chép kit lớn, nên mỗi turn chậm hơn;
+  - PR chạm đường dẫn được bảo vệ, nên `security` vẫn ở `max`.
+
+  Chi phí giảm 26%. Ở Lượt 16, Claude ước 3–4 USD cho lượt review này; ước đó sai, vì nó dựa trên phép đo ở một PR code app.
+- Finding: cả hai Approve, không có Critical, High hay Medium.
+  - `reviewer`, 4 Low:
+    - `--name-status` chạy không có `-z`, nên tên file có dấu bị escape;
+    - file vừa đổi tên vừa sửa không có toàn văn;
+    - 5 trong 26 mutation còn xanh;
+    - tiêu đề PR nằm ngoài fence.
+  - `security`, 2 Low:
+    - tiêu đề PR nằm ngoài fence;
+    - file có byte NUL bị ghi là binary, không kèm lệnh đọc.
+  - `security` nêu lại một chỗ hở có từ trước: lượt review chạy trên checkout của nhánh PR.
+- Phiên Sonnet điều phối chạy `ao-step` ở nền rồi thoát sau 15 giây (0,10 USD), vì `claude -p` không chờ thông báo. `ao-step` vẫn chạy tới hết.
+- Bạn merge PR #7 lúc 10:23 (`7af4af0`). Trên commit merge:
+  - `CI` (sast, build-test, secrets, policy) xanh;
+  - `Deploy` (audit, deploy) xanh;
+  - `jira-sync` ×3 báo "no work item of SMP";
+  - `merge-gate` ×4 xanh.
+
+  `SMP-14` vẫn ở New.
