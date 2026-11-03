@@ -320,7 +320,18 @@ Sau khi kit PR merge: một PR chép kit vào `ao-sample` (plan, quyết định
 
 **Mô tả:**
 
-1. Nếu còn bản sửa kit chưa vào `ao-sample`: một PR chép kit, review bằng `/ao-review`, bạn merge.
+0. **Bản sửa các lỗi kit tìm được ở Pilot 1** (Phiên 24: bạn xác nhận Checkpoint 4 và giao T10). Mỗi lỗi một kit PR có test; bạn merge. Danh sách và trạng thái (cập nhật 2026-11-04):
+   - [ ] Review chạy trên checkout của nhánh đích, code của PR trong worktree (thay cách tạm "chuyển sang `develop`"): kit PR #156.
+   - [ ] `ao-step` dừng agent còn sống sau khi có kết quả, cùng server nó bỏ lại: kit PR #157 (xếp chồng lên #156).
+   - [ ] Gợi ý `Next:` sau gate ② bỏ qua item bị chặn bởi Blocks: kit PR #158.
+   - [ ] Hai thay đổi runner của T7b chưa có test giữ (`Math.min`, phép trộn `limits`).
+   - [ ] `NONE` của `runs.mjs` nhận `,` `(` `-` sau "Không có", nên câu hỏi thật mở đầu như vậy bị bỏ sót.
+   - [ ] `addedLines`, `deletedTests`, `changedLines` không đọc tên file ngoài ASCII (git đặt trong ngoặc kép), nên suppression trong file như `ghi-chú.ts` lọt khỏi `policy`.
+   - [ ] `runner.mjs` cắt câu trả lời của agent ở 2000 ký tự khi ghi `state.json`, và `last.md` lấy chữ từ đó (câu dừng giữa chừng, không dấu báo).
+   - [ ] Hook `block-atlassian` chặn nhầm lệnh Bash chỉ chứa link `atlassian.net` trong chữ.
+   - [ ] `ba` không có tool tạo link Blocks (`addGraphContext`, cần thử trước), kèm `jira-guard`.
+   - [ ] Các Low còn lại của kit PR #153 và của review PR #7.
+   Sau khi các PR này merge, bước 1 chép chúng vào `ao-sample` một lần.
 2. `verification.md` có mục "Đầu vào cho `project-scaffold`": bảng các bước cài, bước nào tự động được, bước nào cần bạn, thời gian, chỗ vướng.
 3. `SPEC.md` ghi Pilot 1 hoàn thành; `SPEC-pilot-1.md` cập nhật trạng thái; README của kit nhắc `ao-sample` nếu cần.
 4. Chuyển `tasks/plan.md`, `tasks/todo.md`, `tasks/verification.md` vào `tasks/archive/pilot-1/`, sửa link.
