@@ -280,7 +280,7 @@ Sau khi kit PR merge: một PR chép kit vào `ao-sample` (plan, quyết định
 ### Checkpoint 3
 - [x] Bạn xem code và test của Sub-task đầu, cùng chi phí từ đầu Epic, rồi đồng ý chạy tiếp: bạn chọn cách C, chỉ làm tiếp `SMP-4` (Phiên 23 · Lượt 4), vì phần còn lại ước 50–70 USD, vượt xa mức ước 30–45 USD của cả Epic
 
-### [ ] T9: `/ao-build`, `/ao-fix`, `/ao-review` tới khi mọi item của `SMP-2` sang Ready for QA [bạn]
+### [x] T9: `/ao-build`, `/ao-fix`, `/ao-review` tới khi mọi item của `SMP-2` sang Ready for QA [bạn]
 
 **Đổi ở Checkpoint 3** (Phiên 23 · Lượt 4, bạn chọn cách C): chỉ làm tiếp `SMP-4`; bước 3 chạy `/ao-fix 4` với ghi chú của Claude (CI chạy integration test của API, gitleaks báo nhầm). `SMP-4` sang Ready for QA ở Lượt 6.
 
@@ -294,13 +294,13 @@ Sau khi kit PR merge: một PR chép kit vào `ao-sample` (plan, quyết định
 4. **[bạn]** Approve PR. `merge-gate` merge, `audit` xanh, item sang Ready for QA.
 
 **Tiêu chí chấp nhận:**
-- [ ] Tiêu chí 3–7 của spec mục 9 đạt.
-- [ ] Sáu lệnh `/ao-*` đều đã chạy qua `claude -p`, mỗi lệnh ít nhất một lần.
-- [ ] Mọi lỗi kit tìm được có kit PR sửa kèm test; lỗi chặn Epic đã vào `ao-sample` qua PR chép kit (plan, quyết định 6).
+- [x] Tiêu chí 3–7 của spec mục 9 đạt.
+- [x] Sáu lệnh `/ao-*` đều đã chạy qua `claude -p`, mỗi lệnh ít nhất một lần.
+- [ ] Mọi lỗi kit tìm được có kit PR sửa kèm test; lỗi chặn Epic đã vào `ao-sample` qua PR chép kit (plan, quyết định 6). Chuyển sang T10 (Phiên 24: bạn xác nhận Checkpoint 4 và giao T10).
 
 **Kiểm chứng:**
-- [ ] `git log --merges` và danh sách PR của `ao-sample`: mọi commit vào `develop` sau commit đầu đến từ PR
-- [ ] Không review nào trên PR đứng tên bạn ngoài approve của bạn
+- [x] `git log --merges` và danh sách PR của `ao-sample`: mọi commit vào `develop` sau commit đầu đến từ PR (2026-11-04: `ao-sample` merge kiểu squash, nên Claude đối chiếu `--first-parent` với 11 PR đã merge)
+- [x] Không review nào trên PR đứng tên bạn ngoài approve của bạn (2026-11-04)
 
 **Phụ thuộc:** T8, Checkpoint 3
 
@@ -309,8 +309,8 @@ Sau khi kit PR merge: một PR chép kit vào `ao-sample` (plan, quyết định
 **Cỡ:** S
 
 ### Checkpoint 4
-- [ ] Tiêu chí 3–7 của spec mục 9 đạt
-- [ ] Bạn xem lịch sử Epic trên `SMP`, PR tài liệu và PR code trên `ao-sample`, và `.ai/runs/`
+- [x] Tiêu chí 3–7 của spec mục 9 đạt (bạn xác nhận 2026-11-04)
+- [x] Bạn xem lịch sử Epic trên `SMP`, PR tài liệu và PR code trên `ao-sample`, và `.ai/runs/`
 
 ---
 
