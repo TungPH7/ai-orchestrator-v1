@@ -84,7 +84,7 @@ T9 ── T10 bản sửa kit còn lại, tài liệu, lưu trữ
 - [x] Bạn xem code và test của Sub-task đầu, cùng chi phí từ đầu Epic, rồi đồng ý chạy tiếp: bạn chọn cách C, chỉ làm tiếp `SMP-4` (Phiên 23 · Lượt 4), vì phần còn lại ước 50–70 USD, vượt xa mức ước 30–45 USD của cả Epic
 
 ### Giai đoạn 3 (tiếp)
-- [ ] T9: `/ao-fix`, `/ao-review` tới khi `SMP-4` sang Ready for QA [bạn] (đổi ở Checkpoint 3)
+- [ ] T9: `/ao-build`, `/ao-fix`, `/ao-review` tới khi mọi item của `SMP-2` sang Ready for QA [bạn] (thu hẹp ở Checkpoint 3, đổi lại ở Phiên 23 · Lượt 22)
 
 ### Checkpoint 4
 - [ ] Tiêu chí 3–7 của spec mục 9 đạt

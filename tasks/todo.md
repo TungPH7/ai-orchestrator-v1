@@ -280,9 +280,11 @@ Sau khi kit PR merge: một PR chép kit vào `ao-sample` (plan, quyết định
 ### Checkpoint 3
 - [x] Bạn xem code và test của Sub-task đầu, cùng chi phí từ đầu Epic, rồi đồng ý chạy tiếp: bạn chọn cách C, chỉ làm tiếp `SMP-4` (Phiên 23 · Lượt 4), vì phần còn lại ước 50–70 USD, vượt xa mức ước 30–45 USD của cả Epic
 
-### [ ] T9: `/ao-fix`, `/ao-review` tới khi `SMP-4` sang Ready for QA [bạn]
+### [ ] T9: `/ao-build`, `/ao-fix`, `/ao-review` tới khi mọi item của `SMP-2` sang Ready for QA [bạn]
 
-**Đổi ở Checkpoint 3** (Phiên 23 · Lượt 4, bạn chọn cách C): chỉ làm tiếp `SMP-4`. `SMP-5`, `SMP-6`, `SMP-7`, `SMP-10`, `SMP-11` ở lại Ready, ngoài Pilot 1. Bước 1 dưới đây không chạy; bước 3 chạy `/ao-fix 4` với ghi chú của Claude (CI chạy integration test của API, gitleaks báo nhầm).
+**Đổi ở Checkpoint 3** (Phiên 23 · Lượt 4, bạn chọn cách C): chỉ làm tiếp `SMP-4`; bước 3 chạy `/ao-fix 4` với ghi chú của Claude (CI chạy integration test của API, gitleaks báo nhầm). `SMP-4` sang Ready for QA ở Lượt 6.
+
+**Đổi lại ở Phiên 23 · Lượt 22:** làm hết các item còn lại, theo link Blocks: đợt 1 `SMP-5` (`be-dev`) và `SMP-6` (`fe-dev`); đợt 2 `SMP-7` (Sub-task `SMP-8` BE rồi `SMP-9` FE, một PR); đợt 3 `SMP-10` và `SMP-11` (`fe-dev`). Trước mỗi `/ao-review`, Claude chuyển checkout của `ao-sample` về `develop`, để chỉ dẫn của agent review lấy từ bản đã duyệt (cách tạm; cách sửa thật ở T10). Ước 35–55 USD; Claude dừng báo bạn nếu vượt 60 USD.
 
 **Mô tả:**
 
