@@ -10498,3 +10498,43 @@ Mình chưa làm gì thêm. PR #7 chờ bạn ở gate ③. Vì PR chạm đư�
 - Lượt review chạy trên checkout của nhánh PR, nên chỉ dẫn của agent lấy từ chính PR. `security` đã nêu điểm này hai lần.
 
 Bạn muốn thảo luận điều gì trước?
+
+# Phiên 23 · Lượt 20 — 2026-11-03 khoảng 10:30
+
+**Bạn:**
+
+````markdown
+1. kiểm tra commit merge PR #7 trước đi
+2. Các task SMP 4 - 11 đã làm đâu mà bạn lại định đóng T9 ([Image #6])??
+````
+
+Ảnh: `misc/images/phien-23-luot-20-anh-1.png` (danh sách item của `SMP-2` trên Jira: `SMP-2` In Progress, `SMP-4` Ready for QA, `SMP-5`, `SMP-6`, `SMP-7`, `SMP-10`, `SMP-11` Ready).
+
+Claude kiểm commit merge `7af4af0` của PR #7 và ghi vào `tasks/verification.md`.
+
+**Claude:**
+
+**1. Commit merge của PR #7** (`7af4af0`, bạn merge lúc 10:23): mọi thứ đều xanh.
+- `CI` (sast, build-test, secrets, policy) và `Deploy` (audit, deploy) xanh.
+- `merge-gate` chạy 4 lượt, đều xanh.
+- `jira-sync` chạy 3 lượt, lượt nào cũng báo "no work item of SMP". Đây là kết quả đúng.
+- `SMP-14` vẫn ở New, giống `SMP-13`.
+
+Mình đã ghi kết quả vào `tasks/verification.md` và lưu ảnh của bạn thành `misc/images/phien-23-luot-20-anh-1.png`.
+
+**2. Vì sao mình nói "đóng T9" khi `SMP-5` tới `SMP-11` chưa làm**
+
+Ở Checkpoint 3 (Phiên 23 · Lượt 4–5, đêm 2/11), bạn chọn cách C: Pilot 1 chỉ làm tiếp `SMP-4`. Lý do: làm hết 6 item ước tốn thêm 50–70 USD, trong khi plan ước 30–45 USD cho cả Epic. Theo lựa chọn đó, mình đã sửa hai chỗ:
+- Tiêu chí 3 ở mục 9 của `SPEC-pilot-1.md` giờ là "Epic thử đi từ New tới khi Task `SMP-4` sang Ready for QA".
+- T9 trong `tasks/todo.md`: bước 1 (`/ao-build` các item còn lại) không chạy.
+
+Nên theo plan hiện tại, T9 chỉ cần `SMP-4`. `SMP-5`, `SMP-6`, `SMP-7`, `SMP-10`, `SMP-11` ở lại Ready, ngoài Pilot 1, đúng như ảnh của bạn. Lẽ ra mình phải nhắc lại điều này khi nói "đóng T9", vì câu đó dễ hiểu thành Epic đã xong. Thực tế Epic `SMP-2` mới có 1 trên 6 item tới Ready for QA.
+
+**Nếu bạn muốn làm tiếp các item này trong Pilot 1:**
+- [Ước] Khoảng 35–50 USD, thấp hơn mức 50–70 USD lúc trước vì review đã rẻ hơn.
+  - `SMP-4` tốn 10,23 USD: build 2,47 USD, phần còn lại chủ yếu là review với kit cũ.
+  - Với kit mới, review một PR code app ước còn khoảng 3–4 USD: `reviewer` khoảng 1 USD (phép đo trên PR #4), `security` ở `high` chưa đo.
+  - `SMP-7` có Sub-task nên tốn hơn.
+- Dù làm hết, Epic vẫn chỉ tới Ready for QA trong Pilot 1, vì bước QA thuộc module sau (release-workflow).
+
+Bạn quyết: giữ cách C, hay đưa các item còn lại vào Pilot 1.
