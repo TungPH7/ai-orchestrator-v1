@@ -10751,3 +10751,84 @@ Không. Kit PR không chạy `reviewer` hay `security`, nên không tốn tiền
 - Bước 0 chỉ sửa tài liệu: `SPEC-pilot-1.md`, `tasks/todo.md`, nhật ký. [Ước] Tổng cộng khoảng 5–10 phút, phần lớn là thời gian mình sửa chữ.
 
 Plan vẫn chờ bạn xác nhận.
+
+# Phiên 23 · Lượt 24 — 2026-11-03 khoảng 11:00
+
+**Bạn:**
+
+````markdown
+ok, xác nhận plan, bắt đầu từ bước 0
+````
+
+Claude sửa trên máy, chưa commit: `SPEC-pilot-1.md` mục 9 (tiêu chí 3 về lại "mọi Story", tiêu chí 5 theo câu mới), `tasks/todo.md` (T9), `tasks/plan.md` (dòng T9).
+
+**Bạn** (nhắn giữa chừng):
+
+````markdown
+dừng lại 1 xíu
+````
+
+**Claude:**
+
+Mình đã dừng. Trạng thái hiện tại:
+
+- Đã sửa trên máy, **chưa commit, chưa push**, trên nhánh kit `task/t9-review-pack-copy`:
+  - `SPEC-pilot-1.md`: tiêu chí 3 về lại "mọi Story", tiêu chí 5 theo câu mới.
+  - `tasks/todo.md`: tiêu đề và ghi chú đổi lại của T9.
+  - `tasks/plan.md`: dòng T9.
+- Chưa mở kit PR, chưa chạy agent nào, chưa đụng `ao-sample` hay Jira.
+- Nhật ký của lượt này (Lượt 24) mình chưa ghi; khi bạn cho làm tiếp, mình ghi bù cả tin "dừng lại 1 xíu".
+
+Mình chờ bạn.
+
+**Bạn:**
+
+````markdown
+tôi cần thao luận thêm
+````
+
+**Claude:**
+
+Được, bạn cứ nói. Mình giữ nguyên trạng thái: ba file đã sửa trên máy, chưa commit, chưa chạy gì thêm.
+
+# Phiên 23 · Lượt 25 — 2026-11-03 khoảng 11:10
+
+**Bạn:**
+
+````markdown
+Kit ai-orchestrator có thể mở rộng các chức năng ở dưới không? Hay phải đập đi xây lại
+1. Hiện tại kit chỉ đang có 1 luồng SDLC cho 1 task. Có thể nâng cấp để chạy đồng thời nhiều nhiều task (nhiều luồng SDLC), chạy song song để tăng tốc độ phát triển feature/task được không? Giả định các task không phụ thuộc nhau. Nếu chạy nhiều SDLC song song thì dùng tính năng worktree à?
+2. Nếu có 2 SDLC thì như có 2 team nhỏ độc lập trong 1 dự án, các nhân viên như ba, sa, dev, revewer, qa của 2 team không thể giao tiếp với nhau. Nên khi SDLC 1 và 2 bắt đầu task, đang ở bước /spec thì chỉ có sa, ba, ux làm việc, reviwer rảnh không làm gì? Kiến trúc kit ai-orchestrator hiện tại có phải như này không?
+
+3. Xem xét hướng tiếp cận sau (các hướng này là trường hợp thực tế trong 1 cty IT làm phần mềm SDLC)
+3.1. 1 Team có 2 ba, 2 dev be, 2 dev fe, 1 reviewer. 1 team tương ứng 1 luồng SDLC nên khi chạy, ở /spec có 2 ba thì sẽ sinh 2 sub-agent ba làm 2 task độc lập, ba nào xong trước thì chuyển giao dev đang rảnh task, dev xong thì chuyển cho reviewer, vì chỉ có 1 reviewer mà có tận 4 dev, nên các task của 3 dev còn lại phải chờ reviewer xử lý xong task của dev 1 trước.
+
+Như trên thì tôi thấy có 2 hướng làm task theo kiểu song song (giả định là các task độc lập):
+1. là dùng SDLC như hiện tại, trong mỗi luồng SDLC mỗi role chỉ có 1 agent. Muốn làm song song thì tạo thêm luồng SDLC, kết hợp worktree để 2 SDLC làm trên 2 worktree để không conflict, chỉnh sửa lên code của nhau
+
+2. dùng 1 SDLC (làm trên 1 worktree), mỗi role có nhiều agent, ở mỗi stage sẽ spawn nhiều agent, mỗi agent làm task độc lập như 3.1. Hướng này thì Kit ai-orchestrator phải xử lý phức tạp hơn, tốn thời gian và token hơn à? như cần xử lý hàng đợi, check agent nào rảnh để giao task, agent cứ check task, nếu có task thì nhận để làm?
+
+Câu hỏi thêm:
+a. Hiện tại luồng /ao-spec, /ao-plan, /ao-build, /ao-review, /ao-fix cần chạy tuần tự vì bước sau phụ thuộc kết quả bước trước phải không? Nên việc chạy nhiều sub-agent cho từng stage là không hợp lý?
+
+Viết các câu hỏi và trả lời của bạn vào 1 file tài liệu nhé
+````
+
+Claude đọc khóa chạy trong `scripts/ao-step.mjs`, giới hạn WIP trong `contract/policies.yaml`, vai trò của từng bước trong `lib/workflow/steps.mjs` và roster, rồi viết `misc/thao-luan-sdlc-song-song.md`.
+
+**Claude:**
+
+Mình đã ghi câu hỏi và câu trả lời vào `ai-orchestrator/misc/thao-luan-sdlc-song-song.md`. Tóm tắt như sau:
+
+1. **Không cần đập đi xây lại.** Contract, guard, WIP, `jira-sync`, `merge-gate` và roster giữ nguyên. Chỉ lớp chạy agent cần viết mới, gồm: mỗi item một worktree, khóa theo item, một bộ điều phối viết bằng code thường, và trần số lượt chạy cùng lúc.
+2. **Kit đã cho nhiều item cùng nằm trong luồng.** Cái đang làm mọi thứ tuần tự là khóa chạy (mỗi lúc một agent) và checkout chung. Còn câu "reviewer ngồi rảnh" thì không đúng với kit: agent chỉ tồn tại trong lúc một lượt chạy và không chia theo team. Chúng dùng chung Jira và git.
+3. **Mình đề xuất hướng 2,** dưới dạng một board và một bộ điều phối, mỗi item một worktree. "Hướng 2 trên 1 worktree" không chạy được khi 2 dev cùng làm. Token mỗi item như nhau ở cả hai hướng. Hàng đợi là chính board Jira, và bộ điều phối đọc Jira mà không gọi model. Đừng để agent tự đi hỏi có việc không, vì cách đó tốn token.
+4. **Câu a:**
+   - Trong một item, các bước phải tuần tự.
+   - Giữa các item thì gối đầu hay song song đều được.
+   - Trong một bước, chỉ `reviewer` chạy song song với `security` là đáng làm. [Ước] Mỗi PR bớt khoảng 10 phút.
+5. **Chạy song song chỉ rút thời gian.** Chi phí không giảm, và hạn mức gói Claude hết nhanh hơn.
+
+Cuối file có câu để bạn quyết: làm phần này trước khi build `SMP-5` tới `SMP-11`, hay sau Pilot 1 như một module riêng.
+
+Bước 0 vẫn đang dừng: ba file đã sửa nằm trên máy, chưa commit. Mình chỉ commit file thảo luận và nhật ký.
