@@ -500,3 +500,5 @@ Chi phí `SMP-5` tới đây: 4,09 USD cho agent, 0,28 USD cho hai phiên điề
 | 6 | `SMP-5` | `security` | Opus 5.5 | review-delta PR #8 | high | done, COMMENT (Approve) | 10 | 1,7 phút | 14 / 5.657 | 230.040 / 37.384 | 0,35 USD | 0 |
 
 Chi phí `SMP-5` tới gate ③: 6,25 USD cho agent (build 2,01, review 2,07, fix 0,56, review lại 1,60), 0,44 USD cho ba phiên điều phối.
+- **Gate ③ của PR #8:** bạn approve lúc 14:35. `merge-gate` merge lúc 14:35 thành `6e71048`, người merge `app/tungph7-ao-dev`. Trên `6e71048`: `CI` xanh (secrets, sast, build-test, policy), `Deploy` xanh (`audit` xanh, `deploy` xanh), `jira-sync` và `merge-gate` xanh. `jira-sync` (`deployment_status`) chuyển `SMP-5` sang Ready for QA lúc 14:35.
+- Lịch sử trạng thái của `SMP-5`: New → Ready (02/11 22:23, `orchestratorci`), Ready → In Progress (13:19, `orchestratoragent`, bước `start` của `be-dev`), In Progress → In Review (13:30, `orchestratorci`), In Review → Ready for QA (14:35, `orchestratorci`). Đúng tiêu chí 5 mới.
