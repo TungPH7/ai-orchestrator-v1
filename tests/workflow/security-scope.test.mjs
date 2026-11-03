@@ -53,7 +53,8 @@ test('a full review keeps the roster effort on a protected path, a path of secur
   const effort = (files, more = {}) => fullReviewEffort({ files, protectedPaths: [], item: { key: 'SMP-5', effort: null, subtasks: [] }, gates, rosterEffort: 'max', ...more });
   assert.deepEqual(effort(['apps/api/src/notes/notes.shared.ts', 'apps/api/src/notes/notes.shared.spec.ts']), { effort: 'high', reason: 'no protected path, no path of security_review, no effort label' });
   assert.deepEqual(effort(['apps/api/src/notes/notes.controller.ts', 'README.md']), { effort: 'max', reason: 'the PR touches apps/api/src/notes/notes.controller.ts' });
-  for (const file of ['package-lock.json', 'apps/web/next.config.ts', 'apps/web/src/middleware.ts', 'apps/api/src/auth/jwt.strategy.ts', 'apps/api/src/main.ts', 'apps/web/.env.local', 'Dockerfile']) {
+  // The data layer too (review of ao-sample PR #6); a service is not, or most backend PRs would be at max.
+  for (const file of ['package-lock.json', 'apps/web/next.config.ts', 'apps/web/src/middleware.ts', 'apps/api/src/auth/jwt.strategy.ts', 'apps/api/src/main.ts', 'apps/web/.env.local', 'Dockerfile', 'apps/api/src/notes/notes.repository.ts', 'apps/api/src/notes/note.entity.ts', 'apps/api/prisma/schema.prisma', 'apps/api/src/migrations/1700000000000-init.ts', 'db/seed.sql']) {
     assert.equal(effort([file]).effort, 'max', file);
   }
   assert.deepEqual(effort(['.ai-orchestrator/lib/x.mjs'], { protectedPaths: ['.ai-orchestrator/lib/x.mjs'] }), { effort: 'max', reason: 'the PR touches the protected path .ai-orchestrator/lib/x.mjs' });
