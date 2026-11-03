@@ -4,7 +4,7 @@ import { join } from 'node:path';
 import { readRoster } from '../../lib/agents/roster.mjs';
 import { readContract } from '../../lib/contract.mjs';
 import { readGates } from '../../lib/quality/gates.mjs';
-import { answersPrompt, packNote, resumePrompt } from '../../lib/workflow/prompts.mjs';
+import { answersPrompt, packNote, resumePrompt, worktreeNote } from '../../lib/workflow/prompts.mjs';
 import { agentCommand, formatDecision, lastReport, runGo } from '../../lib/workflow/runner.mjs';
 import { decideStep } from '../../lib/workflow/steps.mjs';
 import { CONTRACT_DIR, ROOT } from '../helpers/kit.mjs';
@@ -55,7 +55,7 @@ function specWorld(start = {}) {
 }
 
 // A harness: fake agents that do what `effects` says per purpose, a store in memory, git and time that do nothing.
-function harness(world, effects, { outcomes = [], texts = [] } = {}) {
+function harness(world, effects, { outcomes = [], texts = [], throws = false } = {}) {
   const calls = [];
   const states = [];
   const last = {};
@@ -73,6 +73,7 @@ function harness(world, effects, { outcomes = [], texts = [] } = {}) {
     active += 1;
     assert.equal(active, 1, 'two agents never run at once');
     calls.push({ role: run.role, purpose: run.purpose, resume: run.resume, prompt: run.prompt, log });
+    if (throws) throw new Error('claude could not start');
     await new Promise((done) => setImmediate(done));
     const outcome = outcomes.shift() ?? 'success';
     if (outcome === 'success') effects[run.purpose]?.(world, run);
@@ -86,7 +87,7 @@ function harness(world, effects, { outcomes = [], texts = [] } = {}) {
     last,
     checkouts,
     run: (more = {}) =>
-      runGo({ command: 'spec', arg: 'DEMO-20', options: { ...options, ...more.options }, gather: more.gather, decide: more.decide, pack: more.pack, agent, git: async (c) => (checkouts.push(c), { ok: true }), dispatch: async () => {}, store, sleep: async (ms) => (clock += ms), now: () => clock, limits: { maxRuns: 8, ciWaitMs: 120000, syncWaitMs: 60000, pollMs: 30000, ...more.limits } }),
+      runGo({ command: 'spec', arg: 'DEMO-20', options: { ...options, ...more.options }, gather: more.gather, decide: more.decide, pack: more.pack, worktree: more.worktree, agent, git: async (c) => (checkouts.push(c), { ok: true }), dispatch: async () => {}, store, sleep: async (ms) => (clock += ms), now: () => clock, limits: { maxRuns: 8, ciWaitMs: 120000, syncWaitMs: 60000, pollMs: 30000, ...more.limits } }),
   };
 }
 const SPEC_EFFECTS = {
@@ -161,6 +162,43 @@ test('a full review run starts from the context pack the runner asks for; a buil
   const none = harness(third.world, {});
   await none.run({ gather: third.gather, decide: one(review), pack: async () => null });
   assert.equal(none.calls[0].prompt, 'Review PR #15.', 'without a pack the prompt is the plain one');
+});
+
+// Pilot 1, T10: a review starts on the base branch of the PR, so the instructions of its agent come from the approved
+// branch and a PR cannot change them; the code of the PR is in a worktree the runner adds before the run and removes after.
+test('a review run gets the worktree of its PR before it starts and loses it when it ends, also when the agent fails', async () => {
+  const one = (run) => { let decided = 0; return () => (decided++ === 0 ? { go: true, runs: [run], lines: [] } : { go: false, reason: 'nothing left', next: '-', lines: [] }); };
+  const review = { role: 'reviewer', key: 'DEMO-20', effort: 'xhigh', purpose: 'review', prompt: 'Review PR #15.', worktree: { name: 'pr-15', sha: 'abc1234def5678' } };
+  const events = [];
+  const worktree = { add: async (spec) => (events.push(['add', spec.name]), { ok: true, path: '.ai/reviews/pr-15' }), remove: async (spec) => (events.push(['remove', spec.name]), { ok: true }) };
+  const first = specWorld();
+  const h = harness(first.world, {});
+  await h.run({ gather: first.gather, decide: one(review), worktree, pack: async () => '.ai/reviews/15-context.md' });
+  assert.deepEqual(events, [['add', 'pr-15'], ['remove', 'pr-15']]);
+  assert.equal(h.calls[0].prompt, ['Review PR #15.', packNote('.ai/reviews/15-context.md'), worktreeNote('.ai/reviews/pr-15', 'abc1234def5678')].join('\n\n'));
+  assert.match(worktreeNote('.ai/reviews/pr-15', 'abc1234def5678'), /^The code of the PR at its head abc1234 is in the worktree \.ai\/reviews\/pr-15\. /);
+  // The agent cannot start: the worktree goes all the same.
+  events.length = 0;
+  const failing = specWorld();
+  const f = harness(failing.world, {}, { throws: true });
+  await assert.rejects(f.run({ gather: failing.gather, decide: one(review), worktree }), /could not start/);
+  assert.deepEqual(events, [['add', 'pr-15'], ['remove', 'pr-15']]);
+  // No worktree, no run: the reason is the human's to read.
+  const refused = specWorld();
+  const r = harness(refused.world, {});
+  const { decision } = await r.run({ gather: refused.gather, decide: one(review), worktree: { add: async () => ({ ok: false, reason: 'git could not add the worktree of PR #15: no such commit' }), remove: async () => assert.fail('nothing to remove') } });
+  assert.equal(r.calls.length, 0);
+  assert.equal(decision.go, false);
+  assert.equal(decision.reason, 'git could not add the worktree of PR #15: no such commit');
+  // A run without a worktree (a build) is left alone, and so is a runner without the effect.
+  const plain = specWorld();
+  const p = harness(plain.world, {});
+  await p.run({ gather: plain.gather, decide: one({ ...review, worktree: undefined, prompt: 'Build DEMO-23.', purpose: 'build', role: 'fe-dev' }), worktree });
+  assert.equal(p.calls[0].prompt, 'Build DEMO-23.');
+  const without = specWorld();
+  const w = harness(without.world, {});
+  await w.run({ gather: without.gather, decide: one(review) });
+  assert.equal(w.calls[0].prompt, 'Review PR #15.');
 });
 
 test('an open question stops the runs; --answers resumes the session that asked, once', async () => {
