@@ -10538,3 +10538,82 @@ Nên theo plan hiện tại, T9 chỉ cần `SMP-4`. `SMP-5`, `SMP-6`, `SMP-7`, 
 - Dù làm hết, Epic vẫn chỉ tới Ready for QA trong Pilot 1, vì bước QA thuộc module sau (release-workflow).
 
 Bạn quyết: giữ cách C, hay đưa các item còn lại vào Pilot 1.
+
+# Phiên 23 · Lượt 21 — 2026-11-03 khoảng 10:44
+
+**Bạn:**
+
+````markdown
+ý này là sao "Lượt review chạy trên checkout của nhánh PR, nên chỉ dẫn của agent lấy từ chính PR đang được review. security đã nêu điểm này hai lần." tôi chưa hiểu?
+````
+
+**Bạn** (nhắn thêm giữa chừng):
+
+````markdown
+mục "Những điểm cần bạn quyết", bạn đề xuất giúp tôi
+````
+
+**Claude:**
+
+Câu đó nói về chuyện agent review lấy "luật chơi" của nó từ đâu. Mình giải thích từng bước.
+
+**1. Agent đọc chỉ dẫn từ file trong thư mục project**
+
+Khi chạy trong thư mục `ao-sample`, Claude Code đọc các file sau ngay trên đĩa:
+- `.claude/agents/security.md` và `reviewer.md`: agent phải review thế nào, finding nào là Critical hay High, khi nào phải Request changes;
+- `.claude/settings.json`: quyền và hook, ví dụ hook chặn agent review chạy lệnh git có ghi;
+- `.claude/rules/` và `.claude/skills/`: luật chung và các skill review;
+- `.ai-orchestrator/`: mã của `ao-step`, bên viết gói bối cảnh và chọn effort.
+
+**2. File trên đĩa là bản của nhánh đang checkout**
+
+Thư mục `ao-sample` trên máy bạn lúc nào cũng đứng ở một nhánh. File trên đĩa là bản của nhánh đó.
+- `/ao-review <PR>` không đổi nhánh: agent chạy ở nhánh nào thư mục đang đứng.
+- `/ao-build` và `/ao-fix` chuyển thư mục sang nhánh của PR để dev agent commit. Xong phần sửa, cùng lệnh đó chạy luôn `reviewer` và `security`, mà thư mục vẫn đứng ở nhánh PR.
+
+**3. Vì vậy, trong các trường hợp trên, agent review dùng chỉ dẫn do chính PR viết**
+
+Giống như thí sinh được tự viết đáp án cho bài thi của mình. Ví dụ: một PR vừa thêm code có lỗ hổng, vừa sửa `.claude/agents/security.md`, bỏ câu "Critical và High chặn merge". Nếu `security` review PR đó trên nhánh của nó, nó làm theo bản đã bị sửa, và có thể cho qua.
+
+**4. Chuyện này đã xảy ra thật với PR #7, nhưng do mình cố ý**
+
+- PR #7 sửa chính `.claude/agents/security.md`, và mình chạy `/ao-review 7` khi thư mục đang ở nhánh của PR #7, để thử kit mới. Nghĩa là `security` review PR #7 bằng chỉ dẫn do PR #7 viết.
+- `security` nhận ra điều đó, nên tự kiểm bù: nó so hai file agent với bản ở `develop` và thấy không luật nào bị nới.
+- "Hai lần" là vì nó đã nêu điểm này ở mục "Outside the diff" của báo cáo PR #6, rồi nêu lại ở PR #7.
+
+**5. Rủi ro thực tế hiện nay thấp, vì đã có hai lớp chặn**
+
+- Luật trong chỉ dẫn cấm agent sửa `.claude/**` và `.ai-orchestrator/**`, vì đây là đường dẫn được bảo vệ. Nhưng mình chưa thấy hook nào trong kit chặn cứng việc sửa này.
+- PR nào chạm các đường dẫn đó thì `merge-gate` không tự merge. Bạn phải đọc diff và tự merge.
+
+Chỗ hở còn lại: với một PR như vậy, bạn dựa một phần vào báo cáo review. Nếu báo cáo đó viết theo chỉ dẫn đã bị sửa, lớp kiểm của bạn yếu đi.
+
+**6. Cách sửa mà `security` đề xuất**
+
+Lượt review luôn chạy trên checkout của `develop`, tức bản đã được duyệt. Code của PR được đọc bằng `git show` và `git diff`, như gói bối cảnh đang làm. Đổi lại:
+- Sửa kit không nhiều, nhưng phải xử lý trường hợp `/ao-fix` vừa chạy dev agent trên nhánh PR.
+- Một PR chép kit như PR #7 sẽ được review bằng kit cũ trên `develop`, như PR #6 trước đây. Muốn thử kit mới trên chính PR đó thì không làm được nữa.
+
+---
+
+**Đề xuất cho mục "Những điểm cần bạn quyết"**
+
+**Điểm 1, tiêu chí 5: mình đề xuất sửa câu chữ của spec, không sửa kit.**
+- Contract (`contract/workflows.yaml`) cho agent dùng vài transition: dev agent `start`, `reviewer` và `security` `request-changes`, `qa` `pick-up` và `qa-fail`. Câu "không từ agent" trong spec mâu thuẫn với contract, nên chỗ sai nằm ở spec.
+- Ý của tiêu chí là agent không được vượt cổng. Câu mới: "Mỗi lần đổi trạng thái do đúng actor mà `contract/workflows.yaml` cho phép. Các cổng (`start-spec`, `approve-spec`, `approve-plan`, `accept`, `cancel`) chỉ do bạn. Agent chỉ dùng transition có vai trò của nó, như `start` của dev agent."
+- Khi đóng T9, mình đọc lại lịch sử của `SMP-2` và `SMP-4` theo câu mới.
+
+**Điểm 2, các lỗi kit còn mở: mình đề xuất sửa hết trong kit ở T10, nhưng chưa chép vào `ao-sample`.**
+- Tiêu chí 8 chỉ yêu cầu mỗi lỗi kit có PR sửa kèm test trong kit, không yêu cầu chép. Sửa trong kit không tốn tiền agent.
+- Chép một lần, gom hết, vào lúc `ao-sample` được dùng lại: trước khi build `SMP-5` nếu bạn đưa các item còn lại vào Pilot 1, hoặc ở đầu module sau. Như vậy chỉ tốn một lượt review chép kit, khoảng 5 USD và 20 phút.
+- Thứ tự sửa:
+  1. Lỗi liên quan bảo mật: tiêu đề PR nằm ngoài fence, file có byte NUL, tên file có dấu (thiếu `-z`), tên file không phải ASCII lách được policy.
+  2. Lỗi luồng làm việc: `ba` không có công cụ tạo link Blocks, gợi ý bước tiếp bỏ qua Blocks, hook chặn nhầm chữ `atlassian.net`, `gh-guard` chặn `git archive` chỉ đọc, server spike bị bỏ chạy, phiên `claude -p` thoát khi `ao-step` còn chạy nền.
+  3. Test còn thiếu: test của runner T7b, regex `NONE`, 5 mutation còn xanh.
+
+**Điểm 3, review trên nhánh PR: mình đề xuất sửa trong T10, cùng đợt với điểm 2, và làm trước các lỗi khác.**
+- Đây là chỗ hở lớn nhất còn lại, vì chưa có hook chặn cứng việc sửa `.claude/**`.
+- Cách làm: `ao-step` chạy agent review trong thư mục đứng ở `develop`, nên chỉ dẫn, hook và skill luôn lấy từ bản đã duyệt. Code của PR nằm trong một worktree riêng dưới `.ai/` để agent đọc và chạy test.
+- Đổi lại: PR chép kit sau này được review bằng kit cũ trên `develop`, như PR #6. Mình thấy chấp nhận được, vì kit mới đã có test trong kit trước khi chép.
+
+Nếu bạn đồng ý cả ba, T10 sẽ lớn hơn (vài kit PR), nhưng không tốn tiền agent. Mình chờ bạn quyết rồi mới làm.
