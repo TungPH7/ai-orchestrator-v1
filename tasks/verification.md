@@ -591,3 +591,24 @@ Chi phí `SMP-10` tới giờ: 6,11 USD. PR #11 chờ bạn ở cổng ③: cả
 | 4 | `SMP-11` | `security` | Opus 5.5 | review PR #12 | high | done, COMMENT | 10 | 1,2 phút | 0,56 USD |
 
 Chi phí `SMP-11` tới giờ: 6,52 USD. PR #12 chờ bạn ở cổng ③: cả hai báo cáo nằm trên head `2483779`, CI xanh.
+- **Cách xử lý 3 Low của PR #12** (bạn chọn cách A: không chạy `/ao-fix 12`): để nguyên trong báo cáo của `reviewer` (`.ai/reviews/12-reviewer.md`): khung xương cao cố định 52 px, `ErrorIcon` export từ `note-form.tsx`, tên test `keeps every line break of the content`. `SMP-11` là Story cuối của Epic, nên không còn item nào nhận follow-up. Ba việc này đi cùng phần việc sau Pilot 1.
+- **Gate ③ của PR #12:** bạn approve. `merge-gate` merge lúc 17:42 UTC (00:42 giờ Việt Nam ngày 04/11) thành `9c29ab4`, người merge `app/tungph7-ao-dev`. Trên `9c29ab4`: `merge-gate` và `Deploy` xanh; `jira-sync` chuyển `SMP-11` sang Ready for QA.
+
+### Kiểm chứng T9 (2026-11-04)
+
+- **Mọi commit vào `develop` sau commit đầu đến từ PR:** `ao-sample` merge kiểu squash nên `git log --merges` không có merge commit. Claude đối chiếu `git log --first-parent origin/develop` với danh sách PR đã merge: 11 commit sau commit scaffold `6f5831d` (`SMP-1`) khớp 11 PR: #1 `2fc61a1`, #3 `bcecbde`, #4 `750c6e1`, #5 `50d47f3`, #6 `066cc1d`, #7 `7af4af0`, #8 `6e71048`, #9 `533578a`, #10 `2554714`, #11 `85c61b1`, #12 `9c29ab4`. Không commit nào lên `develop` mà không có PR.
+- **Không review nào đứng tên bạn ngoài approve:** trên mọi PR vào `develop`, bạn (`TungPH7`) chỉ có review `APPROVED` (10 cái); 22 review `COMMENTED` đều của `tungph7-ao-review[bot]`. Claude chưa đối chiếu PR nào trong 11 PR không có approve của bạn (10 approve cho 11 PR).
+- Trạng thái Jira của Epic `SMP-2` (In Progress): `SMP-4`, `SMP-5`, `SMP-6`, `SMP-7`, `SMP-10`, `SMP-11` Ready for QA; `SMP-8`, `SMP-9` Done.
+
+### Tổng kết T9
+
+- **Chi phí agent** (cộng các bảng ở trên, Claude tự cộng, chưa tính các phiên Sonnet điều phối): đợt 1 (`SMP-5`, `SMP-6`) 15,04 USD; `SMP-7` 13,53; `SMP-10` 6,11; `SMP-11` 6,52. Tổng khoảng 41 USD, cộng phần của `SMP-4` ở các lượt trước, khoảng 45 USD, dưới mức dừng 60 USD.
+- **Giới hạn gói:** hai lần `usage-limit` (`security` trên PR #10, `fe-dev` của `SMP-11`). Cả hai lần chạy lại cùng lệnh và `ao-step` tiếp tục đúng phiên cũ của agent; lượt `security` chỉ tốn thêm 1,32 USD, lượt `fe-dev` thêm 1,68 USD.
+- **Cổng ③:** 8 PR của agent (#4, #8–#12 và các PR trước) qua cổng bằng approve của bạn; `merge-gate` tự merge.
+- **Lỗi kit tìm thêm hoặc xảy ra lại, đưa vào T10:**
+  - Agent bỏ server `npm run dev` (`dev.mjs`, `nest start --watch`) chạy sau khi có kết quả, nên lượt chạy treo: `SMP-6`, `SMP-7`, `SMP-10`, và lượt 1 của `SMP-11` (4 lần). Cách sửa: agent tắt đúng tiến trình mình bật, theo cả cây; `ao-step` không chờ lệnh nền của agent sau khi agent có kết quả.
+  - Hook `gh-guard` chặn `git archive` của `reviewer` (nên `reviewer` không chạy thử code của PR được).
+  - `afterPlanGate` gợi ý item không xét `blockedBy`; `SMP-10` và `SMP-11` không có link Blocks nhưng `SMP-11` phụ thuộc file test của PR #11.
+  - Review phải chạy trên checkout `develop` (cách tạm).
+- **Câu hỏi bạn nêu (chưa quyết, để sau Pilot 1):** cho `security` approve PR khi không có finding Critical/High. Claude đề xuất giữ cổng ③ hiện tại, vì cổng này đang ghi nhận cả việc bạn chấp nhận rủi ro (ADR-0002) và các finding Medium/Low.
+- **Việc sau Pilot 1:** item chặn Low của `security` ở PR #10 và Low của PR #11 (dòng rủi ro trong ADR-0002 phải nêu cả cổng 3000); 3 Low của PR #12.
