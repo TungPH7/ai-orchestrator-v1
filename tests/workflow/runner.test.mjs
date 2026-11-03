@@ -135,7 +135,7 @@ test('a fix run keeps in state.json the head it started from and which note it w
 });
 
 // Pilot 1, review cost (option 2): the review agents start from a pack the runner writes, not from many fetches.
-test('a review run starts from the context pack the runner asks for; a build run does not', async () => {
+test('a full review run starts from the context pack the runner asks for; a build run and a review of the new part do not', async () => {
   const one = (run) => { let decided = 0; return () => (decided++ === 0 ? { go: true, runs: [run], lines: [] } : { go: false, reason: 'nothing left', next: '-', lines: [] }); };
   const review = { role: 'reviewer', key: 'DEMO-20', effort: 'xhigh', purpose: 'review', prompt: 'Review PR #15.' };
   const packed = [];
@@ -151,6 +151,12 @@ test('a review run starts from the context pack the runner asks for; a build run
   await built.run({ gather: second.gather, decide: one({ ...review, role: 'fe-dev', purpose: 'build', prompt: 'Build DEMO-23.' }), pack });
   assert.equal(built.calls[0].prompt, 'Build DEMO-23.');
   assert.equal(packed.length, 1, 'no pack for a build');
+  // The pack holds the diff of the whole PR, and a review of the new part reads the diff since its last report.
+  const delta = specWorld();
+  const newPart = harness(delta.world, {});
+  await newPart.run({ gather: delta.gather, decide: one({ ...review, role: 'security', effort: 'high', purpose: 'review-delta', prompt: 'Review the new part of PR #15.' }), pack });
+  assert.equal(newPart.calls[0].prompt, 'Review the new part of PR #15.');
+  assert.equal(packed.length, 1, 'no pack for a review of the new part');
   const third = specWorld();
   const none = harness(third.world, {});
   await none.run({ gather: third.gather, decide: one(review), pack: async () => null });
