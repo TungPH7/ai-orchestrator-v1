@@ -10842,3 +10842,79 @@ tiếp tục bước 0, build SMP-5 tới SMP-11  trước nhé. 'chạy nhiều
 ````
 
 Claude ghi quyết định vào cuối `misc/thao-luan-sdlc-song-song.md`, commit ba file của bước 0 (`SPEC-pilot-1.md`, `tasks/todo.md`, `tasks/plan.md`), mở kit PR cho nhánh `task/t9-review-pack-copy` rồi merge khi CI xanh.
+
+**Claude** (các tin báo tiến độ trong lượt):
+
+Mình đang làm bước 0: commit ba file đã sửa, mở kit PR rồi merge. Xong bước đó mình bắt đầu `SMP-5`.
+
+Kit PR #154 đã mở. Mình đang chờ CI rồi merge.
+
+Bước 0 xong: kit PR #154 đã merge (CI xanh). Giờ mình chuẩn bị build `SMP-5`.
+
+`ao-step build SMP-5` báo GO (`be-dev`, effort high). Mình chạy `/ao-build SMP-5` ở nền và theo dõi.
+
+Đang chạy `/ao-build SMP-5` ở nền (`be-dev`, effort high). Có PR, kết quả CI hay lượt chạy nào đứng yên thì mình báo.
+
+# Phiên 23 · Lượt 27 — 2026-11-03 khoảng 13:10
+
+**Bạn:**
+
+````markdown
+chỉ tôi cách setup để khi RAM thấp thì claude code không tự kill tiến trình của nó. Vân đề tiến trình claude code bị kill diễn ra 1 vài lần rồi phải không?
+````
+
+Claude đếm các thông báo "stopped because the system is running low on memory" trong transcript cũ, đọc trang Environment variables và Interactive mode của tài liệu Claude Code, rồi kiểm RAM trống và các tiến trình lớn.
+
+**Claude** (tin báo tiến độ):
+
+Mình đang tra tài liệu Claude Code để kiểm tên biến môi trường cho bạn. Lượt build `SMP-5` vẫn chạy ở nền.
+
+Mình đang đếm số lần Claude Code dừng lệnh nền vì thiếu RAM trong các phiên trước. Build `SMP-5` vẫn chạy.
+
+Mình đang ghi câu trả lời vào nhật ký, sau đó gửi bạn. Build `SMP-5` vẫn chạy.
+
+**Claude:**
+
+**Đúng, Claude Code đã dừng lệnh nền vì thiếu RAM 5 lần,** lần nào cũng với thông báo "stopped because the system is running low on memory". Mình đếm từ các transcript cũ:
+
+| Lúc (giờ VN) | Phiên | Lệnh bị dừng |
+|---|---|---|
+| 29/10 16:08 | 12 | `reviewer` rồi `security` trên PR #4, #5 |
+| 31/10 02:41 | 16 | `reviewer` trên PR #11 |
+| 01/11 13:02 | 20 | `/ao-spec DEMO-20` |
+| 01/11 16:31 | 20 | lượt `ba` với câu trả lời ở gate ② |
+| 01/11 21:07 | 20 | `/ao-fix 16` |
+
+Pilot 1 chưa bị lần nào.
+
+> Correction: Ở Phiên 20, mình nói rằng `CLAUDE_CODE_DISABLE_BG_SHELL_PRESSURE_REAP=1` làm Claude Code thôi tắt lệnh nền, nhưng không ghi là chưa kiểm chứng. Mình đã sai, và lẽ ra phải ghi nhãn.
+
+Hôm nay mình đọc lại tài liệu Claude Code ([Environment variables](https://code.claude.com/docs/en/env-vars), [Interactive mode](https://code.claude.com/docs/en/interactive-mode)):
+- Tài liệu chỉ nói tới macOS và Linux. Claude Code dừng lệnh nền khi hệ điều hành báo thiếu bộ nhớ nghiêm trọng và phiên đã rảnh 30 phút.
+- Tài liệu ghi rõ: "Windows has no memory-pressure signal, so this variable has no effect there."
+- Nhưng cả 5 lần trên đều xảy ra trên Windows, với Claude Code 2.1.312–2.1.316, và có lần chỉ 4 phút sau khi lệnh bắt đầu. Vậy tài liệu và những gì xảy ra trên máy bạn không khớp nhau.
+- [Chưa kiểm chứng] Mình không biết biến này có tác dụng trên Windows hay không. Từ lúc bạn bật biến ở Phiên 20 · Lượt 22, không còn lần nào bị dừng. Nhưng phiên hiện tại không bật biến này (mình kiểm bằng `echo`, ra rỗng), mà cũng chưa bị lần nào. Vì vậy chưa kết luận được.
+
+**Cách 1: đặt biến môi trường cho tài khoản Windows.** Không tốn gì, và mọi phiên mở sau đều có biến.
+1. Nhấn phím Windows, gõ `environment`, chọn **Edit environment variables for your account** ("Chỉnh sửa biến môi trường cho tài khoản của bạn").
+2. Ở khung trên (**User variables**), bấm **New…**.
+3. Ô **Variable name**: `CLAUDE_CODE_DISABLE_BG_SHELL_PRESSURE_REAP`. Ô **Variable value**: `1`.
+4. Bấm **OK**, rồi **OK** lần nữa để đóng cửa sổ.
+5. Đóng hết các cửa sổ terminal và VS Code đang mở Claude Code. Mở terminal mới, `cd` vào thư mục `AI-for-coding`, rồi gõ `claude --continue`.
+
+Cách gõ lệnh thay cho bước 1–4: trong PowerShell, gõ `setx CLAUDE_CODE_DISABLE_BG_SHELL_PRESSURE_REAP 1`.
+
+Sau khi bạn mở lại, mình chạy `echo $CLAUDE_CODE_DISABLE_BG_SHELL_PRESSURE_REAP` để kiểm, và kết quả phải là `1`.
+
+**Đừng mở lại ngay bây giờ.** Lượt build `SMP-5` đang chạy ở nền trong phiên này. [Chưa kiểm chứng] Nếu thoát phiên, lệnh nền đó có thể bị dừng theo. Lúc thích hợp là khi PR của `SMP-5` đang chờ bạn approve. Tới lúc đó mình sẽ báo.
+
+**Cách 2: mình khởi động lượt chạy tách khỏi Claude Code.** Mình đề xuất cách này, nhưng chưa làm.
+- Mình dùng `Start-Process` của PowerShell để chạy `claude -p` hay `ao-step`, nên tiến trình đó không phải lệnh nền của Claude Code. [Inference] Claude Code chỉ dừng các lệnh nền do nó quản lý, nên tiến trình tách ra sẽ không bị dừng. Monitor vẫn theo dõi `.ai/runs/<KEY>/`, PR và CI như bây giờ.
+- Đổi lại: nếu Monitor bị dừng thì chỉ mất phần theo dõi, mình bật lại được. Muốn dừng lượt chạy thì mình phải `taskkill` theo PID.
+
+**RAM lúc này thấp: chỉ còn 1,4 GB trống trên 15,8 GB.**
+- VS Code: 4 tiến trình `Code` lớn nhất chiếm khoảng 2,3 GB.
+- `claude.exe`: 6 tiến trình, 1,8 GB. [Ước] Ít nhất 3 là của phiên này và lượt build đang chạy. Số còn lại có thể là các phiên Claude Code khác bạn đang mở.
+- Bạn đóng giúp các cửa sổ VS Code, phiên Claude Code và tab Chrome không dùng tới ngay bây giờ, vì `be-dev` đang build `SMP-5`.
+
+Bạn chọn cách 1, cách 2, hay cả hai, mình làm theo. Trong lúc chờ, mình chỉ theo dõi lượt build đang chạy.
