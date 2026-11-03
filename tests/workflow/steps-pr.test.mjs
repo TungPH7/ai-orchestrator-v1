@@ -124,6 +124,22 @@ test('/ao-build stops: not Ready, a dependency not merged, the docs PR not merge
   }
 });
 
+// Pilot 1, T10: the reviewers' instructions (.claude/, CLAUDE.md, hooks) come from the checkout, so it stays on the base
+// branch of the PR, which is approved; the code of the PR is in a worktree at its head.
+test('/ao-review: each run starts on the base branch of the PR, with a worktree at the head of the PR', () => {
+  const full = decide('review', prFacts('review', { files: ['apps/api/src/cart/cart.controller.ts'] }));
+  assert.equal(full.runs.length, 2);
+  for (const run of full.runs) {
+    assert.deepEqual(run.checkout, { branch: 'develop', pull: true });
+    assert.deepEqual(run.worktree, { name: 'pr-15', sha: HEAD });
+  }
+  const onRelease = decide('review', prFacts('review', { base: 'release/v1.2.0', files: ['apps/api/src/cart.ts'] }));
+  assert.deepEqual(onRelease.runs.map((run) => run.checkout), Array(onRelease.runs.length).fill({ branch: 'release/v1.2.0', pull: true }));
+  // The review of the new part reads the same code, at the new head.
+  const delta = decide('review', prFacts('review', { reports: { reviewer: report(), security: report({ sha: OLD, onHead: false, at: '2026-11-04T08:00:00Z' }) }, securityCompare: { base: OLD, status: 'ahead', files: [{ filename: 'apps/api/test/cart.spec.ts', additions: 40, deletions: 2 }] } }));
+  assert.deepEqual(delta.runs.map(({ purpose, checkout, worktree }) => [purpose, checkout, worktree]), [['review-delta', { branch: 'develop', pull: true }, { name: 'pr-15', sha: HEAD }]]);
+});
+
 test('/ao-review: reviewer on the whole PR, then security on the whole PR at the roster effort when the PR touches a path of security_review', () => {
   const decision = decide('review', prFacts('review', { files: ['apps/api/src/cart/cart.controller.ts'] }));
   assert.deepEqual(plan(decision), [`reviewer DEMO-21 ${roster.roles.reviewer.effort} review`, `security DEMO-21 ${roster.roles.security.effort} review`]);

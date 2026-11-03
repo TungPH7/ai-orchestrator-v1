@@ -144,6 +144,7 @@ async function main() {
       git: (checkout) => prepareCheckout(checkout),
       dispatch: (action) => dispatchJiraSync(action.key),
       pack: reviewPackWriter({ github, jira }),
+      worktree: { add: addWorktree, remove: removeWorktree },
       store: {
         readState: (k) => readJson(join(runsDir, k, 'state.json')),
         writeState: (k, state) => writeFileSync(join(runsDir, k, 'state.json'), `${JSON.stringify(state, null, 2)}\n`),
@@ -289,6 +290,36 @@ function prepareCheckout({ branch, from, pull }) {
     if (merged.status !== 0) return { ok: false, reason: `${branch} has commits that are not on origin/${branch}: ${merged.stderr.trim()}` };
   }
   return { ok: true };
+}
+
+// The worktree of a PR for its review (Pilot 1, T10): the code at the head the review is on, in .ai/reviews/pr-<N>, which
+// is never committed. A stale one from a run that was stopped is replaced. Node finds node_modules above it, in the
+// checkout, so the tests of the PR run there.
+const worktreePath = (name) => join('.ai', 'reviews', name);
+function addWorktree({ name, sha }) {
+  const path = worktreePath(name);
+  if (existsSync(join(projectDir, path))) removeWorktree({ name });
+  mkdirSync(join(projectDir, '.ai', 'reviews'), { recursive: true });
+  const added = git('worktree', 'add', '--detach', '--quiet', path, sha);
+  if (added.status !== 0) return { ok: false, reason: `git could not add the worktree of ${name} at ${sha.slice(0, 7)}: ${(added.stderr || added.stdout).trim()}` };
+  return { ok: true, path: path.replaceAll('\\', '/') };
+}
+
+// Takes the worktree away with what the agent left in it. A process that still holds a file of it (Windows) leaves the
+// folder behind; the next run of the same PR replaces it.
+function removeWorktree({ name }) {
+  const path = worktreePath(name);
+  const removed = git('worktree', 'remove', '--force', path);
+  if (removed.status !== 0 && existsSync(join(projectDir, path))) {
+    try {
+      rmSync(join(projectDir, path), { recursive: true, force: true });
+    } catch (error) {
+      git('worktree', 'prune');
+      return { ok: false, reason: error.message };
+    }
+  }
+  git('worktree', 'prune');
+  return existsSync(join(projectDir, path)) ? { ok: false, reason: `${path} is still there` } : { ok: true };
 }
 
 // The second /ao-plan: jira-sync for the Epic, with your gh login, since this is your session, not an agent's.
