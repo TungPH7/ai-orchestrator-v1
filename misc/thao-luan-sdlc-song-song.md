@@ -152,3 +152,5 @@ Vì vậy, nên đặt giới hạn theo ba thứ đó, không mô phỏng số 
 4. Bạn quyết làm phần này lúc nào:
    - trước khi build `SMP-5` tới `SMP-11`, để chính các item đó chạy song song;
    - sau Pilot 1, như một module có spec riêng.
+
+**Bạn quyết (Phiên 23 · Lượt 26):** build `SMP-5` tới `SMP-11` trước với kit như hiện tại; phần chạy nhiều luồng song song để sau.
