@@ -612,3 +612,22 @@ Chi phí `SMP-11` tới giờ: 6,52 USD. PR #12 chờ bạn ở cổng ③: cả
   - Review phải chạy trên checkout `develop` (cách tạm).
 - **Câu hỏi bạn nêu (chưa quyết, để sau Pilot 1):** cho `security` approve PR khi không có finding Critical/High. Claude đề xuất giữ cổng ③ hiện tại, vì cổng này đang ghi nhận cả việc bạn chấp nhận rủi ro (ADR-0002) và các finding Medium/Low.
 - **Việc sau Pilot 1:** item chặn Low của `security` ở PR #10 và Low của PR #11 (dòng rủi ro trong ADR-0002 phải nêu cả cổng 3000); 3 Low của PR #12.
+
+## T10: bản sửa kit và đóng Pilot 1 (2026-11-04)
+
+Bạn xác nhận Checkpoint 4 và giao T10. `tasks/todo.md`: T9 và Checkpoint 4 đã tick; mục 0 của T10 liệt kê các lỗi kit cần sửa.
+
+### Kit PR đã mở
+
+| Kit PR | Sửa | Test | Chưa chạy thật |
+|---|---|---|---|
+| #155 | PR tài liệu của T9: `verification.md`, `todo.md`, log brainstorm | không (chỉ tài liệu) | |
+| #156 | Review chạy trên checkout của nhánh đích (`develop`, `release/*`, `main`); code của PR nằm trong worktree `.ai/reviews/pr-<N>` do `ao-step` tạo trước lượt chạy và gỡ sau (cả khi lượt chạy lỗi). Thay cách tạm "chuyển `ao-sample` sang `develop` trước mỗi `/ao-review`", và cho `reviewer` chạy test của PR mà không cần `git archive` | `steps-pr.test.mjs`, `runner.test.mjs`; `git worktree add/remove` thử tay trong repo tạm | `addWorktree` và `removeWorktree` trong `ao-step.mjs` (file chạy ngay khi import): lần đầu chạy thật ở `/ao-review` kế tiếp trên `ao-sample` |
+| #157 (xếp chồng lên #156) | `ao-step` dừng agent còn sống một phút sau dòng `result`, cùng cả cây tiến trình (Windows: `taskkill /T`), thay vì để lượt chạy treo vì server `npm run dev` agent bỏ lại | `agent-process.test.mjs` (6 test), `runner.test.mjs`; thử với tiến trình thật: lượt chạy kết thúc sau 3,7 giây, tiến trình con chết | `claude -p` thật với dev server thật; ngoài Windows chỉ dừng tiến trình của agent |
+| #158 | Gợi ý `Next:` sau gate ② bỏ qua item bị chặn bởi item chưa merge: mỗi item con của Epic mang `blockedBy`; bỏ qua blocker ngoài Epic (`/ao-build` kiểm bằng guard riêng) | `steps-epic.test.mjs`, `facts.test.mjs` | |
+
+Năm lệnh kiểm của kit xanh trên cả ba nhánh (813 đến 820 test, 0 lỗi).
+
+### Việc T10 còn lại sau khi #155–#158 merge
+
+Các lỗi kit còn lại ở mục 0 của T10 trong `tasks/todo.md`, rồi bước 1 (một PR chép kit vào `ao-sample`, review bằng `/ao-review`, bạn merge), bước 2 ("Đầu vào cho `project-scaffold`"), bước 3 (`SPEC.md`, `SPEC-pilot-1.md`, README) và bước 4 (lưu trữ plan).
