@@ -10818,17 +10818,27 @@ Claude đọc khóa chạy trong `scripts/ao-step.mjs`, giới hạn WIP trong `
 
 **Claude:**
 
-Mình đã ghi câu hỏi và câu trả lời vào `ai-orchestrator/misc/thao-luan-sdlc-song-song.md`. Tóm tắt như sau:
+Mình đã ghi câu hỏi và câu trả lời vào `D:\Document\1Khoahoc\4LapTrinh\AI-for-coding\ai-orchestrator\misc\thao-luan-sdlc-song-song.md`. Tóm tắt:
 
-1. **Không cần đập đi xây lại.** Contract, guard, WIP, `jira-sync`, `merge-gate` và roster giữ nguyên. Chỉ lớp chạy agent cần viết mới, gồm: mỗi item một worktree, khóa theo item, một bộ điều phối viết bằng code thường, và trần số lượt chạy cùng lúc.
-2. **Kit đã cho nhiều item cùng nằm trong luồng.** Cái đang làm mọi thứ tuần tự là khóa chạy (mỗi lúc một agent) và checkout chung. Còn câu "reviewer ngồi rảnh" thì không đúng với kit: agent chỉ tồn tại trong lúc một lượt chạy và không chia theo team. Chúng dùng chung Jira và git.
-3. **Mình đề xuất hướng 2,** dưới dạng một board và một bộ điều phối, mỗi item một worktree. "Hướng 2 trên 1 worktree" không chạy được khi 2 dev cùng làm. Token mỗi item như nhau ở cả hai hướng. Hàng đợi là chính board Jira, và bộ điều phối đọc Jira mà không gọi model. Đừng để agent tự đi hỏi có việc không, vì cách đó tốn token.
-4. **Câu a:**
-   - Trong một item, các bước phải tuần tự.
-   - Giữa các item thì gối đầu hay song song đều được.
-   - Trong một bước, chỉ `reviewer` chạy song song với `security` là đáng làm. [Ước] Mỗi PR bớt khoảng 10 phút.
-5. **Chạy song song chỉ rút thời gian.** Chi phí không giảm, và hạn mức gói Claude hết nhanh hơn.
+1. **Không cần đập đi xây lại.** Contract, guard, WIP, `jira-sync`, `merge-gate` và roster giữ nguyên. Chỉ phải viết mới lớp chạy agent: mỗi item một worktree, khóa theo item, một bộ điều phối viết bằng code thường, và một giới hạn trên cho số lượt chạy cùng lúc.
+2. **Kit đã cho nhiều item cùng nằm trong luồng.** Mọi thứ đang chạy tuần tự vì hai chỗ: khóa chạy (mỗi lúc chỉ một agent) và checkout dùng chung. "Reviewer ngồi rảnh" không đúng với kit: agent chỉ tồn tại trong lúc một lượt chạy, không chia theo team, và dùng chung Jira với git.
+3. **Mình đề xuất hướng 2,** cụ thể là một board, một bộ điều phối, mỗi item một worktree. Hướng 2 mà chỉ có 1 worktree thì không chạy được khi 2 dev cùng làm.
+   - Token cho mỗi item ở hai hướng như nhau.
+   - Hàng đợi chính là board Jira. Bộ điều phối đọc Jira mà không gọi model.
+   - Đừng để agent tự đi hỏi có việc không, vì mỗi lần hỏi là tốn token.
+4. **Câu a:** trong một item, các bước phải chạy tuần tự. Giữa các item thì cho gối đầu hay chạy song song đều được. Trong một bước, chỉ có chỗ cho `reviewer` chạy song song với `security` là đáng làm: [Ước] mỗi PR bớt khoảng 10 phút.
+5. **Chạy song song chỉ rút ngắn thời gian.** Chi phí không giảm, và hạn mức gói Claude hết nhanh hơn.
 
-Cuối file có câu để bạn quyết: làm phần này trước khi build `SMP-5` tới `SMP-11`, hay sau Pilot 1 như một module riêng.
+Cuối file có một điểm để bạn quyết: làm phần này trước khi build `SMP-5` tới `SMP-11`, hay để sau Pilot 1 thành một module riêng.
 
-Bước 0 vẫn đang dừng: ba file đã sửa nằm trên máy, chưa commit. Mình chỉ commit file thảo luận và nhật ký.
+Bước 0 vẫn đang dừng: ba file đã sửa vẫn nằm trên máy, chưa commit. Lần này mình chỉ commit file thảo luận và nhật ký.
+
+# Phiên 23 · Lượt 26 — 2026-11-03 khoảng 11:30
+
+**Bạn:**
+
+````markdown
+tiếp tục bước 0, build SMP-5 tới SMP-11  trước nhé. 'chạy nhiều luồng SDLC song song' để sau
+````
+
+Claude ghi quyết định vào cuối `misc/thao-luan-sdlc-song-song.md`, commit ba file của bước 0 (`SPEC-pilot-1.md`, `tasks/todo.md`, `tasks/plan.md`), mở kit PR cho nhánh `task/t9-review-pack-copy` rồi merge khi CI xanh.
