@@ -464,3 +464,25 @@ Chi phí agent của `SMP-4` tới gate ③: 10,23 USD (build 2,47, fix 2,36, re
   - `merge-gate` ×4 xanh.
 
   `SMP-14` vẫn ở New.
+
+## T9 (tiếp): các item còn lại của `SMP-2` (2026-11-03, Phiên 23 · Lượt 26–)
+
+- Kit PR #154: tiêu chí 3 về lại "mọi Story" cùng các Task chặn chúng, tiêu chí 5 theo contract, T9 có thứ tự theo link Blocks.
+
+### `SMP-5` Quy tắc ghi chú dùng chung (đợt 1, `be-dev`)
+
+- `ao-step build SMP-5` không có `--go`: GO, `be-dev`, effort `high`.
+- **`/ao-build SMP-5`** (13:17–13:30): `MSYS_NO_PATHCONV=1 claude -p --model sonnet --output-format stream-json --verbose "/ao-build SMP-5"` trong `ao-sample`, ở nền, kèm watcher. Phiên Sonnet điều phối: 0,14 USD, thoát 0.
+  - `be-dev` cắt `feature/SMP-5-note-rules` từ `develop` (`7af4af0`), chuyển `SMP-5` Ready → In Progress bằng `start`, viết test trước rồi code qua 4 commit (`277cbf0`, `2279142`, `ea8ba3c`, `7ae155b`): `apps/api/src/notes/notes.shared.ts` (95 dòng, không import) và `notes.shared.spec.ts` (71 test). `ao-dev` mở PR #8 (+500 dòng, 2 file). `CI` #16 xanh. `jira-sync` chuyển `SMP-5` sang In Review.
+  - 2 lệnh bị từ chối: heredoc `cat >` vào `.ai/pr/` và `.ai/ledger/`. Agent ghi lại bằng tool Write.
+- **`/ao-review 8`** (13:48–13:59) trên checkout `develop` (cách tạm cho điểm 3). Phiên Sonnet điều phối: 0,14 USD, thoát 0, lần này chờ tới khi `ao-step` xong.
+  - `reviewer`: Approve, 1 Low. Test giữ hai trong ba ràng buộc của file lá (không import, không decorator). Ràng buộc "không API riêng của Node.js hay trình duyệt" chưa có gì giữ: `tsc` của cả hai app có kiểu của Node, và ESLint của web không lint file này. 1 lệnh bị từ chối: `git archive` (lỗi kit đã biết, `gh-guard`).
+  - `security` ở `high`: Approve, không có finding. Ghi chú cho `SMP-7`: `checkNote(null)` ném `TypeError` (thành 500), nên endpoint phải kiểm thân yêu cầu là object trước, như SPEC đòi.
+
+| # | Item | Lượt | Model | Bước | Effort | Kết quả | Turn | Thời gian | Token vào / ra | Cache đọc / ghi | Chi phí quy đổi | Bị từ chối |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 1 | `SMP-5` | `be-dev` | Opus 5.5 | build | high | done | 54 | 10,8 phút | 86 / 36.187 | 3.474.097 / 118.989 | 2,01 USD | 2 |
+| 2 | `SMP-5` | `reviewer` | Opus 5.5 | review PR #8 | xhigh | done, COMMENT (Approve) | 26 | 7,8 phút | 52 / 36.754 | 1.834.824 / 104.065 | 1,62 USD | 1 |
+| 3 | `SMP-5` | `security` | Opus 5.5 | review PR #8 | high | done, COMMENT (Approve) | 7 | 1,5 phút | 14 / 6.695 | 275.890 / 52.667 | 0,45 USD | 0 |
+
+Chi phí `SMP-5` tới đây: 4,09 USD cho agent, 0,28 USD cho hai phiên điều phối.
