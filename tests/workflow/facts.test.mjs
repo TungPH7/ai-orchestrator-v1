@@ -158,6 +158,21 @@ test('the children of an Epic come with their Sub-tasks, each with its role and 
   assert.deepEqual(epic.children[0].subtasks.map(({ key, role, effort }) => [key, role, effort]), [['DEMO-13', null, null], ['DEMO-14', 'fe-dev', 'xhigh']]);
 });
 
+// Pilot 1, T9: the next build after gate ② has to know which child blocks which, so each child comes with its blockers.
+test('the children of an Epic come with the items that block them (the inward side of "is blocked by")', async () => {
+  const linked = (a) => {
+    a.jira['/rest/api/3/search/jql?fields=summary,issuetype,status,labels,issuelinks&jql=project = "DEMO" AND parent = "DEMO-11"'].issues[0].fields.issuelinks = [
+      { type: { inward: 'is blocked by', outward: 'blocks' }, inwardIssue: { key: 'DEMO-9' } },
+      { type: { inward: 'is blocked by', outward: 'blocks' }, outwardIssue: { key: 'DEMO-30' } },
+      { type: { inward: 'is cloned by', outward: 'clones' }, inwardIssue: { key: 'DEMO-31' } },
+    ];
+  };
+  const { epic } = await gather('build', 'DEMO-11', { change: linked });
+  assert.deepEqual(epic.children[0].blockedBy, ['DEMO-9']);
+  const { epic: plain } = await gather('build', 'DEMO-11');
+  assert.deepEqual(plain.children[0].blockedBy, [], 'a child with no link has none');
+});
+
 test('a PR on the branch of an item outside the space reads no item, and the children of an Epic are read in the space only (T15a)', async () => {
   const foreign = (a) => (a.github['/pulls/11'].head.ref = 'feature/SHOP-5-coupon-code');
   const facts = await gather('review', '11', { change: foreign });

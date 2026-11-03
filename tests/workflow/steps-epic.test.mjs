@@ -179,6 +179,26 @@ test('/ao-plan after gate ②: jira-sync refines the items and merge-gate merges
   assert.match(done.reason, /docs PR #14 of DEMO-20 is merged and its items are refined/);
 });
 
+// Pilot 1, T9: after gate ② the command suggested the first Ready item of the Epic, SMP-11, which SMP-7 blocks.
+test('/ao-plan after gate ②: the build it suggests is the first Ready item that no unmerged item blocks', () => {
+  const merged = { ...openPr(), state: 'closed', merged: true };
+  const past = (children) => decide('plan', epicFacts('in-progress', { docs: { spec: WITH_NFR, plan: PLAN, pr: merged }, item: { children } }));
+  const item = (key, state, blockedBy = []) => ({ key, state, blockedBy });
+  // Jira returns the items in no order that matters: the blocked ones come first here.
+  const children = [item('DEMO-26', 'ready', ['DEMO-22']), item('DEMO-22', 'ready', ['DEMO-21', 'DEMO-23']), item('DEMO-21', 'ready'), item('DEMO-23', 'ready')];
+  assert.equal(past(children).next, '/ao-build DEMO-21', 'not DEMO-26, which DEMO-22 blocks');
+  // A blocker in Ready for QA or Done is merged; one in review is not.
+  const half = [item('DEMO-26', 'ready', ['DEMO-22']), item('DEMO-22', 'ready', ['DEMO-21', 'DEMO-23']), item('DEMO-21', 'ready-for-qa'), item('DEMO-23', 'in-review')];
+  assert.equal(past(half).next, '/ao-status DEMO-20');
+  assert.match(past(half).reason, /every Ready item waits for an item that is not merged yet/);
+  const merged2 = [item('DEMO-26', 'ready', ['DEMO-22']), item('DEMO-22', 'ready', ['DEMO-21', 'DEMO-23']), item('DEMO-21', 'ready-for-qa'), item('DEMO-23', 'done')];
+  assert.equal(past(merged2).next, '/ao-build DEMO-22');
+  // A blocker outside the Epic cannot be judged here: /ao-build checks it with its own guard.
+  assert.equal(past([item('DEMO-26', 'ready', ['OTHER-1'])]).next, '/ao-build DEMO-26');
+  // Items with no link data at all (an older fact) keep the order they had.
+  assert.equal(past([{ key: 'DEMO-21', state: 'ready' }, { key: 'DEMO-23', state: 'ready' }]).next, '/ao-build DEMO-21');
+});
+
 test('/ao-status of an Epic and of the space: the next command, what waits for you, open requests and costs', () => {
   const epic = decide('status', epicFacts('planning', { docs: { pr: openPr() }, run: runState({ role: 'ba', purpose: 'spec-write', outcome: 'done', costUsd: 1.8 }, { role: 'sa', purpose: 'spec-nfr', outcome: 'done', costUsd: 0.7 }) }));
   assert.equal(epic.status, true);
