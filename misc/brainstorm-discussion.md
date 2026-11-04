@@ -31,7 +31,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 21 | `3ead2782-314d-4ae8-981b-96f6ed83a60e` | 2026-11-01 khoảng 22:50 → 2026-11-02 khoảng 01:40 | Bạn dán đoạn cuối của Phiên 20, hỏi vì sao `main` và `develop` của `ao-pilot` lệch nhau, cách xử lý, và lựa chọn 3 có giải quyết được không; Claude kiểm hai nhánh và code của `audit`: `develop` đi trước 10 là đúng GitFlow, 4 commit chỉ có trên `main` là dấu vết lối tắt sandbox và không đổi nội dung; lựa chọn 3 không giải quyết; đề xuất ghi quy tắc merge commit và back-merge từ `main` vào spec `release-workflow`; bạn chọn Pilot 1; Claude nêu phạm vi, giả định A1–A8 và ba câu hỏi (repo, space Jira, feature); bạn duyệt và chọn theo đề xuất: repo mới `ao-sample`, space mới `SMP`, Epic "Ghi chú"; Claude viết `SPEC-pilot-1.md` (nhánh `task/spec-pilot-1`); bạn chọn tạo key mới cho `ao-dev` và duyệt spec; Claude viết plan 10 task, 5 checkpoint, cùng quyết định 6 (lỗi kit giữa Epic) và 8 (Checkpoint 3 sau lượt build đầu); bạn duyệt plan; kit PR #141; T1–T2: tạo repo `ao-sample`, điểm 1 đúng một phần (NestJS 12 dùng Vitest và oxlint, `@nestjs/mau` mang 2 lỗ hổng high), điểm 2 đúng nếu dùng Vitest, điểm 3 và 4 sai (API từ chối), điểm 5 đúng kèm `MSYS_NO_PATHCONV=1` và tin cậy thư mục; Checkpoint 1: bạn duyệt sáu chỗ sửa, dùng chung scheme với `DEMO`, và duyệt trước mọi đề xuất trong Pilot 1; T1a (kit PR #142, `oxlint-disable`); T4 khung app xanh sáu lệnh; T5 bản chép kit và hai skill theo stack; commit đầu bị hook `commit-msg` từ chối vì thiếu mã Jira; bạn gửi ảnh: tùy chọn share settings lúc tạo space cần gói trả phí; Claude đổi cách: tạo space như thường rồi gán ba scheme của `DEMO` trong Space settings; bạn tạo xong `SMP` và gán ba scheme; Claude kiểm bằng API, `jira:check` còn 3 chỗ lệch của board, tạo bốn environment và đặt secret `JIRA_CI_TOKEN`; bạn tắc ở B3 (board thiếu cột); Claude đọc cấu hình board bằng API và ghi từng bước sửa cột trong Board settings; bạn gửi ảnh: board của `SMP` là board mới, Board settings không có Columns; Claude tìm tài liệu Atlassian: cột cấu hình ở More actions → Configure columns trên board; bạn gửi ảnh hộp Configure columns đã sửa đúng, chờ bấm Publish; bạn tắc ở D2 (không có Private keys); Claude đính chính: đường đúng là Credentials → Key pairs → New key, như `docs/github-apps-setup.md` đã ghi; bạn xong B–E và chọn cách (b); Claude đặt secret `AO_DEV_APP_KEY`, tạo `SMP-1`, commit đầu `6f5831d` lên `main` và `develop`; GitHub không chạy workflow cho lần push đầu, Claude chạy tay `merge-gate` (xanh) và `Deploy` (`audit` đỏ, gắn cờ `SMP-1`); Checkpoint 2 đạt, tiêu chí 1 đổi; Epic `SMP-2`; chờ bạn dọn `SMP-1` và bấm Start spec |
 | 22 | `d714399c-65d0-4f98-bbbb-720338ff6bea` | 2026-11-02 khoảng 10:50 → khoảng 20:08 | Bạn dán đoạn cuối của Phiên 21 kèm ảnh panel Development của `SMP-1`, hỏi `Deploy` đỏ có đúng dự kiến không; Claude đọc run và log của `audit`: đúng dự kiến (commit đầu không qua PR), và ảnh cho thấy GitHub for Atlassian đã gắn run vào `SMP-1`; bạn dọn `SMP-1` và bấm Start spec; Claude merge kit PR #143 (T3–T6, Checkpoint 2), chạy `/ao-spec SMP-2` qua `claude -p`: `ba` viết SPEC (1,49 USD) và để lại 4 câu hỏi; Claude chuyển câu hỏi cho bạn, khuyên đồng ý cả bốn; bạn đồng ý cả bốn; Claude nối lại phiên `claude -p` với câu trả lời: `ba`, `ux`, `sa` chạy (3,36 USD), `sa` để lại 2 câu hỏi (đếm emoji, chuẩn hóa NFC và xuống dòng); Claude khuyên đồng ý cả hai; bạn đồng ý cả hai; `sa` ghi câu trả lời, `ba` mở PR tài liệu #1, nhưng GitHub không chạy CI và `ao-step` chờ 30 phút; bạn hỏi vì sao không dừng; Claude dùng nhánh và PR thử tìm ra nguyên nhân (workflow từ lần push đầu chưa được ghi nhận trigger; một push đụng `.github/workflows/` gỡ được), `CI` của PR #1 xanh; tìm thêm lỗi kit `openQuestions` bỏ sót 10 câu hỏi của `ux`; tới gate ①, Claude khuyên không thêm dòng "Đã lưu ghi chú." và gửi các bước Approve spec; bạn hỏi vì sao có hai lỗi nặng và yêu cầu sửa; Claude sửa ở kit (PR #144), chép vào `ao-sample` (Task `SMP-3`, PR #3), `/ao-review 3` Approve (1 Medium, 2 Low ở kit, sửa ở kit PR #145); bạn approve và merge PR #3, hỏi có cần chép kit vào `ao-pilot` (chưa cần); bạn đã bấm Approve spec, chọn chạy `/ao-plan`; `sa` chạm giới hạn 5 giờ giữa lượt viết plan; bạn bảo làm tiếp; `sa` viết xong plan và ba ADR, `ba` tạo 8 item nhưng không tạo được link Blocks; phiên dừng vì Claude chạm giới hạn tuần |
 | 23 | `6d4fa505-b003-47c3-bad3-14958ad7ae83` | 2026-11-02 khoảng 22:10 → | Bạn dán đoạn cuối của Phiên 22 để làm tiếp; Claude tạo 5 link Blocks bằng token CI, tắt server spike `sa` để lại, ghi stage plan và 3 lỗi kit vào `verification.md`, gửi các bước duyệt plan (gate ②) |
-| 26 | `6b41390c-2d48-4d39-9a30-5a4e22f76bf7` | 2026-11-04 khoảng 13:10 → khoảng 23:10 | Bạn báo đã merge kit PR #165; Claude chép vào `ao-sample` PR #13 và review lần 2 (security lại có 1 High: `AGENTS.md`), mở kit PR #166; bạn hỏi chạy review ở high, vì sao lần nào cũng ra High, vì sao security review cả PR; Claude tìm lý do của luật review toàn bộ trong file này; bạn chọn đổi luật review phần mới, điều kiện đường dẫn được bảo vệ (b), và sửa gốc (code của PR không nằm trong thư mục dự án); Claude thử bằng Sonnet và sửa thêm trong kit PR #166; bạn merge #166; Claude chép vào PR #13, review lần 3 còn hai Medium để sau Pilot 1; bạn merge PR #13 (`e56a207`); T10: kit PR #167 (đường bấm của board Jira mới) và #168 (đầu vào cho `project-scaffold`, bảng lỗi kit, chi phí Pilot 1 khoảng 117,6 USD, plan vào `tasks/archive/pilot-1/`); bạn xác nhận Pilot 1 hoàn thành (PR #169); chờ bạn chọn việc tiếp theo |
+| 26 | `6b41390c-2d48-4d39-9a30-5a4e22f76bf7` | 2026-11-04 khoảng 13:10 → | Bạn báo đã merge kit PR #165; Claude chép vào `ao-sample` PR #13 và review lần 2 (security lại có 1 High: `AGENTS.md`), mở kit PR #166; bạn hỏi chạy review ở high, vì sao lần nào cũng ra High, vì sao security review cả PR; Claude tìm lý do của luật review toàn bộ trong file này; bạn chọn đổi luật review phần mới, điều kiện đường dẫn được bảo vệ (b), và sửa gốc (code của PR không nằm trong thư mục dự án); Claude thử bằng Sonnet và sửa thêm trong kit PR #166; bạn merge #166; Claude chép vào PR #13, review lần 3 còn hai Medium để sau Pilot 1; bạn merge PR #13 (`e56a207`); T10: kit PR #167 (đường bấm của board Jira mới) và #168 (đầu vào cho `project-scaffold`, bảng lỗi kit, chi phí Pilot 1 khoảng 117,6 USD, plan vào `tasks/archive/pilot-1/`); bạn xác nhận Pilot 1 hoàn thành (PR #169); bạn hỏi tài khoản GitHub Free có bị tính tiền không: Billed 0 USD, phần miễn phí bù hết Gross; chờ bạn chọn việc tiếp theo |
 
 ---
 
@@ -11659,3 +11659,43 @@ Pilot 1 đã hoàn thành. Kit PR #169 đánh dấu ô cuối "Bạn xác nhận
 Bạn chọn hướng nào? Mình sẽ bắt đầu bằng bước đầu của hướng đó, như các module trước: nêu phạm vi và giả định, rồi chờ bạn duyệt.
 
 Một việc nhỏ không bắt buộc vẫn còn đó: bấm Cancel cho năm Task chép kit `SMP-3`, `SMP-12`, `SMP-13`, `SMP-14`, `SMP-15`.
+
+# Phiên 26 · Lượt 11 — 2026-11-04 khoảng 23:35
+
+Các lượt giữa Lượt 10 và lượt này chỉ là thông báo CI của PR #169: CI xếp hàng vì GitHub Actions có sự cố, rồi xanh. Bạn merge #169.
+
+**Bạn:**
+
+```markdown
+Tôi hỏi 1 điểm ngoài lề tí trước nhé.
+
+Như ảnh thì account github free của tôi bị charge tiền ?
+```
+
+Ảnh: `misc/images/phien-26-luot-11-anh-1.png`, `misc/images/phien-26-luot-11-anh-2.png`, `misc/images/phien-26-luot-11-anh-3.png` (trang Billing Usage của tài khoản `TungPH7`, tháng 11/2026: Gross 1,12; 1,19; 1,42; 0,58 USD cho ngày 1–4, Billed 0 USD, ngày 2 có Discount 1,19 USD).
+
+Trước khi trả lời, Claude thử đọc báo cáo usage qua API. API trả lỗi vì token `gh` thiếu scope `user`.
+
+**Claude:**
+
+Không, bạn chưa bị tính đồng nào. Cột **Billed amount** ghi 0 USD cho cả bốn ngày, và đó mới là số GitHub thu của bạn.
+
+**Ba con số trong ảnh:**
+- **Gross:** giá của phần bạn đã dùng, tính theo bảng giá. Gần như chắc đây là phút chạy GitHub Actions của các repo private (`ai-orchestrator-v1`, `ao-sample`, `ao-pilot`). Repo public chạy Actions không tốn phút.
+- **Discount:** phần miễn phí của gói Free: 2.000 phút Actions mỗi tháng cho repo private, và 500 MB lưu trữ. Ngày 2/11 có Discount 1,19 USD, bằng đúng Gross 1,19 USD.
+- **Billed** = Gross − Discount = 0.
+
+**Khi nào mới bị tính tiền:** khi bạn dùng vượt phần miễn phí, và tài khoản đã có thẻ cùng ngân sách (budget) lớn hơn 0. Nếu chưa có thẻ, GitHub không thu tiền. Thay vào đó, các job Actions của repo private bị chặn tới đầu tháng sau.
+
+**Một điểm nên để ý:** bốn ngày đầu tháng đã dùng khoảng 4,31 USD theo giá gốc (1,12 + 1,19 + 1,42 + 0,58).
+- [Ước tính] Nếu cứ khoảng 1,1 USD mỗi ngày, phần miễn phí có thể hết vào khoảng giữa tháng. Pilot 1 đã xong, nên tốc độ có lẽ sẽ chậm lại.
+- Nếu hết phần miễn phí, CI, `merge-gate` và `jira-sync` ở các repo private sẽ ngừng chạy, và các bước của kit sẽ kẹt.
+- Mình chưa đọc được số phút chính xác: API billing cần scope `user`, mà token `gh` hiện chưa có.
+
+**Cách xem chi tiết trên trang bạn đang mở:**
+1. Ở bảng **Usage breakdown**, bấm mũi tên `>` cạnh một ngày để xem phần dùng của ngày đó (sản phẩm, số lượng).
+2. Hoặc bấm ô **Group by: None** ở trên biểu đồ, chọn **Repository**, để xem repo nào tốn nhiều nhất.
+
+Nếu bạn chụp phần mở rộng của một ngày gửi mình, mình tính được còn bao nhiêu phút. Nếu sắp hết, mình sẽ đề xuất vài cách giảm phút CI.
+
+**Việc chính:** PR #169 đã merge, và CI trên `main` xanh. Pilot 1 đã đóng hẳn. Mình chờ bạn chọn việc tiếp theo: `release-workflow` (mình khuyên chọn), sửa các lỗi kit để sau Pilot 1, hoặc `figma-integration`. Lượt này mình ghi vào log trên nhánh `docs/phien-26-log`. Nhánh này sẽ đi cùng PR đầu tiên của việc bạn chọn.
