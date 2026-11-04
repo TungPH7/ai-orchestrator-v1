@@ -153,6 +153,16 @@ test('board columns list their statuses, the Kanban backlog and the WIP limit', 
   assert.ok(board.some((line) => line.includes('`Cancelled`') && line.includes('Unmapped statuses')));
 });
 
+test('board columns say where to click on the modern board too, where Board settings has no Columns', () => {
+  const start = lines.findIndex((line) => line.startsWith('## 10.'));
+  const text = lines.slice(start, lines.findIndex((line, index) => index > start && line.startsWith('## '))).join('\n');
+  assert.match(text, /This space uses the modern Jira board/);
+  assert.match(text, /\*\*More actions\*\* \(•••\) → \*\*Configure columns\*\*/);
+  assert.match(text, /\*\*Hidden statuses\*\*/);
+  assert.match(text, /\*\*Publish\*\*/);
+  assert.match(text, /\*\*Columns\*\*/);
+});
+
 test('.jira/config.yml maps each Jira environment type to its GitHub environment', () => {
   assert.equal(
     renderJiraConfig(mapping),
