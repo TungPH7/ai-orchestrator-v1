@@ -25,7 +25,7 @@ import { bearerAuth, createJiraClient } from '../lib/tracker/jira-client.mjs';
 import { readMapping } from '../lib/tracker/mapping.mjs';
 import { startAgentProcess, killTree } from '../lib/workflow/agent-process.mjs';
 import { gatherFacts } from '../lib/workflow/facts.mjs';
-import { adfText, buildReviewPack } from '../lib/workflow/review-pack.mjs';
+import { adfText, buildReviewPack, filesToQuote } from '../lib/workflow/review-pack.mjs';
 import { agentCommand, formatDecision, runGo } from '../lib/workflow/runner.mjs';
 import { decideStep } from '../lib/workflow/steps.mjs';
 
@@ -208,8 +208,8 @@ export function reviewPackWriter({ github, jira, git: run = git, projectDir: dir
       // The PR by its number: its branch name is the author's, and one starting with - would read as an option.
       need('fetch', '--quiet', 'origin', `refs/heads/${pr.base}`, `refs/pull/${pr.number}/head`);
       const head = pr.headSha;
+      // git merge-base exits 1 when there is none, so need throws then.
       const baseSha = need('merge-base', `origin/${pr.base}`, head).trim();
-      if (!baseSha) throw new Error(`no merge base of origin/${pr.base} and ${head.slice(0, 7)}`);
       const show = (sha, path) => {
         const shown = run('show', `${sha}:${path}`);
         return shown.status === 0 ? shown.stdout : null;
@@ -219,7 +219,7 @@ export function reviewPackWriter({ github, jira, git: run = git, projectDir: dir
         const [status, ...paths] = line.split('\t').map(unquotePath);
         return paths.length > 1 ? { status, from: paths[0], path: paths[1] } : { status, path: paths[0] };
       });
-      const modified = files.filter(({ status }) => status.startsWith('M')).map(({ path }) => ({ path, text: show(head, path) }));
+      const modified = filesToQuote(files).map((path) => ({ path, text: show(head, path) }));
       const epic = item.parent && /epic/i.test(item.parent.type) ? item.parent.key : null;
       const docs = epic && {
         epic,

@@ -80,4 +80,7 @@ test('checkPrTitle needs exactly one key, the key of the item (spec 2.5)', () =>
   assert.deepEqual(checkPrTitle('feat(auth): add email login (DEMO-12)'), { ok: true, keys: ['DEMO-12'] });
   assert.match(checkPrTitle('feat(auth): add email login (DEMO-12, DEMO-13)').reason, /one Jira key/);
   assert.match(checkPrTitle('feat(auth): add email login').reason, /Jira key/);
+  // A commit has a body after its header; a PR title does not (Pilot 1, review of ao-sample PR #7).
+  assert.deepEqual(checkPrTitle('feat(auth): add email login (DEMO-12)\n## Jira item DEMO-20'), { ok: false, reason: 'a PR title is one line, with no line break' });
+  assert.equal(checkPrTitle('feat(auth): add email login (DEMO-12)\r').ok, false);
 });
