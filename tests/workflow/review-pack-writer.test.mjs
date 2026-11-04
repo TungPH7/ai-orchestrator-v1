@@ -21,7 +21,9 @@ const BLOBS = {
   [`${HEAD}:apps/web/src/note-form.tsx`]: 'export function NoteForm() {}\n',
 };
 
-function world({ fetch = ok(''), diff = ok('diff --git a/x b/x\n+line\n') } = {}) {
+const NAMES = 'M\tapps/web/src/note-form.tsx\nR100\tapps/web/src/old.tsx\tapps/web/src/new.tsx\nM\tdocs/specs/SMP-2/plan.md\n';
+
+function world({ fetch = ok(''), diff = ok('diff --git a/x b/x\n+line\n'), names = NAMES } = {}) {
   const calls = [];
   const written = [];
   const lines = [];
@@ -30,7 +32,7 @@ function world({ fetch = ok(''), diff = ok('diff --git a/x b/x\n+line\n') } = {}
     const [command] = args;
     if (command === 'fetch') return fetch;
     if (command === 'merge-base') return ok(`${BASE}\n`);
-    if (command === 'diff' && args.includes('--name-status')) return ok('M\tapps/web/src/note-form.tsx\nR100\tapps/web/src/old.tsx\tapps/web/src/new.tsx\nM\tdocs/specs/SMP-2/plan.md\n');
+    if (command === 'diff' && args.includes('--name-status')) return ok(names);
     if (command === 'diff' && args.includes('--stat')) return ok(' x | 1 +\n');
     if (command === 'diff') return diff;
     if (command === 'ls-tree') return ok(args.includes(BASE) ? 'docs/adr/0003-one-json-error-shape.md\n' : 'docs/adr/0003-one-json-error-shape.md\ndocs/adr/0009-new.md\n');
@@ -79,6 +81,19 @@ test('a failed git fetch leaves the run without a pack; a diff git could not rea
   const big = world({ diff: { status: null, stdout: '', stderr: '', error: new Error('spawnSync git ENOBUFS') } });
   await big.run();
   assert.match(big.written[0][1], /git could not read the whole diff, so only its stat is here\./);
+});
+
+// Low 1 of reviewer on ao-sample PR #7: git quotes a path with a byte outside ASCII, so git show got the quoted name and
+// the file of the Epic's documents came as "git could not read it at the head".
+test('a file name git quotes is read as it is on disk: its full text comes from the head, and an Epic document is seen as one', async () => {
+  BLOBS[`${HEAD}:docs/specs/SMP-2/design/màn-hình.md`] = '# Màn hình\n';
+  const w = world({ names: 'M\t"docs/specs/SMP-2/design/m\\303\\240n-h\\303\\254nh.md"\n' });
+  await w.run();
+  assert.ok(w.calls.some(([command, spec]) => command === 'show' && spec === `${HEAD}:docs/specs/SMP-2/design/màn-hình.md`));
+  const [[, text]] = w.written;
+  assert.ok(text.includes('This PR changes M docs/specs/SMP-2/design/màn-hình.md.'));
+  assert.ok(text.includes('# Màn hình'));
+  delete BLOBS[`${HEAD}:docs/specs/SMP-2/design/màn-hình.md`];
 });
 
 test('a kit outside the project gives the template of its own folder', async () => {
