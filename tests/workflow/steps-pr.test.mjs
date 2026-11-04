@@ -133,11 +133,23 @@ test('/ao-review: each run starts on the base branch of the PR, with a worktree 
     assert.deepEqual(run.checkout, { branch: 'develop', pull: true });
     assert.deepEqual(run.worktree, { name: 'pr-15', sha: HEAD });
   }
-  const onRelease = decide('review', prFacts('review', { base: 'release/v1.2.0', files: ['apps/api/src/cart.ts'] }));
+  const onRelease = decide('review', prFacts('review', { base: 'release/v1.2.0', headRef: 'bugfix/DEMO-21-remove-line', files: ['apps/api/src/cart.ts'] }));
   assert.deepEqual(onRelease.runs.map((run) => run.checkout), Array(onRelease.runs.length).fill({ branch: 'release/v1.2.0', pull: true }));
   // The review of the new part reads the same code, at the new head.
   const delta = decide('review', prFacts('review', { reports: { reviewer: report(), security: report({ sha: OLD, onHead: false, at: '2026-11-04T08:00:00Z' }) }, securityCompare: { base: OLD, status: 'ahead', files: [{ filename: 'apps/api/test/cart.spec.ts', additions: 40, deletions: 2 }] } }));
   assert.deepEqual(delta.runs.map(({ purpose, checkout, worktree }) => [purpose, checkout, worktree]), [['review-delta', { branch: 'develop', pull: true }, { name: 'pr-15', sha: HEAD }]]);
+});
+
+// Medium of security on ao-sample PR #13: the review checks out the base of the PR, which its author chooses, and can
+// change after CI has run.
+test('/ao-review stops when the base of the PR is not a protected branch, or not where its branch is cut from', () => {
+  const custom = decide('review', prFacts('review', { base: 'feature/DEMO-9-mine' }));
+  assert.equal(custom.go, false);
+  assert.equal(custom.reason, 'PR #15 goes into feature/DEMO-9-mine, which is not a protected branch (develop, main, release/*): its review would run on a branch the PR author controls');
+  assert.equal(custom.next, '/ao-review 15 once its base on GitHub is the branch it was cut from');
+  const wrong = decide('review', prFacts('review', { base: 'main' }));
+  assert.equal(wrong.reason, 'PR #15 goes into main, but a feature/ branch is cut from develop');
+  assert.equal(decide('fix', prFacts('fix', { base: 'feature/DEMO-9-mine' })).go, false, '/ao-fix reviews again, so it stops too');
 });
 
 test('/ao-review: reviewer on the whole PR, then security on the whole PR at the roster effort when the PR touches a path of security_review', () => {

@@ -177,6 +177,7 @@ test('a review run gets the worktree of its PR before it starts and loses it whe
   assert.deepEqual(events, [['add', 'pr-15'], ['remove', 'pr-15']]);
   assert.equal(h.calls[0].prompt, ['Review PR #15.', packNote('.ai/reviews/15-context.md'), worktreeNote('.ai/reviews/pr-15', 'abc1234def5678')].join('\n\n'));
   assert.match(worktreeNote('.ai/reviews/pr-15', 'abc1234def5678'), /^The code of the PR at its head abc1234 is in the worktree \.ai\/reviews\/pr-15\. /);
+  assert.ok(worktreeNote('.ai/reviews/pr-15', 'abc1234def5678').includes('instruction files (CLAUDE.md, CLAUDE.local.md, .claude/) were removed from the worktree'));
   // The agent cannot start: the worktree goes all the same.
   events.length = 0;
   const failing = specWorld();
