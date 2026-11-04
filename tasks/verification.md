@@ -744,6 +744,28 @@ Test mới đỏ trước khi sửa; 14 mutation đều làm test đỏ, sau khi
 
 Đánh đổi: worktree ở temp không có `node_modules`, nên agent không chạy được test cần package trong đó; CI chạy test của head. Việc sau Pilot 1.
 
+### Lần review thứ ba của PR #13 (2026-11-04)
+
+- Bạn merge kit PR #166 lúc 17:09 (`5a352ea`). Claude chép 13 file của kit và render lại `.claude/agents/security.md`: commit `4d8e833`, tác giả `tungph7-ao-dev[bot]`, 14 file, +166/−71. `.ai-orchestrator/` giống hệt kit (`diff -rq`). CI xanh cả bốn job. Mô tả PR #13 được sửa bằng `ao-pr.mjs edit` (Low của `reviewer` lần 2), và qua `checkPullRequest`.
+- Chạy thử từ `develop` trước khi chạy thật: `reviewer` xhigh review cả PR; `security` review phần mới ở max ("237 lines changed since 40130f9, on the protected path …, with 1 Critical or High finding open to check"); `reviewReports` đưa lỗi High `AGENTS.md` của báo cáo trên `40130f9` vào prompt.
+- Lần chạy thật đầu tiên của worktree ở thư mục temp: `…\Temp\ao-reviews\ao-sample-pr-13` ở `4d8e833`, checkout ở `develop`, không còn `.ai/reviews/pr-13`. `apps/web/AGENTS.md` và `.claude/` của PR bị xóa khỏi worktree. Worktree được tạo trước mỗi lượt và gỡ sau mỗi lượt. Trong lượt `security`, các file chỉ dẫn xuất hiện trong `.ao-probe/` là file thử do chính `security` tạo (chuỗi `PROBE-MARKER-…`). Probe của `security` (`probe-tree2.mjs`) xác nhận không file chỉ dẫn nào của worktree vào phiên.
+
+| Lượt | Vai trò | Effort | Kết quả | Turn | Thời gian | Chi phí |
+|---|---|---|---|---|---|---|
+| 5 | `reviewer` | xhigh | Approve | 34 | 7 phút | 2,09 USD |
+| 6 | `security` (phần mới) | max | Approve; High cũ ghi Fixed | 80 | 22 phút | 5,49 USD |
+
+Tổng 7,58 USD. Claude đã ước lượt `security` khoảng 2–4 USD; thực tế 5,49 USD. Ba lần review PR #13 tốn 26,95 USD, cộng khoảng 0,5 USD cho phép thử bằng Sonnet. `ao-step` dừng: "both reports are on the head 4d8e833 of PR #13: it waits for you at gate ③ merge-approval".
+
+- **`reviewer`:** 1 Medium, 3 Low.
+  - Medium: `openCounts` đếm số dòng của `## Earlier findings`, không theo finding nào được ghi. Probe P1–P3: ghi một finding Fixed hai lần thì xóa được finding khác; finding mới của lần phần mới trước có thể bị bỏ mà không ai kiểm; finding bị bỏ sót không còn tên trong prompt nên chặn mãi. Đề xuất: theo dõi theo `where` + `finding`.
+  - Low: hai bản clone cùng tên thư mục dùng chung worktree ở temp. Low B1–B3 của hook và `unquotePath`, như lần trước.
+- **`security`:** 1 Medium, 2 Low.
+  - Medium: chỉ báo cáo có dòng `Scope` đúng mẫu mới mang lỗi High cũ sang; dòng `Scope` khác dạng chút ít, hoặc thiếu, làm báo cáo bị đọc như báo cáo đầy đủ. Status "Fixed một phần" được tính là Fixed.
+  - Low: `develop` cục bộ đi trước origin thì `homeBranch` và `checkoutStop` vẫn coi là bản đã duyệt; dev agent tạo được một `develop` như vậy bằng `git branch -f` hay `git update-ref`.
+  - Low: trên Linux, `/tmp/ao-reviews` dùng chung giữa các user và đoán được. Không áp dụng cho Windows và macOS.
+- Cả hai báo cáo khuyên sửa hai Medium trong item kit tiếp theo, trước khi dùng review phần mới để gỡ một High lần nữa. Ở PR #13 chỉ có một High cũ và không có High mới, nên ba ca P1–P3 và ca dòng `Scope` khác dạng không xảy ra.
+
 ### Việc T10 còn lại
 
-Bạn merge kit PR #166. Claude chép #166 vào PR #13, sửa mô tả PR, rồi chạy review cuối: `reviewer` cả PR, `security` phần mới ở max, kèm kiểm lỗi High cũ. Lần đó chỉ ra Medium hay Low thì ghi lại cho sau Pilot 1; bạn approve và merge PR #13. Sau đó bước 2 ("Đầu vào cho `project-scaffold`"), bước 3 (`SPEC.md`, `SPEC-pilot-1.md`, README) và bước 4 (lưu trữ plan).
+Bạn approve và Squash and merge PR #13 (gate ③; PR chạm đường dẫn được bảo vệ). Hai Medium và các Low của lần 3 ghi ở trên là việc của kit, chưa chép vào `ao-sample`. Sau đó bước 2 ("Đầu vào cho `project-scaffold`"), bước 3 (`SPEC.md`, `SPEC-pilot-1.md`, README) và bước 4 (lưu trữ plan).
