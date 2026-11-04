@@ -628,6 +628,31 @@ Bạn xác nhận Checkpoint 4 và giao T10. `tasks/todo.md`: T9 và Checkpoint 
 
 Năm lệnh kiểm của kit xanh trên cả ba nhánh (813 đến 820 test, 0 lỗi).
 
-### Việc T10 còn lại sau khi #155–#158 merge
+Bạn merge #155, #156, #158 lúc 09:11–09:12; Claude rebase #157 lên `main` mới (CI xanh, 822 test), bạn merge lúc 09:16.
 
-Các lỗi kit còn lại ở mục 0 của T10 trong `tasks/todo.md`, rồi bước 1 (một PR chép kit vào `ao-sample`, review bằng `/ao-review`, bạn merge), bước 2 ("Đầu vào cho `project-scaffold`"), bước 3 (`SPEC.md`, `SPEC-pilot-1.md`, README) và bước 4 (lưu trữ plan).
+Sửa một ghi chú ở bảng trên: `ao-step.mjs` không chạy khi import. File có guard `process.argv[1]` ở cuối, và `review-pack-writer.test.mjs` đã import `reviewPackWriter` từ nó. Vậy `addWorktree` và `removeWorktree` cũng viết được unit test.
+
+### Kit PR của Phiên 25 (2026-11-04)
+
+| Kit PR | Sửa | Test | Chưa chạy thật |
+|---|---|---|---|
+| #159 | Test giữ hai thay đổi runner của T7b: lệnh không đưa `ciStartMs` vẫn dừng sau 5 phút của `LIMITS`; `ciWaitMs` ngắn hơn `ciStartMs` thì lý do nêu đúng số phút đã chờ. `last.md` giữ trọn câu trả lời của agent; `state.json` vẫn giữ 2000 ký tự kèm dấu báo (dấu báo có từ T7b) | `runner.test.mjs`; mỗi test đỏ khi bỏ thay đổi tương ứng | |
+| #160 | Dòng đầu của Open Questions bắt đầu như "Không có," mà có `?` là câu hỏi | `runs.test.mjs`, đỏ trước khi sửa | Câu hỏi không có `?` bắt đầu "Không có," vẫn bị coi là không có câu hỏi |
+| #161 | `addedLines`, `deletedTests`, `changedLines` đọc đường dẫn git đặt trong ngoặc kép (`ghi-chú.ts`) và bỏ dấu tab git thêm sau đường dẫn có dấu cách (`src/a b.ts`); `check-policy.mjs` và `reviewPackWriter` đọc `--name-status` như vậy; gói review in ký tự điều khiển của tên file dưới dạng escape, vì tên có xuống dòng sẽ giả được một mục `## …` của gói | `diff-paths.test.mjs` (diff của git thật), `review-pack.test.mjs`, `review-pack-writer.test.mjs`; đều đỏ trên code cũ | Đổi trong `check-policy.mjs` không có test riêng |
+| #162 | `block-atlassian` cho qua lệnh Bash chỉ ghi link `/browse/<KEY>` hay chữ "Atlassian"; vẫn chặn lệnh nhắc host Atlassian, link đi tiếp sau key, và lệnh gọi mạng (`curl`, `fetch(`…) có chữ "atlassian" | `bypass.test.mjs`: 5 lệnh bị chặn nhầm ở `SMP-2`, `SMP-5`, `SMP-6` (rút gọn) nay qua; 10 kiểu gọi vẫn bị chặn | Lượt agent thật |
+| #163 | `ba` có quyền Jira mới `link`, sau `executeWrite`; hook chỉ cho `createJiraIssueLink` loại Blocks giữa hai key của `AO_JIRA_SPACE`, với bốn input `cloudId`, `linkType`, `inwardIssue`, `outwardIssue`. Prompt của `ba`: một link Blocks cho mỗi "Phụ thuộc" của plan | `bypass.test.mjs` (1 cách đúng, 11 cách bị chặn), `roster.test.mjs`, `render.test.mjs` | `ba` tạo link trong một stage plan thật |
+| #164 | Các Low của lượt review PR #7: tiêu đề PR, tên nhánh, summary và tên check run gộp về một dòng; `checkPrTitle` từ chối tiêu đề có xuống dòng; file đổi tên có sửa (`R085`, `C090`) và `T` có toàn văn; file văn bản có byte NUL kèm lệnh đọc; test cho 5 mutation còn xanh | `review-pack.test.mjs`, `review-pack-writer.test.mjs`, `conventions.test.mjs`; Claude chạy lại 5 mutation của lượt review và 4 mutation mới, cả 9 làm test đỏ | Test "kit ở ổ đĩa khác" chỉ chạy trên Windows |
+
+- Bạn merge #159–#162 lúc 10:39–10:41. Claude rebase #163 lên `main` (bỏ commit của #162) và #164 (bỏ ba commit của #161), kiểm bằng `git patch-id` rằng commit đã merge trùng bản trên nhánh; năm lệnh kiểm xanh (833 và 838 test). Bạn merge #163 lúc 10:46, #164 lúc 10:47 (`55f3e8f`).
+- **Thử tool tạo link Blocks** (token của agent, qua server `atlassian`): `addGraphContext` với `jira-work-item-blocks-jira-work-item` bị từ chối, "Insufficient scopes … Required: [write:all:twg]". `discover` tìm ra `createJiraIssueLink` (chạy qua `executeWrite`; `cloudId` phải nằm ở cấp trên của lời gọi). Lời gọi `inwardIssue: SMP-3`, `outwardIssue: SMP-1` tạo link `10005`, Jira ghi "SMP-3 blocks SMP-1". Token của agent không xóa được link (401); Claude xóa bằng token CI (204).
+
+### Bước 1: PR chép kit vào `ao-sample`
+
+- Task `SMP-15` tạo bằng token CI (201), ở New, chỉ để lấy mã.
+- 17 file của kit tại `55f3e8f` (lib, `ao-step.mjs`, `check-policy.mjs`, roster và schema, prompt của `ba`), rồi `render-agents.mjs --project .` (chỉ `.claude/agents/ba.md` đổi). Sau khi chép, mọi thư mục được chép của `.ai-orchestrator/` giống hệt kit (`diff -rq`); các chỗ khác của `.claude/` là cấu hình riêng của dự án (space, App, skill theo stack).
+- Commit `9906b02` trên `feature/SMP-15-kit-fixes`, tác giả `tungph7-ao-dev[bot]` (cấu hình git của phiên `devops`), 18 file. `ao-dev` mở PR #13 bằng `ao-pr.mjs create` (lần đầu bị từ chối vì thân PR có chuỗi `<KEY>`). `CI` xanh cả năm job.
+- `/ao-review 13` chạy bằng `ao-step.mjs` của kit (bản PR này chép vào), với `AO_KIT_DIR` trỏ tới kit, để hook của phiên agent cũng dùng code mới. `GO`: `reviewer` xhigh rồi `security` max (PR chạm đường dẫn được bảo vệ). Gói bối cảnh 219.684 ký tự; worktree `.ai/reviews/pr-13` được tạo trước lượt `reviewer` (lần chạy thật đầu tiên của #156).
+
+### Việc T10 còn lại
+
+Kết quả review PR #13 và merge của bạn, rồi bước 2 ("Đầu vào cho `project-scaffold`"), bước 3 (`SPEC.md`, `SPEC-pilot-1.md`, README) và bước 4 (lưu trữ plan).
