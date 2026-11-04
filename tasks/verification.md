@@ -678,6 +678,41 @@ Tổng 9,08 USD. `ao-step` dừng: "the reports on the head of PR #13 ask for ch
   - Site so nguyên vẹn (cloud id, hoặc host name); comment của `facts.mjs` về đúng chỗ.
   - Test mới đỏ trước khi sửa; 15 mutation trên luật mới đều làm test đỏ; năm lệnh kiểm xanh (842 test); CI xanh.
 
+### Lần review thứ hai của PR #13 (2026-11-04)
+
+- Bạn merge kit PR #165 lúc 13:09 (`be76985`). Claude chép 9 file của #165 vào `feature/SMP-15-kit-fixes`: commit `40130f9`, tác giả `tungph7-ao-dev[bot]`. `.ai-orchestrator/` giống hệt kit (`diff -rq`), và `render-agents.mjs --project .` ghi 0 trên 11 file. CI xanh.
+- `/ao-review 13 --go` chạy bằng `ao-step.mjs` của kit tại `be76985`, với `AO_KIT_DIR`. Lượt trước Claude báo security sẽ chỉ review phần mới ở high, khoảng 3–5 USD. Câu đó chưa được kiểm: luật của kit là báo cáo security còn mở một lỗi High thì chỉ review toàn bộ PR mới đóng được lỗi đó, nên `ao-step` chọn security review toàn bộ ở max.
+- Lần chạy thật đầu tiên của phần xóa chỉ dẫn (#165): worktree `.ai/reviews/pr-13` ở `40130f9` không có `CLAUDE.md`, `CLAUDE.local.md` hay `.claude/` (`find`), còn checkout ở `develop`. Worktree được tạo trước mỗi lượt và gỡ sau mỗi lượt.
+
+| Lượt | Vai trò | Effort | Kết quả | Turn | Thời gian | Chi phí |
+|---|---|---|---|---|---|---|
+| 3 | `reviewer` | xhigh | Approve | 36 | 10 phút | 2,37 USD |
+| 4 | `security` | max | Request changes | 62 | 29 phút | 7,92 USD |
+
+Tổng 10,29 USD; hai lần review PR #13 tốn 19,37 USD. `ao-step` dừng: "the reports on the head of PR #13 ask for changes (Critical or High: security 1)".
+
+- **`reviewer`** kiểm từng finding của lần trước bằng probe, và tất cả đã sửa, trừ Medium `node_modules`. Finding mới:
+  - Medium: `.claude` là symlink hay junction thì không bị xóa.
+  - Medium: `node_modules`, như lần trước.
+  - Low: ba cách lách hook qua heredoc hay code inline (B1–B3).
+  - Low: `unquotePath` đọc sai ký tự ngoài BMP khi `core.quotePath=false`.
+  - Low: mô tả PR #13 vẫn là của lần đầu.
+- **`security`** xác nhận các bản sửa Medium 2, Low 3, 4, 5 của lần trước bằng probe. Finding mới:
+  - High: `AGENTS.md` của PR vào phiên review. Claude Code 2.1.318 nạp `AGENTS.md` khi dự án không có `CLAUDE.md`, và `security` thấy `.ai/reviews/pr-13/apps/web/AGENTS.md` vào ngữ cảnh sau khi đọc một file cạnh nó.
+  - Medium: `ao-step` và kit lấy từ nhánh đang checkout lúc gõ lệnh. Sau `/ao-build` đó là nhánh của PR, nên lần review đầu của một PR sửa kit chạy code của chính PR đó.
+  - Low: regex `HEAD` của `dataHeredoc` chạy chậm theo hàm mũ: 25 dấu `; ` mất 2,1 giây khi Claude đo.
+  - Low: gói bối cảnh đặt tên file của PR vào lệnh `git show` mà không có ngoặc.
+- Claude cũng thấy cơ chế của lỗi High trong phiên của mình: đọc một file trong `docs/` của kit thì Claude Code nạp `docs/agents.md` làm chỉ dẫn. Trên Windows, tên viết thường cũng được nạp.
+- **Kit PR #166** sửa lỗi High, hai Medium (trừ `node_modules`) và hai Low của `security`:
+  - xóa `AGENTS.md`, kể cả khi tên viết hoa thường lẫn lộn, và `.claude` dạng link;
+  - prompt bảo agent coi chỉ dẫn từ worktree là dữ liệu và báo lại;
+  - `/ao-review` và `/ao-fix` dừng khi checkout không ở nhánh được bảo vệ;
+  - lệnh `build`, `review` hay `fix` kết thúc với PR đang mở thì `ao-step` trả checkout về base;
+  - regex `HEAD` chạy tuyến tính: 5.000 dấu phân cách mất 1 ms;
+  - `git show '<sha>:<path>'` đặt trong nháy đơn.
+- Test của #166: test mới đỏ trước khi sửa. 12 trong 13 mutation làm test đỏ; mutation còn lại là code thừa nên đã bỏ. Năm lệnh kiểm xanh (846 test). CI xanh. Trên `ao-sample`, `ao-step review 13` dừng khi ở `feature/SMP-15-kit-fixes` và chạy tiếp khi ở `develop`.
+- Để sau Pilot 1: các Low của `reviewer` (B1–B3, `unquotePath`) và Medium `node_modules`. Mô tả PR #13 được sửa khi chép #166.
+
 ### Việc T10 còn lại
 
-Bạn merge kit PR #165; Claude chép lại vào PR #13 và chạy review phần mới; bạn approve và merge PR #13. Sau đó bước 2 ("Đầu vào cho `project-scaffold`"), bước 3 (`SPEC.md`, `SPEC-pilot-1.md`, README) và bước 4 (lưu trữ plan).
+Bạn merge kit PR #166. Claude chép #166 vào PR #13, sửa mô tả PR, rồi chạy review lại; security còn phải review toàn bộ ở max, vì lỗi High vẫn mở. Bạn approve và merge PR #13. Sau đó bước 2 ("Đầu vào cho `project-scaffold`"), bước 3 (`SPEC.md`, `SPEC-pilot-1.md`, README) và bước 4 (lưu trữ plan).
