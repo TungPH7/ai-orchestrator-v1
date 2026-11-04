@@ -847,9 +847,9 @@ Tóm lại: Claude làm hết 12 bước bằng lệnh hay API. Bạn và Claude
 | 19 | Các Low của kit PR #153 và của review PR #7 | T9 | #161, #164 | `review-pack.test.mjs`, `review-pack-writer.test.mjs`, `conventions.test.mjs` |
 | 20 | Review PR #13 lần 1: hook để lọt lệnh gọi mạng; worktree trong dự án nạp `.claude/rules` của PR; base không phải nhánh được bảo vệ; các Low | T10 | #165 | `bypass.test.mjs`, `review-tree.test.mjs`, `steps-pr.test.mjs`, `runner.test.mjs`, `diff-paths.test.mjs` |
 | 21 | Review PR #13 lần 2: worktree nạp `AGENTS.md` của PR; checkout không ở nhánh được bảo vệ; sau một High, `security` review lại cả PR | T10 | #166 | `review-tree.test.mjs`, `runner.test.mjs`, `steps-pr.test.mjs`, `pull-request.test.mjs`, `merge-gate.test.mjs`, `security-scope.test.mjs`, `facts.test.mjs`, `bypass.test.mjs`, `review-pack.test.mjs` |
-| 22 | Bước board của `docs/jira-setup.md` chỉ có đường bấm của board cũ | T3 | #167 (đang mở) | `checklist.test.mjs` |
+| 22 | Bước board của `docs/jira-setup.md` chỉ có đường bấm của board cũ | T3 | #167 | `checklist.test.mjs` |
 
-Mọi kit PR trong bảng, trừ #167, đã merge và đã vào `ao-sample`: #142 qua commit đầu, các PR sau qua năm PR chép kit #3, #5, #6, #7 và #13. #167 không sửa file nào dự án chép.
+Mọi kit PR trong bảng đã merge. Trừ #167, các PR đều đã vào `ao-sample`: #142 qua commit đầu, các PR sau qua năm PR chép kit #3, #5, #6, #7 và #13. #167 (merge thành `f5b24f4`) không sửa file nào dự án chép.
 
 **Chưa sửa, để sau Pilot 1** (bạn chọn ở Phiên 26 · Lượt 8: Medium và Low của lần review cuối PR #13 ghi lại, không chặn PR):
 
@@ -896,4 +896,9 @@ Chi phí quy đổi theo giá API của các lượt agent, cộng từ các b�
 | 2 | `npm run jira:check -- --space SMP` chạy lại hôm nay: "Jira space SMP matches tracker/jira.yaml" |
 | 3 | `SMP-4`, `SMP-5`, `SMP-6`, `SMP-7`, `SMP-10`, `SMP-11` ở Ready for QA; `SMP-8`, `SMP-9` Done (đọc lại hôm nay). PR tài liệu #1 do `merge-gate` merge sau gate ②; 6 PR code (#4, #8, #9, #10, #11, #12) do `merge-gate` merge sau gate ③. Job `audit` của `Deploy` xanh trên cả 12 commit vào `develop` sau commit đầu, kể cả `e56a207` |
 | 4–7 | Bạn xác nhận ở Checkpoint 4. Sau đó chỉ có PR #13: bạn tự merge; bot `ao-review` chỉ comment hay request changes, không approve; không agent nào push thẳng hay chuyển item sang Done |
-| 8 | Có bảng các lượt agent (ở từng mục T1–T10), bảng bước cài và bảng lỗi kit với PR sửa (hai mục trên). Mỗi lỗi kit có PR sửa và test, trừ dòng 5 (tài liệu và skill, không có code để test) và các mục "chưa sửa" bạn chọn để sau Pilot 1. #167 chờ bạn merge |
+| 8 | Có bảng các lượt agent (ở từng mục T1–T10), bảng bước cài và bảng lỗi kit với PR sửa (hai mục trên). Mỗi lỗi kit có PR sửa và test, trừ dòng 5 (tài liệu và skill, không có code để test) và các mục "chưa sửa" bạn chọn để sau Pilot 1. #167 đã merge (`f5b24f4`) |
+
+## Checkpoint cuối (2026-11-04)
+
+- Đạt 8 tiêu chí ở spec mục 9. Kit PR #167 merge thành `f5b24f4`. Plan, todo và file này đã nằm trong `tasks/archive/pilot-1/` (kit PR #168, `af5d965`).
+- Bạn xác nhận Pilot 1 hoàn thành ("xác nhận Pilot 1 hoàn thành", Phiên 26 · Lượt 10).

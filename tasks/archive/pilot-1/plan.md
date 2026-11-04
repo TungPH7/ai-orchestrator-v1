@@ -96,7 +96,7 @@ T9 ── T10 bản sửa kit còn lại, tài liệu, lưu trữ
 ### Checkpoint cuối
 - [x] Đạt 8 tiêu chí ở spec mục 9
 - [x] Chuyển `tasks/plan.md`, `tasks/todo.md`, `tasks/verification.md` vào `tasks/archive/pilot-1/`
-- [ ] Bạn xác nhận Pilot 1 hoàn thành
+- [x] Bạn xác nhận Pilot 1 hoàn thành
 
 ## Usage ước tính
 
