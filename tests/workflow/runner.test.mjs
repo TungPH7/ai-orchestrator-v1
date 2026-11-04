@@ -291,6 +291,23 @@ test('a PR whose CI has not started stops the runner after the start limit, not 
   assert.ok(world.ciPendingFor <= 999 - 10, 'it waited the 5 minutes, 10 polls of 30 s, before it stopped');
 });
 
+// The limits a command gives are merged with LIMITS one by one, so a limit it leaves out keeps its default (T7b).
+test('a limit the command leaves out keeps its default: CI that never starts stops the runner after the 5 minutes of LIMITS', async () => {
+  const { world, gather } = specWorld({ spec: NFR, design: DESIGN });
+  const h = harness(world, { 'docs-pr': (w) => ((w.pr = { number: 14, state: 'open', merged: false }), (w.ciPendingFor = 999), (w.ciStarted = false)) });
+  const idle = await h.run({ gather, limits: { ciWaitMs: 30 * 60000 } });
+  assert.match(idle.decision.reason, /^no CI run started on PR #14 after 5 minutes/);
+  assert.ok(world.ciPendingFor > 999 - 30, 'it stopped long before the 30 minutes of the CI wait');
+});
+
+// The start limit is no longer than the whole CI wait, so the reason names the minutes the runner waited (T7b).
+test('a CI wait shorter than the start limit: the runner stops when the CI wait ends and says how long it waited', async () => {
+  const { world, gather } = specWorld({ spec: NFR, design: DESIGN });
+  const h = harness(world, { 'docs-pr': (w) => ((w.pr = { number: 14, state: 'open', merged: false }), (w.ciPendingFor = 999), (w.ciStarted = false)) });
+  const idle = await h.run({ gather, limits: { ciWaitMs: 2 * 60000, ciStartMs: 5 * 60000 } });
+  assert.match(idle.decision.reason, /^no CI run started on PR #14 after 2 minutes/);
+});
+
 test('CI that starts a few polls after the PR opens does not stop the runner: it waits and goes on to gate ① (review of SMP-3)', async () => {
   const { world, gather } = specWorld({ spec: NFR, design: DESIGN });
   let polls = 0;
