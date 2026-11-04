@@ -9,7 +9,8 @@
 // root; the kit is in AO_KIT_DIR when set.
 import { spawn, spawnSync } from 'node:child_process';
 import { appendFileSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
-import { isAbsolute, join, relative, resolve } from 'node:path';
+import { tmpdir } from 'node:os';
+import { basename, isAbsolute, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 import { parse } from 'yaml';
@@ -316,20 +317,22 @@ function prepareCheckout({ branch, from, pull }) {
   return { ok: true };
 }
 
-// The worktree of a PR for its review (Pilot 1, T10): the code at the head the review is on, in .ai/reviews/pr-<N>, which
-// is never committed. A stale one from a run that was stopped is replaced. The PR's instruction files (CLAUDE.md,
-// AGENTS.md, .claude/) are removed from it at once, since Claude Code would load them when the agent reads a file there
-// (reviews of ao-sample PR #13). Node finds the node_modules of the checkout's root above it; a workspace's own node_modules, such as
-// apps/web/node_modules, it does not find, so the tests of that workspace may not run there.
-const worktreePath = (name) => join('.ai', 'reviews', name);
+// The worktree of a PR for its review (Pilot 1, T10): the code at the head the review is on, never committed. It is in
+// the temp folder, outside the project: Claude Code loads the instruction files (CLAUDE.md, AGENTS.md, .claude/rules) of
+// a folder of the project when the agent reads a file there, and a probe of the second review of ao-sample PR #13 found
+// that it loads none from a folder outside it, while agents still read, search and run commands there, and gh-guard lets
+// them write in the temp folder. --add-dir is not given: with it, the skills of the folder's .claude/skills load. The
+// instruction files are still removed from it, in case a later Claude Code loads more. A stale worktree from a run that
+// was stopped is replaced. Node finds no node_modules there, so tests that need packages do not run in it.
+export const reviewTreePath = (project, name, tmp = tmpdir()) => join(tmp, 'ao-reviews', `${basename(resolve(project))}-${name}`);
 function addWorktree({ name, sha }) {
-  const path = worktreePath(name);
-  if (existsSync(join(projectDir, path))) removeWorktree({ name });
-  mkdirSync(join(projectDir, '.ai', 'reviews'), { recursive: true });
+  const path = reviewTreePath(projectDir, name);
+  if (existsSync(path)) removeWorktree({ name });
+  mkdirSync(join(path, '..'), { recursive: true });
   const added = git('worktree', 'add', '--detach', '--quiet', path, sha);
   if (added.status !== 0) return { ok: false, reason: `git could not add the worktree of ${name} at ${sha.slice(0, 7)}: ${(added.stderr || added.stdout).trim()}` };
   try {
-    removeInstructions(join(projectDir, path), { readdirSync, rmSync });
+    removeInstructions(path, { readdirSync, rmSync });
   } catch (error) {
     removeWorktree({ name });
     return { ok: false, reason: `the instruction files of the PR could not be removed from its worktree: ${error.message}` };
@@ -340,18 +343,18 @@ function addWorktree({ name, sha }) {
 // Takes the worktree away with what the agent left in it. A process that still holds a file of it (Windows) leaves the
 // folder behind; the next run of the same PR replaces it.
 function removeWorktree({ name }) {
-  const path = worktreePath(name);
+  const path = reviewTreePath(projectDir, name);
   const removed = git('worktree', 'remove', '--force', path);
-  if (removed.status !== 0 && existsSync(join(projectDir, path))) {
+  if (removed.status !== 0 && existsSync(path)) {
     try {
-      rmSync(join(projectDir, path), { recursive: true, force: true });
+      rmSync(path, { recursive: true, force: true });
     } catch (error) {
       git('worktree', 'prune');
       return { ok: false, reason: error.message };
     }
   }
   git('worktree', 'prune');
-  return existsSync(join(projectDir, path)) ? { ok: false, reason: `${path} is still there` } : { ok: true };
+  return existsSync(path) ? { ok: false, reason: `${path} is still there` } : { ok: true };
 }
 
 // The second /ao-plan: jira-sync for the Epic, with your gh login, since this is your session, not an agent's.

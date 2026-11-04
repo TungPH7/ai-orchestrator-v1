@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { join } from 'node:path';
+import { isAbsolute, join, relative, resolve } from 'node:path';
 import { readRoster } from '../../lib/agents/roster.mjs';
 import { readContract } from '../../lib/contract.mjs';
 import { readGates } from '../../lib/quality/gates.mjs';
@@ -8,7 +8,7 @@ import { answersPrompt, packNote, resumePrompt, worktreeNote } from '../../lib/w
 import { agentCommand, formatDecision, lastReport, runGo } from '../../lib/workflow/runner.mjs';
 import { decideStep } from '../../lib/workflow/steps.mjs';
 import { CONTRACT_DIR, ROOT } from '../helpers/kit.mjs';
-import { checkArgument, checkoutStop, homeBranch, runsFile, takeLock } from '../../scripts/ao-step.mjs';
+import { checkArgument, checkoutStop, homeBranch, reviewTreePath, runsFile, takeLock } from '../../scripts/ao-step.mjs';
 import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 
@@ -176,7 +176,15 @@ test('a review run gets the worktree of its PR before it starts and loses it whe
   await h.run({ gather: first.gather, decide: one(review), worktree, pack: async () => '.ai/reviews/15-context.md' });
   assert.deepEqual(events, [['add', 'pr-15'], ['remove', 'pr-15']]);
   assert.equal(h.calls[0].prompt, ['Review PR #15.', packNote('.ai/reviews/15-context.md'), worktreeNote('.ai/reviews/pr-15', 'abc1234def5678')].join('\n\n'));
-  assert.match(worktreeNote('.ai/reviews/pr-15', 'abc1234def5678'), /^The code of the PR at its head abc1234 is in the worktree \.ai\/reviews\/pr-15\. /);
+  const tree = 'C:/Temp/ao-reviews/shop-pr-15';
+  assert.match(worktreeNote(tree, 'abc1234def5678'), /^The code of the PR at its head abc1234 is in the folder C:\/Temp\/ao-reviews\/shop-pr-15, a worktree outside the project\. /);
+  assert.match(worktreeNote(tree, 'abc1234def5678'), /the folder has no node_modules, and CI ran the tests of the head/);
+  // Second review of ao-sample PR #13: in the temp folder, not under the project, whose instruction files load.
+  assert.equal(reviewTreePath('D:/work/shop', 'pr-15', 'C:/Temp'), join('C:/Temp', 'ao-reviews', 'shop-pr-15'));
+  assert.equal(reviewTreePath('D:/work/shop/', 'pr-15', 'C:/Temp'), join('C:/Temp', 'ao-reviews', 'shop-pr-15'), 'a trailing slash');
+  const project = resolve('D:/work/shop');
+  const outside = relative(project, reviewTreePath(project, 'pr-15', tmpdir()));
+  assert.ok(outside.startsWith('..') || isAbsolute(outside), 'never under the project, on its drive or another');
   assert.ok(worktreeNote('.ai/reviews/pr-15', 'abc1234def5678').includes('instruction files (CLAUDE.md, CLAUDE.local.md, AGENTS.md, .claude/) were removed from the worktree'));
   // The agent cannot start: the worktree goes all the same.
   events.length = 0;

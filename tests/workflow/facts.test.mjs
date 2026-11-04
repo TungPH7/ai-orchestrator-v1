@@ -60,7 +60,7 @@ test('a Story with Sub-tasks: its state, Agent, parent Epic, each Sub-task, its 
 
   assert.deepEqual([pr.number, pr.state, pr.merged, pr.headRef, pr.base, pr.docsEpic], [11, 'closed', true, 'feature/DEMO-12-coupon-code', 'develop', null]);
   assert.deepEqual(pr.ci, { green: true, failed: false, pending: false, started: true });
-  assert.deepEqual(pr.reports.reviewer, { sha: pr.headSha, at: '2026-10-30T19:46:40Z', ok: true, blocking: 0, state: 'COMMENTED', onHead: true });
+  assert.deepEqual(pr.reports.reviewer, { sha: pr.headSha, at: '2026-10-30T19:46:40Z', ok: true, blocking: 0, open: [], state: 'COMMENTED', onHead: true });
   assert.equal(pr.reports.security.onHead, true);
   assert.deepEqual([pr.changesRequested, pr.approved, pr.protectedPaths], [false, true, []]);
   assert.deepEqual([facts.dependenciesMerged, facts.ledger, facts.run], [true, false, null]);
@@ -131,8 +131,25 @@ test('the newest report of each role, and the newest full security report the ne
   ];
   const { reports, securityFull } = reviewReports(reviews, { roles: ['reviewer', 'security'], bot, head: Z });
   assert.deepEqual([reports.reviewer.sha, reports.security.sha, reports.security.onHead], [Y, Y, false], 'a report of another login does not count');
-  assert.deepEqual(securityFull, { sha: X, at: '2026-11-04T08:00:00Z', ok: true, blocking: 0, state: 'COMMENTED', onHead: false });
+  assert.deepEqual(securityFull, { sha: X, at: '2026-11-04T08:00:00Z', ok: true, blocking: 0, open: [], state: 'COMMENTED', onHead: false });
   assert.equal(reviewReports(reviews.slice(2, 3), { roles: ['reviewer', 'security'], bot, head: Z }).securityFull, null, 'only a report of the new part');
+});
+
+// Pilot 1, second review of ao-sample PR #13: the High of a full report stays open through a report of the new part
+// that leaves it out, and the next review of the new part is given the findings to check.
+test('a report of the new part counts the earlier findings it does not list as Fixed', () => {
+  const bot = 'tungph7-ao-review[bot]';
+  const [X, Y] = ['a'.repeat(40), 'b'.repeat(40)];
+  const HIGH = '| Severity | Axis | Where | Finding | Suggested fix |\n|---|---|---|---|---|\n| High | Security | review-tree.mjs:7 | AGENTS.md reaches the review | remove it |\n| Low | Security | a.ts:1 | x | y |\n';
+  const body = (findings, more = '') => `# Review: fix(kit): x (SMP-15)\n\nRole: security\n${more}\n## Findings\n${findings}\n## Verdict\n- [x] **Request changes**\n`;
+  const review = (sha, at, text) => ({ user: { login: bot }, commit_id: sha, submitted_at: at, state: 'COMMENTED', body: text });
+  const full = review(X, '2026-11-04T08:00:00Z', body(HIGH));
+  const leftOut = review(Y, '2026-11-04T09:00:00Z', body('Không có finding.\n', `Scope: changes since ${X.slice(0, 7)}\n`));
+  const { reports, securityFull } = reviewReports([full, leftOut], { roles: ['security'], bot, head: Y });
+  assert.equal(reports.security.blocking, 1, 'the High of the full report is still open');
+  assert.deepEqual(securityFull.open, [{ severity: 'High', where: 'review-tree.mjs:7', finding: 'AGENTS.md reaches the review' }]);
+  const listed = review(Y, '2026-11-04T09:00:00Z', `${body('Không có finding.\n', `Scope: changes since ${X.slice(0, 7)}\n`)}\n## Earlier findings\n| Severity | Where | Finding | Status |\n|---|---|---|---|\n| High | review-tree.mjs:7 | AGENTS.md reaches the review | Fixed |\n`);
+  assert.equal(reviewReports([full, listed], { roles: ['security'], bot, head: Y }).reports.security.blocking, 0);
 });
 
 // Stage spec commits on the docs branch of this checkout and pushes only with the docs PR (spec 2.4): ba's SPEC is not

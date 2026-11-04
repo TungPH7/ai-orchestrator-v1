@@ -77,6 +77,23 @@ test('when the latest report of a role still has a Critical or High finding, it 
   assert.equal(decide(fixedLater).action, 'merge');
 });
 
+// Pilot 1, second review of ao-sample PR #13: after a High, security reviews only the new part, and its report on the
+// head carries the High of the full report before it.
+test('a security report of the new part clears an earlier High only by listing it as Fixed', () => {
+  const HIGH = '| Severity | Axis | Where | Finding | Suggested fix |\n|---|---|---|---|---|\n| High | Security | review-tree.mjs:7 | AGENTS.md reaches the review | remove it |';
+  const withPart = (earlier) => (f) => {
+    const part = reportOf(f, 'security');
+    const full = { ...structuredClone(part), id: 90, commit_id: FIRST, submitted_at: '2026-11-02T09:40:00Z', body: part.body.replace('Không có finding.', HIGH) };
+    f.reviews.splice(f.reviews.indexOf(part), 0, full);
+    part.body = part.body.replace('Role: security\n', `Role: security\nScope: changes since ${FIRST.slice(0, 7)}\n`).replace('## Verdict', `## Earlier findings\n${earlier}\n## Verdict`);
+  };
+  const EARLIER = '| Severity | Where | Finding | Status |\n|---|---|---|---|\n';
+  assert.equal(decide(withPart(`${EARLIER}| High | review-tree.mjs:7 | AGENTS.md reaches the review | Fixed |\n`)).action, 'merge');
+  const open = { action: 'wait', missing: ['security report on head a1b2c3d without Critical or High findings (1 open)'] };
+  assert.deepEqual(decide(withPart(`${EARLIER}| High | review-tree.mjs:7 | AGENTS.md reaches the review | Open |\n`)), open);
+  assert.deepEqual(decide(withPart('Không có finding cũ.\n')), open, 'a report of the new part that leaves the High out');
+});
+
 test('a report merge-gate cannot read makes it wait, and says why', () => {
   const unreadable = (f) => {
     const report = reportOf(f, 'security');

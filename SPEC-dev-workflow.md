@@ -159,16 +159,19 @@ PR tài liệu không cần báo cáo của `reviewer` hay `security`, và khôn
 
 ### 2.6 `security` review phần mới
 
-`/ao-review` tìm báo cáo `security` đầy đủ gần nhất trên PR, tức báo cáo không có dòng `Scope`, của bot `ao-review`, đọc được, trên một commit X. `security` chỉ review phần mới, ở effort `high`, khi đủ bốn điều:
+`/ao-review` tìm báo cáo `security` đầy đủ gần nhất trên PR, tức báo cáo không có dòng `Scope`, của bot `ao-review`, đọc được, trên một commit X. `security` chỉ review phần mới khi đủ hai điều:
 
-- cả báo cáo `security` mới nhất lẫn báo cáo đầy đủ trên X không còn finding Critical hay High. Báo cáo phần mới không nêu lại finding cũ, mà `merge-gate` chỉ đọc báo cáo mới nhất, nên một finding chặn chỉ được gỡ bằng một lượt review đầy đủ (T15a);
 - X là tổ tiên của head, tức không có rebase hay force-push sau đó;
-- diff từ X tới head có tối đa 300 dòng thêm và xóa;
-- diff không đụng đường dẫn được bảo vệ.
+- diff từ X tới head có tối đa 300 dòng thêm và xóa.
 
-Khi đó prompt là "Review PR #<n>, only the changes since <X>; your full report on <X> is the review of <ngày>". Báo cáo vẫn đăng trên head, theo template, có thêm dòng `Scope: changes since <X>`. Vì vậy `merge-gate` và `audit` không đổi.
+Khi đó prompt là "Review PR #<n>, only the changes since <X>; your full report on <X> is the review of <ngày>". Báo cáo vẫn đăng trên head, theo template, có thêm dòng `Scope: changes since <X>`.
 
-Thiếu một trong bốn điều thì `security` review đầy đủ. `reviewer` luôn review đầy đủ PR trên head.
+- **Effort:** `high`; diff đụng đường dẫn được bảo vệ thì effort của roster (`max`).
+- **Finding còn mở:** khi các báo cáo `security` trước còn finding Critical hay High, prompt liệt kê chúng. Báo cáo phần mới ghi từng finding vào mục `## Earlier findings` (Severity, Where, Finding, Status), Status bắt đầu bằng Fixed hay Open. `merge-gate` và `ao-step` đếm finding còn mở theo chuỗi báo cáo: finding Open, và finding của báo cáo trước mà báo cáo phần mới không ghi, vẫn chặn merge.
+
+Trước Pilot 1 (lần review thứ hai của `ao-sample` PR #13, Phiên 26 · Lượt 6–8), hai trường hợp này phải review toàn bộ PR ở `max`. Lý do của luật cũ (T15a, Phiên 20): báo cáo phần mới không nêu lại finding cũ, nên finding chặn có thể biến mất khỏi cổng. Mục `## Earlier findings` giữ lý do đó mà không cần review toàn bộ; review toàn bộ ở `max` mất 7,92 USD chỉ để kiểm một finding High đã sửa.
+
+Thiếu một trong hai điều thì `security` review đầy đủ. `reviewer` luôn review đầy đủ PR trên head.
 
 Effort của lượt review đầy đủ (đổi ở Pilot 1, Phiên 23 · Lượt 9–16, vì `security` ở `max` nghĩ 8–10 phút trên mọi PR, kể cả PR chép kit 16 dòng): `max` khi item hoặc một Sub-task của nó có nhãn effort, hoặc khi PR chạm đường dẫn được bảo vệ hay một mẫu của `security_review.roster_effort_paths` trong `quality/gates.yaml`; `security_review.lower_effort` (`high`) khi không.
 
