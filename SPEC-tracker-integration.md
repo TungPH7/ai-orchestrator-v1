@@ -131,7 +131,7 @@ Dự án khai báo server trong `.mcp.json`. Token nằm trong biến môi trư�
 
 Sau khi agent chuyển trạng thái thành công, hook thứ hai đếm lại rework; nếu chạm giới hạn trong `policies.yaml` thì thực hiện `flag-needs-you`.
 
-Agent không được gọi thẳng Jira REST API. Một hook chặn lệnh Bash có chứa `atlassian`. Biện pháp này không kín hoàn toàn, nên lớp chặn cuối cho các transition của bạn vẫn là rule Restrict.
+Agent không được gọi thẳng Jira REST API. Một hook chặn lệnh Bash nhắc tới host của Atlassian (`atlassian.net`, `atlassian.com`), và lệnh vừa gọi mạng (`curl`, `wget`, `Invoke-WebRequest`, `fetch(`…) vừa có chữ `atlassian`, như `$ATLASSIAN_AGENT_TOKEN`. Link tới một work item (`https://<site>.atlassian.net/browse/<KEY>`) là chữ, không tính, nên lệnh ghi thân PR hay ledger có link Jira vẫn chạy (Pilot 1, T10). Biện pháp này không kín hoàn toàn, nên lớp chặn cuối cho các transition của bạn vẫn là rule Restrict.
 
 Cũng hook đó chỉ cho các tool ghi (`createJiraIssue`, `editJiraIssue`, `addOrEditJiraIssueComment`, `transitionJiraIssue`) chạm vào item của space dự án, vì gói Free không có permission scheme nên token của agent ghi được vào mọi space trên site. Key của space đặt ở biến `AO_JIRA_SPACE` trong mục `env` của `.claude/settings.json` dự án; chưa đặt thì mọi lệnh ghi bị chặn. Tool ghi phải nhận key của item, không nhận id số.
 
