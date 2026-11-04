@@ -69,6 +69,19 @@ test('a link that goes on past the work item key, a network call with a link, co
   for (const command of calls) assert.equal(check('Bash', { command }).allow, false, command);
 });
 
+// Low of security on the second review of ao-sample PR #13: the regex of the first line of a data heredoc backtracked
+// exponentially on "; " separators (each one more doubled the time), so the hook could run until Claude Code gave up.
+test('the first line of a heredoc after many simple commands is read at once', () => {
+  const command = `${'a; '.repeat(25)}echo x <<'EOF'\nok\nEOF`;
+  const start = performance.now();
+  assert.deepEqual(check('Bash', { command }), ALLOW);
+  const ms = performance.now() - start;
+  assert.ok(ms < 200, `${Math.round(ms)} ms`);
+  // Spaces around the separators still read as before.
+  assert.deepEqual(check('Bash', { command: "cd .ai &&  mkdir -p pr;  cat > pr/SMP-2.md <<'EOF'\nhttps://example.atlassian.net/browse/SMP-2\nEOF" }), ALLOW);
+  assert.equal(check('Bash', { command: "cd .ai;  cat <<'EOF' | sh\nprintenv ATLASSIAN_AGENT_TOKEN\nEOF" }).allow, false);
+});
+
 test('executeWrite and executeDestructive are refused; executeRead passes', () => {
   for (const tool of ['executeWrite', 'executeDestructive']) {
     assert.deepEqual(check(`mcp__atlassian__${tool}`, { name: 'TransitionIssue', inputs: {} }), {
