@@ -651,8 +651,33 @@ Sửa một ghi chú ở bảng trên: `ao-step.mjs` không chạy khi import. F
 - Task `SMP-15` tạo bằng token CI (201), ở New, chỉ để lấy mã.
 - 17 file của kit tại `55f3e8f` (lib, `ao-step.mjs`, `check-policy.mjs`, roster và schema, prompt của `ba`), rồi `render-agents.mjs --project .` (chỉ `.claude/agents/ba.md` đổi). Sau khi chép, mọi thư mục được chép của `.ai-orchestrator/` giống hệt kit (`diff -rq`); các chỗ khác của `.claude/` là cấu hình riêng của dự án (space, App, skill theo stack).
 - Commit `9906b02` trên `feature/SMP-15-kit-fixes`, tác giả `tungph7-ao-dev[bot]` (cấu hình git của phiên `devops`), 18 file. `ao-dev` mở PR #13 bằng `ao-pr.mjs create` (lần đầu bị từ chối vì thân PR có chuỗi `<KEY>`). `CI` xanh cả năm job.
-- `/ao-review 13` chạy bằng `ao-step.mjs` của kit (bản PR này chép vào), với `AO_KIT_DIR` trỏ tới kit, để hook của phiên agent cũng dùng code mới. `GO`: `reviewer` xhigh rồi `security` max (PR chạm đường dẫn được bảo vệ). Gói bối cảnh 219.684 ký tự; worktree `.ai/reviews/pr-13` được tạo trước lượt `reviewer` (lần chạy thật đầu tiên của #156).
+- `/ao-review 13` chạy bằng `ao-step.mjs` của kit (bản PR này chép vào), với `AO_KIT_DIR` trỏ tới kit, để hook của phiên agent cũng dùng code mới. `GO`: `reviewer` xhigh rồi `security` max (PR chạm đường dẫn được bảo vệ). Gói bối cảnh 219.684 ký tự.
+- Lần chạy thật đầu tiên của #156: worktree `.ai/reviews/pr-13` được tạo trước mỗi lượt và gỡ sau mỗi lượt; checkout ở `develop`. Không agent nào còn sống sau `result`, nên #157 chưa phải dừng tiến trình nào.
+
+| Lượt | Vai trò | Effort | Kết quả | Turn | Thời gian | Chi phí |
+|---|---|---|---|---|---|---|
+| 1 | `reviewer` | xhigh | Request changes | 33 | 8 phút | 1,88 USD |
+| 2 | `security` | max | Request changes | 51 | 26 phút | 7,20 USD |
+
+Tổng 9,08 USD. `ao-step` dừng: "the reports on the head of PR #13 ask for changes (Critical or High: reviewer 1, security 1)".
+
+- **`reviewer`:** 1 High, 2 Medium, 2 Low.
+  - High: hook của kit PR #162 bỏ link work item ra trước khi tìm network client, nên `curl` tới link `/browse/`, link đi tiếp tới REST bằng `;/../../rest/…` (curl gửi thành `POST /rest/api/3/…`, `reviewer` kiểm bằng server local) và `printenv ATLASSIAN_AGENT_TOKEN` đều qua; hook gốc chặn cả ba.
+  - Medium: worktree nằm trong thư mục dự án, nên Claude Code nạp `.claude/rules` của PR khi agent đọc file trong đó.
+  - Medium: trong worktree, test của `apps/web` không chạy được vì Node không tìm thấy `apps/web/node_modules` của checkout.
+  - Low: `cloudId` so bằng `includes`; comment của `readChildren` trong `facts.mjs` nằm sai chỗ.
+- **`security`:** 1 High, 1 Medium, 3 Low.
+  - High: cùng chuyện worktree, và `security` thấy tận mắt `.ai/reviews/pr-13/.claude/rules/ai-orchestrator.md` vào ngữ cảnh sau khi đọc một file trong worktree. Dev agent ghi được `CLAUDE.md` hay `apps/**/.claude/` vào PR, vì `.claude/**` chỉ khớp ở gốc repo.
+  - Medium: review chuyển checkout sang `pr.base` mà không kiểm đó là nhánh được bảo vệ; base đổi được sau khi CI chạy.
+  - Low: cùng chỗ hở của hook (thêm `http.client`, `https.request` tới host MCP ghép từ link); `cloudId`; dòng thêm "++ b/README.md" bị đọc thành header của diff.
+- **Kit PR #165** sửa tất cả, trừ Medium `node_modules` (để sau Pilot 1, đã ghi trong `docs/dev-workflow.md`):
+  - Hook trở về luật gốc (chặn lệnh Bash có chữ "atlassian"), với hai ngoại lệ: thân heredoc ghi dữ liệu (`cat`/`tee` vào file, delimiter trong ngoặc, không có gì sau trên dòng) và link work item dừng ở key trong lệnh không gọi mạng. 4 trong 5 lệnh bị chặn nhầm ở Pilot 1 vẫn qua; lệnh `node` là code nên bị chặn lại.
+  - `ao-step` xóa mọi `CLAUDE.md`, `CLAUDE.local.md`, `.claude/` khỏi worktree ngay sau khi tạo.
+  - `/ao-review` và `/ao-fix` dừng khi base không phải nhánh được bảo vệ, hoặc không phải nhánh mà nhánh của PR được cắt từ đó.
+  - `diffLines`: dòng `---`/`+++` chỉ là header trước hunk đầu tiên của file.
+  - Site so nguyên vẹn (cloud id, hoặc host name); comment của `facts.mjs` về đúng chỗ.
+  - Test mới đỏ trước khi sửa; 15 mutation trên luật mới đều làm test đỏ; năm lệnh kiểm xanh (842 test); CI xanh.
 
 ### Việc T10 còn lại
 
-Kết quả review PR #13 và merge của bạn, rồi bước 2 ("Đầu vào cho `project-scaffold`"), bước 3 (`SPEC.md`, `SPEC-pilot-1.md`, README) và bước 4 (lưu trữ plan).
+Bạn merge kit PR #165; Claude chép lại vào PR #13 và chạy review phần mới; bạn approve và merge PR #13. Sau đó bước 2 ("Đầu vào cho `project-scaffold`"), bước 3 (`SPEC.md`, `SPEC-pilot-1.md`, README) và bước 4 (lưu trữ plan).
