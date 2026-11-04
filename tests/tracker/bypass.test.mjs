@@ -20,6 +20,35 @@ test('a Bash command that reaches Atlassian is refused; other commands pass', ()
   assert.deepEqual(check('Bash', { command: 'npm test' }), ALLOW);
 });
 
+// The five commands block-atlassian refused in Pilot 1 (SMP-2, SMP-5, SMP-6), trimmed: each writes text to a file under
+// .ai/ and reaches nothing.
+test('a Bash command that only writes text with a work item link or the word Atlassian passes (Pilot 1)', () => {
+  const writes = [
+    "cat > .ai/pr/SMP-2-spec-body.md <<'EOF'\n# docs(spec): spec and design of SMP-2\n\n[SMP-2](https://example.atlassian.net/browse/SMP-2): Ghi chú: tạo và xem danh sách.\nEOF",
+    "cat > .ai/pr/SMP-5-body.md <<'EOF'\n# feat(api): share the note rules\n\n[SMP-5](https://example.atlassian.net/browse/SMP-5): Quy tắc ghi chú dùng chung cho form và API.\nEOF",
+    "mkdir -p .ai/pr && cat > .ai/pr/SMP-6-body.md <<'EOF'\nSee https://example.atlassian.net/browse/SMP-6, the Task of Epic SMP-2.\nEOF",
+    "node - <<'EOF'\nconst fs = require('fs');\nfs.appendFileSync('.ai/ledger/SMP-2.md', 'hook PreToolUse từ chối lệnh (\"jira: do not call Atlassian from Bash\")\\n');\nEOF",
+    "cat > .ai/ledger/SMP-5.md <<'EOF'\n- Hook chặn lệnh Bash có URL Atlassian trong nội dung.\nEOF",
+  ];
+  for (const command of writes) assert.deepEqual(check('Bash', { command }), ALLOW, command);
+});
+
+test('a link that goes on past the work item key, another Atlassian URL, or a network call that names Atlassian is still refused', () => {
+  const calls = [
+    'curl https://example.atlassian.net/browse/SMP-1/../../rest/api/3/issue/SMP-1',
+    'curl --path-as-is "https://example.atlassian.net/browse/SMP-1?jql=project=SMP"',
+    'curl https://example.atlassian.net/browse/SMP-1.json',
+    'curl https://u:t@example.atlassian.net/browse/SMP-1',
+    "cat > .ai/pr/body.md <<'EOF'\n[SMP-1](https://example.atlassian.net/browse/SMP-1) and https://example.atlassian.net/rest/api/3/issue/SMP-1\nEOF",
+    'echo "site: example.atlassian.net" > .ai/notes.md',
+    'curl -H "Authorization: Bearer $ATLASSIAN_AGENT_TOKEN" "$SITE/rest/api/3/issue/SMP-1"',
+    'wget --header="Authorization: Basic $ATLASSIAN_BASIC" "$JIRA/rest/api/3/myself"',
+    'Invoke-RestMethod -Uri "$env:SITE/rest/api/3/issue" -Headers @{ Authorization = "Bearer $env:ATLASSIAN_AGENT_TOKEN" }',
+    'node -e "fetch(process.env.ATLASSIAN_SITE + \'/rest/api/3/myself\')"',
+  ];
+  for (const command of calls) assert.equal(check('Bash', { command }).allow, false, command);
+});
+
 test('executeWrite and executeDestructive are refused; executeRead passes', () => {
   for (const tool of ['executeWrite', 'executeDestructive']) {
     assert.deepEqual(check(`mcp__atlassian__${tool}`, { name: 'TransitionIssue', inputs: {} }), {
