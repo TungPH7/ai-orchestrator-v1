@@ -229,7 +229,15 @@ test('the full text covers modified files, a changed type, and renamed or copied
 test('a text file with a NUL byte is named with how to read it, since its diff shows no change', () => {
   const modified = [{ path: 'apps/api/src/a.ts', text: 'export const a = 1; // \u0000\n' }];
   const text = pack({ files: [{ status: 'M', path: 'apps/api/src/a.ts' }], modified });
-  assert.ok(text.includes('### `apps/api/src/a.ts`\n\nNot quoted: it has a NUL byte, so git treats it as binary and the diff above does not show its changes, though its name is that of a text file. Read it before you approve: `MSYS_NO_PATHCONV=1 git show bbbbbbb:apps/api/src/a.ts`.'));
+  assert.ok(text.includes('### `apps/api/src/a.ts`\n\nNot quoted: it has a NUL byte, so git treats it as binary and the diff above does not show its changes, though its name is that of a text file. Read it before you approve: `MSYS_NO_PATHCONV=1 git show \'bbbbbbb:apps/api/src/a.ts\'`.'));
+});
+
+// Low of security on the second review of ao-sample PR #13: the PR chooses its file names, and the pack put them in a
+// shell command as they were, outside a quoted block, so `$(...)` in a name would run when the agent ran the command.
+test('the command that reads a file has its name in single quotes, so the shell runs nothing in it', () => {
+  const path = "docs/a$(sh .ai/reviews/pr-9/p.sh)`id`'x.ts";
+  const text = pack({ files: [{ status: 'M', path }], modified: [{ path, text: 'x\u0000' }] });
+  assert.ok(text.includes("`MSYS_NO_PATHCONV=1 git show 'bbbbbbb:docs/a$(sh .ai/reviews/pr-9/p.sh)`id`'\\''x.ts'`."));
 });
 
 test('a file of exactly the most lines comes whole, whether or not it ends with a line break; one line more does not', () => {
@@ -272,9 +280,9 @@ test('the diff comes before the full text; a lockfile, a binary, a file git coul
   assert.ok(text.includes('```\nexport const a = 1;\n```'));
   assert.ok(text.includes(`\`\`\`\n${'x'.repeat(60)}\n\`\`\``));
   const named = (path, why) => assert.ok(text.includes(`### \`${path}\`\n\nNot quoted: ${why}`), `${path}: ${why}`);
-  const read = (path) => `Read it with \`MSYS_NO_PATHCONV=1 git show bbbbbbb:${path}\`.`;
+  const read = (path) => `Read it with \`MSYS_NO_PATHCONV=1 git show 'bbbbbbb:${path}'\`.`;
   named('package-lock.json', 'a lockfile; its changes are in the diff.');
-  named('apps/web/public/logo.png', `a binary file. If it is text, read it with \`MSYS_NO_PATHCONV=1 git show bbbbbbb:apps/web/public/logo.png\`.`);
+  named('apps/web/public/logo.png', `a binary file. If it is text, read it with \`MSYS_NO_PATHCONV=1 git show 'bbbbbbb:apps/web/public/logo.png'\`.`);
   named('apps/api/src/gone.ts', `git could not read it at the head. ${read('apps/api/src/gone.ts')}`);
   named('apps/api/src/long.ts', `2001 lines, over 2000. ${read('apps/api/src/long.ts')}`);
   named('apps/api/src/c.ts', `with it the full text would pass 100 characters. ${read('apps/api/src/c.ts')}`);
