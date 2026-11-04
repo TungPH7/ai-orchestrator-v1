@@ -128,6 +128,15 @@ test('a question that begins like "Không có" or "None" is still a question; on
   }
 });
 
+// The punctuation after "Không có" may begin a question rather than a note (review of ao-sample PR #5): a first line that
+// asks something is a question.
+test('a first line that begins "Không có," "Không có (" or "Không có -" and asks something is still a question', () => {
+  for (const asked of ['Không có, hay chỉ một nút xóa từng dòng?', 'Không có (hay chưa có) mockup cho màn hình nhỏ: ux có cần vẽ không?', 'Không có - có cần trang lỗi riêng không?', 'None, unless the list needs paging?']) {
+    assert.deepEqual(openQuestions(doc(asked)), [asked], asked);
+  }
+  assert.deepEqual(openQuestions(doc('- Không có, hay chỉ một nút xóa?\n- Có cần hỏi xác nhận không?')), ['Không có, hay chỉ một nút xóa?', 'Có cần hỏi xác nhận không?']);
+});
+
 test('text without a list is still a question, so a run never passes over it', () => {
   assert.deepEqual(openQuestions(doc('Có cần lưu giỏ hàng khi đăng xuất không?')), ['Có cần lưu giỏ hàng khi đăng xuất không?']);
 });
