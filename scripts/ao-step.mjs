@@ -17,6 +17,7 @@ import { READ_PERMISSIONS } from '../lib/agents/launch.mjs';
 import { mergeLocal, readRoster } from '../lib/agents/roster.mjs';
 import { readContract } from '../lib/contract.mjs';
 import { projectSettings, setting } from '../lib/project-settings.mjs';
+import { unquotePath } from '../lib/quality/diff-paths.mjs';
 import { readGates } from '../lib/quality/gates.mjs';
 import { appCredentials, githubRepoOf, installationToken, userVariable } from '../lib/quality/github-app.mjs';
 import { createGitHubClient } from '../lib/tracker/github-client.mjs';
@@ -215,7 +216,7 @@ export function reviewPackWriter({ github, jira, git: run = git, projectDir: dir
       };
       const range = `${baseSha}...${head}`;
       const files = need('diff', '--name-status', range).trim().split('\n').filter(Boolean).map((line) => {
-        const [status, ...paths] = line.split('\t');
+        const [status, ...paths] = line.split('\t').map(unquotePath);
         return paths.length > 1 ? { status, from: paths[0], path: paths[1] } : { status, path: paths[0] };
       });
       const modified = files.filter(({ status }) => status.startsWith('M')).map(({ path }) => ({ path, text: show(head, path) }));
