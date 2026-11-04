@@ -17,27 +17,41 @@ test('only the new part, at high, when X is an ancestor of the head, the diff ha
   assert.deepEqual(scope(report(), compare(300)), { mode: 'delta', reason: '300 lines changed since a1b2c3d', since: X, at: '2026-11-04T08:00:00Z', lines: 300 });
 });
 
-test('the whole PR again at 301 lines, after a rebase, on a protected path, or without a readable report', () => {
+test('the whole PR again at 301 lines, after a rebase, or without a readable report', () => {
   assert.deepEqual(scope(report(), compare(301)), { mode: 'full', reason: '301 lines changed since a1b2c3d, over 300' });
   for (const status of ['diverged', 'behind']) assert.match(scope(report(), compare(10, { status })).reason, /no longer an ancestor of the head \(rebase or force-push\)/, status);
   assert.equal(scope(report(), null).mode, 'full', 'GitHub no longer knows X');
-  const workflow = compare(10, { files: [{ filename: '.github/workflows/ci.yml', additions: 2, deletions: 1 }] });
-  assert.deepEqual(scope(report(), workflow), { mode: 'full', reason: 'the changes since a1b2c3d touch .github/workflows/ci.yml' });
-  const renamed = compare(4, { files: [{ filename: 'docs/ci.yml', previous_filename: '.github/workflows/ci.yml', additions: 2, deletions: 2 }] });
-  assert.equal(scope(report(), renamed).mode, 'full', 'a file moved out of a protected path');
   assert.deepEqual(scope(report({ ok: false }), compare(10)), { mode: 'full', reason: 'the security report on a1b2c3d cannot be read' });
   assert.deepEqual(scope(null, null), { mode: 'full', reason: 'no security report on this PR yet' });
+});
+
+// Pilot 1, second review of ao-sample PR #13 (option b): a protected path no longer asks for the whole PR, only for the
+// new part at the roster's effort, which steps sets from `protected`.
+test('changes on a protected path are reviewed as the new part, with the protected paths named', () => {
+  const workflow = compare(3, { files: [{ filename: '.github/workflows/ci.yml', additions: 2, deletions: 1 }] });
+  assert.deepEqual(scope(report(), workflow), { mode: 'delta', reason: '3 lines changed since a1b2c3d, on the protected path .github/workflows/ci.yml', since: X, at: '2026-11-04T08:00:00Z', lines: 3, protected: ['.github/workflows/ci.yml'] });
+  const renamed = compare(4, { files: [{ filename: 'docs/ci.yml', previous_filename: '.github/workflows/ci.yml', additions: 2, deletions: 2 }] });
+  assert.deepEqual(scope(report(), renamed).protected, ['.github/workflows/ci.yml'], 'a file moved out of a protected path');
 });
 
 test('a report already on the head needs no new review', () => {
   assert.equal(scope(report({ onHead: true }), null).mode, 'none');
 });
 
-test('the whole PR again while the newest report, or the full one the new part counts from, has Critical or High findings', () => {
-  assert.deepEqual(scope(report({ blocking: 2 }), compare(10)), { mode: 'full', reason: 'the security report on a1b2c3d has 2 Critical or High findings open: only a full review clears them' });
+// Pilot 1, second review of ao-sample PR #13: a full review of the whole PR at max cost 7.92 USD to check one fixed High.
+// The report of the new part lists the open findings (merge-gate counts those it leaves out), so they are passed on.
+test('open Critical or High findings ask for the new part with the findings to check, not for the whole PR', () => {
+  const high = { severity: 'High', where: 'review-tree.mjs:7', finding: 'AGENTS.md reaches the review' };
+  assert.deepEqual(scope(report({ blocking: 1, open: [high] }), compare(10)), { mode: 'delta', reason: '10 lines changed since a1b2c3d, with 1 Critical or High finding open to check', since: X, at: '2026-11-04T08:00:00Z', lines: 10, earlier: [high] });
   const Y = 'b1b2c3d4e5f60718293a4b5c6d7e8f9012345678';
-  const newest = report({ sha: Y, at: '2026-11-05T08:00:00Z' });
-  assert.deepEqual(securityScope({ report: newest, full: report({ blocking: 1 }), compare: compare(10), gates }), { mode: 'full', reason: 'the full security report on a1b2c3d has 1 Critical or High finding open: only a full review clears it' });
+  const low = { severity: 'Critical', where: 'guard.mjs:75', finding: 'the regex backtracks' };
+  // The newest report left the High of the full one out: both count, each once.
+  const newest = report({ sha: Y, at: '2026-11-05T08:00:00Z', blocking: 2, open: [low] });
+  const both = securityScope({ report: newest, full: report({ blocking: 1, open: [high] }), compare: compare(10), gates });
+  assert.deepEqual([both.mode, both.earlier, both.reason], ['delta', [low, high], '10 lines changed since a1b2c3d, with 2 Critical or High findings open to check']);
+  // The newest report lists the High of the full one as still Open: it is checked once.
+  const again = securityScope({ report: report({ sha: Y, blocking: 1, open: [high] }), full: report({ blocking: 1, open: [high] }), compare: compare(10), gates });
+  assert.deepEqual(again.earlier, [high]);
   assert.deepEqual(securityScope({ report: newest, full: null, compare: null, gates }), { mode: 'full', reason: 'no full security report on this PR yet' });
 });
 

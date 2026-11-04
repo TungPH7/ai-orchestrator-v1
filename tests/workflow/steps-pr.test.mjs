@@ -176,6 +176,25 @@ test('/ao-review after a small fix: security reviews only the changes since its 
   assert.equal(security.prompt, 'Review PR #15, only the changes since a1b2c3d; your full report on a1b2c3d is the review of 2026-11-04. Write the line Scope: changes since a1b2c3d in your report.');
 });
 
+// Pilot 1, second review of ao-sample PR #13: the fix of a High on a protected path was reviewed as the whole PR at
+// max (7.92 USD). Now it is the new part, at max for the protected path, with the High to check.
+test('/ao-review after a fix of a High on a protected path: the new part at the roster effort, with the High to check', () => {
+  const high = { severity: 'High', where: '.ai-orchestrator/lib/workflow/review-tree.mjs:7', finding: 'AGENTS.md | of the PR reaches the review' };
+  const facts = prFacts('review', {
+    files: ['.ai-orchestrator/lib/workflow/review-tree.mjs'],
+    protectedPaths: ['.ai-orchestrator/lib/workflow/review-tree.mjs'],
+    reports: { reviewer: report({ sha: OLD, onHead: false }), security: report({ sha: OLD, onHead: false, at: '2026-11-04T08:00:00Z', blocking: 1, open: [high] }) },
+    securityCompare: { base: OLD, status: 'ahead', files: [{ filename: '.ai-orchestrator/lib/workflow/review-tree.mjs', additions: 12, deletions: 3 }] },
+  });
+  const security = decide('review', facts).runs[1];
+  assert.deepEqual([security.effort, security.purpose, security.scope], ['max', 'review-delta', '15 lines changed since a1b2c3d, on the protected path .ai-orchestrator/lib/workflow/review-tree.mjs, with 1 Critical or High finding open to check']);
+  assert.equal(security.prompt, [
+    'Review PR #15, only the changes since a1b2c3d; your full report on a1b2c3d is the review of 2026-11-04. Write the line Scope: changes since a1b2c3d in your report.',
+    'The security reports before this one left 1 Critical or High finding open. Check each against the head, and list every one in a section "## Earlier findings" after Findings, as a table with the columns Severity | Where | Finding | Status, where Status begins with Fixed or Open. merge-gate counts a finding you do not list as open.',
+    '- High | .ai-orchestrator/lib/workflow/review-tree.mjs:7 | AGENTS.md / of the PR reaches the review',
+  ].join('\n\n'));
+});
+
 test('/ao-review stops: CI running or red, both reports on the head, a docs PR, a closed PR', () => {
   const cases = [
     [prFacts('review', { ci: { green: false, failed: false, pending: true } }), /CI is still running on the head d1d2d3d/, /once CI is done/],
