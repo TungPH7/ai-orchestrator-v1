@@ -11628,11 +11628,11 @@ Bạn xác nhận xong thì mình mở một PR nhỏ để tick dòng cuối "B
 xác nhận Pilot 1 hoàn thành
 ```
 
-Trước khi trả lời, Claude kiểm bạn đã merge kit PR #167 (`f5b24f4`) và #168 (`af5d965`). Sau đó Claude đánh dấu ô cuối của Checkpoint cuối trong `tasks/archive/pilot-1/plan.md` và `todo.md`, ghi lần xác nhận vào `verification.md`, chạy năm lệnh kiểm, rồi mở kit PR #169 cùng log.
+Trước khi trả lời, Claude kiểm bạn đã merge kit PR #167 (`f5b24f4`) và #168 (`af5d965`). Sau đó Claude đánh dấu ô cuối của Checkpoint cuối trong `tasks/archive/pilot-1/plan.md` và `todo.md`, ghi lần xác nhận vào `verification.md`, chạy năm lệnh kiểm, rồi mở kit PR #169 cùng log. CI của #169 phải xếp hàng, vì GitHub Actions đang có sự cố.
 
 **Claude:**
 
-Pilot 1 đã hoàn thành. Kit PR #169 đánh dấu ô cuối "Bạn xác nhận Pilot 1 hoàn thành" và ghi lần xác nhận vào `verification.md`. Trong file đó còn hai chỗ ghi #167 "đang mở", mình đã sửa thành đã merge (`f5b24f4`). 853 test và năm lệnh kiểm đều xanh.
+Pilot 1 đã hoàn thành. Kit PR #169 đánh dấu ô cuối "Bạn xác nhận Pilot 1 hoàn thành" và ghi lần xác nhận vào `verification.md`. Trong file đó còn hai chỗ ghi #167 "đang mở", mình đã sửa thành đã merge (`f5b24f4`). Trên máy mình, 853 test và năm lệnh kiểm đều xanh.
 
 **Tóm tắt Pilot 1:**
 - Dự án mẫu `ao-sample` (Next.js + NestJS), space `SMP`, Epic "Ghi chú" (`SMP-2`).
@@ -11642,6 +11642,8 @@ Pilot 1 đã hoàn thành. Kit PR #169 đánh dấu ô cuối "Bạn xác nhận
 - Agent tốn khoảng 117,6 USD.
 
 **Việc của bạn:** mở https://github.com/TungPH7/ai-orchestrator-v1/pull/169, kéo xuống cuối trang, bấm mũi tên cạnh nút merge, chọn **Rebase and merge**, rồi bấm **Confirm rebase and merge**.
+
+Đợi check `contract` của #169 xanh rồi hãy merge. Hiện CI của #169 chưa chạy: GitHub Actions có sự cố từ khoảng 23:05 (githubstatus.com ghi "Incident with Actions and Pages"), nên các lượt CI phải xếp hàng. Lượt CI trên `main` sau khi bạn merge #167 vừa bắt đầu chạy, còn lượt của #168 vẫn chờ. Mình đang theo dõi, và sẽ báo khi các lượt này xong.
 
 **Chọn việc tiếp theo.** Theo `SPEC.md`, thứ tự là `release-workflow`, rồi Pilot 2, rồi `project-scaffold`. `figma-integration` làm lúc nào tùy bạn.
 1. **`release-workflow` (mình khuyên chọn, đúng thứ tự của `SPEC.md`):** viết spec cho vòng ngoài:
