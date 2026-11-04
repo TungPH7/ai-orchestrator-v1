@@ -59,6 +59,33 @@ test('executeWrite and executeDestructive are refused; executeRead passes', () =
   assert.deepEqual(check('mcp__atlassian__executeRead', { name: 'listJiraIssueTransitions', inputs: { issueIdOrKey: 'DEMO-1' } }), ALLOW);
 });
 
+// As Claude made it on SMP with the agent token (Pilot 1, T10): inwardIssue blocks outwardIssue.
+const link = (inputs, more = {}) => check('mcp__atlassian__executeWrite', { cloudId: mapping.cloud_id, name: 'createJiraIssueLink', inputs: { cloudId: mapping.cloud_id, linkType: 'Blocks', inwardIssue: 'DEMO-21', outwardIssue: 'DEMO-23', ...inputs }, ...more });
+
+test('executeWrite may make a Blocks link between two items of the project space, and nothing else', () => {
+  assert.deepEqual(link({}), ALLOW);
+  assert.deepEqual(link({ cloudId: undefined }), ALLOW, 'the cloudId of the inputs may be left out');
+  assert.deepEqual(check('mcp__atlassian__executeWrite', { cloudId: mapping.site, name: 'createJiraIssueLink', inputs: { linkType: 'blocks', inwardIssue: 'DEMO-21', outwardIssue: 'DEMO-23' } }), ALLOW);
+  const refused = [
+    [link({ linkType: 'Duplicate' }), 'jira: createJiraIssueLink may only make a Blocks link, not Duplicate'],
+    [link({ outwardIssue: 'SCRUM-3' }), 'jira: SCRUM-3 is not a work item key of the project space DEMO'],
+    [link({ inwardIssue: '10021' }), 'jira: 10021 is not a work item key of the project space DEMO'],
+    [link({ inwardIssue: 'DEMO-21 OR 1=1' }), 'jira: DEMO-21 OR 1=1 is not a work item key of the project space DEMO'],
+    [link({ outwardIssue: 'DEMO-21' }), 'jira: DEMO-21 cannot block itself'],
+    [link({ comment: 'x' }), 'jira: createJiraIssueLink takes only cloudId, linkType, inwardIssue, outwardIssue, not comment'],
+    [link({}, { cloudId: 'other-site.atlassian.net' }), 'jira: other-site.atlassian.net is not the Jira site of the project'],
+    [link({ cloudId: 'other-cloud' }), 'jira: other-cloud is not the Jira site of the project'],
+    [link({}, { cloudId: undefined }), 'jira: no cloudId is not the Jira site of the project'],
+    [check('mcp__atlassian__executeWrite', { cloudId: mapping.cloud_id, name: 'deleteJiraIssueLink', inputs: { linkId: '10005' } }), 'jira: executeWrite can run any write; use createJiraIssue, editJiraIssue, addOrEditJiraIssueComment or transitionJiraIssue'],
+    [check('mcp__atlassian__executeDestructive', { cloudId: mapping.cloud_id, name: 'createJiraIssueLink', inputs: { linkType: 'Blocks', inwardIssue: 'DEMO-21', outwardIssue: 'DEMO-23' } }), 'jira: executeDestructive can run any write; use createJiraIssue, editJiraIssue, addOrEditJiraIssueComment or transitionJiraIssue'],
+  ];
+  for (const [decision, reason] of refused) assert.deepEqual(decision, { allow: false, reason });
+  assert.deepEqual(checkToolCall({ tool_name: 'mcp__atlassian__executeWrite', tool_input: { cloudId: mapping.cloud_id, name: 'createJiraIssueLink', inputs: { linkType: 'Blocks', inwardIssue: 'DEMO-21', outwardIssue: 'DEMO-23' } } }, { mapping, space: null }), {
+    allow: false,
+    reason: 'jira: set AO_JIRA_SPACE to the project space key in .claude/settings.json',
+  });
+});
+
 test('Atlassian tools of another server, like the claude.ai connector, are refused', () => {
   assert.deepEqual(check('mcp__claude_ai_Atlassian__getJiraIssue', { issueIdOrKey: 'DEMO-1' }), {
     allow: false,

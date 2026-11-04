@@ -76,7 +76,7 @@ Trong dự án, `node .ai-orchestrator/scripts/render-agents.mjs --project .` si
 | Vai trò | Skill nạp sẵn | Tool thêm | Ghi được | Git | App | Jira |
 |---|---|---|---|---|---|---|
 | `pm` | Không | Bash, Write | `.ai/**` | Đọc | Không | Đọc |
-| `ba` | `spec-driven-development`, `interview-me` | Bash, Edit, Write | `docs/specs/**`, `CHANGELOG.md`, `.ai/**` | Ghi | `ao-dev` | Đọc, tạo, sửa, comment |
+| `ba` | `spec-driven-development`, `interview-me` | Bash, Edit, Write | `docs/specs/**`, `CHANGELOG.md`, `.ai/**` | Ghi | `ao-dev` | Đọc, tạo, sửa, comment, tạo link Blocks |
 | `ux` | `frontend-ui-engineering` | Bash, Edit, Write | `docs/specs/**`, `.ai/**` | Ghi | Không | Đọc |
 | `sa` | `planning-and-task-breakdown`, `api-and-interface-design`, `documentation-and-adrs` | Bash, Edit, Write | `docs/specs/**`, `docs/adr/**`, `.ai/**` | Ghi | `ao-dev` | Đọc, comment |
 | `fe-dev` | `test-driven-development`, `incremental-implementation`, `frontend-ui-engineering`, `browser-testing-with-devtools` | Bash, Edit, Write, Chrome DevTools MCP | Mọi file, trừ đường dẫn được bảo vệ | Ghi | `ao-dev` | Đọc, sửa, comment, chuyển trạng thái |
@@ -86,8 +86,8 @@ Trong dự án, `node .ai-orchestrator/scripts/render-agents.mjs --project .` si
 | `qa` | `playwright-cli` | Bash, Write | `.ai/**` | Đọc | Không | Đọc, tạo, sửa, comment, chuyển trạng thái |
 | `devops` | `ci-cd-and-automation`, `shipping-and-launch` | Bash, Edit, Write | Như `fe-dev`, thêm `.github/workflows/**` | Ghi | `ao-dev` | Đọc, sửa, comment, chuyển trạng thái |
 
-- Mọi agent có `Read`, `Glob`, `Grep`. Không agent nào có `Skill`, `Agent`, `WebFetch`, `WebSearch`, `executeWrite`, `executeDestructive`.
-- Quyền Jira đổi ra tool của server `atlassian`: đọc là `getJiraIssue`, `searchJiraIssuesUsingJql`, `executeRead`; tạo là `createJiraIssue`; sửa là `editJiraIssue`; comment là `addOrEditJiraIssueComment`; chuyển trạng thái là `transitionJiraIssue`.
+- Mọi agent có `Read`, `Glob`, `Grep`. Không agent nào có `Skill`, `Agent`, `WebFetch`, `WebSearch`, `executeDestructive`. Chỉ `ba` có `executeWrite`, và hook `block-atlassian` chỉ cho nó chạy `createJiraIssueLink` loại Blocks giữa hai item của space dự án (Pilot 1, T10).
+- Quyền Jira đổi ra tool của server `atlassian`: đọc là `getJiraIssue`, `searchJiraIssuesUsingJql`, `executeRead`; tạo là `createJiraIssue`; sửa là `editJiraIssue`; comment là `addOrEditJiraIssueComment`; tạo link Blocks là `executeWrite`; chuyển trạng thái là `transitionJiraIssue`.
 - Chỉ vai trò có transition trong hợp đồng mới có `transitionJiraIssue`. `reviewer` và `security` có `request-changes` trong hợp đồng nhưng không có tool này, vì `jira-sync` đã đưa item về In Progress dựa trên review trên GitHub (T18 của `quality-gates`).
 - `fe-dev` chỉ được các tool Chrome DevTools thuộc nhóm điều hướng, nhập liệu, giả lập (cỡ màn hình, mạng chậm), debug (console, snapshot, ảnh chụp, chạy script), network và hiệu năng. Không có các nhóm memory, extension, bên thứ ba, WebMCP, PWA, WebAuthn.
 - Skill nạp sẵn được đọc toàn bộ vào ngữ cảnh lúc agent khởi động: subagent nạp qua trường `skills`, phiên chính nạp qua file mà `ao-agent.mjs` truyền bằng `--append-system-prompt-file` (mục 2.5). Agent không có tool `Skill`, nên không tự nạp thêm skill; nhờ vậy chạy ổn định hơn và đỡ token. Skill chỉ cần trong vài trường hợp thì prompt bảo agent đọc file `SKILL.md` của nó: `security` đọc `gha-security-review` khi PR sửa workflow.
@@ -553,7 +553,7 @@ Mỗi lượt chạy bằng `ao-agent.mjs <role> -p "<prompt>" --output-format j
 
 - **Luôn làm:** sinh agent và file quy ước bằng script, không sửa tay file sinh ra; chạy agent lần lượt; ghi số đo của mỗi lượt chạy thật; ghim skill chép vào theo commit, giữ giấy phép, ghi nguồn; ghi nguồn các ý lấy từ agency-agents trong comment của prompt.
 - **Hỏi bạn trước:** đổi hợp đồng; đổi model hoặc effort của một vai trò; thêm skill hoặc cập nhật skill chép vào; cài phần mềm lên máy (`playwright-cli`, trình duyệt); thêm MCP server; bật Git LFS cho một dự án.
-- **Không bao giờ:** cho agent `executeWrite`, `executeDestructive`, quyền chuyển item sang Done, hay quyền approve PR; cho agent trí nhớ riêng; bật cả plugin của Sentry hoặc cài Superpowers; chép nguyên một persona của agency-agents; cho Chrome DevTools MCP dùng profile Chrome của bạn; cho agent đăng nhập Figma hay dùng token Figma của bạn (việc của `figma-integration`); đưa token hay key vào prompt, repo, log hoặc chat.
+- **Không bao giờ:** cho agent `executeDestructive`, `executeWrite` cho thao tác nào khác ngoài link Blocks của `ba`, quyền chuyển item sang Done, hay quyền approve PR; cho agent trí nhớ riêng; bật cả plugin của Sentry hoặc cài Superpowers; chép nguyên một persona của agency-agents; cho Chrome DevTools MCP dùng profile Chrome của bạn; cho agent đăng nhập Figma hay dùng token Figma của bạn (việc của `figma-integration`); đưa token hay key vào prompt, repo, log hoặc chat.
 
 ## 9. Tiêu chí hoàn thành
 
