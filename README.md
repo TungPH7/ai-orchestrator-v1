@@ -10,6 +10,8 @@ Module đã xong:
 - **`agent-roster`**: mười agent của Claude Code, mỗi vai trò của hợp đồng một agent. Mỗi agent biết đầu vào, đầu ra, tool, skill, model và effort của mình, và hook giới hạn file nó được ghi ([SPEC-agent-roster.md](SPEC-agent-roster.md)).
 - **`dev-workflow`**: sáu lệnh `/ao-*` đưa một Epic từ spec tới merge vào `develop`, chỉ dừng ở cổng cần bạn. Agent làm việc với GitHub bằng hai App, không bằng login của bạn ([SPEC-dev-workflow.md](SPEC-dev-workflow.md)).
 
+Pilot 1 (xong 2026-11-04) chạy kit trên repo mẫu `TungPH7/ao-sample` (Next.js + NestJS) và space Jira `SMP`: Epic "Ghi chú" đi từ spec tới khi mọi Story sang Ready for QA ([SPEC-pilot-1.md](SPEC-pilot-1.md)). Các bước cài, chỗ vướng, lỗi kit và chi phí ghi ở [tasks/archive/pilot-1/verification.md](tasks/archive/pilot-1/verification.md).
+
 ## Hợp đồng quy trình
 
 Sáu file YAML trong `contract/` trả lời bốn câu cho mọi bước của quy trình: ai làm, cần đầu vào gì, phải tạo ra gì, và điều kiện nào để sang bước tiếp theo.
@@ -115,7 +117,7 @@ Câu hỏi của agent được chuyển cho bạn trong chat. Kết quả và c
 
 ## Cài kit vào repo dự án
 
-Thư mục `kit/` chứa các file đặt vào repo dự án, giữ đúng đường dẫn tương đối. Tới khi có `project-scaffold`, bạn chép tay như đã làm với `ao-pilot`:
+Thư mục `kit/` chứa các file đặt vào repo dự án, giữ đúng đường dẫn tương đối. Tới khi có `project-scaffold`, bạn chép tay như đã làm với `ao-pilot` và `ao-sample`. Từng bước ở Pilot 1, ai làm và vướng ở đâu: mục "Đầu vào cho `project-scaffold`" của [tasks/archive/pilot-1/verification.md](tasks/archive/pilot-1/verification.md).
 
 1. Tạo `.ai-orchestrator/` ở gốc repo dự án. Chép vào đó `contract/`, `lib/`, `tracker/`, `quality/`, `agents/`, `templates/`, cùng `package.json` và `package-lock.json` của kit, và chép `docs/sdlc.md` thành `.ai-orchestrator/docs/sdlc.md`, vì template trỏ tới DoD trong đó. Chép vào `.ai-orchestrator/scripts/` các script `ao-agent.mjs`, `ao-git-credential.mjs`, `ao-pr.mjs`, `ao-step.mjs`, `audit.mjs`, `check-design.mjs`, `check-policy.mjs`, `commit-msg.mjs`, `coverage-diff.mjs`, `install-hooks.mjs`, `jira-sync.mjs`, `merge-gate.mjs`, `pre-commit.mjs`, `pre-push.mjs`, `render-agents.mjs`. Chạy `npm ci --prefix .ai-orchestrator`, như các workflow.
 2. Chép `kit/.claude/`, `kit/.githooks/`, `kit/.mcp.json`, `kit/.jira/config.yml` và bốn workflow trong `kit/.github/workflows/` (`ci.yml`, `jira-sync.yml`, `merge-gate.yml`, `audit.yml`) vào gốc repo. Trong `.claude/settings.json`, thay các giá trị mẫu: `AO_JIRA_SPACE` bằng mã space, `AO_APPROVERS` bằng login GitHub của bạn, còn `AO_DEV_APP`, `AO_DEV_APP_ID`, `AO_REVIEW_APP`, `AO_REVIEW_APP_ID` bằng slug và App ID của hai App. Rồi chạy `node .ai-orchestrator/scripts/render-agents.mjs --project .`. Lệnh này điền mã space vào agent và gộp skill theo stack của `.ai-orchestrator/roster.local.yaml`, nếu có.

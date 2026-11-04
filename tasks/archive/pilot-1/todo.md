@@ -1,6 +1,6 @@
 # Task: Pilot 1
 
-> **Plan:** [plan.md](plan.md). **Spec:** [SPEC-pilot-1.md](../SPEC-pilot-1.md). Làm theo thứ tự. Đánh dấu `[x]` khi tiêu chí chấp nhận và kiểm chứng đều đạt.
+> **Plan:** [plan.md](plan.md). **Spec:** [SPEC-pilot-1.md](../../../SPEC-pilot-1.md). Làm theo thứ tự. Đánh dấu `[x]` khi tiêu chí chấp nhận và kiểm chứng đều đạt.
 
 **Quy ước chung cho mọi task:**
 
@@ -316,7 +316,7 @@ Sau khi kit PR merge: một PR chép kit vào `ao-sample` (plan, quyết định
 
 ## Giai đoạn 4: hoàn thiện
 
-### [ ] T10: Bản sửa kit còn lại, tài liệu và lưu trữ plan
+### [x] T10: Bản sửa kit còn lại, tài liệu và lưu trữ plan
 
 **Mô tả:**
 
@@ -331,18 +331,18 @@ Sau khi kit PR merge: một PR chép kit vào `ao-sample` (plan, quyết định
    - [x] Hook `block-atlassian` chặn nhầm lệnh Bash chỉ chứa link `atlassian.net` trong chữ: kit PR #162.
    - [x] `ba` không có tool tạo link Blocks (`addGraphContext`, cần thử trước), kèm `jira-guard`: kit PR #163, bằng `executeWrite` chỉ cho `createJiraIssueLink` loại Blocks (`addGraphContext` cần scope `write:all:twg`).
    - [x] Các Low còn lại của kit PR #153 và của review PR #7: kit PR #161 và #164.
-   Sau khi các PR này merge, bước 1 chép chúng vào `ao-sample` một lần: Task `SMP-15`, `ao-sample` PR #13.
-2. `verification.md` có mục "Đầu vào cho `project-scaffold`": bảng các bước cài, bước nào tự động được, bước nào cần bạn, thời gian, chỗ vướng.
-3. `SPEC.md` ghi Pilot 1 hoàn thành; `SPEC-pilot-1.md` cập nhật trạng thái; README của kit nhắc `ao-sample` nếu cần.
-4. Chuyển `tasks/plan.md`, `tasks/todo.md`, `tasks/verification.md` vào `tasks/archive/pilot-1/`, sửa link.
+   Sau khi các PR này merge, bước 1 chép chúng vào `ao-sample` một lần: Task `SMP-15`, `ao-sample` PR #13. Xong 2026-11-04: ba lần review PR #13 thêm kit PR #165 và #166; bạn merge PR #13 thành `e56a207`.
+2. `verification.md` có mục "Đầu vào cho `project-scaffold`": bảng các bước cài, bước nào tự động được, bước nào cần bạn, thời gian, chỗ vướng. Xong, cùng bảng lỗi kit, bảng chi phí và bảng kiểm tiêu chí. Bảng bước cài cho thấy bước board của `docs/jira-setup.md` thiếu đường bấm của board mới: kit PR #167.
+3. `SPEC.md` ghi Pilot 1 hoàn thành; `SPEC-pilot-1.md` cập nhật trạng thái; README của kit nhắc `ao-sample` nếu cần. Xong.
+4. Chuyển `tasks/plan.md`, `tasks/todo.md`, `tasks/verification.md` vào `tasks/archive/pilot-1/`, sửa link. Xong.
 
 **Tiêu chí chấp nhận:**
-- [ ] Tiêu chí 8 của spec mục 9 đạt.
-- [ ] Năm lệnh kiểm của kit xanh; mọi link trong file đã chuyển còn đúng.
+- [x] Tiêu chí 8 của spec mục 9 đạt (`verification.md`, mục "Kiểm tiêu chí của spec mục 9"; kit PR #167 merge trước PR tài liệu này).
+- [x] Năm lệnh kiểm của kit xanh; mọi link trong file đã chuyển còn đúng.
 
 **Kiểm chứng:**
-- [ ] `npm test` xanh
-- [ ] Mọi link tương đối trong các file đã chuyển trỏ tới file có thật (Claude quét bằng một lệnh, như ở T19 của `dev-workflow`)
+- [x] `npm test` xanh
+- [x] Mọi link tương đối trong các file đã chuyển trỏ tới file có thật (Claude quét bằng một lệnh, như ở T19 của `dev-workflow`)
 
 **Phụ thuộc:** T9, Checkpoint 4
 
@@ -351,6 +351,6 @@ Sau khi kit PR merge: một PR chép kit vào `ao-sample` (plan, quyết định
 **Cỡ:** S
 
 ### Checkpoint cuối
-- [ ] Đạt 8 tiêu chí ở spec mục 9
-- [ ] Chuyển `tasks/plan.md`, `tasks/todo.md`, `tasks/verification.md` vào `tasks/archive/pilot-1/`
+- [x] Đạt 8 tiêu chí ở spec mục 9
+- [x] Chuyển `tasks/plan.md`, `tasks/todo.md`, `tasks/verification.md` vào `tasks/archive/pilot-1/`
 - [ ] Bạn xác nhận Pilot 1 hoàn thành
