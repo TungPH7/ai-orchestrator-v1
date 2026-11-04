@@ -8,7 +8,7 @@ import { answersPrompt, packNote, resumePrompt, worktreeNote } from '../../lib/w
 import { agentCommand, formatDecision, lastReport, runGo } from '../../lib/workflow/runner.mjs';
 import { decideStep } from '../../lib/workflow/steps.mjs';
 import { CONTRACT_DIR, ROOT } from '../helpers/kit.mjs';
-import { checkArgument, runsFile, takeLock } from '../../scripts/ao-step.mjs';
+import { checkArgument, checkoutStop, homeBranch, runsFile, takeLock } from '../../scripts/ao-step.mjs';
 import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 
@@ -177,7 +177,7 @@ test('a review run gets the worktree of its PR before it starts and loses it whe
   assert.deepEqual(events, [['add', 'pr-15'], ['remove', 'pr-15']]);
   assert.equal(h.calls[0].prompt, ['Review PR #15.', packNote('.ai/reviews/15-context.md'), worktreeNote('.ai/reviews/pr-15', 'abc1234def5678')].join('\n\n'));
   assert.match(worktreeNote('.ai/reviews/pr-15', 'abc1234def5678'), /^The code of the PR at its head abc1234 is in the worktree \.ai\/reviews\/pr-15\. /);
-  assert.ok(worktreeNote('.ai/reviews/pr-15', 'abc1234def5678').includes('instruction files (CLAUDE.md, CLAUDE.local.md, .claude/) were removed from the worktree'));
+  assert.ok(worktreeNote('.ai/reviews/pr-15', 'abc1234def5678').includes('instruction files (CLAUDE.md, CLAUDE.local.md, AGENTS.md, .claude/) were removed from the worktree'));
   // The agent cannot start: the worktree goes all the same.
   events.length = 0;
   const failing = specWorld();
@@ -344,9 +344,10 @@ test('the second /ao-plan asks for jira-sync and waits for the docs PR to be mer
     run: null,
   });
   const store = { readState: () => null, writeState: () => assert.fail('no run'), writeLast: () => {} };
-  const { decision, made } = await runGo({ command: 'plan', arg: 'DEMO-20', options, gather: async () => epic(), agent: () => assert.fail('no agent'), git: async () => ({ ok: true }), dispatch: async () => (syncs += 1), store, sleep: async () => {}, now: () => 0 });
+  const { decision, made, facts } = await runGo({ command: 'plan', arg: 'DEMO-20', options, gather: async () => epic(), agent: () => assert.fail('no agent'), git: async () => ({ ok: true }), dispatch: async () => (syncs += 1), store, sleep: async () => {}, now: () => 0 });
   assert.deepEqual(made, [{ action: 'jira-sync', key: 'DEMO-20' }]);
   assert.deepEqual([decision.go, decision.next], [false, '/ao-build DEMO-21']);
+  assert.equal(facts.docs.pr.state, 'closed', 'the facts the last decision was made on, for ao-step to put the checkout back');
 });
 
 test('last.md: a row per run with its measurements, the cost so far, why it stopped and what comes next', () => {
@@ -386,6 +387,25 @@ test('the argument is a key of the space or a PR number; anything else stops bef
   assert.match(checkArgument('fix', '15; rm -rf .', 'DEMO'), /takes a PR number/);
   assert.match(checkArgument('spec', 'DEMO-20 && echo', 'DEMO'), /takes a Jira key/);
   assert.match(checkArgument('deploy', 'DEMO-1', 'DEMO'), /unknown command deploy/);
+});
+
+// Medium of security on the second review of ao-sample PR #13: ao-step, the kit and the agents' instructions come from
+// the checkout, which after /ao-build was the branch of the PR, so the first review of a PR ran that PR's code.
+test('/ao-review and /ao-fix start only on a protected branch; a command that ends with an open PR goes back to its base', () => {
+  const branches = ['develop', 'main', 'release/*'];
+  assert.equal(checkoutStop('review', 'develop', branches), null);
+  assert.equal(checkoutStop('fix', 'release/v1.2.0', branches), null);
+  assert.equal(checkoutStop('build', 'feature/DEMO-21-remove-line', branches), null, 'a build goes on on its branch');
+  assert.equal(checkoutStop('review', 'feature/DEMO-21-remove-line', branches), 'the checkout is on feature/DEMO-21-remove-line, not a protected branch (develop, main, release/*): ao-step, the kit and the instructions of the agents would come from it. Switch it to the base of the PR (git switch develop), then run /ao-review again');
+  assert.match(checkoutStop('fix', '', branches), /^the checkout is on a detached HEAD, not a protected branch/);
+  const open = { pr: { state: 'open', base: 'develop' } };
+  for (const command of ['build', 'review', 'fix']) assert.equal(homeBranch(command, open, branches), 'develop', command);
+  assert.equal(homeBranch('fix', { pr: { state: 'open', base: 'release/v1.2.0' } }, branches), 'release/v1.2.0');
+  assert.equal(homeBranch('build', { pr: null }, branches), null, 'a build without its PR stays on its branch, where the next run goes on');
+  assert.equal(homeBranch('fix', { pr: { state: 'closed', base: 'develop' } }, branches), null);
+  assert.equal(homeBranch('review', { pr: { state: 'open', base: 'feature/DEMO-20-x' } }, branches), null);
+  assert.equal(homeBranch('plan', open, branches), null);
+  assert.equal(homeBranch('build', undefined, branches), null);
 });
 
 // Reviews of ao-pilot PR #14 (dev-workflow T15b).
