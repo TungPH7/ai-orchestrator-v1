@@ -2,7 +2,7 @@
 
 > **Loại:** pilot, không phải module. Xem tiêu chí thành công 1 và mục "Thứ tự build" trong [SPEC.md](SPEC.md). **Dùng:** `sdlc-contract`, `tracker-integration`, `quality-gates`, `agent-roster`, `dev-workflow`. **Là đầu vào cho:** `release-workflow` và Pilot 2 (cùng repo, cùng feature), `project-scaffold` (các bước cài làm tay ở đây).
 >
-> **Trạng thái:** đã duyệt ngày 2026-11-01 (Phiên 21 · Lượt 4). Plan: [tasks/plan.md](tasks/plan.md), đã duyệt ngày 2026-11-01 (Phiên 21 · Lượt 5). **Nguồn thảo luận:** [misc/brainstorm-discussion.md](misc/brainstorm-discussion.md), Phiên 21 · Lượt 1–4.
+> **Trạng thái:** đã duyệt ngày 2026-11-01 (Phiên 21 · Lượt 4); plan đã duyệt ngày 2026-11-01 (Phiên 21 · Lượt 5). Pilot 1 hoàn thành ngày 2026-11-04; plan, danh sách task và kết quả kiểm thật lưu ở [tasks/archive/pilot-1/](tasks/archive/pilot-1/plan.md). Đầu vào cho `project-scaffold`, bảng lỗi kit và chi phí: [tasks/archive/pilot-1/verification.md](tasks/archive/pilot-1/verification.md). **Nguồn thảo luận:** [misc/brainstorm-discussion.md](misc/brainstorm-discussion.md), Phiên 21 · Lượt 1–4.
 
 ## 1. Mục tiêu
 
@@ -28,7 +28,7 @@ Pilot 1 kiểm kit Cấp 1 trên một dự án thật: repo mới, stack Next.j
 
 - Repo private `TungPH7/ao-sample`, gói Free. Nhánh mặc định là `develop` (README, bước cài 6).
 - Monorepo dùng npm workspaces, khai `"workspaces": ["apps/*"]` ở `package.json` gốc.
-- `apps/web`: tạo bằng `create-next-app` 16.4.3, App Router, TypeScript, ESLint, Tailwind CSS, thư mục `src/`, theo lựa chọn mặc định của công cụ (flag ghi ở `tasks/verification.md`, T1). Unit test bằng Vitest và React Testing Library, theo hướng dẫn kèm trong gói Next.js. Giữ `AGENTS.md` mà Next.js sinh ra. Có một trang chủ đơn giản. Cổng 3000.
+- `apps/web`: tạo bằng `create-next-app` 16.4.3, App Router, TypeScript, ESLint, Tailwind CSS, thư mục `src/`, theo lựa chọn mặc định của công cụ (flag ghi ở `tasks/archive/pilot-1/verification.md`, T1). Unit test bằng Vitest và React Testing Library, theo hướng dẫn kèm trong gói Next.js. Giữ `AGENTS.md` mà Next.js sinh ra. Có một trang chủ đơn giản. Cổng 3000.
 - `apps/api`: tạo bằng `nest new` của `@nestjs/cli` 12.0.11, Express, ESM, Vitest và oxlint, theo mặc định của NestJS 12. Có `GET /health` trả `{ "status": "ok" }`. Cổng 3001. Hai chỗ bỏ khỏi khung (bạn duyệt ở Checkpoint 1):
   - gỡ `@nestjs/mau` và script `deploy`: gói này mang 2 lỗ hổng mức high, và dự án không deploy lên nền tảng của NestJS;
   - xóa `apps/api/AGENTS.md`: file này quảng cáo dịch vụ NestJS Observe và chỉ agent cài MCP server của họ.
@@ -126,7 +126,7 @@ Spec dựa vào sáu điều chưa ai thử trên máy bạn. Giai đoạn đầ
 
 Điều nào sai thì mình dừng và đề xuất sửa spec.
 
-**Kết quả (2026-11-02, Checkpoint 1):** điểm 1 đúng một phần (NestJS 12 dùng Vitest và oxlint; `@nestjs/mau` mang 2 lỗ hổng high), điểm 2 đúng khi dùng Vitest, điểm 3 và 4 sai (API từ chối token), điểm 5 đúng kèm `MSYS_NO_PATHCONV=1` và việc tin cậy thư mục. Bạn duyệt sáu chỗ sửa ở Phiên 21 · Lượt 6; mục 2.1, 2.3, 2.4, 2.7, 3, 6, 7 đã sửa theo. Chi tiết trong `tasks/verification.md`.
+**Kết quả (2026-11-02, Checkpoint 1):** điểm 1 đúng một phần (NestJS 12 dùng Vitest và oxlint; `@nestjs/mau` mang 2 lỗ hổng high), điểm 2 đúng khi dùng Vitest, điểm 3 và 4 sai (API từ chối token), điểm 5 đúng kèm `MSYS_NO_PATHCONV=1` và việc tin cậy thư mục. Bạn duyệt sáu chỗ sửa ở Phiên 21 · Lượt 6; mục 2.1, 2.3, 2.4, 2.7, 3, 6, 7 đã sửa theo. Chi tiết trong `tasks/archive/pilot-1/verification.md`.
 
 ## 3. Tech stack
 
@@ -199,7 +199,7 @@ ai-orchestrator-v1/
 ├── SPEC-pilot-1.md              # file này
 ├── SPEC.md                      # mục Pilot 1 trỏ tới file này
 ├── SPEC-tracker-integration.md  # mục 10: repo pilot là ao-sample, ao-pilot vẫn là sandbox
-└── tasks/plan.md, todo.md, verification.md   # lưu vào tasks/archive/pilot-1/ khi xong
+└── tasks/archive/pilot-1/       # plan.md, todo.md, verification.md của Pilot 1
 ```
 
 ## 6. Code style

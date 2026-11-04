@@ -1,6 +1,6 @@
 # Plan triển khai: Pilot 1
 
-> **Spec:** [SPEC-pilot-1.md](../SPEC-pilot-1.md), đã duyệt 2026-11-01 (Phiên 21 · Lượt 4). **Trạng thái:** đã duyệt 2026-11-01 (Phiên 21 · Lượt 5), cùng quyết định 6 và 8. Từ Phiên 21 · Lượt 6, bạn duyệt trước các đề xuất của Claude trong Pilot 1: Claude không dừng hỏi duyệt spec hay plan, chỉ hỏi khi cần bạn bấm, cần quyền hoặc cần thêm thông tin; ở mỗi checkpoint Claude ghi kết quả, báo ngắn rồi làm tiếp. **Task chi tiết:** [todo.md](todo.md). **Kết quả kiểm thật:** `tasks/verification.md`, tạo ở T1.
+> **Spec:** [SPEC-pilot-1.md](../../../SPEC-pilot-1.md), đã duyệt 2026-11-01 (Phiên 21 · Lượt 4). **Trạng thái:** đã duyệt 2026-11-01 (Phiên 21 · Lượt 5), cùng quyết định 6 và 8. Từ Phiên 21 · Lượt 6, bạn duyệt trước các đề xuất của Claude trong Pilot 1: Claude không dừng hỏi duyệt spec hay plan, chỉ hỏi khi cần bạn bấm, cần quyền hoặc cần thêm thông tin; ở mỗi checkpoint Claude ghi kết quả, báo ngắn rồi làm tiếp. **Task chi tiết:** [todo.md](todo.md). **Kết quả kiểm thật:** `tasks/verification.md`, tạo ở T1.
 
 ## Tổng quan
 
@@ -84,18 +84,18 @@ T9 ── T10 bản sửa kit còn lại, tài liệu, lưu trữ
 - [x] Bạn xem code và test của Sub-task đầu, cùng chi phí từ đầu Epic, rồi đồng ý chạy tiếp: bạn chọn cách C, chỉ làm tiếp `SMP-4` (Phiên 23 · Lượt 4), vì phần còn lại ước 50–70 USD, vượt xa mức ước 30–45 USD của cả Epic
 
 ### Giai đoạn 3 (tiếp)
-- [ ] T9: `/ao-build`, `/ao-fix`, `/ao-review` tới khi mọi item của `SMP-2` sang Ready for QA [bạn] (thu hẹp ở Checkpoint 3, đổi lại ở Phiên 23 · Lượt 22)
+- [x] T9: `/ao-build`, `/ao-fix`, `/ao-review` tới khi mọi item của `SMP-2` sang Ready for QA [bạn] (thu hẹp ở Checkpoint 3, đổi lại ở Phiên 23 · Lượt 22)
 
 ### Checkpoint 4
-- [ ] Tiêu chí 3–7 của spec mục 9 đạt
-- [ ] Bạn xem lịch sử Epic trên `SMP`, PR tài liệu và PR code trên `ao-sample`, và `.ai/runs/`
+- [x] Tiêu chí 3–7 của spec mục 9 đạt
+- [x] Bạn xem lịch sử Epic trên `SMP`, PR tài liệu và PR code trên `ao-sample`, và `.ai/runs/`
 
 ### Giai đoạn 4: hoàn thiện
-- [ ] T10: Bản sửa kit còn lại, tài liệu và lưu trữ plan
+- [x] T10: Bản sửa kit còn lại, tài liệu và lưu trữ plan
 
 ### Checkpoint cuối
-- [ ] Đạt 8 tiêu chí ở spec mục 9
-- [ ] Chuyển `tasks/plan.md`, `tasks/todo.md`, `tasks/verification.md` vào `tasks/archive/pilot-1/`
+- [x] Đạt 8 tiêu chí ở spec mục 9
+- [x] Chuyển `tasks/plan.md`, `tasks/todo.md`, `tasks/verification.md` vào `tasks/archive/pilot-1/`
 - [ ] Bạn xác nhận Pilot 1 hoàn thành
 
 ## Usage ước tính

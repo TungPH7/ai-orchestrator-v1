@@ -1,6 +1,6 @@
 # Kiểm thật: Pilot 1
 
-> **Plan:** [plan.md](plan.md). **Task:** [todo.md](todo.md). **Spec:** [SPEC-pilot-1.md](../SPEC-pilot-1.md). Giờ theo giờ Việt Nam (UTC+7).
+> **Plan:** [plan.md](plan.md). **Task:** [todo.md](todo.md). **Spec:** [SPEC-pilot-1.md](../../../SPEC-pilot-1.md). Giờ theo giờ Việt Nam (UTC+7).
 
 ## T1: Tiền đề về khung app và `claude -p` (2026-11-01, khoảng 23:45 → 23:55)
 
@@ -766,6 +766,134 @@ Tổng 7,58 USD. Claude đã ước lượt `security` khoảng 2–4 USD; thự
   - Low: trên Linux, `/tmp/ao-reviews` dùng chung giữa các user và đoán được. Không áp dụng cho Windows và macOS.
 - Cả hai báo cáo khuyên sửa hai Medium trong item kit tiếp theo, trước khi dùng review phần mới để gỡ một High lần nữa. Ở PR #13 chỉ có một High cũ và không có High mới, nên ba ca P1–P3 và ca dòng `Scope` khác dạng không xảy ra.
 
-### Việc T10 còn lại
+### Gate ③ của PR #13
 
-Bạn approve và Squash and merge PR #13 (gate ③; PR chạm đường dẫn được bảo vệ). Hai Medium và các Low của lần 3 ghi ở trên là việc của kit, chưa chép vào `ao-sample`. Sau đó bước 2 ("Đầu vào cho `project-scaffold`"), bước 3 (`SPEC.md`, `SPEC-pilot-1.md`, README) và bước 4 (lưu trữ plan).
+- Bạn approve và merge PR #13 lúc 19:51 (`e56a207`). Bạn tự merge, vì PR chạm đường dẫn được bảo vệ. Trên commit merge:
+  - `CI` (policy, build-test, sast, secrets) xanh;
+  - `Deploy` (audit, deploy) xanh;
+  - hai lượt `jira-sync` theo `deployment_status` báo "no work item of SMP";
+  - ba lượt `merge-gate` xanh.
+- `SMP-15` vẫn ở New, như các Task chép kit trước (`SMP-3`, `SMP-12`, `SMP-13`, `SMP-14`).
+- Bản chép kit của `ao-sample` giống hệt `main` của kit (`5a352ea`). Claude so hash của 106 file trong `contract`, `lib`, `tracker`, `quality`, `agents`, `templates` và của 15 script đã chép: không file nào khác.
+- Bước 1 của T10 xong. Ba lần review PR #13 tốn 26,95 USD cho agent, cộng khoảng 0,5 USD cho phép thử bằng Sonnet.
+
+### Bước 2: kit PR #167
+
+Bảng bước cài ở mục sau cho thấy một chỗ của tài liệu kit chưa sửa: bước 10 của `docs/jira-setup.md` chỉ ghi đường bấm của board cũ, còn `SMP` dùng board mới (T3). Kit PR #167 thêm đường bấm của board mới, sinh từ `lib/tracker/checklist.mjs`. Test mới trong `tests/tracker/checklist.test.mjs` đỏ trước khi sửa. Năm lệnh kiểm xanh (853 test). PR chỉ sửa tài liệu cho người dựng Jira, không sửa file nào dự án chép, nên `ao-sample` không cần PR chép.
+
+## Đầu vào cho `project-scaffold`
+
+Các bước dựng `ao-sample` và `SMP` ở T1–T6, theo thứ tự một lần cài mới. "README bước N" là bước của mục "Cài kit vào repo dự án" trong `README.md`. Thời gian lấy từ các mục ở trên; bước nào không ghi giờ thì để "không đo".
+
+| # | Bước | Ai, bằng gì | Tự động được không | Thời gian | Chỗ vướng |
+|---|---|---|---|---|---|
+| 1 | Sinh khung app (T1, T4) | Claude: `create-next-app@16.4.3`, `@nestjs/cli@12.0.11`, flag ghi ở T1 | Có | 3 giây mỗi app; `npm install` 3 phút | `@nestjs/mau` mang 2 lỗ hổng high, nên gỡ cùng script `deploy`. NestJS 12 dùng Vitest và oxlint, không dùng Jest. `apps/api/AGENTS.md` quảng cáo dịch vụ trả phí, nên xóa. `apps/web/AGENTS.md` giữ lại; `next dev` tự thêm lại khối của nó |
+| 2 | Chỉnh khung (T4) | Claude: `HealthController`, Vitest cho web, script `typecheck` và `test:coverage`, `scripts/dev.mjs`, Playwright | Có | không đo | `typecheck` phải chạy `next typegen` trước `tsc`. Playwright cần tải Chromium bản mới (39 giây). `test:coverage` của API phải chạy cả `test/**/*.e2e-spec.ts`, nếu không CI bỏ qua integration test (T8) |
+| 3 | Tạo repo GitHub (T2) | Claude: `gh repo create --private` | Có | vài giây | |
+| 4 | Chép kit (T5; README bước 1–3) | Claude: script tạm `install-kit.mjs` trong scratchpad | Có | `npm ci` 2 phút 32 giây | Kit chưa có script cài; Claude viết tạm theo README |
+| 5 | Render agent (T5; README bước 2) | Claude: `render-agents.mjs --project .` | Có | vài giây | |
+| 6 | Skill theo stack (T5) | Claude chọn, đọc, quét tìm lệnh và URL lạ, ghim theo commit | Một phần: tải và ghim tự động được; đọc và duyệt cần người | không đo | Cả hai repo không có file LICENSE; nhận theo giấy phép MIT mà frontmatter khai |
+| 7 | Commit đầu (T5) | Claude, sau khi bạn chọn cách (b) | Có, khi đã có Task trước | vài phút | Hook `commit-msg` đòi mã Jira, nên phải tạo Task `SMP-1` trước. `curl -d` từ Git Bash làm hỏng chữ tiếng Việt; gọi bằng `fetch` của Node thì được |
+| 8 | Tạo space Jira (T3; `docs/jira-setup.md` bước 9) | Bạn, giao diện | Không: `POST /rest/api/3/project` trả 401 với token admin có scope | khoảng 40 phút cho bước 8–10 | Gói Free không có tùy chọn dùng chung cấu hình ("share settings") với `DEMO` |
+| 9 | Gán scheme của `DEMO` (T3) | Bạn, Space settings | Chưa thử bằng API | (trong 40 phút ở trên) | |
+| 10 | Board (T3; `docs/jira-setup.md` bước 10) | Bạn, giao diện | Không | (trong 40 phút ở trên) | Board mới: cột ở **Configure columns**, tài liệu chỉ ghi đường của board cũ (kit PR #167). Lần **Publish** đầu để `New` nằm nhầm trong cột `In Review` |
+| 11 | Quyền của hai service account, `jira:check` (T3) | Claude: REST, `jira:check` | Có | vài giây | Lần đầu có 3 chỗ lệch, đều ở board |
+| 12 | Environment, rule nhánh của `merge-gate`, secret `JIRA_CI_TOKEN` (T6; README bước 6) | Claude: `gh api`, `gh secret set` qua pipe | Có | vài giây | |
+| 13 | Push `main`, tạo `develop`, đặt nhánh mặc định (T6) | Claude | Có | vài giây | GitHub không chạy workflow nào sau lần push đầu lên repo trống. Workflow chỉ chạy theo sự kiện sau một push đụng `.github/workflows/` (T7). `Deploy` chạy tay thì `audit` đỏ trên commit đầu và gắn cờ `SMP-1`, như spec mục 2.5 dự kiến |
+| 14 | Thêm repo vào bản cài App `ao-dev`, `ao-review` (T2, T6; README bước 5) | Bạn, giao diện | Không: API trả 403 với token `gh` | không đo | |
+| 15 | Nối GitHub for Atlassian với repo (T6; README bước 7) | Bạn, giao diện | Không | không đo | Panel Development gắn PR theo mọi key trong thân PR, nên thân PR chép kit không nên nhắc key của item khác (T7) |
+| 16 | Key thứ hai của `ao-dev`, secret `AO_DEV_APP_KEY` (T6) | Bạn tạo key; Claude kiểm, đặt secret bằng pipe file, rồi xóa file | Một phần | không đo | |
+| 17 | Tin cậy thư mục (T6; README bước 8) | Bạn, mở `claude` trong repo một lần | Không: Claude không sửa `~/.claude.json` | vài giây | Thư mục chưa tin cậy thì Claude Code bỏ qua luật `allow` của dự án (T1) |
+| 18 | Bật hai server MCP (T6) | Claude: `.claude/settings.local.json` | Có | vài giây | Chưa bật thì `claude mcp list` báo "Pending approval" |
+| 19 | `gh:protect` (T6; README bước 9) | Claude | Có | vài giây | Repo private gói Free chỉ được soft mode |
+| 20 | `/ao-status` lần đầu (T1, T6) | Claude: `MSYS_NO_PATHCONV=1 claude -p --model sonnet "/ao-status"` | Có | 2 turn, 0,11 USD | Thiếu `MSYS_NO_PATHCONV=1` thì Git Bash đổi `/ao-status` thành đường dẫn Windows |
+
+Tóm lại: Claude làm hết 12 bước bằng lệnh hay API. Bạn và Claude làm chung 2 bước (6 và 16). 6 bước chỉ bạn làm được trên giao diện (8, 9, 10, 14, 15, 17).
+
+**Việc cho `project-scaffold`:**
+
+1. Một script cài kit thay cho `install-kit.mjs` tạm: bước 4, 5 và 18, cùng `.gitignore` và script `prepare`.
+2. Profile Next.js + NestJS: flag sinh khung, gỡ `@nestjs/mau`, xóa `apps/api/AGENTS.md`, `next typegen` trước `tsc`, Vitest cho hai app, `test:coverage` gồm cả integration test, tải Chromium cho Playwright.
+3. Thứ tự các bước:
+   - tạo Task Jira cho commit đầu trước khi commit;
+   - sau lần push đầu, đẩy thêm một commit đụng `.github/workflows/`, để GitHub chạy workflow theo sự kiện.
+4. Các bước trên giao diện vẫn là hướng dẫn bấm: App, GitHub for Atlassian, space và board. [Inference] Token admin có scope không tạo được space; một loại token khác có thể làm được, nhưng chưa thử.
+5. Lệnh REST tới Jira:
+   - gửi `Accept-Language: en-US`, vì service account nhận tên tiếng Trung;
+   - gửi chữ tiếng Việt bằng `fetch`, không bằng `curl -d` từ Git Bash.
+
+## Lỗi kit của Pilot 1
+
+| # | Lỗi | Tìm ở | Kit PR | Test |
+|---|---|---|---|---|
+| 1 | Mẫu tắt kiểm tra thiếu `oxlint-disable`, nên agent tắt được lint của `apps/api` mà `policy` không thấy | T1 | #142 | `policy.test.mjs` |
+| 2 | `openQuestions` coi câu hỏi mở đầu "Không có …" là không có câu hỏi | T7 (`ux`), review PR #5 | #144, #145, #160 | `runs.test.mjs` |
+| 3 | `ao-step` chờ đủ 30 phút khi CI chưa từng chạy | T7 | #144, #145 | `runner.test.mjs` |
+| 4 | `last.md` cắt câu trả lời của agent ở 2000 ký tự, không dấu báo | T7 | #144 (dấu báo), #159 (giữ trọn) | `runner.test.mjs` |
+| 5 | Trả lời câu hỏi qua `claude -p` cần `--permission-mode acceptEdits`; câu trả lời không được chép nguyên văn | T7 | #144 | không (tài liệu và skill) |
+| 6 | Finding của review PR #3: thời gian chờ CI, cách nói "không có câu hỏi", giới hạn của runner | T7 | #145 | `runner.test.mjs`, `runs.test.mjs` |
+| 7 | Mẫu coverage không khớp `*.e2e-spec.*` của NestJS | T8 | #147 | `coverage.test.mjs`, `policy.test.mjs` |
+| 8 | `/ao-fix` giao lại cùng một ghi chú cho dev agent | T9 (`SMP-4`) | #148 | `runner.test.mjs`, `steps-pr.test.mjs` |
+| 9 | Review tốn nhiều: cache 1 giờ, không có gói bối cảnh, `security` luôn ở `max` | T9 | #149, #150, #151 | `runner.test.mjs`, `gates.test.mjs`, `security-scope.test.mjs`, `steps-pr.test.mjs`, `review-pack.test.mjs` |
+| 10 | Finding của review PR #6 về gói bối cảnh | T9 | #153 | `review-pack.test.mjs`, `review-pack-writer.test.mjs`, `security-scope.test.mjs`, `facts.test.mjs`, `runner.test.mjs` |
+| 11 | Review chạy trên checkout của nhánh PR (cách tạm: chuyển sang `develop`) | T9 | #156, #165, #166 | `steps-pr.test.mjs`, `runner.test.mjs`, `review-tree.test.mjs` |
+| 12 | `gh-guard` chặn `git archive` của `reviewer`, nên agent không chạy được code của PR | T8, T9 | #156 (worktree thay cho `git archive`) | `steps-pr.test.mjs`, `runner.test.mjs` |
+| 13 | Agent bỏ server chạy sau khi có kết quả, lượt chạy treo (4 lần) | T7, T9 | #157 | `agent-process.test.mjs`, `runner.test.mjs` |
+| 14 | `Next:` sau gate ② gợi ý item bị chặn | T7 | #158 | `steps-epic.test.mjs`, `facts.test.mjs` |
+| 15 | Hai thay đổi runner của T7b chưa có test giữ | review PR #5 | #159 | `runner.test.mjs` |
+| 16 | Tên file git đặt trong ngoặc kép lọt khỏi `policy` | review PR #5 | #161 | `diff-paths.test.mjs`, `review-pack.test.mjs`, `review-pack-writer.test.mjs` |
+| 17 | `block-atlassian` chặn nhầm lệnh chỉ chứa link | T7, T9 | #162, #165, #166 | `bypass.test.mjs` |
+| 18 | `ba` không có tool tạo link Blocks | T7 | #163 | `bypass.test.mjs`, `roster.test.mjs`, `render.test.mjs` |
+| 19 | Các Low của kit PR #153 và của review PR #7 | T9 | #161, #164 | `review-pack.test.mjs`, `review-pack-writer.test.mjs`, `conventions.test.mjs` |
+| 20 | Review PR #13 lần 1: hook để lọt lệnh gọi mạng; worktree trong dự án nạp `.claude/rules` của PR; base không phải nhánh được bảo vệ; các Low | T10 | #165 | `bypass.test.mjs`, `review-tree.test.mjs`, `steps-pr.test.mjs`, `runner.test.mjs`, `diff-paths.test.mjs` |
+| 21 | Review PR #13 lần 2: worktree nạp `AGENTS.md` của PR; checkout không ở nhánh được bảo vệ; sau một High, `security` review lại cả PR | T10 | #166 | `review-tree.test.mjs`, `runner.test.mjs`, `steps-pr.test.mjs`, `pull-request.test.mjs`, `merge-gate.test.mjs`, `security-scope.test.mjs`, `facts.test.mjs`, `bypass.test.mjs`, `review-pack.test.mjs` |
+| 22 | Bước board của `docs/jira-setup.md` chỉ có đường bấm của board cũ | T3 | #167 (đang mở) | `checklist.test.mjs` |
+
+Mọi kit PR trong bảng, trừ #167, đã merge và đã vào `ao-sample`: #142 qua commit đầu, các PR sau qua năm PR chép kit #3, #5, #6, #7 và #13. #167 không sửa file nào dự án chép.
+
+**Chưa sửa, để sau Pilot 1** (bạn chọn ở Phiên 26 · Lượt 8: Medium và Low của lần review cuối PR #13 ghi lại, không chặn PR):
+
+- Medium: `openCounts` đếm số dòng của `## Earlier findings`, không theo từng finding (`reviewer`, lần 3).
+- Medium: báo cáo phải có dòng `Scope` đúng mẫu thì lỗi High cũ mới được mang sang; Status "Fixed một phần" được tính là Fixed (`security`, lần 3). Cả hai báo cáo khuyên sửa hai Medium này trước khi dùng review phần mới để gỡ một High lần nữa.
+- Medium: worktree ở thư mục temp không có `node_modules`, nên agent review không chạy được test cần package (lần 1). CI vẫn chạy test của head.
+- Low:
+  - `develop` cục bộ đi trước origin thì `checkoutStop` và `homeBranch` vẫn cho qua;
+  - trên Linux, `/tmp/ao-reviews` dùng chung giữa các user;
+  - hai bản clone cùng tên thư mục dùng chung một worktree;
+  - các đường vòng B1–B3 của hook;
+  - `unquotePath` làm hỏng ký tự ngoài BMP.
+
+Các Low của code app (PR #4, #10, #11, #12) là việc của Epic, không phải lỗi kit; danh sách ở "Tổng kết T9".
+
+## Chi phí của Pilot 1
+
+Chi phí quy đổi theo giá API của các lượt agent, cộng từ các bảng ở trên. Chưa tính các phiên Sonnet điều phối (0,10–0,19 USD mỗi phiên) và lượt `be-dev` bị dừng của `SMP-4` (không đo).
+
+| Phần | Chi phí |
+|---|---|
+| T1: tiền đề (3 lượt Sonnet) | 0,35 USD |
+| `SMP-2`: stage spec và plan (T7) | 15,14 USD |
+| `SMP-4` | 10,23 USD |
+| `SMP-5` | 6,25 USD |
+| `SMP-6` | 8,09 USD |
+| `SMP-7` (`SMP-8`, `SMP-9`) | 13,53 USD |
+| `SMP-10` | 6,11 USD |
+| `SMP-11` | 6,52 USD |
+| Review bốn PR chép kit #3, #5, #6, #7 | 22,95 USD (5,39 + 5,51 + 6,91 + 5,14) |
+| Review PR chép kit #13 (ba lần) | 26,95 USD |
+| Phép thử: gói review trên PR #4, worktree ở temp bằng Sonnet | khoảng 1,45 USD (0,95 + 0,5) |
+| **Tổng** | **khoảng 117,6 USD** |
+
+- Epic `SMP-2` tốn 65,87 USD cho 6 item, so với mức ước 30–45 USD của plan. Mức ước đó dựa trên Epic `DEMO-20`.
+- Năm PR chép kit tốn 49,90 USD cho review, so với mức ước 1–5 USD mỗi PR. Lý do: PR chép kit chạm đường dẫn được bảo vệ, nên `security` chạy ở `max`. Gói bối cảnh của một PR chép kit cũng lớn. PR #13 còn cần ba lần review.
+- Sửa một số ở "Tổng kết T9": 15,04 USD của đợt 1 gồm 0,70 USD của hai phiên điều phối. Riêng agent là 14,34 USD (6,25 + 8,09).
+
+## Kiểm tiêu chí của spec mục 9 (2026-11-04)
+
+| Tiêu chí | Kết quả |
+|---|---|
+| 1 | `develop` là nhánh mặc định; `git merge-base --is-ancestor origin/main origin/develop` thoát 0. `CI` xanh trên PR đầu (#1) và trên `develop` sau lần merge đầu (`CI` #6 trên `2fc61a1`) |
+| 2 | `npm run jira:check -- --space SMP` chạy lại hôm nay: "Jira space SMP matches tracker/jira.yaml" |
+| 3 | `SMP-4`, `SMP-5`, `SMP-6`, `SMP-7`, `SMP-10`, `SMP-11` ở Ready for QA; `SMP-8`, `SMP-9` Done (đọc lại hôm nay). PR tài liệu #1 do `merge-gate` merge sau gate ②; 6 PR code (#4, #8, #9, #10, #11, #12) do `merge-gate` merge sau gate ③. Job `audit` của `Deploy` xanh trên cả 12 commit vào `develop` sau commit đầu, kể cả `e56a207` |
+| 4–7 | Bạn xác nhận ở Checkpoint 4. Sau đó chỉ có PR #13: bạn tự merge; bot `ao-review` chỉ comment hay request changes, không approve; không agent nào push thẳng hay chuyển item sang Done |
+| 8 | Có bảng các lượt agent (ở từng mục T1–T10), bảng bước cài và bảng lỗi kit với PR sửa (hai mục trên). Mỗi lỗi kit có PR sửa và test, trừ dòng 5 (tài liệu và skill, không có code để test) và các mục "chưa sửa" bạn chọn để sau Pilot 1. #167 chờ bạn merge |
