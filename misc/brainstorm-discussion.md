@@ -31,7 +31,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 21 | `3ead2782-314d-4ae8-981b-96f6ed83a60e` | 2026-11-01 khoảng 22:50 → 2026-11-02 khoảng 01:40 | Bạn dán đoạn cuối của Phiên 20, hỏi vì sao `main` và `develop` của `ao-pilot` lệch nhau, cách xử lý, và lựa chọn 3 có giải quyết được không; Claude kiểm hai nhánh và code của `audit`: `develop` đi trước 10 là đúng GitFlow, 4 commit chỉ có trên `main` là dấu vết lối tắt sandbox và không đổi nội dung; lựa chọn 3 không giải quyết; đề xuất ghi quy tắc merge commit và back-merge từ `main` vào spec `release-workflow`; bạn chọn Pilot 1; Claude nêu phạm vi, giả định A1–A8 và ba câu hỏi (repo, space Jira, feature); bạn duyệt và chọn theo đề xuất: repo mới `ao-sample`, space mới `SMP`, Epic "Ghi chú"; Claude viết `SPEC-pilot-1.md` (nhánh `task/spec-pilot-1`); bạn chọn tạo key mới cho `ao-dev` và duyệt spec; Claude viết plan 10 task, 5 checkpoint, cùng quyết định 6 (lỗi kit giữa Epic) và 8 (Checkpoint 3 sau lượt build đầu); bạn duyệt plan; kit PR #141; T1–T2: tạo repo `ao-sample`, điểm 1 đúng một phần (NestJS 12 dùng Vitest và oxlint, `@nestjs/mau` mang 2 lỗ hổng high), điểm 2 đúng nếu dùng Vitest, điểm 3 và 4 sai (API từ chối), điểm 5 đúng kèm `MSYS_NO_PATHCONV=1` và tin cậy thư mục; Checkpoint 1: bạn duyệt sáu chỗ sửa, dùng chung scheme với `DEMO`, và duyệt trước mọi đề xuất trong Pilot 1; T1a (kit PR #142, `oxlint-disable`); T4 khung app xanh sáu lệnh; T5 bản chép kit và hai skill theo stack; commit đầu bị hook `commit-msg` từ chối vì thiếu mã Jira; bạn gửi ảnh: tùy chọn share settings lúc tạo space cần gói trả phí; Claude đổi cách: tạo space như thường rồi gán ba scheme của `DEMO` trong Space settings; bạn tạo xong `SMP` và gán ba scheme; Claude kiểm bằng API, `jira:check` còn 3 chỗ lệch của board, tạo bốn environment và đặt secret `JIRA_CI_TOKEN`; bạn tắc ở B3 (board thiếu cột); Claude đọc cấu hình board bằng API và ghi từng bước sửa cột trong Board settings; bạn gửi ảnh: board của `SMP` là board mới, Board settings không có Columns; Claude tìm tài liệu Atlassian: cột cấu hình ở More actions → Configure columns trên board; bạn gửi ảnh hộp Configure columns đã sửa đúng, chờ bấm Publish; bạn tắc ở D2 (không có Private keys); Claude đính chính: đường đúng là Credentials → Key pairs → New key, như `docs/github-apps-setup.md` đã ghi; bạn xong B–E và chọn cách (b); Claude đặt secret `AO_DEV_APP_KEY`, tạo `SMP-1`, commit đầu `6f5831d` lên `main` và `develop`; GitHub không chạy workflow cho lần push đầu, Claude chạy tay `merge-gate` (xanh) và `Deploy` (`audit` đỏ, gắn cờ `SMP-1`); Checkpoint 2 đạt, tiêu chí 1 đổi; Epic `SMP-2`; chờ bạn dọn `SMP-1` và bấm Start spec |
 | 22 | `d714399c-65d0-4f98-bbbb-720338ff6bea` | 2026-11-02 khoảng 10:50 → khoảng 20:08 | Bạn dán đoạn cuối của Phiên 21 kèm ảnh panel Development của `SMP-1`, hỏi `Deploy` đỏ có đúng dự kiến không; Claude đọc run và log của `audit`: đúng dự kiến (commit đầu không qua PR), và ảnh cho thấy GitHub for Atlassian đã gắn run vào `SMP-1`; bạn dọn `SMP-1` và bấm Start spec; Claude merge kit PR #143 (T3–T6, Checkpoint 2), chạy `/ao-spec SMP-2` qua `claude -p`: `ba` viết SPEC (1,49 USD) và để lại 4 câu hỏi; Claude chuyển câu hỏi cho bạn, khuyên đồng ý cả bốn; bạn đồng ý cả bốn; Claude nối lại phiên `claude -p` với câu trả lời: `ba`, `ux`, `sa` chạy (3,36 USD), `sa` để lại 2 câu hỏi (đếm emoji, chuẩn hóa NFC và xuống dòng); Claude khuyên đồng ý cả hai; bạn đồng ý cả hai; `sa` ghi câu trả lời, `ba` mở PR tài liệu #1, nhưng GitHub không chạy CI và `ao-step` chờ 30 phút; bạn hỏi vì sao không dừng; Claude dùng nhánh và PR thử tìm ra nguyên nhân (workflow từ lần push đầu chưa được ghi nhận trigger; một push đụng `.github/workflows/` gỡ được), `CI` của PR #1 xanh; tìm thêm lỗi kit `openQuestions` bỏ sót 10 câu hỏi của `ux`; tới gate ①, Claude khuyên không thêm dòng "Đã lưu ghi chú." và gửi các bước Approve spec; bạn hỏi vì sao có hai lỗi nặng và yêu cầu sửa; Claude sửa ở kit (PR #144), chép vào `ao-sample` (Task `SMP-3`, PR #3), `/ao-review 3` Approve (1 Medium, 2 Low ở kit, sửa ở kit PR #145); bạn approve và merge PR #3, hỏi có cần chép kit vào `ao-pilot` (chưa cần); bạn đã bấm Approve spec, chọn chạy `/ao-plan`; `sa` chạm giới hạn 5 giờ giữa lượt viết plan; bạn bảo làm tiếp; `sa` viết xong plan và ba ADR, `ba` tạo 8 item nhưng không tạo được link Blocks; phiên dừng vì Claude chạm giới hạn tuần |
 | 23 | `6d4fa505-b003-47c3-bad3-14958ad7ae83` | 2026-11-02 khoảng 22:10 → | Bạn dán đoạn cuối của Phiên 22 để làm tiếp; Claude tạo 5 link Blocks bằng token CI, tắt server spike `sa` để lại, ghi stage plan và 3 lỗi kit vào `verification.md`, gửi các bước duyệt plan (gate ②) |
-| 26 | `6b41390c-2d48-4d39-9a30-5a4e22f76bf7` | 2026-11-04 khoảng 13:10 → | Bạn báo đã merge kit PR #165; Claude chép vào `ao-sample` PR #13 và review lần 2 (security lại có 1 High: `AGENTS.md`), mở kit PR #166; bạn hỏi chạy review ở high, vì sao lần nào cũng ra High, vì sao security review cả PR; Claude tìm lý do của luật review toàn bộ trong file này; bạn chọn đổi luật review phần mới, điều kiện đường dẫn được bảo vệ (b), và sửa gốc (code của PR không nằm trong thư mục dự án); Claude thử bằng Sonnet và sửa thêm trong kit PR #166; bạn merge #166; Claude chép vào PR #13, review lần 3 còn hai Medium để sau Pilot 1; bạn merge PR #13 (`e56a207`); T10: kit PR #167 (đường bấm của board Jira mới) và #168 (đầu vào cho `project-scaffold`, bảng lỗi kit, chi phí Pilot 1 khoảng 117,6 USD, plan vào `tasks/archive/pilot-1/`); bạn xác nhận Pilot 1 hoàn thành (PR #169); bạn hỏi tài khoản GitHub Free có bị tính tiền không: Billed 0 USD, phần miễn phí bù hết Gross; chờ bạn chọn việc tiếp theo |
+| 26 | `6b41390c-2d48-4d39-9a30-5a4e22f76bf7` | 2026-11-04 khoảng 13:10 → | Bạn báo đã merge kit PR #165; Claude chép vào `ao-sample` PR #13 và review lần 2 (security lại có 1 High: `AGENTS.md`), mở kit PR #166; bạn hỏi chạy review ở high, vì sao lần nào cũng ra High, vì sao security review cả PR; Claude tìm lý do của luật review toàn bộ trong file này; bạn chọn đổi luật review phần mới, điều kiện đường dẫn được bảo vệ (b), và sửa gốc (code của PR không nằm trong thư mục dự án); Claude thử bằng Sonnet và sửa thêm trong kit PR #166; bạn merge #166; Claude chép vào PR #13, review lần 3 còn hai Medium để sau Pilot 1; bạn merge PR #13 (`e56a207`); T10: kit PR #167 (đường bấm của board Jira mới) và #168 (đầu vào cho `project-scaffold`, bảng lỗi kit, chi phí Pilot 1 khoảng 117,6 USD, plan vào `tasks/archive/pilot-1/`); bạn xác nhận Pilot 1 hoàn thành (PR #169); bạn hỏi tài khoản GitHub Free có bị tính tiền không: Billed 0 USD, phần miễn phí bù hết Gross; bạn chọn `release-workflow`; Claude nêu phạm vi, điều vừa kiểm (repo private gói Free không có secret theo môi trường và người duyệt bắt buộc, phần miễn phí 12 USD Actions mỗi tháng, tài khoản agent không tạo được Fix Version), bảy giả định và ba câu hỏi (VPS, cách đưa bản mới vào VPS, kiểm thật ở `ao-pilot` hay `ao-sample`); chờ bạn trả lời |
 
 ---
 
@@ -11699,3 +11699,132 @@ Không, bạn chưa bị tính đồng nào. Cột **Billed amount** ghi 0 USD c
 Nếu bạn chụp phần mở rộng của một ngày gửi mình, mình tính được còn bao nhiêu phút. Nếu sắp hết, mình sẽ đề xuất vài cách giảm phút CI.
 
 **Việc chính:** PR #169 đã merge, và CI trên `main` xanh. Pilot 1 đã đóng hẳn. Mình chờ bạn chọn việc tiếp theo: `release-workflow` (mình khuyên chọn), sửa các lỗi kit để sau Pilot 1, hoặc `figma-integration`. Lượt này mình ghi vào log trên nhánh `docs/phien-26-log`. Nhánh này sẽ đi cùng PR đầu tiên của việc bạn chọn.
+
+# Phiên 26 · Lượt 12 — 2026-11-04 khoảng 23:45
+
+**Bạn:**
+
+```markdown
+Làm tiếp module release-workflow nhé
+```
+
+Trước khi trả lời, Claude đọc `SPEC.md`, `docs/sdlc.md`, các việc mà `agent-roster`, `dev-workflow` và Pilot 1 để lại cho module này, và `deploy.yml` của `ao-sample`. Claude cũng đọc tài liệu GitHub về environment, tiền Actions và GHCR, tìm quyền cần để tạo Fix Version của Jira, kiểm quyền Jira của tài khoản agent trên `SMP`, kiểm Docker trên máy bạn, rồi tạo nhánh `task/spec-release-workflow` từ nhánh log `docs/phien-26-log`.
+
+**Claude:**
+
+Mình đã tạo nhánh `task/spec-release-workflow`, trên đó có cả log của Lượt 11. Dưới đây là phạm vi, những điều mình vừa kiểm, các giả định và ba câu hỏi. Mình chưa viết `SPEC-release-workflow.md`.
+
+## Phạm vi của `release-workflow`
+
+Đây là vòng ngoài, chạy sau khi PR đã merge vào `develop`:
+
+1. Tự deploy `develop` lên Development.
+2. `qa` kiểm từng item trên Development, rồi bạn bấm Accept.
+3. Tính điểm cắt và cắt `release/*` lên Staging (gate ④).
+4. Full regression trên Staging, rồi viết release note.
+5. Lên Production (gate ⑤), gắn tag, merge ngược về `develop`.
+6. Hotfix và rollback.
+
+**Các module trước để lại cho module này:**
+- **Từ `agent-roster`:**
+  - `qa` cần đúng commit đã deploy;
+  - ảnh bằng chứng của `qa` mới nằm trên máy bạn, chưa lên Jira;
+  - báo cáo regression phải vào Git, nhưng `qa` chỉ đọc;
+  - `deploy.yml` chèn thẳng tên nhánh vào lệnh shell;
+  - environment `production` không có người duyệt bắt buộc;
+  - job `audit` chưa có `timeout-minutes`.
+- **Từ `dev-workflow` và Pilot 1:**
+  - `DEMO-21` trên `ao-pilot` và sáu item của `SMP` đang ở Ready for QA;
+  - quy tắc merge commit và merge ngược từ `main` về `develop` (Phiên 21);
+  - Epic chỉ Done được khi các item con đã lên Production;
+  - Pilot 1 để module này quyết chuyện cơ sở dữ liệu và Docker.
+
+**Ngoài phạm vi:**
+- profile Spring Boot và script cài kit (`project-scaffold`);
+- CLI tự chạy bước kế tiếp (Cấp 2);
+- Figma;
+- các lỗi kit để sau Pilot 1.
+
+## Điều mình vừa kiểm
+
+- **GitHub Free, repo private** (theo tài liệu GitHub):
+  - Repo private có environment; `ao-sample` đang dùng. Nhưng repo private không có environment secret, environment variable, giới hạn nhánh được deploy, người duyệt bắt buộc hay wait timer.
+  - Vì vậy GitHub không tự chặn được gate ⑤. Thêm nữa, workflow ở bất kỳ nhánh nào cũng đọc được secret của repo.
+- **Tiền Actions:**
+  - Gói Free cho 12 USD mỗi tháng, tức khoảng 2.000 phút Linux (0,006 USD mỗi phút).
+  - Self-hosted runner miễn phí, và không trừ vào phần này.
+  - Ảnh của bạn ghi 4,31 USD trong 4 ngày, tức đã dùng khoảng 36% phần miễn phí.
+- **GHCR** (kho Docker image của GitHub) hiện miễn phí cả dung lượng lẫn băng thông.
+- **Jira, tài khoản agent trên `SMP`:**
+  - đọc được Fix Version (`SMP` chưa có bản nào);
+  - sửa item và gắn file được;
+  - không có quyền Administer Projects. Theo tài liệu REST của Jira (mình đọc qua một bản chép) và một thảo luận trên Atlassian Community tháng 6/2026, tạo và phát hành Fix Version cần quyền này, và Jira chưa có quyền nào hẹp hơn.
+- **`ao-sample`:**
+  - `Deploy` hiện là deploy giả, chỉ chạy một lệnh `echo`;
+  - app chưa có Dockerfile;
+  - API giữ ghi chú trong bộ nhớ, nên mỗi lần deploy là mất hết ghi chú.
+- **Máy bạn** có Docker 24.0.7 chạy trên WSL2, và có OpenSSH.
+
+## Giả định (sửa ngay nếu sai)
+
+1. **Năm lệnh mới, cùng kiểu với `/ao-*` của `dev-workflow`.** Mỗi lệnh mở đầu bằng script kiểm cổng.
+
+   | Lệnh | Gọi agent | Dừng ở |
+   |---|---|---|
+   | `/ao-qa <KEY>` | `qa` | Báo cáo QA trên item; bạn bấm Accept |
+   | `/ao-release` | `devops` | Gate ④: danh sách item của bản |
+   | `/ao-ship <vX.Y.Z>` | `qa` (regression), `devops` (release note, PR release → `main`) | Gate ⑤: bạn approve PR release |
+   | `/ao-hotfix <BUG>` | Dev agent, `reviewer`, `security`, `qa`, `devops` | Gate ③, rồi gate ⑤ |
+   | `/ao-rollback <môi trường>` | Không | Bản trước đó chạy lại |
+
+   Deploy không phải lệnh: nó tự chạy khi `develop`, `release/*`, `hotfix/*` hay `main` có commit mới đã qua cổng. `/ao-status` hiện thêm bản release đang mở và item nào đang chờ release.
+2. **Hạ tầng:** một VPS Linux chạy cả ba môi trường. Mỗi môi trường là một stack Docker Compose riêng, có cổng riêng.
+   - Mỗi commit được build thành image, gắn tag bằng mã commit.
+   - Production chạy đúng image đã qua Staging.
+   - Rollback là chạy lại image của bản trước.
+   - Build, deploy và smoke test chạy trên VPS, để không tốn phút Actions.
+3. **QA:**
+   - `qa` chạy trên máy bạn và kiểm qua URL của Development.
+   - Code `qa` đọc nằm trong một worktree ở đúng commit đã deploy, giống worktree của lượt review.
+   - Ảnh và trace được một script của kit gắn lên item Jira. Script làm việc này, không phải agent.
+   - Regression trên Staging chạy toàn bộ E2E của repo. Script của kit commit báo cáo regression lên nhánh release, vì `qa` chỉ đọc.
+4. **Fix Version:** bạn tạo bản và bấm Release trên giao diện Jira; mình sẽ ghi từng bước bấm. Script gắn Fix Version cho item. Như vậy tài khoản agent không cần quyền admin của space.
+5. **Quy tắc GitFlow:**
+   - PR `release/*` → `main` và PR merge ngược `main` → `develop` dùng merge commit, không squash, để hai nhánh chung lịch sử.
+   - Sau gate ⑤, `merge-gate` merge PR release, gắn tag `vX.Y.Z`, rồi mở PR merge ngược.
+   - Bản đầu tiên là `v0.1.0`.
+6. **`ao-sample` vẫn không có cơ sở dữ liệu ở Pilot 2.** Kit có chỗ cho bước migration, và ghi quy tắc đổi schema an toàn khi rollback. Kiểm thật phần đó để tới dự án có cơ sở dữ liệu.
+7. **Chi phí:** [Ước tính] kiểm thật module khoảng 25–40 USD quy đổi, chưa tính Pilot 2. Ngoài ra còn tiền VPS mỗi tháng.
+
+## Câu hỏi
+
+**1. VPS: bạn đã có chưa?**
+- **(a) Thuê một VPS mới (mình đề xuất).** Chọn Ubuntu, 2 vCPU, 4 GB RAM. [Ước tính] Giá khoảng 5–10 USD mỗi tháng. Lúc đầu dùng IP và cổng, chưa cần tên miền. HTTPS thêm sau, khi bạn có tên miền.
+- **(b) Bạn đã có VPS hoặc máy chủ.** Cho mình biết hệ điều hành, RAM, và trên đó đang chạy gì.
+- **(c) Chưa thuê:** kiểm thật module bằng Docker trên máy bạn, coi như một VPS giả. Tới Pilot 2 mới lên VPS thật. Cách này tiết kiệm tiền thuê, nhưng không kiểm được mạng, SSH và tường lửa thật, và tester bên ngoài không vào được.
+
+**2. Cách đưa bản mới vào VPS: ai giữ chìa khóa vào VPS?**
+- **(a) VPS tự kéo bản đã qua cổng (mình đề xuất).**
+  - Một script của kit chạy trên VPS mỗi phút. Nó hỏi GitHub xem có commit mới trên `develop`, `release/*`, `main` không, rồi tự chạy lại phần kiểm của `audit`.
+  - Commit qua được thì script build image, deploy, smoke test, rồi báo trạng thái deploy lên GitHub. Jira đọc trạng thái từ đó.
+  - GitHub không giữ chìa khóa nào vào VPS. Vì vậy một workflow bị sửa ở bất kỳ nhánh nào cũng không chạm được VPS.
+  - Không tốn phút Actions. Bản mới lên chậm tối đa khoảng 1 phút.
+  - Bạn cần tạo thêm App thứ ba, `ao-deploy`, chỉ có quyền đọc repo và tạo deployment. Key của App này chỉ nằm trên VPS.
+- **(b) Self-hosted runner trên VPS.** Workflow `Deploy` chạy thẳng trên VPS và không tốn phút. Nhưng với repo private gói Free, workflow ở bất kỳ nhánh nào cũng chạy được trên runner này. Một nhánh có file workflow bị sửa sẽ chạy được lệnh trên VPS trước khi bạn review. Hiện chỉ `devops` push được file workflow.
+- **(c) GitHub Actions SSH vào VPS.** Key SSH là secret của repo, mà workflow ở mọi nhánh đều đọc được. Mỗi lần deploy lại tốn phút Actions.
+- **(d) Chuyển `ao-sample` sang public.** GitHub sẽ có người duyệt bắt buộc cho `production`, secret theo môi trường, và phút Actions miễn phí. Nhưng dự án thật của bạn là private, nên Pilot 2 sẽ không kiểm đường private.
+
+**3. Kiểm thật module ở đâu?**
+- **(a) Trên `ao-pilot` (`DEMO-21`), rồi mới tới Pilot 2 trên `ao-sample` (mình đề xuất).** Đây là cách đã làm với `dev-workflow` và Pilot 1.
+  - Kiểm thật chạy code kit trực tiếp qua `AO_KIT_DIR`, nên mỗi lần sửa kit giữa chừng không cần PR chép kit. Ở Pilot 1, review năm PR chép kit đã tốn 49,90 USD.
+  - Pilot 2 chỉ cần một PR chép kit vào `ao-sample`.
+- **(b) Gộp: kiểm thật module chính là Pilot 2, trên `ao-sample`.** Cách này ít lượt agent hơn. Nhưng mỗi lần sửa kit giữa chừng lại cần một PR chép kit có review, như ở Pilot 1.
+
+Bạn trả lời ba câu, và sửa giả định nào sai. Sau đó mình viết `SPEC-release-workflow.md` rồi chờ bạn duyệt.
+
+Nguồn:
+- [GitHub: Deployments and environments](https://docs.github.com/en/actions/reference/workflows-and-actions/deployments-and-environments)
+- [GitHub: tiền của Actions](https://docs.github.com/en/billing/concepts/product-billing/github-actions)
+- [GitHub: tiền của Packages](https://docs.github.com/en/billing/concepts/product-billing/github-packages)
+- [Atlassian Community: quyền tạo version](https://community.atlassian.com/forums/Jira-questions/Granular-permission-to-create-project-versions-without-granting/qaq-p/3250300)
+- [Windmill: bản chép tài liệu Create version](https://hub.windmill.dev/scripts/jira/4574/create-version-jira)
