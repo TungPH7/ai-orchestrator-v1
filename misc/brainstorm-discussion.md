@@ -31,7 +31,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 21 | `3ead2782-314d-4ae8-981b-96f6ed83a60e` | 2026-11-01 khoảng 22:50 → 2026-11-02 khoảng 01:40 | Bạn dán đoạn cuối của Phiên 20, hỏi vì sao `main` và `develop` của `ao-pilot` lệch nhau, cách xử lý, và lựa chọn 3 có giải quyết được không; Claude kiểm hai nhánh và code của `audit`: `develop` đi trước 10 là đúng GitFlow, 4 commit chỉ có trên `main` là dấu vết lối tắt sandbox và không đổi nội dung; lựa chọn 3 không giải quyết; đề xuất ghi quy tắc merge commit và back-merge từ `main` vào spec `release-workflow`; bạn chọn Pilot 1; Claude nêu phạm vi, giả định A1–A8 và ba câu hỏi (repo, space Jira, feature); bạn duyệt và chọn theo đề xuất: repo mới `ao-sample`, space mới `SMP`, Epic "Ghi chú"; Claude viết `SPEC-pilot-1.md` (nhánh `task/spec-pilot-1`); bạn chọn tạo key mới cho `ao-dev` và duyệt spec; Claude viết plan 10 task, 5 checkpoint, cùng quyết định 6 (lỗi kit giữa Epic) và 8 (Checkpoint 3 sau lượt build đầu); bạn duyệt plan; kit PR #141; T1–T2: tạo repo `ao-sample`, điểm 1 đúng một phần (NestJS 12 dùng Vitest và oxlint, `@nestjs/mau` mang 2 lỗ hổng high), điểm 2 đúng nếu dùng Vitest, điểm 3 và 4 sai (API từ chối), điểm 5 đúng kèm `MSYS_NO_PATHCONV=1` và tin cậy thư mục; Checkpoint 1: bạn duyệt sáu chỗ sửa, dùng chung scheme với `DEMO`, và duyệt trước mọi đề xuất trong Pilot 1; T1a (kit PR #142, `oxlint-disable`); T4 khung app xanh sáu lệnh; T5 bản chép kit và hai skill theo stack; commit đầu bị hook `commit-msg` từ chối vì thiếu mã Jira; bạn gửi ảnh: tùy chọn share settings lúc tạo space cần gói trả phí; Claude đổi cách: tạo space như thường rồi gán ba scheme của `DEMO` trong Space settings; bạn tạo xong `SMP` và gán ba scheme; Claude kiểm bằng API, `jira:check` còn 3 chỗ lệch của board, tạo bốn environment và đặt secret `JIRA_CI_TOKEN`; bạn tắc ở B3 (board thiếu cột); Claude đọc cấu hình board bằng API và ghi từng bước sửa cột trong Board settings; bạn gửi ảnh: board của `SMP` là board mới, Board settings không có Columns; Claude tìm tài liệu Atlassian: cột cấu hình ở More actions → Configure columns trên board; bạn gửi ảnh hộp Configure columns đã sửa đúng, chờ bấm Publish; bạn tắc ở D2 (không có Private keys); Claude đính chính: đường đúng là Credentials → Key pairs → New key, như `docs/github-apps-setup.md` đã ghi; bạn xong B–E và chọn cách (b); Claude đặt secret `AO_DEV_APP_KEY`, tạo `SMP-1`, commit đầu `6f5831d` lên `main` và `develop`; GitHub không chạy workflow cho lần push đầu, Claude chạy tay `merge-gate` (xanh) và `Deploy` (`audit` đỏ, gắn cờ `SMP-1`); Checkpoint 2 đạt, tiêu chí 1 đổi; Epic `SMP-2`; chờ bạn dọn `SMP-1` và bấm Start spec |
 | 22 | `d714399c-65d0-4f98-bbbb-720338ff6bea` | 2026-11-02 khoảng 10:50 → khoảng 20:08 | Bạn dán đoạn cuối của Phiên 21 kèm ảnh panel Development của `SMP-1`, hỏi `Deploy` đỏ có đúng dự kiến không; Claude đọc run và log của `audit`: đúng dự kiến (commit đầu không qua PR), và ảnh cho thấy GitHub for Atlassian đã gắn run vào `SMP-1`; bạn dọn `SMP-1` và bấm Start spec; Claude merge kit PR #143 (T3–T6, Checkpoint 2), chạy `/ao-spec SMP-2` qua `claude -p`: `ba` viết SPEC (1,49 USD) và để lại 4 câu hỏi; Claude chuyển câu hỏi cho bạn, khuyên đồng ý cả bốn; bạn đồng ý cả bốn; Claude nối lại phiên `claude -p` với câu trả lời: `ba`, `ux`, `sa` chạy (3,36 USD), `sa` để lại 2 câu hỏi (đếm emoji, chuẩn hóa NFC và xuống dòng); Claude khuyên đồng ý cả hai; bạn đồng ý cả hai; `sa` ghi câu trả lời, `ba` mở PR tài liệu #1, nhưng GitHub không chạy CI và `ao-step` chờ 30 phút; bạn hỏi vì sao không dừng; Claude dùng nhánh và PR thử tìm ra nguyên nhân (workflow từ lần push đầu chưa được ghi nhận trigger; một push đụng `.github/workflows/` gỡ được), `CI` của PR #1 xanh; tìm thêm lỗi kit `openQuestions` bỏ sót 10 câu hỏi của `ux`; tới gate ①, Claude khuyên không thêm dòng "Đã lưu ghi chú." và gửi các bước Approve spec; bạn hỏi vì sao có hai lỗi nặng và yêu cầu sửa; Claude sửa ở kit (PR #144), chép vào `ao-sample` (Task `SMP-3`, PR #3), `/ao-review 3` Approve (1 Medium, 2 Low ở kit, sửa ở kit PR #145); bạn approve và merge PR #3, hỏi có cần chép kit vào `ao-pilot` (chưa cần); bạn đã bấm Approve spec, chọn chạy `/ao-plan`; `sa` chạm giới hạn 5 giờ giữa lượt viết plan; bạn bảo làm tiếp; `sa` viết xong plan và ba ADR, `ba` tạo 8 item nhưng không tạo được link Blocks; phiên dừng vì Claude chạm giới hạn tuần |
 | 23 | `6d4fa505-b003-47c3-bad3-14958ad7ae83` | 2026-11-02 khoảng 22:10 → | Bạn dán đoạn cuối của Phiên 22 để làm tiếp; Claude tạo 5 link Blocks bằng token CI, tắt server spike `sa` để lại, ghi stage plan và 3 lỗi kit vào `verification.md`, gửi các bước duyệt plan (gate ②) |
-| 26 | `6b41390c-2d48-4d39-9a30-5a4e22f76bf7` | 2026-11-04 khoảng 13:10 → | Bạn báo đã merge kit PR #165; Claude chép vào `ao-sample` PR #13 và review lần 2 (security lại có 1 High: `AGENTS.md`), mở kit PR #166; bạn hỏi chạy review ở high, vì sao lần nào cũng ra High, vì sao security review cả PR; Claude tìm lý do của luật review toàn bộ trong file này; bạn chọn đổi luật review phần mới, điều kiện đường dẫn được bảo vệ (b), và sửa gốc (code của PR không nằm trong thư mục dự án); Claude thử bằng Sonnet và sửa thêm trong kit PR #166; bạn merge #166; Claude chép vào PR #13, review lần 3 còn hai Medium để sau Pilot 1; bạn merge PR #13 (`e56a207`); T10: kit PR #167 (đường bấm của board Jira mới) và #168 (đầu vào cho `project-scaffold`, bảng lỗi kit, chi phí Pilot 1 khoảng 117,6 USD, plan vào `tasks/archive/pilot-1/`); bạn xác nhận Pilot 1 hoàn thành (PR #169); bạn hỏi tài khoản GitHub Free có bị tính tiền không: Billed 0 USD, phần miễn phí bù hết Gross; bạn chọn `release-workflow`; Claude nêu phạm vi, điều vừa kiểm (repo private gói Free không có secret theo môi trường và người duyệt bắt buộc, phần miễn phí 12 USD Actions mỗi tháng, tài khoản agent không tạo được Fix Version), bảy giả định và ba câu hỏi (VPS, cách đưa bản mới vào VPS, kiểm thật ở `ao-pilot` hay `ao-sample`); chờ bạn trả lời |
+| 26 | `6b41390c-2d48-4d39-9a30-5a4e22f76bf7` | 2026-11-04 khoảng 13:10 → | Bạn báo đã merge kit PR #165; Claude chép vào `ao-sample` PR #13 và review lần 2 (security lại có 1 High: `AGENTS.md`), mở kit PR #166; bạn hỏi chạy review ở high, vì sao lần nào cũng ra High, vì sao security review cả PR; Claude tìm lý do của luật review toàn bộ trong file này; bạn chọn đổi luật review phần mới, điều kiện đường dẫn được bảo vệ (b), và sửa gốc (code của PR không nằm trong thư mục dự án); Claude thử bằng Sonnet và sửa thêm trong kit PR #166; bạn merge #166; Claude chép vào PR #13, review lần 3 còn hai Medium để sau Pilot 1; bạn merge PR #13 (`e56a207`); T10: kit PR #167 (đường bấm của board Jira mới) và #168 (đầu vào cho `project-scaffold`, bảng lỗi kit, chi phí Pilot 1 khoảng 117,6 USD, plan vào `tasks/archive/pilot-1/`); bạn xác nhận Pilot 1 hoàn thành (PR #169); bạn hỏi tài khoản GitHub Free có bị tính tiền không: Billed 0 USD, phần miễn phí bù hết Gross; bạn chọn `release-workflow`; Claude nêu phạm vi, điều vừa kiểm (repo private gói Free không có secret theo môi trường và người duyệt bắt buộc, phần miễn phí 12 USD Actions mỗi tháng, tài khoản agent không tạo được Fix Version), bảy giả định và ba câu hỏi (VPS, cách đưa bản mới vào VPS, kiểm thật ở `ao-pilot` hay `ao-sample`); bạn trả lời: dùng VPS `dtddeploy` của bạn với subdomain của `t2g.io.vn`, VPS tự kéo bản đã qua cổng, kiểm thật trên `ao-pilot` trước; key SSH của VPS có passphrase, Claude chỉ cách mở khóa bằng ssh-agent của Windows; chờ bạn mở khóa |
 
 ---
 
@@ -11828,3 +11828,59 @@ Nguồn:
 - [GitHub: tiền của Packages](https://docs.github.com/en/billing/concepts/product-billing/github-packages)
 - [Atlassian Community: quyền tạo version](https://community.atlassian.com/forums/Jira-questions/Granular-permission-to-create-project-versions-without-granting/qaq-p/3250300)
 - [Windmill: bản chép tài liệu Create version](https://hub.windmill.dev/scripts/jira/4574/create-version-jira)
+
+# Phiên 26 · Lượt 13 — 2026-11-05 khoảng 06:20
+
+**Bạn:**
+
+```markdown
+1. Tôi đã có VPS và tên miền, vps bạn có thể ssh vào bằng 'ssh dtddeploy', tên miền t2g.io.vn, bạn dùng sub domain nhé
+2.  Như đề xuất
+3. Như đề xuất
+```
+
+Trước khi trả lời, Claude thử `ssh dtddeploy`. Server nhận key `~/.ssh/dtd_deploy`, nhưng key có passphrase nên Claude không đăng nhập được. Claude kiểm ssh-agent của Windows (đang tắt) và DNS của `t2g.io.vn`.
+
+**Claude:**
+
+Mình đã ghi ba câu trả lời của bạn:
+1. Dùng VPS `dtddeploy` của bạn, với subdomain của `t2g.io.vn`.
+2. VPS tự kéo bản đã qua cổng, và thêm App `ao-deploy`.
+3. Kiểm thật trên `ao-pilot` trước, rồi tới Pilot 2 trên `ao-sample`.
+
+**Mình chưa vào được VPS.** Server nhận key `~/.ssh/dtd_deploy`, nhưng key này có passphrase. Mình không gõ passphrase được, và bạn đừng gửi passphrase vào chat.
+
+**Cách mở khóa key (làm một lần), bằng ssh-agent của Windows:**
+1. Bấm **Start**, gõ `PowerShell`. Bấm chuột phải vào **Windows PowerShell**, chọn **Run as administrator**, rồi bấm **Yes**.
+2. Dán hai lệnh này, rồi bấm Enter:
+   ```
+   Set-Service ssh-agent -StartupType Automatic
+   Start-Service ssh-agent
+   ```
+3. Đóng cửa sổ đó. Mở một cửa sổ PowerShell thường (không cần admin), rồi chạy:
+   ```
+   ssh-add $env:USERPROFILE\.ssh\dtd_deploy
+   ```
+   Gõ passphrase khi được hỏi. Thấy dòng `Identity added` là xong.
+4. Nhắn mình "xong".
+
+Agent của Windows giữ key cả sau khi khởi động lại máy, nên các phiên sau không phải mở khóa lại. Muốn gỡ key thì chạy `ssh-add -d $env:USERPROFILE\.ssh\dtd_deploy`.
+
+**Một điều cần biết:** sau bước 3, mọi chương trình chạy dưới tài khoản Windows của bạn đều dùng được key này mà không cần passphrase, kể cả các agent của kit. Vì vậy spec sẽ ghi hai quy tắc:
+- Chỉ phiên chính dùng SSH, để cài VPS. Agent của kit không cần SSH, vì VPS tự kéo bản mới.
+- Cài xong, bạn gỡ key khỏi agent.
+
+**Khi vào được, mình chỉ đọc, không sửa gì trên VPS.** Mình xem:
+- hệ điều hành, CPU, RAM, ổ đĩa;
+- Docker và Docker Compose;
+- cổng 80 và 443 đang do chương trình nào giữ (nginx, Caddy hay chương trình khác);
+- các container và dịch vụ đang chạy.
+
+Spec cần những điều này, vì kit phải chạy cạnh những gì đang có trên VPS mà không làm hỏng chúng.
+
+**Điều mình đã kiểm về tên miền:**
+- DNS của `t2g.io.vn` do BKNS quản (`ns1.bkdns.vn`, `ns2.bkdns.vn`, `ns3.bkdns.vn`).
+- `t2g.io.vn` và `www.t2g.io.vn` đang trỏ tới Vercel.
+- Tên miền chưa có bản ghi wildcard. Vì vậy mỗi subdomain cần một bản ghi A trỏ về VPS. Bạn sẽ tạo các bản ghi này trong trang DNS của BKNS. Spec sẽ ghi tên từng subdomain và từng bước bấm.
+
+Bạn nhắn "xong", mình kiểm VPS rồi viết `SPEC-release-workflow.md`, và chờ bạn duyệt.
