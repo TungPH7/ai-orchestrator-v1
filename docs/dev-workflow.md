@@ -62,8 +62,8 @@ PR sửa đường dẫn được bảo vệ (`.github/workflows/**`, `.claude/*
 
 | File | Nội dung |
 |---|---|
-| `last.md` | Báo cáo của lần chạy gần nhất: bảng các lượt (vai trò, bước, effort, kết quả, turn, thời gian, chi phí), câu trả lời của từng agent, lý do dừng và lệnh tiếp theo |
-| `state.json` | Mọi lượt đã xong của item: session, effort, kết quả (`done`, `usage-limit`, `max-turns`, `error`, `unfinished`), số turn, thời gian, token, chi phí quy đổi, số lần bị từ chối, nhánh đã checkout. `ao-step` đọc file này để chạy tiếp lượt dở trong cùng session |
+| `last.md` | Báo cáo của lần chạy gần nhất: bảng các lượt (vai trò, bước, effort, kết quả, turn, thời gian, chi phí), câu trả lời đầy đủ của từng agent, lý do dừng và lệnh tiếp theo |
+| `state.json` | Mọi lượt đã xong của item: session, effort, kết quả (`done`, `usage-limit`, `max-turns`, `error`, `unfinished`), số turn, thời gian, token, chi phí quy đổi, số lần bị từ chối, nhánh đã checkout, câu trả lời của agent (tối đa 2000 ký tự, phần bị cắt có ghi chú). `ao-step` đọc file này để chạy tiếp lượt dở trong cùng session |
 | `<n>-<role>.jsonl` | Log stream-json của lượt thứ n |
 | `answers.md`, `note.md` | Câu trả lời của bạn, và việc cần sửa của `/ao-fix`, do Claude ghi |
 
