@@ -713,6 +713,37 @@ Tổng 10,29 USD; hai lần review PR #13 tốn 19,37 USD. `ao-step` dừng: "th
 - Test của #166: test mới đỏ trước khi sửa. 12 trong 13 mutation làm test đỏ; mutation còn lại là code thừa nên đã bỏ. Năm lệnh kiểm xanh (846 test). CI xanh. Trên `ao-sample`, `ao-step review 13` dừng khi ở `feature/SMP-15-kit-fixes` và chạy tiếp khi ở `develop`.
 - Để sau Pilot 1: các Low của `reviewer` (B1–B3, `unquotePath`) và Medium `node_modules`. Mô tả PR #13 được sửa khi chép #166.
 
+### Sửa gốc và luật review phần mới (Phiên 26 · Lượt 6–8, 2026-11-04)
+
+Bạn hỏi vì sao lần nào review cũng ra lỗi High, và vì sao security phải review cả PR (Lượt 3–5). Bạn chọn (Lượt 8, "ok, làm như đề xuất"):
+- luật 1 mới: sau lỗi High, security chỉ review phần mới và ghi trạng thái từng lỗi High cũ;
+- điều kiện 3 cách (b): phần mới chạm đường dẫn được bảo vệ thì review phần mới ở max;
+- sửa gốc (code của PR không nằm trong thư mục dự án), gộp vào kit PR #166.
+
+Lý do của luật cũ tìm thấy trong `misc/brainstorm-discussion.md`, Phiên 20 · Lượt 1–2 (T15a): báo cáo phần mới không nêu lại finding cũ, nên finding chặn có thể biến mất khỏi cổng. Ba điều kiện của review phần mới có từ Phiên 16 · Lượt 9–10; điều kiện đường dẫn được bảo vệ không ghi lý do.
+
+**Phép thử bằng Sonnet** (dự án nhỏ trong scratchpad; file chỉ dẫn của "PR" có chuỗi đánh dấu; agent chỉ đọc `apps/web/package.json`):
+
+| Code của PR đặt ở | Chỉ dẫn hay skill của PR vào phiên | Chi phí |
+|---|---|---|
+| `.ai/reviews/pr-1` trong dự án | `.claude/rules`, `apps/web/CLAUDE.md`, `AGENTS.md` ở gốc | 0,07 USD |
+| Ngoài dự án (thư mục temp) | Không | 0,06 USD |
+| Ngoài dự án, kèm `--add-dir` | Không | 0,06 USD |
+| Ngoài dự án, kèm `--add-dir`, chế độ `auto` | Skill trong `.claude/skills`; `settings.json` thì không | 0,07 USD |
+| Ngoài dự án, không `--add-dir`, chế độ `auto` | Không; Read, Glob, Bash ở đó đều chạy | 0,06 USD |
+
+Lượt chạy đầu (0,19 USD) hỏng vì `shell: true` trên Windows cắt prompt; Claude gọi thẳng `claude.exe` rồi chạy lại. Tổng khoảng 0,5 USD.
+
+**Kit PR #166** (commit `14263da`), thêm vào các sửa đã có:
+- worktree ở `<temp>/ao-reviews/<thư mục dự án>-pr-<N>`; không truyền `--add-dir`; vẫn xóa file chỉ dẫn;
+- `## Earlier findings` trong báo cáo phần mới; `openCounts` đếm finding còn mở theo chuỗi báo cáo, dùng ở `merge-gate` và `ao-step`;
+- phần mới chạm đường dẫn được bảo vệ: review phần mới ở effort của roster;
+- spec 2.6, `docs/dev-workflow.md`, `docs/agents.md`, template báo cáo, prompt của `security`.
+
+Test mới đỏ trước khi sửa; 14 mutation đều làm test đỏ, sau khi siết hai test; năm lệnh kiểm xanh (852 test); CI xanh. Phần mới của PR #13 sau khi chép #166 là 237 dòng, dưới 300.
+
+Đánh đổi: worktree ở temp không có `node_modules`, nên agent không chạy được test cần package trong đó; CI chạy test của head. Việc sau Pilot 1.
+
 ### Việc T10 còn lại
 
-Bạn merge kit PR #166. Claude chép #166 vào PR #13, sửa mô tả PR, rồi chạy review lại; security còn phải review toàn bộ ở max, vì lỗi High vẫn mở. Bạn approve và merge PR #13. Sau đó bước 2 ("Đầu vào cho `project-scaffold`"), bước 3 (`SPEC.md`, `SPEC-pilot-1.md`, README) và bước 4 (lưu trữ plan).
+Bạn merge kit PR #166. Claude chép #166 vào PR #13, sửa mô tả PR, rồi chạy review cuối: `reviewer` cả PR, `security` phần mới ở max, kèm kiểm lỗi High cũ. Lần đó chỉ ra Medium hay Low thì ghi lại cho sau Pilot 1; bạn approve và merge PR #13. Sau đó bước 2 ("Đầu vào cho `project-scaffold`"), bước 3 (`SPEC.md`, `SPEC-pilot-1.md`, README) và bước 4 (lưu trữ plan).
