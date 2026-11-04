@@ -48,6 +48,9 @@ test('Jira tools follow the permissions, and MCP groups become the tools of thei
   assert.ok(tools.includes('mcp__chrome-devtools__list_console_messages'));
   assert.ok(!tools.some((t) => /executeWrite|executeDestructive|^Skill$|^Agent$|WebFetch|WebSearch/.test(t)), 'never granted');
   assert.ok(frontmatter(renderAgent('qa', sources)).tools.includes('mcp__atlassian__createJiraIssue'));
+  const ba = frontmatter(renderAgent('ba', sources)).tools.split(', ');
+  assert.ok(ba.includes('mcp__atlassian__executeWrite'), 'ba makes the Blocks links of the plan');
+  assert.ok(!ba.includes('mcp__atlassian__executeDestructive'));
 });
 
 test('max_turns of the roster becomes maxTurns', () => {

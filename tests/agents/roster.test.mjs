@@ -68,7 +68,7 @@ const row = (id) => {
 
 test('tools, files, git, Jira and skills of each role (spec 2.3)', () => {
   assert.equal(row('pm'), 'Bash Write | .ai/** | read | read | ');
-  assert.equal(row('ba'), 'Bash Edit Write | docs/specs/** CHANGELOG.md .ai/** | write | read create edit comment | spec-driven-development interview-me');
+  assert.equal(row('ba'), 'Bash Edit Write | docs/specs/** CHANGELOG.md .ai/** | write | read create edit comment link | spec-driven-development interview-me');
   assert.equal(row('ux'), 'Bash Edit Write | docs/specs/** .ai/** | write | read | frontend-ui-engineering');
   assert.equal(row('sa'), 'Bash Edit Write | docs/specs/** docs/adr/** .ai/** | write | read comment | planning-and-task-breakdown api-and-interface-design documentation-and-adrs');
   assert.equal(row('fe-dev'), 'Bash Edit Write | ** | write | read edit comment transition | test-driven-development incremental-implementation frontend-ui-engineering browser-testing-with-devtools');
@@ -89,14 +89,18 @@ test('fe-dev alone gets Chrome DevTools, in six groups; memory, extensions, thir
   assert.ok(!Object.values(groups).flat().includes('click_at'), 'click_at needs --experimentalVision, which the kit does not turn on');
 });
 
-test('Jira permissions become Rovo MCP tools; no role may write or delete through the generic tools (spec 2.3)', () => {
+// executeWrite only behind link, which block-atlassian narrows to createJiraIssueLink of type Blocks (Pilot 1, T10).
+test('Jira permissions become Rovo MCP tools; only ba may write through executeWrite, and no role may delete (spec 2.3)', () => {
   assert.deepEqual(roster.jira_tools, {
     read: ['getJiraIssue', 'searchJiraIssuesUsingJql', 'executeRead'],
     create: ['createJiraIssue'],
     edit: ['editJiraIssue'],
     comment: ['addOrEditJiraIssueComment'],
+    link: ['executeWrite'],
     transition: ['transitionJiraIssue'],
   });
+  assert.deepEqual(Object.keys(roster.roles).filter((id) => roster.roles[id].jira.includes('link')), ['ba']);
+  assert.ok(!Object.values(roster.jira_tools).flat().includes('executeDestructive'));
 });
 
 test('16 vendored skills, each pinned by a full commit: 13 of agent-skills at the 0.6.13 tag and three from the registry (spec 2.7)', () => {
