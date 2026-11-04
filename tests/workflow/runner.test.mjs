@@ -321,13 +321,16 @@ test('CI that starts a few polls after the PR opens does not stop the runner: it
   assert.match(decision.reason, /docs PR #14 of DEMO-20 is open: stage spec is done/);
 });
 
-test('an answer longer than state.json keeps says where it was cut and where the whole of it is', async () => {
+test('an answer longer than state.json keeps says there where it was cut and where the whole of it is; last.md has all of it (SMP-2)', async () => {
   const { world, gather } = specWorld({ spec: NFR, design: DESIGN });
-  const h = harness(world, { 'docs-pr': (w) => (w.pr = { number: 14, state: 'open', merged: false }) }, { texts: ['x'.repeat(2500)] });
-  await h.run({ gather });
+  const answer = `${'x'.repeat(2500)} would redirect to /notes.`;
+  const h = harness(world, { 'docs-pr': (w) => (w.pr = { number: 14, state: 'open', merged: false }) }, { texts: [answer] });
+  const { made } = await h.run({ gather });
   const [record] = world.run.runs;
   assert.match(record.text, /^x{2000} … \[cut at 2000 characters; the whole answer is in 1-ba\.jsonl\]$/);
-  assert.match(h.last['DEMO-20'], /cut at 2000 characters/);
+  assert.ok(h.last['DEMO-20'].includes(`## 1. ba: its answer\n\n${answer}\n`), 'last.md holds the answer up to its last word');
+  assert.doesNotMatch(h.last['DEMO-20'], /cut at 2000 characters/);
+  assert.equal(made[0].text, answer);
 });
 
 test('the second /ao-plan asks for jira-sync and waits for the docs PR to be merged; no agent runs', async () => {
