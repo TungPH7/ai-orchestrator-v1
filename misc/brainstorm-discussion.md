@@ -11528,3 +11528,51 @@ Worktree `pr-13` là thư mục con của `ao-sample`. Khi agent đọc một fi
 - **(b)** Bỏ worktree. Agent đọc code của PR qua gói bối cảnh và `git show`, nên không có file nào của PR nằm trên đĩa. Bù lại, agent review không chạy được test của PR, nhưng CI đã chạy các test đó rồi.
 
 Với cả hai cách, danh sách tên file cần xóa (`CLAUDE.md`, `AGENTS.md`…) không còn là lớp bảo vệ chính nữa. Mình đề xuất thử (a) trước bằng Sonnet; nếu Claude Code vẫn nạp chỉ dẫn từ đó thì làm (b).
+
+# Phiên 26 · Lượt 8 — 2026-11-04 khoảng 16:30
+
+**Bạn:**
+
+```markdown
+ok, làm như đề xuất
+```
+
+Trước khi trả lời, Claude ghi Lượt 2–7 vào file này, chạy phép thử bằng Sonnet (5 lượt dùng được, khoảng 0,5 USD kể cả một lượt hỏng), sửa kit trên nhánh `fix/t10-review-round-2` (commit `14263da`), cập nhật mô tả kit PR #166, và ghi kết quả vào `tasks/verification.md`.
+
+**Claude:**
+
+Mình đã làm xong phần của mình. Cần bạn merge kit PR #166.
+
+**Kết quả lần thử bằng Sonnet** (khoảng 0,5 USD; lượt đầu hỏng vì lỗi cách gọi lệnh, nên mình chạy lại):
+
+| Code của PR đặt ở | File chỉ dẫn của PR có vào phiên review không |
+|---|---|
+| Trong `ao-sample` (như hiện nay) | Có |
+| Thư mục temp, ngoài `ao-sample` | Không. Agent vẫn đọc, tìm file và chạy lệnh ở đó được |
+| Thư mục temp, có cờ `--add-dir` | Không nạp file chỉ dẫn, nhưng **có nạp skill** trong `.claude/skills` của PR |
+
+Vì vậy mình chọn cách (a): đặt code của PR ở thư mục temp và không dùng `--add-dir`.
+
+**Kit PR #166 giờ có thêm:**
+1. Worktree của PR chuyển ra thư mục temp: `<temp>\ao-reviews\ao-sample-pr-<số PR>`. `ao-step` vẫn xóa `CLAUDE.md`, `AGENTS.md`, `.claude/` trong đó, phòng khi bản Claude Code sau nạp thêm.
+2. Luật 1 mới: sau một lỗi High, security chỉ review phần mới.
+   - Prompt liệt kê các lỗi High cũ.
+   - Báo cáo phải ghi từng lỗi là Fixed hay Open, trong mục `## Earlier findings`.
+   - `merge-gate` coi lỗi ghi Open, và lỗi không được ghi, là vẫn mở và vẫn chặn merge.
+3. Điều kiện 3 theo cách (b): phần mới chạm đường dẫn được bảo vệ thì security review phần mới ở max.
+4. Spec mục 2.6, `docs/dev-workflow.md`, template báo cáo và prompt của security đã được cập nhật.
+5. Các bản sửa đã có trong #166 vẫn giữ: lỗi High `AGENTS.md`, lỗi Medium về checkout, và hai lỗi Low.
+
+CI xanh, 852 test. Mỗi test mới đều đỏ trước khi sửa. 14 mutation trên phần code mới đều làm test đỏ; mình phải siết thêm hai test mới đạt được như vậy.
+
+**Một đánh đổi:** worktree ở thư mục temp không có `node_modules`, nên agent review không chạy được những test cần package trong đó. CI vẫn chạy test của PR. Mình ghi việc này vào danh sách sau Pilot 1.
+
+**Với PR #13:** sau khi chép #166, phần mới là 237 dòng, dưới ngưỡng 300. Lần review cuối sẽ gồm:
+- reviewer review cả PR, khoảng 2,4 USD;
+- security chỉ review phần mới ở max, kèm kiểm lỗi High cũ. [Inference] Lượt này có lẽ khoảng 2–4 USD; mình chưa đo.
+
+Nếu lần cuối chỉ ra Medium hoặc Low, mình ghi chúng vào danh sách sau Pilot 1 và báo bạn merge.
+
+**Việc của bạn:** merge #166 bằng **Rebase and merge**, tại https://github.com/TungPH7/ai-orchestrator-v1/pull/166
+
+**Bạn merge xong thì mình:** chép #166 vào PR #13, sửa mô tả PR, chạy review cuối, rồi báo bạn approve và merge PR #13.
