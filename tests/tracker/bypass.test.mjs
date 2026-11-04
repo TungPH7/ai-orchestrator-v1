@@ -20,31 +20,51 @@ test('a Bash command that reaches Atlassian is refused; other commands pass', ()
   assert.deepEqual(check('Bash', { command: 'npm test' }), ALLOW);
 });
 
-// The five commands block-atlassian refused in Pilot 1 (SMP-2, SMP-5, SMP-6), trimmed: each writes text to a file under
-// .ai/ and reaches nothing.
+// Four of the five commands block-atlassian refused in Pilot 1 (SMP-2, SMP-5, SMP-6), trimmed: each writes text to a
+// file with cat and a quoted heredoc, which the shell does not expand, so its body is data. A link to one work item is
+// data too, outside a command that reaches the network.
 test('a Bash command that only writes text with a work item link or the word Atlassian passes (Pilot 1)', () => {
   const writes = [
     "cat > .ai/pr/SMP-2-spec-body.md <<'EOF'\n# docs(spec): spec and design of SMP-2\n\n[SMP-2](https://example.atlassian.net/browse/SMP-2): Ghi chú: tạo và xem danh sách.\nEOF",
     "cat > .ai/pr/SMP-5-body.md <<'EOF'\n# feat(api): share the note rules\n\n[SMP-5](https://example.atlassian.net/browse/SMP-5): Quy tắc ghi chú dùng chung cho form và API.\nEOF",
-    "mkdir -p .ai/pr && cat > .ai/pr/SMP-6-body.md <<'EOF'\nSee https://example.atlassian.net/browse/SMP-6, the Task of Epic SMP-2.\nEOF",
-    "node - <<'EOF'\nconst fs = require('fs');\nfs.appendFileSync('.ai/ledger/SMP-2.md', 'hook PreToolUse từ chối lệnh (\"jira: do not call Atlassian from Bash\")\\n');\nEOF",
-    "cat > .ai/ledger/SMP-5.md <<'EOF'\n- Hook chặn lệnh Bash có URL Atlassian trong nội dung.\nEOF",
+    "cd /work/ao-sample && mkdir -p .ai/pr && cat > .ai/pr/SMP-6-body.md <<'EOF'\nSee https://example.atlassian.net/browse/SMP-6, the Task of Epic SMP-2.\nEOF",
+    "cat > .ai/ledger/SMP-5.md <<'EOF'\n- Hook chặn lệnh Bash có URL Atlassian trong nội dung.\n- Không gọi https://example.atlassian.net/rest/api/3/issue từ Bash.\nEOF",
+    "cat <<'EOF' > .ai/pr/SMP-7-body.md\nSee [SMP-7](https://example.atlassian.net/browse/SMP-7).\nEOF",
+    'tee -a .ai/ledger/SMP-7.md <<"END" >/dev/null\n- ATLASSIAN_AGENT_TOKEN is never printed.\nEND',
+    'echo "- [SMP-1](https://example.atlassian.net/browse/SMP-1) đã xong." >> .ai/ledger/SMP-1.md',
   ];
   for (const command of writes) assert.deepEqual(check('Bash', { command }), ALLOW, command);
 });
 
-test('a link that goes on past the work item key, another Atlassian URL, or a network call that names Atlassian is still refused', () => {
+// The High of reviewer on ao-sample PR #13: the hook of kit PR #162 cut work item links out before it looked for a
+// network client, and let through what names the token.
+test('a link that goes on past the work item key, a network call with a link, code, and anything that names the token are refused', () => {
   const calls = [
     'curl https://example.atlassian.net/browse/SMP-1/../../rest/api/3/issue/SMP-1',
     'curl --path-as-is "https://example.atlassian.net/browse/SMP-1?jql=project=SMP"',
     'curl https://example.atlassian.net/browse/SMP-1.json',
     'curl https://u:t@example.atlassian.net/browse/SMP-1',
-    "cat > .ai/pr/body.md <<'EOF'\n[SMP-1](https://example.atlassian.net/browse/SMP-1) and https://example.atlassian.net/rest/api/3/issue/SMP-1\nEOF",
+    'curl -s https://example.atlassian.net/browse/SMP-1',
+    "curl -X POST 'https://example.atlassian.net/browse/SMP-1;/../../rest/api/3/issue/SMP-1/transitions'",
+    'echo "see https://example.atlassian.net/browse/SMP-1;/../../rest/api/3/myself" > .ai/notes.md',
     'echo "site: example.atlassian.net" > .ai/notes.md',
     'curl -H "Authorization: Bearer $ATLASSIAN_AGENT_TOKEN" "$SITE/rest/api/3/issue/SMP-1"',
     'wget --header="Authorization: Basic $ATLASSIAN_BASIC" "$JIRA/rest/api/3/myself"',
     'Invoke-RestMethod -Uri "$env:SITE/rest/api/3/issue" -Headers @{ Authorization = "Bearer $env:ATLASSIAN_AGENT_TOKEN" }',
     'node -e "fetch(process.env.ATLASSIAN_SITE + \'/rest/api/3/myself\')"',
+    'printenv ATLASSIAN_AGENT_TOKEN',
+    'echo "$ATLASSIAN_AGENT_TOKEN"',
+    'env | grep -i atlassian',
+    'echo "$(printenv ATLASSIAN_AGENT_TOKEN)" > .ai/notes.md',
+    // A heredoc that is code, expanded, piped, followed by more, or never closed is not data.
+    "node - <<'EOF'\nconst fs = require('fs');\nfs.appendFileSync('.ai/ledger/SMP-2.md', 'hook PreToolUse từ chối lệnh (\"jira: do not call Atlassian from Bash\")\\n');\nEOF",
+    'cat > .ai/notes.md <<EOF\n$ATLASSIAN_AGENT_TOKEN\nEOF',
+    "cat <<'EOF' | sh\nprintenv ATLASSIAN_AGENT_TOKEN\nEOF",
+    "cat > .ai/run.sh <<'EOF' && sh .ai/run.sh\nprintenv ATLASSIAN_AGENT_TOKEN\nEOF",
+    "x=$(cat <<'EOF'\nprintenv ATLASSIAN_AGENT_TOKEN\nEOF\n)",
+    "cat > .ai/notes.md <<'EOF'\nok\nEOF\nprintenv ATLASSIAN_AGENT_TOKEN",
+    "cat > .ai/notes.md <<'EOF'\nprintenv ATLASSIAN_AGENT_TOKEN",
+    "bash -c \"$(cat <<'EOF'\ncurl https://example.atlassian.net/rest/api/3/myself\nEOF\n)\"",
   ];
   for (const command of calls) assert.equal(check('Bash', { command }).allow, false, command);
 });
@@ -76,6 +96,9 @@ test('executeWrite may make a Blocks link between two items of the project space
     [link({}, { cloudId: 'other-site.atlassian.net' }), 'jira: other-site.atlassian.net is not the Jira site of the project'],
     [link({ cloudId: 'other-cloud' }), 'jira: other-cloud is not the Jira site of the project'],
     [link({}, { cloudId: undefined }), 'jira: no cloudId is not the Jira site of the project'],
+    // Low of reviewer on ao-sample PR #13: a URL that only holds the site's name in its query is another site.
+    [link({}, { cloudId: `https://other.atlassian.net/?${mapping.site}` }), `jira: https://other.atlassian.net/?${mapping.site} is not the Jira site of the project`],
+    [check('mcp__atlassian__editJiraIssue', { cloudId: `https://other.atlassian.net/?${mapping.site}`, issueIdOrKey: 'DEMO-12', fields: {} }), `jira: https://other.atlassian.net/?${mapping.site} is not the Jira site of the project`],
     [check('mcp__atlassian__executeWrite', { cloudId: mapping.cloud_id, name: 'deleteJiraIssueLink', inputs: { linkId: '10005' } }), 'jira: executeWrite can run any write; use createJiraIssue, editJiraIssue, addOrEditJiraIssueComment or transitionJiraIssue'],
     [check('mcp__atlassian__executeDestructive', { cloudId: mapping.cloud_id, name: 'createJiraIssueLink', inputs: { linkType: 'Blocks', inwardIssue: 'DEMO-21', outwardIssue: 'DEMO-23' } }), 'jira: executeDestructive can run any write; use createJiraIssue, editJiraIssue, addOrEditJiraIssueComment or transitionJiraIssue'],
   ];
