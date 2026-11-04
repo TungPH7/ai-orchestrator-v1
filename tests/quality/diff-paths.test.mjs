@@ -25,6 +25,31 @@ test('headerPath reads both sides of a diff header, quoted, with the tab after a
   assert.equal(headerPath('@@ -1 +1 @@'), null);
 });
 
+// Low of security on ao-sample PR #13: an added line "++ b/README.md" shows as "+++ b/README.md" in the diff, and the
+// parsers took it for the header of a Markdown file, which policy does not check.
+test('a line of a hunk that looks like a file header is a line of its file', () => {
+  const diff = [
+    'diff --git a/src/a.ts b/src/a.ts',
+    '--- a/src/a.ts',
+    '+++ b/src/a.ts',
+    '@@ -1,1 +2,4 @@',
+    '--- a/src/old.test.ts',
+    '+++ b/README.md',
+    '+++ "b/README.md"',
+    '+++ /dev/null',
+    '+// eslint-disable-line',
+    '',
+  ].join('\n');
+  assert.deepEqual(addedLines(diff), [
+    { file: 'src/a.ts', line: 2, text: '++ b/README.md' },
+    { file: 'src/a.ts', line: 3, text: '++ "b/README.md"' },
+    { file: 'src/a.ts', line: 4, text: '++ /dev/null' },
+    { file: 'src/a.ts', line: 5, text: '// eslint-disable-line' },
+  ]);
+  assert.deepEqual([...changedLines(diff)], [['src/a.ts', [2, 3, 4, 5]]]);
+  assert.deepEqual(deletedTests(diff), []);
+});
+
 // What git writes, with core.quotePath on as by default: the parsers of the policy and coverage jobs read the paths as
 // they are on disk, so a suppression in a file with a Vietnamese name is checked (review of ao-sample PR #5).
 test('on a real git diff, a file with a name outside ASCII or with a space keeps its lines, and its deletion is seen', (t) => {
