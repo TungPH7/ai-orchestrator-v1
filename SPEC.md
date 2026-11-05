@@ -90,7 +90,7 @@ Staging và Production dùng cùng một Docker image build từ nhánh `release
 | `tracker-integration` | Workflow và board Jira khớp với state machine; cài Rovo MCP; quy ước gắn mã Jira vào nhánh, commit, PR; liên kết Jira với GitHub. Bổ sung 2026-10-26: Kanban board, giới hạn WIP cho từng cột, Fix Version cho từng bản release | sdlc-contract |
 | `quality-gates` | Pre-commit hook ở local; pipeline CI trên PR; branch protection; script kiểm tra đã có đủ artifact chưa. Bổ sung 2026-10-29: danh tính GitHub App cho agent, `merge-gate` và `audit` thay cho branch protection trên gói Free | sdlc-contract, tracker-integration |
 | `dev-workflow` | Lệnh điều phối vòng trong: spec → plan → build → review → merge vào `develop`. Mỗi lệnh gọi đúng agent, tạo artifact, kiểm tra cổng, cập nhật Jira. Agent có danh tính GitHub riêng, không nằm trong `AO_APPROVERS` (rủi ro ở `SPEC-agent-roster.md` mục 12). Bổ sung 2026-10-31: sáu lệnh `/ao-*`, mọi việc GitHub của agent qua hai App, PR tài liệu của Epic do `merge-gate` merge sau gate ②, effort theo item, `security` review phần mới | agent-roster, tracker-integration, quality-gates |
-| `release-workflow` | Vòng ngoài trên Docker/VPS: tự deploy `develop` lên Development; QA (E2E, regression); tính điểm cắt và cắt `release/*` lên Staging; release lên Production; hotfix; rollback | agent-roster, tracker-integration, quality-gates |
+| `release-workflow` | Vòng ngoài trên Docker/VPS: tự deploy `develop` lên Development; QA (E2E, regression); tính điểm cắt và cắt `release/*` lên Staging; release lên Production; hotfix; rollback. Bổ sung 2026-11-05: VPS mới chỉ dành cho kit, deployer trên VPS tự kéo bản đã qua `audit` bằng App `ao-deploy`, hai điều kiện cứng cho Production, bốn lệnh `/ao-qa`, `/ao-release`, `/ao-ship`, `/ao-rollback`, basic auth cho Development và Staging | agent-roster, tracker-integration, quality-gates |
 | `project-scaffold` | Profile theo stack (Next.js + NestJS trước, Spring Boot sau) và script cài/đồng bộ kit vào dự án | Tất cả module trên |
 
 **Thứ tự build:**
@@ -133,7 +133,7 @@ agent-roster  → figma-integration (thêm ngày 2026-10-30; làm lúc nào do b
 | `tracker-integration` | [`SPEC-tracker-integration.md`](SPEC-tracker-integration.md) | Hoàn thành 2026-10-28; plan lưu ở [`tasks/archive/tracker-integration/`](tasks/archive/tracker-integration/plan.md) |
 | `quality-gates` | [`SPEC-quality-gates.md`](SPEC-quality-gates.md) | Hoàn thành 2026-10-29; plan lưu ở [`tasks/archive/quality-gates/`](tasks/archive/quality-gates/plan.md) |
 | `dev-workflow` | [`SPEC-dev-workflow.md`](SPEC-dev-workflow.md) | Hoàn thành 2026-11-01; plan lưu ở [`tasks/archive/dev-workflow/`](tasks/archive/dev-workflow/plan.md) |
-| `release-workflow` | `SPEC-release-workflow.md` | Chưa viết |
+| `release-workflow` | [`SPEC-release-workflow.md`](SPEC-release-workflow.md) | Đã duyệt 2026-11-05; plan đang viết |
 | `project-scaffold` | `SPEC-project-scaffold.md` | Chưa viết |
 
 ## Câu hỏi mở
