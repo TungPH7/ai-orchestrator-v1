@@ -402,6 +402,12 @@ test('the argument is a key of the space or a PR number; anything else stops bef
   assert.match(checkArgument('release', '0.1.0', 'DEMO', '22327a5'), /takes nothing, or a release/);
   assert.match(checkArgument('release', 'v0.1.0', 'DEMO', '--force'), /takes nothing, or a release/);
   assert.match(checkArgument('build', 'DEMO-21', 'DEMO', 'extra'), /takes one argument/);
+  // release-workflow T16: /ao-rollback takes an environment, and maybe a commit.
+  assert.equal(checkArgument('rollback', 'production', 'DEMO'), null);
+  assert.equal(checkArgument('rollback', 'development', 'DEMO', 'abc1234'), null);
+  for (const [arg, extra] of [[undefined, undefined], ['qa', undefined], ['production', 'main'], ['production', '--force']]) {
+    assert.match(checkArgument('rollback', arg, 'DEMO', extra), /\/ao-rollback takes an environment/);
+  }
   // release-workflow T15: /ao-ship takes the release.
   assert.equal(checkArgument('ship', 'v0.1.0', 'DEMO'), null);
   for (const [arg, extra] of [[undefined, undefined], ['0.1.0', undefined], ['v0.1.0', '22327a5'], ['v0.1.0;rm', undefined]]) {
