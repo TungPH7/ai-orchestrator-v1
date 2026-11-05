@@ -1,0 +1,8 @@
+description: a Dockerfile given as an absolute path
+rule: D1
+expect:
+  - "apps.web.dockerfile"
+patch:
+  - op: set
+    path: "apps.web.dockerfile"
+    value: /etc/Dockerfile

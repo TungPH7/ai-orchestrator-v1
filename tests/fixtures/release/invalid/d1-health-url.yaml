@@ -1,0 +1,8 @@
+description: a health check that is a URL, not a path of the app
+rule: D1
+expect:
+  - "apps.web.health"
+patch:
+  - op: set
+    path: "apps.web.health"
+    value: "http://169.254.169.254/"

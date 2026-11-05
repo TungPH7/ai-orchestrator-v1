@@ -1,0 +1,10 @@
+# .ai-orchestrator/deploy.yaml of ao-pilot (release-workflow spec 2.3)
+apps:
+  web:
+    dockerfile: Dockerfile
+    port: 3000
+    health: /
+    public: true
+    env: [HOST, PORT]
+smoke:
+  - { app: web, path: /, expect_status: 200, expect_text: "Giỏ hàng" }

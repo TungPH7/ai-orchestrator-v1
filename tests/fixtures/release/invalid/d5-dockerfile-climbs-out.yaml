@@ -1,0 +1,8 @@
+description: a Dockerfile outside the repo
+rule: D5
+expect:
+  - "apps.web.dockerfile"
+patch:
+  - op: set
+    path: "apps.web.dockerfile"
+    value: ../kit/Dockerfile

@@ -1,0 +1,8 @@
+description: an app runs privileged
+rule: D1
+expect:
+  - "apps.web.privileged"
+patch:
+  - op: set
+    path: "apps.web.privileged"
+    value: true

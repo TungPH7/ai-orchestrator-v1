@@ -1,0 +1,8 @@
+description: an app publishes a port on the host
+rule: D1
+expect:
+  - "apps.web.ports"
+patch:
+  - op: set
+    path: "apps.web.ports"
+    value: ["3000:3000"]

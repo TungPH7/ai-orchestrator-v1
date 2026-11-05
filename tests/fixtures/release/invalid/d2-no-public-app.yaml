@@ -1,0 +1,8 @@
+description: no public app
+rule: D2
+expect:
+  - "apps"
+patch:
+  - op: set
+    path: "apps.web.public"
+    value: false

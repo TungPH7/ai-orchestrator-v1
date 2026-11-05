@@ -1,0 +1,8 @@
+description: a smoke check of an app the file does not declare
+rule: D3
+expect:
+  - "smoke[0].app"
+patch:
+  - op: set
+    path: "smoke.0.app"
+    value: api
