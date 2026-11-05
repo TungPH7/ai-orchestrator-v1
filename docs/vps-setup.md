@@ -4,7 +4,7 @@ Hướng dẫn này thuộc module `release-workflow` ([SPEC-release-workflow.md
 
 - Chỉ phiên chính của Claude dùng SSH vào VPS, khi bạn yêu cầu. Agent của kit không bao giờ SSH.
 - Key, mật khẩu và token không bao giờ đi qua chat, repo hay log. Bạn tự gõ chúng trong terminal của bạn.
-- Phần cài deployer nằm ở mục "Cài deployer" (T9 của plan, chưa viết).
+- Phần cài deployer nằm ở mục 11.
 
 **VPS của kit:** BKNS, gói VPS MMO4, IP `42.96.4.120`, cổng SSH `26266`, hostname `vps.ao.t2g.io.vn`, Ubuntu 24.04. Host key ED25519: `SHA256:nxU5j2RoNi+ffPow22zT35H+4F/Kthn/Tmnpi79V1ko`.
 
@@ -158,7 +158,7 @@ Caddy 2 chạy trong container, giữ cổng 80 và 443, và tự lấy chứng 
 ```
 install -d -m 755 /etc/ao/caddy
 cat > /etc/ao/caddy/Caddyfile <<'EOF'
-# ai-orchestrator (docs/vps-setup.md): Caddy in front of every environment. The deployer writes the sites (T9).
+# ai-orchestrator (docs/vps-setup.md): Caddy in front of every environment. The deployer writes the sites (section 11).
 :80 {
 	respond 404
 }
@@ -168,7 +168,7 @@ docker run -d --name caddy -p 80:80 -p 443:443 --restart unless-stopped \
   caddy:2.11.8-alpine@sha256:f6228111e5fafa1a5238258d0858e103f10599b8d1659a146e7726681a002bb9
 ```
 
-- Caddyfile này chưa có site nào, nên mọi request vào cổng 80 nhận 404. Deployer ghi các site (T9 của plan).
+- Caddyfile này chưa có site nào, nên mọi request vào cổng 80 nhận 404. Từ khi cài deployer (mục 11), deployer ghi Caddyfile: một site cho mỗi subdomain của `deployer.yaml`, chuyển tới app `public` của bản đang chạy ở môi trường đó.
 - Chứng chỉ và tài khoản ACME nằm trong volume `caddy_data`. Xóa hay tạo lại container thì không mất chứng chỉ.
 - Ngày 2026-11-05 (T2), Caddy lấy được chứng chỉ Let's Encrypt cho `pilot-dev.ao.t2g.io.vn` ngay lần chạy đầu.
 
@@ -202,3 +202,95 @@ ssh.exe -p 26266 -o PubkeyAuthentication=no -o PreferredAuthentications=password
 
 - `aoadmin` đăng nhập bằng key vẫn được.
 - Quét mọi cổng TCP chỉ thấy cổng SSH `26266`, 80 và 443 mở. Khi Caddyfile chưa có site HTTPS nào, như sau T2, cổng 443 cũng đóng.
+
+## 11. Cài deployer
+
+Làm ở T18 của plan, sau khi bạn mở lại cho root đăng nhập bằng key (mục 9). Claude chạy các lệnh dưới đây qua SSH bằng root. Bước 4 do bạn làm. Xong thì Claude tắt lại đăng nhập root (mục 9), và bạn gỡ key khỏi ssh-agent.
+
+**1. User `aodeploy` và thư mục** (spec mục 2.3). `aodeploy` nằm trong nhóm `docker`, nên gần như có quyền root (spec mục 12). Không ai đăng nhập được bằng user này.
+
+```
+useradd --system --home-dir /var/lib/ao --shell /usr/sbin/nologin --groups docker aodeploy
+install -d -o aodeploy -g aodeploy -m 700 /var/lib/ao
+install -d -o root -g aodeploy -m 750 /etc/ao /etc/ao/secrets
+install -d -o root -g root -m 755 /opt/ao
+chown aodeploy:aodeploy /etc/ao/caddy/Caddyfile
+```
+
+Deployer ghi đè Caddyfile tại chỗ, vì container Caddy gắn đúng file đó (mục 8).
+
+**2. Bản kit ghim.** Claude đóng gói một commit của `main` kit trên máy bạn, chép lên VPS, rồi cài dependency. Commit ghim được ghi vào `tasks/verification.md`. Claude chỉ chép bản mới khi bạn yêu cầu (spec mục 8).
+
+```
+git -C ai-orchestrator archive --format=tar.gz -o ao-kit.tar.gz <commit>
+scp -P 26266 ao-kit.tar.gz root@42.96.4.120:/tmp/ao-kit.tar.gz
+```
+
+Trên VPS:
+
+```
+rm -rf /opt/ao/kit && install -d -o root -g root -m 755 /opt/ao/kit
+tar -xzf /tmp/ao-kit.tar.gz -C /opt/ao/kit && rm /tmp/ao-kit.tar.gz
+cd /opt/ao/kit && npm ci --omit=dev --ignore-scripts
+```
+
+**3. Key của App `ao-deploy`.** Claude chép file bằng `scp` mà không mở nó (plan, quyết định 7). Sau đó bạn xóa bản ở máy.
+
+```
+scp -P 26266 "C:/Users/Huu Tung/ao-keys/tungph7-ao-deploy.pem" root@42.96.4.120:/tmp/ao-deploy.pem
+```
+
+```
+install -o root -g aodeploy -m 640 /tmp/ao-deploy.pem /etc/ao/ao-deploy.pem && shred -u /tmp/ao-deploy.pem
+```
+
+**4. Token Jira chỉ đọc và mật khẩu basic auth (bạn làm).** Bạn chạy hai lệnh này trong PowerShell của bạn. Script `vps/ao-secret.sh` hỏi giá trị mà không hiện chữ, rồi ghi file `root:aodeploy 0640`. Giá trị không nằm trong lịch sử lệnh, tham số của tiến trình hay log.
+
+```
+ssh -p 26266 -i "$env:USERPROFILE\.ssh\ao_vps" -t root@42.96.4.120 bash /opt/ao/kit/vps/ao-secret.sh jira
+ssh -p 26266 -i "$env:USERPROFILE\.ssh\ao_vps" -t root@42.96.4.120 bash /opt/ao/kit/vps/ao-secret.sh basic-auth
+```
+
+- Lệnh thứ nhất hỏi token có scope `read:jira-work` của tài khoản `orchestratorci`. Đó là giá trị của biến `AO_JIRA_READ_TOKEN` trên máy bạn.
+- Lệnh thứ hai hỏi mật khẩu của user `ao` cho Development và Staging. Trên VPS chỉ lưu bản băm bcrypt. Trên máy bạn, biến `AO_ENV_AUTH` của user Windows mang giá trị `ao:<mật khẩu đó>`.
+- Biến bí mật của app dùng cùng script: `bash /opt/ao/kit/vps/ao-secret.sh env <dự án> <môi trường> <TÊN>`.
+
+**5. Biến không bí mật của app.** Claude ghi thẳng, ví dụ cho `ao-pilot`:
+
+```
+install -d -o root -g aodeploy -m 750 /etc/ao/secrets/pilot
+for env in development staging production; do
+  install -o root -g aodeploy -m 640 /dev/null /etc/ao/secrets/pilot/$env.env
+  printf 'HOST=0.0.0.0\nPORT=3000\n' > /etc/ao/secrets/pilot/$env.env
+done
+```
+
+**6. `deployer.yaml`.** Claude chép từ `vps/deployer.example.yaml`, và chỉ giữ những dự án đã cài App `ao-deploy`. Lúc đầu chỉ có `pilot`; `sample` vào sau, ở Pilot 2.
+
+```
+install -o root -g aodeploy -m 640 /opt/ao/kit/vps/deployer.example.yaml /etc/ao/deployer.yaml
+```
+
+**7. Điểm bắt đầu và systemd.** `baseline` in head hiện tại của `develop`, `main` và nhánh release đang mở. Có `--confirm` thì deployer ghi các head đó là đã kiểm, và chỉ deploy từ commit kế tiếp, hoặc từ yêu cầu deploy của bạn.
+
+```
+install -m 644 /opt/ao/kit/vps/ao-deploy.service /opt/ao/kit/vps/ao-deploy.timer /etc/systemd/system/
+systemctl daemon-reload
+cd /var/lib/ao
+sudo -u aodeploy -H node /opt/ao/kit/scripts/ao-deploy.mjs baseline pilot
+sudo -u aodeploy -H node /opt/ao/kit/scripts/ao-deploy.mjs baseline pilot --confirm
+sudo -u aodeploy -H node /opt/ao/kit/scripts/ao-deploy.mjs tick --dry-run
+systemctl enable --now ao-deploy.timer
+```
+
+**8. Kiểm.**
+
+```
+systemctl status ao-deploy.timer
+journalctl -u ao-deploy --since "10 min ago"
+```
+
+- Timer chạy, và mỗi lượt bắt đầu khoảng một phút sau khi lượt trước xong.
+- Log không có token, key hay giá trị biến nào của app.
+- Lượt đầu ghi Caddyfile với site của ba môi trường của `pilot`, mỗi site trả 503 tới lần deploy đầu, rồi reload Caddy. Caddy lấy chứng chỉ cho cả ba tên.
+- [Chưa kiểm] `caddy hash-password` đọc mật khẩu từ stdin khi stdin không phải terminal; T18 kiểm bằng một lần đăng nhập basic auth.
