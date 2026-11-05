@@ -32,10 +32,10 @@ Bản đọc của hợp đồng trong `contract/`. Nội dung và lý do của 
 | `review` | Review code và security | `reviewer`, `security`, `human`; human duyệt sau reviewer và security | PR có CI xanh | Báo cáo review (`review-report`) | Không còn finding Critical/High; Cổng ③ `merge-approval`: Bạn approve PR |
 | `merge` | Merge PR | `automation` | PR đã approve | Commit trên nhánh đích | merge-gate pass |
 | `qa-verify` | QA trên môi trường kiểm | `qa` | Bản đã deploy lên môi trường QA (mục 2.6) | Báo cáo QA của item (`qa-report`) | Báo cáo PASS; bạn chấp nhận |
-| `release-cut` | Cắt release lên Staging, khi bạn yêu cầu | `devops` | Điểm cắt trên develop có ít nhất một item Done chưa release; không có nhánh release/* nào đang mở (mục 2.7). Guard: `cut-point-ready`, `no-open-release` | Nhánh release/vX.Y.0 tách từ điểm cắt, Fix Version | Cổng ④ `release-cut-approval`: Bạn duyệt danh sách item của bản |
+| `release-cut` | Cắt release lên Staging, khi bạn yêu cầu | `devops`; Script của ao-step làm thay devops: tính điểm cắt, tạo nhánh release và gắn Fix Version, khi bạn gõ /ao-release <vX.Y.0> <sha> | Điểm cắt trên develop có ít nhất một item Done chưa release; không có nhánh release/* nào đang mở (mục 2.7). Guard: `cut-point-ready`, `no-open-release` | Nhánh release/vX.Y.0 tách từ điểm cắt, Fix Version | Cổng ④ `release-cut-approval`: Bạn duyệt danh sách item của bản |
 | `staging-verify` | Full regression, demo, UAT | `qa`, `human` | Bản release trên Staging | Báo cáo regression của bản release (`regression-report`); Release note (`release-notes`) | Regression PASS; không còn Bug Critical/High mở cho bản này |
 | `ship` | Lên Production | `devops` | Bản đã qua Staging | Merge vào main, tag vX.Y.Z, merge ngược về develop | Smoke test sau deploy pass; Cổng ⑤ `production-approval`: Bạn duyệt lên Production |
-| `hotfix` | Sửa gấp trên Production | `fe-dev`, `be-dev`, `qa`, `devops`; fe-dev hoặc be-dev sửa | Bug Critical/High trên Production | Nhánh hotfix/..., tag bản vá | Như ship, rút gọn |
+| `hotfix` | Sửa gấp trên Production | `fe-dev`, `be-dev`, `qa`, `devops`; fe-dev hoặc be-dev sửa; gate ⑤ là yêu cầu deploy Production do bạn tạo bằng /ao-ship vX.Y.Z | Bug Critical/High trên Production | Nhánh hotfix/..., tag bản vá | Như ship, rút gọn |
 
 ### Cổng duyệt
 
