@@ -424,7 +424,7 @@
 
 **Cỡ:** M
 
-### [ ] T14: `/ao-release` (spec mục 2.2, 2.6)
+### [x] T14: `/ao-release` (spec mục 2.2, 2.6)
 
 **Mô tả:**
 
@@ -435,15 +435,23 @@
   3. comment lên từng item: số bản, điểm cắt, thời điểm bạn duyệt.
 
 **Tiêu chí chấp nhận:**
-- [ ] Test `steps`: `GO`; `STOP` khi có nhánh release đang mở, thiếu Fix Version trên Jira, `<sha>` không phải điểm cắt.
-- [ ] Test việc gắn và chuyển Fix Version bằng client giả.
+- [x] Test `steps`: `GO`; `STOP` khi có nhánh release đang mở, thiếu Fix Version trên Jira, `<sha>` không phải điểm cắt.
+- [x] Test việc gắn và chuyển Fix Version bằng client giả.
 
 **Kiểm chứng:**
-- [ ] Năm lệnh trong quy ước chung xanh
+- [x] Năm lệnh trong quy ước chung xanh
 
 **Phụ thuộc:** T3, T12
 
 **File dự kiến:** `lib/workflow/steps.mjs`, `lib/workflow/runner.mjs`, `scripts/ao-step.mjs`, `lib/tracker/jira-client.mjs`
+
+**Cách làm khi xong T14** (Phiên 27 · Lượt 8):
+
+- Lịch sử first-parent của `develop` đọc từ git của bản checkout trên máy bạn, sau `git fetch --tags origin develop`, từ tag mới nhất. Trạng thái từng item đọc riêng bằng token của agent; item Jira không trả lời được giữ điểm cắt lại như item chưa Done.
+- Kế hoạch đổi Fix Version là hàm thuần `releaseCutChanges` (`lib/release/release-cut.mjs`), có test. Bước `release-cut` của `ao-step` làm Jira trước, tạo nhánh sau cùng: khi nhánh đã có, lệnh dừng ở "nhánh release đang mở", nên một bước dở trước đó chạy lại được.
+- Runner có thêm bước script (`act`), không gọi agent. Báo cáo của lệnh release nằm ở `.ai/runs/<vX.Y.0>/last.md`.
+- Major là quyết định của bạn: `/ao-release v1.0.0 <sha>` được nhận khi bản kế tiếp là `v0.N.0`.
+- **Trước kiểm thật** (T1): `ao-pilot` còn tag `v0.1.0` và nhánh `release/0.1.0` ở `d013acc`, và `main` có 4 commit không nằm trong `develop`. Đề xuất cách xử lý ở Checkpoint 2.
 
 **Cỡ:** M
 
