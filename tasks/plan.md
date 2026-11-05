@@ -117,7 +117,7 @@ T20 ── T21 DEMO-21 tới Production ── T22 hotfix, rollback, smoke fail 
 - [x] T14: `/ao-release`
 - [x] T15: `/ao-ship` cho bản release
 - [x] T16: `/ao-ship` cho hotfix, `/ao-rollback` và `/ao-status`
-- [ ] T17: Bốn skill, prompt và hợp đồng
+- [x] T17: Bốn skill, prompt và hợp đồng
 
 ### Checkpoint 2
 - [ ] Năm lệnh kiểm trong quy ước chung và CI của kit xanh

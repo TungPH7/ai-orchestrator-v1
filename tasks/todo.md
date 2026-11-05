@@ -516,7 +516,7 @@
 
 **Cỡ:** M
 
-### [ ] T17: Bốn skill, prompt và hợp đồng (spec mục 2.2, 2.10)
+### [x] T17: Bốn skill, prompt và hợp đồng (spec mục 2.2, 2.10)
 
 **Mô tả:**
 
@@ -525,11 +525,11 @@
 - Hợp đồng: stage `release-cut` ghi rằng script làm thay `devops`; stage `hotfix` ghi gate ⑤ là yêu cầu deploy của bạn. `docs/sdlc.md` được sinh lại.
 
 **Tiêu chí chấp nhận:**
-- [ ] Test frontmatter của bốn skill.
-- [ ] `npm run render:check` và `npm run agents:check` xanh sau khi sinh lại.
+- [x] Test frontmatter của bốn skill.
+- [x] `npm run render:check` và `npm run agents:check` xanh sau khi sinh lại.
 
 **Kiểm chứng:**
-- [ ] Năm lệnh trong quy ước chung xanh
+- [x] Năm lệnh trong quy ước chung xanh
 
 **Phụ thuộc:** T13–T16
 
