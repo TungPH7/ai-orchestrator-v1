@@ -87,7 +87,7 @@ function harness(world, effects, { outcomes = [], texts = [], throws = false, st
     last,
     checkouts,
     run: (more = {}) =>
-      runGo({ command: 'spec', arg: 'DEMO-20', options: { ...options, ...more.options }, gather: more.gather, decide: more.decide, pack: more.pack, worktree: more.worktree, after: more.after, log: more.log, agent, git: async (c) => (checkouts.push(c), { ok: true }), dispatch: async () => {}, store, sleep: async (ms) => (clock += ms), now: () => clock, limits: { maxRuns: 8, ciWaitMs: 120000, syncWaitMs: 60000, pollMs: 30000, ...more.limits } }),
+      runGo({ command: 'spec', arg: 'DEMO-20', options: { ...options, ...more.options }, gather: more.gather, decide: more.decide, pack: more.pack, worktree: more.worktree, after: more.after, act: more.act, log: more.log, agent, git: async (c) => (checkouts.push(c), { ok: true }), dispatch: async () => {}, store, sleep: async (ms) => (clock += ms), now: () => clock, limits: { maxRuns: 8, ciWaitMs: 120000, syncWaitMs: 60000, pollMs: 30000, ...more.limits } }),
   };
 }
 const SPEC_EFFECTS = {
@@ -395,6 +395,13 @@ test('the argument is a key of the space or a PR number; anything else stops bef
   assert.match(checkArgument('fix', '15; rm -rf .', 'DEMO'), /takes a PR number/);
   assert.match(checkArgument('spec', 'DEMO-20 && echo', 'DEMO'), /takes a Jira key/);
   assert.match(checkArgument('deploy', 'DEMO-1', 'DEMO'), /unknown command deploy/);
+  // release-workflow T14: /ao-release alone, or with the release and the cut point it printed.
+  assert.equal(checkArgument('release', undefined, 'DEMO'), null);
+  assert.equal(checkArgument('release', 'v0.1.0', 'DEMO', '22327a5'), null);
+  assert.match(checkArgument('release', 'v0.1.0', 'DEMO'), /\/ao-release takes nothing, or a release such as v0\.1\.0 and the cut point it printed/);
+  assert.match(checkArgument('release', '0.1.0', 'DEMO', '22327a5'), /takes nothing, or a release/);
+  assert.match(checkArgument('release', 'v0.1.0', 'DEMO', '--force'), /takes nothing, or a release/);
+  assert.match(checkArgument('build', 'DEMO-21', 'DEMO', 'extra'), /takes one argument/);
 });
 
 // Medium of security on the second review of ao-sample PR #13: ao-step, the kit and the agents' instructions come from
@@ -460,4 +467,20 @@ test('the variables of a run reach ao-agent.mjs through its environment; a passw
   assert.deepEqual(env, { CLAUDE_CODE_EFFORT_LEVEL: 'high', CLAUDE_CODE_PROMPT_CACHE_TTL: '5m', E2E_BASE_URL: 'https://pilot-dev.ao.t2g.io.vn', E2E_HTTP_USER: 'ao', E2E_HTTP_PASSWORD: 's3cr3t-pass' });
   assert.ok(!args.some((arg) => arg.includes('s3cr3t-pass')));
   assert.ok(!('JIRA_CI_TOKEN' in env));
+});
+
+test('a script step of a release command runs once through act, no agent; its notes reach last.md (release-workflow T14)', async () => {
+  let decided = 0;
+  const cut = { action: 'release-cut', key: 'v0.1.0', version: 'v0.1.0', sha: '22327a5b9bfd4d7169b9ca451dbcfc9dc6ddbca7' };
+  const decide = () => (decided++ === 0 ? { go: true, runs: [cut], lines: [] } : { go: false, reason: 'release/v0.1.0 is open at 22327a5b', next: '/ao-ship v0.1.0', lines: [] });
+  const acted = [];
+  const world = specWorld();
+  const h = harness(world.world, {});
+  const { decision, made } = await h.run({ gather: world.gather, decide, act: async (run) => (acted.push(run.action), ['Created release/v0.1.0 at 22327a5b as tungph7-ao-dev[bot].', 'Fix Version v0.1.0 on DEMO-12, DEMO-21.']) });
+  assert.deepEqual(acted, ['release-cut']);
+  assert.equal(h.calls.length, 0, 'no agent runs');
+  assert.deepEqual(made.map(({ action, key }) => `${action} ${key}`), ['release-cut v0.1.0']);
+  assert.equal(decision.reason, 'release/v0.1.0 is open at 22327a5b');
+  assert.match(h.last['DEMO-20'], /\| - \| release-cut \| v0\.1\.0 \|/);
+  assert.match(h.last['DEMO-20'], /- Created release\/v0\.1\.0 at 22327a5b as tungph7-ao-dev\[bot\]\./);
 });
