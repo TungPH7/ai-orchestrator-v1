@@ -58,7 +58,7 @@
 
 **Cỡ:** S
 
-### [ ] T2: VPS mới, DNS và tiền đề về VPS (điểm 5–7) [bạn]
+### [x] T2: VPS mới, DNS và tiền đề về VPS (điểm 5–7) [bạn]
 
 **Mô tả:**
 
@@ -78,11 +78,11 @@
 **Tiêu chí chấp nhận:**
 - [x] Ba điểm có kết quả đúng hoặc sai, kèm số đo, trong `tasks/verification.md`.
 - [x] Từ máy bạn: đăng nhập root bằng SSH bị từ chối, đăng nhập bằng mật khẩu bị từ chối, và quét cổng chỉ thấy cổng SSH `26266`, 80 và 443.
-- [ ] Nếu một điểm sai: spec và plan đã sửa, và bạn đã duyệt bản sửa.
+- [x] Nếu một điểm sai: spec và plan đã sửa, và bạn đã duyệt bản sửa.
 
 **Kiểm chứng:**
 - [x] `docs/vps-setup.md` có đủ các bước đã chạy, theo đúng thứ tự
-- [ ] Bạn đã gỡ key khỏi ssh-agent khi task xong
+- [x] Bạn đã gỡ key khỏi ssh-agent khi task xong
 
 **Phụ thuộc:** T1
 
@@ -92,9 +92,9 @@
 
 ### Checkpoint 1
 
-- [ ] Năm lệnh kiểm trong quy ước chung xanh
-- [ ] Mười tiền đề có kết quả trong `tasks/verification.md`. Tiền đề nào sai thì spec đã được sửa, và bạn đã duyệt bản sửa
-- [ ] VPS đạt phần SSH, `ufw` và Docker của tiêu chí 3
+- [x] Năm lệnh kiểm trong quy ước chung xanh
+- [x] Mười tiền đề có kết quả trong `tasks/verification.md`. Tiền đề nào sai thì spec đã được sửa, và bạn đã duyệt bản sửa
+- [x] VPS đạt phần SSH, `ufw` và Docker của tiêu chí 3
 - [ ] Bạn xem kết quả của T1–T2
 
 ---
@@ -205,14 +205,16 @@
 - `lib/release/smoke.mjs`: gọi từng đường dẫn của `smoke` qua mạng nội bộ, kiểm mã trạng thái và đoạn chữ; hết 60 giây mà chưa xanh thì fail. Nhận hàm `fetch` và đồng hồ làm tham số.
 - `lib/release/docker.mjs`: dựng đối số cho `docker` bằng mảng, không qua shell (spec mục 6):
   - build image tag theo mã tree, nhãn `ao.tree`;
-  - chạy container mới cạnh container cũ, trong mạng Docker riêng của dự án và môi trường, không publish cổng, với `--env-file` của bí mật;
+  - chạy container mới cạnh container cũ, trong mạng Docker riêng của dự án và môi trường, không publish cổng, với `--env-file` của bí mật, và `AO_PUBLIC_URL` của môi trường cho app `public`;
   - chuyển Caddy sang container mới khi smoke đạt, rồi dừng container cũ; xóa container mới khi smoke fail (plan, quyết định 4);
-  - giữ ba image gần nhất của mỗi môi trường, xóa image cũ hơn.
+  - giữ ba image gần nhất của mỗi môi trường, xóa image cũ hơn;
+  - sau mỗi lần deploy, dọn cache build, chỉ giữ phần dùng gần nhất, tối đa 4 GB (T2: 6 lần build để lại 7,25 GB).
 
 **Tiêu chí chấp nhận:**
 - [ ] Test `smoke`: đạt ngay; đạt sau vài lần thử; hết 60 giây; sai mã trạng thái; thiếu đoạn chữ.
 - [ ] Test đối số `docker` với hàm chạy lệnh giả: không có `--publish`, `--privileged`, `--network host` hay `--volume`; tên nhánh lạ không lọt vào đối số.
 - [ ] Test thứ tự đổi bản khi smoke đạt và khi smoke fail.
+- [ ] Test: app `public` nhận `AO_PUBLIC_URL`, app khác không nhận; lệnh dọn cache build giữ tối đa 4 GB.
 
 **Kiểm chứng:**
 - [ ] Năm lệnh trong quy ước chung xanh
@@ -509,13 +511,15 @@
 **Mô tả:**
 
 - Task `DEMO-…` đi như Task chép kit `DEMO-19` của `dev-workflow`.
-- `/ao-build` cho `devops`: Dockerfile, `.dockerignore` bỏ `docs/` và `*.md`, `.ai-orchestrator/deploy.yaml`, biến `HOST`, `playwright.config.ts` đọc `E2E_BASE_URL` và `httpCredentials`, bỏ `deploy.yml` và `audit.yml`.
+- `/ao-build` cho `devops`: Dockerfile, `.dockerignore` bỏ `docs/` và `*.md`, `.ai-orchestrator/deploy.yaml`, biến `HOST`, bỏ `deploy.yml` và `audit.yml`.
+- Cũng trong lượt đó: server nhận Host và Origin của `AO_PUBLIC_URL`, ngoài `127.0.0.1` và `localhost`, và ADR-0001 của `ao-pilot` ghi thêm điều này; `playwright.config.ts` đọc `E2E_BASE_URL` và `httpCredentials`, và 5 test gửi request thô (AC9–AC11 của `DEMO-11`, AC10–AC11 của `DEMO-20`) mang tag `@local` (spec mục 2.5).
 - Sau lượt build, Claude thêm commit chép kit mới lên cùng nhánh, bằng helper của vai trò `devops` (plan, quyết định 6).
 - `/ao-review`, `/ao-fix` nếu cần, gate ③. **Bạn** merge, vì PR sửa đường dẫn được bảo vệ.
 - Deployer deploy Development; `jira-sync` chạy theo deployment đó.
 
 **Tiêu chí chấp nhận:**
 - [ ] `https://pilot-dev.ao.t2g.io.vn` chạy bản mới, có HTTPS, hỏi basic auth.
+- [ ] E2E của `ao-pilot` với `E2E_BASE_URL` của Development: 24/24 xanh, trong đó 5 test `@local` chạy vào server tại chỗ.
 - [ ] Deployment `development` có trên GitHub và hiện trên item Jira.
 - [ ] Chi phí của từng lượt agent nằm trong `tasks/verification.md`.
 
@@ -613,7 +617,7 @@
 **Mô tả:**
 
 - README có mục về bốn lệnh và biến `AO_ENV_AUTH`.
-- `docs/release-workflow.md`: bốn lệnh, một vòng release, các bước bấm Fix Version trên Jira, yêu cầu với dự án (Dockerfile, `.dockerignore`, `deploy.yaml`, `playwright.config.ts`), quy tắc expand/contract cho cơ sở dữ liệu.
+- `docs/release-workflow.md`: bốn lệnh, một vòng release, các bước bấm Fix Version trên Jira, yêu cầu với dự án (Dockerfile, `.dockerignore`, `deploy.yaml`, `playwright.config.ts` với tag `@local`, `AO_PUBLIC_URL`), quy tắc expand/contract cho cơ sở dữ liệu.
 - `docs/github-apps-setup.md` có App `ao-deploy` (từ T1); `docs/vps-setup.md` đủ từ đầu tới cuối.
 - `SPEC.md` ghi module hoàn thành; chuyển `tasks/plan.md`, `tasks/todo.md`, `tasks/verification.md` vào `tasks/archive/release-workflow/`.
 
