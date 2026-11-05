@@ -31,7 +31,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 21 | `3ead2782-314d-4ae8-981b-96f6ed83a60e` | 2026-11-01 khoảng 22:50 → 2026-11-02 khoảng 01:40 | Bạn dán đoạn cuối của Phiên 20, hỏi vì sao `main` và `develop` của `ao-pilot` lệch nhau, cách xử lý, và lựa chọn 3 có giải quyết được không; Claude kiểm hai nhánh và code của `audit`: `develop` đi trước 10 là đúng GitFlow, 4 commit chỉ có trên `main` là dấu vết lối tắt sandbox và không đổi nội dung; lựa chọn 3 không giải quyết; đề xuất ghi quy tắc merge commit và back-merge từ `main` vào spec `release-workflow`; bạn chọn Pilot 1; Claude nêu phạm vi, giả định A1–A8 và ba câu hỏi (repo, space Jira, feature); bạn duyệt và chọn theo đề xuất: repo mới `ao-sample`, space mới `SMP`, Epic "Ghi chú"; Claude viết `SPEC-pilot-1.md` (nhánh `task/spec-pilot-1`); bạn chọn tạo key mới cho `ao-dev` và duyệt spec; Claude viết plan 10 task, 5 checkpoint, cùng quyết định 6 (lỗi kit giữa Epic) và 8 (Checkpoint 3 sau lượt build đầu); bạn duyệt plan; kit PR #141; T1–T2: tạo repo `ao-sample`, điểm 1 đúng một phần (NestJS 12 dùng Vitest và oxlint, `@nestjs/mau` mang 2 lỗ hổng high), điểm 2 đúng nếu dùng Vitest, điểm 3 và 4 sai (API từ chối), điểm 5 đúng kèm `MSYS_NO_PATHCONV=1` và tin cậy thư mục; Checkpoint 1: bạn duyệt sáu chỗ sửa, dùng chung scheme với `DEMO`, và duyệt trước mọi đề xuất trong Pilot 1; T1a (kit PR #142, `oxlint-disable`); T4 khung app xanh sáu lệnh; T5 bản chép kit và hai skill theo stack; commit đầu bị hook `commit-msg` từ chối vì thiếu mã Jira; bạn gửi ảnh: tùy chọn share settings lúc tạo space cần gói trả phí; Claude đổi cách: tạo space như thường rồi gán ba scheme của `DEMO` trong Space settings; bạn tạo xong `SMP` và gán ba scheme; Claude kiểm bằng API, `jira:check` còn 3 chỗ lệch của board, tạo bốn environment và đặt secret `JIRA_CI_TOKEN`; bạn tắc ở B3 (board thiếu cột); Claude đọc cấu hình board bằng API và ghi từng bước sửa cột trong Board settings; bạn gửi ảnh: board của `SMP` là board mới, Board settings không có Columns; Claude tìm tài liệu Atlassian: cột cấu hình ở More actions → Configure columns trên board; bạn gửi ảnh hộp Configure columns đã sửa đúng, chờ bấm Publish; bạn tắc ở D2 (không có Private keys); Claude đính chính: đường đúng là Credentials → Key pairs → New key, như `docs/github-apps-setup.md` đã ghi; bạn xong B–E và chọn cách (b); Claude đặt secret `AO_DEV_APP_KEY`, tạo `SMP-1`, commit đầu `6f5831d` lên `main` và `develop`; GitHub không chạy workflow cho lần push đầu, Claude chạy tay `merge-gate` (xanh) và `Deploy` (`audit` đỏ, gắn cờ `SMP-1`); Checkpoint 2 đạt, tiêu chí 1 đổi; Epic `SMP-2`; chờ bạn dọn `SMP-1` và bấm Start spec |
 | 22 | `d714399c-65d0-4f98-bbbb-720338ff6bea` | 2026-11-02 khoảng 10:50 → khoảng 20:08 | Bạn dán đoạn cuối của Phiên 21 kèm ảnh panel Development của `SMP-1`, hỏi `Deploy` đỏ có đúng dự kiến không; Claude đọc run và log của `audit`: đúng dự kiến (commit đầu không qua PR), và ảnh cho thấy GitHub for Atlassian đã gắn run vào `SMP-1`; bạn dọn `SMP-1` và bấm Start spec; Claude merge kit PR #143 (T3–T6, Checkpoint 2), chạy `/ao-spec SMP-2` qua `claude -p`: `ba` viết SPEC (1,49 USD) và để lại 4 câu hỏi; Claude chuyển câu hỏi cho bạn, khuyên đồng ý cả bốn; bạn đồng ý cả bốn; Claude nối lại phiên `claude -p` với câu trả lời: `ba`, `ux`, `sa` chạy (3,36 USD), `sa` để lại 2 câu hỏi (đếm emoji, chuẩn hóa NFC và xuống dòng); Claude khuyên đồng ý cả hai; bạn đồng ý cả hai; `sa` ghi câu trả lời, `ba` mở PR tài liệu #1, nhưng GitHub không chạy CI và `ao-step` chờ 30 phút; bạn hỏi vì sao không dừng; Claude dùng nhánh và PR thử tìm ra nguyên nhân (workflow từ lần push đầu chưa được ghi nhận trigger; một push đụng `.github/workflows/` gỡ được), `CI` của PR #1 xanh; tìm thêm lỗi kit `openQuestions` bỏ sót 10 câu hỏi của `ux`; tới gate ①, Claude khuyên không thêm dòng "Đã lưu ghi chú." và gửi các bước Approve spec; bạn hỏi vì sao có hai lỗi nặng và yêu cầu sửa; Claude sửa ở kit (PR #144), chép vào `ao-sample` (Task `SMP-3`, PR #3), `/ao-review 3` Approve (1 Medium, 2 Low ở kit, sửa ở kit PR #145); bạn approve và merge PR #3, hỏi có cần chép kit vào `ao-pilot` (chưa cần); bạn đã bấm Approve spec, chọn chạy `/ao-plan`; `sa` chạm giới hạn 5 giờ giữa lượt viết plan; bạn bảo làm tiếp; `sa` viết xong plan và ba ADR, `ba` tạo 8 item nhưng không tạo được link Blocks; phiên dừng vì Claude chạm giới hạn tuần |
 | 23 | `6d4fa505-b003-47c3-bad3-14958ad7ae83` | 2026-11-02 khoảng 22:10 → | Bạn dán đoạn cuối của Phiên 22 để làm tiếp; Claude tạo 5 link Blocks bằng token CI, tắt server spike `sa` để lại, ghi stage plan và 3 lỗi kit vào `verification.md`, gửi các bước duyệt plan (gate ②) |
-| 26 | `6b41390c-2d48-4d39-9a30-5a4e22f76bf7` | 2026-11-04 khoảng 13:10 → | Bạn báo đã merge kit PR #165; Claude chép vào `ao-sample` PR #13 và review lần 2 (security lại có 1 High: `AGENTS.md`), mở kit PR #166; bạn hỏi chạy review ở high, vì sao lần nào cũng ra High, vì sao security review cả PR; Claude tìm lý do của luật review toàn bộ trong file này; bạn chọn đổi luật review phần mới, điều kiện đường dẫn được bảo vệ (b), và sửa gốc (code của PR không nằm trong thư mục dự án); Claude thử bằng Sonnet và sửa thêm trong kit PR #166; bạn merge #166; Claude chép vào PR #13, review lần 3 còn hai Medium để sau Pilot 1; bạn merge PR #13 (`e56a207`); T10: kit PR #167 (đường bấm của board Jira mới) và #168 (đầu vào cho `project-scaffold`, bảng lỗi kit, chi phí Pilot 1 khoảng 117,6 USD, plan vào `tasks/archive/pilot-1/`); bạn xác nhận Pilot 1 hoàn thành (PR #169); bạn hỏi tài khoản GitHub Free có bị tính tiền không: Billed 0 USD, phần miễn phí bù hết Gross; bạn chọn `release-workflow`; Claude nêu phạm vi, điều vừa kiểm (repo private gói Free không có secret theo môi trường và người duyệt bắt buộc, phần miễn phí 12 USD Actions mỗi tháng, tài khoản agent không tạo được Fix Version), bảy giả định và ba câu hỏi (VPS, cách đưa bản mới vào VPS, kiểm thật ở `ao-pilot` hay `ao-sample`); bạn trả lời: dùng VPS `dtddeploy` của bạn với subdomain của `t2g.io.vn`, VPS tự kéo bản đã qua cổng, kiểm thật trên `ao-pilot` trước; key SSH của VPS có passphrase, Claude chỉ cách mở khóa bằng ssh-agent của Windows; bạn mở khóa key; Claude thấy VPS rất có thể đã bị chiếm quyền root (`masscan` chạy bằng root từ một IP của Aeza Group, SSH cho root đăng nhập bằng mật khẩu) và quá nhỏ (1 vCPU, 961 MB RAM), khuyên thu hồi bí mật và cài lại VPS, rồi hỏi lại câu 1; bạn xác nhận `masscan` không phải của bạn, nhờ ghi việc xử lý VPS vào memory (không commit), và hỏi về passphrase 4 chữ số, cách người lạ vào, cách SSH an toàn và EC2: người lạ có root từ khoảng 7/7/2026, nhiều khả năng nhờ mật khẩu root, passphrase không phải nguyên nhân; EC2 chỉ rẻ hơn khi bật ít giờ; bạn chọn VPS mới riêng cho kit; Claude viết `SPEC-release-workflow.md` (deployer trên VPS kiểm mọi commit bằng `audit`, hai điều kiện cứng cho Production, bốn lệnh `/ao-qa`, `/ao-release`, `/ao-ship`, `/ao-rollback`, mười tiền đề), đổi năm chỗ so với giả định, hỏi hai câu (subdomain, basic auth); bạn chọn cả hai đề xuất và duyệt spec; Claude ghi spec đã duyệt (PR #170), nhưng bộ lọc an toàn dừng tin nhắn hai lần; bạn hỏi nguyên nhân; Claude viết plan 23 task, bốn checkpoint, ba quyết định cần duyệt (đổi bản không gián đoạn, gỡ chặn bằng `/ao-rollback <môi trường> <sha>`, bản chép kit đi cùng Task của `ao-pilot`); bạn nhờ giải thích lại quyết định 5; Claude giải thích bằng ví dụ commit push thẳng nằm giữa lịch sử, cách gỡ bằng yêu cầu deploy của bạn, và hỏi có muốn tên `/ao-deploy` thay cho `/ao-rollback <sha>`; bạn merge PR #170 và duyệt plan; Claude ghi ba quyết định vào spec, mở PR #171, bắt đầu T1 (App `ao-deploy` trong script tạo App, mục 7 của `docs/github-apps-setup.md`), mở trang tạo App và đưa các bước bấm để bạn tạo App và token Jira chỉ đọc; bạn báo đã xong và hỏi quyền của App; Claude xác nhận quyền đúng thiết kế, nhưng tiền đề 3 sai một phần (`audit` cần quyền Commit statuses), đề xuất thêm quyền chỉ đọc đó, đề xuất hủy `DEMO-3` trước phép thử điểm 1, và báo tag `v0.1.0`, nhánh `release/0.1.0` cũ trên `ao-pilot` |
+| 26 | `6b41390c-2d48-4d39-9a30-5a4e22f76bf7` | 2026-11-04 khoảng 13:10 → | Bạn báo đã merge kit PR #165; Claude chép vào `ao-sample` PR #13 và review lần 2 (security lại có 1 High: `AGENTS.md`), mở kit PR #166; bạn hỏi chạy review ở high, vì sao lần nào cũng ra High, vì sao security review cả PR; Claude tìm lý do của luật review toàn bộ trong file này; bạn chọn đổi luật review phần mới, điều kiện đường dẫn được bảo vệ (b), và sửa gốc (code của PR không nằm trong thư mục dự án); Claude thử bằng Sonnet và sửa thêm trong kit PR #166; bạn merge #166; Claude chép vào PR #13, review lần 3 còn hai Medium để sau Pilot 1; bạn merge PR #13 (`e56a207`); T10: kit PR #167 (đường bấm của board Jira mới) và #168 (đầu vào cho `project-scaffold`, bảng lỗi kit, chi phí Pilot 1 khoảng 117,6 USD, plan vào `tasks/archive/pilot-1/`); bạn xác nhận Pilot 1 hoàn thành (PR #169); bạn hỏi tài khoản GitHub Free có bị tính tiền không: Billed 0 USD, phần miễn phí bù hết Gross; bạn chọn `release-workflow`; Claude nêu phạm vi, điều vừa kiểm (repo private gói Free không có secret theo môi trường và người duyệt bắt buộc, phần miễn phí 12 USD Actions mỗi tháng, tài khoản agent không tạo được Fix Version), bảy giả định và ba câu hỏi (VPS, cách đưa bản mới vào VPS, kiểm thật ở `ao-pilot` hay `ao-sample`); bạn trả lời: dùng VPS `dtddeploy` của bạn với subdomain của `t2g.io.vn`, VPS tự kéo bản đã qua cổng, kiểm thật trên `ao-pilot` trước; key SSH của VPS có passphrase, Claude chỉ cách mở khóa bằng ssh-agent của Windows; bạn mở khóa key; Claude thấy VPS rất có thể đã bị chiếm quyền root (`masscan` chạy bằng root từ một IP của Aeza Group, SSH cho root đăng nhập bằng mật khẩu) và quá nhỏ (1 vCPU, 961 MB RAM), khuyên thu hồi bí mật và cài lại VPS, rồi hỏi lại câu 1; bạn xác nhận `masscan` không phải của bạn, nhờ ghi việc xử lý VPS vào memory (không commit), và hỏi về passphrase 4 chữ số, cách người lạ vào, cách SSH an toàn và EC2: người lạ có root từ khoảng 7/7/2026, nhiều khả năng nhờ mật khẩu root, passphrase không phải nguyên nhân; EC2 chỉ rẻ hơn khi bật ít giờ; bạn chọn VPS mới riêng cho kit; Claude viết `SPEC-release-workflow.md` (deployer trên VPS kiểm mọi commit bằng `audit`, hai điều kiện cứng cho Production, bốn lệnh `/ao-qa`, `/ao-release`, `/ao-ship`, `/ao-rollback`, mười tiền đề), đổi năm chỗ so với giả định, hỏi hai câu (subdomain, basic auth); bạn chọn cả hai đề xuất và duyệt spec; Claude ghi spec đã duyệt (PR #170), nhưng bộ lọc an toàn dừng tin nhắn hai lần; bạn hỏi nguyên nhân; Claude viết plan 23 task, bốn checkpoint, ba quyết định cần duyệt (đổi bản không gián đoạn, gỡ chặn bằng `/ao-rollback <môi trường> <sha>`, bản chép kit đi cùng Task của `ao-pilot`); bạn nhờ giải thích lại quyết định 5; Claude giải thích bằng ví dụ commit push thẳng nằm giữa lịch sử, cách gỡ bằng yêu cầu deploy của bạn, và hỏi có muốn tên `/ao-deploy` thay cho `/ao-rollback <sha>`; bạn merge PR #170 và duyệt plan; Claude ghi ba quyết định vào spec, mở PR #171, bắt đầu T1 (App `ao-deploy` trong script tạo App, mục 7 của `docs/github-apps-setup.md`), mở trang tạo App và đưa các bước bấm để bạn tạo App và token Jira chỉ đọc; bạn báo đã xong và hỏi quyền của App; Claude xác nhận quyền đúng thiết kế, nhưng tiền đề 3 sai một phần (`audit` cần quyền Commit statuses), đề xuất thêm quyền chỉ đọc đó, đề xuất hủy `DEMO-3` trước phép thử điểm 1, và báo tag `v0.1.0`, nhánh `release/0.1.0` cũ trên `ao-pilot`; bạn thêm quyền và hủy `DEMO-3`; Claude kiểm sáu tiền đề (1, 3, 4, 9, 10 đúng; 8 sai: token của agent không gắn được file), đề xuất gắn bằng chứng bằng token CI trong script, thêm điểm bắt đầu cho deployer, nhờ bạn xem deployment trên `DEMO-21` và hủy Bug thử `DEMO-25` |
 
 ---
 
@@ -12393,3 +12393,81 @@ Nếu bạn đồng ý, làm theo các bước sau.
 2. **Bản cũ từ các lần thử trước.** `ao-pilot` đã có tag `v0.1.0` và nhánh `release/0.1.0`, và `main` có 4 commit không nằm trong `develop`. Như vậy bản đầu tiên của module này sẽ không còn là `v0.1.0`, và `/ao-release` sẽ dừng vì thấy một nhánh release đang mở. Việc này chưa ảnh hưởng T1. Mình sẽ đưa các cách xử lý trước T14.
 
 Bạn nhắn "xong" khi đã thêm quyền và đã xử lý `DEMO-3`, hoặc cho mình biết nếu muốn để `DEMO-3` tự chuyển. Sau đó mình sửa spec và manifest, chạy lại điểm 3–4, rồi kiểm điểm 1, 2, 8, 9 và 10.
+
+# Phiên 26 · Lượt 22 — 2026-11-05 khoảng 16:10
+
+**Bạn:**
+
+```markdown
+xong
+```
+
+Trước khi trả lời, Claude kiểm quyền mới của App và trạng thái `DEMO-3` (Cancelled). Claude thêm quyền Commit statuses vào manifest, test, `docs/github-apps-setup.md` và spec mục 2.3 (commit `c15b7ff`, `dc04b2a`), rồi chạy lại điểm 3 và 4. Sau đó Claude kiểm điểm 1, 8, 9 và 10 trên `ao-pilot` và `DEMO`: deployment thử, gắn và xóa một file trên `DEMO-21`, Bug thử `DEMO-25`, và yêu cầu deploy bằng login của bạn và bằng token `ao-dev`. Kết quả nằm trong `tasks/verification.md`; T8 và T18 của `tasks/todo.md` có thêm bước điểm bắt đầu (commit `2f29c96`).
+
+**Claude:**
+
+Mình kiểm lại quyền mới của App và trạng thái `DEMO-3`, rồi sửa manifest và spec.
+
+Cả hai đã xong: App có thêm quyền Commit statuses chỉ đọc, `DEMO-3` đã ở Cancelled. Mình sửa manifest, tài liệu và spec theo quyền mới.
+
+Mình chạy lại phép kiểm điểm 3 và 4.
+
+`audit` qua được với commit của `DEMO-21`. Với commit của PR tài liệu `DEMO-20`, nó báo thiếu lượt CI. Mình chạy lại đúng lệnh đó bằng login `gh` của bạn, để biết lỗi do App thiếu quyền hay do chính PR đó.
+
+Kết quả giống hệt khi chạy bằng login của bạn, nên lỗi không phải do App thiếu quyền. Mình xem quy tắc PR tài liệu trong `audit` để hiểu vì sao nó báo vậy.
+
+The Jira part of the rule passed. That confirms premise 4: the read-only token reads the Epic and its history. The audit failure comes from the CI-run comparison, so mình list the CI runs of that branch.
+
+The failure comes from an old quirk in PR #15's history, not from the App or the token. Premises 3 and 4 hold. Mình chuẩn bị các phép kiểm có ghi (điểm 1, 8, 9, 10).
+
+Mình viết một script cho bốn phép kiểm có ghi. Script dọn dẹp ngay những gì nó tạo ra, trừ deployment của điểm 1: mình để lại deployment đó để bạn xem nó hiện trên Jira không.
+
+Điểm 1 đúng: deployment do App tạo làm `jira-sync` chạy. Điểm 8 sai: token của agent không gắn file được, còn token CI thì được. Script dừng ở điểm 9 vì đọc sai dạng dữ liệu của Jira; mình sửa rồi chạy lại riêng điểm 9 và 10.
+
+Token CI nhận tên loại item bằng tiếng Trung ("缺陷" thay cho Bug), có lẽ theo ngôn ngữ của tài khoản đó. Mình đổi sang so tên gốc không dịch, rồi chạy lại.
+
+Điểm 9 và 10 đã có kết quả. Mình xem lượt `jira-sync` của điểm 1 đã chạy xong ra sao.
+
+Lượt `jira-sync` của điểm 1 chạy xong và xanh. Mình ghi kết quả vào `tasks/verification.md`.
+
+Bạn đã thêm quyền và hủy `DEMO-3`. Mình đã kiểm xong sáu trong bảy tiền đề của T1. Kết quả ghi ở https://github.com/TungPH7/ai-orchestrator-v1/blob/task/t1-deploy-app/tasks/verification.md
+
+**Kết quả:**
+
+| Điểm | Kết quả |
+|---|---|
+| 1. Deployment do App tạo làm `jira-sync` chạy | Đúng |
+| 2. Deployment hiện trên item Jira | Chờ bạn xem (bước ở dưới) |
+| 3. App đủ quyền để tải code và chạy `audit` | Đúng, sau khi bạn thêm quyền Commit statuses |
+| 4. Token Jira chỉ đọc đọc đủ, và không ghi được | Đúng |
+| 8. Token của agent gắn được file lên Jira | **Sai** |
+| 9. Token CI tạo được Bug có Found in và Severity | Đúng. Affects Version chưa thử được, vì `DEMO` chưa có version nào |
+| 10. Yêu cầu deploy ghi đúng login của bạn; bot không tạo được | Đúng |
+
+**Điểm 8 sai, cần bạn duyệt một chỗ sửa spec.** Token của agent chỉ có quyền đọc qua REST API của Jira, nên không gắn được ảnh và trace của `qa` lên item. Token CI (`orchestratorci`) thì gắn được.
+
+Mình đề xuất:
+
+- script của `/ao-qa` và `/ao-ship` gắn bằng chứng bằng token CI;
+- script chạy trong phiên của bạn, sau khi lượt của `qa` đã xong, và token CI không được đưa vào phiên của agent;
+- spec mục 2.5 ghi theo, và T13 có thêm test kiểm rằng phiên agent không mang token này.
+
+Mình không đề xuất thêm quyền ghi cho token của agent. Khi đó, agent ghi được lên Jira mà không qua các hook đang chặn.
+
+**Ba phát hiện khác.** Mình đã ghi chúng vào plan, bạn không cần làm gì:
+
+1. Một commit cũ của `ao-pilot` (`3fdd514`, PR tài liệu của `DEMO-20`) không qua `audit`, do lịch sử của PR đó. Vì deployer kiểm mọi commit mới, nó cần một điểm bắt đầu. Lúc cài deployer (T18), mình đưa bạn danh sách head hiện tại của từng nhánh. Bạn đồng ý thì deployer coi các commit tới đó là đã kiểm.
+2. Với token CI, Jira trả tên loại item bằng tiếng Trung (`缺陷` thay cho `Bug`), có lẽ theo ngôn ngữ của tài khoản `orchestratorci`. Code ở T11 sẽ dùng tên gốc, không dùng tên đã dịch.
+3. Token CI không chuyển được Bug thử `DEMO-25` sang Cancelled, vì hủy item là việc của người.
+
+**Việc của bạn:**
+
+1. **Xem deployment trên Jira (điểm 2):**
+   1. Mở `DEMO-21` trên Jira.
+   2. Ở khung bên phải, tìm mục **Development** **(đối chiếu giao diện)**.
+   3. Xem có dòng nào về deployment không, ví dụ "1 deployment" hay tên môi trường `development`. Nếu có, bấm vào dòng đó.
+   4. Cho mình biết bạn thấy gì, hoặc gửi ảnh chụp màn hình.
+2. **Hủy Bug thử `DEMO-25`:** mở `DEMO-25`, bấm nút trạng thái (đang ghi New), rồi chọn chuyển sang Cancelled. Nếu Jira hỏi Resolution, chọn **Won't Do**. Nếu không có lựa chọn Cancelled, cho mình biết.
+3. **Trả lời đề xuất cho điểm 8:** đồng ý, hoặc cho mình biết bạn muốn cách khác.
+
+Sau đó mình chuyển deployment thử sang `inactive`, sửa spec mục 2.5, mở PR của T1, rồi chuyển sang T2: chọn và thuê VPS.
