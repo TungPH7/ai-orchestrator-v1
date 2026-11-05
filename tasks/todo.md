@@ -199,7 +199,7 @@
 
 **Cỡ:** M
 
-### [ ] T7: `smoke.mjs` và phần Docker của deployer (spec mục 2.3, 2.9)
+### [x] T7: `smoke.mjs` và phần Docker của deployer (spec mục 2.3, 2.9)
 
 **Mô tả:**
 
@@ -210,15 +210,22 @@
   - chuyển Caddy sang container mới khi smoke đạt, rồi dừng container cũ; xóa container mới khi smoke fail (plan, quyết định 4);
   - giữ ba image gần nhất của mỗi môi trường, xóa image cũ hơn;
   - sau mỗi lần deploy, dọn cache build, chỉ giữ phần dùng gần nhất, tối đa 4 GB (T2: 6 lần build để lại 7,25 GB).
+- **Cách làm khi xong T7** (Phiên 27 · Lượt 3):
+  - Bí mật không đi qua `--env-file`: `docker run --env TÊN` lấy giá trị từ môi trường của lệnh `docker`, nên giá trị không nằm trong dòng lệnh, và mỗi app chỉ nhận đúng các biến nó khai. Biến khai mà file bí mật thiếu thì không deploy.
+  - Mỗi container có hai alias trong mạng của dự án: tên app (`api`), để app gọi nhau bằng cùng một địa chỉ ở mọi môi trường; và `ao-<dự án>-<môi trường>-<app>`, duy nhất trên VPS, cho Caddy.
+  - Đổi bản theo từng app, app không `public` trước, nên app `public` mới được smoke với API mới. Một app fail thì các app đã đổi nhận lại container cũ.
+  - Mỗi app được smoke cả đường dẫn `health` (mã 200), nếu mục `smoke` chưa có đường dẫn đó.
+  - Container chạy với `--pull never`, `--security-opt no-new-privileges`, `--cap-drop ALL`, `--restart unless-stopped`.
+  - Dọn cache bằng `docker buildx prune --force --max-used-space 4gb` (tài liệu Docker của `buildx prune`).
 
 **Tiêu chí chấp nhận:**
-- [ ] Test `smoke`: đạt ngay; đạt sau vài lần thử; hết 60 giây; sai mã trạng thái; thiếu đoạn chữ.
-- [ ] Test đối số `docker` với hàm chạy lệnh giả: không có `--publish`, `--privileged`, `--network host` hay `--volume`; tên nhánh lạ không lọt vào đối số.
-- [ ] Test thứ tự đổi bản khi smoke đạt và khi smoke fail.
-- [ ] Test: app `public` nhận `AO_PUBLIC_URL`, app khác không nhận; lệnh dọn cache build giữ tối đa 4 GB.
+- [x] Test `smoke`: đạt ngay; đạt sau vài lần thử; hết 60 giây; sai mã trạng thái; thiếu đoạn chữ.
+- [x] Test đối số `docker` với hàm chạy lệnh giả: không có `--publish`, `--privileged`, `--network host` hay `--volume`; tên nhánh lạ không lọt vào đối số.
+- [x] Test thứ tự đổi bản khi smoke đạt và khi smoke fail.
+- [x] Test: app `public` nhận `AO_PUBLIC_URL`, app khác không nhận; lệnh dọn cache build giữ tối đa 4 GB.
 
 **Kiểm chứng:**
-- [ ] Năm lệnh trong quy ước chung xanh
+- [x] Năm lệnh trong quy ước chung xanh
 
 **Phụ thuộc:** T4
 
@@ -241,6 +248,8 @@
 - `scripts/ao-deploy.mjs tick [--dry-run]`: đọc `/etc/ao/deployer.yaml`, dựng client, gọi `deployer.mjs`. `--dry-run` in việc sẽ làm, không build, không ghi gì lên GitHub.
 - **Điểm bắt đầu** (T1, `tasks/verification.md`): `scripts/ao-deploy.mjs baseline <dự án>` in head hiện tại của `develop`, `main` và nhánh `release/*`, rồi ghi chúng là đã kiểm khi có `--confirm`. Nhờ vậy lượt đầu không kiểm lại lịch sử cũ, như commit `3fdd514` của `ao-pilot`. Chưa có điểm bắt đầu thì `tick` không deploy dự án đó.
 - Log không chứa token hay giá trị biến môi trường của app.
+- Hàm chạy `docker` khởi động lệnh với môi trường tối thiểu (`PATH`, `HOME`) cộng các biến `swap` đưa cho từng app, không kế thừa môi trường của deployer (T7).
+- Tree đang chạy ở môi trường đó thì không gọi `swap`: commit chỉ đổi tài liệu vẫn có deployment `success` mà không đổi container.
 
 **Tiêu chí chấp nhận:**
 - [ ] Test với client giả: kiểm mọi commit first-parent mới, không chỉ head; dừng ở commit đầu tiên fail; báo `error` khi `targets` từ chối, kèm lý do (spec mục 2.4).
@@ -496,6 +505,7 @@
 **Tiêu chí chấp nhận:**
 - [ ] `tick --dry-run` in đúng việc sẽ làm cho `ao-pilot`: chưa có `deploy.yaml` nên chưa deploy.
 - [ ] Commit kit đã ghim nằm trong `tasks/verification.md`.
+- [ ] Trên VPS: deployer gọi được IP của container trong mạng của dự án để smoke; `docker buildx prune --max-used-space 4gb` chạy được với Docker 29.9.3 (T7).
 - [ ] Không bí mật nào nằm trong log của systemd.
 
 **Kiểm chứng:**
@@ -521,6 +531,7 @@
 
 **Tiêu chí chấp nhận:**
 - [ ] `https://pilot-dev.ao.t2g.io.vn` chạy bản mới, có HTTPS, hỏi basic auth.
+- [ ] Container của `ao-pilot` chạy được với các cờ của T7 (`--cap-drop ALL`, `no-new-privileges`); Dockerfile không cần quyền root đặc biệt.
 - [ ] E2E của `ao-pilot` với `E2E_BASE_URL` của Development: 24/24 xanh, trong đó 5 test `@local` chạy vào server tại chỗ.
 - [ ] Deployment `development` có trên GitHub và hiện trên item Jira.
 - [ ] Chi phí của từng lượt agent nằm trong `tasks/verification.md`.
