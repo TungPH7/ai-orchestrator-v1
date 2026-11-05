@@ -487,7 +487,7 @@
 
 **Cỡ:** M
 
-### [ ] T16: `/ao-ship` cho hotfix, `/ao-rollback` và `/ao-status` (spec mục 2.2, 2.8, 2.9)
+### [x] T16: `/ao-ship` cho hotfix, `/ao-rollback` và `/ao-status` (spec mục 2.2, 2.8, 2.9)
 
 **Mô tả:**
 
@@ -497,16 +497,22 @@
 - `/ao-status` hiện thêm: bản đang chạy ở từng môi trường, nhánh release đang mở, item Done chưa release, Fix Version đã lên Production mà chưa Release trên Jira.
 
 **Tiêu chí chấp nhận:**
-- [ ] Test `steps` cho hotfix và rollback: `GO`, và `STOP` khi Bug chưa Done, Staging chạy commit khác, môi trường chưa có bản trước.
-- [ ] Test yêu cầu deploy được tạo bằng client của login của bạn, không phải bằng token của App.
-- [ ] Test các dòng mới của `/ao-status`.
+- [x] Test `steps` cho hotfix và rollback: `GO`, và `STOP` khi Bug chưa Done, Staging chạy commit khác, môi trường chưa có bản trước.
+- [x] Test yêu cầu deploy được tạo bằng client của login của bạn, không phải bằng token của App.
+- [x] Test các dòng mới của `/ao-status`.
 
 **Kiểm chứng:**
-- [ ] Năm lệnh trong quy ước chung xanh
+- [x] Năm lệnh trong quy ước chung xanh
 
 **Phụ thuộc:** T5, T15
 
 **File dự kiến:** `lib/workflow/steps.mjs`, `lib/workflow/runner.mjs`, `scripts/ao-step.mjs`
+
+**Cách làm khi xong T16** (Phiên 27 · Lượt 9):
+
+- `/ao-ship vX.Y.Z` với Z khác 0 là hotfix: bản vá kế tiếp của tag mà Production đang chạy; head của `main` phải là merge của một PR `hotfix/<BUG>`, Bug đã Done và mang Fix Version này, Staging chạy đúng commit đó. Bước script `hotfix-ship`: tag và yêu cầu deploy Production bằng login `gh` của bạn, PR merge ngược vào `develop` và nhánh release đang mở bằng App `ao-dev`.
+- `/ao-rollback <môi trường>` chọn bản gần nhất đã từng chạy thành công ở đó, khác bản đang chạy; `/ao-rollback <môi trường> <sha>` dùng đúng commit đó. Bước script `deploy-request` tạo yêu cầu bằng login `gh` của bạn (`lib/release/deploy-request.mjs`). Một yêu cầu chưa được deployer trả lời thì lệnh không tạo yêu cầu thứ hai.
+- `/ao-status` của space thêm dòng Running, nhánh release đang mở, item Done chưa release, và nhắc bấm Release cho Fix Version đang chạy trên Production. Không có login `gh` thì bỏ các dòng này.
 
 **Cỡ:** M
 
