@@ -390,7 +390,7 @@
 
 **Cỡ:** M
 
-### [ ] T13: `/ao-qa` (spec mục 2.2, 2.5)
+### [x] T13: `/ao-qa` (spec mục 2.2, 2.5)
 
 **Mô tả:**
 
@@ -403,16 +403,24 @@
   4. so commit đang chạy lúc đầu và lúc cuối lượt, khác thì ghi vào báo cáo.
 
 **Tiêu chí chấp nhận:**
-- [ ] Test `steps`: một trường hợp `GO`, và `STOP` cho sai trạng thái, môi trường chưa có commit của item.
-- [ ] Test môi trường của phiên `qa` có đủ biến E2E, không có `JIRA_CI_TOKEN`, và tham số dòng lệnh không chứa mật khẩu.
-- [ ] Test deploy mới giữa lượt được ghi vào báo cáo.
+- [x] Test `steps`: một trường hợp `GO`, và `STOP` cho sai trạng thái, môi trường chưa có commit của item.
+- [x] Test môi trường của phiên `qa` có đủ biến E2E, không có `JIRA_CI_TOKEN`, và tham số dòng lệnh không chứa mật khẩu.
+- [x] Test deploy mới giữa lượt được ghi vào báo cáo.
 
 **Kiểm chứng:**
-- [ ] Năm lệnh trong quy ước chung xanh
+- [x] Năm lệnh trong quy ước chung xanh
 
 **Phụ thuộc:** T12
 
 **File dự kiến:** `lib/workflow/steps.mjs`, `lib/workflow/runner.mjs`, `scripts/ao-step.mjs`, `lib/workflow/prompts.mjs`
+
+**Cách làm khi xong T13** (Phiên 27 · Lượt 8):
+
+- **Chỗ hở đã sửa:** `JIRA_CI_TOKEN` là biến môi trường của user Windows, nên mọi tiến trình kế thừa nó, kể cả phiên agent; `ao-agent.mjs` chưa xóa biến này. `CLEARED_ENV` giờ xóa thêm `JIRA_CI_TOKEN`, `JIRA_ADMIN_TOKEN`, `AO_JIRA_READ_TOKEN`, `AO_ENV_AUTH` khỏi mọi phiên agent, không riêng `qa`.
+- `qa` nhận `E2E_BASE_URL`, và với Development, Staging thì thêm `E2E_HTTP_USER`, `E2E_HTTP_PASSWORD` tách từ `AO_ENV_AUTH`, qua môi trường của lệnh; không giá trị nào nằm trong tham số.
+- Worktree của `qa` nằm ngoài dự án như worktree của review, ở đúng commit đang chạy, bỏ file hướng dẫn, rồi `npm ci --ignore-scripts` với môi trường đã xóa bí mật.
+- Runner có thêm hook `after`, chạy sau lượt agent và trước khi xóa worktree: gắn ảnh trong `.ai/qa/<KEY>/` và trace của Playwright lên item bằng token CI, rồi so commit đang chạy. Ghi chú của hook nằm trong `state.json` và `last.md`.
+- `/ao-status` và Next của item ở Ready for QA giờ là `/ao-qa <KEY>`.
 
 **Cỡ:** M
 
