@@ -2,7 +2,7 @@
 // A local page sends each App's manifest to GitHub; you confirm on GitHub; GitHub returns a one-time code, which this
 // script exchanges for the App's id, slug and private key. The key goes straight into a file and is never printed.
 //
-// node scripts/github-app-create.mjs --owner TungPH7 --repo ao-pilot [--apps dev,review] [--keys-dir <dir>] [--port 47100]
+// node scripts/github-app-create.mjs --owner TungPH7 --repo ao-pilot [--apps dev,review|deploy] [--keys-dir <dir>] [--port 47100]
 import { randomBytes } from 'node:crypto';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { createServer } from 'node:http';
