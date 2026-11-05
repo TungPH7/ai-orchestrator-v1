@@ -273,7 +273,7 @@
 
 **Cỡ:** L. Nếu quá năm file, tách phần bản ghi ra `lib/release/record.mjs` thành task riêng.
 
-### [ ] T9: Thư mục `vps/` và phần deployer của `docs/vps-setup.md` (spec mục 2.3, 2.11)
+### [x] T9: Thư mục `vps/` và phần deployer của `docs/vps-setup.md` (spec mục 2.3, 2.11)
 
 **Mô tả:**
 
@@ -283,15 +283,22 @@
 - `docs/vps-setup.md` thêm phần cài deployer: user `aodeploy`, thư mục và quyền của spec mục 2.3, cách chép bản kit ghim, cách bạn nhập bí mật bằng `ssh -t` (plan, quyết định 7).
 
 **Tiêu chí chấp nhận:**
-- [ ] Test sinh Caddyfile từ `deployer.yaml` mẫu: đủ sáu subdomain, basic auth chỉ ở Development và Staging.
-- [ ] `npm run validate` kiểm `deployer.example.yaml`, có fixture âm.
+- [x] Test sinh Caddyfile từ `deployer.yaml` mẫu: đủ sáu subdomain, basic auth chỉ ở Development và Staging.
+- [x] `npm run validate` kiểm `deployer.example.yaml`, có fixture âm.
 
 **Kiểm chứng:**
-- [ ] Năm lệnh trong quy ước chung xanh
+- [x] Năm lệnh trong quy ước chung xanh
 
 **Phụ thuộc:** T8
 
 **File dự kiến:** `vps/Caddyfile.template`, `vps/ao-deploy.service`, `vps/ao-deploy.timer`, `vps/deployer.example.yaml`, `docs/vps-setup.md`
+
+**Cách làm khi xong T9** (Phiên 27 · Lượt 5):
+
+- Không có `vps/Caddyfile.template`. Caddy chuyển subdomain tới alias và cổng của app `public`, mà hai giá trị đó nằm trong `deploy.yaml` ở từng commit. Vì vậy deployer nhớ app `public` của bản đang chạy ở mỗi môi trường, sinh lại Caddyfile sau mỗi lượt bằng `lib/release/caddy.mjs`, và chỉ ghi file, `caddy reload` khi nội dung đổi. Môi trường chưa có bản nào trả 503, nhưng vẫn có site để Caddy lấy sẵn chứng chỉ.
+- Schema của `deployer.yaml` nằm ở `lib/release/deployer.schema.json`, cùng chỗ với schema của `deploy.yaml`. Quy tắc V1 (schema), V2 (không trùng tên, repo hay subdomain).
+- `vps/ao-secret.sh` hỏi bí mật mà không hiện chữ, cho token Jira, mật khẩu basic auth và biến bí mật của app. Bạn gọi nó qua `ssh -t`, nên không có dấu nháy lồng nhau mà PowerShell 5 truyền sai cho `ssh.exe`.
+- `deployer.yaml` khai thêm `caddyfile` và `basic_auth_file`.
 
 **Cỡ:** M
 
@@ -504,9 +511,9 @@
   - user `aodeploy`, các thư mục và quyền của spec mục 2.3;
   - chép bản kit ghim theo commit của `main` kit bằng `scp`;
   - chép private key của `ao-deploy` bằng `scp`, không mở file;
-  - `deployer.yaml`, Caddyfile, systemd service và timer.
+  - `deployer.yaml`, quyền ghi Caddyfile cho `aodeploy`, systemd service và timer (`docs/vps-setup.md` mục 11).
 - **Bạn** nhập mật khẩu basic auth và token Jira chỉ đọc bằng lệnh `ssh -t` do Claude soạn, trong terminal của bạn, rồi đặt `AO_ENV_AUTH` trên máy bạn và xóa file key ở máy.
-- Claude chạy `ao-deploy.mjs baseline ao-pilot` và đưa bạn danh sách head. Bạn đồng ý thì Claude chạy lại với `--confirm` (T8).
+- Claude chạy `ao-deploy.mjs baseline pilot` và đưa bạn danh sách head. Bạn đồng ý thì Claude chạy lại với `--confirm` (T8).
 - Claude chạy `tick --dry-run`, đọc kết quả, rồi bật timer.
 
 **Tiêu chí chấp nhận:**

@@ -315,6 +315,9 @@ ai-orchestrator-v1/
 │   ├── targets.mjs                  # bản nào lên môi trường nào, hai điều kiện của Production (hàm thuần)
 │   ├── deploy-config.mjs            # đọc và kiểm deploy.yaml theo schema
 │   ├── deploy.schema.json           # schema của deploy.yaml, nằm trong lib/ để bản chép kit của dự án cũng có
+│   ├── deployer-config.mjs, deployer.schema.json   # kiểm /etc/ao/deployer.yaml
+│   ├── record.mjs                   # bản ghi của deployer: state.json
+│   ├── caddy.mjs                    # sinh Caddyfile từ deployer.yaml và bản đang chạy
 │   ├── smoke.mjs                    # smoke test
 │   └── deployer.mjs                 # một lượt của deployer: hỏi GitHub, audit, build, chạy, báo
 ├── lib/tracker/attachments.mjs      # gắn bằng chứng của qa lên item
@@ -324,8 +327,8 @@ ai-orchestrator-v1/
 ├── scripts/ao-deploy.mjs            # deployer trên VPS: tick, --dry-run
 ├── kit/.claude/skills/ao-qa/, ao-release/, ao-ship/, ao-rollback/
 ├── vps/
-│   ├── Caddyfile.template
 │   ├── ao-deploy.service, ao-deploy.timer
+│   ├── ao-secret.sh                 # bạn nhập bí mật qua ssh -t, không hiện chữ
 │   └── deployer.example.yaml
 ├── agents/prompts/qa.md, devops.md
 ├── quality/gates.yaml               # PR release, PR merge ngược
