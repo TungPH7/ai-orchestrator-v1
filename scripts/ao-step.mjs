@@ -30,13 +30,16 @@ import { readMapping } from '../lib/tracker/mapping.mjs';
 import { startAgentProcess, killTree } from '../lib/workflow/agent-process.mjs';
 import { gatherFacts, readRunning } from '../lib/workflow/facts.mjs';
 import { basicAuthEnv, qaFollowUp } from '../lib/workflow/qa.mjs';
+import { releaseCutChanges } from '../lib/release/release-cut.mjs';
 import { adfText, buildReviewPack, filesToQuote } from '../lib/workflow/review-pack.mjs';
 import { removeInstructions } from '../lib/workflow/review-tree.mjs';
 import { agentCommand, formatDecision, runGo } from '../lib/workflow/runner.mjs';
 import { decideStep } from '../lib/workflow/steps.mjs';
 
-const COMMANDS = ['status', 'spec', 'plan', 'build', 'review', 'fix', 'qa'];
-const USAGE = 'usage: node .ai-orchestrator/scripts/ao-step.mjs <status|spec|plan|build|review|fix|qa> [<KEY>|<PR>] [--go] [--answers <file>] [--note <file>]';
+const COMMANDS = ['status', 'spec', 'plan', 'build', 'review', 'fix', 'qa', 'release'];
+const USAGE = 'usage: node .ai-orchestrator/scripts/ao-step.mjs <status|spec|plan|build|review|fix|qa|release> [<KEY>|<PR>|<vX.Y.0> <sha>] [--go] [--answers <file>] [--note <file>]';
+// The commands that read deployments with your gh login (release-workflow T12).
+const RELEASE_COMMANDS = ['qa', 'release'];
 const kitDir = resolve(process.env.AO_KIT_DIR ?? fileURLToPath(new URL('..', import.meta.url)));
 const projectDir = process.cwd();
 const runsDir = join(projectDir, '.ai', 'runs');
@@ -45,8 +48,13 @@ const git = (...args) => spawnSync('git', args, { cwd: projectDir, encoding: 'ut
 
 // The argument of a command, checked before it reaches anything: a key of the project space, or a PR number. The
 // skill passes only this word, which Claude Code puts in the shell line as it is (T1).
-export function checkArgument(command, arg, space) {
+export function checkArgument(command, arg, space, extra) {
   if (!COMMANDS.includes(command)) return `unknown command ${command ?? '(none)'}; ${USAGE}`;
+  if (command === 'release') {
+    const ok = (arg === undefined && extra === undefined) || (/^v\d{1,4}\.\d{1,4}\.\d{1,4}$/.test(arg ?? '') && /^[0-9a-f]{7,40}$/.test(extra ?? ''));
+    return ok ? null : `/ao-release takes nothing, or a release such as v0.1.0 and the cut point it printed, not ${[arg, extra].filter(Boolean).join(' ') || 'that'}`;
+  }
+  if (extra !== undefined) return `/ao-${command} takes one argument`;
   if (['review', 'fix'].includes(command)) return /^\d{1,7}$/.test(arg ?? '') ? null : `/ao-${command} takes a PR number, not ${arg ?? 'nothing'}`;
   if (command === 'status' && arg === undefined) return null;
   if (!/^[A-Z][A-Z0-9]*-\d{1,7}$/.test(arg ?? '')) return `/ao-${command} takes a Jira key such as ${space ?? 'DEMO'}-12, not ${arg ?? 'nothing'}`;
@@ -102,10 +110,10 @@ export function takeLock(lock, holder, alive) {
 
 async function main() {
   const { values, positionals } = parseArgs({ allowPositionals: true, options: { go: { type: 'boolean', default: false }, answers: { type: 'string' }, note: { type: 'string' } } });
-  const [command, arg] = positionals;
+  const [command, arg, extra] = positionals;
   const settings = projectSettings(projectDir);
   const space = setting('AO_JIRA_SPACE', settings);
-  const wrong = checkArgument(command, arg, space);
+  const wrong = checkArgument(command, arg, space, extra);
   if (wrong) {
     console.log(`STOP: ${wrong}`);
     return;
@@ -148,9 +156,9 @@ async function main() {
     },
   };
   // The release commands read deployments with your gh login: the read token of ao-review may not (release-workflow T12).
-  const userToken = command === 'qa' ? readGitHubToken() : null;
+  const userToken = RELEASE_COMMANDS.includes(command) ? readGitHubToken() : null;
   const deploys = userToken ? createGitHubClient({ repo, token: userToken }) : undefined;
-  const gather = () => gatherFacts({ command, arg, jira, github, deploys, local: files, contract, mapping, roster, gates, apps, approvers, space });
+  const gather = () => gatherFacts({ command, arg, extra, jira, github, deploys, history: developHistory, local: files, contract, mapping, roster, gates, apps, approvers, space });
   const read = (file) => readFileSync(runsFile(projectDir, file), 'utf8');
   const options = { roster, contract, gates, mapping, ...(values.answers && { answers: read(values.answers) }), ...(values.note && { note: read(values.note) }) };
 
@@ -159,7 +167,8 @@ async function main() {
   console.log(formatDecision(decision));
   if (!values.go || !decision.go) return;
 
-  const key = facts.item.key;
+  // A release command has no work item: its runs and report go under the release (.ai/runs/v0.1.0/).
+  const key = facts.item?.key ?? facts.runKey;
   const lock = join(runsDir, 'active.json');
   mkdirSync(join(runsDir, key), { recursive: true });
   const holder = takeLock(lock, { pid: process.pid, command, arg, startedAt: new Date().toISOString() }, alive);
@@ -177,6 +186,7 @@ async function main() {
       // qa on Development or Staging gets the basic auth from AO_ENV_AUTH, as variables, never as arguments.
       agent: (run, { log }) => startAgent(run.qa?.auth ? { ...run, env: { ...run.env, ...basicAuthEnv(secret('AO_ENV_AUTH')) } } : run, join(runsDir, key, log)),
       after: (run, { tree }) => (run.purpose === 'qa' ? afterQa(run, tree, { deploys, mapping }) : []),
+      act: (step) => releaseCut(step, { repo, mapping, settings }),
       git: (checkout) => prepareCheckout(checkout),
       dispatch: (action) => dispatchJiraSync(action.key),
       pack: reviewPackWriter({ github, jira }),
@@ -357,6 +367,37 @@ function addWorktree({ name, sha, install = false }) {
     }
   }
   return { ok: true, path: path.replaceAll('\\', '/') };
+}
+
+// The first-parent history of develop on GitHub after the tag `tag`, oldest first, as parseHistory reads it
+// (release-workflow spec 2.6). The tag comes from GitHub and has the form vX.Y.Z (latestTag), so it is no option.
+function developHistory(tag) {
+  const fetched = git('fetch', '--quiet', '--tags', 'origin', 'develop');
+  if (fetched.status !== 0) throw new Error(`git fetch failed: ${(fetched.stderr || '').trim()}`);
+  const shown = git('log', '--first-parent', '--reverse', '--format=%H%x09%s', tag ? `${tag}..origin/develop` : 'origin/develop');
+  if (shown.status !== 0) throw new Error(`git log failed: ${(shown.stderr || '').trim()}`);
+  return shown.stdout;
+}
+
+// /ao-release <vX.Y.0> <sha>, its one step (release-workflow spec 2.6): the Fix Versions and comments on Jira with the CI
+// token, which only your session holds, then the release branch as the ao-dev App. The branch comes last: once it is
+// there the command stops at "release branch open", so a step cut short before it can be run again.
+async function releaseCut({ version, nextVersion, sha, included, after }, { repo, mapping, settings }) {
+  const notes = [];
+  const ciToken = secret('JIRA_CI_TOKEN');
+  if (!ciToken) throw new Error('JIRA_CI_TOKEN is not set in your session');
+  const jira = createJiraClient({ cloudId: mapping.cloud_id, authorization: bearerAuth(ciToken), write: true });
+  const changes = releaseCutChanges({ version, nextVersion, sha, approvedAt: new Date().toISOString(), included, after });
+  for (const { key, names } of changes.fixVersions) await jira.editItem(key, { fields: { fixVersions: names.map((name) => ({ name })) } });
+  for (const { key, text } of changes.comments) await jira.comment(key, text);
+  notes.push(`Fix Version ${version} on ${included.map(({ key }) => key).join(', ')}.`);
+  const moved = changes.fixVersions.filter(({ key }) => !included.some((item) => item.key === key)).map(({ key }) => key);
+  if (moved.length > 0) notes.push(`Moved to ${nextVersion}: ${moved.join(', ')}.`);
+  const devEnv = { ...process.env, AO_DEV_APP: setting('AO_DEV_APP', settings), AO_DEV_APP_ID: setting('AO_DEV_APP_ID', settings) };
+  const { token } = await installationToken({ ...appCredentials('dev', { env: devEnv }), repo, permissions: { contents: 'write' } });
+  await createGitHubClient({ repo, token, write: true }).request('POST', '/git/refs', undefined, { ref: `refs/heads/release/${version}`, sha });
+  notes.push(`Created release/${version} at ${sha.slice(0, 8)} as ${setting('AO_DEV_APP', settings)}[bot].`);
+  return notes;
 }
 
 // The files under a folder, with forward slashes; [] when there is none.
