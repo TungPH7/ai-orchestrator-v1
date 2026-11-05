@@ -25,7 +25,7 @@
 
 ## Giai đoạn 1: tiền đề
 
-### [ ] T1: App `ao-deploy` và tiền đề về GitHub, Jira (spec mục 2.12, điểm 1–4, 8–10) [bạn]
+### [x] T1: App `ao-deploy` và tiền đề về GitHub, Jira (spec mục 2.12, điểm 1–4, 8–10) [bạn]
 
 **Mô tả:**
 
@@ -42,9 +42,11 @@
   10. Một yêu cầu deploy tạo bằng login `gh` của bạn ghi `creator` là login của bạn. Token `ao-dev` không tạo được deployment nào, hoặc nếu tạo được thì `creator` là bot.
 
 **Tiêu chí chấp nhận:**
-- [ ] Bảy điểm có kết quả đúng hoặc sai, kèm bằng chứng (lệnh, trích output, link), trong `tasks/verification.md`.
-- [ ] Nếu một điểm sai: spec và plan đã sửa theo kết quả, và bạn đã duyệt bản sửa.
-- [ ] Mọi deployment thử trên `ao-pilot` được đánh dấu `inactive` khi xong.
+- [x] Bảy điểm có kết quả đúng hoặc sai, kèm bằng chứng (lệnh, trích output, link), trong `tasks/verification.md`.
+- [x] Nếu một điểm sai: spec và plan đã sửa theo kết quả, và bạn đã duyệt bản sửa.
+- [x] Mọi deployment thử trên `ao-pilot` được đánh dấu `inactive` khi xong.
+
+**Kết quả (2026-11-05):** điểm 1, 2, 4 và 10 đúng; điểm 9 đúng, trừ Affects Version chưa thử được vì `DEMO` chưa có version. Điểm 3 đúng sau khi App có thêm Commit statuses: Read-only. Điểm 8 sai: script gắn bằng chứng, gắn Fix Version và comment bằng token CI. Bạn duyệt cả hai chỗ sửa ở Phiên 26 · Lượt 22–23.
 
 **Kiểm chứng:**
 - [ ] Năm lệnh trong quy ước chung xanh
@@ -333,7 +335,7 @@
 **Mô tả:**
 
 - `lib/workflow/facts.mjs` đọc thêm: bản đang chạy ở từng môi trường (deployment mới nhất có status `success`), commit đó có chứa commit merge của item không, nhánh `release/*` đang mở, tag, và Fix Version trên Jira.
-- `lib/tracker/attachments.mjs`: gắn file lên item bằng token của agent, bỏ qua file quá giới hạn của Jira và ghi tên, rồi comment danh sách file.
+- `lib/tracker/attachments.mjs`: gắn file lên item bằng token CI, trong phiên của bạn (T1, điểm 8), bỏ qua file quá giới hạn của Jira và ghi tên, rồi comment danh sách file.
 
 **Tiêu chí chấp nhận:**
 - [ ] Test dữ kiện bằng bản ghi API ghi sẵn: môi trường chưa có deployment, deployment `failure` mới nhất, commit có và không có commit merge của item.
@@ -361,7 +363,7 @@
 
 **Tiêu chí chấp nhận:**
 - [ ] Test `steps`: một trường hợp `GO`, và `STOP` cho sai trạng thái, môi trường chưa có commit của item.
-- [ ] Test môi trường của phiên `qa` có đủ biến E2E, và tham số dòng lệnh không chứa mật khẩu.
+- [ ] Test môi trường của phiên `qa` có đủ biến E2E, không có `JIRA_CI_TOKEN`, và tham số dòng lệnh không chứa mật khẩu.
 - [ ] Test deploy mới giữa lượt được ghi vào báo cáo.
 
 **Kiểm chứng:**
@@ -380,7 +382,7 @@
 - `decideStep('release', …)`: `STOP` khi có nhánh `release/*` đang mở, hay không có item Done chưa release. Không có tham số thì in điểm cắt, danh sách item và số bản như spec mục 6, rồi dừng ở gate ④.
 - `/ao-release <vX.Y.0> <sha>`: kiểm `<sha>` đúng là điểm cắt và số bản đúng; kiểm Fix Version `vX.Y.0` và bản kế tiếp đã có trên Jira. Sau đó:
   1. tạo nhánh `release/vX.Y.0` tại `<sha>` dưới tên bot `ao-dev`;
-  2. gắn Fix Version cho các item trong bản, chuyển item sau điểm cắt sang bản kế tiếp;
+  2. gắn Fix Version cho các item trong bản, chuyển item sau điểm cắt sang bản kế tiếp, bằng token CI;
   3. comment lên từng item: số bản, điểm cắt, thời điểm bạn duyệt.
 
 **Tiêu chí chấp nhận:**

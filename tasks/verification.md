@@ -11,11 +11,11 @@
 | Điểm | Kết quả | Bằng chứng |
 |---|---|---|
 | 1. Deployment và status do token của App tạo làm `jira-sync` chạy | Đúng | Deployment 7569854997 (`development`, `22327a5`, creator `tungph7-ao-deploy[bot]`), status `success`; `jira-sync` chạy theo `deployment_status`, run 42002039223, xanh. Không item nào đổi trạng thái: không item nào của `DEMO` ở In Review (`DEMO-3` đã được bạn chuyển sang Cancelled trước đó) |
-| 2. GitHub for Jira hiện deployment trên item | Chờ bạn xem | Deployment 7569854997 để lại ở `success` cho tới khi bạn xem `DEMO-21` |
+| 2. GitHub for Jira hiện deployment trên item | Đúng | Tab Deployments của `DEMO-21` hiện deployment 7569854997: môi trường `development`, Successful, cột Pipeline ghi `deploy` (ảnh `misc/images/phien-26-luot-23-anh-1.png`). Sau đó deployment được chuyển `inactive` |
 | 3. Quyền của App đủ cho `git fetch` và `audit` | Sai một phần, đã sửa | `git clone --mirror` và `git fetch` qua HTTPS: xanh. `audit` lần đầu: 403 ở `GET /commits/<sha>/status`, vì App thiếu Commit statuses. Bạn thêm **Commit statuses: Read-only**; spec mục 2.3, manifest và `docs/github-apps-setup.md` đã sửa theo. Lần sau: `audit --dry-run` của `22327a5` xanh ("merge of PR #16, which met every gate") |
 | 4. Token Jira chỉ đọc đọc đủ cho `audit`, không ghi được | Đúng | Đọc `DEMO-20` (Epic, In Progress) và changelog: `audit` đi qua phần Jira của quy tắc PR tài liệu. Thử comment lên `DEMO-21`: 401 |
-| 8. Token của agent gắn được file lên item | Sai | Token của agent: 401 "scope does not match", vì token chỉ có scope đọc. Token CI: gắn được (200), xóa được (204) |
-| 9. Token CI tạo được Bug có Found in, Severity, Affects Version | Đúng phần kiểm được | Bug `DEMO-25` (Found in Production, Severity Critical) tạo được (201). Màn hình tạo Bug có Affects versions, nhưng `DEMO` chưa có version nào nên chưa thử gán. Token CI không chuyển được Bug sang Cancelled: từ New chỉ có transition Refine |
+| 8. Token của agent gắn được file lên item | Sai, đã sửa spec | Token của agent: 401 "scope does not match", vì token chỉ có scope đọc. Token CI: gắn được (200), xóa được (204). Bạn duyệt: script gắn bằng chứng, gắn Fix Version và comment bằng token CI, trong phiên của bạn; token CI không vào phiên agent (spec mục 2.5, 2.6; T12–T14) |
+| 9. Token CI tạo được Bug có Found in, Severity, Affects Version | Đúng phần kiểm được | Bug `DEMO-25` (Found in Production, Severity Critical) tạo được (201). Màn hình tạo Bug có Affects versions, nhưng `DEMO` chưa có version nào nên chưa thử gán. Token CI không chuyển được Bug sang Cancelled: từ New chỉ có transition Refine. Bạn chuyển `DEMO-25` sang Cancelled (Won't Do) |
 | 10. Yêu cầu deploy bằng login của bạn ghi đúng người tạo; token `ao-dev` không tạo được | Đúng | Deployment `production` tạo bằng login `gh`: creator `TungPH7`. Token `ao-dev`: 403 "Resource not accessible by integration". Deployment thử đã chuyển `inactive` và xóa |
 
 **Phát hiện thêm:**
