@@ -17,10 +17,10 @@ test('the ao-review manifest reads contents, Actions and checks, and writes pull
   assert.deepEqual(manifest.default_permissions, { contents: 'read', pull_requests: 'write', actions: 'read', checks: 'read' });
 });
 
-test('the ao-deploy manifest only reads code, pull requests, checks and Actions, and writes deployments', () => {
+test('the ao-deploy manifest only reads code, pull requests, checks, commit statuses and Actions, and writes deployments', () => {
   const manifest = appManifest('deploy', { owner: 'TungPH7', baseUrl: BASE });
   assert.equal(manifest.name, 'tungph7-ao-deploy');
-  assert.deepEqual(manifest.default_permissions, { contents: 'read', pull_requests: 'read', checks: 'read', actions: 'read', deployments: 'write' });
+  assert.deepEqual(manifest.default_permissions, { contents: 'read', pull_requests: 'read', checks: 'read', statuses: 'read', actions: 'read', deployments: 'write' });
   assert.deepEqual(manifest.default_events, []);
 });
 
