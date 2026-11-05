@@ -87,7 +87,7 @@ T20 ── T21 DEMO-21 tới Production ── T22 hotfix, rollback, smoke fail 
 ## Danh sách task
 
 ### Giai đoạn 1: tiền đề
-- [ ] T1: App `ao-deploy` và tiền đề về GitHub, Jira (spec mục 2.12, điểm 1–4, 8–10) [bạn]
+- [x] T1: App `ao-deploy` và tiền đề về GitHub, Jira (spec mục 2.12, điểm 1–4, 8–10) [bạn]
 - [ ] T2: VPS mới, DNS và tiền đề về VPS (điểm 5–7) [bạn]
 
 ### Checkpoint 1

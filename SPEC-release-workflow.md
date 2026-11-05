@@ -136,7 +136,7 @@ GitHub Free không chặn được gate ⑤ cho repo private. Hai điều kiện
 - **`qa` chạy trên máy bạn** và kiểm qua URL của môi trường. Script tìm bản đang chạy ở đó qua deployment mới nhất có status `success`, rồi kiểm bản đó chứa commit merge của item.
 - **Code `qa` đọc** nằm trong một worktree ở đúng commit đang chạy, trong thư mục temp, như worktree của lượt review. Script chạy `npm ci` trong worktree trước, để `qa` chạy được E2E.
 - **E2E chạy vào môi trường thật:** script truyền `E2E_BASE_URL`; với Development và Staging, script truyền thêm `E2E_HTTP_USER` và `E2E_HTTP_PASSWORD` (mục 2.3). `playwright.config.ts` của dự án phải dùng các biến này cho `baseURL` và `httpCredentials`, và bỏ `webServer` khi có `E2E_BASE_URL`. Đây là yêu cầu với dự án, ghi trong `docs/release-workflow.md`.
-- **Bằng chứng:** `qa` lưu ảnh vào `.ai/qa/<KEY>/` như hiện nay, và trace của Playwright nằm trong `test-results/` của worktree. Sau lượt của `qa`, script gắn các file đó lên item Jira bằng token của agent (tài khoản agent có quyền Create Attachments), rồi comment danh sách file. File quá giới hạn của Jira thì bỏ qua và ghi tên. `qa` không tự tải file lên, vì tool Jira của agent không làm được việc đó.
+- **Bằng chứng:** `qa` lưu ảnh vào `.ai/qa/<KEY>/` như hiện nay, và trace của Playwright nằm trong `test-results/` của worktree. Sau lượt của `qa`, script gắn các file đó lên item Jira bằng token CI (`JIRA_CI_TOKEN`), rồi comment danh sách file. Script chạy trong phiên của bạn, sau khi lượt của `qa` đã xong, và token CI không có trong môi trường của phiên agent. Token của agent chỉ có scope đọc với REST API, nên không gắn file được (T1 của plan). File quá giới hạn của Jira thì bỏ qua và ghi tên. `qa` không tự tải file lên, vì tool Jira của agent không làm được việc đó.
 - **Deploy mới giữa lúc `qa` đang kiểm:** script ghi mã commit đang chạy lúc đầu và lúc cuối lượt. Hai mã khác nhau thì báo cáo ghi rõ, và Claude đề nghị bạn chạy lại `/ao-qa`.
 - **Không đưa E2E vào CI của PR** ở module này. Mỗi lần chạy E2E trong Actions tốn thêm vài phút, mà bạn đã dùng khoảng 36% phần miễn phí trong 4 ngày đầu tháng 11. QA trên Development và regression trên Staging thay cho việc đó.
 
@@ -150,7 +150,7 @@ GitHub Free không chặn được gate ⑤ cho repo private. Hai điều kiện
 
 - **Bạn** tạo Fix Version và bấm Release trên giao diện Jira. `docs/release-workflow.md` ghi từng bước bấm. Lúc đầu, bạn tạo `v0.1.0` làm "bản kế tiếp".
 - Lúc cắt `v0.1.0`, hợp đồng cần sẵn một bản kế tiếp mới. Nếu chưa có `v0.2.0` trên Jira, `/ao-release` dừng và nhắc bạn tạo.
-- **Script** gắn Fix Version cho item bằng token của agent: các item trong điểm cắt nhận `vX.Y.0`. Item nằm sau điểm cắt mà đang mang `vX.Y.0`, ví dụ Bug Medium đã gắn lúc triage, được chuyển sang bản kế tiếp.
+- **Script** gắn Fix Version cho item bằng token CI, như mục 2.5: các item trong điểm cắt nhận `vX.Y.0`. Item nằm sau điểm cắt mà đang mang `vX.Y.0`, ví dụ Bug Medium đã gắn lúc triage, được chuyển sang bản kế tiếp.
 
 **`/ao-release <vX.Y.0> <sha>`** tạo nhánh `release/vX.Y.0` tại `<sha>` dưới tên bot `ao-dev`. `audit` đã chấp nhận commit đầu của nhánh release là một commit của `develop`. Deployer thấy nhánh mới và deploy Staging.
 
@@ -259,7 +259,7 @@ Spec dựa vào mười điều chưa ai thử. Task đầu kiểm cả mười,
 5. Trên VPS 2 vCPU, 4 GB: build Next.js và NestJS xong trong khi ba môi trường đang chạy, và đo thời gian build.
 6. Caddy lấy được chứng chỉ HTTPS cho subdomain dưới bản ghi wildcard ở BKNS.
 7. E2E của `ao-pilot` chạy từ máy bạn vào URL thật, với Chrome của máy và basic auth.
-8. Script gắn được file lên item Jira bằng token của agent.
+8. Script gắn được file lên item Jira bằng token của agent. Kết quả T1: sai; script dùng token CI (mục 2.5).
 9. `jira-sync` tạo được Bug với Found in, Severity và Affects Version bằng token CI.
 10. Một yêu cầu deploy tạo bằng login `gh` của bạn ghi `creator` là login của bạn, và token `ao-dev` không tạo được yêu cầu nào mang login đó.
 
