@@ -77,3 +77,8 @@ test('/ao-qa stops while the QA environment does not run a release that holds th
 test('Next of an item in Ready for QA is /ao-qa', () => {
   assert.equal(nextFor({ key: 'DEMO-21', workType: 'story', state: 'ready-for-qa', flagged: false }), '/ao-qa DEMO-21');
 });
+
+test('/ao-qa stops when the deployment that runs has no URL: a deploy by another tool, such as the old fake deploy.yml', () => {
+  const decision = decide(qaFacts({ qa: { running: { sha: RUNNING, deployment: 7, url: null } } }));
+  assert.equal(decision.reason, 'the deployment of cccccccc on Development has no URL: only the deployer of the kit deploys there with one (spec 2.3)');
+});

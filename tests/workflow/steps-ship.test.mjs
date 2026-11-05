@@ -84,3 +84,7 @@ test('/ao-ship stops while Staging runs another commit, a Bug Critical or High i
   assert.equal(failed.reason, 'the regression of v0.1.0 failed on aaaaaaaa');
   assert.match(failed.next, /draft Bugs in \.ai\/runs\/v0\.1\.0\/regression-report\.md/);
 });
+
+test('/ao-ship stops when the deployment Staging runs has no URL for the regression', () => {
+  assert.equal(decide(shipFacts({ staging: { sha: HEAD, deployment: 40, url: null } })).reason, 'the deployment of aaaaaaaa on Staging has no URL: only the deployer of the kit deploys there with one (spec 2.3)');
+});
