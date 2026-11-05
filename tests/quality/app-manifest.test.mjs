@@ -17,8 +17,15 @@ test('the ao-review manifest reads contents, Actions and checks, and writes pull
   assert.deepEqual(manifest.default_permissions, { contents: 'read', pull_requests: 'write', actions: 'read', checks: 'read' });
 });
 
-test('both Apps are private, have no webhook and no user sign-in, and come back to the local server', () => {
-  for (const kind of ['dev', 'review']) {
+test('the ao-deploy manifest only reads code, pull requests, checks and Actions, and writes deployments', () => {
+  const manifest = appManifest('deploy', { owner: 'TungPH7', baseUrl: BASE });
+  assert.equal(manifest.name, 'tungph7-ao-deploy');
+  assert.deepEqual(manifest.default_permissions, { contents: 'read', pull_requests: 'read', checks: 'read', actions: 'read', deployments: 'write' });
+  assert.deepEqual(manifest.default_events, []);
+});
+
+test('every App is private, has no webhook and no user sign-in, and comes back to the local server', () => {
+  for (const kind of ['dev', 'review', 'deploy']) {
     const manifest = appManifest(kind, { owner: 'TungPH7', baseUrl: BASE });
     assert.equal(manifest.public, false, kind);
     assert.equal(manifest.hook_attributes.active, false, kind);
