@@ -2,7 +2,7 @@
 
 > **Module:** `release-workflow`, xem capability map trong [SPEC.md](SPEC.md). **Phụ thuộc:** `sdlc-contract`, `tracker-integration`, `quality-gates`, `agent-roster`, `dev-workflow`. **Được dùng bởi:** Pilot 2, `project-scaffold`, và `orchestrator-cli` ở Cấp 2.
 >
-> **Trạng thái:** bản nháp, chờ bạn duyệt. **Nguồn thảo luận:** [misc/brainstorm-discussion.md](misc/brainstorm-discussion.md), Phiên 26 · Lượt 12–16.
+> **Trạng thái:** đã duyệt ngày 2026-11-05; plan đang viết. **Nguồn thảo luận:** [misc/brainstorm-discussion.md](misc/brainstorm-discussion.md), Phiên 26 · Lượt 12–17.
 
 ## 1. Mục tiêu
 
@@ -98,6 +98,7 @@ smoke:
 
 - Container của mỗi dự án và môi trường nằm trong một mạng Docker riêng, không publish cổng nào ra host. Docker publish cổng thì đi vòng qua `ufw`; không publish thì không có lỗ đó.
 - Chỉ Caddy giữ cổng 80 và 443. Caddy chạy trong container, tự lấy chứng chỉ HTTPS của Let's Encrypt, và chuyển từng subdomain tới app `public` của đúng môi trường.
+- **Basic auth cho Development và Staging** (mục 10, câu 6). Caddy hỏi một tài khoản chung trên mọi subdomain của hai môi trường này; Production để mở. Bạn đặt mật khẩu lúc cài VPS. Trên VPS chỉ có bản băm bcrypt, trong Caddyfile. Trên máy bạn, script của `/ao-qa` và `/ao-ship` đọc tài khoản từ biến môi trường `AO_ENV_AUTH` (dạng `user:mật khẩu`), không nằm trong repo hay log. Smoke test đi qua mạng nội bộ, nên không cần tài khoản này.
 - Giá trị của biến môi trường (bí mật của app) nằm ở `/etc/ao/secrets/<dự án>/<môi trường>.env` trên VPS, không nằm trên GitHub. Nhờ vậy không cần environment secret, thứ mà repo private gói Free không có.
 
 **Thư mục trên VPS:**
@@ -134,7 +135,7 @@ GitHub Free không chặn được gate ⑤ cho repo private. Hai điều kiện
 - **Môi trường QA của item** lấy theo bảng định tuyến của hợp đồng: item vào `develop` thì QA trên Development; bản vá Production và Bug của bản đang ở Staging thì QA trên Staging.
 - **`qa` chạy trên máy bạn** và kiểm qua URL của môi trường. Script tìm bản đang chạy ở đó qua deployment mới nhất có status `success`, rồi kiểm bản đó chứa commit merge của item.
 - **Code `qa` đọc** nằm trong một worktree ở đúng commit đang chạy, trong thư mục temp, như worktree của lượt review. Script chạy `npm ci` trong worktree trước, để `qa` chạy được E2E.
-- **E2E chạy vào môi trường thật:** script truyền `E2E_BASE_URL` (và tài khoản basic auth, nếu có, mục 11). `playwright.config.ts` của dự án phải dùng biến này thay cho `baseURL`, và bỏ `webServer` khi có biến. Đây là yêu cầu với dự án, ghi trong `docs/release-workflow.md`.
+- **E2E chạy vào môi trường thật:** script truyền `E2E_BASE_URL`; với Development và Staging, script truyền thêm `E2E_HTTP_USER` và `E2E_HTTP_PASSWORD` (mục 2.3). `playwright.config.ts` của dự án phải dùng các biến này cho `baseURL` và `httpCredentials`, và bỏ `webServer` khi có `E2E_BASE_URL`. Đây là yêu cầu với dự án, ghi trong `docs/release-workflow.md`.
 - **Bằng chứng:** `qa` lưu ảnh vào `.ai/qa/<KEY>/` như hiện nay, và trace của Playwright nằm trong `test-results/` của worktree. Sau lượt của `qa`, script gắn các file đó lên item Jira bằng token của agent (tài khoản agent có quyền Create Attachments), rồi comment danh sách file. File quá giới hạn của Jira thì bỏ qua và ghi tên. `qa` không tự tải file lên, vì tool Jira của agent không làm được việc đó.
 - **Deploy mới giữa lúc `qa` đang kiểm:** script ghi mã commit đang chạy lúc đầu và lúc cuối lượt. Hai mã khác nhau thì báo cáo ghi rõ, và Claude đề nghị bạn chạy lại `/ao-qa`.
 - **Không đưa E2E vào CI của PR** ở module này. Mỗi lần chạy E2E trong Actions tốn thêm vài phút, mà bạn đã dùng khoảng 36% phần miễn phí trong 4 ngày đầu tháng 11. QA trên Development và regression trên Staging thay cho việc đó.
@@ -231,7 +232,7 @@ Hotfix dùng đúng quy ước đã có: Bug Critical hay High tìm thấy trên
 
 Chỉ phiên chính dùng SSH. Agent của kit không bao giờ SSH vào VPS. Cài xong, bạn gỡ key khỏi ssh-agent; lần sau cần sửa VPS thì thêm lại.
 
-**Tên miền.** Bạn tạo một bản ghi A wildcard `*.ao.t2g.io.vn` trỏ về IP của VPS, trong trang DNS của BKNS. Mỗi môi trường có một subdomain dưới đó (mục 11, câu 1):
+**Tên miền.** Bạn tạo một bản ghi A wildcard `*.ao.t2g.io.vn` trỏ về IP của VPS, trong trang DNS của BKNS. Mỗi môi trường có một subdomain dưới đó (mục 10, câu 5):
 
 | Dự án | Development | Staging | Production |
 |---|---|---|---|
@@ -422,14 +423,16 @@ STOP: gate ④. Read the list, then run /ao-release v0.1.0 22327a5
 
 ## 10. Câu hỏi đã trả lời
 
-Phiên 26 · Lượt 13–16 (2026-11-05):
+Phiên 26 · Lượt 13–17 (2026-11-05):
 
 1. **VPS:** một VPS mới, chỉ dành cho kit (Lượt 16). Lựa chọn đầu là VPS `dtddeploy` của bạn. Lúc kiểm (chỉ đọc), Claude thấy rất có thể người lạ đã chiếm quyền root của VPS đó từ khoảng 2026-07-07. VPS đó cũng quá nhỏ: 1 vCPU, 961 MB RAM.
 2. **Cách đưa bản mới vào VPS:** VPS tự kéo bản đã qua cổng, dùng App `ao-deploy` (mục 2.3).
 3. **Kiểm thật:** trên `ao-pilot` (`DEMO-21`) qua `AO_KIT_DIR`, rồi Pilot 2 trên `ao-sample`.
 4. **Tên miền:** subdomain của `t2g.io.vn`. DNS do BKNS quản; tên miền chưa có bản ghi wildcard.
+5. **Cách đặt subdomain:** một bản ghi A wildcard `*.ao.t2g.io.vn`, tên như bảng ở mục 2.11 (Lượt 17). Một bản ghi dùng được cho mọi dự án sau này, và không đụng tới `t2g.io.vn` hay `www` đang trỏ tới Vercel. Nếu trang DNS của BKNS không cho tạo wildcard, mỗi subdomain một bản ghi A, ví dụ `pilot-dev.t2g.io.vn`.
+6. **Basic auth:** bật cho Development và Staging, vì hai môi trường này mở ra internet, chạy bản chưa phát hành, mà app mẫu không có đăng nhập (Lượt 17, mục 2.3). Bạn đưa tài khoản chung cho tester. Production của `ao-pilot` để mở.
 
-Khi viết spec, Claude đổi năm chỗ so với giả định ở Lượt 12, và nêu lý do:
+Khi viết spec, Claude đổi năm chỗ so với giả định ở Lượt 12, và nêu lý do. Bạn duyệt cả năm chỗ cùng spec ngày 2026-11-05 (Lượt 17):
 
 - **Bốn lệnh thay vì năm: bỏ `/ao-hotfix`.** Hợp đồng đã có nhánh `hotfix/<BUG>-…` tách từ `main`, và `/ao-build`, `/ao-review`, `/ao-fix`, `/ao-qa` làm được mọi bước. Gate ⑤ của hotfix là `/ao-ship vX.Y.(Z+1)` (mục 2.8).
 - **Tag của image là mã tree, không phải mã commit.** Merge commit trên `main` khác mã với head của nhánh release, nhưng cùng tree. Nhờ vậy Production chạy đúng image đã qua Staging (mục 2.3).
@@ -439,8 +442,7 @@ Khi viết spec, Claude đổi năm chỗ so với giả định ở Lượt 12,
 
 ## 11. Câu hỏi mở
 
-1. **Cách đặt subdomain.** Mình đề xuất một bản ghi A wildcard `*.ao.t2g.io.vn`, với tên như bảng ở mục 2.11. Một bản ghi dùng được cho mọi dự án sau này, và không đụng tới `t2g.io.vn` hay `www` đang trỏ tới Vercel. Cách khác: mỗi subdomain một bản ghi A, ví dụ `pilot-dev.t2g.io.vn`. Nếu trang DNS của BKNS không cho tạo wildcard, mình dùng cách này.
-2. **Basic auth cho Development và Staging.** Mình đề xuất bật: hai môi trường này mở ra internet, chạy bản chưa phát hành, mà app mẫu không có đăng nhập. Caddy hỏi một tài khoản chung; bạn đưa tài khoản đó cho tester. Production của `ao-pilot` để mở.
+Không có. Hai câu hỏi của bản nháp đã được trả lời ở mục 10, câu 5 và 6.
 
 ## 12. Rủi ro
 
