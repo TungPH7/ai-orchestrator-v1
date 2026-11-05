@@ -62,7 +62,7 @@
 
 **Mô tả:**
 
-- Claude đưa hai hay ba nhà cung cấp VPS đạt spec mục 2.11 (có console web và snapshot), kèm giá. **Bạn** chọn và thuê.
+- **Bạn** chọn BKNS, gói VPS MMO4: 2 core, 4 GB RAM, 40 GB SSD, 1 IPv4, 150.000 VND mỗi tháng (Phiên 26 · Lượt 24), và thuê theo từng bước bấm. Bước đưa lựa chọn nhà cung cấp được bỏ.
 - **Bạn** tạo key SSH mới có passphrase mạnh trong terminal của bạn, nạp vào ssh-agent của Windows, rồi tạo bản ghi A wildcard `*.ao.t2g.io.vn` ở BKNS, theo từng bước bấm.
 - Claude viết phần nền của `docs/vps-setup.md` rồi cài theo đúng tài liệu đó:
   - user thường có `sudo`, mật khẩu do bạn đặt;
