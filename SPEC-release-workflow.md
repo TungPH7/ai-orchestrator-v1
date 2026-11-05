@@ -73,7 +73,7 @@ Deploy chậm tối đa khoảng một phút sau merge. Mỗi lúc deployer ch�
 
 **Code của deployer không lấy từ commit đang deploy.** Bản kit trên VPS nằm ở `/opt/ao/kit`, ghim theo một commit của kit. Claude chép nó lên VPS bằng `scp` từ máy bạn, khi bạn yêu cầu. Vì vậy một commit của dự án không sửa được cách kiểm cổng, kể cả khi commit đó sửa `.ai-orchestrator/`.
 
-**App `ao-deploy`** là App thứ ba, chỉ cài trên repo dự án. Quyền: Contents đọc, Pull requests đọc, Checks đọc, Actions đọc, Deployments đọc và ghi. Private key chỉ nằm trên VPS. `docs/github-apps-setup.md` có từng bước tạo App.
+**App `ao-deploy`** là App thứ ba, chỉ cài trên repo dự án. Quyền: Contents đọc, Pull requests đọc, Checks đọc, Commit statuses đọc, Actions đọc, Deployments đọc và ghi. Commit statuses được thêm ở T1 của plan: `audit` đọc kết quả CI của commit qua đó. Private key chỉ nằm trên VPS. `docs/github-apps-setup.md` có từng bước tạo App.
 
 **Image.** Mỗi app của dự án có một Dockerfile trong repo. Image được build ngay trên VPS và giữ tại chỗ, không cần registry.
 

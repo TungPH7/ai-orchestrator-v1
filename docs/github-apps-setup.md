@@ -6,7 +6,7 @@ Hướng dẫn này thuộc module `quality-gates` ([SPEC-quality-gates.md](../S
 |---|---|---|---|
 | `ao-dev` | `tungph7-ao-dev` | Contents: Read and write; Pull requests: Read and write; Workflows: Read and write; Actions: Read-only; Checks: Read-only | `ba`, `sa`, `fe-dev`, `be-dev`, `devops` mở và sửa PR; agent push commit; `merge-gate` merge |
 | `ao-review` | `tungph7-ao-review` | Contents: Read-only; Pull requests: Read and write; Actions: Read-only; Checks: Read-only | `reviewer`, `security` đăng báo cáo review; mọi agent đọc PR và CI bằng token chỉ đọc |
-| `ao-deploy` | `tungph7-ao-deploy` | Contents: Read-only; Pull requests: Read-only; Checks: Read-only; Actions: Read-only; Deployments: Read and write | deployer trên VPS đọc code và cổng, rồi báo deployment (mục 7) |
+| `ao-deploy` | `tungph7-ao-deploy` | Contents: Read-only; Pull requests: Read-only; Checks: Read-only; Commit statuses: Read-only; Actions: Read-only; Deployments: Read and write | deployer trên VPS đọc code và cổng, rồi báo deployment (mục 7) |
 
 Bạn tạo hai App một lần cho tài khoản. Mỗi dự án mới chỉ cần cài thêm hai App vào repo của dự án (mục 3). App tạo trước `dev-workflow` thiếu ba quyền mới: thêm theo mục 6.
 
@@ -148,12 +148,14 @@ Module `release-workflow` ([SPEC-release-workflow.md](../SPEC-release-workflow.m
    ```
 
 2. Mở `http://127.0.0.1:47100/` trên trình duyệt đang đăng nhập GitHub. Trang chỉ có một App: `tungph7-ao-deploy`.
-3. Bấm **Tạo App trên GitHub**. Trên trang của GitHub, mục quyền phải có đúng năm dòng như bảng ở đầu tài liệu. Bấm **Create GitHub App for TungPH7** ở cuối trang **(đối chiếu giao diện)**. GitHub có thể hỏi lại mật khẩu hoặc mã xác thực hai bước.
+3. Bấm **Tạo App trên GitHub**. Trên trang của GitHub, mục quyền phải có đúng sáu dòng như bảng ở đầu tài liệu, cộng dòng Metadata: Read-only mà GitHub luôn tự thêm. Bấm **Create GitHub App for TungPH7** ở cuối trang **(đối chiếu giao diện)**. GitHub có thể hỏi lại mật khẩu hoặc mã xác thực hai bước.
 4. GitHub chuyển sang trang cài App. Chọn **Only select repositories**, chọn repo dự án (ở đây là `ao-pilot`) nếu chưa được chọn sẵn, rồi bấm **Install**. Không cài App lên repo kit.
 5. GitHub quay về trang `127.0.0.1`, ghi "Xong mọi App". Script tự dừng, rồi in slug, App ID và đường dẫn file key `C:UsersHuu Tungao-keys	ungph7-ao-deploy.pem`.
 6. Claude đặt biến môi trường `AO_DEPLOY_APP_KEY_FILE` là đường dẫn đó, rồi kiểm App lấy được token cho repo dự án.
 
 Mỗi dự án mới cài thêm `ao-deploy` vào repo của dự án, như mục 3.
+
+App `tungph7-ao-deploy` tạo bằng bản script trước bản sửa ngày 2026-11-05 thiếu quyền **Commit statuses: Read-only**, mà `audit` cần để đọc kết quả CI của commit. Thêm quyền này theo cách ở mục 6, rồi chấp nhận nó trên tài khoản của bạn.
 
 **Key của `ao-deploy` cuối cùng chỉ nằm trên VPS.** Lúc kiểm tiền đề, key nằm ở `ao-keys` trên máy bạn, như hai App kia. Khi cài deployer, Claude chép file lên VPS bằng `scp` mà không mở file (`docs/vps-setup.md`). Sau đó bạn xóa file ở máy và biến `AO_DEPLOY_APP_KEY_FILE`.
 
