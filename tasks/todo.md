@@ -234,6 +234,7 @@
   6. ghi bản ghi vào `/var/lib/ao/<dự án>/state.json` trước khi sang môi trường kế tiếp.
 - Bản ghi giữ: commit đã kiểm của mỗi nhánh, bản đang chạy và các bản đã chạy thành công ở từng môi trường, các đoạn lịch sử bạn đã gỡ chặn.
 - `scripts/ao-deploy.mjs tick [--dry-run]`: đọc `/etc/ao/deployer.yaml`, dựng client, gọi `deployer.mjs`. `--dry-run` in việc sẽ làm, không build, không ghi gì lên GitHub.
+- **Điểm bắt đầu** (T1, `tasks/verification.md`): `scripts/ao-deploy.mjs baseline <dự án>` in head hiện tại của `develop`, `main` và nhánh `release/*`, rồi ghi chúng là đã kiểm khi có `--confirm`. Nhờ vậy lượt đầu không kiểm lại lịch sử cũ, như commit `3fdd514` của `ao-pilot`. Chưa có điểm bắt đầu thì `tick` không deploy dự án đó.
 - Log không chứa token hay giá trị biến môi trường của app.
 
 **Tiêu chí chấp nhận:**
@@ -483,6 +484,7 @@
   - chép private key của `ao-deploy` bằng `scp`, không mở file;
   - `deployer.yaml`, Caddyfile, systemd service và timer.
 - **Bạn** nhập mật khẩu basic auth và token Jira chỉ đọc bằng lệnh `ssh -t` do Claude soạn, trong terminal của bạn, rồi đặt `AO_ENV_AUTH` trên máy bạn và xóa file key ở máy.
+- Claude chạy `ao-deploy.mjs baseline ao-pilot` và đưa bạn danh sách head. Bạn đồng ý thì Claude chạy lại với `--confirm` (T8).
 - Claude chạy `tick --dry-run`, đọc kết quả, rồi bật timer.
 
 **Tiêu chí chấp nhận:**
