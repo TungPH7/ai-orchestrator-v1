@@ -175,7 +175,7 @@
 
 ## Giai đoạn 3: deployer
 
-### [ ] T6: `audit` cho một dãy commit, và hai quy tắc mới (spec mục 2.3, 2.10)
+### [x] T6: `audit` cho một dãy commit, và hai quy tắc mới (spec mục 2.3, 2.10)
 
 **Mô tả:**
 
@@ -185,13 +185,13 @@
   - merge commit của PR merge ngược, khi head là `main` và người merge là `merge-gate`.
 
 **Tiêu chí chấp nhận:**
-- [ ] Test: một commit push thẳng nằm dưới một PR hợp lệ làm cả dãy fail, đúng ở commit đó.
-- [ ] Test hai quy tắc mới, và commit của bot sửa file khác ngoài hai đường dẫn đó thì fail.
-- [ ] Test lịch sử bị viết lại.
-- [ ] Test cũ của `audit` vẫn xanh.
+- [x] Test: một commit push thẳng nằm dưới một PR hợp lệ làm cả dãy fail, đúng ở commit đó.
+- [x] Test hai quy tắc mới, và commit của bot sửa file khác ngoài hai đường dẫn đó thì fail.
+- [x] Test lịch sử bị viết lại.
+- [x] Test cũ của `audit` vẫn xanh.
 
 **Kiểm chứng:**
-- [ ] Năm lệnh trong quy ước chung xanh
+- [x] Năm lệnh trong quy ước chung xanh
 
 **Phụ thuộc:** Checkpoint 1
 
