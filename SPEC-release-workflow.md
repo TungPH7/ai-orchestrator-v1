@@ -2,7 +2,7 @@
 
 > **Module:** `release-workflow`, xem capability map trong [SPEC.md](SPEC.md). **Phụ thuộc:** `sdlc-contract`, `tracker-integration`, `quality-gates`, `agent-roster`, `dev-workflow`. **Được dùng bởi:** Pilot 2, `project-scaffold`, và `orchestrator-cli` ở Cấp 2.
 >
-> **Trạng thái:** đã duyệt ngày 2026-11-05; plan đang viết. **Nguồn thảo luận:** [misc/brainstorm-discussion.md](misc/brainstorm-discussion.md), Phiên 26 · Lượt 12–17.
+> **Trạng thái:** đã duyệt ngày 2026-11-05 (Phiên 26 · Lượt 17). Plan: [tasks/plan.md](tasks/plan.md), đã duyệt ngày 2026-11-05 (Phiên 26 · Lượt 20). **Nguồn thảo luận:** [misc/brainstorm-discussion.md](misc/brainstorm-discussion.md), Phiên 26 · Lượt 12–20.
 
 ## 1. Mục tiêu
 
@@ -51,7 +51,7 @@ Lệnh là skill của kit ở `kit/.claude/skills/ao-<lệnh>/SKILL.md`, cùng 
 | `/ao-release` | Không có nhánh `release/*` nào mở; có ít nhất một item Done chưa release | Không | In điểm cắt, danh sách item và số bản; chờ gate ④ |
 | `/ao-release <vX.Y.0> <sha>` | Như trên; `<sha>` đúng là điểm cắt vừa in; Fix Version `vX.Y.0` và bản kế tiếp đã có trên Jira | Không | Nhánh `release/vX.Y.0` có trên GitHub, Fix Version đã gắn cho các item |
 | `/ao-ship <vX.Y.Z>` | Bản release (hoặc hotfix, mục 2.8) đang chạy trên Staging; không còn Bug Critical hay High mở cho bản này | Release: `qa` (regression), rồi `devops`. Hotfix: không | Release: PR release vào `main` mở, CI xanh, chờ gate ⑤. Hotfix: Production chạy bản vá |
-| `/ao-rollback <môi trường>` | Môi trường có một bản trước đã deploy thành công | Không | VPS chạy lại bản trước, smoke test xanh |
+| `/ao-rollback <môi trường> [<sha>]` | Không có `<sha>`: môi trường có một bản trước đã deploy thành công. Có `<sha>`: bạn đã đọc các commit chưa qua cổng tính tới `<sha>` (mục 2.9) | Không | VPS chạy bản trước, hoặc đúng `<sha>`; smoke test xanh |
 
 - **`/ao-release` không gọi agent.** Theo hợp đồng, `devops` làm stage `release-cut`. Nhưng tính điểm cắt và tạo nhánh là việc tất định, nên script làm thay, dưới tên bot `ao-dev`.
 - **Gate ④ là lúc bạn gõ `/ao-release <vX.Y.0> <sha>`.** Lệnh có đúng số bản và điểm cắt, nên bạn duyệt đúng danh sách vừa đọc. Script ghi một comment lên từng item của bản: số bản, điểm cắt, và thời điểm bạn duyệt.
@@ -194,13 +194,22 @@ Hotfix dùng đúng quy ước đã có: Bug Critical hay High tìm thấy trên
 
 **Smoke test** chạy trên VPS sau mỗi lần deploy, theo mục `smoke` của `deploy.yaml`: gọi từng đường dẫn qua mạng nội bộ, kiểm mã trạng thái và một đoạn chữ. Hết 60 giây mà chưa xanh thì coi là fail.
 
-- **Development, Staging:** smoke fail thì deployment có status `failure`, container cũ chạy lại, và item không sang Ready for QA. `jira-sync` gắn cờ "Needs you", đúng quy tắc "Deploy lên môi trường QA thất bại" của hợp đồng.
-- **Production:** smoke fail thì deployer chạy lại image trước ngay, rồi báo deployment `failure`. `jira-sync` thấy status đó và tạo Bug Critical, Found in Production, Affects Version là bản vừa lên, như quy tắc "Smoke test sau khi lên Production fail" của hợp đồng.
+- **Development, Staging:** smoke fail thì deployment có status `failure`, container cũ vẫn phục vụ, và item không sang Ready for QA. `jira-sync` gắn cờ "Needs you", đúng quy tắc "Deploy lên môi trường QA thất bại" của hợp đồng.
+- **Production:** smoke fail thì container của bản trước vẫn phục vụ, và deployer báo deployment `failure`. `jira-sync` thấy status đó và tạo Bug Critical, Found in Production, Affects Version là bản vừa lên, như quy tắc "Smoke test sau khi lên Production fail" của hợp đồng.
+
+**Đổi bản không gián đoạn** (plan, quyết định 4). Container mới chạy cạnh container cũ, và smoke test gọi container mới qua mạng nội bộ. Đạt thì Caddy chuyển sang container mới, và container cũ dừng. Không đạt thì container mới bị xóa. Vì vậy "quay về bản trước" là giữ nguyên container cũ.
 
 **`/ao-rollback <môi trường>`** tìm bản trước đã deploy thành công ở môi trường đó, rồi tạo yêu cầu deploy cho bản đó bằng login `gh` của bạn, đánh dấu là rollback. Deployer chỉ nhận yêu cầu rollback khi người tạo nằm trong `AO_APPROVERS` và bản đó đã từng chạy thành công ở chính môi trường đó. Image vẫn còn trên VPS, nên rollback không build lại.
 
 - Sau rollback Production, deployer không tự đưa `main` lên lại. Production chỉ đổi khi có bản release mới, hotfix mới, hay một yêu cầu deploy khác của bạn.
 - Sau rollback Development, commit mới kế tiếp trên `develop` lại được deploy như thường.
+
+**`/ao-rollback <môi trường> <sha>`** tạo yêu cầu deploy cho đúng `<sha>`, cũng bằng login `gh` của bạn (plan, quyết định 5). Lệnh có hai việc:
+
+- **Gỡ chặn.** Deployer kiểm mọi commit mới, nên một commit không qua `audit` nằm lại trong lịch sử và chặn mọi head sau nó, kể cả sau khi revert. Bạn đọc commit đó, rồi chạy lệnh cho một head sau nó. Deployer ghi rằng bạn đã duyệt đoạn lịch sử tới head đó, deploy head đó, rồi kiểm các commit mới sau nó như thường.
+- **Đưa một bản lên lại sau rollback**, ví dụ `v0.1.1` sau khi Production quay về `v0.1.0`.
+
+Với Production, `<sha>` vẫn phải thỏa hai điều kiện của mục 2.4.
 
 **Cơ sở dữ liệu (để sau).** Khi dự án có cơ sở dữ liệu, `deploy.yaml` có thêm lệnh migration, chạy trước khi bật container mới. Quy tắc ghi trong `docs/release-workflow.md`: đổi schema theo kiểu expand/contract, để image trước vẫn chạy được trên schema mới, và rollback không phải chạy migration ngược.
 
@@ -372,18 +381,18 @@ STOP: gate ④. Read the list, then run /ao-release v0.1.0 22327a5
 - `steps`: mỗi lệnh có một trường hợp `GO` và các trường hợp `STOP` (sai trạng thái, môi trường QA chưa có commit của item, có nhánh release đang mở, thiếu Fix Version trên Jira, regression trên commit cũ, diff sau regression sửa file khác).
 - Skill: frontmatter của bốn lệnh có `disable-model-invocation: true` và gọi đúng `ao-step.mjs`.
 
-**Kiểm thật** trên `ao-pilot` và space `DEMO`, kit chạy trực tiếp qua `AO_KIT_DIR`, kết quả ghi vào `tasks/verification.md`:
+**Kiểm thật** trên `ao-pilot` và space `DEMO`, lệnh ở máy chạy bằng repo kit qua `AO_KIT_DIR`, kết quả ghi vào `tasks/verification.md`:
 
 1. Mười tiền đề ở mục 2.12.
 2. Bạn thuê VPS, tạo bản ghi DNS, tạo App `ao-deploy`; Claude cài VPS và deployer.
-3. Một Task của `ao-pilot` đưa Dockerfile, `.dockerignore`, `deploy.yaml`, biến `HOST`, `E2E_BASE_URL` vào dự án, và bỏ `deploy.yml`. Task đi qua `/ao-build`, `/ao-review` và gate ③. Bạn tự merge, vì PR sửa đường dẫn được bảo vệ. Deployer deploy Development.
+3. Một Task của `ao-pilot` đưa Dockerfile, `.dockerignore`, `deploy.yaml`, biến `HOST`, `E2E_BASE_URL` vào dự án, và bỏ `deploy.yml`. PR của Task mang thêm bản chép kit mới vào `.ai-orchestrator/`, vì `merge-gate` và `jira-sync` chạy trong Actions bằng bản chép đó (plan, quyết định 6). Task đi qua `/ao-build`, `/ao-review` và gate ③. Bạn tự merge, vì PR sửa đường dẫn được bảo vệ. Deployer deploy Development.
 4. `/ao-qa DEMO-21` trên Development: bằng chứng nằm trên Jira; bạn Accept.
 5. `/ao-release`, rồi gate ④: `release/v0.1.0`, Staging.
 6. `/ao-ship v0.1.0`, rồi gate ⑤: merge commit, tag, merge ngược, Production, smoke xanh. Bạn bấm Release trên Jira.
 7. Một Bug thử trên Production đi theo mục 2.8, tới `v0.1.1` trên Production.
-8. `/ao-rollback production` về `v0.1.0`, rồi một yêu cầu deploy đưa `v0.1.1` lên lại.
+8. `/ao-rollback production` về `v0.1.0`, rồi `/ao-rollback production <sha của v0.1.1>` đưa `v0.1.1` lên lại.
 9. Một lần smoke fail có chủ đích trên Production của `ao-pilot` (đây là sandbox): deployer tự quay về bản trước, và Jira có Bug Critical.
-10. Hai lần thử đi vòng: một commit push thẳng lên `develop` không được deploy; một yêu cầu deploy Production tạo bằng token `ao-dev` bị từ chối.
+10. Hai lần thử đi vòng: một commit push thẳng lên `develop` không được deploy, rồi bạn gỡ chặn bằng `/ao-rollback development <sha>`; một yêu cầu deploy Production tạo bằng token `ao-dev` bị từ chối.
 
 [Ước tính] Khoảng 25–40 USD quy đổi cho các lượt agent, cộng tiền VPS. Lượt đắt nhất là `security` trên PR ở bước 3 và trên PR hotfix ở bước 7.
 
@@ -431,6 +440,7 @@ Phiên 26 · Lượt 13–17 (2026-11-05):
 4. **Tên miền:** subdomain của `t2g.io.vn`. DNS do BKNS quản; tên miền chưa có bản ghi wildcard.
 5. **Cách đặt subdomain:** một bản ghi A wildcard `*.ao.t2g.io.vn`, tên như bảng ở mục 2.11 (Lượt 17). Một bản ghi dùng được cho mọi dự án sau này, và không đụng tới `t2g.io.vn` hay `www` đang trỏ tới Vercel. Nếu trang DNS của BKNS không cho tạo wildcard, mỗi subdomain một bản ghi A, ví dụ `pilot-dev.t2g.io.vn`.
 6. **Basic auth:** bật cho Development và Staging, vì hai môi trường này mở ra internet, chạy bản chưa phát hành, mà app mẫu không có đăng nhập (Lượt 17, mục 2.3). Bạn đưa tài khoản chung cho tester. Production của `ao-pilot` để mở.
+7. **Ba quyết định của plan** (Lượt 20): đổi bản không gián đoạn, gỡ chặn bằng `/ao-rollback <môi trường> <sha>`, và bản chép kit đi cùng PR của Task trên `ao-pilot`. Mục 2.2, 2.9 và 7 ghi theo. Lệnh vẫn tên `/ao-rollback`, nên vẫn có bốn lệnh.
 
 Khi viết spec, Claude đổi năm chỗ so với giả định ở Lượt 12, và nêu lý do. Bạn duyệt cả năm chỗ cùng spec ngày 2026-11-05 (Lượt 17):
 
