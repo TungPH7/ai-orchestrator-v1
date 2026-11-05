@@ -53,7 +53,7 @@ Như các module trước, plan kiểm mười tiền đề trước (T1–T2, s
    - Mọi bước cài nằm trong `docs/vps-setup.md`, nên làm lại được từ đầu trên một VPS khác.
 9. **Bản kit trên VPS ghim theo một commit của `main` kit.** Claude chép bản mới lên VPS chỉ khi bạn yêu cầu (spec mục 8), và ghi commit đã ghim vào `tasks/verification.md`.
 10. **Quy trình nhánh như các module trước.**
-    - Mỗi task một nhánh `task/t<N>-<slug>` tách từ `main`, mở PR khi CI xanh. Bạn merge PR của kit bằng Rebase and merge.
+    - Mỗi task một nhánh `task/t<N>-<slug>` tách từ `main`, mở PR khi CI xanh. Từ T8 tới Checkpoint 2, Claude merge PR của kit bằng Rebase and merge khi CI xanh, rồi làm tiếp task sau; bạn soát ở Checkpoint 2 (bạn duyệt ở Phiên 27 · Lượt 7). Sau Checkpoint 2, Claude hỏi lại bạn trước khi tự merge.
     - PR trên `ao-pilot` sửa đường dẫn được bảo vệ do bạn merge.
     - Claude dừng ở các checkpoint để bạn soát.
 11. **Usage của gói Pro.** Kiểm thật tốn khoảng 10–12 lượt agent (bảng ở cuối file). Checkpoint 3 hỏi bạn trước phần tốn nhất.
