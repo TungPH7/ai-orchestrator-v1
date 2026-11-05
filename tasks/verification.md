@@ -23,3 +23,29 @@
 - **`audit` của commit `3fdd514`** (PR tài liệu #15 của `DEMO-20`, merge ngày 2026-11-01) fail, kể cả khi chạy bằng login của bạn: "PR #15 was merged without: a CI run on head 8b7f944". Lượt CI mới nhất của nhánh là của `2109853`, commit được push rồi bị bỏ trước lúc merge. Lỗi nằm ở lịch sử cũ, không ở App. Vì deployer kiểm mọi commit mới, nó cần một điểm bắt đầu: lúc cài (T18), head hiện tại của từng nhánh được ghi là đã kiểm. T8 và T18 đã ghi thêm việc này.
 - **Tên loại item theo ngôn ngữ của tài khoản.** Với token CI, `createmeta` trả tên loại item bằng tiếng Trung (`缺陷`), kèm `untranslatedName` là `Bug`. T11 tìm loại item và trường bằng `untranslatedName` hay id, không bằng tên hiển thị.
 - **Bản cũ trên `ao-pilot`:** tag `v0.1.0`, nhánh `release/0.1.0`, và `main` có 4 commit không nằm trong `develop`. Cách xử lý được đưa ra trước T14.
+
+## T2: VPS mới, DNS và tiền đề về VPS (2026-11-05)
+
+**VPS:** BKNS VPS MMO4, Ubuntu 24.04.1, 2 core, 3,9 GB RAM, 38 GB đĩa, swap 4 GB; IP `42.96.4.120`, SSH cổng `26266`. Cài theo [docs/vps-setup.md](../docs/vps-setup.md). DNS: bản ghi A `*.ao.t2g.io.vn` trỏ về `42.96.4.120`. Qua `8.8.8.8`, `pilot-dev`, `vps` và một tên bất kỳ dưới `ao.t2g.io.vn` đều trả đúng IP đó.
+
+**Cách thử:** image dựng tay từ `git archive` của `develop` (`ao-pilot` ở `22327a5`, `ao-sample` ở `e56a207`), với Dockerfile tạm không vào repo, base `node:24-bookworm-slim` (Node v24.22.2), `docker build --no-cache`. RAM đo mỗi giây bằng `free -m`, lấy total trừ available.
+
+| Điểm | Kết quả | Bằng chứng |
+|---|---|---|
+| 5. Build ba image trong khi ba container khác đang chạy; RAM khi mỗi app có hai container | Đúng | Build lần đầu, chưa có container nào: `ao-pilot` khoảng 14 giây, API khoảng 330 giây, web 359 giây. Build lại trong khi một container của mỗi app và Caddy đang chạy: `ao-pilot` 5 giây; API 310 giây (`npm ci` 183, `nest build` và `npm prune` 62, ghi image 42); web 349 giây (`npm ci` 180, `next build` và `npm prune` 97, ghi image 48). RAM lúc cao nhất: 1.572 MB khi build API, 1.767 MB khi build web, trên 3.915 MB; swap 0. Mỗi app hai container, cộng Caddy, lúc rảnh: các container dùng 275 MiB, VPS dùng 1.200 MB, còn 2.714 MB. Cỡ image: `ao-pilot` 334 MB, API 830 MB, web 883 MB |
+| 6. Caddy lấy chứng chỉ HTTPS cho `pilot-dev.ao.t2g.io.vn` | Đúng | Caddy 2.11.8 lấy chứng chỉ Let's Encrypt (issuer `YE2`, hạn tới 2027-02-03) ngay lần chạy đầu. Từ máy bạn, Node tin chứng chỉ. Không có mật khẩu hay sai mật khẩu: 401; đúng mật khẩu: 200 và trang giỏ hàng. HTTP chuyển sang HTTPS bằng 308 |
+| 7. E2E của `ao-pilot` từ máy bạn, vào `https://pilot-dev.ao.t2g.io.vn`, với Chrome và basic auth | Đúng một phần | Bản clone tạm ở `22327a5`, chỉ sửa `playwright.config.ts`: đọc `E2E_BASE_URL`, `httpCredentials`, bỏ `webServer` khi có URL. Chạy tại chỗ: 24/24 xanh. Chạy vào VPS: 19 xanh, 5 fail. 5 test fail (AC9–AC11 của `DEMO-11`, AC10–AC11 của `DEMO-20`) gửi request thô bằng `node:http` tới chính server, nên đi HTTP cổng 80 không có basic auth, và nhận 308 của Caddy. 19 test xanh nhờ Caddyfile tạm đổi Host và Origin cho server (phát hiện thứ nhất bên dưới) |
+
+**Phát hiện thêm:**
+
+- **Server của `ao-pilot` chưa chạy được sau Caddy.** Nó chỉ nghe `127.0.0.1`, và chỉ nhận Host `127.0.0.1:<port>` hay `localhost:<port>` cùng Origin `http://<Host đó>` (ADR-0001 của `ao-pilot`). Lần thử dùng một file chạy tạm nghe `0.0.0.0`, và Caddyfile tạm gửi Host `localhost:3000` cho server, chỉ đổi Origin của chính site thành `http://localhost:3000`; Origin khác vẫn tới server nguyên vẹn. Spec đã có biến `HOST` cho địa chỉ nghe (T19); còn thiếu việc server nhận Host và Origin công khai của môi trường.
+- **5 test E2E chỉ chạy được vào server tại chỗ.** Chúng gửi Host lạ, Origin lạ hay body quá lớn, là thứ trình duyệt không gửi được. Qua Caddy, request Host lạ không tới được server, và request thô không có basic auth.
+- **Web của `ao-sample` import mã nguồn của API:** `@api/notes-shared` trỏ tới `apps/api/src/notes/notes.shared.ts`. Build lần đầu fail vì Dockerfile tạm chưa chép thư mục đó. Dockerfile của web phải build từ gốc repo và chép cả `apps/api/src`.
+- **`API_URL` của web:** `rewrites` trong `next.config.ts` đọc biến này. Dockerfile tạm đặt nó cả lúc build và lúc chạy, trỏ tới alias mạng `sample-api`, mà cả hai container API cùng mang. [Chưa kiểm] Next.js có đọc lại `rewrites` lúc chạy hay chỉ lúc build.
+- **Cache build lớn nhanh:** sau 6 lần build, cache của BuildKit là 7,25 GB, đĩa dùng 16 GB trên 38 GB. Deployer cần dọn cache build (T9). Lúc dọn xong T2, đĩa dùng 7,5 GB.
+- **Phần lớn thời gian build là `npm ci`**, khoảng 3 phút. Không có `--no-cache` thì bước này trúng cache khi `package.json` và `package-lock.json` không đổi. [Ước tính] Một lần deploy chỉ đổi code của API hay web mất khoảng 2–3 phút.
+- **`curl` của Windows** (schannel) lỗi TLS `SEC_E_INTERNAL_ERROR` với site, ở phía máy bạn. Node và Chrome kết nối được. Script chạy trên máy bạn nên gọi HTTPS bằng Node, không bằng `curl`.
+
+**Sau khi tắt đăng nhập root, kiểm từ máy bạn:** root bằng key: "Permission denied (publickey)"; `aoadmin` bằng mật khẩu: "Permission denied (publickey)"; `aoadmin` bằng key: vào được. Quét 65.535 cổng TCP (412 giây): chỉ cổng 80 và `26266` mở. Cổng 443 đã mở trong `ufw` và được Caddy publish, nhưng Caddyfile gốc chưa có site HTTPS nào, nên chưa có gì nghe ở đó; lúc thử điểm 6, HTTPS qua cổng 443 chạy được.
+
+**Dọn:** đã xóa 6 container thử, image thử, mạng `ao-edge`, cache build, `/root/t2` trên VPS và mật khẩu basic auth dùng một lần trên máy bạn. Caddy vẫn chạy với Caddyfile gốc ở `docs/vps-setup.md` mục 8, giữ chứng chỉ trong volume `caddy_data`.
