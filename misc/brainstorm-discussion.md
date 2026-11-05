@@ -31,7 +31,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 21 | `3ead2782-314d-4ae8-981b-96f6ed83a60e` | 2026-11-01 khoảng 22:50 → 2026-11-02 khoảng 01:40 | Bạn dán đoạn cuối của Phiên 20, hỏi vì sao `main` và `develop` của `ao-pilot` lệch nhau, cách xử lý, và lựa chọn 3 có giải quyết được không; Claude kiểm hai nhánh và code của `audit`: `develop` đi trước 10 là đúng GitFlow, 4 commit chỉ có trên `main` là dấu vết lối tắt sandbox và không đổi nội dung; lựa chọn 3 không giải quyết; đề xuất ghi quy tắc merge commit và back-merge từ `main` vào spec `release-workflow`; bạn chọn Pilot 1; Claude nêu phạm vi, giả định A1–A8 và ba câu hỏi (repo, space Jira, feature); bạn duyệt và chọn theo đề xuất: repo mới `ao-sample`, space mới `SMP`, Epic "Ghi chú"; Claude viết `SPEC-pilot-1.md` (nhánh `task/spec-pilot-1`); bạn chọn tạo key mới cho `ao-dev` và duyệt spec; Claude viết plan 10 task, 5 checkpoint, cùng quyết định 6 (lỗi kit giữa Epic) và 8 (Checkpoint 3 sau lượt build đầu); bạn duyệt plan; kit PR #141; T1–T2: tạo repo `ao-sample`, điểm 1 đúng một phần (NestJS 12 dùng Vitest và oxlint, `@nestjs/mau` mang 2 lỗ hổng high), điểm 2 đúng nếu dùng Vitest, điểm 3 và 4 sai (API từ chối), điểm 5 đúng kèm `MSYS_NO_PATHCONV=1` và tin cậy thư mục; Checkpoint 1: bạn duyệt sáu chỗ sửa, dùng chung scheme với `DEMO`, và duyệt trước mọi đề xuất trong Pilot 1; T1a (kit PR #142, `oxlint-disable`); T4 khung app xanh sáu lệnh; T5 bản chép kit và hai skill theo stack; commit đầu bị hook `commit-msg` từ chối vì thiếu mã Jira; bạn gửi ảnh: tùy chọn share settings lúc tạo space cần gói trả phí; Claude đổi cách: tạo space như thường rồi gán ba scheme của `DEMO` trong Space settings; bạn tạo xong `SMP` và gán ba scheme; Claude kiểm bằng API, `jira:check` còn 3 chỗ lệch của board, tạo bốn environment và đặt secret `JIRA_CI_TOKEN`; bạn tắc ở B3 (board thiếu cột); Claude đọc cấu hình board bằng API và ghi từng bước sửa cột trong Board settings; bạn gửi ảnh: board của `SMP` là board mới, Board settings không có Columns; Claude tìm tài liệu Atlassian: cột cấu hình ở More actions → Configure columns trên board; bạn gửi ảnh hộp Configure columns đã sửa đúng, chờ bấm Publish; bạn tắc ở D2 (không có Private keys); Claude đính chính: đường đúng là Credentials → Key pairs → New key, như `docs/github-apps-setup.md` đã ghi; bạn xong B–E và chọn cách (b); Claude đặt secret `AO_DEV_APP_KEY`, tạo `SMP-1`, commit đầu `6f5831d` lên `main` và `develop`; GitHub không chạy workflow cho lần push đầu, Claude chạy tay `merge-gate` (xanh) và `Deploy` (`audit` đỏ, gắn cờ `SMP-1`); Checkpoint 2 đạt, tiêu chí 1 đổi; Epic `SMP-2`; chờ bạn dọn `SMP-1` và bấm Start spec |
 | 22 | `d714399c-65d0-4f98-bbbb-720338ff6bea` | 2026-11-02 khoảng 10:50 → khoảng 20:08 | Bạn dán đoạn cuối của Phiên 21 kèm ảnh panel Development của `SMP-1`, hỏi `Deploy` đỏ có đúng dự kiến không; Claude đọc run và log của `audit`: đúng dự kiến (commit đầu không qua PR), và ảnh cho thấy GitHub for Atlassian đã gắn run vào `SMP-1`; bạn dọn `SMP-1` và bấm Start spec; Claude merge kit PR #143 (T3–T6, Checkpoint 2), chạy `/ao-spec SMP-2` qua `claude -p`: `ba` viết SPEC (1,49 USD) và để lại 4 câu hỏi; Claude chuyển câu hỏi cho bạn, khuyên đồng ý cả bốn; bạn đồng ý cả bốn; Claude nối lại phiên `claude -p` với câu trả lời: `ba`, `ux`, `sa` chạy (3,36 USD), `sa` để lại 2 câu hỏi (đếm emoji, chuẩn hóa NFC và xuống dòng); Claude khuyên đồng ý cả hai; bạn đồng ý cả hai; `sa` ghi câu trả lời, `ba` mở PR tài liệu #1, nhưng GitHub không chạy CI và `ao-step` chờ 30 phút; bạn hỏi vì sao không dừng; Claude dùng nhánh và PR thử tìm ra nguyên nhân (workflow từ lần push đầu chưa được ghi nhận trigger; một push đụng `.github/workflows/` gỡ được), `CI` của PR #1 xanh; tìm thêm lỗi kit `openQuestions` bỏ sót 10 câu hỏi của `ux`; tới gate ①, Claude khuyên không thêm dòng "Đã lưu ghi chú." và gửi các bước Approve spec; bạn hỏi vì sao có hai lỗi nặng và yêu cầu sửa; Claude sửa ở kit (PR #144), chép vào `ao-sample` (Task `SMP-3`, PR #3), `/ao-review 3` Approve (1 Medium, 2 Low ở kit, sửa ở kit PR #145); bạn approve và merge PR #3, hỏi có cần chép kit vào `ao-pilot` (chưa cần); bạn đã bấm Approve spec, chọn chạy `/ao-plan`; `sa` chạm giới hạn 5 giờ giữa lượt viết plan; bạn bảo làm tiếp; `sa` viết xong plan và ba ADR, `ba` tạo 8 item nhưng không tạo được link Blocks; phiên dừng vì Claude chạm giới hạn tuần |
 | 23 | `6d4fa505-b003-47c3-bad3-14958ad7ae83` | 2026-11-02 khoảng 22:10 → | Bạn dán đoạn cuối của Phiên 22 để làm tiếp; Claude tạo 5 link Blocks bằng token CI, tắt server spike `sa` để lại, ghi stage plan và 3 lỗi kit vào `verification.md`, gửi các bước duyệt plan (gate ②) |
-| 26 | `6b41390c-2d48-4d39-9a30-5a4e22f76bf7` | 2026-11-04 khoảng 13:10 → | Bạn báo đã merge kit PR #165; Claude chép vào `ao-sample` PR #13 và review lần 2 (security lại có 1 High: `AGENTS.md`), mở kit PR #166; bạn hỏi chạy review ở high, vì sao lần nào cũng ra High, vì sao security review cả PR; Claude tìm lý do của luật review toàn bộ trong file này; bạn chọn đổi luật review phần mới, điều kiện đường dẫn được bảo vệ (b), và sửa gốc (code của PR không nằm trong thư mục dự án); Claude thử bằng Sonnet và sửa thêm trong kit PR #166; bạn merge #166; Claude chép vào PR #13, review lần 3 còn hai Medium để sau Pilot 1; bạn merge PR #13 (`e56a207`); T10: kit PR #167 (đường bấm của board Jira mới) và #168 (đầu vào cho `project-scaffold`, bảng lỗi kit, chi phí Pilot 1 khoảng 117,6 USD, plan vào `tasks/archive/pilot-1/`); bạn xác nhận Pilot 1 hoàn thành (PR #169); bạn hỏi tài khoản GitHub Free có bị tính tiền không: Billed 0 USD, phần miễn phí bù hết Gross; bạn chọn `release-workflow`; Claude nêu phạm vi, điều vừa kiểm (repo private gói Free không có secret theo môi trường và người duyệt bắt buộc, phần miễn phí 12 USD Actions mỗi tháng, tài khoản agent không tạo được Fix Version), bảy giả định và ba câu hỏi (VPS, cách đưa bản mới vào VPS, kiểm thật ở `ao-pilot` hay `ao-sample`); bạn trả lời: dùng VPS `dtddeploy` của bạn với subdomain của `t2g.io.vn`, VPS tự kéo bản đã qua cổng, kiểm thật trên `ao-pilot` trước; key SSH của VPS có passphrase, Claude chỉ cách mở khóa bằng ssh-agent của Windows; bạn mở khóa key; Claude thấy VPS rất có thể đã bị chiếm quyền root (`masscan` chạy bằng root từ một IP của Aeza Group, SSH cho root đăng nhập bằng mật khẩu) và quá nhỏ (1 vCPU, 961 MB RAM), khuyên thu hồi bí mật và cài lại VPS, rồi hỏi lại câu 1 |
+| 26 | `6b41390c-2d48-4d39-9a30-5a4e22f76bf7` | 2026-11-04 khoảng 13:10 → | Bạn báo đã merge kit PR #165; Claude chép vào `ao-sample` PR #13 và review lần 2 (security lại có 1 High: `AGENTS.md`), mở kit PR #166; bạn hỏi chạy review ở high, vì sao lần nào cũng ra High, vì sao security review cả PR; Claude tìm lý do của luật review toàn bộ trong file này; bạn chọn đổi luật review phần mới, điều kiện đường dẫn được bảo vệ (b), và sửa gốc (code của PR không nằm trong thư mục dự án); Claude thử bằng Sonnet và sửa thêm trong kit PR #166; bạn merge #166; Claude chép vào PR #13, review lần 3 còn hai Medium để sau Pilot 1; bạn merge PR #13 (`e56a207`); T10: kit PR #167 (đường bấm của board Jira mới) và #168 (đầu vào cho `project-scaffold`, bảng lỗi kit, chi phí Pilot 1 khoảng 117,6 USD, plan vào `tasks/archive/pilot-1/`); bạn xác nhận Pilot 1 hoàn thành (PR #169); bạn hỏi tài khoản GitHub Free có bị tính tiền không: Billed 0 USD, phần miễn phí bù hết Gross; bạn chọn `release-workflow`; Claude nêu phạm vi, điều vừa kiểm (repo private gói Free không có secret theo môi trường và người duyệt bắt buộc, phần miễn phí 12 USD Actions mỗi tháng, tài khoản agent không tạo được Fix Version), bảy giả định và ba câu hỏi (VPS, cách đưa bản mới vào VPS, kiểm thật ở `ao-pilot` hay `ao-sample`); bạn trả lời: dùng VPS `dtddeploy` của bạn với subdomain của `t2g.io.vn`, VPS tự kéo bản đã qua cổng, kiểm thật trên `ao-pilot` trước; key SSH của VPS có passphrase, Claude chỉ cách mở khóa bằng ssh-agent của Windows; bạn mở khóa key; Claude thấy VPS rất có thể đã bị chiếm quyền root (`masscan` chạy bằng root từ một IP của Aeza Group, SSH cho root đăng nhập bằng mật khẩu) và quá nhỏ (1 vCPU, 961 MB RAM), khuyên thu hồi bí mật và cài lại VPS, rồi hỏi lại câu 1; bạn xác nhận `masscan` không phải của bạn, nhờ ghi việc xử lý VPS vào memory (không commit), và hỏi về passphrase 4 chữ số, cách người lạ vào, cách SSH an toàn và EC2: người lạ có root từ khoảng 7/7/2026, nhiều khả năng nhờ mật khẩu root, passphrase không phải nguyên nhân; EC2 chỉ rẻ hơn khi bật ít giờ |
 
 ---
 
@@ -11935,3 +11935,121 @@ Nếu bạn cho mình biết bạn thuê VPS ở đâu, mình ghi từng bước
 - **(c) Chưa thuê:** kiểm thật module bằng Docker trên máy bạn, tới Pilot 2 mới lên VPS thật.
 
 Câu 2 và câu 3 giữ như bạn đã chọn. Bạn trả lời câu 1, rồi mình viết `SPEC-release-workflow.md` và chờ bạn duyệt.
+
+# Phiên 26 · Lượt 15 — 2026-11-05 khoảng 10:10
+
+**Bạn:**
+
+```markdown
+Chưa làm tiếp, thực hiện các mục sau:
+
+1. Note việc xử lý VPS bị hack này vào 1 file memory để xử lý sau. không commit file note này.
+2. thảo luận 1 xíu nữa.  Lệnh masscan không phải của tôi. khi SSH và được hỏi passphrase tôi đặt là khá đơn giản chỉ có 4 ký tự chữ số. 2.1. Đây có phải là nguyên nhân bị hack? 2.2. Hacker đăng nhập vào VPS của tôi bằng cách nào nhỉ? 2.3. Có phải họ đoán passphrase  đơn giản của tôi ? 2.4. Cách đăng nhập, SSH VPS an toàn, bảo mật là gì?
+3. Tôi dùng dịch vụ hosting củaAWS như EC2 thì có tiết kiệm hơn không? Khi nào không dùng thì tắt đi
+```
+
+Trước khi trả lời, Claude ghi file memory. Claude cũng chỉ đọc trên VPS: toàn bộ lịch sử đăng nhập và danh sách tài khoản. Sau đó Claude tra chủ các IP qua RDAP, và tìm giá EC2, IPv4, EBS cùng gói Free Tier của AWS.
+
+**Claude:**
+
+Mình đã ghi việc xử lý VPS vào một file memory: `C:\Users\Huu Tung\.claude\projects\D--Document-1Khoahoc-4LapTrinh-AI-for-coding\memory\vps-dtddeploy-compromise.md`. Thư mục này không nằm trong repo git nào, nên file không bị commit. File ghi bằng chứng, các mốc thời gian và sáu việc cần làm. Khi bạn nhắc tới VPS, mình sẽ đọc lại file này.
+
+Để trả lời câu 2.2, mình xem thêm (chỉ đọc) toàn bộ lịch sử đăng nhập trên VPS, ghi từ tháng 2/2025.
+
+## 2.1 và 2.3. Passphrase 4 chữ số có phải nguyên nhân không?
+
+Gần như chắc là không. Người lạ không đoán passphrase của bạn, vì hai lý do:
+- **Passphrase không bao giờ rời máy bạn.** Nó chỉ khóa file key `~/.ssh/dtd_deploy` trên laptop. Khi bạn SSH, máy bạn dùng passphrase để mở file key ngay trên máy. VPS không nhận passphrase, nên không ai đoán được nó từ ngoài internet. Muốn dùng passphrase, người lạ phải lấy được file key trên laptop của bạn trước.
+- **Người lạ đăng nhập bằng `root`, còn key `dtd_deploy` chỉ mở được `user1`.** Danh sách key của `user1` chỉ có hai key: key trên laptop của bạn và `github-actions-deploy`. Các lần đăng nhập `user1` đều từ IP Việt Nam. Mình không xem được danh sách key của root, vì cần sudo.
+
+Dù vậy, 4 chữ số vẫn quá yếu. Nếu file key bị lộ, máy tính thử hết 10.000 khả năng trong vài giây. Bạn nên đổi sang passphrase dài hơn (xem mục 2.4). Key đã nằm trong ssh-agent, nên passphrase dài cũng hiếm khi phải gõ.
+
+## 2.2. Người lạ vào bằng cách nào?
+
+**Điều mình thấy chắc:** họ đăng nhập SSH bằng tài khoản `root`, nhiều lần, từ các máy chủ thuê ở nước ngoài.
+
+| Thời gian | IP | Chủ IP (theo RDAP) | Số lần |
+|---|---|---|---|
+| 7/7 – 20/7/2026 | `193.233.232.229` | Aeza Group, dải IP ở Áo | 6 |
+| 27/7 – 30/10/2026 | `147.45.69.97` | Aeza Group, dải IP ở Hà Lan | 22 |
+| 7/9/2026 | `194.36.108.93` | M247, Berlin | 1 |
+| 29/9/2026 | `158.173.156.23` | Dịch vụ VPN, Frankfurt | 1 |
+
+Vậy họ có quyền root từ khoảng **7/7/2026**, tức gần 4 tháng.
+
+**Khả năng cao nhất: họ có mật khẩu root.** VPS cho đăng nhập root bằng mật khẩu. Bot trên internet dò mật khẩu suốt ngày, kể cả ở cổng SSH lạ như cổng của bạn. Mật khẩu cũng có thể lộ theo đường khác: bạn dùng lại mật khẩu đó ở nơi khác, nhà cung cấp gửi mật khẩu qua email mà bạn chưa đổi, hay bạn đã gửi nó cho người khác.
+
+Mình chưa chứng minh được điều này, vì đọc log đăng nhập cần sudo. Còn một khả năng nữa: họ vào qua một app có lỗ hổng trên VPS (MinIO mở ra internet, cổng 4173, các app ecom và logistics), lên được root, rồi thêm key của họ cho root.
+
+**Muốn biết chắc**, bạn tự SSH vào VPS rồi chạy hai lệnh dưới. Lệnh sẽ hỏi mật khẩu sudo của `user1`.
+```
+sudo zgrep -h "Accepted" /var/log/auth.log* | grep -v "123\.19\." | tail -20
+sudo ssh-keygen -lf /root/.ssh/authorized_keys
+```
+- Dòng `Accepted password for root` nghĩa là họ vào bằng mật khẩu.
+- Dòng `Accepted publickey for root` nghĩa là họ đã thêm key của họ. Lệnh thứ hai sẽ hiện key lạ đó.
+- Log chỉ giữ vài tuần gần nhất, nên bạn chỉ thấy các lần vào gần đây.
+- Người có root đọc được mật khẩu sudo bạn gõ trên VPS này. Bạn sẽ cài lại VPS và đổi mật khẩu, nên việc này chấp nhận được. Nhưng đừng dùng mật khẩu này ở nơi khác.
+
+Bạn kiểm giúp mình một điều. Từ tháng 2 tới tháng 7, root còn đăng nhập từ nhiều IP Việt Nam (FPT, VNPT). Lần cuối là ngày 7/7, đúng ngày người lạ vào lần đầu. Các lần đó có phải bạn hay đồng đội không? Nếu mật khẩu root từng được gửi cho người khác, hay dán vào chat hoặc file, đó cũng là một đường lộ.
+
+## 2.4. SSH thế nào cho an toàn?
+
+Theo thứ tự quan trọng:
+1. **Chỉ đăng nhập bằng key; tắt đăng nhập bằng mật khẩu và tắt đăng nhập root.** Trong `/etc/ssh/sshd_config`:
+   ```
+   PermitRootLogin no
+   PasswordAuthentication no
+   KbdInteractiveAuthentication no
+   ```
+   - Trên Ubuntu, các file trong `/etc/ssh/sshd_config.d/` (ví dụ `50-cloud-init.conf`) có thể bật lại `PasswordAuthentication yes`. VPS của bạn đang có dòng này ở ba chỗ, nên phải sửa hết.
+   - Đăng nhập bằng user thường, rồi dùng `sudo` với một mật khẩu mạnh, khác mọi mật khẩu khác của bạn.
+   - Trước khi đóng phiên SSH đang mở, mở thêm một phiên mới để thử. Nếu cấu hình sai, bạn vẫn còn phiên cũ để sửa.
+2. **Key có passphrase mạnh**, ví dụ bốn, năm từ ngẫu nhiên, hoặc ít nhất 12 ký tự. Đổi passphrase của key hiện có bằng `ssh-keygen -p -f $env:USERPROFILE\.ssh\dtd_deploy`. Mỗi máy một key, và xóa key cũ khỏi `authorized_keys` khi không dùng nữa.
+3. **Tường lửa chỉ mở cổng cần dùng:** SSH, 80 và 443. Docker có một cái bẫy: cổng publish kiểu `-p 9000:9000` đi vòng qua `ufw`, nên vẫn mở ra internet. Muốn cổng chỉ dùng trong máy thì ghi `127.0.0.1:9000:9000`.
+4. **Không mở công cụ quản trị ra internet:** trang quản trị của MinIO, cơ sở dữ liệu, server dev (như cổng 4173).
+5. **Tốt hơn nữa: không mở cổng SSH ra internet.** Ví dụ, dùng Tailscale (miễn phí cho cá nhân): SSH chỉ đi qua mạng riêng giữa laptop và VPS. Còn chặn SSH theo IP thì khó với bạn, vì IP VNPT nhà bạn đổi thường xuyên (riêng tháng 10 đã có ba IP).
+6. **Tự cập nhật bản vá bảo mật** bằng `unattended-upgrades` của Ubuntu.
+7. **Token trên server chỉ có quyền tối thiểu.** Ví dụ, token để kéo image từ GHCR chỉ cần quyền `read:packages`.
+8. **Bật xác thực hai lớp cho tài khoản ở trang quản lý VPS.** Ai vào được trang đó thì cài lại máy hay mở console root được.
+9. **Thỉnh thoảng chạy `last`** để xem ai đã đăng nhập. Mình phát hiện vụ này cũng nhờ lệnh đó.
+
+Khi cài VPS cho kit, mình sẽ đưa các bước này vào spec.
+
+## 3. Dùng AWS EC2 và tắt khi không dùng có rẻ hơn không?
+
+Có thể rẻ hơn một chút, nhưng chỉ khi máy bật ít giờ. Với kit này, mình không khuyên dùng.
+
+**Giá** (theo các trang tổng hợp giá; mình chưa đối chiếu trang giá chính thức của AWS):
+- Máy `t3.medium` (2 vCPU, 4 GB RAM) ở Singapore, vùng gần Việt Nam nhất: khoảng 0,053 USD mỗi giờ máy bật.
+- IP công khai: 0,005 USD mỗi giờ.
+- Ổ đĩa EBS gp3: khoảng 0,08 USD mỗi GB mỗi tháng (giá ở Mỹ; Singapore có thể cao hơn). Ổ đĩa vẫn tính tiền khi máy tắt.
+
+[Ước tính] Chi phí mỗi tháng, với ổ 20 GB:
+
+| Cách dùng | Số giờ bật | Tiền mỗi tháng |
+|---|---|---|
+| EC2 bật 24/7 | 730 | khoảng 44 USD |
+| EC2 bật 8 giờ mỗi ngày | 240 | khoảng 16 USD |
+| EC2 bật 4 giờ mỗi ngày, 22 ngày | 88 | khoảng 7 USD |
+| VPS thường 2 vCPU, 4 GB, bật 24/7 | 730 | khoảng 5–10 USD |
+
+**Vì sao mình không khuyên EC2 cho kit này:**
+- **Máy tắt thì cả ba môi trường đều tắt.** `qa` và tester không kiểm được. Production của dự án thật thì không tắt được.
+- **IP đổi mỗi lần bật lại,** nên mỗi lần phải sửa bản ghi DNS của các subdomain. Muốn giữ IP cố định (Elastic IP) thì IP tính tiền cả lúc máy tắt, khoảng 3,6 USD mỗi tháng.
+- **AWS không tự chặn khi bạn tiêu quá tay.** Quên tắt máy thì cuối tháng mất khoảng 44 USD. Bạn phải tự đặt cảnh báo bằng AWS Budgets.
+- **Cài đặt nhiều bước hơn:** security group, IAM, IP, lịch tắt bật.
+
+**Khi nào EC2 đáng dùng:** bạn chỉ cần máy vài giờ mỗi tuần, bạn muốn học AWS, hoặc bạn tạo tài khoản AWS mới. Từ 15/7/2025, tài khoản mới được 100 USD tín dụng, cộng tối đa 100 USD nữa khi làm vài việc làm quen. Nếu chọn gói Free plan, tài khoản bị đóng khi hết tín dụng hoặc sau 6 tháng.
+
+Thiết kế "VPS tự kéo bản mới" vẫn chạy được với máy lúc bật lúc tắt: khi bật lại, máy kéo bản mới nhất. Nên nếu bạn vẫn chọn EC2, spec không phải đổi nhiều.
+
+Mình chưa làm tiếp `release-workflow`. Khi bạn sẵn sàng, bạn chọn lại câu 1: (a) VPS mới riêng cho kit, (b) cài lại và nâng gói VPS `dtddeploy`, (c) Docker trên máy bạn, hoặc (d) EC2.
+
+Nguồn:
+- [DoIT: giá t3.medium ở ap-southeast-1](https://www.doit.com/compute/spot/ap-southeast-1/t3.medium)
+- [Holori: giá t3.medium ở ap-southeast-1](https://calculator.holori.com/aws/ec2/t3.medium/ap-southeast-1)
+- [AWS News Blog: phí IPv4 công khai](https://aws.amazon.com/blogs/aws/new-aws-public-ipv4-address-charge-public-ip-insights)
+- [AWS: giá EBS](https://aws.amazon.com/ebs/pricing)
+- [Neowin: AWS Free Tier mới, 200 USD tín dụng](https://www.neowin.net/news/aws-free-tier-overhauled-new-users-get-200-in-credits-but-theres-a-catch/)
+- [AWS Builder Center: tài khoản 0 USD năm 2026](https://builder.aws.com/content/3Kkt4kNiDSUnO3n6db2weSNubzE/the-dollar0-aws-account-in-2026-free-plan-credits-guardrails)
