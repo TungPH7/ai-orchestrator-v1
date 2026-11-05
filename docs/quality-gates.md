@@ -148,7 +148,7 @@ Bạn tự merge trong ba trường hợp. `audit` vẫn kiểm cả ba, nên h�
    - Sau đó bấm **Squash and merge** **(đối chiếu giao diện)**. `audit` chỉ chấp nhận PR này khi người merge là một login trong `AO_APPROVERS`.
    - Từ `dev-workflow` (spec mục 2.7), khi PR chỉ còn chờ bạn (không thiếu gì, hoặc chỉ thiếu approve của bạn), `merge-gate` comment lên PR bằng `ao-dev` và gắn cờ "Needs you" lên item, kèm comment cùng nội dung bắt đầu bằng `merge-gate: needs you at <sha> on PR #<n>`. Mỗi head chỉ một lần. Item đã bị cổng khác gắn cờ thì `merge-gate` để nguyên trên Jira. Khi PR được merge hoặc đóng, `jira-sync` gỡ cờ đó, trừ khi sau đó có ai gắn cờ lại. Cả hai chỉ tính comment trên Jira của tài khoản token CI, tức `account_id` của identity `automation` trong `tracker/jira.yaml`, và comment trên PR của bot `ao-dev`: dấu do agent hay người khác viết không được tính. Tìm `account_id` của một tài khoản: mở hồ sơ của nó trên Jira, phần cuối của URL là id **(đối chiếu giao diện)**.
 2. **PR do bạn mở.** `merge-gate` bỏ qua PR của bạn. `audit` tính bạn là đã approve, nhưng PR vẫn cần `CI` xanh, hai báo cáo trên commit đầu, cùng tiêu đề và mô tả đúng mẫu.
-3. **PR từ `release/*`** vào `main`, hoặc merge ngược vào `develop`. `audit` chỉ cần `CI` xanh và approve của bạn trên commit đầu, vì từng item trong bản release đã qua review. Phần này thuộc `release-workflow`.
+3. **PR từ `release/*`** vào `main`. `audit` chỉ cần `CI` xanh và approve của bạn trên commit đầu, vì từng item trong bản release đã qua review. Phần này thuộc `release-workflow`.
 
 Merge tay một PR chưa đủ cổng thì `audit` đỏ ở lần deploy kế tiếp.
 
@@ -173,6 +173,11 @@ jobs:
 - Đỏ vì push thẳng: `<sha> on develop is not the merge of a PR into develop: it was pushed without one`.
 - Đỏ vì PR thiếu cổng: `PR #6 was merged without: reviewer report on head <sha>; security report on head <sha>; approval on head <sha>`.
 - Đỏ vì sai người merge: `PR #9 changes .github/workflows/ci.yml, which only you merge, but <login> merged it`.
+
+Hai trường hợp của `release-workflow` không cần review hay approve:
+
+- **Commit báo cáo của `/ao-ship`** trên `release/*`: bot `ao-dev` push thẳng, không qua PR, một commit chỉ sửa `docs/releases/**` và `CHANGELOG.md`. Hai file đó nằm ngoài image. Commit của bot sửa file khác thì đỏ: `<sha> on release/v0.1.0 is a commit of tungph7-ao-dev[bot] without a PR, which may only change docs/releases/** and CHANGELOG.md, but it changes <file>`.
+- **PR merge ngược** từ `main` vào `develop` hay vào nhánh `release/*` đang mở: chỉ cần `CI` xanh trên head, và người merge là `merge-gate` hoặc bạn. Mọi commit của `main` đã qua gate ③ hay gate ⑤.
 
 Khi `audit` đỏ:
 
