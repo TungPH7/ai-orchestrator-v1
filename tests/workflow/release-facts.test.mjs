@@ -131,3 +131,44 @@ test('the ship facts: the release branch, what Staging runs, the open Bugs Criti
   assert.equal(facts.notes, true);
   assert.deepEqual(facts.pr, { number: 30, headSha: sha('f') });
 });
+
+test('the hotfix facts: the release on Production and its next patch, the merge at the head of main, its Bug, the tag and the request', async () => {
+  const { readContract } = await import('../../lib/contract.mjs');
+  const { CONTRACT_DIR } = await import('../helpers/kit.mjs');
+  const { readHotfixFacts } = await import('../../lib/workflow/facts.mjs');
+  const contract = readContract(CONTRACT_DIR);
+  const hot = recordedClient({
+    ...answers,
+    '/git/ref/heads/main': { object: { sha: sha('7') } },
+    [`/commits/${sha('7')}/pulls`]: [{ number: 31, merged_at: '2026-11-06T05:00:00Z', merge_commit_sha: sha('7'), head: { ref: 'hotfix/DEMO-40-cart-total' } }],
+    '/deployments?environment=staging&per_page=30': [deployment(50, '7')],
+    '/deployments/50/statuses?per_page=1': latest('success', 'https://pilot-staging.ao.t2g.io.vn'),
+  });
+  const bug = { key: 'DEMO-40', fields: { issuetype: { name: 'Bug' }, status: { name: 'Done' }, fixVersions: [{ name: 'v0.1.1' }] } };
+  const jira = fakeJira({ issues: [bug], gets: { '/rest/api/3/project/DEMO/versions': [] } });
+  const facts = await readHotfixFacts({ jira, github: hot, deploys: hot, contract, mapping, space: 'DEMO', version: 'v0.1.1' });
+  // Production runs d…, which the tag v0.1.0 names.
+  assert.deepEqual([facts.production, facts.expected], [{ sha: sha('d'), version: 'v0.1.0' }, 'v0.1.1']);
+  assert.deepEqual(facts.main, { sha: sha('7'), pull: { number: 31, head: 'hotfix/DEMO-40-cart-total', key: 'DEMO-40' } });
+  assert.deepEqual(facts.bug, { key: 'DEMO-40', state: 'done', status: 'Done', fixVersions: ['v0.1.1'] });
+  assert.deepEqual([facts.staging.sha, facts.tag, facts.request], [sha('7'), null, null]);
+});
+
+test('the rollback facts: what runs, the releases that ran there before, the commit you name, and a request not handled yet', async () => {
+  const { readRollbackFacts } = await import('../../lib/workflow/facts.mjs');
+  const back = recordedClient({
+    '/deployments?environment=production&per_page=30': [
+      { id: 12, sha: sha('9'), payload: { ao: 'request', rollback: true } },
+      { id: 11, sha: sha('3'), payload: { ao: 'deploy' } },
+      { id: 10, sha: sha('2'), payload: { ao: 'deploy' } },
+      { id: 9, sha: sha('1'), payload: { ao: 'deploy' } },
+    ],
+    '/deployments/12/statuses?per_page=30': [],
+    '/deployments/11/statuses?per_page=30': [{ state: 'success' }, { state: 'in_progress' }],
+    '/deployments/10/statuses?per_page=30': [{ state: 'failure' }, { state: 'in_progress' }],
+    '/deployments/9/statuses?per_page=30': [{ state: 'inactive' }, { state: 'success' }],
+    '/commits/1111111': { sha: sha('1') },
+  });
+  const facts = await readRollbackFacts({ deploys: back, mapping, environment: 'production', extra: '1111111' });
+  assert.deepEqual(facts, { environment: 'production', running: { sha: sha('3'), deployment: 11 }, earlier: [{ sha: sha('1'), deployment: 9 }], target: { sha: sha('1') }, requested: { id: 12, sha: sha('9') } });
+});

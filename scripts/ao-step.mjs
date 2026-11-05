@@ -32,15 +32,17 @@ import { gatherFacts, readRunning } from '../lib/workflow/facts.mjs';
 import { basicAuthEnv, qaFollowUp } from '../lib/workflow/qa.mjs';
 import { releaseCutChanges } from '../lib/release/release-cut.mjs';
 import { changelogWith } from '../lib/release/release-pr.mjs';
+import { requestDeploy } from '../lib/release/deploy-request.mjs';
 import { adfText, buildReviewPack, filesToQuote } from '../lib/workflow/review-pack.mjs';
 import { removeInstructions } from '../lib/workflow/review-tree.mjs';
 import { agentCommand, formatDecision, runGo } from '../lib/workflow/runner.mjs';
 import { decideStep } from '../lib/workflow/steps.mjs';
 
-const COMMANDS = ['status', 'spec', 'plan', 'build', 'review', 'fix', 'qa', 'release', 'ship'];
-const USAGE = 'usage: node .ai-orchestrator/scripts/ao-step.mjs <status|spec|plan|build|review|fix|qa|release|ship> [<KEY>|<PR>|<vX.Y.0> <sha>|<vX.Y.Z>] [--go] [--answers <file>] [--note <file>]';
+const COMMANDS = ['status', 'spec', 'plan', 'build', 'review', 'fix', 'qa', 'release', 'ship', 'rollback'];
+const USAGE = 'usage: node .ai-orchestrator/scripts/ao-step.mjs <status|spec|plan|build|review|fix|qa|release|ship|rollback> [<KEY>|<PR>|<vX.Y.0> <sha>|<vX.Y.Z>|<environment> [<sha>]] [--go] [--answers <file>] [--note <file>]';
+const ENVIRONMENTS = ['development', 'staging', 'production'];
 // The commands that read deployments with your gh login (release-workflow T12).
-const RELEASE_COMMANDS = ['qa', 'release', 'ship'];
+const RELEASE_COMMANDS = ['qa', 'release', 'ship', 'rollback', 'status'];
 const kitDir = resolve(process.env.AO_KIT_DIR ?? fileURLToPath(new URL('..', import.meta.url)));
 const projectDir = process.cwd();
 const runsDir = join(projectDir, '.ai', 'runs');
@@ -52,6 +54,10 @@ const git = (...args) => spawnSync('git', args, { cwd: projectDir, encoding: 'ut
 export function checkArgument(command, arg, space, extra) {
   if (!COMMANDS.includes(command)) return `unknown command ${command ?? '(none)'}; ${USAGE}`;
   if (command === 'ship') return /^v\d{1,4}\.\d{1,4}\.\d{1,4}$/.test(arg ?? '') && extra === undefined ? null : `/ao-ship takes a release such as v0.1.0, not ${[arg, extra].filter(Boolean).join(' ') || 'nothing'}`;
+  if (command === 'rollback') {
+    const ok = ENVIRONMENTS.includes(arg) && (extra === undefined || /^[0-9a-f]{7,40}$/.test(extra));
+    return ok ? null : `/ao-rollback takes an environment (${ENVIRONMENTS.join(', ')}) and maybe a commit, not ${[arg, extra].filter(Boolean).join(' ') || 'nothing'}`;
+  }
   if (command === 'release') {
     const ok = (arg === undefined && extra === undefined) || (/^v\d{1,4}\.\d{1,4}\.\d{1,4}$/.test(arg ?? '') && /^[0-9a-f]{7,40}$/.test(extra ?? ''));
     return ok ? null : `/ao-release takes nothing, or a release such as v0.1.0 and the cut point it printed, not ${[arg, extra].filter(Boolean).join(' ') || 'that'}`;
@@ -190,7 +196,12 @@ async function main() {
       // qa on Development or Staging gets the basic auth from AO_ENV_AUTH, as variables, never as arguments.
       agent: (run, { log }) => startAgent(run.qa?.auth ? { ...run, env: { ...run.env, ...basicAuthEnv(secret('AO_ENV_AUTH')) } } : run, join(runsDir, key, log)),
       after: (run, { tree }) => (run.purpose === 'qa' ? afterQa(run, tree, { deploys, mapping }) : []),
-      act: (step) => (step.action === 'release-pr' ? releasePr(step, { repo, settings }) : releaseCut(step, { repo, mapping, settings })),
+      act: (step) => {
+        if (step.action === 'release-pr') return releasePr(step, { repo, settings });
+        if (step.action === 'hotfix-ship') return hotfixShip(step, { repo, settings, userToken });
+        if (step.action === 'deploy-request') return deployRequest(step, { repo, userToken });
+        return releaseCut(step, { repo, mapping, settings });
+      },
       git: (checkout) => prepareCheckout(checkout),
       dispatch: (action) => dispatchJiraSync(action.key),
       pack: reviewPackWriter({ github, jira }),
@@ -461,6 +472,47 @@ async function releasePr({ version, branch, regression }, { repo, settings }) {
   else {
     const pr = await github.request('POST', '/pulls', undefined, { title: `release: ${version}`, head: branch, base: 'main', body });
     notes.push(`Opened PR #${pr.number} of ${branch} into main.`);
+  }
+  return notes;
+}
+
+// A writing client of your gh login: GitHub records you as the creator of what it makes (gate ⑤, spec 2.4).
+function yours(repo, userToken) {
+  if (!userToken) throw new Error('log in with gh auth login: the deployment request must be yours');
+  return createGitHubClient({ repo, token: userToken, write: true });
+}
+
+// /ao-rollback, its one step (release-workflow spec 2.9): the deployment request, with your gh login.
+async function deployRequest({ environment, sha, rollback }, { repo, userToken }) {
+  const id = await requestDeploy(yours(repo, userToken), { sha, environment, rollback });
+  return [`Deployment request #${id} for ${sha.slice(0, 8)} on ${environment}${rollback ? ', a rollback' : ''}, made with your gh login. The deployer takes it within a minute or two.`];
+}
+
+// /ao-ship of a hotfix, its one step (release-workflow spec 2.8, steps 6 and 7): with your gh login the tag and the
+// deployment request for Production; as the ao-dev App the PRs that merge main back, unless one is open already.
+async function hotfixShip({ version, sha, backMerges }, { repo, settings, userToken }) {
+  const github = yours(repo, userToken);
+  const notes = [];
+  try {
+    await github.request('POST', '/git/refs', undefined, { ref: `refs/tags/${version}`, sha });
+    notes.push(`Tagged ${version} at ${sha.slice(0, 8)} with your gh login.`);
+  } catch (error) {
+    if (error.status !== 422) throw error;
+    notes.push(`The tag ${version} is there already.`);
+  }
+  const id = await requestDeploy(github, { sha, environment: 'production', rollback: false });
+  notes.push(`Deployment request #${id} for ${version} on Production, made with your gh login (gate ⑤).`);
+  const devEnv = { ...process.env, AO_DEV_APP: setting('AO_DEV_APP', settings), AO_DEV_APP_ID: setting('AO_DEV_APP_ID', settings) };
+  const { token } = await installationToken({ ...appCredentials('dev', { env: devEnv }), repo, permissions: { pull_requests: 'write', contents: 'read' } });
+  const dev = createGitHubClient({ repo, token, write: true });
+  for (const base of backMerges) {
+    const open = (await dev.getAll('/pulls', { state: 'open', base })).find((pr) => pr.head.ref === 'main');
+    if (open) {
+      notes.push(`The merge of main back into ${base} is open already: PR #${open.number}.`);
+      continue;
+    }
+    const pr = await dev.request('POST', '/pulls', undefined, { title: `Merge main into ${base} after ${version}`, head: 'main', base, body: `merge-gate merges main back into ${base} with a merge commit once CI is green and there is no conflict (release-workflow spec 2.8).` });
+    notes.push(`Opened PR #${pr.number}: main into ${base}.`);
   }
   return notes;
 }
