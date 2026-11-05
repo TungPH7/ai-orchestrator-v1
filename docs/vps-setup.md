@@ -139,9 +139,49 @@ install -m 600 -o aoadmin -g aoadmin /root/.ssh/authorized_keys /home/aoadmin/.s
 ssh -p 26266 -i "$env:USERPROFILE\.ssh\ao_vps" -t root@42.96.4.120 passwd aoadmin
 ```
 
-## 7. Tắt đăng nhập root khi cài xong
+## 7. Tên miền (bạn làm)
 
-Cuối mỗi đợt cài, Claude đổi `PermitRootLogin prohibit-password` thành `PermitRootLogin no` trong `00-ao-hardening.conf`, rồi `systemctl restart ssh`. Từ đó chỉ `aoadmin` đăng nhập được, và `sudo` cần mật khẩu của bạn.
+Một bản ghi A wildcard `*.ao.t2g.io.vn` trỏ về IP của VPS, nên mọi subdomain của môi trường (`pilot-dev.ao.t2g.io.vn`, `pilot.ao.t2g.io.vn`…) trỏ về VPS mà không phải thêm bản ghi. Trong trang quản lý của BKNS **(đối chiếu giao diện)**:
+
+1. Bấm **Quản lý dịch vụ** → **Quản lý dns**.
+2. Bấm vào tên miền `t2g.io.vn`.
+3. Bấm **Thêm bản ghi**.
+4. Điền **Loại** `A`, **Tên** `*.ao`, **Giá trị** `42.96.4.120`; **TTL** để mặc định.
+5. Bấm lưu.
+
+Kiểm từ máy bạn: `nslookup pilot-dev.ao.t2g.io.vn 8.8.8.8` trả `42.96.4.120`.
+
+## 8. Caddy
+
+Caddy 2 chạy trong container, giữ cổng 80 và 443, và tự lấy chứng chỉ HTTPS của Let's Encrypt cho từng subdomain có trong Caddyfile. Image ghim theo phiên bản và digest:
+
+```
+install -d -m 755 /etc/ao/caddy
+cat > /etc/ao/caddy/Caddyfile <<'EOF'
+# ai-orchestrator (docs/vps-setup.md): Caddy in front of every environment. The deployer writes the sites (T9).
+:80 {
+	respond 404
+}
+EOF
+docker run -d --name caddy -p 80:80 -p 443:443 --restart unless-stopped \
+  -v /etc/ao/caddy/Caddyfile:/etc/caddy/Caddyfile:ro -v caddy_data:/data -v caddy_config:/config \
+  caddy:2.11.8-alpine@sha256:f6228111e5fafa1a5238258d0858e103f10599b8d1659a146e7726681a002bb9
+```
+
+- Caddyfile này chưa có site nào, nên mọi request vào cổng 80 nhận 404. Deployer ghi các site (T9 của plan).
+- Chứng chỉ và tài khoản ACME nằm trong volume `caddy_data`. Xóa hay tạo lại container thì không mất chứng chỉ.
+- Ngày 2026-11-05 (T2), Caddy lấy được chứng chỉ Let's Encrypt cho `pilot-dev.ao.t2g.io.vn` ngay lần chạy đầu.
+
+## 9. Tắt đăng nhập root khi cài xong
+
+Cuối mỗi đợt cài, Claude đổi `PermitRootLogin prohibit-password` thành `PermitRootLogin no` trong `00-ao-hardening.conf`:
+
+```
+sed -i 's/^PermitRootLogin prohibit-password$/PermitRootLogin no/' /etc/ssh/sshd_config.d/00-ao-hardening.conf
+sshd -t && systemctl restart ssh
+```
+
+Từ đó chỉ `aoadmin` đăng nhập được, và `sudo` cần mật khẩu của bạn. Cài xong mỗi đợt, bạn gỡ key khỏi ssh-agent (mục 1).
 
 Khi cần một đợt cài mới, bạn mở lại cho root đăng nhập bằng key, trong PowerShell của bạn:
 
@@ -149,14 +189,16 @@ Khi cần một đợt cài mới, bạn mở lại cho root đăng nhập bằn
 ssh -p 26266 -i "$env:USERPROFILE\.ssh\ao_vps" -t aoadmin@42.96.4.120 "sudo sed -i 's/^PermitRootLogin no$/PermitRootLogin prohibit-password/' /etc/ssh/sshd_config.d/00-ao-hardening.conf && sudo systemctl restart ssh"
 ```
 
-## 8. Tên miền (bạn làm)
+## 10. Kiểm lại
 
-Một bản ghi A wildcard `*.ao.t2g.io.vn` trỏ về IP của VPS, trong trang quản lý DNS của BKNS. Các bước bấm được ghi sau khi bạn tạo bản ghi.
+Từ máy bạn, sau mục 9:
 
-## 9. Kiểm lại
+```
+ssh.exe -p 26266 -o IdentitiesOnly=yes -i "C:\Users\Huu Tung\.ssh\ao_vps.pub" root@42.96.4.120
+# root@42.96.4.120: Permission denied (publickey).
+ssh.exe -p 26266 -o PubkeyAuthentication=no -o PreferredAuthentications=password,keyboard-interactive aoadmin@42.96.4.120
+# aoadmin@42.96.4.120: Permission denied (publickey).
+```
 
-Từ máy bạn, sau mục 7:
-
-- đăng nhập root bằng SSH bị từ chối;
-- đăng nhập bằng mật khẩu bị từ chối;
-- quét cổng chỉ thấy 26266, 80 và 443 mở.
+- `aoadmin` đăng nhập bằng key vẫn được.
+- Quét mọi cổng TCP chỉ thấy cổng SSH `26266`, 80 và 443 mở. Khi Caddyfile chưa có site HTTPS nào, như sau T2, cổng 443 cũng đóng.

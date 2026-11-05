@@ -76,12 +76,12 @@
 - Xong thì Claude xóa các container thử, giữ Caddy.
 
 **Tiêu chí chấp nhận:**
-- [ ] Ba điểm có kết quả đúng hoặc sai, kèm số đo, trong `tasks/verification.md`.
-- [ ] Từ máy bạn: đăng nhập root bằng SSH bị từ chối, đăng nhập bằng mật khẩu bị từ chối, và quét cổng chỉ thấy 22, 80, 443.
+- [x] Ba điểm có kết quả đúng hoặc sai, kèm số đo, trong `tasks/verification.md`.
+- [x] Từ máy bạn: đăng nhập root bằng SSH bị từ chối, đăng nhập bằng mật khẩu bị từ chối, và quét cổng chỉ thấy cổng SSH `26266`, 80 và 443.
 - [ ] Nếu một điểm sai: spec và plan đã sửa, và bạn đã duyệt bản sửa.
 
 **Kiểm chứng:**
-- [ ] `docs/vps-setup.md` có đủ các bước đã chạy, theo đúng thứ tự
+- [x] `docs/vps-setup.md` có đủ các bước đã chạy, theo đúng thứ tự
 - [ ] Bạn đã gỡ key khỏi ssh-agent khi task xong
 
 **Phụ thuộc:** T1
