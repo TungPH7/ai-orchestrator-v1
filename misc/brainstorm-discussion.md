@@ -31,7 +31,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 21 | `3ead2782-314d-4ae8-981b-96f6ed83a60e` | 2026-11-01 khoảng 22:50 → 2026-11-02 khoảng 01:40 | Bạn dán đoạn cuối của Phiên 20, hỏi vì sao `main` và `develop` của `ao-pilot` lệch nhau, cách xử lý, và lựa chọn 3 có giải quyết được không; Claude kiểm hai nhánh và code của `audit`: `develop` đi trước 10 là đúng GitFlow, 4 commit chỉ có trên `main` là dấu vết lối tắt sandbox và không đổi nội dung; lựa chọn 3 không giải quyết; đề xuất ghi quy tắc merge commit và back-merge từ `main` vào spec `release-workflow`; bạn chọn Pilot 1; Claude nêu phạm vi, giả định A1–A8 và ba câu hỏi (repo, space Jira, feature); bạn duyệt và chọn theo đề xuất: repo mới `ao-sample`, space mới `SMP`, Epic "Ghi chú"; Claude viết `SPEC-pilot-1.md` (nhánh `task/spec-pilot-1`); bạn chọn tạo key mới cho `ao-dev` và duyệt spec; Claude viết plan 10 task, 5 checkpoint, cùng quyết định 6 (lỗi kit giữa Epic) và 8 (Checkpoint 3 sau lượt build đầu); bạn duyệt plan; kit PR #141; T1–T2: tạo repo `ao-sample`, điểm 1 đúng một phần (NestJS 12 dùng Vitest và oxlint, `@nestjs/mau` mang 2 lỗ hổng high), điểm 2 đúng nếu dùng Vitest, điểm 3 và 4 sai (API từ chối), điểm 5 đúng kèm `MSYS_NO_PATHCONV=1` và tin cậy thư mục; Checkpoint 1: bạn duyệt sáu chỗ sửa, dùng chung scheme với `DEMO`, và duyệt trước mọi đề xuất trong Pilot 1; T1a (kit PR #142, `oxlint-disable`); T4 khung app xanh sáu lệnh; T5 bản chép kit và hai skill theo stack; commit đầu bị hook `commit-msg` từ chối vì thiếu mã Jira; bạn gửi ảnh: tùy chọn share settings lúc tạo space cần gói trả phí; Claude đổi cách: tạo space như thường rồi gán ba scheme của `DEMO` trong Space settings; bạn tạo xong `SMP` và gán ba scheme; Claude kiểm bằng API, `jira:check` còn 3 chỗ lệch của board, tạo bốn environment và đặt secret `JIRA_CI_TOKEN`; bạn tắc ở B3 (board thiếu cột); Claude đọc cấu hình board bằng API và ghi từng bước sửa cột trong Board settings; bạn gửi ảnh: board của `SMP` là board mới, Board settings không có Columns; Claude tìm tài liệu Atlassian: cột cấu hình ở More actions → Configure columns trên board; bạn gửi ảnh hộp Configure columns đã sửa đúng, chờ bấm Publish; bạn tắc ở D2 (không có Private keys); Claude đính chính: đường đúng là Credentials → Key pairs → New key, như `docs/github-apps-setup.md` đã ghi; bạn xong B–E và chọn cách (b); Claude đặt secret `AO_DEV_APP_KEY`, tạo `SMP-1`, commit đầu `6f5831d` lên `main` và `develop`; GitHub không chạy workflow cho lần push đầu, Claude chạy tay `merge-gate` (xanh) và `Deploy` (`audit` đỏ, gắn cờ `SMP-1`); Checkpoint 2 đạt, tiêu chí 1 đổi; Epic `SMP-2`; chờ bạn dọn `SMP-1` và bấm Start spec |
 | 22 | `d714399c-65d0-4f98-bbbb-720338ff6bea` | 2026-11-02 khoảng 10:50 → khoảng 20:08 | Bạn dán đoạn cuối của Phiên 21 kèm ảnh panel Development của `SMP-1`, hỏi `Deploy` đỏ có đúng dự kiến không; Claude đọc run và log của `audit`: đúng dự kiến (commit đầu không qua PR), và ảnh cho thấy GitHub for Atlassian đã gắn run vào `SMP-1`; bạn dọn `SMP-1` và bấm Start spec; Claude merge kit PR #143 (T3–T6, Checkpoint 2), chạy `/ao-spec SMP-2` qua `claude -p`: `ba` viết SPEC (1,49 USD) và để lại 4 câu hỏi; Claude chuyển câu hỏi cho bạn, khuyên đồng ý cả bốn; bạn đồng ý cả bốn; Claude nối lại phiên `claude -p` với câu trả lời: `ba`, `ux`, `sa` chạy (3,36 USD), `sa` để lại 2 câu hỏi (đếm emoji, chuẩn hóa NFC và xuống dòng); Claude khuyên đồng ý cả hai; bạn đồng ý cả hai; `sa` ghi câu trả lời, `ba` mở PR tài liệu #1, nhưng GitHub không chạy CI và `ao-step` chờ 30 phút; bạn hỏi vì sao không dừng; Claude dùng nhánh và PR thử tìm ra nguyên nhân (workflow từ lần push đầu chưa được ghi nhận trigger; một push đụng `.github/workflows/` gỡ được), `CI` của PR #1 xanh; tìm thêm lỗi kit `openQuestions` bỏ sót 10 câu hỏi của `ux`; tới gate ①, Claude khuyên không thêm dòng "Đã lưu ghi chú." và gửi các bước Approve spec; bạn hỏi vì sao có hai lỗi nặng và yêu cầu sửa; Claude sửa ở kit (PR #144), chép vào `ao-sample` (Task `SMP-3`, PR #3), `/ao-review 3` Approve (1 Medium, 2 Low ở kit, sửa ở kit PR #145); bạn approve và merge PR #3, hỏi có cần chép kit vào `ao-pilot` (chưa cần); bạn đã bấm Approve spec, chọn chạy `/ao-plan`; `sa` chạm giới hạn 5 giờ giữa lượt viết plan; bạn bảo làm tiếp; `sa` viết xong plan và ba ADR, `ba` tạo 8 item nhưng không tạo được link Blocks; phiên dừng vì Claude chạm giới hạn tuần |
 | 23 | `6d4fa505-b003-47c3-bad3-14958ad7ae83` | 2026-11-02 khoảng 22:10 → | Bạn dán đoạn cuối của Phiên 22 để làm tiếp; Claude tạo 5 link Blocks bằng token CI, tắt server spike `sa` để lại, ghi stage plan và 3 lỗi kit vào `verification.md`, gửi các bước duyệt plan (gate ②) |
-| 26 | `6b41390c-2d48-4d39-9a30-5a4e22f76bf7` | 2026-11-04 khoảng 13:10 → | Bạn báo đã merge kit PR #165; Claude chép vào `ao-sample` PR #13 và review lần 2 (security lại có 1 High: `AGENTS.md`), mở kit PR #166; bạn hỏi chạy review ở high, vì sao lần nào cũng ra High, vì sao security review cả PR; Claude tìm lý do của luật review toàn bộ trong file này; bạn chọn đổi luật review phần mới, điều kiện đường dẫn được bảo vệ (b), và sửa gốc (code của PR không nằm trong thư mục dự án); Claude thử bằng Sonnet và sửa thêm trong kit PR #166; bạn merge #166; Claude chép vào PR #13, review lần 3 còn hai Medium để sau Pilot 1; bạn merge PR #13 (`e56a207`); T10: kit PR #167 (đường bấm của board Jira mới) và #168 (đầu vào cho `project-scaffold`, bảng lỗi kit, chi phí Pilot 1 khoảng 117,6 USD, plan vào `tasks/archive/pilot-1/`); bạn xác nhận Pilot 1 hoàn thành (PR #169); bạn hỏi tài khoản GitHub Free có bị tính tiền không: Billed 0 USD, phần miễn phí bù hết Gross; bạn chọn `release-workflow`; Claude nêu phạm vi, điều vừa kiểm (repo private gói Free không có secret theo môi trường và người duyệt bắt buộc, phần miễn phí 12 USD Actions mỗi tháng, tài khoản agent không tạo được Fix Version), bảy giả định và ba câu hỏi (VPS, cách đưa bản mới vào VPS, kiểm thật ở `ao-pilot` hay `ao-sample`); bạn trả lời: dùng VPS `dtddeploy` của bạn với subdomain của `t2g.io.vn`, VPS tự kéo bản đã qua cổng, kiểm thật trên `ao-pilot` trước; key SSH của VPS có passphrase, Claude chỉ cách mở khóa bằng ssh-agent của Windows; bạn mở khóa key; Claude thấy VPS rất có thể đã bị chiếm quyền root (`masscan` chạy bằng root từ một IP của Aeza Group, SSH cho root đăng nhập bằng mật khẩu) và quá nhỏ (1 vCPU, 961 MB RAM), khuyên thu hồi bí mật và cài lại VPS, rồi hỏi lại câu 1; bạn xác nhận `masscan` không phải của bạn, nhờ ghi việc xử lý VPS vào memory (không commit), và hỏi về passphrase 4 chữ số, cách người lạ vào, cách SSH an toàn và EC2: người lạ có root từ khoảng 7/7/2026, nhiều khả năng nhờ mật khẩu root, passphrase không phải nguyên nhân; EC2 chỉ rẻ hơn khi bật ít giờ; bạn chọn VPS mới riêng cho kit; Claude viết `SPEC-release-workflow.md` (deployer trên VPS kiểm mọi commit bằng `audit`, hai điều kiện cứng cho Production, bốn lệnh `/ao-qa`, `/ao-release`, `/ao-ship`, `/ao-rollback`, mười tiền đề), đổi năm chỗ so với giả định, hỏi hai câu (subdomain, basic auth); bạn chọn cả hai đề xuất và duyệt spec; Claude ghi spec đã duyệt (PR #170), nhưng bộ lọc an toàn dừng tin nhắn hai lần; bạn hỏi nguyên nhân; Claude viết plan 23 task, bốn checkpoint, ba quyết định cần duyệt (đổi bản không gián đoạn, gỡ chặn bằng `/ao-rollback <môi trường> <sha>`, bản chép kit đi cùng Task của `ao-pilot`); bạn nhờ giải thích lại quyết định 5; Claude giải thích bằng ví dụ commit push thẳng nằm giữa lịch sử, cách gỡ bằng yêu cầu deploy của bạn, và hỏi có muốn tên `/ao-deploy` thay cho `/ao-rollback <sha>`; bạn merge PR #170 và duyệt plan; Claude ghi ba quyết định vào spec, mở PR #171, bắt đầu T1 (App `ao-deploy` trong script tạo App, mục 7 của `docs/github-apps-setup.md`), mở trang tạo App và đưa các bước bấm để bạn tạo App và token Jira chỉ đọc; bạn báo đã xong và hỏi quyền của App; Claude xác nhận quyền đúng thiết kế, nhưng tiền đề 3 sai một phần (`audit` cần quyền Commit statuses), đề xuất thêm quyền chỉ đọc đó, đề xuất hủy `DEMO-3` trước phép thử điểm 1, và báo tag `v0.1.0`, nhánh `release/0.1.0` cũ trên `ao-pilot`; bạn thêm quyền và hủy `DEMO-3`; Claude kiểm sáu tiền đề (1, 3, 4, 9, 10 đúng; 8 sai: token của agent không gắn được file), đề xuất gắn bằng chứng bằng token CI trong script, thêm điểm bắt đầu cho deployer, nhờ bạn xem deployment trên `DEMO-21` và hủy Bug thử `DEMO-25`; bạn gửi ảnh tab Deployments, hủy `DEMO-25` và đồng ý đề xuất; Claude đóng T1 (điểm 2 đúng; script dùng token CI cho bằng chứng, Fix Version và comment), nhờ bạn merge PR #171; bạn merge #171, chọn gói VPS MMO4 của BKNS và bỏ bước đưa lựa chọn nhà cung cấp; Claude mở PR #172 của T1, đưa các bước tạo key SSH mới và đặt VPS; bạn gửi ảnh form đặt hàng của BKNS; Claude viết lại bước 2 theo form (`Ubuntu-24-x64`, hostname `vps.ao.t2g.io.vn`, dán public key, 1 snapshot nếu giá hợp lý); bạn gửi ảnh form đã điền; Claude xác nhận đúng; bạn gửi IP `42.96.4.120`; VPS trả lời ping nhưng SSH chưa mở, Claude chờ cổng 22 và hỏi cổng SSH, trạng thái VPS; bạn gửi cổng `26266`; Claude cài phần nền (chỉ key, `ufw`, tự cập nhật, swap, Docker, Node.js 24, user `aoadmin`), viết `docs/vps-setup.md`, nhờ bạn đặt mật khẩu `aoadmin` và tạo bản ghi DNS wildcard; bạn hỏi đăng nhập bằng key thì ở vai trò nào và lúc tạo `aoadmin` Claude ở vai trò nào; Claude giải thích tên user trong lệnh quyết định vai trò, và Claude đã tạo `aoadmin` bằng root |
+| 26 | `6b41390c-2d48-4d39-9a30-5a4e22f76bf7` | 2026-11-04 khoảng 13:10 → | Bạn báo đã merge kit PR #165; Claude chép vào `ao-sample` PR #13 và review lần 2 (security lại có 1 High: `AGENTS.md`), mở kit PR #166; bạn hỏi chạy review ở high, vì sao lần nào cũng ra High, vì sao security review cả PR; Claude tìm lý do của luật review toàn bộ trong file này; bạn chọn đổi luật review phần mới, điều kiện đường dẫn được bảo vệ (b), và sửa gốc (code của PR không nằm trong thư mục dự án); Claude thử bằng Sonnet và sửa thêm trong kit PR #166; bạn merge #166; Claude chép vào PR #13, review lần 3 còn hai Medium để sau Pilot 1; bạn merge PR #13 (`e56a207`); T10: kit PR #167 (đường bấm của board Jira mới) và #168 (đầu vào cho `project-scaffold`, bảng lỗi kit, chi phí Pilot 1 khoảng 117,6 USD, plan vào `tasks/archive/pilot-1/`); bạn xác nhận Pilot 1 hoàn thành (PR #169); bạn hỏi tài khoản GitHub Free có bị tính tiền không: Billed 0 USD, phần miễn phí bù hết Gross; bạn chọn `release-workflow`; Claude nêu phạm vi, điều vừa kiểm (repo private gói Free không có secret theo môi trường và người duyệt bắt buộc, phần miễn phí 12 USD Actions mỗi tháng, tài khoản agent không tạo được Fix Version), bảy giả định và ba câu hỏi (VPS, cách đưa bản mới vào VPS, kiểm thật ở `ao-pilot` hay `ao-sample`); bạn trả lời: dùng VPS `dtddeploy` của bạn với subdomain của `t2g.io.vn`, VPS tự kéo bản đã qua cổng, kiểm thật trên `ao-pilot` trước; key SSH của VPS có passphrase, Claude chỉ cách mở khóa bằng ssh-agent của Windows; bạn mở khóa key; Claude thấy VPS rất có thể đã bị chiếm quyền root (`masscan` chạy bằng root từ một IP của Aeza Group, SSH cho root đăng nhập bằng mật khẩu) và quá nhỏ (1 vCPU, 961 MB RAM), khuyên thu hồi bí mật và cài lại VPS, rồi hỏi lại câu 1; bạn xác nhận `masscan` không phải của bạn, nhờ ghi việc xử lý VPS vào memory (không commit), và hỏi về passphrase 4 chữ số, cách người lạ vào, cách SSH an toàn và EC2: người lạ có root từ khoảng 7/7/2026, nhiều khả năng nhờ mật khẩu root, passphrase không phải nguyên nhân; EC2 chỉ rẻ hơn khi bật ít giờ; bạn chọn VPS mới riêng cho kit; Claude viết `SPEC-release-workflow.md` (deployer trên VPS kiểm mọi commit bằng `audit`, hai điều kiện cứng cho Production, bốn lệnh `/ao-qa`, `/ao-release`, `/ao-ship`, `/ao-rollback`, mười tiền đề), đổi năm chỗ so với giả định, hỏi hai câu (subdomain, basic auth); bạn chọn cả hai đề xuất và duyệt spec; Claude ghi spec đã duyệt (PR #170), nhưng bộ lọc an toàn dừng tin nhắn hai lần; bạn hỏi nguyên nhân; Claude viết plan 23 task, bốn checkpoint, ba quyết định cần duyệt (đổi bản không gián đoạn, gỡ chặn bằng `/ao-rollback <môi trường> <sha>`, bản chép kit đi cùng Task của `ao-pilot`); bạn nhờ giải thích lại quyết định 5; Claude giải thích bằng ví dụ commit push thẳng nằm giữa lịch sử, cách gỡ bằng yêu cầu deploy của bạn, và hỏi có muốn tên `/ao-deploy` thay cho `/ao-rollback <sha>`; bạn merge PR #170 và duyệt plan; Claude ghi ba quyết định vào spec, mở PR #171, bắt đầu T1 (App `ao-deploy` trong script tạo App, mục 7 của `docs/github-apps-setup.md`), mở trang tạo App và đưa các bước bấm để bạn tạo App và token Jira chỉ đọc; bạn báo đã xong và hỏi quyền của App; Claude xác nhận quyền đúng thiết kế, nhưng tiền đề 3 sai một phần (`audit` cần quyền Commit statuses), đề xuất thêm quyền chỉ đọc đó, đề xuất hủy `DEMO-3` trước phép thử điểm 1, và báo tag `v0.1.0`, nhánh `release/0.1.0` cũ trên `ao-pilot`; bạn thêm quyền và hủy `DEMO-3`; Claude kiểm sáu tiền đề (1, 3, 4, 9, 10 đúng; 8 sai: token của agent không gắn được file), đề xuất gắn bằng chứng bằng token CI trong script, thêm điểm bắt đầu cho deployer, nhờ bạn xem deployment trên `DEMO-21` và hủy Bug thử `DEMO-25`; bạn gửi ảnh tab Deployments, hủy `DEMO-25` và đồng ý đề xuất; Claude đóng T1 (điểm 2 đúng; script dùng token CI cho bằng chứng, Fix Version và comment), nhờ bạn merge PR #171; bạn merge #171, chọn gói VPS MMO4 của BKNS và bỏ bước đưa lựa chọn nhà cung cấp; Claude mở PR #172 của T1, đưa các bước tạo key SSH mới và đặt VPS; bạn gửi ảnh form đặt hàng của BKNS; Claude viết lại bước 2 theo form (`Ubuntu-24-x64`, hostname `vps.ao.t2g.io.vn`, dán public key, 1 snapshot nếu giá hợp lý); bạn gửi ảnh form đã điền; Claude xác nhận đúng; bạn gửi IP `42.96.4.120`; VPS trả lời ping nhưng SSH chưa mở, Claude chờ cổng 22 và hỏi cổng SSH, trạng thái VPS; bạn gửi cổng `26266`; Claude cài phần nền (chỉ key, `ufw`, tự cập nhật, swap, Docker, Node.js 24, user `aoadmin`), viết `docs/vps-setup.md`, nhờ bạn đặt mật khẩu `aoadmin` và tạo bản ghi DNS wildcard; bạn hỏi đăng nhập bằng key thì ở vai trò nào và lúc tạo `aoadmin` Claude ở vai trò nào; Claude giải thích tên user trong lệnh quyết định vai trò, và Claude đã tạo `aoadmin` bằng root; bạn báo đã đặt mật khẩu và tạo bản ghi DNS; Claude thử ba tiền đề còn lại của T2 (build đúng, HTTPS đúng, E2E 19/24), dọn VPS, tắt đăng nhập root, quét cổng, rồi đề xuất ba chỗ sửa spec và plan; bạn nhắc Claude hai lần trả lời bằng tiếng Việt |
 
 ---
 
@@ -12788,3 +12788,137 @@ Cuối T2, mình tắt đăng nhập root. Từ đó chỉ `aoadmin@` vào đư�
 **2. Lúc tạo `aoadmin`, mình ở vai trò nào?**
 
 Mình ở vai trò root. Mình đăng nhập `root@42.96.4.120` bằng key, nên chạy được `adduser` và `usermod` mà không cần `sudo` hay mật khẩu. Mình gửi từng lệnh qua SSH rồi đọc kết quả, không mở terminal tương tác, nên không có dòng `root@vps:~#` nào hiện ra.
+
+# Phiên 26 · Lượt 30 — 2026-11-05 khoảng 23:15
+
+**Bạn:**
+
+```markdown
+đã xong 2 việc
+1. Đặt mật khẩu cho aoadmin
+2. Tạo bản ghi DNS wildcard ở BKNS
+
+Lưu ý: trả lời bằng tiếng Việt có dấu
+```
+
+Trước khi trả lời, Claude kiểm DNS qua `8.8.8.8`: `pilot-dev.ao.t2g.io.vn`, `vps.ao.t2g.io.vn` và một tên bất kỳ dưới `ao.t2g.io.vn` đều trả `42.96.4.120`. `passwd -S aoadmin` cho thấy user này đã có mật khẩu. Claude đọc cấu trúc của `ao-pilot` và `ao-sample`, viết Dockerfile tạm trong thư mục tạm của phiên, chép mã nguồn lên VPS bằng `git archive`, rồi chạy build. Lệnh build bị ngắt giữa chừng.
+
+**Claude:**
+
+DNS đã trỏ đúng về VPS, và `aoadmin` đã có mật khẩu. Mình đang đọc cấu trúc của `ao-pilot` và `ao-sample` để viết Dockerfile tạm cho tiền đề 5.
+
+# Phiên 26 · Lượt 31 — 2026-11-05 khoảng 23:28
+
+**Bạn:**
+
+```markdown
+[Request interrupted by user for tool use]
+Tiếp tục, sao lại dừng vậy??
+```
+
+**Claude:**
+
+Lệnh build bị ngắt giữa chừng từ phía giao diện, không phải mình chủ động dừng. Mình không thấy lý do cụ thể. Mình kiểm xem trên VPS đã build tới đâu, rồi chạy tiếp. Lần này mình chạy build ở chế độ nền trên VPS, để lệnh có bị ngắt thì build vẫn chạy tiếp.
+
+Build `ao-pilot` xong; image của API đang build trên VPS, image web sẽ build ngay sau đó. Trong lúc chờ, mình chuẩn bị bản clone tạm của `ao-pilot` trên máy bạn để chạy E2E.
+
+Bản clone tạm đã chạy E2E trên máy bạn: 24/24 test xanh. Đây là mốc để so khi chạy E2E qua VPS. Mình đang chờ build image web trên VPS.
+
+Image của API đã build xong; image web đang build. Mình chờ build xong rồi chạy tiếp: bật container, Caddy với HTTPS, rồi build lại khi ba container đang chạy.
+
+Image web lỗi vì app web import một file trong mã nguồn của API (`@api/notes-shared`), mà Dockerfile tạm của mình chưa chép file đó vào. Mình sửa Dockerfile rồi build lại.
+
+Mình đã sửa Dockerfile, image web đang build lại. Kịch bản bật container và Caddy cũng đã sẵn sàng. Build xong là mình chạy tiếp.
+
+Cả ba image đã build xong. Giờ mình bật một container cho mỗi app, rồi bật Caddy phía trước `ao-pilot` với basic auth dùng một lần.
+
+Caddy đã lấy được chứng chỉ Let's Encrypt cho `pilot-dev.ao.t2g.io.vn`. `curl` của Windows lỗi TLS ở phía máy, nên mình kiểm lại bằng Node.
+
+Ba tin nhắn tiếp theo Claude gửi bằng tiếng Anh. Log ghi bản tiếng Việt:
+
+Tiền đề 6 đúng: Node tin chứng chỉ. Không có mật khẩu hay sai mật khẩu thì trang trả 401; đúng mật khẩu thì trả 200 kèm trang giỏ hàng. Giờ mình chạy E2E của `ao-pilot` từ máy bạn qua VPS.
+
+Tiền đề 7 chỉ đúng một phần: 19/24 test xanh, 5 test fail. Trước khi giải thích lý do, mình đo tiền đề 5 trong lúc các container đang chạy.
+
+Trong lúc ba image build lại khi ba container kia đang chạy, mình đã đọc xong lý do của tiền đề 7. Build lại xong, mình bật container thứ hai cho mỗi app để đo RAM.
+
+# Phiên 26 · Lượt 32 — 2026-11-05 khoảng 23:54
+
+**Bạn:**
+
+```markdown
+bạn có đang chạy không? sau tôi thấy hơi lâu
+```
+
+Claude trả lời bằng tiếng Anh. Log ghi bản tiếng Việt.
+
+**Claude:**
+
+Có, mình vẫn đang chạy. Phần chậm là build image trên VPS.
+
+- Build lại `ao-pilot` mất 5 giây; build lại API mất 310 giây, khoảng 5 phút. Phần lớn thời gian là `npm ci` tải gói và ghi image ra đĩa.
+- Image web đang ở bước cuối. Lần build đầu của nó mất khoảng 6 phút.
+
+Xong thì mình bật container thứ hai cho mỗi app và đo RAM, mất khoảng 1 phút. Sau đó mình ghi kết quả và hai chỗ cần sửa mà mình tìm thấy ở tiền đề 7.
+
+Sau đó Claude đo RAM khi mỗi app có hai container, xóa các container thử, giữ Caddy, tắt đăng nhập root, rồi bắt đầu quét cổng. Claude gửi ba tin nhắn trạng thái bằng tiếng Anh. Log ghi bản tiếng Việt:
+
+Tiền đề 5 đúng. Trong lúc các container khác vẫn chạy, build lại API mất 5,2 phút và web mất 5,8 phút. RAM lúc cao nhất là 1,77 GB trên 3,9 GB, không dùng swap. Khi mỗi app có hai container, tất cả container cộng lại dùng khoảng 275 MB. Giờ mình xóa các container thử, giữ Caddy, và dọn VPS.
+
+Root không đăng nhập được nữa; đăng nhập bằng mật khẩu bị từ chối; chỉ `aoadmin` dùng key là vào được. Giờ mình quét cả 65.535 cổng TCP từ máy bạn, mất khoảng 5 phút.
+
+Trong lúc chờ quét, mình ghi phần DNS, Caddy và phần kiểm lại vào `docs/vps-setup.md`.
+
+Trong lúc Claude đang làm, bạn nhắn thêm:
+
+```markdown
+trả lời bằng tiếng Việt, sao bạn cứ trả lời bằng tiếng anh vậy?
+```
+
+**Claude:**
+
+Xin lỗi bạn. Mấy tin nhắn vừa rồi mình viết bằng tiếng Anh là sai. Từ giờ mình chỉ trả lời bằng tiếng Việt có dấu. Mình tóm lại bằng tiếng Việt những gì đã báo:
+
+- **Tiền đề 6 đúng:** Caddy lấy được chứng chỉ Let's Encrypt cho `pilot-dev.ao.t2g.io.vn`. Không có mật khẩu hay sai mật khẩu thì trang trả 401; đúng mật khẩu thì trả 200 kèm trang giỏ hàng.
+- **Tiền đề 7 đúng một phần:** 19/24 test E2E xanh khi chạy vào VPS; 5 test fail. Lý do mình sẽ giải thích ở tin tổng kết.
+- **Tiền đề 5 đúng:** build lại trong lúc các container khác đang chạy mất 5,2 phút với API và 5,8 phút với web. RAM lúc cao nhất là 1,77 GB trên 3,9 GB, không dùng swap. Khi mỗi app có hai container, các container chỉ dùng khoảng 275 MB.
+- Mình đã xóa các container thử và giữ Caddy. Root đã bị tắt đăng nhập; đăng nhập bằng mật khẩu bị từ chối. Mình đang quét cổng từ máy bạn và ghi các bước vào `docs/vps-setup.md`.
+
+Mình đang chờ kết quả quét cổng, còn khoảng 1–2 phút.
+
+Quét xong, Claude ghi kết quả vào `tasks/verification.md` và `docs/vps-setup.md`, đánh dấu các mục đã đạt của T2 trong `tasks/todo.md`, chạy `npm run validate`, rồi commit `f4f6f9c` và push nhánh `task/t2-vps`.
+
+**Claude:**
+
+**T2 đã thử xong cả ba tiền đề.** Kết quả và số đo: https://github.com/TungPH7/ai-orchestrator-v1/blob/task/t2-vps/tasks/verification.md
+
+- **Tiền đề 5 đúng.** Build lại image API mất 5,2 phút, image web 5,8 phút, trong lúc các container khác vẫn chạy. RAM lúc cao nhất là 1,77 GB trên 3,9 GB, không dùng swap. Khi mỗi app có hai container, tất cả container chỉ dùng khoảng 275 MB.
+- **Tiền đề 6 đúng.** Caddy lấy được chứng chỉ HTTPS cho `pilot-dev.ao.t2g.io.vn` ngay lần chạy đầu. Basic auth chặn đúng.
+- **Tiền đề 7 đúng một phần.** 19/24 test E2E xanh khi chạy từ máy bạn vào VPS; 5 test fail.
+
+**Vì sao 5 test fail, và một chỗ app chưa sẵn sàng:**
+
+1. Server của `ao-pilot` chỉ nhận request gửi tới `127.0.0.1` hay `localhost` (ADR-0001 của `ao-pilot`), để trang không bị gọi qua một tên miền lạ. Sau Caddy, request mang tên `pilot-dev.ao.t2g.io.vn`, nên server từ chối. Lần thử này, mình cho Caddy đổi tên đó trước khi chuyển request vào server, nên 19 test mới xanh. Bản thật cần server biết địa chỉ công khai của nó.
+2. 5 test gửi request "thô" thẳng tới server: tên miền lạ, Origin lạ, nội dung quá lớn. Trình duyệt không gửi được loại request này. Qua Caddy, chúng không tới được server.
+
+**Ba đề xuất sửa spec và plan.** Bạn duyệt thì mình sửa:
+
+1. **Deployer đặt biến `AO_PUBLIC_URL`** cho app public, ví dụ `https://pilot-dev.ao.t2g.io.vn`. Server của `ao-pilot` nhận tên miền và Origin của địa chỉ này, ngoài `127.0.0.1` và `localhost`. Việc sửa server nằm trong Task của `ao-pilot` ở T19, cùng biến `HOST` đã có trong plan.
+2. **Test cần server tại chỗ được gắn tag `@local`.** Khi có `E2E_BASE_URL`, `playwright.config.ts` chạy test `@local` vào server do Playwright tự bật từ worktree, ở cùng commit; các test khác chạy vào môi trường thật. Nhờ vậy `qa` vẫn chạy đủ 24 test bằng một lệnh. Câu "bỏ `webServer` khi có `E2E_BASE_URL`" ở spec mục 2.5 đổi theo cách này.
+3. **T9: deployer dọn cache build.** Sau 6 lần build, cache đã chiếm 7,25 GB trên đĩa 38 GB.
+
+Mình cũng ghi lại hai điều cho T19: web của `ao-sample` import mã nguồn của API, nên Dockerfile của web phải build từ gốc repo; và web cần `API_URL` ngay lúc build.
+
+**VPS đã dọn và khóa:**
+
+- Đã xóa container, image và cache thử, cùng mật khẩu basic auth dùng một lần. Caddy vẫn chạy và giữ chứng chỉ.
+- Root không đăng nhập được nữa; đăng nhập bằng mật khẩu bị từ chối; `aoadmin` dùng key vẫn vào được.
+- Quét cả 65.535 cổng TCP: chỉ cổng 80 và `26266` mở. Cổng 443 sẽ mở khi Caddy có site HTTPS, từ T9. Lúc thử tiền đề 6, HTTPS qua cổng 443 đã chạy được.
+
+**Việc của bạn:**
+
+1. Gỡ key khỏi ssh-agent, trong PowerShell: `ssh-add -d "$env:USERPROFILE\.ssh\ao_vps"`. Từ giờ tới T9, mình không cần SSH vào VPS.
+2. Merge PR #172 (T1) bằng Rebase and merge: https://github.com/TungPH7/ai-orchestrator-v1/pull/172
+3. Trả lời ba đề xuất trên.
+
+Khi #172 đã vào `main` và bạn đã duyệt đề xuất, mình sửa spec và plan, đánh dấu T2 xong, rồi mở PR của T2.
