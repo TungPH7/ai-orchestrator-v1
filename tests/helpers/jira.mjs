@@ -52,7 +52,9 @@ export function jiraIssue({ key, type = 'Story', st, parent, subtasks = [], desc
 
 // A Jira client for tests: GET /issue/<key> from `issues`, GET /field from `fields`, changelogs by key, JQL searches
 // from `search` by query. Writes are recorded in `writes`; a write on a key in `failOn` fails.
-export function fakeJira({ issues = [], fields = [], changelogs = {}, search = {}, failOn = [] }) {
+// `gets` and `lists` answer GET and getAll by full path, before the rules above; `created` answers request() by
+// "METHOD path", and every request is kept among the writes.
+export function fakeJira({ issues = [], fields = [], changelogs = {}, search = {}, failOn = [], gets = {}, lists = {}, created = {} }) {
   const writes = [];
   const searches = [];
   const write = (kind) => async (key, arg) => {
@@ -63,12 +65,17 @@ export function fakeJira({ issues = [], fields = [], changelogs = {}, search = {
     writes,
     searches,
     async get(path) {
+      if (path in gets) return structuredClone(gets[path]);
       if (path === '/rest/api/3/field') return fields;
       const found = issues.find(({ key }) => key === decodeURIComponent(path.split('/').pop()));
       if (!found) throw new Error(`Jira GET ${path} returned 404`);
       return found;
     },
-    getAll: async (path) => changelogs[path.split('/').at(-2)] ?? [],
+    getAll: async (path) => (path in lists ? structuredClone(lists[path]) : (changelogs[path.split('/').at(-2)] ?? [])),
+    async request(method, path, query, body) {
+      writes.push(['request', `${method} ${path}`, body]);
+      return created[`${method} ${path}`] ?? {};
+    },
     async searchAll(jql) {
       searches.push(jql);
       return search[jql] ?? [];
