@@ -132,3 +132,24 @@ test('a transition the account cannot make on the item is an error, and nothing 
   await assert.rejects(client.transition('DEMO-1', 'Submit'), /DEMO-1 has no transition "Submit" for this account/);
   assert.equal(calls.length, 1);
 });
+
+test('attach uploads one file as multipart form data, with the header Jira asks for on uploads (release-workflow T12)', async () => {
+  const { fetch, calls } = fakeFetch([{ body: [{ id: '10500', filename: 'cart.png' }] }]);
+  const client = createJiraClient({ cloudId: 'c1', authorization: 'Bearer x', fetch, write: true });
+  assert.deepEqual(await client.attach('DEMO-21', 'cart.png', Buffer.from('png bytes')), [{ id: '10500', filename: 'cart.png' }]);
+  const [{ url, init }] = calls;
+  assert.equal(url.href, 'https://api.atlassian.com/ex/jira/c1/rest/api/3/issue/DEMO-21/attachments');
+  assert.equal(init.method, 'POST');
+  assert.equal(init.headers['X-Atlassian-Token'], 'no-check');
+  assert.equal(init.headers['Content-Type'], undefined, 'fetch sets the multipart boundary itself');
+  const file = init.body.get('file');
+  assert.equal(file.name, 'cart.png');
+  assert.equal(await file.text(), 'png bytes');
+});
+
+test('a read-only client refuses to attach, without sending the request', async () => {
+  const { fetch, calls } = fakeFetch([]);
+  const client = createJiraClient({ cloudId: 'c1', authorization: 'Bearer x', fetch });
+  await assert.rejects(client.attach('DEMO-21', 'cart.png', Buffer.from('x')), /read-only/i);
+  assert.equal(calls.length, 0);
+});
