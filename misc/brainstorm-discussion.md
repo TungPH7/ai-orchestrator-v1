@@ -32,6 +32,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 22 | `d714399c-65d0-4f98-bbbb-720338ff6bea` | 2026-11-02 khoảng 10:50 → khoảng 20:08 | Bạn dán đoạn cuối của Phiên 21 kèm ảnh panel Development của `SMP-1`, hỏi `Deploy` đỏ có đúng dự kiến không; Claude đọc run và log của `audit`: đúng dự kiến (commit đầu không qua PR), và ảnh cho thấy GitHub for Atlassian đã gắn run vào `SMP-1`; bạn dọn `SMP-1` và bấm Start spec; Claude merge kit PR #143 (T3–T6, Checkpoint 2), chạy `/ao-spec SMP-2` qua `claude -p`: `ba` viết SPEC (1,49 USD) và để lại 4 câu hỏi; Claude chuyển câu hỏi cho bạn, khuyên đồng ý cả bốn; bạn đồng ý cả bốn; Claude nối lại phiên `claude -p` với câu trả lời: `ba`, `ux`, `sa` chạy (3,36 USD), `sa` để lại 2 câu hỏi (đếm emoji, chuẩn hóa NFC và xuống dòng); Claude khuyên đồng ý cả hai; bạn đồng ý cả hai; `sa` ghi câu trả lời, `ba` mở PR tài liệu #1, nhưng GitHub không chạy CI và `ao-step` chờ 30 phút; bạn hỏi vì sao không dừng; Claude dùng nhánh và PR thử tìm ra nguyên nhân (workflow từ lần push đầu chưa được ghi nhận trigger; một push đụng `.github/workflows/` gỡ được), `CI` của PR #1 xanh; tìm thêm lỗi kit `openQuestions` bỏ sót 10 câu hỏi của `ux`; tới gate ①, Claude khuyên không thêm dòng "Đã lưu ghi chú." và gửi các bước Approve spec; bạn hỏi vì sao có hai lỗi nặng và yêu cầu sửa; Claude sửa ở kit (PR #144), chép vào `ao-sample` (Task `SMP-3`, PR #3), `/ao-review 3` Approve (1 Medium, 2 Low ở kit, sửa ở kit PR #145); bạn approve và merge PR #3, hỏi có cần chép kit vào `ao-pilot` (chưa cần); bạn đã bấm Approve spec, chọn chạy `/ao-plan`; `sa` chạm giới hạn 5 giờ giữa lượt viết plan; bạn bảo làm tiếp; `sa` viết xong plan và ba ADR, `ba` tạo 8 item nhưng không tạo được link Blocks; phiên dừng vì Claude chạm giới hạn tuần |
 | 23 | `6d4fa505-b003-47c3-bad3-14958ad7ae83` | 2026-11-02 khoảng 22:10 → | Bạn dán đoạn cuối của Phiên 22 để làm tiếp; Claude tạo 5 link Blocks bằng token CI, tắt server spike `sa` để lại, ghi stage plan và 3 lỗi kit vào `verification.md`, gửi các bước duyệt plan (gate ②) |
 | 26 | `6b41390c-2d48-4d39-9a30-5a4e22f76bf7` | 2026-11-04 khoảng 13:10 → | Bạn báo đã merge kit PR #165; Claude chép vào `ao-sample` PR #13 và review lần 2 (security lại có 1 High: `AGENTS.md`), mở kit PR #166; bạn hỏi chạy review ở high, vì sao lần nào cũng ra High, vì sao security review cả PR; Claude tìm lý do của luật review toàn bộ trong file này; bạn chọn đổi luật review phần mới, điều kiện đường dẫn được bảo vệ (b), và sửa gốc (code của PR không nằm trong thư mục dự án); Claude thử bằng Sonnet và sửa thêm trong kit PR #166; bạn merge #166; Claude chép vào PR #13, review lần 3 còn hai Medium để sau Pilot 1; bạn merge PR #13 (`e56a207`); T10: kit PR #167 (đường bấm của board Jira mới) và #168 (đầu vào cho `project-scaffold`, bảng lỗi kit, chi phí Pilot 1 khoảng 117,6 USD, plan vào `tasks/archive/pilot-1/`); bạn xác nhận Pilot 1 hoàn thành (PR #169); bạn hỏi tài khoản GitHub Free có bị tính tiền không: Billed 0 USD, phần miễn phí bù hết Gross; bạn chọn `release-workflow`; Claude nêu phạm vi, điều vừa kiểm (repo private gói Free không có secret theo môi trường và người duyệt bắt buộc, phần miễn phí 12 USD Actions mỗi tháng, tài khoản agent không tạo được Fix Version), bảy giả định và ba câu hỏi (VPS, cách đưa bản mới vào VPS, kiểm thật ở `ao-pilot` hay `ao-sample`); bạn trả lời: dùng VPS `dtddeploy` của bạn với subdomain của `t2g.io.vn`, VPS tự kéo bản đã qua cổng, kiểm thật trên `ao-pilot` trước; key SSH của VPS có passphrase, Claude chỉ cách mở khóa bằng ssh-agent của Windows; bạn mở khóa key; Claude thấy VPS rất có thể đã bị chiếm quyền root (`masscan` chạy bằng root từ một IP của Aeza Group, SSH cho root đăng nhập bằng mật khẩu) và quá nhỏ (1 vCPU, 961 MB RAM), khuyên thu hồi bí mật và cài lại VPS, rồi hỏi lại câu 1; bạn xác nhận `masscan` không phải của bạn, nhờ ghi việc xử lý VPS vào memory (không commit), và hỏi về passphrase 4 chữ số, cách người lạ vào, cách SSH an toàn và EC2: người lạ có root từ khoảng 7/7/2026, nhiều khả năng nhờ mật khẩu root, passphrase không phải nguyên nhân; EC2 chỉ rẻ hơn khi bật ít giờ; bạn chọn VPS mới riêng cho kit; Claude viết `SPEC-release-workflow.md` (deployer trên VPS kiểm mọi commit bằng `audit`, hai điều kiện cứng cho Production, bốn lệnh `/ao-qa`, `/ao-release`, `/ao-ship`, `/ao-rollback`, mười tiền đề), đổi năm chỗ so với giả định, hỏi hai câu (subdomain, basic auth); bạn chọn cả hai đề xuất và duyệt spec; Claude ghi spec đã duyệt (PR #170), nhưng bộ lọc an toàn dừng tin nhắn hai lần; bạn hỏi nguyên nhân; Claude viết plan 23 task, bốn checkpoint, ba quyết định cần duyệt (đổi bản không gián đoạn, gỡ chặn bằng `/ao-rollback <môi trường> <sha>`, bản chép kit đi cùng Task của `ao-pilot`); bạn nhờ giải thích lại quyết định 5; Claude giải thích bằng ví dụ commit push thẳng nằm giữa lịch sử, cách gỡ bằng yêu cầu deploy của bạn, và hỏi có muốn tên `/ao-deploy` thay cho `/ao-rollback <sha>`; bạn merge PR #170 và duyệt plan; Claude ghi ba quyết định vào spec, mở PR #171, bắt đầu T1 (App `ao-deploy` trong script tạo App, mục 7 của `docs/github-apps-setup.md`), mở trang tạo App và đưa các bước bấm để bạn tạo App và token Jira chỉ đọc; bạn báo đã xong và hỏi quyền của App; Claude xác nhận quyền đúng thiết kế, nhưng tiền đề 3 sai một phần (`audit` cần quyền Commit statuses), đề xuất thêm quyền chỉ đọc đó, đề xuất hủy `DEMO-3` trước phép thử điểm 1, và báo tag `v0.1.0`, nhánh `release/0.1.0` cũ trên `ao-pilot`; bạn thêm quyền và hủy `DEMO-3`; Claude kiểm sáu tiền đề (1, 3, 4, 9, 10 đúng; 8 sai: token của agent không gắn được file), đề xuất gắn bằng chứng bằng token CI trong script, thêm điểm bắt đầu cho deployer, nhờ bạn xem deployment trên `DEMO-21` và hủy Bug thử `DEMO-25`; bạn gửi ảnh tab Deployments, hủy `DEMO-25` và đồng ý đề xuất; Claude đóng T1 (điểm 2 đúng; script dùng token CI cho bằng chứng, Fix Version và comment), nhờ bạn merge PR #171; bạn merge #171, chọn gói VPS MMO4 của BKNS và bỏ bước đưa lựa chọn nhà cung cấp; Claude mở PR #172 của T1, đưa các bước tạo key SSH mới và đặt VPS; bạn gửi ảnh form đặt hàng của BKNS; Claude viết lại bước 2 theo form (`Ubuntu-24-x64`, hostname `vps.ao.t2g.io.vn`, dán public key, 1 snapshot nếu giá hợp lý); bạn gửi ảnh form đã điền; Claude xác nhận đúng; bạn gửi IP `42.96.4.120`; VPS trả lời ping nhưng SSH chưa mở, Claude chờ cổng 22 và hỏi cổng SSH, trạng thái VPS; bạn gửi cổng `26266`; Claude cài phần nền (chỉ key, `ufw`, tự cập nhật, swap, Docker, Node.js 24, user `aoadmin`), viết `docs/vps-setup.md`, nhờ bạn đặt mật khẩu `aoadmin` và tạo bản ghi DNS wildcard; bạn hỏi đăng nhập bằng key thì ở vai trò nào và lúc tạo `aoadmin` Claude ở vai trò nào; Claude giải thích tên user trong lệnh quyết định vai trò, và Claude đã tạo `aoadmin` bằng root; bạn báo đã đặt mật khẩu và tạo bản ghi DNS; Claude thử ba tiền đề còn lại của T2 (build đúng, HTTPS đúng, E2E 19/24), dọn VPS, tắt đăng nhập root, quét cổng, rồi đề xuất ba chỗ sửa spec và plan; bạn nhắc Claude hai lần trả lời bằng tiếng Việt; bạn gỡ key, merge #172 và duyệt ba đề xuất; Claude sửa spec và plan (`AO_PUBLIC_URL`, tag `@local`, dọn cache build ở T7), đóng T2, mở PR #173, chờ bạn xem kết quả T1–T2 ở Checkpoint 1; bạn hỏi vì sao Claude cứ trả lời bằng tiếng Anh; Claude xin lỗi, giải thích lỗi chép tin từ log, thêm bước kiểm vào bộ nhớ và gửi lại bản tiếng Việt; bạn hỏi nguyên nhân; Claude nêu ba nguyên nhân (ngữ cảnh tiếng Anh sau khi phiên bị nén, viết lại tin thay vì chép từ log, tin tiến độ theo thông báo tiếng Anh) |
+| 27 | `6fe2d487-8a5e-4cfb-a02c-e03e1598a124` | 2026-11-06 khoảng 00:21 → | Bạn báo đã merge PR #173 và nhắc đọc memory; Claude đánh dấu Checkpoint 1 đạt, làm T3 (`versions.mjs`, `cut.mjs`, PR #174), T4 (kiểm `deploy.yaml`, schema chuyển vào `lib/release/`) và T5 (`targets.mjs`), rồi đề xuất báo lần từ chối bằng status `error`, để `jira-sync` không tạo Bug Critical sai |
 
 ---
 
@@ -13026,3 +13027,96 @@ Mình không nhìn được chính xác bên trong cách mình chọn ngôn ng�
 Cả ba điều trên không biện minh cho lỗi. Quy tắc tiếng Việt đã có trong bộ nhớ, nhưng mình không có bước kiểm trước khi gửi, nên lỗi vẫn lặp lại sau khi bạn đã nhắc. Phần mình phải sửa là: chép đúng bản trong log, và kiểm ngôn ngữ của mọi tin trước khi gửi.
 
 Mình chưa làm thêm việc gì. Mình chỉ ghi lượt này vào log, theo quy tắc của bạn.
+
+# Phiên 27 · Lượt 1 — 2026-11-06 khoảng 00:21
+
+**Bạn:**
+
+````markdown
+Làm tiếp session id: 6b41390c-2d48-4d39-9a30-5a4e22f76bf7
+
+Đã Merge PR #173, làm tiếp nhé
+
+đoạn chat của session id: 6b41390c-2d48-4d39-9a30-5a4e22f76bf7
+```
+Mình đã làm theo đề xuất, và T2 xong.
+
+**Đã sửa spec và plan:**
+
+1. **`AO_PUBLIC_URL`:** spec mục 2.3 ghi deployer đặt biến này cho app `public`. T7 thêm phần này vào deployer và test của nó. T19 thêm việc sửa server của `ao-pilot` và ADR-0001 của nó.
+2. **Tag `@local`:** spec mục 2.5 bỏ câu "bỏ `webServer` khi có `E2E_BASE_URL`", thay bằng cách chạy test `@local` vào server tại chỗ. T19 gắn tag cho 5 test, và thêm tiêu chí E2E 24/24 xanh trên Development. T23 ghi yêu cầu này vào tài liệu.
+3. **Dọn cache build:** mình đặt việc này vào **T7** chứ không phải T9, vì phần Docker của deployer nằm ở T7. Cache được giữ lại tối đa 4 GB.
+
+Spec mục 2.12 cũng đã ghi kết quả của điểm 5–7.
+
+**Kiểm:** năm lệnh kiểm của kit đều xanh. Key `ao-vps` không còn trong ssh-agent.
+
+**PR của T2:** https://github.com/TungPH7/ai-orchestrator-v1/pull/173
+
+**Checkpoint 1** đã đạt ba trên bốn mục. Mục còn lại là bạn xem kết quả của T1–T2: https://github.com/TungPH7/ai-orchestrator-v1/blob/task/t2-vps/tasks/verification.md
+
+**Việc của bạn:**
+
+1. Xem kết quả T1–T2 ở link trên.
+2. Merge PR #173 bằng Rebase and merge khi CI xanh.
+3. Nhắn mình. Mình sẽ bắt đầu T3: `versions.mjs` và `cut.mjs`, viết test trước.
+```
+````
+
+Giữa lượt, bạn nhắn thêm:
+
+```markdown
+nhớ đọc memory để nắm rõ ngữ cảnh nhé
+```
+
+Claude trả lời ngắn giữa lượt: "Vâng, mình đã đọc memory ở đầu phiên (ghi log brainstorm, trả lời tiếng Việt, không ghi dòng AI vào commit hay PR, tự làm việc, trạng thái release-workflow tới T2). Mình đọc nốt các file còn lại cho chắc."
+
+**Claude:**
+
+Mình đã làm xong giai đoạn 2 của plan: T3, T4, T5. Cả ba đều viết test trước. Năm lệnh kiểm của kit đều xanh, với 910 test.
+
+**Checkpoint 1:** mình đánh dấu đạt đủ bốn mục, vì bạn đã xem kết quả T1–T2 và merge PR #173. `tasks/verification.md` đã ghi mục này.
+
+**T3, số bản và điểm cắt** (PR #174, CI xanh):
+
+- `versions.mjs`: bản đầu là `v0.1.0`; bản sau tăng `minor` của tag mới nhất. Tag mới nhất tính theo số, nên `v0.10.0` mới hơn `v0.9.3`. Bản vá tăng `patch` của bản đang chạy trên Production. Nếu một bản vá đã gắn tag rồi bị rollback, số đó không bị dùng lại. Tag sai dạng bị bỏ qua.
+- `cut.mjs`: tính điểm cắt đúng theo định nghĩa của hợp đồng. Commit không mang mã item, như commit merge ngược từ `main`, vẫn làm điểm cắt được. Chỉ Done được tính: item Cancelled vẫn chặn điểm cắt, để bạn xử lý trước khi cắt.
+
+**T4, kiểm `deploy.yaml`:**
+
+- Schema từ chối volume, `privileged`, cổng ra host và mạng của host. Đường dẫn health và smoke phải bắt đầu bằng đúng một dấu `/`, nên không trỏ được sang host khác.
+- Năm quy tắc D1–D5: đúng schema; đúng một app `public`; mục `smoke` trỏ tới app có thật; tên biến bắt đầu bằng `AO_` dành riêng cho deployer; Dockerfile nằm trong repo. Có 15 fixture âm.
+- **Một chỗ đổi so với plan:** schema nằm ở `lib/release/deploy.schema.json`, không nằm ở `contract/schema/`. Có hai lý do. Code của kit đọc mọi schema trong `contract/schema/` như một file `contract/<tên>.yaml`. Bản chép kit trong dự án có `lib/` nhưng không có `vps/`. Spec mục 5 và `todo.md` đã sửa theo.
+- `npm run validate` kiểm `deploy.yaml` nằm cạnh thư mục `contract/`, tức `.ai-orchestrator/deploy.yaml` của dự án. Repo kit không có file này, nên bước kiểm được bỏ qua ở đó.
+
+**T5, bản nào lên môi trường nào:** `decideTarget` trả một trong ba kết quả:
+
+- `deploy`: chạy bản này, kèm nguồn là nhánh, yêu cầu deploy hay rollback;
+- `skip`: commit dành cho môi trường khác, không báo gì. Ví dụ: hotfix trên `main` lên Staging, còn Production bỏ qua;
+- `refuse`: từ chối, kèm lý do.
+
+Có test cho từng dòng của bảng spec mục 2.4, và cho mọi trường hợp từ chối Production. Một commit fail `audit` chặn mọi head sau nó, kể cả khi head qua `audit`. Lý do từ chối ghi luôn cách gỡ: `/ao-rollback <môi trường> <sha>`.
+
+**Cần bạn duyệt một chỗ sửa spec (mục 2.4 và 2.9):**
+
+Spec mục 2.4 ghi: Production bị từ chối thì deployer báo deployment `failure`. Spec mục 2.9 lại ghi: `jira-sync` thấy `failure` trên Production thì tạo Bug Critical. Gộp hai câu lại, một lần từ chối sẽ tạo ra một Bug Critical sai, dù bản đó chưa hề chạy. Ví dụ: tree chưa qua Staging, hay thiếu gate ⑤.
+
+Mình đề xuất:
+
+- Deployer từ chối trước khi deploy thì báo status `error`, kèm lý do.
+- Bản mới đã chạy mà smoke test fail thì vẫn báo `failure`, như cũ.
+- `jira-sync` chỉ tạo Bug Critical khi Production báo `failure`. Với `error` trên Production, không tạo Bug; lý do hiện trên deployment và trong `/ao-status`. Ở Development và Staging, cả `failure` và `error` đều gắn cờ "Needs you", như cũ.
+
+Phần này sửa spec mục 2.4, 2.9, 2.10, và T8, T11 trong `todo.md`. Theo quy ước của plan, mình phải hỏi bạn trước khi đổi quy tắc của mục 2.4 và 2.9. Bạn đồng ý thì mình sửa trước khi làm T8.
+
+**PR:**
+
+- T3: https://github.com/TungPH7/ai-orchestrator-v1/pull/174 (CI xanh).
+- T4 nằm trên nhánh `task/t4-deploy-config`, xếp chồng lên T3. T5 nằm trên nhánh `task/t5-targets`, xếp chồng lên T4. Mình mở PR của mỗi nhánh ngay sau khi PR trước được merge, như đã làm với T1 và T2.
+
+**Việc của bạn:**
+
+1. Merge PR #174 bằng Rebase and merge.
+2. Trả lời đề xuất `error` / `failure` ở trên.
+
+Sau đó mình mở PR của T4, rồi T5, và làm tiếp T6: `audit` cho một dãy commit, cùng hai quy tắc mới.
