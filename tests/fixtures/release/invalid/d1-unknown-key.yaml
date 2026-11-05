@@ -1,0 +1,8 @@
+description: a key the schema does not declare
+rule: D1
+expect:
+  - "volumes"
+patch:
+  - op: set
+    path: "volumes"
+    value: { data: {} }

@@ -1,0 +1,8 @@
+description: a second public app
+rule: D2
+expect:
+  - "apps"
+patch:
+  - op: set
+    path: "apps.api"
+    value: { dockerfile: apps/api/Dockerfile, port: 4000, health: /health, public: true }

@@ -1,0 +1,8 @@
+description: an app joins the network of the host
+rule: D1
+expect:
+  - "apps.web.network_mode"
+patch:
+  - op: set
+    path: "apps.web.network_mode"
+    value: host

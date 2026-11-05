@@ -1,0 +1,7 @@
+description: a smoke check without the text it expects
+rule: D1
+expect:
+  - "smoke[0].expect_text"
+patch:
+  - op: remove
+    path: "smoke.0.expect_text"

@@ -1,0 +1,8 @@
+description: an environment variable name that is not upper case
+rule: D1
+expect:
+  - "apps.web.env[1]"
+patch:
+  - op: set
+    path: "apps.web.env"
+    value: [HOST, port]

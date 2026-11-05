@@ -1,0 +1,8 @@
+description: an app mounts a volume
+rule: D1
+expect:
+  - "apps.web.volumes"
+patch:
+  - op: set
+    path: "apps.web.volumes"
+    value: ["/var/run/docker.sock:/var/run/docker.sock"]
