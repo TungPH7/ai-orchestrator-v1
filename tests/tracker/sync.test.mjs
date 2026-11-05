@@ -67,12 +67,9 @@ test('deployment_status: a successful deployment reconciles every item in review
   assert.deepEqual(jira.searches, [WAITING_FOR_DEPLOY]);
 });
 
-test('deployment_status: a failed deployment concerns no item, and one to staging leaves a new item in review', async () => {
+// A failed deployment flags items or makes a Bug since release-workflow T11: tests/tracker/sync-deployments.test.mjs.
+test('deployment_status: a successful deployment to staging leaves a new item in review', async () => {
   const jira = fakeJira({ issues: [story('DEMO-11', IN_REVIEW)], search: { [WAITING_FOR_DEPLOY]: [{ key: 'DEMO-11' }] } });
-  const failed = payload('deployment_status');
-  failed.deployment_status.state = 'failure';
-  assert.deepEqual(chosen(await sync('deployment_status', jira, { body: failed })), { keys: [], actions: [] });
-
   const staging = payload('deployment_status');
   Object.assign(staging.deployment, { id: 30, sha: 'd30', ref: 'release/1.2.0', environment: 'staging' });
   staging.deployment_status.environment = 'staging';
