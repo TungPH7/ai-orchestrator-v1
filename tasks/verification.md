@@ -62,3 +62,16 @@
 - Mười tiền đề có kết quả ở T1 và T2. Các tiền đề sai (3, 7, 8) đã được sửa trong spec, và bạn đã duyệt bản sửa.
 - VPS đạt phần SSH, `ufw` và Docker của tiêu chí 3 (T2).
 - Bạn xem kết quả của T1–T2, merge PR #173 và nhắn làm tiếp (Phiên 27 · Lượt 1).
+
+## T8: chạy thử deployer trên máy bạn (2026-11-06)
+
+**Cách thử:** `scripts/ao-deploy.mjs` với một `deployer.yaml` tạm trong thư mục scratchpad của phiên, trỏ tới `ao-pilot`, bằng key của App `tungph7-ao-deploy` ở máy bạn. Bản mirror và bản ghi nằm trong scratchpad; không có gì trên VPS. Không có token Jira chỉ đọc trong lần thử này.
+
+| Bước | Kết quả |
+|---|---|
+| `tick --dry-run` khi chưa có điểm bắt đầu | `no baseline: run ao-deploy.mjs baseline pilot --confirm`; không làm gì |
+| `baseline pilot` | In `develop` `22327a5`, `main` `354f02c`. Nhánh cũ `release/0.1.0` sai dạng `release/v<x.y.z>` nên bị bỏ qua |
+| `baseline pilot --confirm`, rồi lùi `develop` trong bản ghi tạm về `d8a67f7` | Bản ghi tạm ghi điểm bắt đầu |
+| `tick --dry-run` | `development: would refuse 22327a5 from develop: 3fdd514 did not pass audit: PR #15 was merged without: JIRA_CI_TOKEN, for merge-gate to read DEMO-20. Read it, then run /ao-rollback development <sha> for a later head` |
+
+Deployer kiểm từng commit sau điểm đã kiểm, dừng ở `3fdd514`, PR tài liệu #15 mà T1 đã ghi là không qua `audit`, và không kiểm tiếp `22327a5`. Không lệnh nào ghi lên GitHub. Lý do lần này là thiếu token Jira; trên VPS có token chỉ đọc, `3fdd514` vẫn fail vì thiếu lượt CI trên head của PR (T1).
