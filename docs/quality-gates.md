@@ -140,7 +140,7 @@ Từ `dev-workflow` (spec mục 2.4), tài liệu của một Epic (SPEC, design
 
 ## Khi nào bạn tự merge
 
-Bạn tự merge trong ba trường hợp. `audit` vẫn kiểm cả ba, nên hãy làm đủ các bước trước khi bấm Merge.
+Bạn tự merge trong hai trường hợp đầu dưới đây. Trường hợp 3, PR release và PR merge ngược, giờ do `merge-gate` merge. `audit` vẫn kiểm cả ba, nên hãy làm đủ các bước trước khi bấm Merge.
 
 1. **PR của agent sửa file được bảo vệ:** `.github/workflows/**`, `.githooks/**`, `.claude/**`, `.ai-orchestrator/**`, `.mcp.json`. `merge-gate` in `Needs you`.
    - Workflow chạy theo `pull_request` dùng bản nằm trong PR, nên một PR sửa `ci.yml` có thể tự làm `CI` của nó xanh. Vì vậy hãy đọc kỹ diff ở tab **Files changed**.
@@ -148,7 +148,10 @@ Bạn tự merge trong ba trường hợp. `audit` vẫn kiểm cả ba, nên h�
    - Sau đó bấm **Squash and merge** **(đối chiếu giao diện)**. `audit` chỉ chấp nhận PR này khi người merge là một login trong `AO_APPROVERS`.
    - Từ `dev-workflow` (spec mục 2.7), khi PR chỉ còn chờ bạn (không thiếu gì, hoặc chỉ thiếu approve của bạn), `merge-gate` comment lên PR bằng `ao-dev` và gắn cờ "Needs you" lên item, kèm comment cùng nội dung bắt đầu bằng `merge-gate: needs you at <sha> on PR #<n>`. Mỗi head chỉ một lần. Item đã bị cổng khác gắn cờ thì `merge-gate` để nguyên trên Jira. Khi PR được merge hoặc đóng, `jira-sync` gỡ cờ đó, trừ khi sau đó có ai gắn cờ lại. Cả hai chỉ tính comment trên Jira của tài khoản token CI, tức `account_id` của identity `automation` trong `tracker/jira.yaml`, và comment trên PR của bot `ao-dev`: dấu do agent hay người khác viết không được tính. Tìm `account_id` của một tài khoản: mở hồ sơ của nó trên Jira, phần cuối của URL là id **(đối chiếu giao diện)**.
 2. **PR do bạn mở.** `merge-gate` bỏ qua PR của bạn. `audit` tính bạn là đã approve, nhưng PR vẫn cần `CI` xanh, hai báo cáo trên commit đầu, cùng tiêu đề và mô tả đúng mẫu.
-3. **PR từ `release/*`** vào `main`. `audit` chỉ cần `CI` xanh và approve của bạn trên commit đầu, vì từng item trong bản release đã qua review. Phần này thuộc `release-workflow`.
+3. **PR release và PR merge ngược** (`release-workflow`, spec mục 2.7; mục `release_pull_requests` của `quality/gates.yaml`). Cả hai do `ao-dev` mở, và `merge-gate` merge bằng **merge commit**, không squash, để lịch sử của từng bản nằm trên `main`.
+   - **PR release** `release/vX.Y.Z` → `main` (gate ⑤): `merge-gate` merge khi `CI` xanh và bạn đã approve commit đầu. Bạn approve, không bấm Merge. Từng thay đổi trong bản đã qua cổng ở PR riêng của nó, nên đường dẫn được bảo vệ không bắt bạn tự merge PR này. Merge xong, `merge-gate` gắn tag `vX.Y.Z` vào merge commit, rồi mở PR merge ngược `main` → `develop`.
+   - **PR merge ngược** (head là `main` của chính repo, vào `develop` hay nhánh `release/*` đang mở): `merge-gate` merge khi `CI` xanh và PR không có xung đột, không cần approve, vì mọi commit của `main` đã qua gate ③ hay gate ⑤.
+   - **PR merge ngược có xung đột:** `merge-gate` không merge, và comment "Needs you" lên PR một lần cho mỗi commit đầu. Bạn gỡ ở máy: tách một nhánh từ `main`, merge nhánh đích vào đó, sửa xung đột, push nhánh, rồi mở PR vào nhánh đích và tự merge bằng **Create a merge commit**, để giữ hai nhánh cha. Đóng PR merge ngược cũ. PR mới không phải PR của một item, nên `audit` chặn deploy ở môi trường đó. Bạn đọc diff, rồi gỡ chặn bằng `/ao-rollback <môi trường> <sha>` (plan, quyết định 5). [Chưa kiểm] Cách gỡ này chưa chạy thật lần nào.
 
 Merge tay một PR chưa đủ cổng thì `audit` đỏ ở lần deploy kế tiếp.
 
