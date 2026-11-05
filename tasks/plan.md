@@ -1,6 +1,6 @@
 # Plan triển khai: release-workflow
 
-> **Spec:** [SPEC-release-workflow.md](../SPEC-release-workflow.md), đã duyệt 2026-11-05. **Trạng thái:** bản nháp, chờ bạn duyệt. **Task chi tiết:** [todo.md](todo.md). **Kết quả kiểm thật:** `tasks/verification.md`, tạo ở T1.
+> **Spec:** [SPEC-release-workflow.md](../SPEC-release-workflow.md), đã duyệt 2026-11-05 (Phiên 26 · Lượt 17). **Trạng thái:** đã duyệt 2026-11-05 (Phiên 26 · Lượt 20), cùng quyết định 4, 5 và 6. **Task chi tiết:** [todo.md](todo.md). **Kết quả kiểm thật:** `tasks/verification.md`, tạo ở T1.
 
 ## Tổng quan
 
@@ -37,12 +37,12 @@ Như các module trước, plan kiểm mười tiền đề trước (T1–T2, s
    - Deployer kiểm mọi commit mới, nên commit đó nằm lại trong lịch sử, và mọi head sau nó cũng bị từ chối. Revert không gỡ được.
    - Cách gỡ: bạn đọc commit đó, rồi tạo một yêu cầu deploy bằng login của bạn cho một head sau nó, bằng `/ao-rollback <môi trường> <sha>`. Deployer ghi rằng bạn đã duyệt đoạn lịch sử tới head đó, rồi đi tiếp như thường. Với Production, `<sha>` vẫn phải thỏa hai điều kiện của spec mục 2.4.
    - Dạng `<sha>` này cũng là cách đưa `v0.1.1` lên lại sau rollback, ở bước 8 của kiểm thật. Spec chưa ghi lệnh cho bước đó.
-   - Khi bạn duyệt plan, spec mục 2.9 ghi thêm một đoạn, và bảng ở mục 2.2 ghi thêm dạng `<sha>` của `/ao-rollback`.
+   - Spec mục 2.9 ghi thêm một đoạn, và bảng ở mục 2.2 ghi thêm dạng `<sha>` của `/ao-rollback`. Lệnh vẫn tên `/ao-rollback`, nên vẫn có bốn lệnh.
 6. **Bản chép kit vào `ao-pilot` vẫn cần.**
    - `merge-gate` và `jira-sync` chạy trong Actions của `ao-pilot`, bằng bản chép trong `.ai-orchestrator/`. `AO_KIT_DIR` chỉ đổi được code chạy trên máy bạn.
    - Vì vậy PR của Task ở T19 mang thêm bản chép kit mới, bên cạnh Dockerfile, `deploy.yaml` và việc bỏ `deploy.yml`. Bạn merge một PR thay vì hai.
    - Lệnh ở máy vẫn chạy qua `AO_KIT_DIR`. Khi sửa lỗi kit giữa kiểm thật, Claude chỉ phải chép lại khi lỗi nằm ở phần chạy trong Actions.
-   - Khi bạn duyệt plan, spec mục 7 bước 3 ghi thêm ý này.
+   - Spec mục 7 bước 3 ghi thêm ý này.
 7. **Bí mật không đi qua chat, repo hay log.**
    - **Private key của App `ao-deploy`:** bạn tải về lúc tạo App. T1 dùng key ở máy bạn, như hai App kia. T18 chép file lên VPS bằng `scp`, không mở file. Sau đó bạn xóa bản ở máy.
    - **Mật khẩu basic auth và token Jira chỉ đọc:** bạn tự gõ, trong terminal của bạn, vào một lệnh `ssh -t` do Claude soạn sẵn. Lệnh hỏi giá trị mà không hiện chữ trên màn hình.
@@ -178,8 +178,8 @@ Tổng khoảng 10–12 lượt agent, 24–40 USD quy đổi, khớp mức 25�
 
 ## Câu hỏi mở
 
-Ba quyết định cần bạn duyệt cùng plan, vì chúng thêm vào spec hoặc nói rõ hơn spec:
+Không có. Bạn duyệt plan ngày 2026-11-05 (Phiên 26 · Lượt 20), gồm cả ba quyết định thêm vào hoặc nói rõ hơn spec. Spec mục 2.2, 2.9, 7 và 10 đã ghi theo:
 
 - **Quyết định 4:** đổi bản bằng cách cho container mới chạy cạnh container cũ, thay vì dừng container cũ trước.
-- **Quyết định 5:** gỡ chặn bằng `/ao-rollback <môi trường> <sha>`. Spec mục 2.2 và 2.9 sẽ ghi thêm.
-- **Quyết định 6:** bản chép kit đi cùng PR của Task ở T19. Spec mục 7 sẽ ghi thêm.
+- **Quyết định 5:** gỡ chặn bằng `/ao-rollback <môi trường> <sha>`. Spec mục 2.2 và 2.9 đã ghi thêm.
+- **Quyết định 6:** bản chép kit đi cùng PR của Task ở T19. Spec mục 7 đã ghi thêm.
