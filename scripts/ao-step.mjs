@@ -14,7 +14,7 @@ import { basename, isAbsolute, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 import { parse } from 'yaml';
-import { READ_PERMISSIONS } from '../lib/agents/launch.mjs';
+import { CLEARED_ENV, READ_PERMISSIONS } from '../lib/agents/launch.mjs';
 import { mergeLocal, readRoster } from '../lib/agents/roster.mjs';
 import { readContract } from '../lib/contract.mjs';
 import { projectSettings, setting } from '../lib/project-settings.mjs';
@@ -22,18 +22,21 @@ import { unquotePath } from '../lib/quality/diff-paths.mjs';
 import { readGates } from '../lib/quality/gates.mjs';
 import { matchesGlob } from '../lib/quality/glob.mjs';
 import { appCredentials, githubRepoOf, installationToken, userVariable } from '../lib/quality/github-app.mjs';
-import { createGitHubClient } from '../lib/tracker/github-client.mjs';
+import { runNpm } from '../lib/quality/npm.mjs';
+import { attachEvidence } from '../lib/tracker/attachments.mjs';
+import { createGitHubClient, readGitHubToken } from '../lib/tracker/github-client.mjs';
 import { bearerAuth, createJiraClient } from '../lib/tracker/jira-client.mjs';
 import { readMapping } from '../lib/tracker/mapping.mjs';
 import { startAgentProcess, killTree } from '../lib/workflow/agent-process.mjs';
-import { gatherFacts } from '../lib/workflow/facts.mjs';
+import { gatherFacts, readRunning } from '../lib/workflow/facts.mjs';
+import { basicAuthEnv, qaFollowUp } from '../lib/workflow/qa.mjs';
 import { adfText, buildReviewPack, filesToQuote } from '../lib/workflow/review-pack.mjs';
 import { removeInstructions } from '../lib/workflow/review-tree.mjs';
 import { agentCommand, formatDecision, runGo } from '../lib/workflow/runner.mjs';
 import { decideStep } from '../lib/workflow/steps.mjs';
 
-const COMMANDS = ['status', 'spec', 'plan', 'build', 'review', 'fix'];
-const USAGE = 'usage: node .ai-orchestrator/scripts/ao-step.mjs <status|spec|plan|build|review|fix> [<KEY>|<PR>] [--go] [--answers <file>] [--note <file>]';
+const COMMANDS = ['status', 'spec', 'plan', 'build', 'review', 'fix', 'qa'];
+const USAGE = 'usage: node .ai-orchestrator/scripts/ao-step.mjs <status|spec|plan|build|review|fix|qa> [<KEY>|<PR>] [--go] [--answers <file>] [--note <file>]';
 const kitDir = resolve(process.env.AO_KIT_DIR ?? fileURLToPath(new URL('..', import.meta.url)));
 const projectDir = process.cwd();
 const runsDir = join(projectDir, '.ai', 'runs');
@@ -144,7 +147,10 @@ async function main() {
       return shown.status === 0 ? shown.stdout : null;
     },
   };
-  const gather = () => gatherFacts({ command, arg, jira, github, local: files, contract, mapping, roster, gates, apps, approvers, space });
+  // The release commands read deployments with your gh login: the read token of ao-review may not (release-workflow T12).
+  const userToken = command === 'qa' ? readGitHubToken() : null;
+  const deploys = userToken ? createGitHubClient({ repo, token: userToken }) : undefined;
+  const gather = () => gatherFacts({ command, arg, jira, github, deploys, local: files, contract, mapping, roster, gates, apps, approvers, space });
   const read = (file) => readFileSync(runsFile(projectDir, file), 'utf8');
   const options = { roster, contract, gates, mapping, ...(values.answers && { answers: read(values.answers) }), ...(values.note && { note: read(values.note) }) };
 
@@ -168,7 +174,9 @@ async function main() {
       arg,
       options,
       gather,
-      agent: (run, { log }) => startAgent(run, join(runsDir, key, log)),
+      // qa on Development or Staging gets the basic auth from AO_ENV_AUTH, as variables, never as arguments.
+      agent: (run, { log }) => startAgent(run.qa?.auth ? { ...run, env: { ...run.env, ...basicAuthEnv(secret('AO_ENV_AUTH')) } } : run, join(runsDir, key, log)),
+      after: (run, { tree }) => (run.purpose === 'qa' ? afterQa(run, tree, { deploys, mapping }) : []),
       git: (checkout) => prepareCheckout(checkout),
       dispatch: (action) => dispatchJiraSync(action.key),
       pack: reviewPackWriter({ github, jira }),
@@ -325,7 +333,7 @@ function prepareCheckout({ branch, from, pull }) {
 // instruction files are still removed from it, in case a later Claude Code loads more. A stale worktree from a run that
 // was stopped is replaced. Node finds no node_modules there, so tests that need packages do not run in it.
 export const reviewTreePath = (project, name, tmp = tmpdir()) => join(tmp, 'ao-reviews', `${basename(resolve(project))}-${name}`);
-function addWorktree({ name, sha }) {
+function addWorktree({ name, sha, install = false }) {
   const path = reviewTreePath(projectDir, name);
   if (existsSync(path)) removeWorktree({ name });
   mkdirSync(join(path, '..'), { recursive: true });
@@ -337,7 +345,44 @@ function addWorktree({ name, sha }) {
     removeWorktree({ name });
     return { ok: false, reason: `the instruction files of the PR could not be removed from its worktree: ${error.message}` };
   }
+  // qa runs the E2E there (release-workflow spec 2.5): the packages of that commit, without their install scripts, and
+  // without your secrets in their environment.
+  if (install) {
+    const env = { ...process.env };
+    for (const name of CLEARED_ENV) delete env[name];
+    const installed = runNpm(['ci', '--ignore-scripts', '--no-audit', '--no-fund'], { cwd: path, env, encoding: 'utf8' });
+    if (installed.status !== 0) {
+      removeWorktree({ name });
+      return { ok: false, reason: `npm ci failed in the worktree of ${name} at ${sha.slice(0, 7)}: ${(installed.stderr || installed.error?.message || '').trim().slice(-500)}` };
+    }
+  }
   return { ok: true, path: path.replaceAll('\\', '/') };
+}
+
+// The files under a folder, with forward slashes; [] when there is none.
+function listFiles(dir) {
+  if (!existsSync(dir)) return [];
+  return readdirSync(dir, { recursive: true, withFileTypes: true })
+    .filter((entry) => entry.isFile())
+    .map((entry) => join(entry.parentPath ?? entry.path, entry.name).replaceAll('\\', '/'));
+}
+
+// After a qa run, before its worktree goes: the evidence to the item with the CI token, which only this session holds,
+// and whether the environment still runs the release qa tested (release-workflow spec 2.5).
+function afterQa(run, tree, { deploys, mapping }) {
+  const ciToken = secret('JIRA_CI_TOKEN');
+  const jira = ciToken ? createJiraClient({ cloudId: mapping.cloud_id, authorization: bearerAuth(ciToken), write: true }) : null;
+  return qaFollowUp({
+    run,
+    tree,
+    projectDir,
+    list: listFiles,
+    attach: (key, paths) => {
+      if (!jira) throw new Error('JIRA_CI_TOKEN is not set in your session');
+      return attachEvidence({ jira, key, files: paths });
+    },
+    running: async (environment) => (await readRunning(deploys, mapping))[environment]?.sha ?? null,
+  });
 }
 
 // Takes the worktree away with what the agent left in it. A process that still holds a file of it (Windows) leaves the
