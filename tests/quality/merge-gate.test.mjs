@@ -152,7 +152,7 @@ test('CI, a request for changes, the title, the description, the base branch and
 
 // A run of merge-gate over the recorded repository, after `change` edits a copy of the answers. The writing client
 // records each request; `refuse` makes the merge call fail with that HTTP status.
-async function runOnce({ change = () => {}, dryRun = false, refuse } = {}) {
+async function runOnce({ change = () => {}, dryRun = false, refuse, reply = () => ({ merged: true }) } = {}) {
   const copy = structuredClone(answers);
   change(copy);
   const sent = [];
@@ -164,7 +164,7 @@ async function runOnce({ change = () => {}, dryRun = false, refuse } = {}) {
       request: async (method, path, query, body) => {
         sent.push({ method, path, body });
         if (refuse) throw Object.assign(new Error(`GitHub ${method} ${path} returned ${refuse.status}: ${refuse.message}`), { status: refuse.status });
-        return { merged: true };
+        return reply(method, path);
       },
     };
   };
@@ -253,4 +253,127 @@ test('a PR that changes a protected path is left to you, with what it still miss
 test('with no open PR the run says so', async () => {
   const { lines } = await runOnce({ change: (a) => (a['/pulls?direction=asc&sort=created&state=open'] = []) });
   assert.deepEqual(lines, ['No open PR']);
+});
+
+// release-workflow spec 2.7: PR #12 as the PR of release/v0.1.0 into main, which the script of /ao-ship opens as ao-dev.
+const REPO = { full_name: 'TungPH7/ao-pilot' };
+const asRelease = (pr) => Object.assign(pr, { title: 'release: v0.1.0', head: { ...pr.head, ref: 'release/v0.1.0', repo: REPO }, base: { ...pr.base, ref: 'main', repo: REPO } });
+// PR #12 as the PR that merges main back into develop, which merge-gate opened after the release; nobody approves it.
+const asBackMerge = (pr) => Object.assign(pr, { title: 'Merge main into develop after v0.1.0', body: '', head: { ...pr.head, ref: 'main', repo: REPO }, base: { ...pr.base, ref: 'develop', repo: REPO } });
+const RELEASE_MERGE = { action: 'merge', method: 'merge', sha: HEAD, title: 'release: v0.1.0 (#12)', release: { tag: 'v0.1.0', backMerge: 'develop' } };
+
+test('a release PR you approved on its head is merged with a merge commit, to be tagged v0.1.0 and merged back into develop', () => {
+  assert.deepEqual(decide((f) => asRelease(f.pr)), RELEASE_MERGE);
+  // Every change in it passed its own gates: protected paths do not make it yours to merge.
+  assert.deepEqual(decide((f) => {
+    asRelease(f.pr);
+    f.files.push({ filename: '.github/workflows/ci.yml', status: 'modified' });
+  }), RELEASE_MERGE);
+});
+
+test('a release PR waits for green CI and your approval on its head commit', () => {
+  assert.deepEqual(decide((f) => {
+    asRelease(f.pr);
+    f.reviews.splice(f.reviews.indexOf(approval(f)), 1);
+    f.checks = { green: false, failed: false };
+  }), { action: 'wait', missing: ['CI green on head a1b2c3d', 'approval on head a1b2c3d'] });
+  assert.deepEqual(decide((f) => {
+    asRelease(f.pr);
+    approval(f).commit_id = FIRST;
+  }), { action: 'wait', missing: ['approval on head a1b2c3d'] });
+});
+
+test('a merge back from main needs only green CI and no conflict; a conflict is yours to resolve', () => {
+  const noReviews = (f) => {
+    asBackMerge(f.pr);
+    f.reviews.splice(0);
+  };
+  assert.deepEqual(decide(noReviews), { action: 'merge', method: 'merge', sha: HEAD, title: 'Merge main into develop after v0.1.0 (#12)' });
+  assert.deepEqual(decide((f) => {
+    noReviews(f);
+    f.pr.base.ref = 'release/v0.1.0';
+  }).action, 'merge');
+  assert.deepEqual(decide((f) => {
+    noReviews(f);
+    f.checks = { green: false, failed: false };
+  }), { action: 'wait', missing: ['CI green on head a1b2c3d'] });
+  assert.deepEqual(decide((f) => {
+    noReviews(f);
+    f.pr.mergeable = false;
+  }), { action: 'conflict', base: 'develop' });
+});
+
+test('only main of this repository merges back, and only into develop or a release branch', () => {
+  const cases = [
+    [(pr) => Object.assign(asBackMerge(pr), { head: { ...pr.head, ref: 'develop' } }), 'develop is not the branch of a work item'],
+    [(pr) => Object.assign(asBackMerge(pr), { base: { ...pr.base, ref: 'feature/DEMO-12-login' } }), 'main merges back only into develop or release/*'],
+    [(pr) => Object.assign(asBackMerge(pr), { head: { ...pr.head, repo: { full_name: 'someone/ao-pilot' } } }), 'main is not the branch of a work item'],
+    [(pr) => Object.assign(asRelease(pr), { base: { ...pr.base, ref: 'develop' } }), 'release/v0.1.0 is not the branch of a work item'],
+  ];
+  for (const [change, reason] of cases) assert.deepEqual(decide((f) => change(f.pr)), { action: 'skip', reason });
+});
+
+// A run with only PR #12 open, as the release PR or the merge back; the writer answers each request in turn.
+const MERGED = 'f'.repeat(40);
+async function runRelease({ change = asRelease, more = () => {}, answers: replies = {}, dryRun = false } = {}) {
+  return runOnce({
+    dryRun,
+    change: (a) => {
+      a['/pulls?direction=asc&sort=created&state=open'] = [change(a['/pulls/12'])];
+      a['/pulls?base=develop&state=open'] = [];
+      more(a);
+    },
+    reply: (method, path) => {
+      const answer = replies[`${method} ${path}`];
+      if (answer instanceof Error) throw answer;
+      return answer ?? (method === 'PUT' ? { merged: true, sha: MERGED } : method === 'POST' && path === '/pulls' ? { number: 40 } : {});
+    },
+  });
+}
+
+test('after merging a release PR, merge-gate tags the merge commit and opens the merge back into develop', async () => {
+  const { lines, sent, failures } = await runRelease();
+  assert.deepEqual(sent, [
+    { method: 'PUT', path: '/pulls/12/merge', body: { sha: HEAD, merge_method: 'merge', commit_title: 'release: v0.1.0 (#12)' } },
+    { method: 'POST', path: '/git/refs', body: { ref: 'refs/tags/v0.1.0', sha: MERGED } },
+    {
+      method: 'POST',
+      path: '/pulls',
+      body: { title: 'Merge main into develop after v0.1.0', head: 'main', base: 'develop', body: 'merge-gate merges main back into develop with a merge commit once CI is green and there is no conflict (release-workflow spec 2.7).' },
+    },
+  ]);
+  assert.deepEqual(lines, ['Merged #12: release: v0.1.0 (#12) (merge at a1b2c3d)', 'Tagged v0.1.0 at fffffff', 'Opened #40: Merge main into develop after v0.1.0']);
+  assert.deepEqual(failures, []);
+});
+
+test('a tag that already names the merge commit, or an open merge back, is left as it is; a tag on another commit is a failure', async () => {
+  const exists = Object.assign(new Error('GitHub POST /git/refs returned 422: Reference already exists'), { status: 422 });
+  const backMergeOpen = (a) => {
+    a['/pulls?base=develop&state=open'] = [asBackMerge({ ...structuredClone(a['/pulls/12']), number: 41 })];
+  };
+  const same = await runRelease({ answers: { 'POST /git/refs': exists }, more: (a) => {
+    a['/git/ref/tags/v0.1.0'] = { object: { sha: MERGED } };
+    backMergeOpen(a);
+  } });
+  assert.deepEqual(same.sent.map(({ method, path }) => `${method} ${path}`), ['PUT /pulls/12/merge', 'POST /git/refs']);
+  assert.deepEqual(same.lines.slice(1), ['Tag v0.1.0 is already at fffffff', 'The merge back into develop is open already: #41']);
+  const other = await runRelease({ answers: { 'POST /git/refs': exists }, more: (a) => (a['/git/ref/tags/v0.1.0'] = { object: { sha: FIRST } }) });
+  assert.deepEqual(other.failures.map(({ number }) => number), [12]);
+  assert.match(other.lines.at(-1), /^Failed #12: tag v0\.1\.0 is at [0-9a-f]{7}, not at the merge commit fffffff/);
+});
+
+test('a dry run of a release PR says what it would do, and sends nothing', async () => {
+  const { lines, sent, writers } = await runRelease({ dryRun: true });
+  assert.deepEqual([sent, writers], [[], 0]);
+  assert.deepEqual(lines, ['Would merge #12: release: v0.1.0 (#12) (merge at a1b2c3d), then tag v0.1.0 and merge main back into develop']);
+});
+
+test('a merge back with a conflict gets one comment per head commit, and is not merged', async () => {
+  const conflict = (pr) => Object.assign(asBackMerge(pr), { mergeable: false });
+  const first = await runRelease({ change: conflict, more: (a) => (a['/issues/12/comments'] = []) });
+  assert.deepEqual(first.lines, ['Needs you #12: merging main back into develop conflicts, so merge-gate does not merge it', 'Commented on #12: merge-gate: needs you at a1b2c3d on PR #12']);
+  assert.equal(first.sent.length, 1);
+  assert.equal(first.sent[0].body.body, 'merge-gate: needs you at a1b2c3d on PR #12. Merging main back into develop conflicts, so merge-gate does not merge it: resolve the conflicts as docs/quality-gates.md says (case 3).');
+  const again = await runRelease({ change: conflict, more: (a) => (a['/issues/12/comments'] = [{ body: first.sent[0].body.body, user: { login: 'tungph7-ao-dev[bot]' } }]) });
+  assert.deepEqual(again.sent, []);
 });

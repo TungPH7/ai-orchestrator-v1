@@ -46,6 +46,16 @@ merge_method:
   bugfix: squash
   hotfix: squash
 
+# The PR of a release branch into main, and the PR that merges main back into develop or the open release branch
+# (release-workflow spec 2.7). merge-gate merges both with a merge commit, so each release keeps its history on main. A
+# release PR needs green CI and your approval on its head; after it merges, merge-gate tags the merge commit and opens
+# the merge back. A merge back needs only green CI and no conflict: every commit of main passed gate ③ or gate ⑤.
+release_pull_requests:
+  merge_method: merge
+  tag: v<VERSION>
+  back_merge_bases: [develop, "release/*"]
+  back_merge_after_release: develop
+
 # Files an agent may not edit, except the roles listed as editors. A PR of an agent that touches one is never merged by
 # merge-gate: you read the diff and merge it yourself.
 protected_paths:

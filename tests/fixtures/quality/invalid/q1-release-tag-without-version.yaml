@@ -1,0 +1,8 @@
+description: a release tag that does not hold the version
+rule: Q1
+expect:
+  - "release_pull_requests.tag"
+patch:
+  - op: set
+    path: "release_pull_requests.tag"
+    value: latest

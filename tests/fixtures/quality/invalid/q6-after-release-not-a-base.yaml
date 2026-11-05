@@ -1,0 +1,8 @@
+description: the PR opened after a release goes into a branch merge-gate does not merge back into
+rule: Q6
+expect:
+  - "release_pull_requests.back_merge_after_release"
+patch:
+  - op: set
+    path: "release_pull_requests.back_merge_bases"
+    value: ["release/*"]
