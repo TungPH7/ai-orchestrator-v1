@@ -98,7 +98,7 @@ T20 ── T21 DEMO-21 tới Production ── T22 hotfix, rollback, smoke fail 
 
 ### Giai đoạn 2: thư viện release
 - [x] T3: `versions.mjs` và `cut.mjs`
-- [ ] T4: `deploy.schema.json` và `deploy-config.mjs`
+- [x] T4: `deploy.schema.json` và `deploy-config.mjs`
 - [ ] T5: `targets.mjs`
 
 ### Giai đoạn 3: deployer
