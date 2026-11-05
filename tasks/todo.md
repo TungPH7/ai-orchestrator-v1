@@ -330,7 +330,7 @@
 
 **Cỡ:** M
 
-### [ ] T11: `jira-sync`: ba sự kiện deployment (spec mục 2.9, 2.10)
+### [x] T11: `jira-sync`: ba sự kiện deployment (spec mục 2.9, 2.10)
 
 **Mô tả:** `lib/tracker/sync.mjs` nhận thêm:
 
@@ -339,15 +339,22 @@
 - deployment `failure` hay `error` lên Development hay Staging: gắn cờ "Needs you" cho item của commit đó.
 
 **Tiêu chí chấp nhận:**
-- [ ] Test cho ba sự kiện, bằng bản ghi API ghi sẵn.
-- [ ] Test không tạo Bug lặp khi cùng một deployment báo `failure` hai lần.
-- [ ] Test `error` lên Production không tạo Bug.
-- [ ] Test cũ của `jira-sync` vẫn xanh.
+- [x] Test cho ba sự kiện, bằng bản ghi API ghi sẵn.
+- [x] Test không tạo Bug lặp khi cùng một deployment báo `failure` hai lần.
+- [x] Test `error` lên Production không tạo Bug.
+- [x] Test cũ của `jira-sync` vẫn xanh.
 
 **Kiểm chứng:**
-- [ ] Năm lệnh trong quy ước chung xanh
+- [x] Năm lệnh trong quy ước chung xanh
 
 **Phụ thuộc:** T1 (điểm 9)
+
+**Cách làm khi xong T11** (Phiên 27 · Lượt 7):
+
+- Hotfix chạy xong trên Staging đã đưa Bug sang Ready for QA bằng code sẵn có: đường định tuyến `production` của hợp đồng có môi trường QA đầu tiên là Staging. T11 chỉ thêm test cho việc này.
+- Bug Critical mang nhãn `ao-deployment-<id>`, để một deployment báo `failure` hai lần chỉ sinh một Bug. Loại item tìm theo tên tiếng Anh (`untranslatedName`, T1). Affects versions là tag của commit vừa chạy, khi tag đó là một version của dự án trên Jira; nếu không, Bug ghi lý do.
+- Ở Development và Staging, item bị gắn cờ là item mà header của commit được deploy nêu tên, mỗi deployment một lần.
+- Không cần thêm trường nào vào hợp đồng.
 
 **File dự kiến:** `lib/tracker/sync.mjs`, `contract/` nếu quy tắc tạo Bug cần thêm trường
 

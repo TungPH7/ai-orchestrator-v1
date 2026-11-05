@@ -109,7 +109,7 @@ T20 ── T21 DEMO-21 tới Production ── T22 hotfix, rollback, smoke fail 
 
 ### Giai đoạn 4: cổng và Jira
 - [x] T10: `merge-gate`: PR release, tag và PR merge ngược
-- [ ] T11: `jira-sync`: ba sự kiện deployment
+- [x] T11: `jira-sync`: ba sự kiện deployment
 
 ### Giai đoạn 5: bốn lệnh
 - [ ] T12: Dữ kiện về môi trường, và `attachments.mjs`
