@@ -86,6 +86,7 @@ stages:
   - id: release-cut
     name: "Cắt release lên Staging, khi bạn yêu cầu"
     roles: [devops]
+    note: "Script của ao-step làm thay devops: tính điểm cắt, tạo nhánh release và gắn Fix Version, khi bạn gõ /ao-release <vX.Y.0> <sha>"
     input: "Điểm cắt trên develop có ít nhất một item Done chưa release; không có nhánh release/* nào đang mở (mục 2.7)"
     guards: [cut-point-ready, no-open-release]
     outputs:
@@ -109,7 +110,7 @@ stages:
   - id: hotfix
     name: "Sửa gấp trên Production"
     roles: [fe-dev, be-dev, qa, devops]
-    note: "fe-dev hoặc be-dev sửa"
+    note: "fe-dev hoặc be-dev sửa; gate ⑤ là yêu cầu deploy Production do bạn tạo bằng /ao-ship vX.Y.Z"
     input: "Bug Critical/High trên Production"
     outputs:
       other: "Nhánh hotfix/..., tag bản vá"
