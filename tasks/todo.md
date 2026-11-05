@@ -455,7 +455,7 @@
 
 **Cỡ:** M
 
-### [ ] T15: `/ao-ship` cho bản release (spec mục 2.7)
+### [x] T15: `/ao-ship` cho bản release (spec mục 2.7)
 
 **Mô tả:**
 
@@ -467,15 +467,23 @@
   4. script kiểm diff từ commit đã chạy regression tới head mới chỉ sửa hai file đó.
 
 **Tiêu chí chấp nhận:**
-- [ ] Test `steps`: `GO`; `STOP` khi Staging chạy commit khác, còn Bug Critical hay High, regression chạy trên commit cũ, diff sau regression sửa file khác.
-- [ ] Test thứ tự lượt và điểm dừng khi regression FAIL.
+- [x] Test `steps`: `GO`; `STOP` khi Staging chạy commit khác, còn Bug Critical hay High, regression chạy trên commit cũ, diff sau regression sửa file khác.
+- [x] Test thứ tự lượt và điểm dừng khi regression FAIL.
 
 **Kiểm chứng:**
-- [ ] Năm lệnh trong quy ước chung xanh
+- [x] Năm lệnh trong quy ước chung xanh
 
 **Phụ thuộc:** T13
 
 **File dự kiến:** `lib/workflow/steps.mjs`, `lib/workflow/runner.mjs`, `scripts/ao-step.mjs`, `lib/workflow/prompts.mjs`
+
+**Cách làm khi xong T15** (Phiên 27 · Lượt 9):
+
+- Mỗi lần gõ, `/ao-ship` đi tiếp từ bước còn thiếu: regression của `qa`, ghi chú của `devops`, rồi bước script `release-pr`. PR release đã mở và regression còn đúng thì dừng ở gate ⑤.
+- **Lệch so với tiêu chí:** nhánh release đổi file khác báo cáo và `CHANGELOG.md` sau regression thì `/ao-ship` chạy lại regression trên head mới, thay vì chỉ dừng; dừng thì lần gõ sau cũng dừng y như vậy. Bước script vẫn dừng nếu thấy file khác (spec mục 2.7, bước 5).
+- `qa` kết thúc mục Regression Result bằng dòng `Result: PASS` hay `Result: FAIL`; `state.json` ghi commit lượt regression đã chạy.
+- Commit báo cáo tạo qua API của GitHub, với tác giả và người commit là bot `ao-dev`, để quy tắc mới của `audit` (T6) nhận ra. [Chưa kiểm] GitHub có giữ đúng hai login đó cho commit tạo qua API không; T21 kiểm.
+- `/ao-ship vX.Y.Z` với Z khác 0 (hotfix) đi theo T16.
 
 **Cỡ:** M
 
