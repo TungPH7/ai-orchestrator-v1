@@ -31,7 +31,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 21 | `3ead2782-314d-4ae8-981b-96f6ed83a60e` | 2026-11-01 khoảng 22:50 → 2026-11-02 khoảng 01:40 | Bạn dán đoạn cuối của Phiên 20, hỏi vì sao `main` và `develop` của `ao-pilot` lệch nhau, cách xử lý, và lựa chọn 3 có giải quyết được không; Claude kiểm hai nhánh và code của `audit`: `develop` đi trước 10 là đúng GitFlow, 4 commit chỉ có trên `main` là dấu vết lối tắt sandbox và không đổi nội dung; lựa chọn 3 không giải quyết; đề xuất ghi quy tắc merge commit và back-merge từ `main` vào spec `release-workflow`; bạn chọn Pilot 1; Claude nêu phạm vi, giả định A1–A8 và ba câu hỏi (repo, space Jira, feature); bạn duyệt và chọn theo đề xuất: repo mới `ao-sample`, space mới `SMP`, Epic "Ghi chú"; Claude viết `SPEC-pilot-1.md` (nhánh `task/spec-pilot-1`); bạn chọn tạo key mới cho `ao-dev` và duyệt spec; Claude viết plan 10 task, 5 checkpoint, cùng quyết định 6 (lỗi kit giữa Epic) và 8 (Checkpoint 3 sau lượt build đầu); bạn duyệt plan; kit PR #141; T1–T2: tạo repo `ao-sample`, điểm 1 đúng một phần (NestJS 12 dùng Vitest và oxlint, `@nestjs/mau` mang 2 lỗ hổng high), điểm 2 đúng nếu dùng Vitest, điểm 3 và 4 sai (API từ chối), điểm 5 đúng kèm `MSYS_NO_PATHCONV=1` và tin cậy thư mục; Checkpoint 1: bạn duyệt sáu chỗ sửa, dùng chung scheme với `DEMO`, và duyệt trước mọi đề xuất trong Pilot 1; T1a (kit PR #142, `oxlint-disable`); T4 khung app xanh sáu lệnh; T5 bản chép kit và hai skill theo stack; commit đầu bị hook `commit-msg` từ chối vì thiếu mã Jira; bạn gửi ảnh: tùy chọn share settings lúc tạo space cần gói trả phí; Claude đổi cách: tạo space như thường rồi gán ba scheme của `DEMO` trong Space settings; bạn tạo xong `SMP` và gán ba scheme; Claude kiểm bằng API, `jira:check` còn 3 chỗ lệch của board, tạo bốn environment và đặt secret `JIRA_CI_TOKEN`; bạn tắc ở B3 (board thiếu cột); Claude đọc cấu hình board bằng API và ghi từng bước sửa cột trong Board settings; bạn gửi ảnh: board của `SMP` là board mới, Board settings không có Columns; Claude tìm tài liệu Atlassian: cột cấu hình ở More actions → Configure columns trên board; bạn gửi ảnh hộp Configure columns đã sửa đúng, chờ bấm Publish; bạn tắc ở D2 (không có Private keys); Claude đính chính: đường đúng là Credentials → Key pairs → New key, như `docs/github-apps-setup.md` đã ghi; bạn xong B–E và chọn cách (b); Claude đặt secret `AO_DEV_APP_KEY`, tạo `SMP-1`, commit đầu `6f5831d` lên `main` và `develop`; GitHub không chạy workflow cho lần push đầu, Claude chạy tay `merge-gate` (xanh) và `Deploy` (`audit` đỏ, gắn cờ `SMP-1`); Checkpoint 2 đạt, tiêu chí 1 đổi; Epic `SMP-2`; chờ bạn dọn `SMP-1` và bấm Start spec |
 | 22 | `d714399c-65d0-4f98-bbbb-720338ff6bea` | 2026-11-02 khoảng 10:50 → khoảng 20:08 | Bạn dán đoạn cuối của Phiên 21 kèm ảnh panel Development của `SMP-1`, hỏi `Deploy` đỏ có đúng dự kiến không; Claude đọc run và log của `audit`: đúng dự kiến (commit đầu không qua PR), và ảnh cho thấy GitHub for Atlassian đã gắn run vào `SMP-1`; bạn dọn `SMP-1` và bấm Start spec; Claude merge kit PR #143 (T3–T6, Checkpoint 2), chạy `/ao-spec SMP-2` qua `claude -p`: `ba` viết SPEC (1,49 USD) và để lại 4 câu hỏi; Claude chuyển câu hỏi cho bạn, khuyên đồng ý cả bốn; bạn đồng ý cả bốn; Claude nối lại phiên `claude -p` với câu trả lời: `ba`, `ux`, `sa` chạy (3,36 USD), `sa` để lại 2 câu hỏi (đếm emoji, chuẩn hóa NFC và xuống dòng); Claude khuyên đồng ý cả hai; bạn đồng ý cả hai; `sa` ghi câu trả lời, `ba` mở PR tài liệu #1, nhưng GitHub không chạy CI và `ao-step` chờ 30 phút; bạn hỏi vì sao không dừng; Claude dùng nhánh và PR thử tìm ra nguyên nhân (workflow từ lần push đầu chưa được ghi nhận trigger; một push đụng `.github/workflows/` gỡ được), `CI` của PR #1 xanh; tìm thêm lỗi kit `openQuestions` bỏ sót 10 câu hỏi của `ux`; tới gate ①, Claude khuyên không thêm dòng "Đã lưu ghi chú." và gửi các bước Approve spec; bạn hỏi vì sao có hai lỗi nặng và yêu cầu sửa; Claude sửa ở kit (PR #144), chép vào `ao-sample` (Task `SMP-3`, PR #3), `/ao-review 3` Approve (1 Medium, 2 Low ở kit, sửa ở kit PR #145); bạn approve và merge PR #3, hỏi có cần chép kit vào `ao-pilot` (chưa cần); bạn đã bấm Approve spec, chọn chạy `/ao-plan`; `sa` chạm giới hạn 5 giờ giữa lượt viết plan; bạn bảo làm tiếp; `sa` viết xong plan và ba ADR, `ba` tạo 8 item nhưng không tạo được link Blocks; phiên dừng vì Claude chạm giới hạn tuần |
 | 23 | `6d4fa505-b003-47c3-bad3-14958ad7ae83` | 2026-11-02 khoảng 22:10 → | Bạn dán đoạn cuối của Phiên 22 để làm tiếp; Claude tạo 5 link Blocks bằng token CI, tắt server spike `sa` để lại, ghi stage plan và 3 lỗi kit vào `verification.md`, gửi các bước duyệt plan (gate ②) |
-| 26 | `6b41390c-2d48-4d39-9a30-5a4e22f76bf7` | 2026-11-04 khoảng 13:10 → | Bạn báo đã merge kit PR #165; Claude chép vào `ao-sample` PR #13 và review lần 2 (security lại có 1 High: `AGENTS.md`), mở kit PR #166; bạn hỏi chạy review ở high, vì sao lần nào cũng ra High, vì sao security review cả PR; Claude tìm lý do của luật review toàn bộ trong file này; bạn chọn đổi luật review phần mới, điều kiện đường dẫn được bảo vệ (b), và sửa gốc (code của PR không nằm trong thư mục dự án); Claude thử bằng Sonnet và sửa thêm trong kit PR #166; bạn merge #166; Claude chép vào PR #13, review lần 3 còn hai Medium để sau Pilot 1; bạn merge PR #13 (`e56a207`); T10: kit PR #167 (đường bấm của board Jira mới) và #168 (đầu vào cho `project-scaffold`, bảng lỗi kit, chi phí Pilot 1 khoảng 117,6 USD, plan vào `tasks/archive/pilot-1/`); bạn xác nhận Pilot 1 hoàn thành (PR #169); bạn hỏi tài khoản GitHub Free có bị tính tiền không: Billed 0 USD, phần miễn phí bù hết Gross; bạn chọn `release-workflow`; Claude nêu phạm vi, điều vừa kiểm (repo private gói Free không có secret theo môi trường và người duyệt bắt buộc, phần miễn phí 12 USD Actions mỗi tháng, tài khoản agent không tạo được Fix Version), bảy giả định và ba câu hỏi (VPS, cách đưa bản mới vào VPS, kiểm thật ở `ao-pilot` hay `ao-sample`); bạn trả lời: dùng VPS `dtddeploy` của bạn với subdomain của `t2g.io.vn`, VPS tự kéo bản đã qua cổng, kiểm thật trên `ao-pilot` trước; key SSH của VPS có passphrase, Claude chỉ cách mở khóa bằng ssh-agent của Windows; chờ bạn mở khóa |
+| 26 | `6b41390c-2d48-4d39-9a30-5a4e22f76bf7` | 2026-11-04 khoảng 13:10 → | Bạn báo đã merge kit PR #165; Claude chép vào `ao-sample` PR #13 và review lần 2 (security lại có 1 High: `AGENTS.md`), mở kit PR #166; bạn hỏi chạy review ở high, vì sao lần nào cũng ra High, vì sao security review cả PR; Claude tìm lý do của luật review toàn bộ trong file này; bạn chọn đổi luật review phần mới, điều kiện đường dẫn được bảo vệ (b), và sửa gốc (code của PR không nằm trong thư mục dự án); Claude thử bằng Sonnet và sửa thêm trong kit PR #166; bạn merge #166; Claude chép vào PR #13, review lần 3 còn hai Medium để sau Pilot 1; bạn merge PR #13 (`e56a207`); T10: kit PR #167 (đường bấm của board Jira mới) và #168 (đầu vào cho `project-scaffold`, bảng lỗi kit, chi phí Pilot 1 khoảng 117,6 USD, plan vào `tasks/archive/pilot-1/`); bạn xác nhận Pilot 1 hoàn thành (PR #169); bạn hỏi tài khoản GitHub Free có bị tính tiền không: Billed 0 USD, phần miễn phí bù hết Gross; bạn chọn `release-workflow`; Claude nêu phạm vi, điều vừa kiểm (repo private gói Free không có secret theo môi trường và người duyệt bắt buộc, phần miễn phí 12 USD Actions mỗi tháng, tài khoản agent không tạo được Fix Version), bảy giả định và ba câu hỏi (VPS, cách đưa bản mới vào VPS, kiểm thật ở `ao-pilot` hay `ao-sample`); bạn trả lời: dùng VPS `dtddeploy` của bạn với subdomain của `t2g.io.vn`, VPS tự kéo bản đã qua cổng, kiểm thật trên `ao-pilot` trước; key SSH của VPS có passphrase, Claude chỉ cách mở khóa bằng ssh-agent của Windows; bạn mở khóa key; Claude thấy VPS rất có thể đã bị chiếm quyền root (`masscan` chạy bằng root từ một IP của Aeza Group, SSH cho root đăng nhập bằng mật khẩu) và quá nhỏ (1 vCPU, 961 MB RAM), khuyên thu hồi bí mật và cài lại VPS, rồi hỏi lại câu 1 |
 
 ---
 
@@ -11884,3 +11884,54 @@ Spec cần những điều này, vì kit phải chạy cạnh những gì đang 
 - Tên miền chưa có bản ghi wildcard. Vì vậy mỗi subdomain cần một bản ghi A trỏ về VPS. Bạn sẽ tạo các bản ghi này trong trang DNS của BKNS. Spec sẽ ghi tên từng subdomain và từng bước bấm.
 
 Bạn nhắn "xong", mình kiểm VPS rồi viết `SPEC-release-workflow.md`, và chờ bạn duyệt.
+
+# Phiên 26 · Lượt 14 — 2026-11-05 khoảng 09:05
+
+**Bạn:**
+
+```markdown
+Xong
+```
+
+Trước khi trả lời, Claude vào VPS bằng `ssh.exe` của Windows (dùng ssh-agent của Windows) và chỉ chạy lệnh đọc: hệ điều hành, CPU, RAM, ổ đĩa, Docker, container, cổng đang mở, tiến trình, lịch sử đăng nhập, cấu hình SSH, ổ mạng đang gắn. Claude cũng tra chủ của hai IP qua RDAP của RIPE và APNIC.
+
+**Claude:**
+
+**Dừng lại trước đã: VPS `dtddeploy` rất có thể đã bị người lạ chiếm quyền root.** Mình chỉ đọc, chưa sửa gì trên VPS, và chưa viết spec.
+
+**Mình thấy gì:**
+- Một tiến trình `masscan --resume paused.conf` chạy bằng root từ 23:44 tối qua (giờ của VPS), ăn khoảng 60% CPU. `masscan` là công cụ quét cổng hàng loạt trên internet. Máy bị chiếm thường bị dùng để quét tìm máy khác.
+- Lệnh đó chạy trong một phiên SSH bằng `root` từ IP `147.45.69.97`. Phiên này mở từ 30/10 và vẫn đang mở. Theo RDAP của RIPE, IP này thuộc Aeza Group, một công ty hosting của Nga (dải IP đăng ký ở Hà Lan).
+- IP này đăng nhập root nhiều lần: 3/10, 8/10, 13/10, 22/10 và 30/10. Các lần bạn đăng nhập đều từ `123.19.x.x` (VNPT).
+- Một ổ mạng `//147.45.69.97/ALL23` (120 GB) đang được gắn vào `/mnt/AXXE`. Ổ này được gắn bằng tay, không có trong `/etc/fstab`.
+- SSH cho phép đăng nhập root và đăng nhập bằng mật khẩu (`PermitRootLogin yes`, `PasswordAuthentication yes`). Đây là cách bị dò mật khẩu phổ biến nhất. Mình không đọc được log đăng nhập (cần sudo), nên chưa biết chắc người lạ vào bằng đường nào.
+
+Nếu IP `147.45.69.97` và lệnh `masscan` là của bạn, bạn báo mình, và bỏ qua phần dưới.
+
+**Nếu không phải của bạn, mình khuyên:**
+1. Coi mọi bí mật trên VPS là đã lộ, vì root đọc được mọi file:
+   - **Token GHCR** trong `~/.docker/config.json` của `user1` (mình chỉ kiểm là có, không đọc giá trị). Thu hồi token này trên GitHub: bấm ảnh đại diện → **Settings** → **Developer settings** → **Personal access tokens** → **Tokens (classic)** hoặc **Fine-grained tokens**. Tìm token dùng cho `ghcr.io`, rồi bấm **Delete**.
+   - **Bí mật của các app trên VPS:** file môi trường của `ecom-app` và `logistics-be`, mật khẩu cơ sở dữ liệu, JWT secret, key của MinIO, key cloud. Đổi hết. Nếu `logistics-backend` (`ghcr.io/rd-logistics`) là dự án của công ty hay khách hàng, nên báo họ.
+   - **Mật khẩu** của `root` và `user1`.
+   - Key `dtd_deploy` thì chưa lộ: VPS chỉ giữ nửa công khai, còn key bí mật nằm trên máy bạn.
+2. **Đừng "dọn" VPS.** Người có quyền root có thể đã để lại cửa hậu mà mình không thấy. Cách chắc chắn là cài lại hệ điều hành từ trang quản lý VPS của nhà cung cấp (thường gọi là Rebuild hoặc Reinstall OS). Trước đó, chỉ chép ra dữ liệu bạn cần (ví dụ dữ liệu của MinIO), không chép file chạy được.
+3. **Sau khi cài lại:**
+   - tắt đăng nhập root và đăng nhập bằng mật khẩu, chỉ dùng key;
+   - bật tường lửa, chỉ mở cổng SSH, 80 và 443. MinIO (cổng 9000, 9001) không mở ra internet.
+4. Nhà cung cấp VPS có thể khóa VPS, vì nó đang quét cổng ra ngoài. Nếu bạn nhận được email abuse, đó là lý do.
+
+Nếu bạn cho mình biết bạn thuê VPS ở đâu, mình ghi từng bước bấm cho bước 2 và 3.
+
+**Kể cả khi đã sạch, VPS này cũng quá nhỏ cho `release-workflow`:**
+- 1 vCPU, 961 MB RAM (chỉ còn trống khoảng 256 MB), không có swap;
+- ổ đĩa 19 GB, còn trống 3,1 GB;
+- VPS đang chạy dự án khác của bạn: nginx giữ cổng 80 và 443 (có certbot), MinIO, và hai container `ecom-app`, `logistics-be` (đang dừng).
+
+[Ước tính] Ba môi trường của `ao-sample` (mỗi môi trường có web Next.js và API NestJS), cộng việc build image trên VPS, cần khoảng 2 vCPU và 4 GB RAM.
+
+**Vì vậy, câu 1 cần trả lời lại:**
+- **(a) Thuê một VPS mới, riêng cho kit (mình đề xuất).** Chọn Ubuntu 24.04, 2 vCPU, 4 GB RAM. [Ước tính] Giá khoảng 5–10 USD mỗi tháng. Mình cài từ đầu, với SSH chỉ dùng key và có tường lửa. Subdomain của `t2g.io.vn` trỏ về VPS mới. VPS cũ bạn xử lý riêng.
+- **(b) Cài lại VPS `dtddeploy` và nâng gói lên ít nhất 2 vCPU, 4 GB RAM.** Bạn không phải quản thêm một VPS. Nhưng kit sẽ dùng chung nginx với dự án khác của bạn, nên một lỗi deploy của kit có thể làm hỏng dự án kia.
+- **(c) Chưa thuê:** kiểm thật module bằng Docker trên máy bạn, tới Pilot 2 mới lên VPS thật.
+
+Câu 2 và câu 3 giữ như bạn đã chọn. Bạn trả lời câu 1, rồi mình viết `SPEC-release-workflow.md` và chờ bạn duyệt.
