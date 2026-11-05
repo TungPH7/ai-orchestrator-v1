@@ -35,6 +35,8 @@ test('a commit that failed audit blocks every head after it, even a head that pa
   const result = decide('development', { candidate: head('develop', C, TC, [pass(A), fail(B, 'pushed without a PR'), pass(C)]) });
   assertRefuse(result, /bbbbbbb did not pass audit: pushed without a PR/);
   assert.match(result.reason, /\/ao-rollback development <sha>/, 'the reason says how you unblock it');
+  // auditRange stops at the first commit that fails, so its audits end there, short of the head: the reason names it.
+  assertRefuse(decide('development', { candidate: head('develop', C, TC, [pass(A), fail(B, 'pushed without a PR')]) }), /bbbbbbb did not pass audit/);
 });
 
 test('audits that stop short of the head are refused', () => {
