@@ -95,13 +95,13 @@
 - [x] Năm lệnh kiểm trong quy ước chung xanh
 - [x] Mười tiền đề có kết quả trong `tasks/verification.md`. Tiền đề nào sai thì spec đã được sửa, và bạn đã duyệt bản sửa
 - [x] VPS đạt phần SSH, `ufw` và Docker của tiêu chí 3
-- [ ] Bạn xem kết quả của T1–T2
+- [x] Bạn xem kết quả của T1–T2
 
 ---
 
 ## Giai đoạn 2: thư viện release
 
-### [ ] T3: `versions.mjs` và `cut.mjs` (spec mục 2.6)
+### [x] T3: `versions.mjs` và `cut.mjs` (spec mục 2.6)
 
 **Mô tả:**
 
@@ -114,11 +114,11 @@
   - trả commit điểm cắt, danh sách item trong bản, và danh sách item sau điểm cắt, theo đúng định nghĩa của hợp đồng.
 
 **Tiêu chí chấp nhận:**
-- [ ] Test `versions` của spec mục 7: bản đầu, tăng `minor`, bản vá, tag sai dạng.
-- [ ] Test `cut` của spec mục 7: mọi item Done; item giữa lịch sử chưa Done; item có commit trước và sau điểm cắt; không có item Done nào.
+- [x] Test `versions` của spec mục 7: bản đầu, tăng `minor`, bản vá, tag sai dạng.
+- [x] Test `cut` của spec mục 7: mọi item Done; item giữa lịch sử chưa Done; item có commit trước và sau điểm cắt; không có item Done nào.
 
 **Kiểm chứng:**
-- [ ] Năm lệnh trong quy ước chung xanh
+- [x] Năm lệnh trong quy ước chung xanh
 
 **Phụ thuộc:** Checkpoint 1
 

@@ -94,10 +94,10 @@ T20 ── T21 DEMO-21 tới Production ── T22 hotfix, rollback, smoke fail 
 - [x] Năm lệnh kiểm trong quy ước chung xanh
 - [x] Mười tiền đề có kết quả trong `tasks/verification.md`. Tiền đề nào sai thì spec đã được sửa, và bạn đã duyệt bản sửa
 - [x] VPS đạt phần SSH, `ufw` và Docker của tiêu chí 3
-- [ ] Bạn xem kết quả của T1–T2
+- [x] Bạn xem kết quả của T1–T2
 
 ### Giai đoạn 2: thư viện release
-- [ ] T3: `versions.mjs` và `cut.mjs`
+- [x] T3: `versions.mjs` và `cut.mjs`
 - [ ] T4: `deploy.schema.json` và `deploy-config.mjs`
 - [ ] T5: `targets.mjs`
 

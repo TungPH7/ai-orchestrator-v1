@@ -55,3 +55,10 @@
 **Sau khi tắt đăng nhập root, kiểm từ máy bạn:** root bằng key: "Permission denied (publickey)"; `aoadmin` bằng mật khẩu: "Permission denied (publickey)"; `aoadmin` bằng key: vào được. Quét 65.535 cổng TCP (412 giây): chỉ cổng 80 và `26266` mở. Cổng 443 đã mở trong `ufw` và được Caddy publish, nhưng Caddyfile gốc chưa có site HTTPS nào, nên chưa có gì nghe ở đó; lúc thử điểm 6, HTTPS qua cổng 443 chạy được.
 
 **Dọn:** đã xóa 6 container thử, image thử, mạng `ao-edge`, cache build, `/root/t2` trên VPS và mật khẩu basic auth dùng một lần trên máy bạn. Caddy vẫn chạy với Caddyfile gốc ở `docs/vps-setup.md` mục 8, giữ chứng chỉ trong volume `caddy_data`.
+
+## Checkpoint 1 (2026-11-06)
+
+- Năm lệnh kiểm trong quy ước chung xanh.
+- Mười tiền đề có kết quả ở T1 và T2. Các tiền đề sai (3, 7, 8) đã được sửa trong spec, và bạn đã duyệt bản sửa.
+- VPS đạt phần SSH, `ufw` và Docker của tiêu chí 3 (T2).
+- Bạn xem kết quả của T1–T2, merge PR #173 và nhắn làm tiếp (Phiên 27 · Lượt 1).
