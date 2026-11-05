@@ -148,7 +148,7 @@
 
 **Cỡ:** S
 
-### [ ] T5: `targets.mjs` (spec mục 2.4, 2.8, 2.9)
+### [x] T5: `targets.mjs` (spec mục 2.4, 2.8, 2.9)
 
 **Mô tả:** hàm thuần `decideTarget({ environment, candidate, record, request, approvers })`, trả bản cần deploy hoặc lý do từ chối:
 
@@ -158,12 +158,12 @@
 - Yêu cầu deploy: người tạo phải nằm trong `AO_APPROVERS`. Rollback chỉ về bản đã từng chạy thành công ở chính môi trường đó. Dạng `<sha>` gỡ chặn ở Development và Staging, và vẫn phải thỏa hai điều kiện ở Production (plan, quyết định 5).
 
 **Tiêu chí chấp nhận:**
-- [ ] Test cho mỗi dòng của bảng spec mục 2.4.
-- [ ] Test từ chối Production: thiếu gate ⑤; tree chưa qua Staging; người tạo yêu cầu không nằm trong `AO_APPROVERS`; rollback về bản chưa từng chạy ở môi trường đó.
-- [ ] Test gỡ chặn: yêu cầu của bạn cho một head sau commit fail được nhận; yêu cầu của bot bị từ chối.
+- [x] Test cho mỗi dòng của bảng spec mục 2.4.
+- [x] Test từ chối Production: thiếu gate ⑤; tree chưa qua Staging; người tạo yêu cầu không nằm trong `AO_APPROVERS`; rollback về bản chưa từng chạy ở môi trường đó.
+- [x] Test gỡ chặn: yêu cầu của bạn cho một head sau commit fail được nhận; yêu cầu của bot bị từ chối.
 
 **Kiểm chứng:**
-- [ ] Năm lệnh trong quy ước chung xanh
+- [x] Năm lệnh trong quy ước chung xanh
 
 **Phụ thuộc:** Checkpoint 1
 
