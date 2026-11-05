@@ -402,6 +402,11 @@ test('the argument is a key of the space or a PR number; anything else stops bef
   assert.match(checkArgument('release', '0.1.0', 'DEMO', '22327a5'), /takes nothing, or a release/);
   assert.match(checkArgument('release', 'v0.1.0', 'DEMO', '--force'), /takes nothing, or a release/);
   assert.match(checkArgument('build', 'DEMO-21', 'DEMO', 'extra'), /takes one argument/);
+  // release-workflow T15: /ao-ship takes the release.
+  assert.equal(checkArgument('ship', 'v0.1.0', 'DEMO'), null);
+  for (const [arg, extra] of [[undefined, undefined], ['0.1.0', undefined], ['v0.1.0', '22327a5'], ['v0.1.0;rm', undefined]]) {
+    assert.match(checkArgument('ship', arg, 'DEMO', extra), /\/ao-ship takes a release such as v0\.1\.0/);
+  }
 });
 
 // Medium of security on the second review of ao-sample PR #13: ao-step, the kit and the agents' instructions come from
@@ -447,7 +452,7 @@ test('the lock of ao-step is taken atomically: a second run sees the first, a st
 // release-workflow T13: a qa run.
 test('a qa run gets its worktree with the qa note; its follow-up runs before the worktree goes, and its notes reach state.json and last.md', async () => {
   const one = (run) => { let decided = 0; return () => (decided++ === 0 ? { go: true, runs: [run], lines: [] } : { go: false, reason: 'nothing left', next: '-', lines: [] }); };
-  const qa = { role: 'qa', key: 'DEMO-20', effort: 'high', purpose: 'qa', prompt: 'QA Story DEMO-20.', worktree: { kind: 'qa', name: 'DEMO-20-qa', sha: 'abc1234def5678', install: true }, env: { E2E_BASE_URL: 'https://pilot-dev.ao.t2g.io.vn' } };
+  const qa = { role: 'qa', key: 'DEMO-20', effort: 'high', purpose: 'qa', prompt: 'QA Story DEMO-20.', worktree: { kind: 'qa', name: 'DEMO-20-qa', sha: 'abc1234def5678', install: true }, env: { E2E_BASE_URL: 'https://pilot-dev.ao.t2g.io.vn' }, qa: { environment: 'development', sha: 'abc1234def5678' } };
   const events = [];
   const worktree = { add: async (spec) => (events.push(['add', spec.name, spec.install]), { ok: true, path: 'C:/Temp/ao-reviews/shop-DEMO-20-qa' }), remove: async (spec) => (events.push(['remove', spec.name]), { ok: true }) };
   const after = async (run, { tree }) => (events.push(['after', run.purpose, tree.path]), ['Attached to DEMO-20: cart.png.']);
@@ -458,6 +463,8 @@ test('a qa run gets its worktree with the qa note; its follow-up runs before the
   assert.equal(h.calls[0].prompt, ['QA Story DEMO-20.', qaWorktreeNote('C:/Temp/ao-reviews/shop-DEMO-20-qa', 'abc1234def5678')].join('\n\n'));
   assert.match(qaWorktreeNote('C:/Temp/x', 'abc1234def5678'), /^The code of abc1234, the release the environment runs, is in the folder C:\/Temp\/x, a worktree outside the project, with its packages installed\. /);
   assert.deepEqual(h.states.at(-1).runs.at(-1).notes, ['Attached to DEMO-20: cart.png.']);
+  // /ao-ship reads which commit a regression ran on from state.json (release-workflow T15).
+  assert.deepEqual(h.states.at(-1).runs.at(-1).qa, { environment: 'development', sha: 'abc1234def5678' });
   assert.match(h.last['DEMO-20'], /## 1\. qa: notes of the orchestrator\n\n- Attached to DEMO-20: cart\.png\./);
 });
 

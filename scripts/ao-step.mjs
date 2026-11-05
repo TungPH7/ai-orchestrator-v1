@@ -21,7 +21,7 @@ import { projectSettings, setting } from '../lib/project-settings.mjs';
 import { unquotePath } from '../lib/quality/diff-paths.mjs';
 import { readGates } from '../lib/quality/gates.mjs';
 import { matchesGlob } from '../lib/quality/glob.mjs';
-import { appCredentials, githubRepoOf, installationToken, userVariable } from '../lib/quality/github-app.mjs';
+import { appCredentials, botIdentity, githubRepoOf, installationToken, userVariable } from '../lib/quality/github-app.mjs';
 import { runNpm } from '../lib/quality/npm.mjs';
 import { attachEvidence } from '../lib/tracker/attachments.mjs';
 import { createGitHubClient, readGitHubToken } from '../lib/tracker/github-client.mjs';
@@ -31,15 +31,16 @@ import { startAgentProcess, killTree } from '../lib/workflow/agent-process.mjs';
 import { gatherFacts, readRunning } from '../lib/workflow/facts.mjs';
 import { basicAuthEnv, qaFollowUp } from '../lib/workflow/qa.mjs';
 import { releaseCutChanges } from '../lib/release/release-cut.mjs';
+import { changelogWith } from '../lib/release/release-pr.mjs';
 import { adfText, buildReviewPack, filesToQuote } from '../lib/workflow/review-pack.mjs';
 import { removeInstructions } from '../lib/workflow/review-tree.mjs';
 import { agentCommand, formatDecision, runGo } from '../lib/workflow/runner.mjs';
 import { decideStep } from '../lib/workflow/steps.mjs';
 
-const COMMANDS = ['status', 'spec', 'plan', 'build', 'review', 'fix', 'qa', 'release'];
-const USAGE = 'usage: node .ai-orchestrator/scripts/ao-step.mjs <status|spec|plan|build|review|fix|qa|release> [<KEY>|<PR>|<vX.Y.0> <sha>] [--go] [--answers <file>] [--note <file>]';
+const COMMANDS = ['status', 'spec', 'plan', 'build', 'review', 'fix', 'qa', 'release', 'ship'];
+const USAGE = 'usage: node .ai-orchestrator/scripts/ao-step.mjs <status|spec|plan|build|review|fix|qa|release|ship> [<KEY>|<PR>|<vX.Y.0> <sha>|<vX.Y.Z>] [--go] [--answers <file>] [--note <file>]';
 // The commands that read deployments with your gh login (release-workflow T12).
-const RELEASE_COMMANDS = ['qa', 'release'];
+const RELEASE_COMMANDS = ['qa', 'release', 'ship'];
 const kitDir = resolve(process.env.AO_KIT_DIR ?? fileURLToPath(new URL('..', import.meta.url)));
 const projectDir = process.cwd();
 const runsDir = join(projectDir, '.ai', 'runs');
@@ -50,6 +51,7 @@ const git = (...args) => spawnSync('git', args, { cwd: projectDir, encoding: 'ut
 // skill passes only this word, which Claude Code puts in the shell line as it is (T1).
 export function checkArgument(command, arg, space, extra) {
   if (!COMMANDS.includes(command)) return `unknown command ${command ?? '(none)'}; ${USAGE}`;
+  if (command === 'ship') return /^v\d{1,4}\.\d{1,4}\.\d{1,4}$/.test(arg ?? '') && extra === undefined ? null : `/ao-ship takes a release such as v0.1.0, not ${[arg, extra].filter(Boolean).join(' ') || 'nothing'}`;
   if (command === 'release') {
     const ok = (arg === undefined && extra === undefined) || (/^v\d{1,4}\.\d{1,4}\.\d{1,4}$/.test(arg ?? '') && /^[0-9a-f]{7,40}$/.test(extra ?? ''));
     return ok ? null : `/ao-release takes nothing, or a release such as v0.1.0 and the cut point it printed, not ${[arg, extra].filter(Boolean).join(' ') || 'that'}`;
@@ -154,6 +156,8 @@ async function main() {
       const shown = git('show', `refs/heads/${branch}:${path}`);
       return shown.status === 0 ? shown.stdout : null;
     },
+    // A file the agents of a release command wrote in .ai/runs/<release>/ (release-workflow T15).
+    runFile: (k, name) => readRunFile(k, name),
   };
   // The release commands read deployments with your gh login: the read token of ao-review may not (release-workflow T12).
   const userToken = RELEASE_COMMANDS.includes(command) ? readGitHubToken() : null;
@@ -186,7 +190,7 @@ async function main() {
       // qa on Development or Staging gets the basic auth from AO_ENV_AUTH, as variables, never as arguments.
       agent: (run, { log }) => startAgent(run.qa?.auth ? { ...run, env: { ...run.env, ...basicAuthEnv(secret('AO_ENV_AUTH')) } } : run, join(runsDir, key, log)),
       after: (run, { tree }) => (run.purpose === 'qa' ? afterQa(run, tree, { deploys, mapping }) : []),
-      act: (step) => releaseCut(step, { repo, mapping, settings }),
+      act: (step) => (step.action === 'release-pr' ? releasePr(step, { repo, settings }) : releaseCut(step, { repo, mapping, settings })),
       git: (checkout) => prepareCheckout(checkout),
       dispatch: (action) => dispatchJiraSync(action.key),
       pack: reviewPackWriter({ github, jira }),
@@ -214,6 +218,16 @@ async function main() {
 function readJson(file) {
   try {
     return JSON.parse(readFileSync(file, 'utf8'));
+  } catch {
+    return null;
+  }
+}
+
+// A file in .ai/runs/<key>/, or null. The key is a work item or a release that checkArgument let through, and the
+// name one of the kit's own.
+function readRunFile(key, name) {
+  try {
+    return readFileSync(join(runsDir, key, name), 'utf8');
   } catch {
     return null;
   }
@@ -397,6 +411,57 @@ async function releaseCut({ version, nextVersion, sha, included, after }, { repo
   const { token } = await installationToken({ ...appCredentials('dev', { env: devEnv }), repo, permissions: { contents: 'write' } });
   await createGitHubClient({ repo, token, write: true }).request('POST', '/git/refs', undefined, { ref: `refs/heads/release/${version}`, sha });
   notes.push(`Created release/${version} at ${sha.slice(0, 8)} as ${setting('AO_DEV_APP', settings)}[bot].`);
+  return notes;
+}
+
+// A file of a branch on GitHub, or null when it has none.
+async function contentOf(github, path, branch) {
+  try {
+    const { content } = await github.get(`/contents/${path}`, { ref: branch });
+    return Buffer.from(content, 'base64').toString('utf8');
+  } catch (error) {
+    if (error.status === 404) return null;
+    throw error;
+  }
+}
+
+// /ao-ship vX.Y.0, its last step (release-workflow spec 2.7, steps 4 and 5): as the ao-dev App, one commit on the release
+// branch with the regression report as docs/releases/<version>.md and the section of the release in CHANGELOG.md, then
+// the check that the branch changed nothing else since the regression, then the release PR into main. The commit names
+// the bot as author and committer, as audit's rule for the release report wants. Run again, it commits nothing new and
+// opens no second PR.
+async function releasePr({ version, branch, regression }, { repo, settings }) {
+  const [report, section, body] = ['regression-report.md', 'changelog.md', 'pr-description.md'].map((name) => readRunFile(version, name));
+  if (!report || !section || !body) throw new Error(`.ai/runs/${version}/ lacks the regression report or the notes of devops`);
+  const slug = setting('AO_DEV_APP', settings);
+  const devEnv = { ...process.env, AO_DEV_APP: slug, AO_DEV_APP_ID: setting('AO_DEV_APP_ID', settings) };
+  const { token } = await installationToken({ ...appCredentials('dev', { env: devEnv }), repo, permissions: { contents: 'write', pull_requests: 'write' } });
+  const github = createGitHubClient({ repo, token, write: true });
+  const bot = await botIdentity({ slug, token });
+  const notes = [];
+  const head = (await github.get(`/git/ref/heads/${branch}`)).object.sha;
+  const reportPath = `docs/releases/${version}.md`;
+  const current = await contentOf(github, 'CHANGELOG.md', branch);
+  const changelog = changelogWith(current, section, version);
+  if (changelog !== current || report !== (await contentOf(github, reportPath, branch))) {
+    const { tree } = await github.get(`/git/commits/${head}`);
+    const files = [{ path: reportPath, content: report }, { path: 'CHANGELOG.md', content: changelog }].map((file) => ({ ...file, mode: '100644', type: 'blob' }));
+    const made = await github.request('POST', '/git/trees', undefined, { base_tree: tree.sha, tree: files });
+    const signed = { ...bot, date: new Date().toISOString() };
+    const commit = await github.request('POST', '/git/commits', undefined, { message: `docs(release): add the regression report and the changelog of ${version}`, tree: made.sha, parents: [head], author: signed, committer: signed });
+    await github.request('PATCH', `/git/refs/heads/${branch}`, undefined, { sha: commit.sha, force: false });
+    notes.push(`Committed ${reportPath} and CHANGELOG.md on ${branch} as ${bot.name}: ${commit.sha.slice(0, 8)}.`);
+  }
+  const allowed = [reportPath, 'CHANGELOG.md'];
+  const changed = ((await github.get(`/compare/${regression}...${branch}`)).files ?? []).flatMap(({ filename, previous_filename: previous }) => (previous ? [previous, filename] : [filename]));
+  const beyond = [...new Set(changed.filter((file) => !allowed.includes(file)))];
+  if (beyond.length > 0) throw new Error(`${branch} changed ${beyond.join(', ')} since the regression on ${regression.slice(0, 8)}: run /ao-ship ${version} again, and the regression runs again`);
+  const open = (await github.getAll('/pulls', { state: 'open', base: 'main' })).find((pr) => pr.head.ref === branch);
+  if (open) notes.push(`PR #${open.number} of ${branch} into main is open already.`);
+  else {
+    const pr = await github.request('POST', '/pulls', undefined, { title: `release: ${version}`, head: branch, base: 'main', body });
+    notes.push(`Opened PR #${pr.number} of ${branch} into main.`);
+  }
   return notes;
 }
 

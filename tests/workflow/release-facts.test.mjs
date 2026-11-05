@@ -105,3 +105,29 @@ test('the cut facts: the history of develop since the newest tag, the state of e
   ]);
   assert.deepEqual(facts.releaseBranches.map(({ name }) => name), ['release/v0.2.0']);
 });
+
+test('the ship facts: the release branch, what Staging runs, the open Bugs Critical and High, the regression on record, the notes and the PR', async () => {
+  const { readContract } = await import('../../lib/contract.mjs');
+  const { CONTRACT_DIR } = await import('../helpers/kit.mjs');
+  const { readShipFacts } = await import('../../lib/workflow/facts.mjs');
+  const contract = readContract(CONTRACT_DIR);
+  const ship = recordedClient({
+    ...answers,
+    '/deployments?environment=staging&per_page=30': [deployment(41, 'f')],
+    '/deployments/41/statuses?per_page=1': latest('success', 'https://pilot-staging.ao.t2g.io.vn'),
+    [`/compare/${sha('e')}...${sha('f')}`]: { status: 'ahead', files: [{ filename: 'CHANGELOG.md' }, { filename: 'docs/releases/v0.2.0.md', previous_filename: 'docs/releases/draft.md' }] },
+    '/pulls?base=main&state=open': [{ number: 30, head: { ref: 'release/v0.2.0', sha: sha('f') } }, { number: 31, head: { ref: 'hotfix/DEMO-40-x', sha: sha('1') } }],
+  });
+  const severity = (name) => `project = "DEMO" AND issuetype = "Bug" AND fixVersion = "v0.2.0" AND statusCategory != Done AND "Severity" = "${name}"`;
+  const jira = fakeJira({ gets: { '/rest/api/3/project/DEMO/versions': [] }, search: { [severity('High')]: [{ key: 'DEMO-30' }] } });
+  const files = { 'regression-report.md': '## Regression Result\n\nResult: PASS\n', 'changelog.md': '## v0.2.0', 'pr-description.md': 'x', 'fix-version.md': 'y' };
+  const local = { runState: () => ({ runs: [{ purpose: 'regression', outcome: 'done', qa: { sha: sha('e') } }] }), runFile: (key, name) => (key === 'v0.2.0' ? (files[name] ?? null) : null) };
+  const facts = await readShipFacts({ jira, github: ship, deploys: ship, local, contract, mapping, space: 'DEMO', version: 'v0.2.0' });
+  assert.deepEqual(facts.branch, { name: 'release/v0.2.0', version: '0.2.0', sha: sha('f') });
+  assert.equal(facts.staging.sha, sha('f'));
+  assert.deepEqual(facts.bugs, [{ key: 'DEMO-30', severity: 'High' }]);
+  assert.deepEqual(facts.regression, { sha: sha('e'), result: 'PASS' });
+  assert.deepEqual(facts.changedSinceRegression, ['CHANGELOG.md', 'docs/releases/draft.md', 'docs/releases/v0.2.0.md']);
+  assert.equal(facts.notes, true);
+  assert.deepEqual(facts.pr, { number: 30, headSha: sha('f') });
+});
