@@ -145,6 +145,15 @@ test('a commit that failed audit under the head is reported as error with the re
   assert.equal(r.state.branches.develop.audited, B, 'the audit goes no further than the last commit that passed');
 });
 
+test('the record keeps the public app of the release that runs, for Caddy, also across a docs-only commit', async () => {
+  const web = { app: 'web', port: 3000 };
+  const r = await run({ repo: { heads: { develop: C, main: H0 }, open: [], trees: TREES }, state: started(), audits: { [`develop ${C}`]: [pass(C)] }, results: [{ outcome: 'success', public: web }] });
+  assert.deepEqual(r.state.environments.development.current.public, web);
+  const trees = { ...TREES, [D]: tree('c') };
+  const docs = await run({ repo: { heads: { develop: D, main: H0 }, open: [], trees }, state: r.state, audits: { [`develop ${D}`]: [pass(D)] } });
+  assert.deepEqual(docs.state.environments.development.current, { sha: D, tree: tree('c'), branch: 'develop', public: web });
+});
+
 test('a docs-only commit keeps the running containers and still reports success', async () => {
   const state = started();
   Object.assign(state.environments.development, { current: { sha: A, tree: tree('a'), branch: 'develop' } });

@@ -45,7 +45,8 @@ function fakes({ deployYaml = DEPLOY_YAML, build = '', smoke = { ok: true, failu
 
 test('install builds every app from a worktree at the commit, removes the worktree, and swaps the new containers in', async () => {
   const f = fakes();
-  assert.deepEqual(await f.installer.install({ env: 'development', sha: SHA, tree: TREE }), { outcome: 'success' });
+  // The public app and its port tell Caddy where the environment now answers.
+  assert.deepEqual(await f.installer.install({ env: 'development', sha: SHA, tree: TREE }), { outcome: 'success', public: { app: 'web', port: 3000 } });
   assert.deepEqual(f.gitCalls, [
     `show ${SHA}:.ai-orchestrator/deploy.yaml`,
     `worktree remove --force ${DIR}`,

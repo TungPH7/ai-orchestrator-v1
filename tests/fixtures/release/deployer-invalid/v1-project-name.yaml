@@ -1,0 +1,8 @@
+description: a project name that climbs out of the state folder
+rule: V1
+expect:
+  - "projects[0].name"
+patch:
+  - op: set
+    path: "projects.0.name"
+    value: ../etc

@@ -1,0 +1,8 @@
+description: two environments on the same host
+rule: V2
+expect:
+  - "projects[1].hosts.production"
+patch:
+  - op: set
+    path: "projects.1.hosts.production"
+    value: pilot.ao.t2g.io.vn

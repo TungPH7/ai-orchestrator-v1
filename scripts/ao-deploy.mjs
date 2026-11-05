@@ -1,6 +1,7 @@
 // The deployer on the VPS (release-workflow spec 2.3): systemd runs `tick` every minute as user aodeploy, from the kit
 // pinned in /opt/ao/kit, never from the project's own copy. The logic is lib/release/deployer.mjs; this file reads the
-// configuration, builds the clients and keeps the record of each project.
+// configuration, builds the clients, keeps the record of each project, and after each tick rewrites the Caddyfile when the
+// public app of an environment changed.
 // Usage: node scripts/ao-deploy.mjs tick [--dry-run] [--config <file>]
 //        node scripts/ao-deploy.mjs baseline <project> [--confirm] [--config <file>]
 // The configuration is /etc/ao/deployer.yaml unless --config names another (vps/deployer.example.yaml, T9). git and
@@ -9,17 +10,19 @@
 // GitHub, no container, no record. `baseline` prints today's heads, and with --confirm records them as audited.
 import { execFile } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
-import { readFile } from 'node:fs/promises';
+import { readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseArgs, promisify } from 'node:util';
 import { parse } from 'yaml';
-import { readContract } from '../lib/contract.mjs';
+import { formatError, readContract } from '../lib/contract.mjs';
 import { auditRange } from '../lib/quality/audit.mjs';
 import { gatePassage } from '../lib/quality/docs-pr.mjs';
 import { readGates } from '../lib/quality/gates.mjs';
 import { installationToken } from '../lib/quality/github-app.mjs';
+import { updateCaddy } from '../lib/release/caddy.mjs';
 import { createInstaller, gitAuthEnv, readHeads, tick } from '../lib/release/deployer.mjs';
+import { validateDeployerConfig } from '../lib/release/deployer-config.mjs';
 import { baseline, hasBaseline, readState, stateText } from '../lib/release/record.mjs';
 import { createGitHubClient } from '../lib/tracker/github-client.mjs';
 import { bearerAuth, createJiraClient } from '../lib/tracker/jira-client.mjs';
@@ -28,7 +31,6 @@ import { readMapping } from '../lib/tracker/mapping.mjs';
 const run = promisify(execFile);
 const kit = fileURLToPath(new URL('..', import.meta.url));
 const USAGE = 'usage: ao-deploy.mjs tick [--dry-run] [--config <file>] | ao-deploy.mjs baseline <project> [--confirm] [--config <file>]';
-const REPO = /^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/;
 const OUTPUT = 64 * 1024 * 1024; // docker build prints a lot
 
 // Only what git and docker need to run; nothing of the deployer's own environment.
@@ -37,10 +39,8 @@ const execute = (command, args, env = {}) => run(command, args, { env: { ...BARE
 
 function readConfig(file) {
   const config = parse(readFileSync(file, 'utf8'));
-  for (const key of ['state_dir', 'secrets_dir', 'app', 'apps', 'approvers', 'projects']) if (!config?.[key]) throw new Error(`${file} has no ${key}`);
-  for (const project of config.projects) {
-    if (!/^[a-z][a-z0-9-]*$/.test(project.name ?? '') || !REPO.test(project.repo ?? '')) throw new Error(`${file}: a project needs a name like pilot and a repo like owner/name`);
-  }
+  const errors = validateDeployerConfig(config);
+  if (errors.length > 0) throw new Error(`${file} is not valid:\n${errors.map(formatError).join('\n')}`);
   return config;
 }
 
@@ -79,10 +79,13 @@ async function tickAll(config, { dryRun }) {
     ? { jira: createJiraClient({ cloudId: mapping.cloud_id, authorization: bearerAuth(readFileSync(config.jira_token_file, 'utf8').trim()) }), passage: gatePassage(readContract(join(kit, 'contract')), mapping, gates.docs_pull_requests.gate) }
     : undefined;
   let failed = false;
+  const states = {};
   for (const project of config.projects) {
     const log = (line) => console.log(`${project.name}: ${line}`);
+    const stateFile = join(config.state_dir, project.name, 'state.json');
     try {
       const c = await connect(config, project, { dryRun });
+      states[project.name] = c.state;
       const urls = Object.fromEntries(Object.entries(project.hosts ?? {}).map(([env, host]) => [env, `https://${host}`]));
       const docker = (args, options = {}) => execute('docker', args, options.env);
       await tick({
@@ -101,7 +104,23 @@ async function tickAll(config, { dryRun }) {
     } catch (error) {
       failed = true;
       log(`the tick stopped: ${error.message}`);
+      if (!states[project.name] && existsSync(stateFile)) states[project.name] = readState(readFileSync(stateFile, 'utf8'));
     }
+  }
+  try {
+    await updateCaddy({
+      config,
+      states,
+      credentials: readFileSync(config.basic_auth_file, 'utf8'),
+      read: () => readFile(config.caddyfile, 'utf8'),
+      write: (text) => writeFile(config.caddyfile, text),
+      docker: (args) => execute('docker', args),
+      dryRun,
+      log: (line) => console.log(`caddy: ${line}`),
+    });
+  } catch (error) {
+    failed = true;
+    console.log(`caddy: ${error.message}`);
   }
   if (failed) process.exitCode = 1;
 }
@@ -125,11 +144,11 @@ async function baselineOne(config, name, { confirm }) {
 
 try {
   const { values, positionals } = parseArgs({ allowPositionals: true, options: { 'dry-run': { type: 'boolean', default: false }, confirm: { type: 'boolean', default: false }, config: { type: 'string', default: '/etc/ao/deployer.yaml' } } });
-  const config = readConfig(values.config);
   const [command, name] = positionals;
+  if (!(command === 'tick' || (command === 'baseline' && name))) throw new Error(USAGE);
+  const config = readConfig(values.config);
   if (command === 'tick') await tickAll(config, { dryRun: values['dry-run'] });
-  else if (command === 'baseline' && name) await baselineOne(config, name, { confirm: values.confirm });
-  else throw new Error(USAGE);
+  else await baselineOne(config, name, { confirm: values.confirm });
 } catch (error) {
   console.error(error.message);
   process.exitCode = 1;

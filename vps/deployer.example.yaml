@@ -1,0 +1,29 @@
+# /etc/ao/deployer.yaml: what the deployer on the VPS deploys (release-workflow spec 2.3, 2.11; docs/vps-setup.md).
+# No secret lives here: only the paths of the files that hold them, each root:aodeploy 0640.
+state_dir: /var/lib/ao                      # a mirror, a record (state.json) and a work folder per project
+secrets_dir: /etc/ao/secrets                # <project>/<environment>.env: the values of the variables apps name
+caddyfile: /etc/ao/caddy/Caddyfile          # written by the deployer, read by the Caddy container
+basic_auth_file: /etc/ao/caddy/basic-auth   # one line "<user> <bcrypt hash>" for Development and Staging
+app:                                        # the GitHub App ao-deploy
+  id: 5624698
+  key_file: /etc/ao/ao-deploy.pem
+apps:                                       # the slugs of the agents' two Apps, as audit reads them
+  dev: tungph7-ao-dev
+  review: tungph7-ao-review
+jira_token_file: /etc/ao/jira-read.token    # read-only token of the CI account, for the docs PR rule of audit
+approvers: [TungPH7]                        # AO_APPROVERS: the logins whose deployment requests count
+projects:
+  - name: pilot
+    repo: TungPH7/ao-pilot
+    space: DEMO
+    hosts:
+      development: pilot-dev.ao.t2g.io.vn
+      staging: pilot-staging.ao.t2g.io.vn
+      production: pilot.ao.t2g.io.vn
+  - name: sample
+    repo: TungPH7/ao-sample
+    space: SMP
+    hosts:
+      development: sample-dev.ao.t2g.io.vn
+      staging: sample-staging.ao.t2g.io.vn
+      production: sample.ao.t2g.io.vn

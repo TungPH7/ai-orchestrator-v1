@@ -1,0 +1,8 @@
+description: a host that would break out of its Caddyfile block
+rule: V1
+expect:
+  - "projects[0].hosts.production"
+patch:
+  - op: set
+    path: "projects.0.hosts.production"
+    value: "pilot.ao.t2g.io.vn {\n}"

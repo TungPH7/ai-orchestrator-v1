@@ -1,0 +1,8 @@
+description: no login whose deployment requests count
+rule: V1
+expect:
+  - "approvers"
+patch:
+  - op: set
+    path: "approvers"
+    value: []

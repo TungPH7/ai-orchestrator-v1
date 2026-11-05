@@ -1,0 +1,20 @@
+# One tick of the ai-orchestrator deployer (release-workflow spec 2.3; docs/vps-setup.md section 11). The timer starts it
+# every minute; systemd never starts a oneshot unit that is still running, so ticks never overlap.
+[Unit]
+Description=ai-orchestrator deployer, one tick
+Requires=docker.service
+After=docker.service network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=aodeploy
+Group=aodeploy
+Environment=HOME=/var/lib/ao
+WorkingDirectory=/var/lib/ao
+ExecStart=/usr/bin/node /opt/ao/kit/scripts/ao-deploy.mjs tick
+TimeoutStartSec=45min
+UMask=0077
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectHome=yes
