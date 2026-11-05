@@ -75,3 +75,23 @@
 | `tick --dry-run` | `development: would refuse 22327a5 from develop: 3fdd514 did not pass audit: PR #15 was merged without: JIRA_CI_TOKEN, for merge-gate to read DEMO-20. Read it, then run /ao-rollback development <sha> for a later head` |
 
 Deployer kiểm từng commit sau điểm đã kiểm, dừng ở `3fdd514`, PR tài liệu #15 mà T1 đã ghi là không qua `audit`, và không kiểm tiếp `22327a5`. Không lệnh nào ghi lên GitHub. Lý do lần này là thiếu token Jira; trên VPS có token chỉ đọc, `3fdd514` vẫn fail vì thiếu lượt CI trên head của PR (T1).
+
+## Checkpoint 2 (2026-11-06)
+
+**Năm lệnh kiểm và CI của kit:** xanh trên mỗi PR từ #179 tới #188 (T8–T17), 1056 test. Claude merge các PR đó khi CI xanh (plan, quyết định 10).
+
+**Chạy chỉ kiểm trong `ao-pilot`**, bằng code của kit (`node ../ai-orchestrator/scripts/ao-step.mjs`, nhánh của T17), trên `develop` ở `22327a5`. Không lệnh nào có `--go`, nên không agent nào chạy, và không gì được ghi lên GitHub hay Jira.
+
+| Lệnh | Kết quả |
+|---|---|
+| `qa DEMO-21` | Lần đầu: `GO`, vì deployment `development` của workflow deploy giả cũ (`deploy.yml`, ngày 2026-11-01) có status `success`. Deployment đó không có URL, nên `qa` sẽ thử một URL rỗng. Claude thêm chốt chặn (commit `6acb3de`, PR #188). Lần sau: `STOP: the deployment of 22327a5b on Development has no URL: only the deployer of the kit deploys there with one (spec 2.3)` |
+| `release` | `STOP: no cut point on develop since v0.1.0: DEMO-5 (New) is not Done, and the items after it wait for it` |
+| `ship v0.1.0` | `STOP: release/v0.1.0 is not open` |
+| `rollback production` | `STOP: Production has no earlier release that ran there` |
+| `status` | Thêm `Running: Development 22327a5b, Staging d013acc1, Production d013acc1` và `Done, not released yet: DEMO-12` |
+
+**Phát hiện, cần xử lý trước kiểm thật (T18–T21):**
+
+1. **Deployment cũ của `deploy.yml`** vẫn mang status `success`, nên được tính là bản đang chạy: Development `22327a5`, Staging và Production `d013acc`. Trước điểm bắt đầu của deployer (T18), các deployment đó cần được chuyển `inactive`; T19 bỏ `deploy.yml`.
+2. **Task chép kit nằm mãi ở New** (`DEMO-5`, `DEMO-19`): commit của chúng nằm trên `develop`, nên giữ điểm cắt lại, vì chỉ Done mới được tính. Cần chuyển chúng sang Done trước `/ao-release`.
+3. **Bản cũ trên `ao-pilot`** (đã hẹn ở T1): tag `v0.1.0` và nhánh `release/0.1.0` cùng ở `d013acc`; `main` có 4 commit không nằm trong `develop` (3 commit thử của CI, và `354f02c` đưa kit lên `main` của `DEMO-5`). Với tag cũ, bản đầu tiên sẽ là `v0.2.0` và lịch sử tính từ `d013acc`.

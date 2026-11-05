@@ -539,8 +539,8 @@
 
 ### Checkpoint 2
 
-- [ ] Năm lệnh kiểm trong quy ước chung và CI của kit xanh
-- [ ] Claude chạy `ao-step.mjs` ở chế độ chỉ kiểm trong `ao-pilot`, bằng code của kit: `qa DEMO-21`, `release`, `ship v0.1.0`, `rollback production`. Các lệnh dừng đúng chỗ, vì VPS chưa có deployer. Không agent nào chạy
+- [x] Năm lệnh kiểm trong quy ước chung và CI của kit xanh
+- [x] Claude chạy `ao-step.mjs` ở chế độ chỉ kiểm trong `ao-pilot`, bằng code của kit: `qa DEMO-21`, `release`, `ship v0.1.0`, `rollback production`. Các lệnh dừng đúng chỗ, vì VPS chưa có deployer. Không agent nào chạy
 - [ ] Bạn đọc kết quả đó, skill `ao-ship`, và phần prompt đã sửa
 
 ---
