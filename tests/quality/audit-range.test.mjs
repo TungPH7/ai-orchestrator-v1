@@ -47,6 +47,8 @@ test('auditRange audits every first-parent commit after the last one audited, ol
   assert.deepEqual({ base: result.base, rewritten: result.rewritten }, { base: S, rewritten: false });
   assert.deepEqual(summary(result), ['a ok', 'b ok', 'c ok']);
   assert.deepEqual(result.audits.map(({ pr }) => pr), [21, 22, 23]);
+  // The branch each PR came from tells the deployer a hotfix from the merge of a release on main.
+  assert.deepEqual(result.audits[0].pull, { number: 21, head: 'feature/DEMO-12-login' });
 });
 
 test('a commit pushed without a PR under a valid one fails the range at that commit, and the audit stops there', async () => {
