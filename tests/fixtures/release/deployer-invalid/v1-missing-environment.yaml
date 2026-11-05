@@ -1,0 +1,7 @@
+description: a project without a host for Staging
+rule: V1
+expect:
+  - "projects[0].hosts.staging"
+patch:
+  - op: remove
+    path: "projects.0.hosts.staging"

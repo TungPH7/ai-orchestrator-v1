@@ -1,0 +1,8 @@
+description: two projects with the same name
+rule: V2
+expect:
+  - "projects[1].name"
+patch:
+  - op: set
+    path: "projects.1.name"
+    value: pilot

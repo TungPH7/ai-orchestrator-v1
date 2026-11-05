@@ -1,0 +1,8 @@
+description: a key the schema does not declare
+rule: V1
+expect:
+  - "registry"
+patch:
+  - op: set
+    path: "registry"
+    value: ghcr.io

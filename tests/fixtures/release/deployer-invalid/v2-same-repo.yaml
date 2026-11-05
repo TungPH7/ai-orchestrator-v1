@@ -1,0 +1,8 @@
+description: two projects with the same repository
+rule: V2
+expect:
+  - "projects[1].repo"
+patch:
+  - op: set
+    path: "projects.1.repo"
+    value: TungPH7/ao-pilot

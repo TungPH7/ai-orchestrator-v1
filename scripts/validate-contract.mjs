@@ -1,14 +1,17 @@
 // Checks the contract against its schemas and consistency rules (spec section 7), then the Jira mapping
 // in the tracker folder next to it (tracker-integration spec section 7), the quality gates in the quality folder
 // (quality-gates spec section 7), the agent roster in the agents folder (agent-roster spec section 7) and a project's
-// deploy.yaml next to the contract folder (release-workflow spec section 7), when they are there.
+// deploy.yaml next to the contract folder and, in the kit, vps/deployer.example.yaml (release-workflow spec section 7),
+// when they are there.
 // Usage: node scripts/validate-contract.mjs [contract-dir]
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { parse } from 'yaml';
 import { readRoster, validateRoster } from '../lib/agents/roster.mjs';
 import { formatError, readContract, validateContract } from '../lib/contract.mjs';
 import { readCiJobs, readGates, validateGates } from '../lib/quality/gates.mjs';
 import { readDeployConfig } from '../lib/release/deploy-config.mjs';
+import { validateDeployerConfig } from '../lib/release/deployer-config.mjs';
 import { readMapping, validateMapping } from '../lib/tracker/mapping.mjs';
 
 const dir = process.argv[2] ?? 'contract';
@@ -17,6 +20,8 @@ const qualityDir = join(dir, '..', 'quality');
 const agentsDir = join(dir, '..', 'agents');
 // A project keeps deploy.yaml in .ai-orchestrator/, next to its contract copy; the kit itself has none.
 const deployFile = join(dir, '..', 'deploy.yaml');
+// The example of /etc/ao/deployer.yaml lives in the kit only.
+const deployerFile = join(dir, '..', 'vps', 'deployer.example.yaml');
 
 // The SKILL.md of each vendored skill, by name; undefined when it is missing.
 function readSkills(roster, skillsDir) {
@@ -62,6 +67,9 @@ try {
   }
   if (existsSync(deployFile)) {
     report(readDeployConfig(readFileSync(deployFile, 'utf8')).errors, `Deploy config OK: ${deployFile}`, deployFile);
+  }
+  if (existsSync(deployerFile)) {
+    report(validateDeployerConfig(parse(readFileSync(deployerFile, 'utf8'))), `Deployer config OK: ${deployerFile}`, deployerFile);
   }
 } catch (error) {
   console.error(error.message);

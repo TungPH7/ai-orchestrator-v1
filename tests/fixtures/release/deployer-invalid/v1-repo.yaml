@@ -1,0 +1,8 @@
+description: a repository that is a URL, not owner/name
+rule: V1
+expect:
+  - "projects[0].repo"
+patch:
+  - op: set
+    path: "projects.0.repo"
+    value: "https://evil.example/x.git"

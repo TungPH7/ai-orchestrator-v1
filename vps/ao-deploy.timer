@@ -1,0 +1,11 @@
+# Starts the deployer one minute after the previous tick ended (release-workflow spec 2.3).
+[Unit]
+Description=Run the ai-orchestrator deployer every minute
+
+[Timer]
+OnBootSec=1min
+OnUnitInactiveSec=1min
+AccuracySec=5s
+
+[Install]
+WantedBy=timers.target

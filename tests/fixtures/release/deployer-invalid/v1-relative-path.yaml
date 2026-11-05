@@ -1,0 +1,8 @@
+description: a secrets folder given as a relative path
+rule: V1
+expect:
+  - "secrets_dir"
+patch:
+  - op: set
+    path: "secrets_dir"
+    value: secrets
