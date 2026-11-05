@@ -1,0 +1,8 @@
+description: a release PR squashed, which would drop the history of the release from main
+rule: Q1
+expect:
+  - "release_pull_requests.merge_method"
+patch:
+  - op: set
+    path: "release_pull_requests.merge_method"
+    value: squash

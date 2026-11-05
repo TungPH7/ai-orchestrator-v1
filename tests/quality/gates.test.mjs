@@ -59,6 +59,10 @@ test('the Epic of a docs branch, and no Epic for any other branch', () => {
   }
 });
 
+test('a release PR and a merge back from main keep their commits with a merge commit; a release is tagged v<version> (release-workflow spec 2.7)', () => {
+  assert.deepEqual(gates.release_pull_requests, { merge_method: 'merge', tag: 'v<VERSION>', back_merge_bases: ['develop', 'release/*'], back_merge_after_release: 'develop' });
+});
+
 test('readGates names the file it cannot read', () => {
   assert.throws(() => readGates(join(ROOT, 'no-such-dir')), /Cannot read .*gates\.yaml/);
 });

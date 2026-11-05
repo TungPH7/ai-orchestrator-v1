@@ -1,0 +1,8 @@
+description: a merge back from main into a work item branch
+rule: Q1
+expect:
+  - "release_pull_requests.back_merge_bases[1]"
+patch:
+  - op: set
+    path: "release_pull_requests.back_merge_bases"
+    value: [develop, "feature/*"]
