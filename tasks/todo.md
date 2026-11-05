@@ -364,7 +364,7 @@
 
 ## Giai đoạn 5: bốn lệnh
 
-### [ ] T12: Dữ kiện về môi trường, và `attachments.mjs` (spec mục 2.5)
+### [x] T12: Dữ kiện về môi trường, và `attachments.mjs` (spec mục 2.5)
 
 **Mô tả:**
 
@@ -372,15 +372,21 @@
 - `lib/tracker/attachments.mjs`: gắn file lên item bằng token CI, trong phiên của bạn (T1, điểm 8), bỏ qua file quá giới hạn của Jira và ghi tên, rồi comment danh sách file.
 
 **Tiêu chí chấp nhận:**
-- [ ] Test dữ kiện bằng bản ghi API ghi sẵn: môi trường chưa có deployment, deployment `failure` mới nhất, commit có và không có commit merge của item.
-- [ ] Test `attachments`: gắn đủ; bỏ file quá giới hạn; comment có tên file.
+- [x] Test dữ kiện bằng bản ghi API ghi sẵn: môi trường chưa có deployment, deployment `failure` mới nhất, commit có và không có commit merge của item.
+- [x] Test `attachments`: gắn đủ; bỏ file quá giới hạn; comment có tên file.
 
 **Kiểm chứng:**
-- [ ] Năm lệnh trong quy ước chung xanh
+- [x] Năm lệnh trong quy ước chung xanh
 
 **Phụ thuộc:** T1 (điểm 8)
 
 **File dự kiến:** `lib/workflow/facts.mjs`, `lib/tracker/attachments.mjs`, `lib/tracker/jira-client.mjs`
+
+**Cách làm khi xong T12** (Phiên 27 · Lượt 8):
+
+- `readRunning`, `contains`, `readReleaseFacts` trong `lib/workflow/facts.mjs`. Nhánh release đang mở là nhánh `release/v*` còn commit chưa vào `main`.
+- **Tiền đề sai, đã kiểm:** token chỉ đọc của App `ao-review`, thứ `ao-step` dùng để đọc GitHub, nhận 403 khi đọc deployment; đọc tag thì được. Login `gh` của bạn đọc được (200). Vì vậy các lệnh release đọc deployment bằng login `gh` của bạn, cùng login T16 dùng để tạo yêu cầu deploy. Không xin thêm quyền cho App nào.
+- `attachEvidence` đọc giới hạn dung lượng từ Jira (`/rest/api/3/attachment/meta`), không đoán. Client Jira có thêm `attach`, gửi multipart với header `X-Atlassian-Token: no-check`.
 
 **Cỡ:** M
 
@@ -389,6 +395,7 @@
 **Mô tả:**
 
 - `decideStep('qa', …)` trong `lib/workflow/steps.mjs`: môi trường QA theo bảng định tuyến; `STOP` khi item không ở Ready for QA, hay môi trường chưa chạy bản chứa commit merge của item.
+- `ao-step.mjs` đọc deployment bằng login `gh` của bạn (T12), không bằng token của `ao-review`.
 - `ao-step.mjs qa <KEY> --go`:
   1. tạo worktree ở đúng commit đang chạy, trong thư mục temp, rồi `npm ci`;
   2. chạy `qa` với `E2E_BASE_URL`, và với Development, Staging thì thêm `E2E_HTTP_USER`, `E2E_HTTP_PASSWORD` lấy từ `AO_ENV_AUTH`;

@@ -112,7 +112,7 @@ T20 ── T21 DEMO-21 tới Production ── T22 hotfix, rollback, smoke fail 
 - [x] T11: `jira-sync`: ba sự kiện deployment
 
 ### Giai đoạn 5: bốn lệnh
-- [ ] T12: Dữ kiện về môi trường, và `attachments.mjs`
+- [x] T12: Dữ kiện về môi trường, và `attachments.mjs`
 - [ ] T13: `/ao-qa`
 - [ ] T14: `/ao-release`
 - [ ] T15: `/ao-ship` cho bản release
