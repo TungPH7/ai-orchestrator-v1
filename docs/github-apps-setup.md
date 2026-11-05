@@ -6,6 +6,7 @@ Hướng dẫn này thuộc module `quality-gates` ([SPEC-quality-gates.md](../S
 |---|---|---|---|
 | `ao-dev` | `tungph7-ao-dev` | Contents: Read and write; Pull requests: Read and write; Workflows: Read and write; Actions: Read-only; Checks: Read-only | `ba`, `sa`, `fe-dev`, `be-dev`, `devops` mở và sửa PR; agent push commit; `merge-gate` merge |
 | `ao-review` | `tungph7-ao-review` | Contents: Read-only; Pull requests: Read and write; Actions: Read-only; Checks: Read-only | `reviewer`, `security` đăng báo cáo review; mọi agent đọc PR và CI bằng token chỉ đọc |
+| `ao-deploy` | `tungph7-ao-deploy` | Contents: Read-only; Pull requests: Read-only; Checks: Read-only; Actions: Read-only; Deployments: Read and write | deployer trên VPS đọc code và cổng, rồi báo deployment (mục 7) |
 
 Bạn tạo hai App một lần cho tài khoản. Mỗi dự án mới chỉ cần cài thêm hai App vào repo của dự án (mục 3). App tạo trước `dev-workflow` thiếu ba quyền mới: thêm theo mục 6.
 
@@ -26,7 +27,7 @@ Script `scripts/github-app-create.mjs` dùng manifest flow của GitHub: nó đi
 2. Mở `http://127.0.0.1:47100/` trên trình duyệt đang đăng nhập GitHub. Trang liệt kê hai App.
 3. Với App đầu tiên, bấm **Tạo App trên GitHub**. GitHub mở trang tạo App đã điền sẵn; bấm nút **Create GitHub App for TungPH7** ở cuối trang **(đối chiếu giao diện)**. GitHub có thể hỏi lại mật khẩu hoặc mã xác thực hai bước.
 4. GitHub chuyển sang trang cài App. Chọn **Only select repositories**, chọn `ao-pilot` (nếu chưa được chọn sẵn), bấm **Install**.
-5. GitHub quay về trang `127.0.0.1`. Làm lại bước 3 và 4 cho App thứ hai. Khi trang ghi "Xong cả hai App", script tự dừng và in slug, App ID, đường dẫn file key của từng App.
+5. GitHub quay về trang `127.0.0.1`. Làm lại bước 3 và 4 cho App thứ hai. Khi trang ghi "Xong mọi App", script tự dừng và in slug, App ID, đường dẫn file key của từng App.
 6. Đặt hai biến môi trường ở mục 4 (Claude làm được, vì giá trị chỉ là đường dẫn). Slug và App ID đã có trong output của script, không cần gửi lại.
 
 Script dừng sau 30 phút nếu chưa xong. File key đã có thì script không ghi đè; muốn tạo lại App thì đổi tên hoặc xóa file cũ trước.
@@ -134,8 +135,30 @@ Làm mục này một lần nếu hai App được tạo trước module `dev-wo
 
 Xong thì nhắn Claude. Claude kiểm mỗi App lấy được token có đúng các quyền mới cho repo của dự án.
 
+## 7. App `ao-deploy` cho release-workflow
+
+Module `release-workflow` ([SPEC-release-workflow.md](../SPEC-release-workflow.md), mục 2.3) thêm App thứ ba. Deployer trên VPS dùng App này để đọc code, PR và CI của repo dự án, kiểm cổng, rồi báo deployment. App không ghi được code hay PR. Agent không dùng App này.
+
+**Tạo App bằng script:**
+
+1. Claude chạy trong thư mục `ai-orchestrator`:
+
+   ```
+   node scripts/github-app-create.mjs --owner TungPH7 --repo ao-pilot --apps deploy --timeout-minutes 120
+   ```
+
+2. Mở `http://127.0.0.1:47100/` trên trình duyệt đang đăng nhập GitHub. Trang chỉ có một App: `tungph7-ao-deploy`.
+3. Bấm **Tạo App trên GitHub**. Trên trang của GitHub, mục quyền phải có đúng năm dòng như bảng ở đầu tài liệu. Bấm **Create GitHub App for TungPH7** ở cuối trang **(đối chiếu giao diện)**. GitHub có thể hỏi lại mật khẩu hoặc mã xác thực hai bước.
+4. GitHub chuyển sang trang cài App. Chọn **Only select repositories**, chọn repo dự án (ở đây là `ao-pilot`) nếu chưa được chọn sẵn, rồi bấm **Install**. Không cài App lên repo kit.
+5. GitHub quay về trang `127.0.0.1`, ghi "Xong mọi App". Script tự dừng, rồi in slug, App ID và đường dẫn file key `C:UsersHuu Tungao-keys	ungph7-ao-deploy.pem`.
+6. Claude đặt biến môi trường `AO_DEPLOY_APP_KEY_FILE` là đường dẫn đó, rồi kiểm App lấy được token cho repo dự án.
+
+Mỗi dự án mới cài thêm `ao-deploy` vào repo của dự án, như mục 3.
+
+**Key của `ao-deploy` cuối cùng chỉ nằm trên VPS.** Lúc kiểm tiền đề, key nằm ở `ao-keys` trên máy bạn, như hai App kia. Khi cài deployer, Claude chép file lên VPS bằng `scp` mà không mở file (`docs/vps-setup.md`). Sau đó bạn xóa file ở máy và biến `AO_DEPLOY_APP_KEY_FILE`.
+
 ## Giữ an toàn private key
 
 - Private key là bí mật quan trọng nhất của App: ai có file này đều làm được mọi việc App được phép, trên mọi repo App được cài.
-- Key chỉ nằm ở hai nơi: thư mục `ao-keys` trên máy bạn, và secret của GitHub Actions cho `merge-gate`. Mỗi nơi một key riêng, để thu hồi riêng được. Một App có tối đa 25 key.
+- Key của `ao-dev` và `ao-review` chỉ nằm ở hai nơi: thư mục `ao-keys` trên máy bạn, và secret của GitHub Actions cho `merge-gate`. Key của `ao-deploy` chỉ nằm trên VPS (mục 7). Mỗi nơi một key riêng, để thu hồi riêng được. Một App có tối đa 25 key.
 - Nghi key bị lộ: vào trang cài đặt của App, **Credentials** → **Key pairs** (hoặc mục **Private keys**), xóa key đó, tạo key mới, rồi cập nhật file và biến môi trường.
