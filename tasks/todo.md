@@ -306,7 +306,7 @@
 
 ## Giai đoạn 4: cổng và Jira
 
-### [ ] T10: `merge-gate`: PR release, tag và PR merge ngược (spec mục 2.7, 2.10)
+### [x] T10: `merge-gate`: PR release, tag và PR merge ngược (spec mục 2.7, 2.10)
 
 **Mô tả:**
 
@@ -314,14 +314,15 @@
 - PR release (`release/vX.Y.0` → `main`): merge bằng merge commit khi CI xanh trên head và một login trong `AO_APPROVERS` đã approve head; gắn tag `vX.Y.0` vào merge commit; mở PR merge ngược `main` → `develop`.
 - PR merge ngược (head `main`, vào `develop` hay nhánh `release/*` đang mở): merge bằng merge commit khi CI xanh và không có xung đột, không cần approve; có xung đột thì gắn cờ "Needs you" và không merge.
 - `docs/quality-gates.md` trường hợp 3 ghi cách mới.
+- **Cách làm khi xong T10** (Phiên 27 · Lượt 7): mục `release_pull_requests` (cách merge, dạng tag, nhánh nhận PR merge ngược, nhánh mở PR merge ngược sau release) và quy tắc Q6. PR release không bị đường dẫn được bảo vệ bắt bạn tự merge, vì từng thay đổi đã qua cổng ở PR riêng. PR merge ngược có xung đột nhận một comment "Needs you" trên PR, không có cờ trên Jira, vì PR đó không thuộc item nào. `isBackMerge` nằm ở `merge-gate.mjs`, `audit` dùng chung.
 
 **Tiêu chí chấp nhận:**
-- [ ] Test PR release: merge bằng merge commit và gắn tag; không merge khi thiếu approve trên head hay CI chưa xanh.
-- [ ] Test PR merge ngược: merge khi không xung đột; gắn cờ khi có; không nhận PR merge ngược có head khác `main`.
-- [ ] Test dương và fixture âm cho mục mới của `quality/gates.yaml`.
+- [x] Test PR release: merge bằng merge commit và gắn tag; không merge khi thiếu approve trên head hay CI chưa xanh.
+- [x] Test PR merge ngược: merge khi không xung đột; gắn cờ khi có; không nhận PR merge ngược có head khác `main`.
+- [x] Test dương và fixture âm cho mục mới của `quality/gates.yaml`.
 
 **Kiểm chứng:**
-- [ ] Năm lệnh trong quy ước chung xanh
+- [x] Năm lệnh trong quy ước chung xanh
 
 **Phụ thuộc:** T6
 

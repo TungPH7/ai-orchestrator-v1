@@ -108,7 +108,7 @@ T20 ── T21 DEMO-21 tới Production ── T22 hotfix, rollback, smoke fail 
 - [x] T9: Thư mục `vps/` và phần deployer của `docs/vps-setup.md`
 
 ### Giai đoạn 4: cổng và Jira
-- [ ] T10: `merge-gate`: PR release, tag và PR merge ngược
+- [x] T10: `merge-gate`: PR release, tag và PR merge ngược
 - [ ] T11: `jira-sync`: ba sự kiện deployment
 
 ### Giai đoạn 5: bốn lệnh
