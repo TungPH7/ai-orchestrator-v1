@@ -63,3 +63,17 @@ test('a repository without release branches answers an empty list', async () => 
   const jira = fakeJira({ gets: { '/rest/api/3/project/DEMO/versions': [] } });
   assert.deepEqual((await readReleaseFacts({ github: empty, jira, mapping, space: 'DEMO' })).releaseBranches, []);
 });
+
+test('the QA facts of an item: the QA environment of its route, the release that runs there, and whether it holds the merge', async () => {
+  const { readContract } = await import('../../lib/contract.mjs');
+  const { CONTRACT_DIR } = await import('../helpers/kit.mjs');
+  const { readQaFacts } = await import('../../lib/workflow/facts.mjs');
+  const contract = readContract(CONTRACT_DIR);
+  // New work merges into develop and is tested on Development; a hotfix merges into main and is tested on Staging.
+  assert.deepEqual(await readQaFacts(github, { base: 'develop', mergeCommit: sha('a') }, { contract, mapping }), {
+    environment: 'development',
+    running: { sha: sha('b'), deployment: 2, url: 'https://pilot-dev.ao.t2g.io.vn' },
+    contains: true,
+  });
+  assert.deepEqual(await readQaFacts(github, { base: 'main', mergeCommit: sha('a') }, { contract, mapping }), { environment: 'staging', running: null, contains: false });
+});

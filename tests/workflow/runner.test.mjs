@@ -4,7 +4,7 @@ import { isAbsolute, join, relative, resolve } from 'node:path';
 import { readRoster } from '../../lib/agents/roster.mjs';
 import { readContract } from '../../lib/contract.mjs';
 import { readGates } from '../../lib/quality/gates.mjs';
-import { answersPrompt, packNote, resumePrompt, worktreeNote } from '../../lib/workflow/prompts.mjs';
+import { answersPrompt, packNote, qaWorktreeNote, resumePrompt, worktreeNote } from '../../lib/workflow/prompts.mjs';
 import { agentCommand, formatDecision, lastReport, runGo } from '../../lib/workflow/runner.mjs';
 import { decideStep } from '../../lib/workflow/steps.mjs';
 import { CONTRACT_DIR, ROOT } from '../helpers/kit.mjs';
@@ -87,7 +87,7 @@ function harness(world, effects, { outcomes = [], texts = [], throws = false, st
     last,
     checkouts,
     run: (more = {}) =>
-      runGo({ command: 'spec', arg: 'DEMO-20', options: { ...options, ...more.options }, gather: more.gather, decide: more.decide, pack: more.pack, worktree: more.worktree, log: more.log, agent, git: async (c) => (checkouts.push(c), { ok: true }), dispatch: async () => {}, store, sleep: async (ms) => (clock += ms), now: () => clock, limits: { maxRuns: 8, ciWaitMs: 120000, syncWaitMs: 60000, pollMs: 30000, ...more.limits } }),
+      runGo({ command: 'spec', arg: 'DEMO-20', options: { ...options, ...more.options }, gather: more.gather, decide: more.decide, pack: more.pack, worktree: more.worktree, after: more.after, log: more.log, agent, git: async (c) => (checkouts.push(c), { ok: true }), dispatch: async () => {}, store, sleep: async (ms) => (clock += ms), now: () => clock, limits: { maxRuns: 8, ciWaitMs: 120000, syncWaitMs: 60000, pollMs: 30000, ...more.limits } }),
   };
 }
 const SPEC_EFFECTS = {
@@ -435,4 +435,29 @@ test('the lock of ao-step is taken atomically: a second run sees the first, a st
   assert.equal(takeLock(lock, { pid: 103, command: 'fix', arg: '15' }, () => false), null, 'the holder is gone');
   assert.equal(JSON.parse(readFileSync(lock, 'utf8')).pid, 103);
   rmSync(dir, { recursive: true, force: true });
+});
+
+// release-workflow T13: a qa run.
+test('a qa run gets its worktree with the qa note; its follow-up runs before the worktree goes, and its notes reach state.json and last.md', async () => {
+  const one = (run) => { let decided = 0; return () => (decided++ === 0 ? { go: true, runs: [run], lines: [] } : { go: false, reason: 'nothing left', next: '-', lines: [] }); };
+  const qa = { role: 'qa', key: 'DEMO-20', effort: 'high', purpose: 'qa', prompt: 'QA Story DEMO-20.', worktree: { kind: 'qa', name: 'DEMO-20-qa', sha: 'abc1234def5678', install: true }, env: { E2E_BASE_URL: 'https://pilot-dev.ao.t2g.io.vn' } };
+  const events = [];
+  const worktree = { add: async (spec) => (events.push(['add', spec.name, spec.install]), { ok: true, path: 'C:/Temp/ao-reviews/shop-DEMO-20-qa' }), remove: async (spec) => (events.push(['remove', spec.name]), { ok: true }) };
+  const after = async (run, { tree }) => (events.push(['after', run.purpose, tree.path]), ['Attached to DEMO-20: cart.png.']);
+  const world = specWorld();
+  const h = harness(world.world, {});
+  await h.run({ gather: world.gather, decide: one(qa), worktree, after });
+  assert.deepEqual(events, [['add', 'DEMO-20-qa', true], ['after', 'qa', 'C:/Temp/ao-reviews/shop-DEMO-20-qa'], ['remove', 'DEMO-20-qa']]);
+  assert.equal(h.calls[0].prompt, ['QA Story DEMO-20.', qaWorktreeNote('C:/Temp/ao-reviews/shop-DEMO-20-qa', 'abc1234def5678')].join('\n\n'));
+  assert.match(qaWorktreeNote('C:/Temp/x', 'abc1234def5678'), /^The code of abc1234, the release the environment runs, is in the folder C:\/Temp\/x, a worktree outside the project, with its packages installed\. /);
+  assert.deepEqual(h.states.at(-1).runs.at(-1).notes, ['Attached to DEMO-20: cart.png.']);
+  assert.match(h.last['DEMO-20'], /## 1\. qa: notes of the orchestrator\n\n- Attached to DEMO-20: cart\.png\./);
+});
+
+test('the variables of a run reach ao-agent.mjs through its environment; a password never reaches its arguments', () => {
+  const run = { role: 'qa', key: 'DEMO-21', effort: 'high', purpose: 'qa', prompt: 'QA Story DEMO-21.', env: { E2E_BASE_URL: 'https://pilot-dev.ao.t2g.io.vn', E2E_HTTP_USER: 'ao', E2E_HTTP_PASSWORD: 's3cr3t-pass' } };
+  const { args, env } = agentCommand(run, 'D:/work/shop/.ai-orchestrator');
+  assert.deepEqual(env, { CLAUDE_CODE_EFFORT_LEVEL: 'high', CLAUDE_CODE_PROMPT_CACHE_TTL: '5m', E2E_BASE_URL: 'https://pilot-dev.ao.t2g.io.vn', E2E_HTTP_USER: 'ao', E2E_HTTP_PASSWORD: 's3cr3t-pass' });
+  assert.ok(!args.some((arg) => arg.includes('s3cr3t-pass')));
+  assert.ok(!('JIRA_CI_TOKEN' in env));
 });

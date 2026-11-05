@@ -93,6 +93,9 @@ test('every agent session reads GitHub with the read-only token and runs git wit
   ]);
   assert.deepEqual(clear, CLEARED_ENV);
   for (const name of ['GIT_CONFIG_PARAMETERS', 'GIT_ASKPASS', 'SSH_ASKPASS', 'GITHUB_TOKEN']) assert.ok(clear.includes(name), name);
+  // release-workflow spec 2.5: the CI token and your other secrets stay in your session, out of every agent's, though
+  // Windows gives every process your user variables (T13).
+  for (const name of ['JIRA_CI_TOKEN', 'JIRA_ADMIN_TOKEN', 'AO_JIRA_READ_TOKEN', 'AO_ENV_AUTH']) assert.ok(clear.includes(name), name);
   assert.deepEqual(READ_PERMISSIONS, { contents: 'read', pull_requests: 'read', actions: 'read', checks: 'read' });
 });
 
