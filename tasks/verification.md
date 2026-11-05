@@ -46,6 +46,12 @@
 - **Phần lớn thời gian build là `npm ci`**, khoảng 3 phút. Không có `--no-cache` thì bước này trúng cache khi `package.json` và `package-lock.json` không đổi. [Ước tính] Một lần deploy chỉ đổi code của API hay web mất khoảng 2–3 phút.
 - **`curl` của Windows** (schannel) lỗi TLS `SEC_E_INTERNAL_ERROR` với site, ở phía máy bạn. Node và Chrome kết nối được. Script chạy trên máy bạn nên gọi HTTPS bằng Node, không bằng `curl`.
 
+**Sửa spec và plan** (bạn duyệt ở Phiên 26 · Lượt 33):
+
+1. Deployer đặt biến `AO_PUBLIC_URL` cho app `public`; server của `ao-pilot` nhận Host và Origin của địa chỉ đó (spec mục 2.3; T7, T19).
+2. Test gửi request thô mang tag `@local` và chạy vào server tại chỗ, ở cùng commit; các test khác chạy vào `E2E_BASE_URL` (spec mục 2.5; T19, T23).
+3. Deployer dọn cache build, giữ tối đa 4 GB (spec mục 2.3; T7).
+
 **Sau khi tắt đăng nhập root, kiểm từ máy bạn:** root bằng key: "Permission denied (publickey)"; `aoadmin` bằng mật khẩu: "Permission denied (publickey)"; `aoadmin` bằng key: vào được. Quét 65.535 cổng TCP (412 giây): chỉ cổng 80 và `26266` mở. Cổng 443 đã mở trong `ufw` và được Caddy publish, nhưng Caddyfile gốc chưa có site HTTPS nào, nên chưa có gì nghe ở đó; lúc thử điểm 6, HTTPS qua cổng 443 chạy được.
 
 **Dọn:** đã xóa 6 container thử, image thử, mạng `ao-edge`, cache build, `/root/t2` trên VPS và mật khẩu basic auth dùng một lần trên máy bạn. Caddy vẫn chạy với Caddyfile gốc ở `docs/vps-setup.md` mục 8, giữ chứng chỉ trong volume `caddy_data`.

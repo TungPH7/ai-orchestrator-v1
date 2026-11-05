@@ -80,8 +80,9 @@ Deploy chậm tối đa khoảng một phút sau merge. Mỗi lúc deployer ch�
 - Tag của image là **mã tree** của commit (`git rev-parse <commit>^{tree}`), không phải mã commit. Merge commit trên `main` có cùng tree với head của nhánh release, nên Production chạy đúng image đã qua Staging mà không phải build lại.
 - `.dockerignore` của dự án bỏ `docs/` và `*.md`. Commit chỉ sửa tài liệu thì build trúng cache, xong trong vài giây.
 - Deployer giữ ba image gần nhất của mỗi môi trường để rollback, và xóa image cũ hơn.
+- Sau mỗi lần deploy, deployer dọn cache build của Docker, chỉ giữ phần dùng gần nhất, tối đa 4 GB. Nhờ vậy bước `npm ci` vẫn trúng cache mà đĩa không đầy: ở T2 của plan, 6 lần build để lại 7,25 GB cache.
 
-**Container.** Cấu hình chạy container do deployer dựng, theo file `.ai-orchestrator/deploy.yaml` của dự án ở đúng commit đã qua cổng. File này chỉ khai: các app, Dockerfile, cổng trong container, đường dẫn health, và **tên** các biến môi trường. Schema của kit không cho khai volume, `privileged`, mạng của host hay cổng ra ngoài. `.ai-orchestrator/**` là đường dẫn được bảo vệ, nên mọi thay đổi file này do bạn merge.
+**Container.** Cấu hình chạy container do deployer dựng, theo file `.ai-orchestrator/deploy.yaml` của dự án ở đúng commit đã qua cổng. File này chỉ khai: các app, Dockerfile, cổng trong container, đường dẫn health, và **tên** các biến môi trường. Schema của kit không cho khai volume, `privileged`, mạng của host hay cổng ra ngoài. `.ai-orchestrator/**` là đường dẫn được bảo vệ, nên mọi thay đổi file này do bạn merge. Deployer tự đặt thêm biến `AO_PUBLIC_URL` cho app `public`: địa chỉ HTTPS của môi trường, ví dụ `https://pilot-dev.ao.t2g.io.vn`. Sau Caddy, request mang tên miền công khai đó, nên app nào kiểm Host hay Origin của request thì nhận địa chỉ này (T2 của plan).
 
 ```yaml
 # .ai-orchestrator/deploy.yaml của ao-pilot
@@ -135,7 +136,7 @@ GitHub Free không chặn được gate ⑤ cho repo private. Hai điều kiện
 - **Môi trường QA của item** lấy theo bảng định tuyến của hợp đồng: item vào `develop` thì QA trên Development; bản vá Production và Bug của bản đang ở Staging thì QA trên Staging.
 - **`qa` chạy trên máy bạn** và kiểm qua URL của môi trường. Script tìm bản đang chạy ở đó qua deployment mới nhất có status `success`, rồi kiểm bản đó chứa commit merge của item.
 - **Code `qa` đọc** nằm trong một worktree ở đúng commit đang chạy, trong thư mục temp, như worktree của lượt review. Script chạy `npm ci` trong worktree trước, để `qa` chạy được E2E.
-- **E2E chạy vào môi trường thật:** script truyền `E2E_BASE_URL`; với Development và Staging, script truyền thêm `E2E_HTTP_USER` và `E2E_HTTP_PASSWORD` (mục 2.3). `playwright.config.ts` của dự án phải dùng các biến này cho `baseURL` và `httpCredentials`, và bỏ `webServer` khi có `E2E_BASE_URL`. Đây là yêu cầu với dự án, ghi trong `docs/release-workflow.md`.
+- **E2E chạy vào môi trường thật:** script truyền `E2E_BASE_URL`; với Development và Staging, script truyền thêm `E2E_HTTP_USER` và `E2E_HTTP_PASSWORD` (mục 2.3). `playwright.config.ts` của dự án phải dùng các biến này cho `baseURL` và `httpCredentials`. Test gửi request mà trình duyệt không gửi được (Host lạ, Origin lạ, body quá lớn) mang tag `@local`, vì qua Caddy các request đó không tới được app. Khi có `E2E_BASE_URL`, test `@local` chạy vào server do `webServer` tự bật từ worktree, ở cùng commit; các test khác chạy vào `E2E_BASE_URL`. Một lệnh `playwright test` chạy đủ cả hai phần (T2 của plan). Đây là yêu cầu với dự án, ghi trong `docs/release-workflow.md`.
 - **Bằng chứng:** `qa` lưu ảnh vào `.ai/qa/<KEY>/` như hiện nay, và trace của Playwright nằm trong `test-results/` của worktree. Sau lượt của `qa`, script gắn các file đó lên item Jira bằng token CI (`JIRA_CI_TOKEN`), rồi comment danh sách file. Script chạy trong phiên của bạn, sau khi lượt của `qa` đã xong, và token CI không có trong môi trường của phiên agent. Token của agent chỉ có scope đọc với REST API, nên không gắn file được (T1 của plan). File quá giới hạn của Jira thì bỏ qua và ghi tên. `qa` không tự tải file lên, vì tool Jira của agent không làm được việc đó.
 - **Deploy mới giữa lúc `qa` đang kiểm:** script ghi mã commit đang chạy lúc đầu và lúc cuối lượt. Hai mã khác nhau thì báo cáo ghi rõ, và Claude đề nghị bạn chạy lại `/ao-qa`.
 - **Không đưa E2E vào CI của PR** ở module này. Mỗi lần chạy E2E trong Actions tốn thêm vài phút, mà bạn đã dùng khoảng 36% phần miễn phí trong 4 ngày đầu tháng 11. QA trên Development và regression trên Staging thay cho việc đó.
@@ -256,9 +257,9 @@ Spec dựa vào mười điều chưa ai thử. Task đầu kiểm cả mười,
 2. GitHub for Jira hiện các deployment đó trên item, đúng môi trường.
 3. Quyền của App `ao-deploy` ở mục 2.3 đủ cho `git fetch` qua HTTPS và mọi lệnh đọc của `audit`.
 4. Token Jira chỉ đọc của tài khoản CI đọc được những gì `audit` cần cho PR tài liệu.
-5. Trên VPS 2 vCPU, 4 GB: build Next.js và NestJS xong trong khi ba môi trường đang chạy, và đo thời gian build.
-6. Caddy lấy được chứng chỉ HTTPS cho subdomain dưới bản ghi wildcard ở BKNS.
-7. E2E của `ao-pilot` chạy từ máy bạn vào URL thật, với Chrome của máy và basic auth.
+5. Trên VPS 2 vCPU, 4 GB: build Next.js và NestJS xong trong khi ba môi trường đang chạy, và đo thời gian build. Kết quả T2: đúng; build lại API mất 5,2 phút, web 5,8 phút, RAM lúc cao nhất 1,77 GB trên 3,9 GB.
+6. Caddy lấy được chứng chỉ HTTPS cho subdomain dưới bản ghi wildcard ở BKNS. Kết quả T2: đúng.
+7. E2E của `ao-pilot` chạy từ máy bạn vào URL thật, với Chrome của máy và basic auth. Kết quả T2: đúng một phần, 19/24 test xanh; app đọc `AO_PUBLIC_URL` (mục 2.3), và test gửi request thô mang tag `@local` (mục 2.5).
 8. Script gắn được file lên item Jira bằng token của agent. Kết quả T1: sai; script dùng token CI (mục 2.5).
 9. `jira-sync` tạo được Bug với Found in, Severity và Affects Version bằng token CI.
 10. Một yêu cầu deploy tạo bằng login `gh` của bạn ghi `creator` là login của bạn, và token `ao-dev` không tạo được yêu cầu nào mang login đó.
@@ -332,7 +333,7 @@ ai-orchestrator-v1/
 └── tests/release/                   # dữ liệu mẫu ở tests/fixtures/release/
 ```
 
-Dự án có thêm: Dockerfile của từng app, `.dockerignore`, `.ai-orchestrator/deploy.yaml`, và `playwright.config.ts` đọc `E2E_BASE_URL`.
+Dự án có thêm: Dockerfile của từng app, `.dockerignore`, `.ai-orchestrator/deploy.yaml`, và `playwright.config.ts` đọc `E2E_BASE_URL` và tách test `@local` (mục 2.5). App `public` kiểm Host hay Origin thì đọc `AO_PUBLIC_URL` (mục 2.3).
 
 ## 6. Code style
 
@@ -375,6 +376,7 @@ STOP: gate ④. Read the list, then run /ao-release v0.1.0 22327a5
 - `targets`: mỗi dòng của bảng mục 2.4. Production bị từ chối khi thiếu gate ⑤, khi tree chưa qua Staging, khi người tạo yêu cầu không nằm trong `AO_APPROVERS`, khi rollback về bản chưa từng chạy ở môi trường đó.
 - `deployer` với client giả: kiểm mọi commit first-parent mới, không chỉ head; dừng ở commit đầu tiên không qua `audit`; báo đúng deployment status.
 - `deploy-config`: từ chối volume, `privileged`, cổng ra host.
+- `docker`: app `public` nhận `AO_PUBLIC_URL` của môi trường, app khác không nhận; sau deploy, cache build được dọn còn tối đa 4 GB.
 - `audit`: hai quy tắc mới, và commit của bot sửa file khác ngoài hai đường dẫn đó thì fail.
 - `merge-gate`: PR release merge bằng merge commit và gắn tag; PR merge ngược merge khi không xung đột, gắn cờ khi có.
 - `jira-sync`: ba sự kiện deployment của mục 2.10.
@@ -385,7 +387,7 @@ STOP: gate ④. Read the list, then run /ao-release v0.1.0 22327a5
 
 1. Mười tiền đề ở mục 2.12.
 2. Bạn thuê VPS, tạo bản ghi DNS, tạo App `ao-deploy`; Claude cài VPS và deployer.
-3. Một Task của `ao-pilot` đưa Dockerfile, `.dockerignore`, `deploy.yaml`, biến `HOST`, `E2E_BASE_URL` vào dự án, và bỏ `deploy.yml`. PR của Task mang thêm bản chép kit mới vào `.ai-orchestrator/`, vì `merge-gate` và `jira-sync` chạy trong Actions bằng bản chép đó (plan, quyết định 6). Task đi qua `/ao-build`, `/ao-review` và gate ③. Bạn tự merge, vì PR sửa đường dẫn được bảo vệ. Deployer deploy Development.
+3. Một Task của `ao-pilot` đưa Dockerfile, `.dockerignore`, `deploy.yaml`, biến `HOST` và `AO_PUBLIC_URL`, `E2E_BASE_URL` và tag `@local` vào dự án, và bỏ `deploy.yml`. PR của Task mang thêm bản chép kit mới vào `.ai-orchestrator/`, vì `merge-gate` và `jira-sync` chạy trong Actions bằng bản chép đó (plan, quyết định 6). Task đi qua `/ao-build`, `/ao-review` và gate ③. Bạn tự merge, vì PR sửa đường dẫn được bảo vệ. Deployer deploy Development.
 4. `/ao-qa DEMO-21` trên Development: bằng chứng nằm trên Jira; bạn Accept.
 5. `/ao-release`, rồi gate ④: `release/v0.1.0`, Staging.
 6. `/ao-ship v0.1.0`, rồi gate ⑤: merge commit, tag, merge ngược, Production, smoke xanh. Bạn bấm Release trên Jira.
