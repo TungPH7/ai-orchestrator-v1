@@ -243,7 +243,7 @@
 - Log không chứa token hay giá trị biến môi trường của app.
 
 **Tiêu chí chấp nhận:**
-- [ ] Test với client giả: kiểm mọi commit first-parent mới, không chỉ head; dừng ở commit đầu tiên fail; báo đúng deployment status.
+- [ ] Test với client giả: kiểm mọi commit first-parent mới, không chỉ head; dừng ở commit đầu tiên fail; báo `error` khi `targets` từ chối, kèm lý do (spec mục 2.4).
 - [ ] Test Production: hotfix trên `main` lên Staging trước; merge commit của PR release lên Production khi tree đã qua Staging; smoke fail giữ bản cũ và báo `failure`.
 - [ ] Test chạy lại sau khi lượt trước dừng giữa chừng: không deploy lại bản đã xong, không bỏ sót bản chưa xong.
 - [ ] Test log và tham số dòng lệnh không chứa token.
@@ -312,12 +312,13 @@
 **Mô tả:** `lib/tracker/sync.mjs` nhận thêm:
 
 - deployment `success` lên Staging của commit hotfix: Bug sang Ready for QA;
-- deployment `failure` lên Production: tạo Bug Critical, Found in Production, Affects Version là bản vừa lên;
-- deployment `failure` lên Development hay Staging: gắn cờ "Needs you" cho item của commit đó.
+- deployment `failure` lên Production: tạo Bug Critical, Found in Production, Affects Version là bản vừa lên. `error` lên Production, tức deployer từ chối trước khi deploy, không tạo Bug (spec mục 2.4);
+- deployment `failure` hay `error` lên Development hay Staging: gắn cờ "Needs you" cho item của commit đó.
 
 **Tiêu chí chấp nhận:**
 - [ ] Test cho ba sự kiện, bằng bản ghi API ghi sẵn.
 - [ ] Test không tạo Bug lặp khi cùng một deployment báo `failure` hai lần.
+- [ ] Test `error` lên Production không tạo Bug.
 - [ ] Test cũ của `jira-sync` vẫn xanh.
 
 **Kiểm chứng:**

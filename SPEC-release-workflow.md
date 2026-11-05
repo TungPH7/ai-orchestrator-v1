@@ -127,9 +127,11 @@ Token Jira chỉ đọc cần cho một quy tắc của `audit`: commit merge c�
 **Production có hai điều kiện cứng, deployer tự kiểm:**
 
 1. **Có gate ⑤, theo một trong hai cách.** Cách một: commit là merge của PR release mà một login trong `AO_APPROVERS` đã approve trên head; `audit` đã kiểm điều này. Cách hai: GitHub ghi người tạo yêu cầu deploy là một login trong `AO_APPROVERS`. GitHub ghi người tạo theo token đã gọi API, nên agent không giả được. Tag không được tính là gate ⑤, vì token `ao-dev` của agent cũng tạo được tag.
-2. **Tree của commit đã chạy thành công trên Staging, và qua smoke test ở đó.** Thiếu một trong hai thì deployer báo deployment `failure` kèm lý do, và không đụng tới Production.
+2. **Tree của commit đã chạy thành công trên Staging, và qua smoke test ở đó.** Thiếu một trong hai thì deployer báo deployment `error` kèm lý do, và không đụng tới Production.
 
 GitHub Free không chặn được gate ⑤ cho repo private. Hai điều kiện này thay cho người duyệt bắt buộc của environment `production`.
+
+**`error` và `failure`.** Deployer báo `error` khi từ chối một bản trước khi deploy, ở mọi môi trường: commit không qua `audit`, thiếu một trong hai điều kiện trên, yêu cầu deploy của người ngoài `AO_APPROVERS`, rollback về bản chưa từng chạy ở môi trường đó. Deployer chỉ báo `failure` khi bản mới đã chạy mà smoke test fail (mục 2.9). Nhờ vậy `jira-sync` không tạo Bug Critical cho một bản chưa hề chạy trên Production (bạn duyệt ở Phiên 27 · Lượt 2).
 
 ### 2.5 QA trên môi trường
 
@@ -196,7 +198,7 @@ Hotfix dùng đúng quy ước đã có: Bug Critical hay High tìm thấy trên
 **Smoke test** chạy trên VPS sau mỗi lần deploy, theo mục `smoke` của `deploy.yaml`: gọi từng đường dẫn qua mạng nội bộ, kiểm mã trạng thái và một đoạn chữ. Hết 60 giây mà chưa xanh thì coi là fail.
 
 - **Development, Staging:** smoke fail thì deployment có status `failure`, container cũ vẫn phục vụ, và item không sang Ready for QA. `jira-sync` gắn cờ "Needs you", đúng quy tắc "Deploy lên môi trường QA thất bại" của hợp đồng.
-- **Production:** smoke fail thì container của bản trước vẫn phục vụ, và deployer báo deployment `failure`. `jira-sync` thấy status đó và tạo Bug Critical, Found in Production, Affects Version là bản vừa lên, như quy tắc "Smoke test sau khi lên Production fail" của hợp đồng.
+- **Production:** smoke fail thì container của bản trước vẫn phục vụ, và deployer báo deployment `failure`. `jira-sync` thấy status đó và tạo Bug Critical, Found in Production, Affects Version là bản vừa lên, như quy tắc "Smoke test sau khi lên Production fail" của hợp đồng. Bản bị từ chối trước khi chạy có status `error`, không phải `failure`, nên không sinh Bug (mục 2.4).
 
 **Đổi bản không gián đoạn** (plan, quyết định 4). Container mới chạy cạnh container cũ, và smoke test gọi container mới qua mạng nội bộ. Đạt thì Caddy chuyển sang container mới, và container cũ dừng. Không đạt thì container mới bị xóa. Vì vậy "quay về bản trước" là giữ nguyên container cũ.
 
@@ -222,8 +224,8 @@ Với Production, `<sha>` vẫn phải thỏa hai điều kiện của mục 2.4
 - **`merge-gate`** (`lib/quality/merge-gate.mjs`): PR release, tag, PR merge ngược (mục 2.7). Quy tắc mới có mục riêng trong `quality/gates.yaml`, kèm schema và quy tắc kiểm của `npm run validate`.
 - **`jira-sync`** (`lib/tracker/sync.mjs`):
   - deployment `success` lên Staging của commit hotfix chuyển Bug sang Ready for QA;
-  - deployment `failure` lên Production tạo Bug Critical;
-  - deployment `failure` lên Development hay Staging gắn cờ "Needs you".
+  - deployment `failure` lên Production tạo Bug Critical; `error` lên Production không tạo Bug (mục 2.4);
+  - deployment `failure` hay `error` lên Development hay Staging gắn cờ "Needs you".
 - **Prompt:** `qa.md` thêm QA trên môi trường và full regression; `devops.md` thêm release note và mô tả PR release, và bỏ câu "chờ `release-workflow`".
 - **Hợp đồng:** stage `release-cut` ghi rằng script làm thay `devops`; stage `hotfix` ghi gate ⑤ là yêu cầu deploy của bạn. `docs/sdlc.md` được sinh lại.
 - **Dự án** bỏ `deploy.yml` (deploy giả). Workflow này gọi `audit` mỗi lần push, nên bỏ nó cũng bớt được phút Actions.
@@ -374,12 +376,12 @@ STOP: gate ④. Read the list, then run /ao-release v0.1.0 22327a5
 - `cut`: điểm cắt khi mọi item Done; khi item giữa lịch sử chưa Done; khi item có commit trước và sau điểm cắt; khi không có item Done nào.
 - `versions`: bản đầu `v0.1.0`; tăng `minor`; bản vá tăng `patch`; tag sai dạng bị bỏ qua.
 - `targets`: mỗi dòng của bảng mục 2.4. Production bị từ chối khi thiếu gate ⑤, khi tree chưa qua Staging, khi người tạo yêu cầu không nằm trong `AO_APPROVERS`, khi rollback về bản chưa từng chạy ở môi trường đó.
-- `deployer` với client giả: kiểm mọi commit first-parent mới, không chỉ head; dừng ở commit đầu tiên không qua `audit`; báo đúng deployment status.
+- `deployer` với client giả: kiểm mọi commit first-parent mới, không chỉ head; dừng ở commit đầu tiên không qua `audit`; báo `error` khi từ chối, `failure` khi smoke fail.
 - `deploy-config`: từ chối volume, `privileged`, cổng ra host.
 - `docker`: app `public` nhận `AO_PUBLIC_URL` của môi trường, app khác không nhận; sau deploy, cache build được dọn còn tối đa 4 GB.
 - `audit`: hai quy tắc mới, và commit của bot sửa file khác ngoài hai đường dẫn đó thì fail.
 - `merge-gate`: PR release merge bằng merge commit và gắn tag; PR merge ngược merge khi không xung đột, gắn cờ khi có.
-- `jira-sync`: ba sự kiện deployment của mục 2.10.
+- `jira-sync`: ba sự kiện deployment của mục 2.10; `error` lên Production không tạo Bug.
 - `steps`: mỗi lệnh có một trường hợp `GO` và các trường hợp `STOP` (sai trạng thái, môi trường QA chưa có commit của item, có nhánh release đang mở, thiếu Fix Version trên Jira, regression trên commit cũ, diff sau regression sửa file khác).
 - Skill: frontmatter của bốn lệnh có `disable-model-invocation: true` và gọi đúng `ao-step.mjs`.
 
