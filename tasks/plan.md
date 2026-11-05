@@ -104,7 +104,7 @@ T20 ── T21 DEMO-21 tới Production ── T22 hotfix, rollback, smoke fail 
 ### Giai đoạn 3: deployer
 - [x] T6: `audit` cho một dãy commit, và hai quy tắc mới
 - [x] T7: `smoke.mjs` và phần Docker của deployer
-- [ ] T8: `deployer.mjs` và `scripts/ao-deploy.mjs`
+- [x] T8: `deployer.mjs` và `scripts/ao-deploy.mjs`
 - [ ] T9: Thư mục `vps/` và phần deployer của `docs/vps-setup.md`
 
 ### Giai đoạn 4: cổng và Jira

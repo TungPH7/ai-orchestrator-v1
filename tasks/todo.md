@@ -233,7 +233,7 @@
 
 **Cỡ:** M
 
-### [ ] T8: `deployer.mjs` và `scripts/ao-deploy.mjs` (spec mục 2.3, 2.4, 2.9)
+### [x] T8: `deployer.mjs` và `scripts/ao-deploy.mjs` (spec mục 2.3, 2.4, 2.9)
 
 **Mô tả:**
 
@@ -250,16 +250,22 @@
 - Log không chứa token hay giá trị biến môi trường của app.
 - Hàm chạy `docker` khởi động lệnh với môi trường tối thiểu (`PATH`, `HOME`) cộng các biến `swap` đưa cho từng app, không kế thừa môi trường của deployer (T7).
 - Tree đang chạy ở môi trường đó thì không gọi `swap`: commit chỉ đổi tài liệu vẫn có deployment `success` mà không đổi container.
+- **Cách làm khi xong T8** (Phiên 27 · Lượt 4):
+  - Bản ghi nằm ở `lib/release/record.mjs`. Mỗi môi trường nhớ head đã xét của từng nhánh: head đó đã deploy, bị từ chối hay bỏ qua thì không xét lại. Nhờ vậy sau rollback Production, `main` không tự lên lại, và một commit bị từ chối không sinh deployment mới mỗi phút.
+  - Điểm bắt đầu ghi head của hôm nay là đã kiểm và đã xét: lượt đầu không deploy gì, deploy bắt đầu từ commit kế tiếp, hoặc từ yêu cầu deploy của bạn.
+  - Một lượt dừng giữa chừng vì lỗi của Docker hay git để lại việc dở trong bản ghi; lượt sau làm lại với cùng deployment. Lỗi của cấu hình, bí mật hay build là `error`, không làm lại.
+  - Yêu cầu deploy của bạn (không phải rollback) ghi lịch sử của nhánh tới commit đó là đã duyệt, nếu `audit` chưa đi xa hơn.
+  - Trên Staging, hotfix của `main` đi trước, và giữ Staging tới khi lên Production; sau đó tới nhánh release đang mở. Hai nhánh release cùng mở thì Staging không chạy nhánh nào.
 
 **Tiêu chí chấp nhận:**
-- [ ] Test với client giả: kiểm mọi commit first-parent mới, không chỉ head; dừng ở commit đầu tiên fail; báo `error` khi `targets` từ chối, kèm lý do (spec mục 2.4).
-- [ ] Test Production: hotfix trên `main` lên Staging trước; merge commit của PR release lên Production khi tree đã qua Staging; smoke fail giữ bản cũ và báo `failure`.
-- [ ] Test chạy lại sau khi lượt trước dừng giữa chừng: không deploy lại bản đã xong, không bỏ sót bản chưa xong.
-- [ ] Test log và tham số dòng lệnh không chứa token.
+- [x] Test với client giả: kiểm mọi commit first-parent mới, không chỉ head; dừng ở commit đầu tiên fail; báo `error` khi `targets` từ chối, kèm lý do (spec mục 2.4).
+- [x] Test Production: hotfix trên `main` lên Staging trước; merge commit của PR release lên Production khi tree đã qua Staging; smoke fail giữ bản cũ và báo `failure`.
+- [x] Test chạy lại sau khi lượt trước dừng giữa chừng: không deploy lại bản đã xong, không bỏ sót bản chưa xong.
+- [x] Test log và tham số dòng lệnh không chứa token.
 
 **Kiểm chứng:**
-- [ ] Năm lệnh trong quy ước chung xanh
-- [ ] `ao-deploy.mjs tick --dry-run` chạy được trên máy bạn với một `deployer.yaml` mẫu trỏ tới `ao-pilot`, bằng key của `ao-deploy` ở máy
+- [x] Năm lệnh trong quy ước chung xanh
+- [x] `ao-deploy.mjs tick --dry-run` chạy được trên máy bạn với một `deployer.yaml` mẫu trỏ tới `ao-pilot`, bằng key của `ao-deploy` ở máy
 
 **Phụ thuộc:** T3, T5, T6, T7
 
@@ -441,6 +447,7 @@
 
 - `/ao-ship vX.Y.(Z+1)`: kiểm Bug đã Done và Staging đang chạy commit hotfix. Rồi script, bằng login `gh` của bạn, gắn tag và tạo yêu cầu deploy Production; mở PR merge ngược `main` → `develop`, và `main` → nhánh `release/*` nếu đang mở.
 - `/ao-rollback <môi trường> [<sha>]`: không có `<sha>` thì tìm bản trước đã chạy thành công; có `<sha>` thì dùng đúng bản đó (plan, quyết định 5). Tạo yêu cầu deploy bằng login `gh` của bạn, đánh dấu rollback.
+- **Yêu cầu deploy** (T8 đọc theo dạng này): một deployment của commit đó, `environment` là môi trường, `payload` là `{ "ao": "request", "rollback": true }` hay `false`, `required_contexts: []`, `auto_merge: false`. Deployer đọc 30 deployment mới nhất của mỗi môi trường, chỉ xử lý yêu cầu mới nhất chưa xử lý, và báo các yêu cầu cũ hơn là `error` "superseded".
 - `/ao-status` hiện thêm: bản đang chạy ở từng môi trường, nhánh release đang mở, item Done chưa release, Fix Version đã lên Production mà chưa Release trên Jira.
 
 **Tiêu chí chấp nhận:**
@@ -549,7 +556,7 @@
 
 **Mô tả:**
 
-1. Claude push thẳng một commit nhỏ lên `develop` của `ao-pilot`, không qua PR. Deployer không deploy commit đó, báo `failure` kèm lý do, và `jira-sync` gắn cờ. Rồi bạn gỡ chặn bằng `/ao-rollback development <sha>` sau khi đọc commit đó (plan, quyết định 5).
+1. Claude push thẳng một commit nhỏ lên `develop` của `ao-pilot`, không qua PR. Deployer không deploy commit đó, báo `error` kèm lý do, và `jira-sync` gắn cờ. Rồi bạn gỡ chặn bằng `/ao-rollback development <sha>` sau khi đọc commit đó (plan, quyết định 5).
 2. Claude thử tạo yêu cầu deploy Production bằng token `ao-dev`. GitHub từ chối, hoặc deployer từ chối vì người tạo là bot.
 
 **Tiêu chí chấp nhận:**
@@ -601,7 +608,7 @@
 
 1. **Bug thử:** một lỗi nhỏ có thật của `ao-pilot`, do `qa` hay bạn thấy ở T21. Nếu không có, Claude đề xuất một lỗi nhỏ để bạn chọn trước khi tạo Bug. Bug đi theo spec mục 2.8 tới `v0.1.1` trên Production.
 2. `/ao-rollback production` về `v0.1.0`, rồi `/ao-rollback production <sha của v0.1.1>` đưa `v0.1.1` lên lại.
-3. **Smoke fail có chủ đích:** Claude đề xuất cách gây fail mà không cần commit mới, ví dụ một biến môi trường sai trong `/etc/ao/secrets/ao-pilot/production.env` rồi một yêu cầu deploy lại bản đang chạy. Bạn đồng ý thì Claude làm. Deployer giữ bản cũ, và Jira có Bug Critical. Xong thì Claude trả biến về như cũ và chuyển Bug thử đó sang Cancelled.
+3. **Smoke fail có chủ đích:** Claude đề xuất cách gây fail mà không cần commit mới, ví dụ một biến môi trường sai trong `/etc/ao/secrets/pilot/production.env` rồi `/ao-rollback production` về bản trước. Yêu cầu deploy lại đúng tree đang chạy thì không gây fail được: deployer giữ nguyên container và không smoke lại (T8). Bạn đồng ý thì Claude làm. Deployer giữ bản cũ, và Jira có Bug Critical. Xong thì Claude trả biến về như cũ và chuyển Bug thử đó sang Cancelled.
 
 **Tiêu chí chấp nhận:**
 - [ ] Tiêu chí 7 và 8 của spec mục 9 đạt.
