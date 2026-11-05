@@ -115,7 +115,7 @@ T20 ── T21 DEMO-21 tới Production ── T22 hotfix, rollback, smoke fail 
 - [x] T12: Dữ kiện về môi trường, và `attachments.mjs`
 - [x] T13: `/ao-qa`
 - [x] T14: `/ao-release`
-- [ ] T15: `/ao-ship` cho bản release
+- [x] T15: `/ao-ship` cho bản release
 - [ ] T16: `/ao-ship` cho hotfix, `/ao-rollback` và `/ao-status`
 - [ ] T17: Bốn skill, prompt và hợp đồng
 
