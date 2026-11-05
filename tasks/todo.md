@@ -126,24 +126,25 @@
 
 **Cỡ:** S
 
-### [ ] T4: `deploy.schema.json` và `deploy-config.mjs` (spec mục 2.3, 7)
+### [x] T4: `deploy.schema.json` và `deploy-config.mjs` (spec mục 2.3, 7)
 
 **Mô tả:**
 
-- `contract/schema/deploy.schema.json` cho `.ai-orchestrator/deploy.yaml`: `apps` (Dockerfile, cổng, đường dẫn health, `public`, tên biến môi trường) và `smoke`. `additionalProperties: false` ở mọi mức, nên không khai được volume, `privileged`, mạng của host hay cổng ra ngoài.
+- `lib/release/deploy.schema.json` cho `.ai-orchestrator/deploy.yaml`: `apps` (Dockerfile, cổng, đường dẫn health, `public`, tên biến môi trường) và `smoke`. `additionalProperties: false` ở mọi mức, nên không khai được volume, `privileged`, mạng của host hay cổng ra ngoài.
 - `lib/release/deploy-config.mjs`: đọc file ở một commit (nhận nội dung, không tự đọc đĩa), kiểm schema, và kiểm thêm những điều schema không nói được: đúng một app `public` mỗi dự án, mỗi mục `smoke` trỏ tới một app có thật, tên biến môi trường hợp lệ.
-- `npm run validate` kiểm `deploy.yaml` mẫu trong `tests/fixtures/release/`.
+- `npm run validate` kiểm `deploy.yaml` nằm cạnh thư mục `contract/`, tức `.ai-orchestrator/deploy.yaml` của dự án. Repo kit không có file này; test dùng mẫu trong `tests/fixtures/release/`.
+- Schema nằm trong `lib/release/`, không nằm trong `contract/schema/`: code đọc mọi schema ở đó như một file `contract/<tên>.yaml`, và bản chép kit của dự án có `lib/` nhưng không có `vps/`.
 
 **Tiêu chí chấp nhận:**
-- [ ] Test dương với `deploy.yaml` của spec mục 2.3.
-- [ ] Fixture âm: volume, `privileged`, cổng ra host, mạng của host, app `public` thứ hai, mục `smoke` trỏ tới app lạ.
+- [x] Test dương với `deploy.yaml` của spec mục 2.3.
+- [x] Fixture âm: volume, `privileged`, cổng ra host, mạng của host, app `public` thứ hai, mục `smoke` trỏ tới app lạ.
 
 **Kiểm chứng:**
-- [ ] Năm lệnh trong quy ước chung xanh
+- [x] Năm lệnh trong quy ước chung xanh
 
 **Phụ thuộc:** Checkpoint 1
 
-**File dự kiến:** `contract/schema/deploy.schema.json`, `lib/release/deploy-config.mjs`, `scripts/validate-contract.mjs`
+**File dự kiến:** `lib/release/deploy.schema.json`, `lib/release/deploy-config.mjs`, `scripts/validate-contract.mjs`
 
 **Cỡ:** S
 
@@ -302,7 +303,7 @@
 
 **Phụ thuộc:** T6
 
-**File dự kiến:** `lib/quality/merge-gate.mjs`, `lib/quality/gates.mjs`, `quality/gates.yaml`, `contract/schema/` của gates, `docs/quality-gates.md`
+**File dự kiến:** `lib/quality/merge-gate.mjs`, `lib/quality/gates.mjs`, `quality/gates.yaml`, `quality/schema/gates.schema.json`, `docs/quality-gates.md`
 
 **Cỡ:** M
 
