@@ -137,3 +137,8 @@ Deployer kiểm từng commit sau điểm đã kiểm, dừng ở `3fdd514`, PR 
 - **Sự cố nhỏ:** Claude in nguyên Caddyfile ra output của phiên, nên bản băm bcrypt (cost 14) của mật khẩu cũ nằm trong transcript. Bản băm không nằm trong repo hay log của kit. Mật khẩu được thay ở bước nhập lại ở trên.
 - **Basic auth: đạt** (Lượt 17). Bạn nhập lại bằng `ao-secret.sh basic-auth` lúc 03:35 UTC; lượt deployer kế tiếp ghi lại Caddyfile và reload Caddy lúc 03:36. Development và Staging: không có hoặc sai mật khẩu thì 401, `AO_ENV_AUTH` thì 503 "Not deployed yet". Production: 503, không cần mật khẩu. `AO_ENV_AUTH` không đổi, nên bản băm đầu là của một chuỗi gõ khác, và bản băm lộ trong transcript không còn khớp mật khẩu nào đang dùng.
 - **Tắt đăng nhập root** (mục 9): `PermitRootLogin no`, `sshd -t` qua, root nhận `Permission denied (publickey)`, `aoadmin` vẫn vào được, `ao-deploy.timer` vẫn `active`. Còn chờ bạn gỡ key khỏi ssh-agent và xóa file key của App `ao-deploy` ở máy.
+- **Đóng T18** (Lượt 18): bạn gỡ key `ao_vps` khỏi ssh-agent (Claude kiểm: `ssh-add -l` không còn key đó) và xóa `tungph7-ao-deploy.pem` ở máy; còn key của `ao-dev` và `ao-review`.
+
+## T19: Task của `ao-pilot`
+
+- Task `DEMO-26` tạo bằng token CI lúc 2026-11-06 khoảng 10:50, ở New, nhãn `ao-devops`, mô tả theo `templates/task.md`. `ao-step.mjs build DEMO-26` (chỉ kiểm) dừng đúng: `DEMO-26 is New, not Ready`.

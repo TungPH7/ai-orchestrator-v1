@@ -555,7 +555,7 @@
 
 ## Giai đoạn 6: lên VPS và `ao-pilot`
 
-### [ ] T18: Cài deployer lên VPS [bạn]
+### [x] T18: Cài deployer lên VPS [bạn]
 
 **Mô tả:**
 
@@ -578,7 +578,7 @@
 
 **Kiểm chứng:**
 - [x] `systemctl status ao-deploy.timer` chạy; `journalctl -u ao-deploy` không có lỗi
-- [ ] Bạn đã gỡ key khỏi ssh-agent
+- [x] Bạn đã gỡ key khỏi ssh-agent
 
 **Phụ thuộc:** T9, T10, T11, T17, Checkpoint 2
 
@@ -590,7 +590,8 @@
 
 **Mô tả:**
 
-- Task `DEMO-…` đi như Task chép kit `DEMO-19` của `dev-workflow`.
+- Task `DEMO-26` (tạo bằng token CI, nhãn `ao-devops`), đi như Task chép kit `DEMO-19` của `dev-workflow`.
+- **Lệch so với mô tả dưới đây** (Phiên 27 · Lượt 18): `.ai-orchestrator/deploy.yaml` nằm trong commit chép kit của Claude, vì `quality/gates.yaml` không cho agent nào sửa `.ai-orchestrator/**`. ADR-0001 chỉ nằm trên nhánh `feature/DEMO-11-spec`, không có trên `develop`, nên `devops` viết ADR mới `0003` thay vì sửa ADR-0001.
 - `/ao-build` cho `devops`: Dockerfile, `.dockerignore` bỏ `docs/` và `*.md`, `.ai-orchestrator/deploy.yaml`, biến `HOST`, bỏ `deploy.yml` và `audit.yml`.
 - Cũng trong lượt đó: server nhận Host và Origin của `AO_PUBLIC_URL`, ngoài `127.0.0.1` và `localhost`, và ADR-0001 của `ao-pilot` ghi thêm điều này; `playwright.config.ts` đọc `E2E_BASE_URL` và `httpCredentials`, và 5 test gửi request thô (AC9–AC11 của `DEMO-11`, AC10–AC11 của `DEMO-20`) mang tag `@local` (spec mục 2.5).
 - Sau lượt build, Claude thêm commit chép kit mới lên cùng nhánh, bằng helper của vai trò `devops` (plan, quyết định 6).
