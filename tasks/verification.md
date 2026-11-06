@@ -194,3 +194,8 @@ Deployer kiểm từng commit sau điểm đã kiểm, dừng ở `3fdd514`, PR 
 - **`/ao-ship v0.2.0`, lần 3** (sau PR #211): `devops` viết lại release note có `DEMO-27`, 0,56 USD; script commit báo cáo và `CHANGELOG.md` (`88a9e8a`) và cập nhật mô tả PR #18. CI 11/11 xanh, Staging chạy `88a9e8a`. Bốn lượt agent của `/ao-ship v0.2.0`: 1,84 USD.
 - **Gate ⑤:** bạn approve PR #18. `merge-gate` merge bằng merge commit `8e8bf66` lúc 16:29, gắn tag `v0.2.0`, mở PR merge ngược #20. Deployer deploy Production `8e8bf66`, `success` lúc 16:30; `https://pilot.ao.t2g.io.vn` trả 200 không cần mật khẩu. **Tiêu chí 6 của spec mục 9: đạt.** Tree của `8e8bf66` và của `88a9e8a` (bản đã qua smoke trên Staging) đều là `225979aa357db9378c236c4aab43f45c4338b23d`.
 - **PR merge ngược #20** `Merge main into develop after v0.2.0`: CI xanh, kể cả `policy` với luật mới của `DEMO-27`; `merge-gate` merge (`3c7c341`); Development deploy `3c7c341`, `success`. `ao-step status`: `Running: Development 3c7c3418, Staging 88a9e8a3, Production v0.2.0 (8e8bf666)`.
+- **Đóng T21** (Lượt 40): bạn bấm Release, API trả `v0.2.0` `released: true`. **Tiêu chí 5 và 6 của spec mục 9: đạt.** Tiêu chí 4 đạt nốt: Staging và Production có app, HTTPS, deployment trên GitHub. Chi phí agent của T21: 6,31 USD (`qa` năm lượt 4,47 USD; `/ao-ship` 1,84 USD).
+
+## T22: hotfix, rollback và smoke fail
+
+- **Bug thử `DEMO-28`** (Lượt 41): `/favicon.ico` trả 404 trên Production. Mức thật là Low; Severity đặt High để thử đường hotfix, bạn đồng ý, và mô tả Bug ghi rõ. Nhãn `ao-be-dev`. Fix Version chờ bạn tạo `v0.2.1`.

@@ -643,7 +643,7 @@
 
 ## Giai đoạn 7: kiểm thật
 
-### [ ] T21: `DEMO-21` từ QA tới Production (spec mục 7, bước 4–6) [bạn]
+### [x] T21: `DEMO-21` từ QA tới Production (spec mục 7, bước 4–6) [bạn]
 
 **Mô tả:**
 
@@ -652,11 +652,11 @@
 3. `/ao-ship v0.2.0`; **bạn** đọc PR release rồi approve (gate ⑤). `merge-gate` merge, gắn tag, mở và merge PR merge ngược. Deployer deploy Production, smoke xanh. **Bạn** bấm Release cho `v0.2.0` trên Jira.
 
 **Tiêu chí chấp nhận:**
-- [ ] Tiêu chí 5 và 6 của spec mục 9 đạt.
-- [ ] Chi phí của từng lượt agent nằm trong `tasks/verification.md`.
+- [x] Tiêu chí 5 và 6 của spec mục 9 đạt.
+- [x] Chi phí của từng lượt agent nằm trong `tasks/verification.md`.
 
 **Kiểm chứng:**
-- [ ] `https://pilot.ao.t2g.io.vn` chạy đúng image đã qua Staging: cùng mã tree
+- [x] `https://pilot.ao.t2g.io.vn` chạy đúng image đã qua Staging: cùng mã tree
 
 **Phụ thuộc:** Checkpoint 3
 
