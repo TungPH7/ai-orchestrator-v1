@@ -111,3 +111,9 @@ Deployer kiểm từng commit sau điểm đã kiểm, dừng ở `3fdd514`, PR 
    Từ New, rule Restrict của Jira (`docs/jira-setup.md`) chỉ cho bạn `Refine` và `Cancel`: `Start` và `Pick up` thuộc `ao-agents`, `Submit` và `Deploy to QA` thuộc `ao-automation`. Bạn chỉ bấm được `Accept` (In QA → Done). Nên bạn không tự đưa item New sang Done được. `Cancel` cũng không gỡ được, vì item Cancelled vẫn giữ điểm cắt lại (`lib/release/cut.mjs`).
 3. **Bản cũ trên `ao-pilot`** (đã hẹn ở T1): tag `v0.1.0` và nhánh `release/0.1.0` cùng ở `d013acc`; `main` có 4 commit không nằm trong `develop` (3 commit thử của CI, và `354f02c` đưa kit lên `main` của `DEMO-5`). Với tag cũ, bản đầu tiên sẽ là `v0.2.0` và lịch sử tính từ `d013acc`. Xóa tag thì lịch sử tính từ commit đầu, mà `d013acc` mang `DEMO-3` (Cancelled), nên điểm cắt bị chặn ngay ở đó. Nhánh `release/0.1.0` không bị tính là đang mở, vì `d013acc` đã nằm trong `main`.
 4. **Lỗi của kit: điểm cắt tính cả key của Epic.** Commit `3fdd514` mang `DEMO-20` (Epic), nên giữ điểm cắt tới khi Epic Done. Nhưng Epic chỉ `complete` được khi mọi item con đã release (guard `children-released`, `contract/workflows.yaml`). Hai điều kiện chờ nhau, nên mọi commit tài liệu của Epic chặn điểm cắt mãi.
+
+**Sau Checkpoint 2 (Phiên 27 · Lượt 12):**
+
+- Phát hiện 4 đã sửa ở PR #190: điểm cắt không tính key của Epic.
+- Sửa dữ liệu Jira dừng sau `DEMO-19`. `Refine` bằng token CI chạy được. `Start` bằng `ATLASSIAN_AGENT_TOKEN` qua REST nhận `401 Unauthorized; scope does not match`: token đó ghi qua Rovo MCP (`kit/.mcp.json`), không qua REST. `Start` của `DEMO-21` ngày 2026-11-01 do `orchestratoragent` làm theo đường đó.
+- Trạng thái lúc dừng: `DEMO-19` ở Ready, có comment ghi lý do, và workflow không có bước lùi về New. `DEMO-5`, `DEMO-8`, `DEMO-9`, `DEMO-10`, `DEMO-16` chưa đổi.
