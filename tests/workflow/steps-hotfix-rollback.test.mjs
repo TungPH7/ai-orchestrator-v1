@@ -61,6 +61,10 @@ test('right after the hotfix is tagged, the tag does not make it look like an ol
 test('once Production runs the hotfix, /ao-ship of it says so', () => {
   const live = decide('ship', hotfixFacts({ production: { sha: HOTFIX, version: 'v0.1.1' }, expected: 'v0.1.2', tag: { name: 'v0.1.1', sha: HOTFIX }, request: { id: 77, sha: HOTFIX } }));
   assert.deepEqual([live.go, live.reason, live.next], [false, 'Production runs v0.1.1 (aaaaaaaa), the hotfix: nothing is left to ship', '/ao-status']);
+  // Low of reviewer on ao-pilot PR #23, second round: right after a release, Production runs the merge of the release PR,
+  // which is no hotfix.
+  const released = decide('ship', hotfixFacts({ production: { sha: HOTFIX, version: 'v0.1.0' }, main: { sha: HOTFIX, pull: { number: 32, head: 'release/v0.1.0', key: null } } }));
+  assert.equal(released.reason, 'main ends with aaaaaaaa, the merge of PR #32 from release/v0.1.0, not of a hotfix');
 });
 
 test('/ao-ship of a hotfix stops while its Bug is not Done, Staging runs another commit, or it is not the next patch of Production', () => {
