@@ -599,14 +599,14 @@
 - Deployer deploy Development; `jira-sync` chạy theo deployment đó.
 
 **Tiêu chí chấp nhận:**
-- [ ] `https://pilot-dev.ao.t2g.io.vn` chạy bản mới, có HTTPS, hỏi basic auth.
-- [ ] Container của `ao-pilot` chạy được với các cờ của T7 (`--cap-drop ALL`, `no-new-privileges`); Dockerfile không cần quyền root đặc biệt.
-- [ ] E2E của `ao-pilot` với `E2E_BASE_URL` của Development: 24/24 xanh, trong đó 5 test `@local` chạy vào server tại chỗ.
+- [x] `https://pilot-dev.ao.t2g.io.vn` chạy bản mới, có HTTPS, hỏi basic auth.
+- [x] Container của `ao-pilot` chạy được với các cờ của T7 (`--cap-drop ALL`, `no-new-privileges`); Dockerfile không cần quyền root đặc biệt.
+- [x] E2E của `ao-pilot` với `E2E_BASE_URL` của Development: 24/24 xanh, trong đó 5 test `@local` chạy vào server tại chỗ.
 - [ ] Deployment `development` có trên GitHub và hiện trên item Jira.
-- [ ] Chi phí của từng lượt agent nằm trong `tasks/verification.md`.
+- [x] Chi phí của từng lượt agent nằm trong `tasks/verification.md`.
 
 **Kiểm chứng:**
-- [ ] CI của PR xanh; `.ai-orchestrator/` của `ao-pilot` giống `main` của kit ở các file đã chép
+- [ ] (CI xanh; bản chép kit khác `main` ở 7 file, xem `tasks/verification.md`) CI của PR xanh; `.ai-orchestrator/` của `ao-pilot` giống `main` của kit ở các file đã chép
 
 **Phụ thuộc:** T18
 
@@ -622,7 +622,7 @@
 2. Claude thử tạo yêu cầu deploy Production bằng token `ao-dev`. GitHub từ chối, hoặc deployer từ chối vì người tạo là bot.
 
 **Tiêu chí chấp nhận:**
-- [ ] Hai lần thử bị chặn, kèm bằng chứng trong `tasks/verification.md`.
+- [x] Hai lần thử bị chặn, kèm bằng chứng trong `tasks/verification.md`.
 - [ ] Development chạy lại bình thường sau khi gỡ chặn.
 
 **Kiểm chứng:**
