@@ -2,11 +2,26 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { openQuestions, readRun } from '../../lib/workflow/runs.mjs';
+import { openQuestions, readRun, withLoggedSession } from '../../lib/workflow/runs.mjs';
 import { ROOT } from '../helpers/kit.mjs';
 
 // Logs of real runs of agent-roster, trimmed to the events readRun reads (tests/fixtures/workflow/runs/).
 const log = (name) => readFileSync(join(ROOT, 'tests/fixtures/workflow/runs', `${name}.jsonl`), 'utf8').split('\n');
+
+test('a run killed before its end takes its session from its log; any other state is left as it is', () => {
+  const session = readRun(log('reviewer-done')).session;
+  const open = { n: 2, session: null, outcome: 'unfinished', log: '2-reviewer.jsonl' };
+  const state = { key: 'DEMO-20', runs: [{ n: 1, session: 'earlier' }, open] };
+  const asked = [];
+  const read = (name) => (asked.push(name), log('reviewer-done'));
+  assert.deepEqual(withLoggedSession(state, read), { key: 'DEMO-20', runs: [{ n: 1, session: 'earlier' }, { ...open, session }] });
+  assert.deepEqual(asked, ['2-reviewer.jsonl']);
+
+  assert.equal(withLoggedSession(state, () => []), state, 'killed before its first line: there is no session to go on in');
+  const closed = { key: 'DEMO-20', runs: [{ n: 1, session: 'earlier', log: '1-ba.jsonl' }] };
+  assert.equal(withLoggedSession(closed, () => assert.fail('a run with a session needs no log')), closed);
+  assert.equal(withLoggedSession(null, () => []), null);
+});
 
 test('a finished run: its outcome, session, model, turns, time, tokens, cost and the calls a hook refused', () => {
   const run = readRun(log('reviewer-done'));
