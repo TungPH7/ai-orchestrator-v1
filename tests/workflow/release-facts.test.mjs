@@ -9,7 +9,7 @@ import { ROOT } from '../helpers/kit.mjs';
 const mapping = readMapping(join(ROOT, 'tracker'));
 const sha = (ch) => ch.repeat(40);
 const deployment = (id, ch) => ({ id, sha: sha(ch), environment: 'x', created_at: '2026-11-06T03:00:00Z' });
-const latest = (state, url) => [{ state, ...(url && { environment_url: url }) }];
+const latest = (state, url, login = 'tungph7-ao-deploy[bot]') => [{ state, creator: { login }, ...(url && { environment_url: url }) }];
 
 // GitHub as the deployer leaves it (release-workflow spec 2.5): on Development a newer deploy failed its smoke test, so
 // the one before still runs; Staging has no deployment yet; on Production a deploy is under way over v0.1.0.
@@ -40,6 +40,16 @@ test('the release running in each environment is the newest deployment whose lat
     staging: null,
     production: { sha: sha('d'), deployment: 8, url: 'https://pilot.ao.t2g.io.vn' },
   });
+});
+
+test('only a success status the deployer wrote counts: another writer could point qa, and its basic auth, at any URL', async () => {
+  const forged = recordedClient({
+    ...answers,
+    '/deployments?environment=development&per_page=30': [deployment(5, 'e'), deployment(4, 'f'), deployment(2, 'b')],
+    '/deployments/5/statuses?per_page=1': latest('success', 'https://evil.example', 'tungph7-ao-dev[bot]'),
+    '/deployments/4/statuses?per_page=1': latest('success', 'https://evil.example', 'TungPH7'),
+  });
+  assert.deepEqual((await readRunning(forged, mapping)).development, { sha: sha('b'), deployment: 2, url: 'https://pilot-dev.ao.t2g.io.vn' });
 });
 
 test('a running release contains a merge commit when it is that commit or comes after it', async () => {

@@ -57,6 +57,19 @@ test('behind basic auth the traces stay on this machine: Playwright writes httpC
   ]);
 });
 
+test('behind basic auth only images and videos of .ai/qa/<KEY>/ go to Jira: a trace or a config put there could hold the password', async () => {
+  const folder = 'D:/work/pilot/.ai/qa/DEMO-21';
+  const list = (dir) => (dir === folder ? [`${folder}/cart.png`, `${folder}/flow.webm`, `${folder}/run/trace.zip`, `${folder}/playwright.config.ts`] : []);
+  const behind = await follow({ list });
+  assert.deepEqual(behind.attached, [['DEMO-21', [`${folder}/cart.png`, `${folder}/flow.webm`]]]);
+  assert.deepEqual(behind.notes, [
+    'Attached to DEMO-21: cart.png, flow.webm.',
+    'Behind the basic auth of Development only images and videos go to Jira, so these stay in .ai/qa/DEMO-21/: trace.zip, playwright.config.ts.',
+  ]);
+  const open = await follow({ list, run: { ...run, qa: { environment: 'production', sha: SHA, auth: false } } });
+  assert.equal(open.attached[0][1].length, 4);
+});
+
 test('a deploy during the run is said, so the report is not read as one of the release that runs now (spec 2.5)', async () => {
   const { notes } = await follow({ running: async () => 'd'.repeat(40) });
   assert.equal(notes.at(-1), 'Development ran cccccccc when qa started and runs dddddddd now: the deployer replaced it during the run, so run /ao-qa DEMO-21 again.');
