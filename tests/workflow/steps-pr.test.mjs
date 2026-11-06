@@ -100,6 +100,10 @@ test('/ao-build goes on after the BE Sub-task is done, and an In Progress item w
   assert.deepEqual(decide('build', task).runs.map(({ role, prompt }) => [role, prompt]), [['devops', PURPOSES['build-again']({ key: 'DEMO-24', status: 'In Progress' })]]);
   const resumed = { ...half, run: { key: 'DEMO-21', runs: [{ n: 1, command: 'build', role: 'fe-dev', purpose: 'build', session: 's-fe', outcome: 'usage-limit', effort: 'xhigh' }] } };
   assert.deepEqual(decide('build', resumed).runs, [{ role: 'fe-dev', key: 'DEMO-21', effort: 'xhigh', purpose: 'build', resume: 's-fe', prompt: resumePrompt('DEMO-21'), checkout: undefined }]);
+  // Medium of reviewer on ao-pilot PR #23: the first build run checks out develop, and the agent then makes its branch.
+  // A killed build goes on where its agent left the checkout, as build-again does, not back on develop.
+  const killed = { ...half, run: { key: 'DEMO-21', runs: [{ n: 1, command: 'build', role: 'be-dev', purpose: 'build', session: 's-be', outcome: 'unfinished', effort: 'high', checkout: { branch: 'develop', pull: true } }] } };
+  assert.equal(decide('build', killed).runs[0].checkout, undefined);
 });
 
 test('/ao-build stops: not Ready, a dependency not merged, the docs PR not merged, no role label, WIP full, an open PR', () => {
@@ -138,6 +142,31 @@ test('/ao-review: each run starts on the base branch of the PR, with a worktree 
   // The review of the new part reads the same code, at the new head.
   const delta = decide('review', prFacts('review', { reports: { reviewer: report(), security: report({ sha: OLD, onHead: false, at: '2026-11-04T08:00:00Z' }) }, securityCompare: { base: OLD, status: 'ahead', files: [{ filename: 'apps/api/test/cart.spec.ts', additions: 40, deletions: 2 }] } }));
   assert.deepEqual(delta.runs.map(({ purpose, checkout, worktree }) => [purpose, checkout, worktree]), [['review-delta', { branch: 'develop', pull: true }, { name: 'pr-15', sha: HEAD }]]);
+});
+
+// High of reviewer on ao-pilot PR #23 (T22b): a review run is on record from its start, so a killed one goes on. It goes
+// on only on the head it was reviewing, with its worktree back: on a new head, ao-pr would post what it wrote about the
+// old one as the report of the new head.
+test('a stopped review goes on in its session on the head it was reviewing, with its worktree; on a new head it starts again', () => {
+  const stopped = (more = {}) => ({ key: 'DEMO-21', runs: [{ n: 1, command: 'review', role: 'security', purpose: 'review', effort: 'max', session: 's-sec', outcome: 'unfinished', checkout: { branch: 'develop', pull: true }, head: HEAD, ...more }] });
+  const goesOn = decide('review', prFacts('review', { reports: { reviewer: report(), security: null } }, { run: stopped() }));
+  assert.deepEqual(goesOn.runs, [{ role: 'security', key: 'DEMO-21', effort: 'max', purpose: 'review', resume: 's-sec', prompt: resumePrompt('DEMO-21'), checkout: { branch: 'develop', pull: true }, head: HEAD, worktree: { name: 'pr-15', sha: HEAD } }]);
+  assert.deepEqual(decide('review', prFacts('review', { reports: { reviewer: report(), security: null } }, { run: stopped({ outcome: 'usage-limit' }) })).runs[0].resume, 's-sec');
+
+  const moved = decide('review', prFacts('review', { reports: { reviewer: null, security: null } }, { run: stopped({ head: OLD }) }));
+  assert.deepEqual(moved.runs.map(({ role, resume, head }) => [role, resume, head]), [['reviewer', undefined, HEAD], ['security', undefined, HEAD]], 'a new head: both review it afresh');
+  const unknown = decide('review', prFacts('review', { reports: { reviewer: report(), security: null } }, { run: stopped({ head: undefined }) }));
+  assert.equal(unknown.runs[0].resume, undefined, 'a run on record without its head does not go on');
+  const posted = decide('review', prFacts('review', { reports: { reviewer: report(), security: report() } }, { run: stopped() }));
+  assert.match(posted.reason, /both reports are on the head/, 'its report reached the head before it stopped');
+  const fixStopped = { key: 'DEMO-21', runs: [{ ...stopped().runs[0], command: 'fix', head: OLD }] };
+  assert.deepEqual(decide('fix', prFacts('fix', { reports: { reviewer: report(), security: null } }, { run: fixStopped })).runs.map(({ role, resume }) => [role, resume]), [['security', undefined]], 'the reviews of /ao-fix too');
+});
+
+test('a run killed before the first line of its log has no session to go on in: the command makes it afresh', () => {
+  const killed = { key: 'DEMO-21', runs: [{ n: 1, command: 'review', role: 'reviewer', purpose: 'review', effort: 'xhigh', session: null, outcome: 'unfinished', head: HEAD }] };
+  const decision = decide('review', prFacts('review', {}, { run: killed }));
+  assert.deepEqual(decision.runs.map(({ role, resume, prompt }) => [role, resume, prompt]), [['reviewer', undefined, 'Review PR #15.'], ['security', undefined, 'Review PR #15.']]);
 });
 
 // Medium of security on ao-sample PR #13: the review checks out the base of the PR, which its author chooses, and can

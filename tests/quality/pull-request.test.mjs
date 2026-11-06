@@ -104,6 +104,9 @@ test('a Scope line that does not read as the template says leaves the report unr
   }
   assert.equal(readReviewReport(withLine('<!-- Scope: changes since <short SHA> -->'), ROLES).ok, true, 'the comment of the template left in place');
   assert.equal(readReviewReport(report('Không có finding.\n').replace('## Verdict', 'Scope: hai file của PR\n\n## Verdict'), ROLES).ok, true, 'the word in a section of a full report');
+  // Low of reviewer on ao-pilot PR #23: a Scope line counts only under the Role line, where the template puts it.
+  const below = report('Không có finding.\n').replace('## Verdict', 'Scope: changes since 0f1e2d3\n\n## Verdict');
+  assert.equal(readReviewReport(below, ROLES).scope, undefined);
 });
 
 // Pilot 1, second review of ao-sample PR #13: a High no longer asks for a full review. A report of the new part lists

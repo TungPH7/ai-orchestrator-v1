@@ -76,6 +76,11 @@ test('a qa run stopped by the usage limit goes on in its session with its worktr
     assert.deepEqual(run.env, { E2E_BASE_URL: URL });
     assert.deepEqual(run.qa, { environment: 'development', sha: RUNNING, auth: true });
   }
+  // Medium of reviewer on ao-pilot PR #23: killed before the first line of its log, it has no session; it starts afresh
+  // with its URL and basic auth.
+  const killed = decide(qaFacts({ run: { key: 'DEMO-21', runs: [{ ...stopped.runs[0], session: null, outcome: 'unfinished' }] } })).runs[0];
+  assert.deepEqual([killed.resume, killed.env, killed.qa.auth], [undefined, { E2E_BASE_URL: URL }, true]);
+  assert.match(killed.prompt, /^QA /);
   const finished = { key: 'DEMO-21', runs: [{ ...stopped.runs[0], outcome: 'done' }] };
   assert.equal(decide(qaFacts({ item: { state: 'in-qa', status: 'In QA' }, run: finished })).reason, 'DEMO-21 is In QA, not Ready for QA');
 });

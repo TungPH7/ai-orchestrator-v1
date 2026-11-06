@@ -57,6 +57,12 @@ test('right after the hotfix is tagged, the tag does not make it look like an ol
   assert.deepEqual([tagged.go, tagged.reason], [false, 'v0.1.1 is tagged and deployment request #77 asks for it on Production: the deployer takes it within a minute or two']);
 });
 
+// Low of reviewer on ao-pilot PR #23: once Production runs the hotfix, the request is not waiting for the deployer.
+test('once Production runs the hotfix, /ao-ship of it says so', () => {
+  const live = decide('ship', hotfixFacts({ production: { sha: HOTFIX, version: 'v0.1.1' }, expected: 'v0.1.2', tag: { name: 'v0.1.1', sha: HOTFIX }, request: { id: 77, sha: HOTFIX } }));
+  assert.deepEqual([live.go, live.reason, live.next], [false, 'Production runs v0.1.1 (aaaaaaaa), the hotfix: nothing is left to ship', '/ao-status']);
+});
+
 test('/ao-ship of a hotfix stops while its Bug is not Done, Staging runs another commit, or it is not the next patch of Production', () => {
   assert.equal(decide('ship', hotfixFacts({ bug: { key: 'DEMO-40', state: 'in-qa', status: 'In QA', fixVersions: ['v0.1.1'] } })).reason, 'DEMO-40 is In QA, not Done: QA it on Staging with /ao-qa DEMO-40, then Accept it');
   assert.equal(decide('ship', hotfixFacts({ bug: { key: 'DEMO-40', state: 'done', status: 'Done', fixVersions: ['v0.2.0'] } })).reason, 'DEMO-40 does not carry the Fix Version v0.1.1');

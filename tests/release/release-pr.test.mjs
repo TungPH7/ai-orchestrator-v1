@@ -18,6 +18,10 @@ test('a changelog that has the section already gets the new one in its place, so
   const older = '# Changelog\n\n## [0.1.0] - 2026-11-05\n\n### Fixed\n\nKhông có\n\n## [0.0.9] - 2026-10-01\n\n- cũ\n';
   assert.equal(changelogWith(older, SECTION, 'v0.1.0'), `# Changelog\n\n${SECTION}\n## [0.0.9] - 2026-10-01\n\n- cũ\n`);
   assert.equal(changelogWith('# Changelog\n\n## [v0.1.0] - 2026-11-06\n', SECTION, 'v0.1.0'), `# Changelog\n\n${SECTION}`);
+  // Low of reviewer on ao-pilot PR #23: the old section ends at the next heading of a release, not at any level-two
+  // heading, such as the ## Added of templates/release-notes.md.
+  const levelTwo = '# Changelog\n\n## [0.1.0] - 2026-11-05\n\n## Added\n\n- cũ\n\n## [0.0.9] - 2026-10-01\n\n- cũ hơn\n';
+  assert.equal(changelogWith(levelTwo, SECTION, 'v0.1.0'), `# Changelog\n\n${SECTION}\n## [0.0.9] - 2026-10-01\n\n- cũ hơn\n`);
   // v0.1.0 is not 0.1.01.
   assert.equal(changelogWith('# Changelog\n\n## [0.1.01]\n', SECTION, 'v0.1.0'), `# Changelog\n\n${SECTION}\n## [0.1.01]\n`);
 });
