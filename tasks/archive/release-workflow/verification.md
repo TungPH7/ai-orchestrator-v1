@@ -254,3 +254,37 @@ Bạn yêu cầu rà kit, Jira, `ao-pilot` và `ao-sample`, rồi xét thời đ
 - **Review lượt 2, trên `a96efbc`:** `reviewer` 2,63 USD: approve, 1 Medium (`DEMO-30` còn ghi `521e031`, đã sửa trên Jira), 1 Low (thông báo sai của `/ao-ship vX.Y.Z` khi `main` kết thúc bằng merge của bản release; lệnh vẫn dừng đúng, sửa ở PR đóng module). `security` chỉ phần mới (max) 3,22 USD: không có finding.
 - **Chi phí `DEMO-30` tới gate ③: 16,22 USD**, ước 7–10 USD. Phần vượt là lượt review thứ hai, do lỗi High nằm trong bản sửa #217 của Claude.
 - **Bản kit trên VPS** vẫn ở `521e031`. Thay đổi sau đó chạm `audit` chỉ ở vị trí dòng `Scope`, mức Low; chép ở lần cập nhật VPS kế tiếp.
+- **Gate ③** (Lượt 55–56): lần nhắn "xong" đầu, PR #23 chưa có approve của bạn và chưa merge; Claude kiểm thấy nên chưa làm tiếp. Lần sau: bạn approve trên `a96efbc` lúc 00:41 và squash merge (`0f86022`). Deployer deploy Development `0f86022`, `success` (deployment `7606788449`), tức `audit` trên VPS cho qua PR này. `jira-sync` chuyển `DEMO-30` sang Ready for QA và gỡ cờ của `merge-gate`.
+- **`/ao-qa DEMO-30`** trên Development: PASS, 0,57 USD. E2E 25/25 (20 vào Development, 5 `@local`); 13 file khớp kit tại `e0cd3b9` theo hash. `qa` không đọc được deployment (403), nên Claude kiểm thay. Bạn `Accept`.
+- **Fix Version `v0.3.0` của `DEMO-30`** (Lượt 57): Claude gắn lúc tạo Task mà không nói. Quy trình gắn Fix Version cho item vào `develop` lúc cắt release (gate ④); gắn sớm không đổi gì, vì `/ao-release v0.3.0` gắn đúng giá trị đó. Giữ nguyên.
+- **Chi phí `DEMO-30`: 16,79 USD.** Lúc đóng T22b, code kit không đổi từ `e0cd3b9`, nên bản chép giống `main`.
+- **T22b đạt.** Sau đó kit có `7bc2e8e`: sửa Low của lượt review thứ hai (`/ao-ship vX.Y.Z` ngay sau một bản release báo nhầm là hotfix đã chạy). Bản sửa này vào `ao-pilot` ở lần chép kit kế tiếp.
+
+## T23 và Checkpoint cuối (2026-11-07, Lượt 58)
+
+- Kit PR #219: `docs/release-workflow.md`, mục bốn lệnh và `AO_ENV_AUTH` trong README, câu về `audit.yml`, `docs/vps-setup.md` mục 12, `misc/scaffold-input/kit-copy.mjs` và `bot-git.mjs`. PR đóng module: bản sửa `7bc2e8e`, `SPEC.md`, README, trạng thái của spec, và chuyển plan vào đây.
+- Năm lệnh của quy ước chung xanh: `npm test` 1083 test, `validate`, `render:check`, `jira:checklist:check`, `agents:check`.
+
+**Mười tiêu chí của spec mục 9:**
+
+| # | Kết quả | Bằng chứng |
+|---|---|---|
+| 1 | Đạt | Bốn skill `ao-qa`, `ao-release`, `ao-ship`, `ao-rollback` trong `kit/.claude/skills/`; năm lệnh và CI của kit xanh |
+| 2 | Đạt | Mười tiền đề ở đầu file này; Affects Version của tiền đề 9 thử được ở T22, khi `jira-sync` tạo `DEMO-29` với Affects Version `v0.2.0` |
+| 3 | Đạt | Checkpoint 3: chỉ mở 80, 443, 26266; root bị từ chối; không container nào publish cổng |
+| 4 | Đạt | T19, T21: ba subdomain có HTTPS; deployment hiện trên item Jira |
+| 5 | Đạt | T21: `DEMO-21` tới Production; báo cáo QA, `docs/releases/v0.2.0.md`, `CHANGELOG.md`, tag `v0.2.0` |
+| 6 | Đạt | T21: Production chạy image theo mã tree đã qua Staging |
+| 7 | Đạt | T22: hotfix `v0.2.1` lên Production, PR merge ngược #22 vào `develop` |
+| 8 | Đạt | T22: rollback hai chiều; smoke fail giữ `v0.2.1` và tạo Bug Critical `DEMO-29` |
+| 9 | Đạt | T20: push thẳng bị chặn; yêu cầu deploy bằng token `ao-dev` bị từ chối |
+| 10 | Đạt | README, `docs/release-workflow.md`, `docs/vps-setup.md`, `docs/github-apps-setup.md` có `ao-deploy`; `SPEC.md` ghi module hoàn thành |
+
+**Để lại sau module** (chi tiết ở mục "Rà soát việc tồn"):
+
+- Bản kit trên VPS ở `521e031`; thay đổi sau đó chạm `audit` chỉ ở vị trí dòng `Scope` (Low). Chép ở lần sửa VPS kế tiếp.
+- Báo cáo `security` thiếu cả dòng `Scope` lẫn mục `## Earlier findings` vẫn được đọc như review đầy đủ; spec dev-workflow mục 2.6 ghi điểm này.
+- `ao-pilot`: `DEMO-24`, `DEMO-15`, `DEMO-17` cho `v0.3.0`; Epic `DEMO-20` chờ `DEMO-24`. Bản chép kit thiếu `7bc2e8e`.
+- `ao-sample` và Pilot 2; PR kit gom 5 lỗi Low; Dependabot và tự xóa nhánh trong `project-scaffold`; dọn nhánh cũ.
+
+**Chi phí agent của module trên `ao-pilot`:** 29 lượt từ 2026-11-05, tổng 47,12 USD. Trong đó `DEMO-26` 21,18 USD, `DEMO-30` 16,80 USD, `DEMO-28` 3,48 USD, `/ao-ship v0.2.0` 1,84 USD, và bốn lượt `qa` của T21 3,82 USD. Plan ước 24–40 USD cho T19, T21, T22. Hai PR chép kit chiếm 38 USD, vì PR chạm đường dẫn được bảo vệ nên `security` chạy ở max, và cả hai đều cần review hai lượt.

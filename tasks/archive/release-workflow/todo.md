@@ -694,18 +694,18 @@
 
 ## Giai đoạn 8: hoàn thiện
 
-### [ ] T22b: Chép lại kit vào `ao-pilot` [bạn]
+### [x] T22b: Chép lại kit vào `ao-pilot` [bạn]
 
 **Mô tả:** sau T22, Claude chép `main` của kit vào `.ai-orchestrator/` bằng một PR của Task mới, gom mọi bản sửa phát sinh từ PR #200 trở đi. **Bạn** merge, vì PR sửa đường dẫn được bảo vệ (Phiên 27 · Lượt 27). PR đó cần báo cáo của `reviewer` và `security` trên head, nếu không `audit` chặn deploy và bạn phải gỡ chặn bằng `/ao-rollback <môi trường> <sha>` (Phiên 27 · Lượt 35). Ở T21, PR #19 của `DEMO-27` đã chép kit tại `66a6618` vào `release/v0.2.0`; phần còn lại vào `develop` qua PR merge ngược.
 
 **Tiêu chí chấp nhận:**
-- [ ] Các file đã chép của `.ai-orchestrator/` giống `main` của kit.
+- [x] Các file đã chép của `.ai-orchestrator/` giống `main` của kit (tại `e0cd3b9`, lúc đóng T22b; `7bc2e8e` sau đó vào lần chép kế).
 
 **Phụ thuộc:** T22
 
 **Cỡ:** S
 
-### [ ] T23: Tài liệu, `SPEC.md` và lưu trữ plan (spec mục 9, tiêu chí 10)
+### [x] T23: Tài liệu, `SPEC.md` và lưu trữ plan (spec mục 9, tiêu chí 10)
 
 **Mô tả:**
 
@@ -717,10 +717,10 @@
 - `SPEC.md` ghi module hoàn thành và danh sách việc tồn trong `tasks/verification.md`; chuyển `tasks/plan.md`, `tasks/todo.md`, `tasks/verification.md` vào `tasks/archive/release-workflow/`.
 
 **Tiêu chí chấp nhận:**
-- [ ] Đạt 10 tiêu chí ở spec mục 9.
+- [x] Đạt 10 tiêu chí ở spec mục 9.
 
 **Kiểm chứng:**
-- [ ] Năm lệnh trong quy ước chung và CI của kit xanh
+- [x] Năm lệnh trong quy ước chung và CI của kit xanh
 
 **Phụ thuộc:** Checkpoint 4
 
@@ -730,6 +730,6 @@
 
 ### Checkpoint cuối
 
-- [ ] Đạt 10 tiêu chí ở spec mục 9
-- [ ] Chuyển `tasks/plan.md`, `tasks/todo.md`, `tasks/verification.md` vào `tasks/archive/release-workflow/`
+- [x] Đạt 10 tiêu chí ở spec mục 9
+- [x] Chuyển `tasks/plan.md`, `tasks/todo.md`, `tasks/verification.md` vào `tasks/archive/release-workflow/`
 - [ ] Bạn xác nhận module hoàn thành
