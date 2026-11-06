@@ -125,7 +125,7 @@ T20 ── T21 DEMO-21 tới Production ── T22 hotfix, rollback, smoke fail 
 - [x] Bạn đọc kết quả đó, skill `ao-ship`, và phần prompt đã sửa
 
 ### Giai đoạn 6: lên VPS và `ao-pilot`
-- [ ] T18: Cài deployer lên VPS [bạn]
+- [x] T18: Cài deployer lên VPS [bạn]
 - [ ] T19: Task của `ao-pilot`: Dockerfile, `deploy.yaml`, E2E và bản chép kit [bạn]
 - [ ] T20: Kiểm rằng cổng chặn đúng (spec mục 7, bước 10)
 
