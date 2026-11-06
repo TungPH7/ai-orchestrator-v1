@@ -49,8 +49,8 @@
 **Kết quả (2026-11-05):** điểm 1, 2, 4 và 10 đúng; điểm 9 đúng, trừ Affects Version chưa thử được vì `DEMO` chưa có version. Điểm 3 đúng sau khi App có thêm Commit statuses: Read-only. Điểm 8 sai: script gắn bằng chứng, gắn Fix Version và comment bằng token CI. Bạn duyệt cả hai chỗ sửa ở Phiên 26 · Lượt 22–23.
 
 **Kiểm chứng:**
-- [ ] Năm lệnh trong quy ước chung xanh
-- [ ] Không file key hay token nào nằm trong repo kit hay `ao-pilot`
+- [x] Năm lệnh trong quy ước chung xanh (kiểm lại ở Phiên 27 · Lượt 52)
+- [x] Không file key hay token nào nằm trong repo kit hay `ao-pilot` (quét theo mẫu, bỏ qua thư mục test, ở Phiên 27 · Lượt 51)
 
 **Phụ thuộc:** không
 
@@ -712,7 +712,9 @@
 - README có mục về bốn lệnh và biến `AO_ENV_AUTH`.
 - `docs/release-workflow.md`: bốn lệnh, một vòng release, các bước bấm Fix Version trên Jira, yêu cầu với dự án (Dockerfile, `.dockerignore`, `deploy.yaml`, `playwright.config.ts` với tag `@local`, `AO_PUBLIC_URL`), quy tắc expand/contract cho cơ sở dữ liệu.
 - `docs/github-apps-setup.md` có App `ao-deploy` (từ T1); `docs/vps-setup.md` đủ từ đầu tới cuối.
-- `SPEC.md` ghi module hoàn thành; chuyển `tasks/plan.md`, `tasks/todo.md`, `tasks/verification.md` vào `tasks/archive/release-workflow/`.
+- `docs/release-workflow.md` ghi thêm cách thêm tab Releases và giới hạn của hai token Jira: `ATLASSIAN_AGENT_TOKEN` chỉ ghi qua Rovo MCP, `JIRA_CI_TOKEN` không tạo được version (Phiên 27 · Lượt 51).
+- Lưu `kit-copy.mjs` và `bot-git.mjs` vào kit làm đầu vào cho `project-scaffold`; hai script này đang ở thư mục tạm.
+- `SPEC.md` ghi module hoàn thành và danh sách việc tồn trong `tasks/verification.md`; chuyển `tasks/plan.md`, `tasks/todo.md`, `tasks/verification.md` vào `tasks/archive/release-workflow/`.
 
 **Tiêu chí chấp nhận:**
 - [ ] Đạt 10 tiêu chí ở spec mục 9.
