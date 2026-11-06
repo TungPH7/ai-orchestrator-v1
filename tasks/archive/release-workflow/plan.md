@@ -142,11 +142,12 @@ T20 ── T21 DEMO-21 tới Production ── T22 hotfix, rollback, smoke fail 
 - [x] Bạn xem lịch sử của `DEMO-21` và Bug thử trên `DEMO`, PR release, tag, deployment trên `ao-pilot`, và `.ai/runs/`
 
 ### Giai đoạn 8: hoàn thiện
-- [ ] T23: Tài liệu, `SPEC.md` và lưu trữ plan
+- [x] T22b: Chép lại kit vào `ao-pilot` [bạn]
+- [x] T23: Tài liệu, `SPEC.md` và lưu trữ plan
 
 ### Checkpoint cuối
-- [ ] Đạt 10 tiêu chí ở spec mục 9
-- [ ] Chuyển `tasks/plan.md`, `tasks/todo.md`, `tasks/verification.md` vào `tasks/archive/release-workflow/`
+- [x] Đạt 10 tiêu chí ở spec mục 9
+- [x] Chuyển `tasks/plan.md`, `tasks/todo.md`, `tasks/verification.md` vào `tasks/archive/release-workflow/`
 - [ ] Bạn xác nhận module hoàn thành
 
 ## Usage ước tính cho kiểm thật

@@ -2,7 +2,7 @@
 
 > **Module:** `release-workflow`, xem capability map trong [SPEC.md](SPEC.md). **Phụ thuộc:** `sdlc-contract`, `tracker-integration`, `quality-gates`, `agent-roster`, `dev-workflow`. **Được dùng bởi:** Pilot 2, `project-scaffold`, và `orchestrator-cli` ở Cấp 2.
 >
-> **Trạng thái:** đã duyệt ngày 2026-11-05 (Phiên 26 · Lượt 17). Plan: [tasks/plan.md](tasks/plan.md), đã duyệt ngày 2026-11-05 (Phiên 26 · Lượt 20). **Nguồn thảo luận:** [misc/brainstorm-discussion.md](misc/brainstorm-discussion.md), Phiên 26 · Lượt 12–20.
+> **Trạng thái:** đã duyệt ngày 2026-11-05 (Phiên 26 · Lượt 17). Plan đã duyệt ngày 2026-11-05 (Phiên 26 · Lượt 20). Module hoàn thành ngày 2026-11-07; plan, danh sách task và kết quả kiểm thật lưu ở [tasks/archive/release-workflow/](tasks/archive/release-workflow/plan.md). **Nguồn thảo luận:** [misc/brainstorm-discussion.md](misc/brainstorm-discussion.md), Phiên 26 · Lượt 12–20.
 
 ## 1. Mục tiêu
 
@@ -390,7 +390,7 @@ STOP: gate ④. Read the list, then run /ao-release v0.1.0 22327a5
 - `steps`: mỗi lệnh có một trường hợp `GO` và các trường hợp `STOP` (sai trạng thái, môi trường QA chưa có commit của item, có nhánh release đang mở, thiếu Fix Version trên Jira, regression trên commit cũ, diff sau regression sửa file khác).
 - Skill: frontmatter của bốn lệnh có `disable-model-invocation: true` và gọi đúng `ao-step.mjs`.
 
-**Kiểm thật** trên `ao-pilot` và space `DEMO`, lệnh ở máy chạy bằng repo kit qua `AO_KIT_DIR`, kết quả ghi vào `tasks/verification.md`:
+**Kiểm thật** trên `ao-pilot` và space `DEMO`, lệnh ở máy chạy bằng repo kit qua `AO_KIT_DIR`, kết quả ghi vào `tasks/archive/release-workflow/verification.md`:
 
 1. Mười tiền đề ở mục 2.12.
 2. Bạn thuê VPS, tạo bản ghi DNS, tạo App `ao-deploy`; Claude cài VPS và deployer.

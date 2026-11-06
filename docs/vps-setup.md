@@ -219,7 +219,7 @@ chown aodeploy:aodeploy /etc/ao/caddy/Caddyfile
 
 Deployer ghi đè Caddyfile tại chỗ, vì container Caddy gắn đúng file đó (mục 8).
 
-**2. Bản kit ghim.** Claude đóng gói một commit của `main` kit trên máy bạn, chép lên VPS, rồi cài dependency. Commit ghim được ghi vào `tasks/verification.md`. Claude chỉ chép bản mới khi bạn yêu cầu (spec mục 8).
+**2. Bản kit ghim.** Claude đóng gói một commit của `main` kit trên máy bạn, chép lên VPS, rồi cài dependency. Commit ghim được ghi vào mục 12 của tài liệu này và vào `tasks/archive/release-workflow/verification.md`. Claude chỉ chép bản mới khi bạn yêu cầu (spec mục 8).
 
 ```
 git -C ai-orchestrator archive --format=tar.gz -o ao-kit.tar.gz <commit>
