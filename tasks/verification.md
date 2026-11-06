@@ -117,3 +117,13 @@ Deployer kiểm từng commit sau điểm đã kiểm, dừng ở `3fdd514`, PR 
 - Phát hiện 4 đã sửa ở PR #190: điểm cắt không tính key của Epic.
 - Sửa dữ liệu Jira dừng sau `DEMO-19`. `Refine` bằng token CI chạy được. `Start` bằng `ATLASSIAN_AGENT_TOKEN` qua REST nhận `401 Unauthorized; scope does not match`: token đó ghi qua Rovo MCP (`kit/.mcp.json`), không qua REST. `Start` của `DEMO-21` ngày 2026-11-01 do `orchestratoragent` làm theo đường đó.
 - Trạng thái lúc dừng: `DEMO-19` ở Ready, có comment ghi lý do, và workflow không có bước lùi về New. `DEMO-5`, `DEMO-8`, `DEMO-9`, `DEMO-10`, `DEMO-16` chưa đổi.
+- Bạn cho phép gọi Rovo MCP bằng script chạy một lần (Lượt 13). `Start` và `Pick up` đi qua `transitionJiraIssue` với `ATLASSIAN_AGENT_TOKEN`, các bước còn lại qua REST với token CI. Script không đi qua hook `jira-guard`. Kết quả: `DEMO-5`, `DEMO-8`, `DEMO-9`, `DEMO-16`, `DEMO-19` ở In QA, chờ bạn `Accept`; `DEMO-10` ở Ready for QA, cùng `DEMO-6` và `DEMO-21`. Mỗi item có comment ghi lý do.
+
+## T18: cài deployer lên VPS (2026-11-06)
+
+**Commit kit đã ghim:** `2586ea8ebe3b28afa56fd12910f0997408a05a1e`.
+
+- Bước 1, 2, 3, 5, 6 của mục 11 trong `docs/vps-setup.md` đã xong: user `aodeploy`, bản kit ở `/opt/ao/kit`, key của App `ao-deploy`, biến không bí mật của `pilot`, `deployer.yaml` chỉ có `pilot`. File tạm ở `/tmp` đã xóa.
+- **Docker 29.9.3:** `docker buildx prune --force --max-used-space 4gb` chạy được (buildx 0.38.1).
+- **Smoke từ host:** `aodeploy` gọi được IP của một container thử trên một network riêng, trả 200. Container, network và image thử đã gỡ.
+- **Deployment cũ:** 11 deployment `success` của `deploy.yml` giả chuyển `inactive` bằng login `gh` của bạn: 9 của Development, 1 của Staging, 1 của Production. Không môi trường nào còn deployment `success`. `jira-sync` bỏ qua status `inactive`.

@@ -546,7 +546,7 @@
 **Quyết định ở Checkpoint 2** (Phiên 27 · Lượt 12, phát hiện trong `tasks/verification.md`):
 
 - **Điểm cắt không tính key của Epic.** Hợp đồng và spec mục 2.6 ghi theo.
-- **Item cũ của `ao-pilot`:** Claude sửa dữ liệu một lần trên Jira bằng token bot, kèm comment trên từng item. `DEMO-10` sang Ready for QA, để `qa` kiểm ở T21 cùng `DEMO-6` và `DEMO-21`. `DEMO-5`, `DEMO-8`, `DEMO-9`, `DEMO-16`, `DEMO-19` sang In QA, rồi **bạn** `Accept` không qua `qa`: ngoại lệ một lần với guard `qa-report-passed`. Đang dừng sau `DEMO-19` (`tasks/verification.md`).
+- **Item cũ của `ao-pilot`:** Claude sửa dữ liệu một lần trên Jira bằng token bot, kèm comment trên từng item. `DEMO-10` sang Ready for QA, để `qa` kiểm ở T21 cùng `DEMO-6` và `DEMO-21`. `DEMO-5`, `DEMO-8`, `DEMO-9`, `DEMO-16`, `DEMO-19` sang In QA, rồi **bạn** `Accept` không qua `qa`: ngoại lệ một lần với guard `qa-report-passed`. Đã làm xong phần của Claude, qua Rovo MCP (`tasks/verification.md`); còn chờ bạn `Accept`.
 - **`ao-pilot` giữ tag `v0.1.0`:** bản đầu tiên của kiểm thật là `v0.2.0`, hotfix là `v0.2.1`.
 - **Deployment cũ của `deploy.yml`** chuyển `inactive` ở T18, trước `baseline`.
 - **Claude tiếp tục tự merge PR của kit khi CI xanh** (plan, quyết định 10).
@@ -572,8 +572,8 @@
 
 **Tiêu chí chấp nhận:**
 - [ ] `tick --dry-run` in đúng việc sẽ làm cho `ao-pilot`: chưa có `deploy.yaml` nên chưa deploy.
-- [ ] Commit kit đã ghim nằm trong `tasks/verification.md`.
-- [ ] Trên VPS: deployer gọi được IP của container trong mạng của dự án để smoke; `docker buildx prune --max-used-space 4gb` chạy được với Docker 29.9.3 (T7).
+- [x] Commit kit đã ghim nằm trong `tasks/verification.md`.
+- [x] Trên VPS: deployer gọi được IP của container trong mạng của dự án để smoke; `docker buildx prune --max-used-space 4gb` chạy được với Docker 29.9.3 (T7).
 - [ ] Không bí mật nào nằm trong log của systemd.
 
 **Kiểm chứng:**
