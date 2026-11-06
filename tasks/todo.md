@@ -546,7 +546,7 @@
 **Quyết định ở Checkpoint 2** (Phiên 27 · Lượt 12, phát hiện trong `tasks/verification.md`):
 
 - **Điểm cắt không tính key của Epic.** Hợp đồng và spec mục 2.6 ghi theo.
-- **Item cũ của `ao-pilot`:** Claude sửa dữ liệu một lần trên Jira bằng token bot, kèm comment trên từng item. `DEMO-10` sang Ready for QA, để `qa` kiểm ở T21 cùng `DEMO-6` và `DEMO-21`. `DEMO-5`, `DEMO-8`, `DEMO-9`, `DEMO-16`, `DEMO-19` sang In QA, rồi **bạn** `Accept` không qua `qa`: ngoại lệ một lần với guard `qa-report-passed`. Đã làm xong phần của Claude, qua Rovo MCP (`tasks/verification.md`); còn chờ bạn `Accept`.
+- **Item cũ của `ao-pilot`:** Claude sửa dữ liệu một lần trên Jira bằng token bot, kèm comment trên từng item. `DEMO-10` sang Ready for QA, để `qa` kiểm ở T21 cùng `DEMO-6` và `DEMO-21`. `DEMO-5`, `DEMO-8`, `DEMO-9`, `DEMO-16`, `DEMO-19` sang In QA, rồi **bạn** `Accept` không qua `qa`: ngoại lệ một lần với guard `qa-report-passed`. Đã xong: Claude sửa qua Rovo MCP, bạn `Accept` (`tasks/verification.md`).
 - **`ao-pilot` giữ tag `v0.1.0`:** bản đầu tiên của kiểm thật là `v0.2.0`, hotfix là `v0.2.1`.
 - **Deployment cũ của `deploy.yml`** chuyển `inactive` ở T18, trước `baseline`.
 - **Claude tiếp tục tự merge PR của kit khi CI xanh** (plan, quyết định 10).

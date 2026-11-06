@@ -127,3 +127,6 @@ Deployer kiểm từng commit sau điểm đã kiểm, dừng ở `3fdd514`, PR 
 - **Docker 29.9.3:** `docker buildx prune --force --max-used-space 4gb` chạy được (buildx 0.38.1).
 - **Smoke từ host:** `aodeploy` gọi được IP của một container thử trên một network riêng, trả 200. Container, network và image thử đã gỡ.
 - **Deployment cũ:** 11 deployment `success` của `deploy.yml` giả chuyển `inactive` bằng login `gh` của bạn: 9 của Development, 1 của Staging, 1 của Production. Không môi trường nào còn deployment `success`. `jira-sync` bỏ qua status `inactive`.
+- **Bạn `Accept`** `DEMO-5`, `DEMO-8`, `DEMO-9`, `DEMO-16`, `DEMO-19`: cả năm đã Done (Lượt 14).
+- **Bước 4 (bạn làm):** `/etc/ao/jira-read.token` và `/etc/ao/caddy/basic-auth` có quyền `root:aodeploy 640`. File basic auth có một dòng của user `ao`, với bản băm bcrypt (`$2a$`, 60 ký tự): `caddy hash-password` đọc được mật khẩu từ stdin. Claude chỉ đọc dạng của file. `AO_ENV_AUTH` trên máy bạn có dạng `ao:<mật khẩu>`.
+- **Bước 7:** service và timer đã cài, chưa bật. `baseline pilot` in `develop` `22327a5b9bfd4d7169b9ca451dbcfc9dc6ddbca7` và `main` `354f02c582b20690bdf439224d693c5c2c9d4217`; `release/0.1.0` không được tính là đang mở. Chờ bạn duyệt trước `--confirm`.
