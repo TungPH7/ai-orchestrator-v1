@@ -242,3 +242,15 @@ Bạn yêu cầu rà kit, Jira, `ao-pilot` và `ao-sample`, rồi xét thời đ
 - Bạn đồng ý ở Lượt 52 và mở đăng nhập root. **Commit ghim mới: `521e03179908062080de9fd6b8fd9c77dfece2fc`**, thay `bb25b2b`. `npm ci` thêm 65 package; `tick --dry-run` không báo gì; timer bật lại.
 - **Lỗi của Claude trong script chép:** vòng chờ dùng `systemctl is-active --quiet`, mà lệnh này trả lỗi với `activating`, trạng thái của service `oneshot` lúc đang chạy. Vòng chờ thoát ngay, nên `/opt/ao/kit` bị thay trong lúc một tick có thể đang chạy. Không có hậu quả: `Result=success`, tick kế tiếp chạy bình thường, không có deployment mới, ba môi trường vẫn chạy. `docs/vps-setup.md` mục 12 ghi cách chờ đúng.
 - Tắt lại đăng nhập root: root nhận `Permission denied (publickey)`, `aoadmin` vào được, timer `active`. Trang chủ Production 200, favicon 204.
+
+## T22b: chép lại kit vào `ao-pilot` (Lượt 53–54)
+
+- **Task `DEMO-30`:** tạo bằng token CI, bạn `Refine`. Claude đặt trường Agent và `Start` qua Rovo MCP, rồi chép kit tại `521e031` lên nhánh `feature/DEMO-30-kit-copy` dưới tên bot `ao-dev` (`b7a62e4`, 13 file). ao-pilot PR #23 vào `develop`, CI xanh cả 5 job.
+- **Review lượt 1, trên `b7a62e4`:**
+  - `reviewer` 3,19 USD: 1 High, 3 Medium, 4 Low. High: kit PR #217 ghi lượt agent từ lúc bắt đầu, nên review bị tắt chạy tiếp qua `carryOn` trên mọi head, không có worktree. Báo cáo viết cho head cũ có thể được đăng và tính cho head mới. Lỗi này có từ trước với usage limit, và #217 mở rộng nó.
+  - `security` (max) chạm giới hạn 5 giờ sau 4,24 USD. Bạn báo còn usage. Claude sửa ở kit trước (kit PR #220), ghi `head` của lượt dừng (`b7a62e4`, đối chiếu log) vào `state.json` một lần, rồi chạy tiếp: session cũ đi tiếp trên `b7a62e4` với worktree, 2,94 USD, không có Critical hay High, 1 Medium trùng High của `reviewer`. Đây là lần đầu chạy tiếp một review thật bằng code mới.
+- **Kit PR #220:** review dừng chỉ chạy tiếp trên đúng head của nó, có worktree; build chạy tiếp tại chỗ; lượt chết trước dòng log đầu tiên chạy mới; ba Low (`changelogWith`, vị trí dòng `Scope`, `/ao-ship` hotfix đã lên Production). 1083 test xanh.
+- **Chép lại tại `e0cd3b9`** (`a96efbc`, 4 file, +27/−7). `diff -rq` sáu thư mục và `cmp` 15 file `scripts/`: giống kit. Mô tả PR và `DEMO-30` cập nhật theo `e0cd3b9`.
+- **Review lượt 2, trên `a96efbc`:** `reviewer` 2,63 USD: approve, 1 Medium (`DEMO-30` còn ghi `521e031`, đã sửa trên Jira), 1 Low (thông báo sai của `/ao-ship vX.Y.Z` khi `main` kết thúc bằng merge của bản release; lệnh vẫn dừng đúng, sửa ở PR đóng module). `security` chỉ phần mới (max) 3,22 USD: không có finding.
+- **Chi phí `DEMO-30` tới gate ③: 16,22 USD**, ước 7–10 USD. Phần vượt là lượt review thứ hai, do lỗi High nằm trong bản sửa #217 của Claude.
+- **Bản kit trên VPS** vẫn ở `521e031`. Thay đổi sau đó chạm `audit` chỉ ở vị trí dòng `Scope`, mức Low; chép ở lần cập nhật VPS kế tiếp.
