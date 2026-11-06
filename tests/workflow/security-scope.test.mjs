@@ -45,13 +45,13 @@ test('open Critical or High findings ask for the new part with the findings to c
   assert.deepEqual(scope(report({ blocking: 1, open: [high] }), compare(10)), { mode: 'delta', reason: '10 lines changed since a1b2c3d, with 1 Critical or High finding open to check', since: X, at: '2026-11-04T08:00:00Z', lines: 10, earlier: [high] });
   const Y = 'b1b2c3d4e5f60718293a4b5c6d7e8f9012345678';
   const low = { severity: 'Critical', where: 'guard.mjs:75', finding: 'the regex backtracks' };
-  // The newest report left the High of the full one out: both count, each once.
-  const newest = report({ sha: Y, at: '2026-11-05T08:00:00Z', blocking: 2, open: [low] });
+  // open of the newest report is all that is open after it, what it left out too (openFindings).
+  const newest = report({ sha: Y, at: '2026-11-05T08:00:00Z', blocking: 2, open: [low, high] });
   const both = securityScope({ report: newest, full: report({ blocking: 1, open: [high] }), compare: compare(10), gates });
   assert.deepEqual([both.mode, both.earlier, both.reason], ['delta', [low, high], '10 lines changed since a1b2c3d, with 2 Critical or High findings open to check']);
-  // The newest report lists the High of the full one as still Open: it is checked once.
-  const again = securityScope({ report: report({ sha: Y, blocking: 1, open: [high] }), full: report({ blocking: 1, open: [high] }), compare: compare(10), gates });
-  assert.deepEqual(again.earlier, [high]);
+  // The newest report lists the High of the full one as Fixed: it is not asked about again.
+  const fixed = securityScope({ report: report({ sha: Y, blocking: 0, open: [] }), full: report({ blocking: 1, open: [high] }), compare: compare(10), gates });
+  assert.deepEqual([fixed.earlier, fixed.reason], [undefined, '10 lines changed since a1b2c3d']);
   assert.deepEqual(securityScope({ report: newest, full: null, compare: null, gates }), { mode: 'full', reason: 'no full security report on this PR yet' });
 });
 

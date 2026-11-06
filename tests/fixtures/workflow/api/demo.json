@@ -466,7 +466,7 @@
     }
    ]
   },
-  "/rest/api/3/search/jql?fields=summary,issuetype,status,labels,issuelinks&jql=project = \"DEMO\" AND parent = \"DEMO-11\"": {
+  "/rest/api/3/search/jql?fields=summary,issuetype,status,labels,issuelinks,fixVersions&jql=project = \"DEMO\" AND parent = \"DEMO-11\"": {
    "issues": [
     {
      "key": "DEMO-12",

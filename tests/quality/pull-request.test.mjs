@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { PLACEHOLDERS, PR_SECTIONS, checkPullRequest, checkReviewHeader, openCounts, readReviewReport, SEVERITIES } from '../../lib/quality/pull-request.mjs';
+import { PLACEHOLDERS, PR_SECTIONS, checkPullRequest, checkReviewHeader, openCounts, openFindings, readReviewReport, SEVERITIES } from '../../lib/quality/pull-request.mjs';
 import { ROOT } from '../helpers/kit.mjs';
 
 const template = readFileSync(join(ROOT, 'templates', 'pull-request.md'), 'utf8');
@@ -93,6 +93,19 @@ test('a security report of the new part only gives the commit it starts from (de
   assert.equal(readReviewReport(delta.replace('0f1e2d3', 'HEAD~1'), ROLES).scope, undefined, 'only a commit SHA');
 });
 
+// Pilot 1, third review of ao-sample PR #13: a Scope line a little off was read as a full review, which judges anew and
+// so cleared the High findings open before it. The report is unreadable now, and an unreadable report clears nothing.
+test('a Scope line that does not read as the template says leaves the report unreadable', () => {
+  const withLine = (line) => report('Không có finding.\n').replace('Role: security\n', `Role: security\n${line}\n`);
+  for (const line of ['Scope: changes since HEAD~1', 'Scope: the new part since 0f1e2d3', '**Scope:** changes since 0f1e2d3', 'scope: changes since 0f1e2d3']) {
+    const read = readReviewReport(withLine(line), ROLES);
+    assert.equal(read.ok, false, line);
+    assert.deepEqual(read.problems, ['Scope: the line must read "Scope: changes since <short SHA>"'], line);
+  }
+  assert.equal(readReviewReport(withLine('<!-- Scope: changes since <short SHA> -->'), ROLES).ok, true, 'the comment of the template left in place');
+  assert.equal(readReviewReport(report('Không có finding.\n').replace('## Verdict', 'Scope: hai file của PR\n\n## Verdict'), ROLES).ok, true, 'the word in a section of a full report');
+});
+
 // Pilot 1, second review of ao-sample PR #13: a High no longer asks for a full review. A report of the new part lists
 // the Critical and High findings left open before it, each Fixed or Open, and those not listed stay open.
 const EARLIER = '| Severity | Where | Finding | Status |\n|---|---|---|---|\n';
@@ -108,18 +121,37 @@ test('a report of the new part carries the earlier Critical and High findings: a
   const newHigh = readReviewReport(delta(`${EARLIER}| High | a.ts:1 | x | fixed |\n`, `${TABLE}| High | Security | b.ts:2 | y | z |\n`), ROLES);
   assert.deepEqual(newHigh.blocking.map(({ where }) => where), ['b.ts:2'], 'a new finding blocks as before; "fixed" in any case clears');
   const full = readReviewReport(report('Không có finding.\n').replace('## Verdict', `## Earlier findings\n${EARLIER}| High | a.ts:1 | x | Open |\n\n## Verdict`), ROLES);
-  assert.deepEqual(full.blocking, [], 'a full review judges anew: an Earlier findings section of it does not count');
+  assert.deepEqual([full.ok, full.problems], [false, ['Earlier findings: only a report of the new part has them, under its Scope line']], 'without its Scope line the report could pass for a full review');
   assert.equal(readReviewReport(delta(`${EARLIER}| Severe | a.ts:1 | x | Open |\n`), ROLES).ok, false, 'an unknown severity is unreadable there too');
 });
 
-test('the findings open after each report: those of the report before that a report of the new part does not list stay open', () => {
-  const full = (blocking) => ({ ok: true, findings: [], blocking: Array.from({ length: blocking }, () => ({ severity: 'High' })) });
-  const part = (blocking, earlier) => ({ ...full(blocking), scope: { since: '0f1e2d3' }, earlier: earlier.map((severity) => ({ severity, status: 'Fixed' })) });
-  assert.deepEqual(openCounts([full(1), part(0, ['High'])]), [1, 0], 'the High is listed as Fixed');
-  assert.deepEqual(openCounts([full(2), part(0, ['High'])]), [2, 1], 'one of the two is not listed');
-  assert.deepEqual(openCounts([full(1), part(0, [])]), [1, 1], 'a report of the new part that lists nothing');
-  assert.deepEqual(openCounts([full(1), part(1, ['High']), part(0, ['High'])]), [1, 1, 0], 'a new High of the first part carries to the second');
-  assert.deepEqual(openCounts([full(1), part(0, ['Medium'])]), [1, 1], 'a Medium row does not stand for a High');
-  assert.deepEqual(openCounts([full(1), full(0)]), [1, 0], 'a full report starts again from its own findings');
-  assert.deepEqual(openCounts([full(1), { ok: false }, part(0, [])]), [1, 1, 1], 'an unreadable report clears nothing');
+test('a Status clears a finding when it is Fixed, alone or with a colon and how: anything else keeps it open', () => {
+  const status = (text) => readReviewReport(delta(`${EARLIER}| High | a.ts:1 | x | ${text} |\n`), ROLES).blocking.length;
+  for (const text of ['Fixed', 'fixed', 'FIXED', 'Fixed: the body is validated']) assert.equal(status(text), 0, text);
+  for (const text of ['Fixed một phần', 'Fixed in part', 'Fixed (partly)', 'Partly fixed', 'Open', 'Won\'t fix', '']) assert.equal(status(text), 1, text);
+});
+
+test('the findings open after each report: a finding clears only by its own row', () => {
+  const high = (name) => ({ severity: 'High', where: `${name}.ts:1`, finding: `${name} is wrong` });
+  const full = (...names) => ({ ok: true, findings: [], blocking: names.map(high) });
+  const row = (name, status = 'Fixed', severity = 'High') => ({ ...high(name), severity, status });
+  const part = (names, rows) => ({ ...full(...names), scope: { since: '0f1e2d3' }, earlier: rows, blocking: [...names.map(high), ...rows.filter(({ status }) => status === 'Open')] });
+
+  assert.deepEqual(openCounts([full('a'), part([], [row('a')])]), [1, 0], 'the High is listed as Fixed');
+  assert.deepEqual(openCounts([full('a', 'b'), part([], [row('a')])]), [2, 1], 'one of the two is not listed');
+  assert.deepEqual(openCounts([full('a'), part([], [])]), [1, 1], 'a report of the new part that lists nothing');
+  assert.deepEqual(openCounts([full('a'), part(['b'], [row('a')]), part([], [row('b')])]), [1, 1, 0], 'a new High of the first part carries to the second');
+  assert.deepEqual(openCounts([full('a'), part([], [row('a', 'Fixed', 'Medium')])]), [1, 1], 'a Medium row does not stand for a High');
+  assert.deepEqual(openCounts([full('a'), full()]), [1, 0], 'a full report starts again from its own findings');
+  assert.deepEqual(openCounts([full('a'), { ok: false }, part([], [])]), [1, 1, 1], 'an unreadable report clears nothing');
+
+  assert.deepEqual(openCounts([full('a', 'b'), part([], [row('a'), row('a')])]), [2, 1], 'a finding listed twice does not clear another one');
+  assert.deepEqual(openCounts([full('a'), part(['b'], [row('a')]), part([], [row('a')])]), [1, 1, 1], 'a row of a finding fixed before does not clear a new one');
+  assert.deepEqual(openCounts([full('a'), part([], [row('c')])]), [1, 1], 'a row of a finding nobody reported clears nothing');
+  assert.deepEqual(openCounts([full('a'), part([], [row('a', 'Open')])]), [1, 1], 'a finding listed as Open counts once');
+  assert.deepEqual(openCounts([full('a'), part([], [{ ...row('a'), where: '`a.ts:1`', finding: 'A  is **wrong**' }])]), [1, 0], 'case, spaces and Markdown do not make it another finding');
+  assert.deepEqual(openCounts([full('a'), part([], [{ ...row('a'), finding: 'a was wrong' }])]), [1, 1], 'reworded, it is another finding: one left out stays open');
+
+  const open = openFindings([full('a', 'b'), part([], [row('a')]), part([], [])]);
+  assert.deepEqual(open.map((list) => list.map(({ where }) => where)), [['a.ts:1', 'b.ts:1'], ['b.ts:1'], ['b.ts:1']], 'one left out keeps its name, for the next review to check');
 });

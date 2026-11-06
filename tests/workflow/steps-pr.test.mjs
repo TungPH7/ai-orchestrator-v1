@@ -190,7 +190,7 @@ test('/ao-review after a fix of a High on a protected path: the new part at the 
   assert.deepEqual([security.effort, security.purpose, security.scope], ['max', 'review-delta', '15 lines changed since a1b2c3d, on the protected path .ai-orchestrator/lib/workflow/review-tree.mjs, with 1 Critical or High finding open to check']);
   assert.equal(security.prompt, [
     'Review PR #15, only the changes since a1b2c3d; your full report on a1b2c3d is the review of 2026-11-04. Write the line Scope: changes since a1b2c3d in your report.',
-    'The security reports before this one left 1 Critical or High finding open. Check each against the head, and list every one in a section "## Earlier findings" after Findings, as a table with the columns Severity | Where | Finding | Status, where Status begins with Fixed or Open. merge-gate counts a finding you do not list as open.',
+    'The security reports before this one left 1 Critical or High finding open. Check each against the head, and list every one in a section "## Earlier findings" after Findings, as a table with the columns Severity | Where | Finding | Status. Copy Severity, Where and Finding as they stand below: merge-gate knows a finding by its Where and Finding. Status is Open, or Fixed, alone or with a colon and how; a finding fixed only in part is Open. merge-gate counts a finding you do not list as open.',
     '- High | .ai-orchestrator/lib/workflow/review-tree.mjs:7 | AGENTS.md / of the PR reaches the review',
   ].join('\n\n'));
 });

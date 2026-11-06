@@ -199,6 +199,25 @@ test('/ao-plan after gate ②: the build it suggests is the first Ready item tha
   assert.equal(past([{ key: 'DEMO-21', state: 'ready' }, { key: 'DEMO-23', state: 'ready' }]).next, '/ao-build DEMO-21');
 });
 
+// The guards of complete in contract/workflows.yaml, children-closed and children-released. Audit of 2026-11-06: DEMO-11
+// could be completed, and /ao-status said "its items move on".
+test('/ao-status asks you to complete an Epic whose items are all closed and released', () => {
+  const released = [{ name: 'v0.2.0', released: true }];
+  const next = (children) => decide('status', { command: 'status', space: 'DEMO', pulls: [], runs: [], items: [{ key: 'DEMO-11', type: 'Epic', workType: 'epic', state: 'in-progress', status: 'In Progress', summary: 'Mã giảm giá', flagged: false, requests: [], children }] }).lines;
+  assert.deepEqual(next([{ state: 'done', fixVersions: released }, { state: 'cancelled', fixVersions: [] }]), [
+    'Waiting for you:',
+    '  DEMO-11: Click Complete on DEMO-11',
+    '',
+    'DEMO-11 Epic "Mã giảm giá": In Progress → Click Complete on DEMO-11',
+  ]);
+  const moving = ['DEMO-11 Epic "Mã giảm giá": In Progress → its items move on'];
+  assert.deepEqual(next([{ state: 'done', fixVersions: [{ name: 'v0.3.0', released: false }] }]), moving, 'Done, but not in a release on Production yet');
+  assert.deepEqual(next([{ state: 'done', fixVersions: released }, { state: 'new', fixVersions: [] }]), moving, 'an item still open');
+  assert.deepEqual(next([{ state: 'cancelled', fixVersions: [] }, { state: 'done', fixVersions: [] }]), moving, 'Done without a Fix Version');
+  assert.deepEqual(next([]), moving, 'no items yet');
+  assert.deepEqual(next(undefined), moving, 'its items not read');
+});
+
 test('/ao-status of an Epic and of the space: the next command, what waits for you, open requests and costs', () => {
   const epic = decide('status', epicFacts('planning', { docs: { pr: openPr() }, run: runState({ role: 'ba', purpose: 'spec-write', outcome: 'done', costUsd: 1.8 }, { role: 'sa', purpose: 'spec-nfr', outcome: 'done', costUsd: 0.7 }) }));
   assert.equal(epic.status, true);
