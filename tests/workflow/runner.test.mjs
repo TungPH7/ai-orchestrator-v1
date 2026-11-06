@@ -372,7 +372,8 @@ test('last.md: a row per run with its measurements, the cost so far, why it stop
 test('the printout: the facts, then GO and the runs, or STOP with the reason and the next command', () => {
   const go = formatDecision({ go: true, lines: ['DEMO-21 Story "Xóa": Ready'], runs: [{ role: 'be-dev', key: 'DEMO-22', purpose: 'build', effort: 'high' }, { role: 'fe-dev', key: 'DEMO-23', purpose: 'build', effort: 'xhigh', when: 'BE is done' }] });
   assert.equal(go, 'DEMO-21 Story "Xóa": Ready\nGO\n1. be-dev DEMO-22, build, effort high\n2. fe-dev DEMO-23, build, effort xhigh (when BE is done)');
-  assert.equal(formatDecision({ go: false, reason: 'DEMO-21 is New, not Ready', next: '/ao-status DEMO-21', lines: [] }), 'STOP: DEMO-21 is New, not Ready\nNext: /ao-status DEMO-21');
+  assert.equal(formatDecision({ go: true, lines: [], runs: [{ action: 'deploy-request', key: 'rollback-development' }] }), 'GO\n1. deploy-request for rollback-development, a script: no agent runs');
+  assert.equal(formatDecision({ go: false, reason: 'DEMO-21 is New, not Ready', next: '/ao-status DEMO-21', lines:[] }), 'STOP: DEMO-21 is New, not Ready\nNext: /ao-status DEMO-21');
   assert.equal(formatDecision({ go: true, lines: [], runs: [{ action: 'jira-sync', key: 'DEMO-20', then: { mergeGate: 14 } }] }), 'GO\n1. jira-sync for DEMO-20, with your gh login; then merge-gate merges the docs PR #14');
 });
 

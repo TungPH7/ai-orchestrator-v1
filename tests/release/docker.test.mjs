@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { PRUNE_CACHE, buildArgs, containerEnv, parseSecrets, pruneImages, runArgs, swap, treesToKeep } from '../../lib/release/docker.mjs';
+import { PRUNE_CACHE, buildArgs, containerEnv, parseSecrets, pruneImages, readableMode, runArgs, swap, treesToKeep } from '../../lib/release/docker.mjs';
 
 const T = 'f'.repeat(40); // the tree to deploy
 const O = 'e'.repeat(40); // the tree running now
@@ -168,6 +168,25 @@ test('a container that does not start counts as a failed deploy', async () => {
     [`rm --force ${name('api', T)}`]: new Error(`Error response from daemon: No such container: ${name('api', T)}`),
   });
   assert.equal((await deploy(none, fakeSmoke([]))).outcome, 'failed');
+});
+
+test('a build context becomes readable by all: COPY keeps its modes, and a USER other than root must read the image', () => {
+  assert.equal(readableMode(0o600, false), 0o644);
+  assert.equal(readableMode(0o700, false), 0o755); // a script stays executable
+  assert.equal(readableMode(0o700, true), 0o755);
+  assert.equal(readableMode(0o644, false), 0o644);
+  assert.equal(readableMode(0o755, true), 0o755);
+});
+
+test('a container with no address is not running: the deploy says how it stands, without a smoke test, and it goes', async () => {
+  const d = docker({
+    [`inspect --format {{json .NetworkSettings.Networks}} ${name('api', T)}`]: `{"${NET}":{"IPAddress":""}}`,
+    [`inspect --format {{.State.Status}}, exit code {{.State.ExitCode}} ${name('api', T)}`]: 'restarting, exit code 1\n',
+  });
+  const s = fakeSmoke([]);
+  assert.deepEqual(await deploy(d, s), { outcome: 'failed', failures: [{ app: 'api', path: null, problem: 'the container has no address: it is restarting, exit code 1' }], stopped: [] });
+  assert.deepEqual(s.asked, []);
+  assert.ok(d.lines().includes(`rm --force ${name('api', T)}`));
 });
 
 test('the first deploy creates the network, connects Caddy, and has nothing old to stop', async () => {
