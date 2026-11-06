@@ -732,4 +732,4 @@
 
 - [x] Đạt 10 tiêu chí ở spec mục 9
 - [x] Chuyển `tasks/plan.md`, `tasks/todo.md`, `tasks/verification.md` vào `tasks/archive/release-workflow/`
-- [ ] Bạn xác nhận module hoàn thành
+- [x] Bạn xác nhận module hoàn thành
