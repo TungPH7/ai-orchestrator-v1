@@ -73,6 +73,13 @@ test('a regression on an older commit no longer holds when the branch changed mo
   assert.match(stale.lines.join('\n'), /release\/v0\.1\.0 changed apps\/web\/src\/cart\.tsx after the regression on bbbbbbbb, so the regression runs again/);
 });
 
+test('after the regression ran again with the release PR open, devops writes the notes again and the script commits them before gate ⑤', () => {
+  // T21: a Bug fixed on the release branch made the regression run again on its new head, which the PR already had.
+  const again = { regression: { sha: HEAD, result: 'PASS' }, changedSinceRegression: [], pr: { number: 30, headSha: HEAD } };
+  assert.deepEqual(decide(shipFacts({ ...again, notes: false })).runs.map(({ role, purpose, action }) => action ?? `${role} ${purpose}`), ['devops release-notes', 'release-pr']);
+  assert.deepEqual(decide(shipFacts({ ...again, notes: true })).runs.map(({ role, purpose, action }) => action ?? `${role} ${purpose}`), ['release-pr']);
+});
+
 test('/ao-ship stops while Staging runs another commit, a Bug Critical or High is open, the branch is not open, or the regression failed', () => {
   assert.equal(decide(shipFacts({ staging: { sha: OLD, deployment: 39, url: URL } })).reason, 'Staging runs bbbbbbbb, not the head aaaaaaaa of release/v0.1.0: wait for the deployer');
   assert.equal(decide(shipFacts({ staging: null })).reason, 'Staging runs no release yet: wait for the deployer');
