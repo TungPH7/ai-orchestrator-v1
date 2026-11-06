@@ -126,12 +126,12 @@ T20 ── T21 DEMO-21 tới Production ── T22 hotfix, rollback, smoke fail 
 
 ### Giai đoạn 6: lên VPS và `ao-pilot`
 - [x] T18: Cài deployer lên VPS [bạn]
-- [ ] T19: Task của `ao-pilot`: Dockerfile, `deploy.yaml`, E2E và bản chép kit [bạn]
+- [x] T19: Task của `ao-pilot`: Dockerfile, `deploy.yaml`, E2E và bản chép kit [bạn]
 - [x] T20: Kiểm rằng cổng chặn đúng (spec mục 7, bước 10)
 
 ### Checkpoint 3
-- [ ] Tiêu chí 3, 4 và 9 của spec mục 9 đạt
-- [ ] Bạn xem chi phí của T19, rồi đồng ý chạy kiểm thật ở T21–T22 (ước 14–24 USD)
+- [x] Tiêu chí 3 và 9 của spec mục 9 đạt; tiêu chí 4 đạt ở Development, phần Staging và Production chờ T21
+- [x] Bạn xem chi phí của T19 (20,53 USD), rồi đồng ý chạy kiểm thật ở T21–T22 (ước lại 20–35 USD)
 
 ### Giai đoạn 7: kiểm thật
 - [ ] T21: `DEMO-21` từ QA tới Production (bước 4–6) [bạn]

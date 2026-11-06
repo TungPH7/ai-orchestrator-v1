@@ -176,3 +176,5 @@ Deployer kiểm từng commit sau điểm đã kiểm, dừng ở `3fdd514`, PR 
 - **Tiêu chí 4:** một phần. Development có app. Staging và Production có HTTPS và trả 503 tới T21. Deployment trên item Jira chờ bạn nhìn.
 - **Tiêu chí 9:** đạt (mục T20).
 - **Chi phí của T19:** 20,53 USD, trên mức ước 10–16 USD. Claude ước lại T21–T22 khoảng 20–35 USD [Ước tính], chờ bạn quyết.
+- **Deployment trên Jira** (Lượt 26): ảnh của bạn cho thấy tab Deployments của `DEMO-26` có đủ bốn lần deploy lên `development`, gồm hai Failed (lần `failure` đầu tiên và lần từ chối ở T20) và hai Successful.
+- **Bạn duyệt** (Lượt 27): đánh T19 xong với chỗ lệch của bản chép kit, chép lại sau T22 (mục T22b của `tasks/todo.md`), và chạy T21–T22.
