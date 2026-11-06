@@ -57,6 +57,22 @@ test('an oxlint-disable comment needs a reason, as eslint-disable does (oxlint h
   ]);
 });
 
+test('xit( and xdescribe( count only as whole names: process.exit( and a method named fixdescribe( are not suppressions', () => {
+  const lines = [
+    { file: 'src/server.ts', line: 166, text: '  exit(code: number): void;' },
+    { file: 'src/server.ts', line: 177, text: '    server.close(() => target.exit(0));' },
+    { file: 'src/a.ts', line: 3, text: 'fixdescribe(list);' },
+    { file: 'src/a.test.ts', line: 9, text: "xit('AC1 is skipped', () => {});" },
+    { file: 'src/a.test.ts', line: 12, text: "  xdescribe('cart', () => {});" },
+    { file: 'src/a.test.ts', line: 15, text: "describe.skip('cart', () => {});" },
+  ];
+  assert.deepEqual(findSuppressions(lines, gates.suppressions), [
+    'src/a.test.ts:9 xit( needs "reason: <why>" on the same line',
+    'src/a.test.ts:12 xdescribe( needs "reason: <why>" on the same line',
+    'src/a.test.ts:15 .skip( needs "reason: <why>" on the same line',
+  ]);
+});
+
 test('deleted test files are listed for the reviewer', () => {
   assert.deepEqual(deletedTests(DIFF), ['src/old.test.ts']);
 });
