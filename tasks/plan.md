@@ -134,7 +134,7 @@ T20 ── T21 DEMO-21 tới Production ── T22 hotfix, rollback, smoke fail 
 - [x] Bạn xem chi phí của T19 (20,53 USD), rồi đồng ý chạy kiểm thật ở T21–T22 (ước lại 20–35 USD)
 
 ### Giai đoạn 7: kiểm thật
-- [ ] T21: `DEMO-21` từ QA tới Production (bước 4–6) [bạn]
+- [x] T21: `DEMO-21` từ QA tới Production (bước 4–6) [bạn]
 - [ ] T22: Hotfix, rollback và smoke fail có chủ đích (bước 7–9) [bạn]
 
 ### Checkpoint 4
