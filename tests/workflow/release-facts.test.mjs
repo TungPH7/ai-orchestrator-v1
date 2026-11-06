@@ -106,6 +106,22 @@ test('the cut facts: the history of develop since the newest tag, the state of e
   assert.deepEqual(facts.releaseBranches.map(({ name }) => name), ['release/v0.2.0']);
 });
 
+test('the cut facts leave the key of an Epic out of the release: its spec commit does not hold the cut point', async () => {
+  const { readContract } = await import('../../lib/contract.mjs');
+  const { CONTRACT_DIR } = await import('../helpers/kit.mjs');
+  const { readCutFacts } = await import('../../lib/workflow/facts.mjs');
+  const issue = (key, type, status, category) => ({ key, fields: { issuetype: { name: type }, status: { name: status, statusCategory: { key: category } }, fixVersions: [] } });
+  const jira = fakeJira({
+    issues: [issue('DEMO-20', 'Epic', 'In Progress', 'indeterminate'), issue('DEMO-21', 'Story', 'Done', 'done')],
+    gets: { '/rest/api/3/project/DEMO/versions': [] },
+  });
+  const history = async () => [`${sha('1')}\tdocs(spec): remove a line (DEMO-20)`, `${sha('2')}\tfeat(cart): remove a line (DEMO-21)`].join('\n');
+  const facts = await readCutFacts({ jira, deploys: github, history, contract: readContract(CONTRACT_DIR), mapping, space: 'DEMO' });
+  assert.equal(facts.cut.sha, sha('2'));
+  assert.deepEqual(facts.included.map(({ key }) => key), ['DEMO-21']);
+  assert.deepEqual(facts.after, []);
+});
+
 test('the ship facts: the release branch, what Staging runs, the open Bugs Critical and High, the regression on record, the notes and the PR', async () => {
   const { readContract } = await import('../../lib/contract.mjs');
   const { CONTRACT_DIR } = await import('../helpers/kit.mjs');
