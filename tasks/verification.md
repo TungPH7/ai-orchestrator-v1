@@ -142,3 +142,6 @@ Deployer kiểm từng commit sau điểm đã kiểm, dừng ở `3fdd514`, PR 
 ## T19: Task của `ao-pilot`
 
 - Task `DEMO-26` tạo bằng token CI lúc 2026-11-06 khoảng 10:50, ở New, nhãn `ao-devops`, mô tả theo `templates/task.md`. `ao-step.mjs build DEMO-26` (chỉ kiểm) dừng đúng: `DEMO-26 is New, not Ready`.
+- **`/ao-build DEMO-26`, lượt 1** (`devops`, effort high, Opus): 13 turn, 1,2 phút, 0,39 USD. Agent điền trường Agent, tạo và push `feature/DEMO-26-docker-public-host` từ `develop` (`22327a5`), ghi ledger. `Start` bị hook `jira-guard` từ chối hai lần: `GitHub GET /git/matching-refs/heads/bugfix/DEMO-26- returned 401: Bad credentials`. Agent gắn cờ Needs you và dừng, chưa viết code.
+- **Nguyên nhân:** Claude chạy `ao-step.mjs` của kit mà không đặt `AO_KIT_DIR` (plan, quyết định 6), nên hook nạp `lib/` từ bản chép cũ trong `ao-pilot`. `readGitHubToken` của bản cũ chỉ nhận token khớp `^gh[opsu]_w+$`, mà token cài đặt của App có dấu chấm, nên rơi xuống `gh auth status --show-token` và lấy phần token trước dấu chấm. Kit hiện tại đọc `GH_TOKEN` trước. Claude kiểm: một token đọc tạo y như của phiên agent có dấu chấm, và gọi `/git/matching-refs/heads/bugfix/DEMO-26-` được 200.
+- **Sửa:** chạy lại với `AO_KIT_DIR`; bạn gỡ cờ và nhãn `needs-you` trên `DEMO-26` như `docs/dev-workflow.md` ghi.
