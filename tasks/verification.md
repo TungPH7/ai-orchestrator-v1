@@ -93,5 +93,21 @@ Deployer kiểm từng commit sau điểm đã kiểm, dừng ở `3fdd514`, PR 
 **Phát hiện, cần xử lý trước kiểm thật (T18–T21):**
 
 1. **Deployment cũ của `deploy.yml`** vẫn mang status `success`, nên được tính là bản đang chạy: Development `22327a5`, Staging và Production `d013acc`. Trước điểm bắt đầu của deployer (T18), các deployment đó cần được chuyển `inactive`; T19 bỏ `deploy.yml`.
-2. **Task chép kit nằm mãi ở New** (`DEMO-5`, `DEMO-19`): commit của chúng nằm trên `develop`, nên giữ điểm cắt lại, vì chỉ Done mới được tính. Cần chuyển chúng sang Done trước `/ao-release`.
-3. **Bản cũ trên `ao-pilot`** (đã hẹn ở T1): tag `v0.1.0` và nhánh `release/0.1.0` cùng ở `d013acc`; `main` có 4 commit không nằm trong `develop` (3 commit thử của CI, và `354f02c` đưa kit lên `main` của `DEMO-5`). Với tag cũ, bản đầu tiên sẽ là `v0.2.0` và lịch sử tính từ `d013acc`.
+2. **Mười item có commit trên `develop` từ `v0.1.0`, chỉ `DEMO-12` Done** (đọc Jira ngày 2026-11-06, Phiên 27 · Lượt 10; Lượt 9 chỉ nêu `DEMO-5` và `DEMO-19`):
+
+   | Item | Loại | Trạng thái | Commit |
+   |---|---|---|---|
+   | `DEMO-5` | Task | New | `468b56d`, `68d2a15`, `2830053`: cài quality gates vào bản chép kit |
+   | `DEMO-6` | Task | Ready for QA | `9f17f6d`: phí vận chuyển |
+   | `DEMO-8` | Task | New | `2e16d25` thêm test, `0e55963` revert lại |
+   | `DEMO-9` | Task | New | `5f030ae`: chép kit có roster |
+   | `DEMO-10` | Story | New | `6c25b8b`: trang giỏ hàng |
+   | `DEMO-12` | Story | Done | `26c8ddb`: mã giảm giá |
+   | `DEMO-16` | Task | Ready for QA | `5956702`: timeout của job trong `deploy.yml` |
+   | `DEMO-19` | Task | New | `d8a67f7`: chép kit có lệnh của `dev-workflow` |
+   | `DEMO-20` | Epic | In Progress | `3fdd514`: spec của Epic |
+   | `DEMO-21` | Story | Ready for QA | `22327a5`: xóa sản phẩm khỏi giỏ hàng |
+
+   Từ New, rule Restrict của Jira (`docs/jira-setup.md`) chỉ cho bạn `Refine` và `Cancel`: `Start` và `Pick up` thuộc `ao-agents`, `Submit` và `Deploy to QA` thuộc `ao-automation`. Bạn chỉ bấm được `Accept` (In QA → Done). Nên bạn không tự đưa item New sang Done được. `Cancel` cũng không gỡ được, vì item Cancelled vẫn giữ điểm cắt lại (`lib/release/cut.mjs`).
+3. **Bản cũ trên `ao-pilot`** (đã hẹn ở T1): tag `v0.1.0` và nhánh `release/0.1.0` cùng ở `d013acc`; `main` có 4 commit không nằm trong `develop` (3 commit thử của CI, và `354f02c` đưa kit lên `main` của `DEMO-5`). Với tag cũ, bản đầu tiên sẽ là `v0.2.0` và lịch sử tính từ `d013acc`. Xóa tag thì lịch sử tính từ commit đầu, mà `d013acc` mang `DEMO-3` (Cancelled), nên điểm cắt bị chặn ngay ở đó. Nhánh `release/0.1.0` không bị tính là đang mở, vì `d013acc` đã nằm trong `main`.
+4. **Lỗi của kit: điểm cắt tính cả key của Epic.** Commit `3fdd514` mang `DEMO-20` (Epic), nên giữ điểm cắt tới khi Epic Done. Nhưng Epic chỉ `complete` được khi mọi item con đã release (guard `children-released`, `contract/workflows.yaml`). Hai điều kiện chờ nhau, nên mọi commit tài liệu của Epic chặn điểm cắt mãi.
