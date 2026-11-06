@@ -36,7 +36,7 @@ Như các module trước, plan kiểm mười tiền đề trước (T1–T2, s
 5. **Một commit không qua `audit` chặn môi trường của nó, cho tới khi bạn gỡ.**
    - Deployer kiểm mọi commit mới, nên commit đó nằm lại trong lịch sử, và mọi head sau nó cũng bị từ chối. Revert không gỡ được.
    - Cách gỡ: bạn đọc commit đó, rồi tạo một yêu cầu deploy bằng login của bạn cho một head sau nó, bằng `/ao-rollback <môi trường> <sha>`. Deployer ghi rằng bạn đã duyệt đoạn lịch sử tới head đó, rồi đi tiếp như thường. Với Production, `<sha>` vẫn phải thỏa hai điều kiện của spec mục 2.4.
-   - Dạng `<sha>` này cũng là cách đưa `v0.1.1` lên lại sau rollback, ở bước 8 của kiểm thật. Spec chưa ghi lệnh cho bước đó.
+   - Dạng `<sha>` này cũng là cách đưa `v0.2.1` lên lại sau rollback, ở bước 8 của kiểm thật. Spec chưa ghi lệnh cho bước đó.
    - Spec mục 2.9 ghi thêm một đoạn, và bảng ở mục 2.2 ghi thêm dạng `<sha>` của `/ao-rollback`. Lệnh vẫn tên `/ao-rollback`, nên vẫn có bốn lệnh.
 6. **Bản chép kit vào `ao-pilot` vẫn cần.**
    - `merge-gate` và `jira-sync` chạy trong Actions của `ao-pilot`, bằng bản chép trong `.ai-orchestrator/`. `AO_KIT_DIR` chỉ đổi được code chạy trên máy bạn.
@@ -53,7 +53,7 @@ Như các module trước, plan kiểm mười tiền đề trước (T1–T2, s
    - Mọi bước cài nằm trong `docs/vps-setup.md`, nên làm lại được từ đầu trên một VPS khác.
 9. **Bản kit trên VPS ghim theo một commit của `main` kit.** Claude chép bản mới lên VPS chỉ khi bạn yêu cầu (spec mục 8), và ghi commit đã ghim vào `tasks/verification.md`.
 10. **Quy trình nhánh như các module trước.**
-    - Mỗi task một nhánh `task/t<N>-<slug>` tách từ `main`, mở PR khi CI xanh. Từ T8 tới Checkpoint 2, Claude merge PR của kit bằng Rebase and merge khi CI xanh, rồi làm tiếp task sau; bạn soát ở Checkpoint 2 (bạn duyệt ở Phiên 27 · Lượt 7). Sau Checkpoint 2, Claude hỏi lại bạn trước khi tự merge.
+    - Mỗi task một nhánh `task/t<N>-<slug>` tách từ `main`, mở PR khi CI xanh. Từ T8, Claude merge PR của kit bằng Rebase and merge khi CI xanh, rồi làm tiếp task sau (bạn duyệt tới Checkpoint 2 ở Phiên 27 · Lượt 7, và cho tiếp tục sau đó ở Lượt 12).
     - PR trên `ao-pilot` sửa đường dẫn được bảo vệ do bạn merge.
     - Claude dừng ở các checkpoint để bạn soát.
 11. **Usage của gói Pro.** Kiểm thật tốn khoảng 10–12 lượt agent (bảng ở cuối file). Checkpoint 3 hỏi bạn trước phần tốn nhất.
@@ -122,7 +122,7 @@ T20 ── T21 DEMO-21 tới Production ── T22 hotfix, rollback, smoke fail 
 ### Checkpoint 2
 - [x] Năm lệnh kiểm trong quy ước chung và CI của kit xanh
 - [x] Claude chạy `ao-step.mjs` ở chế độ chỉ kiểm trong `ao-pilot`, bằng code của kit: `qa DEMO-21`, `release`, `ship v0.1.0`, `rollback production`. Các lệnh dừng đúng chỗ, vì VPS chưa có deployer. Không agent nào chạy
-- [ ] Bạn đọc kết quả đó, skill `ao-ship`, và phần prompt đã sửa
+- [x] Bạn đọc kết quả đó, skill `ao-ship`, và phần prompt đã sửa
 
 ### Giai đoạn 6: lên VPS và `ao-pilot`
 - [ ] T18: Cài deployer lên VPS [bạn]
@@ -156,7 +156,7 @@ T20 ── T21 DEMO-21 tới Production ── T22 hotfix, rollback, smoke fail 
 | T1, T2 | không có agent, chỉ lệnh `git`, `gh`, `ssh` và API | | 0, cộng tiền VPS từ T2 |
 | T19 | `devops` viết Dockerfile, `deploy.yaml` và phần E2E; `reviewer`, `security` trên PR có bản chép kit | Opus | 10–16 USD |
 | T20 | không có agent | | 0 |
-| T21 | `qa` trên Development; `qa` chạy full regression trên Staging; `devops` viết release note | theo roster | 6–10 USD |
+| T21 | `qa` trên Development cho `DEMO-21`, `DEMO-6`, `DEMO-10` và Task của T19; `qa` chạy full regression trên Staging; `devops` viết release note | theo roster | 6–10 USD, cộng ba lượt `qa` thêm ở Checkpoint 2 [Ước tính] |
 | T22 | dev agent sửa Bug thử; `reviewer`, `security`; `qa` trên Staging | theo roster | 8–14 USD |
 
 Tổng khoảng 10–12 lượt agent, 24–40 USD quy đổi, khớp mức 25–40 USD của spec mục 7. Có thể cần ba khung 5 giờ của gói Pro. [Ước tính] VPS khoảng 5–10 USD mỗi tháng, tính từ T2.

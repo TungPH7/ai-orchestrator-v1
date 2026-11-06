@@ -451,7 +451,7 @@
 - Kế hoạch đổi Fix Version là hàm thuần `releaseCutChanges` (`lib/release/release-cut.mjs`), có test. Bước `release-cut` của `ao-step` làm Jira trước, tạo nhánh sau cùng: khi nhánh đã có, lệnh dừng ở "nhánh release đang mở", nên một bước dở trước đó chạy lại được.
 - Runner có thêm bước script (`act`), không gọi agent. Báo cáo của lệnh release nằm ở `.ai/runs/<vX.Y.0>/last.md`.
 - Major là quyết định của bạn: `/ao-release v1.0.0 <sha>` được nhận khi bản kế tiếp là `v0.N.0`.
-- **Trước kiểm thật** (T1): `ao-pilot` còn tag `v0.1.0` và nhánh `release/0.1.0` ở `d013acc`, và `main` có 4 commit không nằm trong `develop`. Đề xuất cách xử lý ở Checkpoint 2.
+- **Trước kiểm thật** (T1): `ao-pilot` còn tag `v0.1.0` và nhánh `release/0.1.0` ở `d013acc`, và `main` có 4 commit không nằm trong `develop`. Quyết định ở Checkpoint 2: giữ nguyên, bản đầu tiên là `v0.2.0`.
 
 **Cỡ:** M
 
@@ -541,7 +541,15 @@
 
 - [x] Năm lệnh kiểm trong quy ước chung và CI của kit xanh
 - [x] Claude chạy `ao-step.mjs` ở chế độ chỉ kiểm trong `ao-pilot`, bằng code của kit: `qa DEMO-21`, `release`, `ship v0.1.0`, `rollback production`. Các lệnh dừng đúng chỗ, vì VPS chưa có deployer. Không agent nào chạy
-- [ ] Bạn đọc kết quả đó, skill `ao-ship`, và phần prompt đã sửa
+- [x] Bạn đọc kết quả đó, skill `ao-ship`, và phần prompt đã sửa (Phiên 27 · Lượt 12)
+
+**Quyết định ở Checkpoint 2** (Phiên 27 · Lượt 12, phát hiện trong `tasks/verification.md`):
+
+- **Điểm cắt không tính key của Epic.** Hợp đồng và spec mục 2.6 ghi theo.
+- **Item cũ của `ao-pilot`:** Claude sửa dữ liệu một lần trên Jira bằng token bot, kèm comment trên từng item. `DEMO-10` sang Ready for QA, để `qa` kiểm ở T21 cùng `DEMO-6` và `DEMO-21`. `DEMO-5`, `DEMO-8`, `DEMO-9`, `DEMO-16`, `DEMO-19` sang In QA, rồi **bạn** `Accept` không qua `qa`: ngoại lệ một lần với guard `qa-report-passed`.
+- **`ao-pilot` giữ tag `v0.1.0`:** bản đầu tiên của kiểm thật là `v0.2.0`, hotfix là `v0.2.1`.
+- **Deployment cũ của `deploy.yml`** chuyển `inactive` ở T18, trước `baseline`.
+- **Claude tiếp tục tự merge PR của kit khi CI xanh** (plan, quyết định 10).
 
 ---
 
@@ -558,6 +566,7 @@
   - chép private key của `ao-deploy` bằng `scp`, không mở file;
   - `deployer.yaml`, quyền ghi Caddyfile cho `aodeploy`, systemd service và timer (`docs/vps-setup.md` mục 11).
 - **Bạn** nhập mật khẩu basic auth và token Jira chỉ đọc bằng lệnh `ssh -t` do Claude soạn, trong terminal của bạn, rồi đặt `AO_ENV_AUTH` trên máy bạn và xóa file key ở máy.
+- Claude chuyển các deployment cũ của `deploy.yml` sang `inactive` bằng login `gh` của bạn (Checkpoint 2).
 - Claude chạy `ao-deploy.mjs baseline pilot` và đưa bạn danh sách head. Bạn đồng ý thì Claude chạy lại với `--confirm` (T8).
 - Claude chạy `tick --dry-run`, đọc kết quả, rồi bật timer.
 
@@ -637,9 +646,9 @@
 
 **Mô tả:**
 
-1. `/ao-qa DEMO-21` trên Development; bằng chứng nằm trên Jira; **bạn** Accept.
-2. **Bạn** tạo Fix Version `v0.1.0` và `v0.2.0` trên Jira theo từng bước bấm. `/ao-release`, rồi **bạn** gõ `/ao-release v0.1.0 <sha>` (gate ④). Deployer deploy Staging.
-3. `/ao-ship v0.1.0`; **bạn** đọc PR release rồi approve (gate ⑤). `merge-gate` merge, gắn tag, mở và merge PR merge ngược. Deployer deploy Production, smoke xanh. **Bạn** bấm Release cho `v0.1.0` trên Jira.
+1. `/ao-qa` trên Development cho `DEMO-21`, `DEMO-6`, `DEMO-10` và Task của T19; bằng chứng nằm trên Jira; **bạn** Accept từng item. Task của T19 phải Done, vì `deploy.yaml` và Dockerfile nằm trong commit của nó: thiếu nó, điểm cắt dừng trước đó và Staging không có gì để deploy.
+2. **Bạn** tạo Fix Version `v0.2.0` và `v0.2.0` trên Jira theo từng bước bấm. `/ao-release`, rồi **bạn** gõ `/ao-release v0.2.0 <sha>` (gate ④). Deployer deploy Staging.
+3. `/ao-ship v0.2.0`; **bạn** đọc PR release rồi approve (gate ⑤). `merge-gate` merge, gắn tag, mở và merge PR merge ngược. Deployer deploy Production, smoke xanh. **Bạn** bấm Release cho `v0.2.0` trên Jira.
 
 **Tiêu chí chấp nhận:**
 - [ ] Tiêu chí 5 và 6 của spec mục 9 đạt.
@@ -658,8 +667,8 @@
 
 **Mô tả:**
 
-1. **Bug thử:** một lỗi nhỏ có thật của `ao-pilot`, do `qa` hay bạn thấy ở T21. Nếu không có, Claude đề xuất một lỗi nhỏ để bạn chọn trước khi tạo Bug. Bug đi theo spec mục 2.8 tới `v0.1.1` trên Production.
-2. `/ao-rollback production` về `v0.1.0`, rồi `/ao-rollback production <sha của v0.1.1>` đưa `v0.1.1` lên lại.
+1. **Bug thử:** một lỗi nhỏ có thật của `ao-pilot`, do `qa` hay bạn thấy ở T21. Nếu không có, Claude đề xuất một lỗi nhỏ để bạn chọn trước khi tạo Bug. Bug đi theo spec mục 2.8 tới `v0.2.1` trên Production.
+2. `/ao-rollback production` về `v0.2.0`, rồi `/ao-rollback production <sha của v0.2.1>` đưa `v0.2.1` lên lại.
 3. **Smoke fail có chủ đích:** Claude đề xuất cách gây fail mà không cần commit mới, ví dụ một biến môi trường sai trong `/etc/ao/secrets/pilot/production.env` rồi `/ao-rollback production` về bản trước. Yêu cầu deploy lại đúng tree đang chạy thì không gây fail được: deployer giữ nguyên container và không smoke lại (T8). Bạn đồng ý thì Claude làm. Deployer giữ bản cũ, và Jira có Bug Critical. Xong thì Claude trả biến về như cũ và chuyển Bug thử đó sang Cancelled.
 
 **Tiêu chí chấp nhận:**
