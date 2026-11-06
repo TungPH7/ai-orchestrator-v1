@@ -139,7 +139,7 @@ T20 ── T21 DEMO-21 tới Production ── T22 hotfix, rollback, smoke fail 
 
 ### Checkpoint 4
 - [x] Tiêu chí 5–8 của spec mục 9 đạt
-- [ ] Bạn xem lịch sử của `DEMO-21` và Bug thử trên `DEMO`, PR release, tag, deployment trên `ao-pilot`, và `.ai/runs/`
+- [x] Bạn xem lịch sử của `DEMO-21` và Bug thử trên `DEMO`, PR release, tag, deployment trên `ao-pilot`, và `.ai/runs/`
 
 ### Giai đoạn 8: hoàn thiện
 - [ ] T23: Tài liệu, `SPEC.md` và lưu trữ plan
