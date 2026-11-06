@@ -293,4 +293,31 @@ journalctl -u ao-deploy --since "10 min ago"
 - Timer chạy, và mỗi lượt bắt đầu khoảng một phút sau khi lượt trước xong.
 - Log không có token, key hay giá trị biến nào của app.
 - Lượt đầu ghi Caddyfile với site của ba môi trường của `pilot`, mỗi site trả 503 tới lần deploy đầu, rồi reload Caddy. Caddy lấy chứng chỉ cho cả ba tên.
-- [Chưa kiểm] `caddy hash-password` đọc mật khẩu từ stdin khi stdin không phải terminal; T18 kiểm bằng một lần đăng nhập basic auth.
+- `caddy hash-password` đọc được mật khẩu từ stdin; T18 kiểm bằng một lần đăng nhập basic auth.
+
+## 12. Cập nhật bản kit trên VPS
+
+Bản kit ghim theo một commit của `main`, nên bản sửa của deployer hay `audit` chỉ có hiệu lực khi được chép lên. Commit ghim hiện tại: `521e03179908062080de9fd6b8fd9c77dfece2fc`. Việc này cần đăng nhập root (mục 9), và bạn đồng ý từng lần.
+
+Trên máy bạn, ở repo kit:
+
+```
+git archive --format=tar.gz -o ao-kit.tar.gz <commit>
+scp -P 26266 ao-kit.tar.gz root@42.96.4.120:/tmp/ao-kit.tar.gz
+```
+
+Trên VPS:
+
+```
+systemctl stop ao-deploy.timer
+until [ "$(systemctl is-active ao-deploy.service)" != "activating" ]; do sleep 5; done
+rm -rf /opt/ao/kit && install -d -o root -g root -m 755 /opt/ao/kit
+tar -xzf /tmp/ao-kit.tar.gz -C /opt/ao/kit && rm /tmp/ao-kit.tar.gz
+cd /opt/ao/kit && npm ci --omit=dev --ignore-scripts
+cd /var/lib/ao && sudo -u aodeploy -H node /opt/ao/kit/scripts/ao-deploy.mjs tick --dry-run
+systemctl start ao-deploy.timer
+```
+
+- Service kiểu `oneshot` báo `activating` suốt lúc chạy, nên vòng `until` chờ đúng trạng thái đó. Dừng timer không dừng lượt đang chạy, và `systemctl is-active --quiet` trả lỗi với `activating`, nên không dùng lệnh đó để chờ.
+- `tick --dry-run` không in gì khi không có việc.
+- Xong thì tắt đăng nhập root (mục 9), rồi ghi commit ghim mới vào mục này.

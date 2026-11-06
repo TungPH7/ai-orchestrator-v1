@@ -115,12 +115,31 @@ Câu hỏi của agent được chuyển cho bạn trong chat. Kết quả và c
 - cách chạy tiếp sau khi hết usage hay bị ngắt;
 - chi phí đo được.
 
+## Bốn lệnh của vòng ngoài
+
+Bốn lệnh đưa code từ `develop` lên Development, Staging và Production trên VPS. Deployer của kit chạy mỗi phút trên VPS, kiểm cổng bằng `audit`, build image và chạy smoke test.
+
+| Lệnh | Làm gì |
+|---|---|
+| `/ao-qa <KEY>` | `qa` kiểm item trên môi trường QA của nó và gắn bằng chứng lên Jira; bạn `Accept` |
+| `/ao-release [<vX.Y.0> <sha>]` | Không có tham số: in điểm cắt và danh sách item. Có tham số: gate ④, tạo nhánh release |
+| `/ao-ship <vX.Y.Z>` | Bản release: regression, release note, PR release; dừng ở gate ⑤. Hotfix: gate ⑤, tag và yêu cầu deploy Production |
+| `/ao-rollback <môi trường> [<sha>]` | Chạy lại bản trước, đưa một bản lên lại, hoặc gỡ chặn sau một commit không qua `audit` |
+
+[docs/release-workflow.md](docs/release-workflow.md) giải thích các phần sau:
+
+- một vòng release từ đầu tới cuối;
+- các bước bấm Fix Version trên Jira;
+- hotfix, rollback, và khi deploy không thành;
+- yêu cầu với dự án: `Dockerfile`, `.dockerignore`, `deploy.yaml`, `playwright.config.ts` với tag `@local`, `AO_PUBLIC_URL`;
+- quy tắc expand/contract cho cơ sở dữ liệu.
+
 ## Cài kit vào repo dự án
 
 Thư mục `kit/` chứa các file đặt vào repo dự án, giữ đúng đường dẫn tương đối. Tới khi có `project-scaffold`, bạn chép tay như đã làm với `ao-pilot` và `ao-sample`. Từng bước ở Pilot 1, ai làm và vướng ở đâu: mục "Đầu vào cho `project-scaffold`" của [tasks/archive/pilot-1/verification.md](tasks/archive/pilot-1/verification.md).
 
 1. Tạo `.ai-orchestrator/` ở gốc repo dự án. Chép vào đó `contract/`, `lib/`, `tracker/`, `quality/`, `agents/`, `templates/`, cùng `package.json` và `package-lock.json` của kit, và chép `docs/sdlc.md` thành `.ai-orchestrator/docs/sdlc.md`, vì template trỏ tới DoD trong đó. Chép vào `.ai-orchestrator/scripts/` các script `ao-agent.mjs`, `ao-git-credential.mjs`, `ao-pr.mjs`, `ao-step.mjs`, `audit.mjs`, `check-design.mjs`, `check-policy.mjs`, `commit-msg.mjs`, `coverage-diff.mjs`, `install-hooks.mjs`, `jira-sync.mjs`, `merge-gate.mjs`, `pre-commit.mjs`, `pre-push.mjs`, `render-agents.mjs`. Chạy `npm ci --prefix .ai-orchestrator`, như các workflow.
-2. Chép `kit/.claude/`, `kit/.githooks/`, `kit/.mcp.json`, `kit/.jira/config.yml` và bốn workflow trong `kit/.github/workflows/` (`ci.yml`, `jira-sync.yml`, `merge-gate.yml`, `audit.yml`) vào gốc repo. Trong `.claude/settings.json`, thay các giá trị mẫu: `AO_JIRA_SPACE` bằng mã space, `AO_APPROVERS` bằng login GitHub của bạn, còn `AO_DEV_APP`, `AO_DEV_APP_ID`, `AO_REVIEW_APP`, `AO_REVIEW_APP_ID` bằng slug và App ID của hai App. Rồi chạy `node .ai-orchestrator/scripts/render-agents.mjs --project .`. Lệnh này điền mã space vào agent và gộp skill theo stack của `.ai-orchestrator/roster.local.yaml`, nếu có.
+2. Chép `kit/.claude/`, `kit/.githooks/`, `kit/.mcp.json`, `kit/.jira/config.yml` và ba workflow trong `kit/.github/workflows/` (`ci.yml`, `jira-sync.yml`, `merge-gate.yml`) vào gốc repo. Trong `.claude/settings.json`, thay các giá trị mẫu: `AO_JIRA_SPACE` bằng mã space, `AO_APPROVERS` bằng login GitHub của bạn, còn `AO_DEV_APP`, `AO_DEV_APP_ID`, `AO_REVIEW_APP`, `AO_REVIEW_APP_ID` bằng slug và App ID của hai App. Rồi chạy `node .ai-orchestrator/scripts/render-agents.mjs --project .`. Lệnh này điền mã space vào agent và gộp skill theo stack của `.ai-orchestrator/roster.local.yaml`, nếu có.
 3. Thêm `.ai-orchestrator/node_modules/`, `.claude/settings.local.json`, `.ai/` và `.playwright-cli/` vào `.gitignore`. `.ai/` giữ ledger, báo cáo và ảnh của agent; `.playwright-cli/` là snapshot mà `playwright-cli` tự ghi.
 4. Trong `package.json` của dự án, khai các script mà job `build-test` chạy: `lint`, `typecheck`, `test:coverage` (ghi lcov vào `coverage/lcov.info`) và `build`. Thêm `"prepare": "node .ai-orchestrator/scripts/install-hooks.mjs"` để `npm install` tự cài hook git. Script `precommit`, ví dụ lint các file đã stage, là tùy chọn; hook `pre-commit` gọi nó sau secretlint.
 5. Tạo hai GitHub App theo [docs/github-apps-setup.md](docs/github-apps-setup.md), cài vào repo, rồi đặt `AO_DEV_APP_KEY_FILE` và `AO_REVIEW_APP_KEY_FILE` trên máy bạn.
@@ -129,7 +148,7 @@ Thư mục `kit/` chứa các file đặt vào repo dự án, giữ đúng đư�
    - tạo ba environment `development`, `staging`, `production`;
    - tạo environment `merge-gate` chỉ cho `develop`, với secret `AO_DEV_APP_KEY`; từng bước ở mục "Environment `merge-gate`" của [docs/quality-gates.md](docs/quality-gates.md);
    - đặt secret `JIRA_CI_TOKEN`;
-   - cho workflow deploy gọi `audit.yml` trước, và job deploy `needs: audit`. Mẫu nằm ở đầu `kit/.github/workflows/audit.yml`;
+   - dựng deployer theo [docs/vps-setup.md](docs/vps-setup.md): deployer chạy `audit` cho mọi commit mới, nên dự án không cần workflow deploy. Chỉ dự án tự deploy bằng GitHub Actions mới chép thêm `audit.yml` từ `kit/.github/workflows/`, cho job deploy `needs: audit`; mẫu nằm ở đầu file đó;
    - đưa mọi file lên `develop`, vì GitHub chỉ chạy trigger `workflow_run` và `deployment_status` từ nhánh đó. Workflow CI của kit tên `CI`, là tên `jira-sync` chờ để chạy lại.
 7. Nối app GitHub for Jira với repo. Lần đầu thêm `.jira/config.yml` thì ngắt rồi nối lại kết nối.
 8. Mở `claude` trong repo một lần: tin cậy thư mục, cho phép hai server `atlassian` và `chrome-devtools`, và `/mcp` phải báo cả hai connected.
@@ -146,6 +165,7 @@ Về sau, cập nhật bản chép kit cũng phải đi qua PR, và PR đó do b
 | `AO_JIRA_SPACE`, `AO_APPROVERS` | Mục `env` trong `.claude/settings.json` của dự án; biến môi trường cùng tên được ưu tiên | Các hook, `jira-sync`, `merge-gate` và `audit`. `AO_APPROVERS` nhận nhiều login, cách nhau bằng dấu phẩy |
 | `GITHUB_TOKEN` | Có sẵn trong GitHub Actions; ở máy, không đặt thì lấy từ GitHub CLI | `jira-sync`, `merge-gate` và `audit` đọc PR, review, check bằng nó; `jira-guard` đọc dữ kiện PR, CI |
 | `AO_KIT_DIR` | Không bắt buộc | Các hook tìm kit ở đây thay cho `.ai-orchestrator/` |
+| `AO_ENV_AUTH` | Biến môi trường user trên máy bạn; giá trị `ao:<mật khẩu>` | Basic auth của Development và Staging. `ao-step` chỉ truyền cho `qa`, dưới dạng `E2E_HTTP_USER` và `E2E_HTTP_PASSWORD` ([docs/release-workflow.md](docs/release-workflow.md)) |
 | `JIRA_ADMIN_EMAIL`, `JIRA_ADMIN_TOKEN` | Biến môi trường user trên máy bạn | `jira:check` |
 | `AO_DEV_APP`, `AO_DEV_APP_ID`, `AO_REVIEW_APP`, `AO_REVIEW_APP_ID` | Mục `env` trong `.claude/settings.json` của dự án | `ao-pr.mjs`: slug và App ID của hai GitHub App, không bí mật ([docs/github-apps-setup.md](docs/github-apps-setup.md)) |
 | `AO_DEV_APP_KEY_FILE`, `AO_REVIEW_APP_KEY_FILE` | Biến môi trường user trên máy bạn; giá trị là đường dẫn tới file private key | `ao-pr.mjs`. Thiếu trong môi trường của tiến trình thì đọc từ biến user trên Windows |
@@ -209,14 +229,18 @@ lib/rules/          8 quy tắc kiểm tra hợp đồng, mỗi quy tắc một 
 lib/render.mjs      sinh nội dung docs/sdlc.md
 lib/tracker/        ánh xạ và quy tắc J1–J4, quy ước mã Jira, client Jira và GitHub, dữ kiện cho guard, hook, đối soát
 lib/quality/        đọc và kiểm quality/gates.yaml, token của App, coverage, mẫu tắt kiểm tra, mô tả PR, merge-gate, audit, luật của gh-guard
+lib/release/        deployer, Docker, Caddy, điểm cắt, số bản, PR release, smoke test
 lib/agents/         đọc roster và roster.local.yaml, sinh agent và file quy ước, dựng lệnh của ao-agent.mjs, luật ghi file và git theo vai trò, chép skill
 scripts/            lệnh của kit: kiểm và sinh tài liệu, Jira, ao-pr.mjs, ao-agent.mjs, job policy, check-design, coverage, merge-gate, audit, gh-protect, hook git
 kit/                file đặt vào repo dự án: .mcp.json, .claude/ (agent, file quy ước, skill, hook), .githooks/, .jira/config.yml, workflow CI, jira-sync, merge-gate, audit
 docs/sdlc.md        sinh tự động, không sửa tay
 docs/jira-setup.md  checklist dựng Jira, sinh tự động, không sửa tay
 docs/quality-gates.md      các lớp chốt, từng check, cách xử lý khi cổng đỏ
-docs/github-apps-setup.md  tạo hai GitHub App, từng bước bấm
+docs/github-apps-setup.md  tạo ba GitHub App, từng bước bấm
+docs/release-workflow.md   bốn lệnh của vòng ngoài, Fix Version, hotfix, rollback, yêu cầu với dự án
+docs/vps-setup.md   dựng VPS và deployer, cập nhật bản kit trên VPS
 docs/agents.md      mười agent, cách chạy, nâng effort, skill, design.md, ảnh Figma, dung lượng repo và LFS
+vps/                file của deployer trên VPS: service, timer, cấu hình mẫu, script đặt secret
 tests/              test; tests/fixtures/invalid/ chứa các hợp đồng cố tình sai, mỗi file sai một quy tắc;
                     tests/fixtures/tracker/ chứa ánh xạ sai, dữ liệu API Jira ghi sẵn và sự kiện GitHub mẫu
 tasks/              plan và danh sách task của module đang làm; plan của module đã xong nằm trong tasks/archive/
