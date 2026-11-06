@@ -673,11 +673,11 @@
 3. **Smoke fail có chủ đích:** Claude đề xuất cách gây fail mà không cần commit mới, ví dụ một biến môi trường sai trong `/etc/ao/secrets/pilot/production.env` rồi `/ao-rollback production` về bản trước. Yêu cầu deploy lại đúng tree đang chạy thì không gây fail được: deployer giữ nguyên container và không smoke lại (T8). Bạn đồng ý thì Claude làm. Deployer giữ bản cũ, và Jira có Bug Critical. Xong thì Claude trả biến về như cũ và chuyển Bug thử đó sang Cancelled.
 
 **Tiêu chí chấp nhận:**
-- [ ] Tiêu chí 7 và 8 của spec mục 9 đạt.
-- [ ] Chi phí của từng lượt agent nằm trong `tasks/verification.md`.
+- [x] Tiêu chí 7 và 8 của spec mục 9 đạt.
+- [x] Chi phí của từng lượt agent nằm trong `tasks/verification.md`.
 
 **Kiểm chứng:**
-- [ ] `develop` có commit hotfix qua PR merge ngược
+- [x] `develop` có commit hotfix qua PR merge ngược
 
 **Phụ thuộc:** T21
 
