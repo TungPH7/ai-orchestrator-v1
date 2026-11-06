@@ -51,6 +51,12 @@ test('once its tag and its deployment request are there, /ao-ship of a hotfix sa
   assert.equal(elsewhere.reason, 'the tag v0.1.1 is at cccccccc, not at the hotfix aaaaaaaa');
 });
 
+test('right after the hotfix is tagged, the tag does not make it look like an old patch: its own request is what stops the command', () => {
+  // T22: the tag v0.2.1 moved the next patch to v0.2.2 while Production still ran v0.2.0.
+  const tagged = decide('ship', hotfixFacts({ expected: 'v0.1.2', tag: { name: 'v0.1.1', sha: HOTFIX }, request: { id: 77, sha: HOTFIX } }));
+  assert.deepEqual([tagged.go, tagged.reason], [false, 'v0.1.1 is tagged and deployment request #77 asks for it on Production: the deployer takes it within a minute or two']);
+});
+
 test('/ao-ship of a hotfix stops while its Bug is not Done, Staging runs another commit, or it is not the next patch of Production', () => {
   assert.equal(decide('ship', hotfixFacts({ bug: { key: 'DEMO-40', state: 'in-qa', status: 'In QA', fixVersions: ['v0.1.1'] } })).reason, 'DEMO-40 is In QA, not Done: QA it on Staging with /ao-qa DEMO-40, then Accept it');
   assert.equal(decide('ship', hotfixFacts({ bug: { key: 'DEMO-40', state: 'done', status: 'Done', fixVersions: ['v0.2.0'] } })).reason, 'DEMO-40 does not carry the Fix Version v0.1.1');
