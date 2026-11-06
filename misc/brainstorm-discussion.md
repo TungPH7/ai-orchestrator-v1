@@ -14742,3 +14742,31 @@ Hai dòng đầu là hai Medium để lại từ Pilot 1. Cả `reviewer` và `s
 1. Đồng ý cho mình sửa mục 1 trước T22b không? Mình đề xuất có.
 2. Sửa xong có chép kit lên VPS không? Mình đề xuất có, vì `audit` trên VPS dùng chung đoạn code đó. Bạn cần giữ key và mở lại đăng nhập root. Nếu không chép, `audit` chỉ lỏng như hiện tại, không hỏng gì.
 3. T22b giữ cả hai lượt review với 7–10 USD không? Mình đề xuất giữ, vì bản chép có code của cổng kiểm. Nếu bỏ, `audit` sẽ chặn deploy và bạn phải gỡ chặn bằng `/ao-rollback development <sha>`.
+
+# Phiên 27 · Lượt 52 — 2026-11-06 khoảng 21:25
+
+**Bạn:**
+
+```markdown
+3 điểm Làm như đề xuất
+```
+
+**Claude:**
+
+**Mục 1 đã xong** (kit PR #218 đã merge). 1080 test và CI của `main` đều xanh.
+
+- **`merge-gate`:** theo từng lỗi còn mở bằng `Where` và `Finding`, không đếm dòng nữa. Lỗi bị bỏ sót vẫn giữ tên để lần review sau kiểm.
+- **Dòng `Scope`:** sai mẫu thì báo cáo không đọc được, nên không gỡ được lỗi nào. `Fixed một phần` không còn tính là đã sửa.
+- **`/ao-status`:** chạy trên Jira thật đã báo `Click Complete on DEMO-11`.
+- **`DEMO-5`:** đã gỡ cờ.
+
+Còn một chỗ hở: báo cáo thiếu cả dòng `Scope` lẫn mục `## Earlier findings` vẫn được đọc như review đầy đủ, vì `merge-gate` không biết lượt đó được yêu cầu kiểu gì. Mình đã ghi điểm này vào spec.
+
+`DEMO-30` đã cập nhật theo commit mới `521e031`: bản chép giờ đổi 13 file thay vì 6, ước vẫn 7–10 USD.
+
+**Việc của bạn:**
+
+1. **Mở đăng nhập root:** lệnh đã nằm trong clipboard, bạn dán vào PowerShell rồi nhập mật khẩu `sudo` của `aoadmin`.
+2. **`Refine` `DEMO-30`:** mở https://phunghuutung12b4.atlassian.net/browse/DEMO-30, bấm nút trạng thái `New`, chọn `Refine`.
+
+Bạn nhắn xong thì mình chép kit lên VPS, tắt lại đăng nhập root, rồi làm T22b. Checkpoint 4 vẫn chờ bạn xem, T23 chờ bước đó.
