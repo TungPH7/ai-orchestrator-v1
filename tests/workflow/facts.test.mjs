@@ -7,7 +7,7 @@ import { readContract } from '../../lib/contract.mjs';
 import { readGates } from '../../lib/quality/gates.mjs';
 import { readMapping } from '../../lib/tracker/mapping.mjs';
 import { agentNames, gatherFacts, reviewReports, workLabels } from '../../lib/workflow/facts.mjs';
-import { recordedClient } from '../helpers/jira.mjs';
+import { fakeJira, recordedClient } from '../helpers/jira.mjs';
 import { CONTRACT_DIR, ROOT } from '../helpers/kit.mjs';
 
 const contract = readContract(CONTRACT_DIR);
@@ -148,8 +148,23 @@ test('a report of the new part counts the earlier findings it does not list as F
   const { reports, securityFull } = reviewReports([full, leftOut], { roles: ['security'], bot, head: Y });
   assert.equal(reports.security.blocking, 1, 'the High of the full report is still open');
   assert.deepEqual(securityFull.open, [{ severity: 'High', where: 'review-tree.mjs:7', finding: 'AGENTS.md reaches the review' }]);
+  assert.deepEqual(reports.security.open, securityFull.open, 'the report that left it out keeps its name, for the next review to check');
   const listed = review(Y, '2026-11-04T09:00:00Z', `${body('Không có finding.\n', `Scope: changes since ${X.slice(0, 7)}\n`)}\n## Earlier findings\n| Severity | Where | Finding | Status |\n|---|---|---|---|\n| High | review-tree.mjs:7 | AGENTS.md reaches the review | Fixed |\n`);
   assert.equal(reviewReports([full, listed], { roles: ['security'], bot, head: Y }).reports.security.blocking, 0);
+});
+
+test('/ao-status of the space reads the items of an Epic In Progress, with their Fix Versions', async () => {
+  const issue = (key, type, status, more = {}) => ({ key, fields: { summary: key, issuetype: { name: type }, status: { name: status }, labels: [], ...more } });
+  const open = `project = "DEMO" AND statusCategory != Done ORDER BY Rank ASC`;
+  const jira = fakeJira({
+    search: {
+      [open]: [issue('DEMO-11', 'Epic', 'In Progress'), issue('DEMO-30', 'Epic', 'Specifying'), issue('DEMO-15', 'Task', 'New')],
+      'project = "DEMO" AND parent = "DEMO-11"': [issue('DEMO-12', 'Story', 'Done', { fixVersions: [{ name: 'v0.2.0', released: true }] })],
+    },
+  });
+  const { items } = await gatherFacts({ command: 'status', jira, github: { getAll: async () => [] }, local: noLocal, ...ctx });
+  assert.deepEqual(items[0].children.map(({ key, state, fixVersions }) => [key, state, fixVersions]), [['DEMO-12', 'done', [{ name: 'v0.2.0', released: true }]]]);
+  assert.deepEqual(items.slice(1).map(({ children }) => children), [undefined, undefined], 'only an Epic In Progress can be completed');
 });
 
 // Stage spec commits on the docs branch of this checkout and pushes only with the docs PR (spec 2.4): ba's SPEC is not
@@ -178,7 +193,7 @@ test('the children of an Epic come with their Sub-tasks, each with its role and 
 // Pilot 1, T9: the next build after gate ② has to know which child blocks which, so each child comes with its blockers.
 test('the children of an Epic come with the items that block them (the inward side of "is blocked by")', async () => {
   const linked = (a) => {
-    a.jira['/rest/api/3/search/jql?fields=summary,issuetype,status,labels,issuelinks&jql=project = "DEMO" AND parent = "DEMO-11"'].issues[0].fields.issuelinks = [
+    a.jira['/rest/api/3/search/jql?fields=summary,issuetype,status,labels,issuelinks,fixVersions&jql=project = "DEMO" AND parent = "DEMO-11"'].issues[0].fields.issuelinks = [
       { type: { inward: 'is blocked by', outward: 'blocks' }, inwardIssue: { key: 'DEMO-9' } },
       { type: { inward: 'is blocked by', outward: 'blocks' }, outwardIssue: { key: 'DEMO-30' } },
       { type: { inward: 'is cloned by', outward: 'clones' }, inwardIssue: { key: 'DEMO-31' } },
