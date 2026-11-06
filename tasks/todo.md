@@ -571,13 +571,13 @@
 - Claude chạy `tick --dry-run`, đọc kết quả, rồi bật timer.
 
 **Tiêu chí chấp nhận:**
-- [ ] `tick --dry-run` in đúng việc sẽ làm cho `ao-pilot`: chưa có `deploy.yaml` nên chưa deploy.
+- [x] `tick --dry-run` in đúng việc sẽ làm cho `ao-pilot`: chưa có `deploy.yaml` nên chưa deploy. Sau `baseline` không có commit mới, nên lượt thử chỉ in việc ghi Caddyfile (`tasks/verification.md`).
 - [x] Commit kit đã ghim nằm trong `tasks/verification.md`.
 - [x] Trên VPS: deployer gọi được IP của container trong mạng của dự án để smoke; `docker buildx prune --max-used-space 4gb` chạy được với Docker 29.9.3 (T7).
-- [ ] Không bí mật nào nằm trong log của systemd.
+- [x] Không bí mật nào nằm trong log của systemd.
 
 **Kiểm chứng:**
-- [ ] `systemctl status ao-deploy.timer` chạy; `journalctl -u ao-deploy` không có lỗi
+- [x] `systemctl status ao-deploy.timer` chạy; `journalctl -u ao-deploy` không có lỗi
 - [ ] Bạn đã gỡ key khỏi ssh-agent
 
 **Phụ thuộc:** T9, T10, T11, T17, Checkpoint 2
