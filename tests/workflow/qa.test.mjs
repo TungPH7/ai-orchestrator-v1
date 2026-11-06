@@ -20,6 +20,7 @@ const listing = {
 };
 const follow = (more = {}) => {
   const attached = [];
+  const kept = [];
   const notes = qaFollowUp({
     run,
     tree,
@@ -29,16 +30,31 @@ const follow = (more = {}) => {
       attached.push([key, files]);
       return { attached: files.map((f) => f.split('/').pop()), skipped: [] };
     },
+    keep: async (key, files) => {
+      kept.push([key, files]);
+      return `.ai/runs/${key}/traces`;
+    },
     running: async () => SHA,
     ...more,
   });
-  return notes.then((n) => ({ notes: n, attached }));
+  return notes.then((n) => ({ notes: n, attached, kept }));
 };
 
-test('after the qa run, before its worktree goes, the screenshots and traces go to the item with the CI token', async () => {
-  const { notes, attached } = await follow();
+test('after a qa run on Production, before its worktree goes, the screenshots and traces go to the item with the CI token', async () => {
+  const { notes, attached, kept } = await follow({ run: { ...run, qa: { environment: 'production', sha: SHA, auth: false } } });
   assert.deepEqual(attached, [['DEMO-21', ['D:/work/pilot/.ai/qa/DEMO-21/cart.png', 'C:/Temp/ao-reviews/pilot-DEMO-21-qa/test-results/cart-remove/trace.zip']]]);
+  assert.deepEqual(kept, []);
   assert.deepEqual(notes, ['Attached to DEMO-21: cart.png, trace.zip.']);
+});
+
+test('behind basic auth the traces stay on this machine: Playwright writes httpCredentials into them, password and all', async () => {
+  const { notes, attached, kept } = await follow();
+  assert.deepEqual(attached, [['DEMO-21', ['D:/work/pilot/.ai/qa/DEMO-21/cart.png']]]);
+  assert.deepEqual(kept, [['DEMO-21', ['C:/Temp/ao-reviews/pilot-DEMO-21-qa/test-results/cart-remove/trace.zip']]]);
+  assert.deepEqual(notes, [
+    'Attached to DEMO-21: cart.png.',
+    'The 1 Playwright trace of the run holds the basic auth of Development, so it is not attached: it stays on this machine, in .ai/runs/DEMO-21/traces.',
+  ]);
 });
 
 test('a deploy during the run is said, so the report is not read as one of the release that runs now (spec 2.5)', async () => {
@@ -48,7 +64,9 @@ test('a deploy during the run is said, so the report is not read as one of the r
 
 test('a failed upload is a note, not a failed run, and no file is no upload', async () => {
   const failed = await follow({ attach: async () => { throw new Error('Jira POST /rest/api/3/issue/DEMO-21/attachments returned 413'); } });
-  assert.deepEqual(failed.notes, ['The evidence was not attached: Jira POST /rest/api/3/issue/DEMO-21/attachments returned 413. It stays in .ai/qa/DEMO-21/.']);
+  assert.deepEqual(failed.notes[0], 'The evidence was not attached: Jira POST /rest/api/3/issue/DEMO-21/attachments returned 413. It stays in .ai/qa/DEMO-21/.');
+  const lost = await follow({ keep: async () => { throw new Error('EPERM: operation not permitted'); } });
+  assert.equal(lost.notes.at(-1), 'The 1 Playwright trace of the run holds the basic auth of Development, so it is not attached, and keeping it failed: EPERM: operation not permitted.');
   const none = await follow({ list: () => [] });
   assert.deepEqual([none.notes, none.attached], [[], []]);
 });
