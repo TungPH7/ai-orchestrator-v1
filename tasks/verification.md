@@ -168,3 +168,11 @@ Deployer kiểm từng commit sau điểm đã kiểm, dừng ở `3fdd514`, PR 
 - **Lần thử 1, push thẳng lên `develop`:** commit `fbbc47d` (bot `ao-dev`, thêm một câu vào README). Hook `pre-push` từ chối: `pre-push: develop is protected: change it through a pull request, not a push`. Claude push bằng `--no-verify`, là lần "đi vòng" của spec mục 7 bước 10; `docs/quality-gates.md` đã ghi hook bỏ qua được. GitHub nhận, vì repo private gói Free không có branch protection. Deployment `7594143177` nhận status `error`: `fbbc47d did not pass audit: fbbc47d on develop is not the merge of a PR into develop: it was pushed without one`. Development vẫn chạy `fb71de5`. `jira-sync` comment và giữ cờ trên `DEMO-26`.
 - **Lần thử 2, yêu cầu Production bằng token `ao-dev`:** GitHub từ chối cấp token: `App 5514949 on TungPH7/ao-pilot lacks a permission of {"deployments":"write"}`.
 - **Kiểm chứng bằng `journalctl`:** `aoadmin` không đọc được journal nếu không có `sudo`, và đăng nhập root đã tắt. Lý do từ chối lấy từ deployment status trên GitHub, cùng câu deployer ghi vào log (`lib/release/deployer.mjs`).
+- **Gỡ chặn** (Lượt 25): bạn đọc commit và đồng ý. Yêu cầu `#7594326167` bằng login `gh` của bạn lúc 13:54; lượt deployer kế tiếp deploy `fbbc47d`, status `success` lúc 13:55. `ao-step status`: `Running: Development fbbc47d6, Staging nothing, Production nothing`. Basic auth vẫn đúng.
+
+## Checkpoint 3 (2026-11-06)
+
+- **Tiêu chí 3 của spec mục 9:** đạt. Từ máy bạn, cổng 80, 443 và 26266 mở; 22, 2375, 3000, 8080 bị chặn. Root nhận `Permission denied (publickey)`. Container của app không có `PortBindings`; chỉ Caddy giữ 80 và 443.
+- **Tiêu chí 4:** một phần. Development có app. Staging và Production có HTTPS và trả 503 tới T21. Deployment trên item Jira chờ bạn nhìn.
+- **Tiêu chí 9:** đạt (mục T20).
+- **Chi phí của T19:** 20,53 USD, trên mức ước 10–16 USD. Claude ước lại T21–T22 khoảng 20–35 USD [Ước tính], chờ bạn quyết.

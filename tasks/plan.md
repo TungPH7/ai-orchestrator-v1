@@ -127,7 +127,7 @@ T20 ── T21 DEMO-21 tới Production ── T22 hotfix, rollback, smoke fail 
 ### Giai đoạn 6: lên VPS và `ao-pilot`
 - [x] T18: Cài deployer lên VPS [bạn]
 - [ ] T19: Task của `ao-pilot`: Dockerfile, `deploy.yaml`, E2E và bản chép kit [bạn]
-- [ ] T20: Kiểm rằng cổng chặn đúng (spec mục 7, bước 10)
+- [x] T20: Kiểm rằng cổng chặn đúng (spec mục 7, bước 10)
 
 ### Checkpoint 3
 - [ ] Tiêu chí 3, 4 và 9 của spec mục 9 đạt
