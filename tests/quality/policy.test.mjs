@@ -132,8 +132,29 @@ test('the conventions of a PR: its branch for its base, its commits and its titl
     'branch feature/DEMO-12-email-login: a feature/ branch is cut from develop, not main',
     'commit c3 "wip": the header must be type(scope): subject (<KEY>)',
   ]);
-  assert.deepEqual(checkConventions({ branch: 'release/v1.0.0', base: 'main', commits: [], title: 'chore(release): v1.0.0 (DEMO-30)' }), []);
+  assert.deepEqual(checkConventions({ branch: 'release/v1.0.0', base: 'main', commits: [], title: 'release: v1.0.0' }), []);
   assert.match(checkConventions({ branch: 'feature/DEMO-12-email-login', base: 'develop', commits: [], title: 'Add login' })[0], /^title "Add login": /);
+});
+
+test('a release PR and a merge back are named by the release: their commits passed their own PRs already', () => {
+  // As ao-step and merge-gate open them (release-workflow spec 2.7): the squash merges of develop end with (#N), and the
+  // report commit of the bot names the release, not an item. ao-pilot PR #18, T21.
+  const commits = [
+    { sha: '0e02f6e', parents: 1, subject: 'docs(release): add the regression report and the changelog of v0.2.0' },
+    { sha: 'fb71de5', parents: 1, subject: 'build(deploy): package ao-pilot for the kit deployer (DEMO-26) (#17)' },
+  ];
+  assert.deepEqual(checkConventions({ branch: 'release/v0.2.0', base: 'main', commits, title: 'release: v0.2.0' }), []);
+  assert.deepEqual(checkConventions({ branch: 'release/v0.2.0', base: 'main', commits, title: 'release: v0.3.0' }), [
+    'title "release: v0.3.0": the PR of release/v0.2.0 into main is titled "release: v0.2.0"',
+  ]);
+  for (const base of ['develop', 'release/v0.3.0']) {
+    assert.deepEqual(checkConventions({ branch: 'main', base, commits, title: `Merge main into ${base} after v0.2.1` }), [], base);
+  }
+  assert.deepEqual(checkConventions({ branch: 'main', base: 'develop', commits, title: 'merge stuff' }), [
+    'title "merge stuff": the merge back of main into develop is titled "Merge main into develop after v<major>.<minor>.<patch>"',
+  ]);
+  // Any other PR from main is no merge back: its branch name fails as before.
+  assert.match(checkConventions({ branch: 'main', base: 'feature/DEMO-1-x', commits: [], title: 'Merge main into feature/DEMO-1-x after v0.2.0' })[0], /^branch main: /);
 });
 
 const advisory = (id, severity, name = 'lodash') => ({ source: 1, name, title: `${severity} issue`, url: `https://github.com/advisories/${id}`, severity });
