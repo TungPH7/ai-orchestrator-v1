@@ -156,6 +156,16 @@ test('the ship facts: the release branch, what Staging runs, the open Bugs Criti
   assert.deepEqual(facts.changedSinceRegression, ['CHANGELOG.md', 'docs/releases/draft.md', 'docs/releases/v0.2.0.md']);
   assert.equal(facts.notes, true);
   assert.deepEqual(facts.pr, { number: 30, headSha: sha('f') });
+  // Notes written before the newest regression are stale: the release may hold more since (T21, Bug DEMO-27).
+  const runs = [
+    { purpose: 'regression', outcome: 'done', qa: { sha: sha('d') } },
+    { purpose: 'release-notes', outcome: 'done' },
+    { purpose: 'regression', outcome: 'done', qa: { sha: sha('e') } },
+  ];
+  const stale = await readShipFacts({ jira, github: ship, deploys: ship, local: { ...local, runState: () => ({ runs }) }, contract, mapping, space: 'DEMO', version: 'v0.2.0' });
+  assert.equal(stale.notes, false);
+  const fresh = await readShipFacts({ jira, github: ship, deploys: ship, local: { ...local, runState: () => ({ runs: [...runs, { purpose: 'release-notes', outcome: 'done' }] }) }, contract, mapping, space: 'DEMO', version: 'v0.2.0' });
+  assert.equal(fresh.notes, true);
 });
 
 test('the hotfix facts: the release on Production and its next patch, the merge at the head of main, its Bug, the tag and the request', async () => {

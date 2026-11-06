@@ -468,7 +468,11 @@ async function releasePr({ version, branch, regression }, { repo, settings }) {
   const beyond = [...new Set(changed.filter((file) => !allowed.includes(file)))];
   if (beyond.length > 0) throw new Error(`${branch} changed ${beyond.join(', ')} since the regression on ${regression.slice(0, 8)}: run /ao-ship ${version} again, and the regression runs again`);
   const open = (await github.getAll('/pulls', { state: 'open', base: 'main' })).find((pr) => pr.head.ref === branch);
-  if (open) notes.push(`PR #${open.number} of ${branch} into main is open already.`);
+  // The notes may have been written again (T21): the description follows them.
+  if (open) {
+    if (open.body !== body) await github.request('PATCH', `/pulls/${open.number}`, undefined, { body });
+    notes.push(`PR #${open.number} of ${branch} into main is open already${open.body !== body ? '; its description now holds the new notes' : ''}.`);
+  }
   else {
     const pr = await github.request('POST', '/pulls', undefined, { title: `release: ${version}`, head: branch, base: 'main', body });
     notes.push(`Opened PR #${pr.number} of ${branch} into main.`);
