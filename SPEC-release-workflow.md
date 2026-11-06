@@ -147,6 +147,8 @@ GitHub Free không chặn được gate ⑤ cho repo private. Hai điều kiện
 
 **Điểm cắt** theo đúng định nghĩa của hợp đồng: commit mới nhất trên lịch sử first-parent của `develop` sao cho mọi item có commit tính tới đó đều Done, và không item nào trong số đó còn commit sau điểm cắt. `lib/release/cut.mjs` tính điểm cắt bằng hàm thuần, từ danh sách commit và trạng thái item.
 
+**Key của Epic không tính** (Phiên 27 · Lượt 12). Epic không được release, item con của nó mới được. Epic chỉ `complete` khi mọi item con đã lên Production, nên nếu tính, commit tài liệu của Epic sẽ chặn điểm cắt mãi. Commit đó đi theo điểm cắt chứa nó, và Epic không nhận Fix Version.
+
 **Số bản:** bản đầu tiên là `v0.1.0`. Mỗi bản sau tăng `minor` từ tag mới nhất; hotfix tăng `patch`. Bạn quyết khi nào tăng `major`.
 
 **Fix Version.** Tài khoản agent không có quyền Administer Projects, mà tạo hay phát hành Fix Version cần quyền đó. Vì vậy:
@@ -376,7 +378,7 @@ STOP: gate ④. Read the list, then run /ao-release v0.1.0 22327a5
 
 **Test đơn vị**, dùng dữ liệu ghi sẵn:
 
-- `cut`: điểm cắt khi mọi item Done; khi item giữa lịch sử chưa Done; khi item có commit trước và sau điểm cắt; khi không có item Done nào.
+- `cut`: điểm cắt khi mọi item Done; khi item giữa lịch sử chưa Done; khi item có commit trước và sau điểm cắt; khi không có item Done nào; khi commit mang key của Epic.
 - `versions`: bản đầu `v0.1.0`; tăng `minor`; bản vá tăng `patch`; tag sai dạng bị bỏ qua.
 - `targets`: mỗi dòng của bảng mục 2.4. Production bị từ chối khi thiếu gate ⑤, khi tree chưa qua Staging, khi người tạo yêu cầu không nằm trong `AO_APPROVERS`, khi rollback về bản chưa từng chạy ở môi trường đó.
 - `deployer` với client giả: kiểm mọi commit first-parent mới, không chỉ head; dừng ở commit đầu tiên không qua `audit`; báo `error` khi từ chối, `failure` khi smoke fail.
@@ -394,10 +396,10 @@ STOP: gate ④. Read the list, then run /ao-release v0.1.0 22327a5
 2. Bạn thuê VPS, tạo bản ghi DNS, tạo App `ao-deploy`; Claude cài VPS và deployer.
 3. Một Task của `ao-pilot` đưa Dockerfile, `.dockerignore`, `deploy.yaml`, biến `HOST` và `AO_PUBLIC_URL`, `E2E_BASE_URL` và tag `@local` vào dự án, và bỏ `deploy.yml`. PR của Task mang thêm bản chép kit mới vào `.ai-orchestrator/`, vì `merge-gate` và `jira-sync` chạy trong Actions bằng bản chép đó (plan, quyết định 6). Task đi qua `/ao-build`, `/ao-review` và gate ③. Bạn tự merge, vì PR sửa đường dẫn được bảo vệ. Deployer deploy Development.
 4. `/ao-qa DEMO-21` trên Development: bằng chứng nằm trên Jira; bạn Accept.
-5. `/ao-release`, rồi gate ④: `release/v0.1.0`, Staging.
-6. `/ao-ship v0.1.0`, rồi gate ⑤: merge commit, tag, merge ngược, Production, smoke xanh. Bạn bấm Release trên Jira.
-7. Một Bug thử trên Production đi theo mục 2.8, tới `v0.1.1` trên Production.
-8. `/ao-rollback production` về `v0.1.0`, rồi `/ao-rollback production <sha của v0.1.1>` đưa `v0.1.1` lên lại.
+5. `/ao-release`, rồi gate ④: `release/v0.2.0`, Staging. Bản đầu tiên của kiểm thật là `v0.2.0`, vì `ao-pilot` giữ tag `v0.1.0` cũ (Phiên 27 · Lượt 12).
+6. `/ao-ship v0.2.0`, rồi gate ⑤: merge commit, tag, merge ngược, Production, smoke xanh. Bạn bấm Release trên Jira.
+7. Một Bug thử trên Production đi theo mục 2.8, tới `v0.2.1` trên Production.
+8. `/ao-rollback production` về `v0.2.0`, rồi `/ao-rollback production <sha của v0.2.1>` đưa `v0.2.1` lên lại.
 9. Một lần smoke fail có chủ đích trên Production của `ao-pilot` (đây là sandbox): deployer tự quay về bản trước, và Jira có Bug Critical.
 10. Hai lần thử đi vòng: một commit push thẳng lên `develop` không được deploy, rồi bạn gỡ chặn bằng `/ao-rollback development <sha>`; một yêu cầu deploy Production tạo bằng token `ao-dev` bị từ chối.
 
@@ -430,9 +432,9 @@ STOP: gate ④. Read the list, then run /ao-release v0.1.0 22327a5
 2. Mười tiền đề ở mục 2.12 được kiểm và ghi kết quả. Tiền đề nào sai thì spec đã được sửa, và bạn đã duyệt bản sửa.
 3. VPS mới chạy deployer theo `docs/vps-setup.md`: SSH chỉ dùng key, không đăng nhập root, `ufw` chỉ mở SSH, 80, 443; không container nào publish cổng ra host.
 4. Ba môi trường của `ao-pilot` chạy trên ba subdomain, có HTTPS. Mỗi lần deploy có deployment trên GitHub, và hiện trên item Jira.
-5. `DEMO-21` đi từ Ready for QA tới Production chỉ bằng các lệnh và cổng của bạn. Báo cáo QA và bằng chứng nằm trên Jira; `docs/releases/v0.1.0.md` và `CHANGELOG.md` nằm trên `main`; tag `v0.1.0` có trên GitHub.
+5. `DEMO-21` đi từ Ready for QA tới Production chỉ bằng các lệnh và cổng của bạn. Báo cáo QA và bằng chứng nằm trên Jira; `docs/releases/v0.2.0.md` và `CHANGELOG.md` nằm trên `main`; tag `v0.2.0` có trên GitHub.
 6. Production chạy đúng image đã qua Staging: cùng mã tree.
-7. Hotfix `v0.1.1` lên Production theo mục 2.8, và được merge ngược về `develop`.
+7. Hotfix `v0.2.1` lên Production theo mục 2.8, và được merge ngược về `develop`.
 8. Rollback Production chạy được, và smoke fail trên Production tự quay về bản trước kèm Bug Critical.
 9. Hai lần thử đi vòng ở bước 10 của kiểm thật đều bị chặn.
 10. README có mục về bốn lệnh; có `docs/release-workflow.md` và `docs/vps-setup.md`; `docs/github-apps-setup.md` có App `ao-deploy`; `SPEC.md` ghi module hoàn thành.
@@ -448,6 +450,7 @@ Phiên 26 · Lượt 13–17 (2026-11-05):
 5. **Cách đặt subdomain:** một bản ghi A wildcard `*.ao.t2g.io.vn`, tên như bảng ở mục 2.11 (Lượt 17). Một bản ghi dùng được cho mọi dự án sau này, và không đụng tới `t2g.io.vn` hay `www` đang trỏ tới Vercel. Nếu trang DNS của BKNS không cho tạo wildcard, mỗi subdomain một bản ghi A, ví dụ `pilot-dev.t2g.io.vn`.
 6. **Basic auth:** bật cho Development và Staging, vì hai môi trường này mở ra internet, chạy bản chưa phát hành, mà app mẫu không có đăng nhập (Lượt 17, mục 2.3). Bạn đưa tài khoản chung cho tester. Production của `ao-pilot` để mở.
 7. **Ba quyết định của plan** (Lượt 20): đổi bản không gián đoạn, gỡ chặn bằng `/ao-rollback <môi trường> <sha>`, và bản chép kit đi cùng PR của Task trên `ao-pilot`. Mục 2.2, 2.9 và 7 ghi theo. Lệnh vẫn tên `/ao-rollback`, nên vẫn có bốn lệnh.
+8. **Ba quyết định ở Checkpoint 2** (Phiên 27 · Lượt 12): điểm cắt không tính key của Epic (mục 2.6); item cũ của `ao-pilot` được sửa dữ liệu một lần trên Jira, trong đó 5 item không có thay đổi người dùng thấy được bạn `Accept` không qua `qa`, là ngoại lệ một lần với guard `qa-report-passed`; `ao-pilot` giữ tag `v0.1.0`, nên bản đầu tiên của kiểm thật là `v0.2.0`.
 
 Khi viết spec, Claude đổi năm chỗ so với giả định ở Lượt 12, và nêu lý do. Bạn duyệt cả năm chỗ cùng spec ngày 2026-11-05 (Lượt 17):
 

@@ -70,3 +70,21 @@ test('only Done counts: a Cancelled item, or one whose state is unknown, holds t
     assert.deepEqual(cutPoint({ commits, items }), { cut: commits[0], included: at(['DEMO-1']), after: at(['DEMO-2']) });
   }
 });
+
+test('an Epic does not hold the cut point: only its children are released, so its spec goes with the cut point that covers it', () => {
+  const items = { 'DEMO-1': 'done', 'DEMO-2': 'in-progress', 'DEMO-3': 'done' };
+  const commits = [c('a1', 'DEMO-1'), c('b2', 'DEMO-2'), c('c3', 'DEMO-3')];
+  const at = pairs(items);
+  assert.deepEqual(cutPoint({ commits, items, epics: ['DEMO-2'] }), { cut: commits[2], included: at(['DEMO-1', 'DEMO-3']), after: [] });
+});
+
+test('a commit that names only an Epic releases nothing by itself', () => {
+  const commits = [c('a1', 'DEMO-2')];
+  assert.deepEqual(cutPoint({ commits, items: { 'DEMO-2': 'in-progress' }, epics: ['DEMO-2'] }), { cut: null, included: [], after: [] });
+});
+
+test('a commit that names an Epic and an item still waits for the item', () => {
+  const items = { 'DEMO-1': 'in-qa', 'DEMO-2': 'in-progress' };
+  const commits = [c('a1', 'DEMO-1', 'DEMO-2')];
+  assert.deepEqual(cutPoint({ commits, items, epics: ['DEMO-2'] }), { cut: null, included: [], after: pairs(items)(['DEMO-1']) });
+});
