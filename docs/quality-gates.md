@@ -157,7 +157,9 @@ Merge tay một PR chưa đủ cổng thì `audit` đỏ ở lần deploy kế t
 
 ## `audit` và deploy
 
-Workflow deploy của dự án gọi `audit.yml` trước, và job deploy có `needs: audit`:
+Dự án dùng VPS (`release-workflow`) không có workflow deploy: deployer chạy cùng code `audit` trên bản kit ghim ở VPS, cho mọi commit mới trên lịch sử first-parent. Commit không qua thì deployment có status `error`, kèm lý do như dưới, và bạn gỡ chặn bằng `/ao-rollback <môi trường> <sha>` ([docs/release-workflow.md](release-workflow.md)).
+
+Dự án tự deploy bằng GitHub Actions thì workflow deploy gọi `audit.yml` trước, và job deploy có `needs: audit`:
 
 ```yaml
 permissions: { contents: read, pull-requests: read, checks: read, statuses: read, actions: read }
