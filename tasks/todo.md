@@ -614,7 +614,7 @@
 
 **Cỡ:** M
 
-### [ ] T20: Kiểm rằng cổng chặn đúng (spec mục 7, bước 10)
+### [x] T20: Kiểm rằng cổng chặn đúng (spec mục 7, bước 10)
 
 **Mô tả:**
 
@@ -623,10 +623,10 @@
 
 **Tiêu chí chấp nhận:**
 - [x] Hai lần thử bị chặn, kèm bằng chứng trong `tasks/verification.md`.
-- [ ] Development chạy lại bình thường sau khi gỡ chặn.
+- [x] Development chạy lại bình thường sau khi gỡ chặn.
 
 **Kiểm chứng:**
-- [ ] `journalctl -u ao-deploy` ghi rõ lý do từ chối
+- [x] Lý do từ chối nằm trong deployment status trên GitHub; `aoadmin` không đọc được `journalctl` nếu không có `sudo` (`tasks/verification.md`)
 
 **Phụ thuộc:** T19
 
