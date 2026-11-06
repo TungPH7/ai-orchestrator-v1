@@ -64,6 +64,22 @@ test('/ao-qa stops while the item is not in Ready for QA, and says what comes in
   assert.match(decide(qaFacts({ item: { flagged: true, flag: 'audit' } })).reason, /flagged Needs you by audit/);
 });
 
+test('a qa run stopped by the usage limit goes on in its session with its worktree, URL and basic auth, even once qa picked the item up', () => {
+  const stopped = { key: 'DEMO-21', runs: [{ n: 1, command: 'qa', role: 'qa', purpose: 'qa', effort: 'high', session: 's-qa-1', outcome: 'usage-limit', qa: { environment: 'development', sha: RUNNING } }] };
+  for (const item of [{}, { state: 'in-qa', status: 'In QA' }]) {
+    const decision = decide(qaFacts({ item, run: stopped }));
+    assert.equal(decision.go, true, item.state ?? 'ready-for-qa');
+    const [run] = decision.runs;
+    assert.equal(run.resume, 's-qa-1');
+    assert.equal(run.prompt, 'Your run stopped before it ended. Read .ai/ledger/DEMO-21.md and go on from where you stopped.');
+    assert.deepEqual(run.worktree, { kind: 'qa', name: 'DEMO-21-qa', sha: RUNNING, install: true });
+    assert.deepEqual(run.env, { E2E_BASE_URL: URL });
+    assert.deepEqual(run.qa, { environment: 'development', sha: RUNNING, auth: true });
+  }
+  const finished = { key: 'DEMO-21', runs: [{ ...stopped.runs[0], outcome: 'done' }] };
+  assert.equal(decide(qaFacts({ item: { state: 'in-qa', status: 'In QA' }, run: finished })).reason, 'DEMO-21 is In QA, not Ready for QA');
+});
+
 test('/ao-qa stops while the QA environment does not run a release that holds the merge of the item', () => {
   const none = decide(qaFacts({ qa: { running: null, contains: false } }));
   assert.deepEqual([none.go, none.reason], [false, 'Development runs no release yet']);
