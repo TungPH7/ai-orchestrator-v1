@@ -288,3 +288,8 @@ Bạn yêu cầu rà kit, Jira, `ao-pilot` và `ao-sample`, rồi xét thời đ
 - `ao-sample` và Pilot 2; PR kit gom 5 lỗi Low; Dependabot và tự xóa nhánh trong `project-scaffold`; dọn nhánh cũ.
 
 **Chi phí agent của module trên `ao-pilot`:** 29 lượt từ 2026-11-05, tổng 47,12 USD. Trong đó `DEMO-26` 21,18 USD, `DEMO-30` 16,80 USD, `DEMO-28` 3,48 USD, `/ao-ship v0.2.0` 1,84 USD, và bốn lượt `qa` của T21 3,82 USD. Plan ước 24–40 USD cho T19, T21, T22. Hai PR chép kit chiếm 38 USD, vì PR chạm đường dẫn được bảo vệ nên `security` chạy ở max, và cả hai đều cần review hai lượt.
+
+## Checkpoint cuối (2026-11-07)
+
+- Đạt 10 tiêu chí ở spec mục 9. Plan, todo và file này đã nằm trong `tasks/archive/release-workflow/` (kit PR #222).
+- Bạn xác nhận module hoàn thành ("Xác nhận module release-workflow hoàn thành", Phiên 27 · Lượt 59), và đã gỡ key `ao_vps` khỏi ssh-agent.

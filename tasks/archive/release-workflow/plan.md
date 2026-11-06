@@ -148,7 +148,7 @@ T20 ── T21 DEMO-21 tới Production ── T22 hotfix, rollback, smoke fail 
 ### Checkpoint cuối
 - [x] Đạt 10 tiêu chí ở spec mục 9
 - [x] Chuyển `tasks/plan.md`, `tasks/todo.md`, `tasks/verification.md` vào `tasks/archive/release-workflow/`
-- [ ] Bạn xác nhận module hoàn thành
+- [x] Bạn xác nhận module hoàn thành
 
 ## Usage ước tính cho kiểm thật
 
