@@ -13482,3 +13482,38 @@ C. **Giữ tag `v0.1.0` (cách b):** bản đầu tiên là `v0.2.0`, lịch s�
 1. Merge PR #189 khi check xanh: https://github.com/TungPH7/ai-orchestrator-v1/pull/189
 2. Trả lời A, B, C.
 3. Cho mình biết có tiếp tục tự merge PR của kit sau Checkpoint 2 không (câu hỏi lần trước vẫn mở).
+
+# Phiên 27 · Lượt 11 — 2026-11-06 khoảng 09:40
+
+**Bạn:**
+
+```markdown
+Tôi hỏi, chưa được làm gì cả nhé.A, B, C thì bạn đề xuất phương án nào?
+```
+
+**Claude:**
+
+A, B, C không phải ba phương án để chọn một, mà là ba việc riêng. Mình đề xuất nhận cả ba: làm A trước, rồi B, còn C thì không phải làm gì. Hiện mình chưa làm việc nào trong ba việc này.
+
+**A. Sửa kit để điểm cắt bỏ qua key của Epic: nên làm.** Đây là lỗi của kit, không riêng `ao-pilot`. Nếu không sửa, commit tài liệu của Epic ở mọi dự án đều chặn release.
+
+**B. Xử lý các item cũ: mình đề xuất B1.** Đây là việc duy nhất có nhiều cách làm, và là chỗ bạn cần cân nhắc nhất:
+
+| Cách | Làm gì | Nhược điểm |
+|---|---|---|
+| **B1 (đề xuất)** | `qa` kiểm 3 item người dùng thấy được (`DEMO-6`, `DEMO-10`, `DEMO-21`); 5 item còn lại bạn `Accept` không qua `qa` | Có ngoại lệ với hợp đồng cho 5 item đó |
+| B2 | `qa` kiểm cả 8 item | Thêm 5 lần chạy agent, mà 5 item đó gần như không có gì để kiểm |
+| B3 | Đặt tag mới ở `22327a5`, để lịch sử tính từ đó, không sửa Jira | Tag ghi một bản chưa từng release, và item cũ không bao giờ vào bản nào |
+
+Lần trước mình chưa nói rõ một điểm của B1: `Accept` khi chưa có báo cáo `qa` là trái guard `qa-report-passed` của hợp đồng. Mình vẫn chọn B1 vì ngoại lệ này chỉ dùng một lần cho item cũ, có comment ghi lý do trên từng item. Full regression cũng vẫn kiểm cả bản trên Staging trước khi lên Production.
+
+B1 và B2 đều phải ghi lên Jira bằng token bot, gồm cả token của `ao-agents`. Mình chưa thử các transition này bằng token, nên có thể Jira từ chối.
+
+**C. Giữ tag `v0.1.0`: nên chọn, vì cách xóa tag không dùng được** (`DEMO-3` sẽ chặn điểm cắt). Thay đổi duy nhất là bản đầu tiên thành `v0.2.0`, nên Jira cần có Fix Version `v0.2.0` và `v0.3.0`.
+
+**Bạn cần trả lời:**
+1. Có đồng ý A không? Việc này đổi định nghĩa điểm cắt trong hợp đồng.
+2. Chọn B1, B2 hay B3?
+3. Có đồng ý C không?
+
+Check của PR #189 đã xanh trên `611e275`, nên bạn merge lúc nào cũng được. Vì bạn dặn chưa làm gì, mình chưa ghi lượt này vào log; mình sẽ ghi nguyên văn ở commit kế tiếp.
