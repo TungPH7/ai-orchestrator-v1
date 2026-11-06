@@ -73,6 +73,21 @@ test('xit( and xdescribe( count only as whole names: process.exit( and a method 
   ]);
 });
 
+test('only the call patterns need a whole name: a comment marker with something glued in front of it still counts', () => {
+  const lines = [
+    { file: 'src/a.ts', line: 1, text: 'const key = 1; // xgitleaks:allow' },
+    { file: 'src/a.ts', line: 2, text: '//_nosemgrep' },
+    { file: 'src/a.ts', line: 3, text: '//$nosemgrep' },
+    { file: 'src/a.ts', line: 4, text: '/*xeslint-disable*/' },
+  ];
+  assert.deepEqual(findSuppressions(lines, gates.suppressions), [
+    'src/a.ts:1 gitleaks:allow needs "reason: <why>" on the same line',
+    'src/a.ts:2 nosemgrep needs "reason: <why>" on the same line',
+    'src/a.ts:3 nosemgrep needs "reason: <why>" on the same line',
+    'src/a.ts:4 eslint-disable needs "reason: <why>" on the same line',
+  ]);
+});
+
 test('deleted test files are listed for the reviewer', () => {
   assert.deepEqual(deletedTests(DIFF), ['src/old.test.ts']);
 });

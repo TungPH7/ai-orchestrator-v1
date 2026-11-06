@@ -150,7 +150,7 @@ Module `release-workflow` ([SPEC-release-workflow.md](../SPEC-release-workflow.m
 2. Mở `http://127.0.0.1:47100/` trên trình duyệt đang đăng nhập GitHub. Trang chỉ có một App: `tungph7-ao-deploy`.
 3. Bấm **Tạo App trên GitHub**. Trên trang của GitHub, mục quyền phải có đúng sáu dòng như bảng ở đầu tài liệu, cộng dòng Metadata: Read-only mà GitHub luôn tự thêm. Bấm **Create GitHub App for TungPH7** ở cuối trang **(đối chiếu giao diện)**. GitHub có thể hỏi lại mật khẩu hoặc mã xác thực hai bước.
 4. GitHub chuyển sang trang cài App. Chọn **Only select repositories**, chọn repo dự án (ở đây là `ao-pilot`) nếu chưa được chọn sẵn, rồi bấm **Install**. Không cài App lên repo kit.
-5. GitHub quay về trang `127.0.0.1`, ghi "Xong mọi App". Script tự dừng, rồi in slug, App ID và đường dẫn file key `C:UsersHuu Tungao-keys	ungph7-ao-deploy.pem`.
+5. GitHub quay về trang `127.0.0.1`, ghi "Xong mọi App". Script tự dừng, rồi in slug, App ID và đường dẫn file key `C:\Users\Huu Tung\ao-keys\tungph7-ao-deploy.pem`.
 6. Claude đặt biến môi trường `AO_DEPLOY_APP_KEY_FILE` là đường dẫn đó, rồi kiểm App lấy được token cho repo dự án.
 
 Mỗi dự án mới cài thêm `ao-deploy` vào repo của dự án, như mục 3.
