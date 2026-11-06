@@ -586,7 +586,7 @@
 
 **Cỡ:** S
 
-### [ ] T19: Task của `ao-pilot`: Dockerfile, `deploy.yaml`, E2E và bản chép kit [bạn]
+### [x] T19: Task của `ao-pilot`: Dockerfile, `deploy.yaml`, E2E và bản chép kit [bạn]
 
 **Mô tả:**
 
@@ -602,11 +602,11 @@
 - [x] `https://pilot-dev.ao.t2g.io.vn` chạy bản mới, có HTTPS, hỏi basic auth.
 - [x] Container của `ao-pilot` chạy được với các cờ của T7 (`--cap-drop ALL`, `no-new-privileges`); Dockerfile không cần quyền root đặc biệt.
 - [x] E2E của `ao-pilot` với `E2E_BASE_URL` của Development: 24/24 xanh, trong đó 5 test `@local` chạy vào server tại chỗ.
-- [ ] Deployment `development` có trên GitHub và hiện trên item Jira.
+- [x] Deployment `development` có trên GitHub và hiện trên item Jira.
 - [x] Chi phí của từng lượt agent nằm trong `tasks/verification.md`.
 
 **Kiểm chứng:**
-- [ ] (CI xanh; bản chép kit khác `main` ở 7 file, xem `tasks/verification.md`) CI của PR xanh; `.ai-orchestrator/` của `ao-pilot` giống `main` của kit ở các file đã chép
+- [x] (lệch, bạn duyệt ở Phiên 27 · Lượt 27: bản chép kit khác `main` ở 7 file, chép lại sau T22) CI của PR xanh; `.ai-orchestrator/` của `ao-pilot` giống `main` của kit ở các file đã chép
 
 **Phụ thuộc:** T18
 
@@ -636,8 +636,8 @@
 
 ### Checkpoint 3
 
-- [ ] Tiêu chí 3, 4 và 9 của spec mục 9 đạt
-- [ ] Bạn xem chi phí của T19, rồi đồng ý chạy kiểm thật ở T21–T22 (ước 14–24 USD)
+- [x] Tiêu chí 3 và 9 của spec mục 9 đạt; tiêu chí 4 đạt ở Development, phần Staging và Production chờ T21
+- [x] Bạn xem chi phí của T19 (20,53 USD), rồi đồng ý chạy kiểm thật ở T21–T22 (ước lại 20–35 USD), ở Phiên 27 · Lượt 27
 
 ---
 
@@ -693,6 +693,17 @@
 ---
 
 ## Giai đoạn 8: hoàn thiện
+
+### [ ] T22b: Chép lại kit vào `ao-pilot` [bạn]
+
+**Mô tả:** sau T22, Claude chép `main` của kit vào `.ai-orchestrator/` bằng một PR của Task mới, gom mọi bản sửa phát sinh từ PR #200 trở đi. **Bạn** merge, vì PR sửa đường dẫn được bảo vệ (Phiên 27 · Lượt 27).
+
+**Tiêu chí chấp nhận:**
+- [ ] Các file đã chép của `.ai-orchestrator/` giống `main` của kit.
+
+**Phụ thuộc:** T22
+
+**Cỡ:** S
 
 ### [ ] T23: Tài liệu, `SPEC.md` và lưu trữ plan (spec mục 9, tiêu chí 10)
 
