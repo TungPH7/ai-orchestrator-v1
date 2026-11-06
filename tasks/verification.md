@@ -211,3 +211,23 @@ Deployer kiểm từng commit sau điểm đã kiểm, dừng ở `3fdd514`, PR 
 - **Đóng T22** (Lượt 50): bạn `Cancel` `DEMO-29`, API trả Cancelled. Bạn gỡ key khỏi ssh-agent sau.
 - **Lượt bị tắt giờ có bản ghi:** `runGo` ghi lượt vào `state.json` với `unfinished` ngay trước khi agent chạy, và `ao-step` lấy session từ log khi đọc lại, nên `/ao-qa` đi tiếp được mà không cần sửa tay như ở `DEMO-28`.
 - **Tiêu chí 7 và 8 của spec mục 9: đạt.** `develop` có commit hotfix: `develop...7b5a559` không còn commit nào thiếu. Chi phí agent của `DEMO-28` nằm ở hai mục đầu của T22.
+
+## Rà soát việc tồn (2026-11-06, Lượt 51–52)
+
+Bạn yêu cầu rà kit, Jira, `ao-pilot` và `ao-sample`, rồi xét thời điểm xử lý từng việc. Bạn duyệt các đề xuất ở Lượt 52.
+
+- **Đã sửa trước T22b (kit PR #218):** hai Medium để lại từ Pilot 1, và `/ao-status` của Epic.
+  - `openFindings` theo từng finding bằng `where` + `finding`, thay cho đếm dòng. Một dòng ghi trùng không còn xóa được finding khác, và finding bị bỏ sót giữ tên để review sau kiểm.
+  - Dòng `Scope` sai mẫu, hay `## Earlier findings` không có `Scope`, làm báo cáo không đọc được. `Fixed một phần` không còn tính là Fixed.
+  - **Còn hở:** báo cáo thiếu cả dòng `Scope` lẫn mục `## Earlier findings` vẫn được đọc như review đầy đủ, vì `merge-gate` không biết lượt đó được yêu cầu kiểu gì. Spec đã ghi điểm này.
+  - `/ao-status` báo `Click Complete on DEMO-11`; đã chạy thử trên Jira thật. `DEMO-20` vẫn ghi `its items move on`, vì `DEMO-24` còn mở.
+- **Cờ Needs you trên `DEMO-5`:** đã gỡ bằng token CI.
+- **Đã kiểm và sạch:** không có PR hay issue mở ở cả 3 repo; không có key hay token trong file đã commit (quét theo mẫu, bỏ qua thư mục test); 31 file đính kèm trên Jira đều là ảnh hoặc video; `npm audit` phần production là 0 ở cả 3 repo.
+- **Jira, bạn bấm lúc nào cũng được:** `Cancel` `DEMO-4`, `DEMO-7`, `DEMO-18`, `SMP-3`, `SMP-12`, `SMP-13`, `SMP-14`, `SMP-15`; `Complete` `DEMO-11`.
+- **Vòng `v0.3.0` của `ao-pilot`:** `DEMO-24` (Epic `DEMO-20` chỉ `Complete` được sau khi item này đóng và đã release), `DEMO-15`, `DEMO-17`; comment sai về favicon ở `src/server.ts:70` và `src/server.test.ts:145`, sửa cùng `DEMO-15`; 10 lỗi moderate của `npm audit` ở dev dependency.
+- **Pilot 2 trên `ao-sample`:** 6 item Ready for QA và Epic `SMP-2`; một lần chép kit gom hết; các Low của code app từ Pilot 1; 9 lỗi moderate ở dev dependency.
+- **Sau module này:**
+  - Một PR kit gom 5 lỗi Low: `develop` cục bộ đi trước origin, `/tmp/ao-reviews` trên Linux, hai clone trùng tên thư mục, B1–B3 của hook, `unquotePath`.
+  - `project-scaffold`: bật Dependabot và tự xóa nhánh sau merge cho repo dự án.
+  - Dọn worktree `ao-kit-fix`, các nhánh cũ của 3 repo, và một stash cũ ở `ao-pilot`.
+  - Không sửa Medium `node_modules` trong worktree review: CI đã chạy test của head, còn cài package của PR thì thêm rủi ro.
