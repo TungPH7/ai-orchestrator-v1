@@ -208,4 +208,6 @@ Deployer kiểm từng commit sau điểm đã kiểm, dừng ở `3fdd514`, PR 
 - **Bug tự động:** `jira-sync` (run `42225129768`) tạo `DEMO-29` `Smoke test failed on Production at v0.2.0`, Severity Critical, Found in Production, Affects Version `v0.2.0`, trạng thái New. Priority giữ mặc định Medium, vì kit ghi mức độ vào Severity.
 - **Trả lại VPS:** `PORT=3000`, quyền file vẫn `root:aodeploy 640`. `PermitRootLogin no`: root bị từ chối, `aoadmin` vào được, `ao-deploy.timer` active. Bài thử không tốn lượt agent.
 - **Lệch so với T22:** plan ghi Claude chuyển Bug thử sang Cancelled, nhưng `Cancel` chỉ người bấm được, nên bạn bấm.
+- **Đóng T22** (Lượt 50): bạn `Cancel` `DEMO-29`, API trả Cancelled. Bạn gỡ key khỏi ssh-agent sau.
+- **Lượt bị tắt giờ có bản ghi:** `runGo` ghi lượt vào `state.json` với `unfinished` ngay trước khi agent chạy, và `ao-step` lấy session từ log khi đọc lại, nên `/ao-qa` đi tiếp được mà không cần sửa tay như ở `DEMO-28`.
 - **Tiêu chí 7 và 8 của spec mục 9: đạt.** `develop` có commit hotfix: `develop...7b5a559` không còn commit nào thiếu. Chi phí agent của `DEMO-28` nằm ở hai mục đầu của T22.

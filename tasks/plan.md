@@ -135,10 +135,10 @@ T20 ── T21 DEMO-21 tới Production ── T22 hotfix, rollback, smoke fail 
 
 ### Giai đoạn 7: kiểm thật
 - [x] T21: `DEMO-21` từ QA tới Production (bước 4–6) [bạn]
-- [ ] T22: Hotfix, rollback và smoke fail có chủ đích (bước 7–9) [bạn]
+- [x] T22: Hotfix, rollback và smoke fail có chủ đích (bước 7–9) [bạn]
 
 ### Checkpoint 4
-- [ ] Tiêu chí 5–8 của spec mục 9 đạt
+- [x] Tiêu chí 5–8 của spec mục 9 đạt
 - [ ] Bạn xem lịch sử của `DEMO-21` và Bug thử trên `DEMO`, PR release, tag, deployment trên `ao-pilot`, và `.ai/runs/`
 
 ### Giai đoạn 8: hoàn thiện
