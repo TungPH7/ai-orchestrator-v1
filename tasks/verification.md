@@ -199,3 +199,6 @@ Deployer kiểm từng commit sau điểm đã kiểm, dừng ở `3fdd514`, PR 
 ## T22: hotfix, rollback và smoke fail
 
 - **Bug thử `DEMO-28`** (Lượt 41): `/favicon.ico` trả 404 trên Production. Mức thật là Low; Severity đặt High để thử đường hotfix, bạn đồng ý, và mô tả Bug ghi rõ. Nhãn `ao-be-dev`. Fix Version chờ bạn tạo `v0.2.1`.
+- **`DEMO-28`:** `be-dev` 1,06 USD, ao-pilot PR #21 vào `main`, nhánh `hotfix/DEMO-28-favicon-no-content`. `be-dev` đo được rằng CSP của trang chặn request favicon trên Chrome, nên console không có lỗi như Claude đã ghi; Claude sửa Bug trên Jira. `reviewer` 1,15 USD (2 Low), `security` 0,52 USD (không có lỗi). Bạn approve, `merge-gate` merge: `7b5a559`. Staging deploy, `success`.
+- **`qa` trên Staging bị tắt lúc 18:09:** Claude Code tắt lệnh nền vì RAM còn 3,0 GB. Lượt đó chưa vào `state.json`, vì `ao-step` chỉ ghi khi lượt kết thúc, nên `/ao-qa` dừng ở `In QA, not Ready for QA`. Sau khi bạn giải phóng RAM, Claude ghi tay lượt đó với `unfinished` và chạy tiếp: PASS, 0,75 USD, E2E 25/25. Cả Bug tới đây 3,48 USD. **Việc còn lại của kit:** ghi lượt vào `state.json` khi bắt đầu, để lượt bị tắt đột ngột chạy tiếp được.
+- Bạn `Accept` `DEMO-28`. `/ao-ship v0.2.1` (chỉ kiểm): `Production runs v0.2.0; v0.2.1 is the hotfix of DEMO-28, merged as 7b5a5597 by PR #21, which Staging runs`, GO, chờ gate ⑤.
