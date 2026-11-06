@@ -62,7 +62,7 @@ PR sửa đường dẫn được bảo vệ (`.github/workflows/**`, `.claude/*
 | File | Nội dung |
 |---|---|
 | `last.md` | Báo cáo của lần chạy gần nhất: bảng các lượt (vai trò, bước, effort, kết quả, turn, thời gian, chi phí), câu trả lời đầy đủ của từng agent, lý do dừng và lệnh tiếp theo |
-| `state.json` | Mọi lượt đã xong của item: session, effort, kết quả (`done`, `usage-limit`, `max-turns`, `error`, `unfinished`), số turn, thời gian, token, chi phí quy đổi, số lần bị từ chối, nhánh đã checkout, câu trả lời của agent (tối đa 2000 ký tự, phần bị cắt có ghi chú). `ao-step` đọc file này để chạy tiếp lượt dở trong cùng session |
+| `state.json` | Mọi lượt của item, ghi từ lúc lượt bắt đầu: session, effort, kết quả (`done`, `usage-limit`, `max-turns`, `error`, `unfinished`), số turn, thời gian, token, chi phí quy đổi, số lần bị từ chối, nhánh đã checkout, câu trả lời của agent (tối đa 2000 ký tự, phần bị cắt có ghi chú). `ao-step` đọc file này để chạy tiếp lượt dở trong cùng session |
 | `<n>-<role>.jsonl` | Log stream-json của lượt thứ n |
 | `answers.md`, `note.md` | Câu trả lời của bạn, và việc cần sửa của `/ao-fix`, do Claude ghi |
 
@@ -85,7 +85,7 @@ PR sửa đường dẫn được bảo vệ (`.github/workflows/**`, `.claude/*
 
 - **Agent bỏ lại server:** `claude -p` không thoát khi agent còn để một lệnh chạy ở nền, ví dụ `npm run dev` sau khi xem trang trên trình duyệt. Ở Pilot 1, lượt chạy vì thế treo 1 đến 12 phút, và khi lệnh nền kết thúc thì agent tỉnh dậy thêm một turn, tốn một lần ghi cache. Từ T10, `ao-step` dừng tiến trình của agent 60 giây sau khi nó có kết quả mà chưa thoát. Trên Windows, lệnh dừng (`taskkill /T`) lấy cả cây tiến trình, nên các server cũng tắt. Ở nơi khác chỉ tiến trình của agent bị dừng; server nó bỏ lại bạn tự tắt. Lượt chạy giữ nguyên câu trả lời và kết quả, `state.json` ghi thêm `stoppedAfterResult: true`, và `ao-step` in một dòng báo.
 - **Hết usage:** lượt đang chạy ghi `usage-limit`. Sau khi reset, chạy lại đúng lệnh đó. `ao-step` mở lại session cũ bằng `--resume`, không chạy lại các lượt đã xong.
-- **Tiến trình bị tắt giữa chừng:** máy thiếu RAM, hoặc bạn tắt Claude Code. Lượt dở không có trong `state.json`, nên lần chạy lại bắt đầu lượt đó từ đầu, với ledger agent đã ghi.
+- **Tiến trình bị tắt giữa chừng:** máy thiếu RAM, hoặc bạn tắt Claude Code. Lượt dở nằm trong `state.json` với kết quả `unfinished`, và lần chạy lại đi tiếp trong session lấy từ log của lượt đó. Lượt bị tắt trước khi có dòng log đầu tiên thì không có session để đi tiếp.
   - Thay đổi chưa commit còn trên bản checkout làm `ao-step` từ chối chạy. Dùng `git stash` để cất chúng.
   - Nhãn hay cờ agent đã đặt trên Jira thì vẫn còn.
 - **Thiếu RAM:** mỗi lượt agent là một phiên Claude Code, kèm các server MCP. Ở Epic thử, Claude Code tắt lệnh nền ba lần, khi máy 16 GB còn trống dưới khoảng 3 GB.

@@ -6,6 +6,7 @@ import { readContract } from '../../lib/contract.mjs';
 import { readGates } from '../../lib/quality/gates.mjs';
 import { answersPrompt, packNote, qaWorktreeNote, resumePrompt, worktreeNote } from '../../lib/workflow/prompts.mjs';
 import { agentCommand, formatDecision, lastReport, runGo } from '../../lib/workflow/runner.mjs';
+import { withLoggedSession } from '../../lib/workflow/runs.mjs';
 import { decideStep } from '../../lib/workflow/steps.mjs';
 import { CONTRACT_DIR, ROOT } from '../helpers/kit.mjs';
 import { checkArgument, checkoutStop, homeBranch, reviewTreePath, runsFile, takeLock } from '../../scripts/ao-step.mjs';
@@ -111,17 +112,43 @@ test('--go makes the runs one after another, deciding again after each, until th
   assert.deepEqual(h.checkouts, Array(4).fill({ branch: BRANCH, from: 'develop' }));
 });
 
-test('state.json is written after every run, before the next one starts', async () => {
+test('state.json is written when a run starts and after it ends, before the next one starts', async () => {
   const { world, gather } = specWorld();
   const h = harness(world, SPEC_EFFECTS);
   await h.run({ gather });
-  assert.deepEqual(h.states.map(({ runs }) => runs.length), [1, 2, 3, 4]);
-  const first = h.states[0].runs[0];
+  assert.deepEqual(h.states.map(({ runs }) => runs.length), [1, 1, 2, 2, 3, 3, 4, 4]);
+  assert.deepEqual(h.states.map(({ runs }) => runs.at(-1).outcome), Array(4).fill(['unfinished', 'done']).flat());
+  const first = h.states[1].runs[0];
   assert.deepEqual(
     { n: first.n, command: first.command, role: first.role, key: first.key, purpose: first.purpose, effort: first.effort, session: first.session, outcome: first.outcome, turns: first.turns, costUsd: first.costUsd, log: first.log },
     { n: 1, command: 'spec', role: 'ba', key: 'DEMO-20', purpose: 'spec-write', effort: roster.roles.ba.effort, session: 's-ba-1', outcome: 'done', turns: 5, costUsd: 0.25, log: '1-ba.jsonl' },
   );
   assert.deepEqual(first.checkout, { branch: BRANCH, from: 'develop' });
+});
+
+// release-workflow T22: Claude Code killed the shell of a qa run of DEMO-28 when memory ran low. Nothing was on record,
+// so /ao-qa stopped at "In QA, not Ready for QA".
+test('a run killed with its shell is on record as unfinished, and the next command goes on in the session of its log', async () => {
+  const { world, gather } = specWorld();
+  const killed = harness(world, SPEC_EFFECTS, { throws: true });
+  await assert.rejects(killed.run({ gather }), /claude could not start/);
+  const [open] = world.run.runs;
+  assert.deepEqual({ n: open.n, role: open.role, purpose: open.purpose, session: open.session, outcome: open.outcome, costUsd: open.costUsd, log: open.log }, { n: 1, role: 'ba', purpose: 'spec-write', session: null, outcome: 'unfinished', costUsd: 0, log: '1-ba.jsonl' });
+  assert.ok(open.startedAt);
+
+  world.run = withLoggedSession(world.run, () => runLines({ session: 's-killed', outcome: 'cut' }));
+  const again = harness(world, SPEC_EFFECTS, { outcomes: ['limit'] });
+  await again.run({ gather });
+  assert.deepEqual(again.calls[0], { role: 'ba', purpose: 'spec-write', resume: 's-killed', prompt: resumePrompt('DEMO-20'), log: '2-ba.jsonl' });
+});
+
+test('a resumed run on record from its start keeps what its session cost so far, so the next one counts only what it adds', async () => {
+  const { world, gather } = specWorld();
+  await harness(world, SPEC_EFFECTS, { outcomes: ['limit'] }).run({ gather });
+  const { session, cumulative } = world.run.runs[0];
+  await assert.rejects(harness(world, SPEC_EFFECTS, { throws: true }).run({ gather }), /claude could not start/);
+  const open = world.run.runs[1];
+  assert.deepEqual([open.session, open.resumed, open.cumulative], [session, true, cumulative]);
 });
 
 test('a fix run keeps in state.json the head it started from and which note it was for', async () => {
