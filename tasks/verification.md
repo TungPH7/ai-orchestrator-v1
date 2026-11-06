@@ -231,3 +231,14 @@ Bạn yêu cầu rà kit, Jira, `ao-pilot` và `ao-sample`, rồi xét thời đ
   - `project-scaffold`: bật Dependabot và tự xóa nhánh sau merge cho repo dự án.
   - Dọn worktree `ao-kit-fix`, các nhánh cũ của 3 repo, và một stash cũ ở `ao-pilot`.
   - Không sửa Medium `node_modules` trong worktree review: CI đã chạy test của head, còn cài package của PR thì thêm rủi ro.
+
+## Checkpoint 4 (2026-11-06)
+
+- Tiêu chí 5–8 của spec mục 9: đạt, ở các mục T21 và T22.
+- Bạn xem lịch sử của `DEMO-21`, hai Bug thử, PR release, tag, deployment và `.ai/runs/` (Lượt 53).
+
+## Chép kit lên VPS sau đợt rà soát (Lượt 53)
+
+- Bạn đồng ý ở Lượt 52 và mở đăng nhập root. **Commit ghim mới: `521e03179908062080de9fd6b8fd9c77dfece2fc`**, thay `bb25b2b`. `npm ci` thêm 65 package; `tick --dry-run` không báo gì; timer bật lại.
+- **Lỗi của Claude trong script chép:** vòng chờ dùng `systemctl is-active --quiet`, mà lệnh này trả lỗi với `activating`, trạng thái của service `oneshot` lúc đang chạy. Vòng chờ thoát ngay, nên `/opt/ao/kit` bị thay trong lúc một tick có thể đang chạy. Không có hậu quả: `Result=success`, tick kế tiếp chạy bình thường, không có deployment mới, ba môi trường vẫn chạy. `docs/vps-setup.md` mục 12 ghi cách chờ đúng.
+- Tắt lại đăng nhập root: root nhận `Permission denied (publickey)`, `aoadmin` vào được, timer `active`. Trang chủ Production 200, favicon 204.
