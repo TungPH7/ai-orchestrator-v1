@@ -1,6 +1,6 @@
 # Plan triển khai: kit-copy-review
 
-> **Spec:** [SPEC-kit-copy-review.md](../../SPEC-kit-copy-review.md), đã duyệt 2026-11-07 (Phiên 27 · Lượt 67). **Trạng thái:** đang làm.
+> **Spec:** [SPEC-kit-copy-review.md](../../../SPEC-kit-copy-review.md), đã duyệt 2026-11-07 (Phiên 27 · Lượt 67). **Trạng thái:** hoàn thành 2026-11-07 (Phiên 27 · Lượt 72).
 
 ## Tổng quan
 
