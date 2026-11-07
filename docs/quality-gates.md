@@ -220,7 +220,9 @@ Dòng `Kit review:` chỉ là lời khai. `ao-step` kiểm lần lượt:
 
 Không đạt một điều thì lệnh in lý do và cho agent review như thường. Lỗi mạng, hay một push trong lúc so, cũng vậy.
 
-Lý do `max` vẫn giữ ở lượt review đầu tiên: bài thử mù ngày 2026-11-07 cho thấy `high` tìm ra 4 trên 6 lỗi đã biết, và bỏ sót một lỗi High ở cả hai lượt lặp. Xem [`tasks/kit-copy-review/verification.md`](../tasks/kit-copy-review/verification.md).
+`/ao-review` chạy bản chép kit của dự án, nên chỉ dự án nào đã có code này mới đi được đường so byte. Lần chép đầu tiên mang code này vào một dự án vẫn được agent review đầy đủ, trừ khi bạn chạy `ao-step` từ kit bằng `AO_KIT_DIR`, như ở lần kiểm thật. Đặt `AO_KIT_PEERS` trong `.claude/settings.json` của dự án để dùng lâu dài.
+
+Lý do `max` vẫn giữ ở lượt review đầu tiên: bài thử mù ngày 2026-11-07 cho thấy `high` tìm ra 4 trên 6 lỗi đã biết, và bỏ sót một lỗi High ở cả hai lượt lặp. Xem [`tasks/kit-copy-review/verification.md`](../tasks/archive/kit-copy-review/verification.md).
 
 ## Environment `merge-gate`
 

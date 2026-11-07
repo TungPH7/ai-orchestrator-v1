@@ -1,6 +1,6 @@
 # SPEC: kit-copy-review
 
-Trạng thái: đã duyệt 2026-11-07 (Phiên 27 · Lượt 67). Chen trước Pilot 2 theo yêu cầu ở Phiên 27. Thứ tự: `kit-copy-review` → Pilot 2 → `project-scaffold`.
+Trạng thái: hoàn thành 2026-11-07 (Phiên 27 · Lượt 72); đã duyệt ở Lượt 67. Chen trước Pilot 2 theo yêu cầu ở Phiên 27. Thứ tự: `kit-copy-review` → Pilot 2 → `project-scaffold`.
 
 Spec này sửa mục 2.6 của [`SPEC-dev-workflow.md`](SPEC-dev-workflow.md) ở một điểm: `/ao-review` có thêm một nhánh cho PR chép kit. Nó không đổi luật của `merge-gate` và `audit`.
 
@@ -14,7 +14,7 @@ Review PR chép kit đang tốn nhiều mà tốn sai chỗ: cùng một code ki
 
 ### Bài thử làm cơ sở
 
-Thử mù ngày 2026-11-07 trên 3 head của `ao-sample`, so với 6 lỗi Medium trở lên mà `security` ở `max` từng tìm ra. Chi tiết ở `tasks/kit-copy-review/verification.md`.
+Thử mù ngày 2026-11-07 trên 3 head của `ao-sample`, so với 6 lỗi Medium trở lên mà `security` ở `max` từng tìm ra. Chi tiết ở `tasks/archive/kit-copy-review/verification.md`.
 
 | Phương án | USD (3 head) | Phút | Tìm ra |
 |---|---|---|---|
@@ -142,7 +142,7 @@ quality/gates.yaml, schema       # khối kit_copy, lỗi 3
 agents/prompts/security.md       # 2.6
 docs/quality-gates.md, docs/dev-workflow.md, docs/release-workflow.md, README.md
 tests/                           # test của từng phần trên
-tasks/kit-copy-review/           # plan, todo, verification
+tasks/archive/kit-copy-review/   # plan, todo, verification
 ```
 
 ## 5. Chiến lược test
@@ -162,7 +162,7 @@ Test trước, bằng `node:test`, theo mẫu của `decideReview` và `decideAu
 1. Năm lệnh kiểm của kit xanh.
 2. Ba lỗi ở 2.7 có test và đã sửa.
 3. Bản kit mới vào `ao-pilot` qua PR được review đầy đủ, ở `max`. Bạn merge.
-4. Bản đó vào `ao-sample` qua PR có dòng `Kit review:`. `/ao-review` đăng hai báo cáo, không gọi agent, 0 USD. `merge-gate` thấy đủ báo cáo.
+4. Bản đó vào `ao-sample` qua PR có dòng `Kit review:`. `/ao-review` đăng hai báo cáo, không gọi agent, 0 USD. `merge-gate` thấy đủ báo cáo. `develop` của `ao-sample` chưa có code so byte, nên lần kiểm này chạy `ao-step` từ kit bằng `AO_KIT_DIR`. Khi dùng bình thường, `/ao-review` chạy bản chép kit của dự án, nên lần chép đầu tiên mang code này vào một dự án vẫn do kit cũ quyết định và được review đầy đủ.
 5. Thử một PR có một byte khác: `/ao-review` in lý do và không đăng báo cáo. Lượt thử này dừng trước khi gọi agent.
 6. `audit` qua được commit merge của PR ở tiêu chí 4. Kiểm ở Pilot 2, khi `ao-sample` đã có trên VPS.
 
@@ -184,6 +184,6 @@ Test trước, bằng `node:test`, theo mẫu của `decideReview` và `decideAu
 
 ## Nguồn
 
-- Bài thử: `tasks/kit-copy-review/verification.md`, Phiên 27.
+- Bài thử: `tasks/archive/kit-copy-review/verification.md`, Phiên 27.
 - [cloudflare/security-audit-skill](https://github.com/cloudflare/security-audit-skill), MIT.
 - [OpenCodeReview, arXiv 2608.09290](https://arxiv.org/html/2608.09290v2).

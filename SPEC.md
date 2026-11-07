@@ -134,7 +134,7 @@ agent-roster  → figma-integration (thêm ngày 2026-10-30; làm lúc nào do b
 | `quality-gates` | [`SPEC-quality-gates.md`](SPEC-quality-gates.md) | Hoàn thành 2026-10-29; plan lưu ở [`tasks/archive/quality-gates/`](tasks/archive/quality-gates/plan.md) |
 | `dev-workflow` | [`SPEC-dev-workflow.md`](SPEC-dev-workflow.md) | Hoàn thành 2026-11-01; plan lưu ở [`tasks/archive/dev-workflow/`](tasks/archive/dev-workflow/plan.md) |
 | `release-workflow` | [`SPEC-release-workflow.md`](SPEC-release-workflow.md) | Hoàn thành 2026-11-07; plan lưu ở [`tasks/archive/release-workflow/`](tasks/archive/release-workflow/plan.md), việc để lại ở cuối `verification.md` |
-| `kit-copy-review` | [`SPEC-kit-copy-review.md`](SPEC-kit-copy-review.md) | Đang làm, chen trước Pilot 2; plan ở [`tasks/kit-copy-review/`](tasks/kit-copy-review/plan.md) |
+| `kit-copy-review` | [`SPEC-kit-copy-review.md`](SPEC-kit-copy-review.md) | Hoàn thành 2026-11-07, chen trước Pilot 2; plan lưu ở [`tasks/archive/kit-copy-review/`](tasks/archive/kit-copy-review/plan.md) |
 | `project-scaffold` | `SPEC-project-scaffold.md` | Chưa viết |
 
 ## Câu hỏi mở
