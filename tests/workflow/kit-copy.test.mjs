@@ -4,7 +4,7 @@ import { join } from 'node:path';
 import { readGates } from '../../lib/quality/gates.mjs';
 import { reportGaps } from '../../lib/quality/merge-gate.mjs';
 import { readReviewReport } from '../../lib/quality/pull-request.mjs';
-import { decideKitCopy, kitCopyReport, kitReviewOf } from '../../lib/workflow/kit-copy.mjs';
+import { decideKitCopy, kitCopyReport, kitReviewOf, postKitCopyReports, readKitCopy, renderedReason } from '../../lib/workflow/kit-copy.mjs';
 import { ROOT } from '../helpers/kit.mjs';
 
 const gates = readGates(join(ROOT, 'quality'));
@@ -136,4 +136,100 @@ test('merge-gate and audit read the report of ao-step as a report of its role, w
   }
   const posted = gates.github_apps.review.roles.map((role) => ({ user: { login: REVIEW_BOT }, commit_id: HEAD, body: kitCopyReport({ role, pr: { title: 'chore(kit): a title without its key' }, key: 'SMP-30', reference: { ...claim, head: REF_HEAD }, compared: 5 }) }));
   assert.deepEqual(reportGaps(posted, HEAD, 'on head eeeeeee', gates.github_apps.review.roles, REVIEW_BOT), []);
+});
+
+// A project and a peer on GitHub, as the two clients see them.
+function world({ peerRead = () => {}, headNow = HEAD, files = pr().files, render = () => null } = {}) {
+  const asked = [];
+  const refer = reference();
+  const peer = {
+    get: async (path, query) => {
+      asked.push(['peer', path, query]);
+      peerRead(path);
+      if (path === '/pulls/24') return refer.pull;
+      if (path === '/commits') return [{ sha: refer.newest }];
+      if (path === `/git/trees/${REF_HEAD}`) return refer.tree;
+      throw new Error(`unexpected ${path}`);
+    },
+    getAll: async (path) => {
+      asked.push(['peer', path]);
+      return refer.reviews;
+    },
+  };
+  const github = {
+    get: async (path) => {
+      asked.push(['project', path]);
+      if (path === '/pulls/30') return { head: { sha: headNow } };
+      if (path === `/git/trees/${HEAD}`) return headTree();
+      throw new Error(`unexpected ${path}`);
+    },
+    getAll: async (path) => {
+      asked.push(['project', path]);
+      return files;
+    },
+  };
+  const opened = [];
+  return { asked, opened, input: { pr: { number: 30, headSha: HEAD, body: 'Kit review: acme/peer#24' }, github, peer: (repo) => { opened.push(repo); return peer; }, peers: ['acme/peer'], gates, apps, approvers: ['owner'], render } };
+}
+
+test('readKitCopy reads both heads and decides; without the line of the description it reads nothing', async () => {
+  const { input, asked } = world();
+  assert.deepEqual(await readKitCopy(input), { ok: true, compared: 4, reference: { ...claim, head: REF_HEAD }, renders: false });
+  assert.deepEqual(asked.find(([, path]) => path === '/commits')[2], { path: '.ai-orchestrator/lib', sha: 'develop', per_page: 1 });
+  const none = world();
+  assert.equal(await readKitCopy({ ...none.input, pr: { ...none.input.pr, body: 'A usual PR.' } }), null);
+  assert.deepEqual(none.asked, []);
+});
+
+test('readKitCopy opens no repository outside AO_KIT_PEERS: your login reads only those', async () => {
+  const { input, opened } = world();
+  const decision = await readKitCopy({ ...input, pr: { ...input.pr, body: 'Kit review: evil/repo#1' } });
+  assert.deepEqual(decision, { ok: false, reason: 'evil/repo is not in AO_KIT_PEERS' });
+  assert.deepEqual(opened, []);
+});
+
+test('readKitCopy falls back to the review on any error, on a push while it reads, and on a kit without kit_copy', async () => {
+  const failing = world({ peerRead: () => { throw new Error('GitHub GET returned 404'); } });
+  assert.deepEqual(await readKitCopy(failing.input), { ok: false, reason: 'could not read the reference: GitHub GET returned 404' });
+  const pushed = world({ headNow: 'f'.repeat(40) });
+  assert.deepEqual(await readKitCopy(pushed.input), { ok: false, reason: `the head of PR #30 moved from ${HEAD.slice(0, 7)} while it was compared` });
+  const old = world();
+  assert.equal(await readKitCopy({ ...old.input, gates: { ...gates, kit_copy: undefined } }), null);
+});
+
+test('readKitCopy renders only when the PR changes a rendered file, and a wrong render refuses it', async () => {
+  const rendered = [];
+  const agents = [{ filename: '.claude/agents/security.md', status: 'modified' }];
+  const passing = world({ files: agents, render: async (sha) => { rendered.push(sha); return null; } });
+  assert.equal((await readKitCopy(passing.input)).ok, true);
+  assert.deepEqual(rendered, [HEAD]);
+  const wrong = world({ files: agents, render: async () => 'the rendered files at eeeeeee do not match their sources' });
+  assert.deepEqual(await readKitCopy(wrong.input), { ok: false, reason: 'the rendered files at eeeeeee do not match their sources' });
+  rendered.length = 0;
+  const plain = world({ render: async (sha) => { rendered.push(sha); return null; } });
+  assert.equal((await readKitCopy(plain.input)).ok, true);
+  assert.deepEqual(rendered, []);
+});
+
+test('renderedReason always removes its tree, and says what did not match', () => {
+  const steps = [];
+  const tree = (ok = true) => ({ add: () => { steps.push('add'); return ok ? { ok, path: '/tmp/t' } : { ok, reason: 'no such commit' }; }, remove: () => { steps.push('remove'); } });
+  assert.equal(renderedReason({ sha: HEAD, tree: tree(), render: (path) => { steps.push(path); return { status: 0, text: '' }; } }), null);
+  assert.deepEqual(steps, ['add', '/tmp/t', 'remove']);
+  assert.equal(renderedReason({ sha: HEAD, tree: tree(), render: () => ({ status: 1, text: '.claude/agents/security.md is stale\n' }) }), 'the rendered files at eeeeeee do not match their sources: .claude/agents/security.md is stale');
+  steps.length = 0;
+  assert.throws(() => renderedReason({ sha: HEAD, tree: tree(), render: () => { throw new Error('boom'); } }), /boom/);
+  assert.deepEqual(steps, ['add', 'remove']);
+  assert.equal(renderedReason({ sha: HEAD, tree: tree(false), render: () => assert.fail('no tree, no render') }), 'the tree of eeeeeee could not be made: no such commit');
+});
+
+test('the reports go on the head that was compared, whatever the head is by then', async () => {
+  const posted = [];
+  const github = { request: async (method, path, query, body) => { posted.push({ method, path, body }); } };
+  const step = { number: 30, title: 'chore(kit): copy the kit (SMP-30)', key: 'SMP-30', sha: HEAD, roles: ['security'], reference: { ...claim, head: REF_HEAD }, compared: 4 };
+  const notes = await postKitCopyReports({ github, step });
+  assert.equal(posted.length, 1);
+  assert.deepEqual([posted[0].method, posted[0].path, posted[0].body.commit_id, posted[0].body.event], ['POST', '/pulls/30/reviews', HEAD, 'COMMENT']);
+  assert.match(posted[0].body.body, /^Role: security$/m);
+  assert.deepEqual(notes, ['Posted the security report of PR #30 on eeeeeee: a copy of acme/peer#24, 4 files compared, no agent ran.']);
 });

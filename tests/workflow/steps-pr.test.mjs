@@ -314,6 +314,36 @@ test('a fix that stopped goes on with the head and the note it started with', ()
   assert.deepEqual([decision.runs[0].resume, decision.runs[0].head, decision.runs[0].note], ['s1', OLD, noteKey('a note')]);
 });
 
+// kit-copy-review spec 2.1.
+test('/ao-review of a kit copy that matches a reviewed head: ao-step posts the reports, no agent runs', () => {
+  const kitCopy = { ok: true, compared: 40, reference: { repo: 'acme/peer', number: 24, head: OLD }, renders: true };
+  const decision = decide('review', prFacts('review', {}, { kitCopy }));
+  assert.equal(decision.go, true);
+  assert.deepEqual(decision.runs, [{ action: 'kit-copy-reports', key: 'DEMO-21', number: 15, title: 'feat(cart): remove a line from the cart (DEMO-21)', sha: HEAD, roles: ['reviewer', 'security'], reference: kitCopy.reference, compared: 40 }]);
+  // A report an agent already put on the head stays.
+  const half = decide('review', prFacts('review', { reports: { reviewer: report(), security: null } }, { kitCopy }));
+  assert.deepEqual(half.runs[0].roles, ['security']);
+  // Both on the head: the PR waits for you, as after any review.
+  const both = decide('review', prFacts('review', { reports: { reviewer: report(), security: report() } }, { kitCopy }));
+  assert.equal(both.go, false);
+  assert.match(both.reason, /both reports are on the head/);
+});
+
+test('/ao-review of a kit copy that does not match: it says why, and the agents review the PR', () => {
+  const decision = decide('review', prFacts('review', {}, { kitCopy: { ok: false, reason: 'src/a.mjs differs from acme/peer#24' } }));
+  assert.deepEqual(decision.runs.map(({ role, purpose }) => `${role} ${purpose}`), ['reviewer review', 'security review']);
+  assert.ok(decision.lines.includes('Kit review: src/a.mjs differs from acme/peer#24, so the agents review the PR'));
+});
+
+test('a stopped review goes on before anything else, and red CI stops a kit copy too', () => {
+  const kitCopy = { ok: true, compared: 40, reference: { repo: 'acme/peer', number: 24, head: OLD }, renders: false };
+  const run = { key: 'DEMO-21', runs: [{ n: 1, command: 'review', role: 'security', purpose: 'review', outcome: 'usage-limit', head: HEAD, session: 's1', effort: 'max' }] };
+  assert.equal(decide('review', prFacts('review', {}, { kitCopy, run })).runs[0].resume, 's1');
+  const red = decide('review', prFacts('review', { ci: { green: false, failed: true, pending: false } }, { kitCopy }));
+  assert.equal(red.go, false);
+  assert.match(red.reason, /CI is red/);
+});
+
 test('a Done or Cancelled item has no next command', async () => {
   const { nextFor } = await import('../../lib/workflow/steps.mjs');
   assert.equal(nextFor({ key: 'DEMO-12', workType: 'story', state: 'done' }, null), 'done');
