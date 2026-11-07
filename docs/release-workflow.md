@@ -153,7 +153,7 @@ Trên `ao-pilot`, bản `v0.2.0`:
 | Một Bug hotfix nhỏ, từ build tới QA (`DEMO-28`) | 3,48 |
 | `/ao-release`, `/ao-rollback`, `/ao-ship` của hotfix | 0: script, không có agent |
 
-PR chạm đường dẫn được bảo vệ, như PR chép kit, tốn hơn nhiều, vì `security` chạy ở max: 5–7 USD cho riêng lượt đó.
+PR chạm đường dẫn được bảo vệ, như PR chép kit, tốn hơn nhiều, vì `security` chạy ở max: 5–7 USD cho riêng lượt đó. PR chép một bản kit đã được review ở dự án khác thì 0 USD, xem [quality-gates.md](quality-gates.md#pr-chép-một-bản-kit-đã-được-review).
 
 ## Những điều đã gặp khi chạy thật
 

@@ -197,6 +197,30 @@ Cách dọn, như T20 đã làm:
 
 Cập nhật bản chép kit trong dự án cũng phải đi qua PR, và PR đó do bạn merge, vì nó sửa `.ai-orchestrator/**`. Push thẳng lên `develop` làm `audit` chặn deploy và gắn cờ item có mã trong header commit. `DEMO-5` mang cờ vì lý do này, từ lần cài kit ở T18.
 
+### PR chép một bản kit đã được review
+
+Mỗi bản kit chỉ cần agent review đầy đủ một lần. Khi chép cùng bản đó sang dự án thứ hai, thêm vào mô tả PR một dòng riêng, trỏ tới PR đã được review ở dự án đầu:
+
+```text
+Kit review: TungPH7/ao-pilot#24
+```
+
+`/ao-review <PR>` tự kiểm rồi đăng hai báo cáo `reviewer` và `security` bằng App `ao-review`. Không agent nào chạy, chi phí 0 USD. Báo cáo có dòng `Kit copy of:` để bạn thấy nó do `ao-step` viết. `merge-gate` và `audit` đọc nó như mọi báo cáo khác. Bạn vẫn đọc diff, approve và tự merge ở gate ③.
+
+Dòng `Kit review:` chỉ là lời khai. `ao-step` kiểm lần lượt:
+
+1. Repo tham chiếu nằm trong `AO_KIT_PEERS`.
+2. PR tham chiếu đã merge vào nhánh được bảo vệ, do bạn merge.
+3. Head của nó có đủ hai báo cáo do agent viết, không còn Critical hay High mở.
+4. Nó là PR mới nhất của repo đó đổi `.ai-orchestrator/lib/`, nên không chép ngược về bản cũ được.
+5. Mọi file PR đổi đều là file kit, và khớp nội dung, mode và loại với head tham chiếu.
+6. Các file "phải giống hệt" khớp theo cả hai chiều, nên không chép một phần hay thêm file lạ được. Danh sách nằm ở khối `kit_copy` của `quality/gates.yaml`.
+7. `.claude/agents/` và `.claude/rules/ai-orchestrator.md` chứa mã space và skill theo stack của dự án, nên không so với dự án khác. `ao-step` dựng lại chúng bằng `render-agents.mjs` của kit đang chạy, rồi so.
+
+Không đạt một điều thì lệnh in lý do và cho agent review như thường. Lỗi mạng, hay một push trong lúc so, cũng vậy.
+
+Lý do `max` vẫn giữ ở lượt review đầu tiên: bài thử mù ngày 2026-11-07 cho thấy `high` tìm ra 4 trên 6 lỗi đã biết, và bỏ sót một lỗi High ở cả hai lượt lặp. Xem [`tasks/kit-copy-review/verification.md`](../tasks/kit-copy-review/verification.md).
+
 ## Environment `merge-gate`
 
 `merge-gate` merge bằng một private key thứ hai của App `ao-dev`, lưu ở secret `AO_DEV_APP_KEY` của environment `merge-gate`. Environment này chỉ cho nhánh mặc định (`develop`), nên workflow chạy trên nhánh khác không đọc được key (đã kiểm ở T3 và T19). Cài một lần cho mỗi repo:
