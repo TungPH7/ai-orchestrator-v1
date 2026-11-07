@@ -13,6 +13,7 @@ const REVIEW_BOT = 'ao-review[bot]';
 const REF_HEAD = 'c'.repeat(40);
 const MERGE = 'd'.repeat(40);
 const HEAD = 'e'.repeat(40);
+const BASE = 'b'.repeat(40);
 const claim = { repo: 'acme/peer', number: 24 };
 
 const blob = (path, sha, more = {}) => ({ path, mode: '100644', type: 'blob', sha, ...more });
@@ -25,9 +26,14 @@ const KIT = [
   blob('.claude/agents/security.md', 'peer-agent'),
   blob('.github/workflows/ci.yml', 'c1'),
 ];
-// The peer's own files and the project's differ, and neither is compared.
+const OURS = [blob('.claude/settings.json', 'our-settings'), blob('.claude/skills/stack-skill/SKILL.md', 'stack'), blob('apps/api/main.ts', 'x2')];
+// The peer's own files and the project's differ, and neither is compared. The rendered agent holds the space key of each.
 const peerTree = (more = []) => treeOf([...KIT, blob('.ai-orchestrator/deploy.yaml', 'peer'), blob('.claude/settings.json', 'peer-settings'), blob('src/peer.ts', 'x1'), ...more]);
-const headTree = (more = [], without = []) => treeOf([...KIT.filter(({ path }) => !without.includes(path)).map((e) => (e.path === '.claude/agents/security.md' ? { ...e, sha: 'our-agent' } : e)), blob('.claude/settings.json', 'our-settings'), blob('.claude/skills/stack-skill/SKILL.md', 'stack'), blob('apps/api/main.ts', 'x2'), ...more]);
+const ourKit = (without = []) => KIT.filter(({ path }) => !without.includes(path)).map((e) => (e.path === '.claude/agents/security.md' ? { ...e, sha: 'our-agent' } : e));
+const headTree = (more = [], without = []) => treeOf([...ourKit(without), ...OURS, ...more]);
+// Before the PR: the older kit, in which only a.mjs and the agent differ.
+const baseTree = (more = []) => treeOf([...ourKit().map((e) => (e.path === '.ai-orchestrator/lib/a.mjs' ? { ...e, sha: 'a1' } : e.path === '.claude/agents/security.md' ? { ...e, sha: 'our-old-agent' } : e)), ...OURS, ...more]);
+const swap = (tree, entry) => ({ ...tree, tree: tree.tree.map((e) => (e.path === entry.path ? entry : e)) });
 
 const report = (role, rows = '') => `# Review: chore(kit): copy the kit (DEMO-30)\n\nRole: ${role}\n\n## Context\n\nA review.\n\n## Findings\n\n| Severity | Axis | Where | Finding | Suggested fix |\n|---|---|---|---|---|\n${rows}\n\n## Verdict\n\nDone.\n`;
 const review = (role, more = {}) => ({ user: { login: REVIEW_BOT }, commit_id: REF_HEAD, body: report(role), state: 'COMMENTED', ...more });
@@ -38,8 +44,7 @@ const reference = (more = {}) => ({
   tree: peerTree(),
   ...more,
 });
-const pr = (files = ['.ai-orchestrator/lib/a.mjs']) => ({ headSha: HEAD, files: files.map((filename) => ({ filename, status: 'modified' })) });
-const decide = (more = {}) => decideKitCopy({ claim, peers: ['acme/peer'], pr: pr(), headTree: headTree(), reference: reference(), gates, apps, approvers: ['owner'], ...more });
+const decide = (more = {}) => decideKitCopy({ claim, peers: ['acme/peer'], headTree: headTree(), baseTree: baseTree(), reference: reference(), gates, apps, approvers: ['owner'], ...more });
 const refused = (more, text) => {
   const decision = decide(more);
   assert.equal(decision.ok, false);
@@ -54,8 +59,8 @@ test('the line of the PR description names one repository and PR; anything else 
   }
 });
 
-test('a PR whose kit files match the reviewed head passes, and the kit files of one side only count', () => {
-  assert.deepEqual(decide(), { ok: true, compared: 4, reference: { ...claim, head: REF_HEAD }, renders: false });
+test('a PR whose kit files match the reviewed head passes, and the files of one project only do not count', () => {
+  assert.deepEqual(decide(), { ok: true, compared: 5, reference: { ...claim, head: REF_HEAD } });
 });
 
 test('the reference must be a reviewed, merged PR of a listed repository', () => {
@@ -82,26 +87,28 @@ test('the reference is the newest kit of its repository, so a PR cannot go back 
   refused({ reference: reference({ newest: 'b'.repeat(40) }) }, /acme\/peer#24 is not the newest PR of acme\/peer on \.ai-orchestrator\/lib/);
 });
 
-test('a PR that changes anything outside the kit files is reviewed as usual', () => {
-  for (const path of ['apps/api/main.ts', '.claude/settings.json', '.ai-orchestrator/deploy.yaml', '.ai-orchestrator/roster.local.yaml', '.github/workflows/deploy.yml']) {
-    refused({ pr: pr(['.ai-orchestrator/lib/a.mjs', path]) }, new RegExp(`changes ${path.replaceAll('.', '\\.')}, which is not a kit file`));
+// The files a PR changes come from its trees, by SHA: the list of GET /pulls/{n}/files stops at 3000 and is read by
+// number (review of ao-pilot PR #24).
+test('a PR that changes anything outside the kit files is reviewed as usual, however many files it has', () => {
+  for (const path of ['apps/api/main.ts', '.claude/settings.json', '.ai-orchestrator/deploy.yaml', '.ai-orchestrator/roster.local.yaml', '.github/workflows/deploy.yml', 'src/zz-after-3000-files.ts']) {
+    const changed = blob(path, 'new');
+    const head = headTree().tree.some((e) => e.path === path) ? swap(headTree(), changed) : headTree([changed]);
+    refused({ headTree: head }, new RegExp(`changes ${path.replaceAll('.', '\\.')}, which is not a kit file`));
   }
+  refused({ baseTree: baseTree([blob('apps/api/gone.ts', 'g1')]) }, /changes apps\/api\/gone\.ts, which is not a kit file/);
 });
 
 test('every file the PR changes matches the reference by content, mode and kind', () => {
-  const swapped = (entry) => headTree().tree.map((e) => (e.path === entry.path ? entry : e));
-  refused({ headTree: { truncated: false, tree: swapped(blob('.ai-orchestrator/lib/a.mjs', 'a3')) } }, /\.ai-orchestrator\/lib\/a\.mjs differs from acme\/peer#24/);
-  refused({ headTree: { truncated: false, tree: swapped(blob('.ai-orchestrator/lib/a.mjs', 'a2', { mode: '100755' })) } }, /a\.mjs differs/);
-  refused({ headTree: { truncated: false, tree: swapped(blob('.ai-orchestrator/lib/a.mjs', 'a2', { mode: '120000' })) } }, /a\.mjs differs/);
-  refused({ headTree: { truncated: false, tree: swapped(blob('.ai-orchestrator/lib/a.mjs', 'a2', { type: 'commit', mode: '160000' })) } }, /a\.mjs differs/);
+  refused({ headTree: swap(headTree(), blob('.ai-orchestrator/lib/a.mjs', 'a3')) }, /\.ai-orchestrator\/lib\/a\.mjs differs from acme\/peer#24/);
+  refused({ headTree: swap(headTree(), blob('.ai-orchestrator/lib/a.mjs', 'a2', { mode: '100755' })) }, /a\.mjs differs/);
+  refused({ headTree: swap(headTree(), blob('.ai-orchestrator/lib/a.mjs', 'a2', { mode: '120000' })) }, /a\.mjs differs/);
+  refused({ headTree: swap(headTree(), blob('.ai-orchestrator/lib/a.mjs', 'a2', { type: 'commit', mode: '160000' })) }, /a\.mjs differs/);
 });
 
-test('a file the PR removes or renames away must be gone from the reference too', () => {
-  const removed = { headSha: HEAD, files: [{ filename: '.claude/skills/kit-skill/SKILL.md', status: 'removed' }] };
-  refused({ pr: removed, headTree: headTree([], ['.claude/skills/kit-skill/SKILL.md']) }, /kit-skill\/SKILL\.md differs/);
-  const renamed = { headSha: HEAD, files: [{ filename: '.claude/skills/kit-skill/SKILL.md', previous_filename: '.claude/skills/old/SKILL.md', status: 'renamed' }] };
-  assert.equal(decide({ pr: renamed }).ok, true, 'the old name is on neither side');
-  refused({ pr: renamed, reference: reference({ tree: peerTree([blob('.claude/skills/old/SKILL.md', 'o1')]) }) }, /old\/SKILL\.md differs/);
+test('a kit file the PR removes or renames away must be gone from the reference too', () => {
+  const old = blob('.ai-orchestrator/lib/old.mjs', 'o1');
+  assert.equal(decide({ baseTree: baseTree([old]) }).ok, true, 'the reference removed it too');
+  refused({ baseTree: baseTree([old]), reference: reference({ tree: peerTree([old]) }) }, /old\.mjs differs/);
 });
 
 test('the kit files that must be the same are compared both ways: no part copy, no extra file', () => {
@@ -110,19 +117,25 @@ test('the kit files that must be the same are compared both ways: no part copy, 
   refused({ reference: reference({ tree: peerTree([blob('.ai-orchestrator/lib/new.mjs', 'n1')]) }) }, /new\.mjs differs/);
 });
 
-test('a stack skill of one project stays, and a skill the PR changes must match', () => {
-  assert.equal(decide({ headTree: headTree([blob('.claude/skills/other-stack/SKILL.md', 'q')]) }).ok, true);
-  refused({ pr: pr(['.claude/skills/stack-skill/SKILL.md']) }, /stack-skill\/SKILL\.md differs/);
+test('a stack skill of one project stays, a skill the PR changes must match, and a skill it removes needs a review', () => {
+  assert.equal(decide({ headTree: headTree([blob('.claude/skills/other-stack/SKILL.md', 'q')]), baseTree: baseTree([blob('.claude/skills/other-stack/SKILL.md', 'q')]) }).ok, true);
+  refused({ headTree: swap(headTree(), blob('.claude/skills/stack-skill/SKILL.md', 'changed')) }, /stack-skill\/SKILL\.md differs/);
+  // Both sides lack it, which is no match: the reference never had it (review of ao-pilot PR #24).
+  refused({ headTree: { ...headTree(), tree: headTree().tree.filter(({ path }) => !path.startsWith('.claude/skills/stack-skill/')) } }, /removes \.claude\/skills\/stack-skill\/SKILL\.md, which only a review can judge/);
 });
 
-test('rendered files are not compared with the peer: ao-step renders them again', () => {
-  assert.deepEqual(decide({ pr: pr(['.claude/agents/security.md']) }).renders, true);
-  assert.deepEqual(decide({ pr: pr(['.claude/rules/ai-orchestrator.md']) }).renders, true);
-  assert.deepEqual(decide().renders, false);
+// Review of ao-pilot PR #24: render-agents --check compares only the files it renders, so a file added beside them
+// was read by no one.
+test('rendered files are compared by name both ways; their content is left to the render check', () => {
+  assert.equal(decide().ok, true, 'the agent differs from the peer, as the space key does');
+  refused({ headTree: headTree([blob('.claude/agents/helper.md', 'z')]) }, /\.claude\/agents\/helper\.md is in the PR but not in acme\/peer#24/);
+  refused({ headTree: headTree([blob('.claude/agents/helper.md', 'z')]), baseTree: baseTree([blob('.claude/agents/helper.md', 'z')]) }, /helper\.md is in the PR but not/);
+  refused({ reference: reference({ tree: peerTree([blob('.claude/agents/qa.md', 'q')]) }) }, /\.claude\/agents\/qa\.md is in acme\/peer#24 but not in the PR/);
 });
 
 test('a tree GitHub cut short proves nothing', () => {
   refused({ headTree: { ...headTree(), truncated: true } }, /tree of the head is too large/);
+  refused({ baseTree: { ...baseTree(), truncated: true } }, /tree of the merge base is too large/);
   refused({ reference: reference({ tree: { ...peerTree(), truncated: true } }) }, /tree of acme\/peer#24 is too large/);
 });
 
@@ -139,7 +152,7 @@ test('merge-gate and audit read the report of ao-step as a report of its role, w
 });
 
 // A project and a peer on GitHub, as the two clients see them.
-function world({ peerRead = () => {}, headNow = HEAD, files = pr().files, render = () => null } = {}) {
+function world({ peerRead = () => {}, headNow = HEAD, render = async () => null } = {}) {
   const asked = [];
   const refer = reference();
   const peer = {
@@ -157,25 +170,30 @@ function world({ peerRead = () => {}, headNow = HEAD, files = pr().files, render
     },
   };
   const github = {
-    get: async (path) => {
-      asked.push(['project', path]);
+    get: async (path, query) => {
+      asked.push(['project', path, query]);
       if (path === '/pulls/30') return { head: { sha: headNow } };
+      if (path === `/compare/release/v0.3.0...${HEAD}`) return { merge_base_commit: { sha: BASE } };
       if (path === `/git/trees/${HEAD}`) return headTree();
+      if (path === `/git/trees/${BASE}`) return baseTree();
       throw new Error(`unexpected ${path}`);
     },
     getAll: async (path) => {
       asked.push(['project', path]);
-      return files;
+      throw new Error(`unexpected list ${path}`);
     },
   };
   const opened = [];
-  return { asked, opened, input: { pr: { number: 30, headSha: HEAD, body: 'Kit review: acme/peer#24' }, github, peer: (repo) => { opened.push(repo); return peer; }, peers: ['acme/peer'], gates, apps, approvers: ['owner'], render } };
+  return { asked, opened, input: { pr: { number: 30, headSha: HEAD, base: 'release/v0.3.0', body: 'Kit review: acme/peer#24' }, github, peer: (repo) => { opened.push(repo); return peer; }, peers: ['acme/peer'], gates, apps, approvers: ['owner'], render } };
 }
 
-test('readKitCopy reads both heads and decides; without the line of the description it reads nothing', async () => {
-  const { input, asked } = world();
-  assert.deepEqual(await readKitCopy(input), { ok: true, compared: 4, reference: { ...claim, head: REF_HEAD }, renders: false });
+test('readKitCopy reads the trees by SHA, decides, and always renders; without the line of the description it reads nothing', async () => {
+  const rendered = [];
+  const { input, asked } = world({ render: async (sha) => { rendered.push(sha); return null; } });
+  assert.deepEqual(await readKitCopy(input), { ok: true, compared: 5, reference: { ...claim, head: REF_HEAD } });
+  assert.deepEqual(rendered, [HEAD]);
   assert.deepEqual(asked.find(([, path]) => path === '/commits')[2], { path: '.ai-orchestrator/lib', sha: 'develop', per_page: 1 });
+  assert.equal(asked.some(([, path]) => path.endsWith('/files')), false, 'no list of files, which GitHub cuts at 3000');
   const none = world();
   assert.equal(await readKitCopy({ ...none.input, pr: { ...none.input.pr, body: 'A usual PR.' } }), null);
   assert.deepEqual(none.asked, []);
@@ -197,17 +215,12 @@ test('readKitCopy falls back to the review on any error, on a push while it read
   assert.equal(await readKitCopy({ ...old.input, gates: { ...gates, kit_copy: undefined } }), null);
 });
 
-test('readKitCopy renders only when the PR changes a rendered file, and a wrong render refuses it', async () => {
-  const rendered = [];
-  const agents = [{ filename: '.claude/agents/security.md', status: 'modified' }];
-  const passing = world({ files: agents, render: async (sha) => { rendered.push(sha); return null; } });
-  assert.equal((await readKitCopy(passing.input)).ok, true);
-  assert.deepEqual(rendered, [HEAD]);
-  const wrong = world({ files: agents, render: async () => 'the rendered files at eeeeeee do not match their sources' });
+test('a wrong render refuses the copy, and a copy refused before it renders nothing', async () => {
+  const wrong = world({ render: async () => 'the rendered files at eeeeeee do not match their sources' });
   assert.deepEqual(await readKitCopy(wrong.input), { ok: false, reason: 'the rendered files at eeeeeee do not match their sources' });
-  rendered.length = 0;
-  const plain = world({ render: async (sha) => { rendered.push(sha); return null; } });
-  assert.equal((await readKitCopy(plain.input)).ok, true);
+  const rendered = [];
+  const outside = world({ render: async (sha) => { rendered.push(sha); return null; } });
+  assert.equal((await readKitCopy({ ...outside.input, peers: ['acme/peer'], pr: { ...outside.input.pr, body: 'Kit review: acme/peer#25' } })).ok, false);
   assert.deepEqual(rendered, []);
 });
 
