@@ -290,6 +290,30 @@ test('/ao-fix with your note runs the dev agent once: after its fix and a review
   assert.equal(again.runs[0].note, noteKey('Đổi tên biến cho rõ hơn.'), 'the runner keeps which note the fix was for');
 });
 
+// Review test of 2026-11-07, head d049513: a later fix for a finding has no note, and only the newest fix run was read.
+test('/ao-fix with your note does not send it again after a later fix without a note', () => {
+  const note = 'the note was for the fix already made';
+  const later = 'e1e2e3e4e5e6e7e8e9eaebecedeeeff0f1f2f3f4';
+  const noted = { n: 1, command: 'fix', role: 'fe-dev', purpose: 'fix', outcome: 'done', head: OLD, session: 's1', note: noteKey(note) };
+  const review = { n: 2, command: 'fix', role: 'reviewer', purpose: 'review', outcome: 'done', session: 's2' };
+  const finding = { n: 3, command: 'fix', role: 'fe-dev', purpose: 'fix', outcome: 'done', head: later, session: 's3' };
+  const facts = (runs) => prFacts('fix', { reports: { reviewer: report(), security: null } }, { run: { key: 'DEMO-21', runs } });
+  assert.deepEqual(decide('fix', facts([noted, review, finding]), { note }).runs.map(({ role, purpose }) => `${role} ${purpose}`), ['security review']);
+  // The note whose fix did not finish still has to run, and so does the same note after another note.
+  const failed = decide('fix', facts([{ ...noted, outcome: 'failed' }, review, finding]), { note });
+  assert.deepEqual(failed.runs.map(({ role, purpose }) => `${role} ${purpose}`), ['fe-dev fix', 'reviewer review', 'security review']);
+  const other = { ...finding, note: noteKey('Đổi tên biến cho rõ hơn.') };
+  assert.equal(decide('fix', facts([noted, review, other]), { note }).runs[0].purpose, 'fix');
+});
+
+// Review test of 2026-11-07, head d049513: the run on record after a resume had neither, so its note counted as not done.
+test('a fix that stopped goes on with the head and the note it started with', () => {
+  const run = { key: 'DEMO-21', runs: [{ n: 1, command: 'fix', role: 'fe-dev', purpose: 'fix', outcome: 'usage-limit', head: OLD, session: 's1', note: noteKey('a note'), effort: 'high', checkout: { branch: 'feature/DEMO-21-remove-line', pull: true } }] };
+  const decision = decide('fix', prFacts('fix', {}, { run }), { note: 'a note' });
+  assert.equal(decision.go, true);
+  assert.deepEqual([decision.runs[0].resume, decision.runs[0].head, decision.runs[0].note], ['s1', OLD, noteKey('a note')]);
+});
+
 test('a Done or Cancelled item has no next command', async () => {
   const { nextFor } = await import('../../lib/workflow/steps.mjs');
   assert.equal(nextFor({ key: 'DEMO-12', workType: 'story', state: 'done' }, null), 'done');
