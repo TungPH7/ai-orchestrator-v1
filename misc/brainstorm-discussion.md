@@ -32,7 +32,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 22 | `d714399c-65d0-4f98-bbbb-720338ff6bea` | 2026-11-02 khoảng 10:50 → khoảng 20:08 | Bạn dán đoạn cuối của Phiên 21 kèm ảnh panel Development của `SMP-1`, hỏi `Deploy` đỏ có đúng dự kiến không; Claude đọc run và log của `audit`: đúng dự kiến (commit đầu không qua PR), và ảnh cho thấy GitHub for Atlassian đã gắn run vào `SMP-1`; bạn dọn `SMP-1` và bấm Start spec; Claude merge kit PR #143 (T3–T6, Checkpoint 2), chạy `/ao-spec SMP-2` qua `claude -p`: `ba` viết SPEC (1,49 USD) và để lại 4 câu hỏi; Claude chuyển câu hỏi cho bạn, khuyên đồng ý cả bốn; bạn đồng ý cả bốn; Claude nối lại phiên `claude -p` với câu trả lời: `ba`, `ux`, `sa` chạy (3,36 USD), `sa` để lại 2 câu hỏi (đếm emoji, chuẩn hóa NFC và xuống dòng); Claude khuyên đồng ý cả hai; bạn đồng ý cả hai; `sa` ghi câu trả lời, `ba` mở PR tài liệu #1, nhưng GitHub không chạy CI và `ao-step` chờ 30 phút; bạn hỏi vì sao không dừng; Claude dùng nhánh và PR thử tìm ra nguyên nhân (workflow từ lần push đầu chưa được ghi nhận trigger; một push đụng `.github/workflows/` gỡ được), `CI` của PR #1 xanh; tìm thêm lỗi kit `openQuestions` bỏ sót 10 câu hỏi của `ux`; tới gate ①, Claude khuyên không thêm dòng "Đã lưu ghi chú." và gửi các bước Approve spec; bạn hỏi vì sao có hai lỗi nặng và yêu cầu sửa; Claude sửa ở kit (PR #144), chép vào `ao-sample` (Task `SMP-3`, PR #3), `/ao-review 3` Approve (1 Medium, 2 Low ở kit, sửa ở kit PR #145); bạn approve và merge PR #3, hỏi có cần chép kit vào `ao-pilot` (chưa cần); bạn đã bấm Approve spec, chọn chạy `/ao-plan`; `sa` chạm giới hạn 5 giờ giữa lượt viết plan; bạn bảo làm tiếp; `sa` viết xong plan và ba ADR, `ba` tạo 8 item nhưng không tạo được link Blocks; phiên dừng vì Claude chạm giới hạn tuần |
 | 23 | `6d4fa505-b003-47c3-bad3-14958ad7ae83` | 2026-11-02 khoảng 22:10 → | Bạn dán đoạn cuối của Phiên 22 để làm tiếp; Claude tạo 5 link Blocks bằng token CI, tắt server spike `sa` để lại, ghi stage plan và 3 lỗi kit vào `verification.md`, gửi các bước duyệt plan (gate ②) |
 | 26 | `6b41390c-2d48-4d39-9a30-5a4e22f76bf7` | 2026-11-04 khoảng 13:10 → | Bạn báo đã merge kit PR #165; Claude chép vào `ao-sample` PR #13 và review lần 2 (security lại có 1 High: `AGENTS.md`), mở kit PR #166; bạn hỏi chạy review ở high, vì sao lần nào cũng ra High, vì sao security review cả PR; Claude tìm lý do của luật review toàn bộ trong file này; bạn chọn đổi luật review phần mới, điều kiện đường dẫn được bảo vệ (b), và sửa gốc (code của PR không nằm trong thư mục dự án); Claude thử bằng Sonnet và sửa thêm trong kit PR #166; bạn merge #166; Claude chép vào PR #13, review lần 3 còn hai Medium để sau Pilot 1; bạn merge PR #13 (`e56a207`); T10: kit PR #167 (đường bấm của board Jira mới) và #168 (đầu vào cho `project-scaffold`, bảng lỗi kit, chi phí Pilot 1 khoảng 117,6 USD, plan vào `tasks/archive/pilot-1/`); bạn xác nhận Pilot 1 hoàn thành (PR #169); bạn hỏi tài khoản GitHub Free có bị tính tiền không: Billed 0 USD, phần miễn phí bù hết Gross; bạn chọn `release-workflow`; Claude nêu phạm vi, điều vừa kiểm (repo private gói Free không có secret theo môi trường và người duyệt bắt buộc, phần miễn phí 12 USD Actions mỗi tháng, tài khoản agent không tạo được Fix Version), bảy giả định và ba câu hỏi (VPS, cách đưa bản mới vào VPS, kiểm thật ở `ao-pilot` hay `ao-sample`); bạn trả lời: dùng VPS `dtddeploy` của bạn với subdomain của `t2g.io.vn`, VPS tự kéo bản đã qua cổng, kiểm thật trên `ao-pilot` trước; key SSH của VPS có passphrase, Claude chỉ cách mở khóa bằng ssh-agent của Windows; bạn mở khóa key; Claude thấy VPS rất có thể đã bị chiếm quyền root (`masscan` chạy bằng root từ một IP của Aeza Group, SSH cho root đăng nhập bằng mật khẩu) và quá nhỏ (1 vCPU, 961 MB RAM), khuyên thu hồi bí mật và cài lại VPS, rồi hỏi lại câu 1; bạn xác nhận `masscan` không phải của bạn, nhờ ghi việc xử lý VPS vào memory (không commit), và hỏi về passphrase 4 chữ số, cách người lạ vào, cách SSH an toàn và EC2: người lạ có root từ khoảng 7/7/2026, nhiều khả năng nhờ mật khẩu root, passphrase không phải nguyên nhân; EC2 chỉ rẻ hơn khi bật ít giờ; bạn chọn VPS mới riêng cho kit; Claude viết `SPEC-release-workflow.md` (deployer trên VPS kiểm mọi commit bằng `audit`, hai điều kiện cứng cho Production, bốn lệnh `/ao-qa`, `/ao-release`, `/ao-ship`, `/ao-rollback`, mười tiền đề), đổi năm chỗ so với giả định, hỏi hai câu (subdomain, basic auth); bạn chọn cả hai đề xuất và duyệt spec; Claude ghi spec đã duyệt (PR #170), nhưng bộ lọc an toàn dừng tin nhắn hai lần; bạn hỏi nguyên nhân; Claude viết plan 23 task, bốn checkpoint, ba quyết định cần duyệt (đổi bản không gián đoạn, gỡ chặn bằng `/ao-rollback <môi trường> <sha>`, bản chép kit đi cùng Task của `ao-pilot`); bạn nhờ giải thích lại quyết định 5; Claude giải thích bằng ví dụ commit push thẳng nằm giữa lịch sử, cách gỡ bằng yêu cầu deploy của bạn, và hỏi có muốn tên `/ao-deploy` thay cho `/ao-rollback <sha>`; bạn merge PR #170 và duyệt plan; Claude ghi ba quyết định vào spec, mở PR #171, bắt đầu T1 (App `ao-deploy` trong script tạo App, mục 7 của `docs/github-apps-setup.md`), mở trang tạo App và đưa các bước bấm để bạn tạo App và token Jira chỉ đọc; bạn báo đã xong và hỏi quyền của App; Claude xác nhận quyền đúng thiết kế, nhưng tiền đề 3 sai một phần (`audit` cần quyền Commit statuses), đề xuất thêm quyền chỉ đọc đó, đề xuất hủy `DEMO-3` trước phép thử điểm 1, và báo tag `v0.1.0`, nhánh `release/0.1.0` cũ trên `ao-pilot`; bạn thêm quyền và hủy `DEMO-3`; Claude kiểm sáu tiền đề (1, 3, 4, 9, 10 đúng; 8 sai: token của agent không gắn được file), đề xuất gắn bằng chứng bằng token CI trong script, thêm điểm bắt đầu cho deployer, nhờ bạn xem deployment trên `DEMO-21` và hủy Bug thử `DEMO-25`; bạn gửi ảnh tab Deployments, hủy `DEMO-25` và đồng ý đề xuất; Claude đóng T1 (điểm 2 đúng; script dùng token CI cho bằng chứng, Fix Version và comment), nhờ bạn merge PR #171; bạn merge #171, chọn gói VPS MMO4 của BKNS và bỏ bước đưa lựa chọn nhà cung cấp; Claude mở PR #172 của T1, đưa các bước tạo key SSH mới và đặt VPS; bạn gửi ảnh form đặt hàng của BKNS; Claude viết lại bước 2 theo form (`Ubuntu-24-x64`, hostname `vps.ao.t2g.io.vn`, dán public key, 1 snapshot nếu giá hợp lý); bạn gửi ảnh form đã điền; Claude xác nhận đúng; bạn gửi IP `42.96.4.120`; VPS trả lời ping nhưng SSH chưa mở, Claude chờ cổng 22 và hỏi cổng SSH, trạng thái VPS; bạn gửi cổng `26266`; Claude cài phần nền (chỉ key, `ufw`, tự cập nhật, swap, Docker, Node.js 24, user `aoadmin`), viết `docs/vps-setup.md`, nhờ bạn đặt mật khẩu `aoadmin` và tạo bản ghi DNS wildcard; bạn hỏi đăng nhập bằng key thì ở vai trò nào và lúc tạo `aoadmin` Claude ở vai trò nào; Claude giải thích tên user trong lệnh quyết định vai trò, và Claude đã tạo `aoadmin` bằng root; bạn báo đã đặt mật khẩu và tạo bản ghi DNS; Claude thử ba tiền đề còn lại của T2 (build đúng, HTTPS đúng, E2E 19/24), dọn VPS, tắt đăng nhập root, quét cổng, rồi đề xuất ba chỗ sửa spec và plan; bạn nhắc Claude hai lần trả lời bằng tiếng Việt; bạn gỡ key, merge #172 và duyệt ba đề xuất; Claude sửa spec và plan (`AO_PUBLIC_URL`, tag `@local`, dọn cache build ở T7), đóng T2, mở PR #173, chờ bạn xem kết quả T1–T2 ở Checkpoint 1; bạn hỏi vì sao Claude cứ trả lời bằng tiếng Anh; Claude xin lỗi, giải thích lỗi chép tin từ log, thêm bước kiểm vào bộ nhớ và gửi lại bản tiếng Việt; bạn hỏi nguyên nhân; Claude nêu ba nguyên nhân (ngữ cảnh tiếng Anh sau khi phiên bị nén, viết lại tin thay vì chép từ log, tin tiến độ theo thông báo tiếng Anh) |
-| 27 | `6fe2d487-8a5e-4cfb-a02c-e03e1598a124` | 2026-11-06 khoảng 00:21 → | Bạn báo đã merge PR #173 và nhắc đọc memory; Claude đánh dấu Checkpoint 1 đạt, làm T3 (`versions.mjs`, `cut.mjs`, PR #174), T4 (kiểm `deploy.yaml`, schema chuyển vào `lib/release/`) và T5 (`targets.mjs`), rồi đề xuất báo lần từ chối bằng status `error`, để `jira-sync` không tạo Bug Critical sai; bạn merge #174 và duyệt đề xuất; Claude sửa spec, mở PR #175 của T4, làm T6 (`auditRange`, commit báo cáo của bot trên `release/*`, PR merge ngược); bạn merge #175; Claude mở PR #176 của T5, làm T7 (`smoke.mjs`, `docker.mjs`: đổi bản theo từng app, hai alias, bí mật qua môi trường của lệnh `docker`); bạn merge #176; Claude mở PR #177 của T6, làm T8 (`deployer.mjs`, `record.mjs`, `scripts/ao-deploy.mjs`), chạy thử `tick --dry-run` vào `ao-pilot`: dừng đúng ở `3fdd514`; bạn merge #177; Claude mở PR #178 của T7, làm T9 (Caddyfile do deployer sinh, schema của `deployer.yaml`, systemd, `ao-secret.sh`, mục 11 của `docs/vps-setup.md`); bạn hỏi Claude có tự merge được không; Claude trả lời được (repo kit private gói Free không có branch protection, `gh` có quyền admin), quy ước hiện tại là quyết định 10 của plan, và đề xuất để Claude merge PR của kit khi CI xanh, bạn xem ở checkpoint; bạn cho Claude tự merge tới Checkpoint 2; Claude ghi quyết định vào plan, merge #179 (T8), #180 (T9), #181 (T10: `merge-gate` cho PR release và PR merge ngược), #182 (T11: `jira-sync` tạo Bug Critical, gắn cờ khi deploy lên môi trường QA thất bại); bạn nhắn tiếp; Claude merge #183–#188 (T12–T17: dữ kiện môi trường, `/ao-qa`, `/ao-release`, `/ao-ship`, hotfix, `/ao-rollback`, bốn skill), sửa chỗ hở `JIRA_CI_TOKEN` trong phiên agent, chạm giới hạn usage giữa T15 rồi làm tiếp; tới Checkpoint 2, kiểm chỉ đọc trong `ao-pilot`, đề xuất ba việc trước kiểm thật; bạn hỏi `DEMO-5`, `DEMO-19` có phải hai Task trong ảnh không, vì Jira chỉ cho chuyển sang Cancelled, và PR #189 có chỉ cần Rebase and merge; Claude đính chính: từ New bạn chỉ `Refine` hoặc `Cancel`, mười item có commit trên `develop` chỉ `DEMO-12` Done, điểm cắt tính cả key của Epic là lỗi, xóa tag `v0.1.0` làm `DEMO-3` chặn điểm cắt; đề xuất A (điểm cắt bỏ qua Epic), B (sửa dữ liệu Jira của item cũ bằng token bot), C (giữ tag `v0.1.0`); bạn hỏi nên chọn phương án nào, dặn chưa làm gì; Claude nói đó là ba việc riêng, chọn B1; bạn merge #189, duyệt cả ba, cho tiếp tục tự merge; Claude merge #190 (việc A); việc B dừng sau `DEMO-19`, vì token của `ao-agents` không ghi được qua REST, và hỏi bạn có cho gọi Rovo MCP bằng script không; bạn đồng ý và nạp key SSH; Claude sửa xong dữ liệu Jira qua Rovo MCP, cài phần T18 của mình trên VPS, chuyển 11 deployment cũ sang `inactive`, rồi dừng để bạn bấm `Accept` và nhập hai bí mật; bạn làm xong; Claude kiểm, chạy `baseline pilot`, và hỏi bạn duyệt hai head trước `--confirm`; bạn hỏi có cần merge `develop` vào `main` không; Claude trả lời không cần và không nên, hai hướng merge đều không xung đột; bạn duyệt hai head; Claude ghi điểm bắt đầu, bật timer, thấy `AO_ENV_AUTH` không khớp mật khẩu trên VPS, báo đã in bản băm của mật khẩu ra output, và nhờ bạn nhập mật khẩu mới; bạn nhập lại; Claude thấy basic auth đã khớp, tắt đăng nhập root, và nhờ bạn gỡ key SSH, xóa file key `ao-deploy`; bạn làm xong; Claude đóng T18, tạo Task `DEMO-26` của T19, và nhờ bạn đọc rồi bấm `Refine`; bạn bấm `Refine`; lượt build đầu của `devops` dừng vì hook `jira-guard` nhận 401, do Claude quên đặt `AO_KIT_DIR`; Claude nhờ bạn gỡ cờ trên `DEMO-26`; bạn gỡ cờ; `devops` mở ao-pilot PR #17; Claude thấy trace của Playwright giữ mật khẩu basic auth và sửa kit (#198); bạn yêu cầu báo tiến độ 3 phút một lần; `/ao-review`, `/ao-fix` chạy, `policy` đọc nhầm `exit(` (#199), chạm giới hạn 5 giờ rồi chạy tiếp; không còn Critical hay High, ba Medium trong kit sửa ở #200; chi phí của `DEMO-26` là 20,53 USD; Claude nhờ bạn duyệt và merge PR #17 ở gate ③; bạn merge; deploy đầu lên Development thất bại vì `UMask=0077` làm image không đọc được code; Claude dựng lại lỗi bằng Docker Desktop, sửa kit ở #202, và hỏi bạn có đồng ý chép bản kit mới lên VPS; bạn đồng ý; Claude chép kit lên VPS, deploy lại `fb71de5` thành công, E2E vào Development 24/24 xanh, rồi làm T20: deployer chặn commit push thẳng, GitHub từ chối token `ao-dev`; bạn đồng ý gỡ chặn; Development chạy `fbbc47d`; tới Checkpoint 3, Claude hỏi bạn có chạy T21–T22 không; bạn hỏi vì sao T19 chưa được đánh xong; Claude giải thích hai mục còn mở và nhận đã nói quá; bạn đồng ý đánh xong T19, chép kit lại sau T22, và chạy T21–T22; `qa` kiểm bốn item trên Development, hai lượt chạm giới hạn 5 giờ, Claude sửa lỗi chạy tiếp lượt `qa` (#207); cả bốn PASS, bạn `Accept`; Claude đưa link trang Releases sai, bạn thêm tab Releases và tạo `v0.2.0`, `v0.3.0`; `/ao-release` dừng ở gate ④ với 10 item, chờ bạn duyệt; bạn duyệt; Staging chạy `v0.2.0`, regression PASS, PR release #18 đỏ ở `policy`; Claude sửa kit (#209); bạn đồng ý đi luồng Bug `DEMO-27` không review; `audit` chặn bản sửa trên Staging vì thiếu báo cáo review, Claude nhận đã đề xuất sai; bạn gỡ chặn; `DEMO-27` qua QA trên Staging, bạn `Accept`; regression chạy lại, Claude sửa lỗi gate ⑤ đến quá sớm (#211), release note viết lại; bạn approve PR #18; `merge-gate` merge, gắn tag `v0.2.0`, merge ngược; Production chạy `v0.2.0`, cùng tree với Staging; bạn bấm Release; T22: bạn chọn Bug thử `/favicon.ico` với Severity High, Claude tạo `DEMO-28`; `be-dev` sửa, đo được câu "console có lỗi" của Claude là sai, Claude sửa Bug; `merge-gate` merge PR #21; lượt `qa` bị tắt vì máy thiếu RAM, bạn giải phóng RAM, `qa` PASS; bạn `Accept`; `/ao-ship v0.2.1` chờ gate ⑤; bạn duyệt, `v0.2.1` lên Production; bạn bấm Release; rollback về `v0.2.0` và lên lại `v0.2.1` đều đạt; smoke fail có chủ đích đạt, `jira-sync` tạo Bug `DEMO-29`, Production giữ `v0.2.1`; T22 đóng; Claude rà việc tồn ở kit, Jira và hai pilot, sửa hai Medium của Pilot 1 (PR #218); chép kit lên VPS (`521e031`); Checkpoint 4 đóng, `docs/release-workflow.md` (PR #219); T22b: ao-pilot PR #23, review tìm lỗi High trong PR #217, sửa ở PR #220, chép lại, merge (`0f86022`), `qa` PASS, bạn Accept; T22b và T23 xong, plan lưu ở `tasks/archive/release-workflow/`, bạn xác nhận `release-workflow` hoàn thành |
+| 27 | `6fe2d487-8a5e-4cfb-a02c-e03e1598a124` | 2026-11-06 khoảng 00:21 → | Bạn báo đã merge PR #173 và nhắc đọc memory; Claude đánh dấu Checkpoint 1 đạt, làm T3 (`versions.mjs`, `cut.mjs`, PR #174), T4 (kiểm `deploy.yaml`, schema chuyển vào `lib/release/`) và T5 (`targets.mjs`), rồi đề xuất báo lần từ chối bằng status `error`, để `jira-sync` không tạo Bug Critical sai; bạn merge #174 và duyệt đề xuất; Claude sửa spec, mở PR #175 của T4, làm T6 (`auditRange`, commit báo cáo của bot trên `release/*`, PR merge ngược); bạn merge #175; Claude mở PR #176 của T5, làm T7 (`smoke.mjs`, `docker.mjs`: đổi bản theo từng app, hai alias, bí mật qua môi trường của lệnh `docker`); bạn merge #176; Claude mở PR #177 của T6, làm T8 (`deployer.mjs`, `record.mjs`, `scripts/ao-deploy.mjs`), chạy thử `tick --dry-run` vào `ao-pilot`: dừng đúng ở `3fdd514`; bạn merge #177; Claude mở PR #178 của T7, làm T9 (Caddyfile do deployer sinh, schema của `deployer.yaml`, systemd, `ao-secret.sh`, mục 11 của `docs/vps-setup.md`); bạn hỏi Claude có tự merge được không; Claude trả lời được (repo kit private gói Free không có branch protection, `gh` có quyền admin), quy ước hiện tại là quyết định 10 của plan, và đề xuất để Claude merge PR của kit khi CI xanh, bạn xem ở checkpoint; bạn cho Claude tự merge tới Checkpoint 2; Claude ghi quyết định vào plan, merge #179 (T8), #180 (T9), #181 (T10: `merge-gate` cho PR release và PR merge ngược), #182 (T11: `jira-sync` tạo Bug Critical, gắn cờ khi deploy lên môi trường QA thất bại); bạn nhắn tiếp; Claude merge #183–#188 (T12–T17: dữ kiện môi trường, `/ao-qa`, `/ao-release`, `/ao-ship`, hotfix, `/ao-rollback`, bốn skill), sửa chỗ hở `JIRA_CI_TOKEN` trong phiên agent, chạm giới hạn usage giữa T15 rồi làm tiếp; tới Checkpoint 2, kiểm chỉ đọc trong `ao-pilot`, đề xuất ba việc trước kiểm thật; bạn hỏi `DEMO-5`, `DEMO-19` có phải hai Task trong ảnh không, vì Jira chỉ cho chuyển sang Cancelled, và PR #189 có chỉ cần Rebase and merge; Claude đính chính: từ New bạn chỉ `Refine` hoặc `Cancel`, mười item có commit trên `develop` chỉ `DEMO-12` Done, điểm cắt tính cả key của Epic là lỗi, xóa tag `v0.1.0` làm `DEMO-3` chặn điểm cắt; đề xuất A (điểm cắt bỏ qua Epic), B (sửa dữ liệu Jira của item cũ bằng token bot), C (giữ tag `v0.1.0`); bạn hỏi nên chọn phương án nào, dặn chưa làm gì; Claude nói đó là ba việc riêng, chọn B1; bạn merge #189, duyệt cả ba, cho tiếp tục tự merge; Claude merge #190 (việc A); việc B dừng sau `DEMO-19`, vì token của `ao-agents` không ghi được qua REST, và hỏi bạn có cho gọi Rovo MCP bằng script không; bạn đồng ý và nạp key SSH; Claude sửa xong dữ liệu Jira qua Rovo MCP, cài phần T18 của mình trên VPS, chuyển 11 deployment cũ sang `inactive`, rồi dừng để bạn bấm `Accept` và nhập hai bí mật; bạn làm xong; Claude kiểm, chạy `baseline pilot`, và hỏi bạn duyệt hai head trước `--confirm`; bạn hỏi có cần merge `develop` vào `main` không; Claude trả lời không cần và không nên, hai hướng merge đều không xung đột; bạn duyệt hai head; Claude ghi điểm bắt đầu, bật timer, thấy `AO_ENV_AUTH` không khớp mật khẩu trên VPS, báo đã in bản băm của mật khẩu ra output, và nhờ bạn nhập mật khẩu mới; bạn nhập lại; Claude thấy basic auth đã khớp, tắt đăng nhập root, và nhờ bạn gỡ key SSH, xóa file key `ao-deploy`; bạn làm xong; Claude đóng T18, tạo Task `DEMO-26` của T19, và nhờ bạn đọc rồi bấm `Refine`; bạn bấm `Refine`; lượt build đầu của `devops` dừng vì hook `jira-guard` nhận 401, do Claude quên đặt `AO_KIT_DIR`; Claude nhờ bạn gỡ cờ trên `DEMO-26`; bạn gỡ cờ; `devops` mở ao-pilot PR #17; Claude thấy trace của Playwright giữ mật khẩu basic auth và sửa kit (#198); bạn yêu cầu báo tiến độ 3 phút một lần; `/ao-review`, `/ao-fix` chạy, `policy` đọc nhầm `exit(` (#199), chạm giới hạn 5 giờ rồi chạy tiếp; không còn Critical hay High, ba Medium trong kit sửa ở #200; chi phí của `DEMO-26` là 20,53 USD; Claude nhờ bạn duyệt và merge PR #17 ở gate ③; bạn merge; deploy đầu lên Development thất bại vì `UMask=0077` làm image không đọc được code; Claude dựng lại lỗi bằng Docker Desktop, sửa kit ở #202, và hỏi bạn có đồng ý chép bản kit mới lên VPS; bạn đồng ý; Claude chép kit lên VPS, deploy lại `fb71de5` thành công, E2E vào Development 24/24 xanh, rồi làm T20: deployer chặn commit push thẳng, GitHub từ chối token `ao-dev`; bạn đồng ý gỡ chặn; Development chạy `fbbc47d`; tới Checkpoint 3, Claude hỏi bạn có chạy T21–T22 không; bạn hỏi vì sao T19 chưa được đánh xong; Claude giải thích hai mục còn mở và nhận đã nói quá; bạn đồng ý đánh xong T19, chép kit lại sau T22, và chạy T21–T22; `qa` kiểm bốn item trên Development, hai lượt chạm giới hạn 5 giờ, Claude sửa lỗi chạy tiếp lượt `qa` (#207); cả bốn PASS, bạn `Accept`; Claude đưa link trang Releases sai, bạn thêm tab Releases và tạo `v0.2.0`, `v0.3.0`; `/ao-release` dừng ở gate ④ với 10 item, chờ bạn duyệt; bạn duyệt; Staging chạy `v0.2.0`, regression PASS, PR release #18 đỏ ở `policy`; Claude sửa kit (#209); bạn đồng ý đi luồng Bug `DEMO-27` không review; `audit` chặn bản sửa trên Staging vì thiếu báo cáo review, Claude nhận đã đề xuất sai; bạn gỡ chặn; `DEMO-27` qua QA trên Staging, bạn `Accept`; regression chạy lại, Claude sửa lỗi gate ⑤ đến quá sớm (#211), release note viết lại; bạn approve PR #18; `merge-gate` merge, gắn tag `v0.2.0`, merge ngược; Production chạy `v0.2.0`, cùng tree với Staging; bạn bấm Release; T22: bạn chọn Bug thử `/favicon.ico` với Severity High, Claude tạo `DEMO-28`; `be-dev` sửa, đo được câu "console có lỗi" của Claude là sai, Claude sửa Bug; `merge-gate` merge PR #21; lượt `qa` bị tắt vì máy thiếu RAM, bạn giải phóng RAM, `qa` PASS; bạn `Accept`; `/ao-ship v0.2.1` chờ gate ⑤; bạn duyệt, `v0.2.1` lên Production; bạn bấm Release; rollback về `v0.2.0` và lên lại `v0.2.1` đều đạt; smoke fail có chủ đích đạt, `jira-sync` tạo Bug `DEMO-29`, Production giữ `v0.2.1`; T22 đóng; Claude rà việc tồn ở kit, Jira và hai pilot, sửa hai Medium của Pilot 1 (PR #218); chép kit lên VPS (`521e031`); Checkpoint 4 đóng, `docs/release-workflow.md` (PR #219); T22b: ao-pilot PR #23, review tìm lỗi High trong PR #217, sửa ở PR #220, chép lại, merge (`0f86022`), `qa` PASS, bạn Accept; T22b và T23 xong, plan lưu ở `tasks/archive/release-workflow/`, bạn xác nhận `release-workflow` hoàn thành; bạn hỏi Pilot 2 khác gì Pilot 1 và cách giảm chi phí review PR chép kit; Claude thử mù review (`max`, `high`, `open-code-review`), viết và được duyệt spec `kit-copy-review` |
 
 ---
 
@@ -14952,3 +14952,366 @@ Module tiếp theo do bạn chọn. Các hướng còn lại:
 | `figma-integration` | Nối thiết kế Figma với `ux` | Chưa có spec |
 
 Như các module trước, mình sẽ bắt đầu bằng bước đầu của hướng bạn chọn: nêu phạm vi và giả định, rồi chờ bạn duyệt.
+
+# Phiên 27 · Lượt 60 — 2026-11-07 01:14
+
+**Bạn:**
+
+```markdown
+Pilot 2 có gì khác với Pilot 1 ở ao-pilot? Tôi thấy 'release-workflow' cũng đã đưa các task tại ao-pilot từ Ready for QA lên Production mà? Lý do làm pilot 2 là gì?
+```
+
+**Claude:**
+
+Trước hết mình cần đính chính một điểm: **Pilot 1 không chạy trên `ao-pilot`.** Pilot 1 chạy trên `ao-sample` (space `SMP`, Epic "Ghi chú"), và dừng khi 6 item sang Ready for QA. Còn `ao-pilot` (space `DEMO`) là sandbox để mỗi module chạy kiểm thật của mình.
+
+**Bạn nói đúng:** kiểm thật của `release-workflow` đã đưa item của `ao-pilot` lên Production. Bốn lệnh, deployer, các cổng, hotfix, rollback và smoke fail đều đã chạy thật.
+
+**Phần `ao-pilot` chưa kiểm được:** `ao-pilot` chỉ là một server Node một file, một app, không có dependency lúc chạy, nên image không cài gì. Một dự án thật như `ao-sample` khác ở năm điểm:
+
+| Điểm | `ao-pilot` | `ao-sample` |
+|---|---|---|
+| Số app | 1 (`web`) | 2: Next.js (`apps/web`) gọi NestJS (`apps/api`) qua mạng nội bộ |
+| Deploy nhiều app | Chưa chạy thật | Thứ tự đổi bản, và trả bản cũ cho app trước khi app sau fail smoke. Code đã có nhưng mới chỉ có unit test |
+| Build | Không cài package nào | npm workspaces, `npm ci` có dependency thật, `next build` trên VPS 4 GB RAM |
+| Dự án thứ hai trên VPS | Không có | Thêm cấu hình deployer, mạng Docker, site Caddy, secret, App `ao-deploy` trên repo thứ hai, space Jira thứ hai |
+| Cả một Epic | `DEMO-20` chưa `Complete` được | 6 item do agent build đi hết tới Production, Story có Sub-task BE và FE QA trên hai app, rồi Epic `Complete` |
+
+Ngoài ra, bản chép kit trong `ao-sample` cũ hơn `main` khoảng 30 commit. Đây là lần đầu thử cập nhật kit cho một dự án đã nằm yên lâu như vậy.
+
+**Lý do làm Pilot 2:** dự án thật đầu tiên của bạn sẽ có hình dạng giống `ao-sample`, không giống `ao-pilot`. Lỗi ở deploy nhiều app hay ở build framework thật sẽ lộ ra trên Pilot 2, thay vì trên dự án thật. `project-scaffold` theo kế hoạch đóng gói những gì đã chạy được. Bỏ Pilot 2 thì profile Next.js + NestJS sẽ đóng gói một cách deploy chưa từng chạy.
+
+**Chi phí cũng đáng cân nhắc** [Ước tính, dựa trên chi phí đo ở `ao-pilot`]: khoảng 40–60 USD.
+
+- Chép kit vào `ao-sample` có review: 16–20 USD, theo hai PR chép kit vừa rồi.
+- `devops` viết hai Dockerfile và `deploy.yaml`: `DEMO-26` cho một app đã tốn 21 USD.
+- 6 lượt `qa`, cộng regression và release note: khoảng 8 USD.
+
+Phần đắt nhất là review PR chép kit. Có một cách giảm mà bạn có thể cân nhắc trước Pilot 2: PR chép kit khớp từng byte với một commit trên `main` của kit thì một script kiểm, thay cho lượt `security` ở max. Code đó đã qua test và CI của kit. Việc này đổi luật của `audit`, nên cần bạn duyệt.
+
+**Đề xuất của mình:** vẫn làm Pilot 2 trước `project-scaffold`, như thứ tự trong `SPEC.md`. Nếu bạn muốn giảm chi phí, mình làm thêm bước cải tiến review PR chép kit trước. Bạn chọn hướng nào?
+
+# Phiên 27 · Lượt 61 — 2026-11-07 01:27
+
+**Bạn:**
+
+```markdown
+ok, vẫn làm Pilot 2 trước project-scaffold nhưng làm thêm bước cải tiến review PR chép kit trước, vì hiện tại review PR chép kit chạy review và security tốn rất nhiều token và thời gian. Đánh giá việc cải tiến này có đánh đổi chất lượng review không? Hãy đưa ra nhận xét đánh đổi giữa việc review nhanh hơn, ít tốn token hơn và việc review kỹ lưỡng, nhưng tốn token. Xem xét chất lượng stage review chép kit hiện tại có xứng đáng với thời gian và token bỏ ra không? Nếu thời gian và token bỏ ra nhiều mà kết quả, chất lượng đem lại không qua nhiều hoặc bằng với việc review dùng effort thấp hơn thì cần xem lại nhé? Có dùng thư viện nào trên github giúp tôi ưu token không?
+
+Xem thử thư viện này này có giúp ích gì cho việc review không? https://github.com/alibaba/open-code-review
+```
+
+**Claude:**
+
+**Kết luận: đề xuất lần trước của mình sai một phần.** Nếu chỉ thay review bằng script kiểm từng byte, chất lượng sẽ giảm thật. Mình tự merge PR kit chỉ với CI, nên review trên PR chép kit là lần duy nhất agent đọc code kit. Câu "code đó đã qua test và CI" của mình đánh giá thấp điểm này. Lượt này mình chỉ đọc và phân tích, chưa đổi gì.
+
+## Review chép kit có xứng đáng không?
+
+**Có, nhưng tiền đang đặt sai chỗ.** Số liệu lấy từ 7 PR chép kit có ghi chi phí, gồm 10 vòng review, tổng 73,24 USD:
+
+| | `reviewer` (xhigh) | `security` (max) |
+|---|---|---|
+| Chi phí | 25,11 USD (34%) | 48,13 USD (66%) |
+| Lỗi Medium trở lên tìm được | 16 | 10 |
+| Lỗi chỉ nó tìm ra | 13 (1 High) | 7 (1 High) |
+| USD cho mỗi lỗi chỉ nó tìm ra | 1,93 | 6,88 |
+
+Tổng cộng có 23 lỗi khác nhau, gồm 4 High; 3 lỗi được cả hai cùng tìm ra. Mình tự phân loại lỗi trùng dựa trên đoạn đầu của mỗi finding, nên số này là gần đúng.
+
+- **Không lỗi nào là chép sai.** 20 lỗi nằm trong code kit, 3 lỗi là câu chữ trong mô tả PR hoặc Jira. Script kiểm byte chỉ thay được phần chưa từng tìm ra gì.
+- **Không bỏ được `security`.** 7 lỗi chỉ nó tìm ra phần lớn thuộc nhóm nguy hiểm nhất: PR tự lái được review của chính nó qua `AGENTS.md`, base do tác giả PR chọn, và `ao-step` chạy từ nhánh của PR.
+- **Phần lãng phí:**
+  - 3 trong 7 PR (`ao-sample` #3, #5, #7) không có lỗi Medium nào từ `security`, tốn 10,08 USD.
+  - 3 lượt review phần mới ở max tốn 13,27 USD, chỉ ra 1 lỗi riêng.
+  - PR #23 có lượt tốn 3,22 USD, 54 turn cho 34 dòng, và không có lỗi nào.
+  - Cùng một code bị review lại ở mỗi dự án.
+
+**Token tốn ở đâu** (ước lượng hồi quy trên 44 lượt, R² 0,98): ghi cache 39%, output gồm cả suy nghĩ 38%, đọc lại cache 23%. Gói bối cảnh của PR #23 dài 205.470 ký tự cho diff 214 dòng.
+
+| Lượt `security` | Số lượt | USD trung bình | Phút | Turn |
+|---|---|---|---|---|
+| Toàn PR, max | 13 | 3,98 | 13,3 | 40 |
+| Toàn PR, high | 4 | 0,59 | 1,8 | 12 |
+| Phần mới, max | 3 | 4,42 | 18,0 | 62 |
+| Phần mới, high | 2 | 0,46 | 2,0 | 12 |
+
+`high` rẻ hơn 7–10 lần, nhưng các lượt `high` chạy trên PR rủi ro thấp. Bảng này chưa trả lời được `high` có tìm ra cùng lỗi hay không.
+
+## Đánh đổi
+
+| Thay đổi | Tiết kiệm | Mất gì | Đánh giá |
+|---|---|---|---|
+| Bỏ review, chỉ kiểm byte | Toàn bộ | Cả nhóm 23 lỗi | Không nên |
+| Review một lần cho mỗi bản kit, PR chép chỉ kiểm byte | Mỗi lần chép giảm từ 16–20 USD xuống 0 | Không mất review code kit. PR có cả code app vẫn review đầy đủ | Nên làm |
+| Review phần mới từ max xuống high khi không còn High mở | Khoảng 4 USD mỗi lượt | Có thể lọt lỗi kiểu dòng `Scope` | Nên làm, sau khi thử |
+| Review toàn PR từ max xuống high | Khoảng 3,4 USD mỗi lượt | Chưa biết, đây là chỗ rủi ro nhất | Chỉ quyết sau khi thử |
+| Thu nhỏ gói bối cảnh, đưa báo cáo `reviewer` cho `security` | Chưa đo | Agent có thể đọc thêm, hoặc bị neo theo `reviewer` | Thử sau |
+
+Với Pilot 2, cách thứ hai cũng giảm tiền, nhưng chưa về 0: PR #19 đã bỏ qua review, nên đoạn kit đó cần review một lần. Cách này đổi luật của `audit`, nên cần spec và bạn duyệt. Script phải tự lấy file từ repo kit, không tin lời khai của PR. Gate ③ vẫn do bạn bấm.
+
+## Thư viện tối ưu token
+
+**Kit hiện không dùng thư viện nào cho việc này.** Phần tiết kiệm đang có là kit tự làm: gói bối cảnh, cache 5 phút, effort theo rủi ro, và review phần mới.
+
+| Công cụ | Nhận xét | Đề xuất |
+|---|---|---|
+| [open-code-review](https://github.com/alibaba/open-code-review) (Apache-2.0, 49,5k sao) | Tự công bố chỉ tốn khoảng 1/9 token so với Claude Code, Precision và F1 cao hơn, nhưng Recall thấp hơn; số liệu chỉ có trong ảnh. Có plugin Claude Code và Delegation Mode không cần API key. Luật có sẵn thiên về NPE, XSS, SQL injection | Thử cho PR app thường. Mình dự đoán nó sẽ bỏ sót nhóm lỗi agent tự lái review, nên chưa thay `security` |
+| [rtk](https://github.com/rtk-ai/rtk) | Nén output lệnh. Trong [benchmark của Dasein](https://github.com/daseinlabs/code-compression-bench), tốn hơn 13% và giải ít hơn 3 task; bài đó là sửa issue, không phải review, và bên tài trợ có sản phẩm trong bài thử. Nén output cũng có thể che bằng chứng, và có thể đụng `gh-guard` | Chưa dùng |
+| [code-review-graph](https://github.com/tirth8205/code-review-graph) | Con số 65× [chỉ đo số token](https://instagit.com/tirth8205/code-review-graph/what-is-token-savings-estimate-accuracy/), không đo chất lượng review | Cân nhắc khi thu nhỏ gói bối cảnh |
+| [Serena](https://github.com/oraios/serena) | Tìm code theo symbol qua MCP. Mình chưa thấy số đo cho review, và nó thêm một server MCP | Để sau |
+| [ccusage](https://github.com/ccusage/ccusage) | Chỉ đo usage, không tiết kiệm token | Dùng khi cần xem cửa sổ 5 giờ |
+
+Repomix không giúp được, vì kit đã có gói bối cảnh riêng. Mình cũng không tìm thấy benchmark độc lập nào đo độ chính xác của review khi nén ngữ cảnh, nên phải tự đo.
+
+## Đề xuất các bước
+
+1. **Thử đối chứng, khoảng 8–12 USD [Ước tính]:** chạy lại trên 3 head đã biết đáp án (`ao-sample` #6 `d049513`, #13 `9906b02`, #13 `40130f9`), có 6 lỗi `security` từng tìm ra. Ba phương án là Opus ở high, Sonnet ở high, và `open-code-review`. Mỗi phương án chạy trong bản clone tạm, không đọc được báo cáo cũ, không đăng lên GitHub. Mẫu nhỏ, nên kết quả chỉ để định hướng.
+2. **Viết spec nhỏ** cho cách review một lần mỗi bản kit và luật `audit` mới, rồi chờ bạn duyệt.
+3. **Chốt effort** theo kết quả bước 1, rồi vào Pilot 2.
+
+**Bạn đồng ý chạy bước 1 không?** Bước này có cài `open-code-review` lên máy bạn. Nếu không muốn cài, mình chỉ so hai phương án Opus và Sonnet.
+
+# Phiên 27 · Lượt 62 — 2026-11-07 10:21
+
+**Bạn:**
+
+```markdown
+Chưa làm, tôi hỏi thêm, tìm thêm xem có thư viện, repo review nào tốt và tối ưu token không? Chọn theo lượng star github cao nhất
+```
+
+**Claude:**
+
+**Kết luận: xét theo số sao, `alibaba/open-code-review` vẫn đứng đầu nhóm vừa review code vừa giảm token, với 49.574 sao.** GitHub Trending không có repo nào tốt hơn cho nhu cầu này. Tuy vậy, chưa có bằng chứng nó thay được `reviewer` hay `security`, nên mình chỉ đề xuất chạy thử. Lượt này mình chưa cài hay đổi gì.
+
+**Mình sửa hai điều đã nói ở lượt trước:**
+- **`open-code-review`:** số liệu không chỉ nằm trong ảnh, mà có [bảng đầy đủ trong paper](https://arxiv.org/html/2608.09290v2). Paper ghi mức giảm là 5–15 lần.
+- **`code-review-graph`:** mình hạ ưu tiên. Con số 65 lần là so với đọc cả repo; so với grep, trung vị chỉ còn 6,65 lần. Với commit nhỏ, gói review của nó có thể lớn hơn phần file đã đổi.
+
+## Repo review code, xếp theo số sao
+
+| Sao | Repo | Giảm token? | Cần thêm | Đề xuất |
+|---|---|---|---|---|
+| 64.217 | [cloudflare/security-audit-skill](https://github.com/cloudflare/security-audit-skill) | Không, chạy nhiều agent nên tốn hơn | Sandbox nếu chạy code | Tham khảo checklist, không chạy cho từng PR |
+| 49.574 | [alibaba/open-code-review](https://github.com/alibaba/open-code-review) | Có, theo số tự đo | Không cần API key nếu dùng Delegation Mode | **Chạy thử** |
+| 46.314 | [claude-plugins-official](https://github.com/anthropics/claude-plugins-official) (số sao của cả kho) | Không, plugin `code-review` chạy 4 agent song song | Không | Bỏ qua |
+| 34.945 | [openai/codex-plugin-cc](https://github.com/openai/codex-plugin-cc) | Không, chỉ chuyển sang quota ChatGPT | Tài khoản ChatGPT, code gửi sang OpenAI | Chỉ dùng nếu muốn ý kiến từ hãng khác |
+| 15.320 | [The-PR-Agent/pr-agent](https://github.com/The-PR-Agent/pr-agent) | Có, mỗi lệnh một lần gọi LLM và nén PR | API key riêng | Không hợp gói Pro |
+| 6.766 | [claude-code-security-review](https://github.com/anthropics/claude-code-security-review) | Chỉ quét file đổi | API key, lần push cuối 2026-02 | Bỏ qua |
+| 1.569 | [kodustech/kodus-ai](https://github.com/kodustech/kodus-ai) | Chỉ theo dõi token | LLM key riêng | Bỏ qua |
+| 1.072 | [openqodex/openqodex](https://github.com/openqodex/openqodex) | Có công bố chi phí mỗi review | Dùng login Claude Code, nhưng chưa test trên Windows | Theo dõi |
+
+## Repo giảm token nhưng không tự review
+
+| Sao | Repo | Nhận xét | Đề xuất |
+|---|---|---|---|
+| 143.603 | [graphify](https://github.com/Graphify-Labs/graphify) | Con số giảm 80% là của bản Cloud; benchmark không đo review | Chưa dùng |
+| 118.031 | [caveman](https://github.com/juliusbrussee/caveman) | Rút gọn output. [Benchmark Dasein](https://github.com/daseinlabs/code-compression-bench): giải 58 task, 2,05 USD; không dùng: 57 task, 2,58 USD | Thử sau, phải giữ đúng mẫu báo cáo cho merge-gate |
+| 114.067 | [claude-mem](https://github.com/thedotmack/claude-mem) | Nhớ giữa các phiên | Không hợp, vì review cần chạy độc lập |
+| 85.767 | [rtk](https://github.com/rtk-ai/rtk) | Trong benchmark trên, tốn hơn 13% và giải ít hơn 3 task | Chưa dùng |
+| 32.629 | [code-review-graph](https://github.com/tirth8205/code-review-graph) | Xem phần sửa ở trên | Tự thu nhỏ gói bối cảnh trước |
+| 31.162 | [serena](https://github.com/oraios/serena) | Chưa thấy số đo cho review | Để sau |
+
+Nhóm không dùng LLM như `gitleaks` (30.744 sao), `semgrep` (17.529 sao) và `reviewdog` (9.725 sao) không tốn token, nhưng chỉ là lớp bổ sung. Phần chỉ chạy scanner của OpenQodex tìm được 0/16 lỗi đã biết trên một tập nhỏ.
+
+## GitHub Trending
+
+Mình xem trang chung theo ngày, tuần, tháng, và trang tháng của TypeScript, Go, Python, Rust. Trending chỉ cho biết repo đang được chú ý, không nói lên chất lượng.
+
+- **Liên quan đến review:** chỉ có `cloudflare/security-audit-skill` (+2.548 sao hôm nay, +38.004 sao tháng này) và `pr-agent` (+1.523 sao tuần này). `open-code-review` không có trên các trang này.
+- **Không nên dùng:** `free-claude-code` và `freellmapi`. Chúng lấy token miễn phí từ nhà cung cấp khác chứ không tối ưu token, nên code có thể bị gửi tới dịch vụ bên thứ ba.
+
+## `open-code-review` tốt đến đâu?
+
+Đây là kết quả với Claude-4.8-Opus, bản Claude mới nhất trong paper, trên AACR-Bench:
+
+| | Precision | Recall | F1 | Token | Thời gian |
+|---|---|---|---|---|---|
+| `open-code-review` | 37,8% | 11,7% | 17,9% | 352K | 1m06s |
+| Claude Code | 15,9% | 12,7% | 14,1% | 2.062K | 5m38s |
+
+- **Recall thấp hơn:** so với Claude Code, recall thấp hơn 8–31% trên cả 5 model. Paper không chia theo loại lỗi, nên chưa biết nó có bắt được nhóm PR tự lái review hay không.
+- **Không độc lập:** 6 trong 11 tác giả thuộc Alibaba, và [AACR-Bench](https://arxiv.org/html/2601.19494) cũng nằm dưới tổ chức Alibaba trên GitHub.
+- **Số phụ thuộc benchmark:** precision của Claude Code trong paper chỉ 7–16%. Mình tự tính từ [dữ liệu của Martian](https://github.com/withmartian/code-review-benchmark), Claude Code đạt khoảng 48,8% precision và 48,6% recall. Dữ liệu này không có `open-code-review` và `pr-agent`; Kodus đạt F1 44,8%, so với 48,7% của Claude Code.
+- **Delegation Mode chưa được đo:** ở chế độ này Claude tự review, còn công cụ chỉ chọn file và luật. Mình không thấy paper đo chế độ này, nên mức giảm 5–15 lần có thể không đúng với gói Pro.
+- **Effort chưa được đo:** các nguồn mình đọc không so `max` với `high`, nên vẫn phải tự thử.
+
+## Đề xuất điều chỉnh bước chạy thử
+
+1. **Công cụ ngoài:** chỉ thử `open-code-review` ở Delegation Mode, cùng Opus `high` và Sonnet `high`.
+2. **Mỗi phương án chạy 2 lần:** Cloudflare ghi rằng một lượt chỉ tìm được khoảng một nửa số lỗi của nhiều lượt cộng lại. Cách này cũng cho biết hai lượt `high` có tìm được nhiều hơn một lượt `max` hay không. Theo số trung bình cũ, hai lượt `high` tốn khoảng 1,2 USD và một lượt `max` khoảng 4 USD, nhưng số `high` lấy từ PR rủi ro thấp.
+3. **Checklist của Cloudflare:** đọc `AI-AND-LLM.md` và `SUPPLY-CHAIN-AND-RELEASE.md` để cân nhắc bổ sung cho `security`. Mình mới đọc README và danh sách file, chưa đọc hai file này.
+
+Chạy 2 lần làm chi phí tăng từ 8–12 USD lên khoảng 12–18 USD [Ước tính].
+
+**Bạn đồng ý chạy thử theo cách này không?** Bước này sẽ cài `open-code-review` lên máy bạn và dùng usage Claude.
+
+# Phiên 27 · Lượt 63 — 2026-11-07 12:44
+
+**Bạn:**
+
+```markdown
+đồng ý như đề xuất
+```
+
+**Claude:**
+
+**Bài test đã dừng giữa chừng và chưa có kết quả nào dùng được.** Claude Code dừng bộ chạy sau khoảng 6,5 phút vì máy thiếu RAM, và theo quy định mình không tự chạy lại khi chưa có lệnh của bạn. Lúc mình kiểm tra, máy chỉ còn 2,7 GB trống trên 15,8 GB, sau đó lên 3,9 GB.
+
+## Trạng thái hiện tại
+
+| Lượt | Kết quả |
+|---|---|
+| Sonnet `high` trên `40130f9` | Xong: 0,56 USD, 12 turn, 3,6 phút. Mình chưa đọc báo cáo, để giữ chấm mù |
+| Opus `high` trên `40130f9` | Bị dừng ở phút 6,4, chưa có báo cáo |
+| `open-code-review` trên `40130f9` | Bị dừng ở phút 6,5, chưa có báo cáo |
+| Opus `high` trên `9906b02` | Bị dừng ở phút 2,8, chưa có báo cáo |
+| 5 lượt còn lại của vòng 1 | Chưa chạy |
+
+- **Chi phí:** đã dùng khoảng 3,6 USD [Ước tính]. Trong đó 0,63 USD là số thật của lượt Sonnet và lượt kiểm tra; khoảng 3 USD là phần mất ở ba lượt bị dừng. Số 3 USD chỉ tương đối, vì log bị cắt giữa chừng nên không có tổng chi phí.
+- **An toàn:** không có gì bị đăng lên GitHub. Số review trên PR #6 và #13 vẫn là 3 và 7, như trước khi chạy. Không còn tiến trình `claude` nào sót lại.
+- **Không thay đổi:** kit, hai repo pilot và cấu hình đều giữ nguyên. Thứ cài thêm chỉ có `open-code-review` trong scratchpad.
+
+## Đã làm xong trong lúc chờ
+
+Mình đã đọc hai checklist của Cloudflare, và chúng đáng dùng. Nên chép khoảng 8–10 dòng vào prompt `security` thay vì cả 18 KB. Các ý hợp nhất:
+- Prompt chặn không phải là ranh giới an ninh; chỉ tính các kiểm tra tất định.
+- Kiểm tra việc lắp prompt có để văn bản không tin cậy giả làm nguồn tin cậy không.
+- Kiểm tra thứ được duyệt có đúng là thứ sẽ chạy không, kể cả khi chạy lại hoặc tiếp tục lượt cũ.
+- Checksum lấy cùng nơi với file thì không chứng minh được gì. Ý này áp dụng thẳng vào thiết kế kiểm byte: gốc tin cậy phải là repo kit.
+
+Việc này chưa áp dụng, sẽ đi cùng spec cải tiến review.
+
+## Phát hiện mới về `open-code-review`
+
+Nó tự loại file `.md` khỏi diện review với lý do `unsupported_ext`. Trên PR #13, nó bỏ qua `.ai-orchestrator/agents/prompts/ba.md` và `.claude/agents/ba.md`. Với kit, các file này chính là prompt của agent, nên đây là điểm yếu thật, không phụ thuộc kết quả bài test.
+
+## Bạn quyết định
+
+**Bạn có muốn chạy lại không?** Mình đề xuất chạy từng lượt một, không song song:
+- Giảm RAM mà không đổi kết quả. Đổi lại lâu hơn: 8 lượt còn lại của vòng 1 có thể mất khoảng 1–2 giờ [Ước tính].
+- Trần cho việc mở lượt mới hạ từ 15 xuống 12 USD. Tổng chi phí vẫn nằm trong mức 18 USD bạn đã duyệt, nên vòng lặp lại có thể không đủ tiền chạy hết. Nếu thiếu, mình sẽ hỏi bạn trước.
+- Đóng bớt Chrome hoặc cửa sổ VS Code trước khi chạy sẽ an toàn hơn. Nếu bị dừng lần nữa, các lượt đã xong vẫn được giữ, nhưng lượt đang chạy dở sẽ mất tiền như lần này.
+
+# Phiên 27 · Lượt 64 — 2026-11-07 13:02
+
+**Bạn:**
+
+```markdown
+Tôi vừa đóng bớt Chrome. Chạy lại nhé
+```
+
+**Claude:**
+
+Xong trọn head `40130f9`:
+
+| Phương án | USD | Turn | Phút |
+|---|---|---|---|
+| Sonnet `high` | 0,56 | 12 | 3,6 |
+| Opus `high` | 1,74 | 23 | 8,3 |
+| `open-code-review` (Opus `high`) | 1,99 | 23 | 8,8 |
+
+Ở head này, `open-code-review` chạy Delegation Mode không rẻ hơn prompt của kit, đúng điều mình lo trước đó. Một head chưa kết luận được. Tổng ghi nhận 4,29 USD. Theo nhịp này, vòng 1 sẽ tốn khoảng 12–13 USD [Ước tính], nên vòng lặp lại có lẽ không đủ ngân sách. Mình sẽ báo khi vòng 1 xong.
+
+# Phiên 27 · Lượt 65 — 2026-11-07 14:16
+
+**Bạn:**
+
+```markdown
+I hit my usage limit while you were working, but it has reset now. Please continue from where you left off.
+```
+
+**Claude:**
+
+**Kết luận: hạ `security` từ `max` xuống `high` có đánh đổi chất lượng thật, nên không nên hạ cho code kit.** Tiền nên tiết kiệm bằng cách chỉ review một lần cho mỗi bản kit, không phải giảm effort. `open-code-review` cũng không nên dùng: ở chế độ chạy được với gói Pro, nó không rẻ hơn mà còn tìm ra ít lỗi hơn Opus `high`.
+
+## Kết quả chấm
+
+Mình chấm 3 head theo 6 lỗi `security` đã biết, dùng prompt và gói bối cảnh đúng thời điểm đó. Mỗi ô là mức độ phương án đó ghi cho lỗi, dấu – là không tìm ra.
+
+| Lỗi đã biết | `max` (bản gốc) | Opus `high` | Sonnet `high` | `open-code-review` |
+|---|---|---|---|---|
+| Văn bản không tin cậy trong gói bối cảnh | Medium | Medium | Low, một phần | Low |
+| Tài liệu Epic đọc ở head của PR | Medium | Low | – | – |
+| PR tự lái review qua worktree | **High** | **High** | Low | Medium |
+| Base của PR không được kiểm | Medium | **High** | – | – (có xét nhưng bỏ qua) |
+| `AGENTS.md` của PR vẫn lái được review | **High** | – (2 lượt) | – (2 lượt) | – |
+| `ao-step` chạy từ checkout của PR | Medium | – (2 lượt) | – (2 lượt) | – |
+| **Tìm ra** | 6/6 | 4/6 | 2/6 | 2/6 |
+| **Chi phí 3 head** | 19,45 USD | 5,04 USD | 1,22 USD | 5,49 USD |
+| **Thời gian** | 71 phút | 22 phút | 8 phút | 23 phút |
+
+## Điều rút ra
+
+- **Opus `high`:** chỉ tốn 26% chi phí và tìm đủ cả 4 lỗi ở hai head đầu. Nhưng ở head thứ ba, nó bỏ sót lỗi High cả hai lần và đề xuất Approve.
+- **Hai lượt `high` không thay được một lượt `max`:** giả thuyết của mình sai trên head này. Cả 4 lượt `high`, gồm Opus và Sonnet, đều bỏ sót.
+- **`max` đáng tiền ở đâu:** lượt `max` tự đi xa ngoài diff. Nó mở `claude.exe` để xem CLI nạp file chỉ dẫn nào, rồi thử thật, nhờ đó mới thấy lỗi `AGENTS.md`.
+- **Sonnet `high`:** rẻ nhất, nhưng không chặn được lỗi High nào, nên chưa đủ cho `security` của kit.
+- **`open-code-review`:**
+  - Tốn 5,49 USD so với 5,04 USD của prompt kit. Bộ chạy của mình làm nó mất thêm vài turn tìm `ocr`, nhưng phần đội đó không đổi kết luận.
+  - Mức giảm 5–15 lần trong paper không xuất hiện ở Delegation Mode.
+  - Nó tự bỏ qua file `.md`, mà đó chính là prompt của agent.
+- **`max` không phải là tất cả:** lượt `open-code-review` tìm ra lỗi review chạy tiếp bị mất worktree. Cả `reviewer` lẫn `security` trên PR #13 đều bỏ sót lỗi này, và nó thành lỗi High ở PR #23. Theo mình, công lao chủ yếu đến từ góc nhìn khác của prompt, không phải từ công cụ.
+
+## Ba lỗi thật còn trong kit
+
+Bài test tìm ra ba lỗi. Mình đã đọc code hiện tại và thấy chúng vẫn còn, nhưng chưa chạy lại trên kit hiện tại:
+1. **`lib/workflow/steps.mjs:451`:** `/ao-fix <note>` gửi lại ghi chú đã sửa, nếu sau đó có một lượt fix không kèm ghi chú.
+2. **`carryOn` trong `lib/workflow/steps.mjs`:** lượt fix chạy tiếp bị mất `head` và `note`.
+3. **`quality/gates.yaml`:** glob `security_review` phân biệt hoa thường, nên `AuthProvider.tsx` và `useAuth.ts` bị tụt xuống `high`. Danh sách cũng thiếu `docker-compose.yaml`, `.npmrc` và `proxy.ts`.
+
+## Đề xuất
+
+1. **Giữ `max`** cho lượt review đầy đủ của code kit và các đường dẫn được bảo vệ.
+2. **Review một lần cho mỗi bản kit:** PR chép kit chỉ cần script kiểm byte với gốc tin cậy là repo kit. Cách này tiết kiệm 16–20 USD mỗi lần chép mà không mất lớp review nào. PR #19 đã bỏ qua review, nên đoạn kit đó vẫn cần review một lần.
+3. **Không dùng `open-code-review`.** Mình đã xóa nó trong đợt dọn file tạm đang chạy.
+4. **Thêm khoảng 8–10 dòng từ checklist Cloudflare** vào prompt `security`.
+5. **Sửa 3 lỗi trên** trong cùng đợt kit này.
+
+Riêng đề xuất hạ lượt review phần mới xuống `high`, bài test này chưa đo, nên mình chưa đưa vào.
+
+## Giới hạn và chi phí
+
+- **Giới hạn:** mẫu nhỏ, chỉ 3 head và tối đa 2 lượt. Mình không chạy lại `max`, nên chưa biết lần sau nó có tìm lại được lỗi `AGENTS.md` không. Đáp án lấy từ chính các lượt `max` nên có lợi cho `max`. Chấm mù chỉ thật sự mù giữa Opus và Sonnet, vì báo cáo của `open-code-review` nhận ra được qua định dạng.
+- **Chi phí:** tổng khoảng 17,3 USD [Ước tính], trong mức 18 USD đã duyệt. Khoảng 3 USD mất do lần bị dừng vì thiếu RAM.
+- **An toàn:** không có gì bị đăng lên GitHub, và kit cùng repo pilot không đổi.
+
+**Bạn duyệt hướng này để mình viết spec không?** Spec sẽ đổi luật của `audit`, nên mình chờ bạn duyệt rồi mới sửa code. Sau bước này mới đến Pilot 2.
+
+# Phiên 27 · Lượt 66 — 2026-11-07 15:03
+
+**Bạn:**
+
+```markdown
+Ok duyệt như đề xuất
+```
+
+**Claude:**
+
+Spec đã xong ở `SPEC-kit-copy-review.md`, chưa commit, và mình chưa sửa code. Có hai điểm khác với đề xuất bạn vừa duyệt, cả hai đều làm thiết kế gọn và an toàn hơn, nên cần bạn xem lại.
+
+## Hai điểm thay đổi
+
+1. **Không đổi luật `audit` và `merge-gate`.** Thay vì nới luật, `/ao-review` tự kiểm rồi đăng hai báo cáo `reviewer` và `security` bằng App `ao-review`. Cả hai luật đọc báo cáo này như mọi báo cáo khác, nên cũng không phải cập nhật kit trên VPS. Đánh đổi là `audit` không phân biệt được báo cáo do script hay do agent viết. Bù lại, báo cáo có dòng `Kit copy of:` để bạn thấy ở gate ③.
+2. **Gốc tin cậy là head đã được review và merge, không phải repo kit.** Mình từng nói gốc là repo kit, nhưng commit kit chưa từng được agent review, vì kit tự merge chỉ với CI. So với head đã review mới chứng minh được đúng điều cần chứng minh, và mọi bằng chứng đã có sẵn trên GitHub, nên không cần sổ ghi riêng.
+
+## Cách hoạt động
+
+PR chép kit có thêm một dòng trong mô tả, ví dụ `Kit review: TungPH7/ao-pilot#24`. Dòng này chỉ là lời khai. `ao-step` tự kiểm các điều chính sau:
+- Repo tham chiếu nằm trong danh sách cho phép, và PR tham chiếu đã được bạn merge.
+- Báo cáo của nó do agent viết, không còn Critical hay High mở.
+- Đó là bản kit mới nhất của repo kia, để không chép ngược về bản cũ có lỗi.
+- Từng file khớp byte và mode, cả hai chiều, nên không chép được một phần hay thêm file lạ.
+- `.claude/agents` và file rules chứa mã space Jira nên không so byte được; `ao-step` dựng lại chúng bằng renderer của kit đang chạy rồi mới so.
+
+Có bất kỳ nghi ngờ nào thì quay về review bằng agent như cũ. Gate ③ vẫn do bạn bấm.
+
+## Số tiền tiết kiệm thực tế
+
+Mình cần nói rõ hơn con số 16–20 USD: nó chỉ áp dụng từ **dự án thứ hai** của mỗi bản kit. Bản đầu tiên vẫn phải review đầy đủ. Thứ tự sẽ là:
+
+1. Kit mới vào `ao-pilot`, review đầy đủ ở `max`, khoảng 8–16 USD [Ước tính].
+2. Cùng bản đó vào `ao-sample` cho Pilot 2, 0 USD.
+
+Spec cũng gồm phần thêm dòng vào prompt `security` và sửa ba lỗi kit. Ý mới từ bài test là khi PR đổi thứ lái agent, phải kiểm xem công cụ thật sự nạp gì, chứ không dừng ở đọc diff.
+
+**Bạn duyệt spec này không?** Nếu duyệt, mình commit spec, viết plan rồi bắt đầu sửa code theo kiểu test trước.
