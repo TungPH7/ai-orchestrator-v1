@@ -71,6 +71,10 @@ test('a full review keeps the roster effort on a protected path, a path of secur
   for (const file of ['package-lock.json', 'apps/web/next.config.ts', 'apps/web/src/middleware.ts', 'apps/api/src/auth/jwt.strategy.ts', 'apps/api/src/main.ts', 'apps/web/.env.local', 'Dockerfile', 'apps/api/src/notes/notes.repository.ts', 'apps/api/src/notes/note.entity.ts', 'apps/api/prisma/schema.prisma', 'apps/api/src/migrations/1700000000000-init.ts', 'db/seed.sql']) {
     assert.equal(effort([file]).effort, 'max', file);
   }
+  // Whatever the case of the name, and the other names of the same files (review test of 2026-11-07, head d049513).
+  for (const file of ['apps/web/src/AuthProvider.tsx', 'apps/web/src/hooks/useAuth.ts', 'apps/web/src/lib/OAuth.ts', 'apps/web/src/hooks/useSession.ts', 'docker-compose.yaml', 'compose.yml', 'apps/api/compose.dev.yaml', '.npmrc', 'apps/web/src/proxy.ts', 'pnpm-lock.yaml', 'yarn.lock']) {
+    assert.equal(effort([file]).effort, 'max', file);
+  }
   assert.deepEqual(effort(['.ai-orchestrator/lib/x.mjs'], { protectedPaths: ['.ai-orchestrator/lib/x.mjs'] }), { effort: 'max', reason: 'the PR touches the protected path .ai-orchestrator/lib/x.mjs' });
   const labelled = { key: 'SMP-7', effort: null, subtasks: [{ key: 'SMP-8', effort: 'xhigh' }] };
   assert.deepEqual(effort(['apps/web/src/app/notes/note-list.tsx'], { item: labelled }), { effort: 'max', reason: 'SMP-8 has the effort label xhigh' });
