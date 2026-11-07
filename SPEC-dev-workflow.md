@@ -175,6 +175,8 @@ Thiếu một trong hai điều thì `security` review đầy đủ. `reviewer` 
 
 Effort của lượt review đầy đủ (đổi ở Pilot 1, Phiên 23 · Lượt 9–16, vì `security` ở `max` nghĩ 8–10 phút trên mọi PR, kể cả PR chép kit 16 dòng): `max` khi item hoặc một Sub-task của nó có nhãn effort, hoặc khi PR chạm đường dẫn được bảo vệ hay một mẫu của `security_review.roster_effort_paths` trong `quality/gates.yaml`; `security_review.lower_effort` (`high`) khi không.
 
+PR chép một bản kit đã được review ở dự án khác không qua hai lượt agent này: `ao-step` so byte rồi tự đăng báo cáo, theo [`SPEC-kit-copy-review.md`](SPEC-kit-copy-review.md).
+
 ### 2.7 `merge-gate` báo PR cần bạn
 
 PR sửa đường dẫn được bảo vệ cần bạn tự merge. Khi PR như vậy chỉ còn chờ bạn, tức không thiếu gì hoặc chỉ thiếu approve của bạn, `merge-gate` làm thêm hai việc, mỗi việc một lần cho mỗi head (T6: báo sớm hơn thì cờ "Needs you" nằm trên item trong lúc agent còn review):

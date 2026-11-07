@@ -103,6 +103,8 @@ PR sửa đường dẫn được bảo vệ (`.github/workflows/**`, `.claude/*
 
 ## Chi phí đo được
 
+`/ao-review` của PR chép một bản kit đã được review ở dự án khác không gọi agent: `ao-step` so byte rồi tự đăng báo cáo, xem [quality-gates.md](quality-gates.md#pr-chép-một-bản-kit-đã-được-review).
+
 Quy ra USD theo giá API. Gói Pro không trả theo cách này, nhưng tỉ lệ giữa các lượt vẫn đúng.
 
 | Việc | Lượt | USD |

@@ -164,6 +164,7 @@ Về sau, cập nhật bản chép kit cũng phải đi qua PR, và PR đó do b
 | `ATLASSIAN_AGENT_TOKEN` | Biến môi trường user trên máy chạy Claude Code | `.mcp.json` gửi token này cho Rovo MCP; hook `jira-guard` và `jira-rework` đọc dữ kiện Jira bằng nó |
 | `JIRA_CI_TOKEN` | Secret của repo dự án trên GitHub | `jira-sync`; `audit` dùng nó để gắn cờ item; `merge-gate` đọc Epic của PR tài liệu và gắn cờ item của PR bạn tự merge |
 | `AO_JIRA_SPACE`, `AO_APPROVERS` | Mục `env` trong `.claude/settings.json` của dự án; biến môi trường cùng tên được ưu tiên | Các hook, `jira-sync`, `merge-gate` và `audit`. `AO_APPROVERS` nhận nhiều login, cách nhau bằng dấu phẩy |
+| `AO_KIT_PEERS` | Mục `env` trong `.claude/settings.json` của dự án; biến môi trường cùng tên được ưu tiên. Các repo đã review kit, cách nhau bằng dấu phẩy, dùng cho [PR chép một bản kit đã được review](docs/quality-gates.md#pr-chép-một-bản-kit-đã-được-review) |
 | `GITHUB_TOKEN` | Có sẵn trong GitHub Actions; ở máy, không đặt thì lấy từ GitHub CLI | `jira-sync`, `merge-gate` và `audit` đọc PR, review, check bằng nó; `jira-guard` đọc dữ kiện PR, CI |
 | `AO_KIT_DIR` | Không bắt buộc | Các hook tìm kit ở đây thay cho `.ai-orchestrator/` |
 | `AO_ENV_AUTH` | Biến môi trường user trên máy bạn; giá trị `ao:<mật khẩu>` | Basic auth của Development và Staging. `ao-step` chỉ truyền cho `qa`, dưới dạng `E2E_HTTP_USER` và `E2E_HTTP_PASSWORD` ([docs/release-workflow.md](docs/release-workflow.md)) |
