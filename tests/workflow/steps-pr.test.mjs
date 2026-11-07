@@ -335,6 +335,15 @@ test('/ao-review of a kit copy that does not match: it says why, and the agents 
   assert.ok(decision.lines.includes('Kit review: src/a.mjs differs from acme/peer#24, so the agents review the PR'));
 });
 
+// Review of ao-pilot PR #24: the report of ao-step is a full one, which would clear the findings still open.
+test('/ao-review of a kit copy with Critical or High findings open: the agents review it', () => {
+  const kitCopy = { ok: true, compared: 40, reference: { repo: 'acme/peer', number: 24, head: OLD } };
+  const open = { reviewer: report({ sha: OLD, onHead: false, blocking: 1 }), security: report({ sha: OLD, onHead: false }) };
+  const decision = decide('review', prFacts('review', { reports: open }, { kitCopy }));
+  assert.equal(decision.runs.some(({ action }) => action), false);
+  assert.ok(decision.lines.includes('Kit review: PR #15 still has Critical or High findings open (reviewer 1), so the agents review the PR'));
+});
+
 test('a stopped review goes on before anything else, and red CI stops a kit copy too', () => {
   const kitCopy = { ok: true, compared: 40, reference: { repo: 'acme/peer', number: 24, head: OLD }, renders: false };
   const run = { key: 'DEMO-21', runs: [{ n: 1, command: 'review', role: 'security', purpose: 'review', outcome: 'usage-limit', head: HEAD, session: 's1', effort: 'max' }] };

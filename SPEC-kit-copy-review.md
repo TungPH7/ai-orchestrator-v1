@@ -52,12 +52,12 @@ Dòng này chỉ là lời khai. `ao-step` tự kiểm tất cả, ở đúng he
 2. PR tham chiếu đã merge vào nhánh được bảo vệ, do một login của `AO_APPROVERS` merge.
 3. Head của nó có đủ báo cáo `reviewer` và `security` của App `ao-review`, không còn Critical hay High mở. Luật này dùng lại `reportGaps` của `merge-gate`.
 4. Hai báo cáo đó do agent viết: không có dòng `Kit copy of:`. Nhờ vậy không có chuỗi tham chiếu, bản nào cũng trỏ thẳng về một lượt review thật.
-5. Nó là PR mới nhất của repo đó đổi `.ai-orchestrator/lib/`. Điều này chặn việc chép ngược về một bản cũ đã được review nhưng có lỗi.
+5. Nó là PR mới nhất trên `develop` của repo đó đổi `.ai-orchestrator/lib/`, dù nó merge vào nhánh nào. Điều này chặn việc chép ngược về một bản cũ đã được review nhưng có lỗi.
 6. Mọi file PR đổi đều nằm trong đường dẫn kit (2.3), và khớp mode cùng blob với head của PR tham chiếu. File bị xóa cũng phải không có ở đó, trừ skill: PR xóa một skill thì quay về review thường, vì skill chỉ dự án này có cũng vắng ở bên kia. `ao-step` tính file PR đổi bằng cách so cây git của merge base với cây của head, theo SHA, không dùng `GET /pulls/{n}/files`, vì danh sách đó dừng ở 3000 file và được đọc theo số PR (review của `ao-pilot` PR #24).
 7. Sau PR, mọi file trong nhóm "phải giống hệt" khớp head tham chiếu theo cả hai chiều. Như vậy không chép được một phần, và không có file lạ nằm thêm.
-8. Các file render lại (2.3) có cùng tên ở hai bên, theo cả hai chiều, và khớp với bản dựng từ nguồn ở head của PR. Bước dựng luôn chạy, kể cả khi PR không đổi file render.
+8. Các file render lại (2.3) là file thường, đúng là các file `render-agents.mjs --list` kể ra, và khớp với bản dựng từ nguồn ở head của PR. Bước dựng luôn chạy, kể cả khi PR không đổi file render.
 9. Cây git của hai head và của merge base đọc được đầy đủ, không bị `truncated`.
-10. PR đang mở và CI xanh, như mọi PR mà `/ao-review` review.
+10. PR đang mở, CI xanh, và không còn finding Critical hay High mở từ các báo cáo trước. Báo cáo của `ao-step` là báo cáo đầy đủ, nên nó sẽ xóa các finding đó; chúng phải đi qua `/ao-fix` và review phần mới như mọi PR (review của `ao-pilot` PR #24).
 
 Gốc tin cậy là **head đã được review và merge**, không phải commit của repo kit. Đề xuất ban đầu ở Phiên 27 dùng repo kit, nhưng commit kit chưa từng được agent review: kit tự merge chỉ với CI. Head tham chiếu chứng minh đúng điều cần chứng minh, và mọi bằng chứng đã có sẵn trên GitHub, nên không cần sổ ghi riêng.
 
@@ -69,10 +69,10 @@ Khai ở `quality/gates.yaml`, khối mới `kit_copy`:
 |---|---|---|
 | Phải giống hệt | `.ai-orchestrator/{agents,contract,docs,lib,quality,scripts,templates,tracker}/**`, `.ai-orchestrator/package*.json`, `.claude/hooks/**`, `.githooks/**`, `.mcp.json`, `.jira/config.yml`, ba workflow `ci.yml`, `jira-sync.yml`, `merge-gate.yml` | Khớp hai chiều |
 | Giống khi PR đổi | `.claude/skills/**` | File PR đổi phải khớp. Skill theo stack chỉ có ở một dự án thì được giữ |
-| Render lại | `.claude/agents/**`, `.claude/rules/ai-orchestrator.md` | Tên khớp hai chiều; nội dung thì dựng lại rồi so |
+| Render lại | `.claude/agents/**`, `.claude/rules/ai-orchestrator.md` | Đúng tập file `render-agents` viết; dựng lại rồi so nội dung |
 | Của dự án | `.claude/settings.json`, `.ai-orchestrator/deploy.yaml`, `.ai-orchestrator/roster.local.yaml` | PR chép kit không được đổi. Đổi thì rơi về review thường |
 
-File render lại khác nhau giữa các dự án vì chứa mã space Jira và skill theo stack, nên không so byte với dự án khác được. `ao-step` lấy cây của head vào thư mục tạm, không cho agent nào đọc, rồi chạy `render-agents.mjs --check --project <thư mục>` **của kit đang chạy `ao-step`**. `render-agents.mjs --check` chỉ so các file nó dựng, nên một file thêm vào cạnh chúng không bị nó thấy. Vì vậy bước 8 so thêm tên của các file render với head tham chiếu (review của `ao-pilot` PR #24). Nguồn của render đã được kiểm ở bước 6 và 7, nên tên khớp cộng bản dựng khớp mới nghĩa là chỉ dẫn của agent không bị chèn gì thêm.
+File render lại khác nhau giữa các dự án vì chứa mã space Jira và skill theo stack, nên không so byte với dự án khác được. `ao-step` lấy cây của head vào thư mục tạm, không cho agent nào đọc, rồi chạy `render-agents.mjs --check --project <thư mục>` **của kit đang chạy `ao-step`**. `render-agents.mjs --check` chỉ so các file nó dựng, nên một file thêm vào cạnh chúng không bị nó thấy. Vì vậy bước 8 so thêm tập file render ở head với danh sách `render-agents.mjs --list` in ra: file nào ngoài danh sách thì quay về review thường (review của `ao-pilot` PR #24). So tên với dự án tham chiếu là chưa đủ, vì một file thừa có ở cả hai bên vẫn không được ai đọc. Nguồn của render đã được kiểm ở bước 6 và 7, nên đúng tập file cộng bản dựng khớp mới nghĩa là chỉ dẫn của agent không bị chèn gì thêm.
 
 ### 2.4 Báo cáo
 
@@ -115,7 +115,7 @@ Thêm khoảng 8–10 dòng vào `agents/prompts/security.md`, lấy ý từ [`A
 - Một workspace có độ tin cậy thấp có đổ vào bước có độ tin cậy cao không.
 - Checksum lấy cùng nơi với file không chứng minh gì; phải chỉ ra gốc tin cậy.
 
-Thêm một ý từ bài thử: khi PR đổi thứ lái agent, đừng dừng ở đọc diff, hãy kiểm công cụ thật sự nạp gì. Đó là cách `max` tìm ra lỗi `AGENTS.md`.
+Thêm một ý từ bài thử: khi PR đổi thứ lái agent, đừng dừng ở đọc diff, hãy kiểm công cụ thật sự nạp gì. Đó là cách `max` tìm ra lỗi `AGENTS.md`. Review của `ao-pilot` PR #24 thêm điều kiện: chỉ thử bằng file đánh dấu tự viết trong thư mục tạm ngoài dự án và worktree, chạy CLI với `--setting-sources user`, và không bao giờ nạp, chạy hay chép file chỉ dẫn, settings, hook hay script của PR.
 
 ### 2.7 Ba lỗi kit
 
