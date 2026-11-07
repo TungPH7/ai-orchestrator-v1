@@ -212,10 +212,11 @@ Dòng `Kit review:` chỉ là lời khai. `ao-step` kiểm lần lượt:
 1. Repo tham chiếu nằm trong `AO_KIT_PEERS`.
 2. PR tham chiếu đã merge vào nhánh được bảo vệ, do bạn merge.
 3. Head của nó có đủ hai báo cáo do agent viết, không còn Critical hay High mở.
-4. Nó là PR mới nhất của repo đó đổi `.ai-orchestrator/lib/`, nên không chép ngược về bản cũ được.
+4. Nó là PR mới nhất trên `develop` của repo đó đổi `.ai-orchestrator/lib/`, nên không chép ngược về bản cũ được.
 5. Mọi file PR đổi đều là file kit, và khớp nội dung, mode và loại với head tham chiếu. PR xóa một skill thì quay về review thường. File đổi được tính bằng cách so cây git của merge base với cây của head, nên không có giới hạn số file.
 6. Các file "phải giống hệt" khớp theo cả hai chiều, nên không chép một phần hay thêm file lạ được. Danh sách nằm ở khối `kit_copy` của `quality/gates.yaml`.
-7. `.claude/agents/` và `.claude/rules/ai-orchestrator.md` chứa mã space và skill theo stack của dự án, nên chỉ so tên của chúng với dự án khác, theo cả hai chiều. `ao-step` luôn dựng lại chúng bằng `render-agents.mjs` của kit đang chạy, rồi so nội dung.
+7. `.claude/agents/` và `.claude/rules/ai-orchestrator.md` chứa mã space và skill theo stack của dự án, nên không so với dự án khác. `ao-step` luôn dựng lại chúng bằng `render-agents.mjs` của kit đang chạy, và chỉ nhận đúng các file `render-agents.mjs --list` kể ra.
+8. PR không còn finding Critical hay High mở từ các báo cáo trước. Những finding đó đi qua `/ao-fix` như mọi PR.
 
 Không đạt một điều thì lệnh in lý do và cho agent review như thường. Lỗi mạng, hay một push trong lúc so, cũng vậy.
 

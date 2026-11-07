@@ -126,11 +126,11 @@ test('a stack skill of one project stays, a skill the PR changes must match, and
 
 // Review of ao-pilot PR #24: render-agents --check compares only the files it renders, so a file added beside them
 // was read by no one.
-test('rendered files are compared by name both ways; their content is left to the render check', () => {
+test('rendered files are plain files; which ones and their content are left to the render check', () => {
   assert.equal(decide().ok, true, 'the agent differs from the peer, as the space key does');
-  refused({ headTree: headTree([blob('.claude/agents/helper.md', 'z')]) }, /\.claude\/agents\/helper\.md is in the PR but not in acme\/peer#24/);
-  refused({ headTree: headTree([blob('.claude/agents/helper.md', 'z')]), baseTree: baseTree([blob('.claude/agents/helper.md', 'z')]) }, /helper\.md is in the PR but not/);
-  refused({ reference: reference({ tree: peerTree([blob('.claude/agents/qa.md', 'q')]) }) }, /\.claude\/agents\/qa\.md is in acme\/peer#24 but not in the PR/);
+  for (const odd of [{ mode: '120000' }, { mode: '100755' }, { type: 'commit', mode: '160000' }]) {
+    refused({ headTree: headTree([blob('.claude/agents/helper.md', 'z', odd)]) }, /\.claude\/agents\/helper\.md is not a plain file/);
+  }
 });
 
 test('a tree GitHub cut short proves nothing', () => {
@@ -189,9 +189,11 @@ function world({ peerRead = () => {}, headNow = HEAD, render = async () => null 
 
 test('readKitCopy reads the trees by SHA, decides, and always renders; without the line of the description it reads nothing', async () => {
   const rendered = [];
-  const { input, asked } = world({ render: async (sha) => { rendered.push(sha); return null; } });
+  const { input, asked } = world({ render: async (sha, paths) => { rendered.push([sha, paths]); return null; } });
   assert.deepEqual(await readKitCopy(input), { ok: true, compared: 5, reference: { ...claim, head: REF_HEAD } });
-  assert.deepEqual(rendered, [HEAD]);
+  assert.deepEqual(rendered, [[HEAD, ['.claude/agents/security.md']]], 'with the rendered files of the head, for the render to name any other');
+  // The newest kit of the peer is on develop, whatever branch the reference was merged into (review of ao-pilot PR #24).
+  assert.equal(gates.kit_copy.newest_branch, 'develop');
   assert.deepEqual(asked.find(([, path]) => path === '/commits')[2], { path: '.ai-orchestrator/lib', sha: 'develop', per_page: 1 });
   assert.equal(asked.some(([, path]) => path.endsWith('/files')), false, 'no list of files, which GitHub cuts at 3000');
   const none = world();
@@ -227,13 +229,17 @@ test('a wrong render refuses the copy, and a copy refused before it renders noth
 test('renderedReason always removes its tree, and says what did not match', () => {
   const steps = [];
   const tree = (ok = true) => ({ add: () => { steps.push('add'); return ok ? { ok, path: '/tmp/t' } : { ok, reason: 'no such commit' }; }, remove: () => { steps.push('remove'); } });
-  assert.equal(renderedReason({ sha: HEAD, tree: tree(), render: (path) => { steps.push(path); return { status: 0, text: '' }; } }), null);
+  const written = ['.claude/agents/security.md', '.claude/rules/ai-orchestrator.md'];
+  const fine = (path) => { steps.push(path); return { status: 0, text: '', files: written }; };
+  assert.equal(renderedReason({ sha: HEAD, paths: written, tree: tree(), render: fine }), null);
   assert.deepEqual(steps, ['add', '/tmp/t', 'remove']);
-  assert.equal(renderedReason({ sha: HEAD, tree: tree(), render: () => ({ status: 1, text: '.claude/agents/security.md is stale\n' }) }), 'the rendered files at eeeeeee do not match their sources: .claude/agents/security.md is stale');
+  assert.equal(renderedReason({ sha: HEAD, paths: written, tree: tree(), render: () => ({ status: 1, text: '.claude/agents/security.md is stale\n', files: written }) }), 'the rendered files at eeeeeee do not match their sources: .claude/agents/security.md is stale');
+  // Review of ao-pilot PR #24: --check compares only the files it renders.
+  assert.equal(renderedReason({ sha: HEAD, paths: [...written, '.claude/agents/helper.md', '.claude/agents/sub/x.md'], tree: tree(), render: fine }), 'the PR has .claude/agents/helper.md, .claude/agents/sub/x.md among the rendered files, which render-agents does not write');
   steps.length = 0;
-  assert.throws(() => renderedReason({ sha: HEAD, tree: tree(), render: () => { throw new Error('boom'); } }), /boom/);
+  assert.throws(() => renderedReason({ sha: HEAD, paths: written, tree: tree(), render: () => { throw new Error('boom'); } }), /boom/);
   assert.deepEqual(steps, ['add', 'remove']);
-  assert.equal(renderedReason({ sha: HEAD, tree: tree(false), render: () => assert.fail('no tree, no render') }), 'the tree of eeeeeee could not be made: no such commit');
+  assert.equal(renderedReason({ sha: HEAD, paths: written, tree: tree(false), render: () => assert.fail('no tree, no render') }), 'the tree of eeeeeee could not be made: no such commit');
 });
 
 test('the reports go on the head that was compared, whatever the head is by then', async () => {

@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { cpSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { mergeLocal, readRoster } from '../../lib/agents/roster.mjs';
@@ -60,6 +60,18 @@ test('--project renders into the project\'s .claude/, with its space key and its
 
   writeFileSync(join(dir, '.ai-orchestrator', 'roster.local.yaml'), 'roles:\n  fe-dev:\n    skills: []\n');
   assert.equal(render(dir, '--check').status, 1, 'stale once the local file changes');
+});
+
+// kit-copy-review: ao-step needs the files render-agents writes, to refuse any other file among the rendered ones.
+test('--list prints the files render-agents writes in the project, and writes nothing', (t) => {
+  const dir = project(t);
+  const result = render(dir, '--list');
+  assert.equal(result.status, 0, result.stderr);
+  const listed = result.stdout.trim().split('\n');
+  assert.ok(listed.includes('.claude/agents/security.md'));
+  assert.ok(listed.includes('.claude/rules/ai-orchestrator.md'));
+  assert.equal(listed.length, readdirSync(join(ROOT, 'agents', 'prompts')).length + 1);
+  assert.throws(() => readFileSync(join(dir, '.claude', 'agents', 'security.md')), 'nothing written');
 });
 
 test('--project stops on an error of roster.local.yaml and writes nothing', (t) => {
