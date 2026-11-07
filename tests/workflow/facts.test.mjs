@@ -25,6 +25,29 @@ const gather = (command, arg, { change = () => {}, local = noLocal } = {}) => {
   return gatherFacts({ command, arg, jira: recordedClient(copy.jira), github: recordedClient(copy.github), local, ...ctx });
 };
 
+test('/ao-review compares a kit copy only while a report is missing on the head', async () => {
+  const asked = [];
+  const kitCopy = async (pr) => {
+    asked.push(pr.number);
+    return { ok: false, reason: 'src/a.mjs differs' };
+  };
+  const read = (command, change = () => {}) => {
+    const copy = structuredClone(recording);
+    change(copy);
+    return gatherFacts({ command, arg: '11', jira: recordedClient(copy.jira), github: recordedClient(copy.github), local: noLocal, ...ctx, kitCopy });
+  };
+  const missing = await read('review', (copy) => { copy.github['/pulls/11/reviews'] = []; });
+  assert.deepEqual([asked, missing.kitCopy], [[11], { ok: false, reason: 'src/a.mjs differs' }]);
+  asked.length = 0;
+  const onHead = await read('review');
+  assert.deepEqual(Object.values(onHead.pr.reports).map((report) => report?.onHead), [true, true], 'the recording has both reports on its head');
+  assert.deepEqual([asked, onHead.kitCopy], [[], undefined]);
+  await read('fix', (copy) => { copy.github['/pulls/11/reviews'] = []; });
+  assert.deepEqual(asked, [], 'only /ao-review compares');
+  const none = await gatherFacts({ command: 'review', arg: '11', jira: recordedClient(structuredClone(recording).jira), github: recordedClient(structuredClone(recording).github), local: noLocal, ...ctx, kitCopy: async () => null });
+  assert.equal('kitCopy' in none, false, 'no claim, no fact');
+});
+
 test('the Agent field value of every role, in the names Jira uses', () => {
   const names = agentNames(contract, mapping);
   assert.equal(names.ba, 'Business Analyst');
