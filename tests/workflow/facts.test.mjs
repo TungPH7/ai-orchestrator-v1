@@ -25,7 +25,7 @@ const gather = (command, arg, { change = () => {}, local = noLocal } = {}) => {
   return gatherFacts({ command, arg, jira: recordedClient(copy.jira), github: recordedClient(copy.github), local, ...ctx });
 };
 
-test('/ao-review compares a kit copy only while a report is missing on the head', async () => {
+test('/ao-review compares a kit copy only on an open PR with green CI, while a report is missing on the head', async () => {
   const asked = [];
   const kitCopy = async (pr) => {
     asked.push(pr.number);
@@ -33,9 +33,13 @@ test('/ao-review compares a kit copy only while a report is missing on the head'
   };
   const read = (command, change = () => {}) => {
     const copy = structuredClone(recording);
+    // PR #11 of the recording is merged: open it again for the compare.
+    Object.assign(copy.github['/pulls/11'], { state: 'open', merged_at: null });
     change(copy);
     return gatherFacts({ command, arg: '11', jira: recordedClient(copy.jira), github: recordedClient(copy.github), local: noLocal, ...ctx, kitCopy });
   };
+  const closed = await read('review', (copy) => { copy.github['/pulls/11/reviews'] = []; copy.github['/pulls/11'].state = 'closed'; });
+  assert.deepEqual([asked, closed.kitCopy], [[], undefined], 'a closed PR is not compared');
   const missing = await read('review', (copy) => { copy.github['/pulls/11/reviews'] = []; });
   assert.deepEqual([asked, missing.kitCopy], [[11], { ok: false, reason: 'src/a.mjs differs' }]);
   asked.length = 0;
