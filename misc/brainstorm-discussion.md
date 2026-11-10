@@ -32,7 +32,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 22 | `d714399c-65d0-4f98-bbbb-720338ff6bea` | 2026-11-02 khoảng 10:50 → khoảng 20:08 | Bạn dán đoạn cuối của Phiên 21 kèm ảnh panel Development của `SMP-1`, hỏi `Deploy` đỏ có đúng dự kiến không; Claude đọc run và log của `audit`: đúng dự kiến (commit đầu không qua PR), và ảnh cho thấy GitHub for Atlassian đã gắn run vào `SMP-1`; bạn dọn `SMP-1` và bấm Start spec; Claude merge kit PR #143 (T3–T6, Checkpoint 2), chạy `/ao-spec SMP-2` qua `claude -p`: `ba` viết SPEC (1,49 USD) và để lại 4 câu hỏi; Claude chuyển câu hỏi cho bạn, khuyên đồng ý cả bốn; bạn đồng ý cả bốn; Claude nối lại phiên `claude -p` với câu trả lời: `ba`, `ux`, `sa` chạy (3,36 USD), `sa` để lại 2 câu hỏi (đếm emoji, chuẩn hóa NFC và xuống dòng); Claude khuyên đồng ý cả hai; bạn đồng ý cả hai; `sa` ghi câu trả lời, `ba` mở PR tài liệu #1, nhưng GitHub không chạy CI và `ao-step` chờ 30 phút; bạn hỏi vì sao không dừng; Claude dùng nhánh và PR thử tìm ra nguyên nhân (workflow từ lần push đầu chưa được ghi nhận trigger; một push đụng `.github/workflows/` gỡ được), `CI` của PR #1 xanh; tìm thêm lỗi kit `openQuestions` bỏ sót 10 câu hỏi của `ux`; tới gate ①, Claude khuyên không thêm dòng "Đã lưu ghi chú." và gửi các bước Approve spec; bạn hỏi vì sao có hai lỗi nặng và yêu cầu sửa; Claude sửa ở kit (PR #144), chép vào `ao-sample` (Task `SMP-3`, PR #3), `/ao-review 3` Approve (1 Medium, 2 Low ở kit, sửa ở kit PR #145); bạn approve và merge PR #3, hỏi có cần chép kit vào `ao-pilot` (chưa cần); bạn đã bấm Approve spec, chọn chạy `/ao-plan`; `sa` chạm giới hạn 5 giờ giữa lượt viết plan; bạn bảo làm tiếp; `sa` viết xong plan và ba ADR, `ba` tạo 8 item nhưng không tạo được link Blocks; phiên dừng vì Claude chạm giới hạn tuần |
 | 23 | `6d4fa505-b003-47c3-bad3-14958ad7ae83` | 2026-11-02 khoảng 22:10 → | Bạn dán đoạn cuối của Phiên 22 để làm tiếp; Claude tạo 5 link Blocks bằng token CI, tắt server spike `sa` để lại, ghi stage plan và 3 lỗi kit vào `verification.md`, gửi các bước duyệt plan (gate ②) |
 | 26 | `6b41390c-2d48-4d39-9a30-5a4e22f76bf7` | 2026-11-04 khoảng 13:10 → | Bạn báo đã merge kit PR #165; Claude chép vào `ao-sample` PR #13 và review lần 2 (security lại có 1 High: `AGENTS.md`), mở kit PR #166; bạn hỏi chạy review ở high, vì sao lần nào cũng ra High, vì sao security review cả PR; Claude tìm lý do của luật review toàn bộ trong file này; bạn chọn đổi luật review phần mới, điều kiện đường dẫn được bảo vệ (b), và sửa gốc (code của PR không nằm trong thư mục dự án); Claude thử bằng Sonnet và sửa thêm trong kit PR #166; bạn merge #166; Claude chép vào PR #13, review lần 3 còn hai Medium để sau Pilot 1; bạn merge PR #13 (`e56a207`); T10: kit PR #167 (đường bấm của board Jira mới) và #168 (đầu vào cho `project-scaffold`, bảng lỗi kit, chi phí Pilot 1 khoảng 117,6 USD, plan vào `tasks/archive/pilot-1/`); bạn xác nhận Pilot 1 hoàn thành (PR #169); bạn hỏi tài khoản GitHub Free có bị tính tiền không: Billed 0 USD, phần miễn phí bù hết Gross; bạn chọn `release-workflow`; Claude nêu phạm vi, điều vừa kiểm (repo private gói Free không có secret theo môi trường và người duyệt bắt buộc, phần miễn phí 12 USD Actions mỗi tháng, tài khoản agent không tạo được Fix Version), bảy giả định và ba câu hỏi (VPS, cách đưa bản mới vào VPS, kiểm thật ở `ao-pilot` hay `ao-sample`); bạn trả lời: dùng VPS `dtddeploy` của bạn với subdomain của `t2g.io.vn`, VPS tự kéo bản đã qua cổng, kiểm thật trên `ao-pilot` trước; key SSH của VPS có passphrase, Claude chỉ cách mở khóa bằng ssh-agent của Windows; bạn mở khóa key; Claude thấy VPS rất có thể đã bị chiếm quyền root (`masscan` chạy bằng root từ một IP của Aeza Group, SSH cho root đăng nhập bằng mật khẩu) và quá nhỏ (1 vCPU, 961 MB RAM), khuyên thu hồi bí mật và cài lại VPS, rồi hỏi lại câu 1; bạn xác nhận `masscan` không phải của bạn, nhờ ghi việc xử lý VPS vào memory (không commit), và hỏi về passphrase 4 chữ số, cách người lạ vào, cách SSH an toàn và EC2: người lạ có root từ khoảng 7/7/2026, nhiều khả năng nhờ mật khẩu root, passphrase không phải nguyên nhân; EC2 chỉ rẻ hơn khi bật ít giờ; bạn chọn VPS mới riêng cho kit; Claude viết `SPEC-release-workflow.md` (deployer trên VPS kiểm mọi commit bằng `audit`, hai điều kiện cứng cho Production, bốn lệnh `/ao-qa`, `/ao-release`, `/ao-ship`, `/ao-rollback`, mười tiền đề), đổi năm chỗ so với giả định, hỏi hai câu (subdomain, basic auth); bạn chọn cả hai đề xuất và duyệt spec; Claude ghi spec đã duyệt (PR #170), nhưng bộ lọc an toàn dừng tin nhắn hai lần; bạn hỏi nguyên nhân; Claude viết plan 23 task, bốn checkpoint, ba quyết định cần duyệt (đổi bản không gián đoạn, gỡ chặn bằng `/ao-rollback <môi trường> <sha>`, bản chép kit đi cùng Task của `ao-pilot`); bạn nhờ giải thích lại quyết định 5; Claude giải thích bằng ví dụ commit push thẳng nằm giữa lịch sử, cách gỡ bằng yêu cầu deploy của bạn, và hỏi có muốn tên `/ao-deploy` thay cho `/ao-rollback <sha>`; bạn merge PR #170 và duyệt plan; Claude ghi ba quyết định vào spec, mở PR #171, bắt đầu T1 (App `ao-deploy` trong script tạo App, mục 7 của `docs/github-apps-setup.md`), mở trang tạo App và đưa các bước bấm để bạn tạo App và token Jira chỉ đọc; bạn báo đã xong và hỏi quyền của App; Claude xác nhận quyền đúng thiết kế, nhưng tiền đề 3 sai một phần (`audit` cần quyền Commit statuses), đề xuất thêm quyền chỉ đọc đó, đề xuất hủy `DEMO-3` trước phép thử điểm 1, và báo tag `v0.1.0`, nhánh `release/0.1.0` cũ trên `ao-pilot`; bạn thêm quyền và hủy `DEMO-3`; Claude kiểm sáu tiền đề (1, 3, 4, 9, 10 đúng; 8 sai: token của agent không gắn được file), đề xuất gắn bằng chứng bằng token CI trong script, thêm điểm bắt đầu cho deployer, nhờ bạn xem deployment trên `DEMO-21` và hủy Bug thử `DEMO-25`; bạn gửi ảnh tab Deployments, hủy `DEMO-25` và đồng ý đề xuất; Claude đóng T1 (điểm 2 đúng; script dùng token CI cho bằng chứng, Fix Version và comment), nhờ bạn merge PR #171; bạn merge #171, chọn gói VPS MMO4 của BKNS và bỏ bước đưa lựa chọn nhà cung cấp; Claude mở PR #172 của T1, đưa các bước tạo key SSH mới và đặt VPS; bạn gửi ảnh form đặt hàng của BKNS; Claude viết lại bước 2 theo form (`Ubuntu-24-x64`, hostname `vps.ao.t2g.io.vn`, dán public key, 1 snapshot nếu giá hợp lý); bạn gửi ảnh form đã điền; Claude xác nhận đúng; bạn gửi IP `42.96.4.120`; VPS trả lời ping nhưng SSH chưa mở, Claude chờ cổng 22 và hỏi cổng SSH, trạng thái VPS; bạn gửi cổng `26266`; Claude cài phần nền (chỉ key, `ufw`, tự cập nhật, swap, Docker, Node.js 24, user `aoadmin`), viết `docs/vps-setup.md`, nhờ bạn đặt mật khẩu `aoadmin` và tạo bản ghi DNS wildcard; bạn hỏi đăng nhập bằng key thì ở vai trò nào và lúc tạo `aoadmin` Claude ở vai trò nào; Claude giải thích tên user trong lệnh quyết định vai trò, và Claude đã tạo `aoadmin` bằng root; bạn báo đã đặt mật khẩu và tạo bản ghi DNS; Claude thử ba tiền đề còn lại của T2 (build đúng, HTTPS đúng, E2E 19/24), dọn VPS, tắt đăng nhập root, quét cổng, rồi đề xuất ba chỗ sửa spec và plan; bạn nhắc Claude hai lần trả lời bằng tiếng Việt; bạn gỡ key, merge #172 và duyệt ba đề xuất; Claude sửa spec và plan (`AO_PUBLIC_URL`, tag `@local`, dọn cache build ở T7), đóng T2, mở PR #173, chờ bạn xem kết quả T1–T2 ở Checkpoint 1; bạn hỏi vì sao Claude cứ trả lời bằng tiếng Anh; Claude xin lỗi, giải thích lỗi chép tin từ log, thêm bước kiểm vào bộ nhớ và gửi lại bản tiếng Việt; bạn hỏi nguyên nhân; Claude nêu ba nguyên nhân (ngữ cảnh tiếng Anh sau khi phiên bị nén, viết lại tin thay vì chép từ log, tin tiến độ theo thông báo tiếng Anh) |
-| 27 | `6fe2d487-8a5e-4cfb-a02c-e03e1598a124` | 2026-11-06 khoảng 00:21 → | Bạn báo đã merge PR #173 và nhắc đọc memory; Claude đánh dấu Checkpoint 1 đạt, làm T3 (`versions.mjs`, `cut.mjs`, PR #174), T4 (kiểm `deploy.yaml`, schema chuyển vào `lib/release/`) và T5 (`targets.mjs`), rồi đề xuất báo lần từ chối bằng status `error`, để `jira-sync` không tạo Bug Critical sai; bạn merge #174 và duyệt đề xuất; Claude sửa spec, mở PR #175 của T4, làm T6 (`auditRange`, commit báo cáo của bot trên `release/*`, PR merge ngược); bạn merge #175; Claude mở PR #176 của T5, làm T7 (`smoke.mjs`, `docker.mjs`: đổi bản theo từng app, hai alias, bí mật qua môi trường của lệnh `docker`); bạn merge #176; Claude mở PR #177 của T6, làm T8 (`deployer.mjs`, `record.mjs`, `scripts/ao-deploy.mjs`), chạy thử `tick --dry-run` vào `ao-pilot`: dừng đúng ở `3fdd514`; bạn merge #177; Claude mở PR #178 của T7, làm T9 (Caddyfile do deployer sinh, schema của `deployer.yaml`, systemd, `ao-secret.sh`, mục 11 của `docs/vps-setup.md`); bạn hỏi Claude có tự merge được không; Claude trả lời được (repo kit private gói Free không có branch protection, `gh` có quyền admin), quy ước hiện tại là quyết định 10 của plan, và đề xuất để Claude merge PR của kit khi CI xanh, bạn xem ở checkpoint; bạn cho Claude tự merge tới Checkpoint 2; Claude ghi quyết định vào plan, merge #179 (T8), #180 (T9), #181 (T10: `merge-gate` cho PR release và PR merge ngược), #182 (T11: `jira-sync` tạo Bug Critical, gắn cờ khi deploy lên môi trường QA thất bại); bạn nhắn tiếp; Claude merge #183–#188 (T12–T17: dữ kiện môi trường, `/ao-qa`, `/ao-release`, `/ao-ship`, hotfix, `/ao-rollback`, bốn skill), sửa chỗ hở `JIRA_CI_TOKEN` trong phiên agent, chạm giới hạn usage giữa T15 rồi làm tiếp; tới Checkpoint 2, kiểm chỉ đọc trong `ao-pilot`, đề xuất ba việc trước kiểm thật; bạn hỏi `DEMO-5`, `DEMO-19` có phải hai Task trong ảnh không, vì Jira chỉ cho chuyển sang Cancelled, và PR #189 có chỉ cần Rebase and merge; Claude đính chính: từ New bạn chỉ `Refine` hoặc `Cancel`, mười item có commit trên `develop` chỉ `DEMO-12` Done, điểm cắt tính cả key của Epic là lỗi, xóa tag `v0.1.0` làm `DEMO-3` chặn điểm cắt; đề xuất A (điểm cắt bỏ qua Epic), B (sửa dữ liệu Jira của item cũ bằng token bot), C (giữ tag `v0.1.0`); bạn hỏi nên chọn phương án nào, dặn chưa làm gì; Claude nói đó là ba việc riêng, chọn B1; bạn merge #189, duyệt cả ba, cho tiếp tục tự merge; Claude merge #190 (việc A); việc B dừng sau `DEMO-19`, vì token của `ao-agents` không ghi được qua REST, và hỏi bạn có cho gọi Rovo MCP bằng script không; bạn đồng ý và nạp key SSH; Claude sửa xong dữ liệu Jira qua Rovo MCP, cài phần T18 của mình trên VPS, chuyển 11 deployment cũ sang `inactive`, rồi dừng để bạn bấm `Accept` và nhập hai bí mật; bạn làm xong; Claude kiểm, chạy `baseline pilot`, và hỏi bạn duyệt hai head trước `--confirm`; bạn hỏi có cần merge `develop` vào `main` không; Claude trả lời không cần và không nên, hai hướng merge đều không xung đột; bạn duyệt hai head; Claude ghi điểm bắt đầu, bật timer, thấy `AO_ENV_AUTH` không khớp mật khẩu trên VPS, báo đã in bản băm của mật khẩu ra output, và nhờ bạn nhập mật khẩu mới; bạn nhập lại; Claude thấy basic auth đã khớp, tắt đăng nhập root, và nhờ bạn gỡ key SSH, xóa file key `ao-deploy`; bạn làm xong; Claude đóng T18, tạo Task `DEMO-26` của T19, và nhờ bạn đọc rồi bấm `Refine`; bạn bấm `Refine`; lượt build đầu của `devops` dừng vì hook `jira-guard` nhận 401, do Claude quên đặt `AO_KIT_DIR`; Claude nhờ bạn gỡ cờ trên `DEMO-26`; bạn gỡ cờ; `devops` mở ao-pilot PR #17; Claude thấy trace của Playwright giữ mật khẩu basic auth và sửa kit (#198); bạn yêu cầu báo tiến độ 3 phút một lần; `/ao-review`, `/ao-fix` chạy, `policy` đọc nhầm `exit(` (#199), chạm giới hạn 5 giờ rồi chạy tiếp; không còn Critical hay High, ba Medium trong kit sửa ở #200; chi phí của `DEMO-26` là 20,53 USD; Claude nhờ bạn duyệt và merge PR #17 ở gate ③; bạn merge; deploy đầu lên Development thất bại vì `UMask=0077` làm image không đọc được code; Claude dựng lại lỗi bằng Docker Desktop, sửa kit ở #202, và hỏi bạn có đồng ý chép bản kit mới lên VPS; bạn đồng ý; Claude chép kit lên VPS, deploy lại `fb71de5` thành công, E2E vào Development 24/24 xanh, rồi làm T20: deployer chặn commit push thẳng, GitHub từ chối token `ao-dev`; bạn đồng ý gỡ chặn; Development chạy `fbbc47d`; tới Checkpoint 3, Claude hỏi bạn có chạy T21–T22 không; bạn hỏi vì sao T19 chưa được đánh xong; Claude giải thích hai mục còn mở và nhận đã nói quá; bạn đồng ý đánh xong T19, chép kit lại sau T22, và chạy T21–T22; `qa` kiểm bốn item trên Development, hai lượt chạm giới hạn 5 giờ, Claude sửa lỗi chạy tiếp lượt `qa` (#207); cả bốn PASS, bạn `Accept`; Claude đưa link trang Releases sai, bạn thêm tab Releases và tạo `v0.2.0`, `v0.3.0`; `/ao-release` dừng ở gate ④ với 10 item, chờ bạn duyệt; bạn duyệt; Staging chạy `v0.2.0`, regression PASS, PR release #18 đỏ ở `policy`; Claude sửa kit (#209); bạn đồng ý đi luồng Bug `DEMO-27` không review; `audit` chặn bản sửa trên Staging vì thiếu báo cáo review, Claude nhận đã đề xuất sai; bạn gỡ chặn; `DEMO-27` qua QA trên Staging, bạn `Accept`; regression chạy lại, Claude sửa lỗi gate ⑤ đến quá sớm (#211), release note viết lại; bạn approve PR #18; `merge-gate` merge, gắn tag `v0.2.0`, merge ngược; Production chạy `v0.2.0`, cùng tree với Staging; bạn bấm Release; T22: bạn chọn Bug thử `/favicon.ico` với Severity High, Claude tạo `DEMO-28`; `be-dev` sửa, đo được câu "console có lỗi" của Claude là sai, Claude sửa Bug; `merge-gate` merge PR #21; lượt `qa` bị tắt vì máy thiếu RAM, bạn giải phóng RAM, `qa` PASS; bạn `Accept`; `/ao-ship v0.2.1` chờ gate ⑤; bạn duyệt, `v0.2.1` lên Production; bạn bấm Release; rollback về `v0.2.0` và lên lại `v0.2.1` đều đạt; smoke fail có chủ đích đạt, `jira-sync` tạo Bug `DEMO-29`, Production giữ `v0.2.1`; T22 đóng; Claude rà việc tồn ở kit, Jira và hai pilot, sửa hai Medium của Pilot 1 (PR #218); chép kit lên VPS (`521e031`); Checkpoint 4 đóng, `docs/release-workflow.md` (PR #219); T22b: ao-pilot PR #23, review tìm lỗi High trong PR #217, sửa ở PR #220, chép lại, merge (`0f86022`), `qa` PASS, bạn Accept; T22b và T23 xong, plan lưu ở `tasks/archive/release-workflow/`, bạn xác nhận `release-workflow` hoàn thành; bạn hỏi Pilot 2 khác gì Pilot 1 và cách giảm chi phí review PR chép kit; Claude thử mù review (`max`, `high`, `open-code-review`), viết và được duyệt spec `kit-copy-review`; Claude làm `kit-copy-review` (kit PR #224–#230), review đầy đủ bản kit ở `ao-pilot` PR #24 (15,59 USD, một High được sửa), chép sang `ao-sample` PR #14 không cần agent (0 USD); đóng `kit-copy-review`, bạn duyệt spec Pilot 2 |
+| 27 | `6fe2d487-8a5e-4cfb-a02c-e03e1598a124` | 2026-11-06 khoảng 00:21 → | Bạn báo đã merge PR #173 và nhắc đọc memory; Claude đánh dấu Checkpoint 1 đạt, làm T3 (`versions.mjs`, `cut.mjs`, PR #174), T4 (kiểm `deploy.yaml`, schema chuyển vào `lib/release/`) và T5 (`targets.mjs`), rồi đề xuất báo lần từ chối bằng status `error`, để `jira-sync` không tạo Bug Critical sai; bạn merge #174 và duyệt đề xuất; Claude sửa spec, mở PR #175 của T4, làm T6 (`auditRange`, commit báo cáo của bot trên `release/*`, PR merge ngược); bạn merge #175; Claude mở PR #176 của T5, làm T7 (`smoke.mjs`, `docker.mjs`: đổi bản theo từng app, hai alias, bí mật qua môi trường của lệnh `docker`); bạn merge #176; Claude mở PR #177 của T6, làm T8 (`deployer.mjs`, `record.mjs`, `scripts/ao-deploy.mjs`), chạy thử `tick --dry-run` vào `ao-pilot`: dừng đúng ở `3fdd514`; bạn merge #177; Claude mở PR #178 của T7, làm T9 (Caddyfile do deployer sinh, schema của `deployer.yaml`, systemd, `ao-secret.sh`, mục 11 của `docs/vps-setup.md`); bạn hỏi Claude có tự merge được không; Claude trả lời được (repo kit private gói Free không có branch protection, `gh` có quyền admin), quy ước hiện tại là quyết định 10 của plan, và đề xuất để Claude merge PR của kit khi CI xanh, bạn xem ở checkpoint; bạn cho Claude tự merge tới Checkpoint 2; Claude ghi quyết định vào plan, merge #179 (T8), #180 (T9), #181 (T10: `merge-gate` cho PR release và PR merge ngược), #182 (T11: `jira-sync` tạo Bug Critical, gắn cờ khi deploy lên môi trường QA thất bại); bạn nhắn tiếp; Claude merge #183–#188 (T12–T17: dữ kiện môi trường, `/ao-qa`, `/ao-release`, `/ao-ship`, hotfix, `/ao-rollback`, bốn skill), sửa chỗ hở `JIRA_CI_TOKEN` trong phiên agent, chạm giới hạn usage giữa T15 rồi làm tiếp; tới Checkpoint 2, kiểm chỉ đọc trong `ao-pilot`, đề xuất ba việc trước kiểm thật; bạn hỏi `DEMO-5`, `DEMO-19` có phải hai Task trong ảnh không, vì Jira chỉ cho chuyển sang Cancelled, và PR #189 có chỉ cần Rebase and merge; Claude đính chính: từ New bạn chỉ `Refine` hoặc `Cancel`, mười item có commit trên `develop` chỉ `DEMO-12` Done, điểm cắt tính cả key của Epic là lỗi, xóa tag `v0.1.0` làm `DEMO-3` chặn điểm cắt; đề xuất A (điểm cắt bỏ qua Epic), B (sửa dữ liệu Jira của item cũ bằng token bot), C (giữ tag `v0.1.0`); bạn hỏi nên chọn phương án nào, dặn chưa làm gì; Claude nói đó là ba việc riêng, chọn B1; bạn merge #189, duyệt cả ba, cho tiếp tục tự merge; Claude merge #190 (việc A); việc B dừng sau `DEMO-19`, vì token của `ao-agents` không ghi được qua REST, và hỏi bạn có cho gọi Rovo MCP bằng script không; bạn đồng ý và nạp key SSH; Claude sửa xong dữ liệu Jira qua Rovo MCP, cài phần T18 của mình trên VPS, chuyển 11 deployment cũ sang `inactive`, rồi dừng để bạn bấm `Accept` và nhập hai bí mật; bạn làm xong; Claude kiểm, chạy `baseline pilot`, và hỏi bạn duyệt hai head trước `--confirm`; bạn hỏi có cần merge `develop` vào `main` không; Claude trả lời không cần và không nên, hai hướng merge đều không xung đột; bạn duyệt hai head; Claude ghi điểm bắt đầu, bật timer, thấy `AO_ENV_AUTH` không khớp mật khẩu trên VPS, báo đã in bản băm của mật khẩu ra output, và nhờ bạn nhập mật khẩu mới; bạn nhập lại; Claude thấy basic auth đã khớp, tắt đăng nhập root, và nhờ bạn gỡ key SSH, xóa file key `ao-deploy`; bạn làm xong; Claude đóng T18, tạo Task `DEMO-26` của T19, và nhờ bạn đọc rồi bấm `Refine`; bạn bấm `Refine`; lượt build đầu của `devops` dừng vì hook `jira-guard` nhận 401, do Claude quên đặt `AO_KIT_DIR`; Claude nhờ bạn gỡ cờ trên `DEMO-26`; bạn gỡ cờ; `devops` mở ao-pilot PR #17; Claude thấy trace của Playwright giữ mật khẩu basic auth và sửa kit (#198); bạn yêu cầu báo tiến độ 3 phút một lần; `/ao-review`, `/ao-fix` chạy, `policy` đọc nhầm `exit(` (#199), chạm giới hạn 5 giờ rồi chạy tiếp; không còn Critical hay High, ba Medium trong kit sửa ở #200; chi phí của `DEMO-26` là 20,53 USD; Claude nhờ bạn duyệt và merge PR #17 ở gate ③; bạn merge; deploy đầu lên Development thất bại vì `UMask=0077` làm image không đọc được code; Claude dựng lại lỗi bằng Docker Desktop, sửa kit ở #202, và hỏi bạn có đồng ý chép bản kit mới lên VPS; bạn đồng ý; Claude chép kit lên VPS, deploy lại `fb71de5` thành công, E2E vào Development 24/24 xanh, rồi làm T20: deployer chặn commit push thẳng, GitHub từ chối token `ao-dev`; bạn đồng ý gỡ chặn; Development chạy `fbbc47d`; tới Checkpoint 3, Claude hỏi bạn có chạy T21–T22 không; bạn hỏi vì sao T19 chưa được đánh xong; Claude giải thích hai mục còn mở và nhận đã nói quá; bạn đồng ý đánh xong T19, chép kit lại sau T22, và chạy T21–T22; `qa` kiểm bốn item trên Development, hai lượt chạm giới hạn 5 giờ, Claude sửa lỗi chạy tiếp lượt `qa` (#207); cả bốn PASS, bạn `Accept`; Claude đưa link trang Releases sai, bạn thêm tab Releases và tạo `v0.2.0`, `v0.3.0`; `/ao-release` dừng ở gate ④ với 10 item, chờ bạn duyệt; bạn duyệt; Staging chạy `v0.2.0`, regression PASS, PR release #18 đỏ ở `policy`; Claude sửa kit (#209); bạn đồng ý đi luồng Bug `DEMO-27` không review; `audit` chặn bản sửa trên Staging vì thiếu báo cáo review, Claude nhận đã đề xuất sai; bạn gỡ chặn; `DEMO-27` qua QA trên Staging, bạn `Accept`; regression chạy lại, Claude sửa lỗi gate ⑤ đến quá sớm (#211), release note viết lại; bạn approve PR #18; `merge-gate` merge, gắn tag `v0.2.0`, merge ngược; Production chạy `v0.2.0`, cùng tree với Staging; bạn bấm Release; T22: bạn chọn Bug thử `/favicon.ico` với Severity High, Claude tạo `DEMO-28`; `be-dev` sửa, đo được câu "console có lỗi" của Claude là sai, Claude sửa Bug; `merge-gate` merge PR #21; lượt `qa` bị tắt vì máy thiếu RAM, bạn giải phóng RAM, `qa` PASS; bạn `Accept`; `/ao-ship v0.2.1` chờ gate ⑤; bạn duyệt, `v0.2.1` lên Production; bạn bấm Release; rollback về `v0.2.0` và lên lại `v0.2.1` đều đạt; smoke fail có chủ đích đạt, `jira-sync` tạo Bug `DEMO-29`, Production giữ `v0.2.1`; T22 đóng; Claude rà việc tồn ở kit, Jira và hai pilot, sửa hai Medium của Pilot 1 (PR #218); chép kit lên VPS (`521e031`); Checkpoint 4 đóng, `docs/release-workflow.md` (PR #219); T22b: ao-pilot PR #23, review tìm lỗi High trong PR #217, sửa ở PR #220, chép lại, merge (`0f86022`), `qa` PASS, bạn Accept; T22b và T23 xong, plan lưu ở `tasks/archive/release-workflow/`, bạn xác nhận `release-workflow` hoàn thành; bạn hỏi Pilot 2 khác gì Pilot 1 và cách giảm chi phí review PR chép kit; Claude thử mù review (`max`, `high`, `open-code-review`), viết và được duyệt spec `kit-copy-review`; Claude làm `kit-copy-review` (kit PR #224–#230), review đầy đủ bản kit ở `ao-pilot` PR #24 (15,59 USD, một High được sửa), chép sang `ao-sample` PR #14 không cần agent (0 USD); đóng `kit-copy-review`, bạn duyệt spec Pilot 2; Lượt 74–93: duyệt spec Pilot 2, SMP-17 và SMP-18 (đổi thành Story, Epic SMP-19), QA 9 item, sửa điểm cắt (PR #234), v0.1.0 lên Staging rồi Production, rollback trên Development, checkpoint cuối (PR #235), đóng root login |
 
 ---
 
@@ -15719,3 +15719,989 @@ Chi phí ước tính khoảng 30–40 USD [Ước tính]. Phần lớn là Task
 2. **Phạm vi QA:** chạy `qa` cho cả 8 item (mình đề xuất, vì DoD đòi QA PASS cho từng item), hay chỉ cho 5 item rồi để regression phủ phần còn lại?
 
 **Bạn duyệt spec này không?** Nếu duyệt, mình commit spec cùng plan, rồi bắt đầu tạo `SMP-17` và hướng dẫn bạn cài App `ao-deploy`.
+# Phiên 27 · Lượt 74 — 2026-11-07 22:26
+
+**Bạn:**
+
+```markdown
+Duyệt
+```
+
+**Claude:**
+
+Cảm ơn bạn. Hai câu hỏi mở mình theo đề xuất: rollback trên Development, và chạy `qa` cho cả 8 item. Mình commit spec cùng plan, ghi nhật ký, tạo Task `SMP-17` trên Jira, rồi hướng dẫn bạn những việc cần bấm.
+
+PR spec [#232](https://github.com/TungPH7/ai-orchestrator-v1/pull/232) đã mở. Trong lúc chờ CI, mình tạo Task `SMP-17` trên Jira bằng token CI.
+
+Dòng "Plan" trong mô tả vẫn trỏ tới kế hoạch cũ. Mình sửa bằng `Edit` rồi tạo Task.
+
+Task [SMP-17](https://phunghuutung12b4.atlassian.net/browse/SMP-17) đã được tạo, và spec Pilot 2 đã merge vào kit (`7908a7d`).
+
+## Việc của bạn ở T2
+
+**1. Refine `SMP-17`**
+1. Mở [SMP-17](https://phunghuutung12b4.atlassian.net/browse/SMP-17).
+2. Bấm vào ô trạng thái `New` gần tiêu đề.
+3. Chọn `Refine`.
+
+**2. Cài App `ao-deploy` vào repo `ao-sample`**
+1. Mở [GitHub → Settings → Applications](https://github.com/settings/installations).
+2. Ở thẻ **Installed GitHub Apps**, bấm **Configure** cạnh App `ao-deploy`.
+3. Ở mục **Repository access**, mở danh sách **Select repositories** và chọn `TungPH7/ao-sample`. Giữ nguyên `TungPH7/ao-pilot`.
+4. Bấm **Save**.
+
+**3. Cancel 5 Task chép kit cũ** (bạn làm lúc nào cũng được)
+
+Với từng Task [SMP-3](https://phunghuutung12b4.atlassian.net/browse/SMP-3), [SMP-12](https://phunghuutung12b4.atlassian.net/browse/SMP-12), [SMP-13](https://phunghuutung12b4.atlassian.net/browse/SMP-13), [SMP-14](https://phunghuutung12b4.atlassian.net/browse/SMP-14), [SMP-15](https://phunghuutung12b4.atlassian.net/browse/SMP-15): bấm vào ô trạng thái `New` → chọn `Cancel`.
+
+## Sau khi bạn báo xong
+
+1. Mình chạy `/ao-build SMP-17` cho `devops`, theo dõi mỗi 3 phút. Bước này có tốn usage.
+2. Trong lúc build chạy, mình sẽ nhờ bạn nạp key SSH và mở đăng nhập root để làm phần VPS (T4).
+
+# Phiên 27 · Lượt 75 — 2026-11-07 22:32
+
+**Bạn:**
+
+```markdown
+xong
+```
+
+**Claude:**
+
+Mình kiểm ba việc bạn vừa làm, rồi chạy thử `/ao-build SMP-17` ở chế độ chỉ in quyết định.
+
+Build đang chạy. Trong lúc chờ, mình chuẩn bị phần VPS (T4). Mình xem lại cách bạn nạp key và mở đăng nhập root lần trước, để đưa đúng các bước.
+
+Build vẫn đang chạy. Trong lúc chờ, bạn chuẩn bị giúp mình phần VPS (T4).
+
+## Việc của bạn: mở VPS cho đợt cài này
+
+Trong **PowerShell** của bạn:
+
+1. Nạp key vào ssh-agent, rồi nhập passphrase khi được hỏi:
+   ```
+   ssh-add "$env:USERPROFILE\.ssh\ao_vps"
+   ```
+2. Mở lại đăng nhập root bằng key, rồi nhập mật khẩu `sudo` của `aoadmin` khi được hỏi:
+   ```
+   ssh -p 26266 -i "$env:USERPROFILE\.ssh\ao_vps" -t aoadmin@42.96.4.120 "sudo sed -i 's/^PermitRootLogin no$/PermitRootLogin prohibit-password/' /etc/ssh/sshd_config.d/00-ao-hardening.conf && sudo systemctl restart ssh"
+   ```
+
+Xong thì báo mình. Mình sẽ:
+1. Kiểm App `ao-deploy` đã thấy repo `ao-sample`.
+2. Thêm dự án `sample` vào `deployer.yaml` và tạo ba file bí mật rỗng.
+3. Đặt `baseline` tại head hiện tại của `develop`.
+4. Đo RAM.
+
+Mình không chép kit mới lên VPS.
+
+**Một việc cần bạn cho phép:** spec ghi bạn tự đặt các deployment giả cũ của `ao-sample` thành inactive. Mình có thể làm thay bằng login `gh` của bạn trên máy này, như đã làm với `ao-pilot`. **Bạn đồng ý để mình làm không?**
+
+Bản build `SMP-17` vừa bị Claude Code dừng vì máy thiếu RAM. Theo quy định, mình không tự chạy lại. Mình kiểm xem lượt đó dừng ở đâu và có tiến trình nào còn sót không.
+
+Đã rõ chuyện gì xảy ra. Agent `devops` tự mở **Docker Desktop** trên máy bạn để chạy `docker build` tại chỗ, vì phần kiểm chứng mình ghi trong `SMP-17` có dòng "docker build cả hai Dockerfile tại chỗ". Máy ảo của Docker (`vmmem`) chiếm khoảng 2,1 GB, RAM còn trống chỉ 0,5 GB, nên Claude Code dừng lệnh nền.
+
+## Trạng thái
+
+- **Lượt build** dừng sau 17 lần gọi tool, chi phí gần như 0. Nó đã tạo nhánh `feature/SMP-17-run-on-vps` (chưa có commit) và chuyển `SMP-17` sang In Progress. Phiên của lượt này có trong log, nên chạy lại sẽ tiếp tục đúng chỗ.
+- **Không còn tiến trình agent nào chạy.**
+- **Docker Desktop vẫn đang chạy**, và nó tự bật lại container `learn-postgres` của bạn.
+
+Lỗi này do câu mình viết trong Task, không phải lỗi của agent hay của kit.
+
+## Đề xuất
+
+1. **Bạn tắt Docker Desktop:** chuột phải biểu tượng cá voi ở khay hệ thống → **Quit Docker Desktop**. Cách này giải phóng khoảng 2 GB và đưa máy về trạng thái trước đó. Container `learn-postgres` cũng sẽ dừng theo, như trước khi agent mở Docker.
+2. **Mình build image trên VPS thay vì trên máy bạn:**
+   - Sửa phần kiểm chứng của `SMP-17` trên Jira: bỏ "docker build tại chỗ", thay bằng "Claude build hai image trên VPS trước khi merge". Ở T2 của `release-workflow`, mình đã dựng image `ao-sample` trên VPS theo cách này.
+   - Thêm một dòng vào ledger của `SMP-17` để lượt build chạy tiếp không mở Docker nữa.
+3. Sau đó **chạy tiếp lượt build** trong phiên cũ.
+
+## Bạn cần trả lời
+
+1. Bạn đồng ý với đề xuất trên, và cho mình chạy tiếp build sau khi bạn tắt Docker Desktop không?
+2. Phần VPS ở tin nhắn trước vẫn chờ bạn: nạp key SSH, mở đăng nhập root, và cho phép mình đặt các deployment giả cũ thành inactive bằng login `gh` của bạn. Bạn làm phần này lúc nào cũng được.
+
+Báo cáo lúc 22:36 là của lượt build đã bị dừng, được gửi trễ. Mình đã tắt bộ theo dõi đó, nên bạn sẽ không nhận thêm báo cáo cũ. Mình đang chờ bạn trả lời hai câu ở tin nhắn trên.
+
+# Phiên 27 · Lượt 76 — 2026-11-07 22:39
+
+**Bạn:**
+
+```markdown
+1. đồng ý
+2. xong
+```
+
+**Claude:**
+
+Cảm ơn bạn. Mình kiểm Docker đã tắt và RAM còn trống, sửa Task `SMP-17` cùng ledger, rồi chạy tiếp lượt build. Trong lúc build chạy, mình làm phần VPS.
+
+Jira và ledger đều đã cập nhật. Mình chạy tiếp lượt build trong phiên cũ, ở nền, và báo mỗi 3 phút.
+
+Phần VPS của T4 đã xong:
+
+- Dự án `sample` đã nằm trong `deployer.yaml`, có ba file biến rỗng. App `ao-deploy` đọc được `ao-sample`, và Caddy đã có ba host của `sample`.
+- `baseline` đã ghi tại `develop` `22a0213` và `main` `6f5831d`, nên commit merge của `SMP-17` sẽ là lần deploy thật đầu tiên.
+- 13 deployment giả trên GitHub đã chuyển sang inactive.
+- Deployer của `pilot` vẫn chạy bình thường.
+
+Lượt build của `devops` đang đi đúng hướng. Ledger cho thấy nó không mở Docker, dùng chế độ `standalone` của Next.js, đặt `API_URL=http://api:3001` lúc build, và chuyển các E2E sang gọi `/api/notes` qua web.
+
+Mình giữ đăng nhập root trên VPS mở thêm một lúc, vì còn hai việc: build hai image trên VPS trước khi bạn merge `SMP-17`, và đo RAM sau lần deploy đầu tiên. Xong hai việc đó, mình sẽ đóng đăng nhập root và nhắc bạn gỡ key.
+
+22:43: lượt build chạy tiếp của `devops` đã chạy 3 phút, 24 bước, log vẫn được ghi đều. Dòng "1-devops đang chạy" chỉ là bản ghi của lượt đầu bị dừng, chưa được cập nhật, nên không cần lo.
+
+22:46: `devops` đã chạy 6 phút, 35 bước, vẫn làm việc bình thường.
+
+22:49: `devops` đã chạy 9 phút, 41 bước, log vẫn được ghi đều.
+
+`deploy.yaml` hợp lệ theo bộ kiểm của kit. Mình commit nó cùng `AO_KIT_PEERS` dưới tên bot `ao-dev`, rồi push.
+
+Lần build thử trên VPS đang chạy ở nền, khoảng 11 phút. Mình sẽ báo mỗi 3 phút. Có kết quả, mình sẽ chạy `/ao-review 15`.
+
+22:57: VPS đang build image `api`, dùng 1,4 GB RAM trên tổng 3,9 GB. Chưa có kết quả.
+
+23:00: VPS vẫn đang build image `api`, ở phút thứ 6, RAM ổn định khoảng 1,4 GB. Lần đo ở T2 của `release-workflow` cũng mất khoảng 5–6 phút cho riêng API.
+
+23:03: image `api` đã build xong và VPS đang build image `web`, RAM khoảng 0,9 GB. Kết quả từng bước sẽ hiện khi cả lệnh xong, vì đầu ra đang được giữ trong bộ đệm.
+
+23:06: VPS vẫn đang build image `web`, RAM khoảng 1,4 GB, chưa có dấu hiệu lỗi.
+
+23:10: VPS vẫn build image `web`, đã 15 phút cho cả lệnh. Thời gian này vẫn nằm trong mức đo được lần trước (web khoảng 6 phút).
+
+Image `web` đã build khoảng 10 phút, lâu hơn mức 6 phút đo lần trước. Mình xem VPS đang chạy bước nào.
+
+Cả hai image đã build xong, và script vừa chuyển sang bước chạy hai container để thử. Kết quả sẽ có trong khoảng một phút.
+
+Mô tả PR đã đầy đủ. Mình chạy `/ao-review 15` ở nền và báo mỗi 3 phút.
+
+Mình đã ghi kết quả T2–T4, chưa commit. Review của PR #15 đang chạy, mình sẽ báo mỗi 3 phút.
+
+Đây là thông báo trễ của bộ theo dõi lần build trên VPS; kết quả mình đã báo ở trên. Review PR #15 vẫn đang chạy.
+
+23:18: `reviewer` của PR #15 đã chạy 3 phút, 32 bước, log vẫn được ghi đều.
+
+23:21: `reviewer` đã chạy 6 phút, 39 bước, vẫn làm việc bình thường.
+
+You've hit your 5-hour limit · resets 12:40am (Asia/Bangkok)
+
+# Phiên 27 · Lượt 77 — 2026-11-07 23:23
+
+**Bạn:**
+
+```markdown
+Tiếp tục những gì đang làm
+```
+
+**Claude:**
+
+Đã đặt xong. Lúc 00:41 lượt review của PR #15 sẽ tự chạy tiếp, và lúc 00:43 mình bật bộ theo dõi 3 phút.
+
+**Tình hình Pilot 2:**
+- **T1–T4 đã xong:**
+  - `SMP-17` đã build: PR #15 có hai Dockerfile và `deploy.yaml`. Hai image đã build thử trên VPS và chạy đúng: tạo và đọc được ghi chú qua `/api/notes`.
+  - VPS đã có dự án `sample`, đã đặt điểm bắt đầu của deployer.
+- **Đang chờ:** review PR #15, tạm dừng vì hết hạn mức 5 giờ.
+- **Chi phí tới giờ:** 2,55 USD.
+
+**Việc của bạn tiếp theo:** khi review xong và không còn Critical hay High, bạn approve và merge PR #15 ở gate ③. Merge xong là lần deploy thật đầu tiên của `ao-sample` lên Development. Đăng nhập root trên VPS mình vẫn giữ mở để đo RAM sau lần deploy đó.
+
+# Phiên 27 · Lượt 78 — 2026-11-07 23:32
+
+**Bạn:**
+
+```markdown
+Làm tiếp đi, hết bị giới hàn rồi
+```
+
+**Claude:**
+
+Mình kiểm xem lệnh nền đã tự chạy tiếp lượt review chưa, để tránh chạy trùng.
+
+Mình lại vừa dùng `ls -t` để chọn file output, đúng lỗi đã ghi nhớ. Mình bật lại bộ theo dõi với đường dẫn cụ thể của lượt này.
+
+Lượt review của PR #15 đã chạy lại: `reviewer` tiếp tục trong phiên cũ, sau đó tới `security` ở `max`. Mình đã hủy hai lệnh hẹn giờ, nên sẽ không có lượt chạy trùng. Mình báo tiến độ mỗi 3 phút.
+
+23:36: `reviewer` đã chạy tiếp được 3 phút, 12 bước, nên hạn mức đúng là đã mở lại. Log vẫn được ghi đều.
+
+23:39: `reviewer` đã chạy 6 phút, 25 bước, vẫn làm việc bình thường.
+
+`reviewer` đã xong (3,42 USD tính cả phần trước lúc bị chặn), và `security` đang chạy ở phút thứ 2. Mình xem báo cáo của `reviewer`.
+
+`reviewer` không có Critical hay High; có 2 Medium và vài Low. Hai Medium đáng chú ý:
+
+1. **Smoke test của web không đi qua API:** trang `/notes` trả 200 dù đường `/api/notes` bị hỏng, nên deployer vẫn chuyển sang bản lỗi. Sửa dễ: thêm một smoke check `/api/notes` trong `deploy.yaml`.
+2. **Production mở hoàn toàn ra Internet:** không có basic auth, và app cho bất kỳ ai tạo ghi chú, không giới hạn số lượng, lưu trong bộ nhớ. Đây là điểm cần bạn quyết, mình sẽ trình bày sau khi có báo cáo `security`.
+
+`security` đang chạy; mình chờ nó xong rồi tổng hợp.
+
+23:45: `security` đã chạy 5 phút, 31 bước, log vẫn được ghi đều.
+
+23:48: `security` đã chạy 8 phút, 37 bước, vẫn làm việc bình thường.
+
+23:51: `security` đã chạy 11 phút, 52 bước, vẫn làm việc bình thường.
+
+23:54: `security` đã chạy 14 phút, 68 bước, vẫn làm việc bình thường.
+
+23:57: `security` đã chạy 17 phút, 76 bước, có vẻ đang ở giai đoạn viết báo cáo.
+
+Đã kiểm 94 comment trên 48 item của cả `DEMO` và `SMP`: không có comment nào chứa thông tin basic auth, nên không cần đổi mật khẩu.
+
+## PR #15 sẵn sàng cho gate ③
+
+Hai báo cáo trên head `8884d74` không có Critical hay High. Merge lúc này an toàn, vì nó chỉ đưa `ao-sample` lên Development, nơi có basic auth chặn phía trước. Chi phí của `SMP-17` tới giờ: 9,13 USD.
+
+Các bước:
+1. Mở [PR #15](https://github.com/TungPH7/ao-sample/pull/15), đọc hai báo cáo mới nhất và tab **Files changed**.
+2. Bấm **Review changes** → **Approve** → **Submit review**.
+3. Bấm **Squash and merge** → **Confirm squash and merge**.
+
+## Một quyết định trước khi cắt `v0.1.0`
+
+Cả `reviewer` lẫn `security` đều báo cùng một Medium: Production không có basic auth. Ai trên Internet cũng tạo được ghi chú, không giới hạn số lượng, và ghi chú lưu trong bộ nhớ. `security` đo được rằng khoảng 100.000 ghi chú sẽ làm API chậm hẳn rồi chết. Container cũng không có trần RAM, nên `ao-pilot` chạy chung VPS có thể bị ảnh hưởng. Spec của `SMP-2` cũng đòi có các giới hạn trước khi lên môi trường công khai, và spec Pilot 2 của mình đã bỏ sót điều này.
+
+| Lựa chọn | Làm gì | Chi phí [Ước tính] |
+|---|---|---|
+| **1. Task nhỏ trước khi cắt bản (mình đề xuất)** | `be-dev` đặt trần 1000 ghi chú, đúng con số spec dùng cho hiệu năng, và báo lỗi khi đầy. Trong cùng PR, mình thêm smoke check `/api/notes`, sửa luôn Medium thứ hai của `reviewer`. Giới hạn tần suất và header bảo mật để cho Epic sau | 6–10 USD |
+| 2. Một Epic đầy đủ như spec của `SMP-2` đòi | Giới hạn tần suất, trần số ghi chú, header bảo mật, đi đủ spec, plan, build | 20–40 USD |
+| 3. Giữ basic auth cho Production của `ao-sample` | Sửa kit để mỗi dự án tự chọn có basic auth trên Production hay không, rồi chép kit mới lên VPS | Gần 0 USD agent, nhưng lệch thiết kế của `release-workflow` |
+| 4. Chấp nhận rủi ro | Release công khai như hiện tại, sửa ở `v0.2.0` | 0 |
+
+Còn hai việc của kit để vào danh sách sửa sau: đặt trần RAM cho container trong deployer, và thêm một hook chặn comment Jira có chứa basic auth (finding Low của `security`).
+
+**Bạn merge PR #15 không, và chọn lựa chọn nào?** Trong lúc bạn quyết, mình có thể chạy `/ao-qa` cho các item trên Development ngay sau khi deploy xong, vì việc QA không phụ thuộc lựa chọn này.
+
+Bộ theo dõi đã dừng vì lượt review kết thúc; kết quả mình đã báo ở trên. Mình đang chờ bạn merge PR #15 và chọn một trong bốn lựa chọn cho Production.
+
+# Phiên 27 · Lượt 79 — 2026-11-08 00:05
+
+**Bạn:**
+
+```markdown
+Đã merge. chọn 1. Task nhỏ trước khi cắt bản
+```
+
+**Claude:**
+
+Mình kiểm PR #15 đã merge và deployer đã bắt đầu lần deploy thật đầu tiên của `ao-sample`. Sau đó mình tạo Task giới hạn số ghi chú.
+
+Nhãn vai trò là `ao-be-dev`. Mình tạo Task `SMP-18` bằng token CI.
+
+Lần deploy đầu tiên của `ao-sample` lên Development đang chạy, mình báo mỗi 3 phút.
+
+**Việc của bạn: Refine `SMP-18`**
+1. Mở [SMP-18](https://phunghuutung12b4.atlassian.net/browse/SMP-18).
+2. Bấm vào ô trạng thái `New` gần tiêu đề.
+3. Chọn `Refine`.
+
+**Sau khi bạn Refine, mình sẽ:**
+1. Chạy `/ao-build SMP-18` cho `be-dev`.
+2. Thêm smoke check `/api/notes` vào `deploy.yaml` dưới tên bot.
+3. Review PR đó; `security` sẽ chạy ở `max` vì PR chạm `deploy.yaml`.
+4. Khi Development đã chạy bản `337f230`, chạy `/ao-qa` cho 8 item đầu.
+
+Mình cũng sẽ ghi quyết định chọn lựa chọn 1 vào spec Pilot 2. Tổng số item của `v0.1.0` nay là 9: thêm `SMP-18`.
+
+00:07: deployment đang ở `in_progress`, VPS đang build image `web` và dùng 1,3 GB RAM. Chưa có container nào của `sample` chạy.
+
+00:10: image `web` đã build xong, VPS đang build image `api` và dùng khoảng 1,3 GB RAM. Deployment vẫn `in_progress`.
+
+Lần deploy đầu tiên của `ao-sample` lên Development đã **thành công**, mất khoảng 6 phút nhờ bộ đệm từ lần build thử. Mình kiểm từ máy bạn:
+- Không có mật khẩu thì bị hỏi basic auth.
+- Có mật khẩu thì trang ghi chú mở được, và tạo, đọc được ghi chú qua `/api/notes`.
+
+Mình dùng `AO_ENV_AUTH` mà không in giá trị ra, rồi đo RAM trên VPS.
+
+Mình đã ghi xong T3–T5 và quyết định thêm `SMP-18`, chưa commit. `be-dev` đang build `SMP-18`, mình báo mỗi 3 phút.
+
+00:18: `be-dev` đã chạy 3 phút, 27 bước, log vẫn được ghi đều.
+
+00:21: `be-dev` đã chạy 6 phút, 44 bước, vẫn làm việc bình thường.
+
+CI xanh. Quyết định review đúng như dự kiến: `reviewer` ở `xhigh`, `security` ở `max` vì PR chạm `deploy.yaml`. Mình chạy ở nền và báo mỗi 3 phút.
+
+Review của PR #16 đang chạy, mình báo mỗi 3 phút. Chi phí Pilot 2 tới giờ là khoảng 10,5 USD: `SMP-17` 9,13 USD và build `SMP-18` 1,35 USD. Nhiều khả năng nó vẫn nằm trong ước tính 30–40 USD.
+
+00:30: `reviewer` của PR #16 đã chạy 3 phút, 18 bước, log vẫn được ghi đều.
+
+You've hit your 5-hour limit · resets 12:40am (Asia/Bangkok)
+
+You've hit your 5-hour limit · resets 12:40am (Asia/Bangkok)
+
+# Phiên 27 · Lượt 80 — 2026-11-08 21:08
+
+**Bạn:**
+
+```markdown
+/compact
+```
+
+**Claude:**
+
+
+
+# Phiên 27 · Lượt 81 — 2026-11-09 22:40
+
+**Bạn:**
+
+```markdown
+I hit my usage limit while you were working, but it has reset now. Please continue from where you left off
+```
+
+**Claude:**
+
+Review của PR #16 (SMP-18) đang chạy lại sau khi giới hạn 5 giờ được đặt lại. Reviewer sẽ chạy trước, rồi đến security. Khi xong tôi sẽ báo kết quả và chi phí, rồi hướng dẫn bạn bấm cổng ③.
+
+Chi phí Pilot 2 tính đến giờ khoảng 11,8 USD, dưới mức ước tính 30–40.
+
+# Phiên 27 · Lượt 82 — 2026-11-09 22:41
+
+**Bạn:**
+
+```markdown
+Tạm dựng nhé
+```
+
+**Claude:**
+
+Tôi đã dừng lượt review của PR #16. Reviewer chạy lại được rất ngắn trước khi bị dừng, nên có thể chưa kịp tốn nhiều chi phí. Tôi chưa mở lại file kết quả để kiểm tra, và cũng chưa xem reviewer đã kịp đăng gì lên PR chưa.
+
+Trạng thái hiện tại:
+- **PR #16 (SMP-18):** chưa có báo cáo review nào hoàn chỉnh. Reviewer bị dừng từ lần trước vì giới hạn 5 giờ, lần này tôi dừng.
+- **ao-sample:** checkout đang ở `develop`. Tôi không đổi gì thêm.
+- **VPS:** root login vẫn đang mở. Tôi sẽ đóng khi xong việc trên VPS.
+- **Chi phí Pilot 2:** khoảng 11,8 USD, chưa tính lượt chạy vừa dừng.
+
+Khi bạn bảo tiếp, tôi chạy lại `/ao-review 16` rồi báo kết quả, sau đó hướng dẫn bạn bấm cổng ③ cho PR này.
+
+# Phiên 27 · Lượt 83 — 2026-11-09 22:43
+
+**Bạn:**
+
+```markdown
+Tiếp tục
+```
+
+**Claude:**
+
+Tôi đã chạy lại `/ao-review 16` cho SMP-18 (PR #16, head `d37681a`, CI xanh). Lượt này tiếp tục session cũ của reviewer (effort `xhigh`). Xong reviewer thì đến security (effort `max`, vì PR sửa `deploy.yaml`). Lần dừng trước chưa có báo cáo nào được đăng lên PR.
+
+Cứ 3 phút tôi báo tiến độ một lần. Khi cả hai báo cáo xong, tôi sẽ tóm tắt các finding và chi phí, rồi hướng dẫn bạn bấm cổng ③.
+
+Tiến độ lúc 22:46:
+- **Reviewer:** đã xong, lượt này tốn 2,45 USD.
+- **Security:** đang chạy được 1 phút, mới đọc gói ngữ cảnh của PR.
+- Trong danh sách vẫn còn một dòng reviewer báo "đang chạy". Đó là lượt bạn bảo dừng lúc trước, nó không chạy thật.
+
+Chi phí riêng SMP-18 đến giờ là 5,12 USD: build 1,35, reviewer lần đầu (dừng vì giới hạn) 1,32, reviewer lần này 2,45. Lượt reviewer bị dừng chưa có số, và security vẫn đang chạy.
+
+Lúc 22:49, security vẫn đang review PR #16: đã chạy 4 phút, 38 bước, và vẫn đang ghi log.
+
+Lúc 22:52, security đã chạy 7 phút, được 59 bước, và vẫn đang làm (log ghi cách đây 1 giây).
+
+Lúc 22:55, security đã chạy 10 phút và 61 bước. Bước gần nhất là xoá thư mục tạm của nó, có vẻ sắp xong.
+
+Review của PR #16 (SMP-18) đã xong, nhưng PR chưa merge được. Bạn cần quyết một việc trước khi tôi chạy vòng sửa.
+
+**Kết quả:**
+- **Reviewer:** yêu cầu sửa, với 1 High, 4 Medium, 1 Low. Code đúng và làm đủ checklist; bốn lần reviewer cố tình làm hỏng code store đều bị test bắt.
+- **Security:** duyệt, với 0 High và 1 Medium.
+- **Chi phí:** SMP-18 tốn 6,75 USD, nâng tổng Pilot 2 lên khoảng 15,9 USD, vẫn dưới ước tính 30–40.
+
+**Finding High: SMP-18 là Task nhưng làm đổi API công khai.** `POST /api/notes` nay có thêm câu trả lời 409 `NOTES_LIMIT_REACHED`, và người dùng thấy ghi chú thứ 1001 không lưu được. `contract/work-items.yaml` dòng 67 ghi: "PR của một Task mà làm đổi giao diện hoặc API công khai thì reviewer yêu cầu đổi Task thành Story." Code không sai, chỉ sai loại item, và lỗi này của tôi: tôi đã tạo SMP-18 là Task.
+
+Bạn cũng không thể tự merge rồi bỏ qua finding này. Khi deploy, bước audit (`lib/quality/audit.mjs:69`) đòi báo cáo của reviewer không còn Critical/High nào mở. Merge khi High còn mở thì lần deploy Development sẽ bị audit từ chối.
+
+**Các Medium và Low:**
+- **Mô tả PR tự mâu thuẫn:** nó ghi smoke check `/api/notes` "Not in this PR", trong khi commit `d37681a` đã thêm smoke check đó. Sửa: be-dev.
+- **`plan.md` thiếu mã lỗi mới:** API Contract chưa có `NOTES_LIMIT_REACHED`. Sửa: sa.
+- **SPEC vẫn ghi "không giới hạn số ghi chú":** ba chỗ trong `spec.md` (dòng 75, 97, 111). Sửa: ba.
+- **Ai cũng khóa được việc tạo ghi chú trên Production:** chỉ cần gửi 1000 `POST` là kho đầy, và kho chỉ trống lại khi API khởi động lại, việc đó cũng xóa hết ghi chú. Reviewer và security cùng nêu. Hiện chưa có item nào theo dõi việc giới hạn tần suất.
+- **Low: chưa có E2E cho câu trả lời 409.** Có thể giả câu trả lời như test AC8 hiện có.
+
+**Câu 1: xử lý finding High thế nào?**
+1. **(Đề xuất) Đổi SMP-18 thành Story thuộc Epic SMP-2**, vì plan của Epic này đã được duyệt.
+   - ba viết acceptance criteria (AC) đánh số và sửa ba chỗ trong SPEC. Bạn duyệt Story và thay đổi SPEC.
+   - sa thêm mã lỗi vào `plan.md`.
+   - be-dev sửa mô tả PR và thêm E2E cho AC mới.
+   - Reviewer review lại.
+   - Ước tính thêm 5–8 USD. Cách này đúng quy tắc và gỡ luôn các Medium về tài liệu trong cùng một vòng.
+2. **Giữ là Task.** Bạn ghi quyết định lên PR, các agent vẫn sửa các Medium về tài liệu, rồi reviewer review lại và đóng finding High theo quyết định của bạn. Chi phí gần như ngang cách 1, nhưng làm ngược một quy tắc của contract. Đó là loại thay đổi quy tắc cần bạn duyệt rõ.
+
+**Câu 2: có tạo item theo dõi việc giới hạn tần suất không?** Tôi đề xuất tạo một item trong backlog SMP: "Giới hạn tần suất và lưu bền vững trước khi Production công khai". Tôi cũng sẽ ghi rủi ro khóa tạo ghi chú vào release note của `v0.1.0`. Bạn chọn làm item này trước khi `v0.1.0` lên Production, hay để sau Pilot 2.
+
+Trình theo dõi đã tắt vì lệnh review đã chạy xong. Lượt security lúc 22:58 không có gì mới so với báo cáo ở trên. Việc đang chờ là hai câu hỏi: cách xử lý finding High, và có tạo item giới hạn tần suất không.
+
+# Phiên 27 · Lượt 84 — 2026-11-09 23:01
+
+**Bạn:**
+
+```markdown
+'item theo dõi việc giới hạn tần suất' này là gì?
+```
+
+**Claude:**
+
+Đó là một item trên Jira, Epic hoặc Task, nằm trong backlog của SMP. Nó ghi lại việc làm giới hạn tần suất cho API ghi chú, để việc này không bị quên.
+
+**Giới hạn tần suất là gì?** Mỗi người gửi, nhận theo IP, chỉ được gửi tối đa một số yêu cầu trong một khoảng thời gian, ví dụ 10 `POST` mỗi phút. Quá mức đó thì server trả lỗi 429 và không xử lý.
+
+**Vì sao cần, sau khi SMP-18 đã đặt trần 1000?** Trần 1000 bảo vệ RAM của VPS, nhưng lại mở ra một cách phá khác:
+- Production không có đăng nhập, nên ai cũng gửi được 1000 `POST` liên tiếp, chưa tới một phút là xong.
+- Kho đầy thì không ai tạo được ghi chú nữa. Form vẫn báo "Vui lòng thử lại", nhưng thử lại không bao giờ được.
+- Muốn gỡ thì phải khởi động lại API, mà ghi chú nằm trong bộ nhớ nên khởi động lại là mất hết.
+
+Có giới hạn tần suất thì một IP cần khoảng 100 phút mới lấp đầy kho, thay vì vài giây. Kẻ có nhiều IP vẫn làm được, nhưng khó hơn nhiều.
+
+**Vì sao gọi là "item theo dõi"?** Khi tạo SMP-18, tôi ghi rằng giới hạn tần suất, header bảo mật và lưu bền vững "để cho một Epic sau". Nhưng Epic đó chưa có trên Jira. Reviewer đã tra các item SMP chưa xong và không thấy item nào nhắc việc này. Lời hứa hiện chỉ nằm trong mô tả của một Task sắp Done, nên rất dễ bị quên.
+
+**Item đó sẽ gồm gì**, theo gợi ý của reviewer và security:
+- Giới hạn tần suất `POST /api/notes` theo IP thật của người gửi, làm ở Caddy hoặc trong API. Nên tính cả `GET`, vì khi kho đầy mỗi lần `GET` trả về tới khoảng 6,7 MB.
+- Ghi một dòng log khi kho vừa đầy, chỉ có số đếm, không có nội dung, để bạn biết mà không phải chờ người dùng báo.
+- Chọn chính sách khi kho đầy rồi ghi vào SPEC: từ chối như bây giờ, hay đẩy ghi chú cũ nhất ra.
+- Lưu bền vững (database), để khởi động lại không mất dữ liệu.
+
+**Ảnh hưởng tới Pilot 2:** tạo item chỉ là ghi nó vào backlog, gần như không tốn gì. Câu hỏi thật là làm nó khi nào:
+- **Làm trước khi `v0.1.0` lên Production:** an toàn hơn, nhưng thêm một vòng spec, build và review, và Pilot 2 kéo dài.
+- **Để sau Pilot 2:** `v0.1.0` lên Production với rủi ro trên. Tôi sẽ ghi rủi ro đó vào release note. App hiện chỉ là bản thử, không có dữ liệu quan trọng, nên tôi nghiêng về cách này. Đổi lại, item trên Jira phải tồn tại để việc này không bị quên.
+
+# Phiên 27 · Lượt 85 — 2026-11-09 23:03
+
+**Bạn:**
+
+```markdown
+Làm 2 câu trên như bạn đề xuất nhé
+```
+
+**Claude:**
+
+Tôi đang tìm cách kit chuyển một Task thành Story và cách vòng sửa gọi ba và sa, để làm đúng quy trình.
+
+SMP-18 giờ là Story thuộc Epic SMP-2, vẫn ở In Progress với nhãn `ao-be-dev`. Tiếp theo tôi tạo Epic theo dõi việc giới hạn tần suất trong backlog SMP.
+
+ba đang chạy trên SMP-18. Cứ 3 phút tôi báo tiến độ một lần. Trong lúc chờ, tôi đã viết sẵn yêu cầu cho sa (thêm mã lỗi vào `plan.md`). sa sẽ chạy ngay khi ba xong, vì hai agent dùng chung nhánh và chạy lần lượt từng agent một.
+
+Lúc 23:09, ba đã chạy 3 phút, được 39 bước, và đang sửa SPEC.
+
+ba đang sửa nốt các chỗ đếm AC trong SPEC. Xong lượt này thì đến sa.
+
+sa đang chạy. Lượt này thêm `NOTES_LIMIT_REACHED` vào API Contract của `plan.md`, đưa SMP-18 vào Task List, và trả lời yêu cầu `Cần sa:` của be-dev.
+
+Lúc 23:16, sa đã chạy 3 phút, được 49 bước, và đang ghi ledger.
+
+CI của head `293ffaa` đã xanh, và vòng sửa `/ao-fix 16` đang chạy theo ba bước:
+1. be-dev viết E2E cho AC14 và AC15, sửa mô tả PR, và sửa comment Jira đã cũ.
+2. reviewer review lại PR.
+3. security review lại.
+
+Trong lúc chờ, bạn có thể đọc trước phần SPEC mới. Bạn sẽ duyệt nó ở cổng ③, cùng với code:
+- **AC14:** kho đã có 1000 ghi chú thì ghi chú mới không được lưu, form hiện lỗi lưu như AC8 và giữ nguyên chữ đã gõ.
+- **AC15:** kho đầy thì mở hoặc tải lại trang vẫn thấy đủ 1000 ghi chú, mới nhất trước.
+
+Nếu muốn sửa câu chữ của hai AC này, bạn cứ nói, tôi dừng vòng sửa.
+
+Chi phí từ lúc đổi sang Story: ba 4,39 USD, sa 1,51 USD. Tổng Pilot 2 hiện khoảng 21,8 USD, chưa tính vòng sửa đang chạy.
+
+Lúc 23:21, be-dev đã chạy 3 phút, được 20 bước, và đang chạy lint và typecheck sau khi viết test.
+
+Lúc 23:24, be-dev đã chạy 6 phút, được 35 bước, và đang đọc lại các báo cáo review để sửa mô tả PR.
+
+Lúc 23:27, be-dev đã sửa xong, tốn 1,05 USD. CI của head mới xanh nên reviewer đã bắt đầu review lại, đến giờ được 1 phút.
+
+Bạn đã chạm giới hạn sử dụng, nên tôi dừng tại đây. Reviewer cũng vừa bị dừng giữa lúc review lại PR #16 vì giới hạn 5 giờ, tính đến 3:40 sáng (giờ Bangkok).
+
+**Đã xong:**
+- **SMP-18 đã thành Story** thuộc Epic SMP-2. ba đã sửa SPEC: thêm AC14 và AC15, sửa ba chỗ đã cũ, và cập nhật số AC thành AC1–AC15 (commit `64e1698` và `b1afd1b`). ba cũng viết lại mô tả Jira của SMP-18 theo mẫu Story.
+- **sa đã sửa `plan.md`** (commit `293ffaa`): thêm `NOTES_LIMIT_REACHED` vào API Contract, đưa SMP-18 vào Task List, và trả lời yêu cầu `Cần sa:` của be-dev.
+- **Epic SMP-19** "Ghi chú: chống lạm dụng và lưu bền vững trước khi công khai" đã có trong backlog, ở New.
+- **be-dev đã sửa xong** (commit `5c5c58b`):
+  - Thêm E2E cho AC14 và AC15. Ở máy dev, cả 33 E2E đều pass, cùng với lint, typecheck, unit test và build.
+  - Viết lại mô tả PR thành PR của một Story.
+  - Sửa comment Jira đã cũ.
+
+**Còn lại:**
+1. Sau 3:40 sáng, tôi chạy lại `/ao-fix 16` để reviewer tiếp tục session cũ, rồi đến security.
+2. Tôi báo kết quả review và hướng dẫn bạn bấm cổng ③. Bạn tự merge, vì PR sửa `.ai-orchestrator/deploy.yaml`, đường dẫn mà chỉ bạn được merge.
+3. Sau đó là các bước còn lại của Pilot 2:
+   - Deploy Development, rồi `/ao-qa` cho 9 item.
+   - Release `v0.1.0` lên Staging, rồi Production. Release note ghi rủi ro khóa tạo ghi chú, chờ SMP-19.
+   - Rollback rồi deploy tiến lại trên Development.
+   - Đóng root login của VPS, hiện vẫn đang mở.
+
+Còn hai dòng tài liệu nhỏ tôi chưa sửa, reviewer có thể nêu thành Low: checkpoint cuối của `plan.md` vẫn ghi "AC1–AC13", và ADR-0002 vẫn ghi deploy giả lập.
+
+**Chi phí:**
+
+| Phần | Chi phí |
+|---|---|
+| SMP-17 | 9,13 USD |
+| SMP-18, các lượt build, review và sửa | 9,13 USD |
+| ba và sa | 5,90 USD |
+| **Tổng Pilot 2** | **khoảng 24,2 USD** |
+
+Mức ước tính là 30–40 USD.
+
+Khi bạn bảo tiếp, tôi chạy lại `/ao-fix 16`.
+
+Trình theo dõi đã tắt vì lệnh nền đã kết thúc. Nó ghi lượt reviewer là "success", nhưng thực ra reviewer bị dừng vì giới hạn sử dụng. `last.md` ghi đúng là `usage-limit`, và chưa có báo cáo review mới nào trên PR #16.
+
+Tình trạng không đổi: sau 3:40 sáng, tôi chạy lại `/ao-fix 16` khi bạn bảo tiếp.
+
+# Phiên 27 · Lượt 86 — 2026-11-10 07:41
+
+**Bạn:**
+
+```markdown
+Tiếp tục
+```
+
+**Claude:**
+
+Tôi đã chạy lại `/ao-fix 16`. Reviewer tiếp tục session cũ trên head `5c5c58b`, CI vẫn xanh. Xong reviewer thì đến security. Cứ 3 phút tôi báo tiến độ một lần.
+
+Lúc 07:45, reviewer đã chạy 2 phút, được 17 bước, và đang đọc code trong worktree review.
+
+Lúc 07:48, reviewer đã xong, tốn 2,82 USD. Security đang review phần thay đổi từ `d37681a` đến `5c5c58b`, đến giờ được 1 phút.
+
+Review lại PR #16 đã xong, và cả hai bên đều duyệt:
+- **Reviewer:** 0 Critical, 0 High, 0 Medium, 2 Low. Tất cả finding của vòng đầu đã được xử lý. Reviewer cố tình làm hỏng code 7 chỗ, và test của PR bắt được cả 7.
+- **Security:** chỉ review phần thay đổi từ `d37681a`, và không có finding nào. Medium cũ về việc khóa tạo ghi chú vẫn còn, nhưng nay đã ghi trong SPEC và có Epic SMP-19 theo dõi.
+- **Chi phí:** SMP-18 tốn 11,20 USD cho các lượt build, review và sửa, cộng 5,90 USD cho ba và sa. Tổng Pilot 2 khoảng 26,2 USD, vẫn dưới mức 30–40.
+
+**Hai finding Low, không chặn merge:**
+1. Chưa ai kiểm một kho đầy thật đi qua web tới form, vì cả hai E2E đều giả câu trả lời của API. Tôi sẽ giao việc này cho QA trên Development.
+2. Quyết định 10 trong plan và Testing Strategy trong SPEC chưa liệt kê AC14 và AC15. Tôi để vào danh sách sửa tài liệu sau.
+
+Reviewer còn lưu ý cho QA: mỗi lần chạy E2E tạo khoảng 9 ghi chú thật. Chạy khoảng 100 lần mà không deploy lại thì kho Development sẽ đầy. Deploy lại thì kho trống.
+
+**Cổng ③: bạn duyệt rồi tự merge,** vì PR sửa `.ai-orchestrator/deploy.yaml`:
+1. Mở https://github.com/TungPH7/ao-sample/pull/16.
+2. Bấm tab **Files changed** và đọc:
+   - `.ai-orchestrator/deploy.yaml`: thêm hai dòng, một comment và smoke check `GET /api/notes` qua web, `expect_text '"data"'`.
+   - `docs/specs/SMP-2/spec.md`: user story "Giới hạn số ghi chú" với AC14 và AC15. Đây là phần SPEC bạn duyệt.
+3. Bấm **Review changes** ở góc trên bên phải, chọn **Approve**, rồi bấm **Submit review**.
+4. Quay lại tab **Conversation** và kéo xuống cuối trang. Bấm mũi tên cạnh nút merge, chọn **Squash and merge**, rồi bấm **Confirm squash and merge**.
+
+Merge xong, bạn báo tôi. Tôi sẽ kiểm deployer deploy Development và smoke check `/api/notes` có xanh không, rồi chuyển sang `/ao-qa` cho 9 item.
+
+Trình theo dõi đã tắt, và không có gì mới so với báo cáo ở trên. Việc đang chờ là bạn duyệt và tự merge PR #16 ở cổng ③.
+
+# Phiên 27 · Lượt 87 — 2026-11-10 09:01
+
+**Bạn:**
+
+```markdown
+đã merge
+```
+
+**Claude:**
+
+Merge đã vào `develop` (`59cd4de`), và deployer đã bắt đầu deploy Development lúc 02:00 UTC. Tôi chờ kết quả deploy và smoke test.
+
+Deploy Development đã `success` lúc 02:02 UTC, mất khoảng 2 phút. Tôi kiểm thêm trên VPS xem smoke check `/api/notes` có thật sự chạy không, và container nào đang chạy.
+
+QA của SMP-4 trên Development đang chạy. Cứ 3 phút tôi báo tiến độ một lần.
+
+`/ao-status` đang gợi ý "Click Start spec on SMP-19". Bạn đừng bấm lúc này: SMP-19 để sau Pilot 2.
+
+Lúc 09:07, QA của SMP-4 đã chạy 1 phút, được 6 bước, và đang đọc item trên Jira.
+
+Lúc 09:10, QA của SMP-4 đã xong, mất 4 phút và tốn 0,64 USD. Tôi chờ lệnh gửi bằng chứng lên Jira xong rồi mới đọc báo cáo.
+
+SMP-4 đã **đạt** QA trên Development, tốn 0,64 USD:
+- 33/33 E2E pass trên https://sample-dev.ao.t2g.io.vn, integration test 40/40, unit test của filter 26/26.
+- qa gửi request sai lên `/api/notes` trên Development, và mọi lỗi trả về đúng dạng JSON chung, không lộ stack trace, không lặp lại dữ liệu đã gửi.
+- Báo cáo QA nằm ở comment 10164 trên SMP-4.
+
+Với giá này, cả 9 item chỉ tốn khoảng 6–12 USD, nên tổng Pilot 2 vẫn dưới 40 USD. Vì vậy tôi đã cho QA chạy lần lượt 8 item còn lại: SMP-5, 6, 7, 10, 11, 16, 17 và 18. Chuỗi sẽ dừng nếu chạm giới hạn sử dụng.
+
+**Bạn Accept SMP-4:**
+1. Mở https://phunghuutung12b4.atlassian.net/browse/SMP-4.
+2. Kéo xuống phần Activity và đọc comment QA của Tester/QA Engineer (kết quả PASS).
+3. Bấm nút trạng thái **In QA** ở góc trên bên phải, cạnh tiêu đề, rồi chọn **Accept**.
+
+Các item khác bạn có thể Accept dần khi tôi báo đạt.
+
+Trình theo dõi của SMP-4 đã tắt, và không có gì mới. Chuỗi QA của 8 item còn lại có trình theo dõi riêng.
+
+Lúc 09:14, QA của SMP-5 đã chạy 1 phút, được 9 bước.
+
+Lúc 09:17, QA của SMP-5 đã chạy 4 phút, được 35 bước, và đang viết script chụp màn hình form.
+
+SMP-5 đã **đạt** QA trên Development, tốn 0,90 USD:
+- 33/33 E2E pass và 72 unit test pass.
+- AC3, AC4, AC5 và AC9 đều đạt.
+- qa gửi thử 29 trường hợp trong bảng `checkNote` lên API đã deploy, và cả 29 trả lời đúng như bảng.
+
+qa không dùng được playwright-cli, vì công cụ này đòi đưa mật khẩu basic auth lên dòng lệnh. Nó chụp 8 ảnh màn hình bằng một script nhỏ đọc thông tin đăng nhập từ biến môi trường, nên mật khẩu không nằm trong file hay comment nào.
+
+Bạn Accept SMP-5 giống SMP-4: mở https://phunghuutung12b4.atlassian.net/browse/SMP-5, bấm **In QA**, rồi chọn **Accept**. Chuỗi QA đang chuyển sang SMP-6.
+
+Dòng tiến độ lúc 09:20 là của một lượt security cũ trên SMP-6: lượt QA mới vừa bắt đầu và chưa có log. Không có gì đáng lo.
+
+Lúc 09:23, QA của SMP-6 đã chạy 2 phút, được 29 bước.
+
+Lúc 09:26, QA của SMP-6 đã xong, mất 5 phút và tốn 0,75 USD. Tôi chờ dòng kết thúc của chuỗi rồi mới đọc báo cáo.
+
+SMP-6 đã **đạt** QA trên Development, tốn 0,75 USD:
+- 33/33 E2E pass.
+- Bố cục được đo ở 320, 767, 768, 1024 và 1440 px.
+- Độ tương phản màu đạt ở cả giao diện sáng lẫn tối.
+- `/api/notes` chuyển tới API, còn `/api/health` trả 404.
+
+Lần này qa đưa header basic auth vào playwright-cli qua shell, nên tôi đã quét 141 file log, bằng chứng QA và ledger, tìm cả mật khẩu lẫn dạng base64 của nó. Không thấy ở đâu. Riêng trace của Playwright vẫn chứa mật khẩu, nhưng nằm trên máy này như kit đã định và không lên Jira.
+
+Bạn Accept SMP-6 ở https://phunghuutung12b4.atlassian.net/browse/SMP-6: bấm **In QA**, rồi chọn **Accept**. Chuỗi QA đang chuyển sang SMP-7.
+
+Lúc 09:29, QA của SMP-7 đã chạy 1 phút, được 10 bước.
+
+Lúc 09:32, QA của SMP-7 đã chạy 4 phút, được 32 bước, và đang xem ảnh chụp của AC7 (trạng thái đang lưu).
+
+SMP-7 đã **đạt** QA trên Development, tốn 0,84 USD:
+- 33/33 E2E pass.
+- AC1, AC2, AC7, AC8 và AC9 đều đạt. Với AC7, qa giữ câu trả lời của API lại 3 giây rồi bấm Lưu thêm lần nữa: chỉ có 1 yêu cầu được gửi và 1 ghi chú được lưu.
+- Báo cáo QA nằm ở comment 10169.
+
+Bạn Accept SMP-7 ở https://phunghuutung12b4.atlassian.net/browse/SMP-7: bấm **In QA**, rồi chọn **Accept**. Chuỗi QA đang chuyển sang SMP-10.
+
+Dòng tiến độ lúc 09:35 là của một lượt cũ trên SMP-10: lượt QA mới vừa bắt đầu và chưa có log.
+
+Lúc 09:39, QA của SMP-10 đã chạy 2 phút, được 18 bước.
+
+Trình theo dõi tự tắt sau 30 phút, nên tôi đã bật lại. Lần này nó chỉ báo những dòng mới. QA của SMP-10 vẫn đang chạy.
+
+SMP-10 đã **đạt** QA trên Development, tốn 0,77 USD:
+- 33/33 E2E pass.
+- AC3, AC4, AC5 và AC6 đều đạt. Lỗi hiện ngay ở ký tự thứ 101 của tiêu đề và ký tự thứ 1001 của nội dung, và biến mất ngay sau phím gõ để sửa.
+- Báo cáo QA nằm ở comment 10171.
+
+qa tạo thêm một file trợ giúp, `.ai/tools/basic-auth-init.cjs`. Tôi đã kiểm: file chỉ đọc thông tin đăng nhập từ biến môi trường, không chứa mật khẩu, và nằm trong `.ai/` nên không bị commit.
+
+Bạn Accept SMP-10 ở https://phunghuutung12b4.atlassian.net/browse/SMP-10: bấm **In QA**, rồi chọn **Accept**. Chuỗi QA đang chuyển sang SMP-11.
+
+Dòng lúc 09:44 vẫn là log cũ của SMP-11, vì lượt QA mới chưa có log.
+
+Lúc 09:47, QA của SMP-11 đã chạy 3 phút, được 22 bước.
+
+Tôi ghi lại một điểm cho backlog của kit: qa gọi `curl -u "$E2E_HTTP_USER:$E2E_HTTP_PASSWORD"`. Mật khẩu không vào log, vì log chỉ ghi tên biến. Nhưng khi lệnh chạy, mật khẩu nằm trong tham số dòng lệnh của tiến trình curl, trái quy tắc của bạn. Rủi ro thấp, vì máy này chỉ có mình bạn dùng. Sau Pilot 2, tôi sẽ sửa prompt của qa để curl đọc thông tin đăng nhập từ stdin (`-K -`).
+
+Lúc 09:50, QA của SMP-11 đã chạy 6 phút, được 44 bước.
+
+SMP-11 đã **đạt** QA trên Development, tốn 0,94 USD:
+- 33/33 E2E pass.
+- AC10, AC11, AC12 và AC13 đều đạt. Với AC12, đoạn `<script>` và `<img onerror>` hiện y như đã gõ: không thành mã chạy được, không bật cửa sổ nào.
+
+qa để lại 6 ghi chú thử bị lỗi chữ trên Development. Lỗi do công cụ của qa (curl trên Windows làm mất dấu tiếng Việt), không phải do app. Lần deploy sau, kho sẽ trống.
+
+Bạn Accept SMP-11 ở https://phunghuutung12b4.atlassian.net/browse/SMP-11: bấm **In QA**, rồi chọn **Accept**. Chuỗi QA đang chuyển sang SMP-16.
+
+Lúc 09:53, QA của SMP-16 vừa bắt đầu và chưa có log. SMP-16 là Task chép bản kit đã review sang ao-sample, chưa từng có lượt agent nào, nên chưa có log cũ.
+
+Lúc 09:56, QA của SMP-16 đã chạy 2 phút, được 21 bước. Nó đang đọc thư mục kit để so bản kit trong ao-sample với bản đã review.
+
+SMP-16 đã **đạt** QA trên Development, tốn 0,67 USD:
+- Bản kit trong ao-sample giống hệt bản của ao-pilot: 143/143 file, chỉ khác một file riêng của mỗi dự án.
+- Bước render agent báo "11 files up to date".
+- Báo cáo kit-copy chỉ được đăng khi bản chép khớp từng byte; bản lệch một byte thì không có báo cáo nào.
+- 33/33 E2E pass.
+
+qa đọc thư mục kit nhưng không sửa gì. Cây làm việc của kit vẫn chỉ có hai file Pilot 2 mà tôi chưa commit.
+
+qa chỉ ra một điểm lệch: mô tả của SMP-16 ghi chép kit ở `c80b480`, nhưng PR #14 chép `0edf8df`. `0edf8df` mới hơn hai commit, và chính là bản ao-pilot PR #24 đã review. Lỗi là ở câu chữ tôi viết khi tạo item. Nếu bạn muốn, tôi sửa mô tả bằng token CI sau khi bạn Accept.
+
+Bạn Accept SMP-16 ở https://phunghuutung12b4.atlassian.net/browse/SMP-16: bấm **In QA**, rồi chọn **Accept**. Chuỗi QA đang chuyển sang SMP-17.
+
+Dòng lúc 09:59 là log cũ của SMP-17, vì lượt QA mới chưa có log.
+
+Lúc 10:02, QA của SMP-17 đã chạy 2 phút, được 21 bước.
+
+SMP-17 đã **đạt** QA trên Development, tốn 0,63 USD:
+- Cả 8 mục trong checklist và 4 mục Verification đều đạt.
+- 33/33 E2E pass.
+- API không công khai: `/health` và `/api/health` trả 404. Yêu cầu không có basic auth bị trả 401.
+- Báo cáo QA nằm ở comment 10176.
+
+Bạn Accept SMP-17 ở https://phunghuutung12b4.atlassian.net/browse/SMP-17: bấm **In QA**, rồi chọn **Accept**. Còn SMP-18 là item cuối, đang chạy.
+
+Dòng lúc 10:05 là log cũ của SMP-18, vì lượt QA mới chưa có log.
+
+Lúc 10:09, QA của SMP-18 đã chạy 1 phút, được 15 bước. Nếu qa lấp đầy kho thật trên Development để kiểm AC14 đến tận form, như reviewer đã gợi ý, thì cũng không sao: các item khác đã QA xong, và lần deploy sau kho sẽ trống.
+
+Tôi đã bật lại trình theo dõi cho QA của SMP-18, item cuối cùng.
+
+Cả 9 item đều **đạt** QA trên Development. Phần QA tốn 6,96 USD, nên tổng Pilot 2 khoảng 33,2 USD, vẫn dưới 40.
+
+| Item | Kết quả | Chi phí |
+|---|---|---|
+| SMP-4 Dạng lỗi chung của API | Đạt | 0,64 |
+| SMP-5 Quy tắc ghi chú dùng chung | Đạt | 0,90 |
+| SMP-6 Khung trang Ghi chú | Đạt | 0,75 |
+| SMP-7 Tạo ghi chú | Đạt | 0,84 |
+| SMP-10 Báo lỗi nhập ngay cạnh ô | Đạt | 0,77 |
+| SMP-11 Xem danh sách ghi chú | Đạt | 0,94 |
+| SMP-16 Chép kit đã review | Đạt | 0,67 |
+| SMP-17 Chạy ao-sample trên VPS | Đạt | 0,63 |
+| SMP-18 Giới hạn số ghi chú | Đạt | 0,82 |
+
+Với SMP-18, qa không lấp đầy kho thật trên Development. Kho đầy sẽ chặn mọi người tạo ghi chú trên môi trường dùng chung, nên qa giả câu trả lời "kho đầy" ngay trong trình duyệt. Còn câu trả lời 409 thật và danh sách đủ 1000 ghi chú thì đã được 36 integration test của API kiểm. Vì vậy Low của reviewer về việc chưa kiểm kho đầy thật qua web vẫn còn mở, và tôi chấp nhận để vậy.
+
+**Việc của bạn:**
+
+1. **Accept 9 item.** Với mỗi item, mở link, bấm nút trạng thái **In QA** cạnh tiêu đề, rồi chọn **Accept**:
+   - https://phunghuutung12b4.atlassian.net/browse/SMP-4
+   - https://phunghuutung12b4.atlassian.net/browse/SMP-5
+   - https://phunghuutung12b4.atlassian.net/browse/SMP-6
+   - https://phunghuutung12b4.atlassian.net/browse/SMP-7
+   - https://phunghuutung12b4.atlassian.net/browse/SMP-10
+   - https://phunghuutung12b4.atlassian.net/browse/SMP-11
+   - https://phunghuutung12b4.atlassian.net/browse/SMP-16
+   - https://phunghuutung12b4.atlassian.net/browse/SMP-17
+   - https://phunghuutung12b4.atlassian.net/browse/SMP-18
+
+2. **Tạo hai Fix Version trong SMP:**
+   1. Mở https://phunghuutung12b4.atlassian.net/projects/SMP.
+   2. Ở thanh bên trái, bấm **Releases**. Nếu không thấy, bấm **Project settings**, rồi chọn **Versions**.
+   3. Bấm **Create version**, gõ tên `v0.1.0`, rồi bấm **Save**. Bỏ trống ngày bắt đầu và ngày phát hành.
+   4. Lặp lại bước 3 với tên `v0.2.0`.
+
+Xong hai việc này, bạn báo tôi. Tôi sẽ chạy `/ao-release v0.1.0 59cd4de` để cắt bản release lên Staging, rồi hướng dẫn bạn bấm cổng ④.
+
+Nếu bạn muốn, tôi cũng sửa mô tả của SMP-16, cho ghi đúng commit kit đã chép là `0edf8df` thay vì `c80b480`.
+
+Chuỗi QA đã xong và trình theo dõi đã tắt, không có gì mới. Tôi đang chờ bạn Accept 9 item và tạo hai Fix Version `v0.1.0` và `v0.2.0`.
+
+# Phiên 27 · Lượt 88 — 2026-11-10 10:17
+
+**Bạn:**
+
+```markdown
+tôi đang làm 2 việc như bạn nói. sửa mô tả của SMP-16 không gây re test gì phải không? Nếu đúng thì sửa đi nhé
+```
+
+**Claude:**
+
+Đúng vậy. Sửa mô tả không làm item chạy lại QA hay đổi trạng thái: `jira-sync` chỉ phản ứng với sự kiện của PR và deploy trên GitHub, không phản ứng khi mô tả Jira đổi. Tôi chỉ thay mã commit trong mô tả.
+
+Cả hai chỗ đều nói đến commit kit được chép, nên tôi thay cả hai.
+
+Jira từ chối, vì tắt thông báo khi sửa item cần quyền admin. Lần ghi đó không đổi gì. Tôi bỏ tuỳ chọn tắt thông báo rồi ghi lại.
+
+Tôi đã sửa mô tả của SMP-16: hai chỗ ghi `c80b480` giờ ghi `0edf8df`, đúng bản kit mà PR #14 đã chép và ao-pilot PR #24 đã review. Đúng như bạn hỏi, việc sửa này không làm chạy lại QA: SMP-16 vẫn ở In QA, chờ bạn Accept.
+
+Lần ghi đầu bị Jira từ chối và không đổi gì, vì muốn tắt email thông báo khi sửa item thì cần quyền admin. Lần ghi thứ hai đã thành công, nên bạn sẽ nhận một email thông báo về thay đổi này.
+
+Khi bạn Accept xong 9 item và tạo hai Fix Version `v0.1.0` và `v0.2.0`, tôi chạy `/ao-release v0.1.0 59cd4de`.
+
+# Phiên 27 · Lượt 89 — 2026-11-10 10:22
+
+**Bạn:**
+
+```markdown
+đã xong 2 việc
+```
+
+**Claude:**
+
+Bạn đã Accept 8 item và tạo xong hai Fix Version `v0.1.0`, `v0.2.0`. **SMP-16 vẫn ở In QA**, có lẽ thao tác Accept chưa lưu. Bạn mở https://phunghuutung12b4.atlassian.net/browse/SMP-16, bấm **In QA**, rồi chọn **Accept** giúp tôi.
+
+Nhưng dù SMP-16 Done, `/ao-release` vẫn chưa cắt được bản. Phần này bạn cần quyết định.
+
+**Vì sao dừng:** lịch sử `develop` có commit của 6 item đang ở Cancelled (Won't Do):
+
+| Item | Commit trên `develop` |
+|---|---|
+| SMP-1 | Dựng khung app và bản chép kit, commit đầu tiên `6f5831d` |
+| SMP-3, SMP-12, SMP-13, SMP-14, SMP-15 | Các bản chép kit cũ, đã merge qua PR #3, #5, #6, #7, #13 |
+
+Kit chỉ cắt bản release tại một commit mà mọi item có commit trước đó đều Done (`lib/release/cut.mjs`). Item Cancelled cũng chặn. Mà SMP-1 nằm ngay commit đầu, nên không có điểm cắt nào. Cancelled lại là trạng thái cuối: Jira không cho chuyển 6 item này đi đâu nữa. Tôi đã kiểm, cả 6 đều không còn transition nào.
+
+Lỗi này của tôi. Mục 2.7 của spec Pilot 2 bảo bạn Cancel năm Task chép kit, và tôi không tính tới quy tắc trên. Đây cũng là lần thứ hai kit gặp chuyện này: trên ao-pilot, `DEMO-3` (Cancelled) từng chặn y như vậy, và chỉ tránh được nhờ giữ tag cũ.
+
+**Hai cách:**
+
+1. **(Đề xuất) Sửa kit.** Item Cancelled không chặn điểm cắt nữa, giống cách kit đã bỏ qua key của Epic. Thay vào đó, `/ao-release` in riêng một dòng "Cancelled, code vẫn đi theo bản này: SMP-1, SMP-3, …" để bạn thấy và duyệt ở cổng ④. Ai muốn bỏ code đó ra thì revert trước khi cắt bản. Item Cancelled không nhận Fix Version.
+   - Việc tôi làm: sửa `cut.mjs` và test, phần in của `/ao-release`, `docs/sdlc.md` và `SPEC-release-workflow.md`. Tôi mở PR kit và tự merge khi CI xanh, như quy tắc hiện tại.
+   - Không chạy agent nào, nên không tốn thêm chi phí agent. `ao-step` chạy từ kit main, nên dùng được ngay mà không phải chép kit vào ao-sample.
+   - Đây là đổi một quy tắc trong spec của kit, nên cần bạn duyệt.
+2. **Sửa dữ liệu Jira.** Bạn tạm thêm một transition ra khỏi Cancelled trong workflow của SMP, ở phần quản trị Jira. Tôi đưa 6 item sang In QA, bạn Accept mà không qua QA, như ngoại lệ một lần đã làm với ao-pilot, rồi bạn gỡ transition đó đi.
+   - Không đụng code kit, nhưng bạn phải bấm nhiều trong phần quản trị Jira.
+   - Kit vẫn giữ lỗ hổng này, nên lần sau lại gặp.
+   - Jira sẽ ghi 6 việc chép kit cũ là Done dù chúng đã bị thay.
+
+Bạn chọn cách nào?
+
+# Phiên 27 · Lượt 90 — 2026-11-10 10:29
+
+**Bạn:**
+
+```markdown
+cách 1 như đề xuất
+```
+
+**Claude:**
+
+Now the tests. First `cut.test.mjs`, with the new `cancelled` list in every result:
+
+Tất cả đều fail như mong đợi, vì hàm hiện tại chưa trả về `cancelled`. Giờ tôi sửa `cut.mjs`:
+
+Next, the facts test: Jira says Cancelled, and the cut facts list the item apart.
+
+Now the step test (`/ao-release` prints the Cancelled items, and the cut run carries them) and the release-cut test (a comment on each, no Fix Version):
+
+Tất cả 38 test release đều pass. Giờ đến tài liệu. Tôi kiểm xem đoạn "Điểm cắt" trong `docs/sdlc.md` được viết tay hay sinh ra từ contract.
+
+PR kit #234 đã có CI xanh và tôi đã merge, đúng quy tắc tự merge PR kit khi CI xanh. Kit main giờ ở `42ec84d`.
+
+**Cổng ④: bạn duyệt danh sách của bản `v0.1.0`**
+- **Điểm cắt:** `59cd4de` "feat(notes): keep at most 1000 notes in the store (SMP-18) (#16)", commit mới nhất của `develop`.
+- **Trong `v0.1.0` (Done):** SMP-4, SMP-5, SMP-6, SMP-7, SMP-10, SMP-11, SMP-16, SMP-17, SMP-18.
+- **Cancelled, code vẫn đi theo bản này, không nhận Fix Version:** SMP-1 (khung app ban đầu) và SMP-3, SMP-12, SMP-13, SMP-14, SMP-15 (các bản chép kit cũ, đã bị bản chép của SMP-16 thay).
+- **Sau điểm cắt:** không có item nào.
+- **Fix Version:** `v0.1.0` và `v0.2.0` đều đã có và chưa phát hành.
+
+Khi bạn duyệt, tôi chạy `/ao-release v0.1.0 59cd4de`:
+1. Gắn Fix Version `v0.1.0` cho 9 item, và comment lên từng item, kể cả 6 item Cancelled.
+2. Tạo nhánh `release/v0.1.0` tại `59cd4de` dưới tên bot `ao-dev`.
+3. Deployer tự đưa bản này lên Staging trong vài phút. Tôi kiểm deploy và smoke test, rồi chạy `/ao-ship v0.1.0`: chạy full regression trên Staging, viết release note, mở PR release, rồi dừng ở cổng ⑤ chờ bạn duyệt.
+
+Bạn duyệt danh sách này chứ?
+
+# Phiên 27 · Lượt 91 — 2026-11-10 10:58
+
+**Bạn:**
+
+```markdown
+duyệt
+```
+
+**Claude:**
+
+Nhánh `release/v0.1.0` đã có, và Staging đã deploy `59cd4de` thành công lúc 04:00 UTC. Tôi kiểm nhanh VPS: bây giờ có 4 container chạy cùng lúc (Development và Staging).
+
+Cổng ④ đã xong:
+- 9 item đã nhận Fix Version `v0.1.0`, và 6 item Cancelled đều có comment.
+- Nhánh `release/v0.1.0` đã có tại `59cd4de`.
+- Staging deploy thành công.
+
+`/ao-ship v0.1.0` đang chạy ba bước:
+1. qa chạy full regression trên Staging.
+2. devops viết release note.
+3. Một script mở PR release vào `main`.
+
+Cứ 3 phút tôi báo tiến độ một lần. Khi xong, tôi kiểm release note có ghi rủi ro khóa tạo ghi chú, đang chờ SMP-19, rồi hướng dẫn bạn bấm cổng ⑤.
+
+Lúc 11:05, bước regression của qa đã chạy 1 phút, được 9 bước, và đang tra các item của bản trên Jira.
+
+Lúc 11:08, regression đã xong, tốn 0,30 USD. devops đang viết release note, và đã tới file mô tả Fix Version.
+
+`/ao-ship v0.1.0` đã xong, tốn 1,04 USD, và PR release #17 đã có CI xanh. Tổng Pilot 2 hiện khoảng 34,2 USD.
+- **Regression trên Staging:** 33/33 E2E pass, AC1–AC15 đều có test, và không có Bug nào đang mở.
+- **Release note:** devops ghi ở mục Known Issues hai giới hạn có chủ ý:
+  - Ghi chú mất mỗi khi API khởi động lại hoặc deploy lại.
+  - Trên Production, ai cũng làm đầy được kho 1000 ghi chú. Epic SMP-19 sẽ xử lý việc này.
+- **Commit trên `release/v0.1.0`** (`2149896`): báo cáo regression `docs/releases/v0.1.0.md` và `CHANGELOG.md`, do bot `ao-dev` commit.
+
+**Cổng ⑤: bạn thử bản trên Staging, rồi duyệt PR**
+
+1. **Thử bản (UAT):**
+   1. Mở https://sample-staging.ao.t2g.io.vn và đăng nhập basic auth của Staging.
+   2. Tạo một ghi chú có tiêu đề và nội dung, rồi một ghi chú chỉ có tiêu đề.
+   3. Bấm Lưu với tiêu đề trống: phải thấy lỗi "Vui lòng nhập tiêu đề".
+   4. Tải lại trang: ghi chú mới nhất phải ở trên cùng.
+2. **Duyệt PR #17, nhưng không merge:**
+   1. Mở https://github.com/TungPH7/ao-sample/pull/17.
+   2. Bấm tab **Files changed**. Bạn chỉ cần đọc `CHANGELOG.md` và `docs/releases/v0.1.0.md`; phần còn lại là code của các item bạn đã duyệt.
+   3. Bấm **Review changes**, chọn **Approve**, rồi bấm **Submit review**.
+   4. **Đừng bấm Merge.** merge-gate sẽ tự merge bằng merge commit, gắn tag `v0.1.0`, rồi merge `main` ngược về `develop`. Sau đó deployer đưa bản lên Production.
+
+Duyệt xong, bạn báo tôi. Tôi sẽ kiểm deploy Production và smoke test, rồi hướng dẫn bạn bấm **Release** cho Fix Version `v0.1.0`, dán mô tả từ `.ai/runs/v0.1.0/fix-version.md` vào Jira, và **Complete** Epic SMP-2.
+
+# Phiên 27 · Lượt 92 — 2026-11-10 11:18
+
+**Bạn:**
+
+```markdown
+đã Duyệt xong
+```
+
+**Claude:**
+
+merge-gate đã merge PR #17 vào `main` lúc 04:18 UTC (`2e69e47`) và gắn tag `v0.1.0`. Tôi chờ deploy Production, và xem merge-gate đã mở PR merge `main` về `develop` chưa.
+
+Production đã deploy thành công lúc 04:18 UTC (`2e69e47`). Tôi kiểm Production từ bên ngoài. Production công khai, không cần basic auth.
+
+Production đã chạy `v0.1.0`, và mọi kiểm tra từ bên ngoài đều đạt:
+- `/notes` trả 200 và có chữ "Ghi chú".
+- `/api/notes` trả 200 `{"data":[]}`.
+- `/` chuyển tới `/notes`, và HTTP chuyển sang HTTPS.
+- API không công khai: `/health` và `/api/health` trả 404.
+
+Trên VPS đang chạy 6 container cho ba môi trường, và còn khoảng 2,9 GB RAM trống. merge-gate đã mở PR #18 để merge `main` về `develop`, và sẽ tự merge khi CI xanh.
+
+**Việc của bạn trên Jira:**
+
+1. **Release Fix Version `v0.1.0`:**
+   1. Mở https://phunghuutung12b4.atlassian.net/projects/SMP và bấm **Releases** ở thanh bên trái.
+   2. Ở hàng `v0.1.0`, bấm **⋯**, chọn **Edit**. Mở file `D:\Document\1Khoahoc\4LapTrinh\AI-for-coding\ao-sample\.ai\runs\v0.1.0\fix-version.md`, chép nội dung vào ô **Description**, rồi bấm **Save**. Nếu Jira báo quá dài, chỉ dán hai mục **Goal** và **Customer Summary**.
+   3. Ở hàng `v0.1.0`, bấm **⋯**, chọn **Release**. Để ngày phát hành là hôm nay, rồi bấm **Release**.
+2. **Complete Epic SMP-2:** mở https://phunghuutung12b4.atlassian.net/browse/SMP-2, bấm nút trạng thái **In Progress**, rồi chọn **Complete**. Làm bước này sau bước 1, vì Epic chỉ Complete được khi mọi item con đã nằm trong một bản đã phát hành.
+
+Trong lúc bạn làm, tôi chờ PR #18 merge và Development deploy lại bản mới. Xong thì tôi chạy T9: `/ao-rollback development` để quay về bản trước, rồi deploy tiến lại.
+
+# Phiên 27 · Lượt 93 — 2026-11-10 11:34
+
+**Bạn:**
+
+```markdown
+Đã làm 2 việc trên
+```
+
+**Claude:**
+
+Rollback đã thành công. Development chạy lại `59cd4de` (tree `94998e8e`) từ 04:36, và `/api/notes` trả 200. Giờ tôi deploy tiến lại `bf7cddb`.
+
+Tôi đang đóng Pilot 2 trong kit: chuyển plan và nhật ký vào `tasks/archive/pilot-2/`, cập nhật trạng thái trong `SPEC.md` và `SPEC-pilot-2.md`, rồi mở PR tài liệu.
+
+**Pilot 2 đã hoàn thành.** `ao-sample` `v0.1.0` chạy trên Production, và cả 8 tiêu chí của spec đều đạt.
+
+**T9, rollback trên Development:** `/ao-rollback development` đưa Development về `59cd4de` lúc 04:36 UTC, deploy `success`, `/api/notes` trả 200. Lệnh `/ao-rollback development bf7cddb` đưa bản mới về lại, cũng `success`. Cả hai chiều đều không phải build lại image.
+
+**VPS:** root login đã đóng lại (`PermitRootLogin no`). Tôi đã thử SSH vào bằng root và bị từ chối. Bạn gỡ key khỏi ssh-agent bằng lệnh sau trong PowerShell: `ssh-add -d "$env:USERPROFILE\.ssh\ao_vps"`.
+
+**T10, đối chiếu tiêu chí:**
+
+| Tiêu chí | Kết quả |
+|---|---|
+| 1. Production trả trang "Ghi chú"; Development và Staging hỏi basic auth | Đạt |
+| 2. API không có subdomain; web tạo và đọc ghi chú ở cả ba môi trường | Đạt. Trên Production tôi tạo một ghi chú thử "Pilot 2: kiểm tra Production"; nó sẽ mất ở lần deploy sau |
+| 3. Fix Version `v0.1.0` đã Release; SMP-2 Complete | Đạt, với 9 item thay vì 8, vì thêm SMP-18 |
+| 4. Tag `v0.1.0` trên `main`; PR merge ngược đã vào `develop` | Đạt (PR #18) |
+| 5. Rollback và đưa bản mới về lại | Đạt |
+| 6. Audit qua commit merge của PR #14 | Đạt, nhưng tôi phải kiểm tay. Commit đó là mốc baseline của `develop` nên deployer không tự audit nó; tôi chạy thử audit (`--dry-run`) và audit báo đạt |
+| 7. ao-pilot vẫn chạy bình thường | Đạt. VPS chạy 6 container của `sample`, 3 của `pilot` và Caddy, còn 2,9 GB RAM trống |
+| 8. Năm lệnh kiểm của kit xanh | Đạt |
+
+**Chi phí Pilot 2:** 34,23 USD, trong mức ước tính 30–40:
+
+| Phần | Chi phí |
+|---|---|
+| SMP-17 | 9,13 USD |
+| SMP-18 | 17,10 USD |
+| QA 9 item | 6,96 USD |
+| Regression và release note | 1,04 USD |
+
+**Kit:**
+- PR #234 sửa điểm cắt: item Cancelled không chặn bản release nữa.
+- PR #235 lưu plan và nhật ký vào `tasks/archive/pilot-2/`.
+- Kit main giờ ở `db3a758`.
+
+**Việc kit để sau** (ghi ở cuối `verification.md`):
+- `qa` gọi `curl -u` nên mật khẩu nằm trong tham số của tiến trình.
+- `audit.mjs` nhận SHA rút gọn thì báo sai.
+- Kit chưa có lệnh đổi Task thành Story, cũng chưa có lệnh trả lời `Cần ba:`, `Cần sa:`.
+- Deployer không dọn build cache (đang chiếm 4,2 GB có thể thu hồi) và chưa đặt trần RAM cho container.
+- Các Low cũ từ kit-copy-review và tài liệu.
+
+Theo thứ tự bạn đã chọn, việc tiếp theo là module `project-scaffold`. Bạn muốn bắt đầu luôn, hay làm trước một số việc trong danh sách kit để sau?
