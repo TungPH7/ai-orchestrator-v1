@@ -51,6 +51,19 @@ test('/ao-release prints the cut point, the items, the release and its Fix Versi
   assert.equal(decision.next, '/ao-release v0.1.0 22327a5');
 });
 
+test('/ao-release lists apart the Cancelled items whose code goes out with the release, and the cut run carries them', () => {
+  const cancelled = [{ key: 'DEMO-3', state: 'cancelled', status: 'Cancelled', fixVersions: [] }, { key: 'DEMO-8', state: 'cancelled', status: 'Cancelled', fixVersions: [] }];
+  const gate = decide(releaseFacts({ release: { cancelled } }));
+  assert.deepEqual(gate.lines, [
+    LINES[0],
+    LINES[1],
+    'Cancelled, with code in v0.1.0 and no Fix Version: DEMO-3, DEMO-8. Revert it on develop first if it should not ship',
+    ...LINES.slice(2),
+  ]);
+  const cut = decide(releaseFacts({ arg: 'v0.1.0', extra: '22327a5', release: { cancelled } }));
+  assert.deepEqual(cut.runs[0].cancelled, cancelled);
+});
+
 test('/ao-release <version> <sha> of that list cuts the release branch with a script, no agent', () => {
   const decision = decide(releaseFacts({ arg: 'v0.1.0', extra: '22327a5' }));
   assert.equal(decision.go, true);

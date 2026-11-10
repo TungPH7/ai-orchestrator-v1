@@ -41,3 +41,20 @@ test('a cut sets the release on every item in it, moves to the next release the 
     { key: 'DEMO-26', text: 'ao-step: DEMO-26 is after the cut point of v0.1.0, so its Fix Version moved to v0.2.0.' },
   ]);
 });
+
+test('a cut comments on each Cancelled item whose code goes out with it, and gives it no Fix Version', () => {
+  const changes = releaseCutChanges({
+    version: 'v0.1.0',
+    nextVersion: 'v0.2.0',
+    sha: sha('2'),
+    approvedAt: '2026-11-10T03:30:00Z',
+    included: [{ key: 'DEMO-4', fixVersions: [] }],
+    after: [],
+    cancelled: [{ key: 'DEMO-1', fixVersions: [] }],
+  });
+  assert.deepEqual(changes.fixVersions, [{ key: 'DEMO-4', names: ['v0.1.0'] }]);
+  assert.deepEqual(changes.comments.at(-1), {
+    key: 'DEMO-1',
+    text: 'ao-step: DEMO-1 is Cancelled, but its commits are on develop up to 22222222, so its code goes out with v0.1.0, without a Fix Version. You approved the list at gate ④ on 2026-11-10T03:30:00Z.',
+  });
+});
