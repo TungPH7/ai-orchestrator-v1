@@ -130,6 +130,23 @@ test('the cut facts leave the key of an Epic out of the release: its spec commit
   assert.equal(facts.cut.sha, sha('2'));
   assert.deepEqual(facts.included.map(({ key }) => key), ['DEMO-21']);
   assert.deepEqual(facts.after, []);
+  assert.deepEqual(facts.cancelled, []);
+});
+
+test('the cut facts let the commits of a Cancelled item go out with the release, and list the item apart', async () => {
+  const { readContract } = await import('../../lib/contract.mjs');
+  const { CONTRACT_DIR } = await import('../helpers/kit.mjs');
+  const { readCutFacts } = await import('../../lib/workflow/facts.mjs');
+  const issue = (key, status, category) => ({ key, fields: { issuetype: { name: 'Task' }, status: { name: status, statusCategory: { key: category } }, fixVersions: [] } });
+  const jira = fakeJira({
+    issues: [issue('DEMO-1', 'Cancelled', 'done'), issue('DEMO-4', 'Done', 'done')],
+    gets: { '/rest/api/3/project/DEMO/versions': [] },
+  });
+  const history = async () => [`${sha('1')}\tchore(repo): scaffold the app (DEMO-1)`, `${sha('2')}\tfeat(api): one error shape (DEMO-4)`].join('\n');
+  const facts = await readCutFacts({ jira, deploys: github, history, contract: readContract(CONTRACT_DIR), mapping, space: 'DEMO' });
+  assert.equal(facts.cut.sha, sha('2'));
+  assert.deepEqual(facts.included.map(({ key }) => key), ['DEMO-4']);
+  assert.deepEqual(facts.cancelled, [{ key: 'DEMO-1', state: 'cancelled', status: 'Cancelled', fixVersions: [] }]);
 });
 
 test('the ship facts: the release branch, what Staging runs, the open Bugs Critical and High, the regression on record, the notes and the PR', async () => {

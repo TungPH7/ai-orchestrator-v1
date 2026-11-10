@@ -149,6 +149,8 @@ GitHub Free không chặn được gate ⑤ cho repo private. Hai điều kiện
 
 **Key của Epic không tính** (Phiên 27 · Lượt 12). Epic không được release, item con của nó mới được. Epic chỉ `complete` khi mọi item con đã lên Production, nên nếu tính, commit tài liệu của Epic sẽ chặn điểm cắt mãi. Commit đó đi theo điểm cắt chứa nó, và Epic không nhận Fix Version.
 
+**Item Cancelled không tính** (Pilot 2, ngày 2026-11-10). Cancelled là trạng thái cuối, không có transition nào ra khỏi nó, nên một item bị hủy sau khi đã merge sẽ chặn điểm cắt mãi. Pilot 2 gặp đúng trường hợp này: `SMP-1` và năm Task chép kit cũ bị Cancel sau khi commit của chúng đã vào `develop`. Trên `ao-pilot`, `DEMO-3` từng chặn như vậy, và chỉ tránh được nhờ giữ tag cũ. Nay commit của item Cancelled đi theo điểm cắt chứa nó. Item đó không nhận Fix Version. `/ao-release` ghi riêng một dòng "Cancelled, with code in vX.Y.0", để bạn duyệt code đó ở gate ④. Script comment lên từng item đó lúc cắt. Code nào không được lên thì bạn revert trên `develop` trước khi cắt. Item mà Jira không biết vẫn chặn điểm cắt như trước.
+
 **Số bản:** bản đầu tiên là `v0.1.0`. Mỗi bản sau tăng `minor` từ tag mới nhất; hotfix tăng `patch`. Bạn quyết khi nào tăng `major`.
 
 **Fix Version.** Tài khoản agent không có quyền Administer Projects, mà tạo hay phát hành Fix Version cần quyền đó. Vì vậy:

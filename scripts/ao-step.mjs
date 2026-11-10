@@ -452,17 +452,18 @@ function developHistory(tag) {
 // /ao-release <vX.Y.0> <sha>, its one step (release-workflow spec 2.6): the Fix Versions and comments on Jira with the CI
 // token, which only your session holds, then the release branch as the ao-dev App. The branch comes last: once it is
 // there the command stops at "release branch open", so a step cut short before it can be run again.
-async function releaseCut({ version, nextVersion, sha, included, after }, { repo, mapping, settings }) {
+async function releaseCut({ version, nextVersion, sha, included, after, cancelled = [] }, { repo, mapping, settings }) {
   const notes = [];
   const ciToken = secret('JIRA_CI_TOKEN');
   if (!ciToken) throw new Error('JIRA_CI_TOKEN is not set in your session');
   const jira = createJiraClient({ cloudId: mapping.cloud_id, authorization: bearerAuth(ciToken), write: true });
-  const changes = releaseCutChanges({ version, nextVersion, sha, approvedAt: new Date().toISOString(), included, after });
+  const changes = releaseCutChanges({ version, nextVersion, sha, approvedAt: new Date().toISOString(), included, after, cancelled });
   for (const { key, names } of changes.fixVersions) await jira.editItem(key, { fields: { fixVersions: names.map((name) => ({ name })) } });
   for (const { key, text } of changes.comments) await jira.comment(key, text);
   notes.push(`Fix Version ${version} on ${included.map(({ key }) => key).join(', ')}.`);
   const moved = changes.fixVersions.filter(({ key }) => !included.some((item) => item.key === key)).map(({ key }) => key);
   if (moved.length > 0) notes.push(`Moved to ${nextVersion}: ${moved.join(', ')}.`);
+  if (cancelled.length > 0) notes.push(`Cancelled, code in ${version}, commented: ${cancelled.map(({ key }) => key).join(', ')}.`);
   const devEnv = { ...process.env, AO_DEV_APP: setting('AO_DEV_APP', settings), AO_DEV_APP_ID: setting('AO_DEV_APP_ID', settings) };
   const { token } = await installationToken({ ...appCredentials('dev', { env: devEnv }), repo, permissions: { contents: 'write' } });
   await createGitHubClient({ repo, token, write: true }).request('POST', '/git/refs', undefined, { ref: `refs/heads/release/${version}`, sha });
