@@ -202,7 +202,7 @@ node .ai-orchestrator/scripts/jira-sync.mjs --dry-run      # chạy thử đối
 node .ai-orchestrator/scripts/install-hooks.mjs            # cài hook git; script prepare gọi lệnh này
 node .ai-orchestrator/scripts/coverage-diff.mjs --base origin/develop  # coverage của dòng thay đổi, chạy trước khi push
 node .ai-orchestrator/scripts/merge-gate.mjs --dry-run     # PR nào sẽ được merge, PR nào còn thiếu gì; không merge
-node .ai-orchestrator/scripts/audit.mjs --sha <commit> --branch develop --dry-run  # commit có qua đủ cổng không; không gắn cờ
+node .ai-orchestrator/scripts/audit.mjs --sha <commit> --branch develop --dry-run  # commit (hash 7–40 chữ số hex) có qua đủ cổng không; không gắn cờ
 node .ai-orchestrator/scripts/ao-agent.mjs <role> -p "<prompt>"  # chạy một agent làm phiên chính; bỏ -p để làm trực tiếp với agent
 node .ai-orchestrator/scripts/ao-step.mjs <status|spec|plan|build|review|fix> [<KEY>|<PR>] [--go]  # bước của lệnh /ao-*: kiểm, rồi chạy với --go
 node .ai-orchestrator/scripts/render-agents.mjs --project .      # sinh lại agent của dự án: mã space, skill theo stack

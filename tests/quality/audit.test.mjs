@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { decideAudit, mergedPull, runAudit } from '../../lib/quality/audit.mjs';
+import { commitArgument, decideAudit, mergedPull, runAudit } from '../../lib/quality/audit.mjs';
 import { readGates } from '../../lib/quality/gates.mjs';
 import { readMapping } from '../../lib/tracker/mapping.mjs';
 import { recordedClient } from '../helpers/jira.mjs';
@@ -162,6 +162,23 @@ test('a run that passes says so and writes nothing to Jira', async () => {
   assert.equal(ok, true);
   assert.deepEqual(lines, ['audit passed: e1e2e3e on develop is the merge of PR #12, which met every gate']);
   assert.deepEqual(jira.writes, []);
+});
+
+// audit.mjs --sha 22a0213 said the merge of PR #14 was pushed without a PR (Pilot 2, T10): the PR's merge commit is
+// matched by the full hash GitHub gives back.
+test('a short hash is audited as its full one, and --sha takes only a commit hash', async () => {
+  const short = SQUASH.slice(0, 7);
+  const jira = commentingJira();
+  const { ok, lines } = await run(recording((a) => {
+    a[`/commits/${short}`] = a[`/commits/${SQUASH}`];
+  }), jira, { sha: short });
+  assert.equal(ok, true);
+  assert.deepEqual(lines, ['audit passed: e1e2e3e on develop is the merge of PR #12, which met every gate']);
+  assert.equal(commitArgument('E1E2E3E'), 'e1e2e3e');
+  assert.equal(commitArgument(SQUASH), SQUASH);
+  for (const bad of ['develop', 'v0.1.0', 'e1e2e3', 'HEAD~1', SQUASH + '0', undefined]) {
+    assert.throws(() => commitArgument(bad), /--sha takes a commit hash of 7 to 40 hex digits/, String(bad));
+  }
 });
 
 test('a run that fails flags the item once: a second run adds no comment', async () => {

@@ -252,7 +252,7 @@ ssh -p 26266 -i "$env:USERPROFILE\.ssh\ao_vps" -t root@42.96.4.120 bash /opt/ao/
 ```
 
 - Lệnh thứ nhất hỏi token có scope `read:jira-work` của tài khoản `orchestratorci`. Đó là giá trị của biến `AO_JIRA_READ_TOKEN` trên máy bạn.
-- Lệnh thứ hai hỏi mật khẩu của user `ao` cho Development và Staging. Trên VPS chỉ lưu bản băm bcrypt. Trên máy bạn, biến `AO_ENV_AUTH` của user Windows mang giá trị `ao:<mật khẩu đó>`.
+- Lệnh thứ hai hỏi mật khẩu của user `ao` cho Development và Staging. Trên VPS chỉ lưu bản băm bcrypt. Trên máy bạn, biến `AO_ENV_AUTH` của user Windows mang giá trị `ao:<mật khẩu đó>`. Mật khẩu không được chứa dấu nháy kép, dấu `\` hay ký tự xuống dòng, vì `qa` đưa nó cho `curl` trong một dòng cấu hình; `ao-step` từ chối chạy `qa` khi mật khẩu có các ký tự đó.
 - Biến bí mật của app dùng cùng script: `bash /opt/ao/kit/vps/ao-secret.sh env <dự án> <môi trường> <TÊN>`.
 
 **5. Biến không bí mật của app.** Claude ghi thẳng, ví dụ cho `ao-pilot`:
