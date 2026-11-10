@@ -32,7 +32,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 22 | `d714399c-65d0-4f98-bbbb-720338ff6bea` | 2026-11-02 khoảng 10:50 → khoảng 20:08 | Bạn dán đoạn cuối của Phiên 21 kèm ảnh panel Development của `SMP-1`, hỏi `Deploy` đỏ có đúng dự kiến không; Claude đọc run và log của `audit`: đúng dự kiến (commit đầu không qua PR), và ảnh cho thấy GitHub for Atlassian đã gắn run vào `SMP-1`; bạn dọn `SMP-1` và bấm Start spec; Claude merge kit PR #143 (T3–T6, Checkpoint 2), chạy `/ao-spec SMP-2` qua `claude -p`: `ba` viết SPEC (1,49 USD) và để lại 4 câu hỏi; Claude chuyển câu hỏi cho bạn, khuyên đồng ý cả bốn; bạn đồng ý cả bốn; Claude nối lại phiên `claude -p` với câu trả lời: `ba`, `ux`, `sa` chạy (3,36 USD), `sa` để lại 2 câu hỏi (đếm emoji, chuẩn hóa NFC và xuống dòng); Claude khuyên đồng ý cả hai; bạn đồng ý cả hai; `sa` ghi câu trả lời, `ba` mở PR tài liệu #1, nhưng GitHub không chạy CI và `ao-step` chờ 30 phút; bạn hỏi vì sao không dừng; Claude dùng nhánh và PR thử tìm ra nguyên nhân (workflow từ lần push đầu chưa được ghi nhận trigger; một push đụng `.github/workflows/` gỡ được), `CI` của PR #1 xanh; tìm thêm lỗi kit `openQuestions` bỏ sót 10 câu hỏi của `ux`; tới gate ①, Claude khuyên không thêm dòng "Đã lưu ghi chú." và gửi các bước Approve spec; bạn hỏi vì sao có hai lỗi nặng và yêu cầu sửa; Claude sửa ở kit (PR #144), chép vào `ao-sample` (Task `SMP-3`, PR #3), `/ao-review 3` Approve (1 Medium, 2 Low ở kit, sửa ở kit PR #145); bạn approve và merge PR #3, hỏi có cần chép kit vào `ao-pilot` (chưa cần); bạn đã bấm Approve spec, chọn chạy `/ao-plan`; `sa` chạm giới hạn 5 giờ giữa lượt viết plan; bạn bảo làm tiếp; `sa` viết xong plan và ba ADR, `ba` tạo 8 item nhưng không tạo được link Blocks; phiên dừng vì Claude chạm giới hạn tuần |
 | 23 | `6d4fa505-b003-47c3-bad3-14958ad7ae83` | 2026-11-02 khoảng 22:10 → | Bạn dán đoạn cuối của Phiên 22 để làm tiếp; Claude tạo 5 link Blocks bằng token CI, tắt server spike `sa` để lại, ghi stage plan và 3 lỗi kit vào `verification.md`, gửi các bước duyệt plan (gate ②) |
 | 26 | `6b41390c-2d48-4d39-9a30-5a4e22f76bf7` | 2026-11-04 khoảng 13:10 → | Bạn báo đã merge kit PR #165; Claude chép vào `ao-sample` PR #13 và review lần 2 (security lại có 1 High: `AGENTS.md`), mở kit PR #166; bạn hỏi chạy review ở high, vì sao lần nào cũng ra High, vì sao security review cả PR; Claude tìm lý do của luật review toàn bộ trong file này; bạn chọn đổi luật review phần mới, điều kiện đường dẫn được bảo vệ (b), và sửa gốc (code của PR không nằm trong thư mục dự án); Claude thử bằng Sonnet và sửa thêm trong kit PR #166; bạn merge #166; Claude chép vào PR #13, review lần 3 còn hai Medium để sau Pilot 1; bạn merge PR #13 (`e56a207`); T10: kit PR #167 (đường bấm của board Jira mới) và #168 (đầu vào cho `project-scaffold`, bảng lỗi kit, chi phí Pilot 1 khoảng 117,6 USD, plan vào `tasks/archive/pilot-1/`); bạn xác nhận Pilot 1 hoàn thành (PR #169); bạn hỏi tài khoản GitHub Free có bị tính tiền không: Billed 0 USD, phần miễn phí bù hết Gross; bạn chọn `release-workflow`; Claude nêu phạm vi, điều vừa kiểm (repo private gói Free không có secret theo môi trường và người duyệt bắt buộc, phần miễn phí 12 USD Actions mỗi tháng, tài khoản agent không tạo được Fix Version), bảy giả định và ba câu hỏi (VPS, cách đưa bản mới vào VPS, kiểm thật ở `ao-pilot` hay `ao-sample`); bạn trả lời: dùng VPS `dtddeploy` của bạn với subdomain của `t2g.io.vn`, VPS tự kéo bản đã qua cổng, kiểm thật trên `ao-pilot` trước; key SSH của VPS có passphrase, Claude chỉ cách mở khóa bằng ssh-agent của Windows; bạn mở khóa key; Claude thấy VPS rất có thể đã bị chiếm quyền root (`masscan` chạy bằng root từ một IP của Aeza Group, SSH cho root đăng nhập bằng mật khẩu) và quá nhỏ (1 vCPU, 961 MB RAM), khuyên thu hồi bí mật và cài lại VPS, rồi hỏi lại câu 1; bạn xác nhận `masscan` không phải của bạn, nhờ ghi việc xử lý VPS vào memory (không commit), và hỏi về passphrase 4 chữ số, cách người lạ vào, cách SSH an toàn và EC2: người lạ có root từ khoảng 7/7/2026, nhiều khả năng nhờ mật khẩu root, passphrase không phải nguyên nhân; EC2 chỉ rẻ hơn khi bật ít giờ; bạn chọn VPS mới riêng cho kit; Claude viết `SPEC-release-workflow.md` (deployer trên VPS kiểm mọi commit bằng `audit`, hai điều kiện cứng cho Production, bốn lệnh `/ao-qa`, `/ao-release`, `/ao-ship`, `/ao-rollback`, mười tiền đề), đổi năm chỗ so với giả định, hỏi hai câu (subdomain, basic auth); bạn chọn cả hai đề xuất và duyệt spec; Claude ghi spec đã duyệt (PR #170), nhưng bộ lọc an toàn dừng tin nhắn hai lần; bạn hỏi nguyên nhân; Claude viết plan 23 task, bốn checkpoint, ba quyết định cần duyệt (đổi bản không gián đoạn, gỡ chặn bằng `/ao-rollback <môi trường> <sha>`, bản chép kit đi cùng Task của `ao-pilot`); bạn nhờ giải thích lại quyết định 5; Claude giải thích bằng ví dụ commit push thẳng nằm giữa lịch sử, cách gỡ bằng yêu cầu deploy của bạn, và hỏi có muốn tên `/ao-deploy` thay cho `/ao-rollback <sha>`; bạn merge PR #170 và duyệt plan; Claude ghi ba quyết định vào spec, mở PR #171, bắt đầu T1 (App `ao-deploy` trong script tạo App, mục 7 của `docs/github-apps-setup.md`), mở trang tạo App và đưa các bước bấm để bạn tạo App và token Jira chỉ đọc; bạn báo đã xong và hỏi quyền của App; Claude xác nhận quyền đúng thiết kế, nhưng tiền đề 3 sai một phần (`audit` cần quyền Commit statuses), đề xuất thêm quyền chỉ đọc đó, đề xuất hủy `DEMO-3` trước phép thử điểm 1, và báo tag `v0.1.0`, nhánh `release/0.1.0` cũ trên `ao-pilot`; bạn thêm quyền và hủy `DEMO-3`; Claude kiểm sáu tiền đề (1, 3, 4, 9, 10 đúng; 8 sai: token của agent không gắn được file), đề xuất gắn bằng chứng bằng token CI trong script, thêm điểm bắt đầu cho deployer, nhờ bạn xem deployment trên `DEMO-21` và hủy Bug thử `DEMO-25`; bạn gửi ảnh tab Deployments, hủy `DEMO-25` và đồng ý đề xuất; Claude đóng T1 (điểm 2 đúng; script dùng token CI cho bằng chứng, Fix Version và comment), nhờ bạn merge PR #171; bạn merge #171, chọn gói VPS MMO4 của BKNS và bỏ bước đưa lựa chọn nhà cung cấp; Claude mở PR #172 của T1, đưa các bước tạo key SSH mới và đặt VPS; bạn gửi ảnh form đặt hàng của BKNS; Claude viết lại bước 2 theo form (`Ubuntu-24-x64`, hostname `vps.ao.t2g.io.vn`, dán public key, 1 snapshot nếu giá hợp lý); bạn gửi ảnh form đã điền; Claude xác nhận đúng; bạn gửi IP `42.96.4.120`; VPS trả lời ping nhưng SSH chưa mở, Claude chờ cổng 22 và hỏi cổng SSH, trạng thái VPS; bạn gửi cổng `26266`; Claude cài phần nền (chỉ key, `ufw`, tự cập nhật, swap, Docker, Node.js 24, user `aoadmin`), viết `docs/vps-setup.md`, nhờ bạn đặt mật khẩu `aoadmin` và tạo bản ghi DNS wildcard; bạn hỏi đăng nhập bằng key thì ở vai trò nào và lúc tạo `aoadmin` Claude ở vai trò nào; Claude giải thích tên user trong lệnh quyết định vai trò, và Claude đã tạo `aoadmin` bằng root; bạn báo đã đặt mật khẩu và tạo bản ghi DNS; Claude thử ba tiền đề còn lại của T2 (build đúng, HTTPS đúng, E2E 19/24), dọn VPS, tắt đăng nhập root, quét cổng, rồi đề xuất ba chỗ sửa spec và plan; bạn nhắc Claude hai lần trả lời bằng tiếng Việt; bạn gỡ key, merge #172 và duyệt ba đề xuất; Claude sửa spec và plan (`AO_PUBLIC_URL`, tag `@local`, dọn cache build ở T7), đóng T2, mở PR #173, chờ bạn xem kết quả T1–T2 ở Checkpoint 1; bạn hỏi vì sao Claude cứ trả lời bằng tiếng Anh; Claude xin lỗi, giải thích lỗi chép tin từ log, thêm bước kiểm vào bộ nhớ và gửi lại bản tiếng Việt; bạn hỏi nguyên nhân; Claude nêu ba nguyên nhân (ngữ cảnh tiếng Anh sau khi phiên bị nén, viết lại tin thay vì chép từ log, tin tiến độ theo thông báo tiếng Anh) |
-| 27 | `6fe2d487-8a5e-4cfb-a02c-e03e1598a124` | 2026-11-06 khoảng 00:21 → | Bạn báo đã merge PR #173 và nhắc đọc memory; Claude đánh dấu Checkpoint 1 đạt, làm T3 (`versions.mjs`, `cut.mjs`, PR #174), T4 (kiểm `deploy.yaml`, schema chuyển vào `lib/release/`) và T5 (`targets.mjs`), rồi đề xuất báo lần từ chối bằng status `error`, để `jira-sync` không tạo Bug Critical sai; bạn merge #174 và duyệt đề xuất; Claude sửa spec, mở PR #175 của T4, làm T6 (`auditRange`, commit báo cáo của bot trên `release/*`, PR merge ngược); bạn merge #175; Claude mở PR #176 của T5, làm T7 (`smoke.mjs`, `docker.mjs`: đổi bản theo từng app, hai alias, bí mật qua môi trường của lệnh `docker`); bạn merge #176; Claude mở PR #177 của T6, làm T8 (`deployer.mjs`, `record.mjs`, `scripts/ao-deploy.mjs`), chạy thử `tick --dry-run` vào `ao-pilot`: dừng đúng ở `3fdd514`; bạn merge #177; Claude mở PR #178 của T7, làm T9 (Caddyfile do deployer sinh, schema của `deployer.yaml`, systemd, `ao-secret.sh`, mục 11 của `docs/vps-setup.md`); bạn hỏi Claude có tự merge được không; Claude trả lời được (repo kit private gói Free không có branch protection, `gh` có quyền admin), quy ước hiện tại là quyết định 10 của plan, và đề xuất để Claude merge PR của kit khi CI xanh, bạn xem ở checkpoint; bạn cho Claude tự merge tới Checkpoint 2; Claude ghi quyết định vào plan, merge #179 (T8), #180 (T9), #181 (T10: `merge-gate` cho PR release và PR merge ngược), #182 (T11: `jira-sync` tạo Bug Critical, gắn cờ khi deploy lên môi trường QA thất bại); bạn nhắn tiếp; Claude merge #183–#188 (T12–T17: dữ kiện môi trường, `/ao-qa`, `/ao-release`, `/ao-ship`, hotfix, `/ao-rollback`, bốn skill), sửa chỗ hở `JIRA_CI_TOKEN` trong phiên agent, chạm giới hạn usage giữa T15 rồi làm tiếp; tới Checkpoint 2, kiểm chỉ đọc trong `ao-pilot`, đề xuất ba việc trước kiểm thật; bạn hỏi `DEMO-5`, `DEMO-19` có phải hai Task trong ảnh không, vì Jira chỉ cho chuyển sang Cancelled, và PR #189 có chỉ cần Rebase and merge; Claude đính chính: từ New bạn chỉ `Refine` hoặc `Cancel`, mười item có commit trên `develop` chỉ `DEMO-12` Done, điểm cắt tính cả key của Epic là lỗi, xóa tag `v0.1.0` làm `DEMO-3` chặn điểm cắt; đề xuất A (điểm cắt bỏ qua Epic), B (sửa dữ liệu Jira của item cũ bằng token bot), C (giữ tag `v0.1.0`); bạn hỏi nên chọn phương án nào, dặn chưa làm gì; Claude nói đó là ba việc riêng, chọn B1; bạn merge #189, duyệt cả ba, cho tiếp tục tự merge; Claude merge #190 (việc A); việc B dừng sau `DEMO-19`, vì token của `ao-agents` không ghi được qua REST, và hỏi bạn có cho gọi Rovo MCP bằng script không; bạn đồng ý và nạp key SSH; Claude sửa xong dữ liệu Jira qua Rovo MCP, cài phần T18 của mình trên VPS, chuyển 11 deployment cũ sang `inactive`, rồi dừng để bạn bấm `Accept` và nhập hai bí mật; bạn làm xong; Claude kiểm, chạy `baseline pilot`, và hỏi bạn duyệt hai head trước `--confirm`; bạn hỏi có cần merge `develop` vào `main` không; Claude trả lời không cần và không nên, hai hướng merge đều không xung đột; bạn duyệt hai head; Claude ghi điểm bắt đầu, bật timer, thấy `AO_ENV_AUTH` không khớp mật khẩu trên VPS, báo đã in bản băm của mật khẩu ra output, và nhờ bạn nhập mật khẩu mới; bạn nhập lại; Claude thấy basic auth đã khớp, tắt đăng nhập root, và nhờ bạn gỡ key SSH, xóa file key `ao-deploy`; bạn làm xong; Claude đóng T18, tạo Task `DEMO-26` của T19, và nhờ bạn đọc rồi bấm `Refine`; bạn bấm `Refine`; lượt build đầu của `devops` dừng vì hook `jira-guard` nhận 401, do Claude quên đặt `AO_KIT_DIR`; Claude nhờ bạn gỡ cờ trên `DEMO-26`; bạn gỡ cờ; `devops` mở ao-pilot PR #17; Claude thấy trace của Playwright giữ mật khẩu basic auth và sửa kit (#198); bạn yêu cầu báo tiến độ 3 phút một lần; `/ao-review`, `/ao-fix` chạy, `policy` đọc nhầm `exit(` (#199), chạm giới hạn 5 giờ rồi chạy tiếp; không còn Critical hay High, ba Medium trong kit sửa ở #200; chi phí của `DEMO-26` là 20,53 USD; Claude nhờ bạn duyệt và merge PR #17 ở gate ③; bạn merge; deploy đầu lên Development thất bại vì `UMask=0077` làm image không đọc được code; Claude dựng lại lỗi bằng Docker Desktop, sửa kit ở #202, và hỏi bạn có đồng ý chép bản kit mới lên VPS; bạn đồng ý; Claude chép kit lên VPS, deploy lại `fb71de5` thành công, E2E vào Development 24/24 xanh, rồi làm T20: deployer chặn commit push thẳng, GitHub từ chối token `ao-dev`; bạn đồng ý gỡ chặn; Development chạy `fbbc47d`; tới Checkpoint 3, Claude hỏi bạn có chạy T21–T22 không; bạn hỏi vì sao T19 chưa được đánh xong; Claude giải thích hai mục còn mở và nhận đã nói quá; bạn đồng ý đánh xong T19, chép kit lại sau T22, và chạy T21–T22; `qa` kiểm bốn item trên Development, hai lượt chạm giới hạn 5 giờ, Claude sửa lỗi chạy tiếp lượt `qa` (#207); cả bốn PASS, bạn `Accept`; Claude đưa link trang Releases sai, bạn thêm tab Releases và tạo `v0.2.0`, `v0.3.0`; `/ao-release` dừng ở gate ④ với 10 item, chờ bạn duyệt; bạn duyệt; Staging chạy `v0.2.0`, regression PASS, PR release #18 đỏ ở `policy`; Claude sửa kit (#209); bạn đồng ý đi luồng Bug `DEMO-27` không review; `audit` chặn bản sửa trên Staging vì thiếu báo cáo review, Claude nhận đã đề xuất sai; bạn gỡ chặn; `DEMO-27` qua QA trên Staging, bạn `Accept`; regression chạy lại, Claude sửa lỗi gate ⑤ đến quá sớm (#211), release note viết lại; bạn approve PR #18; `merge-gate` merge, gắn tag `v0.2.0`, merge ngược; Production chạy `v0.2.0`, cùng tree với Staging; bạn bấm Release; T22: bạn chọn Bug thử `/favicon.ico` với Severity High, Claude tạo `DEMO-28`; `be-dev` sửa, đo được câu "console có lỗi" của Claude là sai, Claude sửa Bug; `merge-gate` merge PR #21; lượt `qa` bị tắt vì máy thiếu RAM, bạn giải phóng RAM, `qa` PASS; bạn `Accept`; `/ao-ship v0.2.1` chờ gate ⑤; bạn duyệt, `v0.2.1` lên Production; bạn bấm Release; rollback về `v0.2.0` và lên lại `v0.2.1` đều đạt; smoke fail có chủ đích đạt, `jira-sync` tạo Bug `DEMO-29`, Production giữ `v0.2.1`; T22 đóng; Claude rà việc tồn ở kit, Jira và hai pilot, sửa hai Medium của Pilot 1 (PR #218); chép kit lên VPS (`521e031`); Checkpoint 4 đóng, `docs/release-workflow.md` (PR #219); T22b: ao-pilot PR #23, review tìm lỗi High trong PR #217, sửa ở PR #220, chép lại, merge (`0f86022`), `qa` PASS, bạn Accept; T22b và T23 xong, plan lưu ở `tasks/archive/release-workflow/`, bạn xác nhận `release-workflow` hoàn thành; bạn hỏi Pilot 2 khác gì Pilot 1 và cách giảm chi phí review PR chép kit; Claude thử mù review (`max`, `high`, `open-code-review`), viết và được duyệt spec `kit-copy-review`; Claude làm `kit-copy-review` (kit PR #224–#230), review đầy đủ bản kit ở `ao-pilot` PR #24 (15,59 USD, một High được sửa), chép sang `ao-sample` PR #14 không cần agent (0 USD); đóng `kit-copy-review`, bạn duyệt spec Pilot 2; Lượt 74–93: duyệt spec Pilot 2, SMP-17 và SMP-18 (đổi thành Story, Epic SMP-19), QA 9 item, sửa điểm cắt (PR #234), v0.1.0 lên Staging rồi Production, rollback trên Development, checkpoint cuối (PR #235), đóng root login |
+| 27 | `6fe2d487-8a5e-4cfb-a02c-e03e1598a124` | 2026-11-06 khoảng 00:21 → | Bạn báo đã merge PR #173 và nhắc đọc memory; Claude đánh dấu Checkpoint 1 đạt, làm T3 (`versions.mjs`, `cut.mjs`, PR #174), T4 (kiểm `deploy.yaml`, schema chuyển vào `lib/release/`) và T5 (`targets.mjs`), rồi đề xuất báo lần từ chối bằng status `error`, để `jira-sync` không tạo Bug Critical sai; bạn merge #174 và duyệt đề xuất; Claude sửa spec, mở PR #175 của T4, làm T6 (`auditRange`, commit báo cáo của bot trên `release/*`, PR merge ngược); bạn merge #175; Claude mở PR #176 của T5, làm T7 (`smoke.mjs`, `docker.mjs`: đổi bản theo từng app, hai alias, bí mật qua môi trường của lệnh `docker`); bạn merge #176; Claude mở PR #177 của T6, làm T8 (`deployer.mjs`, `record.mjs`, `scripts/ao-deploy.mjs`), chạy thử `tick --dry-run` vào `ao-pilot`: dừng đúng ở `3fdd514`; bạn merge #177; Claude mở PR #178 của T7, làm T9 (Caddyfile do deployer sinh, schema của `deployer.yaml`, systemd, `ao-secret.sh`, mục 11 của `docs/vps-setup.md`); bạn hỏi Claude có tự merge được không; Claude trả lời được (repo kit private gói Free không có branch protection, `gh` có quyền admin), quy ước hiện tại là quyết định 10 của plan, và đề xuất để Claude merge PR của kit khi CI xanh, bạn xem ở checkpoint; bạn cho Claude tự merge tới Checkpoint 2; Claude ghi quyết định vào plan, merge #179 (T8), #180 (T9), #181 (T10: `merge-gate` cho PR release và PR merge ngược), #182 (T11: `jira-sync` tạo Bug Critical, gắn cờ khi deploy lên môi trường QA thất bại); bạn nhắn tiếp; Claude merge #183–#188 (T12–T17: dữ kiện môi trường, `/ao-qa`, `/ao-release`, `/ao-ship`, hotfix, `/ao-rollback`, bốn skill), sửa chỗ hở `JIRA_CI_TOKEN` trong phiên agent, chạm giới hạn usage giữa T15 rồi làm tiếp; tới Checkpoint 2, kiểm chỉ đọc trong `ao-pilot`, đề xuất ba việc trước kiểm thật; bạn hỏi `DEMO-5`, `DEMO-19` có phải hai Task trong ảnh không, vì Jira chỉ cho chuyển sang Cancelled, và PR #189 có chỉ cần Rebase and merge; Claude đính chính: từ New bạn chỉ `Refine` hoặc `Cancel`, mười item có commit trên `develop` chỉ `DEMO-12` Done, điểm cắt tính cả key của Epic là lỗi, xóa tag `v0.1.0` làm `DEMO-3` chặn điểm cắt; đề xuất A (điểm cắt bỏ qua Epic), B (sửa dữ liệu Jira của item cũ bằng token bot), C (giữ tag `v0.1.0`); bạn hỏi nên chọn phương án nào, dặn chưa làm gì; Claude nói đó là ba việc riêng, chọn B1; bạn merge #189, duyệt cả ba, cho tiếp tục tự merge; Claude merge #190 (việc A); việc B dừng sau `DEMO-19`, vì token của `ao-agents` không ghi được qua REST, và hỏi bạn có cho gọi Rovo MCP bằng script không; bạn đồng ý và nạp key SSH; Claude sửa xong dữ liệu Jira qua Rovo MCP, cài phần T18 của mình trên VPS, chuyển 11 deployment cũ sang `inactive`, rồi dừng để bạn bấm `Accept` và nhập hai bí mật; bạn làm xong; Claude kiểm, chạy `baseline pilot`, và hỏi bạn duyệt hai head trước `--confirm`; bạn hỏi có cần merge `develop` vào `main` không; Claude trả lời không cần và không nên, hai hướng merge đều không xung đột; bạn duyệt hai head; Claude ghi điểm bắt đầu, bật timer, thấy `AO_ENV_AUTH` không khớp mật khẩu trên VPS, báo đã in bản băm của mật khẩu ra output, và nhờ bạn nhập mật khẩu mới; bạn nhập lại; Claude thấy basic auth đã khớp, tắt đăng nhập root, và nhờ bạn gỡ key SSH, xóa file key `ao-deploy`; bạn làm xong; Claude đóng T18, tạo Task `DEMO-26` của T19, và nhờ bạn đọc rồi bấm `Refine`; bạn bấm `Refine`; lượt build đầu của `devops` dừng vì hook `jira-guard` nhận 401, do Claude quên đặt `AO_KIT_DIR`; Claude nhờ bạn gỡ cờ trên `DEMO-26`; bạn gỡ cờ; `devops` mở ao-pilot PR #17; Claude thấy trace của Playwright giữ mật khẩu basic auth và sửa kit (#198); bạn yêu cầu báo tiến độ 3 phút một lần; `/ao-review`, `/ao-fix` chạy, `policy` đọc nhầm `exit(` (#199), chạm giới hạn 5 giờ rồi chạy tiếp; không còn Critical hay High, ba Medium trong kit sửa ở #200; chi phí của `DEMO-26` là 20,53 USD; Claude nhờ bạn duyệt và merge PR #17 ở gate ③; bạn merge; deploy đầu lên Development thất bại vì `UMask=0077` làm image không đọc được code; Claude dựng lại lỗi bằng Docker Desktop, sửa kit ở #202, và hỏi bạn có đồng ý chép bản kit mới lên VPS; bạn đồng ý; Claude chép kit lên VPS, deploy lại `fb71de5` thành công, E2E vào Development 24/24 xanh, rồi làm T20: deployer chặn commit push thẳng, GitHub từ chối token `ao-dev`; bạn đồng ý gỡ chặn; Development chạy `fbbc47d`; tới Checkpoint 3, Claude hỏi bạn có chạy T21–T22 không; bạn hỏi vì sao T19 chưa được đánh xong; Claude giải thích hai mục còn mở và nhận đã nói quá; bạn đồng ý đánh xong T19, chép kit lại sau T22, và chạy T21–T22; `qa` kiểm bốn item trên Development, hai lượt chạm giới hạn 5 giờ, Claude sửa lỗi chạy tiếp lượt `qa` (#207); cả bốn PASS, bạn `Accept`; Claude đưa link trang Releases sai, bạn thêm tab Releases và tạo `v0.2.0`, `v0.3.0`; `/ao-release` dừng ở gate ④ với 10 item, chờ bạn duyệt; bạn duyệt; Staging chạy `v0.2.0`, regression PASS, PR release #18 đỏ ở `policy`; Claude sửa kit (#209); bạn đồng ý đi luồng Bug `DEMO-27` không review; `audit` chặn bản sửa trên Staging vì thiếu báo cáo review, Claude nhận đã đề xuất sai; bạn gỡ chặn; `DEMO-27` qua QA trên Staging, bạn `Accept`; regression chạy lại, Claude sửa lỗi gate ⑤ đến quá sớm (#211), release note viết lại; bạn approve PR #18; `merge-gate` merge, gắn tag `v0.2.0`, merge ngược; Production chạy `v0.2.0`, cùng tree với Staging; bạn bấm Release; T22: bạn chọn Bug thử `/favicon.ico` với Severity High, Claude tạo `DEMO-28`; `be-dev` sửa, đo được câu "console có lỗi" của Claude là sai, Claude sửa Bug; `merge-gate` merge PR #21; lượt `qa` bị tắt vì máy thiếu RAM, bạn giải phóng RAM, `qa` PASS; bạn `Accept`; `/ao-ship v0.2.1` chờ gate ⑤; bạn duyệt, `v0.2.1` lên Production; bạn bấm Release; rollback về `v0.2.0` và lên lại `v0.2.1` đều đạt; smoke fail có chủ đích đạt, `jira-sync` tạo Bug `DEMO-29`, Production giữ `v0.2.1`; T22 đóng; Claude rà việc tồn ở kit, Jira và hai pilot, sửa hai Medium của Pilot 1 (PR #218); chép kit lên VPS (`521e031`); Checkpoint 4 đóng, `docs/release-workflow.md` (PR #219); T22b: ao-pilot PR #23, review tìm lỗi High trong PR #217, sửa ở PR #220, chép lại, merge (`0f86022`), `qa` PASS, bạn Accept; T22b và T23 xong, plan lưu ở `tasks/archive/release-workflow/`, bạn xác nhận `release-workflow` hoàn thành; bạn hỏi Pilot 2 khác gì Pilot 1 và cách giảm chi phí review PR chép kit; Claude thử mù review (`max`, `high`, `open-code-review`), viết và được duyệt spec `kit-copy-review`; Claude làm `kit-copy-review` (kit PR #224–#230), review đầy đủ bản kit ở `ao-pilot` PR #24 (15,59 USD, một High được sửa), chép sang `ao-sample` PR #14 không cần agent (0 USD); đóng `kit-copy-review`, bạn duyệt spec Pilot 2; Lượt 74–93: duyệt spec Pilot 2, SMP-17 và SMP-18 (đổi thành Story, Epic SMP-19), QA 9 item, sửa điểm cắt (PR #234), v0.1.0 lên Staging rồi Production, rollback trên Development, checkpoint cuối (PR #235), đóng root login; Bạn hỏi kit có chỉ dùng cho monorepo Next.js + NestJS không; Claude trả lời trong misc/thao-luan/kit-voi-stack-khac-va-nhieu-repo.md: không cần làm lại, có hai mức sửa (stack profile, nhiều repo), khuyên gom monorepo; Bạn hỏi ba trường hợp mở rộng (user/admin/api NestJS, Spring Boot, hai repo); Claude khuyên làm cả ba trong kit hiện tại, không clone; trường hợp 1 và 2 trong project-scaffold, trường hợp 3 thành module multi-repo sau; Bạn bảo ghi concern 1 vào file chỉ mục và hỏi concern 2 (chạy song song) sửa kit hay clone; Claude lập misc/thao-luan/concerns.md và sdlc-song-song-sua-kit-hay-clone.md: sửa kit hiện tại, chỉ thay lớp chạy, trần mặc định 1; Bạn bảo ghi quyết định của concern 2 vào concerns.md; Claude viết lại file thành mỗi concern một mục, concern 2 có 5 quyết định và link tới hai file thảo luận; Bạn hỏi concern 3 (thêm role mới: SEO Content Writer, SEO lúc spec và plan); Claude viết misc/thao-luan/role-moi-trong-sdlc.md: ba kiểu role, seo là cố vấn trong /ao-spec, viết bài trong database là workflow nội dung riêng, sửa kit và đưa thứ tự chạy sang contract; Bạn hỏi concern 4 (cập nhật skill và agent, chọn lọc); Claude viết misc/thao-luan/cap-nhat-skill-va-agent.md: bốn cách đưa vào kit, tám nguyên tắc phải giữ, quy trình 5 bước, sửa kit không clone; Bạn hỏi thứ tự làm các concern; Claude thêm bảng Thứ tự làm và tiến độ (A1–D3) vào misc/thao-luan/concerns.md, chờ bạn duyệt; Bạn hỏi reviewer có song song với security được không, Pilot 3 chạy thế nào, trần A2; Claude trả lời: song song được (4 chỗ dùng chung phải sửa), Pilot 3 dùng Epic đầu của dự án thật sau khi kiểm scaffold không agent, trần 1 với gói Pro và đề xuất gộp A2 vào C2; Bạn đồng ý gộp A2 vào C2 và hỏi các bước làm một tính năng khi dùng kit; Claude ghi quyết định vào concerns.md và trả lời: ở Cấp 1 bạn gõ /ao-* từng bước, dừng ở 5 cổng; Cấp 2 bộ điều phối tự chạy; Bạn hỏi sao PO phải tự tạo Epic, sao /ao-spec không phỏng vấn từ mô tả sơ khai; Claude giải thích ba giả định của Cấp 1 và đề xuất bước intake (/ao-intake) trước /ao-spec, đặt trước B1; Bạn đồng ý thêm intake; Claude thêm A3 /ao-intake trước B1 và mục concern 5 vào concerns.md; Bạn hỏi cách sửa SPEC sau /ao-spec và yêu cầu hướng dẫn green/brown trong project-scaffold; Claude trả lời kit chưa có lệnh sửa SPEC, đề xuất /ao-spec và /ao-plan kèm yêu cầu sửa gom vào A3, và ghi yêu cầu hướng dẫn vào B1; Bạn hỏi item dừng ở đâu để hỏi bạn sau /ao-spec; Claude liệt kê 12 chỗ dừng theo kế hoạch (5 cổng, Accept, câu hỏi spec/plan) và 7 chỗ dừng bất thường; Bạn nêu vấn đề kit không dừng để bạn xem trước sau /ao-build; Claude xác nhận ba lỗ hổng và đề xuất bước xem trước bằng PR nháp, /ao-preview, /ao-fix không kéo review, đặt thành A4 trước B1; Bạn hỏi sao xem trước phải dùng worktree thay vì chuyển nhánh; Claude đồng ý, giải thích worktree là vì agent (review, QA, C2), sửa /ao-preview sang chuyển nhánh trong checkout chính; Bạn hỏi lại về nhánh, checkout và pull khi xem trước; Claude giải thích chậm kèm sơ đồ mermaid trong misc/thao-luan/git-khi-dung-kit.md; Bạn báo lỗi Mermaid trong VS Code; Claude sửa gitGraph (mainBranchName develop) và dấu ; trong sequenceDiagram; Bạn đồng ý thêm A4 và gom sửa SPEC/plan cùng trả lời Cần ba/sa vào A3; Claude cập nhật bảng tiến độ, concern 5 và mục concern 6 trong concerns.md; Bạn duyệt bảng và cách chạy Pilot 3, hỏi lệnh yêu cầu sửa sau xem trước; Claude ghi quyết định vào concerns.md, đề xuất /ao-fix <PR> với tiền tố be:/fe:, và hỏi AC khi yêu cầu đổi AC; Bạn đồng ý: yêu cầu sửa làm đổi AC thì ba cập nhật AC trước; Claude ghi vào A4 và concern 6 trong concerns.md; Bạn hỏi ba có sửa AC khi Story In Progress được không; Claude trả lời được (guard, Jira, tiền lệ SMP-18) và nêu ba việc đi kèm cho spec A4; Bạn hỏi yêu cầu sửa có đổi AC của Epic hay Task không; Claude nêu các trường hợp Epic, Task, Bug và hợp đồng API, đề xuất A4 hỏi rộng hơn và chuyển lệnh đổi Task thành Story sang A4; Bạn đồng ý hai điểm của A4 và hỏi về lỗi bạn thấy khi item In QA; Claude ghi quyết định, chỉ ra ba chỗ chưa thông của đường QA fail và đề xuất A5 (/ao-qa <KEY> fail:, build lại sau QA fail); Bạn đồng ý thêm A5; Claude thêm A5 (sửa lỗi tìm thấy khi QA) và mục concern 7 vào concerns.md; Bạn bảo bắt đầu; Claude làm A1 (kit PR #237: mật khẩu basic auth không lên dòng lệnh, audit nhận SHA rút gọn) và hỏi gộp một spec cho A3–A5 |
 
 ---
 
@@ -16705,3 +16705,938 @@ Tôi đang đóng Pilot 2 trong kit: chuyển plan và nhật ký vào `tasks/ar
 - Các Low cũ từ kit-copy-review và tài liệu.
 
 Theo thứ tự bạn đã chọn, việc tiếp theo là module `project-scaffold`. Bạn muốn bắt đầu luôn, hay làm trước một số việc trong danh sách kit để sau?
+# Phiên 27 · Lượt 94 — 2026-11-10 14:49
+
+**Bạn:**
+
+```markdown
+Chưa làm module project-scaffold. Thảo luận và trả lời các điểm dưới đây, yêu cầu trả lời súc tích, ngắn gọn, viết vào 1 file tại D:\Document\1Khoahoc\4LapTrinh\AI-for-coding\ai-orchestrator\misc\thao-luan
+
+## 1. AO (ai-orchestrator) kit hiện tại được thiết để chỉ dùng được cho dự án Mono repo với Frontend dùng Next.js và Backend dùng Nestjs à? Nếu tôi xây nền tảng E-commerce (single repo, mỗi website ở 1 repo riêng) gồm: User-facing website (Next.js), Admin/Seller Dashboard (React.js), Backend (Java Springboot) thì cần làm lại AO kit à?
+```
+
+**Claude:**
+
+Câu trả lời đầy đủ nằm trong `misc/thao-luan/kit-voi-stack-khac-va-nhieu-repo.md`. Mình chưa commit file này.
+
+**Không cần làm lại kit.** Đến giờ kit mới được chạy thử trên monorepo Next.js + NestJS, nên mã còn hai giả định ở hai mức. Phần còn lại không phụ thuộc stack: luồng Jira, các gate, agent, merge-gate, audit, release, rollback, và deployer (deployer chỉ cần Dockerfile).
+
+**Mức 1, gắn với JS/TS:** sáu chỗ, gồm:
+- CI chạy lệnh `npm`;
+- coverage đọc file lcov;
+- `npm audit`;
+- dòng tắt check chỉ theo cú pháp JS/TS;
+- path security theo mẫu tên file NestJS và Next.js;
+- mô tả role fe-dev, be-dev và skill của chúng.
+
+Cách sửa là cho mỗi dự án khai một "stack profile". Admin bằng React gần như chạy được ngay. Spring Boot cần Gradle hoặc Maven, JaCoCo và một công cụ kiểm dependency cho Java.
+
+**Mức 2, một sản phẩm trên ba repo:** đây là giả định của hợp đồng, nên sửa lớn hơn. Kit vướng sáu chỗ:
+- một Story thành 3 PR, trong khi guard chỉ xem PR mới nhất;
+- API phải deploy trước web;
+- mỗi dự án có network Docker riêng, nên API phải có host công khai riêng, kéo theo CORS và basic auth chặn request từ origin khác;
+- tên Fix Version trùng nhau khi ba repo dùng chung một Jira space;
+- E2E cần API đúng phiên bản trên cùng môi trường;
+- SPEC và plan chỉ nằm ở một repo.
+
+**Khuyến nghị:** gom thành một monorepo `apps/shop`, `apps/admin`, `apps/api`. Ngoài stack profile, chỉ cần sửa thêm một chỗ: cho phép nhiều app công khai, mỗi app một host (luật D2 hiện chỉ cho một). Ước tính 1 đến 1,5 module. Giữ ba repo thì ước tính 2 đến 3 module, và mỗi Story tốn thêm tiền agent. Chỉ nên chọn cách này khi có lý do ngoài kit, như team, quyền truy cập hoặc nhịp release khác nhau.
+# Phiên 27 · Lượt 95 — 2026-11-10 15:05
+
+**Bạn:**
+
+```markdown
+Thảo luận thêm:
+
+Ngoài trường hợp hiện tại của ao kit (cứ xem là version 1) là một sản phẩm trên 1 repo (mono repo)
+- FE: Next.js
+- BE: Nest.js
+
+Tôi muốn AO có thể mở rộng theo các trường hợp sau:
+
+1. Một sản phẩm trên 1 repo (mono repo):
+    - User-facing App (Next.js)
+    - Admin Dashboard (React)
+    - Backend API (Nest.js)
+
+2. Một sản phẩm trên 1 repo (mono repo):
+    - User-facing App (Next.js)
+    - Admin Dashboard (React)
+    - Backend API (Java Springboot)
+
+3. Một sản phẩm trên 2 repo riêng biệt: 
+    - 1 repo cho Frontend là mono repo chứa User-facing App (Next.js), Admin Dashboard (React)
+    - 1 repo cho Backend (API có thể dùng Java Springboot hoặc là Nest.js hoặc là .NET)
+
+Câu hỏi:
+
+1. Trong 3 trường hợp này, trường hợp nào là nên sửa trên AO Kit hiện tại? Trường hợp nào là nên clone ra và tạo 1 phiên bản riêng (Ví dụ đặt tên: ao-multi-repo-v1)
+
+2. Nên làm việc mở rộng kit này trước hay trong module project-scaffold
+
+Tên app:
+apps/user (User-facing App (Next.js)), apps/admin (Admin Dashboard (React)), apps/api (Backend API)
+```
+
+**Claude:**
+
+Mình đã ghi phần trả lời vào cuối `misc/thao-luan/kit-voi-stack-khac-va-nhieu-repo.md`, dưới mục "Thảo luận thêm". Mình chưa commit file này.
+
+**Câu 1: cả ba trường hợp nên làm trong kit hiện tại, không nên clone.**
+- **Trường hợp 1** thêm một app công khai. Hiện deployer chỉ cho đúng một app công khai (luật D2), nên cần sửa để mỗi app công khai có host riêng.
+- **Trường hợp 2** cần thêm stack profile cho từng app. Cách rẻ nhất: `apps/api` có một `package.json` gọi Gradle, nên CI hiện tại vẫn chạy được.
+- **Trường hợp 3** là phần mở rộng của hợp đồng: một item có PR ở hai repo. Nên làm thành chế độ bật theo cấu hình; dự án một repo không đổi gì.
+
+Không nên clone vì ba lẽ:
+- khoảng 90% mã giống nhau, nên mỗi lần sửa lỗi phải làm hai lần;
+- VPS chỉ có một deployer phục vụ mọi dự án;
+- kit-copy-review sẽ phải review hai kit, tức trả phí hai lần.
+
+**Câu 2:** trường hợp 1 và 2 nên làm trong `project-scaffold`. Đó vốn là phạm vi của module này ở `SPEC.md:94`: "Profile theo stack… và script cài/đồng bộ kit". Trường hợp 3 nên làm sau, thành một module `multi-repo` riêng, kèm profile .NET. Dù vậy, `project-scaffold` nên chừa sẵn chỗ cho trường hợp 3 trong file cấu hình dự án: một danh sách repo, và cho mỗi app thì khai repo, đường dẫn và profile.
+
+**Thứ tự đề xuất:**
+1. `project-scaffold`, gồm trường hợp 1 và 2. Ước tính 1 đến 1,5 module.
+2. Một pilot cho Spring Boot.
+3. Module `multi-repo`. Ước tính 2 module.
+
+Tên `apps/user`, `apps/admin`, `apps/api` không vướng gì, vì mã kit không gắn cứng `apps/web`.
+# Phiên 27 · Lượt 96 — 2026-11-10 15:20
+
+**Bạn:**
+
+```markdown
+Note lại cho concern này, đặt là concern 1 viết vào 1 file tại D:\Document\1Khoahoc\4LapTrinh\AI-for-coding\ai-orchestrator\misc\thao-luan, không chép lại, để link tới file D:\Document\1Khoahoc\4LapTrinh\AI-for-coding\ai-orchestrator\misc\thao-luan\kit-voi-stack-khac-va-nhieu-repo.md
+
+Thảo luận tiếp các câu hỏi, concern bên dưới. Các mở rộng bên dưới nên sửa kit hiện tại hay clone ra 1 bản mới.
+## 2. chạy nhiều luồng SDLC song song
+Đọc D:\Document\1Khoahoc\4LapTrinh\AI-for-coding\ai-orchestrator\misc\thao-luan-sdlc-song-song.md nhé
+```
+
+**Claude:**
+
+Mình đã thêm hai file trong `misc/thao-luan/`, chưa commit:
+- `concerns.md`: mỗi concern một dòng gồm kết luận và link. Concern 1 link tới `kit-voi-stack-khac-va-nhieu-repo.md`; mình không chép lại nội dung.
+- `sdlc-song-song-sua-kit-hay-clone.md`: trả lời concern 2. File này link tới bản phân tích gốc `misc/thao-luan-sdlc-song-song.md`, không chép lại nó.
+
+**Concern 2: nên sửa kit hiện tại, không clone.**
+- **Chỉ thay lớp chạy agent:** khóa chạy, checkout và vòng chạy trong `ao-step` và `runner`. Contract, guard, WIP, Jira, các gate, merge-gate, audit và deployer giữ nguyên.
+- **Đã có trong lộ trình của chính kit này:** `orchestrator-cli` ở Cấp 2, và `workflow-engine` ở Cấp 3 có mục "chạy nhiều agent song song".
+- **Làm thành chế độ bật được:** thêm một trần số lượt chạy cùng lúc, mặc định 1. Với mặc định đó, kit chạy y như bây giờ, hợp với hạn mức gói Pro.
+
+**Từ 2026-11-03 tới nay:**
+- Đã có: review chạy trong worktree ở head của PR; QA và regression chạy trong worktree có cài package.
+- Chưa có:
+  - `reviewer` song song với `security`;
+  - mỗi item một worktree cho build và fix (hiện vẫn dùng một checkout chung);
+  - khóa theo item (hiện vẫn một khóa cho cả project);
+  - bộ điều phối;
+  - WIP tính theo số chỗ.
+
+**Liên quan concern 1:** `project-scaffold` nên cho mỗi app lấy cổng từ biến môi trường. Không vậy thì hai worktree giành nhau cổng 3000 và 3001.
+
+**Thứ tự đề xuất** (chỉnh lại thứ tự của concern 1):
+1. `reviewer` song song với `security`.
+2. `project-scaffold` và pilot Spring Boot.
+3. Lớp chạy song song, làm phần đầu của `orchestrator-cli`.
+4. `multi-repo`, chỉ khi có dự án thật cần hai repo.
+# Phiên 27 · Lượt 97 — 2026-11-10 15:30
+
+**Bạn:**
+
+```markdown
+Note concern 2 này vào file vừa tạo, viết những quyết định cần viết, còn lại thì link tới các file thảo luận (nếu có) đã có từ trước
+```
+
+**Claude:**
+
+Mình đã viết lại `misc/thao-luan/concerns.md` thành mỗi concern một mục, chưa commit.
+
+**Concern 1** giữ nguyên dạng: kết luận ngắn và link tới `kit-voi-stack-khac-va-nhieu-repo.md`. Mình thêm một dòng nói thứ tự làm việc nay theo concern 2.
+
+**Concern 2** ghi 5 quyết định:
+1. Sửa kit hiện tại, không clone. Chỉ lớp chạy agent thay đổi.
+2. Chạy song song là chế độ bật theo từng dự án, trần mặc định là 1.
+3. Lớp chạy song song là phần đầu của `orchestrator-cli`, gồm worktree theo item, khóa theo item, trần số lượt, bộ điều phối không dùng LLM và WIP theo số chỗ.
+4. `project-scaffold` cho mỗi app lấy cổng từ biến môi trường, profile khai lệnh cài package, và mỗi worktree tự cài package.
+5. Thứ tự làm: `reviewer` song song với `security` → `project-scaffold` rồi pilot Spring Boot → lớp chạy song song → `multi-repo` khi có dự án thật cần hai repo.
+
+Phần thảo luận của concern 2 link tới `misc/thao-luan-sdlc-song-song.md` (phân tích gốc, Phiên 23) và `sdlc-song-song-sua-kit-hay-clone.md` (lý do không clone, và những phần đã có hoặc chưa có trong mã).
+# Phiên 27 · Lượt 98 — 2026-11-10 15:50
+
+**Bạn:**
+
+```markdown
+Thảo luận tiếp các câu hỏi, concern bên dưới:
+
+## 3. SDLC hiện tại chỉ có các role cố định, trong lúc làm việc nếu phát sinh 1 role mới thì làm như nào? 
+    - Ví dụ 1: cụ thể là khi phát triển tính năng 'Blogs', tới lúc viết bài thì cần 1 nhân viên chuyên viết bài hay, chuẩn SEO (tương đương với 1 agent SEO Content Writer mới) thì agent viết blog này sẽ làm việc với team agent trong SDLC như nào cho đúng?
+    - Ví dụ 2: bổ sung thêm agent về SEO lúc spec và plan
+```
+
+**Claude:**
+
+Mình đã viết câu trả lời vào `misc/thao-luan/role-moi-trong-sdlc.md` và thêm mục concern 3 vào `concerns.md`, ghi rõ là đề xuất chưa duyệt. Cả hai chưa commit.
+
+**Thêm một role hiện phải chạm vào 7 chỗ:**
+- contract (`roles.yaml`, `stages.yaml`);
+- roster và prompt;
+- giá trị mới cho field Agent trên Jira;
+- label `ao-<role>`;
+- mapping App trong `gates.yaml`;
+- thứ tự chạy viết thẳng trong `steps.mjs`.
+
+Comment `Cần <role>:` đã chạy được với mọi role có trong roster. Chỉ có thứ tự chạy là còn gắn cứng trong mã.
+
+**Một role mới thuộc một trong ba kiểu:**
+- cố vấn ở spec và plan, như `ux`, `sa`;
+- người làm qua Sub-task và PR, như dev;
+- người kiểm ở review và QA, như `security`, `qa`.
+
+**Ví dụ 2:** `seo` là role cố vấn. Nó chạy trong `/ao-spec` sau `ux`, chỉ khi SPEC có trang công khai, và viết `docs/specs/<EPIC>/seo.md`. Ở `/ao-plan`, `sa` biến file đó thành acceptance criteria. Ước tính tốn thêm khoảng 1–2 USD mỗi Epic. Cách rẻ hơn là gắn skill SEO cho `ba` và `fe-dev`, nhưng khi đó không ai chịu trách nhiệm riêng về SEO.
+
+**Ví dụ 1:** tùy vào chỗ bài viết nằm.
+- **Bài trong database, đăng qua Admin** (mình khuyên dùng): viết bài không thuộc SDLC. SDLC xây tính năng Blog; viết bài là một workflow nội dung riêng, bạn duyệt trước khi đăng. Agent viết bài nối với các agent SDLC qua SPEC (mô hình nội dung và field SEO). Khi tính năng thiếu gì, nó tạo Story hoặc Bug.
+- **Bài là file MDX trong repo:** agent viết bài là role người làm `content-writer`, chỉ ghi `content/**` và mở PR như dev.
+
+**Khi role phát sinh giữa dự án:**
+1. Bạn duyệt, vì role mới là thêm quyền cho agent.
+2. Một PR vào kit.
+3. Chép kit sang dự án; bạn tự merge PR này.
+4. Epic đang dở gọi role mới qua `Cần seo:`; nếu SPEC đổi thì SPEC qua gate ① lại.
+
+**Sửa kit hay clone:** sửa kit hiện tại. Bản sửa đáng làm là đưa thứ tự chạy từ `steps.mjs` sang contract, kèm điều kiện `when`, và cho mỗi dự án khai role tùy chọn. Khi đó thêm role chỉ cần sửa cấu hình và viết prompt. `project-scaffold` nên chừa sẵn chỗ khai role tùy chọn. Role `seo` làm ngay trước dự án đầu tiên cần SEO. Workflow nội dung làm sau nữa.
+# Phiên 27 · Lượt 99 — 2026-11-10 16:10
+
+**Bạn:**
+
+```markdown
+Thảo luận tiếp các câu hỏi bên dưới:
+## 4. Nếu muốn update skills, agent của Kit thì có được không? Ví dụ như trong lúc phát triển dự án tôi tìm được 1 skill hay, 1 agent tốt hơn trong Kit và muốn update lại skills, agent cho Kit, các nguyên tắc cần đảm bảo để kit hoạt động vẫn được giữ nguyên, chỉ là chọn lọc những điều mà skills, agent làm tốt hơn vào kit, không phải replace hoàn toàn.
+```
+
+**Claude:**
+
+Mình đã viết câu trả lời vào `misc/thao-luan/cap-nhat-skill-va-agent.md` và thêm mục concern 4 vào `concerns.md`, ghi là đề xuất chưa duyệt. Cả hai chưa commit.
+
+**Được, và kit đã được thiết kế cho việc này.** "Chọn lọc, không thay hết" là quyết định đã chốt ở `SPEC.md:50`. Prompt của `qa` và `security` đã lấy ý từ agency-agents theo đúng cách đó. Đây là việc bảo trì kit bằng PR, không cần clone.
+
+**Bốn cách đưa cái hay vào kit**, thử theo thứ tự:
+1. **Lấy ý vào prompt của role** (`agents/prompts/<role>.md`), ghi nguồn trong comment HTML. Đây là cách mặc định cho "chọn lọc".
+2. **Chép cả skill vào kit, ghim theo commit**, khi skill là một phương pháp trọn vẹn.
+3. **Skill theo stack** đặt trong `roster.local.yaml` của dự án, không vào kit.
+4. **Skill của kit chuyển thể từ upstream**, khi muốn sửa một phần lớn. Kit chưa có chỗ cho loại này, nên cần một bản sửa nhỏ.
+
+Với một agent tốt hơn: không thay file agent, vì file đó được sinh ra. Lấy phần làm tốt hơn vào prompt và skill. Không sửa thẳng file của skill đã chép.
+
+**Tám nguyên tắc phải giữ:**
+1. Contract thắng skill.
+2. Quyền không tự tăng; thêm quyền do bạn duyệt.
+3. Không sửa tay file sinh ra hoặc file đã chép, và năm lệnh kiểm phải xanh.
+4. Ghim theo SHA, đọc diff và giấy phép.
+5. Giữ ngân sách ngữ cảnh: `fe-dev` đã nạp khoảng 13.000 token skill.
+6. Đo trước khi đổi, trên các head cũ có lỗi đã biết.
+7. Một kit cho mọi dự án.
+8. Giữ quy tắc ngôn ngữ.
+
+File cũng có quy trình 5 bước cho lần tới bạn tìm được một skill hay.
+# Phiên 27 · Lượt 100 — 2026-11-10 16:35
+
+**Bạn:**
+
+```markdown
+Xem xét kỹ trong các concern này nên làm theo thứ tự nào? Cái nào làm trước, cái nào làm sau? Note vào D:\Document\1Khoahoc\4LapTrinh\AI-for-coding\ai-orchestrator\misc\thao-luan\concerns.md để track, theo dõi tiến độ làm
+```
+
+**Claude:**
+
+Mình đã thêm mục "Thứ tự làm và tiến độ" ở đầu `misc/thao-luan/concerns.md`. Mục này là một bảng 11 việc, mỗi việc có cột Cần xong trước, Trạng thái và Kết quả để theo dõi. File chưa commit.
+
+**Thứ tự đề xuất:**
+
+| # | Việc |
+|---|---|
+| A1 | Sửa hai lỗi an toàn còn lại của Pilot 2: `qa` dùng `curl -K -`, `audit` nhận SHA rút gọn |
+| A2 | Trần số lượt chạy cùng lúc (mặc định 1), và `reviewer` song song với `security` khi trần từ 2 trở lên |
+| B1 | `project-scaffold` phần 1: file cấu hình dự án (repo, app, cổng lấy từ biến môi trường, role tùy chọn), script cài và đồng bộ kit, profile Next.js + NestJS, dựng Jira và GitHub |
+| B2 | Phần 2: nhiều app công khai, profile React. Xong là có trường hợp 1 |
+| B3 | Phần 3: profile Spring Boot, trần RAM container, dọn build cache. Xong là có trường hợp 2 |
+| B4 | Pilot 3 trên Spring Boot |
+| C1 | Thứ tự chạy chuyển sang contract, thêm role `seo` |
+| C2 | Lớp chạy song song, phần đầu của `orchestrator-cli` |
+| D1–D3 | Chỉ làm khi có nhu cầu: `multi-repo` và profile .NET; workflow nội dung; skill riêng của kit |
+
+**Những điểm mình xem kỹ lại:**
+- **A2 vướng một quyết định trước đó.** `reviewer` song song với `security` vi phạm trần mặc định 1 đã chốt ở concern 2, nên A2 phải đi cùng trần số lượt. Giữ trần ở 1 thì kit chạy như cũ; chỉ khi bạn nâng lên 2 mới có lợi.
+- **`project-scaffold` quá lớn cho một module,** nên mình chia làm ba phần. Mỗi phần thêm một trường hợp và giữ nguyên các dự án đang chạy.
+- **Trần RAM container phải xong trước Pilot 3.** Spring Boot cần khoảng 300–500 MB mỗi container, nhân 3 môi trường, trong khi VPS còn 2,9 GB trống.
+- **C1 phải đi trước C2.** Bộ điều phối cần đọc thứ tự chạy và số chỗ của mỗi role từ dữ liệu; nếu đọc từ các danh sách viết cứng thì sẽ phải viết lại khi thêm role.
+
+Mình cũng đã chỉnh concern 1 và concern 2 để trỏ về bảng này, và lưu một memory để các phiên sau đọc bảng trước khi đề xuất module.
+
+**Bạn cần quyết ba điều:**
+1. Duyệt thứ tự này, hoặc sửa nó.
+2. Pilot 3 chạy trên một dự án mẫu mới (thêm khoảng 30–40 USD, không rủi ro cho dự án thật), hay dùng Epic đầu tiên của dự án thật?
+3. Có làm A2 bây giờ không?
+# Phiên 27 · Lượt 101 — 2026-11-10 17:00
+
+**Bạn:**
+
+```markdown
+Chưa làm tôi hỏi:
+
+1. Kiểm tra kỹ xem reviewer có chạy song song với security được không? Hay security cần kết quả của reviewer, reviewer phải chạy trước thì security mới chạy được?
+
+2. Bạn Đề xuất chạy Pilot 3 như nào? Epic đầu tiên hay mẫu mới?
+
+3. Về A2: Hãy Đề xuất số lượt chạy cùng lúc
+```
+
+**Claude:**
+
+Mình chỉ trả lời, chưa sửa `concerns.md` hay mã kit.
+
+**1. Chạy song song được: `security` không cần kết quả của `reviewer`.** Mình kiểm trong mã:
+- `reviewRuns` (`lib/workflow/steps.mjs:377`) dựng hai lượt độc lập trên cùng head của PR. `security` review cả PR hay chỉ phần mới là dựa vào báo cáo `security` lần trước (dòng 383), không dựa vào báo cáo của `reviewer`.
+- Prompt của cả hai chỉ là "Review PR #N."; prompt của `security` không nhắc tới `reviewer`.
+- Báo cáo tách theo role (`.ai/reviews/<PR>-reviewer.md`, `<PR>-security.md`) và được đăng thành hai review riêng.
+- Contract chỉ yêu cầu bạn duyệt sau khi có cả hai báo cáo (`contract/stages.yaml:66`), không quy định thứ tự giữa hai agent. "`reviewer` rồi `security`" chỉ là thứ tự mà runner đang chạy.
+- Ở SMP-18, `reviewer` đã Request changes mà `security` vẫn chạy, tức kit không chờ `reviewer` đạt.
+
+Muốn chạy song song thì phải sửa 4 chỗ hai lượt đang dùng chung:
+1. **Worktree `pr-<N>`:** runner thêm worktree trước mỗi lượt và gỡ sau mỗi lượt (`runner.mjs:100`). Phải đổi thành thêm một lần, gỡ khi cả hai xong.
+2. **Ledger `.ai/ledger/<KEY>.md`:** `reviewer` có ghi vào file này; ledger của SMP-18 có mục của nó. Hai agent cùng sửa một file thì mất dữ liệu, nên ledger của lượt review phải tách theo role.
+3. **State của lượt chạy:** `state.json`, số thứ tự trong `<n>-<role>.jsonl` và `last.md` phải được ghi lần lượt.
+4. **Vòng chạy:** runner chạy từng lượt rồi tính lại bước kế tiếp. Phải cho nó chạy hai lượt cùng lúc và chỉ tính lại khi cả hai xong.
+
+Context pack hai bên dùng chung nhưng chỉ đọc, nên không vướng. Lợi ích: ở SMP-18, `reviewer` mất khoảng 7 phút và `security` 10,9 phút; ở PR #7 là 9,7 và 12,8 phút. Chạy song song mỗi vòng review bớt khoảng 7–10 phút.
+
+**2. Pilot 3: mình đề xuất dùng Epic đầu của dự án thật, nhưng kiểm scaffold riêng trước.**
+- **Bước 1, kiểm scaffold không cần agent.** Scaffold dựng repo thật với ba app khung: trang chào cho `user` và `admin`, `/health` cho `api` Spring Boot. Repo phải có CI xanh, deploy được lên 3 môi trường, và có 2 host công khai. Bước này gần như không tốn tiền agent mà bắt được phần lớn lỗi của B1–B3. Lỗi tìm thấy thì sửa trong kit, khi repo thật chưa có code thật.
+- **Bước 2, Pilot 3 là Epic đầu, nhỏ, chạm cả ba app, tránh đăng nhập và thanh toán.** Ví dụ "Danh mục sản phẩm": API trả dữ liệu seed, `user` xem danh sách và chi tiết, `admin` xem danh sách. Khi chưa có đăng nhập, `admin` chỉ đọc dữ liệu công khai, hoặc chưa lên Production.
+- **Lý do:** một mẫu mới tốn khoảng 30–40 USD cho code sẽ bỏ đi (Pilot 2 tốn 34,23 USD). Rủi ro chính của dự án thật là lỗi kit lọt vào repo. Rủi ro đó đã giảm nhờ bước 1, và mọi merge vẫn qua gate của bạn.
+- **Điều kiện:** dự án thật đã chốt tên repo, Jira space và domain. Nếu chưa chốt thì đừng dựng mẫu chỉ để pilot: làm bước 1 trên một repo khung để kiểm B1–B3, và để Pilot 3 chờ dự án thật.
+
+**3. A2: mình đề xuất trần 1 với gói Pro hiện tại.**
+- **2 là mức cao nhất có nghĩa.** Khi chưa có C2, chỗ duy nhất chạy song song được là `reviewer` cùng `security`, nên trần chỉ có thể là 1 hoặc 2. Đặt cao hơn không thêm được gì.
+- **Hạn mức gói là ràng buộc thật.** Ở SMP-18, `reviewer` chạm giới hạn usage 2 lần (lượt 2 và lượt 7), dù chỉ chạy một mình. Nếu `security` (effort max) chạy cùng `reviewer` (xhigh), hạn mức hết nhanh hơn và có thể để lại hai lượt dở thay vì một. Chạy tiếp một lượt dở cũng tốn: lần resume `ba` mất 2,40 USD.
+- **Đề xuất cụ thể:** mặc định 1. Thêm một cờ bật 2 cho từng lệnh, để bạn dùng khi cần nhanh và còn nhiều hạn mức, ví dụ ở đầu cửa sổ 5 giờ.
+- **Khi có C2** (nhiều item cùng lúc) [Ước]:
+  - gói Pro: tổng trần 2;
+  - gói Max: 3–4;
+  - trong đó `qa` tối đa 1, vì E2E và trình duyệt nặng và chạy trên môi trường dùng chung;
+  - spec và plan tối đa 1, vì WIP chỉ cho 1 Epic;
+  - không nên để nhiều PR hơn số chỗ của cột In Review (2), vì bạn vẫn là người duyệt.
+
+**Hệ quả cho bảng thứ tự:** với gói Pro, A2 mang lại ít. Mình đề xuất gộp A2 vào C2, trừ khi bạn định nâng gói. Nếu bạn đồng ý, mình sẽ cập nhật `concerns.md`.
+# Phiên 27 · Lượt 102 — 2026-11-10 17:15
+
+**Bạn:**
+
+```markdown
+Đồng ý: gộp A2 vào C2.
+
+Chưa làm gì, Trả lời ngắn gọn Câu hỏi:
+- Sau khi xong Module project-scaffold là hoàn thành cấp 1 trong ## 3. Capability map tại D:\Document\1Khoahoc\4LapTrinh\AI-for-coding\ai-orchestrator\misc\brainstorm-discussion.md, vậy lúc sử dụng AO Kit trong 1 dự án thì các bước làm 1 tính năng sẽ như nào? Dev sẽ gõ slash command /ao-* để làm từng bước trong SDLC à?
+```
+
+**Claude:**
+
+Mình đã ghi quyết định gộp A2 vào C2 vào bảng tiến độ trong `concerns.md`, ngoài ra chưa làm gì khác.
+
+**Đúng, ở Cấp 1 bạn gõ `/ao-*` cho từng bước,** trong phiên Claude Code mở ở repo dự án. Bạn cũng có thể nói bằng lời, ví dụ "làm bước tiếp của SMP-5", để phiên chính chạy hộ, như mình đã làm ở Pilot 2. Người gõ là bạn, người điều phối và duyệt; không có dev người, vì dev là agent. Mỗi lệnh kiểm trạng thái trên Jira, GitHub và `.ai/`, rồi in GO hoặc STOP. Khi GO, lệnh chạy đúng agent theo đúng thứ tự và dừng ở chỗ cần bạn. `/ao-status` luôn cho biết lệnh tiếp theo.
+
+**Một tính năng (Epic) đi như sau:**
+
+| # | Bạn gõ | Agent làm | Bạn làm ở cổng |
+|---|---|---|---|
+| 1 | Tạo Epic trên Jira, bấm `Start spec` | | |
+| 2 | `/ao-spec <EPIC>` | `ba` viết SPEC, `ux` vẽ màn hình nếu có, `sa` thêm yêu cầu phi chức năng | ① Đọc SPEC, bấm `Approve spec` |
+| 3 | `/ao-plan <EPIC>`, rồi chạy lại sau cổng ② | `sa` viết plan, `ba` tạo Story và Task | ② Đọc plan, bấm `Approve plan` |
+| 4 | Với mỗi item: `/ao-build <KEY>` | Dev agent code theo TDD, mở PR | |
+| 5 | `/ao-review <PR>`, và `/ao-fix <PR>` nếu có finding | `reviewer`, `security`; dev sửa | ③ Approve PR. `merge-gate` merge, deployer tự đưa lên Development |
+| 6 | `/ao-qa <KEY>` | `qa` kiểm trên Development | Bấm `Accept` |
+| 7 | `/ao-release`, rồi `/ao-release vX.Y.0 <sha>` | Script tính điểm cắt và tạo nhánh release | ④ Tạo Fix Version, duyệt danh sách. Deployer tự đưa lên Staging |
+| 8 | `/ao-ship vX.Y.0` | `qa` chạy regression, `devops` viết release note, mở PR release | ⑤ UAT, approve. Deployer đưa lên Production; bạn bấm Release Fix Version và Complete Epic |
+
+Với một Epic có N item, bạn gõ khoảng 2 lệnh cho spec và plan, 3–4 lệnh cho mỗi item, và 2–3 lệnh cho release, cộng 5 cổng duyệt và một lần `Accept` cho mỗi item.
+
+**Ở Cấp 2,** `orchestrator-cli`, trong đó có C2, sẽ bỏ việc gõ lệnh: bộ điều phối đọc board, tự chạy bước kế tiếp, và chỉ dừng ở các cổng. Lúc đó bạn chỉ còn duyệt.
+# Phiên 27 · Lượt 103 — 2026-11-10 17:35
+
+**Bạn:**
+
+```markdown
+Như bạn viết thì 'Tạo Epic trên Jira, bấm Start spec' là bước đầu tiên.
+
+Tôi hỏi:
+1. Tại sao không thiết kế theo kiểu /ao-spec + 'PO dự án mô tả sơ khai về tính năng sẽ làm' (chưa biết cụ thể cần làm những gì), /ao-spec có nghiệm vụ làm rõ, phỏng vấn, brainstorm với PO từ đó hiểu rõ mong đợi, scope, độ phức tạp và bắt đầu thực hiện tạo Task hoặc Epic hoặc Story trên Jira? Như bạn viết 'Tạo Epic trên Jira, bấm Start spec' thì nghĩa là PO cần tự tạo Epic trước à? Nếu đúng thì Tại sao Claude không tạo luôn??
+```
+
+**Claude:**
+
+**Đúng, hiện bạn phải tự tạo Epic,** rồi bấm `Start spec` (`docs/dev-workflow.md:31`). Claude không tạo không phải vì không làm được: `ba` đã có quyền tạo item trên Jira, và vẫn tạo Story, Task ở `/ao-plan`. Lý do là thiết kế Cấp 1 dựa trên ba giả định:
+
+1. **Mã Epic là cái neo của mọi thứ:** nhánh `feature/<EPIC>-spec`, thư mục `docs/specs/<EPIC>/`, `.ai/runs/<EPIC>/` và các comment trên Jira. Vì vậy `/ao-spec` cần có mã Epic trước khi chạy.
+2. **Agent trong `/ao-spec` chạy không người trực** (`claude -p`), nên không phỏng vấn được. Mỗi câu hỏi thành một mục Open Questions, lệnh dừng, bạn trả lời trong chat, rồi agent chạy tiếp. Ở Epic thử DEMO-20, `ba` hỏi 3 câu, `ux` 6 câu, `sa` 2 câu, nghĩa là ba lần dừng rồi chạy tiếp, và mỗi lần chạy tiếp đều tốn tiền (ở SMP-18 là 2,40 USD). Phỏng vấn trực tiếp chỉ có khi mở `ao-agent.mjs ba` không kèm `-p`, và cách đó nằm ngoài `/ao-spec`.
+3. **Làm gì và làm lúc nào là quyết định của PO.** Kanban chỉ cho 1 Epic ở bước spec hoặc plan, nên đưa Epic nào vào luồng là việc của bạn.
+
+Giả định 3 đúng. Nhưng giả định 1 và 2 không buộc bạn phải tự gõ Epic, vì tạo bản ghi trên Jira chỉ là việc giấy tờ. Đây là chỗ hổng của thiết kế, không phải một nguyên tắc. Cách bạn đề xuất tốt hơn.
+
+**Đề xuất: thêm một bước intake trước `/ao-spec`,** ví dụ `/ao-intake "<mô tả sơ khai>"`.
+
+1. **Phỏng vấn.** Phiên chính phỏng vấn bạn từng câu theo `interview-me`, khi bạn đang ngồi đó, không chạy kiểu không người trực. Khi cần thì brainstorm phương án theo `idea-refine`. Các điều cần làm rõ:
+   - ai dùng, và vấn đề là gì;
+   - phạm vi gồm gì và không gồm gì;
+   - tiêu chí thành công;
+   - ràng buộc;
+   - độ phức tạp.
+2. **Phân loại theo contract.** Việc lớn là Epic. Story luôn thuộc một Epic. Task hoặc Bug lẻ thì chỉ cần bạn duyệt trực tiếp. Bước này kiểm luôn các luật như "Task đổi API công khai phải là Story", để không lặp lại lỗi của SMP-18.
+3. **Tạo item.** Claude cho bạn xem bản tóm tắt. Bạn đồng ý thì Claude tạo item trên Jira, với mô tả lấy từ cuộc phỏng vấn.
+4. **Bạn bấm `Start spec`.** Bạn giữ đúng một cú bấm này: quyền chọn ưu tiên và chỗ WIP vẫn là của bạn, và lịch sử Jira ghi đúng người. Sau đó `/ao-spec` chạy tiếp. SPEC còn ít Open Questions hơn vì phần lớn câu hỏi đã được hỏi lúc intake, nên ít lần phải dừng rồi chạy tiếp.
+
+Nếu bạn đồng ý, mình sẽ thêm việc này vào bảng tiến độ, đặt trước B1: dự án thật đầu tiên sẽ bắt đầu bằng intake, và việc này không phụ thuộc scaffold.
+# Phiên 27 · Lượt 104 — 2026-11-10 17:45
+
+**Bạn:**
+
+```markdown
+Đồng ý, thêm intake vào bảng trước B1
+```
+
+**Claude:**
+
+Mình đã cập nhật `misc/thao-luan/concerns.md`; file chưa commit.
+
+- **Bảng tiến độ:** thêm việc **A3 `/ao-intake`** sau A1. A3 gồm phỏng vấn theo `interview-me`, phân loại việc theo contract, cho bạn xem bản tóm tắt, rồi tạo item trên Jira. Kit chưa có template Epic nên A3 thêm template này. Bạn vẫn giữ cú bấm `Start spec`. B1 nay chờ cả A1 và A3.
+- **Lý do của thứ tự:** thêm lý do vì sao A3 đi trước B1.
+- **Mục "Bạn đã quyết":** ghi lại hai quyết định của Lượt 102 và Lượt 104.
+- **Mục mới "Concern 5: bắt đầu một tính năng từ mô tả sơ khai":** ghi 4 quyết định và link tới Lượt 102–104 trong nhật ký brainstorm, vì concern này chưa có file thảo luận riêng.
+
+Mình cũng cập nhật memory về thứ tự này.
+
+Thứ tự hiện tại là A1 → A3 → B1 → B2 → B3 → B4 → C1 → C2; D1–D3 chỉ làm khi có nhu cầu. Việc còn chờ bạn: duyệt cả bảng, và chọn cách chạy Pilot 3.
+# Phiên 27 · Lượt 105 — 2026-11-10 18:05
+
+**Bạn:**
+
+```markdown
+Tôi hỏi thêm:
+
+Nếu sau /ao-spec, tôi đọc SPEC và thấy chưa đúng mong đợi, thì tôi chạy lại gõ lệnh '/ao-spec <EPIC> + <kèm đoạn yêu cầu sửa đổi> à?
+
+Tôi mong đợi trong module project-scaffold phải có hướng dẫn cài đặt, sử dụng AO Kit cho 1 repo mới (có thể là folder trống) và repo đang phát triển (green và brown), hướng dẫn dựa trên ví dụ cụ thể, ví dụ như Dev muốn phát triển 1 tính năng lớn thì cần làm gì? Gõ lệnh như nào?
+```
+
+**Claude:**
+
+**1. Sửa SPEC: hiện kit chưa có lệnh này.** Khi PR tài liệu đã mở, `/ao-spec <EPIC>` chỉ báo STOP "chờ bạn ở gate ①" và không nhận yêu cầu sửa (`lib/workflow/steps.mjs`, `decideSpec`). `/ao-fix` cũng không giúp được, vì nó từ chối PR tài liệu. Cách duy nhất bây giờ là làm tay: phiên chính chạy `ao-agent.mjs ba` với yêu cầu của bạn, như mình đã làm khi thêm AC14 và AC15 cho SMP-18.
+
+Cú pháp bạn đề xuất là đúng hướng. Nó giống `/ao-fix <PR> [việc cần sửa]`, lệnh đã có sẵn cơ chế ghi yêu cầu vào `note.md` và không chạy lại một yêu cầu đã làm. Mình đề xuất:
+- **`/ao-spec <EPIC> <yêu cầu sửa>`**, dùng khi Epic còn ở Specifying, trước `Approve spec`. `ba` sửa SPEC. Nếu thay đổi chạm màn hình hay yêu cầu phi chức năng thì `ux` và `sa` chạy theo, như thứ tự hiện có. PR tài liệu được cập nhật, rồi lệnh dừng lại ở gate ①.
+- **`/ao-plan <EPIC> <yêu cầu sửa>`**, tương tự cho plan, trước `Approve plan`.
+- **Sau khi bạn đã duyệt cổng,** contract không có đường lùi về Specifying. Khi đó, thay đổi đi thành Story hoặc Epic mới. Nếu bạn muốn mở lại spec, contract cần thêm một transition do bạn bấm.
+- **Gom cùng chỗ:** cơ chế này cũng là lệnh trả lời `Cần ba:` / `Cần sa:` đang nằm trong backlog Pilot 2. Mình đề xuất gom cả hai vào A3, cùng intake, vì chúng cùng sửa `decideSpec`, `decidePlan` và hai skill `ao-spec`, `ao-plan`. Hiện phần trả lời đó đang nằm ở C2.
+
+**2. Hướng dẫn cài và dùng: mình đã ghi yêu cầu của bạn vào việc B1** trong `concerns.md`. Hướng dẫn nên có ba phần:
+- **Repo mới (thư mục trống):**
+  - điều kiện trước: Node, `gh`, Claude Code, Jira, GitHub App, VPS;
+  - một lệnh scaffold dựng `apps/user`, `apps/admin`, `apps/api` theo profile, chép kit vào, dựng Jira space, cấu hình GitHub và `deploy.yaml`;
+  - kiểm: CI xanh, và trang khung chạy trên 3 môi trường.
+- **Repo đang phát triển.** Phần này nhiều việc hơn:
+  - nhận ra stack để chọn profile;
+  - thêm các npm script còn thiếu (`lint`, `typecheck`, `test:coverage`, `build`);
+  - tạo `develop` cho GitFlow;
+  - xử lý CI cũ, nhánh và PR đang mở;
+  - dùng Jira project có sẵn hay tạo space mới;
+  - thêm Dockerfile và `deploy.yaml`;
+  - đặt mốc baseline cho `audit` và cho điểm cắt release (bài học ở tiêu chí 6 và PR #234 của Pilot 2).
+
+  Code cũ không bị phạt coverage, vì kit chỉ đo dòng mà PR thay đổi. Việc cài vào repo là một PR do bạn merge.
+- **Dùng kit qua ví dụ cụ thể:**
+  - một tính năng lớn, đi từ `/ao-intake` tới `/ao-ship`, có lệnh gõ, kết quả in ra ở mỗi lần dừng, và cú bấm ở mỗi cổng;
+  - một Task nhỏ;
+  - một Bug trên Production (hotfix);
+  - rollback;
+  - chạy tiếp sau khi hết usage.
+
+  `docs/dev-workflow.md` đã có một vòng mẫu với DEMO-20, nên phần này viết tiếp từ đó.
+
+File `concerns.md` chưa commit. Bạn có đồng ý gom phần sửa SPEC và plan, cùng lệnh trả lời `Cần ba:` / `Cần sa:`, vào A3 không?
+# Phiên 27 · Lượt 106 — 2026-11-10 18:25
+
+**Bạn:**
+
+```markdown
+Tôi hỏi thêm:
+Hiện tại sau khi chạy /ao-spec cho 1 Jira item, thì item đó dừng ở những chỗ nào trong SDLC để hỏi tôi?
+```
+
+**Claude:**
+
+`/ao-spec` chỉ nhận một Epic. Các Story mà `ba` tạo ở bước plan thì mỗi Story tự đi tiếp từ build tới ship. Dưới đây là mọi chỗ kit hiện dừng lại chờ bạn, đọc từ `lib/workflow/steps.mjs` và prompt của các agent.
+
+**Chỗ dừng theo kế hoạch.** Lần nào cũng có, trừ những dòng ghi "nếu có":
+
+| # | Lệnh | Kit dừng vì | Bạn làm |
+|---|---|---|---|
+| 1 | trước `/ao-spec` | Epic còn ở New | Bấm `Start spec` |
+| 2 | `/ao-spec` | Nếu có: `ba`, `ux` hoặc `sa` để lại Open Questions (Epic thử DEMO-20 có 3 + 6 + 2 câu) | Trả lời trong chat; agent chạy tiếp |
+| 3 | `/ao-spec` | **Gate ①:** PR tài liệu đã mở | Đọc SPEC, bấm `Approve spec` |
+| 4 | `/ao-plan` | Nếu có: `sa` để lại câu hỏi trong `plan.md` | Trả lời trong chat |
+| 5 | `/ao-plan` | **Gate ②:** plan và item đã xong | Đọc `plan.md`. Nếu muốn nâng effort một item thì nói trong chat. Bấm `Approve plan` |
+| 6 | `/ao-review` (mỗi item) | **Gate ③:** có đủ hai báo cáo, không còn Critical hay High | Đọc báo cáo và diff, approve PR. Nếu PR sửa đường dẫn được bảo vệ thì bạn tự merge |
+| 7 | `/ao-qa` (mỗi item) | `qa` báo PASS | Bấm `Accept` |
+| 8 | `/ao-release` | Nếu có: thiếu Fix Version | Tạo Fix Version trên Jira |
+| 9 | `/ao-release` | **Gate ④:** in điểm cắt và danh sách item | Đọc danh sách, chạy `/ao-release vX.Y.0 <sha>` |
+| 10 | `/ao-ship` | Nếu có: regression hỏng | Phân loại các Bug nháp, rồi tạo Bug |
+| 11 | `/ao-ship` | **Gate ⑤:** PR release chờ duyệt | Làm UAT trên Staging, approve PR |
+| 12 | sau Production | | Bấm Release Fix Version, rồi Complete Epic |
+
+`/ao-build` và `/ao-fix` không dừng để hỏi bạn: chúng chạy tới khi PR mở và CI chạy xong. Review có finding hay QA báo FAIL thì item tự quay về dev; bạn chỉ gõ lệnh kế tiếp.
+
+**Chỗ dừng bất thường.** Chỉ xảy ra khi có vấn đề:
+- **Dev agent gặp chỗ SPEC, plan hay hợp đồng API bỏ ngỏ,** hoặc không làm được như đã viết. Agent comment câu hỏi lên item, gắn cờ "Needs you" rồi dừng. Bạn trả lời trên item, gỡ cờ, rồi chạy lại lệnh.
+- **`qa` báo NOT TESTED,** vì lý do ngoài code như thiếu dữ liệu hay cần người kiểm. Item cũng bị gắn cờ "Needs you".
+- **Item bị trả về lần thứ 3** (request changes hoặc QA fail). Kit gắn cờ "Needs you".
+- **Một agent thất bại 2 lần liên tiếp ở cùng một bước.** Bạn đọc `last.md`, sửa nguyên nhân, rồi chạy lại.
+- **Ảnh Figma không đạt quy tắc.** `ux` nhờ bạn export lại.
+- **Item thiếu nhãn role.** Bạn nhờ `ba` gắn nhãn.
+- **Hết usage.** Bạn chờ, rồi chạy lại lệnh.
+
+**Tổng lại,** một Epic có N Story cần bạn bấm `Start spec`, duyệt 5 cổng, bấm `Accept` N lần, tạo Fix Version, rồi Release và Complete. Ngoài ra là số lần trả lời câu hỏi ở spec và plan, tùy Epic.
+
+Câu hỏi ở lượt trước vẫn chờ bạn: có gom phần sửa SPEC và plan, cùng lệnh trả lời `Cần ba:` / `Cần sa:`, vào A3 không?
+# Phiên 27 · Lượt 107 — 2026-11-11 08:30
+
+**Bạn:**
+
+```markdown
+Tôi hỏi thêm:
+
+Với flow như hiện tại tôi thấy có 1 vấn đề nghiêm trong, đó là sau ao-build, kit không dừng lại để tôi verify trước ở local, xem dev fe và be đã làm UI và API đúng mong đợi, đúng hướng chưa trước khi thực hiện ao-review bởi mỗi lần review rất lâu và tốn token. Nếu sau khi dev fe và be làm xong task và dừng lại, e check thấy UI chưa đúng ý thì có thể yêu cầu dev fe sửa lại ngay, sau khi OK thì mới đi tiếp tới ao-review.
+```
+
+**Claude:**
+
+Bạn đúng, đây là một lỗ hổng thật.
+
+Về hình thức, kit có dừng sau `/ao-build`: lệnh chạy tới khi PR mở và CI chạy xong, còn `/ao-review` là lệnh riêng. Nhưng ba chỗ khiến bạn không kiểm được ở khoảng đó:
+
+1. **Không có gì giúp bạn xem.** Kit không có lệnh hay hướng dẫn chạy nhánh của PR ở local (cài package, bật API và web, dữ liệu mẫu), cũng không có ảnh chụp màn hình hay mẫu request và response của API.
+2. **Không yêu cầu sửa được mà không kéo theo review.** `/ao-fix <PR> <yêu cầu>` đã nhận yêu cầu của bạn, nhưng sửa xong là tự chạy luôn `reviewer` và `security` (`decideFix` trong `lib/workflow/steps.mjs`). Mỗi vòng sửa giao diện vì thế tốn thêm một vòng review.
+3. **Item đã sang In Review ngay khi PR mở.** Guard `pr-open` không phân biệt PR nháp, nên trong lúc bạn đang xem, item đã chiếm một trong 2 chỗ của cột In Review.
+
+**Đề xuất: thêm bước xem trước giữa build và review.**
+
+1. **Dev agent mở PR ở dạng nháp (draft).** CI vẫn chạy trên PR nháp, và `merge-gate` đã từ chối PR nháp (`merge-gate.mjs:203`). Chỉ cần sửa guard `pr-open` để bỏ qua PR nháp; như vậy item còn ở In Progress.
+2. **`/ao-build` dừng ở bước "chờ bạn xem trước"** và đưa sẵn hai thứ:
+   - **Bằng chứng không cần chạy gì:** `fe-dev` chụp từng màn hình bằng Chrome DevTools, công cụ nó đã có. `be-dev` ghi mẫu request và response cho từng endpoint trong hợp đồng API. Tất cả nằm ở `.ai/runs/<KEY>/preview/`.
+   - **Lệnh `/ao-preview <KEY>`:** tạo worktree ở nhánh của PR (như review và QA đã làm), cài package, bật API và web, rồi in URL để bạn thử.
+3. **Chưa đúng ý thì gõ `/ao-fix <PR> <yêu cầu>`.** Khi PR còn nháp, lệnh này chỉ chạy dev agent, không review. Lặp lại tới khi bạn hài lòng.
+4. **Đúng ý thì gõ `/ao-review <PR>`.** Kit chuyển PR từ nháp sang sẵn sàng. `jira-sync` đã nghe sự kiện `ready_for_review`, nên item sang In Review, rồi `reviewer` và `security` chạy.
+5. **Bỏ qua bước xem trước:** gõ thẳng `/ao-review` trên PR nháp, ví dụ với Task kỹ thuật không có gì để xem.
+
+Mình không đề xuất môi trường xem trước theo PR trên VPS. Deployer chỉ deploy code đã qua `audit`, tức đã qua gate ③. Mở thêm môi trường cho code chưa review là phá nguyên tắc đó, và còn tốn RAM của VPS.
+
+**Lợi ích:** mỗi lần bạn phát hiện sai hướng ở bước xem trước là tiết kiệm một vòng review đầy đủ. Ở SMP-18, một vòng như vậy mất khoảng 15–20 phút; tiền thì mình ước khoảng vài USD. Cái lợi lớn hơn là bạn sửa hướng sớm, khi sửa còn rẻ.
+
+**Thứ tự:** mình đề xuất thêm việc này vào bảng tiến độ thành **A4, trước B1**, vì mỗi item của Pilot 3 đều cần nó. A4 không phụ thuộc scaffold: lúc này kit chạy mỗi lần một lượt, nên một lần xem trước dùng cổng mặc định là đủ.
+
+Có hai câu cần bạn trả lời:
+1. Có thêm A4 vào bảng không?
+2. Câu hỏi từ lượt trước: có gom phần sửa SPEC và plan, cùng lệnh trả lời `Cần ba:` / `Cần sa:`, vào A3 không?
+# Phiên 27 · Lượt 108 — 2026-11-11 08:50
+
+**Bạn:**
+
+````markdown
+Tôi hỏi thêm:
+
+Vì sao không làm: đang đứng tại develop, git checkout -b feat/... mà phải tạo worktree rồi cài package, làm như vậy cho  mỗi task thì có chuẩn không?
+
+```
+Lệnh /ao-preview <KEY>: tạo worktree ở nhánh của PR như review và QA đã làm, cài package, bật API và web, rồi in URL để bạn thử.
+```
+````
+
+**Claude:**
+
+**Bạn đúng: để bạn xem trước thì chuyển nhánh ngay trong checkout chính là cách chuẩn và rẻ hơn.** Mình sửa lại đề xuất.
+
+Một chỗ nhỏ: xem trước là chuyển sang nhánh có sẵn của PR, bằng `git switch feature/<KEY>-<slug>` hay `gh pr checkout <N>`, chứ không tạo nhánh mới bằng `checkout -b`.
+
+**Vì sao review và QA lại dùng worktree?** Lý do nằm ở agent, không phải ở bạn:
+- **Review:** ao-step, kit và chỉ dẫn của agent (`.claude/`, `CLAUDE.md`, hook) được đọc từ checkout. Nếu checkout đứng ở nhánh PR, chính code của PR sẽ điều khiển agent đang review nó. Lỗi này lộ ra ở lần review thứ hai của PR #13 trong `ao-sample`. Vì vậy checkout luôn đứng ở `develop`, còn code của PR nằm trong một worktree đã gỡ các file chỉ dẫn.
+- **QA:** chạy E2E trên đúng commit đang chạy ở môi trường, không phải trên head của nhánh.
+- **Chạy song song (C2):** mỗi item cần thư mục riêng, nên lúc đó worktree theo item mới là chuẩn.
+
+Với một người xem một PR mỗi lần, worktree kèm cài package mới tinh chỉ tốn thêm vài phút và chỗ đĩa. Dùng junction để dùng chung `node_modules` thì đã gây sự cố trước đây.
+
+**`/ao-preview` sửa lại cho phù hợp với kit hiện tại:**
+1. Kiểm checkout sạch, rồi chuyển sang nhánh PR và kéo code mới về.
+2. Chạy `npm ci` chỉ khi `package-lock.json` khác với bản trên `develop`.
+3. Bật API và web, rồi in URL.
+4. `/ao-preview <KEY> --stop` tắt server và về lại `develop`. `/ao-fix` và `/ao-review` tự làm bước này trước khi chạy. Cần vậy vì hai lệnh này chỉ chạy khi checkout đứng ở nhánh được bảo vệ (`checkoutStop`, `scripts/ao-step.mjs:79`), để agent không nhận chỉ dẫn từ code chưa review.
+
+**Hai điều bạn cần nhớ khi đang xem trước:**
+- **Đừng sửa file trong checkout.** Checkout không sạch thì lệnh kế tiếp từ chối chạy.
+- **Bạn đang chạy code chưa review trên máy mình.** Nếu PR thêm dependency, `npm ci` chạy cả script cài đặt của dependency đó. Dùng worktree cũng không khác gì ở điểm này. Rủi ro thấp, vì agent không sửa được `.claude/**`. Dù vậy, đừng mở phiên Claude Code mới khi checkout đang đứng ở nhánh PR.
+
+**Khi có C2,** `/ao-preview` dùng luôn worktree mà dev agent đã tạo và cài sẵn cho item. Lúc đó không có thêm lần cài nào cho mỗi task.
+
+Hai câu vẫn chờ bạn:
+1. Có thêm A4 (bước xem trước) vào bảng, đặt trước B1, không?
+2. Có gom phần sửa SPEC và plan, cùng lệnh trả lời `Cần ba:` / `Cần sa:`, vào A3 không?
+# Phiên 27 · Lượt 109 — 2026-11-11 09:15
+
+**Bạn:**
+
+````markdown
+Tôi vẫn chưa nắm, hiểu git flow chỗ này, đang làm tính năng A thì phải đang đứng ở nhánh feat/A chứ nhỉ? Kiểm checkout nghĩa là gì? Bạn dùng từ checkout có chuẩn không vậy? Tôi thấy hơi lạ. Rồi còn 'chuyển sang nhánh PR và kéo code mới về' nghĩa là sao? Không phải đang đứng ở nhánh PR rồi à? Sao phải chuyển và pull code mới, code mới là code nào? Giải thích chậm, vẽ mermaid cho tôi dễ hiểu nhé
+
+Kiểm checkout sạch, chuyển sang nhánh PR và kéo code mới về
+````
+
+**Claude:**
+
+Mình viết phần giải thích kèm sơ đồ vào `misc/thao-luan/git-khi-dung-kit.md` (chưa commit). Hãy mở file bằng VS Code preview hoặc trên GitHub để xem sơ đồ. Nội dung file như sau.
+
+## Bốn từ cần thống nhất
+
+| Từ | Nghĩa |
+|---|---|
+| **Thư mục dự án** | Thư mục repo trên máy bạn. Git gọi nó là *working tree*. Ở các lượt trước mình gọi nó là "checkout": đó là cách nói thông dụng nhưng không chính xác, nên từ đây mình dùng "thư mục dự án". |
+| **Đứng ở nhánh X** | Thư mục dự án đang hiện các file của nhánh X. Mỗi lúc thư mục chỉ đứng ở **một** nhánh. Lệnh chuyển nhánh là `git switch X`; lệnh cũ cùng tác dụng là `git checkout X`. |
+| **Sạch** | `git status` in ra `working tree clean`, tức không có file nào sửa dở mà chưa commit. Thư mục không sạch thì chuyển nhánh có thể bị từ chối, hoặc mang theo phần sửa dở sang nhánh kia. |
+| **Hai bản của một nhánh** | Mỗi nhánh có một bản trên máy bạn và một bản trên GitHub (`origin/...`). `git push` đưa commit từ máy lên GitHub; `git pull` kéo commit từ GitHub về máy. |
+
+## Gitflow của một tính năng
+
+Đây là lịch sử commit. Dev agent làm trên nhánh tính năng, và nhánh đó vào `develop` khi bạn duyệt PR ở gate ③.
+
+```mermaid
+gitGraph
+  commit id: "develop"
+  branch feature/SMP-21-xoa-ghi-chu
+  checkout feature/SMP-21-xoa-ghi-chu
+  commit id: "be-dev: API"
+  commit id: "fe-dev: UI"
+  commit id: "fe-dev: sửa theo bạn"
+  checkout develop
+  merge feature/SMP-21-xoa-ghi-chu id: "merge PR (gate ③)"
+```
+
+Bạn hiểu đúng một điều: **người đang làm tính năng A phải đứng ở nhánh của A.** Ở kit này, người làm là **dev agent**, không phải bạn. Bạn là người xem và duyệt, giống một reviewer trong team người.
+
+## Thư mục dự án đứng ở đâu, theo từng lệnh
+
+```mermaid
+sequenceDiagram
+  autonumber
+  actor B as Bạn
+  participant T as Thư mục dự án (máy bạn)
+  participant G as GitHub
+  Note over T: đứng ở develop
+  B->>T: /ao-build SMP-21
+  T->>T: dev agent tạo nhánh feature/SMP-21 từ develop và đứng ở đó
+  T->>T: be-dev, fe-dev viết code, commit
+  T->>G: push nhánh, mở PR #22, CI chạy
+  T->>T: kit tự chuyển thư mục về develop
+  Note over T: /ao-build xong: thư mục đứng ở develop, KHÔNG ở nhánh PR
+  B->>T: /ao-preview SMP-21
+  T->>T: git status — có sạch không?
+  T->>T: git switch feature/SMP-21
+  T->>G: git pull — bản trên máy có giống PR trên GitHub không?
+  Note over T: bật API + web, bạn thử trên trình duyệt
+  B->>T: /ao-preview SMP-21 --stop
+  T->>T: tắt server, git switch develop
+  B->>T: /ao-review 22
+  Note over T: đứng ở develop; code của PR nằm trong một worktree riêng
+```
+
+## Trả lời từng câu hỏi
+
+**"Đang làm tính năng A thì phải đứng ở `feat/A` chứ?"**
+Đúng, nhưng chỉ trong lúc `/ao-build` chạy (bước 2–4). Khi `/ao-build` xong, kit tự đưa thư mục về `develop` (bước 5; `homeBranch` trong `scripts/ao-step.mjs:86`).
+
+**"Vì sao kit phải đưa thư mục về `develop`?"**
+Lệnh kế tiếp là `/ao-review`, và agent review đọc luật làm việc của nó (`.claude/`, `CLAUDE.md`, hook) từ thư mục dự án. Nếu thư mục còn đứng ở nhánh PR, bộ luật đó lấy từ PR: code chưa ai review, do một agent khác viết, có thể sửa luật của chính agent đang review nó. Vì vậy, giữa các lệnh, kit luôn "đỗ" thư mục ở `develop`, nhánh đã được duyệt. `/ao-review` và `/ao-fix` cũng từ chối chạy nếu thư mục không đứng ở nhánh được bảo vệ (`checkoutStop`, `scripts/ao-step.mjs:79`).
+
+**"Kiểm sạch nghĩa là gì?"**
+Là chạy `git status` (bước 7) để chắc không có file nào sửa dở. Nếu có, chuyển nhánh sẽ mang phần sửa dở sang nhánh PR, hoặc bị git từ chối.
+
+**"Chuyển sang nhánh PR là sao, chẳng phải đang đứng ở đó rồi à?"**
+Không. Sau bước 5, thư mục đứng ở `develop`. Muốn thấy code của tính năng thì phải chuyển sang nhánh của PR (bước 8). Đây cũng chính là việc một reviewer người làm khi muốn chạy thử PR của đồng nghiệp: `gh pr checkout 22`.
+
+**"Kéo code mới về là code nào?"**
+Là những commit có trên GitHub (`origin/feature/SMP-21`) mà bản trên máy chưa có.
+
+Nói thật: với kit hiện tại, bước này thường không kéo về gì. Agent commit ngay trong thư mục này rồi mới push, nên bản trên máy đã giống GitHub. `git pull` ở bước 9 chỉ là một lần kiểm rẻ, phòng khi nhánh trên GitHub có commit từ nơi khác, ví dụ bạn bấm "Commit suggestion" trên GitHub, hoặc lệnh build từng chạy trên một máy khác.
+
+## Tóm tắt
+
+- **Dev agent làm** → thư mục đứng ở nhánh tính năng.
+- **Giữa các lệnh** → kit đưa thư mục về `develop`, để agent không nhận luật từ code chưa review.
+- **Bạn xem trước** → chuyển sang nhánh PR, thử, rồi về lại `develop`.
+# Phiên 27 · Lượt 110 — 2026-11-11 09:30
+
+**Bạn:**
+
+```markdown
+[Ảnh chụp VS Code preview của misc/thao-luan/git-khi-dung-kit.md, hai lỗi Mermaid: "Trying to checkout branch which is not yet created. (Help try using "branch develop")" và "Parse error on line 21: ...g một worktree riêng"]
+Lỗi Mermaid diagram không hiển thị trong VS Code
+```
+
+**Claude:**
+
+Mình đã sửa cả hai sơ đồ trong `misc/thao-luan/git-khi-dung-kit.md`. Bạn mở lại preview để xem.
+
+1. **gitGraph:** Mermaid mặc định gọi nhánh đầu tiên là `main`, nên `checkout develop` hỏng vì chưa có nhánh `develop`. Mình thêm dòng `%%{init: { 'gitGraph': { 'mainBranchName': 'develop' } } }%%` ở đầu sơ đồ để nhánh đầu tiên tên là `develop`.
+2. **sequenceDiagram:** trong sơ đồ này, dấu `;` có nghĩa là hết một câu lệnh. Câu ghi chú cuối có `develop; code của PR…`, nên phần sau dấu `;` bị đọc thành một lệnh mới và gây lỗi ở dòng 21. Mình đổi `;` thành `,`, và đã kiểm không còn dấu `;` nào khác trong các sơ đồ.
+
+Mình chưa chạy được Mermaid trên máy để kiểm, vì làm vậy phải cài thêm trình duyệt headless. Nếu preview vẫn báo lỗi, bạn gửi ảnh lỗi cho mình.
+# Phiên 27 · Lượt 111 — 2026-11-11 09:45
+
+**Bạn:**
+
+```markdown
+1. Có thêm A4 (bước xem trước) vào bảng, đặt trước B1, không?
+2. Có gom phần sửa SPEC và plan, cùng lệnh trả lời `Cần ba:` / `Cần sa:`, vào A3 không?
+
+
+Trả lời:
+
+1. có
+2. có
+```
+
+**Claude:**
+
+Mình đã cập nhật `misc/thao-luan/concerns.md` theo hai câu trả lời. File chưa commit.
+
+- **A3** thêm hai phần:
+  - `/ao-spec <EPIC> <yêu cầu sửa>` và `/ao-plan <EPIC> <yêu cầu sửa>`, dùng trước khi bạn duyệt cổng;
+  - lệnh trả lời `Cần ba:` / `Cần sa:`. Lệnh này trước nằm ở C2; C2 giờ chỉ giữ lệnh đổi Task thành Story.
+- **A4 mới, ngay trước B1:** bước xem trước, gồm:
+  - PR nháp;
+  - ảnh từng màn hình và mẫu request, response của API;
+  - `/ao-preview <KEY>`, chuyển thư mục dự án sang nhánh PR;
+  - `/ao-fix` trên PR nháp chỉ chạy dev agent;
+  - `/ao-review` chuyển PR sang sẵn sàng.
+
+  B1 giờ chờ A1, A3 và A4.
+- **Lý do của thứ tự:** thêm lý do cho A4. Phần "Thay đổi" và "Bạn đã quyết" ghi lại hai quyết định của Lượt 111.
+- **Concern 5:** thêm quyết định thứ 5, về cách sửa SPEC và plan.
+- **Mục mới "Concern 6: xem trước UI và API sau build, trước review":** ghi 5 quyết định, kèm link tới nhật ký Lượt 107–110 và `git-khi-dung-kit.md`.
+
+Memory về thứ tự cũng đã cập nhật.
+
+Thứ tự hiện tại: A1 → A3 → A4 → B1 → B2 → B3 → B4 → C1 → C2. D1–D3 chỉ làm khi có nhu cầu.
+
+Còn hai việc chờ bạn:
+1. Duyệt cả bảng.
+2. Chọn cách chạy Pilot 3. Đề xuất của mình là dùng Epic đầu của dự án thật, sau khi đã kiểm scaffold mà không cần agent.
+
+Bảng duyệt xong thì việc đầu tiên là A1. Mình chỉ bắt đầu khi bạn bảo.
+# Phiên 27 · Lượt 112 — 2026-11-11 10:05
+
+**Bạn:**
+
+```markdown
+1. OK duyệt
+2. Làm như đề xuất
+
+
+Chưa làm nhé, tôi hỏi thêm:
+
+* Nếu sau khi preview xong và thấy UI hay API chưa đúng mong đợi, thì tôi gõ lệnh gì để yêu cầu dev fe và be sửa  lại cho đúng mong đợi?
+```
+
+**Claude:**
+
+Mình đã ghi hai quyết định vào `concerns.md`: bảng đã duyệt, và cách chạy Pilot 3 ở cột B4. Mình chưa bắt đầu việc nào.
+
+**Lệnh để yêu cầu sửa sau khi xem trước:** `/ao-fix <PR> <yêu cầu>`. Lệnh này đã có sẵn, nhưng có hai chỗ phải sửa trong A4:
+- **Kit hiện chỉ chạy một dev agent.** `/ao-fix` lấy role ghi trong field Agent của Story, thường là `fe-dev` vì `fe-dev` làm sau cùng. Nếu yêu cầu là sửa API, kit sẽ chọn nhầm agent.
+- **Kit hiện kéo theo review.** Sửa xong là kit tự chạy `reviewer` và `security`. Trong A4, khi PR còn ở dạng nháp, kit chỉ chạy dev agent.
+
+**Đề xuất cách gõ trong A4:** ghi `be:` hoặc `fe:` trước từng yêu cầu để kit biết giao cho ai.
+
+```text
+/ao-fix 22 fe: Nút "Xóa" màu đỏ và hỏi xác nhận trước khi xóa. Danh sách xếp ghi chú mới nhất lên đầu.
+/ao-fix 22 be: GET /api/notes trả 20 ghi chú mỗi trang, có total trong meta.
+/ao-fix 22 be: API trả thêm total. fe: hiện "Tổng: N ghi chú" dưới tiêu đề.
+```
+
+- **Có cả `be:` và `fe:`:** kit chạy `be-dev` trước rồi `fe-dev`, như luật hiện có (BE trước FE). Mỗi agent nhận đúng phần của mình, cộng phần của bên kia để biết bối cảnh.
+- **Không có tiền tố, và Story có cả hai Sub-task:** kit dừng lại hỏi bạn giao cho ai, thay vì đoán.
+- **Muốn chỉ rõ giao diện mong đợi:** đặt ảnh chụp hay ảnh phác vào `.ai/runs/<KEY>/`, rồi ghi tên file trong yêu cầu. Agent đọc được ảnh.
+- **Sau khi sửa:** dev push, CI chạy, kit dừng lại ở bước xem trước với ảnh mới. Bạn chạy `/ao-preview` lần nữa và lặp lại tới khi đúng ý, rồi mới gõ `/ao-review 22`.
+
+**Một chỗ cần quyết khi viết spec cho A4:** khi yêu cầu của bạn làm đổi acceptance criteria, không phải chỉ sửa cho đúng SPEC, thì AC trên Story và SPEC cũng phải đổi. Nếu không, `reviewer` và `qa` sẽ kiểm theo AC cũ. Đây đúng là chuyện đã xảy ra ở SMP-18 với AC14 và AC15. Mình đề xuất A4 cho kit hỏi bạn "yêu cầu này có đổi AC không?". Nếu có, `ba` cập nhật AC trước, rồi mới tới dev.
+# Phiên 27 · Lượt 113 — 2026-11-11 10:15
+
+**Bạn:**
+
+```markdown
+'Một chỗ cần quyết khi viết spec cho A4' => Đồng ý như đề xuất
+```
+
+**Claude:**
+
+Mình đã ghi quyết định vào `misc/thao-luan/concerns.md`. File chưa commit.
+
+- **Dòng A4** thêm hai ý:
+  - tiền tố `be:` / `fe:` trong `/ao-fix`, là cách gõ mình đề xuất ở Lượt 112;
+  - khi yêu cầu sửa làm đổi AC, kit hỏi bạn trước. Nếu có đổi, `ba` cập nhật AC trên Story và trong SPEC, rồi mới tới dev.
+- **Mục concern 6:** thêm quyết định 6 với cùng nội dung, kèm bài học AC14 và AC15 của SMP-18.
+- **Mục "Bạn đã quyết":** thêm dòng của Lượt 113.
+
+Memory về thứ tự cũng đã cập nhật. Mình chưa bắt đầu việc nào; việc đầu tiên khi bạn bảo là A1.
+# Phiên 27 · Lượt 114 — 2026-11-11 10:30
+
+**Bạn:**
+
+```markdown
+"khi một yêu cầu sửa làm đổi acceptance criteria (AC), kit hỏi bạn trước. Nếu đúng là có đổi, ba cập nhật AC trên Story và trong SPEC, rồi mới tới dev."
+
+Story qua staus In Progress rồi thì BA có cập nhật AC trên Story được nữa không vây?
+```
+
+**Claude:**
+
+**Được.** Có ba bằng chứng:
+- **Kit không chặn.** `jira-guard` chỉ kiểm xem item có thuộc space của dự án không. Nó không xét trạng thái khi agent sửa item (`lib/tracker/guard.mjs`, phần `editJiraIssue`).
+- **Jira không khóa.** Workflow mà kit dựng không khóa việc sửa item ở trạng thái nào. Kit không đặt thuộc tính `jira.issue.editable` cho trạng thái nào cả.
+- **Đã làm thật ở Pilot 2.** SMP-18 đang In Progress khi `ba` thêm AC14 và AC15 vào SPEC và viết lại mô tả Story trên Jira (`tasks/archive/pilot-2/verification.md`, mục T5b).
+
+**Sửa vẫn kéo theo ba việc, và mình sẽ đưa chúng vào spec của A4:**
+1. **Để lại dấu vết.** `ba` comment lên Story: AC nào đổi, nội dung cũ, nội dung mới, và lý do là yêu cầu của bạn ở bước xem trước. Nhờ vậy `reviewer`, `qa` và chính bạn sau này biết AC đã đổi giữa chừng.
+2. **SPEC đổi trong chính PR của item.** SPEC nằm trong git, và PR tài liệu đã merge sau gate ②. Vì vậy `ba` commit phần sửa SPEC lên nhánh của PR item, như commit `64e1698` ở SMP-18. Phần sửa đó được review và merge cùng code.
+3. **Giữ quy tắc đánh số AC.** Số AC không bao giờ được dùng lại trong một Epic. AC thêm mới nhận số mới, như AC14 và AC15. Nếu sửa nội dung một AC cũ, comment phải ghi rõ chỗ đổi.
+
+**Thời điểm này là tốt nhất.** Ở bước xem trước, PR còn là nháp và Story còn In Progress, chưa có review hay QA nào chạy theo AC cũ. Khi Story đã Done hay đã release, mình không sửa AC nữa. Lúc đó yêu cầu mới trở thành một Story mới.
+# Phiên 27 · Lượt 115 — 2026-11-11 10:45
+
+**Bạn:**
+
+```markdown
+Vậy đối với Story thì OK, tôi hỏi thêm?
+Có trường hợp nào mà một yêu cầu sửa làm đổi acceptance criteria (AC) của Epic hay của Task không?
+```
+
+**Claude:**
+
+Theo contract, Epic và Task đều không có AC riêng. Dù vậy, vẫn có những trường hợp yêu cầu sửa chạm tới chúng.
+
+**Epic.** AC nằm trong SPEC của Epic, và mỗi Story giữ lại số AC của SPEC. Vì vậy sửa AC của một Story chính là sửa SPEC của Epic, và trường hợp này đã được tính trong quyết định ở Lượt 113. Có ba trường hợp chạm tới cả Epic:
+1. **Đổi yêu cầu chung của cả Epic,** như hiệu năng, bảo mật hay khả năng truy cập trong SPEC. Đây là phần của `sa`. `sa` sửa SPEC, còn Story đang làm thì sửa theo. Những Story đã Done mà chưa đạt yêu cầu mới thì cần Story hoặc Task mới.
+2. **Thêm một khả năng mà chưa Story nào có.** `ba` tạo một Story mới trong Epic, `sa` thêm nó vào Task List của plan, và bạn duyệt. Không nhồi vào Story đang làm, để mỗi Story vẫn nhỏ, khoảng 5 file.
+3. **Đổi hướng hay phạm vi của cả Epic.** Lúc này dừng lại: hủy các Story còn lại nếu cần, rồi bắt đầu lại bằng `/ao-intake`.
+
+**Task.** Task không có AC, chỉ có mục tiêu và checklist kỹ thuật (`contract/work-items.yaml`).
+1. **Yêu cầu chỉ đổi phần kỹ thuật bên trong.** `ba` sửa checklist và comment lý do.
+2. **Yêu cầu thêm hành vi người dùng thấy được, ở UI hay API công khai.** Khi đó Task này thật ra là một Story trá hình. Contract bắt đổi Task thành Story có AC, và `reviewer` sẽ chặn nếu không đổi. Đây chính là chuyện của SMP-18.
+
+**Bug.** Bug có phần kết quả mong đợi. Nếu yêu cầu đổi chính kết quả mong đợi đó thì đây không còn là sửa lỗi nữa, mà là một Story.
+
+**Một trường hợp nữa, không phải AC:** yêu cầu `be:` có thể đổi **hợp đồng API** trong plan (path, payload, mã lỗi). Phần đó là của `sa`, như khi `sa` thêm `NOTES_LIMIT_REACHED` cho SMP-18.
+
+**Đề xuất bổ sung cho A4:**
+1. Câu hỏi ở bước xem trước mở rộng thành "yêu cầu này có đổi AC, hợp đồng API, hay yêu cầu chung của Epic không?". Đổi AC thì `ba` cập nhật. Đổi hợp đồng API hay yêu cầu chung thì `sa` cập nhật. Cập nhật xong mới tới dev.
+2. Chuyển lệnh đổi Task thành Story từ C2 sang A4, vì trường hợp Task 2 có thể xảy ra ngay ở bước xem trước.
+
+Bạn có đồng ý hai điểm này không?
+# Phiên 27 · Lượt 116 — 2026-11-11 11:10
+
+**Bạn:**
+
+```markdown
+đồng ý hai điểm này.
+
+Khi item đang ở In QA, tester đang test, nếu tôi phát hiện bug và muốn log trên Jira để dev agent fix. Trường hợp này thì kit có hỗ trợ chưa? Flow nên làm như nào cho trường hợp này?
+```
+
+**Claude:**
+
+Mình đã ghi hai điểm bạn đồng ý vào `concerns.md`: dòng A4, dòng C2, quyết định 7 của concern 6, và mục "Bạn đã quyết". Memory cũng đã cập nhật.
+
+**Kit đã có luật cho trường hợp này, nhưng đường chạy thì chưa thông.**
+
+**Luật trong contract** (`contract/routing.yaml`, `bug_rules`): lỗi tìm thấy khi QA một item chưa Done thì **không tạo Bug**. Item quay về In Progress qua transition `QA fail`, và được sửa trên một nhánh mới tách từ `develop`, vẫn mang mã item cũ. Bug chỉ dành cho lỗi nằm ngoài item, hoặc lỗi trong code đã release.
+
+**Ba chỗ chưa thông:**
+1. **Bạn không có đường đưa lỗi vào.** Chỉ `qa` được bấm `QA fail`, và guard đòi báo cáo QA mới nhất phải là FAIL (`contract/workflows.yaml`). Nếu bạn thấy lỗi mà báo cáo của `qa` là PASS, kit không có lệnh nào để ghi phát hiện của bạn vào báo cáo.
+2. **Story có Sub-task thì bế tắc.** Sau `QA fail`, mọi Sub-task đã Done và PR cũ đã merge, nên `/ao-build` dừng với lý do "every Sub-task of KEY is done, and it has no open PR" (`lib/workflow/steps.mjs:345`).
+3. **Story hay Task không có Sub-task thì dev không biết phải sửa gì.** Item đã có ledger, nên kit dùng prompt "đọc ledger và làm tiếp từ chỗ dừng" (`steps.mjs:326`). Ledger ghi việc đã xong, và prompt không nhắc tới báo cáo QA FAIL.
+
+Đường này chưa từng chạy thật: ở Pilot 2 cả 9 item đều PASS.
+
+**Flow đề xuất,** giữ đúng luật của contract:
+1. **Bạn báo lỗi qua `qa`:** `/ao-qa <KEY> fail: <lỗi, cách tái hiện, kết quả mong đợi>`. `qa` tái hiện lỗi trên môi trường QA, chụp bằng chứng, ghi báo cáo FAIL gồm lỗi của bạn và lỗi nó tự thấy, rồi bấm `QA fail`. Rework tăng 1. Nếu `qa` không tái hiện được, nó gắn cờ "Needs you" để hỏi bạn. Đi qua `qa` thì mọi lỗi đều có bằng chứng và cách tái hiện, không chỉ là một câu mô tả. Nếu `qa` đang chạy thì bạn chờ nó xong; lúc này kit chạy mỗi lần một lượt.
+2. **`/ao-build <KEY>` nhận ra đây là một lần sửa sau QA fail.** Kit tạo nhánh mới từ `develop` với cùng mã item. Prompt đưa cho dev agent danh sách lỗi trong báo cáo FAIL. Lỗi được giao theo `be:` / `fe:` như ở A4, nên Story có Sub-task không còn bế tắc.
+3. **Phần sau đi như thường lệ:** PR nháp → xem trước (A4) → `/ao-review` → bạn duyệt ở gate ③ → deploy lên Development → `/ao-qa <KEY>` lại.
+
+**Hai trường hợp không đi theo flow này:**
+- **Lỗi nằm ngoài item,** ở tính năng khác hay trong code cũ: tạo Bug theo `bug.md`. `qa` đã làm việc này sẵn, và Bug đi theo bảng định tuyến lỗi (độ nghiêm trọng, nơi xảy ra).
+- **"Lỗi" thật ra là mong đợi mới, không có trong AC:** đây là thay đổi yêu cầu, không phải lỗi. Nếu muốn đưa vào item này thì `ba` cập nhật AC như quyết định ở Lượt 113. Nếu không thì tạo Story mới.
+
+**Thứ tự:** mình đề xuất thêm việc này vào bảng thành **A5, trước B1**. Item nào của Pilot 3 cũng có thể bị QA fail, và A5 dùng lại cách giao việc theo `be:` / `fe:` của A4.
+
+Bạn có đồng ý thêm A5 không?
+# Phiên 27 · Lượt 117 — 2026-11-11 11:20
+
+**Bạn:**
+
+```markdown
+Đồng ý
+```
+
+**Claude:**
+
+Mình đã thêm A5 vào `misc/thao-luan/concerns.md`. File chưa commit.
+
+- **Dòng A5**, đặt sau A4 và trước B1, ghi việc sửa lỗi tìm thấy khi QA:
+  - `/ao-qa <KEY> fail: <lỗi, cách tái hiện, kết quả mong đợi>`: `qa` tái hiện lỗi và ghi báo cáo FAIL;
+  - `/ao-build` nhận ra lần sửa sau QA fail: tạo nhánh mới từ `develop`, đưa danh sách lỗi vào prompt, giao theo `be:` / `fe:`. A5 sửa luôn hai chỗ đang hỏng: Story có Sub-task bị kẹt ở `steps.mjs:345`, và prompt chạy tiếp từ ledger không nhắc tới báo cáo FAIL;
+  - lỗi nằm ngoài item thì tạo Bug; mong đợi mới thì `ba` cập nhật AC hoặc tạo Story mới.
+
+  A5 cần A4 xong trước, và B1 giờ chờ A1, A3, A4, A5.
+- **Lý do của thứ tự:** thêm lý do cho A5. Mục "Thay đổi" và "Bạn đã quyết" có thêm dòng của Lượt 117.
+- **Mục mới "Concern 7: lỗi tìm thấy khi item đang ở In QA":** ghi 4 quyết định, kèm link tới Lượt 116–117 trong nhật ký brainstorm.
+
+Memory về thứ tự cũng đã cập nhật.
+
+Thứ tự hiện tại: A1 → A3 → A4 → A5 → B1 → B2 → B3 → B4 → C1 → C2. D1–D3 chỉ làm khi có nhu cầu. Mình chưa bắt đầu việc nào; khi bạn bảo bắt đầu thì việc đầu tiên là A1.
+# Phiên 27 · Lượt 118 — 2026-11-11 12:20
+
+**Bạn:**
+
+```markdown
+Bắt đầu đi nhé
+```
+
+**Claude:**
+
+**A1 xong.** Kit PR #237 đã merge (`409590e`), CI xanh. Bảng tiến độ trong `concerns.md` ghi A1 là Xong.
+
+**Lỗi thứ nhất: mật khẩu basic auth nằm trên dòng lệnh.** Ở Pilot 2, `qa` đã chạy `curl -u`.
+- **Prompt của `qa`:** đưa mật khẩu cho `curl` qua stdin, bằng `printf 'user = "%s:%s"\n' "$E2E_HTTP_USER" "$E2E_HTTP_PASSWORD" | curl -K - <url>`. Mật khẩu không nằm trên dòng lệnh của tiến trình nào.
+- **`gh-guard`:** từ chối mọi lệnh của agent có tham số nhắc tới `$E2E_HTTP_PASSWORD` hay `$AO_ENV_AUTH`, viết theo cú pháp bash, PowerShell hay cmd. Riêng `printf`, lệnh có sẵn của shell, được dùng.
+- **`ao-step`:** từ chối chạy `qa` khi mật khẩu có dấu nháy kép, dấu `\` hay ký tự xuống dòng. Mình đã kiểm `AO_ENV_AUTH` hiện tại bằng cách chỉ in đúng/sai, không in giá trị: không có ký tự nào trong số đó.
+
+**Lỗi thứ hai: `audit` báo sai khi nhận SHA rút gọn.**
+- `audit` giờ so commit merge của PR với hash đầy đủ mà GitHub trả về. Trước đây, chạy không kèm `--dry-run` thì có thể gắn cờ "Needs you" nhầm.
+- `--sha` chỉ nhận 7 đến 40 chữ số hex. Trước đây, tên nhánh hay tag cũng lọt qua.
+
+**Kiểm:**
+- 1120 test qua, trong đó 3 test mới. Bỏ bản sửa đi thì test `audit` mới đỏ.
+- 4 lệnh kiểm còn lại xanh.
+- CI của PR xanh.
+
+**Tài liệu:** danh sách của `gh-guard` trong `docs/quality-gates.md`, quy tắc mật khẩu trong `docs/vps-setup.md`, ghi chú `--sha` trong README. Mình cũng thêm một dòng vào bảng ở mục 2.7 của `SPEC-quality-gates.md`, đánh dấu "thêm ở A1". Nếu bạn muốn giữ spec như cũ, bảo mình gỡ dòng đó.
+
+**Còn lại:**
+- **Bản chép kit chưa cập nhật.** `ao-sample`, `ao-pilot` và VPS chưa có hai bản sửa này. Chép kit vào dự án là PR bạn tự merge, và cập nhật VPS cần bạn đồng ý. Mình đề xuất làm một lần sau khi xong A3–A5, trước B1.
+- **PR tài liệu:** mình mở một PR riêng cho `misc/thao-luan/` và nhật ký Lượt 94–118, rồi tự merge khi CI xanh.
+
+**Việc kế tiếp là A3, một việc cỡ module.** A3, A4 và A5 cùng sửa `steps.mjs` (`decideSpec`, `decideBuild`, `decideFix`), cùng sửa các skill `ao-*`, và cùng dùng cách giao việc theo `be:` / `fe:`. Vì vậy mình đề xuất viết **một spec chung cho cả A3–A5**, chia ba phần làm lần lượt, mỗi phần có PR riêng. Bạn duyệt spec ở cổng như các module trước. Bạn đồng ý gộp một spec, hay muốn mỗi việc một spec?
