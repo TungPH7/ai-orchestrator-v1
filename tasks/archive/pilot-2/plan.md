@@ -1,6 +1,6 @@
 # Plan triển khai: Pilot 2
 
-> **Spec:** [SPEC-pilot-2.md](../../SPEC-pilot-2.md), đã duyệt 2026-11-07 (Phiên 27 · Lượt 74). **Trạng thái:** đang làm.
+> **Spec:** [SPEC-pilot-2.md](../../../SPEC-pilot-2.md), đã duyệt 2026-11-07 (Phiên 27 · Lượt 74). **Trạng thái:** hoàn thành 2026-11-10, xem [verification.md](verification.md).
 
 ## Quyết định
 

@@ -2,7 +2,7 @@
 
 > **Loại:** pilot, không phải module. Xem tiêu chí thành công 2 và mục "Thứ tự build" trong [SPEC.md](SPEC.md). **Dùng:** mọi module Cấp 1 đã xong, gồm `release-workflow` và `kit-copy-review`. **Là đầu vào cho:** `project-scaffold`.
 >
-> **Trạng thái:** đã duyệt 2026-11-07 (Phiên 27 · Lượt 74): rollback trên Development, `qa` cho cả 8 item. Plan ở [tasks/pilot-2/](tasks/pilot-2/plan.md).
+> **Trạng thái:** đã duyệt 2026-11-07 (Phiên 27 · Lượt 74): rollback trên Development, `qa` cho cả 8 item. Hoàn thành 2026-11-10: `v0.1.0` chạy trên Production, 8 tiêu chí đạt, chi phí 34,23 USD. Plan và kết quả lưu ở [tasks/archive/pilot-2/](tasks/archive/pilot-2/verification.md).
 
 ## 1. Mục tiêu
 
@@ -85,7 +85,7 @@ Bản kit trên VPS giữ ở `521e031`. Deployer và `audit` không đổi từ
 ### 2.4 Đường đi của bản `v0.1.0`
 
 1. `SMP-17` merge, deployer deploy Development.
-2. `/ao-qa` trên Development cho 8 item: `SMP-4`, `SMP-5`, `SMP-6`, `SMP-7`, `SMP-10`, `SMP-11`, `SMP-16`, `SMP-17`. Bằng chứng nằm trên Jira. **Bạn** Accept từng item.
+2. `/ao-qa` trên Development cho 9 item: `SMP-4`, `SMP-5`, `SMP-6`, `SMP-7`, `SMP-10`, `SMP-11`, `SMP-16`, `SMP-17` và `SMP-18` (mục 2.6). Bằng chứng nằm trên Jira. **Bạn** Accept từng item.
 3. **Bạn** tạo Fix Version `v0.1.0` và `v0.2.0` trong space `SMP`, theo [docs/release-workflow.md](docs/release-workflow.md#fix-version-trên-jira).
 4. **Gate ④:** `/ao-release v0.1.0 <sha>`. Script tạo `release/v0.1.0` và gắn Fix Version. Deployer deploy Staging.
 5. `/ao-ship v0.1.0`: `qa` chạy regression trên Staging, `devops` viết release notes. Script mở PR release vào `main`.
@@ -96,7 +96,11 @@ Bản kit trên VPS giữ ở `521e031`. Deployer và `audit` không đổi từ
 
 Production chỉ có một bản, nên không có gì để quay về. Pilot 2 chạy rollback trên Development: sau ít nhất hai lần deploy thật, `/ao-rollback development` đưa image trước đó lên, rồi `/ao-rollback development <sha>` đưa bản mới về lại. Hai lệnh này là script, 0 USD. Rollback Production đã chạy thật trên `ao-pilot` ở T22 của `release-workflow`.
 
-### 2.6 Dọn Jira
+### 2.6 Giới hạn trước khi công khai (thêm ở Phiên 27, sau review của `SMP-17`)
+
+Review của `ao-sample` PR #15 chỉ ra rằng Production mở cho Internet, trong khi API nhận ghi chú không giới hạn và giữ trong bộ nhớ. `docs/specs/SMP-2/spec.md` của `ao-sample` cũng đòi các giới hạn trước môi trường công khai. Bạn chọn một Task nhỏ trước khi cắt bản: `SMP-18` (`be-dev`) đặt trần 1000 ghi chú, và Claude thêm smoke check `/api/notes`. `v0.1.0` gồm 9 item. Giới hạn tần suất, header bảo mật và lưu bền vững để cho một Epic sau.
+
+### 2.7 Dọn Jira
 
 Bạn bấm `Cancel` cho 5 Task chép kit cũ ở trạng thái New: `SMP-3`, `SMP-12`, `SMP-13`, `SMP-14`, `SMP-15`. Bản chép trong `SMP-16` đã thay chúng.
 
