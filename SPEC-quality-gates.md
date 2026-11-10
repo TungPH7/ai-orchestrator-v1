@@ -150,6 +150,7 @@ Hook mới `kit/.claude/hooks/gh-guard.mjs` khai báo trong `kit/.claude/setting
 | Xóa dấu vết của các cổng | `gh run delete` |
 | Sửa file được bảo vệ | `Edit`, `Write`, `NotebookEdit` vào `protected_paths`. Riêng `devops` được sửa `.github/workflows/**`; PR đó vẫn phải do bạn merge |
 | Dùng sai App | Vai trò dev chạy `ao-pr.mjs review`; vai trò review chạy `ao-pr.mjs create`, `edit` hoặc `comment` |
+| Đưa mật khẩu basic auth lên dòng lệnh (thêm ở A1, 2026-11-11, sau khi `qa` chạy `curl -u` ở Pilot 2) | Tham số của một lệnh nhắc tới `$E2E_HTTP_PASSWORD` hay `$AO_ENV_AUTH` (cả `${…}`, `$env:…`, `%…%`), trừ `printf` có sẵn của shell |
 
 `gh pr revert`, `gh pr update-branch`, `gh repo autolink` và `gh run delete` chỉ có ở các bản `gh` sau 2.16. Checkpoint 4 thêm chúng vào bảng, cùng với `gh auth status -t`, việc đọc `hosts.yml`, và trường hợp `-R` đứng trước lệnh con.
 

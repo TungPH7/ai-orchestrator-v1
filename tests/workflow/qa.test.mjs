@@ -13,6 +13,12 @@ test('AO_ENV_AUTH (user:password) becomes the two variables Playwright reads; a 
   }
 });
 
+test('a password with a double quote, a backslash or a line break is refused, since qa passes it to curl in a config line', () => {
+  for (const bad of ['ao:Qz"7k', 'ao:Qz\\7k', 'ao:Qz\n7k', 'ao:Qz\r7k']) {
+    assert.throws(() => basicAuthEnv(bad), (error) => /must not hold a double quote, a backslash or a line break/.test(error.message) && !error.message.includes('Qz'), JSON.stringify(bad));
+  }
+});
+
 // The files qa left: screenshots in .ai/qa/<KEY>/ of the project, and the Playwright traces of the worktree.
 const listing = {
   'D:/work/pilot/.ai/qa/DEMO-21': ['D:/work/pilot/.ai/qa/DEMO-21/cart.png'],

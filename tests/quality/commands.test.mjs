@@ -419,3 +419,30 @@ test('the kit settings hide the attribution Claude Code adds to commits and PRs'
   const { default: settings } = await import('../../kit/.claude/settings.json', { with: { type: 'json' } });
   assert.deepEqual(settings.attribution, { commit: '', pr: '' });
 });
+
+// qa ran curl -u with the basic auth of Development (Pilot 2, T6): any process on the machine can read that command line.
+test('the basic auth password stays off command lines: only printf, a builtin of the shell, may name it', () => {
+  for (const command of [
+    'curl -u "$E2E_HTTP_USER:$E2E_HTTP_PASSWORD" "$E2E_BASE_URL/api/notes"',
+    'curl --user "${E2E_HTTP_USER}:${E2E_HTTP_PASSWORD}" https://sample-dev.example/api/notes',
+    'curl "https://$E2E_HTTP_USER:$E2E_HTTP_PASSWORD@sample-dev.example/notes"',
+    'node e2e/login.mjs "$E2E_HTTP_PASSWORD"',
+    'echo "$E2E_HTTP_PASSWORD"',
+    '/usr/bin/printf %s "$E2E_HTTP_PASSWORD"',
+    'timeout 30 curl -u "ao:$E2E_HTTP_PASSWORD" https://sample-dev.example',
+    'bash -c \'curl -u "ao:$E2E_HTTP_PASSWORD" https://sample-dev.example\'',
+    'powershell -Command "curl.exe -u ao:$env:E2E_HTTP_PASSWORD https://sample-dev.example"',
+    'cmd /c curl -u ao:%E2E_HTTP_PASSWORD% https://sample-dev.example',
+    'curl -u "$AO_ENV_AUTH" https://sample-dev.example',
+  ]) {
+    denied(bash(command, 'qa'), /password on a command line/, command);
+  }
+  for (const command of [
+    'printf \'user = "%s:%s"\n\' "$E2E_HTTP_USER" "$E2E_HTTP_PASSWORD" | curl -K - "$E2E_BASE_URL/api/notes"',
+    'E2E_BASE_URL=https://sample-dev.example npx playwright test e2e/notes',
+    'node -e "console.log(Boolean(process.env.E2E_HTTP_PASSWORD))"',
+    'curl -s "$E2E_BASE_URL/notes" -o /dev/null -w "%{http_code}"',
+  ]) {
+    allowed(bash(command, 'qa'), command);
+  }
+});
