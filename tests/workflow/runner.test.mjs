@@ -42,7 +42,7 @@ function specWorld(start = {}) {
   const facts = () => ({
     command: 'spec',
     space: 'DEMO',
-    item: { key: 'DEMO-20', type: 'Epic', workType: 'epic', state: 'specifying', status: 'Specifying', summary: 'Xóa sản phẩm', labels: [], flagged: world.flagged, flag: world.flagged ? 'other' : null, children: [], requests: [], subtasks: [] },
+    item: { key: 'DEMO-20', type: 'Epic', workType: 'epic', state: 'specifying', status: 'Specifying', summary: 'Xóa sản phẩm', labels: [], flagged: world.flagged, flag: world.flagged ? 'other' : null, children: [], requests: [...(world.requests ?? [])], subtasks: [] },
     docs: { branch: BRANCH, exists: Boolean(world.spec), pr: world.pr && { ...world.pr, ci: { pending: world.ciPendingFor > 0, green: world.ciPendingFor === 0, failed: false, started: world.ciStarted ?? true } }, spec: world.spec, design: world.design, plan: null },
     pr: null,
     wip: { epicShaping: { used: 1, limit: 1 }, devAgent: {} },
@@ -298,6 +298,23 @@ test('an agent that fails twice in a row stops the command; a flag raised by an 
   const flagged = await h2.run({ gather: flagging.gather });
   assert.match(flagged.decision.reason, /flagged Needs you/);
   assert.equal(h2.calls.length, 1);
+});
+
+test('two requests to one role are two runs; a request its run leaves open stops the runner (human-loop spec 3.3)', async () => {
+  const docsPr = { number: 14, state: 'open', merged: false };
+  const asked = (at, from) => ({ from, to: 'ba', text: 'S2 cần nút hoàn tác không?', at });
+  const both = specWorld({ spec: NFR, design: DESIGN, pr: docsPr, requests: [asked(1, 'ux'), asked(2, 'sa')] });
+  const h = harness(both.world, { request: (w) => w.requests.shift() });
+  const { decision } = await h.run({ gather: both.gather });
+  assert.deepEqual(h.calls.map(({ role, purpose }) => `${role} ${purpose}`), ['ba request', 'ba request']);
+  assert.match(decision.reason, /waits for you at gate ① spec-approval/);
+  assert.deepEqual(both.world.run.runs.map(({ request }) => request), [1, 2]);
+
+  const stuck = specWorld({ spec: NFR, design: DESIGN, pr: docsPr, requests: [asked(1, 'ux')] });
+  const h2 = harness(stuck.world, {});
+  const left = await h2.run({ gather: stuck.gather });
+  assert.equal(h2.calls.length, 1);
+  assert.match(left.decision.reason, /^ba ran request on DEMO-20 and it still has to run/);
 });
 
 test('a run that ends well but leaves nothing for the facts is not made again in a loop', async () => {

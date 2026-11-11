@@ -9,14 +9,14 @@ import { readGates } from '../../lib/quality/gates.mjs';
 import { CONTRACT_DIR, ROOT } from '../helpers/kit.mjs';
 
 const SKILLS = join(ROOT, 'kit', '.claude', 'skills');
-const COMMANDS = { status: '[KEY]', spec: '<EPIC>', plan: '<EPIC>', build: '<KEY>', review: '<PR>', fix: '<PR> [what to fix]', qa: '<KEY>', release: '[<vX.Y.0> <sha>]', ship: '<vX.Y.Z>', rollback: '<environment> [<sha>]' };
+const COMMANDS = { status: '[KEY]', spec: '<EPIC>', plan: '<EPIC>', request: '<KEY>', build: '<KEY>', review: '<PR>', fix: '<PR> [what to fix]', qa: '<KEY>', release: '[<vX.Y.0> <sha>]', ship: '<vX.Y.Z>', rollback: '<environment> [<sha>]' };
 // The positional arguments each check passes on: /ao-release and /ao-rollback take two (release-workflow T17).
 const ARGS = { release: '$0 $1', rollback: '$0 $1' };
 const args = (command) => ARGS[command] ?? '$0';
 const read = (command) => readFileSync(join(SKILLS, `ao-${command}`, 'SKILL.md'), 'utf8');
 const frontmatter = (text) => parse(text.match(/^---\r?\n([\s\S]*?)\r?\n---/)[1]);
 
-test('the kit has the ten /ao-* commands as skills, and no other ao- folder', () => {
+test('the kit has the /ao-* commands as skills, and no other ao- folder', () => {
   const folders = readdirSync(SKILLS).filter((name) => name.startsWith(KIT_SKILL_PREFIX));
   assert.deepEqual(folders.sort(), Object.keys(COMMANDS).map((c) => `ao-${c}`).sort());
 });
