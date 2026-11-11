@@ -39,7 +39,7 @@ import { adfText, buildReviewPack, filesToQuote } from '../lib/workflow/review-p
 import { postKitCopyReports, readKitCopy, renderedReason } from '../lib/workflow/kit-copy.mjs';
 import { removeInstructions } from '../lib/workflow/review-tree.mjs';
 import { agentCommand, formatDecision, runGo } from '../lib/workflow/runner.mjs';
-import { decideStep } from '../lib/workflow/steps.mjs';
+import { CHANGES, decideStep } from '../lib/workflow/steps.mjs';
 
 const COMMANDS = ['status', 'intake', 'spec', 'plan', 'request', 'build', 'review', 'fix', 'qa', 'release', 'ship', 'rollback'];
 const USAGE = 'usage: node .ai-orchestrator/scripts/ao-step.mjs <status|intake|spec|plan|request|build|review|fix|qa|release|ship|rollback> [<KEY>|<PR>|<vX.Y.0> <sha>|<vX.Y.Z>|<environment> [<sha>]] [--go] [--answers <file>] [--note <file>]';
@@ -73,6 +73,16 @@ export function checkArgument(command, arg, space, extra) {
   if (!/^[A-Z][A-Z0-9]*-\d{1,7}$/.test(arg ?? '')) return `/ao-${command} takes a Jira key such as ${space ?? 'DEMO'}-12, not ${arg ?? 'nothing'}`;
   if (space && !arg.startsWith(`${space}-`)) return `${arg} is not in the space ${space} of this project`;
   return null;
+}
+
+// --change: what your request changes, as you answered the main session (human-loop spec 4.5, 5.1). One word of a
+// fixed list, so nothing you wrote reaches the command line; it goes with --note only.
+export function checkChange(command, change, hasNote) {
+  if (change === undefined) return null;
+  const allowed = { fix: CHANGES, qa: ['none', 'ac'] }[command];
+  if (!allowed) return '--change goes with /ao-fix and /ao-qa only';
+  if (!allowed.includes(change)) return `--change takes ${allowed.join(', ')}, not ${change}`;
+  return hasNote ? null : '--change goes with --note: it says what your request changes';
 }
 
 // ao-step, the kit and the instructions of the agents are read from the checkout, so a review or a fix starts only on a
@@ -122,11 +132,11 @@ export function takeLock(lock, holder, alive) {
 }
 
 async function main() {
-  const { values, positionals } = parseArgs({ allowPositionals: true, options: { go: { type: 'boolean', default: false }, answers: { type: 'string' }, note: { type: 'string' } } });
+  const { values, positionals } = parseArgs({ allowPositionals: true, options: { go: { type: 'boolean', default: false }, answers: { type: 'string' }, note: { type: 'string' }, change: { type: 'string' } } });
   const [command, arg, extra] = positionals;
   const settings = projectSettings(projectDir);
   const space = setting('AO_JIRA_SPACE', settings);
-  const wrong = checkArgument(command, arg, space, extra);
+  const wrong = checkArgument(command, arg, space, extra) ?? checkChange(command, values.change, Boolean(values.note));
   if (wrong) {
     console.log(`STOP: ${wrong}`);
     return;
@@ -178,7 +188,7 @@ async function main() {
   const kitCopy = (pr) => readKitCopy({ pr, github, peer: (name) => createGitHubClient({ repo: name, token: readGitHubToken() }), peers, gates, apps, approvers, render: (sha, paths) => renderCheck(pr.number, sha, paths) });
   const gather = () => gatherFacts({ command, arg, extra, jira, github, deploys, history: developHistory, local: files, contract, mapping, roster, gates, apps, approvers, space, kitCopy });
   const read = (file) => readFileSync(runsFile(projectDir, file), 'utf8');
-  const options = { roster, contract, gates, mapping, ...(values.answers && { answers: read(values.answers) }), ...(values.note && { note: read(values.note) }) };
+  const options = { roster, contract, gates, mapping, ...(values.answers && { answers: read(values.answers) }), ...(values.note && { note: read(values.note) }), ...(values.change && { change: values.change }) };
 
   const facts = await gather();
   const decision = decideStep(command, facts, options);

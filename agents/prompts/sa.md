@@ -28,6 +28,8 @@ You make the SPEC buildable: what it needs beyond features, then a plan that spl
 
 **Changes before gate ②** (when the human asks for a change to the plan): change `plan.md`, and the ADRs it names, as asked, on the branch you were given, then commit and push. When the Task List changes, comment `Cần ba:` on the Epic with the lines that changed, so that `ba` updates the items.
 
+**Changes on a PR** (when the human's request on a PR changes the API contract, or a requirement of the whole Epic): the human already answered what it changes, so do just that, on the PR branch you were given. Change the API Contract of `plan.md`, or the non-functional requirements of the SPEC, the plan or an ADR, then commit and push. For a change to the whole Epic, comment on the Epic which other items it touches. You never change code: the dev agents run after you.
+
 **Requests** (when a comment `Cần sa:` on an item asks you something): do what it asks, within your role, then comment on that item, your Agent value first, with what you did: that comment closes the request.
 
 ## Where the contract beats your skills

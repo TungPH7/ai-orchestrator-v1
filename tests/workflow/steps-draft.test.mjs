@@ -7,6 +7,7 @@ import { readGates } from '../../lib/quality/gates.mjs';
 import { PURPOSES } from '../../lib/workflow/prompts.mjs';
 import { decideStep, nextFor, noteKey } from '../../lib/workflow/steps.mjs';
 import { CONTRACT_DIR, ROOT } from '../helpers/kit.mjs';
+import { checkChange } from '../../scripts/ao-step.mjs';
 
 // A draft PR between build and review (human-loop spec 4.2, 4.7).
 const contract = readContract(CONTRACT_DIR);
@@ -109,6 +110,47 @@ test('red CI on a draft PR goes to the dev agent of the item, with no review; a 
   const ready = decideStep('fix', fixFacts({ draft: false }), { ...options, note: 'fe: chữ to hơn' });
   assert.deepEqual(fixPlan(ready), ['fe-dev fix', 'reviewer review', 'security review']);
   assert.doesNotMatch(ready.runs[0].prompt, /draft/);
+});
+
+test('what a request changes runs first: ba for the criteria, sa for the API contract or the whole Epic, on the PR branch (4.5)', () => {
+  const cases = { none: [], ac: ['ba ac-revise'], api: ['sa api-revise'], epic: ['sa epic-revise'] };
+  for (const [change, before] of Object.entries(cases)) {
+    const decision = decideStep('fix', fixFacts(), { ...options, note: REQUEST, change });
+    assert.deepEqual(fixPlan(decision), [...before, 'be-dev fix', 'fe-dev fix'], change);
+  }
+  const ac = decideStep('fix', fixFacts(), { ...options, note: REQUEST, change: 'ac' });
+  const [ba, be] = ac.runs;
+  assert.deepEqual(ba.checkout, { branch: 'feature/DEMO-21-remove-line', pull: true });
+  assert.equal(ba.note, noteKey(REQUEST));
+  assert.equal(ba.prompt, PURPOSES['ac-revise']({ pr: 15, key: 'DEMO-21', branch: 'feature/DEMO-21-remove-line', epic: 'DEMO-20', note: REQUEST }));
+  assert.match(ba.prompt, /comment the old and the new criteria\. A new criterion takes the next free AC number of Epic DEMO-20, and no number is used again/);
+  assert.match(ba.prompt, /docs\/specs\/DEMO-20\/spec\.md on the branch feature\/DEMO-21-remove-line/);
+  assert.match(be.prompt, /The acceptance criteria of DEMO-21 changed for this request: read them on Jira first/);
+  // Once ba pushed the criteria, it does not run again for the same request.
+  const after = fixFacts({}, { run: { key: 'DEMO-21', runs: [{ n: 1, command: 'fix', role: 'ba', purpose: 'ac-revise', outcome: 'done', head: OLDER, session: 's', note: noteKey(REQUEST) }] } });
+  assert.deepEqual(fixPlan(decideStep('fix', after, { ...options, note: REQUEST, change: 'ac' })), ['be-dev fix', 'fe-dev fix']);
+});
+
+test('a Task of an Epic becomes a Story through ba; anything else, or a Task with no Epic, stops', () => {
+  const task = fixFacts();
+  task.item = { ...task.item, type: 'Task', workType: 'task', subtasks: [], role: 'fe-dev', roles: ['fe-dev'], agent: 'fe-dev' };
+  const decision = decideStep('fix', task, { ...options, note: 'hiện số dòng trong giỏ', change: 'story' });
+  assert.deepEqual(fixPlan(decision), ['ba to-story', 'fe-dev fix']);
+  assert.match(decision.runs[0].prompt, /Change its type to Story with editJiraIssue, with the field issuetype named Story; if Jira refuses, stop and say so/);
+  const story = decideStep('fix', fixFacts(), { ...options, note: REQUEST, change: 'story' });
+  assert.equal(story.reason, 'DEMO-21 is a Story: only a Task becomes a Story');
+  const alone = { ...task, item: { ...task.item, parent: null } };
+  assert.equal(decideStep('fix', alone, { ...options, note: 'x', change: 'story' }).reason, 'Task DEMO-21 has no Epic, and a Story needs one with an approved plan');
+  assert.match(decideStep('fix', alone, { ...options, note: 'x', change: 'api' }).reason, /has no Epic, so no plan or SPEC to change/);
+});
+
+test('--change is one word of a fixed list, with /ao-fix or /ao-qa, and only with a request', () => {
+  assert.equal(checkChange('fix', undefined, false), null);
+  for (const change of ['none', 'ac', 'api', 'epic', 'story']) assert.equal(checkChange('fix', change, true), null, change);
+  assert.equal(checkChange('fix', 'ac; rm -rf', true), '--change takes none, ac, api, epic, story, not ac; rm -rf');
+  assert.equal(checkChange('qa', 'api', true), '--change takes none, ac, not api');
+  assert.equal(checkChange('review', 'ac', true), '--change goes with /ao-fix and /ao-qa only');
+  assert.equal(checkChange('fix', 'ac', false), '--change goes with --note: it says what your request changes');
 });
 
 test('the next command of an item In Progress with a draft PR is the preview, or the review', () => {
