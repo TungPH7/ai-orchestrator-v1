@@ -164,7 +164,7 @@ apps:
     env: { API_URL: "http://localhost:3001" }
 ```
 
-File này thuộc nhóm "Của dự án" trong `kit_copy` của `quality/gates.yaml`. Thiếu file thì lệnh dừng và in mẫu trên.
+File này thuộc nhóm "Của dự án" trong `kit_copy` của `quality/gates.yaml`. Thiếu file thì lệnh dừng và in mẫu trên. Lệnh của mỗi app là `npm` hoặc `node` cùng các từ thường, và `ao-step` chạy nó không qua shell: job `sast` của `ao-sample` PR #21 chặn `spawn` có `shell: true` (T19). Dấu nháy, `|`, `&&`, `>` và biến môi trường vì vậy bị từ chối.
 
 **Kiểm** (`ao-step.mjs preview <KEY>`). Lệnh chỉ chạy khi đủ các điều kiện sau:
 - Item có PR đang mở, nháp hay sẵn sàng đều được.
