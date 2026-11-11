@@ -5,7 +5,7 @@ import { readRoster } from '../../lib/agents/roster.mjs';
 import { readContract } from '../../lib/contract.mjs';
 import { readGates } from '../../lib/quality/gates.mjs';
 import { matchesGlob } from '../../lib/quality/glob.mjs';
-import { lockHash, needsInstall, PREVIEW_SAMPLE, readPreviewConfig } from '../../lib/workflow/preview.mjs';
+import { lockHash, needsInstall, PREVIEW_SAMPLE, previewEnv, readPreviewConfig } from '../../lib/workflow/preview.mjs';
 import { decideStep } from '../../lib/workflow/steps.mjs';
 import { CONTRACT_DIR, ROOT } from '../helpers/kit.mjs';
 import { checkArgument, previewFirst } from '../../scripts/ao-step.mjs';
@@ -94,13 +94,42 @@ test('/ao-preview stops: no open PR, a PR on protected paths, an agent running, 
 });
 
 test('a command that runs agents stops a preview first, once; the others leave it running', () => {
-  for (const command of ['spec', 'plan', 'request', 'build', 'review', 'fix', 'qa']) {
+  for (const command of ['spec', 'plan', 'request', 'build', 'review', 'fix', 'qa', 'release', 'ship', 'rollback']) {
     assert.equal(previewFirst(command, true, false), 'stop', command);
     assert.equal(previewFirst(command, true, true), 'refuse', command);
     assert.equal(previewFirst(command, false, false), null, command);
   }
-  for (const command of ['status', 'intake', 'preview', 'release', 'ship', 'rollback']) assert.equal(previewFirst(command, true, false), null, command);
+  // /ao-ship runs devops in the project folder (review of ao-sample PR #21), so the release commands stop it too.
+  for (const command of ['status', 'intake', 'preview']) assert.equal(previewFirst(command, true, false), null, command);
   assert.equal(checkArgument('preview', 'DEMO-21', 'DEMO'), null);
+});
+
+test('/ao-preview refuses instruction files at any depth, a protected path in another case, a fork, and CI not green (review of ao-sample PR #21)', () => {
+  const gates = readGates(join(ROOT, 'quality'));
+  const preview = (pr) => decideStep('preview', facts({}, pr), { roster, contract, gates });
+  for (const files of [['apps/web/AGENTS.md'], ['CLAUDE.md'], ['apps/api/claude.local.md'], ['apps/web/.claude/rules/x.md'], ['.Claude/rules/x.md'], ['.GITHOOKS/pre-push']]) {
+    const decision = preview({ files });
+    assert.equal(decision.go, false, files[0]);
+    assert.match(decision.reason, /which steer the kit and the agents: during a preview every \/ao-\* command, and your own session, would load them/, files[0]);
+  }
+  assert.equal(preview({ files: ['apps/web/src/app/page.tsx', 'docs/agents-guide.md'] }).go, true);
+  assert.match(preview({ fromFork: true }).reason, /comes from another repository/);
+  assert.match(preview({ ci: { green: false, failed: false, pending: true } }).reason, /CI is still running on the head of PR #15/);
+  const red = preview({ ci: { green: false, failed: true, pending: false } });
+  assert.deepEqual([red.reason, red.next], ['CI is red on the head of PR #15', '/ao-fix 15']);
+});
+
+test('the apps of a preview get no secret variable of your session', () => {
+  const env = { PATH: 'p', SystemRoot: 'C:\\Windows', ATLASSIAN_AGENT_TOKEN: 't', GH_TOKEN: 'g', JIRA_CI_TOKEN: 'j', AO_ENV_AUTH: 'a:b', AO_DEV_APP_KEY_FILE: 'k', AO_DEV_APP: 'tungph7-ao-dev', NPM_CONFIG_PASSWORD: 'x', GIT_ASKPASS: 'y', SOME_CLIENT_SECRET: 's' };
+  assert.deepEqual(previewEnv(env, ['GIT_ASKPASS']), { PATH: 'p', SystemRoot: 'C:\\Windows', AO_DEV_APP: 'tungph7-ao-dev' });
+});
+
+test('/ao-status says when a preview runs, as the first thing that waits for you', () => {
+  const running = { key: 'DEMO-21', branch: 'feature/DEMO-21-remove-line', apps: [{ name: 'web', url: 'http://localhost:3000/' }] };
+  const space = decideStep('status', { command: 'status', space: 'DEMO', item: null, items: [], pulls: [], runs: [], previewRunning: running }, { roster, contract });
+  assert.deepEqual(space.lines.slice(0, 2), ['Waiting for you:', '  the preview of DEMO-21 runs on feature/DEMO-21-remove-line: web http://localhost:3000/ → /ao-preview DEMO-21 --stop']);
+  const stopped = decideStep('status', { command: 'status', space: 'DEMO', item: null, items: [], pulls: [], runs: [], previewRunning: { ...running, apps: [] } }, { roster, contract });
+  assert.match(stopped.lines[1], /runs on feature\/DEMO-21-remove-line, its apps stopped → \/ao-preview DEMO-21 --stop/);
 });
 
 test('/ao-preview --stop stops the preview that runs, whatever the key; with none it says so', () => {

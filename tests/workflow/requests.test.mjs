@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { openRequests } from '../../lib/workflow/requests.mjs';
+import { openRequests, UNSIGNED_AGENT } from '../../lib/workflow/requests.mjs';
 
 // The Agent field value of each role, as tracker/jira.yaml maps it (agents/rules.md: an agent's comment starts with it).
 const NAMES = { ba: 'Business Analyst', ux: 'UI/UX designer', sa: 'Solution Architect', 'fe-dev': 'Frontend Developer', qa: 'Tester/QA Engineer' };
@@ -29,4 +29,11 @@ test('a request without the author prefix, from you, is a request too; an unknow
 test('several requests are each tracked on their own', () => {
   const comments = [comment(9, ASK), comment(9, 'Frontend Developer: Cần ux: thêm màn hình lỗi mạng.'), comment(11, 'UI/UX designer: đã thêm S3.')];
   assert.deepEqual(openRequests(comments, NAMES).map(({ to }) => to), ['ba']);
+});
+
+test("an unsigned request of the agents' account is an agent's, never yours (review of ao-sample PR #21)", () => {
+  const by = (accountId, hour, text) => ({ ...comment(hour, text), author: { accountId } });
+  const asks = [by('agents-1', 9, 'Cần ba: đổi AC2.'), by('human-1', 10, 'Cần sa: ghi ADR cho cache.'), by('agents-1', 11, 'Frontend Developer: Cần ux: thêm S3.')];
+  assert.deepEqual(openRequests(asks, NAMES, { agentAccount: 'agents-1' }).map(({ from, to }) => [from, to]), [['agent', 'ba'], [null, 'sa'], ['fe-dev', 'ux']]);
+  assert.equal(UNSIGNED_AGENT, 'agent');
 });
