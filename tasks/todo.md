@@ -25,7 +25,7 @@
 
 ## Phần 1 (A3), nhánh `task/human-loop-part-1`
 
-- [ ] **T3: `/ao-request <KEY>`; `/ao-spec`, `/ao-plan` chạy yêu cầu trên Epic** (spec 3.3).
+- [x] **T3: `/ao-request <KEY>`; `/ao-spec`, `/ao-plan` chạy yêu cầu trên Epic** (spec 3.3).
   - **Đạt khi:**
     - `decideRequest` chạy lần lượt các yêu cầu `Cần ba:`, `Cần ux:`, `Cần sa:` còn mở, cũ trước;
     - Epic ở Specifying hay Planning thì chạy trên nhánh tài liệu; trường hợp khác thì đứng ở `develop`, và prompt dặn không commit;
@@ -34,7 +34,7 @@
     - một lượt xong mà yêu cầu vẫn mở thì lệnh dừng.
   - **Kiểm:** test mới trong `tests/workflow/steps-request.test.mjs` và `steps-epic.test.mjs`; `skills.test.mjs` biết lệnh thứ 11.
   - **File:** `lib/workflow/steps.mjs`, `lib/workflow/prompts.mjs`, `scripts/ao-step.mjs` (lệnh `request`), `kit/.claude/skills/ao-request/SKILL.md`, test.
-- [ ] **T4: `/ao-spec <EPIC> <sửa>`, `/ao-plan <EPIC> <sửa>`** (spec 3.2).
+- [x] **T4: `/ao-spec <EPIC> <sửa>`, `/ao-plan <EPIC> <sửa>`** (spec 3.2).
   - **Đạt khi:**
     - note chỉ được nhận khi Epic còn trước cổng và không có câu hỏi mở;
     - `ba` chạy `spec-revise`, `sa` chạy `plan-revise`;
@@ -43,7 +43,7 @@
     - prompt `ba` và `sa` có mục "Revisions": số AC, comment `Cần <role>:` khi phần sửa chạm role khác. Agent được render lại.
   - **Kiểm:** `steps-epic.test.mjs`; test của `decideFix` vẫn xanh; `npm run agents:check`.
   - **File:** `lib/workflow/steps.mjs`, `lib/workflow/prompts.mjs`, `agents/prompts/ba.md`, `agents/prompts/sa.md`, skill `ao-spec`, `ao-plan`, agent render lại, test.
-- [ ] **T5: template Epic, artifact `epic`, chép `idea-refine`** (spec 3.1).
+- [x] **T5: template Epic, artifact `epic`, chép `idea-refine`** (spec 3.1).
   - **Đạt khi:**
     - `templates/epic.md` có các mục Objective, Users, Scope, Rough Stories, Constraints, Open Points, Original Request, cùng một Example;
     - `contract/policies.yaml` có artifact `epic`, và `docs/sdlc.md` được sinh lại;
@@ -51,7 +51,7 @@
     - prompt `ba` đọc Open Points và Original Request của Epic.
   - **Kiểm:** `tests/templates.test.mjs`, `tests/agents/vendor.test.mjs`, `npm run validate`, `npm run render:check`.
   - **File:** `templates/epic.md`, `contract/policies.yaml`, `docs/sdlc.md`, `agents/roster.yaml`, `kit/.claude/skills/idea-refine/`, `agents/prompts/ba.md`.
-- [ ] **T6: `/ao-intake`** (spec 3.1).
+- [x] **T6: `/ao-intake`** (spec 3.1).
   - **Đạt khi:**
     - `ao-step.mjs intake` không nhận đối số. Nó in space, các Epic chưa xong, WIP `epic-shaping`, luật chọn loại và quy ước item, và không trả GO;
     - skill gồm các bước: phỏng vấn theo `interview-me` (thêm `idea-refine` khi cần), phân loại Epic, Task hay Bug, viết bản nháp vào `.ai/intake/`, chờ bạn OK, tạo item một lần bằng `createJiraIssue`, rồi chạy `status <KEY>`;
