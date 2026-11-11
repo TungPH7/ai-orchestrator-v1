@@ -29,3 +29,21 @@ Chạy trước T15, không gọi agent, bằng kit trên nhánh `task/human-loo
 | `ao-step.mjs review 20` trong lúc xem trước | Tự dừng preview ("Stopped the preview of SMP-21: api, web"), đưa thư mục về `develop`, rồi chạy lại từ `develop` và in GO với bước đầu `pr-ready`. Hai cổng 3000 và 3001 trống |
 
 PR #20 đã đóng, nhánh đã xóa, lượt CI đang chạy bị hủy.
+
+## T19: chép kit vào `ao-sample`, 2026-11-11
+
+Task `SMP-22`, nhánh `feature/SMP-22-kit-copy`, PR nháp `ao-sample` #21. Kit chép ba lần: `b1aa592`…`9f19521`, rồi `8df2666`, rồi `c6fdfa8`.
+
+| Bước | Kết quả |
+|---|---|
+| `ao-pr create` | Mở PR nháp, như mục 4.1 của spec. `SMP-22` vẫn sang In Review ngay, vì `jira-sync` trên `develop` lúc đó còn là bản kit cũ, chưa bỏ qua PR nháp |
+| CI lần đầu | Job `sast` chặn `spawn(..., { shell: true })` của `/ao-preview` (Semgrep `spawn-shell-true`). Sửa ở kit #244: lệnh của `preview.yaml` chỉ là `npm` hoặc `node` cùng các từ thường, chạy không qua shell |
+| `/ao-review 21`, vòng 1, head `085b5c9` | Bước `pr-ready` chạy thật: PR thôi là nháp, rồi `reviewer` chạy tiếp ngay trong lệnh. Kết quả REQUEST_CHANGES: `reviewer` 1 High, 5 Medium, 5 Low; `security` 1 High, 2 Medium, 2 Low. 13,29 USD. Sửa hết ở kit #245 |
+| `/ao-review 21`, vòng 2, head `313c4e0` | `reviewer` đọc toàn PR, `security` chỉ 147 dòng mới, ở mức `max`. Mỗi lượt chạm giới hạn usage 5 giờ một lần, và chạy tiếp đúng session của nó khi chạy lại lệnh. Hai báo cáo COMMENTED, không còn Critical hay High |
+| Gate ③, merge | Bạn approve và tự merge (`518ec40`), vì PR sửa đường dẫn được bảo vệ |
+| `/ao-qa SMP-22` | PASS trên Development, 0,87 USD. Lần E2E đầu lỗi 3 test API vì máy QA không phân giải được tên miền Development; chạy lại 33/33. Hook `gh-guard` chặn một lệnh có tên biến mật khẩu basic auth |
+| Accept | `SMP-22` Done |
+
+- **Chi phí:** 22,99 USD cho `SMP-22`, vượt mức ước 10–16 USD vì review hai vòng.
+- **Còn lại, không chặn:** Medium của `reviewer` (khi `startPreview` lỗi, package của PR còn trong thư mục và bản ghi xem trước có thể mất); Medium của `security` (bước chặn file chỉ dẫn đọc `pr.files`, mà GitHub dừng ở 3000 file); các Low: `fromFork` sai khi fork đã bị xóa, `HKCUEnvironment` thiếu dấu `\` trong skill `ao-preview`, code preview chưa tách khỏi `ao-step.mjs`.
+- **Monitor báo sai "ended":** `ao-step` chỉ lấy khóa `active.json` sau khi đọc xong Jira và GitHub, nên lần kiểm đầu thấy không có tiến trình. Script theo dõi giờ chờ 60 giây trước lần kiểm đầu.
