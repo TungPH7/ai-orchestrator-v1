@@ -9,7 +9,7 @@ Module đã xong:
 - **`quality-gates`**: biến các cổng tự động của hợp đồng thành kiểm tra thật. Code chỉ vào `develop`, `main`, `release/*` và chỉ được deploy khi đã qua CI, có báo cáo review và có approve của bạn, kể cả khi repo private ở gói Free không có branch protection ([SPEC-quality-gates.md](SPEC-quality-gates.md)).
 - **`agent-roster`**: mười agent của Claude Code, mỗi vai trò của hợp đồng một agent. Mỗi agent biết đầu vào, đầu ra, tool, skill, model và effort của mình, và hook giới hạn file nó được ghi ([SPEC-agent-roster.md](SPEC-agent-roster.md)).
 - **`dev-workflow`**: sáu lệnh `/ao-*` đưa một Epic từ spec tới merge vào `develop`, chỉ dừng ở cổng cần bạn. Agent làm việc với GitHub bằng hai App, không bằng login của bạn ([SPEC-dev-workflow.md](SPEC-dev-workflow.md)).
-- **`human-loop`** (đang làm): các chỗ bạn lái agent giữa chừng. Phần 1 đã có `/ao-intake`, sửa SPEC và plan trước cổng, và `/ao-request`. Phần 2 thêm PR nháp và bước xem trước `/ao-preview` giữa build và review, cùng `/ao-fix` giao việc theo `be:` / `fe:` ([SPEC-human-loop.md](SPEC-human-loop.md)).
+- **`human-loop`** (đang làm): các chỗ bạn lái agent giữa chừng. Phần 1 đã có `/ao-intake`, sửa SPEC và plan trước cổng, và `/ao-request`. Phần 2 thêm PR nháp và bước xem trước `/ao-preview` giữa build và review, cùng `/ao-fix` giao việc theo `be:` / `fe:`. Phần 3 thêm `/ao-qa <KEY> fail:` cho lỗi bạn thấy khi QA, và `/ao-build` sửa sau `QA fail` trên nhánh mới ([SPEC-human-loop.md](SPEC-human-loop.md)).
 - **`release-workflow`**: bốn lệnh đưa code từ `develop` lên Development, Staging và Production trên VPS của bạn, qua QA, gate ④ cắt release và gate ⑤ ship. Deployer trên VPS kiểm cổng cho mọi commit, chạy smoke test và giữ bản cũ khi smoke fail ([SPEC-release-workflow.md](SPEC-release-workflow.md)).
 
 Pilot 1 (xong 2026-11-04) chạy kit trên repo mẫu `TungPH7/ao-sample` (Next.js + NestJS) và space Jira `SMP`: Epic "Ghi chú" đi từ spec tới khi mọi Story sang Ready for QA ([SPEC-pilot-1.md](SPEC-pilot-1.md)). Các bước cài, chỗ vướng, lỗi kit và chi phí ghi ở [tasks/archive/pilot-1/verification.md](tasks/archive/pilot-1/verification.md).
@@ -127,6 +127,7 @@ Bốn lệnh đưa code từ `develop` lên Development, Staging và Production 
 | Lệnh | Làm gì |
 |---|---|
 | `/ao-qa <KEY>` | `qa` kiểm item trên môi trường QA của nó và gắn bằng chứng lên Jira; bạn `Accept` |
+| `/ao-qa <KEY> fail: <lỗi>` | Lỗi bạn thấy khi QA: `qa` tái hiện rồi bấm `QA fail`; `/ao-build` sửa trên nhánh `-rN` mới |
 | `/ao-release [<vX.Y.0> <sha>]` | Không có tham số: in điểm cắt và danh sách item. Có tham số: gate ④, tạo nhánh release |
 | `/ao-ship <vX.Y.Z>` | Bản release: regression, release note, PR release; dừng ở gate ⑤. Hotfix: gate ⑤, tag và yêu cầu deploy Production |
 | `/ao-rollback <môi trường> [<sha>]` | Chạy lại bản trước, đưa một bản lên lại, hoặc gỡ chặn sau một commit không qua `audit` |

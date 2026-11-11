@@ -106,7 +106,7 @@ Khả năng mới, đổi kết quả mong đợi của một Bug, hay đổi h�
 8. `/ao-fix <PR>` khi có finding chặn hoặc khi bạn muốn sửa thêm. `security` chỉ review phần mới khi phần đổi từ báo cáo đầy đủ gần nhất tối đa 300 dòng và báo cáo đó vẫn là tổ tiên của head. Từ lần review thứ hai của `ao-sample` PR #13, hai trường hợp trước đây phải review toàn bộ ở `max` nay chỉ review phần mới:
    - phần đổi đụng đường dẫn được bảo vệ: review phần mới ở effort của roster (`max`), còn lại ở `high`;
    - báo cáo trước còn Critical hay High: prompt liệt kê các finding đó, báo cáo phần mới ghi từng finding vào mục `## Earlier findings` là Fixed hay Open, và `merge-gate` coi finding không được ghi là còn mở.
-9. **[bạn]** Approve PR trên GitHub (gate ③), và không bấm merge. `merge-gate` squash merge, `audit` xanh khi deploy, và `jira-sync` chuyển Story sang Ready for QA. QA và release thuộc module `release-workflow`.
+9. **[bạn]** Approve PR trên GitHub (gate ③), và không bấm merge. `merge-gate` squash merge, `audit` xanh khi deploy, và `jira-sync` chuyển Story sang Ready for QA. QA và release thuộc module `release-workflow`. Lỗi bạn thấy khi QA thì `/ao-qa <KEY> fail: …`; sau `QA fail`, `/ao-build <KEY>` sửa trên nhánh `-r2` mới tách từ `develop`, rồi vòng lại bước 6 ([docs/release-workflow.md](release-workflow.md), mục "Lỗi bạn thấy khi QA").
 
 PR sửa đường dẫn được bảo vệ (`.github/workflows/**`, `.claude/**`, `.ai-orchestrator/**` …) thì bạn tự squash merge. `merge-gate` comment lên PR và gắn cờ item khi PR chỉ còn chờ bạn, và `jira-sync` gỡ cờ đó khi PR đóng.
 
