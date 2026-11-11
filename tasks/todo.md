@@ -58,7 +58,7 @@
     - skill ghi rõ intake không tạo Story, và khi nào thì thành Epic nhỏ.
   - **Kiểm:** test của `decideIntake` và `checkArgument`; `skills.test.mjs` (lệnh không có `--go`).
   - **File:** `lib/workflow/steps.mjs`, `lib/workflow/facts.mjs`, `scripts/ao-step.mjs`, `kit/.claude/skills/ao-intake/SKILL.md`, test.
-- [ ] **T7: tài liệu phần 1, PR phần 1.**
+- [x] **T7: tài liệu phần 1, PR phần 1.**
   - **Đạt khi:** `docs/dev-workflow.md` có `/ao-intake`, note của `/ao-spec` và `/ao-plan`, `/ao-request`; README có các lệnh mới; `SPEC-dev-workflow.md` mục 2.8 trỏ sang spec này.
   - **Kiểm:** năm lệnh kiểm; CI xanh; PR merge.
 

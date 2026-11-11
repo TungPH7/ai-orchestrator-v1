@@ -96,10 +96,10 @@ test('README covers the agents: the section, the spec, the docs, the commands an
   for (const text of [...texts, ...commands, ...install, 'lib/agents/']) assert.ok(readme().includes(text), text);
 });
 
-const AO_COMMANDS = ['ao-status', 'ao-spec', 'ao-plan', 'ao-build', 'ao-review', 'ao-fix'];
+const AO_COMMANDS = ['ao-status', 'ao-intake', 'ao-spec', 'ao-plan', 'ao-request', 'ao-build', 'ao-review', 'ao-fix'];
 
-test('README covers the six commands: the module, the section, the spec, the docs and ao-step.mjs', () => {
-  const texts = ['**`dev-workflow`**', '## Sáu lệnh `/ao-*`', '(SPEC-dev-workflow.md)', '(docs/dev-workflow.md)', 'ao-step.mjs <status|spec|plan|build|review|fix>', '.ai/runs/<KEY>/'];
+test('README covers the commands of the inner loop: the modules, the section, the specs, the docs and ao-step.mjs', () => {
+  const texts = ['**`dev-workflow`**', '**`human-loop`**', '## Các lệnh `/ao-*` của vòng trong', '(SPEC-dev-workflow.md)', '(SPEC-human-loop.md)', '(docs/dev-workflow.md)', 'ao-step.mjs <status|intake|spec|plan|request|build|review|fix|qa|release|ship|rollback>', '.ai/runs/<KEY>/'];
   for (const text of [...texts, ...AO_COMMANDS.map((command) => `\`/${command}`)]) assert.ok(readme().includes(text), text);
 });
 
