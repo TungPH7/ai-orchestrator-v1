@@ -9,10 +9,14 @@ import { readGates } from '../../lib/quality/gates.mjs';
 import { CONTRACT_DIR, ROOT } from '../helpers/kit.mjs';
 
 const SKILLS = join(ROOT, 'kit', '.claude', 'skills');
-const COMMANDS = { status: '[KEY]', spec: '<EPIC> [change]', plan: '<EPIC> [change]', request: '<KEY>', build: '<KEY>', review: '<PR>', fix: '<PR> [what to fix]', qa: '<KEY>', release: '[<vX.Y.0> <sha>]', ship: '<vX.Y.Z>', rollback: '<environment> [<sha>]' };
-// The positional arguments each check passes on: /ao-release and /ao-rollback take two (release-workflow T17).
-const ARGS = { release: '$0 $1', rollback: '$0 $1' };
+const COMMANDS = { status: '[KEY]', intake: '<rough description>', spec: '<EPIC> [change]', plan: '<EPIC> [change]', request: '<KEY>', build: '<KEY>', review: '<PR>', fix: '<PR> [what to fix]', qa: '<KEY>', release: '[<vX.Y.0> <sha>]', ship: '<vX.Y.Z>', rollback: '<environment> [<sha>]' };
+// The positional arguments each check passes on: /ao-release and /ao-rollback take two (release-workflow T17), and
+// /ao-intake none: its description stays in the chat (human-loop spec 3.1).
+const ARGS = { release: '$0 $1', rollback: '$0 $1', intake: '' };
 const args = (command) => ARGS[command] ?? '$0';
+const checkLine = (command) => ['node .ai-orchestrator/scripts/ao-step.mjs', command, args(command)].filter(Boolean).join(' ');
+// The commands that run no agent: /ao-status reads, and the main session does /ao-intake with you.
+const NO_RUN = ['status', 'intake'];
 const read = (command) => readFileSync(join(SKILLS, `ao-${command}`, 'SKILL.md'), 'utf8');
 const frontmatter = (text) => parse(text.match(/^---\r?\n([\s\S]*?)\r?\n---/)[1]);
 
@@ -35,21 +39,31 @@ test('the check line calls ao-step.mjs for its command with its positional argum
   for (const command of Object.keys(COMMANDS)) {
     const text = read(command);
     const bang = text.split('\n').filter((line) => line.startsWith('!`'));
-    assert.deepEqual(bang, [`!\`node .ai-orchestrator/scripts/ao-step.mjs ${command} ${args(command)}\``], command);
-    const beyond = ARGS[command] ? /\$ARGUMENTS|\$2/ : /\$ARGUMENTS|\$1/;
+    assert.deepEqual(bang, [`!\`${checkLine(command)}\``], command);
+    const beyond = ARGS[command] === '' ? /\$ARGUMENTS|\$0|\$1/ : ARGS[command] ? /\$ARGUMENTS|\$2/ : /\$ARGUMENTS|\$1/;
     for (const line of text.split('\n').filter((l) => l.includes('ao-step.mjs'))) assert.doesNotMatch(line, beyond, `${command}: ${line}`);
   }
 });
 
 test('every command that runs agents runs --go in the background with a 2-hour timeout, and leaves agents to ao-step', () => {
-  for (const command of Object.keys(COMMANDS).filter((c) => c !== 'status')) {
+  for (const command of Object.keys(COMMANDS).filter((c) => !NO_RUN.includes(c))) {
     const text = read(command).replace(/\s+/g, ' ');
-    assert.ok(text.includes(`node .ai-orchestrator/scripts/ao-step.mjs ${command} ${args(command)} --go`), command);
+    assert.ok(text.includes(`${checkLine(command)} --go`), command);
     assert.match(text, /in the background, with a timeout of 7200000 ms/, command);
     assert.match(text, /Do not run any agent yourself, and do not change Jira or GitHub yourself/, command);
     assert.match(text, /\.ai\/runs\/<KEY>\/last\.md/, command);
   }
-  assert.doesNotMatch(read('status'), /--go/);
+  for (const command of NO_RUN) assert.doesNotMatch(read(command), /--go/, command);
+});
+
+test('/ao-intake writes one Jira item, only after your OK, and never a Story (human-loop spec 3.1)', () => {
+  const text = read('intake').replace(/\s+/g, ' ');
+  assert.match(text, /## What the human wrote \$ARGUMENTS/);
+  assert.match(text, /Only after the human's OK, create the item once with the createJiraIssue tool/);
+  assert.match(text, /This is the one Jira write you make: no transition, no comment, no edit of another item/);
+  assert.match(text, /You never make a Story/);
+  assert.match(text, /\.ai\/intake\//);
+  assert.match(text, /do not run its script/);
 });
 
 test('answers and the text after the argument go through files, as --answers and --note', () => {

@@ -40,8 +40,8 @@ import { removeInstructions } from '../lib/workflow/review-tree.mjs';
 import { agentCommand, formatDecision, runGo } from '../lib/workflow/runner.mjs';
 import { decideStep } from '../lib/workflow/steps.mjs';
 
-const COMMANDS = ['status', 'spec', 'plan', 'request', 'build', 'review', 'fix', 'qa', 'release', 'ship', 'rollback'];
-const USAGE = 'usage: node .ai-orchestrator/scripts/ao-step.mjs <status|spec|plan|request|build|review|fix|qa|release|ship|rollback> [<KEY>|<PR>|<vX.Y.0> <sha>|<vX.Y.Z>|<environment> [<sha>]] [--go] [--answers <file>] [--note <file>]';
+const COMMANDS = ['status', 'intake', 'spec', 'plan', 'request', 'build', 'review', 'fix', 'qa', 'release', 'ship', 'rollback'];
+const USAGE = 'usage: node .ai-orchestrator/scripts/ao-step.mjs <status|intake|spec|plan|request|build|review|fix|qa|release|ship|rollback> [<KEY>|<PR>|<vX.Y.0> <sha>|<vX.Y.Z>|<environment> [<sha>]] [--go] [--answers <file>] [--note <file>]';
 const ENVIRONMENTS = ['development', 'staging', 'production'];
 // The commands that read deployments with your gh login (release-workflow T12).
 const RELEASE_COMMANDS = ['qa', 'release', 'ship', 'rollback', 'status'];
@@ -64,6 +64,8 @@ export function checkArgument(command, arg, space, extra) {
     const ok = (arg === undefined && extra === undefined) || (/^v\d{1,4}\.\d{1,4}\.\d{1,4}$/.test(arg ?? '') && /^[0-9a-f]{7,40}$/.test(extra ?? ''));
     return ok ? null : `/ao-release takes nothing, or a release such as v0.1.0 and the cut point it printed, not ${[arg, extra].filter(Boolean).join(' ') || 'that'}`;
   }
+  // The description goes in the chat, never on the check line (human-loop spec 3.1).
+  if (command === 'intake') return arg === undefined && extra === undefined ? null : '/ao-intake takes no argument on its check line: your description stays in the chat';
   if (extra !== undefined) return `/ao-${command} takes one argument`;
   if (['review', 'fix'].includes(command)) return /^\d{1,7}$/.test(arg ?? '') ? null : `/ao-${command} takes a PR number, not ${arg ?? 'nothing'}`;
   if (command === 'status' && arg === undefined) return null;
