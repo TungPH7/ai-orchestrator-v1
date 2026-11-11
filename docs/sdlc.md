@@ -326,6 +326,7 @@ Giới hạn mặc định, chỉnh được ở retro:
 | Thiết kế màn hình | `templates/design.md` | `ux` | Git: `docs/specs/<EPIC-KEY>/design.md`; Git: `docs/specs/<EPIC-KEY>/design/`, ảnh của màn hình kiểu Figma |
 | Plan | `templates/plan.md` | `sa` | Git: `docs/specs/<EPIC-KEY>/plan.md` |
 | ADR | `templates/adr.md` | `sa` | Git: `docs/adr/NNNN-<slug>.md` |
+| Epic | `templates/epic.md` | `human` | Jira: Mô tả item |
 | Story | `templates/story.md` | `ba` | Jira: Mô tả item |
 | Task | `templates/task.md` | `ba` | Jira: Mô tả item |
 | Bug | `templates/bug.md` | Người báo lỗi | Jira: Mô tả item |

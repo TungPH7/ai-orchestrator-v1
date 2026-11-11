@@ -27,10 +27,10 @@ test('the 7 retro metrics of spec 2.7, in order', () => {
   );
 });
 
-test('13 artifacts, Story, Task and Bug separate, each with its own template (spec 2.9; agent-roster spec 2.11)', () => {
+test('14 artifacts, Epic, Story, Task and Bug separate, each with its own template (spec 2.9; agent-roster spec 2.11; human-loop spec 3.1)', () => {
   assert.deepEqual(
     contract.artifacts.map(({ id }) => id),
-    ['spec', 'design', 'plan', 'adr', 'story', 'task', 'bug', 'pull-request', 'review-report', 'qa-report', 'regression-report', 'release-notes', 'ledger'],
+    ['spec', 'design', 'plan', 'adr', 'epic', 'story', 'task', 'bug', 'pull-request', 'review-report', 'qa-report', 'regression-report', 'release-notes', 'ledger'],
   );
   for (const { id, template } of contract.artifacts) assert.equal(template, `templates/${id}.md`, id);
 });

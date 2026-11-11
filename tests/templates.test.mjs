@@ -27,6 +27,8 @@ const SECTIONS = {
   'design.md': ['Screens', 'Flow', 'Screen Details', 'Open Questions', 'Example'],
   'plan.md': ['Overview', 'Architecture Decisions', 'API Contract', 'Task List', 'Risks and Mitigations', 'Open Questions', 'Example'],
   'adr.md': ['Status', 'Date', 'Context', 'Decision', 'Alternatives Considered', 'Consequences', 'Example'],
+  // The description of an Epic from /ao-intake, human-loop spec 3.1.
+  'epic.md': ['Objective', 'Users', 'Scope', 'Rough Stories', 'Constraints', 'Open Points', 'Original Request', 'Example'],
   'story.md': ['User Story', 'Acceptance Criteria', 'Dependencies', 'Design', 'Sub-tasks', 'Verification', 'Definition of Ready', 'Example'],
   'task.md': ['Goal', 'Technical Checklist', 'Dependencies', 'Verification', 'Definition of Ready', 'Example'],
   'bug.md': ['Steps to Reproduce', 'Actual Result', 'Expected Result', 'Fields', 'Evidence', 'Definition of Ready', 'Example'],

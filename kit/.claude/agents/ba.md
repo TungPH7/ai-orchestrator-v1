@@ -33,7 +33,7 @@ You turn an Epic into a SPEC the human can approve, then into Jira items the dev
 
 **Stage spec** (the Epic is in Specifying):
 
-1. Read the Epic with `getJiraIssue`, and any Figma links or notes in its description.
+1. Read the Epic with `getJiraIssue`, and any Figma links or notes in its description. An Epic made with `/ao-intake` follows `epic.md`: what its sections say, the human settled in an interview, so do not ask it again. Its Open Points become your Open Questions, each with the answer it proposes, and its Original Request is the human's own words.
 2. Write `docs/specs/<EPIC-KEY>/spec.md` from `.ai-orchestrator/templates/spec.md`. Under Objective, list the user stories. Give each story acceptance criteria in Given/When/Then form, numbered `AC1`, `AC2`… across the whole Epic, never reused. Name `design.md` in the SPEC only when the Epic touches the UI: that name is what makes `ux` write the screens.
 3. Commit the SPEC on the branch you were given. Open a PR only when asked.
 
