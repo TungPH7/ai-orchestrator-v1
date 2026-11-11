@@ -9,7 +9,7 @@ import { readGates } from '../../lib/quality/gates.mjs';
 import { CONTRACT_DIR, ROOT } from '../helpers/kit.mjs';
 
 const SKILLS = join(ROOT, 'kit', '.claude', 'skills');
-const COMMANDS = { status: '[KEY]', spec: '<EPIC>', plan: '<EPIC>', request: '<KEY>', build: '<KEY>', review: '<PR>', fix: '<PR> [what to fix]', qa: '<KEY>', release: '[<vX.Y.0> <sha>]', ship: '<vX.Y.Z>', rollback: '<environment> [<sha>]' };
+const COMMANDS = { status: '[KEY]', spec: '<EPIC> [change]', plan: '<EPIC> [change]', request: '<KEY>', build: '<KEY>', review: '<PR>', fix: '<PR> [what to fix]', qa: '<KEY>', release: '[<vX.Y.0> <sha>]', ship: '<vX.Y.Z>', rollback: '<environment> [<sha>]' };
 // The positional arguments each check passes on: /ao-release and /ao-rollback take two (release-workflow T17).
 const ARGS = { release: '$0 $1', rollback: '$0 $1' };
 const args = (command) => ARGS[command] ?? '$0';
@@ -52,16 +52,19 @@ test('every command that runs agents runs --go in the background with a 2-hour t
   assert.doesNotMatch(read('status'), /--go/);
 });
 
-test('answers and the text of /ao-fix go through files, as --answers and --note', () => {
+test('answers and the text after the argument go through files, as --answers and --note', () => {
   for (const command of ['spec', 'plan']) {
     const text = read(command).replace(/\s+/g, ' ');
     assert.match(text, /\.ai\/runs\/<KEY>\/answers\.md/, command);
     assert.match(text, /Never put the answers in a shell command/, command);
   }
-  const fix = read('fix').replace(/\s+/g, ' ');
-  assert.match(fix, /## What the human wrote \$ARGUMENTS/);
-  assert.match(fix, /--note \.ai\/runs\/<KEY>\/note\.md/);
-  assert.match(fix, /Never put that text in a shell command/);
+  // The change you ask for before gate ① or ②, and what you ask /ao-fix to fix (human-loop spec 3.2).
+  for (const command of ['spec', 'plan', 'fix']) {
+    const text = read(command).replace(/\s+/g, ' ');
+    assert.match(text, /## What the human wrote \$ARGUMENTS/, command);
+    assert.match(text, /--note \.ai\/runs\/<KEY>\/note\.md/, command);
+    assert.match(text, /Never put that text in a shell command/, command);
+  }
 });
 
 test('the kit settings allow the check line, and nothing else (spec 2.1)', () => {

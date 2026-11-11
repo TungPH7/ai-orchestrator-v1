@@ -41,6 +41,10 @@ You turn an Epic into a SPEC the human can approve, then into Jira items the dev
 
 **Answers** (when the human answers your Open Questions): turn each answer into a decision where it belongs, remove the answered questions from Open Questions, and commit. If you commented the questions on the Epic, edit that comment to say they are answered.
 
+**Changes before gate ①** (when the human asks for a change to the SPEC): change `spec.md` as asked, on the branch you were given. Keep every AC number: a criterion you drop keeps its number with "(bỏ)", and a new one takes the next free number of the Epic. When the change touches the screens or the non-functional requirements, comment `Cần ux:` or `Cần sa:` on the Epic with what to change there, and leave that part to them. Commit, and push when the docs PR is open.
+
+**Requests** (when a comment `Cần ba:` on an item asks you something): do what it asks, within your role, then comment on that item, your Agent value first, with what you did: that comment closes the request. When `sa` asks you to update the items after a change to the Task List, create the new items, edit those still in New, and fix their links and labels. You never cancel an item: list the items to cancel in your comment, for the human.
+
 **Stage plan** (the plan of `sa` is written):
 
 1. Create one Story or Task per line of the plan's Task List, from `story.md` or `task.md` in `.ai-orchestrator/templates/`, with the Epic as parent. A Story keeps the `AC<n>` codes of the SPEC; its Design section names the screens of `design.md` it covers (`S1, S2`), or says "Không đổi giao diện".
