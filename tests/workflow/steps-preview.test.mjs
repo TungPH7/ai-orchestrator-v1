@@ -28,9 +28,17 @@ const decide = (f) => decideStep('preview', f, { roster, contract });
 
 test('preview.yaml: the apps in order, each with its command, its local URL and port, and its variables', () => {
   assert.deepEqual(APPS, [
-    { name: 'api', command: 'npm run start:dev -w apps/api', url: 'http://localhost:3001/health', port: 3001, env: {} },
-    { name: 'web', command: 'npm run dev -w apps/web', url: 'http://localhost:3000/', port: 3000, env: { API_URL: 'http://localhost:3001' } },
+    { name: 'api', command: 'npm run start:dev -w apps/api', argv: ['npm', 'run', 'start:dev', '-w', 'apps/api'], url: 'http://localhost:3001/health', port: 3001, env: {} },
+    { name: 'web', command: 'npm run dev -w apps/web', argv: ['npm', 'run', 'dev', '-w', 'apps/web'], url: 'http://localhost:3000/', port: 3000, env: { API_URL: 'http://localhost:3001' } },
   ]);
+});
+
+test('a command is npm or node and plain words, since ao-step runs it with no shell (sast of ao-sample PR #21)', () => {
+  const app = (command) => `apps:\n  web:\n    command: ${JSON.stringify(command)}\n    url: http://localhost:3000/`;
+  assert.deepEqual(readPreviewConfig(app('node scripts/dev.mjs --port 3000'))[0].argv, ['node', 'scripts/dev.mjs', '--port', '3000']);
+  for (const command of ['next dev', 'npm run dev && rm -rf .', 'npm run dev | tee log', 'npm run dev > log', 'node -e "x"', 'npm run $SCRIPT', 'npm run dev; curl x']) {
+    assert.throws(() => readPreviewConfig(app(command)), /command: npm or node and plain words, run with no shell/, command);
+  }
 });
 
 test('a wrong preview.yaml says every problem', () => {
