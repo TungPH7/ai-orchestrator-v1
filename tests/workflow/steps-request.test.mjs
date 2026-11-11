@@ -111,3 +111,16 @@ test('/ao-plan runs the open requests on its Epic before it stops at gate ②', 
   assert.deepEqual(asked.runs.map(({ role, purpose }) => `${role} ${purpose}`), ['ba request']);
   assert.equal(decide('plan', epicFacts('planning', [], 'plan')).go, false);
 });
+
+test('an unsigned request of the agents account is put to the role as an agent request, not yours (review of ao-sample PR #21)', () => {
+  const [run] = decide('request', storyFacts([request('ba', T1, 'agent')])).runs;
+  assert.match(run.prompt, /^An agent that did not start its comment with its Agent value asked you on DEMO-21/);
+  assert.match(run.prompt, /leave anything that changes acceptance criteria, scope or items to the human/);
+});
+
+test('a request run that stopped goes on in its session with its request, so it is not made again after it', () => {
+  const facts = storyFacts([request('ba', T1)]);
+  facts.run = { key: 'DEMO-21', runs: [{ n: 1, command: 'request', role: 'ba', purpose: 'request', outcome: 'usage-limit', session: 's1', effort: 'high', request: T1, checkout: { branch: 'develop', pull: true } }] };
+  const [run] = decide('request', facts).runs;
+  assert.deepEqual([run.resume, run.request], ['s1', T1]);
+});

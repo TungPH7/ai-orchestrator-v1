@@ -168,7 +168,8 @@ File này thuộc nhóm "Của dự án" trong `kit_copy` của `quality/gates.y
 
 **Kiểm** (`ao-step.mjs preview <KEY>`). Lệnh chỉ chạy khi đủ các điều kiện sau:
 - Item có PR đang mở, nháp hay sẵn sàng đều được.
-- PR không sửa đường dẫn được bảo vệ. Trong lúc xem trước, mọi lệnh `/ao-*` chạy kit và hook của thư mục dự án. PR sửa `.ai-orchestrator/`, `.claude/` hay `.githooks/` thì bạn đọc thay đổi trong diff, không chạy.
+- PR không sửa đường dẫn được bảo vệ. Trong lúc xem trước, mọi lệnh `/ao-*` chạy kit và hook của thư mục dự án. PR sửa `.ai-orchestrator/`, `.claude/` hay `.githooks/` thì bạn đọc thay đổi trong diff, không chạy. Từ review của `ao-sample` PR #21: file chỉ dẫn ở mọi tầng (`CLAUDE.md`, `CLAUDE.local.md`, `AGENTS.md`, `.claude/` lồng trong thư mục con) cũng bị từ chối, và đường dẫn được bảo vệ được so không phân biệt hoa thường.
+- PR là nhánh của chính repo, không từ fork, và CI xanh trên head.
 - Không agent nào đang chạy (khóa `active.json`).
 - Thư mục sạch.
 - Các cổng trong `url` còn trống.
