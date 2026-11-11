@@ -69,7 +69,8 @@ const row = (id) => {
 test('tools, files, git, Jira and skills of each role (spec 2.3)', () => {
   assert.equal(row('pm'), 'Bash Write | .ai/** | read | read | ');
   assert.equal(row('ba'), 'Bash Edit Write | docs/specs/** CHANGELOG.md .ai/** | write | read create edit comment link | spec-driven-development interview-me');
-  assert.equal(row('ux'), 'Bash Edit Write | docs/specs/** .ai/** | write | read | frontend-ui-engineering');
+  // comment: ux answers a Cần ux: request (human-loop spec 3.3, Lượt 122).
+  assert.equal(row('ux'), 'Bash Edit Write | docs/specs/** .ai/** | write | read comment | frontend-ui-engineering');
   assert.equal(row('sa'), 'Bash Edit Write | docs/specs/** docs/adr/** .ai/** | write | read comment | planning-and-task-breakdown api-and-interface-design documentation-and-adrs');
   assert.equal(row('fe-dev'), 'Bash Edit Write | ** | write | read edit comment transition | test-driven-development incremental-implementation frontend-ui-engineering browser-testing-with-devtools');
   assert.equal(row('be-dev'), 'Bash Edit Write | ** | write | read edit comment transition | test-driven-development incremental-implementation api-and-interface-design');

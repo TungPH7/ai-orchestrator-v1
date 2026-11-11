@@ -81,7 +81,8 @@ roles:
     effort: xhigh
     max_turns: 60
     tools: [Bash, Edit, Write]
-    jira: [read]
+    # comment: ux answers a "Cần ux:" request with a comment, which closes it (human-loop spec 3.3, Lượt 122).
+    jira: [read, comment]
     git: write
     writes: ["docs/specs/**", ".ai/**"]
     skills: [frontend-ui-engineering]

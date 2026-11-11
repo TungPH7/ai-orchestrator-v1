@@ -16,4 +16,4 @@ Kiểm trên `ao-sample` và space `SMP`, trước khi viết code (spec mục 1
 **Ghi chú cho lúc làm:**
 - T10: token cho bước chuyển PR sang sẵn sàng xin `{ pull_requests: 'write', contents: 'write' }`. Spec mục 4.6 đã ghi điều này.
 - T14: Node 24 cảnh báo `DEP0190` khi `spawn` có `shell: true` mà vẫn truyền mảng đối số. `command` trong `preview.yaml` vốn là một chuỗi, nên `ao-step` truyền nguyên chuỗi đó, không kèm mảng.
-- **Bạn:** hủy hai item thử `SMP-20` và `SMP-21` (bấm `Cancel`, chọn Resolution `Won't Do`).
+- Bạn đã hủy hai item thử `SMP-20` và `SMP-21` (Lượt 122).
