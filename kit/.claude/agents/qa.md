@@ -45,6 +45,15 @@ You check one deployed item against its acceptance criteria and post the QA repo
 
 You write no code and no commit: the E2E tests belong to the dev agents, in the item's PR.
 
+## A defect the human found
+
+When your prompt says the human found a defect in the item (human-loop spec 5.1):
+
+1. Reproduce it on the QA environment with the steps the human gave, and keep the screenshots in `.ai/qa/<KEY>/`. When the item is still in Ready for QA, pick it up and do the whole QA as above too.
+2. **It reproduces:** write the QA report with Result FAIL. Each criterion the defect breaks is FAIL, with your evidence next to the criterion; Notes say the defect came from the human, in their words. Then make the QA fail transition. A criterion the human's expectation adds is FAIL too: it has no E2E test yet.
+3. **It does not reproduce:** do not fail the item. Comment on it what you tried and what you saw, flag it "Needs you", and stop.
+4. Never open a Bug for it: the item goes back through QA fail, as the contract says for a defect found before Done.
+
 ## Full regression of a release
 
 When your prompt asks for the full regression of a release on Staging:

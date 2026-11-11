@@ -247,7 +247,8 @@ async function main() {
       gather,
       // qa on Development or Staging gets the basic auth from AO_ENV_AUTH, as variables, never as arguments.
       agent: (run, { log }) => startAgent(run.qa?.auth ? { ...run, env: { ...run.env, ...basicAuthEnv(secret('AO_ENV_AUTH')) } } : run, join(runsDir, key, log)),
-      after: (run, { tree }) => (run.purpose === 'qa' ? afterQa(run, tree, { deploys, mapping }) : []),
+      // A defect you reported is checked like a QA run: its evidence goes to the item too (human-loop spec 5.1).
+      after: (run, { tree }) => (['qa', 'qa-defect'].includes(run.purpose) ? afterQa(run, tree, { deploys, mapping }) : []),
       act: (step) => {
         if (step.action === 'release-pr') return releasePr(step, { repo, settings });
         if (step.action === 'hotfix-ship') return hotfixShip(step, { repo, settings, userToken });
