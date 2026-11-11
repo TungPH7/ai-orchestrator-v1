@@ -18,9 +18,10 @@ Claude của phiên chính không tự mở agent, cũng không tự sửa Jira 
 | `/ao-spec` | `<EPIC>` ở Specifying, thêm `[sửa]` khi muốn sửa SPEC | `ba` viết SPEC, `ux` viết `design.md` khi SPEC có màn hình, `sa` thêm yêu cầu phi chức năng, rồi `ba` push nhánh tài liệu và mở PR tài liệu. Có `[sửa]` thì `ba` sửa SPEC | Câu hỏi mở, hoặc gate ① `spec-approval` |
 | `/ao-plan` | `<EPIC>` ở Planning, thêm `[sửa]` khi muốn sửa plan; rồi lần nữa sau gate ② | `sa` viết plan và ADR, `sa` đánh dấu SPEC và design là Approved, rồi `ba` tạo Story, Task và Sub-task có nhãn. Có `[sửa]` thì `sa` sửa plan, và `ba` sửa item khi Task List đổi. Lần chạy sau gate ② không chạy agent: `jira-sync` refine các item, `merge-gate` merge PR tài liệu | Câu hỏi mở, gate ② `plan-approval`, rồi lúc các item sang Ready |
 | `/ao-request` | `<KEY>` có yêu cầu `Cần ba:`, `Cần ux:` hoặc `Cần sa:` còn mở | Role được nhờ, mỗi yêu cầu một lượt, cũ trước | Hết yêu cầu mở gửi ba role đó |
-| `/ao-build` | `<KEY>` của Story, Task hay Bug ở Ready | Dev agent của mỗi Sub-task, BE trước FE, hoặc dev agent theo nhãn vai trò của item. Agent cuối mở PR. Effort theo nhãn `ao-effort-*` | PR mở với CI chạy xong, hoặc một item mang cờ Needs you |
-| `/ao-review` | `<PR>` có CI xanh | `reviewer`, rồi `security` (đầy đủ ở `max` khi PR có rủi ro, ở `high` khi không; hoặc chỉ phần mới ở `high`) | Hai báo cáo trên head, chờ bạn ở gate ③ |
-| `/ao-fix` | `<PR> [việc cần sửa]` | Dev agent sửa, rồi `reviewer` và `security` review lại | Hai báo cáo mới trên head, chờ bạn ở gate ③ |
+| `/ao-build` | `<KEY>` của Story, Task hay Bug ở Ready | Dev agent của mỗi Sub-task, BE trước FE, hoặc dev agent theo nhãn vai trò của item. Agent cuối mở PR nháp, kèm ảnh màn hình và mẫu API trong `.ai/runs/<KEY>/preview/`. Effort theo nhãn `ao-effort-*` | PR nháp mở với CI chạy xong, chờ bạn xem trước; hoặc một item mang cờ Needs you |
+| `/ao-preview` | `<KEY>` có PR đang mở, thêm `--stop` để tắt | Không. Thư mục dự án chuyển sang nhánh PR, `npm ci` khi lockfile đổi, bật các app của `preview.yaml` | App chạy và in URL; `--stop` tắt app và đưa thư mục về `develop` |
+| `/ao-review` | `<PR>` có CI xanh | PR nháp thì một bước script chuyển nó sang sẵn sàng. Rồi `reviewer`, rồi `security` (đầy đủ ở `max` khi PR có rủi ro, ở `high` khi không; hoặc chỉ phần mới ở `high`) | Hai báo cáo trên head, chờ bạn ở gate ③ |
+| `/ao-fix` | `<PR> [việc cần sửa]` | `ba` hoặc `sa` khi yêu cầu đổi AC, hợp đồng API hay yêu cầu chung, rồi dev agent sửa. PR đã sẵn sàng thì `reviewer` và `security` review lại | PR nháp: chờ bạn xem lại. PR sẵn sàng: hai báo cáo mới trên head, chờ bạn ở gate ③ |
 
 **`/ao-fix` khi không có gì chặn.** Bạn ghi việc cần sửa ngay sau số PR, ví dụ `/ao-fix 16 sửa hai finding Low đầu của reviewer`. Claude ghi đoạn chữ đó vào `.ai/runs/<KEY>/note.md` và truyền bằng `--note`, không bao giờ đưa nó vào dòng lệnh.
 
@@ -38,6 +39,44 @@ Intake không tạo Story, vì Story cần AC trong SPEC, màn hình và hợp �
 - `sa` sửa plan và ADR. Task List đổi thì `sa` nhờ `ba` sửa item. `ba` không hủy item: nó liệt kê item cần hủy để bạn bấm `Cancel`.
 - Cùng một yêu cầu gõ lại thì không làm lại. Epic đã qua `Approve spec` (hay `Approve plan`) thì lệnh dừng: thay đổi đi thành một Epic mới qua `/ao-intake`.
 
+**Xem trước giữa build và review.** Dev agent mở PR nháp, nên item ở lại In Progress: guard `pr-open` không tính PR nháp. Trước khi mở PR, `fe-dev` chụp từng màn hình ở mỗi cỡ của `design.md` (`S1-mobile.png`, `S1-desktop.png`), còn `be-dev` ghi `api.md` gồm một request mẫu và response cho mỗi endpoint. Các file này nằm trong `.ai/runs/<KEY>/preview/`, chỉ trên máy bạn. Sau đó bạn chọn một trong ba hướng:
+1. `/ao-preview <KEY>`: thư mục dự án chuyển sang nhánh PR, `npm ci --ignore-scripts` chạy khi lockfile khác bản đã cài, rồi các app trong `.ai-orchestrator/preview.yaml` được bật theo thứ tự. Bạn mở URL để thử. Đây là code chưa ai review, chạy trên máy bạn: app không có biến bí mật nào trong môi trường, và kit từ chối xem trước PR sửa đường dẫn được bảo vệ. Đừng sửa file trong lúc xem trước. `/ao-preview <KEY> --stop` tắt app và đưa thư mục về `develop`.
+2. `/ao-fix <PR> <yêu cầu>`: dev agent sửa trên PR nháp, không chạy review, và cập nhật ảnh hay `api.md`. Sau đó bạn xem lại.
+3. `/ao-review <PR>`: một bước script chuyển PR nháp sang sẵn sàng bằng App `ao-dev`, `jira-sync` đưa item sang In Review, rồi review chạy như cũ. Gõ thẳng lệnh này nếu muốn bỏ qua bước xem trước.
+
+`/ao-fix`, `/ao-review` và các lệnh khác có chạy agent đều tự dừng xem trước trước khi chạy: chúng tắt app, đưa thư mục về `develop`, rồi chạy lại từ `develop`, để kit đã duyệt quyết định. `preview.yaml` là file của dự án, ví dụ cho `ao-sample`:
+
+```yaml
+apps:
+  api:
+    command: npm run start:dev -w apps/api
+    url: http://localhost:3001/health
+  web:
+    command: npm run dev -w apps/web
+    url: http://localhost:3000/notes
+```
+
+**Giao việc theo `be:` / `fe:`.** Trong yêu cầu của `/ao-fix`, một dòng mở đầu bằng `be:` hay `fe:` giao phần đó cho `be-dev` hay `fe-dev`, tới dòng có tiền tố kế tiếp. Ví dụ:
+
+```text
+/ao-fix 22 be: API trả thêm trường updatedAt
+fe: hiện updatedAt dưới tiêu đề, dạng "2 phút trước"
+```
+
+Có cả hai thì `be-dev` chạy trước. Mỗi agent nhận phần của mình, kèm phần của bên kia để biết. Không có tiền tố thì yêu cầu đi tới dev agent của item; riêng Story có Sub-task cả BE và FE thì lệnh dừng và nhờ bạn ghi tiền tố. Phần đã push thì không gửi lại.
+
+**"Yêu cầu này đổi gì?"** Mỗi khi `/ao-fix` có yêu cầu của bạn, Claude hỏi một câu kèm đề xuất, và bạn trả lời "ok" hoặc chọn lại. Câu trả lời đi vào lệnh bằng `--change`:
+
+| Trả lời | Chạy trước dev agent |
+|---|---|
+| `none` | Không gì |
+| `ac` | `ba` sửa AC trên item (comment AC cũ và mới, AC mới lấy số kế tiếp, không dùng lại số), rồi commit phần sửa `spec.md` lên nhánh PR |
+| `api` | `sa` sửa mục API Contract của `plan.md` trên nhánh PR |
+| `epic` | `sa` sửa SPEC, plan hay ADR trên nhánh PR, và liệt kê các item khác bị ảnh hưởng trên Epic |
+| `story` | `ba` đổi Task thành Story, viết AC mới và thêm chúng vào `spec.md` |
+
+Khả năng mới, đổi kết quả mong đợi của một Bug, hay đổi hướng cả Epic thì không sửa trên PR này: Claude dừng và trỏ sang `/ao-intake`.
+
 **Yêu cầu giữa các vai trò.** Agent nhờ role khác bằng comment `Cần <role>:` trên item; bạn cũng nhờ được bằng một comment như vậy, không có tên Agent ở đầu. `/ao-request <KEY>` chạy các yêu cầu gửi `ba`, `ux` hoặc `sa`. Trên Epic đang ở Specifying hay Planning, role làm trên nhánh tài liệu; ở chỗ khác, role chỉ làm trên Jira và không commit. Yêu cầu xong khi role đó comment trả lời trên item. `/ao-spec` và `/ao-plan` tự chạy các yêu cầu này trên Epic của mình trước khi dừng ở cổng. Yêu cầu gửi dev role hay `qa` chỉ hiện trong `/ao-status`.
 
 ## Một vòng Epic từ đầu tới cuối
@@ -54,7 +93,7 @@ Intake không tạo Story, vì Story cần AC trong SPEC, màn hình và hợp �
 5. `/ao-plan DEMO-20` lần nữa: `jira-sync` chuyển Story sang Ready, `merge-gate` merge PR tài liệu, `audit` xanh khi deploy.
 6. `/ao-build DEMO-21`:
    - `be-dev` làm Sub-task BE, rồi `fe-dev` làm Sub-task FE. Cả hai commit lên nhánh của Story `feature/DEMO-21-<slug>`.
-   - `fe-dev` mở PR và lệnh chờ CI.
+   - `fe-dev` mở PR nháp và lệnh chờ CI. Lệnh dừng để bạn xem trước: `/ao-preview DEMO-21`, rồi `/ao-fix <PR> be: … fe: …` nếu cần sửa (mục "Xem trước giữa build và review" ở trên).
    - Nếu một agent gắn cờ Needs you lên Sub-task của nó, **[bạn]** trả lời trên item, gỡ cờ và nhãn `needs-you`, rồi chạy lại lệnh.
 7. `/ao-review <PR>`: `reviewer` rồi `security`. Trước mỗi lượt review đầy đủ, `ao-step` ghi gói bối cảnh `.ai/reviews/<PR>-context.md`. Gói gồm:
    - PR và check run của head, item trên Jira;
@@ -93,6 +132,9 @@ Bản nháp của `/ao-intake` nằm ở `.ai/intake/<YYYYMMDD-HHmm>-<slug>.md`.
 | `… left N open questions in docs/specs/<EPIC>/…` | Trả lời trong chat. Câu hỏi còn mở trong SPEC hay `design.md` vẫn dừng lệnh khi PR tài liệu đã mở; agent đã hỏi ghi câu trả lời rồi push lên PR (Pilot 1, `SMP-2`) |
 | `… waits for you at gate ①/②/③` | Bấm duyệt theo các bước Claude gửi |
 | `… is past gate ① spec-approval: its SPEC no longer changes before the gate` (hay gate ②, plan) | Thay đổi đi thành một Epic mới: `/ao-intake` với yêu cầu đó |
+| `the draft PR #… of … waits for your preview` | `/ao-preview <KEY>` để thử, `/ao-fix <PR> …` để sửa, hoặc `/ao-review <PR>` để bỏ qua bước xem trước |
+| `your request has no be: or fe: …` | Ghi `be:` hay `fe:` ở đầu từng phần của yêu cầu, rồi chạy lại |
+| `PR #… changes …, which steer the kit and the agents` | Không xem trước PR này: đọc thay đổi trong diff, rồi `/ao-review` |
 | `… has no open request to ba, ux or sa` | Không còn gì cho `/ao-request`. Yêu cầu gửi role khác, nếu có, hiện trong `/ao-status` |
 | `… is flagged Needs you by …`, `Sub-task … is flagged Needs you` | Đọc comment mới nhất trên item, trả lời ở đó, gỡ cờ và nhãn `needs-you`, rồi chạy lại. `jira-guard` không cho chuyển trạng thái của item còn nhãn đó |
 | `… hit the usage limit … Run the same command again after it resets` | Chờ giới hạn reset, rồi chạy lại đúng lệnh (mục sau) |

@@ -28,10 +28,21 @@ function setup({ files = {}, branch = 'feature/DEMO-12-email-login' } = {}) {
   return { sent, run: (...args) => runAoPr(args, deps) };
 }
 
-test('create opens the PR with the ao-dev App from the current branch', async () => {
+test('create opens the PR of a work item as a draft, with the ao-dev App, from the current branch (human-loop spec 4.1)', async () => {
   const { sent, run } = setup({ files: { 'pr.md': BODY } });
+  assert.equal(await run('create', '--base', 'develop', '--title', TITLE, '--body-file', 'pr.md'), 'opened draft #7 https://github.com/TungPH7/ao-pilot/pull/7');
+  assert.deepEqual(sent, [{ kind: 'dev', method: 'POST', path: '/pulls', body: { title: TITLE, head: 'feature/DEMO-12-email-login', base: 'develop', body: BODY, draft: true } }]);
+  for (const branch of ['bugfix/DEMO-31-favicon', 'hotfix/DEMO-32-login', 'feature/DEMO-12-email-login-r2']) {
+    const other = setup({ files: { 'pr.md': BODY }, branch });
+    await other.run('create', '--base', branch.startsWith('hotfix/') ? 'main' : 'develop', '--title', TITLE, '--body-file', 'pr.md');
+    assert.equal(other.sent[0].body.draft, true, branch);
+  }
+});
+
+test('the docs PR of an Epic is not a draft: merge-gate merges it after gate ②, and it never merges a draft', async () => {
+  const { sent, run } = setup({ files: { 'pr.md': BODY }, branch: 'feature/DEMO-20-spec' });
   assert.equal(await run('create', '--base', 'develop', '--title', TITLE, '--body-file', 'pr.md'), 'opened #7 https://github.com/TungPH7/ao-pilot/pull/7');
-  assert.deepEqual(sent, [{ kind: 'dev', method: 'POST', path: '/pulls', body: { title: TITLE, head: 'feature/DEMO-12-email-login', base: 'develop', body: BODY } }]);
+  assert.equal(sent[0].body.draft, undefined);
 });
 
 test('create sends nothing when the branch, the title or the description is wrong, and says what', async () => {

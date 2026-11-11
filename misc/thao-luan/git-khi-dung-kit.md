@@ -80,3 +80,12 @@ Nói thật: với kit hiện tại, bước này thường không kéo về gì
 - **Dev agent làm** → thư mục đứng ở nhánh tính năng.
 - **Giữa các lệnh** → kit đưa thư mục về `develop`, để agent không nhận luật từ code chưa review.
 - **Bạn xem trước** → chuyển sang nhánh PR, thử, rồi về lại `develop`.
+
+## Đã làm (2026-11-11)
+
+Phần 2 của `human-loop` làm đúng các bước trong sơ đồ, thêm ba điều:
+- `/ao-preview` chạy `npm ci --ignore-scripts` khi `package-lock.json` của nhánh PR khác bản đã cài lần trước, rồi bật các app khai trong `.ai-orchestrator/preview.yaml`.
+- Ngoài `--stop`, mọi lệnh có chạy agent (`/ao-fix`, `/ao-review`, `/ao-build`…) cũng tự tắt app và đưa thư mục về `develop` trước khi chạy.
+- Kit không xem trước PR sửa đường dẫn được bảo vệ (`.ai-orchestrator/`, `.claude/`…), vì trong lúc xem trước mọi lệnh `/ao-*` chạy kit của nhánh PR.
+
+Kết quả chạy thật trên `ao-sample` nằm ở `tasks/verification.md`, mục Checkpoint 3.

@@ -8,7 +8,8 @@
 // Jira is read with ATLASSIAN_AGENT_TOKEN, GitHub with a read-only token of the ao-review App. Run it from the project
 // root; the kit is in AO_KIT_DIR when set.
 import { spawn, spawnSync } from 'node:child_process';
-import { appendFileSync, copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { appendFileSync, copyFileSync, existsSync, mkdirSync, openSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { connect } from 'node:net';
 import { tmpdir } from 'node:os';
 import { basename, dirname, isAbsolute, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -21,6 +22,7 @@ import { projectSettings, setting } from '../lib/project-settings.mjs';
 import { unquotePath } from '../lib/quality/diff-paths.mjs';
 import { readGates } from '../lib/quality/gates.mjs';
 import { matchesGlob } from '../lib/quality/glob.mjs';
+import { markReadyForReview, READY_PERMISSIONS } from '../lib/quality/pr-ready.mjs';
 import { appCredentials, botIdentity, githubRepoOf, installationToken, userVariable } from '../lib/quality/github-app.mjs';
 import { runNpm } from '../lib/quality/npm.mjs';
 import { attachEvidence } from '../lib/tracker/attachments.mjs';
@@ -28,6 +30,7 @@ import { createGitHubClient, readGitHubToken } from '../lib/tracker/github-clien
 import { bearerAuth, createJiraClient } from '../lib/tracker/jira-client.mjs';
 import { readMapping } from '../lib/tracker/mapping.mjs';
 import { startAgentProcess, killTree } from '../lib/workflow/agent-process.mjs';
+import { lockHash, needsInstall, PREVIEW_FILE, readPreviewConfig } from '../lib/workflow/preview.mjs';
 import { withLoggedSession } from '../lib/workflow/runs.mjs';
 import { gatherFacts, readRunning } from '../lib/workflow/facts.mjs';
 import { basicAuthEnv, qaFollowUp } from '../lib/workflow/qa.mjs';
@@ -38,16 +41,22 @@ import { adfText, buildReviewPack, filesToQuote } from '../lib/workflow/review-p
 import { postKitCopyReports, readKitCopy, renderedReason } from '../lib/workflow/kit-copy.mjs';
 import { removeInstructions } from '../lib/workflow/review-tree.mjs';
 import { agentCommand, formatDecision, runGo } from '../lib/workflow/runner.mjs';
-import { decideStep } from '../lib/workflow/steps.mjs';
+import { CHANGES, decideStep } from '../lib/workflow/steps.mjs';
 
-const COMMANDS = ['status', 'intake', 'spec', 'plan', 'request', 'build', 'review', 'fix', 'qa', 'release', 'ship', 'rollback'];
-const USAGE = 'usage: node .ai-orchestrator/scripts/ao-step.mjs <status|intake|spec|plan|request|build|review|fix|qa|release|ship|rollback> [<KEY>|<PR>|<vX.Y.0> <sha>|<vX.Y.Z>|<environment> [<sha>]] [--go] [--answers <file>] [--note <file>]';
+const COMMANDS = ['status', 'intake', 'preview', 'spec', 'plan', 'request', 'build', 'review', 'fix', 'qa', 'release', 'ship', 'rollback'];
+const USAGE = 'usage: node .ai-orchestrator/scripts/ao-step.mjs <status|intake|preview|spec|plan|request|build|review|fix|qa|release|ship|rollback> [<KEY>|<PR>|<vX.Y.0> <sha>|<vX.Y.Z>|<environment> [<sha>]] [--go] [--answers <file>] [--note <file>] [--change <word>] [--stop]';
 const ENVIRONMENTS = ['development', 'staging', 'production'];
 // The commands that read deployments with your gh login (release-workflow T12).
 const RELEASE_COMMANDS = ['qa', 'release', 'ship', 'rollback', 'status'];
 const kitDir = resolve(process.env.AO_KIT_DIR ?? fileURLToPath(new URL('..', import.meta.url)));
 const projectDir = process.cwd();
 const runsDir = join(projectDir, '.ai', 'runs');
+// The files of a preview (human-loop spec 4.3): the apps that run, and the lockfile installed last.
+const previewDir = join(projectDir, '.ai', 'preview');
+const previewActive = join(previewDir, 'active.json');
+const previewState = join(previewDir, 'state.json');
+// The commands that stop a preview before they run: those that run agents or switch the folder.
+const PREVIEW_STOPS = ['spec', 'plan', 'request', 'build', 'review', 'fix', 'qa'];
 // maxBuffer: the full text of a file or a diff may pass the 1 MiB default, which ends git with ENOBUFS and no output.
 const git = (...args) => spawnSync('git', args, { cwd: projectDir, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
 
@@ -72,6 +81,24 @@ export function checkArgument(command, arg, space, extra) {
   if (!/^[A-Z][A-Z0-9]*-\d{1,7}$/.test(arg ?? '')) return `/ao-${command} takes a Jira key such as ${space ?? 'DEMO'}-12, not ${arg ?? 'nothing'}`;
   if (space && !arg.startsWith(`${space}-`)) return `${arg} is not in the space ${space} of this project`;
   return null;
+}
+
+// What a command does first when a preview runs (human-loop spec 4.3): 'stop' it, go back to develop and run again from
+// there; 'refuse' when this is that second run and the preview is still on record, so it never loops; null otherwise.
+// /ao-status, /ao-intake and /ao-preview leave a preview alone, as do the release commands, which run no dev agent here.
+export function previewFirst(command, running, stoppedAlready) {
+  if (!PREVIEW_STOPS.includes(command) || !running) return null;
+  return stoppedAlready ? 'refuse' : 'stop';
+}
+
+// --change: what your request changes, as you answered the main session (human-loop spec 4.5, 5.1). One word of a
+// fixed list, so nothing you wrote reaches the command line; it goes with --note only.
+export function checkChange(command, change, hasNote) {
+  if (change === undefined) return null;
+  const allowed = { fix: CHANGES, qa: ['none', 'ac'] }[command];
+  if (!allowed) return '--change goes with /ao-fix and /ao-qa only';
+  if (!allowed.includes(change)) return `--change takes ${allowed.join(', ')}, not ${change}`;
+  return hasNote ? null : '--change goes with --note: it says what your request changes';
 }
 
 // ao-step, the kit and the instructions of the agents are read from the checkout, so a review or a fix starts only on a
@@ -121,13 +148,26 @@ export function takeLock(lock, holder, alive) {
 }
 
 async function main() {
-  const { values, positionals } = parseArgs({ allowPositionals: true, options: { go: { type: 'boolean', default: false }, answers: { type: 'string' }, note: { type: 'string' } } });
+  const { values, positionals } = parseArgs({ allowPositionals: true, options: { go: { type: 'boolean', default: false }, answers: { type: 'string' }, note: { type: 'string' }, change: { type: 'string' }, stop: { type: 'boolean', default: false } } });
   const [command, arg, extra] = positionals;
   const settings = projectSettings(projectDir);
   const space = setting('AO_JIRA_SPACE', settings);
-  const wrong = checkArgument(command, arg, space, extra);
+  const wrong = checkArgument(command, arg, space, extra) ?? checkChange(command, values.change, Boolean(values.note)) ?? (values.stop && command !== 'preview' ? '--stop goes with /ao-preview only' : null);
   if (wrong) {
     console.log(`STOP: ${wrong}`);
+    return;
+  }
+  // A preview runs the PR's code from this folder, on its branch: a command that runs agents stops it first, puts the
+  // folder back on develop, and runs again from there, so the approved kit decides (human-loop spec 4.3).
+  const first = previewFirst(command, existsSync(previewActive), Boolean(process.env.AO_PREVIEW_STOPPED));
+  if (first === 'refuse') {
+    console.log(`STOP: the preview still runs after ao-step stopped it (${relative(projectDir, previewActive)}): run /ao-preview <KEY> --stop, then /ao-${command} again`);
+    return;
+  }
+  if (first === 'stop') {
+    console.log((await stopPreview()).join('\n'));
+    const again = spawnSync(process.execPath, [join(kitDir, 'scripts', 'ao-step.mjs'), ...process.argv.slice(2)], { cwd: projectDir, stdio: 'inherit', env: { ...process.env, AO_PREVIEW_STOPPED: '1' } });
+    process.exitCode = again.status ?? 1;
     return;
   }
   if (!space) throw new Error('AO_JIRA_SPACE is not set in .claude/settings.json');
@@ -175,9 +215,14 @@ async function main() {
   // A kit copy is compared with a head of another project, which your gh login reads (kit-copy-review spec 2.5).
   const peers = (setting('AO_KIT_PEERS', settings) ?? '').split(',').map((name) => name.trim()).filter(Boolean);
   const kitCopy = (pr) => readKitCopy({ pr, github, peer: (name) => createGitHubClient({ repo: name, token: readGitHubToken() }), peers, gates, apps, approvers, render: (sha, paths) => renderCheck(pr.number, sha, paths) });
-  const gather = () => gatherFacts({ command, arg, extra, jira, github, deploys, history: developHistory, local: files, contract, mapping, roster, gates, apps, approvers, space, kitCopy });
+  const gatherAll = () => gatherFacts({ command, arg, extra, jira, github, deploys, history: developHistory, local: files, contract, mapping, roster, gates, apps, approvers, space, kitCopy });
+  // /ao-preview also reads this machine: preview.yaml, the preview that runs, the folder and the ports (spec 4.3).
+  const gather = async () => {
+    const facts = await gatherAll();
+    return command === 'preview' ? { ...facts, preview: await previewFacts(values.stop, facts.pr) } : facts;
+  };
   const read = (file) => readFileSync(runsFile(projectDir, file), 'utf8');
-  const options = { roster, contract, gates, mapping, ...(values.answers && { answers: read(values.answers) }), ...(values.note && { note: read(values.note) }) };
+  const options = { roster, contract, gates, mapping, ...(values.answers && { answers: read(values.answers) }), ...(values.note && { note: read(values.note) }), ...(values.change && { change: values.change }) };
 
   const facts = await gather();
   const decision = decideStep(command, facts, options);
@@ -208,6 +253,9 @@ async function main() {
         if (step.action === 'hotfix-ship') return hotfixShip(step, { repo, settings, userToken });
         if (step.action === 'deploy-request') return deployRequest(step, { repo, userToken });
         if (step.action === 'kit-copy-reports') return kitCopyReports(step, { repo, appEnv });
+        if (step.action === 'pr-ready') return prReady(step, { repo, settings });
+        if (step.action === 'preview-start') return startPreview(step);
+        if (step.action === 'preview-stop') return stopPreview();
         return releaseCut(step, { repo, mapping, settings });
       },
       git: (checkout) => prepareCheckout(checkout),
@@ -441,6 +489,15 @@ async function kitCopyReports(step, { repo, appEnv }) {
   return postKitCopyReports({ github: createGitHubClient({ repo, token, write: true }), step });
 }
 
+// The first step of /ao-review on a draft PR (human-loop spec 4.6): marks it ready as the ao-dev App, which opened it.
+async function prReady({ number }, { repo, settings }) {
+  const slug = setting('AO_DEV_APP', settings);
+  const devEnv = { ...process.env, AO_DEV_APP: slug, AO_DEV_APP_ID: setting('AO_DEV_APP_ID', settings) };
+  const { token } = await installationToken({ ...appCredentials('dev', { env: devEnv }), repo, permissions: READY_PERMISSIONS });
+  const marked = await markReadyForReview({ token, repo, number });
+  return [marked ? `Marked PR #${number} ready for review as ${slug}[bot]; jira-sync moves its item to In Review once CI is green.` : `PR #${number} was ready already.`];
+}
+
 // The first-parent history of develop on GitHub after the tag `tag`, oldest first, as parseHistory reads it
 // (release-workflow spec 2.6). The tag comes from GitHub and has the form vX.Y.Z (latestTag), so it is no option.
 function developHistory(tag) {
@@ -617,6 +674,131 @@ function removeWorktree({ name }) {
   }
   git('worktree', 'prune');
   return existsSync(path) ? { ok: false, reason: `${path} is still there` } : { ok: true };
+}
+
+// What /ao-preview reads on this machine (human-loop spec 4.3). `install` is a forecast from the head of the PR when git
+// has it already; startPreview decides again once the folder is on the branch.
+async function previewFacts(stopping, pr) {
+  let config = null;
+  let configError = null;
+  if (existsSync(join(projectDir, PREVIEW_FILE))) {
+    try {
+      config = readPreviewConfig(readFileSync(join(projectDir, PREVIEW_FILE), 'utf8'));
+    } catch (error) {
+      configError = error.message;
+    }
+  }
+  const holder = readJson(join(runsDir, 'active.json'));
+  const dirty = git('status', '--porcelain', '--untracked-files=no').stdout.trim().split('\n').filter(Boolean).length;
+  const busy = [];
+  for (const { port } of config ?? []) if (await portBusy(port)) busy.push(port);
+  const lock = pr?.headSha ? git('show', `${pr.headSha}:package-lock.json`) : null;
+  return {
+    stop: stopping,
+    config,
+    configError,
+    active: readJson(previewActive),
+    // The lock of this very process, taken for --go, is not another run.
+    agentRunning: holder && holder.pid !== process.pid && alive(holder.pid) ? holder : null,
+    dirty,
+    busy,
+    install: lock?.status === 0 ? needsInstall(lock.stdout, readJson(previewState)) : true,
+  };
+}
+
+// Whether something answers on the port, on IPv4 or IPv6.
+async function portBusy(port) {
+  const tryHost = (host) => new Promise((done) => {
+    const socket = connect({ host, port });
+    const end = (busy) => {
+      socket.destroy();
+      done(busy);
+    };
+    socket.setTimeout(1000, () => end(false));
+    socket.once('connect', () => end(true));
+    socket.once('error', () => end(false));
+  });
+  return (await tryHost('127.0.0.1')) || (await tryHost('::1'));
+}
+
+// Whether the URL answers 2xx or 3xx within `ms`.
+async function answers(url, ms) {
+  const until = Date.now() + ms;
+  while (Date.now() < until) {
+    try {
+      const res = await fetch(url, { redirect: 'manual', signal: AbortSignal.timeout(5000) });
+      if (res.status < 400) return true;
+    } catch {
+      // not up yet
+    }
+    await new Promise((done) => setTimeout(done, 2000));
+  }
+  return false;
+}
+
+// /ao-preview <KEY> --go: the folder on the PR branch, the packages of its lockfile, then each app of preview.yaml in
+// order, apart from ao-step, with its log in .ai/preview/ and no secret in its environment. An app that does not answer
+// in 2 minutes stops them all and puts the folder back on develop.
+async function startPreview({ key, number, branch }) {
+  const config = readPreviewConfig(readFileSync(join(projectDir, PREVIEW_FILE), 'utf8'));
+  const moved = prepareCheckout({ branch, pull: true });
+  if (!moved.ok) throw new Error(moved.reason);
+  const head = git('rev-parse', 'HEAD').stdout.trim();
+  const env = { ...process.env };
+  for (const name of CLEARED_ENV) delete env[name];
+  const notes = [`The project folder is on ${branch} at ${head.slice(0, 8)}.`];
+  mkdirSync(previewDir, { recursive: true });
+  const back = (reason) => {
+    const home = prepareCheckout({ branch: 'develop', pull: true });
+    return new Error(`${reason}${home.ok ? '; the folder is back on develop' : `; the folder stays on ${branch}: ${home.reason}`}`);
+  };
+  const lockFile = join(projectDir, 'package-lock.json');
+  const lock = existsSync(lockFile) ? readFileSync(lockFile, 'utf8') : '';
+  if (needsInstall(lock, readJson(previewState))) {
+    const installed = runNpm(['ci', '--ignore-scripts', '--no-audit', '--no-fund'], { cwd: projectDir, env, encoding: 'utf8' });
+    if (installed.status !== 0) throw back(`npm ci failed: ${(installed.stderr || installed.error?.message || '').trim().slice(-500)}`);
+    writeFileSync(previewState, `${JSON.stringify({ lock: lockHash(lock), at: new Date().toISOString() }, null, 2)}\n`);
+    notes.push('Ran npm ci --ignore-scripts, since package-lock.json differs from the one installed before.');
+  }
+  const apps = [];
+  const record = () => writeFileSync(previewActive, `${JSON.stringify({ key, pr: number, branch, head, apps, startedAt: new Date().toISOString() }, null, 2)}\n`);
+  for (const app of config) {
+    const log = openSync(join(previewDir, `${app.name}.log`), 'w');
+    // The command is one line of the project's own file, given to the shell as it is.
+    const child = spawn(app.command, { cwd: projectDir, env: { ...env, ...app.env }, shell: true, detached: true, windowsHide: true, stdio: ['ignore', log, log] });
+    child.unref();
+    apps.push({ name: app.name, url: app.url, port: app.port, pid: child.pid });
+    record();
+    if (!(await answers(app.url, 120000))) {
+      await stopApps(apps);
+      rmSync(previewActive, { force: true });
+      throw back(`${app.name} did not answer at ${app.url} within 2 minutes: read .ai/preview/${app.name}.log`);
+    }
+  }
+  notes.push(...apps.map(({ name, url }) => `${name}: ${url}`), `Stop it with /ao-preview ${key} --stop: the apps stop and the folder goes back to develop. /ao-fix and /ao-review stop it too.`);
+  return notes;
+}
+
+// Stops each app with its whole tree (lib/workflow/agent-process.mjs), then says which port still answers.
+async function stopApps(apps) {
+  for (const { pid } of apps) killTree(pid, { spawnSync, kill: (target, signal) => process.kill(target, signal) });
+  await new Promise((done) => setTimeout(done, 3000));
+  const still = [];
+  for (const { name, port } of apps) if (await portBusy(port)) still.push(`${name} (port ${port})`);
+  return still;
+}
+
+// /ao-preview <KEY> --stop, and the first step of a command that runs agents during a preview.
+async function stopPreview() {
+  const active = readJson(previewActive);
+  if (!active) return ['No preview runs.'];
+  const still = await stopApps(active.apps ?? []);
+  rmSync(previewActive, { force: true });
+  const home = prepareCheckout({ branch: 'develop', pull: true });
+  return [
+    `Stopped the preview of ${active.key}: ${(active.apps ?? []).map(({ name }) => name).join(', ')}.${still.length > 0 ? ` Still answering: ${still.join(', ')}; stop it yourself.` : ''}`,
+    home.ok ? 'The project folder is back on develop.' : `The project folder stays on ${active.branch}: ${home.reason}`,
+  ];
 }
 
 // The second /ao-plan: jira-sync for the Epic, with your gh login, since this is your session, not an agent's.

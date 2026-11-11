@@ -253,8 +253,9 @@ test('/ao-fix: the dev agent of the item fixes what was asked on its branch, the
   assert.equal(dev.prompt, 'Fix PR #15 of DEMO-21: the changes requested on d1d2d3d; the 1 Critical or High findings of the reviewer report. The branch feature/DEMO-21-remove-line is checked out and up to date with origin.');
 });
 
+// A Story with a BE and an FE Sub-task: a request names its side with be: or fe: (human-loop spec 4.4).
 test('/ao-fix with your note, at Rework 2 at least xhigh; red CI is a reason too', () => {
-  const noted = decide('fix', prFacts('fix', {}), { note: 'Sửa hai finding Low của reviewer.' });
+  const noted = decide('fix', prFacts('fix', {}), { note: 'fe: Sửa hai finding Low của reviewer.' });
   assert.match(noted.runs[0].prompt, /: what the human asks below\. The branch .*\n\nThe human asks:\n\nSửa hai finding Low của reviewer\.$/);
   const second = decide('fix', prFacts('fix', { ci: { green: false, failed: true, pending: false } }, { item: { rework: 2 } }));
   assert.deepEqual([second.runs[0].effort, second.runs[0].prompt.includes('the red CI on d1d2d3d')], ['xhigh', true]);
@@ -264,9 +265,9 @@ test('/ao-fix with your note, at Rework 2 at least xhigh; red CI is a reason too
 
 test('/ao-fix after its fix is pushed reviews the new head; with nothing to fix it says so', () => {
   const pushed = prFacts('fix', { reports: { reviewer: report({ sha: OLD, onHead: false }), security: report({ sha: OLD, onHead: false }) }, securityCompare: { base: OLD, status: 'ahead', files: [{ filename: 'apps/web/cart.tsx', additions: 5, deletions: 1 }] } }, {
-    run: { key: 'DEMO-21', runs: [{ n: 1, command: 'fix', role: 'fe-dev', purpose: 'fix', outcome: 'done', head: OLD, session: 's', note: noteKey('the note was for the fix already made') }] },
+    run: { key: 'DEMO-21', runs: [{ n: 1, command: 'fix', role: 'fe-dev', purpose: 'fix', outcome: 'done', head: OLD, session: 's', note: noteKey('fe: the note was for the fix already made') }] },
   });
-  assert.deepEqual(decide('fix', pushed, { note: 'the note was for the fix already made' }).runs.map(({ role, purpose }) => `${role} ${purpose}`), ['reviewer review', 'security review-delta']);
+  assert.deepEqual(decide('fix', pushed, { note: 'fe: the note was for the fix already made' }).runs.map(({ role, purpose }) => `${role} ${purpose}`), ['reviewer review', 'security review-delta']);
   const nothing = decide('fix', prFacts('fix', { reports: { reviewer: report(), security: report() } }));
   assert.deepEqual([nothing.go, nothing.reason], [false, 'PR #15 has nothing to fix: no request for changes, no red CI, no blocking finding']);
   assert.match(nothing.next, /approve it/);
@@ -279,20 +280,20 @@ test('/ao-fix with your note runs the dev agent once: after its fix and a review
     { n: 1, command: 'fix', role: 'fe-dev', purpose: 'fix', outcome: 'done', head: OLD, session: 's1' },
     { n: 2, command: 'fix', role: 'reviewer', purpose: 'review', outcome: 'done', session: 's2' },
   ] };
-  run.runs[0].note = noteKey('the note was for the fix already made');
+  run.runs[0].note = noteKey('fe: the note was for the fix already made');
   const reviewed = prFacts('fix', { reports: { reviewer: report(), security: null } }, { run });
-  const decision = decide('fix', reviewed, { note: 'the note was for the fix already made' });
+  const decision = decide('fix', reviewed, { note: 'fe: the note was for the fix already made' });
   assert.equal(decision.go, true);
   assert.deepEqual(decision.runs.map(({ role, purpose }) => `${role} ${purpose}`), ['security review']);
   // A new note, on a later /ao-fix, is a new fix.
-  const again = decide('fix', prFacts('fix', { reports: { reviewer: report(), security: report() } }, { run }), { note: 'Đổi tên biến cho rõ hơn.' });
+  const again = decide('fix', prFacts('fix', { reports: { reviewer: report(), security: report() } }, { run }), { note: 'fe: Đổi tên biến cho rõ hơn.' });
   assert.deepEqual(again.runs.map(({ role, purpose }) => `${role} ${purpose}`), ['fe-dev fix', 'reviewer review', 'security review']);
-  assert.equal(again.runs[0].note, noteKey('Đổi tên biến cho rõ hơn.'), 'the runner keeps which note the fix was for');
+  assert.equal(again.runs[0].note, noteKey('fe: Đổi tên biến cho rõ hơn.'), 'the runner keeps which note the fix was for');
 });
 
 // Review test of 2026-11-07, head d049513: a later fix for a finding has no note, and only the newest fix run was read.
 test('/ao-fix with your note does not send it again after a later fix without a note', () => {
-  const note = 'the note was for the fix already made';
+  const note = 'fe: the note was for the fix already made';
   const later = 'e1e2e3e4e5e6e7e8e9eaebecedeeeff0f1f2f3f4';
   const noted = { n: 1, command: 'fix', role: 'fe-dev', purpose: 'fix', outcome: 'done', head: OLD, session: 's1', note: noteKey(note) };
   const review = { n: 2, command: 'fix', role: 'reviewer', purpose: 'review', outcome: 'done', session: 's2' };
@@ -302,7 +303,7 @@ test('/ao-fix with your note does not send it again after a later fix without a 
   // The note whose fix did not finish still has to run, and so does the same note after another note.
   const failed = decide('fix', facts([{ ...noted, outcome: 'failed' }, review, finding]), { note });
   assert.deepEqual(failed.runs.map(({ role, purpose }) => `${role} ${purpose}`), ['fe-dev fix', 'reviewer review', 'security review']);
-  const other = { ...finding, note: noteKey('Đổi tên biến cho rõ hơn.') };
+  const other = { ...finding, note: noteKey('fe: Đổi tên biến cho rõ hơn.') };
   assert.equal(decide('fix', facts([noted, review, other]), { note }).runs[0].purpose, 'fix');
 });
 
