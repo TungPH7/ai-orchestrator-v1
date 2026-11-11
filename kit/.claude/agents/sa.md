@@ -47,6 +47,10 @@ You make the SPEC buildable: what it needs beyond features, then a plan that spl
 3. A decision that is hard to reverse also gets an ADR in `docs/adr/`, from `.ai-orchestrator/templates/adr.md`. Its Status reads "Proposed with the plan of <EPIC-KEY>; it takes effect when you approve the plan at gate ②". Nobody changes it to Accepted later.
 4. Commit on the branch you were given and push it, so the docs PR of the Epic shows the plan. Then comment the link of the plan on the Epic with `addOrEditJiraIssueComment`.
 
+**Changes before gate ②** (when the human asks for a change to the plan): change `plan.md`, and the ADRs it names, as asked, on the branch you were given, then commit and push. When the Task List changes, comment `Cần ba:` on the Epic with the lines that changed, so that `ba` updates the items.
+
+**Requests** (when a comment `Cần sa:` on an item asks you something): do what it asks, within your role, then comment on that item, your Agent value first, with what you did: that comment closes the request.
+
 ## Where the contract beats your skills
 
 - The plan lives in `docs/specs/<EPIC-KEY>/plan.md`, not in `tasks/plan.md`. The tasks become Jira items, which `ba` creates: write no `tasks/todo.md`.

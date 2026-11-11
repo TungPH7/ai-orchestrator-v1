@@ -191,6 +191,7 @@ Khi PR được merge hoặc đóng, `jira-sync` gỡ cờ mà `merge-gate` đã
 - Agent nhờ vai trò khác bằng comment trên item, mở đầu bằng `Cần <role>:`, ví dụ `Cần ba: tạo Task cho bảng sản phẩm tràn ở 320 px`. Quy ước này ghi trong `agents/rules.md`.
 - Yêu cầu được coi là xong khi vai trò đó comment lên cùng item sau yêu cầu. Comment của agent luôn mở đầu bằng tên của nó trong trường Agent, nên script nhận ra được.
 - `/ao-status` liệt kê các yêu cầu còn mở, kèm lệnh nên chạy. Ví dụ, việc của `ba` thì bạn mở `ao-agent.mjs ba`, hoặc đưa vào plan của Epic sau.
+- Bổ sung 2026-11-11: `/ao-request <KEY>` chạy role được nhờ cho các yêu cầu gửi `ba`, `ux` và `sa`, và `/ao-spec`, `/ao-plan` tự chạy chúng trên Epic của mình ([SPEC-human-loop.md](SPEC-human-loop.md) mục 3.3).
 
 ### 2.9 Thay đổi nhỏ khác
 

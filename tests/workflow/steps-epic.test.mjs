@@ -243,7 +243,7 @@ test('/ao-status of an Epic and of the space: the next command, what waits for y
     '',
     'DEMO-20 Epic "Xóa sản phẩm": New → Click Start spec on DEMO-20',
     'DEMO-21 Story "Xóa một dòng": In Review, 4.25 USD → /ao-review 15 or /ao-fix 15',
-    '  open request to ba from fe-dev: tạo Task cho bảng tràn ở 320 px.',
+    '  open request to ba from fe-dev: tạo Task cho bảng tràn ở 320 px. → /ao-request DEMO-21',
     'DEMO-16 Task "Timeout": Ready, flagged → read the flag comment on DEMO-16 (Needs you)',
   ]);
 });

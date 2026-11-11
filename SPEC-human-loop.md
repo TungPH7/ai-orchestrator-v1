@@ -123,6 +123,7 @@ Epic đã qua `Approve plan` thì lệnh dừng.
 - `/ao-spec` và `/ao-plan` chạy các yêu cầu còn mở trên Epic của mình trước khi dừng ở cổng. Ví dụ, `ux` hỏi `ba` trong lúc làm spec thì được trả lời ngay trong cùng lệnh.
 - Yêu cầu gửi dev role hay `qa` không chạy bằng lệnh này. `/ao-status` vẫn liệt kê chúng như hiện nay.
 - Hai role nhờ qua lại nhau thì vòng chạy dừng ở trần 8 lượt mỗi lệnh (`LIMITS.maxRuns`), hoặc khi một lượt xong mà yêu cầu vẫn mở.
+- `ux` được thêm quyền comment trên Jira (Lượt 122, bạn chọn cách A). Trước đó `ux` chỉ đọc Jira, nên không trả lời được, và một yêu cầu `Cần ux:` không bao giờ đóng.
 
 ## 4. Phần 2 (A4): xem trước giữa build và review
 
@@ -230,7 +231,7 @@ Commit của `ba` hay `sa` nằm trong PR của item, nên `reviewer` thấy nó
 
 ### 4.6 `/ao-review` chuyển PR sang sẵn sàng
 
-- Gặp PR nháp, bước đầu của `/ao-review` là một bước script: đánh dấu PR sẵn sàng bằng App `ao-dev`. REST API không làm được việc này, nên bước này gọi mutation GraphQL `markPullRequestReadyForReview`. Bước này không gọi agent.
+- Gặp PR nháp, bước đầu của `/ao-review` là một bước script: đánh dấu PR sẵn sàng bằng App `ao-dev`. REST API không làm được việc này, nên bước này gọi mutation GraphQL `markPullRequestReadyForReview`. Bước này không gọi agent. Token của bước này xin `pull_requests: write` và `contents: write`, hai quyền App đã có: chỉ xin quyền đầu thì GitHub từ chối (T2, tiền đề 3).
 - `jira-sync` chạy theo `ready_for_review`. Khi CI xanh, item sang In Review.
 - Rồi `reviewer` và `security` chạy như cũ.
 - Muốn bỏ qua bước xem trước thì gõ thẳng `/ao-review`.

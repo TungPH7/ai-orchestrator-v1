@@ -1,21 +1,23 @@
-# Dev workflow: sáu lệnh `/ao-*`
+# Dev workflow: các lệnh `/ao-*` của vòng trong
 
-> **Spec:** [SPEC-dev-workflow.md](../SPEC-dev-workflow.md). Tài liệu này dành cho bạn. Nó trả lời bốn câu hỏi: gõ lệnh nào để đưa một Epic từ spec tới merge vào `develop`, lệnh dừng khi nào, đọc kết quả ở đâu, và làm gì khi một lượt chạy bị ngắt. Số đo lấy từ Epic thử DEMO-20 trên `ao-pilot`, ghi trong [tasks/archive/dev-workflow/verification.md](../tasks/archive/dev-workflow/verification.md) (T17, T18).
+> **Spec:** [SPEC-dev-workflow.md](../SPEC-dev-workflow.md), và [SPEC-human-loop.md](../SPEC-human-loop.md) cho `/ao-intake`, `/ao-request` và phần sửa SPEC, plan trước cổng. Tài liệu này dành cho bạn. Nó trả lời bốn câu hỏi: gõ lệnh nào để đưa một Epic từ mô tả sơ khai tới merge vào `develop`, lệnh dừng khi nào, đọc kết quả ở đâu, và làm gì khi một lượt chạy bị ngắt. Số đo lấy từ Epic thử DEMO-20 trên `ao-pilot`, ghi trong [tasks/archive/dev-workflow/verification.md](../tasks/archive/dev-workflow/verification.md) (T17, T18).
 
-## Sáu lệnh
+## Các lệnh
 
 Mỗi lệnh là một skill của Claude Code trong `.claude/skills/ao-*/`. Mỗi lệnh chạy theo hai bước:
 
 1. Dòng kiểm chạy `node .ai-orchestrator/scripts/ao-step.mjs <lệnh> <đối số>`. Dòng này chỉ đọc Jira, GitHub và `.ai/`, rồi in `GO` kèm các lượt agent sẽ chạy, hoặc `STOP` kèm lý do và việc cần làm.
 2. Khi kết quả là `GO`, Claude chạy cùng lệnh với `--go` ở nền, chờ nó xong, rồi đọc `.ai/runs/<KEY>/last.md` và báo bạn bằng tiếng Việt.
 
-Claude của phiên chính không tự mở agent, cũng không tự sửa Jira hay GitHub.
+Claude của phiên chính không tự mở agent, cũng không tự sửa Jira hay GitHub. Ngoại lệ duy nhất là `/ao-intake`: phiên chính tạo đúng một item trên Jira, sau khi bạn OK bản nháp.
 
 | Lệnh | Đối số | Agent chạy | Dừng ở |
 |---|---|---|---|
 | `/ao-status` | Không có, hoặc `<KEY>` | Không | Việc đang chờ bạn, lệnh tiếp theo của từng item, yêu cầu giữa các vai trò, chi phí |
-| `/ao-spec` | `<EPIC>` ở Specifying | `ba` viết SPEC, `ux` viết `design.md` khi SPEC có màn hình, `sa` thêm yêu cầu phi chức năng, rồi `ba` push nhánh tài liệu và mở PR tài liệu | Câu hỏi mở, hoặc gate ① `spec-approval` |
-| `/ao-plan` | `<EPIC>` ở Planning, rồi lần nữa sau gate ② | `sa` viết plan và ADR, `sa` đánh dấu SPEC và design là Approved, rồi `ba` tạo Story, Task và Sub-task có nhãn. Lần thứ hai không chạy agent: `jira-sync` refine các item, `merge-gate` merge PR tài liệu | Câu hỏi mở, gate ② `plan-approval`, rồi lúc các item sang Ready |
+| `/ao-intake` | `<mô tả sơ khai>` | Không. Phiên chính phỏng vấn bạn, phân loại việc, viết bản nháp vào `.ai/intake/` | Item mới ở New: một Epic, một Task hoặc một Bug |
+| `/ao-spec` | `<EPIC>` ở Specifying, thêm `[sửa]` khi muốn sửa SPEC | `ba` viết SPEC, `ux` viết `design.md` khi SPEC có màn hình, `sa` thêm yêu cầu phi chức năng, rồi `ba` push nhánh tài liệu và mở PR tài liệu. Có `[sửa]` thì `ba` sửa SPEC | Câu hỏi mở, hoặc gate ① `spec-approval` |
+| `/ao-plan` | `<EPIC>` ở Planning, thêm `[sửa]` khi muốn sửa plan; rồi lần nữa sau gate ② | `sa` viết plan và ADR, `sa` đánh dấu SPEC và design là Approved, rồi `ba` tạo Story, Task và Sub-task có nhãn. Có `[sửa]` thì `sa` sửa plan, và `ba` sửa item khi Task List đổi. Lần chạy sau gate ② không chạy agent: `jira-sync` refine các item, `merge-gate` merge PR tài liệu | Câu hỏi mở, gate ② `plan-approval`, rồi lúc các item sang Ready |
+| `/ao-request` | `<KEY>` có yêu cầu `Cần ba:`, `Cần ux:` hoặc `Cần sa:` còn mở | Role được nhờ, mỗi yêu cầu một lượt, cũ trước | Hết yêu cầu mở gửi ba role đó |
 | `/ao-build` | `<KEY>` của Story, Task hay Bug ở Ready | Dev agent của mỗi Sub-task, BE trước FE, hoặc dev agent theo nhãn vai trò của item. Agent cuối mở PR. Effort theo nhãn `ao-effort-*` | PR mở với CI chạy xong, hoặc một item mang cờ Needs you |
 | `/ao-review` | `<PR>` có CI xanh | `reviewer`, rồi `security` (đầy đủ ở `max` khi PR có rủi ro, ở `high` khi không; hoặc chỉ phần mới ở `high`) | Hai báo cáo trên head, chờ bạn ở gate ③ |
 | `/ao-fix` | `<PR> [việc cần sửa]` | Dev agent sửa, rồi `reviewer` và `security` review lại | Hai báo cáo mới trên head, chờ bạn ở gate ③ |
@@ -24,11 +26,25 @@ Claude của phiên chính không tự mở agent, cũng không tự sửa Jira 
 
 **Câu hỏi của `ba`, `ux` và `sa`.** Khi có câu hỏi, lệnh dừng và Claude chuyển câu hỏi cho bạn trong chat. Claude ghi câu trả lời của bạn vào `.ai/runs/<KEY>/answers.md`, rồi chạy lại với `--answers`. Agent đã hỏi sẽ làm tiếp trong chính session của nó.
 
+**`/ao-intake`.** Ví dụ: `/ao-intake cho khách hoàn tác khi lỡ xóa sản phẩm khỏi giỏ`. Phiên chính hỏi bạn từng câu (skill `interview-me`; `idea-refine` khi ý còn mơ hồ), rồi phân loại việc theo contract:
+- **Epic:** người dùng thấy kết quả, cần SPEC và plan;
+- **Task:** việc kỹ thuật, người dùng không thấy kết quả;
+- **Bug:** hành vi hiện có sai so với yêu cầu đã có.
+
+Intake không tạo Story, vì Story cần AC trong SPEC, màn hình và hợp đồng API. Việc cỡ một Story, hay một khả năng mới cho Epic đã qua gate ②, thành một Epic nhỏ. Bản nháp theo `epic.md`, `task.md` hoặc `bug.md` nằm ở `.ai/intake/`. Bạn OK thì phiên chính tạo item qua MCP `atlassian`, item đứng tên tài khoản agent như item `ba` tạo. Phần Open Points của Epic thành Open Questions của SPEC; điều bạn đã trả lời lúc intake thì `ba` không hỏi lại. `Start spec` vẫn là cú bấm của bạn.
+
+**Sửa SPEC hay plan trước cổng.** Gõ yêu cầu ngay sau mã Epic, ví dụ `/ao-spec SMP-30 bỏ AC3; thêm AC: hoàn tác trong 5 giây`, hoặc `/ao-plan SMP-30 gộp Task 2 vào Story 1`. Claude ghi đoạn chữ vào `.ai/runs/<EPIC>/note.md` và truyền bằng `--note`.
+- `ba` sửa SPEC: AC bị bỏ giữ số với "(bỏ)", AC mới lấy số kế tiếp. Phần sửa chạm màn hình hay yêu cầu phi chức năng thì `ba` nhờ `ux` hay `sa` bằng `Cần ux:` / `Cần sa:`, và lệnh chạy luôn các yêu cầu đó.
+- `sa` sửa plan và ADR. Task List đổi thì `sa` nhờ `ba` sửa item. `ba` không hủy item: nó liệt kê item cần hủy để bạn bấm `Cancel`.
+- Cùng một yêu cầu gõ lại thì không làm lại. Epic đã qua `Approve spec` (hay `Approve plan`) thì lệnh dừng: thay đổi đi thành một Epic mới qua `/ao-intake`.
+
+**Yêu cầu giữa các vai trò.** Agent nhờ role khác bằng comment `Cần <role>:` trên item; bạn cũng nhờ được bằng một comment như vậy, không có tên Agent ở đầu. `/ao-request <KEY>` chạy các yêu cầu gửi `ba`, `ux` hoặc `sa`. Trên Epic đang ở Specifying hay Planning, role làm trên nhánh tài liệu; ở chỗ khác, role chỉ làm trên Jira và không commit. Yêu cầu xong khi role đó comment trả lời trên item. `/ao-spec` và `/ao-plan` tự chạy các yêu cầu này trên Epic của mình trước khi dừng ở cổng. Yêu cầu gửi dev role hay `qa` chỉ hiện trong `/ao-status`.
+
 ## Một vòng Epic từ đầu tới cuối
 
 Đây là vòng của DEMO-20 "Xóa sản phẩm khỏi giỏ hàng". Các bước **[bạn]** là việc bạn bấm.
 
-1. Tạo Epic trên Jira, mô tả giỏ hàng hiện có gì và "xóa" nghĩa là gì. **[bạn]** Bấm `Start spec`.
+1. `/ao-intake` với mô tả sơ khai, trả lời các câu phiên chính hỏi, rồi OK bản nháp. Ở Epic thử DEMO-20 (trước khi có lệnh này), bạn tự tạo Epic trên Jira, mô tả giỏ hàng hiện có gì và "xóa" nghĩa là gì. **[bạn]** Bấm `Start spec`.
 2. `/ao-spec DEMO-20`. Ở Epic thử, `ba` hỏi 3 câu, `ux` 6 câu, `sa` 2 câu. Bạn trả lời trong chat sau mỗi lần lệnh dừng.
 3. `ba` mở PR tài liệu. CI kiểm `design.md` trong job `policy`. **[bạn]** Đọc diff của PR, rồi bấm `Approve spec` (gate ①).
 4. `/ao-plan DEMO-20`: `sa` viết plan, `ba` tạo Story DEMO-21 và hai Sub-task.
@@ -64,7 +80,9 @@ PR sửa đường dẫn được bảo vệ (`.github/workflows/**`, `.claude/*
 | `last.md` | Báo cáo của lần chạy gần nhất: bảng các lượt (vai trò, bước, effort, kết quả, turn, thời gian, chi phí), câu trả lời đầy đủ của từng agent, lý do dừng và lệnh tiếp theo |
 | `state.json` | Mọi lượt của item, ghi từ lúc lượt bắt đầu: session, effort, kết quả (`done`, `usage-limit`, `max-turns`, `error`, `unfinished`), số turn, thời gian, token, chi phí quy đổi, số lần bị từ chối, nhánh đã checkout, câu trả lời của agent (tối đa 2000 ký tự, phần bị cắt có ghi chú). `ao-step` đọc file này để chạy tiếp lượt dở trong cùng session |
 | `<n>-<role>.jsonl` | Log stream-json của lượt thứ n |
-| `answers.md`, `note.md` | Câu trả lời của bạn, và việc cần sửa của `/ao-fix`, do Claude ghi |
+| `answers.md`, `note.md` | Câu trả lời của bạn, và yêu cầu sửa của `/ao-fix`, `/ao-spec` hay `/ao-plan`, do Claude ghi |
+
+Bản nháp của `/ao-intake` nằm ở `.ai/intake/<YYYYMMDD-HHmm>-<slug>.md`.
 
 `.ai/runs/active.json` là khóa của lần chạy đang diễn ra: mỗi lúc chỉ một lệnh `--go` chạy trên bản checkout. Agent ghi tiến độ vào `.ai/ledger/<KEY>.md`; với Story có Sub-task, ledger nằm ở từng Sub-task.
 
@@ -74,6 +92,8 @@ PR sửa đường dẫn được bảo vệ (`.github/workflows/**`, `.claude/*
 |---|---|
 | `… left N open questions in docs/specs/<EPIC>/…` | Trả lời trong chat. Câu hỏi còn mở trong SPEC hay `design.md` vẫn dừng lệnh khi PR tài liệu đã mở; agent đã hỏi ghi câu trả lời rồi push lên PR (Pilot 1, `SMP-2`) |
 | `… waits for you at gate ①/②/③` | Bấm duyệt theo các bước Claude gửi |
+| `… is past gate ① spec-approval: its SPEC no longer changes before the gate` (hay gate ②, plan) | Thay đổi đi thành một Epic mới: `/ao-intake` với yêu cầu đó |
+| `… has no open request to ba, ux or sa` | Không còn gì cho `/ao-request`. Yêu cầu gửi role khác, nếu có, hiện trong `/ao-status` |
 | `… is flagged Needs you by …`, `Sub-task … is flagged Needs you` | Đọc comment mới nhất trên item, trả lời ở đó, gỡ cờ và nhãn `needs-you`, rồi chạy lại. `jira-guard` không cho chuyển trạng thái của item còn nhãn đó |
 | `… hit the usage limit … Run the same command again after it resets` | Chờ giới hạn reset, rồi chạy lại đúng lệnh (mục sau) |
 | `… ran <step> on <KEY> and it still has to run` | Agent xong lượt mà dữ kiện chưa đổi như mong đợi. Đọc câu trả lời của nó trong `last.md` |

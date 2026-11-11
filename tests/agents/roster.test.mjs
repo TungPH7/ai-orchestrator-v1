@@ -69,7 +69,8 @@ const row = (id) => {
 test('tools, files, git, Jira and skills of each role (spec 2.3)', () => {
   assert.equal(row('pm'), 'Bash Write | .ai/** | read | read | ');
   assert.equal(row('ba'), 'Bash Edit Write | docs/specs/** CHANGELOG.md .ai/** | write | read create edit comment link | spec-driven-development interview-me');
-  assert.equal(row('ux'), 'Bash Edit Write | docs/specs/** .ai/** | write | read | frontend-ui-engineering');
+  // comment: ux answers a Cần ux: request (human-loop spec 3.3, Lượt 122).
+  assert.equal(row('ux'), 'Bash Edit Write | docs/specs/** .ai/** | write | read comment | frontend-ui-engineering');
   assert.equal(row('sa'), 'Bash Edit Write | docs/specs/** docs/adr/** .ai/** | write | read comment | planning-and-task-breakdown api-and-interface-design documentation-and-adrs');
   assert.equal(row('fe-dev'), 'Bash Edit Write | ** | write | read edit comment transition | test-driven-development incremental-implementation frontend-ui-engineering browser-testing-with-devtools');
   assert.equal(row('be-dev'), 'Bash Edit Write | ** | write | read edit comment transition | test-driven-development incremental-implementation api-and-interface-design');
@@ -103,11 +104,11 @@ test('Jira permissions become Rovo MCP tools; only ba may write through executeW
   assert.ok(!Object.values(roster.jira_tools).flat().includes('executeDestructive'));
 });
 
-test('16 vendored skills, each pinned by a full commit: 13 of agent-skills at the 0.6.13 tag and three from the registry (spec 2.7)', () => {
+test('17 vendored skills, each pinned by a full commit: 14 of agent-skills at the 0.6.13 tag and three from the registry (spec 2.7; human-loop spec 3.1)', () => {
   const by = (repo) => roster.vendored_skills.filter((skill) => skill.repo === repo);
 
-  assert.equal(roster.vendored_skills.length, 16);
-  assert.equal(by('addyosmani/agent-skills').length, 13);
+  assert.equal(roster.vendored_skills.length, 17);
+  assert.equal(by('addyosmani/agent-skills').length, 14);
   for (const skill of by('addyosmani/agent-skills')) {
     assert.deepEqual(skill, { name: skill.name, repo: 'addyosmani/agent-skills', path: `skills/${skill.name}`, commit: 'aeac41d4d005999432bb7312f7ff06383a91d59d' });
   }
@@ -118,9 +119,10 @@ test('16 vendored skills, each pinned by a full commit: 13 of agent-skills at th
     { name: 'sentry-security-review', repo: 'getsentry/skills', path: 'skills/security-review', commit: '6d20de492725c78e805aa0741507bb90d1982cc7', upstream_name: 'security-review' },
     { name: 'gha-security-review', repo: 'getsentry/skills', path: 'skills/gha-security-review', commit: 'b11ee5163295996fa6449c4842749811c82ac77c' },
   ]);
-  // Every preloaded skill is vendored, and gha-security-review is the one security reads only for workflow changes.
+  // Every preloaded skill is vendored. Two are not preloaded: gha-security-review, which security reads only for workflow
+  // changes, and idea-refine, which only the main session of /ao-intake uses.
   const preloaded = new Set(Object.values(roster.roles).flatMap(({ skills }) => skills));
-  assert.deepEqual(roster.vendored_skills.map(({ name }) => name).filter((name) => !preloaded.has(name)), ['gha-security-review']);
+  assert.deepEqual(roster.vendored_skills.map(({ name }) => name).filter((name) => !preloaded.has(name)), ['gha-security-review', 'idea-refine']);
 });
 
 test('readRoster names the file it cannot read', () => {
