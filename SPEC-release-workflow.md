@@ -135,6 +135,8 @@ GitHub Free không chặn được gate ⑤ cho repo private. Hai điều kiện
 
 ### 2.5 QA trên môi trường
 
+> Bổ sung 2026-11-11: lỗi bạn thấy khi QA đi qua `/ao-qa <KEY> fail: …`, và `/ao-build` sau `QA fail` sửa trên nhánh `-rN` ([SPEC-human-loop.md](SPEC-human-loop.md) mục 5).
+
 - **Môi trường QA của item** lấy theo bảng định tuyến của hợp đồng: item vào `develop` thì QA trên Development; bản vá Production và Bug của bản đang ở Staging thì QA trên Staging.
 - **`qa` chạy trên máy bạn** và kiểm qua URL của môi trường. Script tìm bản đang chạy ở đó qua deployment mới nhất có status `success` do bot `ao-deploy` ghi, rồi kiểm bản đó chứa commit merge của item. Status của người khác không được tính, vì `qa` gửi basic auth tới URL trong status đó.
 - **Code `qa` đọc** nằm trong một worktree ở đúng commit đang chạy, trong thư mục temp, như worktree của lượt review. Script chạy `npm ci` trong worktree trước, để `qa` chạy được E2E.

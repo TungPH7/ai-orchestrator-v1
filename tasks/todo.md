@@ -127,11 +127,11 @@
   - **Kiểm:** năm lệnh kiểm; CI xanh; PR merge.
 
 ### Checkpoint 3: sau T15
-- [ ] PR phần 2 đã merge. Thử `/ao-preview` trên bản sao `ao-sample` ở máy, không gọi agent.
+- [x] PR phần 2 đã merge (#241, `9f19521`). `/ao-preview` đã chạy thật trên `ao-sample` (xem `verification.md`).
 
 ## Phần 3 (A5), nhánh `task/human-loop-part-3`
 
-- [ ] **T16: `/ao-qa <KEY> fail:`** (spec 5.1).
+- [x] **T16: `/ao-qa <KEY> fail:`** (spec 5.1).
   - **Đạt khi:**
     - note được nhận ở Ready for QA và In QA;
     - `--change none` cho `qa` chạy `qa-defect`; `--change ac` cho `ba` chạy `ac-revise` (chỉ trên Jira) trước `qa`;
@@ -140,7 +140,7 @@
     - skill `ao-qa` hỏi câu phân loại lỗi.
   - **Kiểm:** `steps-qa.test.mjs`; test của `checkArgument`; `npm run agents:check`.
   - **File:** `lib/workflow/steps.mjs`, `lib/workflow/prompts.mjs`, `agents/prompts/qa.md`, skill `ao-qa`, test.
-- [ ] **T17: `/ao-build` sau `QA fail`** (spec 5.2).
+- [x] **T17: `/ao-build` sau `QA fail`** (spec 5.2).
   - **Đạt khi:**
     - `facts` có `qaReport`, `nextBranch` và `mergedAt`;
     - lần làm lại tạo nhánh `-r<N+1>` từ `origin/develop`;
@@ -150,7 +150,7 @@
     - skill `ao-build` hỏi cách chia lỗi khi cần.
   - **Kiểm:** `steps-build.test.mjs` (mới) cho Story có Sub-task, item không có Sub-task, `-r2`, `-r3`, `spec-sync` có và không, báo cáo QA không phải FAIL thì dừng.
   - **File:** `lib/workflow/facts.mjs`, `lib/workflow/steps.mjs`, `lib/workflow/prompts.mjs`, skill `ao-build`, test.
-- [ ] **T18: tài liệu phần 3, PR phần 3.**
+- [x] **T18: tài liệu phần 3, PR phần 3.**
   - **Đạt khi:**
     - `docs/release-workflow.md` có `/ao-qa … fail:`;
     - `docs/dev-workflow.md` có ví dụ trọn vòng, từ intake tới làm lại sau `QA fail`;

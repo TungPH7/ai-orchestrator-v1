@@ -7,6 +7,7 @@ Vòng trong (`/ao-spec` tới `/ao-fix`, [docs/dev-workflow.md](dev-workflow.md)
 | Lệnh | Làm gì | Agent | Dừng ở |
 |---|---|---|---|
 | `/ao-qa <KEY>` | Kiểm item trên môi trường QA của nó, chạy E2E, gắn bằng chứng lên Jira | `qa` | Bạn đọc báo cáo rồi `Accept` |
+| `/ao-qa <KEY> fail: <lỗi>` | Lỗi bạn thấy khi item ở Ready for QA hay In QA: `qa` tái hiện rồi bấm `QA fail`. Mong đợi mới thì `ba` thêm AC trước | `ba` khi cần, `qa` | Item về In Progress, hoặc mang cờ Needs you khi không tái hiện được |
 | `/ao-release` | In điểm cắt, danh sách item và số bản | Không | Gate ④ |
 | `/ao-release <vX.Y.0> <sha>` | Gate ④: tạo `release/vX.Y.0` tại điểm cắt, gắn Fix Version | Không | Deployer đưa bản lên Staging |
 | `/ao-ship <vX.Y.0>` | Full regression trên Staging, release note, PR release vào `main` | `qa`, `devops` | Gate ⑤: bạn approve PR |
@@ -31,7 +32,7 @@ Deployer chạy mỗi phút trên VPS và kiểm mọi commit mới trên lịch
 
 1. PR vào `develop`. Deployer đưa commit lên Development, và `jira-sync` chuyển item sang Ready for QA.
 2. `/ao-qa <KEY>`: `qa` kiểm trên Development và ghi báo cáo lên item. PASS thì item ở In QA; FAIL thì item về In Progress.
-3. Bạn đọc báo cáo, rồi `Accept` để item sang Done.
+3. Bạn đọc báo cáo, rồi `Accept` để item sang Done. Bạn thấy lỗi trước khi bấm `Accept` thì dùng `/ao-qa <KEY> fail: …` (mục "Lỗi bạn thấy khi QA" ở dưới).
 4. Bạn tạo trên Jira Fix Version của bản này và bản kế tiếp, nếu chưa có. Từng bước ở mục dưới.
 5. `/ao-release`: đọc điểm cắt và danh sách item. Lệnh dừng ở gate ④.
 6. **Gate ④:** `/ao-release <vX.Y.0> <sha>`. Script tạo nhánh release, gắn Fix Version cho item trong điểm cắt, và chuyển item sau điểm cắt sang bản kế tiếp. Deployer đưa bản lên Staging.
@@ -41,6 +42,16 @@ Deployer chạy mỗi phút trên VPS và kiểm mọi commit mới trên lịch
 8. **Gate ⑤:** bạn đọc PR rồi approve. Bạn không bấm merge. `merge-gate` merge bằng merge commit, gắn tag, và mở PR merge ngược vào `develop`.
 9. Deployer đưa merge commit lên Production và chạy smoke test.
 10. Bạn bấm Release cho Fix Version trên Jira. Từ đó, Epic có mọi item đã lên Production mới `Complete` được.
+
+## Lỗi bạn thấy khi QA
+
+Theo contract, lỗi tìm thấy khi QA một item chưa Done thì không tạo Bug: item quay về In Progress qua `QA fail` và được sửa trên một nhánh mới, vẫn mang mã item ([SPEC-human-loop.md](../SPEC-human-loop.md) mục 5).
+
+1. `/ao-qa SMP-21 fail: xóa dòng cuối thì giỏ vẫn hiện tổng 120.000 đ; bước: thêm 1 sản phẩm rồi xóa; mong đợi: "Giỏ hàng trống"`. Claude hỏi lỗi này vi phạm AC nào của item, hay là mong đợi mới. Lỗi nằm ngoài item thì báo bằng Bug qua `/ao-intake`.
+2. Mong đợi mới thì `ba` thêm AC trên Jira trước (comment AC cũ và mới), chưa sửa SPEC.
+3. `qa` tái hiện lỗi trên môi trường QA, ghi báo cáo FAIL kèm bằng chứng, rồi bấm `QA fail`. Không tái hiện được thì `qa` không fail item, mà comment những gì đã thử và gắn cờ Needs you.
+4. `/ao-build SMP-21`: `ao-step` tạo nhánh `-r2` từ `develop`. Nếu `ba` đã đổi AC, `ba` chép phần đổi vào `spec.md` trước. Story có Sub-task cả BE và FE thì Claude liệt kê lỗi trong báo cáo FAIL và đề xuất chia theo `be:` / `fe:` để bạn duyệt; Sub-task đã Done giữ nguyên, lượt sửa làm ở mức Story.
+5. Phần sau đi như thường: PR nháp, xem trước, review, gate ③, deploy, rồi `/ao-qa` lại. `QA fail` tăng Rework; chạm 3 thì item mang cờ.
 
 ## Fix Version trên Jira
 
