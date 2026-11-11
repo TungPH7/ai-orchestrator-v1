@@ -17,3 +17,15 @@ Kiểm trên `ao-sample` và space `SMP`, trước khi viết code (spec mục 1
 - T10: token cho bước chuyển PR sang sẵn sàng xin `{ pull_requests: 'write', contents: 'write' }`. Spec mục 4.6 đã ghi điều này.
 - T14: Node 24 cảnh báo `DEP0190` khi `spawn` có `shell: true` mà vẫn truyền mảng đối số. `command` trong `preview.yaml` vốn là một chuỗi, nên `ao-step` truyền nguyên chuỗi đó, không kèm mảng.
 - Bạn đã hủy hai item thử `SMP-20` và `SMP-21` (Lượt 122).
+
+## Checkpoint 3: `/ao-preview` chạy thật trên `ao-sample`, 2026-11-11
+
+Chạy trước T15, không gọi agent, bằng kit trên nhánh `task/human-loop-part-2` (`AO_KIT_DIR`). Item thử là `SMP-21` (đã hủy), với nhánh `feature/SMP-21-preview-probe` và PR nháp `ao-sample` #20 tạo bằng login `gh` của bạn. `preview.yaml` chỉ nằm trên máy, không commit.
+
+| Bước | Kết quả |
+|---|---|
+| `ao-step.mjs preview SMP-21` | GO: một bước script `preview-start`; báo sẽ chạy `npm ci`, vì chưa có hash lockfile nào |
+| `--go` | Thư mục chuyển sang nhánh PR, `npm ci --ignore-scripts` chạy, `api` và `web` lên. `http://localhost:3001/health` và `http://localhost:3000/notes` trả 200. Lệnh dừng với "the preview of SMP-21 runs already" kèm hai URL |
+| `ao-step.mjs review 20` trong lúc xem trước | Tự dừng preview ("Stopped the preview of SMP-21: api, web"), đưa thư mục về `develop`, rồi chạy lại từ `develop` và in GO với bước đầu `pr-ready`. Hai cổng 3000 và 3001 trống |
+
+PR #20 đã đóng, nhánh đã xóa, lượt CI đang chạy bị hủy.
