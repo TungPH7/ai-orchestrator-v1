@@ -158,7 +158,7 @@
   - **Kiểm:** năm lệnh kiểm; CI xanh; PR merge.
 
 ### Checkpoint 4: sau T18
-- [ ] PR phần 3 đã merge. Mình hỏi bạn trước T19.
+- [x] PR phần 3 đã merge (#242, `d44d465`). Đã hỏi bạn trước T19 (Lượt 122).
 
 ## Kiểm thật
 
