@@ -2,7 +2,7 @@
 
 > **Module:** `human-loop`, gồm ba việc A3, A4 và A5 trong [misc/thao-luan/concerns.md](misc/thao-luan/concerns.md). Làm sau A1 và trước `project-scaffold` (B1). **Sửa:** mục 2.1 và 2.8 của [SPEC-dev-workflow.md](SPEC-dev-workflow.md), mục 2.5 của [SPEC-release-workflow.md](SPEC-release-workflow.md).
 >
-> **Trạng thái:** bản nháp 2026-11-11 (Phiên 27 · Lượt 119), chờ bạn duyệt. **Nguồn thảo luận:** [misc/brainstorm-discussion.md](misc/brainstorm-discussion.md), Phiên 27 · Lượt 102–118; [misc/thao-luan/git-khi-dung-kit.md](misc/thao-luan/git-khi-dung-kit.md).
+> **Trạng thái:** đã duyệt 2026-11-11 (Phiên 27 · Lượt 120), cả 11 điểm ở mục 12. Plan và danh sách task: [tasks/plan.md](tasks/plan.md), [tasks/todo.md](tasks/todo.md). **Nguồn thảo luận:** [misc/brainstorm-discussion.md](misc/brainstorm-discussion.md), Phiên 27 · Lượt 102–118; [misc/thao-luan/git-khi-dung-kit.md](misc/thao-luan/git-khi-dung-kit.md).
 
 Tên module: các chỗ bạn lái agent giữa chừng, ngoài 5 cổng duyệt.
 
@@ -389,7 +389,7 @@ Phần bật app, tắt cây tiến trình và GraphQL được kiểm ở kiể
    3. `/ao-build` một Story có cả FE và BE → PR nháp có ảnh và `api.md` → `/ao-preview` → `/ao-fix` có `be:` và `fe:`, một lần với `--change ac` → `/ao-review` (PR sẵn sàng, item sang In Review) → gate ③ → merge → deploy;
    4. `/ao-qa <KEY> fail: …` → `QA fail` → `/ao-build` trên nhánh `-r2` → review → merge → `/ao-qa` PASS → bạn `Accept`.
 
-   [Ước] tốn 25–35 USD và hai khung 5 giờ của gói Pro. Mọi lượt có số đo trong `.ai/runs/`.
+   [Ước] tốn 25–35 USD và hai khung 5 giờ của gói Pro. Mọi lượt có số đo trong `.ai/runs/`. Con số này chưa tính lượt review đầy đủ của PR chép kit vào `ao-sample` (bản kit mới chưa dự án nào review, theo `kit-copy-review`), [Ước] thêm 10–16 USD (ghi thêm khi viết plan, Lượt 120).
 4. Tài liệu được cập nhật:
    - `docs/dev-workflow.md` có các lệnh mới và một ví dụ đi trọn vòng;
    - `docs/release-workflow.md` có `/ao-qa … fail:`;
