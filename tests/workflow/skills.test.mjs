@@ -9,7 +9,7 @@ import { readGates } from '../../lib/quality/gates.mjs';
 import { CONTRACT_DIR, ROOT } from '../helpers/kit.mjs';
 
 const SKILLS = join(ROOT, 'kit', '.claude', 'skills');
-const COMMANDS = { status: '[KEY]', intake: '<rough description>', preview: '<KEY> [--stop]', spec: '<EPIC> [change]', plan: '<EPIC> [change]', request: '<KEY>', build: '<KEY>', review: '<PR>', fix: '<PR> [what to fix]', qa: '<KEY> [fail: <defect, steps, expected result>]', release: '[<vX.Y.0> <sha>]', ship: '<vX.Y.Z>', rollback: '<environment> [<sha>]' };
+const COMMANDS = { status: '[KEY]', intake: '<rough description>', preview: '<KEY> [--stop]', spec: '<EPIC> [change]', plan: '<EPIC> [change]', request: '<KEY>', build: '<KEY> [be: … fe: …]', review: '<PR>', fix: '<PR> [what to fix]', qa: '<KEY> [fail: <defect, steps, expected result>]', release: '[<vX.Y.0> <sha>]', ship: '<vX.Y.Z>', rollback: '<environment> [<sha>]' };
 // The positional arguments each check passes on: /ao-release and /ao-rollback take two (release-workflow T17), and
 // /ao-intake none: its description stays in the chat (human-loop spec 3.1).
 const ARGS = { release: '$0 $1', rollback: '$0 $1', intake: '' };

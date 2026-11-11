@@ -1,7 +1,7 @@
 ---
 name: ao-build
 description: Build a Ready item of the SDLC contract with its dev agent, up to a draft PR with CI done, which waits for the human's preview.
-argument-hint: <KEY>
+argument-hint: "<KEY> [be: … fe: …]"
 disable-model-invocation: true
 ---
 
@@ -9,9 +9,19 @@ disable-model-invocation: true
 
 !`node .ai-orchestrator/scripts/ao-step.mjs build $0`
 
+## What the human wrote
+
+$ARGUMENTS
+
 ## What to do
 
-- On STOP, tell the human the reason and the command or clicks it names, in Vietnamese, and stop.
+- After QA fail (human-loop spec 5.2), when the check says the item failed QA and asks which defects go to whom: read
+  the newest QA report on the item (`getJiraIssue`), list its FAIL rows and its Notes for the human in Vietnamese, and
+  propose a split, each part starting a line with `be:` or `fe:`. When they say OK, or give their own split, write it,
+  as it is, to `.ai/runs/<KEY>/note.md`, where KEY is the item, and run the command below with
+  `--note .ai/runs/<KEY>/note.md` added. Never put that text in a shell command. When the text after the key above
+  already splits the defects that way, use it as it is.
+- On any other STOP, tell the human the reason and the command or clicks it names, in Vietnamese, and stop.
 - On GO, run `node .ai-orchestrator/scripts/ao-step.mjs build $0 --go` with the Bash tool in the background, with a
   timeout of 7200000 ms, and wait for its notification. Do not poll.
   Do not run any agent yourself, and do not change Jira or GitHub yourself.
