@@ -8,6 +8,7 @@ import { matchesGlob } from '../../lib/quality/glob.mjs';
 import { lockHash, needsInstall, PREVIEW_SAMPLE, readPreviewConfig } from '../../lib/workflow/preview.mjs';
 import { decideStep } from '../../lib/workflow/steps.mjs';
 import { CONTRACT_DIR, ROOT } from '../helpers/kit.mjs';
+import { checkArgument, previewFirst } from '../../scripts/ao-step.mjs';
 
 // /ao-preview (human-loop spec 4.3).
 const contract = readContract(CONTRACT_DIR);
@@ -82,6 +83,16 @@ test('/ao-preview stops: no open PR, a PR on protected paths, an agent running, 
   }
   const sample = decide(facts({ config: null }));
   assert.ok(sample.lines.includes('apps:'), 'the sample goes with the stop');
+});
+
+test('a command that runs agents stops a preview first, once; the others leave it running', () => {
+  for (const command of ['spec', 'plan', 'request', 'build', 'review', 'fix', 'qa']) {
+    assert.equal(previewFirst(command, true, false), 'stop', command);
+    assert.equal(previewFirst(command, true, true), 'refuse', command);
+    assert.equal(previewFirst(command, false, false), null, command);
+  }
+  for (const command of ['status', 'intake', 'preview', 'release', 'ship', 'rollback']) assert.equal(previewFirst(command, true, false), null, command);
+  assert.equal(checkArgument('preview', 'DEMO-21', 'DEMO'), null);
 });
 
 test('/ao-preview --stop stops the preview that runs, whatever the key; with none it says so', () => {
