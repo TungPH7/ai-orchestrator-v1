@@ -50,6 +50,11 @@ test('pr-open needs the base branch of the work type', async () => {
   assert.deepEqual(await holds(item('DEMO-12'), ['pr-open'], { change: (a) => (pr(a, 5).base.ref = 'main') }), []);
 });
 
+test('pr-open does not hold for a draft PR: the item stays In Progress while you preview it (human-loop spec 4.1)', async () => {
+  assert.deepEqual(await holds(item('DEMO-12'), ['pr-open', 'ci-green'], { change: (a) => (pr(a, 5).draft = true) }), ['ci-green']);
+  assert.deepEqual(await holds(item('DEMO-12'), ['pr-open'], { change: (a) => (pr(a, 5).draft = false) }), ['pr-open']);
+});
+
 test('ci-green: every check run of the newest commit succeeded or was skipped, and no commit status failed', async () => {
   assert.deepEqual(await holds(item('DEMO-12'), ['ci-green']), ['ci-green']);
   const runs = (a) => a['/commits/c5/check-runs'].check_runs;
