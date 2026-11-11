@@ -21,6 +21,7 @@ import { projectSettings, setting } from '../lib/project-settings.mjs';
 import { unquotePath } from '../lib/quality/diff-paths.mjs';
 import { readGates } from '../lib/quality/gates.mjs';
 import { matchesGlob } from '../lib/quality/glob.mjs';
+import { markReadyForReview, READY_PERMISSIONS } from '../lib/quality/pr-ready.mjs';
 import { appCredentials, botIdentity, githubRepoOf, installationToken, userVariable } from '../lib/quality/github-app.mjs';
 import { runNpm } from '../lib/quality/npm.mjs';
 import { attachEvidence } from '../lib/tracker/attachments.mjs';
@@ -208,6 +209,7 @@ async function main() {
         if (step.action === 'hotfix-ship') return hotfixShip(step, { repo, settings, userToken });
         if (step.action === 'deploy-request') return deployRequest(step, { repo, userToken });
         if (step.action === 'kit-copy-reports') return kitCopyReports(step, { repo, appEnv });
+        if (step.action === 'pr-ready') return prReady(step, { repo, settings });
         return releaseCut(step, { repo, mapping, settings });
       },
       git: (checkout) => prepareCheckout(checkout),
@@ -439,6 +441,15 @@ function renderCheck(number, sha, paths) {
 async function kitCopyReports(step, { repo, appEnv }) {
   const { token } = await installationToken({ ...appCredentials('review', { env: appEnv }), repo, permissions: { pull_requests: 'write' } });
   return postKitCopyReports({ github: createGitHubClient({ repo, token, write: true }), step });
+}
+
+// The first step of /ao-review on a draft PR (human-loop spec 4.6): marks it ready as the ao-dev App, which opened it.
+async function prReady({ number }, { repo, settings }) {
+  const slug = setting('AO_DEV_APP', settings);
+  const devEnv = { ...process.env, AO_DEV_APP: slug, AO_DEV_APP_ID: setting('AO_DEV_APP_ID', settings) };
+  const { token } = await installationToken({ ...appCredentials('dev', { env: devEnv }), repo, permissions: READY_PERMISSIONS });
+  const marked = await markReadyForReview({ token, repo, number });
+  return [marked ? `Marked PR #${number} ready for review as ${slug}[bot]; jira-sync moves its item to In Review once CI is green.` : `PR #${number} was ready already.`];
 }
 
 // The first-parent history of develop on GitHub after the tag `tag`, oldest first, as parseHistory reads it

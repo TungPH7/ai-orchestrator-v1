@@ -317,6 +317,37 @@ test('two requests to one role are two runs; a request its run leaves open stops
   assert.match(left.decision.reason, /^ba ran request on DEMO-20 and it still has to run/);
 });
 
+test('an action with continue goes on to the runs decided after it; an action without it still ends the command (human-loop spec 4.6)', async () => {
+  const review = { role: 'reviewer', key: 'DEMO-21', effort: 'high', purpose: 'review', prompt: 'Review PR #15.' };
+  const decide = (_command, w) => {
+    if (!w.ready) return { go: true, runs: [{ action: 'pr-ready', key: 'DEMO-21', number: 15, continue: true }, review], lines: [] };
+    if (!w.reviewed) return { go: true, runs: [review], lines: [] };
+    return { go: false, reason: 'both reports are on the head', next: 'gate ③', lines: [] };
+  };
+  const world = { ready: false, reviewed: false, run: null };
+  const h = harness(world, { review: (w) => (w.reviewed = true) });
+  const acted = [];
+  const { decision, made } = await h.run({ gather: async () => world, decide, act: async (step) => (acted.push(step.action), (world.ready = true), ['Marked PR #15 ready.']) });
+  assert.deepEqual(acted, ['pr-ready']);
+  assert.deepEqual(h.calls.map(({ role, purpose }) => `${role} ${purpose}`), ['reviewer review']);
+  assert.deepEqual(made.map(({ action, role }) => action ?? role), ['pr-ready', 'reviewer']);
+  assert.equal(decision.reason, 'both reports are on the head');
+
+  // GitHub does not show the change: the command stops instead of marking the PR again and again.
+  const stuck = { ready: false, reviewed: false, run: null };
+  const h2 = harness(stuck, {});
+  const left = await h2.run({ gather: async () => stuck, decide, act: async () => ['Marked PR #15 ready.'] });
+  assert.equal(h2.calls.length, 0);
+  assert.match(left.decision.reason ?? '', /^pr-ready ran on DEMO-21, but the facts still ask for it after 1 minutes/);
+
+  // An action without continue, such as the reports of a kit copy, is the one step of its command.
+  const once = { ready: false, reviewed: false, run: null };
+  const only = (_command, w) => (w.ready ? { go: true, runs: [review], lines: [] } : { go: true, runs: [{ action: 'kit-copy-reports', key: 'DEMO-21' }], lines: [] });
+  const h3 = harness(once, {});
+  await h3.run({ gather: async () => once, decide: only, act: async () => ((once.ready = true), []) });
+  assert.equal(h3.calls.length, 0);
+});
+
 test('a run that ends well but leaves nothing for the facts is not made again in a loop', async () => {
   const { world, gather } = specWorld();
   const h = harness(world, {});

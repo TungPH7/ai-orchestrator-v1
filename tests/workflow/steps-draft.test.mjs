@@ -52,6 +52,18 @@ test('red CI on a draft PR goes to /ao-fix first', () => {
   assert.equal(decision.next, '/ao-fix 15');
 });
 
+test('/ao-review of a draft PR marks it ready first, a script with no agent, then the reviews run in the same command', () => {
+  const facts = { ...buildFacts(), command: 'review', arg: '15' };
+  const decision = decideStep('review', facts, options);
+  assert.equal(decision.go, true);
+  assert.deepEqual(decision.runs[0], { action: 'pr-ready', key: 'DEMO-21', number: 15, continue: true });
+  assert.deepEqual(decision.runs.slice(1).map(({ role }) => role), ['reviewer', 'security']);
+  // Its CI still has to be green, as for any review.
+  const red = decideStep('review', { ...buildFacts({ ci: { green: false, failed: true, pending: false } }), command: 'review', arg: '15' }, options);
+  assert.equal(red.go, false);
+  assert.match(red.reason, /CI is red/);
+});
+
 test('the next command of an item In Progress with a draft PR is the preview, or the review', () => {
   const item = { key: 'DEMO-21', workType: 'story', state: 'in-progress', flagged: false };
   assert.equal(nextFor(item, 15, true), '/ao-preview DEMO-21 or /ao-review 15');
