@@ -1,6 +1,6 @@
 # Plan triển khai: human-loop
 
-> **Spec:** [SPEC-human-loop.md](../SPEC-human-loop.md), đã duyệt 2026-11-11 (Phiên 27 · Lượt 120). **Trạng thái:** bản nháp 2026-11-11, chờ bạn duyệt. **Danh sách task:** [todo.md](todo.md).
+> **Spec:** [SPEC-human-loop.md](../SPEC-human-loop.md), đã duyệt 2026-11-11 (Phiên 27 · Lượt 120). **Trạng thái:** đã duyệt 2026-11-11 (Phiên 27 · Lượt 121). **Danh sách task:** [todo.md](todo.md).
 
 ## Tổng quan
 

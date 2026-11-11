@@ -10,7 +10,7 @@
 
 ## Chuẩn bị
 
-- [ ] **T1: tài liệu.** Spec ghi đã duyệt, plan, todo, nhật ký Lượt 119–120. PR tài liệu, tự merge khi CI xanh.
+- [x] **T1: tài liệu.** Spec ghi đã duyệt, plan, todo, nhật ký Lượt 119–120. PR tài liệu, tự merge khi CI xanh.
 - [ ] **T2 [bạn]: bốn tiền đề trên `ao-sample`** (spec mục 10.2). Không viết code.
   1. Một phiên `claude -p` ở `ao-sample` tạo một Epic thử bằng `createJiraIssue`. Hook cho qua, và mô tả markdown hiện đúng trên Jira (heading, danh sách, bảng).
   2. Cùng phiên tạo một Task thử, rồi đổi nó thành Story bằng `editJiraIssue`.
