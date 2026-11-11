@@ -4,7 +4,8 @@ import { join } from 'node:path';
 import { readRoster } from '../../lib/agents/roster.mjs';
 import { readContract } from '../../lib/contract.mjs';
 import { readGates } from '../../lib/quality/gates.mjs';
-import { decideStep, nextFor } from '../../lib/workflow/steps.mjs';
+import { PURPOSES } from '../../lib/workflow/prompts.mjs';
+import { decideStep, nextFor, noteKey } from '../../lib/workflow/steps.mjs';
 import { CONTRACT_DIR, ROOT } from '../helpers/kit.mjs';
 
 // A draft PR between build and review (human-loop spec 4.2, 4.7).
@@ -62,6 +63,52 @@ test('/ao-review of a draft PR marks it ready first, a script with no agent, the
   const red = decideStep('review', { ...buildFacts({ ci: { green: false, failed: true, pending: false } }), command: 'review', arg: '15' }, options);
   assert.equal(red.go, false);
   assert.match(red.reason, /CI is red/);
+});
+
+const fixFacts = (prMore = {}, more = {}) => ({ ...buildFacts(prMore), command: 'fix', arg: '15', ...more });
+const OLDER = 'a1b2c3d4e5f60718293a4b5c6d7e8f9012345678';
+const fixPlan = (decision) => decision.runs.map(({ role, purpose }) => `${role} ${purpose}`);
+const REQUEST = 'be: API trả thêm trường updatedAt\nfe: hiện updatedAt dưới tiêu đề, dạng "2 phút trước"';
+
+test('/ao-fix on a draft PR runs the dev agents only, BE first, each with its part and the other part to know (human-loop 4.4)', () => {
+  const decision = decideStep('fix', fixFacts(), { ...options, note: REQUEST });
+  assert.equal(decision.go, true);
+  assert.deepEqual(fixPlan(decision), ['be-dev fix', 'fe-dev fix']);
+  const [be, fe] = decision.runs;
+  assert.equal(be.note, noteKey(REQUEST));
+  assert.equal(be.prompt, PURPOSES.fix({ pr: 15, key: 'DEMO-21', branch: 'feature/DEMO-21-remove-line', reasons: ['what the human asks below'], note: 'API trả thêm trường updatedAt', others: [{ role: 'fe-dev', text: 'hiện updatedAt dưới tiêu đề, dạng "2 phút trước"' }], draft: true }));
+  assert.match(be.prompt, /The PR is a draft the human previewed: update your preview files in \.ai\/runs\/DEMO-21\/preview\//);
+  assert.match(be.prompt, /The human asks fe-dev for this part, which is not yours to do:\n\nhiện updatedAt/);
+  assert.match(fe.prompt, /The human asks:\n\nhiện updatedAt dưới tiêu đề/);
+  assert.match(fe.prompt, /The human asks be-dev for this part/);
+});
+
+test('a request without be: or fe: stops on a Story with a BE and an FE Sub-task; on an item of one dev role it goes to that role', () => {
+  const stopped = decideStep('fix', fixFacts(), { ...options, note: 'đổi màu nút sang xanh' });
+  assert.equal(stopped.go, false);
+  assert.equal(stopped.reason, 'your request has no be: or fe:, and DEMO-21 has a BE and an FE Sub-task: /ao-fix does not guess who does it');
+  assert.equal(stopped.next, 'Start each part of your request with be: or fe:, then /ao-fix 15 again');
+  const task = fixFacts({}, {});
+  task.item = { ...task.item, type: 'Task', workType: 'task', subtasks: [], role: 'fe-dev', roles: ['fe-dev'], agent: 'fe-dev' };
+  assert.deepEqual(fixPlan(decideStep('fix', task, { ...options, note: 'đổi màu nút sang xanh' })), ['fe-dev fix']);
+});
+
+test('a part pushed already is not sent again; once all are pushed, the draft waits for your preview again', () => {
+  const run = (role, head) => ({ n: 1, command: 'fix', role, purpose: 'fix', outcome: 'done', head, session: `s-${role}`, note: noteKey(REQUEST) });
+  const half = fixFacts({}, { run: { key: 'DEMO-21', runs: [run('be-dev', OLDER)] } });
+  assert.deepEqual(fixPlan(decideStep('fix', half, { ...options, note: REQUEST })), ['fe-dev fix']);
+  const both = fixFacts({}, { run: { key: 'DEMO-21', runs: [run('be-dev', OLDER), run('fe-dev', OLDER)] } });
+  const decision = decideStep('fix', both, { ...options, note: REQUEST });
+  assert.equal(decision.go, false);
+  assert.equal(decision.reason, 'the draft PR #15 of DEMO-21 has nothing left to fix: your request is pushed');
+  assert.equal(decision.next, '/ao-preview DEMO-21 to look at it again, or /ao-review 15');
+});
+
+test('red CI on a draft PR goes to the dev agent of the item, with no review; a ready PR is reviewed again after the fix', () => {
+  assert.deepEqual(fixPlan(decideStep('fix', fixFacts({ ci: { green: false, failed: true, pending: false } }), options)), ['fe-dev fix']);
+  const ready = decideStep('fix', fixFacts({ draft: false }), { ...options, note: 'fe: chữ to hơn' });
+  assert.deepEqual(fixPlan(ready), ['fe-dev fix', 'reviewer review', 'security review']);
+  assert.doesNotMatch(ready.runs[0].prompt, /draft/);
 });
 
 test('the next command of an item In Progress with a draft PR is the preview, or the review', () => {
