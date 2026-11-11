@@ -63,17 +63,17 @@
   - **Kiểm:** năm lệnh kiểm; CI xanh; PR merge.
 
 ### Checkpoint 2: sau T7
-- [ ] PR phần 1 đã merge, `main` xanh.
+- [x] PR phần 1 đã merge, `main` xanh (#240, `b1aa592`).
 
 ## Phần 2 (A4), nhánh `task/human-loop-part-2`
 
-- [ ] **T8: PR nháp** (spec 4.1).
+- [x] **T8: PR nháp** (spec 4.1).
   - **Đạt khi:**
     - `ao-pr.mjs create` mở PR nháp cho nhánh `feature/`, `bugfix/`, `hotfix/`, trừ nhánh tài liệu `feature/<EPIC>-spec`;
     - guard `pr-open` không đạt với PR nháp.
   - **Kiểm:** `tests/quality/ao-pr.test.mjs`, `tests/tracker/facts-github.test.mjs`.
   - **File:** `lib/quality/ao-pr.mjs`, `lib/tracker/facts.mjs`, hai file test.
-- [ ] **T9: `/ao-build` dừng chờ xem trước** (spec 4.2, 4.7).
+- [x] **T9: `/ao-build` dừng chờ xem trước** (spec 4.2, 4.7).
   - **Đạt khi:**
     - PR nháp đang mở thì `decideBuild` dừng, với `/ao-preview <KEY>` hoặc `/ao-review <PR>`;
     - CI đỏ trên PR nháp thì trỏ tới `/ao-fix`;
@@ -82,14 +82,14 @@
     - skill `ao-build` liệt kê các file đó trong phần báo.
   - **Kiểm:** `steps-pr.test.mjs`, test của `decideBuild` và `decideStatus`; `npm run agents:check`.
   - **File:** `lib/workflow/steps.mjs`, `agents/prompts/fe-dev.md`, `agents/prompts/be-dev.md`, skill `ao-build`, agent render lại, test.
-- [ ] **T10: `/ao-review` chuyển PR sang sẵn sàng** (spec 4.6).
+- [x] **T10: `/ao-review` chuyển PR sang sẵn sàng** (spec 4.6).
   - **Đạt khi:**
     - PR nháp thì `decideReview` trả `action: 'pr-ready'` với `continue`, rồi tới các lượt review;
     - `runGo` đi tiếp sau một `action` có `continue`; `kit-copy-reports` và các `action` của lệnh release vẫn dừng như cũ;
     - `ao-step` gọi `markPullRequestReadyForReview` bằng token `ao-dev`.
   - **Kiểm:** `steps-pr.test.mjs`, `runner.test.mjs`; test hàm GraphQL với `fetch` giả.
   - **File:** `lib/workflow/steps.mjs`, `lib/workflow/runner.mjs`, `scripts/ao-step.mjs`, hàm GraphQL (trong `lib/quality/github-app.mjs` hoặc file mới), test.
-- [ ] **T11: `notes.mjs`; `/ao-fix` trên PR nháp; giao việc theo tiền tố** (spec 4.4).
+- [x] **T11: `notes.mjs`; `/ao-fix` trên PR nháp; giao việc theo tiền tố** (spec 4.4).
   - **Đạt khi:**
     - `splitNote` tách các đoạn `be:` / `fe:` (không phân biệt hoa thường, chỉ tính ở đầu đoạn);
     - PR nháp thì `/ao-fix` chỉ chạy dev, rồi dừng với `/ao-preview` hoặc `/ao-review`;
@@ -98,7 +98,7 @@
     - PR đã sẵn sàng thì vẫn review như cũ.
   - **Kiểm:** `tests/workflow/notes.test.mjs`, `steps-pr.test.mjs`.
   - **File:** `lib/workflow/notes.mjs`, `lib/workflow/steps.mjs`, `lib/workflow/prompts.mjs`, skill `ao-fix`, test.
-- [ ] **T12: `--change`** (spec 4.5).
+- [x] **T12: `--change`** (spec 4.5).
   - **Đạt khi:**
     - `checkArgument` nhận `--change none|ac|api|epic|story` với `fix`;
     - `ac` cho `ba` chạy `ac-revise`, `api` và `epic` cho `sa` chạy, `story` cho `ba` chạy `to-story`; tất cả chạy trên nhánh của PR, trước dev;
@@ -107,14 +107,14 @@
     - prompt `ba` và `sa` có các lượt mới. Lượt `to-story` có đường lui khi tiền đề 2 sai.
   - **Kiểm:** `steps-pr.test.mjs` cho cả năm loại; test của `checkArgument`; `npm run agents:check`.
   - **File:** `lib/workflow/steps.mjs`, `lib/workflow/prompts.mjs`, `scripts/ao-step.mjs`, `agents/prompts/ba.md`, `agents/prompts/sa.md`, skill `ao-fix`, test.
-- [ ] **T13: phần thuần của xem trước** (spec 4.3).
+- [x] **T13: phần thuần của xem trước** (spec 4.3).
   - **Đạt khi:**
     - `preview.mjs` đọc và kiểm `preview.yaml`, so hash lockfile với `.ai/preview/state.json`, và đọc `active.json`;
     - `decidePreview` dừng khi: không có PR mở, PR sửa đường dẫn được bảo vệ, có agent đang chạy, thư mục bẩn, cổng bận, thiếu file cấu hình (kèm mẫu);
     - `preview.yaml` nằm trong nhóm "Của dự án" của `kit_copy`.
   - **Kiểm:** `tests/workflow/preview.test.mjs`, `steps-preview.test.mjs`, `tests/quality/gates.test.mjs`.
   - **File:** `lib/workflow/preview.mjs`, `lib/workflow/steps.mjs`, `quality/gates.yaml` (cùng schema nếu cần), test.
-- [ ] **T14: `/ao-preview --go`, `--stop`; tự dừng xem trước** (spec 4.3).
+- [x] **T14: `/ao-preview --go`, `--stop`; tự dừng xem trước** (spec 4.3).
   - **Đạt khi:**
     - `--go`: chuyển nhánh, `npm ci --ignore-scripts` khi lockfile khác, bật app tách khỏi `ao-step` với `CLEARED_ENV`, chờ `url`, ghi `active.json`, in URL;
     - `--stop`: tắt cây tiến trình, xóa `active.json`, về `develop`; thư mục bẩn thì không chuyển nhánh;
@@ -122,7 +122,7 @@
     - skill `ao-preview` (không agent).
   - **Kiểm:** test của `checkoutStop` và của phần quyết định chạy lại. Thử tay trên bản sao `ao-sample` ở máy: bật, mở URL, tắt, cổng trống, thư mục về `develop`.
   - **File:** `scripts/ao-step.mjs`, `kit/.claude/skills/ao-preview/SKILL.md`, test.
-- [ ] **T15: tài liệu phần 2, PR phần 2.**
+- [x] **T15: tài liệu phần 2, PR phần 2.**
   - **Đạt khi:** `docs/dev-workflow.md` có bước xem trước, tiền tố, câu hỏi "đổi gì?" và một ví dụ; `misc/thao-luan/git-khi-dung-kit.md` khớp với lệnh thật; README được cập nhật.
   - **Kiểm:** năm lệnh kiểm; CI xanh; PR merge.
 

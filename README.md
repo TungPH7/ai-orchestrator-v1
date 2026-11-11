@@ -9,7 +9,7 @@ Module đã xong:
 - **`quality-gates`**: biến các cổng tự động của hợp đồng thành kiểm tra thật. Code chỉ vào `develop`, `main`, `release/*` và chỉ được deploy khi đã qua CI, có báo cáo review và có approve của bạn, kể cả khi repo private ở gói Free không có branch protection ([SPEC-quality-gates.md](SPEC-quality-gates.md)).
 - **`agent-roster`**: mười agent của Claude Code, mỗi vai trò của hợp đồng một agent. Mỗi agent biết đầu vào, đầu ra, tool, skill, model và effort của mình, và hook giới hạn file nó được ghi ([SPEC-agent-roster.md](SPEC-agent-roster.md)).
 - **`dev-workflow`**: sáu lệnh `/ao-*` đưa một Epic từ spec tới merge vào `develop`, chỉ dừng ở cổng cần bạn. Agent làm việc với GitHub bằng hai App, không bằng login của bạn ([SPEC-dev-workflow.md](SPEC-dev-workflow.md)).
-- **`human-loop`** (đang làm): các chỗ bạn lái agent giữa chừng. Phần 1 đã có `/ao-intake`, sửa SPEC và plan trước cổng, và `/ao-request` ([SPEC-human-loop.md](SPEC-human-loop.md)).
+- **`human-loop`** (đang làm): các chỗ bạn lái agent giữa chừng. Phần 1 đã có `/ao-intake`, sửa SPEC và plan trước cổng, và `/ao-request`. Phần 2 thêm PR nháp và bước xem trước `/ao-preview` giữa build và review, cùng `/ao-fix` giao việc theo `be:` / `fe:` ([SPEC-human-loop.md](SPEC-human-loop.md)).
 - **`release-workflow`**: bốn lệnh đưa code từ `develop` lên Development, Staging và Production trên VPS của bạn, qua QA, gate ④ cắt release và gate ⑤ ship. Deployer trên VPS kiểm cổng cho mọi commit, chạy smoke test và giữ bản cũ khi smoke fail ([SPEC-release-workflow.md](SPEC-release-workflow.md)).
 
 Pilot 1 (xong 2026-11-04) chạy kit trên repo mẫu `TungPH7/ao-sample` (Next.js + NestJS) và space Jira `SMP`: Epic "Ghi chú" đi từ spec tới khi mọi Story sang Ready for QA ([SPEC-pilot-1.md](SPEC-pilot-1.md)). Các bước cài, chỗ vướng, lỗi kit và chi phí ghi ở [tasks/archive/pilot-1/verification.md](tasks/archive/pilot-1/verification.md).
@@ -107,9 +107,10 @@ Trong phiên Claude Code của bạn, ở repo dự án, các lệnh này đưa 
 | `/ao-spec <EPIC> [sửa]` | `ba`, `ux`, `sa` viết SPEC và design, rồi mở PR tài liệu; dừng ở gate ①. Có `[sửa]` thì `ba` sửa SPEC trước gate ① |
 | `/ao-plan <EPIC> [sửa]` | `sa` viết plan, `ba` tạo item; dừng ở gate ②. Có `[sửa]` thì `sa` sửa plan trước gate ②. Chạy lần nữa sau gate ② để refine item và merge PR tài liệu |
 | `/ao-request <KEY>` | Chạy `ba`, `ux` hoặc `sa` cho các yêu cầu `Cần <role>:` còn mở trên item |
-| `/ao-build <KEY>` | Dev agent của từng Sub-task, BE trước FE, tới khi PR mở và CI chạy xong |
-| `/ao-review <PR>` | `reviewer`, rồi `security` (đầy đủ, hoặc chỉ phần mới); dừng ở gate ③ |
-| `/ao-fix <PR> [việc cần sửa]` | Dev agent sửa, rồi review lại |
+| `/ao-build <KEY>` | Dev agent của từng Sub-task, BE trước FE, tới khi PR nháp mở và CI chạy xong; dừng chờ bạn xem trước |
+| `/ao-preview <KEY> [--stop]` | Chuyển thư mục dự án sang nhánh PR và bật app để bạn thử; `--stop` tắt app và về `develop` |
+| `/ao-review <PR>` | Chuyển PR nháp sang sẵn sàng, rồi `reviewer`, `security` (đầy đủ, hoặc chỉ phần mới); dừng ở gate ③ |
+| `/ao-fix <PR> [việc cần sửa]` | Dev agent sửa (theo `be:` / `fe:`); PR nháp thì không review, PR sẵn sàng thì review lại |
 
 Câu hỏi của agent được chuyển cho bạn trong chat. Kết quả và chi phí của mỗi lượt nằm ở `.ai/runs/<KEY>/`. [docs/dev-workflow.md](docs/dev-workflow.md) giải thích các phần sau:
 
@@ -207,7 +208,7 @@ node .ai-orchestrator/scripts/coverage-diff.mjs --base origin/develop  # coverag
 node .ai-orchestrator/scripts/merge-gate.mjs --dry-run     # PR nào sẽ được merge, PR nào còn thiếu gì; không merge
 node .ai-orchestrator/scripts/audit.mjs --sha <commit> --branch develop --dry-run  # commit (hash 7–40 chữ số hex) có qua đủ cổng không; không gắn cờ
 node .ai-orchestrator/scripts/ao-agent.mjs <role> -p "<prompt>"  # chạy một agent làm phiên chính; bỏ -p để làm trực tiếp với agent
-node .ai-orchestrator/scripts/ao-step.mjs <status|intake|spec|plan|request|build|review|fix|qa|release|ship|rollback> [<KEY>|<PR>] [--go]  # bước của lệnh /ao-*: kiểm, rồi chạy với --go
+node .ai-orchestrator/scripts/ao-step.mjs <status|intake|preview|spec|plan|request|build|review|fix|qa|release|ship|rollback> [<KEY>|<PR>] [--go]  # bước của lệnh /ao-*: kiểm, rồi chạy với --go
 node .ai-orchestrator/scripts/render-agents.mjs --project .      # sinh lại agent của dự án: mã space, skill theo stack
 node .ai-orchestrator/scripts/check-design.mjs <design.md>       # kiểm design.md và ảnh của nó, như job policy
 ```
