@@ -230,7 +230,7 @@ Commit của `ba` hay `sa` nằm trong PR của item, nên `reviewer` thấy nó
 
 ### 4.6 `/ao-review` chuyển PR sang sẵn sàng
 
-- Gặp PR nháp, bước đầu của `/ao-review` là một bước script: đánh dấu PR sẵn sàng bằng App `ao-dev`. REST API không làm được việc này, nên bước này gọi mutation GraphQL `markPullRequestReadyForReview`. Bước này không gọi agent.
+- Gặp PR nháp, bước đầu của `/ao-review` là một bước script: đánh dấu PR sẵn sàng bằng App `ao-dev`. REST API không làm được việc này, nên bước này gọi mutation GraphQL `markPullRequestReadyForReview`. Bước này không gọi agent. Token của bước này xin `pull_requests: write` và `contents: write`, hai quyền App đã có: chỉ xin quyền đầu thì GitHub từ chối (T2, tiền đề 3).
 - `jira-sync` chạy theo `ready_for_review`. Khi CI xanh, item sang In Review.
 - Rồi `reviewer` và `security` chạy như cũ.
 - Muốn bỏ qua bước xem trước thì gõ thẳng `/ao-review`.

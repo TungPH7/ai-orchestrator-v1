@@ -11,7 +11,7 @@
 ## Chuẩn bị
 
 - [x] **T1: tài liệu.** Spec ghi đã duyệt, plan, todo, nhật ký Lượt 119–120. PR tài liệu, tự merge khi CI xanh.
-- [ ] **T2 [bạn]: bốn tiền đề trên `ao-sample`** (spec mục 10.2). Không viết code.
+- [x] **T2 [bạn]: bốn tiền đề trên `ao-sample`** (spec mục 10.2). Không viết code.
   1. Một phiên `claude -p` ở `ao-sample` tạo một Epic thử bằng `createJiraIssue`. Hook cho qua, và mô tả markdown hiện đúng trên Jira (heading, danh sách, bảng).
   2. Cùng phiên tạo một Task thử, rồi đổi nó thành Story bằng `editJiraIssue`.
   3. Một nhánh thử `test/ready-probe` có PR nháp. Token của `ao-dev` gọi `markPullRequestReadyForReview`, và PR thành sẵn sàng. Rồi đóng PR, xóa nhánh.
@@ -21,7 +21,7 @@
   - **Kiểm:** đủ bốn kết quả. Tiền đề nào sai thì sửa spec, và bạn duyệt trước T3.
 
 ### Checkpoint 1: sau T2
-- [ ] Bốn tiền đề có kết quả; spec đã sửa nếu cần.
+- [x] Bốn tiền đề có kết quả; spec đã sửa nếu cần. Cả bốn đạt (xem `verification.md`); spec mục 4.6 ghi thêm quyền `contents: write` của token.
 
 ## Phần 1 (A3), nhánh `task/human-loop-part-1`
 
