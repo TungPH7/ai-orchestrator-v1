@@ -1,6 +1,6 @@
 # Bắt đầu với AO Kit
 
-> **Bản nháp** (project-scaffold). Phần 3 và 4 đã được làm thật trên `ao-green` (T16) và `ao-brown` (T17), rồi sửa theo những gì gặp. Phần 5 và 7 viết ở bản cuối (T19). Spec: [SPEC-project-scaffold.md](../SPEC-project-scaffold.md) mục 2.7.
+> Spec: [SPEC-project-scaffold.md](../SPEC-project-scaffold.md) mục 2.7. Mọi lệnh, đầu ra, thời gian và chi phí trong tài liệu này lấy từ lần chạy thật: `ao-green` (phần 3), `ao-brown` (phần 4), Epic `SMP-23` của `ao-sample` (phần 5).
 
 Tài liệu này dành cho dev chưa dùng kit. Bạn đọc từ trên xuống: chuẩn bị một lần, dựng dự án, rồi làm một tính năng từ ý tưởng tới Production. Mỗi lệnh có bốn ý: làm gì, gõ khi nào, kết quả mong đợi, lỗi thì làm gì.
 
@@ -366,7 +366,206 @@ node <kit>/scripts/ao-kit.mjs doctor ao-brown
 
 ## 5. Một tính năng lớn, từ ý tưởng tới Production
 
-Viết ở bản cuối (T19), theo Epic `SMP-23` "Ghim ghi chú" của `ao-sample`, với lệnh, đầu ra, thời gian và chi phí thật.
+Ví dụ thật: Epic `SMP-23` "Ghim ghi chú lên đầu danh sách" của `ao-sample`. Người dùng ghim tối đa 3 ghi chú lên đầu danh sách, rồi bỏ ghim khi không cần nữa. Đoạn từ ý tưởng tới QA chạy ngày 11–12/11/2026 với kit `c6fdfa8`. Đoạn release chạy ngày 13/11 (giờ Việt Nam) với kit hiện tại. Mọi lệnh, đầu ra, thời gian và chi phí dưới đây là của lần chạy đó.
+
+**Chi phí** quy ra USD theo giá API. Gói Pro hay Max không trả theo cách này, nhưng tỉ lệ giữa các lượt vẫn đúng. **Thời gian** là thời gian agent chạy, chưa kể lúc chờ bạn đọc và duyệt. Câu sau tên lệnh ở bước 1, 5, 7 là bản rút gọn của câu đã gõ; kết quả và số liệu là của lần chạy thật.
+
+| Bước | Lệnh | Dừng ở | Bạn làm | Lượt agent | Thời gian | USD |
+|---|---|---|---|---|---|---|
+| 1 | `/ao-intake` | Bản nháp Epic | Trả lời 3 câu, "ok", bấm `Start spec` | Phiên chính | vài phút | 0,14 |
+| 2 | `/ao-spec SMP-23` | Gate ① | Trả lời câu hỏi, yêu cầu sửa, bấm `Approve spec` | 9 | 24 phút | 6,10 |
+| 3 | `/ao-plan SMP-23` | Gate ② | Yêu cầu sửa, bấm `Approve plan` | 5 | 29 phút | 8,80 |
+| 4 | `/ao-build SMP-24` | PR nháp | | 3 | 45 phút | 13,45 |
+| 5 | `/ao-preview`, `/ao-fix`, `/ao-request` | PR nháp đã sửa | Xem app, yêu cầu sửa | 6 | 22 phút | 7,26 |
+| 6 | `/ao-review 23` | Gate ③ | Đọc báo cáo, approve PR | 2 | 23 phút | 5,88 |
+| 7 | `/ao-qa`, `QA fail`, làm lại, QA lại | Báo cáo QA | Báo lỗi, approve PR lần hai, bấm `Accept` | 8 | 58 phút | 12,46 |
+| 8 | `/ao-release` | Gate ④ | Tạo Fix Version, duyệt điểm cắt | 0 | 48 giây | 0 |
+| 9 | `/ao-ship v0.2.0` | Gate ⑤ | UAT trên Staging, approve PR release | 2 | 6,6 phút | 1,05 |
+| 10 | Production | | Bấm `Release`, `Complete` | 0 | 28 giây | 0 |
+| | **Tổng** | | | **35** | **khoảng 3,5 giờ** | **khoảng 55,1** |
+
+Ba lượt chạm giới hạn usage 5 giờ của tài khoản. Lần nào cũng vậy: chạy lại đúng lệnh khi hạn mức mở lại, và agent chạy tiếp đúng phiên của nó (phần 7).
+
+### Bước 1. Ý tưởng thành Epic: `/ao-intake`
+
+```
+/ao-intake ghim ghi chú lên đầu danh sách
+```
+
+- **Chuyện xảy ra:** Claude ở phiên chính hỏi bạn từng câu một. Với `SMP-23` có ba câu: ghim tối đa bao nhiêu ghi chú (3), trạng thái ghim lưu ở đâu (ở API, nên giống nhau ở mọi trình duyệt), và phạm vi. Claude viết bản nháp theo template Epic vào `.ai/intake/`.
+- **Dừng ở:** bản nháp. Bạn trả lời "ok" thì Epic `SMP-23` mới được tạo trên Jira, ở trạng thái New.
+- **Bạn bấm:** `Start spec` trên Epic. Epic sang Specifying.
+- **Chi phí:** 0,14 USD.
+
+### Bước 2. SPEC và thiết kế: `/ao-spec SMP-23` tới gate ①
+
+```
+/ao-spec SMP-23
+```
+
+- **Chuyện xảy ra:**
+  - `ba` viết `docs/specs/SMP-23/spec.md` với AC1–AC11, rồi hỏi 4 câu. Claude đưa câu hỏi ra chat bằng tiếng Việt. Bạn trả lời "ok cả 4", Claude chép nguyên văn câu trả lời rồi chạy tiếp.
+  - `ux` vẽ màn hình S1 trong `design.md` và hỏi 8 câu. Bạn trả lời "Ok cả 8".
+  - `ux` comment `Cần ba:` để thêm hai câu cho trình đọc màn hình, và lệnh tự gọi `ba` làm việc đó ngay.
+  - `sa` không chạy, vì SPEC đã có mục NFR.
+  - `ba` mở PR tài liệu #22.
+- **Sửa trước gate:** gõ yêu cầu ngay sau mã Epic, ví dụ:
+
+  ```
+  /ao-spec SMP-23 gộp ba Story thành một
+  ```
+
+  `ba` gộp Story và giữ nguyên AC1–AC11, rồi comment `Cần ux:`. Lệnh tự gọi `ux` sửa cột User story của `design.md`.
+- **Gate ①:** đọc `spec.md` và `design.md` trong PR #22, rồi bấm `Approve spec` trên Epic.
+- **Thời gian, chi phí:** 9 lượt (`ba` 6, `ux` 3), 24 phút, 6,10 USD. Lượt đắt nhất là `ba` viết SPEC (7,9 phút, 1,73 USD).
+
+### Bước 3. Plan: `/ao-plan SMP-23` tới gate ②
+
+```
+/ao-plan SMP-23
+```
+
+- **Chuyện xảy ra:**
+  - `sa` viết `plan.md` cùng ADR-0003 và ADR-0004 (15,6 phút, 3,74 USD).
+  - `ba` tạo Story `SMP-24` "Ghim và bỏ ghim", với Sub-task BE `SMP-25` và FE `SMP-26`. Lượt này chạm giới hạn 5 giờ giữa chừng, và chạy tiếp đúng phiên khi gõ lại lệnh.
+- **Sửa trước gate:**
+
+  ```
+  /ao-plan SMP-23 chuyển E2E của AC11 và pin-helpers.ts sang Sub-task FE
+  ```
+
+  `sa` sửa plan trên PR #22 rồi comment `Cần ba:`. Lệnh tự gọi `ba` sửa Sub-task trên Jira.
+- **Gate ②:** đọc `plan.md`, rồi bấm `Approve plan`. `merge-gate` merge PR #22 (`d9030d9`), và `SMP-24` sang Ready.
+- **Thời gian, chi phí:** 5 lượt, 29 phút, 8,80 USD.
+
+### Bước 4. Code: `/ao-build SMP-24`
+
+```
+/ao-build SMP-24
+```
+
+- **Chuyện xảy ra:**
+  - `be-dev` làm Sub-task BE theo TDD: 13,1 phút, 3,68 USD.
+  - `fe-dev` làm Sub-task FE trên cùng nhánh Story. Lượt đầu chạm giới hạn ở 2,70 USD, lượt chạy tiếp thêm 22,9 phút và 7,07 USD.
+  - `fe-dev` mở PR nháp #23. Item vẫn ở In Progress: PR nháp chưa sang In Review.
+- **Dừng ở:** PR nháp chờ bạn xem trước. Ảnh màn hình S1 (desktop, mobile) và mẫu API nằm trong `.ai/runs/SMP-24/preview/`.
+- **Đo được:** unit test api 246, web 256; integration của API 74; E2E 49.
+- **Thời gian, chi phí:** 3 lượt, 45 phút, 13,45 USD.
+
+### Bước 5. Xem trước và sửa: `/ao-preview`, `/ao-fix`
+
+```
+/ao-preview SMP-24
+```
+
+- **Chuyện xảy ra:** thư mục dự án chuyển sang nhánh của PR, rồi bật `api` ở `:3001` và `web` ở `:3000`. Bạn dùng thử app trên trình duyệt.
+
+```
+/ao-fix 23 đảo thứ tự trong nhóm đã ghim: ghim sau cùng đứng trên cùng
+be: trả danh sách theo thứ tự mới
+fe: hiển thị theo thứ tự mới, sửa E2E
+```
+
+- **Chuyện xảy ra:**
+  - Claude hỏi yêu cầu này đổi gì. Bạn chọn "đổi AC", nên lệnh chạy với `--change ac`.
+  - Bước kiểm tự tắt bản xem trước.
+  - `ba` sửa AC1, AC2 trên Jira và trong SPEC trên nhánh của PR, rồi comment `Cần sa:` và `Cần ux:` trên Epic.
+  - `be-dev` và `fe-dev` sửa phần của mình, theo dòng `be:` và `fe:`. PR vẫn là nháp, chưa review.
+- **Thời gian, chi phí:** 4 lượt, 19 phút, 6,27 USD.
+- **Yêu cầu còn mở:** `/ao-request SMP-23` chạy `sa` và `ux` cho hai comment trên. Hai lượt hết 3,4 phút, 0,99 USD.
+
+### Bước 6. Review: `/ao-review 23` tới gate ③
+
+```
+/ao-review 23
+```
+
+- **Chuyện xảy ra:**
+  - PR thôi là nháp. `jira-sync` đưa item sang In Review.
+  - `reviewer` (effort `xhigh`) báo 1 Medium (plan và design còn tả thứ tự cũ) và 2 Low: 8,7 phút, 2,39 USD.
+  - `security` (effort `max`) không có finding: 14,1 phút, 3,49 USD.
+- **Gate ③:** đọc hai báo cáo và diff, rồi approve PR. `merge-gate` merge (`a39067b`), và deployer đưa bản lên Development.
+- **Thời gian, chi phí:** 2 lượt, 23 phút, 5,88 USD.
+
+### Bước 7. QA, có cả `QA fail`: `/ao-qa SMP-24`
+
+Bạn tự thử trên Development và thấy lỗi: `id` có mã `%` hỏng, như `%FF`, nhận 400 thay vì 404.
+
+```
+/ao-qa SMP-24 fail: id có mã % hỏng (%FF, %C3%28) nhận 400 INVALID_BODY; mong đợi 404 như id không tồn tại
+```
+
+- **Chuyện xảy ra:**
+  - Lỗi này chưa có trong AC, nên lệnh chạy với `--change ac`. `ba` thêm AC12 trên Jira.
+  - `qa` tái hiện lỗi bằng `curl` và trên trang, viết báo cáo FAIL, rồi bấm `QA fail`. Item về In Progress.
+- **Làm lại:**
+
+  ```
+  /ao-build SMP-24
+  ```
+
+  - Story có hai Sub-task, nên lệnh dừng hỏi cách chia việc. Bạn duyệt: `be:` sửa API, `fe:` thêm E2E cho AC12.
+  - Nhánh mới `feature/SMP-24-pin-notes-r2` tách từ `develop`.
+  - `ba` đưa AC12 vào `spec.md`. `be-dev` viết test trước, thấy test fail với 400, rồi sửa. `fe-dev` thêm 5 E2E và mở PR nháp #24.
+  - `/ao-review 24`: PR không đổi giao diện, nên không cần xem trước. `reviewer` báo 4 Low, `security` không có finding. Bạn approve; `merge-gate` merge (`61f4cec`).
+- **QA lại:**
+
+  ```
+  /ao-qa SMP-24
+  ```
+
+  `qa` báo PASS cho AC1–AC12, 54/54 E2E trên Development. Item sang In QA. Bạn bấm `Accept`, và `SMP-24` sang Done.
+- **Thời gian, chi phí:** 8 lượt, 58 phút, 12,46 USD. Riêng vòng `QA fail` và làm lại hết 11,27 USD.
+
+### Bước 8. Cắt release: `/ao-release` tới gate ④
+
+```
+/ao-release
+```
+
+- **Chuyện xảy ra** (13 giây, không agent): lệnh in điểm cắt và các item sẽ vào bản:
+
+  ```
+  develop: 5 commits since v0.1.0; cut point 61f4cec "fix(notes): answer 404 for pin ids that do not decode to UTF-8 (SMP-24)"
+  In v0.2.0: SMP-22, SMP-24 (Done)
+  Fix Versions on Jira: v0.2.0 (unreleased), v0.3.0 (missing)
+  STOP: gate ④ waits for the Fix Version v0.3.0 on Jira
+  ```
+
+- **Bạn tạo Fix Version:** kit cần cả bản sẽ cắt và bản kế tiếp. Vào space trên Jira → **Releases** → **Create version** → gõ `v0.3.0` → **Save**.
+- **Gate ④:** duyệt điểm cắt và danh sách, rồi gõ:
+
+  ```
+  /ao-release v0.2.0 61f4cec
+  ```
+
+  Lệnh chạy 35 giây, không agent: gắn Fix Version `v0.2.0` cho các item, rồi tạo nhánh `release/v0.2.0` dưới tên bot `ao-dev`. Deployer đưa bản lên Staging sau 28 giây.
+
+### Bước 9. Phát hành: `/ao-ship v0.2.0` tới gate ⑤
+
+```
+/ao-ship v0.2.0
+```
+
+- **Chuyện xảy ra** (396 giây):
+  - `qa` chạy regression trên Staging: 54/54 E2E qua, không có Bug mở. 2 phút, 0,42 USD.
+  - `devops` viết release note: phần cho `CHANGELOG.md`, mô tả PR, mô tả Fix Version. 1,6 phút, 0,63 USD.
+  - Script commit `docs/releases/v0.2.0.md` và `CHANGELOG.md` lên nhánh release, rồi mở PR #28 vào `main`.
+- **Gate ⑤:**
+  1. Làm UAT trên Staging: ghim, ghim tới giới hạn 3, bỏ ghim, tải lại trang.
+  2. Đọc PR #28.
+  3. Approve PR, nhưng **không merge**.
+
+  Chưa tới một phút sau, `merge-gate` merge bằng merge commit (`ab62bfb`), gắn tag `v0.2.0`, rồi mở và merge PR #29 đưa `main` về `develop`.
+
+### Bước 10. Production, `Release`, `Complete`
+
+- Deployer đưa `v0.2.0` lên Production sau 28 giây. `/ao-status` in `Production v0.2.0 (ab62bfbf)`.
+- **Bạn bấm trên Jira:**
+  - **Release** Fix Version `v0.2.0`. Dán vào mô tả nội dung file `.ai/runs/v0.2.0/fix-version.md` mà `devops` đã viết.
+  - **Complete** Epic `SMP-23`.
+
+  Ở lần chạy này, hai việc trên do Claude làm qua API theo lời bạn nhờ. Kit chưa có lệnh riêng cho chúng.
 
 ## 6. Bảng tra lệnh
 
@@ -374,32 +573,84 @@ Viết ở bản cuối (T19), theo Epic `SMP-23` "Ghim ghi chú" của `ao-samp
 
 | Lệnh | Làm gì | Gõ khi nào | Thường dừng ở | Kế tiếp |
 |---|---|---|---|---|
-| `/ao-status [KEY]` | Việc đang chờ bạn, lệnh kế tiếp, chi phí | Bất cứ lúc nào | Không chạy agent | Lệnh nó gợi ý |
-| `/ao-intake <ý tưởng>` | Phỏng vấn bạn, rồi tạo Epic, Task hay Bug | Có ý tưởng mới | Chờ bạn "ok" bản nháp | Bấm `Start spec` (Epic), hoặc `/ao-build` (Task, Bug đã Ready) |
+| `/ao-status [KEY]` | Việc đang chờ bạn, lệnh kế tiếp, chi phí, bản đang chạy ở ba môi trường | Bất cứ lúc nào | Không chạy agent | Lệnh nó gợi ý |
+| `/ao-intake <ý tưởng>` | Phỏng vấn bạn, rồi tạo Epic, Task hay Bug | Có ý tưởng mới, hay thấy lỗi | Chờ bạn "ok" bản nháp | Bấm `Start spec` (Epic), hoặc `/ao-build` (Task, Bug đã Ready) |
 | `/ao-spec <EPIC> [sửa]` | `ba`, `ux`, `sa` viết SPEC và design, mở PR tài liệu | Epic ở Specifying | Gate ①, hoặc câu hỏi cho bạn | Bấm `Approve spec`, rồi `/ao-plan` |
-| `/ao-plan <EPIC> [sửa]` | `sa` viết plan, `ba` tạo item | Epic ở Planning | Gate ② | Bấm `Approve plan`, rồi `/ao-plan` lần hai |
+| `/ao-plan <EPIC> [sửa]` | `sa` viết plan, `ba` tạo item | Epic ở Planning | Gate ② | Bấm `Approve plan` |
 | `/ao-request <KEY>` | Chạy các yêu cầu `Cần ba:`, `Cần ux:`, `Cần sa:` còn mở | `/ao-status` báo có yêu cầu mở | Hết yêu cầu | Lệnh trước đó |
-| `/ao-build <KEY>` | Dev agent code, mở PR nháp | Item Ready, hoặc sau `QA fail` | PR nháp chờ bạn xem trước | `/ao-preview` hoặc `/ao-review` |
+| `/ao-build <KEY> [be: … fe: …]` | Dev agent code, mở PR nháp | Item Ready, hoặc sau `QA fail` | PR nháp chờ bạn xem trước | `/ao-preview` hoặc `/ao-review` |
 | `/ao-preview <KEY> [--stop]` | Bật app của PR trên máy bạn | PR nháp mở, CI xanh | App chạy, in URL | `/ao-fix` hoặc `/ao-review` |
-| `/ao-fix <PR> [sửa]` | Dev agent sửa; `be:`/`fe:` chia việc | Bạn muốn sửa, CI đỏ, review có lỗi | Đẩy xong phần sửa | `/ao-review` |
-| `/ao-review <PR>` | `reviewer`, `security` review | PR sẵn sàng review | Gate ③ | Approve PR |
-| `/ao-qa <KEY> [fail: …]` | `qa` kiểm trên môi trường QA | Item Ready for QA | Báo cáo QA | Bấm `Accept`, hoặc `/ao-build` sau `QA fail` |
+| `/ao-fix <PR> [sửa]` | Dev agent sửa; `be:`/`fe:` chia việc; hỏi bạn yêu cầu có đổi AC không | Bạn muốn sửa, CI đỏ, review có lỗi | Đẩy xong phần sửa | `/ao-preview` lần nữa, hoặc `/ao-review` |
+| `/ao-review <PR>` | Chuyển PR nháp sang sẵn sàng; `reviewer`, `security` review | Bạn đã xem trước xong | Gate ③ | Approve PR |
+| `/ao-qa <KEY> [fail: …]` | `qa` kiểm trên môi trường QA; với `fail:`, tái hiện lỗi bạn thấy | Item Ready for QA | Báo cáo QA | Bấm `Accept`, hoặc `/ao-build` sau `QA fail` |
 | `/ao-release [<vX.Y.0> <sha>]` | In điểm cắt; có tham số thì cắt nhánh release | Có item Done chưa phát hành | Gate ④ | `/ao-ship` |
-| `/ao-ship <vX.Y.Z>` | Regression, release note, PR release | Nhánh release đã lên Staging | Gate ⑤ | Bấm Release Fix Version |
-| `/ao-rollback <môi trường> [<sha>]` | Chạy lại bản trước | Bản mới lỗi | Deploy xong | `/ao-status` |
+| `/ao-ship <vX.Y.Z>` | Regression, release note, PR release | Nhánh release đã lên Staging | Gate ⑤ | Bấm `Release` Fix Version, `Complete` Epic |
+| `/ao-rollback <môi trường> [<sha>]` | Chạy lại bản trước, hoặc một commit bạn chỉ | Bản mới lỗi | Deploy xong | `/ao-status` |
 
 **Lệnh `ao-kit`**, gõ trong Git Bash: `node <kit>/scripts/ao-kit.mjs <lệnh> <thư mục dự án>`.
 
 | Lệnh | Làm gì | Gõ khi nào |
 |---|---|---|
-| `init` | Dựng khung (thư mục trống) hoặc chỉ cài kit (repo có code) | Lần đầu của mỗi dự án |
-| `setup jira` | Space, board, bộ lọc, rồi `jira:check` | Sau `init` |
-| `setup github` | Nhánh mặc định, Dependabot, environment, secret, ruleset | Sau khi `develop` lên GitHub |
-| `doctor` | Kiểm mọi thứ, mỗi dòng kèm việc cần làm | Sau mỗi bước, và khi có gì lạ |
-| `check` | Kiểm `project.yaml` | Sau khi sửa `project.yaml` |
+| `init` | Dựng khung (thư mục trống) hoặc chỉ cài kit (repo có code); thêm `origin` nếu thiếu | Lần đầu của mỗi dự án |
+| `setup jira` | Space, board, bộ lọc, rồi `jira:check`; in từng chỗ còn lệch | Sau `init` |
+| `setup github` | Nhánh mặc định, Dependabot, environment, secret, ruleset | Ngay sau khi `develop` lên GitHub |
+| `doctor` | Kiểm máy, repo, GitHub, Jira, Claude Code; mỗi dòng kèm việc cần làm | Sau mỗi bước, và khi có gì lạ |
+| `check` | Kiểm `project.yaml`, đối chiếu với `deploy.yaml` và `package.json` | Sau khi sửa `project.yaml` |
 | `render` | Sinh lại `settings.json` và agent | Sau khi sửa `project.yaml` |
-| `sync --key <KEY>` | Chép bản kit mới vào dự án, trên nhánh riêng | Khi kit có bản mới |
+| `sync --key <KEY>` | Chép bản kit mới vào dự án, trên nhánh riêng, một commit, không push | Khi kit có bản mới |
 
 ## 7. Việc thường ngày và khi gặp sự cố
 
-Viết ở bản cuối (T19).
+### Cập nhật kit trong dự án
+
+1. Trong thư mục kit: `git pull`, rồi `npm ci`.
+2. Tạo một Task cho việc chép kit: `/ao-intake Task chép kit <bản mới> vào <dự án>`.
+3. Chạy:
+
+   ```
+   node <kit>/scripts/ao-kit.mjs sync <thư mục dự án> --key <KEY của Task>
+   ```
+
+   Lệnh tạo nhánh `feature/<KEY>-kit-copy` từ `develop`, chép kit, sinh lại `settings.json` và agent, rồi commit một lần. Lệnh không push. Dự án có từ trước `project-scaffold` thì được viết thêm `project.yaml` từ các file cũ.
+4. Push nhánh, mở PR, rồi `/ao-review <PR>`. PR chép kit sửa đường dẫn được bảo vệ (`.ai-orchestrator/`, `.claude/`, workflow), nên `merge-gate` không merge. Bạn đọc báo cáo, approve, rồi tự merge. Ở `ao-sample`, PR chép kit `c6fdfa8` (`SMP-22`) cần hai vòng review, hết 22,99 USD cả QA.
+
+### Hết usage giữa chừng
+
+- Lượt agent dừng với lý do giới hạn usage. `/ao-status` báo item đang dở.
+- Chờ tới giờ hạn mức mở lại, rồi gõ **đúng lệnh cũ**. `ao-step` chạy tiếp đúng phiên của agent đó. Phần code dev agent chưa commit được cất vào stash có nhãn, rồi được áp lại trước khi chạy tiếp.
+- Ở `SMP-23`, chuyện này xảy ra ba lần. Không lần nào phải làm lại từ đầu.
+
+### CI đỏ
+
+- Mở log của job đỏ. [docs/quality-gates.md](quality-gates.md) giải thích từng job, lỗi thường gặp và cách sửa.
+- PR của agent: gõ `/ao-fix <PR>`, dev agent sửa theo log CI.
+- PR do bạn mở: sửa rồi push thêm commit.
+- **Không merge PR khi CI còn đỏ.** Repo private trên gói Free không có ruleset, nên nút merge vẫn bấm được.
+
+### Lỗi trên Production
+
+- **Lỗi nặng (critical, high):** `/ao-intake` mở Bug. Bug đi trên nhánh `hotfix/<KEY>-<slug>` tách từ `main`, rồi QA trên Staging và Production. Bảng nhánh theo nơi thấy lỗi và mức độ nằm trong [docs/sdlc.md](sdlc.md).
+- **Cần lùi ngay:**
+
+  ```
+  /ao-rollback production
+  ```
+
+  Deployer chạy lại bản trước, không build lại. Ở Pilot 2, `/ao-rollback development` chạy lại bản cũ và báo `success`. Lệnh sau đó, với một commit cụ thể, đưa bản mới trở lại. Chi tiết ở [docs/release-workflow.md](release-workflow.md).
+
+### Khi một lệnh dừng
+
+- Đọc dòng `STOP:` và dòng `Next:`: lệnh luôn nói lý do và việc kế tiếp. Báo cáo đầy đủ nằm ở `.ai/runs/<KEY>/last.md`.
+- Agent cần bạn quyết thì gắn cờ "Needs you" lên item và dừng. `/ao-status` liệt kê những item đó.
+- Hook từ chối một lệnh của agent thì agent trích nguyên văn lý do rồi dừng, không tìm đường khác.
+
+### Đọc sâu hơn
+
+| Tài liệu | Nội dung |
+|---|---|
+| [docs/dev-workflow.md](dev-workflow.md) | Vòng một item: các lệnh `/ao-*`, nhánh, PR, xem trước, sửa |
+| [docs/release-workflow.md](release-workflow.md) | Cắt release, phát hành, hotfix, rollback, deployer |
+| [docs/quality-gates.md](quality-gates.md) | Hook git, bốn job CI, `merge-gate`, `audit` |
+| [docs/AGENTS.md](AGENTS.md) | Mười agent, effort, skill, chi phí đo được |
+| [docs/vps-setup.md](vps-setup.md) | Dựng VPS, deployer, thêm dự án |
+| [docs/jira-setup.md](jira-setup.md) | Site, service account, workflow, board |

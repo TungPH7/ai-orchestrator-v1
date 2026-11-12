@@ -153,3 +153,47 @@ Lỗi chỉ lần chạy thật bắt được:
 - Phần 4 của hướng dẫn viết lại thành 8 bước, theo đúng những gì đã chạy. Đoạn mẫu của `/ao-intake` có thêm hai ý mà phỏng vấn đã hỏi: `main` giữ nguyên tới lần release đầu, và cách sửa khi `doctor` chưa đạt.
 - Lượt cập nhật bảo mật `minimatch` của Dependabot đỏ. Chưa tìm hiểu, vì không chặn T17.
 - Ở Lượt 171 mình đoán lượt CI đầu trên `develop` sẽ không kéo theo `jira-sync`. Đoán sai: `jira-sync` vẫn chạy (`workflow_run`, xanh), vì `setup github` đã đổi nhánh mặc định sang `develop` trước khi CI chạy xong.
+- `AOG-2`, `AOG-3` Cancelled (Lượt 180). Kit PR #257 (`506b002`).
+
+**T18, release `v0.2.0` của `ao-sample`, 2026-11-13 (xong).** Từ Lượt 181, bạn cho mình tự làm theo đề xuất; mình chỉ hỏi khi tới merge, gate ④ và ⑤, và các nút bấm trên Jira.
+- `/ao-release` (dòng kiểm, 13 giây):
+  - `develop` có 5 commit kể từ `v0.1.0`; điểm cắt là `61f4cec`, cũng là đầu `develop`;
+  - item vào `v0.2.0`: `SMP-22`, `SMP-24`;
+  - `STOP: gate ④ waits for the Fix Version v0.3.0 on Jira`. Bạn tạo `v0.3.0` rồi duyệt gate ④.
+- `/ao-release v0.2.0 61f4cec --go`, 35 giây, không chạy agent:
+  - Fix Version `v0.2.0` được gắn vào `SMP-22`, `SMP-24`;
+  - nhánh `release/v0.2.0` được tạo tại `61f4cec`, dưới tên `tungph7-ao-dev[bot]`.
+
+  Deployer đưa lên Staging: deployment 7745767125 tạo lúc 18:16:12Z, `success` lúc 18:16:40Z.
+- `/ao-ship v0.2.0`: dòng kiểm in `GO` với ba bước: `qa` regression (`high`), `devops` release notes (`high`), rồi script mở PR release. Lượt chạy thật bắt đầu lúc 18:17:34Z, tổng cộng 396 giây.
+
+| Lượt | Model, effort | Kết quả | USD | Phút |
+|---|---|---|---|---|
+| `qa` regression trên Staging | Opus, `high` | 54/54 E2E qua (1 `@local`, 53 trên Staging), 43,5 giây; `Result: PASS`; không có Bug mở | 0,42 | 2 |
+| `devops` release notes | Opus, `high` | `changelog.md`, `pr-description.md`, `fix-version.md` | 0,63 | 1,6 |
+
+  - `gh-guard` chặn một lệnh của `qa`: "do not put the basic auth password on a command line". Lệnh đó là bước kiểm `qa` tự thêm, nên agent bỏ qua và đi tiếp, đúng luật.
+  - Script commit `docs/releases/v0.2.0.md` và `CHANGELOG.md` (`33a2933`, tên `tungph7-ao-dev[bot]`), rồi mở PR #28 từ `release/v0.2.0` vào `main`. Kết quả: `STOP: gate ⑤: PR #28 … waits for your approval on its head 33a29330`.
+- **CI của `release/v0.2.0` đúng như đã báo trước:**
+  - Lượt push đầu (`61f4cec`, run 43278006032) đỏ ở `sast`, vì `scripts/dev.mjs` (`spawn-shell-true`). Ba job kia xanh.
+  - Lượt push và lượt PR của `33a2933` đều xanh, nhờ có baseline.
+  - Staging đã deploy `33a2933` lúc 18:24:04Z. Lượt đỏ đầu tiên không chặn gì.
+- **Gate ⑤:** bạn làm UAT trên Staging rồi approve PR #28.
+  - `jira-sync` chạy theo review. `merge-gate` merge PR lúc 18:30:10Z (`ab62bfb`, `app/tungph7-ao-dev`), sau khi bạn approve chưa tới một phút, và gắn tag `v0.2.0` tại `ab62bfb`.
+  - Production deployment 7746116760: tạo lúc 18:30:49Z, `success` lúc 18:31:17Z.
+  - Kiểm từ ngoài: `/notes` 200, `/api/notes` 200 với `{"data":[]}`. Ghi chú mất sau mỗi lần deploy, như Known Issues đã ghi.
+  - PR #29 `Merge main into develop after v0.2.0`: CI xanh, `merge-gate` merge lúc 18:32:51Z (`b189631`).
+- **Release trên Jira** (Lượt 184, bạn nhờ mình làm): một script dùng token admin của bạn, gọi `PUT /rest/api/3/version/10004`. Kết quả: `v0.2.0` thành `released: true`, `releaseDate` 2026-11-13, mô tả là nguyên văn `fix-version.md` (1537 ký tự, Jira nhận đủ). Trước khi ghi, script kiểm cả hai item `SMP-22`, `SMP-24` đều Done. Đây là bước người dùng có thể giao cho phiên chính. Bản cuối của hướng dẫn nên ghi cả hai cách: tự bấm, hoặc nhờ Claude.
+- **Complete `SMP-23`** (Lượt 185, bạn nhờ mình làm): script kiểm Epic có một item con là `SMP-24` (Done, `v0.2.0`), thấy có transition `Complete`, rồi `POST` transition đó, nhận 204. `SMP-23` giờ ở Done, resolution Done.
+- `/ao-status` của `ao-sample`: `Running: Development b1896318, Staging 33a29330, Production v0.2.0 (ab62bfbf)`. Item còn chờ bạn duy nhất: Epic `SMP-19` ở New.
+- **T18 xong.** Tổng tiền agent 1,05 USD. Thời gian từ dòng kiểm `/ao-release` tới Production khoảng 16 phút (18:15–18:31Z), kể cả thời gian bạn làm UAT.
+
+**T19, bản cuối của `docs/getting-started.md`, 2026-11-13.**
+- Phần 5 viết theo `SMP-23`, từ `/ao-intake` tới `Complete`, thành 10 bước. Số liệu lấy từ `state.json` của `.ai/runs/SMP-23/` và `.ai/runs/SMP-24/` trong `ao-sample`, cùng `.ai/runs/v0.2.0/last.md`:
+  - 35 lượt agent, khoảng 208 phút thời gian agent, khoảng 55,1 USD (T20 của `human-loop` 54,08 USD, cộng `/ao-ship` 1,05 USD);
+  - từng giai đoạn: SPEC 9 lượt 6,10 USD; plan 5 lượt 8,80 USD; build 3 lượt 13,45 USD; xem trước, sửa và yêu cầu 6 lượt 7,26 USD; review 2 lượt 5,88 USD; vòng QA fail, làm lại và QA lại 8 lượt 12,46 USD; release 2 lượt 1,05 USD.
+- Câu gõ sau tên lệnh ở bước 1, 5, 7 là bản rút gọn. Lần chạy thật của intake ở T20 dùng một phiên `claude -p`, không có một câu `/ao-intake` gõ sẵn. Hướng dẫn ghi rõ điều này.
+- Phần 6 thêm cú pháp `be:`/`fe:`, câu hỏi "yêu cầu đổi gì" của `/ao-fix`, và các thay đổi của `ao-kit` từ T16, T17. Phần 7 gồm: cập nhật kit, hết usage, CI đỏ, lỗi trên Production (hotfix, rollback), khi một lệnh dừng, và bảng tài liệu đọc thêm.
+- `README.md`: mục cài kit bỏ danh sách 9 bước, chỉ còn trỏ tới hướng dẫn, kèm danh sách những gì `init` và `sync` chép vào dự án (test `repo.test.mjs` đòi các ý này).
+- Test mới trong `tests/repo.test.mjs` kiểm: README trỏ tới hướng dẫn và không còn danh sách bước; hướng dẫn có đủ bảy phần; không còn ghi chú "Bản nháp"; phần 5 có `SMP-23` tới `Complete`. Test này viết sau khi nội dung đã có, nên không có lần đỏ trước. Lần chạy đầu của nó đỏ vì chính nó bắt nhầm chữ "bản nháp" của `/ao-intake`, đã thu hẹp lại.
+- Năm lệnh kiểm xanh (1278 test).

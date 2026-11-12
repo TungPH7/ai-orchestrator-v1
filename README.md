@@ -142,25 +142,22 @@ Bốn lệnh đưa code từ `develop` lên Development, Staging và Production 
 
 ## Cài kit vào repo dự án
 
-Thư mục `kit/` chứa các file đặt vào repo dự án, giữ đúng đường dẫn tương đối. Từ `project-scaffold`, `node <kit>/scripts/ao-kit.mjs init <thư mục>` làm các bước 1–4 dưới đây: thư mục trống thì dựng thêm khung app theo profile `next-nest`; repo đang có code thì chỉ chép kit và liệt kê việc còn thiếu. `ao-kit sync` chép bản kit mới vào dự án trên một nhánh riêng. `ao-kit setup github` và `ao-kit setup jira` làm phần GitHub và Jira mà API cho phép; `ao-kit doctor` liệt kê những gì còn thiếu. Các bước còn lại vẫn làm theo danh sách dưới đây, cho tới khi có `docs/getting-started.md`. Từng bước ở Pilot 1, ai làm và vướng ở đâu: mục "Đầu vào cho `project-scaffold`" của [tasks/archive/pilot-1/verification.md](tasks/archive/pilot-1/verification.md).
+Làm theo [docs/getting-started.md](docs/getting-started.md). Tài liệu này đi từng lệnh, mỗi lệnh có ý nghĩa, kết quả mong đợi chép từ lần chạy thật, và cách xử lý khi lỗi:
+- chuẩn bị máy và tài khoản (phần 2);
+- dự án mới từ thư mục trống (phần 3);
+- repo đang phát triển (phần 4);
+- một tính năng lớn từ ý tưởng tới Production (phần 5);
+- cập nhật kit, hết usage, hotfix, rollback (phần 7).
 
-1. Tạo `.ai-orchestrator/` ở gốc repo dự án. Chép vào đó `contract/`, `lib/`, `tracker/`, `quality/`, `agents/`, `templates/`, cùng `package.json` và `package-lock.json` của kit, và chép `docs/sdlc.md` thành `.ai-orchestrator/docs/sdlc.md`, vì template trỏ tới DoD trong đó. Chép vào `.ai-orchestrator/scripts/` các script `ao-agent.mjs`, `ao-git-credential.mjs`, `ao-pr.mjs`, `ao-step.mjs`, `audit.mjs`, `check-design.mjs`, `check-policy.mjs`, `commit-msg.mjs`, `coverage-diff.mjs`, `install-hooks.mjs`, `jira-sync.mjs`, `merge-gate.mjs`, `pre-commit.mjs`, `pre-push.mjs`, `render-agents.mjs`. Chạy `npm ci --prefix .ai-orchestrator`, như các workflow.
-2. Chép `kit/.claude/`, `kit/.githooks/`, `kit/.mcp.json`, `kit/.jira/config.yml` và ba workflow trong `kit/.github/workflows/` (`ci.yml`, `jira-sync.yml`, `merge-gate.yml`) vào gốc repo. Viết `.ai-orchestrator/project.yaml`, file cấu hình của dự án ([SPEC-project-scaffold.md](SPEC-project-scaffold.md) mục 2.1): mã space, login GitHub của bạn, slug và App ID của hai App, các app. `node <kit>/scripts/ao-kit.mjs check .` kiểm file này. Rồi chạy `node .ai-orchestrator/scripts/render-agents.mjs --project .`. Lệnh này sinh `.claude/settings.json` từ hook, quyền của kit và `env` của `project.yaml`, điền mã space vào agent, và gộp skill theo stack của `.ai-orchestrator/roster.local.yaml`, nếu có. Đừng sửa tay `settings.json`: sửa `project.yaml` rồi chạy lại lệnh.
-3. Thêm `.ai-orchestrator/node_modules/`, `.claude/settings.local.json`, `.ai/` và `.playwright-cli/` vào `.gitignore`. `.ai/` giữ ledger, báo cáo và ảnh của agent; `.playwright-cli/` là snapshot mà `playwright-cli` tự ghi.
-4. Trong `package.json` của dự án, khai các script mà job `build-test` chạy: `lint`, `typecheck`, `test:coverage` (ghi lcov vào `coverage/lcov.info`) và `build`. Thêm `"prepare": "node .ai-orchestrator/scripts/install-hooks.mjs"` để `npm install` tự cài hook git. Script `precommit`, ví dụ lint các file đã stage, là tùy chọn; hook `pre-commit` gọi nó sau secretlint.
-5. Tạo hai GitHub App theo [docs/github-apps-setup.md](docs/github-apps-setup.md), cài vào repo, rồi đặt `AO_DEV_APP_KEY_FILE` và `AO_REVIEW_APP_KEY_FILE` trên máy bạn.
-6. Trên GitHub:
-   - đặt `develop` làm nhánh mặc định: **Settings** → **General** → mục **Default branch**, bấm nút hai mũi tên, chọn `develop`, rồi bấm **Update** **(đối chiếu giao diện)**. `merge-gate` và `jira-sync` chạy bằng bản trên nhánh mặc định, nên một bản sửa của kit có hiệu lực ngay khi PR của nó vào `develop`;
-   - tạo ba environment `development`, `staging`, `production`;
-   - tạo environment `merge-gate` chỉ cho `develop`, với secret `AO_DEV_APP_KEY`; từng bước ở mục "Environment `merge-gate`" của [docs/quality-gates.md](docs/quality-gates.md);
-   - đặt secret `JIRA_CI_TOKEN`;
-   - dựng deployer theo [docs/vps-setup.md](docs/vps-setup.md): deployer chạy `audit` cho mọi commit mới, nên dự án không cần workflow deploy. Chỉ dự án tự deploy bằng GitHub Actions mới chép thêm `audit.yml` từ `kit/.github/workflows/`, cho job deploy `needs: audit`; mẫu nằm ở đầu file đó;
-   - đưa mọi file lên `develop`, vì GitHub chỉ chạy trigger `workflow_run` và `deployment_status` từ nhánh đó. Workflow CI của kit tên `CI`, là tên `jira-sync` chờ để chạy lại.
-7. Nối app GitHub for Jira với repo. Lần đầu thêm `.jira/config.yml` thì ngắt rồi nối lại kết nối.
-8. Mở `claude` trong repo một lần: tin cậy thư mục, cho phép hai server `atlassian` và `chrome-devtools`, và `/mcp` phải báo cả hai connected.
-9. Từ repo kit, chạy `npm run gh:protect -- --repo <owner>/<name>`. Repo private ở gói Free chỉ được báo soft mode.
+Các lệnh `ao-kit` (`init`, `sync`, `setup github`, `setup jira`, `doctor`, `check`, `render`) làm phần việc mà máy làm được. Hướng dẫn chỉ rõ từng bước bạn phải bấm trên GitHub và Jira.
 
-Về sau, cập nhật bản chép kit cũng phải đi qua PR, và PR đó do bạn merge, vì nó sửa file được bảo vệ. Push thẳng lên `develop` làm `audit` chặn deploy và gắn cờ item.
+`ao-kit init` và `ao-kit sync` chép vào dự án:
+- `.ai-orchestrator/`: `contract/`, `lib/`, `tracker/`, `quality/`, `agents/`, `templates/`, các script, `package.json` của kit, và `docs/sdlc.md` thành `.ai-orchestrator/docs/sdlc.md`, vì template trỏ tới DoD trong đó;
+- `kit/.claude/`, `kit/.githooks/`, `kit/.mcp.json` (hai server `atlassian` và `chrome-devtools`), `kit/.jira/config.yml`;
+- ba workflow `ci.yml`, `jira-sync.yml`, `merge-gate.yml`. Dự án tự deploy bằng GitHub Actions thì chép thêm `audit.yml`, cho job deploy `needs: audit`;
+- bốn dòng `.gitignore`: `.ai-orchestrator/node_modules/`, `.claude/settings.local.json`, `.ai/` (ledger, báo cáo, ảnh của agent), `.playwright-cli/`.
+
+Về sau, cập nhật bản chép kit phải đi qua PR, và bạn tự merge PR đó, vì nó sửa file được bảo vệ. Push thẳng lên `develop` làm `audit` chặn deploy và gắn cờ item.
 
 ## Biến môi trường và secret
 
