@@ -41,25 +41,25 @@
   - **Kiểm:** năm lệnh kiểm; CI xanh; PR merge.
 
 ### Checkpoint 1: sau T6
-- [ ] PR phần 1 đã merge, `main` xanh.
+- [x] PR phần 1 đã merge, `main` xanh (#248, `cdf4ab3`).
 
 ## Phần 2, nhánh `task/live-run-fixes-part-2`
 
-- [ ] **T7: tách `preview-run.mjs`.**
+- [x] **T7: tách `preview-run.mjs`.**
   - **Đạt khi:**
     - `previewFacts`, `portBusy`, `answers`, `startPreview`, `stopApps`, `stopPreview` nằm trong `lib/workflow/preview-run.mjs`, nhận git, npm, spawn, fs, cách thử cổng và URL làm tham số;
     - `ao-step.mjs` chỉ ghép tham số và gọi;
     - hành vi không đổi.
   - **Kiểm:** test mới `tests/workflow/preview-run.test.mjs` cho hành vi hiện có: bật được, tắt được, tắt mà không về được `develop`, cài lại package của `develop`.
   - **File:** `lib/workflow/preview-run.mjs`, `scripts/ao-step.mjs`, test.
-- [ ] **T8: lỗi khi bật đi qua `stopPreview`** (spec 2.6).
+- [x] **T8: lỗi khi bật đi qua `stopPreview`** (spec 2.6).
   - **Đạt khi:**
     - `active.json` được ghi với `apps: []` ngay sau khi switch, kể cả khi bước fast-forward sau switch lỗi;
     - `npm ci` lỗi, head lệch hay app không trả lời thì `stopPreview` chạy, và lỗi báo ra có ghi chú của nó;
     - `back()` không còn.
   - **Kiểm:** test đỏ trước: `npm ci` lỗi thì package của `develop` được cài lại; về `develop` lỗi thì `active.json` còn, với `apps: []`.
   - **File:** `lib/workflow/preview-run.mjs`, test.
-- [ ] **T9: danh sách file của PR, file lái phiên mới** (spec 2.7).
+- [x] **T9: danh sách file của PR, file lái phiên mới** (spec 2.7).
   - **Đạt khi:**
     - facts có `changedFiles` và số file đọc được; `decidePreview` từ chối khi đọc được ít hơn;
     - trước khi switch, `startPreview` kiểm `origin/<branch>` đúng head đã kiểm, lấy danh sách file bằng `git diff --name-only --no-renames origin/develop <head>`, rồi áp `isSteeringPath` và đường dẫn được bảo vệ, không phân biệt hoa thường;
@@ -67,20 +67,20 @@
     - câu từ chối vì nhánh cắt từ `develop` cũ bảo bạn merge `develop` vào nhánh đó.
   - **Kiểm:** test đỏ trước: `steps-preview.test.mjs` (số file thiếu, tên mới); `preview-run.test.mjs` (head lệch, `AGENTS.md` nằm sau 3000 file, nhánh cắt từ `develop` cũ); `review-tree.test.mjs` (`isSteeringPath`, và `removeInstructions` không đổi).
   - **File:** `lib/workflow/facts.mjs`, `lib/workflow/steps.mjs`, `lib/workflow/review-tree.mjs`, `lib/workflow/preview-run.mjs`, test.
-- [ ] **T10: file chỉ dẫn chưa track; skill `ao-preview`** (spec 2.8).
+- [x] **T10: file chỉ dẫn chưa track; skill `ao-preview`** (spec 2.8).
   - **Đạt khi:**
     - lúc bật, `active.json` ghi danh sách file lái phiên chưa track; lúc tắt, `stopPreview` cảnh báo các file mới so với danh sách đó, và không xóa chúng;
     - skill viết `` `HKCU\Environment` `` trong backtick, và có câu: app ghi được vào thư mục dự án, kể cả file chưa track như `CLAUDE.local.md` hay `.claude/settings.local.json`; `--stop` không xóa chúng.
   - **Kiểm:** test đỏ trước trong `preview-run.test.mjs`; `skills.test.mjs` xanh.
   - **File:** `lib/workflow/preview-run.mjs`, `kit/.claude/skills/ao-preview/SKILL.md`, test.
-- [ ] **T11: kiểm thật `/ao-preview` trên `ao-sample`** (tiêu chí 3 của spec). Không gọi agent.
+- [x] **T11: kiểm thật `/ao-preview` trên `ao-sample`** (tiêu chí 3 của spec). Không gọi agent.
   - Kit chạy từ một worktree của nhánh phần 2, qua `AO_KIT_DIR`. Item thử là một item đã hủy, như `SMP-21` ở Checkpoint 3 của human-loop. PR thử là PR nháp tạo bằng login `gh` của bạn; `preview.yaml` chỉ nằm trên máy.
   - **Đạt khi:**
     1. Một PR mà app không lên, trong khi CI vẫn xanh (ví dụ đổi script chỉ xem trước dùng): thư mục về `develop`, package của `develop` được cài lại, `active.json` không còn, và lệnh sau không bị chặn nhầm.
     2. Một PR đổi file chỉ dẫn, như `apps/web/AGENTS.md`: `/ao-preview` từ chối.
     3. Một nhánh cắt từ `develop` cũ: `/ao-preview` từ chối, và bảo merge `develop` vào nhánh.
   - Xong thì đóng PR thử và xóa nhánh. Kết quả ghi vào `tasks/verification.md`.
-- [ ] **T12: tài liệu phần 2, PR phần 2.**
+- [x] **T12: tài liệu phần 2, PR phần 2.**
   - **Đạt khi:** `docs/dev-workflow.md` tả các trường hợp `/ao-preview` từ chối thêm, đường lỗi khi bật, và cảnh báo file chưa track.
   - **Kiểm:** năm lệnh kiểm; CI xanh; PR merge.
 
