@@ -34,13 +34,16 @@ function effects({ answers = {} } = {}) {
     run: (argv, cwd) => (calls.run.push([argv.join(' '), cwd]), { status: 0, stdout: '', stderr: '' }),
   };
 }
+const noOrigin = { 'remote get-url origin': { status: 2, stdout: '', stderr: 'error: No such remote' } };
 
 test('init in an empty folder: the skeleton of the profile, project.yaml, the kit, then the render and what the profile runs after', (t) => {
   const dir = temp(t);
   mkdirSync(join(dir, '.git'));
-  const fx = effects();
+  const fx = effects({ answers: noOrigin });
   const { notes, ok } = initProject({ kitDir: ROOT, projectDir: dir, options: OPTIONS, ...fx });
   assert.equal(ok, true, notes.join('\n'));
+  // ao-step reads the repo from origin, so /ao-* needs it before the first push (T16).
+  assert.ok(fx.calls.git.includes('remote add origin https://github.com/acme/shop.git'), fx.calls.git.join('\n'));
   for (const path of ['apps/web/src/app/page.tsx', 'apps/api/src/main.ts', '.ai-orchestrator/deploy.yaml', '.ai-orchestrator/scripts/ao-step.mjs', '.claude/hooks/gh-guard.mjs', '.claude/skills/nestjs-best-practices/SKILL.md']) {
     assert.ok(existsSync(join(dir, path)), path);
   }
@@ -53,7 +56,20 @@ test('init in an empty folder: the skeleton of the profile, project.yaml, the ki
   // The packages of the kit copy first: render-agents imports yaml and ajv from .ai-orchestrator/node_modules (T16).
   assert.deepEqual(fx.calls.run.map(([argv]) => argv), ['npm ci --prefix .ai-orchestrator --no-audit --no-fund', 'node .ai-orchestrator/scripts/render-agents.mjs --project .', 'npm ci', 'npx playwright install chromium']);
   assert.ok(fx.calls.run.every(([, cwd]) => cwd === dir));
-  assert.match(notes.join('\n'), /Next: open claude in the folder/);
+  // The order of docs/getting-started.md part 3: Jira, the Apps, the first commit (no key), GitHub, doctor, then claude.
+  assert.match(notes.join('\n'), /Next: ao-kit setup jira; add the repo to the two GitHub Apps; run lint, typecheck, test:coverage and build, commit \(the first commit needs no Jira key\) and push develop and main; ao-kit setup github; ao-kit doctor; then open claude in the folder/);
+});
+
+test('init leaves an origin that is there, and says so when it is not the repo of project.yaml', (t) => {
+  const same = temp(t);
+  const fx = effects({ answers: { 'remote get-url origin': { status: 0, stdout: 'git@github.com:acme/shop.git\n', stderr: '' } } });
+  initProject({ kitDir: ROOT, projectDir: same, options: OPTIONS, ...fx });
+  assert.ok(!fx.calls.git.some((call) => call.startsWith('remote add')));
+  const other = temp(t);
+  const fx2 = effects({ answers: { 'remote get-url origin': { status: 0, stdout: 'https://github.com/acme/old-shop.git\n', stderr: '' } } });
+  const { notes } = initProject({ kitDir: ROOT, projectDir: other, options: OPTIONS, ...fx2 });
+  assert.ok(!fx2.calls.git.some((call) => call.startsWith('remote add')));
+  assert.match(notes.join('\n'), /origin is acme\/old-shop, not acme\/shop of project\.yaml: ao-step reads the repo from origin/);
 });
 
 test('init with no App values leaves them as TODO, renders nothing, and says what to fill', (t) => {
@@ -113,6 +129,8 @@ test('init in a repo that has code: no app file changes, a draft project.yaml fr
   assert.match(text, /no \.ai-orchestrator\/deploy\.yaml/);
   assert.match(text, /no develop branch/);
   assert.match(text, /commit header/);
+  // A repo that has commits: the commit of the kit copy needs a key, so the Apps come before /ao-intake (T16).
+  assert.match(text, /Next: fix what is missing above; add the repo to the two GitHub Apps; ao-kit setup jira; open claude in the folder, trust it, allow its two MCP servers, and run \/ao-intake for the Task of the kit copy; commit with its key on develop and push it; ao-kit setup github; ao-kit doctor/);
   // Only the packages of the kit copy, in .ai-orchestrator/: none of the apps.
   assert.deepEqual(fx.calls.run.map(([argv]) => argv).filter((argv) => argv.startsWith('npm') || argv.startsWith('npx')), ['npm ci --prefix .ai-orchestrator --no-audit --no-fund'], 'no package of the apps is installed in a repo that has code');
 });
