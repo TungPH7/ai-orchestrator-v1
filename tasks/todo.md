@@ -122,7 +122,7 @@
   - **Kiểm:** năm lệnh kiểm; CI xanh; PR merge.
 
 ### Checkpoint 3: sau T17
-- [ ] PR phần 3 đã merge, `main` xanh. Mình báo bạn trước T18.
+- [x] PR phần 3 đã merge, `main` xanh (#250, `7dd1a4d`). Mình báo bạn trước T18 (Lượt 150).
 
 ## Đóng module
 
