@@ -21,11 +21,13 @@ const CONFIG = [
   '    env: { API_URL: "http://localhost:3001" }',
 ].join('\n');
 const paths = previewPaths(PROJECT);
-const START = { key: 'DEMO-21', number: 15, branch: BRANCH, head: HEAD };
+const PROTECTED = ['.github/workflows/**', '.githooks/**', '.claude/**', '.ai-orchestrator/**', '.mcp.json'];
+const START = { key: 'DEMO-21', number: 15, branch: BRANCH, head: HEAD, protected: PROTECTED };
 
 // files: path → text. The folder starts on `on`. checkoutFails: branch → { reason, switched }. npmStatus: the exit of
-// npm ci. up(url): whether an app answers. lock(): the package-lock.json of the branch the folder is on.
-function machine({ files = {}, on = 'develop', checkoutFails = {}, npmStatus = 0, up = () => true, busyPorts = [], head = HEAD, dirty = '', agent = null } = {}) {
+// npm ci. up(url): whether an app answers. origin: the head of the branch on origin after git fetch. own: what git diff
+// lists from the fork point of the branch, the PR's own changes; all: what it lists from the tip of develop.
+function machine({ files = {}, on = 'develop', checkoutFails = {}, npmStatus = 0, up = () => true, busyPorts = [], head = HEAD, dirty = '', agent = null, origin = HEAD, own = ['apps/web/src/page.tsx'], all = own, fetched = true } = {}) {
   const store = new Map(Object.entries({ [join(PROJECT, '.ai-orchestrator/preview.yaml')]: CONFIG, ...files }));
   const events = [];
   let branch = on;
@@ -45,7 +47,10 @@ function machine({ files = {}, on = 'develop', checkoutFails = {}, npmStatus = 0
   };
   const git = (...args) => {
     if (args[0] === 'branch') return { status: 0, stdout: `${branch}\n`, stderr: '' };
+    if (args[0] === 'fetch') return fetched ? { status: 0, stdout: '', stderr: '' } : { status: 1, stdout: '', stderr: 'fatal: unable to access origin' };
+    if (args[0] === 'rev-parse' && args.includes(`refs/remotes/origin/${BRANCH}`)) return { status: 0, stdout: `${origin}\n`, stderr: '' };
     if (args[0] === 'rev-parse') return { status: 0, stdout: `${head}\n`, stderr: '' };
+    if (args[0] === 'diff') return { status: 0, stdout: (args.some((arg) => arg.includes('...')) ? own : all).map((path) => `${path}\0`).join(''), stderr: '' };
     if (args[0] === 'status') return { status: 0, stdout: dirty, stderr: '' };
     if (args[0] === 'show') return { status: 0, stdout: PR_LOCK, stderr: '' };
     return { status: 0, stdout: '', stderr: '' };
@@ -220,4 +225,34 @@ test('a head other than the one checked goes back through stop, before any packa
   const m = machine({ files: installedFor(DEVELOP_LOCK), head: 'b'.repeat(40) });
   assert.match(await failing(m), /^feature\/DEMO-21-remove-line is at bbbbbbbb, not aaaaaaaa, the head that was checked: a push came in between\. Run \/ao-preview DEMO-21 again\. Stopped the preview of DEMO-21: no app ran\. The project folder is back on develop\.$/);
   assert.deepEqual(m.events, [['checkout', BRANCH], ['checkout', 'develop']]);
+});
+
+// Medium of security on ao-sample PR #21 (T19): the check of decidePreview reads the files GitHub lists, at most 3000.
+// Before the switch, start reads the list itself with git, which has no such limit, from the head that was checked
+// (live-run-fixes spec 2.7). A refusal there leaves nothing to undo.
+test('before the switch, the branch on origin must be at the head that was checked', async () => {
+  const m = machine({ origin: 'c'.repeat(40) });
+  assert.equal(await failing(m), 'feature/DEMO-21-remove-line is at cccccccc on origin, not aaaaaaaa, the head that was checked: a push came in between. Run /ao-preview DEMO-21 again');
+  assert.deepEqual(m.events, []);
+  assert.equal(await failing(machine({ fetched: false })), 'git fetch failed: fatal: unable to access origin');
+});
+
+test('an instruction file past the 3000 files GitHub lists is found in the list git gives, and nothing is switched', async () => {
+  const many = Array.from({ length: 3000 }, (_, i) => `apps/web/src/generated/f${String(i).padStart(4, '0')}.ts`);
+  const m = machine({ own: [...many, 'apps/web/AGENTS.md'] });
+  assert.equal(await failing(m), 'PR #15 changes apps/web/AGENTS.md, which steer the kit and the agents: during a preview every /ao-* command, and your own session, would load them. Read those changes in the diff instead');
+  assert.deepEqual(m.events, []);
+  assert.equal(m.json(paths.active), null);
+});
+
+test('a protected path in another case and the other files that steer a session are refused the same way', async () => {
+  const m = machine({ own: ['.GitHub/workflows/deploy.yml', 'apps/api/.mcp.json', '.gitattributes', 'apps/web/src/page.tsx'] });
+  assert.match(await failing(m), /^PR #15 changes \.GitHub\/workflows\/deploy\.yml, apps\/api\/\.mcp\.json, \.gitattributes, which steer the kit and the agents/);
+  assert.deepEqual(m.events, []);
+});
+
+test('a branch cut from an older develop is refused: the old kit and instructions of develop would load, so it merges develop first', async () => {
+  const m = machine({ own: ['apps/web/src/page.tsx'], all: ['apps/web/src/page.tsx', '.claude/settings.json', '.ai-orchestrator/scripts/ao-step.mjs'] });
+  assert.equal(await failing(m), 'feature/DEMO-21-remove-line was cut from an older develop: .claude/settings.json, .ai-orchestrator/scripts/ao-step.mjs differ from develop there, and those older files would steer the agents during the preview. Merge develop into feature/DEMO-21-remove-line and push, then run /ao-preview DEMO-21 again');
+  assert.deepEqual(m.events, []);
 });

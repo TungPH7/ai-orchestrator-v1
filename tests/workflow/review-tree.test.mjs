@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import * as fs from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { instructionPaths, removeInstructions } from '../../lib/workflow/review-tree.mjs';
+import { instructionPaths, isInstructionPath, isSteeringPath, removeInstructions } from '../../lib/workflow/review-tree.mjs';
 
 // High of security on ao-sample PR #13: in the worktree of the PR, .claude/rules/ of the PR reached the review session.
 test('the instruction files of a PR worktree are removed at every depth, and its code stays', (t) => {
@@ -57,4 +57,15 @@ test('AGENTS.md at every depth and a .claude that is a link are removed too; wha
   assert.deepEqual(removeInstructions(dir, fs).sort(), instructions);
   for (const path of instructions) assert.ok(!fs.existsSync(join(dir, path)), path);
   for (const path of ['apps/x/index.ts', 'docs/hidden/rules/evil.md', 'docs/agents-notes.md']) assert.ok(fs.existsSync(join(dir, path)), path);
+});
+
+// Medium of security on ao-sample PR #21 (T19): besides the instruction files, a branch in the project folder brings
+// what Claude Code reads there to set up a session: plugins, MCP servers, and the git files that change how a checkout
+// is written (live-run-fixes spec 2.7). /ao-preview refuses them; the worktree of a review keeps them, as before.
+test('the files that steer a session in the project folder: the instruction files, plugins, MCP servers, submodules, git attributes and LFS', () => {
+  for (const path of ['CLAUDE.md', 'apps/web/AGENTS.md', '.claude/settings.json', '.claude-plugin/plugin.json', 'apps/web/.Claude-Plugin/marketplace.json', '.mcp.json', 'apps/api/.MCP.json', '.gitmodules', 'apps/web/.gitattributes', '.lfsconfig']) {
+    assert.equal(isSteeringPath(path), true, path);
+  }
+  for (const path of ['docs/mcp.json.md', 'apps/web/src/gitattributes.ts', 'apps/web/.claude-plugins/x.json', 'README.md']) assert.equal(isSteeringPath(path), false, path);
+  assert.equal(isInstructionPath('.mcp.json'), false);
 });
