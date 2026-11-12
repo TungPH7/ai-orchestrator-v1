@@ -178,3 +178,8 @@ Lỗi chỉ lần chạy thật bắt được:
   - Lượt push đầu (`61f4cec`, run 43278006032) đỏ ở `sast`, vì `scripts/dev.mjs` (`spawn-shell-true`). Ba job kia xanh.
   - Lượt push và lượt PR của `33a2933` đều xanh, nhờ có baseline.
   - Staging đã deploy `33a2933` lúc 18:24:04Z. Lượt đỏ đầu tiên không chặn gì.
+- **Gate ⑤:** bạn làm UAT trên Staging rồi approve PR #28.
+  - `jira-sync` chạy theo review. `merge-gate` merge PR lúc 18:30:10Z (`ab62bfb`, `app/tungph7-ao-dev`), sau khi bạn approve chưa tới một phút, và gắn tag `v0.2.0` tại `ab62bfb`.
+  - Production deployment 7746116760: tạo lúc 18:30:49Z, `success` lúc 18:31:17Z.
+  - Kiểm từ ngoài: `/notes` 200, `/api/notes` 200 với `{"data":[]}`. Ghi chú mất sau mỗi lần deploy, như Known Issues đã ghi.
+  - PR #29 `Merge main into develop after v0.2.0` được mở; `merge-gate` sẽ merge khi CI của nó xanh.
