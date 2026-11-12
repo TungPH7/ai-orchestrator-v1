@@ -27,7 +27,9 @@ const START = { key: 'DEMO-21', number: 15, branch: BRANCH, head: HEAD, protecte
 // files: path → text. The folder starts on `on`. checkoutFails: branch → { reason, switched }. npmStatus: the exit of
 // npm ci. up(url): whether an app answers. origin: the head of the branch on origin after git fetch. own: what git diff
 // lists from the fork point of the branch, the PR's own changes; all: what it lists from the tip of develop.
-function machine({ files = {}, on = 'develop', checkoutFails = {}, npmStatus = 0, up = () => true, busyPorts = [], head = HEAD, dirty = '', agent = null, origin = HEAD, own = ['apps/web/src/page.tsx'], all = own, fetched = true } = {}) {
+// untracked: what git status lists as untracked (??) or ignored (!!), as `?? CLAUDE.local.md`; m.untracked changes it.
+function machine({ files = {}, on = 'develop', checkoutFails = {}, npmStatus = 0, up = () => true, busyPorts = [], head = HEAD, dirty = '', agent = null, origin = HEAD, own = ['apps/web/src/page.tsx'], all = own, fetched = true, untracked = [] } = {}) {
+  let others = untracked;
   const store = new Map(Object.entries({ [join(PROJECT, '.ai-orchestrator/preview.yaml')]: CONFIG, ...files }));
   const events = [];
   let branch = on;
@@ -51,6 +53,7 @@ function machine({ files = {}, on = 'develop', checkoutFails = {}, npmStatus = 0
     if (args[0] === 'rev-parse' && args.includes(`refs/remotes/origin/${BRANCH}`)) return { status: 0, stdout: `${origin}\n`, stderr: '' };
     if (args[0] === 'rev-parse') return { status: 0, stdout: `${head}\n`, stderr: '' };
     if (args[0] === 'diff') return { status: 0, stdout: (args.some((arg) => arg.includes('...')) ? own : all).map((path) => `${path}\0`).join(''), stderr: '' };
+    if (args[0] === 'status' && args.includes('--ignored=matching')) return { status: 0, stdout: others.map((entry) => `${entry}\0`).join(''), stderr: '' };
     if (args[0] === 'status') return { status: 0, stdout: dirty, stderr: '' };
     if (args[0] === 'show') return { status: 0, stdout: PR_LOCK, stderr: '' };
     return { status: 0, stdout: '', stderr: '' };
@@ -91,7 +94,7 @@ function machine({ files = {}, on = 'develop', checkoutFails = {}, npmStatus = 0
     now: () => Date.parse('2026-11-12T08:00:00Z'),
   });
   const json = (path) => (store.has(path) ? JSON.parse(store.get(path)) : null);
-  return { runner, events, store, json, branch: () => branch };
+  return { runner, events, store, json, branch: () => branch, untracked: (entries) => (others = entries) };
 }
 
 const installedFor = (lock) => ({ [paths.state]: JSON.stringify({ lock: lockHash(lock), at: '2026-11-11T08:00:00Z' }) });
@@ -249,6 +252,30 @@ test('a protected path in another case and the other files that steer a session 
   const m = machine({ own: ['.GitHub/workflows/deploy.yml', 'apps/api/.mcp.json', '.gitattributes', 'apps/web/src/page.tsx'] });
   assert.match(await failing(m), /^PR #15 changes \.GitHub\/workflows\/deploy\.yml, apps\/api\/\.mcp\.json, \.gitattributes, which steer the kit and the agents/);
   assert.deepEqual(m.events, []);
+});
+
+// Low of security on ao-sample PR #21 (T19): the apps of a PR run as you, in the project folder, and may write files
+// git does not track, such as CLAUDE.local.md or .claude/settings.local.json, which outlive the preview. stop names
+// those that appeared since the start; it does not delete them (live-run-fixes spec 2.8).
+test('stop names the untracked files that steer a session and appeared during the preview, and deletes none', async () => {
+  const before = ['?? CLAUDE.local.md', '!! node_modules/', '?? apps/web/notes.txt'];
+  const m = machine({ files: installedFor(PR_LOCK), untracked: before });
+  await m.runner.start(START);
+  assert.deepEqual(m.json(paths.active).untracked, ['CLAUDE.local.md']);
+  assert.deepEqual(m.json(paths.active).protected, PROTECTED);
+  m.untracked([...before, '!! .claude/settings.local.json', '?? apps/web/AGENTS.md', '?? .ai-orchestrator/roster.local.yaml', '?? apps/web/out.log']);
+  const { notes } = await m.runner.stop();
+  assert.equal(notes[1], 'Files that steer a session appeared in the project folder during the preview, and git does not track them: .claude/settings.local.json, apps/web/AGENTS.md, .ai-orchestrator/roster.local.yaml. The apps of the PR may have written them, and /ao-preview --stop does not delete them: read each one, and delete those you did not make.');
+  assert.equal(m.events.filter(([what]) => what === 'rm').length, 0);
+});
+
+test('stop says nothing of untracked files when none appeared, or when the record of the preview has no list of them', async () => {
+  const quiet = machine({ files: installedFor(PR_LOCK), untracked: ['?? CLAUDE.local.md'] });
+  await quiet.runner.start(START);
+  const { notes } = await quiet.runner.stop();
+  assert.ok(!notes.some((note) => note.includes('git does not track')), notes.join(' '));
+  const older = machine({ on: BRANCH, files: { ...active(), ...installedFor(PR_LOCK) }, untracked: ['?? CLAUDE.local.md'] });
+  assert.ok(!(await older.runner.stop()).notes.some((note) => note.includes('git does not track')));
 });
 
 test('a branch cut from an older develop is refused: the old kit and instructions of develop would load, so it merges develop first', async () => {
