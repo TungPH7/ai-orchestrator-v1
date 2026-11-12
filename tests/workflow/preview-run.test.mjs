@@ -64,7 +64,11 @@ function machine({ files = {}, on = 'develop', checkoutFails = {}, npmStatus = 0
     projectDir: PROJECT,
     git,
     checkout,
-    npm: (args, { env }) => (events.push(['npm', args.join(' '), branch, 'SECRET_TOKEN' in env ? 'with a secret' : 'no secret']), { status: npmStatus, stderr: npmStatus ? 'npm ERR! the lockfile does not match' : '' }),
+    npm: (args, { env }) => {
+      events.push(['npm', args.join(' '), branch, 'SECRET_TOKEN' in env ? 'with a secret' : 'no secret']);
+      const status = typeof npmStatus === 'function' ? npmStatus(branch) : npmStatus;
+      return { status, stderr: status ? 'npm ERR! the lockfile does not match' : '' };
+    },
     spawn: (file, args, { env }) => {
       pid += 1;
       events.push(['spawn', pid, [file, ...args].join(' '), env.API_URL ?? '-', 'SECRET_TOKEN' in env ? 'with a secret' : 'no secret']);
@@ -159,4 +163,61 @@ test('the facts of /ao-preview: the apps of preview.yaml, the record, a run of a
   const broken = await machine({ files: { [join(PROJECT, '.ai-orchestrator/preview.yaml')]: 'apps: [' } }).runner.facts(true, null);
   assert.deepEqual([broken.config, broken.stop, broken.install], [null, true, true]);
   assert.match(broken.configError, /preview\.yaml is not YAML/);
+});
+
+// T19 of human-loop, review of ao-sample PR #21: a start that failed only switched back to develop. The packages of the
+// PR stayed, and the record went before the folder was back, so the next command could run on the PR branch. Now every
+// failure once the folder may have left develop goes through stop (live-run-fixes spec 2.6).
+const failing = (m) => m.runner.start(START).then(() => assert.fail('start should fail'), (error) => error.message);
+
+test('npm ci that fails goes through stop: the folder goes back to develop and the packages of develop are installed again', async () => {
+  const m = machine({ files: installedFor(DEVELOP_LOCK), npmStatus: (on) => (on === BRANCH ? 1 : 0) });
+  const message = await failing(m);
+  assert.equal(message, 'npm ci failed: npm ERR! the lockfile does not match. Stopped the preview of DEMO-21: no app ran. The project folder is back on develop. Ran npm ci --ignore-scripts again, for the packages of develop.');
+  assert.equal(m.branch(), 'develop');
+  assert.deepEqual(m.events.map(([what, a, b]) => [what, what === 'npm' ? b : a]), [['checkout', BRANCH], ['npm', BRANCH], ['checkout', 'develop'], ['npm', 'develop']]);
+  assert.equal(m.json(paths.active), null);
+  assert.equal(m.json(paths.state).lock, lockHash(DEVELOP_LOCK));
+});
+
+test('an app that does not answer stops them all through stop, with the packages of develop installed again', async () => {
+  const m = machine({ files: installedFor(DEVELOP_LOCK), up: (url) => !url.includes(':3000') });
+  const message = await failing(m);
+  assert.match(message, /^web did not answer at http:\/\/localhost:3000\/ within 2 minutes: read \.ai\/preview\/web\.log\. Stopped the preview of DEMO-21: api, web\. The project folder is back on develop\. Ran npm ci --ignore-scripts again, for the packages of develop\.$/);
+  assert.deepEqual(m.events.filter(([what]) => what === 'kill'), [['kill', 101], ['kill', 102]]);
+  assert.equal(m.branch(), 'develop');
+  assert.equal(m.json(paths.active), null);
+});
+
+test('a failure while the folder cannot go back keeps the record with no app, so no command runs from the PR branch', async () => {
+  const m = machine({ files: installedFor(DEVELOP_LOCK), up: () => false, checkoutFails: { develop: { reason: 'the checkout has changes not committed (2 files)' } } });
+  const message = await failing(m);
+  assert.ok(message.endsWith(`The project folder stays on ${BRANCH}: the checkout has changes not committed (2 files)`), message);
+  assert.equal(m.branch(), BRANCH);
+  assert.deepEqual(m.json(paths.active).apps, []);
+  assert.equal(m.json(paths.active).key, 'DEMO-21');
+});
+
+test('a switch that fails once the folder moved, such as the fast-forward, records the preview first, then goes back through stop', async () => {
+  const pulled = { reason: `${BRANCH} has commits that are not on origin/${BRANCH}`, switched: true };
+  const back = machine({ files: installedFor(DEVELOP_LOCK), checkoutFails: { [BRANCH]: pulled } });
+  assert.equal(await failing(back), `${pulled.reason}. Stopped the preview of DEMO-21: no app ran. The project folder is back on develop.`);
+  assert.equal(back.branch(), 'develop');
+  assert.equal(back.json(paths.active), null);
+  const stuck = machine({ files: installedFor(DEVELOP_LOCK), checkoutFails: { [BRANCH]: pulled, develop: { reason: 'git could not switch to develop' } } });
+  await failing(stuck);
+  assert.deepEqual(stuck.json(paths.active).apps, []);
+});
+
+test('a switch that fails before the folder moved leaves nothing to undo', async () => {
+  const m = machine({ files: installedFor(DEVELOP_LOCK), checkoutFails: { [BRANCH]: { reason: 'git fetch failed: no network' } } });
+  assert.equal(await failing(m), 'git fetch failed: no network');
+  assert.deepEqual(m.events, [['checkout', BRANCH]]);
+  assert.equal(m.json(paths.active), null);
+});
+
+test('a head other than the one checked goes back through stop, before any package or app', async () => {
+  const m = machine({ files: installedFor(DEVELOP_LOCK), head: 'b'.repeat(40) });
+  assert.match(await failing(m), /^feature\/DEMO-21-remove-line is at bbbbbbbb, not aaaaaaaa, the head that was checked: a push came in between\. Run \/ao-preview DEMO-21 again\. Stopped the preview of DEMO-21: no app ran\. The project folder is back on develop\.$/);
+  assert.deepEqual(m.events, [['checkout', BRANCH], ['checkout', 'develop']]);
 });
