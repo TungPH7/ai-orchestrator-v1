@@ -68,7 +68,7 @@ test('npm ci runs when the lockfile of the head differs from the one installed, 
 test('/ao-preview starts the apps on the PR branch: a script step, with or without npm ci', () => {
   const decision = decide(facts({ install: true }));
   assert.equal(decision.go, true);
-  assert.deepEqual(decision.runs, [{ action: 'preview-start', key: 'DEMO-21', number: 15, branch: 'feature/DEMO-21-remove-line', head: HEAD, install: true }]);
+  assert.deepEqual(decision.runs, [{ action: 'preview-start', key: 'DEMO-21', number: 15, branch: 'feature/DEMO-21-remove-line', head: HEAD, install: true, protected: [] }]);
   assert.match(decision.lines.at(-1), /^Preview of PR #15 \(draft\): feature\/DEMO-21-remove-line at d1d2d3d4; npm ci first, since package-lock\.json differs from the one installed; apps api http:\/\/localhost:3001\/health, web http:\/\/localhost:3000\/$/);
 });
 
@@ -117,6 +117,28 @@ test('/ao-preview refuses instruction files at any depth, a protected path in an
   assert.match(preview({ ci: { green: false, failed: false, pending: true } }).reason, /CI is still running on the head of PR #15/);
   const red = preview({ ci: { green: false, failed: true, pending: false } });
   assert.deepEqual([red.reason, red.next], ['CI is red on the head of PR #15', '/ao-fix 15']);
+});
+
+// Medium of security on ao-sample PR #21 (T19): GitHub lists at most 3000 files of a PR, so a file past them, such as
+// apps/web/AGENTS.md, was never checked (live-run-fixes spec 2.7).
+test('/ao-preview refuses a PR GitHub lists only in part, since the files past the list are not checked', () => {
+  const gates = readGates(join(ROOT, 'quality'));
+  const preview = (pr) => decideStep('preview', facts({}, pr), { roster, contract, gates });
+  const cut = preview({ files: ['apps/web/src/a.ts'], filesRead: 3000, changedFiles: 3004 });
+  assert.equal(cut.go, false);
+  assert.equal(cut.reason, 'GitHub lists 3000 of the 3004 files of PR #15, so /ao-preview cannot check each one for a file that steers the agents');
+  assert.equal(cut.next, '/ao-review 15');
+  assert.equal(preview({ files: ['apps/web/src/a.ts'], filesRead: 1, changedFiles: 1 }).go, true);
+});
+
+test('/ao-preview refuses the other files that steer a session: plugins, MCP servers at any depth, submodules, git attributes and LFS', () => {
+  const gates = readGates(join(ROOT, 'quality'));
+  const preview = (pr) => decideStep('preview', facts({}, pr), { roster, contract, gates });
+  for (const file of ['.claude-plugin/plugin.json', 'apps/web/.claude-plugin/marketplace.json', 'apps/api/.mcp.json', '.MCP.json', '.gitmodules', 'apps/web/.gitattributes', '.lfsconfig']) {
+    assert.match(preview({ files: [file] }).reason ?? 'GO', /which steer the kit and the agents/, file);
+  }
+  // The step carries the protected paths: ao-step checks them again on the list of files it reads itself.
+  assert.deepEqual(preview({ files: ['apps/web/src/a.ts'] }).runs[0].protected, gates.protected_paths.map(({ path }) => path));
 });
 
 test('the apps of a preview get no secret variable of your session', () => {

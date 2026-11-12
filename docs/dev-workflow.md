@@ -41,6 +41,14 @@ Intake không tạo Story, vì Story cần AC trong SPEC, màn hình và hợp �
 
 **Xem trước giữa build và review.** Dev agent mở PR nháp, nên item ở lại In Progress: guard `pr-open` không tính PR nháp. Trước khi mở PR, `fe-dev` chụp từng màn hình ở mỗi cỡ của `design.md` (`S1-mobile.png`, `S1-desktop.png`), còn `be-dev` ghi `api.md` gồm một request mẫu và response cho mỗi endpoint. Các file này nằm trong `.ai/runs/<KEY>/preview/`, chỉ trên máy bạn. Sau đó bạn chọn một trong ba hướng:
 1. `/ao-preview <KEY>`: thư mục dự án chuyển sang nhánh PR, `npm ci --ignore-scripts` chạy khi lockfile khác bản đã cài, rồi các app trong `.ai-orchestrator/preview.yaml` được bật theo thứ tự. Bạn mở URL để thử. Đây là code chưa ai review, chạy trên máy bạn: app không có biến bí mật nào trong môi trường, và kit từ chối xem trước PR sửa đường dẫn được bảo vệ. Đừng sửa file trong lúc xem trước. `/ao-preview <KEY> --stop` tắt app và đưa thư mục về `develop`.
+
+   **Khi nào `/ao-preview` từ chối.** PR đổi một file lái phiên thì không được xem trước, ở bất cứ tầng nào: `CLAUDE.md`, `AGENTS.md`, `.claude/`, `.claude-plugin/`, `.mcp.json`, `.gitmodules`, `.gitattributes`, `.lfsconfig`, hay một đường dẫn được bảo vệ, không phân biệt hoa thường. GitHub chỉ liệt kê 3000 file đầu của một PR, nên `ao-step` kiểm hai lần:
+   - với danh sách của GitHub; PR có nhiều file hơn danh sách đó thì bị từ chối luôn;
+   - trước khi switch, với danh sách `git diff` tự lấy từ head đã kiểm. Nhánh trên origin phải ở đúng head đó. Nhánh cắt từ một `develop` cũ, mà phần khác `develop` có file lái phiên (ví dụ trước một lần chép kit), cũng bị từ chối: bạn merge `develop` vào nhánh rồi push, sau đó chạy lại.
+
+   **Khi bật không được** (`npm ci` lỗi, app không trả lời trong 2 phút, head đổi giữa chừng), `ao-step` dừng như `--stop`: tắt app, đưa thư mục về `develop`, cài lại package của `develop`. Thư mục chưa về được `develop` thì bản ghi xem trước còn lại, nên lệnh sau không chạy trên nhánh PR.
+
+   **File chưa track.** App chạy dưới user Windows của bạn, nên ghi được file trong thư mục dự án, kể cả file git không track như `CLAUDE.local.md` hay `.claude/settings.local.json`. Phiên sau sẽ nạp những file đó. `--stop` liệt kê các file lái phiên mới xuất hiện trong lúc xem trước, nhưng không xóa: bạn đọc từng file, rồi xóa file nào không phải do bạn tạo.
 2. `/ao-fix <PR> <yêu cầu>`: dev agent sửa trên PR nháp, không chạy review, và cập nhật ảnh hay `api.md`. Sau đó bạn xem lại.
 3. `/ao-review <PR>`: một bước script chuyển PR nháp sang sẵn sàng bằng App `ao-dev`, `jira-sync` đưa item sang In Review, rồi review chạy như cũ. Gõ thẳng lệnh này nếu muốn bỏ qua bước xem trước.
 

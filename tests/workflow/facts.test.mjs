@@ -247,6 +247,18 @@ test('the files of a PR name a renamed file by its old name and its new one', as
   assert.deepEqual(facts.pr.files.slice(-2), ['src/auth/jwt.guard.ts', 'src/common/jwt.ts']);
 });
 
+// GitHub lists at most 3000 files of a PR: /ao-preview compares how many it read with how many the PR changes
+// (live-run-fixes spec 2.7). A renamed file is one of each, though files names it twice.
+test('a PR says how many files it changes and how many GitHub listed', async () => {
+  const renamed = { filename: 'src/common/jwt.ts', previous_filename: 'src/auth/jwt.guard.ts', status: 'renamed', additions: 3, deletions: 1 };
+  const facts = await gather('review', '11', { change: (copy) => {
+    copy.github['/pulls/11/files'].push(renamed);
+    copy.github['/pulls/11'].changed_files = copy.github['/pulls/11/files'].length + 2;
+  } });
+  assert.equal(facts.pr.filesRead, facts.pr.changedFiles - 2);
+  assert.equal(facts.pr.files.length, facts.pr.filesRead + 1);
+});
+
 // /ao-preview runs only a branch of this repository (review of ao-sample PR #21). GitHub gives head.repo null once the
 // fork of a PR is deleted: that PR is not shown to be from here, so it counts as one from a fork (live-run-fixes 2.8).
 test('a PR is from a fork unless its head and base are both this repository; a deleted fork counts as a fork', async () => {
