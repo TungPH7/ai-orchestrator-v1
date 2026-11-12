@@ -96,11 +96,11 @@
   - **Kiểm:** năm lệnh kiểm và `profiles:check`; CI xanh; PR merge.
 
 ### Checkpoint 3: sau T10
-- [ ] PR chặng 2 đã merge, `main` xanh, `profiles.yml` xanh.
+- [x] PR chặng 2 đã merge, `main` xanh, `profiles.yml` xanh (#254).
 
 ## Chặng 3: dựng và kiểm, nhánh `task/project-scaffold-3`
 
-- [ ] **T11: `ao-kit setup github`** (spec 2.4; plan, quyết định 8).
+- [x] **T11: `ao-kit setup github`** (spec 2.4; plan, quyết định 8).
   - **Đạt khi:**
     - lệnh đặt nhánh mặc định `develop`, bật tự xóa nhánh và Dependabot security updates;
     - tạo bốn environment, `merge-gate` chỉ cho `develop`;
@@ -109,11 +109,11 @@
     - việc đã xong thì bỏ qua.
   - **Kiểm:** test đỏ trước với `gh` giả: thứ tự lệnh, không giá trị bí mật nào trong tham số, chạy lần hai không đổi gì.
   - **File:** `lib/scaffold/setup-github.mjs`, `scripts/ao-kit.mjs`, test.
-- [ ] **T12: `ao-kit setup jira`** (spec 2.4, theo kết quả T2).
+- [x] **T12: `ao-kit setup jira`** (spec 2.4, theo kết quả T2).
   - **Đạt khi:** lệnh làm bằng API các bước T2 thấy làm được, in checklist bấm tay cho phần còn lại, rồi chạy `jira:check`.
   - **Kiểm:** test đỏ trước với REST giả, gồm trường hợp API trả 401 hay 403.
   - **File:** `lib/scaffold/setup-jira.mjs`, `scripts/ao-kit.mjs`, test.
-- [ ] **T13: `ao-kit doctor`** (spec 2.5; plan, quyết định 9).
+- [x] **T13: `ao-kit doctor`** (spec 2.5; plan, quyết định 9).
   - **Đạt khi:**
     - bảng có các dòng của spec 2.5, mỗi dòng nói đạt hay chưa đạt và việc cần làm;
     - thoát mã 1 khi có dòng chưa đạt;
@@ -121,7 +121,7 @@
     - VPS chỉ có đoạn `deployer.yaml` mẫu và câu hỏi.
   - **Kiểm:** test đỏ trước với máy, `gh`, Jira giả: từng dòng đạt và chưa đạt, và không giá trị bí mật nào trong đầu ra.
   - **File:** `lib/scaffold/doctor.mjs`, `scripts/ao-kit.mjs`, test.
-- [ ] **T14: tài liệu chặng 3, PR.**
+- [x] **T14: tài liệu chặng 3, PR.**
   - **Đạt khi:** `README.md` mục cài kit nêu ba lệnh mới; `docs/jira-setup.md` (nếu đổi) nói bước nào `setup jira` làm thay.
   - **Kiểm:** năm lệnh kiểm; CI xanh; PR merge.
 
