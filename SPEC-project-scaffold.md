@@ -1,6 +1,6 @@
 # SPEC: project-scaffold
 
-> **Trạng thái:** chờ duyệt (Phiên 27 · Lượt 153). Spec này viết chi tiết **phần 1 (B1)**. Phần 2 (B2) và phần 3 (B3) mới có phạm vi (mục 4); mỗi phần sẽ có spec chi tiết riêng, bạn duyệt trước khi phần đó bắt đầu. Nguồn: hàng B1–B3 của [misc/thao-luan/concerns.md](misc/thao-luan/concerns.md), mục "Đầu vào cho `project-scaffold`" của [tasks/archive/pilot-1/verification.md](tasks/archive/pilot-1/verification.md), và yêu cầu của bạn ở Lượt 105 và Lượt 153.
+> **Trạng thái:** đã duyệt 2026-11-12 (Phiên 27 · Lượt 154), cả năm câu ở mục 9 theo đề xuất. Plan: [tasks/plan.md](tasks/plan.md). Spec này viết chi tiết **phần 1 (B1)**. Phần 2 (B2) và phần 3 (B3) mới có phạm vi (mục 4); mỗi phần sẽ có spec chi tiết riêng, bạn duyệt trước khi phần đó bắt đầu. Nguồn: hàng B1–B3 của [misc/thao-luan/concerns.md](misc/thao-luan/concerns.md), mục "Đầu vào cho `project-scaffold`" của [tasks/archive/pilot-1/verification.md](tasks/archive/pilot-1/verification.md), và yêu cầu của bạn ở Lượt 105 và Lượt 153.
 
 ## 1. Mục tiêu
 
@@ -300,7 +300,9 @@ tests/scaffold/                    # test của từng phần trên
 | Tạo repo và space thật để kiểm làm rác tài khoản | Repo private, space riêng, có bước dọn ở cuối; xóa hay giữ do bạn quyết |
 | Hướng dẫn dài, khó theo | Mỗi chặng kết thúc bằng `doctor`; bảng tra lệnh tách khỏi phần kể theo thứ tự |
 
-## 9. Câu hỏi cần bạn trả lời
+## 9. Câu hỏi đã trả lời
+
+Bạn duyệt cả năm đề xuất dưới đây ở Lượt 154.
 
 1. **Nguồn cấu hình.** `project.yaml` làm nguồn; `settings.json` và agent sinh ra từ nó; `preview.yaml` bỏ đi; `deploy.yaml` giữ nguyên và được đối chiếu. Mình đề xuất **đồng ý**. Cách khác là gộp luôn `deploy.yaml` vào `project.yaml`, nhưng làm vậy phải cập nhật kit trên VPS ngay ở phần 1.
 2. **Khung app: ghim file hay chạy công cụ sinh.** Mình đề xuất **ghim file** trong kit, lấy từ `ao-sample`. Dựng khung như vậy ra cùng một kết quả mỗi lần, nhanh, và test được trong CI. Chạy `create-next-app`, `nest new` rồi sửa thì luôn lấy bản mới, nhưng mỗi lần ra một khác, và các sửa của Pilot 1 có thể không còn khớp.
