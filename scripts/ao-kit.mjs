@@ -12,6 +12,8 @@
 //   check <dir>   project.yaml against its schema, deploy.yaml, package.json and the folders; writes nothing
 //   setup github <dir>   the GitHub side, with your gh login: default branch, branch deletion, Dependabot, the four
 //                 environments, JIRA_CI_TOKEN and AO_DEV_APP_KEY (--dev-app-key-file <path>), the ruleset check
+//   setup jira <dir>     the space of project.yaml with the schemes of --template (DEMO), its board and filter, then
+//                 jira:check; with JIRA_ADMIN_EMAIL and JIRA_ADMIN_CLASSIC_TOKEN. --space-name <name> (the project name)
 // Exit: 0 when it did what it says, 1 when the project has a problem it names, 2 on a wrong command line.
 import { spawnSync } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
@@ -22,9 +24,11 @@ import { runNpm } from '../lib/quality/npm.mjs';
 import { appCredentials, userVariable } from '../lib/quality/github-app.mjs';
 import { initProject, syncKit } from '../lib/scaffold/init.mjs';
 import { setupGithub } from '../lib/scaffold/setup-github.mjs';
+import { setupJira } from '../lib/scaffold/setup-jira.mjs';
+import { readMapping } from '../lib/tracker/mapping.mjs';
 import { checkProject, PROJECT_FILE, readProjectConfig } from '../lib/scaffold/project-config.mjs';
 
-const USAGE = 'usage: node <kit>/scripts/ao-kit.mjs <init|sync|render|check|setup github> <project dir> [options]; see the top of scripts/ao-kit.mjs';
+const USAGE = 'usage: node <kit>/scripts/ao-kit.mjs <init|sync|render|check|setup github|setup jira> <project dir> [options]; see the top of scripts/ao-kit.mjs';
 const kitDir = fileURLToPath(new URL('..', import.meta.url));
 
 const git = (args, cwd) => spawnSync('git', args, { cwd, encoding: 'utf8' });
@@ -86,7 +90,7 @@ function render(dir) {
 
 const OPTIONS = {
   profile: { type: 'string' }, name: { type: 'string' }, title: { type: 'string' }, space: { type: 'string' }, repo: { type: 'string' }, approvers: { type: 'string' },
-  'dev-app-key-file': { type: 'string' }, 'dev-app': { type: 'string' }, 'dev-app-id': { type: 'string' }, 'review-app': { type: 'string' }, 'review-app-id': { type: 'string' }, 'kit-peers': { type: 'string' }, key: { type: 'string' },
+  'dev-app-key-file': { type: 'string' }, template: { type: 'string' }, 'space-name': { type: 'string' }, 'dev-app': { type: 'string' }, 'dev-app-id': { type: 'string' }, 'review-app': { type: 'string' }, 'review-app-id': { type: 'string' }, 'kit-peers': { type: 'string' }, key: { type: 'string' },
 };
 let parsed;
 try {
@@ -111,6 +115,26 @@ const COMMANDS = {
     if (!config) return 1;
     return print(setupGithub({ kitDir, repo: config.github.repo, devAppKeyFile: v['dev-app-key-file'], secret, readFile: (path) => readFileSync(path, 'utf8'), gh, run }));
   },
+  'setup jira': async (dir) => {
+    const config = projectConfig(dir);
+    if (!config) return 1;
+    const [email, token] = [secret('JIRA_ADMIN_EMAIL'), secret('JIRA_ADMIN_CLASSIC_TOKEN')];
+    if (!email || !token) return print({ ok: false, notes: ['Set JIRA_ADMIN_EMAIL and JIRA_ADMIN_CLASSIC_TOKEN, a classic API token of your Atlassian account, as user variables (docs/getting-started.md)'] });
+    const mapping = readMapping(join(kitDir, 'tracker'));
+    const auth = `Basic ${Buffer.from(`${email}:${token}`).toString('base64')}`;
+    const jira = async (method, path, body) => {
+      const res = await fetch(`https://${mapping.site}${path}`, { method, headers: { Authorization: auth, Accept: 'application/json', 'Accept-Language': 'en-US', ...(body && { 'Content-Type': 'application/json' }) }, body: body && JSON.stringify(body) });
+      const text = await res.text();
+      let json = null;
+      try {
+        json = text ? JSON.parse(text) : null;
+      } catch {
+        json = null;
+      }
+      return { status: res.status, json };
+    };
+    return print(await setupJira({ kitDir, space: config.jira.space, name: v['space-name'] ?? config.name, template: v.template ?? 'DEMO', mapping, jira, run }));
+  },
 };
 if (!COMMANDS[command] || !dirArg) {
   console.error(USAGE);
@@ -121,4 +145,4 @@ if (!existsSync(dir)) {
   console.error(`${dir} does not exist: make the folder first`);
   process.exit(2);
 }
-process.exitCode = COMMANDS[command](dir);
+process.exitCode = await COMMANDS[command](dir);
