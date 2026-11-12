@@ -135,7 +135,7 @@ agent-roster  → figma-integration (thêm ngày 2026-10-30; làm lúc nào do b
 | `dev-workflow` | [`SPEC-dev-workflow.md`](SPEC-dev-workflow.md) | Hoàn thành 2026-11-01; plan lưu ở [`tasks/archive/dev-workflow/`](tasks/archive/dev-workflow/plan.md) |
 | `release-workflow` | [`SPEC-release-workflow.md`](SPEC-release-workflow.md) | Hoàn thành 2026-11-07; plan lưu ở [`tasks/archive/release-workflow/`](tasks/archive/release-workflow/plan.md), việc để lại ở cuối `verification.md` |
 | `kit-copy-review` | [`SPEC-kit-copy-review.md`](SPEC-kit-copy-review.md) | Hoàn thành 2026-11-07, chen trước Pilot 2; plan lưu ở [`tasks/archive/kit-copy-review/`](tasks/archive/kit-copy-review/plan.md) |
-| `human-loop` | [`SPEC-human-loop.md`](SPEC-human-loop.md) | Spec duyệt 2026-11-11; plan ở [`tasks/plan.md`](tasks/plan.md). Gồm A3, A4, A5 của [misc/thao-luan/concerns.md](misc/thao-luan/concerns.md): intake, xem trước giữa build và review, sửa lỗi sau QA fail. Làm trước `project-scaffold` |
+| `human-loop` | [`SPEC-human-loop.md`](SPEC-human-loop.md) | Hoàn thành 2026-11-12; plan lưu ở [`tasks/archive/human-loop/`](tasks/archive/human-loop/plan.md). Gồm A3, A4, A5 của [misc/thao-luan/concerns.md](misc/thao-luan/concerns.md): intake, xem trước giữa build và review, sửa lỗi sau QA fail. Kiểm thật trọn vòng trên `ao-sample` với Epic `SMP-23`; việc kit còn lại ở mục T20 của verification |
 | `project-scaffold` | `SPEC-project-scaffold.md` | Chưa viết |
 
 ## Câu hỏi mở

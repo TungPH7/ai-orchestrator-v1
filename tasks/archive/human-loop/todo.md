@@ -1,6 +1,6 @@
 # Task: human-loop
 
-> **Plan:** [plan.md](plan.md). **Spec:** [SPEC-human-loop.md](../SPEC-human-loop.md). Làm theo thứ tự. Mỗi task viết test đỏ trước.
+> **Plan:** [plan.md](plan.md). **Spec:** [SPEC-human-loop.md](../../../SPEC-human-loop.md). Làm theo thứ tự. Mỗi task viết test đỏ trước.
 
 **Quy ước:**
 - Xong mỗi task thì năm lệnh kiểm phải xanh: `npm test`, `npm run validate`, `npm run render:check`, `npm run jira:checklist:check`, `npm run agents:check`.
@@ -162,12 +162,12 @@
 
 ## Kiểm thật
 
-- [ ] **T19 [bạn]: chép kit vào `ao-sample`.** Bản kit mới gồm cả A1. PR chép kit cùng với `.ai-orchestrator/preview.yaml` của `ao-sample`. `/ao-review` review đầy đủ, `security` ở `max`. Bạn đọc, approve rồi tự merge.
+- [x] **T19 [bạn]: chép kit vào `ao-sample`.** Bản kit mới gồm cả A1. PR chép kit cùng với `.ai-orchestrator/preview.yaml` của `ao-sample`. `/ao-review` review đầy đủ, `security` ở `max`. Bạn đọc, approve rồi tự merge.
   - **Kiểm:** `audit` qua commit merge khi Development deploy.
-- [ ] **T20 [bạn]: kiểm thật trọn vòng** (spec mục 10.3).
+- [x] **T20 [bạn]: kiểm thật trọn vòng** (spec mục 10.3).
   - **Đạt khi:** bốn chặng của mục 10.3 đều chạy, mọi cú bấm ở cổng là của bạn, và mỗi lượt có số đo.
   - **Kiểm:** ghi vào `tasks/verification.md`.
-- [ ] **T21: đóng module.**
+- [x] **T21: đóng module.**
   - **Đạt khi:**
     - plan, todo và verification được chuyển sang `tasks/archive/human-loop/`;
     - `SPEC.md` ghi hoàn thành;
