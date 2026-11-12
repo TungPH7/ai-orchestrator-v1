@@ -1,6 +1,6 @@
 # Plan triển khai: live-run-fixes
 
-> **Spec:** [SPEC-live-run-fixes.md](../SPEC-live-run-fixes.md), đã duyệt 2026-11-12 (Phiên 27 · Lượt 149). **Trạng thái:** chờ duyệt. **Danh sách task:** [todo.md](todo.md).
+> **Spec:** [SPEC-live-run-fixes.md](../SPEC-live-run-fixes.md), đã duyệt 2026-11-12 (Phiên 27 · Lượt 149). **Trạng thái:** đã duyệt 2026-11-12 (Phiên 27 · Lượt 150). **Danh sách task:** [todo.md](todo.md).
 
 ## Tổng quan
 
@@ -79,10 +79,8 @@ Không task nào gọi agent trả tiền.
 
 ## Câu hỏi mở
 
-Một điểm cần bạn đồng ý: comment trên `SMP-19` (câu 3 của spec). Mình viết comment bằng `JIRA_CI_TOKEN`, token của CI, nội dung:
+Không còn. Comment trên `SMP-19` (câu 3 của spec) bạn đồng ý ở Lượt 150; mình đăng bằng `JIRA_CI_TOKEN`, token của CI (comment 10223), nội dung:
 
 > Thứ tự ghim của các ghi chú lấy theo Rules 1 và 4 trong SPEC của Epic `SMP-23`, không theo quyết định 3 của `plan.md`. Plan và design của `SMP-23` còn tả thứ tự cũ, và chỉ có AC1–AC11.
-
-Nếu bạn muốn comment đứng tên bạn, mình đưa từng bước để bạn dán.
 
 **Nút Complete trên `SMP-23` chưa bấm được.** `/ao-status SMP-23` báo `its items move on`: `SMP-24` đã Done, nhưng chưa nằm trong bản phát hành nào trên Production, mà luật `complete` cần điều đó. Bạn bấm Complete khi một bản phát hành có `SMP-24` lên Production. Việc này nằm ngoài module.

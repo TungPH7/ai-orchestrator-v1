@@ -9,8 +9,8 @@
 
 ## Chuẩn bị
 
-- [ ] **T1: tài liệu.** Spec ghi đã duyệt, plan, todo, nhật ký Lượt 148–150. PR tài liệu từ nhánh `task/live-run-fixes`, tự merge khi CI xanh. Comment trên `SMP-19` như mục Câu hỏi mở của plan.
-  - **Kiểm:** CI xanh, PR merge; comment hiện trên `SMP-19`.
+- [x] **T1: tài liệu.** Spec ghi đã duyệt, plan, todo, nhật ký Lượt 148–149. PR tài liệu từ nhánh `task/live-run-fixes`, tự merge khi CI xanh. Comment trên `SMP-19` như mục Câu hỏi mở của plan.
+  - **Kiểm:** CI xanh, PR merge; comment hiện trên `SMP-19` (comment 10223).
 
 ## Phần 1, nhánh `task/live-run-fixes-part-1`
 
