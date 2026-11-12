@@ -282,4 +282,8 @@ test('a branch cut from an older develop is refused: the old kit and instruction
   const m = machine({ own: ['apps/web/src/page.tsx'], all: ['apps/web/src/page.tsx', '.claude/settings.json', '.ai-orchestrator/scripts/ao-step.mjs'] });
   assert.equal(await failing(m), 'feature/DEMO-21-remove-line was cut from an older develop: .claude/settings.json, .ai-orchestrator/scripts/ao-step.mjs differ from develop there, and those older files would steer the agents during the preview. Merge develop into feature/DEMO-21-remove-line and push, then run /ao-preview DEMO-21 again');
   assert.deepEqual(m.events, []);
+  // T11 on ao-sample: a branch from before a kit copy differs in 55 such files. The reason names 8 and counts the rest.
+  const kit = Array.from({ length: 55 }, (_, i) => `.ai-orchestrator/lib/f${i}.mjs`);
+  assert.match(await failing(machine({ own: [], all: kit })), /: \.ai-orchestrator\/lib\/f0\.mjs, (?:[^,]+, ){6}\.ai-orchestrator\/lib\/f7\.mjs and 47 more differ from develop there/);
+  assert.match(await failing(machine({ own: kit })), /^PR #15 changes \.ai-orchestrator\/lib\/f0\.mjs, (?:[^,]+, ){6}\.ai-orchestrator\/lib\/f7\.mjs and 47 more, which steer/);
 });
