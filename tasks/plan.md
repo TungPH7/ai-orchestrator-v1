@@ -1,6 +1,6 @@
 # Plan triển khai: project-scaffold, phần 1 (B1)
 
-> **Spec:** [SPEC-project-scaffold.md](../SPEC-project-scaffold.md), đã duyệt 2026-11-12 (Phiên 27 · Lượt 154). **Trạng thái:** chờ duyệt. **Danh sách task:** [todo.md](todo.md).
+> **Spec:** [SPEC-project-scaffold.md](../SPEC-project-scaffold.md), đã duyệt 2026-11-12 (Phiên 27 · Lượt 154). **Trạng thái:** đã duyệt 2026-11-12 (Phiên 27 · Lượt 155). **Danh sách task:** [todo.md](todo.md).
 
 ## Tổng quan
 

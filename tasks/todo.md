@@ -10,7 +10,7 @@
 
 ## Chuẩn bị
 
-- [ ] **T1: tài liệu.** Spec ghi đã duyệt, plan, todo, nhật ký Lượt 151–154. PR tài liệu từ nhánh `task/project-scaffold`, tự merge khi CI xanh.
+- [x] **T1: tài liệu.** Spec ghi đã duyệt, plan, todo, nhật ký Lượt 151–154. PR tài liệu từ nhánh `task/project-scaffold`, tự merge khi CI xanh.
 - [ ] **T2 [bạn]: tiền đề Jira.**
   - **Bạn:** tạo một API token thường (không scope) ở trang Atlassian account, rồi đặt làm biến môi trường user `JIRA_ADMIN_CLASSIC_TOKEN` trên Windows. Token không đi qua chat.
   - **Mình:** bằng một script tạm, thử lần lượt:
