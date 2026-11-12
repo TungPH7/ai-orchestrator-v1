@@ -113,7 +113,7 @@ Lỗi chỉ lần chạy thật bắt được:
 - Sau lỗi `App … is not installed`, Node trên Windows in thêm `Assertion failed: !(handle->flags & UV_HANDLE_CLOSING)` khi thoát. Đây là tiếng ồn của libuv, lệnh vẫn dừng đúng. Cần ghi nhận, chưa sửa.
 - **T16 xong (Lượt 169).** Kit PR #256 (`bd01ebc`) chứa các sửa ở trên, bản nháp hướng dẫn với phần 3 viết lại thành 10 bước, và log các lượt 157–169.
 
-**T17, repo đang có `ao-brown`, 2026-11-12 (đang làm).** Bạn duyệt cách làm ở Lượt 170: Task chép kit, commit lên `develop` mới, rồi Cancel Task, 0 USD tiền agent.
+**T17, repo đang có `ao-brown`, 2026-11-12–13 (xong, chờ Cancel `AOG-2`, `AOG-3`).** Bạn duyệt cách làm ở Lượt 170: Task chép kit, commit lên `develop` mới, rồi Cancel Task, 0 USD tiền agent.
 - Dựng repo giả "đang phát triển": `gh repo create TungPH7/ao-brown --private`. Code lấy từ `main` của `ao-sample` (`2e69e47`, v0.1.0) bằng `git archive`. Gỡ `.ai-orchestrator/`, `.claude/`, `.githooks/`, `.github/`, `.jira/`, `.mcp.json`, `docs/`, `CHANGELOG.md`, script `prepare` và bốn dòng của kit trong `.gitignore`. Kết quả: 70 file, một commit `Initial commit` trên `main`, đã push. Repo chưa có workflow nào.
 - `ao-kit init ao-brown` (kit `bd01ebc`), 12 giây:
   - `init` thấy repo có code, nên chỉ chép kit, không đụng file app. Lệnh thêm bốn dòng `.gitignore` và script `prepare`, chạy `npm ci --prefix .ai-orchestrator` và render. `origin` đã có và đúng repo, nên không có ghi chú gì về nó.
@@ -148,5 +148,8 @@ Lỗi chỉ lần chạy thật bắt được:
   Lần chạy test đầu, bash gọi nhầm `uvx` thật trên máy: đường dẫn Windows có `:` làm tách `PATH`. Test giờ dùng `$PWD/bin`.
   - `check-policy` không coi việc thêm mục vào `coverage.exclude` là hạ chuẩn: `loweredThresholds` chỉ xét `changed_lines_min`, `audit_level` và các danh sách bị mất mục. Chỗ này được giữ bởi việc `gates.yaml` là đường dẫn được bảo vệ, chỉ bạn merge.
 - Bạn hỏi vì sao lại merge một PR có CI đỏ (Lượt 178). Mình đổi cách: đưa luật coverage mới vào chính bản kit của `ao-brown` trong PR #1 (`ee0bc2e`, chép `quality/gates.yaml` của kit). CI chạy lại xanh đủ: `policy`, `build-test`, `secrets`, `sast`, `jira-sync`. GitHub vẫn cho bấm merge PR đỏ, vì repo private trên gói Free không có ruleset (soft mode). Hướng dẫn nên nói rõ điều này: CI đỏ thì không merge, kể cả khi nút vẫn bấm được.
+- Bạn merge PR #1 bằng Squash (`498c769`). Lượt `CI` theo push trên `develop` (run 43273419038) xanh đủ bốn job, kể cả `sast`.
+- `doctor ao-brown`: mọi dòng đạt, gồm cả MCP và tin cậy thư mục, trừ "the kit files are those of this clone". Dòng này lệch 1 file: `.github/workflows/ci.yml`. Đó là luật Semgrep mới, sửa sau khi kit đã chép vào `ao-brown`. Mong đợi, như 6 file của `ao-green` ở T16.
+- Phần 4 của hướng dẫn viết lại thành 8 bước, theo đúng những gì đã chạy. Đoạn mẫu của `/ao-intake` có thêm hai ý mà phỏng vấn đã hỏi: `main` giữ nguyên tới lần release đầu, và cách sửa khi `doctor` chưa đạt.
 - Lượt cập nhật bảo mật `minimatch` của Dependabot đỏ. Chưa tìm hiểu, vì không chặn T17.
 - Ở Lượt 171 mình đoán lượt CI đầu trên `develop` sẽ không kéo theo `jira-sync`. Đoán sai: `jira-sync` vẫn chạy (`workflow_run`, xanh), vì `setup github` đã đổi nhánh mặc định sang `develop` trước khi CI chạy xong.
