@@ -93,5 +93,19 @@ Lỗi chỉ lần chạy thật bắt được:
   - `CI` xanh (run 43245798287).
   - `jira-sync` chạy cho sự kiện PR và sau CI, cả hai lần đều in `AOG-1` / `No change`: Task còn ở New, nên không có bước nào áp được.
   - `merge-gate` in `Skipped #1: opened by TungPH7, not by tungph7-ao-dev: whoever opened it merges it`.
+- Người dùng merge PR #1 bằng Squash. `develop` là `ff8f322`. Nhánh trên GitHub tự bị xóa, nhờ `setup github` đã bật xóa nhánh sau merge. Lượt `CI` theo sự kiện push trên `develop` (run 43247152735) xanh đủ bốn job: `policy`, `build-test`, `secrets`, `sast`. Sau đó `jira-sync` và `merge-gate` chạy theo `workflow_run`.
+- **Sửa lại một ý của chính mình ở Lượt 166:** `doctor` đã có dòng "CI has run on the repo" từ T13, kèm cách sửa của Pilot 1. Chỉ bản nháp hướng dẫn là bỏ sót. Dòng đó nay tách làm hai:
+  - "GitHub knows the workflows of the repo" (`actions/workflows`), cách sửa là bấm **Enable Actions on this repository**;
+  - "CI has run on develop", cách sửa là `gh workflow run CI --repo <repo> --ref develop`.
+- Sửa kit trên nhánh, mỗi sửa có test đỏ trước:
+  - `ci.yml` có `workflow_dispatch` (`881371f`);
+  - commit gốc không cần mã Jira (`b737554`);
+  - `init` thêm `origin` và in `Next:` theo thứ tự của hướng dẫn, riêng cho thư mục trống và repo có code (`76c9b0d`);
+  - `setup jira` in từng chỗ lệch, và không in "By hand" khi `jira:check` sạch (`73f4595`);
+  - `doctor` (`bedb035`).
+- `doctor ao-green` (bản kit trên nhánh): 22 dòng đạt, 2 dòng chưa đạt.
+  - "the kit files are those of this clone": 6 file. Đúng là các file mình vừa sửa trên nhánh: `git-hooks.mjs`, `doctor.mjs`, `init.mjs`, `setup-jira.mjs`, `commit-msg.mjs`, `ci.yml`. Bản kit trong `ao-green` có trước các sửa đó. Đây là kết quả mong đợi.
+  - "MCP servers atlassian, chrome-devtools allowed": `claude mcp list` trong `ao-green` báo cả hai `⏸ Pending approval`. `~/.claude.json` ghi `enabledMcpjsonServers: []` cho thư mục này, và không có `.claude/settings.local.json`. Phiên `/ao-intake` vẫn dùng được server `atlassian`: `AOG-1` do `orchestratoragent` tạo. Vậy lần cho phép trong phiên đó không được lưu lại. Cần biết hộp thoại cho phép MCP có những lựa chọn nào, để bản cuối chỉ đúng lựa chọn có lưu.
+- `ao-step status` trong `ao-green` chạy được: `AOG-1` ở New, ba môi trường trống.
 - `setup github` với key thứ hai (người dùng tải về `ao-keys`, không đổi tên) đã đặt: xóa nhánh sau merge, Dependabot, bốn environment, luật nhánh của `merge-gate`, `JIRA_CI_TOKEN`, `AO_DEV_APP_KEY`. Lệnh nhắc xóa file key. `gh:protect` báo soft mode: repo private trên gói Free không có ruleset, nên `merge-gate` và `audit` giữ gate. Vì vậy mục "bật ruleset ao-protected" trong bản nháp `AOG-1` không xảy ra. Chạy lần hai, lệnh không ghi gì và in `Already set: …` đủ bảy mục.
 - Sau lỗi `App … is not installed`, Node trên Windows in thêm `Assertion failed: !(handle->flags & UV_HANDLE_CLOSING)` khi thoát. Đây là tiếng ồn của libuv, lệnh vẫn dừng đúng. Cần ghi nhận, chưa sửa.
