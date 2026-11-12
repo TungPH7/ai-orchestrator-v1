@@ -150,11 +150,19 @@
   - Repo `TungPH7/ao-brown` (private): code của `ao-sample` đã gỡ hết file của kit, chỉ có nhánh `main`. Dùng chung space `AOG`.
   - **Bạn:** cài hai App, nối GitHub for Jira.
   - **Đạt khi:** `init` báo đúng việc còn thiếu; làm xong các việc đó thì `doctor` đạt và CI xanh.
-- [ ] **T18 [bạn]: release `v0.2.0` của `ao-sample`.**
+- [x] **T18 [bạn]: release `v0.2.0` của `ao-sample`.** Xong 2026-11-13, Lượt 180–185:
+  - Điểm cắt `61f4cec`, gồm `SMP-22` và `SMP-24`.
+  - `/ao-ship` chạy `qa` (54/54 test E2E) và `devops`, hết 1,05 USD.
+  - Gate ⑤: bạn approve PR #28. `merge-gate` merge (`ab62bfb`) và gắn tag `v0.2.0`. Production deploy `success`.
+  - Jira: `v0.2.0` đã Released, `SMP-23` đã Complete. Hai việc này mình làm bằng token admin, theo lời bạn nhờ.
   - Các bước: `/ao-release` → gate ④ → `/ao-ship v0.2.0` → gate ⑤ → Production → bấm `Release` → `Complete` `SMP-23`.
   - Ghi lệnh, đầu ra, thời gian, chi phí cho phần 5 của hướng dẫn.
   - **Bạn:** bấm gate ④ và ⑤, `Release`, `Complete`.
-- [ ] **T19: bản cuối của hướng dẫn, PR.**
+- [x] **T19: bản cuối của hướng dẫn, PR.** Xong 2026-11-13, Lượt 185.
+  - Phần 5 có 10 bước theo `SMP-23`, với số liệu của 35 lượt agent: khoảng 3,5 giờ, 55,1 USD.
+  - Phần 6 bổ sung lệnh, phần 7 viết mới.
+  - `README.md` mục cài kit chỉ còn trỏ tới hướng dẫn và liệt kê những gì kit chép vào dự án.
+  - Có test mới giữ bảy phần và việc README trỏ tới hướng dẫn.
   - **Đạt khi:**
     - đủ bảy phần của spec 2.7, chỉ dùng đầu ra và số liệu thật;
     - phần 5 đi theo `SMP-23` từ `/ao-intake` tới `Complete`;
