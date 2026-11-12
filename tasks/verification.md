@@ -182,4 +182,5 @@ Lỗi chỉ lần chạy thật bắt được:
   - `jira-sync` chạy theo review. `merge-gate` merge PR lúc 18:30:10Z (`ab62bfb`, `app/tungph7-ao-dev`), sau khi bạn approve chưa tới một phút, và gắn tag `v0.2.0` tại `ab62bfb`.
   - Production deployment 7746116760: tạo lúc 18:30:49Z, `success` lúc 18:31:17Z.
   - Kiểm từ ngoài: `/notes` 200, `/api/notes` 200 với `{"data":[]}`. Ghi chú mất sau mỗi lần deploy, như Known Issues đã ghi.
-  - PR #29 `Merge main into develop after v0.2.0` được mở; `merge-gate` sẽ merge khi CI của nó xanh.
+  - PR #29 `Merge main into develop after v0.2.0`: CI xanh, `merge-gate` merge lúc 18:32:51Z (`b189631`).
+- **Release trên Jira** (Lượt 184, bạn nhờ mình làm): một script dùng token admin của bạn, gọi `PUT /rest/api/3/version/10004`. Kết quả: `v0.2.0` thành `released: true`, `releaseDate` 2026-11-13, mô tả là nguyên văn `fix-version.md` (1537 ký tự, Jira nhận đủ). Trước khi ghi, script kiểm cả hai item `SMP-22`, `SMP-24` đều Done. Đây là bước người dùng có thể giao cho phiên chính. Bản cuối của hướng dẫn nên ghi cả hai cách: tự bấm, hoặc nhờ Claude.
