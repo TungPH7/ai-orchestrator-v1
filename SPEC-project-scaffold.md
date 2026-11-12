@@ -126,9 +126,9 @@ Lệnh in từng bước bấm cho việc API không làm được: cài hai App
 
 Cột của board và Kanban backlog vẫn phải bấm tay: API công khai chỉ cho đọc cấu hình cột. Lệnh in từng bước bấm cho phần này.
 
-**Task đầu tiên cho commit đầu.** Hook `commit-msg` đòi mã Jira, nên commit đầu cần một Task. Hướng dẫn chỉ cách làm: mở `claude`, gõ `/ao-intake dựng khung dự án`, rồi commit với mã Task đó.
+**Commit đầu không cần Task** (sửa ở T16, Lượt 166). Hook `commit-msg` cho commit gốc của repo (lúc chưa có `HEAD`) qua mà không cần mã Jira, nhưng header vẫn phải đúng dạng `type(scope): subject`. Lý do: commit này có trước mọi item của space, và không PR nào chở được nó. Hợp đồng cũng không có đường tới Done cho một Task không có PR. Ở T16, Task `AOG-1` tạo cho commit đầu bị kẹt ở New vì lý do này. `/ao-intake` chỉ dùng sau khi dựng xong, cho việc thật đầu tiên.
 
-**Sau lần push đầu** lên repo trống, GitHub không chạy workflow theo sự kiện (Pilot 1, T7). Hướng dẫn và `doctor` nhắc đẩy thêm một commit đụng `.github/workflows/`.
+**Sau lần push đầu** lên repo trống, GitHub có thể không chạy workflow nào: ở Pilot 1 (T7), workflow `active` mà không có lượt chạy theo sự kiện; ở T16, tab Actions báo Actions đang tắt, dù API `actions/permissions` trả `enabled: true`. `ci.yml` có `workflow_dispatch` (T16). Hướng dẫn chỉ cách xử lý: mở tab Actions, bấm **Enable Actions on this repository** nếu thấy nút đó, rồi chạy `gh workflow run CI --ref develop`. `doctor` báo chưa đạt khi GitHub chưa ghi nhận workflow nào, hoặc `develop` chưa có lượt CI nào.
 
 ### 2.5 `doctor`: dự án còn thiếu gì
 

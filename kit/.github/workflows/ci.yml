@@ -7,6 +7,9 @@ on:
   pull_request:
   push:
     branches: [develop, main, 'release/**']
+  # By hand, on a branch: gh workflow run CI --ref develop. For a push made while Actions was off on the repository,
+  # which then has no run (project-scaffold T16). With no PR and no push, the jobs check the head commit alone.
+  workflow_dispatch:
 
 permissions:
   contents: read

@@ -23,7 +23,7 @@ function facts(change = {}) {
     renderCheck: { status: 0, text: '12 files up to date in .claude/' },
     hooksPath: '.githooks',
     gitignoreMissing: [],
-    github: { defaultBranch: 'develop', environments: ['development', 'staging', 'production', 'merge-gate'], secrets: ['JIRA_CI_TOKEN'], envSecrets: ['AO_DEV_APP_KEY'], ciRuns: 3 },
+    github: { defaultBranch: 'develop', environments: ['development', 'staging', 'production', 'merge-gate'], secrets: ['JIRA_CI_TOKEN'], envSecrets: ['AO_DEV_APP_KEY'], workflows: 3, ciRuns: 3 },
     apps: { dev: { ok: true }, review: { ok: true } },
     jiraCheck: { status: 0, text: 'AOG matches tracker/jira.yaml' },
     claude: { trusted: true, mcp: ['atlassian', 'chrome-devtools'] },
@@ -57,7 +57,8 @@ test('each part that is missing fails its own row, with what to do', () => {
     [{ github: { ...facts().github, environments: ['development'] } }, 'environments'],
     [{ github: { ...facts().github, envSecrets: [] } }, 'secrets'],
     [{ apps: { dev: { ok: true }, review: { ok: false, reason: 'the App is not installed on TungPH7/ao-sample' } } }, 'ao-review installed'],
-    [{ github: { ...facts().github, ciRuns: 0 } }, 'CI has run'],
+    [{ github: { ...facts().github, workflows: 0 } }, 'GitHub knows the workflows'],
+    [{ github: { ...facts().github, ciRuns: 0 } }, 'CI has run on develop'],
     [{ jiraCheck: { status: 1, text: '5 difference(s) between Jira and tracker/jira.yaml' } }, 'jira:check'],
     [{ claude: { trusted: false, mcp: ['atlassian', 'chrome-devtools'] } }, 'folder trusted'],
     [{ claude: { trusted: true, mcp: ['atlassian'] } }, 'MCP servers'],
@@ -69,6 +70,14 @@ test('each part that is missing fails its own row, with what to do', () => {
     assert.match(bad[0].name, new RegExp(name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')), name);
     assert.ok(bad[0].fix.length > 10, `${name} says what to do`);
   }
+});
+
+// T16: Actions was off on a new repo though the API said enabled, and the first push started nothing (Pilot 1, T7).
+test('the rows of Actions say where to switch it on, and how to run CI on develop by hand', () => {
+  const rows = doctor(facts({ github: { ...facts().github, workflows: 0, ciRuns: 0 } }));
+  const fix = (name) => rows.find((row) => row.name.startsWith(name)).fix;
+  assert.match(fix('GitHub knows the workflows'), /Actions tab .* Enable Actions on this repository/);
+  assert.match(fix('CI has run on develop'), /gh workflow run CI --repo TungPH7\/ao-sample --ref develop/);
 });
 
 test('the printout names no secret, only whether it is there and has the right shape', () => {

@@ -32,7 +32,7 @@ Trong repo dự án, `npm install` gọi script `prepare`, và script này cài 
 | Hook | Chặn khi | Cách sửa |
 |---|---|---|
 | `pre-commit` | secretlint thấy secret trong file đã stage, hoặc `npm run precommit` của dự án lỗi | Bỏ secret khỏi file, đưa nó vào biến môi trường hoặc secret của GitHub. Nếu đó là secret thật thì thu hồi nó và tạo cái mới. Lỗi của `precommit`, thường là lint, thì sửa theo thông báo |
-| `commit-msg` | Header không theo `type(scope): subject (<KEY>)`, ví dụ `feat(cart): add a quantity limit (DEMO-6)`. `type` là một trong `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `revert` | Viết lại header, hoặc `git commit --amend` nếu commit đã tạo. Commit merge và commit revert do git tạo thì được cho qua |
+| `commit-msg` | Header không theo `type(scope): subject (<KEY>)`, ví dụ `feat(cart): add a quantity limit (DEMO-6)`. `type` là một trong `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `revert` | Viết lại header, hoặc `git commit --amend` nếu commit đã tạo. Commit merge và commit revert do git tạo thì được cho qua. Commit đầu tiên của repo không cần mã Jira, nhưng vẫn theo `type(scope): subject` |
 | `pre-push` | Lần push cập nhật `develop`, `main`, hoặc một nhánh `release/*` đã có | Đẩy lên nhánh làm việc, rồi mở PR. Tạo nhánh `release/*` mới thì được cho qua |
 
 ## Bốn check của `CI`

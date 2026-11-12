@@ -126,12 +126,17 @@
   - **Kiểm:** năm lệnh kiểm; CI xanh; PR merge.
 
 ### Checkpoint 4: sau T14
-- [ ] PR chặng 3 đã merge, `main` xanh. Mình báo bạn trước T16.
+- [x] PR chặng 3 đã merge, `main` xanh (#255). Mình báo bạn trước T16.
 
 ## Chặng 4: hướng dẫn và kiểm thật
 
-- [ ] **T15: bản nháp `docs/getting-started.md`** (spec 2.7): phần 1 (AO Kit là gì, ai làm gì), 2 (chuẩn bị một lần), 3 (dự án mới), 4 (repo đang có), 6 (bảng tra lệnh). Chưa merge.
-- [ ] **T16 [bạn]: kiểm thật dựng mới** (tiêu chí 2), làm đúng theo phần 2 và 3 của bản nháp, từ một thư mục trống.
+- [x] **T15: bản nháp `docs/getting-started.md`** (spec 2.7): phần 1 (AO Kit là gì, ai làm gì), 2 (chuẩn bị một lần), 3 (dự án mới), 4 (repo đang có), 6 (bảng tra lệnh). Chưa merge.
+- [x] **T16 [bạn]: kiểm thật dựng mới** (tiêu chí 2), làm đúng theo phần 2 và 3 của bản nháp, từ một thư mục trống. Xong 2026-11-12, Lượt 158–169:
+  - CI xanh trên `develop` (`ff8f322`); `/ao-status` chạy được.
+  - `doctor` đạt mọi dòng, trừ "the kit files are those of this clone". Dòng này lệch 6 file, chính là các sửa của T16, làm sau khi `init` đã chép kit. Mong đợi.
+  - Bảy lỗi và chỗ thiếu ghi trong `verification.md`, sửa bằng PR cuối T16.
+  - Lượt 166 bạn duyệt: commit gốc không cần mã Jira, `ci.yml` có `workflow_dispatch`, `AOG-1` đóng bằng Cancel.
+  - Phần 3 của hướng dẫn viết lại theo đúng những gì đã chạy.
   - Repo `TungPH7/ao-green` (private), space `AOG`.
   - **Bạn:** cài hai App vào repo, nối GitHub for Jira, tin cậy thư mục, chạy `/ao-intake` cho Task đầu; bấm tạo space và board nếu T2 thấy API không làm được.
   - **Đạt khi:** `doctor` báo mọi dòng đạt, CI xanh trên `develop`, `/ao-status` chạy được.

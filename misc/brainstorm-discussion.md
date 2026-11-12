@@ -32,7 +32,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 22 | `d714399c-65d0-4f98-bbbb-720338ff6bea` | 2026-11-02 khoảng 10:50 → khoảng 20:08 | Bạn dán đoạn cuối của Phiên 21 kèm ảnh panel Development của `SMP-1`, hỏi `Deploy` đỏ có đúng dự kiến không; Claude đọc run và log của `audit`: đúng dự kiến (commit đầu không qua PR), và ảnh cho thấy GitHub for Atlassian đã gắn run vào `SMP-1`; bạn dọn `SMP-1` và bấm Start spec; Claude merge kit PR #143 (T3–T6, Checkpoint 2), chạy `/ao-spec SMP-2` qua `claude -p`: `ba` viết SPEC (1,49 USD) và để lại 4 câu hỏi; Claude chuyển câu hỏi cho bạn, khuyên đồng ý cả bốn; bạn đồng ý cả bốn; Claude nối lại phiên `claude -p` với câu trả lời: `ba`, `ux`, `sa` chạy (3,36 USD), `sa` để lại 2 câu hỏi (đếm emoji, chuẩn hóa NFC và xuống dòng); Claude khuyên đồng ý cả hai; bạn đồng ý cả hai; `sa` ghi câu trả lời, `ba` mở PR tài liệu #1, nhưng GitHub không chạy CI và `ao-step` chờ 30 phút; bạn hỏi vì sao không dừng; Claude dùng nhánh và PR thử tìm ra nguyên nhân (workflow từ lần push đầu chưa được ghi nhận trigger; một push đụng `.github/workflows/` gỡ được), `CI` của PR #1 xanh; tìm thêm lỗi kit `openQuestions` bỏ sót 10 câu hỏi của `ux`; tới gate ①, Claude khuyên không thêm dòng "Đã lưu ghi chú." và gửi các bước Approve spec; bạn hỏi vì sao có hai lỗi nặng và yêu cầu sửa; Claude sửa ở kit (PR #144), chép vào `ao-sample` (Task `SMP-3`, PR #3), `/ao-review 3` Approve (1 Medium, 2 Low ở kit, sửa ở kit PR #145); bạn approve và merge PR #3, hỏi có cần chép kit vào `ao-pilot` (chưa cần); bạn đã bấm Approve spec, chọn chạy `/ao-plan`; `sa` chạm giới hạn 5 giờ giữa lượt viết plan; bạn bảo làm tiếp; `sa` viết xong plan và ba ADR, `ba` tạo 8 item nhưng không tạo được link Blocks; phiên dừng vì Claude chạm giới hạn tuần |
 | 23 | `6d4fa505-b003-47c3-bad3-14958ad7ae83` | 2026-11-02 khoảng 22:10 → | Bạn dán đoạn cuối của Phiên 22 để làm tiếp; Claude tạo 5 link Blocks bằng token CI, tắt server spike `sa` để lại, ghi stage plan và 3 lỗi kit vào `verification.md`, gửi các bước duyệt plan (gate ②) |
 | 26 | `6b41390c-2d48-4d39-9a30-5a4e22f76bf7` | 2026-11-04 khoảng 13:10 → | Bạn báo đã merge kit PR #165; Claude chép vào `ao-sample` PR #13 và review lần 2 (security lại có 1 High: `AGENTS.md`), mở kit PR #166; bạn hỏi chạy review ở high, vì sao lần nào cũng ra High, vì sao security review cả PR; Claude tìm lý do của luật review toàn bộ trong file này; bạn chọn đổi luật review phần mới, điều kiện đường dẫn được bảo vệ (b), và sửa gốc (code của PR không nằm trong thư mục dự án); Claude thử bằng Sonnet và sửa thêm trong kit PR #166; bạn merge #166; Claude chép vào PR #13, review lần 3 còn hai Medium để sau Pilot 1; bạn merge PR #13 (`e56a207`); T10: kit PR #167 (đường bấm của board Jira mới) và #168 (đầu vào cho `project-scaffold`, bảng lỗi kit, chi phí Pilot 1 khoảng 117,6 USD, plan vào `tasks/archive/pilot-1/`); bạn xác nhận Pilot 1 hoàn thành (PR #169); bạn hỏi tài khoản GitHub Free có bị tính tiền không: Billed 0 USD, phần miễn phí bù hết Gross; bạn chọn `release-workflow`; Claude nêu phạm vi, điều vừa kiểm (repo private gói Free không có secret theo môi trường và người duyệt bắt buộc, phần miễn phí 12 USD Actions mỗi tháng, tài khoản agent không tạo được Fix Version), bảy giả định và ba câu hỏi (VPS, cách đưa bản mới vào VPS, kiểm thật ở `ao-pilot` hay `ao-sample`); bạn trả lời: dùng VPS `dtddeploy` của bạn với subdomain của `t2g.io.vn`, VPS tự kéo bản đã qua cổng, kiểm thật trên `ao-pilot` trước; key SSH của VPS có passphrase, Claude chỉ cách mở khóa bằng ssh-agent của Windows; bạn mở khóa key; Claude thấy VPS rất có thể đã bị chiếm quyền root (`masscan` chạy bằng root từ một IP của Aeza Group, SSH cho root đăng nhập bằng mật khẩu) và quá nhỏ (1 vCPU, 961 MB RAM), khuyên thu hồi bí mật và cài lại VPS, rồi hỏi lại câu 1; bạn xác nhận `masscan` không phải của bạn, nhờ ghi việc xử lý VPS vào memory (không commit), và hỏi về passphrase 4 chữ số, cách người lạ vào, cách SSH an toàn và EC2: người lạ có root từ khoảng 7/7/2026, nhiều khả năng nhờ mật khẩu root, passphrase không phải nguyên nhân; EC2 chỉ rẻ hơn khi bật ít giờ; bạn chọn VPS mới riêng cho kit; Claude viết `SPEC-release-workflow.md` (deployer trên VPS kiểm mọi commit bằng `audit`, hai điều kiện cứng cho Production, bốn lệnh `/ao-qa`, `/ao-release`, `/ao-ship`, `/ao-rollback`, mười tiền đề), đổi năm chỗ so với giả định, hỏi hai câu (subdomain, basic auth); bạn chọn cả hai đề xuất và duyệt spec; Claude ghi spec đã duyệt (PR #170), nhưng bộ lọc an toàn dừng tin nhắn hai lần; bạn hỏi nguyên nhân; Claude viết plan 23 task, bốn checkpoint, ba quyết định cần duyệt (đổi bản không gián đoạn, gỡ chặn bằng `/ao-rollback <môi trường> <sha>`, bản chép kit đi cùng Task của `ao-pilot`); bạn nhờ giải thích lại quyết định 5; Claude giải thích bằng ví dụ commit push thẳng nằm giữa lịch sử, cách gỡ bằng yêu cầu deploy của bạn, và hỏi có muốn tên `/ao-deploy` thay cho `/ao-rollback <sha>`; bạn merge PR #170 và duyệt plan; Claude ghi ba quyết định vào spec, mở PR #171, bắt đầu T1 (App `ao-deploy` trong script tạo App, mục 7 của `docs/github-apps-setup.md`), mở trang tạo App và đưa các bước bấm để bạn tạo App và token Jira chỉ đọc; bạn báo đã xong và hỏi quyền của App; Claude xác nhận quyền đúng thiết kế, nhưng tiền đề 3 sai một phần (`audit` cần quyền Commit statuses), đề xuất thêm quyền chỉ đọc đó, đề xuất hủy `DEMO-3` trước phép thử điểm 1, và báo tag `v0.1.0`, nhánh `release/0.1.0` cũ trên `ao-pilot`; bạn thêm quyền và hủy `DEMO-3`; Claude kiểm sáu tiền đề (1, 3, 4, 9, 10 đúng; 8 sai: token của agent không gắn được file), đề xuất gắn bằng chứng bằng token CI trong script, thêm điểm bắt đầu cho deployer, nhờ bạn xem deployment trên `DEMO-21` và hủy Bug thử `DEMO-25`; bạn gửi ảnh tab Deployments, hủy `DEMO-25` và đồng ý đề xuất; Claude đóng T1 (điểm 2 đúng; script dùng token CI cho bằng chứng, Fix Version và comment), nhờ bạn merge PR #171; bạn merge #171, chọn gói VPS MMO4 của BKNS và bỏ bước đưa lựa chọn nhà cung cấp; Claude mở PR #172 của T1, đưa các bước tạo key SSH mới và đặt VPS; bạn gửi ảnh form đặt hàng của BKNS; Claude viết lại bước 2 theo form (`Ubuntu-24-x64`, hostname `vps.ao.t2g.io.vn`, dán public key, 1 snapshot nếu giá hợp lý); bạn gửi ảnh form đã điền; Claude xác nhận đúng; bạn gửi IP `42.96.4.120`; VPS trả lời ping nhưng SSH chưa mở, Claude chờ cổng 22 và hỏi cổng SSH, trạng thái VPS; bạn gửi cổng `26266`; Claude cài phần nền (chỉ key, `ufw`, tự cập nhật, swap, Docker, Node.js 24, user `aoadmin`), viết `docs/vps-setup.md`, nhờ bạn đặt mật khẩu `aoadmin` và tạo bản ghi DNS wildcard; bạn hỏi đăng nhập bằng key thì ở vai trò nào và lúc tạo `aoadmin` Claude ở vai trò nào; Claude giải thích tên user trong lệnh quyết định vai trò, và Claude đã tạo `aoadmin` bằng root; bạn báo đã đặt mật khẩu và tạo bản ghi DNS; Claude thử ba tiền đề còn lại của T2 (build đúng, HTTPS đúng, E2E 19/24), dọn VPS, tắt đăng nhập root, quét cổng, rồi đề xuất ba chỗ sửa spec và plan; bạn nhắc Claude hai lần trả lời bằng tiếng Việt; bạn gỡ key, merge #172 và duyệt ba đề xuất; Claude sửa spec và plan (`AO_PUBLIC_URL`, tag `@local`, dọn cache build ở T7), đóng T2, mở PR #173, chờ bạn xem kết quả T1–T2 ở Checkpoint 1; bạn hỏi vì sao Claude cứ trả lời bằng tiếng Anh; Claude xin lỗi, giải thích lỗi chép tin từ log, thêm bước kiểm vào bộ nhớ và gửi lại bản tiếng Việt; bạn hỏi nguyên nhân; Claude nêu ba nguyên nhân (ngữ cảnh tiếng Anh sau khi phiên bị nén, viết lại tin thay vì chép từ log, tin tiến độ theo thông báo tiếng Anh) |
-| 27 | `6fe2d487-8a5e-4cfb-a02c-e03e1598a124` | 2026-11-06 khoảng 00:21 → | Bạn báo đã merge PR #173 và nhắc đọc memory; Claude đánh dấu Checkpoint 1 đạt, làm T3 (`versions.mjs`, `cut.mjs`, PR #174), T4 (kiểm `deploy.yaml`, schema chuyển vào `lib/release/`) và T5 (`targets.mjs`), rồi đề xuất báo lần từ chối bằng status `error`, để `jira-sync` không tạo Bug Critical sai; bạn merge #174 và duyệt đề xuất; Claude sửa spec, mở PR #175 của T4, làm T6 (`auditRange`, commit báo cáo của bot trên `release/*`, PR merge ngược); bạn merge #175; Claude mở PR #176 của T5, làm T7 (`smoke.mjs`, `docker.mjs`: đổi bản theo từng app, hai alias, bí mật qua môi trường của lệnh `docker`); bạn merge #176; Claude mở PR #177 của T6, làm T8 (`deployer.mjs`, `record.mjs`, `scripts/ao-deploy.mjs`), chạy thử `tick --dry-run` vào `ao-pilot`: dừng đúng ở `3fdd514`; bạn merge #177; Claude mở PR #178 của T7, làm T9 (Caddyfile do deployer sinh, schema của `deployer.yaml`, systemd, `ao-secret.sh`, mục 11 của `docs/vps-setup.md`); bạn hỏi Claude có tự merge được không; Claude trả lời được (repo kit private gói Free không có branch protection, `gh` có quyền admin), quy ước hiện tại là quyết định 10 của plan, và đề xuất để Claude merge PR của kit khi CI xanh, bạn xem ở checkpoint; bạn cho Claude tự merge tới Checkpoint 2; Claude ghi quyết định vào plan, merge #179 (T8), #180 (T9), #181 (T10: `merge-gate` cho PR release và PR merge ngược), #182 (T11: `jira-sync` tạo Bug Critical, gắn cờ khi deploy lên môi trường QA thất bại); bạn nhắn tiếp; Claude merge #183–#188 (T12–T17: dữ kiện môi trường, `/ao-qa`, `/ao-release`, `/ao-ship`, hotfix, `/ao-rollback`, bốn skill), sửa chỗ hở `JIRA_CI_TOKEN` trong phiên agent, chạm giới hạn usage giữa T15 rồi làm tiếp; tới Checkpoint 2, kiểm chỉ đọc trong `ao-pilot`, đề xuất ba việc trước kiểm thật; bạn hỏi `DEMO-5`, `DEMO-19` có phải hai Task trong ảnh không, vì Jira chỉ cho chuyển sang Cancelled, và PR #189 có chỉ cần Rebase and merge; Claude đính chính: từ New bạn chỉ `Refine` hoặc `Cancel`, mười item có commit trên `develop` chỉ `DEMO-12` Done, điểm cắt tính cả key của Epic là lỗi, xóa tag `v0.1.0` làm `DEMO-3` chặn điểm cắt; đề xuất A (điểm cắt bỏ qua Epic), B (sửa dữ liệu Jira của item cũ bằng token bot), C (giữ tag `v0.1.0`); bạn hỏi nên chọn phương án nào, dặn chưa làm gì; Claude nói đó là ba việc riêng, chọn B1; bạn merge #189, duyệt cả ba, cho tiếp tục tự merge; Claude merge #190 (việc A); việc B dừng sau `DEMO-19`, vì token của `ao-agents` không ghi được qua REST, và hỏi bạn có cho gọi Rovo MCP bằng script không; bạn đồng ý và nạp key SSH; Claude sửa xong dữ liệu Jira qua Rovo MCP, cài phần T18 của mình trên VPS, chuyển 11 deployment cũ sang `inactive`, rồi dừng để bạn bấm `Accept` và nhập hai bí mật; bạn làm xong; Claude kiểm, chạy `baseline pilot`, và hỏi bạn duyệt hai head trước `--confirm`; bạn hỏi có cần merge `develop` vào `main` không; Claude trả lời không cần và không nên, hai hướng merge đều không xung đột; bạn duyệt hai head; Claude ghi điểm bắt đầu, bật timer, thấy `AO_ENV_AUTH` không khớp mật khẩu trên VPS, báo đã in bản băm của mật khẩu ra output, và nhờ bạn nhập mật khẩu mới; bạn nhập lại; Claude thấy basic auth đã khớp, tắt đăng nhập root, và nhờ bạn gỡ key SSH, xóa file key `ao-deploy`; bạn làm xong; Claude đóng T18, tạo Task `DEMO-26` của T19, và nhờ bạn đọc rồi bấm `Refine`; bạn bấm `Refine`; lượt build đầu của `devops` dừng vì hook `jira-guard` nhận 401, do Claude quên đặt `AO_KIT_DIR`; Claude nhờ bạn gỡ cờ trên `DEMO-26`; bạn gỡ cờ; `devops` mở ao-pilot PR #17; Claude thấy trace của Playwright giữ mật khẩu basic auth và sửa kit (#198); bạn yêu cầu báo tiến độ 3 phút một lần; `/ao-review`, `/ao-fix` chạy, `policy` đọc nhầm `exit(` (#199), chạm giới hạn 5 giờ rồi chạy tiếp; không còn Critical hay High, ba Medium trong kit sửa ở #200; chi phí của `DEMO-26` là 20,53 USD; Claude nhờ bạn duyệt và merge PR #17 ở gate ③; bạn merge; deploy đầu lên Development thất bại vì `UMask=0077` làm image không đọc được code; Claude dựng lại lỗi bằng Docker Desktop, sửa kit ở #202, và hỏi bạn có đồng ý chép bản kit mới lên VPS; bạn đồng ý; Claude chép kit lên VPS, deploy lại `fb71de5` thành công, E2E vào Development 24/24 xanh, rồi làm T20: deployer chặn commit push thẳng, GitHub từ chối token `ao-dev`; bạn đồng ý gỡ chặn; Development chạy `fbbc47d`; tới Checkpoint 3, Claude hỏi bạn có chạy T21–T22 không; bạn hỏi vì sao T19 chưa được đánh xong; Claude giải thích hai mục còn mở và nhận đã nói quá; bạn đồng ý đánh xong T19, chép kit lại sau T22, và chạy T21–T22; `qa` kiểm bốn item trên Development, hai lượt chạm giới hạn 5 giờ, Claude sửa lỗi chạy tiếp lượt `qa` (#207); cả bốn PASS, bạn `Accept`; Claude đưa link trang Releases sai, bạn thêm tab Releases và tạo `v0.2.0`, `v0.3.0`; `/ao-release` dừng ở gate ④ với 10 item, chờ bạn duyệt; bạn duyệt; Staging chạy `v0.2.0`, regression PASS, PR release #18 đỏ ở `policy`; Claude sửa kit (#209); bạn đồng ý đi luồng Bug `DEMO-27` không review; `audit` chặn bản sửa trên Staging vì thiếu báo cáo review, Claude nhận đã đề xuất sai; bạn gỡ chặn; `DEMO-27` qua QA trên Staging, bạn `Accept`; regression chạy lại, Claude sửa lỗi gate ⑤ đến quá sớm (#211), release note viết lại; bạn approve PR #18; `merge-gate` merge, gắn tag `v0.2.0`, merge ngược; Production chạy `v0.2.0`, cùng tree với Staging; bạn bấm Release; T22: bạn chọn Bug thử `/favicon.ico` với Severity High, Claude tạo `DEMO-28`; `be-dev` sửa, đo được câu "console có lỗi" của Claude là sai, Claude sửa Bug; `merge-gate` merge PR #21; lượt `qa` bị tắt vì máy thiếu RAM, bạn giải phóng RAM, `qa` PASS; bạn `Accept`; `/ao-ship v0.2.1` chờ gate ⑤; bạn duyệt, `v0.2.1` lên Production; bạn bấm Release; rollback về `v0.2.0` và lên lại `v0.2.1` đều đạt; smoke fail có chủ đích đạt, `jira-sync` tạo Bug `DEMO-29`, Production giữ `v0.2.1`; T22 đóng; Claude rà việc tồn ở kit, Jira và hai pilot, sửa hai Medium của Pilot 1 (PR #218); chép kit lên VPS (`521e031`); Checkpoint 4 đóng, `docs/release-workflow.md` (PR #219); T22b: ao-pilot PR #23, review tìm lỗi High trong PR #217, sửa ở PR #220, chép lại, merge (`0f86022`), `qa` PASS, bạn Accept; T22b và T23 xong, plan lưu ở `tasks/archive/release-workflow/`, bạn xác nhận `release-workflow` hoàn thành; bạn hỏi Pilot 2 khác gì Pilot 1 và cách giảm chi phí review PR chép kit; Claude thử mù review (`max`, `high`, `open-code-review`), viết và được duyệt spec `kit-copy-review`; Claude làm `kit-copy-review` (kit PR #224–#230), review đầy đủ bản kit ở `ao-pilot` PR #24 (15,59 USD, một High được sửa), chép sang `ao-sample` PR #14 không cần agent (0 USD); đóng `kit-copy-review`, bạn duyệt spec Pilot 2; Lượt 74–93: duyệt spec Pilot 2, SMP-17 và SMP-18 (đổi thành Story, Epic SMP-19), QA 9 item, sửa điểm cắt (PR #234), v0.1.0 lên Staging rồi Production, rollback trên Development, checkpoint cuối (PR #235), đóng root login; Bạn hỏi kit có chỉ dùng cho monorepo Next.js + NestJS không; Claude trả lời trong misc/thao-luan/kit-voi-stack-khac-va-nhieu-repo.md: không cần làm lại, có hai mức sửa (stack profile, nhiều repo), khuyên gom monorepo; Bạn hỏi ba trường hợp mở rộng (user/admin/api NestJS, Spring Boot, hai repo); Claude khuyên làm cả ba trong kit hiện tại, không clone; trường hợp 1 và 2 trong project-scaffold, trường hợp 3 thành module multi-repo sau; Bạn bảo ghi concern 1 vào file chỉ mục và hỏi concern 2 (chạy song song) sửa kit hay clone; Claude lập misc/thao-luan/concerns.md và sdlc-song-song-sua-kit-hay-clone.md: sửa kit hiện tại, chỉ thay lớp chạy, trần mặc định 1; Bạn bảo ghi quyết định của concern 2 vào concerns.md; Claude viết lại file thành mỗi concern một mục, concern 2 có 5 quyết định và link tới hai file thảo luận; Bạn hỏi concern 3 (thêm role mới: SEO Content Writer, SEO lúc spec và plan); Claude viết misc/thao-luan/role-moi-trong-sdlc.md: ba kiểu role, seo là cố vấn trong /ao-spec, viết bài trong database là workflow nội dung riêng, sửa kit và đưa thứ tự chạy sang contract; Bạn hỏi concern 4 (cập nhật skill và agent, chọn lọc); Claude viết misc/thao-luan/cap-nhat-skill-va-agent.md: bốn cách đưa vào kit, tám nguyên tắc phải giữ, quy trình 5 bước, sửa kit không clone; Bạn hỏi thứ tự làm các concern; Claude thêm bảng Thứ tự làm và tiến độ (A1–D3) vào misc/thao-luan/concerns.md, chờ bạn duyệt; Bạn hỏi reviewer có song song với security được không, Pilot 3 chạy thế nào, trần A2; Claude trả lời: song song được (4 chỗ dùng chung phải sửa), Pilot 3 dùng Epic đầu của dự án thật sau khi kiểm scaffold không agent, trần 1 với gói Pro và đề xuất gộp A2 vào C2; Bạn đồng ý gộp A2 vào C2 và hỏi các bước làm một tính năng khi dùng kit; Claude ghi quyết định vào concerns.md và trả lời: ở Cấp 1 bạn gõ /ao-* từng bước, dừng ở 5 cổng; Cấp 2 bộ điều phối tự chạy; Bạn hỏi sao PO phải tự tạo Epic, sao /ao-spec không phỏng vấn từ mô tả sơ khai; Claude giải thích ba giả định của Cấp 1 và đề xuất bước intake (/ao-intake) trước /ao-spec, đặt trước B1; Bạn đồng ý thêm intake; Claude thêm A3 /ao-intake trước B1 và mục concern 5 vào concerns.md; Bạn hỏi cách sửa SPEC sau /ao-spec và yêu cầu hướng dẫn green/brown trong project-scaffold; Claude trả lời kit chưa có lệnh sửa SPEC, đề xuất /ao-spec và /ao-plan kèm yêu cầu sửa gom vào A3, và ghi yêu cầu hướng dẫn vào B1; Bạn hỏi item dừng ở đâu để hỏi bạn sau /ao-spec; Claude liệt kê 12 chỗ dừng theo kế hoạch (5 cổng, Accept, câu hỏi spec/plan) và 7 chỗ dừng bất thường; Bạn nêu vấn đề kit không dừng để bạn xem trước sau /ao-build; Claude xác nhận ba lỗ hổng và đề xuất bước xem trước bằng PR nháp, /ao-preview, /ao-fix không kéo review, đặt thành A4 trước B1; Bạn hỏi sao xem trước phải dùng worktree thay vì chuyển nhánh; Claude đồng ý, giải thích worktree là vì agent (review, QA, C2), sửa /ao-preview sang chuyển nhánh trong checkout chính; Bạn hỏi lại về nhánh, checkout và pull khi xem trước; Claude giải thích chậm kèm sơ đồ mermaid trong misc/thao-luan/git-khi-dung-kit.md; Bạn báo lỗi Mermaid trong VS Code; Claude sửa gitGraph (mainBranchName develop) và dấu ; trong sequenceDiagram; Bạn đồng ý thêm A4 và gom sửa SPEC/plan cùng trả lời Cần ba/sa vào A3; Claude cập nhật bảng tiến độ, concern 5 và mục concern 6 trong concerns.md; Bạn duyệt bảng và cách chạy Pilot 3, hỏi lệnh yêu cầu sửa sau xem trước; Claude ghi quyết định vào concerns.md, đề xuất /ao-fix <PR> với tiền tố be:/fe:, và hỏi AC khi yêu cầu đổi AC; Bạn đồng ý: yêu cầu sửa làm đổi AC thì ba cập nhật AC trước; Claude ghi vào A4 và concern 6 trong concerns.md; Bạn hỏi ba có sửa AC khi Story In Progress được không; Claude trả lời được (guard, Jira, tiền lệ SMP-18) và nêu ba việc đi kèm cho spec A4; Bạn hỏi yêu cầu sửa có đổi AC của Epic hay Task không; Claude nêu các trường hợp Epic, Task, Bug và hợp đồng API, đề xuất A4 hỏi rộng hơn và chuyển lệnh đổi Task thành Story sang A4; Bạn đồng ý hai điểm của A4 và hỏi về lỗi bạn thấy khi item In QA; Claude ghi quyết định, chỉ ra ba chỗ chưa thông của đường QA fail và đề xuất A5 (/ao-qa <KEY> fail:, build lại sau QA fail); Bạn đồng ý thêm A5; Claude thêm A5 (sửa lỗi tìm thấy khi QA) và mục concern 7 vào concerns.md; Bạn bảo bắt đầu; Claude làm A1 (kit PR #237: mật khẩu basic auth không lên dòng lệnh, audit nhận SHA rút gọn) và hỏi gộp một spec cho A3–A5; Bạn đồng ý gộp một spec cho A3–A5; Claude viết SPEC-human-loop.md (ba phần, 11 điểm tự chốt, 4 tiền đề) và chờ bạn duyệt; Bạn duyệt spec human-loop; Claude viết plan (21 task, 4 checkpoint, ba PR theo phần), ghi thêm 10–16 USD review PR chép kit, chờ bạn duyệt plan; Bạn duyệt plan; Claude merge PR tài liệu #239, kiểm bốn tiền đề (đều đạt; token ao-dev cần contents write), làm T3–T6 của phần 1 (/ao-request, sửa SPEC và plan, epic.md, idea-refine, /ao-intake), hỏi bạn có cho ux quyền comment Jira; Bạn chọn cách A (ux được comment Jira) và hủy hai item thử; Claude merge phần 1–3 của human-loop (kit PR #240, #241, #242), chạy thật /ao-preview trên ao-sample, hỏi bạn trước T19–T20 (35–51 USD) và đề xuất Epic Ghim ghi chú; Bạn đồng ý chạy T19–T20 và Epic Ghim ghi chú; Claude tạo Task SMP-22, chuẩn bị bản chép kit 669fb62 trên nhánh feature/SMP-22-kit-copy (bot ao-dev, b09f751), nhờ bạn bấm Refine; Bạn bấm Refine SMP-22; Claude mở PR nháp ao-sample #21, sửa lỗi shell của /ao-preview do sast bắt (kit PR #244), chạy /ao-review 21 (pr-ready chạy thật), bắt đầu intake Epic Ghim ghi chú; lượt 125–130: theo dõi review PR #21 ba phút một lần, sửa kit #245, review vòng hai, bạn merge PR #21, QA PASS và Accept SMP-22, intake tạo Epic SMP-23; lượt 131–136: /ao-spec SMP-23 với hai vòng câu hỏi, thử sửa SPEC (gộp Story), gate ①, /ao-plan, thử sửa plan (chuyển E2E AC11), gate ②; lượt 137–140: /ao-build SMP-24 (BE rồi FE, chạm giới hạn), PR nháp #23 và xem trước, /ao-fix 23 với be:/fe: và --change ac, /ao-request SMP-23, hai lỗ hổng kit; lượt 141–143: /ao-review 23, gate ③ và merge, thử lỗi id sai dạng trên Development, /ao-qa SMP-24 với --change ac (AC12, QA fail), duyệt cách chia be:/fe: cho -r2; lượt 144–146: /ao-build SMP-24 trên -r2 (spec-sync, be-dev, fe-dev), PR #24, /ao-review 24, gate ③, /ao-qa PASS, Accept; lượt 147: đóng human-loop (kit #246), đề xuất module vá lỗi; lượt 148: spec live-run-fixes (A6); lượt 149: duyệt spec, plan và todo của live-run-fixes; lượt 150: duyệt plan; live-run-fixes T1–T17 (kit #247–#250), kiểm thật /ao-preview trên ao-sample; lượt 151: đóng live-run-fixes (kit #251); lượt 152: ảnh chụp màn hình làm design, đề xuất kiểu màn hình Ảnh và design system; lượt 153: ảnh chụp và design system vào B2; spec project-scaffold (B1); lượt 154: duyệt spec, plan và todo của project-scaffold phần 1; lượt 155–156: duyệt plan; T1–T6 của project-scaffold phần 1 (kit #252, #253), tiền đề Jira, space AOG |
+| 27 | `6fe2d487-8a5e-4cfb-a02c-e03e1598a124` | 2026-11-06 khoảng 00:21 → | Bạn báo đã merge PR #173 và nhắc đọc memory; Claude đánh dấu Checkpoint 1 đạt, làm T3 (`versions.mjs`, `cut.mjs`, PR #174), T4 (kiểm `deploy.yaml`, schema chuyển vào `lib/release/`) và T5 (`targets.mjs`), rồi đề xuất báo lần từ chối bằng status `error`, để `jira-sync` không tạo Bug Critical sai; bạn merge #174 và duyệt đề xuất; Claude sửa spec, mở PR #175 của T4, làm T6 (`auditRange`, commit báo cáo của bot trên `release/*`, PR merge ngược); bạn merge #175; Claude mở PR #176 của T5, làm T7 (`smoke.mjs`, `docker.mjs`: đổi bản theo từng app, hai alias, bí mật qua môi trường của lệnh `docker`); bạn merge #176; Claude mở PR #177 của T6, làm T8 (`deployer.mjs`, `record.mjs`, `scripts/ao-deploy.mjs`), chạy thử `tick --dry-run` vào `ao-pilot`: dừng đúng ở `3fdd514`; bạn merge #177; Claude mở PR #178 của T7, làm T9 (Caddyfile do deployer sinh, schema của `deployer.yaml`, systemd, `ao-secret.sh`, mục 11 của `docs/vps-setup.md`); bạn hỏi Claude có tự merge được không; Claude trả lời được (repo kit private gói Free không có branch protection, `gh` có quyền admin), quy ước hiện tại là quyết định 10 của plan, và đề xuất để Claude merge PR của kit khi CI xanh, bạn xem ở checkpoint; bạn cho Claude tự merge tới Checkpoint 2; Claude ghi quyết định vào plan, merge #179 (T8), #180 (T9), #181 (T10: `merge-gate` cho PR release và PR merge ngược), #182 (T11: `jira-sync` tạo Bug Critical, gắn cờ khi deploy lên môi trường QA thất bại); bạn nhắn tiếp; Claude merge #183–#188 (T12–T17: dữ kiện môi trường, `/ao-qa`, `/ao-release`, `/ao-ship`, hotfix, `/ao-rollback`, bốn skill), sửa chỗ hở `JIRA_CI_TOKEN` trong phiên agent, chạm giới hạn usage giữa T15 rồi làm tiếp; tới Checkpoint 2, kiểm chỉ đọc trong `ao-pilot`, đề xuất ba việc trước kiểm thật; bạn hỏi `DEMO-5`, `DEMO-19` có phải hai Task trong ảnh không, vì Jira chỉ cho chuyển sang Cancelled, và PR #189 có chỉ cần Rebase and merge; Claude đính chính: từ New bạn chỉ `Refine` hoặc `Cancel`, mười item có commit trên `develop` chỉ `DEMO-12` Done, điểm cắt tính cả key của Epic là lỗi, xóa tag `v0.1.0` làm `DEMO-3` chặn điểm cắt; đề xuất A (điểm cắt bỏ qua Epic), B (sửa dữ liệu Jira của item cũ bằng token bot), C (giữ tag `v0.1.0`); bạn hỏi nên chọn phương án nào, dặn chưa làm gì; Claude nói đó là ba việc riêng, chọn B1; bạn merge #189, duyệt cả ba, cho tiếp tục tự merge; Claude merge #190 (việc A); việc B dừng sau `DEMO-19`, vì token của `ao-agents` không ghi được qua REST, và hỏi bạn có cho gọi Rovo MCP bằng script không; bạn đồng ý và nạp key SSH; Claude sửa xong dữ liệu Jira qua Rovo MCP, cài phần T18 của mình trên VPS, chuyển 11 deployment cũ sang `inactive`, rồi dừng để bạn bấm `Accept` và nhập hai bí mật; bạn làm xong; Claude kiểm, chạy `baseline pilot`, và hỏi bạn duyệt hai head trước `--confirm`; bạn hỏi có cần merge `develop` vào `main` không; Claude trả lời không cần và không nên, hai hướng merge đều không xung đột; bạn duyệt hai head; Claude ghi điểm bắt đầu, bật timer, thấy `AO_ENV_AUTH` không khớp mật khẩu trên VPS, báo đã in bản băm của mật khẩu ra output, và nhờ bạn nhập mật khẩu mới; bạn nhập lại; Claude thấy basic auth đã khớp, tắt đăng nhập root, và nhờ bạn gỡ key SSH, xóa file key `ao-deploy`; bạn làm xong; Claude đóng T18, tạo Task `DEMO-26` của T19, và nhờ bạn đọc rồi bấm `Refine`; bạn bấm `Refine`; lượt build đầu của `devops` dừng vì hook `jira-guard` nhận 401, do Claude quên đặt `AO_KIT_DIR`; Claude nhờ bạn gỡ cờ trên `DEMO-26`; bạn gỡ cờ; `devops` mở ao-pilot PR #17; Claude thấy trace của Playwright giữ mật khẩu basic auth và sửa kit (#198); bạn yêu cầu báo tiến độ 3 phút một lần; `/ao-review`, `/ao-fix` chạy, `policy` đọc nhầm `exit(` (#199), chạm giới hạn 5 giờ rồi chạy tiếp; không còn Critical hay High, ba Medium trong kit sửa ở #200; chi phí của `DEMO-26` là 20,53 USD; Claude nhờ bạn duyệt và merge PR #17 ở gate ③; bạn merge; deploy đầu lên Development thất bại vì `UMask=0077` làm image không đọc được code; Claude dựng lại lỗi bằng Docker Desktop, sửa kit ở #202, và hỏi bạn có đồng ý chép bản kit mới lên VPS; bạn đồng ý; Claude chép kit lên VPS, deploy lại `fb71de5` thành công, E2E vào Development 24/24 xanh, rồi làm T20: deployer chặn commit push thẳng, GitHub từ chối token `ao-dev`; bạn đồng ý gỡ chặn; Development chạy `fbbc47d`; tới Checkpoint 3, Claude hỏi bạn có chạy T21–T22 không; bạn hỏi vì sao T19 chưa được đánh xong; Claude giải thích hai mục còn mở và nhận đã nói quá; bạn đồng ý đánh xong T19, chép kit lại sau T22, và chạy T21–T22; `qa` kiểm bốn item trên Development, hai lượt chạm giới hạn 5 giờ, Claude sửa lỗi chạy tiếp lượt `qa` (#207); cả bốn PASS, bạn `Accept`; Claude đưa link trang Releases sai, bạn thêm tab Releases và tạo `v0.2.0`, `v0.3.0`; `/ao-release` dừng ở gate ④ với 10 item, chờ bạn duyệt; bạn duyệt; Staging chạy `v0.2.0`, regression PASS, PR release #18 đỏ ở `policy`; Claude sửa kit (#209); bạn đồng ý đi luồng Bug `DEMO-27` không review; `audit` chặn bản sửa trên Staging vì thiếu báo cáo review, Claude nhận đã đề xuất sai; bạn gỡ chặn; `DEMO-27` qua QA trên Staging, bạn `Accept`; regression chạy lại, Claude sửa lỗi gate ⑤ đến quá sớm (#211), release note viết lại; bạn approve PR #18; `merge-gate` merge, gắn tag `v0.2.0`, merge ngược; Production chạy `v0.2.0`, cùng tree với Staging; bạn bấm Release; T22: bạn chọn Bug thử `/favicon.ico` với Severity High, Claude tạo `DEMO-28`; `be-dev` sửa, đo được câu "console có lỗi" của Claude là sai, Claude sửa Bug; `merge-gate` merge PR #21; lượt `qa` bị tắt vì máy thiếu RAM, bạn giải phóng RAM, `qa` PASS; bạn `Accept`; `/ao-ship v0.2.1` chờ gate ⑤; bạn duyệt, `v0.2.1` lên Production; bạn bấm Release; rollback về `v0.2.0` và lên lại `v0.2.1` đều đạt; smoke fail có chủ đích đạt, `jira-sync` tạo Bug `DEMO-29`, Production giữ `v0.2.1`; T22 đóng; Claude rà việc tồn ở kit, Jira và hai pilot, sửa hai Medium của Pilot 1 (PR #218); chép kit lên VPS (`521e031`); Checkpoint 4 đóng, `docs/release-workflow.md` (PR #219); T22b: ao-pilot PR #23, review tìm lỗi High trong PR #217, sửa ở PR #220, chép lại, merge (`0f86022`), `qa` PASS, bạn Accept; T22b và T23 xong, plan lưu ở `tasks/archive/release-workflow/`, bạn xác nhận `release-workflow` hoàn thành; bạn hỏi Pilot 2 khác gì Pilot 1 và cách giảm chi phí review PR chép kit; Claude thử mù review (`max`, `high`, `open-code-review`), viết và được duyệt spec `kit-copy-review`; Claude làm `kit-copy-review` (kit PR #224–#230), review đầy đủ bản kit ở `ao-pilot` PR #24 (15,59 USD, một High được sửa), chép sang `ao-sample` PR #14 không cần agent (0 USD); đóng `kit-copy-review`, bạn duyệt spec Pilot 2; Lượt 74–93: duyệt spec Pilot 2, SMP-17 và SMP-18 (đổi thành Story, Epic SMP-19), QA 9 item, sửa điểm cắt (PR #234), v0.1.0 lên Staging rồi Production, rollback trên Development, checkpoint cuối (PR #235), đóng root login; Bạn hỏi kit có chỉ dùng cho monorepo Next.js + NestJS không; Claude trả lời trong misc/thao-luan/kit-voi-stack-khac-va-nhieu-repo.md: không cần làm lại, có hai mức sửa (stack profile, nhiều repo), khuyên gom monorepo; Bạn hỏi ba trường hợp mở rộng (user/admin/api NestJS, Spring Boot, hai repo); Claude khuyên làm cả ba trong kit hiện tại, không clone; trường hợp 1 và 2 trong project-scaffold, trường hợp 3 thành module multi-repo sau; Bạn bảo ghi concern 1 vào file chỉ mục và hỏi concern 2 (chạy song song) sửa kit hay clone; Claude lập misc/thao-luan/concerns.md và sdlc-song-song-sua-kit-hay-clone.md: sửa kit hiện tại, chỉ thay lớp chạy, trần mặc định 1; Bạn bảo ghi quyết định của concern 2 vào concerns.md; Claude viết lại file thành mỗi concern một mục, concern 2 có 5 quyết định và link tới hai file thảo luận; Bạn hỏi concern 3 (thêm role mới: SEO Content Writer, SEO lúc spec và plan); Claude viết misc/thao-luan/role-moi-trong-sdlc.md: ba kiểu role, seo là cố vấn trong /ao-spec, viết bài trong database là workflow nội dung riêng, sửa kit và đưa thứ tự chạy sang contract; Bạn hỏi concern 4 (cập nhật skill và agent, chọn lọc); Claude viết misc/thao-luan/cap-nhat-skill-va-agent.md: bốn cách đưa vào kit, tám nguyên tắc phải giữ, quy trình 5 bước, sửa kit không clone; Bạn hỏi thứ tự làm các concern; Claude thêm bảng Thứ tự làm và tiến độ (A1–D3) vào misc/thao-luan/concerns.md, chờ bạn duyệt; Bạn hỏi reviewer có song song với security được không, Pilot 3 chạy thế nào, trần A2; Claude trả lời: song song được (4 chỗ dùng chung phải sửa), Pilot 3 dùng Epic đầu của dự án thật sau khi kiểm scaffold không agent, trần 1 với gói Pro và đề xuất gộp A2 vào C2; Bạn đồng ý gộp A2 vào C2 và hỏi các bước làm một tính năng khi dùng kit; Claude ghi quyết định vào concerns.md và trả lời: ở Cấp 1 bạn gõ /ao-* từng bước, dừng ở 5 cổng; Cấp 2 bộ điều phối tự chạy; Bạn hỏi sao PO phải tự tạo Epic, sao /ao-spec không phỏng vấn từ mô tả sơ khai; Claude giải thích ba giả định của Cấp 1 và đề xuất bước intake (/ao-intake) trước /ao-spec, đặt trước B1; Bạn đồng ý thêm intake; Claude thêm A3 /ao-intake trước B1 và mục concern 5 vào concerns.md; Bạn hỏi cách sửa SPEC sau /ao-spec và yêu cầu hướng dẫn green/brown trong project-scaffold; Claude trả lời kit chưa có lệnh sửa SPEC, đề xuất /ao-spec và /ao-plan kèm yêu cầu sửa gom vào A3, và ghi yêu cầu hướng dẫn vào B1; Bạn hỏi item dừng ở đâu để hỏi bạn sau /ao-spec; Claude liệt kê 12 chỗ dừng theo kế hoạch (5 cổng, Accept, câu hỏi spec/plan) và 7 chỗ dừng bất thường; Bạn nêu vấn đề kit không dừng để bạn xem trước sau /ao-build; Claude xác nhận ba lỗ hổng và đề xuất bước xem trước bằng PR nháp, /ao-preview, /ao-fix không kéo review, đặt thành A4 trước B1; Bạn hỏi sao xem trước phải dùng worktree thay vì chuyển nhánh; Claude đồng ý, giải thích worktree là vì agent (review, QA, C2), sửa /ao-preview sang chuyển nhánh trong checkout chính; Bạn hỏi lại về nhánh, checkout và pull khi xem trước; Claude giải thích chậm kèm sơ đồ mermaid trong misc/thao-luan/git-khi-dung-kit.md; Bạn báo lỗi Mermaid trong VS Code; Claude sửa gitGraph (mainBranchName develop) và dấu ; trong sequenceDiagram; Bạn đồng ý thêm A4 và gom sửa SPEC/plan cùng trả lời Cần ba/sa vào A3; Claude cập nhật bảng tiến độ, concern 5 và mục concern 6 trong concerns.md; Bạn duyệt bảng và cách chạy Pilot 3, hỏi lệnh yêu cầu sửa sau xem trước; Claude ghi quyết định vào concerns.md, đề xuất /ao-fix <PR> với tiền tố be:/fe:, và hỏi AC khi yêu cầu đổi AC; Bạn đồng ý: yêu cầu sửa làm đổi AC thì ba cập nhật AC trước; Claude ghi vào A4 và concern 6 trong concerns.md; Bạn hỏi ba có sửa AC khi Story In Progress được không; Claude trả lời được (guard, Jira, tiền lệ SMP-18) và nêu ba việc đi kèm cho spec A4; Bạn hỏi yêu cầu sửa có đổi AC của Epic hay Task không; Claude nêu các trường hợp Epic, Task, Bug và hợp đồng API, đề xuất A4 hỏi rộng hơn và chuyển lệnh đổi Task thành Story sang A4; Bạn đồng ý hai điểm của A4 và hỏi về lỗi bạn thấy khi item In QA; Claude ghi quyết định, chỉ ra ba chỗ chưa thông của đường QA fail và đề xuất A5 (/ao-qa <KEY> fail:, build lại sau QA fail); Bạn đồng ý thêm A5; Claude thêm A5 (sửa lỗi tìm thấy khi QA) và mục concern 7 vào concerns.md; Bạn bảo bắt đầu; Claude làm A1 (kit PR #237: mật khẩu basic auth không lên dòng lệnh, audit nhận SHA rút gọn) và hỏi gộp một spec cho A3–A5; Bạn đồng ý gộp một spec cho A3–A5; Claude viết SPEC-human-loop.md (ba phần, 11 điểm tự chốt, 4 tiền đề) và chờ bạn duyệt; Bạn duyệt spec human-loop; Claude viết plan (21 task, 4 checkpoint, ba PR theo phần), ghi thêm 10–16 USD review PR chép kit, chờ bạn duyệt plan; Bạn duyệt plan; Claude merge PR tài liệu #239, kiểm bốn tiền đề (đều đạt; token ao-dev cần contents write), làm T3–T6 của phần 1 (/ao-request, sửa SPEC và plan, epic.md, idea-refine, /ao-intake), hỏi bạn có cho ux quyền comment Jira; Bạn chọn cách A (ux được comment Jira) và hủy hai item thử; Claude merge phần 1–3 của human-loop (kit PR #240, #241, #242), chạy thật /ao-preview trên ao-sample, hỏi bạn trước T19–T20 (35–51 USD) và đề xuất Epic Ghim ghi chú; Bạn đồng ý chạy T19–T20 và Epic Ghim ghi chú; Claude tạo Task SMP-22, chuẩn bị bản chép kit 669fb62 trên nhánh feature/SMP-22-kit-copy (bot ao-dev, b09f751), nhờ bạn bấm Refine; Bạn bấm Refine SMP-22; Claude mở PR nháp ao-sample #21, sửa lỗi shell của /ao-preview do sast bắt (kit PR #244), chạy /ao-review 21 (pr-ready chạy thật), bắt đầu intake Epic Ghim ghi chú; lượt 125–130: theo dõi review PR #21 ba phút một lần, sửa kit #245, review vòng hai, bạn merge PR #21, QA PASS và Accept SMP-22, intake tạo Epic SMP-23; lượt 131–136: /ao-spec SMP-23 với hai vòng câu hỏi, thử sửa SPEC (gộp Story), gate ①, /ao-plan, thử sửa plan (chuyển E2E AC11), gate ②; lượt 137–140: /ao-build SMP-24 (BE rồi FE, chạm giới hạn), PR nháp #23 và xem trước, /ao-fix 23 với be:/fe: và --change ac, /ao-request SMP-23, hai lỗ hổng kit; lượt 141–143: /ao-review 23, gate ③ và merge, thử lỗi id sai dạng trên Development, /ao-qa SMP-24 với --change ac (AC12, QA fail), duyệt cách chia be:/fe: cho -r2; lượt 144–146: /ao-build SMP-24 trên -r2 (spec-sync, be-dev, fe-dev), PR #24, /ao-review 24, gate ③, /ao-qa PASS, Accept; lượt 147: đóng human-loop (kit #246), đề xuất module vá lỗi; lượt 148: spec live-run-fixes (A6); lượt 149: duyệt spec, plan và todo của live-run-fixes; lượt 150: duyệt plan; live-run-fixes T1–T17 (kit #247–#250), kiểm thật /ao-preview trên ao-sample; lượt 151: đóng live-run-fixes (kit #251); lượt 152: ảnh chụp màn hình làm design, đề xuất kiểu màn hình Ảnh và design system; lượt 153: ảnh chụp và design system vào B2; spec project-scaffold (B1); lượt 154: duyệt spec, plan và todo của project-scaffold phần 1; lượt 155–156: duyệt plan; T1–T6 của project-scaffold phần 1 (kit #252, #253), tiền đề Jira, space AOG; lượt 157: duyệt mục 2.4; chặng 1–3 của project-scaffold (kit #253–#255), bản nháp hướng dẫn; lượt 158–159: T16 bắt đầu; `/ao-intake` trong `ao-green` dừng vì `init` không thêm remote `origin` và hai App chưa được cài vào repo; lượt 160: chọn câu trả lời cho phỏng vấn `/ao-intake` (Task cho commit đầu, không agent); lượt 161: Task đầu gồm cả cài đặt GitHub; cột `In Review` còn thiếu giới hạn 2; lượt 162: CI đỏ sau push đầu thì mở Bug qua PR; Max của cột `In Review` chưa được lưu; lượt 163: trả lời "ok" cho bản nháp intake thì mới có mã Task; cột board AOG đã khớp; lượt 164: `AOG-1` được tạo; commit đầu `c251670` lên `develop` và `main`; CI chưa được GitHub ghi nhận; bước tạo key thứ hai của `ao-dev`; lượt 165: Actions của `ao-green` bị tắt dù API báo bật; `setup github` xong (soft mode); đề xuất PR commit rỗng cho CI lần đầu, Cancel `AOG-1`, `workflow_dispatch` và commit gốc không cần mã; lượt 166: duyệt ba đề xuất; PR #1 của `ao-green` xanh, chờ bạn merge; sửa lại: `ao-sample` đã gặp lỗi Actions ở Pilot 1; bắt đầu sửa kit; lượt 167: CI trên `develop` của `ao-green` xanh; `doctor` còn 2 dòng (6 file kit mới sửa, MCP chưa lưu duyệt); bạn duyệt MCP và Cancel `AOG-1`; lượt 168: `AOG-1` Cancelled; hộp thoại MCP "Enable selected" của Claude Code 2.1.322; duyệt MCP chưa được lưu; lượt 169: MCP của `ao-green` đã lưu; T16 xong; kit PR #256 sửa bảy điểm và đưa bản nháp hướng dẫn với phần 3 viết lại; đề xuất cách làm T17 |
 
 ---
 
@@ -19075,3 +19075,495 @@ Sau đó `jira:check` của `AOG` chỉ còn 5 chỗ lệch, đều là cột c�
 - Test của lệnh `ao-kit check` được viết cùng lượt với script, nên không có lần chạy đỏ trước. Các phần khác có test đỏ trước.
 
 Bạn trả lời **"duyệt"** cho mục 2.4 đã sửa, để mình làm tiếp chặng 2 (cài kit, khung `next-nest`) rồi chặng 3. Mình sẽ báo bạn ở Checkpoint 4, trước khi kiểm thật cần bạn bấm.
+# Phiên 27 · Lượt 157 — 2026-11-12 khoảng 17:22
+
+**Bạn:**
+
+```markdown
+duyệt
+```
+
+**Claude:**
+
+Toàn bộ code của B1 đã merge vào `main` của kit, CI xanh. Mình đang ở Checkpoint 4, nên báo bạn trước T16, bước bắt đầu cần bạn bấm. Không task nào gọi agent trả tiền.
+
+| PR | Chặng | Nội dung |
+|---|---|---|
+| #253 | 1 | `project.yaml` và `ao-kit check`; `settings.json` sinh từ `project.yaml`; `/ao-preview` đọc app từ `project.yaml` |
+| #254 | 2 | `ao-kit init` (thư mục trống, repo đang có), `sync`, `render`; khung `next-nest`; `npm run profiles:check` và workflow `profiles.yml` |
+| #255 | 3 | `ao-kit setup github`, `setup jira`, `doctor` |
+
+Bản nháp `docs/getting-started.md` (T15) đã viết xong: phần 1–4 và bảng tra lệnh. Bản này còn ở nhánh trên máy, sẽ đi cùng PR của bản cuối (T19).
+
+**Kiểm thật đã chạy:**
+- `profiles:check` dựng khung, rồi `npm ci`, `lint`, `typecheck`, `test:coverage`, `build` đều xanh, cả trên máy và trong CI.
+- `setup jira` chạy trên `AOG` đúng như T2: còn 5 chỗ lệch, đều là cột của board.
+- `doctor` chạy trên `ao-sample` với `project.yaml` đặt tạm: mọi dòng đạt, trừ dòng "file kit khác bản clone" (25 file), vì `ao-sample` còn bản kit cũ.
+
+**Những điều đã ghi trong `verification.md`:**
+- Khung app bỏ luôn bộ lọc lỗi chung của API (`apps/api/src/common/`), vì nó gắn với tính năng ghi chú của `ao-sample`.
+- Lần chạy thật bắt được hai lỗi, đã sửa: `jira:check` phải chạy từ thư mục kit; `doctor` gọi `claude` qua shell làm Node cảnh báo.
+- Một commit trên nhánh từng chứa test đỏ do heredoc làm mất dấu `\`. Mình đã sửa trước khi push.
+- Test của T3 và T12 được viết cùng lượt với code, nên không có lần chạy đỏ trước.
+
+**T16, kiểm thật dựng mới**, làm đúng theo phần 3 của bản nháp:
+1. **Mình:** tạo repo private `TungPH7/ao-green`, chạy `ao-kit init` vào thư mục `ao-green` cạnh `ao-sample`, rồi chạy `ao-kit setup jira`.
+2. **Bạn:** sửa cột của board `AOG`. Mình sẽ gửi từng bước bấm.
+3. **Bạn:** mở `claude` trong thư mục `ao-green`, chọn tin cậy thư mục, cho phép hai server MCP, rồi gõ `/ao-intake dựng khung dự án ao-green bằng ao-kit` và báo mình mã Task được tạo.
+4. **Mình:** commit, push `develop` và `main`.
+5. **Bạn:** tạo key thứ hai cho `ao-dev` và cho mình đường dẫn file. Rồi cài hai App vào `ao-green`, và nối GitHub for Atlassian với repo này.
+6. **Mình:** chạy `setup github` và `doctor`, kiểm CI, rồi chạy `/ao-status`.
+
+Mỗi chỗ hướng dẫn sai hay thiếu, mình ghi lại và sửa bản nháp. Sau đó T17 làm tương tự với `ao-brown`, và T18 là release `v0.2.0` của `ao-sample` (gate ④, ⑤, khoảng 1–2 USD).
+
+Bạn trả lời **"ok"** để mình bắt đầu T16.
+# Phiên 27 · Lượt 158 — 2026-11-12 khoảng 18:38
+
+**Bạn:**
+
+```markdown
+Ok
+```
+
+**Claude:**
+
+`setup jira` ra đúng như phần 3 của hướng dẫn dự kiến: space và board đã có từ T2, chỉ còn 5 chỗ lệch về cột. `ao-green` đã có hook git, `settings.json` với `AOG`, và đủ package.
+
+Giờ cần bạn làm hai việc, A và B. Hai việc độc lập, làm theo thứ tự nào cũng được.
+
+**A. Cột của board `AOG`**
+1. Mở Jira, vào space **AO Green** (`AOG`), mở board **AOG board**.
+2. Trên trang board, bấm **More actions** (•••), chọn **Configure columns**. Nếu board không có mục này, vào **Board settings → Columns**.
+3. Sửa danh sách cột cho đúng tên và thứ tự: **Backlog, Ready, In Progress, In Review, QA, Done**. Đổi tên cột có sẵn (ví dụ `To Do` thành `Ready`), thêm cột bằng nút **+**, xóa cột thừa.
+4. Kéo các status vào đúng chỗ:
+   - `New` vào ô **Backlog** (Kanban backlog);
+   - `Ready`, `To Do` vào cột **Ready**;
+   - `In Progress` vào cột **In Progress**;
+   - `In Review` vào cột **In Review**, rồi đặt số tối đa là **2** ở biểu tượng cạnh tên cột;
+   - `Ready for QA`, `In QA` vào cột **QA**;
+   - `Done` vào cột **Done**;
+   - `Cancelled` vào ô **Hidden statuses**, để item bị hủy rời khỏi board.
+5. Bấm **Publish**.
+
+**B. Claude Code trong `ao-green`**
+1. Mở một cửa sổ Git Bash mới, rồi gõ:
+   ```
+   cd D:/Document/1Khoahoc/4LapTrinh/AI-for-coding/ao-green
+   claude
+   ```
+2. Claude hỏi có tin cậy thư mục không: chọn đồng ý.
+3. Claude hỏi cho phép các server MCP của `.mcp.json`: cho phép cả `atlassian` và `chrome-devtools`.
+4. Gõ `/mcp`: cả hai server phải báo **connected**.
+5. Gõ:
+   ```
+   /ao-intake dựng khung dự án ao-green bằng ao-kit
+   ```
+   Trả lời các câu Claude hỏi. Khi Claude đưa bản nháp, trả lời "ok" để Claude tạo Task.
+
+Xong cả hai thì trả lời **"xong"** kèm mã Task vừa tạo (ví dụ `AOG-1`). Nếu bước nào khác với mô tả ở trên, bạn nói luôn: mình cần biết để sửa hướng dẫn. Sau đó mình commit, push, rồi gửi bạn các bước tạo key thứ hai cho `ao-dev`.
+
+# Phiên 27 · Lượt 159 — 2026-11-12 khoảng 21:27
+
+**Bạn:**
+
+```markdown
+B bị lỗi rồi:
+
+
+❯ /ao-intake dựng khung dự án ao-green bằng ao-kit
+  ⎿  Shell command failed for pattern "!`node .ai-orchestrator/scripts/ao-step.mjs intake`": [stderr]
+     ao-step: the origin remote is not a GitHub repository: none
+```
+
+**Claude:**
+
+Bạn không làm sai bước nào. Lỗi do thiếu hai thứ, cả hai đều là lỗi của kit và của bản nháp hướng dẫn:
+
+1. **`ao-green` chưa có remote `origin`.** `ao-kit init` tạo repo git nhưng không thêm `origin`, dù mình đã truyền `--repo TungPH7/ao-green`. Bản nháp lại đặt `git remote add` sau `/ao-intake`. Mình đã thêm remote bằng tay.
+2. **Hai App chưa được cài vào `ao-green`.** Khi có remote, dòng kiểm báo tiếp `App 5514961 is not installed on TungPH7/ao-green`. Mọi lệnh `/ao-*`, kể cả `/ao-intake`, đều lấy token đọc của `ao-review` trên repo trước khi đọc Jira. Vì vậy phải cài App trước `/ao-intake`, không phải sau push như bản nháp viết.
+
+Mình đã ghi cả hai vào `verification.md`. PR sửa ở cuối T16 sẽ làm hai việc:
+- `init` tự thêm `origin` từ `--repo`;
+- bản nháp và dòng "Next:" của `init` đưa bước cài App lên trước `/ao-intake`.
+
+**C. Cài hai App vào `ao-green` (làm trước khi thử lại B)**
+1. Trên GitHub, bấm ảnh đại diện ở góc phải trên, chọn **Settings**.
+2. Ở cột trái, mục **Integrations**, bấm **Applications**, rồi chọn tab **Installed GitHub Apps**.
+3. Bấm **Configure** cạnh `tungph7-ao-dev`.
+4. Ở **Repository access** (đang chọn **Only select repositories**), bấm **Select repositories**, gõ `ao-green`, rồi chọn repo đó.
+5. Bấm **Save**. GitHub có thể hỏi lại mật khẩu hoặc mã 2FA.
+6. Quay lại tab **Installed GitHub Apps**, làm lại bước 3–5 cho `tungph7-ao-review`.
+
+Key thứ hai của `ao-dev` và GitHub for Atlassian vẫn để sau, khi mình đã push.
+
+**Sau đó thử lại bước 5 của B.** Không cần mở lại `claude`. Trong phiên đang mở ở `ao-green`, gõ lại `/ao-intake dựng khung dự án ao-green bằng ao-kit`.
+
+**A vẫn còn phải làm.** Mình vừa chạy lại `setup jira`: `jira:check` vẫn báo đúng 5 chỗ lệch về cột. Nếu bạn đã bấm **Publish** mà vẫn lệch, hãy chụp màn hình trang cột gửi mình.
+
+Khi xong cả A, B và C, bạn trả lời **"xong"** kèm mã Task vừa tạo.
+# Phiên 27 · Lượt 160 — 2026-11-12 khoảng 21:35
+
+**Bạn:**
+
+```markdown
+[ảnh chụp màn hình: /ao-intake trong ao-green hỏi "Phạm vi": item Jira này làm gì? Các lựa chọn: 1. Task: kiểm khung chạy xanh; 2. Task: thêm phần nền; 3. Không cần item Jira; 4. Type something; 5. Chat about this]
+đang làm B:
+chọn cái nào?
+```
+
+**Claude:**
+
+Chọn **4. Type something**, rồi gõ nguyên câu này:
+
+```
+Task cho commit đầu: tôi tự commit khung và kit đang có trên máy, rồi push develop và main, dòng commit mang mã của Task này. Không agent nào code. Task xong khi CI trên develop xanh.
+```
+
+**Vì sao không chọn ba lựa chọn kia:**
+- **1** dựng sẵn một lượt agent sửa lỗi (tốn usage). Khung đã qua `lint`, `typecheck`, `test:coverage`, `build` trong `profiles:check`, nên chưa cần agent.
+- **2** thêm phần nền, ngoài phạm vi của bước này.
+- **3** không được: hook `commit-msg` đòi mã Jira ở cuối dòng commit ngay từ commit đầu. Không có Task thì không commit được.
+
+Nếu Claude hỏi thêm, ví dụ về tiêu chí xong, bạn trả lời theo câu trên. Khi Claude đưa bản nháp, trả lời "ok".
+
+Chỗ này mình ghi vào `verification.md`: bản nháp hướng dẫn chỉ viết "Claude hỏi vài câu", bản cuối sẽ ghi nguyên văn câu cần trả lời. `/ao-intake` qua được dòng kiểm, tức hai App đã cài đúng vào `ao-green`.
+
+Xong thì báo mình mã Task, cùng kết quả phần A (cột board).
+# Phiên 27 · Lượt 161 — 2026-11-12 khoảng 21:45
+
+**Bạn:**
+
+```markdown
+[ảnh chụp màn hình: /ao-intake hỏi "Ngoài phạm vi": ngoài commit và push khung, repo GitHub ao-green còn cần branch mặc định, ruleset bảo vệ develop/main/release/*, secret JIRA_CI_TOKEN (jira-sync, merge-gate) và AO_DEV_APP_KEY (merge-gate). Task commit đầu này có gồm các cài đặt đó không? Lựa chọn: 1. Không, chỉ commit và push; 2. Có, gồm cả cài đặt GitHub; 3. Chỉ gồm một phần; 4. Type something; 5. Chat about this]
+A, C làm xong rồi, tôi đang làm B
+
+Vẫn đang ở B:
+```
+
+**Claude:**
+
+Chọn **2. Có, gồm cả cài đặt GitHub.**
+
+Lý do: workflow `jira-sync` chạy sau mọi lượt CI và cần secret `JIRA_CI_TOKEN`. Nếu Task chỉ gồm commit và push, tiêu chí "CI trên develop xanh" sẽ phụ thuộc vào một việc nằm ngoài Task. Các cài đặt này do một lệnh làm hết: `ao-kit setup github`, mình chạy ở bước 6. Không agent nào chạy. Riêng key thứ hai của `ao-dev` thì cần bạn tạo, mình gửi các bước sau khi push.
+
+**Phần A còn đúng 1 chỗ lệch.** Mình vừa chạy lại `setup jira`. `jira:check` báo: `column "In Review" has no limit, expected 2`. Cột và status đều đã đúng, chỉ thiếu giới hạn số item của cột `In Review`:
+1. Mở board **AOG board**, bấm **More actions** (•••), chọn **Configure columns**, như lần trước.
+2. Rê chuột lên tên cột **In Review**, bấm biểu tượng ••• trên đầu cột, chọn **Set column limit**.
+3. Gõ **2**, bấm **Save**, rồi bấm **Publish**.
+
+Nếu bạn mở trang cột theo kiểu cũ (**Board settings → Columns**): mỗi cột có ô **Max** dưới tên. Gõ **2** vào ô Max của **In Review**. Nếu không thấy ô Max, ở mục **Column constraint**, chọn **Issue Count** trước.
+
+Mình ghi cả hai điểm này vào `verification.md`:
+- bản cuối nên chạy phần secret của `setup github` trước lần push đầu;
+- giới hạn cột nên là một bước bấm riêng.
+
+Xong B thì báo mình mã Task.
+# Phiên 27 · Lượt 162 — 2026-11-12 khoảng 21:44
+
+**Bạn:**
+
+```markdown
+[ảnh chụp màn hình: /ao-intake hỏi "CI đỏ": sau khi ruleset ao-protected được bật, không ai push thẳng lên develop được nữa. Nếu CI trên develop đỏ sau lần push đầu, Task này xử lý thế nào? Lựa chọn: 1. Chạy 4 lệnh trước khi push (lint, typecheck, test:coverage, build ở máy; CI vẫn đỏ thì mở Bug riêng sửa qua PR, Task này chờ); 2. Chỉ mở Bug khi đỏ; 3. Bật ruleset sau cùng (chạy ao-kit setup github sau khi CI trên develop xanh; CI đỏ thì sửa và push thẳng khi nhánh chưa bị khóa); 4. Type something; 5. Chat about this]
+Xong B, đã set Max = 2.
+
+Vẫn ở B:
+```
+
+**Claude:**
+
+Chọn **1. Chạy 4 lệnh trước khi push.**
+
+- Bốn lệnh này mình chạy trong `ao-green` ngay trước khi commit và push, ở bước 4. Bạn không phải gõ gì.
+- Khung đã chạy xanh cả bốn lệnh trong `profiles:check`, trên máy và trong CI. Khả năng CI đỏ thấp.
+- Nếu CI vẫn đỏ, mở Bug và sửa qua PR. Đó là đường bình thường của kit, nên cũng là một lần kiểm thật.
+- Không chọn **3**: lựa chọn này mở cửa push thẳng lên `develop`. Hướng dẫn nói lần push đầu là lần duy nhất được push thẳng.
+
+**Giới hạn cột chưa được lưu.** Mình đọc cấu hình board qua API: kiểu giới hạn đã là **Issue Count**, nhưng cột **In Review** chưa có Max, các cột khác cũng không. `jira:check` vẫn báo `column "In Review" has no limit, expected 2`. Bạn mở lại trang cột của board và xem ô Max của **In Review**:
+- Nếu ô trống: gõ **2**, rồi bấm phím **Tab** hoặc bấm ra ngoài ô. Trang cột kiểu cũ chỉ lưu khi con trỏ rời ô.
+- Nếu đang ở chế độ **Configure columns**: sau khi gõ, bấm **Publish** ở góc trên. Chưa Publish thì thay đổi chỉ là bản nháp.
+
+Phỏng vấn đã hỏi ba câu cho một Task đơn giản. Mình ghi vào `verification.md`: bản cuối sẽ cho sẵn một câu trả lời đủ ba ý (phạm vi, tiêu chí xong, cách xử lý khi CI đỏ), để `/ao-intake` không phải hỏi lại.
+
+Khi Claude đưa bản nháp, trả lời "ok", rồi báo mình mã Task.
+# Phiên 27 · Lượt 163 — 2026-11-12 khoảng 21:48
+
+**Bạn:**
+
+````markdown
+Trả lời như nào? Không hề thấy mã task gì cả??
+
+
+```
+Bản nháp đã sẵn sàng. Bạn xem và trả lời OK, hoặc nói chỗ cần sửa.
+
+Loại: Task. Người dùng cuối không thấy gì từ việc này. Đây là việc kỹ thuật làm nền cho mọi item sau: có develop để cắt nhánh, và CI, jira-sync, merge-gate chạy được.
+
+Tiêu đề: Commit đầu: đưa khung ao-green dựng bằng ao-kit lên GitHub và cài đặt repo
+
+Phạm vi (bạn tự làm hết, không agent nào code):
+1. Chạy lint, typecheck, test:coverage, build ở máy và thấy xanh trước khi push.
+2. Commit toàn bộ khung và kit thành commit đầu trên develop, header mang mã Task, ví dụ chore(repo): add ao-kit scaffold (AOG-?).
+3. Push lên origin thành hai nhánh mới develop và main. Hook pre-push cho phép vì cả hai nhánh chưa có trên remote. Lần push thẳng này chỉ làm được một lần.
+4. Chạy ao-kit setup github để đặt branch mặc định là develop, thêm JIRA_CI_TOKEN và AO_DEV_APP_KEY, bật ruleset ao-protected.
+5. Xong khi CI trên develop xanh đủ bốn job: policy, build-test, secrets, sast.
+
+Ngoài phạm vi: sửa code của khung. Nếu CI vẫn đỏ thì mở Bug riêng để sửa qua PR, và Task này chờ Bug đó.
+
+Cần bạn duyệt, vì mình thêm vào checklist mà bạn chưa nói rõ:
+- ao-kit setup github tự làm kèm vài việc: tạo 4 environment (development, staging, production, merge-gate), tự xóa nhánh khi PR đã merge, bật Dependabot.
+- Lệnh đó cũng in ra hai bước bạn phải làm tay: thêm repo vào hai GitHub App tungph7-ao-dev và tungph7-ao-review, và kết nối GitHub for Atlassian.
+- Hai ô Definition of Ready đã được đánh dấu, vì Task này do bạn duyệt trực tiếp khi trả lời OK.
+
+Điểm còn mở: không có.
+
+Bản nháp: .ai/intake/20261112-2146-commit-dau-khung-ao-kit.md
+
+Khi bạn trả lời OK, mình tạo Task trong space AOG, chỉ một lần.
+```
+````
+
+**Claude:**
+
+Mã Task chưa có là đúng: Claude chỉ tạo Task sau khi bạn duyệt bản nháp. Hướng dẫn của mình đã không nói rõ thứ tự này, mình xin lỗi.
+
+Trong phiên Claude ở `ao-green`, bạn gõ:
+
+```
+ok
+```
+
+Claude sẽ tạo Task trong space `AOG` và in mã, nhiều khả năng là `AOG-1`. Bạn báo mình mã đó.
+
+Bản nháp đúng với những gì đã thống nhất, nên bạn không cần sửa gì. Có một chỗ đã xong trước: bạn đã thêm `ao-green` vào hai App ở phần C. Khi chạy `setup github`, dòng "By hand" về App sẽ chỉ còn là lời nhắc.
+
+**Phần A đã xong.** Max của cột `In Review` giờ là 2, và `jira:check` báo `Jira space AOG matches tracker\jira.yaml`.
+
+Mình ghi thêm hai điểm vào `verification.md`:
+- `setup jira` vẫn in dòng "By hand: the columns …" dù không còn chỗ lệch. Kit sẽ sửa để dòng đó chỉ hiện khi còn lệch.
+- Bản cuối của hướng dẫn sẽ ghi: trả lời "ok" cho bản nháp, rồi mới có mã Task.
+# Phiên 27 · Lượt 164 — 2026-11-12 khoảng 21:50
+
+**Bạn:**
+
+````markdown
+```
+Mình đã tạo Task AOG-1: https://phunghuutung12b4.atlassian.net/browse/AOG-1
+
+Kết quả lệnh status:
+
+AOG-1 Task "Commit đầu: đưa khung ao-green dựng bằng ao-kit lên GitHub và cài đặt repo": New; no role label; no PR
+Next: waits to be refined (jira-sync after Approve plan, or you)
+
+Bước tiếp theo:
+1. Mở AOG-1 trên Jira và đọc lại phần mô tả.
+2. Bấm Refine trên AOG-1.
+
+Khi commit, header có thể ghi chore(repo): add ao-kit scaffold (AOG-1).
+
+Hook pre-push của kit chỉ cho push thẳng lên develop và main khi hai nhánh này chưa có trên remote. Vì vậy hãy chạy đủ bốn lệnh kiểm tra ở máy trước khi push. Sau lần push đầu, mọi thay đổi trên hai nhánh này phải đi qua PR.
+```
+````
+
+**Claude:**
+
+Bước 4 xong:
+- Bốn lệnh kiểm trong `ao-green` đều xanh: `lint` 53 giây, `typecheck` 22 giây, `test:coverage` 42 giây, `build` 34 giây.
+- Commit đầu là `c251670` `chore(scaffold): set up the project with ao-kit (AOG-1)`, gồm 456 file, không có `node_modules`, `.ai/`, `coverage` hay `.env`.
+- `develop` và `main` đã lên GitHub. GitHub tự lấy `develop` làm nhánh mặc định.
+
+**CI chưa chạy.** Sau 5 phút, GitHub vẫn chưa ghi nhận workflow nào của `ao-green`: `actions/workflows` trả về 0, chưa có lượt chạy nào, chưa có event nào. Actions đang bật. Ba file workflow đã có trên `develop`. Mình đang theo dõi tiếp và sẽ báo khi có kết quả.
+
+**Bạn làm D: tạo key thứ hai cho `ao-dev`.** Workflow `merge-gate` của `ao-green` merge bằng key này. Mỗi repo dùng một key riêng.
+1. Trên GitHub: ảnh đại diện → **Settings** → **Developer settings** (cuối cột trái) → **GitHub Apps** → bấm **Edit** cạnh `tungph7-ao-dev`.
+2. Ở cột trái, bấm **Credentials** → **Key pairs** → **New key**. Nếu không thấy **Credentials**, kéo xuống cuối trang **General**, tới mục **Private keys**, bấm **Generate a private key**.
+3. Trình duyệt tải về một file `.pem`. Cắt (không sao chép) file đó vào `C:\Users\Huu Tung\ao-keys\`, và đổi tên thành `ao-green-merge-gate.pem`.
+4. Không mở file, không dán nội dung file vào đâu cả.
+
+Xong thì trả lời **"xong D"**. Mình chạy `ao-kit setup github` với `--dev-app-key-file` trỏ tới file đó. Lệnh đưa key lên secret qua stdin, rồi nhắc xóa file. Mình chỉ cần đường dẫn, không đọc nội dung file.
+
+**Một chỗ cần bạn quyết sau (chưa gấp).** Hợp đồng không có đường đưa một Task không có PR tới Done. `accept` chỉ đi từ `In QA`, còn `start` và `submit` là việc của agent và automation. `AOG-1` được push thẳng lên nhánh, nên sẽ kẹt ở New. Khi CI xanh, mình gửi bạn các cách đóng `AOG-1`, kèm cách sửa bước commit đầu trong hướng dẫn. Tạm thời bạn chưa cần bấm **Refine** trên `AOG-1`.
+# Phiên 27 · Lượt 165 — 2026-11-12 khoảng 22:05
+
+**Bạn:**
+
+```markdown
+[ảnh chụp màn hình: tab Actions của TungPH7/ao-green: "Workflows aren't being run on this repository. GitHub Actions is not currently enabled on this repository." và nút "Enable Actions on this repository"]
+xong D.
+
+Tại sao repo ao-green lại không tự động bật Actions như những repo ao-sample, ao-pilot ?
+```
+
+**Claude:**
+
+**Vì sao Actions của `ao-green` bị tắt: mình chưa biết chắc.** Những gì mình kiểm được:
+- API `actions/permissions` của `ao-green` vẫn trả `enabled: true, allowed_actions: all`, giống `ao-sample`. Nhưng tab Actions lại báo tắt, và GitHub không ghi nhận workflow nào. Tức là có một trạng thái phía GitHub mà API này không thấy. Vì vậy `setup github` không phát hiện được.
+- Ba trường hợp đã biết GitHub tắt Actions của repo mới đều không khớp: repo là fork ([GitHub Community](https://github.community/t/action-not-triggered-neither-on-pull-request-nor-on-push/16420)), repo tạo từ template ([GitHub Community](https://github.community/t/workflow-isnt-enabled-in-repos-generated-from-template/136421)), và chính sách của tổ chức ([Jit docs](https://docs.jit.io/docs/github-actions-are-disabled)). `ao-green` là repo private của tài khoản cá nhân, tạo trống bằng `gh repo create`.
+
+Mình ghi hiện tượng vào `verification.md`. Bản cuối của hướng dẫn sẽ có bước "mở tab Actions, nếu thấy nút **Enable** thì bấm". `doctor` sẽ kiểm GitHub đã ghi nhận workflow chưa, vì `actions/workflows` bằng 0 là dấu hiệu duy nhất mà API thấy được.
+
+**`setup github` đã chạy xong.** Key thứ hai bạn để ở `C:\Users\Huu Tung\ao-keys\tungph7-ao-dev.2026-11-12.private-key.pem`, mình dùng luôn đường dẫn đó, không đọc nội dung. Lệnh đã đặt:
+- tự xóa nhánh sau merge;
+- Dependabot;
+- bốn environment, và luật chỉ cho `develop` dùng `merge-gate`;
+- hai secret `JIRA_CI_TOKEN` và `AO_DEV_APP_KEY`.
+
+Chạy lần hai thì lệnh không ghi gì, chỉ in `Already set` đủ bảy mục. `gh:protect` báo soft mode: repo private trên gói Free không có ruleset, nên `merge-gate` và `audit` giữ gate. Mục "bật ruleset" trong `AOG-1` vì vậy không áp dụng.
+
+**Bạn làm ba việc:**
+
+E. **Bật Actions:** ở trang trong ảnh, bấm **Enable Actions on this repository**.
+
+F. **Xóa file key:**
+1. Mở File Explorer, vào `C:\Users\Huu Tung\ao-keys`.
+2. Chọn `tungph7-ao-dev.2026-11-12.private-key.pem`, bấm **Shift+Delete**, rồi chọn **Yes** để xóa hẳn, không qua Recycle Bin.
+3. Không đụng tới hai file `tungph7-ao-dev.pem` và `tungph7-ao-review.pem`.
+
+G. **Nối GitHub for Atlassian với `ao-green`:** app này đã cài từ lúc làm `ao-pilot`, nên chỉ cần thêm repo.
+1. GitHub: ảnh đại diện → **Settings** → **Applications** → tab **Installed GitHub Apps**.
+2. Bấm **Configure** cạnh app **Jira** (app của GitHub for Atlassian).
+3. Ở **Repository access**, bấm **Select repositories**, chọn `ao-green`, rồi bấm **Save**.
+
+**Cần bạn quyết: CI lần đầu và cách đóng `AOG-1`.** Bật Actions xong, commit đã push vẫn không có lượt CI, và `ci.yml` không có nút chạy tay. Mặt khác, hợp đồng không có đường đưa `AOG-1` tới Done. Mình đề xuất:
+
+1. **Với `ao-green`:** mình mở PR `feature/AOG-1-first-ci` với một commit rỗng. CI chạy trên PR. Bạn merge tay, rồi CI chạy lại trên `develop`. Không agent nào chạy, nên không tốn usage. PR này còn là lần kiểm thật `jira-sync` và `merge-gate` trên repo mới.
+2. **`AOG-1`:** khi CI trên `develop` xanh, bạn bấm **Cancel** kèm comment trỏ tới `c251670`. Đây là đường duy nhất mà hợp đồng cho người dùng tự làm.
+3. **Kit, trong PR sửa cuối T16:**
+   - `ci.yml` thêm `workflow_dispatch`, để chạy được CI trên `develop` bằng `gh workflow run CI --ref develop` mà không cần commit.
+   - Hook `commit-msg` cho commit gốc của repo (chưa có `HEAD`) qua mà không cần mã Jira. Nhờ vậy hướng dẫn dựng mới bỏ hẳn bước `/ao-intake` trước commit đầu, và không còn Task nào kẹt như `AOG-1`. Đây là đổi luật của hook, nên cần bạn duyệt.
+
+Bạn trả lời **"duyệt"** nếu đồng ý cả ba, hoặc nói điểm cần đổi. Làm xong E, F, G thì báo mình.
+# Phiên 27 · Lượt 166 — 2026-11-12 khoảng 22:12
+
+**Bạn:**
+
+```markdown
+duyệt, đã xong xong E, F, G
+```
+
+**Claude:**
+
+Mình kiểm cả ba việc E, F, G:
+- **E:** GitHub đã nhận đủ ba workflow (`CI`, `jira-sync`, `merge-gate`), cả ba ở trạng thái active.
+- **F:** file key đã bị xóa. `ao-keys` còn hai file.
+- **G:** sẽ kiểm bằng `doctor` sau khi merge.
+
+**PR #1 đã chạy xong, mọi workflow đều xanh:** https://github.com/TungPH7/ao-green/pull/1
+- PR chỉ có một commit rỗng, `ci(scaffold): run CI for the first time (AOG-1)`.
+- `CI` xanh đủ bốn job.
+- `jira-sync` chạy hai lần, đều báo `AOG-1` / `No change`: Task còn ở New, nên không có bước chuyển nào áp được.
+- `merge-gate` báo `Skipped #1: opened by TungPH7, not by tungph7-ao-dev: whoever opened it merges it`. Đúng thiết kế: PR do bạn mở thì bạn merge.
+
+**Bạn merge PR #1:**
+1. Mở link PR ở trên.
+2. Kéo xuống cuối trang, bấm mũi tên cạnh nút merge, chọn **Squash and merge**.
+3. Bấm **Squash and merge**, rồi **Confirm squash and merge**. Giữ nguyên tiêu đề commit.
+
+Merge xong, mình theo dõi lượt CI trên `develop`. Đây là lượt CI đầu tiên chạy theo sự kiện push trên repo này.
+
+**Mình cần sửa lại câu trả lời ở lượt trước.** Mình đã nói chưa biết vì sao Actions của `ao-green` bị tắt, và `ao-sample` không gặp chuyện này. Câu sau là sai. `ao-sample` đã gặp gần như y hệt ở Pilot 1 (T7): sau lần push đầu lên repo trống, workflow active nhưng không chạy theo sự kiện nào. Lần đó sửa bằng một lần push có đụng `.github/workflows/`. `ao-pilot` không gặp, vì commit đầu của nó được tạo trên giao diện GitHub, khi repo chưa có workflow. Spec 2.4 của module này đã ghi là hướng dẫn và `doctor` phải nhắc việc này, nhưng mình làm sót ở cả hai chỗ. Lần này triệu chứng khác: tab Actions báo tắt hẳn, và chỉ cần bấm **Enable** là sự kiện PR chạy ngay. Gốc rễ thì vẫn là một: lần push đầu chở theo workflow lên repo trống.
+
+**Đang sửa kit theo ba điểm bạn vừa duyệt** (trên nhánh, chưa push):
+- `ci.yml` có thêm `workflow_dispatch`, kèm test đỏ trước.
+- Hook `commit-msg` cho commit gốc qua mà không cần mã Jira, nhưng vẫn đúng dạng `type(scope): subject`. Có test đỏ trước, cả hàm lẫn script trên repo git thật.
+- Đã sửa spec `project-scaffold` 2.4, `SPEC-quality-gates` và `docs/quality-gates.md` cho khớp.
+- Còn lại:
+  - `init` tự thêm `origin` và đổi dòng `Next:`;
+  - `setup jira` chỉ in dòng "By hand" khi còn lệch;
+  - `doctor` kiểm Actions và lượt CI trên `develop`;
+  - viết lại phần 3 của hướng dẫn theo thứ tự mới.
+# Phiên 27 · Lượt 167 — 2026-11-12 khoảng 22:22
+
+**Bạn:**
+
+```markdown
+Đã merge
+```
+
+**Claude:**
+
+**CI trên `develop` của `ao-green` xanh** đủ bốn job `policy`, `build-test`, `secrets`, `sast`. Đây là lượt CI đầu tiên chạy theo sự kiện push, và `jira-sync`, `merge-gate` chạy tiếp sau nó. Nhánh của PR #1 đã tự xóa trên GitHub. `ao-step status` trong `ao-green` chạy được và in `AOG-1` ở New.
+
+**`doctor ao-green`: 22 dòng đạt, 2 dòng chưa đạt.**
+- **6 file kit khác bản clone.** Đúng là 6 file mình vừa sửa trên nhánh kit: `ci.yml`, `commit-msg.mjs`, `git-hooks.mjs`, `init.mjs`, `setup-jira.mjs`, `doctor.mjs`. Bản kit trong `ao-green` có từ trước các sửa đó, nên lệch là đúng.
+- **Hai server MCP chưa được cho phép.** `claude mcp list` trong `ao-green` báo cả `atlassian` và `chrome-devtools` đều `⏸ Pending approval`. Nhưng phiên `/ao-intake` của bạn vẫn dùng được `atlassian`, vì `AOG-1` do `orchestratoragent` tạo. Nghĩa là lần cho phép trong phiên đó chỉ có hiệu lực trong phiên, không được lưu lại. Agent chạy bằng `claude -p` sẽ không có hai server này.
+
+**Đính chính thêm một ý của mình ở lượt trước:** `doctor` đã có dòng kiểm "CI đã chạy" từ T13. Chỉ bản nháp hướng dẫn là bỏ sót. Mình đã tách dòng đó thành hai:
+- GitHub đã ghi nhận workflow chưa: chưa thì bấm **Enable Actions**;
+- `develop` đã có lượt CI chưa: chưa thì chạy `gh workflow run CI --ref develop`.
+
+**Bạn làm hai việc:**
+
+H. **Cho phép hai server MCP, có lưu:**
+1. Ở cửa sổ Git Bash đang chạy `claude` trong `ao-green`, gõ `/exit`.
+2. Gõ lại `claude`.
+3. Nếu Claude hỏi về các server MCP của `.mcp.json`, hãy chụp màn hình hộp thoại đó trước khi chọn. Mình cần biết các lựa chọn để sửa hướng dẫn. Sau đó chọn lựa chọn ghi nhớ cho dự án này, ví dụ "Use this and all future MCP servers in this project".
+4. Nếu Claude không hỏi: gõ `/mcp`, chọn từng server đang chờ duyệt, rồi bật nó.
+5. Gõ `/mcp` lần nữa: cả hai phải báo **connected**. Sau đó gõ `/exit`.
+
+I. **Đóng `AOG-1` bằng Cancel:**
+1. Mở https://phunghuutung12b4.atlassian.net/browse/AOG-1
+2. Ở ô **Add a comment**, dán đoạn sau rồi bấm **Save**:
+   ```
+   Commit đầu c251670 và PR #1 (ff8f322) đã lên develop, CI xanh đủ bốn job, setup github và jira:check đều xong. Hợp đồng không có đường tới Done cho Task không có PR, nên đóng bằng Cancel (T16 của project-scaffold).
+   ```
+3. Bấm nút trạng thái **New** ở góc phải, chọn **Cancel**.
+4. Hộp thoại hỏi **Resolution**: chọn **Done** nếu có, không có thì chọn **Won't Do**. Bấm **Cancel** (nút xác nhận) để đóng.
+
+Xong H và I thì trả lời **"xong"**, kèm ảnh hộp thoại MCP nếu Claude có hỏi. Sau đó mình chạy lại `doctor`, viết lại phần 3 của hướng dẫn theo những gì T16 tìm được, rồi mở PR sửa kit.
+# Phiên 27 · Lượt 168 — 2026-11-12 khoảng 22:33
+
+**Bạn:**
+
+```markdown
+[ảnh chụp màn hình: claude trong ao-green: "2 new MCP servers found in this project. Select any you wish to enable." Hai ô [✓] atlassian, [✓] chrome-devtools, nút "Enable selected"; "Space to select · Esc to reject all"]
+H. ảnh đính kèm
+I. Xong
+```
+
+**Claude:**
+
+**I xong:** `AOG-1` đã ở **Cancelled**.
+
+**H chưa được lưu.** Mình vừa chạy `claude mcp list` trong `ao-green`, cả hai server vẫn báo `⏸ Pending approval`. `~/.claude.json` vẫn ghi `enabledMcpjsonServers: []` cho thư mục này. Có thể hộp thoại trong ảnh chưa được xác nhận, hoặc Claude Code chỉ ghi lại lựa chọn khi thoát. Bạn làm tiếp trong cửa sổ đó:
+1. Giữ nguyên hai ô đã đánh dấu. Dùng phím mũi tên đưa con trỏ xuống **Enable selected**, rồi bấm **Enter**.
+2. Gõ `/mcp`: cả hai server phải báo **connected**.
+3. Gõ `/exit`, rồi trả lời mình **"xong H"**.
+
+Cảm ơn bạn đã gửi ảnh. Hộp thoại của Claude Code 2.1.322 khác với những gì mình viết trong bản nháp hướng dẫn: không có lựa chọn "all future servers", chỉ có hai ô đánh dấu và nút **Enable selected**, còn Esc là từ chối tất cả. Bản cuối sẽ tả đúng hộp thoại này. Trong lúc chờ bạn, mình viết lại phần 3 của hướng dẫn.
+# Phiên 27 · Lượt 169 — 2026-11-12 khoảng 22:36
+
+**Bạn:**
+
+```markdown
+xong H
+```
+
+**Claude:**
+
+**H đã được lưu:** `claude mcp list` trong `ao-green` báo `atlassian` và `chrome-devtools` đều `✔ Connected`. Lựa chọn được ghi vào `.claude/settings.local.json`, đúng chỗ `doctor` đọc. Mình chưa biết vì sao lần trước không lưu: có thể hộp thoại chưa được xác nhận, cũng có thể Claude Code chỉ ghi file khi thoát. Phần 3 của hướng dẫn giờ có bước kiểm bằng `claude mcp list`.
+
+**T16 xong.** `doctor ao-green` đạt mọi dòng, trừ dòng "the kit files are those of this clone". Dòng đó lệch 6 file, chính là các sửa của T16, làm sau khi `init` đã chép kit vào `ao-green`. Ngoài ra:
+- CI xanh trên `develop`;
+- `/ao-status` chạy được;
+- `jira:check` không còn lệch;
+- `AOG-1` đã Cancelled.
+
+**PR sửa kit: https://github.com/TungPH7/ai-orchestrator-v1/pull/256**, CI đang chạy. Xanh thì mình tự merge, như các PR kit trước. Mỗi sửa đều có test đỏ trước. Năm lệnh kiểm trên máy đều xanh (1274 test).
+
+| Sửa | Vì sao (lỗi gặp ở T16) |
+|---|---|
+| `init`, `sync` chạy `npm ci --prefix .ai-orchestrator` trước render | Render lỗi `ERR_MODULE_NOT_FOUND` |
+| `init` thêm `origin` từ `--repo` | `/ao-intake` dừng: `origin remote is not a GitHub repository` |
+| `init` in `Next:` theo thứ tự hướng dẫn, cài App trước mọi `/ao-*` | `App 5514961 is not installed` |
+| Commit gốc không cần mã Jira (bạn duyệt) | `AOG-1` không có đường tới Done, phải Cancel |
+| `ci.yml` có `workflow_dispatch` (bạn duyệt) | Push đầu không có lượt CI nào |
+| `setup jira` in từng chỗ lệch, hết lệch thì thôi in "By hand" | Không thấy cột `In Review` thiếu giới hạn |
+| `doctor` có dòng "GitHub đã ghi nhận workflow" và kiểm CI trên `develop` | Actions tắt dù API báo bật |
+
+**Hướng dẫn:**
+- Bản nháp `docs/getting-started.md` đi cùng PR này, sớm hơn plan (plan để tới T19), vì phần 3 thay đổi theo các sửa trên.
+- Phần 3 viết lại thành 10 bước, theo đúng những gì đã chạy, với đầu ra thật: thời gian chạy, hộp thoại MCP, hai cách lưu giới hạn cột, trang Enable Actions.
+
+**Kế tiếp là T17, kiểm thật repo đang có (`ao-brown`).** Có một điểm mình báo trước. Repo đang có đã có commit, nên commit chép kit cần mã Jira. Hợp đồng lại không có đường tới Done cho Task do người làm. `SMP-22` tới được Done là nhờ đi đủ vòng agent: review hai vòng và QA, hết 22,99 USD. Với `ao-brown`, mình đề xuất làm như `AOG-1`: Task chép kit, commit lên `develop` mới, rồi bạn Cancel Task kèm comment. Không agent nào chạy, 0 USD. Còn việc thêm vào hợp đồng một đường Done cho Task do người làm là thay đổi lớn, mình ghi lại để bàn sau.
+
+Bạn trả lời **"ok"** để mình bắt đầu T17 theo cách đó, hoặc nói nếu muốn khác.
