@@ -9,7 +9,6 @@
 // root; the kit is in AO_KIT_DIR when set.
 import { spawn, spawnSync } from 'node:child_process';
 import { appendFileSync, copyFileSync, existsSync, mkdirSync, openSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
-import { connect } from 'node:net';
 import { tmpdir } from 'node:os';
 import { basename, dirname, isAbsolute, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -30,7 +29,7 @@ import { createGitHubClient, readGitHubToken } from '../lib/tracker/github-clien
 import { bearerAuth, createJiraClient } from '../lib/tracker/jira-client.mjs';
 import { readMapping } from '../lib/tracker/mapping.mjs';
 import { startAgentProcess, killTree } from '../lib/workflow/agent-process.mjs';
-import { lockHash, needsInstall, PREVIEW_FILE, previewEnv, readPreviewConfig } from '../lib/workflow/preview.mjs';
+import { answers, portBusy, previewRunner } from '../lib/workflow/preview-run.mjs';
 import { withLoggedSession } from '../lib/workflow/runs.mjs';
 import { gatherFacts, readRunning } from '../lib/workflow/facts.mjs';
 import { basicAuthEnv, qaFollowUp } from '../lib/workflow/qa.mjs';
@@ -51,15 +50,34 @@ const RELEASE_COMMANDS = ['qa', 'release', 'ship', 'rollback', 'status'];
 const kitDir = resolve(process.env.AO_KIT_DIR ?? fileURLToPath(new URL('..', import.meta.url)));
 const projectDir = process.cwd();
 const runsDir = join(projectDir, '.ai', 'runs');
-// The files of a preview (human-loop spec 4.3): the apps that run, and the lockfile installed last.
-const previewDir = join(projectDir, '.ai', 'preview');
-const previewActive = join(previewDir, 'active.json');
-const previewState = join(previewDir, 'state.json');
 // The commands that stop a preview before they run: every one that may run an agent or switch the folder. /ao-ship runs
 // devops in the project folder with no checkout of its own (review of ao-sample PR #21), so the release commands too.
 const PREVIEW_STOPS = ['spec', 'plan', 'request', 'build', 'review', 'fix', 'qa', 'release', 'ship', 'rollback'];
 // maxBuffer: the full text of a file or a diff may pass the 1 MiB default, which ends git with ENOBUFS and no output.
 const git = (...args) => spawnSync('git', args, { cwd: projectDir, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
+// /ao-preview on this machine (human-loop spec 4.3): its files, the facts it reads, starting and stopping the apps.
+const preview = previewRunner({
+  projectDir,
+  git,
+  checkout: (spec) => prepareCheckout(spec),
+  npm: runNpm,
+  spawn,
+  fs: { existsSync, readFileSync, writeFileSync, rmSync, mkdirSync, openSync },
+  portBusy,
+  answers,
+  killTree: (pid) => killTree(pid, { spawnSync, kill: (target, signal) => process.kill(target, signal) }),
+  sleep: (ms) => new Promise((done) => setTimeout(done, ms)),
+  env: process.env,
+  execPath: process.execPath,
+  npmCli,
+  cleared: CLEARED_ENV,
+  // The lock of this very process, taken for --go, is not another run.
+  agentRunning: () => {
+    const holder = readJson(join(runsDir, 'active.json'));
+    return holder && holder.pid !== process.pid && alive(holder.pid) ? holder : null;
+  },
+});
+const previewActive = preview.paths.active;
 
 // The argument of a command, checked before it reaches anything: a key of the project space, or a PR number. The
 // skill passes only this word, which Claude Code puts in the shell line as it is (T1).
@@ -166,7 +184,7 @@ async function main() {
     return;
   }
   if (first === 'stop') {
-    const stopped = await stopPreview();
+    const stopped = await preview.stop();
     console.log(stopped.notes.join('\n'));
     // Still on the PR branch: running again would run its kit (review of ao-sample PR #21).
     if (!stopped.home) {
@@ -227,7 +245,7 @@ async function main() {
   const gather = async () => {
     const facts = await gatherAll();
     if (command === 'status') return { ...facts, previewRunning: readJson(previewActive) };
-    return command === 'preview' ? { ...facts, preview: await previewFacts(values.stop, facts.pr) } : facts;
+    return command === 'preview' ? { ...facts, preview: await preview.facts(values.stop, facts.pr) } : facts;
   };
   const read = (file) => readFileSync(runsFile(projectDir, file), 'utf8');
   const options = { roster, contract, gates, mapping, ...(values.answers && { answers: read(values.answers) }), ...(values.note && { note: read(values.note) }), ...(values.change && { change: values.change }) };
@@ -263,8 +281,8 @@ async function main() {
         if (step.action === 'deploy-request') return deployRequest(step, { repo, userToken });
         if (step.action === 'kit-copy-reports') return kitCopyReports(step, { repo, appEnv });
         if (step.action === 'pr-ready') return prReady(step, { repo, settings });
-        if (step.action === 'preview-start') return startPreview(step);
-        if (step.action === 'preview-stop') return stopPreview().then(({ notes }) => notes);
+        if (step.action === 'preview-start') return preview.start(step);
+        if (step.action === 'preview-stop') return preview.stop().then(({ notes }) => notes);
         return releaseCut(step, { repo, mapping, settings });
       },
       git: (checkout) => prepareCheckout(checkout),
@@ -684,156 +702,6 @@ function removeWorktree({ name }) {
   }
   git('worktree', 'prune');
   return existsSync(path) ? { ok: false, reason: `${path} is still there` } : { ok: true };
-}
-
-// What /ao-preview reads on this machine (human-loop spec 4.3). `install` is a forecast from the head of the PR when git
-// has it already; startPreview decides again once the folder is on the branch.
-async function previewFacts(stopping, pr) {
-  let config = null;
-  let configError = null;
-  if (existsSync(join(projectDir, PREVIEW_FILE))) {
-    try {
-      config = readPreviewConfig(readFileSync(join(projectDir, PREVIEW_FILE), 'utf8'));
-    } catch (error) {
-      configError = error.message;
-    }
-  }
-  const holder = readJson(join(runsDir, 'active.json'));
-  const dirty = git('status', '--porcelain', '--untracked-files=no').stdout.trim().split('\n').filter(Boolean).length;
-  const busy = [];
-  for (const { port } of config ?? []) if (await portBusy(port)) busy.push(port);
-  const lock = pr?.headSha ? git('show', `${pr.headSha}:package-lock.json`) : null;
-  return {
-    stop: stopping,
-    config,
-    configError,
-    active: readJson(previewActive),
-    // The lock of this very process, taken for --go, is not another run.
-    agentRunning: holder && holder.pid !== process.pid && alive(holder.pid) ? holder : null,
-    dirty,
-    busy,
-    install: lock?.status === 0 ? needsInstall(lock.stdout, readJson(previewState)) : true,
-  };
-}
-
-// Whether something answers on the port, on IPv4 or IPv6.
-async function portBusy(port) {
-  const tryHost = (host) => new Promise((done) => {
-    const socket = connect({ host, port });
-    const end = (busy) => {
-      socket.destroy();
-      done(busy);
-    };
-    socket.setTimeout(1000, () => end(false));
-    socket.once('connect', () => end(true));
-    socket.once('error', () => end(false));
-  });
-  return (await tryHost('127.0.0.1')) || (await tryHost('::1'));
-}
-
-// Whether the URL answers 2xx or 3xx within `ms`.
-async function answers(url, ms) {
-  const until = Date.now() + ms;
-  while (Date.now() < until) {
-    try {
-      const res = await fetch(url, { redirect: 'manual', signal: AbortSignal.timeout(5000) });
-      if (res.status < 400) return true;
-    } catch {
-      // not up yet
-    }
-    await new Promise((done) => setTimeout(done, 2000));
-  }
-  return false;
-}
-
-// /ao-preview <KEY> --go: the folder on the PR branch, the packages of its lockfile, then each app of preview.yaml in
-// order, apart from ao-step, with its log in .ai/preview/ and no secret in its environment. An app that does not answer
-// in 2 minutes stops them all and puts the folder back on develop.
-async function startPreview({ key, number, branch, head: checked }) {
-  const config = readPreviewConfig(readFileSync(join(projectDir, PREVIEW_FILE), 'utf8'));
-  const moved = prepareCheckout({ branch, pull: true });
-  if (!moved.ok) {
-    // The switch may have happened before the step that failed, such as a fast-forward: the folder goes back first.
-    const on = git('branch', '--show-current').stdout.trim();
-    const home = on === branch ? prepareCheckout({ branch: 'develop', pull: true }) : { ok: true };
-    throw new Error(`${moved.reason}${on === branch ? (home.ok ? '; the folder is back on develop' : `; the folder stays on ${branch}: ${home.reason}`) : ''}`);
-  }
-  const head = git('rev-parse', 'HEAD').stdout.trim();
-  // No secret of your session reaches code nobody reviewed (review of ao-sample PR #21).
-  const env = previewEnv(process.env, CLEARED_ENV);
-  const notes = [`The project folder is on ${branch} at ${head.slice(0, 8)}.`];
-  mkdirSync(previewDir, { recursive: true });
-  const back = (reason) => {
-    const home = prepareCheckout({ branch: 'develop', pull: true });
-    return new Error(`${reason}${home.ok ? '; the folder is back on develop' : `; the folder stays on ${branch}: ${home.reason}`}`);
-  };
-  // The head decidePreview checked for protected paths and instruction files, or nothing runs (review of PR #21).
-  if (checked && head !== checked) throw back(`${branch} is at ${head.slice(0, 8)}, not ${checked.slice(0, 8)}, the head that was checked: a push came in between. Run /ao-preview ${key} again`);
-  const lockFile = join(projectDir, 'package-lock.json');
-  const lock = existsSync(lockFile) ? readFileSync(lockFile, 'utf8') : '';
-  if (needsInstall(lock, readJson(previewState))) {
-    const installed = runNpm(['ci', '--ignore-scripts', '--no-audit', '--no-fund'], { cwd: projectDir, env, encoding: 'utf8' });
-    if (installed.status !== 0) throw back(`npm ci failed: ${(installed.stderr || installed.error?.message || '').trim().slice(-500)}`);
-    writeFileSync(previewState, `${JSON.stringify({ lock: lockHash(lock), at: new Date().toISOString() }, null, 2)}\n`);
-    notes.push('Ran npm ci --ignore-scripts, since package-lock.json differs from the one installed before.');
-  }
-  const apps = [];
-  const record = () => writeFileSync(previewActive, `${JSON.stringify({ key, pr: number, branch, head, apps, startedAt: new Date().toISOString() }, null, 2)}\n`);
-  for (const app of config) {
-    const log = openSync(join(previewDir, `${app.name}.log`), 'w');
-    // npm or node and its words, with no shell: npm through npm-cli.js next to node, as runNpm does (lib/quality/npm.mjs).
-    const [tool, ...words] = app.argv;
-    const cli = tool === 'npm' ? npmCli() : null;
-    const [file, args] = tool === 'node' ? [process.execPath, words] : cli ? [process.execPath, [cli, ...words]] : ['npm', words];
-    const child = spawn(file, args, { cwd: projectDir, env: { ...env, ...app.env }, detached: true, windowsHide: true, stdio: ['ignore', log, log] });
-    child.unref();
-    apps.push({ name: app.name, url: app.url, port: app.port, pid: child.pid });
-    record();
-    if (!(await answers(app.url, 120000))) {
-      await stopApps(apps);
-      rmSync(previewActive, { force: true });
-      throw back(`${app.name} did not answer at ${app.url} within 2 minutes: read .ai/preview/${app.name}.log`);
-    }
-  }
-  notes.push(...apps.map(({ name, url }) => `${name}: ${url}`), `Stop it with /ao-preview ${key} --stop: the apps stop and the folder goes back to develop. /ao-fix and /ao-review stop it too.`);
-  return notes;
-}
-
-// Stops each app with its whole tree (lib/workflow/agent-process.mjs), then says which port still answers.
-async function stopApps(apps) {
-  for (const { pid } of apps) killTree(pid, { spawnSync, kill: (target, signal) => process.kill(target, signal) });
-  await new Promise((done) => setTimeout(done, 3000));
-  const still = [];
-  for (const { name, port } of apps) if (await portBusy(port)) still.push(`${name} (port ${port})`);
-  return still;
-}
-
-// /ao-preview <KEY> --stop, and the first step of a command that runs agents during a preview. The record of the preview
-// goes only once the folder is back on develop: otherwise it stays, with no app, so no command runs from the PR branch
-// (review of ao-sample PR #21). Back on develop, the packages of develop are installed again when the preview installed
-// those of the PR. Resolves { home, notes }.
-async function stopPreview() {
-  const active = readJson(previewActive);
-  if (!active) return { home: true, notes: ['No preview runs.'] };
-  const still = await stopApps(active.apps ?? []);
-  const notes = [`Stopped the preview of ${active.key}: ${(active.apps ?? []).map(({ name }) => name).join(', ') || 'no app ran'}.${still.length > 0 ? ` Still answering: ${still.join(', ')}; stop it yourself.` : ''}`];
-  const home = prepareCheckout({ branch: 'develop', pull: true });
-  if (!home.ok) {
-    writeFileSync(previewActive, `${JSON.stringify({ ...active, apps: [], stoppedAt: new Date().toISOString() }, null, 2)}\n`);
-    return { home: false, notes: [...notes, `The project folder stays on ${active.branch}: ${home.reason}`] };
-  }
-  rmSync(previewActive, { force: true });
-  notes.push('The project folder is back on develop.');
-  const lockFile = join(projectDir, 'package-lock.json');
-  const lock = existsSync(lockFile) ? readFileSync(lockFile, 'utf8') : '';
-  if (needsInstall(lock, readJson(previewState))) {
-    const installed = runNpm(['ci', '--ignore-scripts', '--no-audit', '--no-fund'], { cwd: projectDir, env: previewEnv(process.env, CLEARED_ENV), encoding: 'utf8' });
-    if (installed.status === 0) {
-      writeFileSync(previewState, `${JSON.stringify({ lock: lockHash(lock), at: new Date().toISOString() }, null, 2)}\n`);
-      notes.push('Ran npm ci --ignore-scripts again, for the packages of develop.');
-    } else notes.push(`npm ci for develop failed: ${(installed.stderr || installed.error?.message || '').trim().slice(-300)}. Run npm ci yourself before a test or a build.`);
-  }
-  return { home: true, notes };
 }
 
 // The second /ao-plan: jira-sync for the Epic, with your gh login, since this is your session, not an agent's.
