@@ -246,3 +246,13 @@ test('the files of a PR name a renamed file by its old name and its new one', as
   const facts = await gather('review', '11', { change: (copy) => copy.github['/pulls/11/files'].push(renamed) });
   assert.deepEqual(facts.pr.files.slice(-2), ['src/auth/jwt.guard.ts', 'src/common/jwt.ts']);
 });
+
+// /ao-preview runs only a branch of this repository (review of ao-sample PR #21). GitHub gives head.repo null once the
+// fork of a PR is deleted: that PR is not shown to be from here, so it counts as one from a fork (live-run-fixes 2.8).
+test('a PR is from a fork unless its head and base are both this repository; a deleted fork counts as a fork', async () => {
+  const repoOf = (head, base) => (copy) => Object.assign(copy.github['/pulls/11'], { head: { ...copy.github['/pulls/11'].head, repo: head }, base: { ...copy.github['/pulls/11'].base, repo: base } });
+  const here = { full_name: 'TungPH7/ao-pilot' };
+  assert.equal((await gather('review', '11', { change: repoOf(here, here) })).pr.fromFork, false);
+  assert.equal((await gather('review', '11', { change: repoOf({ full_name: 'someone/ao-pilot' }, here) })).pr.fromFork, true);
+  assert.equal((await gather('review', '11', { change: repoOf(null, here) })).pr.fromFork, true);
+});

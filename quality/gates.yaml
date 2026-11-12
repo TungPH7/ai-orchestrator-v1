@@ -57,7 +57,8 @@ release_pull_requests:
   back_merge_after_release: develop
 
 # Files an agent may not edit, except the roles listed as editors. A PR of an agent that touches one is never merged by
-# merge-gate: you read the diff and merge it yourself.
+# merge-gate: you read the diff and merge it yourself. A path is compared in any case (.Claude/ is .claude/), since a
+# Windows checkout writes both into one folder.
 protected_paths:
   - { path: ".github/workflows/**", editors: [devops] }
   - { path: ".githooks/**" }

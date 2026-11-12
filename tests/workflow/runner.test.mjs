@@ -537,11 +537,14 @@ test('a qa run gets its worktree with the qa note; its follow-up runs before the
   const qa = { role: 'qa', key: 'DEMO-20', effort: 'high', purpose: 'qa', prompt: 'QA Story DEMO-20.', worktree: { kind: 'qa', name: 'DEMO-20-qa', sha: 'abc1234def5678', install: true }, env: { E2E_BASE_URL: 'https://pilot-dev.ao.t2g.io.vn' }, qa: { environment: 'development', sha: 'abc1234def5678' } };
   const events = [];
   const worktree = { add: async (spec) => (events.push(['add', spec.name, spec.install]), { ok: true, path: 'C:/Temp/ao-reviews/shop-DEMO-20-qa' }), remove: async (spec) => (events.push(['remove', spec.name]), { ok: true }) };
-  const after = async (run, { tree }) => (events.push(['after', run.purpose, tree.path]), ['Attached to DEMO-20: cart.png.']);
+  // after gets the start of the run: qa attaches only the files written since (live-run-fixes spec 2.5).
+  const after = async (run, { tree }) => (events.push(['after', run.purpose, tree.path, run.startedAt]), ['Attached to DEMO-20: cart.png.']);
   const world = specWorld();
   const h = harness(world.world, {});
   await h.run({ gather: world.gather, decide: one(qa), worktree, after });
-  assert.deepEqual(events, [['add', 'DEMO-20-qa', true], ['after', 'qa', 'C:/Temp/ao-reviews/shop-DEMO-20-qa'], ['remove', 'DEMO-20-qa']]);
+  const { startedAt } = h.states.at(-1).runs.at(-1);
+  assert.match(startedAt, /^\d{4}-\d\d-\d\dT/);
+  assert.deepEqual(events, [['add', 'DEMO-20-qa', true], ['after', 'qa', 'C:/Temp/ao-reviews/shop-DEMO-20-qa', startedAt], ['remove', 'DEMO-20-qa']]);
   assert.equal(h.calls[0].prompt, ['QA Story DEMO-20.', qaWorktreeNote('C:/Temp/ao-reviews/shop-DEMO-20-qa', 'abc1234def5678')].join('\n\n'));
   assert.match(qaWorktreeNote('C:/Temp/x', 'abc1234def5678'), /^The code of abc1234, the release the environment runs, is in the folder C:\/Temp\/x, a worktree outside the project, with its packages installed\. /);
   assert.deepEqual(h.states.at(-1).runs.at(-1).notes, ['Attached to DEMO-20: cart.png.']);

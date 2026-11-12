@@ -108,7 +108,7 @@ Khả năng mới, đổi kết quả mong đợi của một Bug, hay đổi h�
    - báo cáo trước còn Critical hay High: prompt liệt kê các finding đó, báo cáo phần mới ghi từng finding vào mục `## Earlier findings` là Fixed hay Open, và `merge-gate` coi finding không được ghi là còn mở.
 9. **[bạn]** Approve PR trên GitHub (gate ③), và không bấm merge. `merge-gate` squash merge, `audit` xanh khi deploy, và `jira-sync` chuyển Story sang Ready for QA. QA và release thuộc module `release-workflow`. Lỗi bạn thấy khi QA thì `/ao-qa <KEY> fail: …`; sau `QA fail`, `/ao-build <KEY>` sửa trên nhánh `-r2` mới tách từ `develop`, rồi vòng lại bước 6 ([docs/release-workflow.md](release-workflow.md), mục "Lỗi bạn thấy khi QA").
 
-PR sửa đường dẫn được bảo vệ (`.github/workflows/**`, `.claude/**`, `.ai-orchestrator/**` …) thì bạn tự squash merge. `merge-gate` comment lên PR và gắn cờ item khi PR chỉ còn chờ bạn, và `jira-sync` gỡ cờ đó khi PR đóng.
+PR sửa đường dẫn được bảo vệ (`.github/workflows/**`, `.claude/**`, `.ai-orchestrator/**` …) thì bạn tự squash merge. Đường dẫn được so không phân biệt hoa thường, vì trên Windows `.Claude/` được ghi vào chính `.claude/`. `merge-gate` so theo cách này từ lần chép kit kế tiếp vào dự án; `audit` chạy trên VPS, nên chỉ so theo cách này khi kit trên VPS được cập nhật. `merge-gate` comment lên PR và gắn cờ item khi PR chỉ còn chờ bạn, và `jira-sync` gỡ cờ đó khi PR đóng.
 
 ## Đọc `.ai/runs/`
 

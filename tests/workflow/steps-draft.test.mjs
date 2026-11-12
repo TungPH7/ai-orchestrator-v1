@@ -155,9 +155,10 @@ test('--change is one word of a fixed list, with /ao-fix or /ao-qa, and only wit
 
 test('the next command of an item In Progress with a draft PR is the preview, or the review', () => {
   const item = { key: 'DEMO-21', workType: 'story', state: 'in-progress', flagged: false };
-  assert.equal(nextFor(item, 15, true), '/ao-preview DEMO-21 or /ao-review 15');
-  assert.equal(nextFor(item, 15, false), '/ao-review 15');
-  assert.equal(nextFor(item, 15), '/ao-review 15');
+  assert.equal(nextFor(item, { number: 15, state: 'open', draft: true }), '/ao-preview DEMO-21 or /ao-review 15');
+  assert.equal(nextFor(item, { number: 15, state: 'open', draft: false }), '/ao-review 15');
+  assert.equal(nextFor(item, { number: 15, state: 'open' }), '/ao-review 15');
+  assert.equal(nextFor(item, null), '/ao-build DEMO-21');
 });
 
 test('/ao-status lists a draft PR as one, with the preview as its next command, which waits for you', () => {

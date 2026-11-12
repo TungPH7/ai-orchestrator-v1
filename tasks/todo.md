@@ -14,30 +14,30 @@
 
 ## Phần 1, nhánh `task/live-run-fixes-part-1`
 
-- [ ] **T2: `nextFor` nhận PR** (spec 2.4).
+- [x] **T2: `nextFor` nhận PR** (spec 2.4).
   - **Đạt khi:**
     - `nextFor(item, pr)` nhận `{ number, state, merged, draft }` hoặc `null`;
     - item In Progress có PR không còn mở thì `Next:` là `/ao-build <KEY>`;
     - mọi chỗ gọi (`decideStatus`, `spaceStatus`, `decideBuild`, `decideQa`, `decidePreview`) truyền PR theo cách đó.
   - **Kiểm:** test đỏ trước: `decideQa` trên item In Progress với PR đã merge trả `Next: /ao-build <KEY>`. Test cũ của `nextFor` trong `steps-qa`, `steps-pr`, `steps-draft` viết lại theo tham số mới.
   - **File:** `lib/workflow/steps.mjs`, `tests/workflow/steps-qa.test.mjs`, `steps-pr.test.mjs`, `steps-draft.test.mjs`.
-- [ ] **T3: bằng chứng QA, chỉ file mới** (spec 2.5).
+- [x] **T3: bằng chứng QA, chỉ file mới** (spec 2.5).
   - **Đạt khi:**
     - `list` trả `{ path, mtimeMs }`;
     - `qaFollowUp` chỉ gắn file sửa từ `run.startedAt` trở đi; file cũ hơn không được gắn và không có trong dòng "these stay in";
     - `runGo` truyền `startedAt` của lượt cho `after`.
   - **Kiểm:** test đỏ trước trong `tests/workflow/qa.test.mjs`: một ảnh cũ trong thư mục con không được gắn; test của `runGo` kiểm `after` nhận `startedAt`.
   - **File:** `lib/workflow/qa.mjs`, `lib/workflow/runner.mjs`, `scripts/ao-step.mjs` (`listFiles`), test.
-- [ ] **T4: `fromFork` khi fork đã bị xóa** (spec 2.8).
+- [x] **T4: `fromFork` khi fork đã bị xóa** (spec 2.8).
   - **Đạt khi:** `head.repo` null thì `fromFork` là `true`.
   - **Kiểm:** ba test của `readPullRequest` trong `tests/workflow/facts.test.mjs`: PR cùng repo, PR từ fork, PR có `head.repo` null. Test thứ ba đỏ trước khi sửa.
   - **File:** `lib/workflow/facts.mjs`, test.
-- [ ] **T5: đường dẫn được bảo vệ, không phân biệt hoa thường** (spec 2.9).
+- [x] **T5: đường dẫn được bảo vệ, không phân biệt hoa thường** (spec 2.9).
   - **Đạt khi:** `protectedPaths` và glob của thông điệp ở `merge-gate.mjs:116` so không phân biệt hoa thường; một PR đổi `.Claude/settings.json` không được `merge-gate` tự merge, và `audit` báo nó như một đường dẫn được bảo vệ.
   - **Kiểm:** test đỏ trước trong `tests/quality/merge-gate.test.mjs` và `audit.test.mjs` với `.Claude/…` và `.GitHub/workflows/…`.
   - **File:** `lib/quality/merge-gate.mjs`, test; `quality/gates.yaml` (chú thích), tài liệu quality gates nếu có câu nói về chữ hoa.
-- [ ] **T6: tài liệu phần 1, PR phần 1.**
-  - **Đạt khi:** `docs/dev-workflow.md` nói `Next:` sau `QA fail` và cách chọn bằng chứng QA; chỗ tả luật đường dẫn được bảo vệ ghi không phân biệt hoa thường, có hiệu lực ở lần chép kit sau, còn `audit` khi kit trên VPS được cập nhật.
+- [x] **T6: tài liệu phần 1, PR phần 1.**
+  - **Đạt khi:** `docs/release-workflow.md`, mục "Lỗi bạn thấy khi QA", nói `Next:` sau `QA fail` và cách chọn bằng chứng QA; `docs/dev-workflow.md`, chỗ tả luật đường dẫn được bảo vệ ghi không phân biệt hoa thường, có hiệu lực ở lần chép kit sau, còn `audit` khi kit trên VPS được cập nhật.
   - **Kiểm:** năm lệnh kiểm; CI xanh; PR merge.
 
 ### Checkpoint 1: sau T6

@@ -122,6 +122,16 @@ test('a PR that changes a protected path is never merged: it needs you, with wha
   });
 });
 
+// On Windows (NTFS) a checkout writes .Claude/rules/x.md into .claude/rules/, so a protected path in another case is the
+// protected path itself (live-run-fixes spec 2.9).
+test('a protected path in another case is a protected path: the PR is yours to merge', () => {
+  const cased = (f) => {
+    f.files.push({ filename: '.Claude/settings.json', status: 'added' });
+    f.files.push({ filename: '.GitHub/Workflows/ci.yml', status: 'added' });
+  };
+  assert.deepEqual(decide(cased), { action: 'needs-you', paths: ['.Claude/settings.json', '.GitHub/Workflows/ci.yml'], missing: [] });
+});
+
 test('a PR you opened, a draft, and a branch that is not of a work item are skipped', () => {
   assert.match(decide((f) => (f.pr.user = { login: 'approver', type: 'User' })).reason, /^opened by approver, not by tungph7-ao-dev/);
   assert.equal(decide((f) => (f.pr.draft = true)).action, 'skip');
