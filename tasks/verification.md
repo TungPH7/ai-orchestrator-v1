@@ -63,3 +63,11 @@ Năm lệnh kiểm xanh (1258 test).
 **Thứ tự test.** Test của T12 được viết cùng lượt với code, chạy lần đầu đã xanh, nên không có lần đỏ trước. T11 và T13 có test đỏ trước.
 
 Năm lệnh kiểm xanh (1269 test).
+
+## Chặng 4: hướng dẫn và kiểm thật
+
+**T15, 2026-11-12.** Bản nháp `docs/getting-started.md`: phần 1 (ai làm gì, sơ đồ vòng, 5 gate), 2 (công cụ, tài khoản, biến môi trường, clone kit), 3 (dự án mới, 8 bước theo `ao-green`), 4 (repo đang có, theo `ao-brown`), 6 (bảng tra lệnh `/ao-*` và `ao-kit`). Phần 5 và 7 viết ở T19.
+
+Cùng nhánh: câu "By hand" của `setup github` giờ trỏ đúng đường mà `docs/github-apps-setup.md` mục 3 dùng để thêm repo cho App đã cài.
+
+**Một lần commit test đỏ.** Commit `d91c398` sửa câu "By hand" kèm test, nhưng heredoc làm mất dấu `\` trong regex của test. Chuỗi lệnh vẫn commit vì `&&` đứng sau `grep`, chỉ xét kết quả của `grep`. Test được sửa ở `57955f7`, trước khi push; năm lệnh kiểm xanh (1269 test).
