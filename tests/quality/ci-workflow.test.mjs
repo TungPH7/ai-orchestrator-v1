@@ -9,10 +9,12 @@ const text = readFileSync(join(ROOT, 'kit', '.github', 'workflows', 'ci.yml'), '
 const workflow = parse(text);
 const steps = (job) => workflow.jobs[job].steps.map((step) => step.run ?? step.uses).join('\n');
 
-test('the workflow is named CI, which jira-sync watches, and runs on PRs and on pushes to the protected branches', () => {
+test('the workflow is named CI, which jira-sync watches, and runs on PRs, on pushes to the protected branches and by hand', () => {
   assert.equal(workflow.name, 'CI');
-  assert.deepEqual(Object.keys(workflow.on), ['pull_request', 'push']);
+  assert.deepEqual(Object.keys(workflow.on), ['pull_request', 'push', 'workflow_dispatch']);
   assert.deepEqual(workflow.on.push.branches, ['develop', 'main', 'release/**']);
+  // By hand: a branch pushed while Actions was off has no run (project-scaffold T16); gh workflow run CI --ref <branch>.
+  assert.equal(workflow.on.workflow_dispatch, null);
   assert.deepEqual(workflow.permissions, { contents: 'read' });
 });
 
