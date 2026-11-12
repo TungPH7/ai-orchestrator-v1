@@ -5,16 +5,19 @@ import { readRoster } from '../../lib/agents/roster.mjs';
 import { readContract } from '../../lib/contract.mjs';
 import { readGates } from '../../lib/quality/gates.mjs';
 import { matchesGlob } from '../../lib/quality/glob.mjs';
-import { lockHash, needsInstall, PREVIEW_SAMPLE, previewEnv, readPreviewConfig } from '../../lib/workflow/preview.mjs';
+import { readFileSync } from 'node:fs';
+import { readProjectConfig } from '../../lib/scaffold/project-config.mjs';
+import { lockHash, needsInstall, PREVIEW_SAMPLE, previewApps, previewEnv } from '../../lib/workflow/preview.mjs';
 import { decideStep } from '../../lib/workflow/steps.mjs';
 import { CONTRACT_DIR, ROOT } from '../helpers/kit.mjs';
 import { checkArgument, previewFirst } from '../../scripts/ao-step.mjs';
 
-// /ao-preview (human-loop spec 4.3).
+// /ao-preview (human-loop spec 4.3), with the apps of project.yaml (project-scaffold spec 2.1).
 const contract = readContract(CONTRACT_DIR);
 const roster = readRoster(join(ROOT, 'agents'));
 const HEAD = 'd1d2d3d4d5d6d7d8d9dadbdcdddedfe0e1e2e3e4';
-const APPS = readPreviewConfig(PREVIEW_SAMPLE);
+const SAMPLE = readProjectConfig(readFileSync(join(ROOT, 'tests/fixtures/scaffold/sample/project.yaml'), 'utf8')).config;
+const APPS = previewApps(SAMPLE);
 
 const facts = (preview = {}, pr = {}, item = {}) => ({
   command: 'preview',
@@ -26,37 +29,24 @@ const facts = (preview = {}, pr = {}, item = {}) => ({
 });
 const decide = (f) => decideStep('preview', f, { roster, contract });
 
-test('preview.yaml: the apps in order, each with its command, its local URL and port, and its variables', () => {
+test('the apps of project.yaml, in order: the dev command, a URL on this machine from the port and the health path, and the port in its variable', () => {
   assert.deepEqual(APPS, [
-    { name: 'api', command: 'npm run start:dev -w apps/api', argv: ['npm', 'run', 'start:dev', '-w', 'apps/api'], url: 'http://localhost:3001/health', port: 3001, env: {} },
-    { name: 'web', command: 'npm run dev -w apps/web', argv: ['npm', 'run', 'dev', '-w', 'apps/web'], url: 'http://localhost:3000/', port: 3000, env: { API_URL: 'http://localhost:3001' } },
+    { name: 'web', command: 'npm run dev -w apps/web', argv: ['npm', 'run', 'dev', '-w', 'apps/web'], url: 'http://localhost:3000/notes', port: 3000, env: { PORT: '3000' } },
+    { name: 'api', command: 'npm run start:dev -w apps/api', argv: ['npm', 'run', 'start:dev', '-w', 'apps/api'], url: 'http://localhost:3001/health', port: 3001, env: { PORT: '3001' } },
   ]);
+  const own = previewApps({ ...SAMPLE, apps: { web: { ...SAMPLE.apps.web, port: { env: 'WEB_PORT', default: 4000 }, env: { API_URL: 'http://localhost:3001', WEB_PORT: '9' } } } });
+  assert.deepEqual(own[0].env, { API_URL: 'http://localhost:3001', WEB_PORT: '4000' }, 'the port of project.yaml wins');
 });
 
-test('a command is npm or node and plain words, since ao-step runs it with no shell (sast of ao-sample PR #21)', () => {
-  const app = (command) => `apps:\n  web:\n    command: ${JSON.stringify(command)}\n    url: http://localhost:3000/`;
-  assert.deepEqual(readPreviewConfig(app('node scripts/dev.mjs --port 3000'))[0].argv, ['node', 'scripts/dev.mjs', '--port', '3000']);
-  for (const command of ['next dev', 'npm run dev && rm -rf .', 'npm run dev | tee log', 'npm run dev > log', 'node -e "x"', 'npm run $SCRIPT', 'npm run dev; curl x']) {
-    assert.throws(() => readPreviewConfig(app(command)), /command: npm or node and plain words, run with no shell/, command);
-  }
+test('the sample /ao-preview prints when the project has no project.yaml is valid apps of that file', () => {
+  const sample = readProjectConfig(`${PREVIEW_SAMPLE}\n${['name: shop', 'jira: { space: SHOP }', 'github: { repo: acme/shop, approvers: [owner], apps: { dev: a-dev, dev_id: 1, review: a-review, review_id: 2 } }', 'repos: [{ name: shop, path: . }]'].join('\n')}`);
+  assert.deepEqual(sample.errors, []);
 });
 
-test('a wrong preview.yaml says every problem', () => {
-  assert.throws(() => readPreviewConfig('apps: {}'), /it lists no app under apps/);
-  assert.throws(() => readPreviewConfig('apps:\n  Web:\n    command: "a\\nb"\n    url: https://example.com/\n    env: [1]'), (error) => {
-    assert.match(error.message, /apps\.Web: a name is lower-case/);
-    assert.match(error.message, /apps\.Web\.command: one line/);
-    assert.match(error.message, /apps\.Web\.url: http:\/\/localhost with a port, not https:\/\/example\.com\//);
-    assert.match(error.message, /apps\.Web\.env: names and text values/);
-    return true;
-  });
-  assert.throws(() => readPreviewConfig('apps: ['), /is not YAML/);
-});
-
-test('preview.yaml belongs to the project: no list of kit_copy holds it, so a kit copy that changes it is reviewed as usual', () => {
+test('project.yaml belongs to the project: no list of kit_copy holds it, so a kit copy that changes it is reviewed as usual', () => {
   const gates = readGates(join(ROOT, 'quality'));
   const lists = [...gates.kit_copy.same, ...gates.kit_copy.same_when_changed, ...gates.kit_copy.rendered];
-  assert.equal(lists.some((glob) => matchesGlob(glob, '.ai-orchestrator/preview.yaml')), false);
+  assert.equal(lists.some((glob) => matchesGlob(glob, '.ai-orchestrator/project.yaml')), false);
 });
 
 test('npm ci runs when the lockfile of the head differs from the one installed, or none is on record', () => {
@@ -69,7 +59,7 @@ test('/ao-preview starts the apps on the PR branch: a script step, with or witho
   const decision = decide(facts({ install: true }));
   assert.equal(decision.go, true);
   assert.deepEqual(decision.runs, [{ action: 'preview-start', key: 'DEMO-21', number: 15, branch: 'feature/DEMO-21-remove-line', head: HEAD, install: true, protected: [] }]);
-  assert.match(decision.lines.at(-1), /^Preview of PR #15 \(draft\): feature\/DEMO-21-remove-line at d1d2d3d4; npm ci first, since package-lock\.json differs from the one installed; apps api http:\/\/localhost:3001\/health, web http:\/\/localhost:3000\/$/);
+  assert.match(decision.lines.at(-1), /^Preview of PR #15 \(draft\): feature\/DEMO-21-remove-line at d1d2d3d4; npm ci first, since package-lock\.json differs from the one installed; apps web http:\/\/localhost:3000\/notes, api http:\/\/localhost:3001\/health$/);
 });
 
 test('/ao-preview stops: no open PR, a PR on protected paths, an agent running, changes not committed, no or a wrong config, a busy port, a preview running', () => {
@@ -78,8 +68,8 @@ test('/ao-preview stops: no open PR, a PR on protected paths, an agent running, 
     [facts({}, { protectedPaths: ['.ai-orchestrator/lib/workflow/steps.mjs'] }), /PR #15 changes \.ai-orchestrator\/lib\/workflow\/steps\.mjs, which steer the kit and the agents/],
     [facts({ agentRunning: { command: 'build', arg: 'DEMO-30' } }), /ao-step is running build DEMO-30: the project folder is busy/],
     [facts({ dirty: 2 }), /the project folder has changes not committed \(2 files\)/],
-    [facts({ config: null }), /the project has no \.ai-orchestrator\/preview\.yaml/],
-    [facts({ config: null, configError: '.ai-orchestrator/preview.yaml: it lists no app under apps' }), /it lists no app under apps/],
+    [facts({ config: null }), /the project has no \.ai-orchestrator\/project\.yaml, which says the apps to start/],
+    [facts({ config: null, configError: 'P6 apps.web.dev: next dev: npm or node and plain words, run with no shell' }), /P6 apps\.web\.dev/],
     [facts({ busy: [3000] }), /port 3000 is in use/],
     [facts({ active: { key: 'DEMO-21', branch: 'feature/DEMO-21-remove-line', apps: [{ name: 'web', url: 'http://localhost:3000/' }] } }), /the preview of DEMO-21 runs already: web http:\/\/localhost:3000\//],
     [facts({}, {}, { type: 'Epic', workType: 'epic' }), /DEMO-21 is an Epic/],
@@ -91,6 +81,9 @@ test('/ao-preview stops: no open PR, a PR on protected paths, an agent running, 
   }
   const sample = decide(facts({ config: null }));
   assert.ok(sample.lines.includes('apps:'), 'the sample goes with the stop');
+  // A kit copy brings it: ao-kit sync makes project.yaml from the preview.yaml the project had (project-scaffold spec 2.1).
+  assert.match(sample.next, /ao-kit sync/);
+  assert.match(decide(facts({ config: null, configError: 'P6 apps.web.dev: x' })).next, /^Fix \.ai-orchestrator\/project\.yaml, then \/ao-preview DEMO-21$/);
 });
 
 test('a command that runs agents stops a preview first, once; the others leave it running', () => {

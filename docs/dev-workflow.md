@@ -19,7 +19,7 @@ Claude của phiên chính không tự mở agent, cũng không tự sửa Jira 
 | `/ao-plan` | `<EPIC>` ở Planning, thêm `[sửa]` khi muốn sửa plan; rồi lần nữa sau gate ② | `sa` viết plan và ADR, `sa` đánh dấu SPEC và design là Approved, rồi `ba` tạo Story, Task và Sub-task có nhãn. Có `[sửa]` thì `sa` sửa plan, và `ba` sửa item khi Task List đổi. Lần chạy sau gate ② không chạy agent: `jira-sync` refine các item, `merge-gate` merge PR tài liệu | Câu hỏi mở, gate ② `plan-approval`, rồi lúc các item sang Ready |
 | `/ao-request` | `<KEY>` có yêu cầu `Cần ba:`, `Cần ux:` hoặc `Cần sa:` còn mở | Role được nhờ, mỗi yêu cầu một lượt, cũ trước | Hết yêu cầu mở gửi ba role đó |
 | `/ao-build` | `<KEY>` của Story, Task hay Bug ở Ready | Dev agent của mỗi Sub-task, BE trước FE, hoặc dev agent theo nhãn vai trò của item. Agent cuối mở PR nháp, kèm ảnh màn hình và mẫu API trong `.ai/runs/<KEY>/preview/`. Effort theo nhãn `ao-effort-*` | PR nháp mở với CI chạy xong, chờ bạn xem trước; hoặc một item mang cờ Needs you |
-| `/ao-preview` | `<KEY>` có PR đang mở, thêm `--stop` để tắt | Không. Thư mục dự án chuyển sang nhánh PR, `npm ci` khi lockfile đổi, bật các app của `preview.yaml` | App chạy và in URL; `--stop` tắt app và đưa thư mục về `develop` |
+| `/ao-preview` | `<KEY>` có PR đang mở, thêm `--stop` để tắt | Không. Thư mục dự án chuyển sang nhánh PR, `npm ci` khi lockfile đổi, bật các app của `project.yaml` | App chạy và in URL; `--stop` tắt app và đưa thư mục về `develop` |
 | `/ao-review` | `<PR>` có CI xanh | PR nháp thì một bước script chuyển nó sang sẵn sàng. Rồi `reviewer`, rồi `security` (đầy đủ ở `max` khi PR có rủi ro, ở `high` khi không; hoặc chỉ phần mới ở `high`) | Hai báo cáo trên head, chờ bạn ở gate ③ |
 | `/ao-fix` | `<PR> [việc cần sửa]` | `ba` hoặc `sa` khi yêu cầu đổi AC, hợp đồng API hay yêu cầu chung, rồi dev agent sửa. PR đã sẵn sàng thì `reviewer` và `security` review lại | PR nháp: chờ bạn xem lại. PR sẵn sàng: hai báo cáo mới trên head, chờ bạn ở gate ③ |
 
@@ -40,7 +40,7 @@ Intake không tạo Story, vì Story cần AC trong SPEC, màn hình và hợp �
 - Cùng một yêu cầu gõ lại thì không làm lại. Epic đã qua `Approve spec` (hay `Approve plan`) thì lệnh dừng: thay đổi đi thành một Epic mới qua `/ao-intake`.
 
 **Xem trước giữa build và review.** Dev agent mở PR nháp, nên item ở lại In Progress: guard `pr-open` không tính PR nháp. Trước khi mở PR, `fe-dev` chụp từng màn hình ở mỗi cỡ của `design.md` (`S1-mobile.png`, `S1-desktop.png`), còn `be-dev` ghi `api.md` gồm một request mẫu và response cho mỗi endpoint. Các file này nằm trong `.ai/runs/<KEY>/preview/`, chỉ trên máy bạn. Sau đó bạn chọn một trong ba hướng:
-1. `/ao-preview <KEY>`: thư mục dự án chuyển sang nhánh PR, `npm ci --ignore-scripts` chạy khi lockfile khác bản đã cài, rồi các app trong `.ai-orchestrator/preview.yaml` được bật theo thứ tự. Bạn mở URL để thử. Đây là code chưa ai review, chạy trên máy bạn: app không có biến bí mật nào trong môi trường, và kit từ chối xem trước PR sửa đường dẫn được bảo vệ. Đừng sửa file trong lúc xem trước. `/ao-preview <KEY> --stop` tắt app và đưa thư mục về `develop`.
+1. `/ao-preview <KEY>`: thư mục dự án chuyển sang nhánh PR, `npm ci --ignore-scripts` chạy khi lockfile khác bản đã cài, rồi các app trong `.ai-orchestrator/project.yaml` được bật theo thứ tự. Bạn mở URL để thử. Đây là code chưa ai review, chạy trên máy bạn: app không có biến bí mật nào trong môi trường, và kit từ chối xem trước PR sửa đường dẫn được bảo vệ. Đừng sửa file trong lúc xem trước. `/ao-preview <KEY> --stop` tắt app và đưa thư mục về `develop`.
 
    **Khi nào `/ao-preview` từ chối.** PR đổi một file lái phiên thì không được xem trước, ở bất cứ tầng nào: `CLAUDE.md`, `AGENTS.md`, `.claude/`, `.claude-plugin/`, `.mcp.json`, `.gitmodules`, `.gitattributes`, `.lfsconfig`, hay một đường dẫn được bảo vệ, không phân biệt hoa thường. GitHub chỉ liệt kê 3000 file đầu của một PR, nên `ao-step` kiểm hai lần:
    - với danh sách của GitHub; PR có nhiều file hơn danh sách đó thì bị từ chối luôn;
@@ -52,17 +52,35 @@ Intake không tạo Story, vì Story cần AC trong SPEC, màn hình và hợp �
 2. `/ao-fix <PR> <yêu cầu>`: dev agent sửa trên PR nháp, không chạy review, và cập nhật ảnh hay `api.md`. Sau đó bạn xem lại.
 3. `/ao-review <PR>`: một bước script chuyển PR nháp sang sẵn sàng bằng App `ao-dev`, `jira-sync` đưa item sang In Review, rồi review chạy như cũ. Gõ thẳng lệnh này nếu muốn bỏ qua bước xem trước.
 
-`/ao-fix`, `/ao-review` và các lệnh khác có chạy agent đều tự dừng xem trước trước khi chạy: chúng tắt app, đưa thư mục về `develop`, rồi chạy lại từ `develop`, để kit đã duyệt quyết định. `preview.yaml` là file của dự án, ví dụ cho `ao-sample`:
+`/ao-fix`, `/ao-review` và các lệnh khác có chạy agent đều tự dừng xem trước trước khi chạy: chúng tắt app, đưa thư mục về `develop`, rồi chạy lại từ `develop`, để kit đã duyệt quyết định.
+
+App được khai trong `.ai-orchestrator/project.yaml`, file cấu hình của dự án ([SPEC-project-scaffold.md](../SPEC-project-scaffold.md) mục 2.1). `/ao-preview` bật từng app theo thứ tự trong file:
+- lệnh bật là `dev`;
+- app nhận cổng mặc định qua biến ghi ở `port.env`;
+- URL kiểm app đã lên là `http://localhost:<cổng><health>`.
+
+Ví dụ phần app của `ao-sample`:
 
 ```yaml
 apps:
-  api:
-    command: npm run start:dev -w apps/api
-    url: http://localhost:3001/health
   web:
-    command: npm run dev -w apps/web
-    url: http://localhost:3000/notes
+    repo: ao-sample
+    path: apps/web
+    profile: nextjs
+    dev: npm run dev -w apps/web
+    port: { env: PORT, default: 3000 }
+    health: /notes
+    public: true
+  api:
+    repo: ao-sample
+    path: apps/api
+    profile: nestjs
+    dev: npm run start:dev -w apps/api
+    port: { env: PORT, default: 3001 }
+    health: /health
 ```
+
+Dự án cài kit trước `project-scaffold` thì có `.ai-orchestrator/preview.yaml` thay vì `project.yaml`. Lần chép kit kế tiếp bằng `ao-kit sync` sẽ dựng `project.yaml` từ `preview.yaml`, rồi xóa `preview.yaml`.
 
 **Giao việc theo `be:` / `fe:`.** Trong yêu cầu của `/ao-fix`, một dòng mở đầu bằng `be:` hay `fe:` giao phần đó cho `be-dev` hay `fe-dev`, tới dòng có tiền tố kế tiếp. Ví dụ:
 

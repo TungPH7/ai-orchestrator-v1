@@ -11,7 +11,7 @@
 ## Chuẩn bị
 
 - [x] **T1: tài liệu.** Spec ghi đã duyệt, plan, todo, nhật ký Lượt 151–154. PR tài liệu từ nhánh `task/project-scaffold`, tự merge khi CI xanh.
-- [ ] **T2 [bạn]: tiền đề Jira.**
+- [x] **T2 [bạn]: tiền đề Jira.**
   - **Bạn:** tạo một API token thường (không scope) ở trang Atlassian account, rồi đặt làm biến môi trường user `JIRA_ADMIN_CLASSIC_TOKEN` trên Windows. Token không đi qua chat.
   - **Mình:** bằng một script tạm, thử lần lượt:
     1. tạo space `AOG`, loại company-managed;
@@ -22,11 +22,11 @@
   - **Kiểm:** kết quả ghi vào `tasks/verification.md`.
 
 ### Checkpoint 1: sau T2
-- [ ] Biết bước Jira nào làm được bằng API. Mục 2.4 của spec đã sửa nếu cần, và bạn duyệt bản sửa trước T12.
+- [x] Biết bước Jira nào làm được bằng API: mọi thứ trừ cột của board và Kanban backlog (`verification.md`). Mục 2.4 của spec đã sửa (Lượt 156); chờ bạn duyệt trước T12.
 
 ## Chặng 1: cấu hình, nhánh `task/project-scaffold-1`
 
-- [ ] **T3: `project.yaml`** (spec 2.1).
+- [x] **T3: `project.yaml`** (spec 2.1).
   - **Đạt khi:**
     - JSON Schema `lib/scaffold/project.schema.json` và `readProjectConfig` kiểm các khóa của spec 2.1: `name`, `jira.space`, `github` (`repo`, `approvers`, `apps`, `kit_peers`), `repos` (đúng một), `apps` (`repo`, `path`, `profile`, `dev`, `port.env`, `port.default`, `health`, `public`, `env`), `roles.optional`, `claude.allow`;
     - lỗi nêu khóa và lý do;
@@ -34,7 +34,7 @@
     - `ao-kit check <dir>` in kết quả.
   - **Kiểm:** `tests/scaffold/project-config.test.mjs`, với `project.yaml` của `ao-sample` viết theo spec làm mẫu đúng.
   - **File:** `lib/scaffold/project-config.mjs`, `lib/scaffold/project.schema.json`, `scripts/ao-kit.mjs` (lệnh `check`), test.
-- [ ] **T4: `settings.json` sinh từ `project.yaml`** (spec 2.1; plan, quyết định 3).
+- [x] **T4: `settings.json` sinh từ `project.yaml`** (spec 2.1; plan, quyết định 3).
   - **Đạt khi:**
     - `render-agents.mjs --project` ghi `.claude/settings.json` từ bản của kit, cộng `env` và `claude.allow`; `--check` và `--list` có file này;
     - không có `project.yaml` thì giữ cách cũ;
@@ -44,7 +44,7 @@
     - test của `kit-copy` với `settings.json` là file sinh lại;
     - `npm run agents:check`.
   - **File:** `scripts/render-agents.mjs`, `lib/agents/` (phần sinh), `quality/gates.yaml`, test.
-- [ ] **T5: `/ao-preview` đọc app từ `project.yaml`** (spec 2.1).
+- [x] **T5: `/ao-preview` đọc app từ `project.yaml`** (spec 2.1).
   - **Đạt khi:**
     - `preview-run.mjs` lấy app, lệnh `dev`, cổng và URL kiểm từ `project.yaml`;
     - thiếu `project.yaml` thì `/ao-preview` dừng, và bảo chạy `ao-kit sync`;
@@ -52,7 +52,7 @@
     - `preview.yaml` không còn được đọc.
   - **Kiểm:** test đỏ trước trong `preview-run.test.mjs` và `steps-preview.test.mjs`.
   - **File:** `lib/workflow/preview.mjs`, `lib/workflow/preview-run.mjs`, `lib/workflow/steps.mjs`, `scripts/ao-step.mjs`, test.
-- [ ] **T6: tài liệu chặng 1, PR.**
+- [x] **T6: tài liệu chặng 1, PR.**
   - **Đạt khi:** `docs/dev-workflow.md` (mục xem trước) và `README.md` (bảng biến) nói `project.yaml` thay `preview.yaml` và là nguồn của `env`.
   - **Kiểm:** năm lệnh kiểm; CI xanh; PR merge.
 

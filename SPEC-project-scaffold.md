@@ -119,11 +119,12 @@ Hướng dẫn nói cách làm từng việc thiếu: hoặc bạn tự làm, ho
 
 Lệnh in từng bước bấm cho việc API không làm được: cài hai App vào repo (API trả 403 với token `gh`), và nối GitHub for Jira.
 
-**Jira** (`setup jira`): Pilot 1 thấy token admin có scope không tạo được space (401). Trước khi viết code, task đầu kiểm một tiền đề: API token thường (không scope) của bạn có tạo được space và gán scheme của `DEMO` không.
-- Được thì lệnh tạo space, gán scheme, rồi chạy `jira:check`.
-- Không được thì lệnh in checklist bấm tay như `docs/jira-setup.md` hiện nay, rồi chạy `jira:check`.
+**Jira** (`setup jira`): Pilot 1 thấy token admin có scope không tạo được space (401). T2 đã kiểm với API token thường (không scope), basic auth trên site (sửa sau T2, Lượt 156). Lệnh dùng token này, đặt ở biến `JIRA_ADMIN_CLASSIC_TOKEN`, và làm theo thứ tự:
+1. tạo space loại company-managed, với workflow scheme, issue type scheme, issue type screen scheme và notification scheme của một space mẫu (`DEMO`) ngay lúc tạo. Gói Free không cho chọn permission scheme (400), nên space mới nhận bản mặc định của nó; `jira:check` không thấy lệch về quyền;
+2. tạo bộ lọc của board với JQL mà `tracker/jira.yaml` đòi, rồi tạo board kanban;
+3. chạy `jira:check`.
 
-Board vẫn cần bấm tay, vì Pilot 1 không tìm được API.
+Cột của board và Kanban backlog vẫn phải bấm tay: API công khai chỉ cho đọc cấu hình cột. Lệnh in từng bước bấm cho phần này.
 
 **Task đầu tiên cho commit đầu.** Hook `commit-msg` đòi mã Jira, nên commit đầu cần một Task. Hướng dẫn chỉ cách làm: mở `claude`, gõ `/ao-intake dựng khung dự án`, rồi commit với mã Task đó.
 

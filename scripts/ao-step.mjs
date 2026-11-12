@@ -244,7 +244,7 @@ async function main() {
   const peers = (setting('AO_KIT_PEERS', settings) ?? '').split(',').map((name) => name.trim()).filter(Boolean);
   const kitCopy = (pr) => readKitCopy({ pr, github, peer: (name) => createGitHubClient({ repo: name, token: readGitHubToken() }), peers, gates, apps, approvers, render: (sha, paths) => renderCheck(pr.number, sha, paths) });
   const gatherAll = () => gatherFacts({ command, arg, extra, jira, github, deploys, history: developHistory, local: files, contract, mapping, roster, gates, apps, approvers, space, kitCopy });
-  // /ao-preview also reads this machine: preview.yaml, the preview that runs, the folder and the ports (spec 4.3).
+  // /ao-preview also reads this machine: project.yaml, the preview that runs, the folder and the ports (spec 4.3).
   const gather = async () => {
     const facts = await gatherAll();
     if (command === 'status') return { ...facts, previewRunning: readJson(previewActive) };

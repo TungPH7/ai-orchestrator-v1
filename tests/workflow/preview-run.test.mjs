@@ -10,14 +10,28 @@ const HEAD = 'a'.repeat(40);
 const BRANCH = 'feature/DEMO-21-remove-line';
 const PR_LOCK = '{"lockfileVersion":3,"of":"the PR"}';
 const DEVELOP_LOCK = '{"lockfileVersion":3,"of":"develop"}';
+// The apps come from .ai-orchestrator/project.yaml (project-scaffold spec 2.1).
 const CONFIG = [
+  'name: shop',
+  'jira: { space: DEMO }',
+  'github: { repo: acme/shop, approvers: [owner], apps: { dev: a-dev, dev_id: 1, review: a-review, review_id: 2 } }',
+  'repos: [{ name: shop, path: . }]',
   'apps:',
   '  api:',
-  '    command: npm run start:dev -w apps/api',
-  '    url: http://localhost:3001/health',
+  '    repo: shop',
+  '    path: apps/api',
+  '    profile: nestjs',
+  '    dev: npm run start:dev -w apps/api',
+  '    port: { env: PORT, default: 3001 }',
+  '    health: /health',
   '  web:',
-  '    command: npm run dev -w apps/web',
-  '    url: http://localhost:3000/',
+  '    repo: shop',
+  '    path: apps/web',
+  '    profile: nextjs',
+  '    dev: npm run dev -w apps/web',
+  '    port: { env: PORT, default: 3000 }',
+  '    health: /',
+  '    public: true',
   '    env: { API_URL: "http://localhost:3001" }',
 ].join('\n');
 const paths = previewPaths(PROJECT);
@@ -30,7 +44,7 @@ const START = { key: 'DEMO-21', number: 15, branch: BRANCH, head: HEAD, protecte
 // untracked: what git status lists as untracked (??) or ignored (!!), as `?? CLAUDE.local.md`; m.untracked changes it.
 function machine({ files = {}, on = 'develop', checkoutFails = {}, npmStatus = 0, up = () => true, busyPorts = [], head = HEAD, dirty = '', agent = null, origin = HEAD, own = ['apps/web/src/page.tsx'], all = own, fetched = true, untracked = [] } = {}) {
   let others = untracked;
-  const store = new Map(Object.entries({ [join(PROJECT, '.ai-orchestrator/preview.yaml')]: CONFIG, ...files }));
+  const store = new Map(Object.entries({ [join(PROJECT, '.ai-orchestrator/project.yaml')]: CONFIG, ...files }));
   const events = [];
   let branch = on;
   const lockFile = join(PROJECT, 'package-lock.json');
@@ -79,7 +93,7 @@ function machine({ files = {}, on = 'develop', checkoutFails = {}, npmStatus = 0
     },
     spawn: (file, args, { env }) => {
       pid += 1;
-      events.push(['spawn', pid, [file, ...args].join(' '), env.API_URL ?? '-', 'SECRET_TOKEN' in env ? 'with a secret' : 'no secret']);
+      events.push(['spawn', pid, [file, ...args].join(' '), env.API_URL ?? '-', `PORT ${env.PORT}`, 'SECRET_TOKEN' in env ? 'with a secret' : 'no secret']);
       return { pid, unref: () => {} };
     },
     fs,
@@ -107,8 +121,8 @@ test('start puts the folder on the PR branch, installs the packages of its lockf
   assert.deepEqual(m.events, [
     ['checkout', BRANCH],
     ['npm', 'ci --ignore-scripts --no-audit --no-fund', BRANCH, 'no secret'],
-    ['spawn', 101, 'node npm-cli.js run start:dev -w apps/api', '-', 'no secret'],
-    ['spawn', 102, 'node npm-cli.js run dev -w apps/web', 'http://localhost:3001', 'no secret'],
+    ['spawn', 101, 'node npm-cli.js run start:dev -w apps/api', '-', 'PORT 3001', 'no secret'],
+    ['spawn', 102, 'node npm-cli.js run dev -w apps/web', 'http://localhost:3001', 'PORT 3000', 'no secret'],
   ]);
   assert.equal(m.json(paths.state).lock, lockHash(PR_LOCK));
   assert.deepEqual(m.json(paths.active).apps.map(({ name, pid }) => [name, pid]), [['api', 101], ['web', 102]]);
@@ -161,16 +175,19 @@ test('stop keeps the record, with no app, while the folder cannot go back to dev
   assert.deepEqual(await machine().runner.stop(), { home: true, notes: ['No preview runs.'] });
 });
 
-test('the facts of /ao-preview: the apps of preview.yaml, the record, a run of another ao-step, the folder, the ports and the packages', async () => {
+test('the facts of /ao-preview: the apps of project.yaml, the record, a run of another ao-step, the folder, the ports and the packages', async () => {
   const agent = { pid: 7, command: 'build', arg: 'DEMO-22' };
   const m = machine({ files: { ...active(), ...installedFor(DEVELOP_LOCK) }, busyPorts: [3001], dirty: ' M apps/web/page.tsx\n', agent });
   const facts = await m.runner.facts(false, { headSha: HEAD });
   assert.deepEqual(facts.config.map(({ name, port }) => [name, port]), [['api', 3001], ['web', 3000]]);
   assert.deepEqual({ stop: facts.stop, configError: facts.configError, key: facts.active.key, agentRunning: facts.agentRunning, dirty: facts.dirty, busy: facts.busy, install: facts.install }, { stop: false, configError: null, key: 'DEMO-21', agentRunning: agent, dirty: 1, busy: [3001], install: true });
   assert.equal((await machine({ files: installedFor(PR_LOCK) }).runner.facts(false, { headSha: HEAD })).install, false);
-  const broken = await machine({ files: { [join(PROJECT, '.ai-orchestrator/preview.yaml')]: 'apps: [' } }).runner.facts(true, null);
+  const broken = await machine({ files: { [join(PROJECT, '.ai-orchestrator/project.yaml')]: 'apps: [' } }).runner.facts(true, null);
   assert.deepEqual([broken.config, broken.stop, broken.install], [null, true, true]);
-  assert.match(broken.configError, /preview\.yaml is not YAML/);
+  assert.match(broken.configError, /^P1 project\.yaml: is not YAML/);
+  const none = await machine({ files: { [join(PROJECT, '.ai-orchestrator/project.yaml')]: undefined } });
+  none.store.delete(join(PROJECT, '.ai-orchestrator/project.yaml'));
+  assert.deepEqual([(await none.runner.facts(false, null)).config, (await none.runner.facts(false, null)).configError], [null, null]);
 });
 
 // T19 of human-loop, review of ao-sample PR #21: a start that failed only switched back to develop. The packages of the

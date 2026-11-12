@@ -1,0 +1,31 @@
+# ao-sample as SPEC-project-scaffold.md 2.1 writes it, with the values of its .claude/settings.json and preview.yaml.
+name: sample
+jira:
+  space: SMP
+github:
+  repo: TungPH7/ao-sample
+  approvers: [TungPH7]
+  apps: { dev: tungph7-ao-dev, dev_id: 5514949, review: tungph7-ao-review, review_id: 5514961 }
+  kit_peers: [TungPH7/ao-pilot]
+repos:
+  - { name: ao-sample, path: . }
+apps:
+  web:
+    repo: ao-sample
+    path: apps/web
+    profile: nextjs
+    dev: npm run dev -w apps/web
+    port: { env: PORT, default: 3000 }
+    health: /notes
+    public: true
+  api:
+    repo: ao-sample
+    path: apps/api
+    profile: nestjs
+    dev: npm run start:dev -w apps/api
+    port: { env: PORT, default: 3001 }
+    health: /health
+roles:
+  optional: []
+claude:
+  allow: []
