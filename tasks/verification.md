@@ -197,3 +197,12 @@ Lỗi chỉ lần chạy thật bắt được:
 - `README.md`: mục cài kit bỏ danh sách 9 bước, chỉ còn trỏ tới hướng dẫn, kèm danh sách những gì `init` và `sync` chép vào dự án (test `repo.test.mjs` đòi các ý này).
 - Test mới trong `tests/repo.test.mjs` kiểm: README trỏ tới hướng dẫn và không còn danh sách bước; hướng dẫn có đủ bảy phần; không còn ghi chú "Bản nháp"; phần 5 có `SMP-23` tới `Complete`. Test này viết sau khi nội dung đã có, nên không có lần đỏ trước. Lần chạy đầu của nó đỏ vì chính nó bắt nhầm chữ "bản nháp" của `/ao-intake`, đã thu hẹp lại.
 - Năm lệnh kiểm xanh (1278 test).
+
+**T20, chép kit `8a8d8ef` vào `ao-sample`, 2026-11-13 (đang làm).** Bạn duyệt ở Lượt 186.
+- Task `SMP-27` "Chép kit 8a8d8ef vào ao-sample bằng ao-kit sync" (New, nhãn `ao-devops`) được tạo bằng token CI, mô tả theo template Task, giống cách đã làm với `SMP-22`. Kế hoạch ghi dùng `/ao-intake`, nhưng phiên phỏng vấn cần bạn trả lời từng câu; với một Task mà nội dung đã rõ, tạo thẳng thì nhanh hơn. Đây là một chỗ lệch so với plan.
+- `ao-kit sync ao-sample --key SMP-27 --name sample`, 17 giây:
+  - viết `project.yaml` từ `.claude/settings.json`, `preview.yaml` và `deploy.yaml`, rồi xóa `preview.yaml`;
+  - chép kit, chạy `npm ci --prefix .ai-orchestrator` và render;
+  - commit `20f90e3` `chore(kit): copy the kit at 8a8d8ef9 (SMP-27)` trên `feature/SMP-27-kit-copy`, 31 file, +1658/−261. Lệnh không push.
+- `project.yaml` sinh ra khớp cấu hình thật: `name: sample`, space `SMP`, hai App, `kit_peers: [TungPH7/ao-pilot]`, `api` ở 3001 với `/health`, `web` ở 3000 với `/notes` và `public: true`. `ao-kit check` báo OK. `doctor ao-sample` trên nhánh này: `Every row passes.`
+- Nhánh đã push. Chờ bạn bấm `Refine` (duyệt Task trực tiếp).
