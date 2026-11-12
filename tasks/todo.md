@@ -85,18 +85,18 @@
   - **Kiểm:** năm lệnh kiểm; CI xanh; PR merge.
 
 ### Checkpoint 2: sau T12
-- [ ] Kiểm thật T11 đạt; PR phần 2 đã merge, `main` xanh.
+- [x] Kiểm thật T11 đạt; PR phần 2 đã merge, `main` xanh (#249, `343b866`).
 
 ## Phần 3, nhánh `task/live-run-fixes-part-3`
 
-- [ ] **T13: `wip.mjs`** (spec 2.1; plan, quyết định 3).
+- [x] **T13: `wip.mjs`** (spec 2.1; plan, quyết định 3).
   - **Đạt khi:**
     - `saveWip` cất khi thư mục ở nhánh không được bảo vệ và có thay đổi, kể cả file chưa track, không tính file bị bỏ qua; trả `{ stash, branch }`, hoặc `null` khi không có gì để cất;
     - `restoreWip` switch về `wip.branch` khi cần, áp theo SHA, rồi xóa theo SHA; áp lỗi thì trả lỗi có SHA, và stash còn nguyên;
     - xóa nhầm entry thì cất lại entry đó bằng `git stash store`, rồi báo.
   - **Kiểm:** `tests/workflow/wip.test.mjs`: với git giả, và trên repo git tạm thật (có một stash khác nằm trên, có file chưa track, áp bị xung đột).
   - **File:** `lib/workflow/wip.mjs`, test.
-- [ ] **T14: `runGo` và `ao-step` dùng `wip`** (spec 2.1).
+- [x] **T14: `runGo` và `ao-step` dùng `wip`** (spec 2.1).
   - **Đạt khi:**
     - lượt kết thúc `usage-limit` hay `unfinished` thì `wip.save` chạy, bản ghi có `wip`, và câu dừng nói phần dở ở stash nào;
     - lượt chạy tiếp mà bản ghi cũ có `wip` thì `wip.restore` chạy sau bước checkout, và prompt thêm câu kiểm `git status`; áp lỗi thì lệnh dừng, không chạy agent, và in SHA;
@@ -104,20 +104,20 @@
     - câu dừng của `checkoutStop` nói cách cất bằng tay khi shell bị tắt giữa lượt.
   - **Kiểm:** test đỏ trước trong `tests/workflow/runner.test.mjs`.
   - **File:** `lib/workflow/runner.mjs`, `lib/workflow/prompts.mjs`, `scripts/ao-step.mjs`, test.
-- [ ] **T15: `/ao-fix` chạy yêu cầu do lượt đổi tài liệu ghi** (spec 2.2).
+- [x] **T15: `/ao-fix` chạy yêu cầu do lượt đổi tài liệu ghi** (spec 2.2).
   - **Đạt khi:**
     - sau lượt `ac-revise`, `api-revise`, `epic-revise` hay `to-story` và trước dev agent, mỗi yêu cầu tới `ba`, `ux`, `sa` trên item hay Epic, viết sau lúc lượt đó bắt đầu, thành một lượt `request` trên nhánh PR, cũ trước;
     - prompt của lượt đó nêu item hay Epic có comment, bảo commit trên nhánh PR rồi push, và không đổi code;
     - yêu cầu viết trước lượt đổi tài liệu, hay đã được trả lời, thì không chạy.
   - **Kiểm:** test đỏ trước trong `tests/workflow/steps-revise.test.mjs`, và chữ của prompt trong `steps-request.test.mjs`.
   - **File:** `lib/workflow/steps.mjs`, `lib/workflow/prompts.mjs`, test.
-- [ ] **T16: lần làm lại chạy các yêu cầu đó; prompt `request` chỉ trên Jira** (spec 2.2).
+- [x] **T16: lần làm lại chạy các yêu cầu đó; prompt `request` chỉ trên Jira** (spec 2.2).
   - **Đạt khi:**
     - lần làm lại chạy các lượt `request` trên nhánh `-rN`, sau `spec-sync`, hoặc trước dev agent khi không có `spec-sync`; mốc thời gian là lúc lượt `ac-add` bắt đầu;
     - prompt `request` chỉ trên Jira không còn câu "flag the item Needs you": agent nói việc cần làm trong comment và trong câu trả lời cuối.
   - **Kiểm:** test đỏ trước trong `tests/workflow/steps-qa-fail.test.mjs` và `steps-request.test.mjs`.
   - **File:** `lib/workflow/steps.mjs`, `lib/workflow/prompts.mjs`, test.
-- [ ] **T17: tài liệu phần 3, PR phần 3.**
+- [x] **T17: tài liệu phần 3, PR phần 3.**
   - **Đạt khi:** `docs/dev-workflow.md` tả việc cất và áp lại phần dở, cách cất bằng tay, và các lượt `request` trong `/ao-fix` và lần làm lại.
   - **Kiểm:** năm lệnh kiểm; CI xanh; PR merge.
 

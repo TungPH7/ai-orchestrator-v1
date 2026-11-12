@@ -62,7 +62,10 @@ test('/ao-request runs the oldest open request to ba, ux or sa; on an item past 
   assert.equal(run.prompt, PURPOSES.request({ key: 'DEMO-21', role: 'ba', from: 'fe-dev', at: T1 }));
   assert.match(run.prompt, /fe-dev asked you on DEMO-21 .*"Cần ba:".*2026-11-11T03:00:00/);
   assert.match(run.prompt, /commit nothing/);
-  assert.match(run.prompt, /flag the item Needs you/);
+  // sa and ux may only comment, so they cannot flag an item: what a merged document needs goes to the human through the
+  // comment and the final answer, which the main session reads (T20 of human-loop; live-run-fixes spec 2.2).
+  assert.doesNotMatch(run.prompt, /flag/);
+  assert.match(run.prompt, /If the request needs a change to a document that is already merged, say what has to change in your comment and in your final answer: it is not made from here, and the human decides how\./);
 });
 
 test('your own request, a comment with no Agent name, counts like an agent\'s', () => {
