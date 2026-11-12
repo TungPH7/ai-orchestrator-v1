@@ -71,3 +71,11 @@ Năm lệnh kiểm xanh (1269 test).
 Cùng nhánh: câu "By hand" của `setup github` giờ trỏ đúng đường mà `docs/github-apps-setup.md` mục 3 dùng để thêm repo cho App đã cài.
 
 **Một lần commit test đỏ.** Commit `d91c398` sửa câu "By hand" kèm test, nhưng heredoc làm mất dấu `\` trong regex của test. Chuỗi lệnh vẫn commit vì `&&` đứng sau `grep`, chỉ xét kết quả của `grep`. Test được sửa ở `57955f7`, trước khi push; năm lệnh kiểm xanh (1269 test).
+
+**T16, dựng mới `ao-green`, 2026-11-12 (đang làm).** Repo private `TungPH7/ao-green` được tạo rỗng. `ao-kit init` vào thư mục trống cạnh `ao-sample` chạy hết trong 144 giây: chép khung 162 file, chép kit, thêm `prepare`, `npm ci --prefix .ai-orchestrator`, render, `npm ci`, cài Chromium của Playwright. `setup jira` thấy space `AOG` và board 36 đã có từ T2, `jira:check` còn 5 chỗ lệch về cột.
+
+Lỗi chỉ lần chạy thật bắt được:
+- Lần chạy `init` đầu tiên dừng ở render với `ERR_MODULE_NOT_FOUND`: bản kit trong dự án chưa có package. Giờ `init` và `sync` chạy `npm ci --prefix .ai-orchestrator` trước render (`533eb67`, có test đỏ trước). Thư mục được xóa và chạy lại từ đầu.
+- `/ao-intake` dừng ngay ở dòng kiểm: `the origin remote is not a GitHub repository: none`. Lý do: `init` tạo repo git mà không thêm remote `origin`, dù đã có `--repo`. Bản nháp cũng đặt `git remote add` sau `/ao-intake`. Mình đã thêm remote bằng tay cho `ao-green`. Kit sẽ sửa để `init` thêm `origin` từ `--repo` khi thư mục chưa có remote này.
+- Khi đã có remote, dòng kiểm báo `App 5514961 is not installed on TungPH7/ao-green`. Mọi lệnh `ao-step`, kể cả `intake`, đều lấy token đọc của `ao-review` trên repo trước khi đọc Jira. Vì vậy hai App phải được cài vào repo trước `/ao-intake`. Bản nháp và dòng "Next:" của `init` đều để bước này sau push, nên cả hai sẽ đổi thứ tự.
+- Sau lỗi đó, Node trên Windows in thêm `Assertion failed: !(handle->flags & UV_HANDLE_CLOSING)` khi thoát. Đây là tiếng ồn của libuv, lệnh vẫn dừng đúng. Cần ghi nhận, chưa sửa.
