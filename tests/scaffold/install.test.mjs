@@ -6,7 +6,7 @@ import { join, relative } from 'node:path';
 import { parse } from 'yaml';
 import { readGates } from '../../lib/quality/gates.mjs';
 import { matchesGlob } from '../../lib/quality/glob.mjs';
-import { draftFromOldConfig, ensureGitignore, ensurePrepare, installKit, KIT_ONLY_SCRIPTS, PROJECT_SCRIPTS } from '../../lib/scaffold/install.mjs';
+import { draftFromOldConfig, ensureGitignore, ensurePrepare, gitignoreMissing, installKit, kitDrift, KIT_ONLY_SCRIPTS, PROJECT_SCRIPTS } from '../../lib/scaffold/install.mjs';
 import { readProjectConfig } from '../../lib/scaffold/project-config.mjs';
 import { ROOT } from '../helpers/kit.mjs';
 
@@ -115,4 +115,18 @@ test('what the old files do not say is left as TODO and named, so the project fi
   assert.deepEqual(todo, ['name', 'github.repo', 'repos[0].name', 'apps.api.repo', 'apps.api.profile', 'apps.web.repo']);
   assert.match(text, /^name: TODO/m);
   assert.notDeepEqual(readProjectConfig(text).errors, []);
+});
+
+// ao-kit doctor reads these (project-scaffold spec 2.5).
+test('kitDrift names the kit files that differ from the clone, a missing one too; line ends do not count', (t) => {
+  const dir = temp(t, 'install-');
+  installKit({ kitDir: ROOT, projectDir: dir });
+  assert.deepEqual(kitDrift({ kitDir: ROOT, projectDir: dir }), []);
+  const file = join(dir, '.ai-orchestrator/lib/scaffold/install.mjs');
+  writeFileSync(file, readFileSync(file, 'utf8').replaceAll('\n', '\r\n'));
+  assert.deepEqual(kitDrift({ kitDir: ROOT, projectDir: dir }), [], 'a checkout on Windows writes CRLF');
+  write(dir, '.ai-orchestrator/lib/scaffold/install.mjs', 'changed\n');
+  rmSync(join(dir, '.mcp.json'));
+  assert.deepEqual(kitDrift({ kitDir: ROOT, projectDir: dir }).sort(), ['.ai-orchestrator/lib/scaffold/install.mjs', '.mcp.json']);
+  assert.deepEqual(gitignoreMissing(dir), ['.ai-orchestrator/node_modules/', '.claude/settings.local.json', '.ai/', '.playwright-cli/']);
 });

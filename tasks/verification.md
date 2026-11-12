@@ -47,3 +47,19 @@ Năm lệnh kiểm xanh (1238 test).
 - `profiles:check` lần đầu đỏ ở `test:coverage` của web: vitest không thấy file test dưới đường dẫn tạm dạng rút gọn của Windows (`HUUTUN~1`). Script dùng đường dẫn dài (`realpathSync.native`) thì xanh.
 
 Năm lệnh kiểm xanh (1258 test).
+
+## Chặng 3: dựng và kiểm, 2026-11-12
+
+| Task | Kết quả |
+|---|---|
+| T11 | `ao-kit setup github`: đặt nhánh mặc định `develop`, xóa nhánh sau merge, Dependabot, bốn environment (`merge-gate` chỉ cho `develop`), hai secret qua stdin, rồi chạy `gh:protect`. Mỗi bước đọc trước, chỉ ghi phần thiếu: test với GitHub giả cho thấy lần chạy thứ hai không ghi gì, và không giá trị bí mật nào nằm trong tham số |
+| T12 | `ao-kit setup jira`, theo đúng các bước T2 đã thử: tạo space với bốn scheme của space mẫu (không gửi permission scheme), bộ lọc và board kanban, sửa JQL nếu lệch, rồi chạy `jira:check`. Chạy thật trên `AOG`: lệnh thấy space và board đã có, `jira:check` báo 5 chỗ lệch về cột |
+| T13 | `ao-kit doctor`: 23 dòng trên máy, repo, GitHub, Jira, Claude Code, cộng một câu hỏi về VPS kèm đoạn `deployer.yaml` cần thêm. Chạy thật trên `ao-sample` (đặt tạm `project.yaml`): mọi dòng đạt trừ "file kit khác bản clone" (25 file, vì `ao-sample` còn bản kit `c6fdfa8`), đúng thực tế |
+
+**Hai lỗi chỉ lần chạy thật bắt được, đã sửa:**
+- `jira:check` đọc `contract/` theo thư mục hiện hành, nên `doctor` và `setup jira` phải chạy nó từ thư mục kit. Lần thử `setup jira` đầu tiên tình cờ đúng vì đứng sẵn trong thư mục kit. Sửa ở `85370a3`.
+- Gọi `claude --version` qua shell làm Node cảnh báo DEP0190; `doctor` giờ chỉ kiểm `claude` có trên `PATH` (`where` trên Windows, `which` nơi khác).
+
+**Thứ tự test.** Test của T12 được viết cùng lượt với code, chạy lần đầu đã xanh, nên không có lần đỏ trước. T11 và T13 có test đỏ trước.
+
+Năm lệnh kiểm xanh (1269 test).
