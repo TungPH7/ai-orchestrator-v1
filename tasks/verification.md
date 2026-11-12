@@ -72,7 +72,7 @@ Cùng nhánh: câu "By hand" của `setup github` giờ trỏ đúng đường m
 
 **Một lần commit test đỏ.** Commit `d91c398` sửa câu "By hand" kèm test, nhưng heredoc làm mất dấu `\` trong regex của test. Chuỗi lệnh vẫn commit vì `&&` đứng sau `grep`, chỉ xét kết quả của `grep`. Test được sửa ở `57955f7`, trước khi push; năm lệnh kiểm xanh (1269 test).
 
-**T16, dựng mới `ao-green`, 2026-11-12 (đang làm).** Repo private `TungPH7/ao-green` được tạo rỗng. `ao-kit init` vào thư mục trống cạnh `ao-sample` chạy hết trong 144 giây: chép khung 162 file, chép kit, thêm `prepare`, `npm ci --prefix .ai-orchestrator`, render, `npm ci`, cài Chromium của Playwright. `setup jira` thấy space `AOG` và board 36 đã có từ T2, `jira:check` còn 5 chỗ lệch về cột.
+**T16, dựng mới `ao-green`, 2026-11-12 (xong).** Repo private `TungPH7/ao-green` được tạo rỗng. `ao-kit init` vào thư mục trống cạnh `ao-sample` chạy hết trong 144 giây: chép khung 162 file, chép kit, thêm `prepare`, `npm ci --prefix .ai-orchestrator`, render, `npm ci`, cài Chromium của Playwright. `setup jira` thấy space `AOG` và board 36 đã có từ T2, `jira:check` còn 5 chỗ lệch về cột.
 
 Lỗi chỉ lần chạy thật bắt được:
 - Lần chạy `init` đầu tiên dừng ở render với `ERR_MODULE_NOT_FOUND`: bản kit trong dự án chưa có package. Giờ `init` và `sync` chạy `npm ci --prefix .ai-orchestrator` trước render (`533eb67`, có test đỏ trước). Thư mục được xóa và chạy lại từ đầu.
@@ -111,3 +111,16 @@ Lỗi chỉ lần chạy thật bắt được:
 - `ao-step status` trong `ao-green` chạy được: `AOG-1` ở New, ba môi trường trống.
 - `setup github` với key thứ hai (người dùng tải về `ao-keys`, không đổi tên) đã đặt: xóa nhánh sau merge, Dependabot, bốn environment, luật nhánh của `merge-gate`, `JIRA_CI_TOKEN`, `AO_DEV_APP_KEY`. Lệnh nhắc xóa file key. `gh:protect` báo soft mode: repo private trên gói Free không có ruleset, nên `merge-gate` và `audit` giữ gate. Vì vậy mục "bật ruleset ao-protected" trong bản nháp `AOG-1` không xảy ra. Chạy lần hai, lệnh không ghi gì và in `Already set: …` đủ bảy mục.
 - Sau lỗi `App … is not installed`, Node trên Windows in thêm `Assertion failed: !(handle->flags & UV_HANDLE_CLOSING)` khi thoát. Đây là tiếng ồn của libuv, lệnh vẫn dừng đúng. Cần ghi nhận, chưa sửa.
+- **T16 xong (Lượt 169).** Kit PR #256 (`bd01ebc`) chứa các sửa ở trên, bản nháp hướng dẫn với phần 3 viết lại thành 10 bước, và log các lượt 157–169.
+
+**T17, repo đang có `ao-brown`, 2026-11-12 (đang làm).** Bạn duyệt cách làm ở Lượt 170: Task chép kit, commit lên `develop` mới, rồi Cancel Task, 0 USD tiền agent.
+- Dựng repo giả "đang phát triển": `gh repo create TungPH7/ao-brown --private`. Code lấy từ `main` của `ao-sample` (`2e69e47`, v0.1.0) bằng `git archive`. Gỡ `.ai-orchestrator/`, `.claude/`, `.githooks/`, `.github/`, `.jira/`, `.mcp.json`, `docs/`, `CHANGELOG.md`, script `prepare` và bốn dòng của kit trong `.gitignore`. Kết quả: 70 file, một commit `Initial commit` trên `main`, đã push. Repo chưa có workflow nào.
+- `ao-kit init ao-brown` (kit `bd01ebc`), 12 giây:
+  - `init` thấy repo có code, nên chỉ chép kit, không đụng file app. Lệnh thêm bốn dòng `.gitignore` và script `prepare`, chạy `npm ci --prefix .ai-orchestrator` và render. `origin` đã có và đúng repo, nên không có ghi chú gì về nó.
+  - `Missing` báo đúng hai việc: `deploy.yaml` và nhánh `develop`. Bốn script và `playwright.config` đã có, nên không bị báo.
+  - Dòng `Next:` là bản cho repo có code.
+- `project.yaml` nháp đoán đúng cổng (`api` 3001, `web` 3000) và `health` của `api` (`/health`). `health` của web đoán là `/`, nhưng `ao-sample` chuyển `/` sang `/notes`. Đúng như hướng dẫn dặn, người dùng phải kiểm lại phần này.
+- Bước 2 (mình làm như một dev): viết `deploy.yaml` từ bản của `ao-sample`, rồi `git switch -c develop`. `ao-kit check` bắt hai chỗ lệch giữa `project.yaml` và `deploy.yaml`: `C1 apps.web.health` (`/` và `/notes`) và `C1 apps.web.public`. Sửa `project.yaml` (`health: /notes`, `public: true`), chạy lại thì `project.yaml OK`. `render` không đổi file nào.
+- **Chỗ thiếu của hướng dẫn và của `Next:`:** với repo có code, `init` không chạy `npm ci` của app. Vì vậy hook git chưa được cài: `core.hooksPath` trống. Phải chạy `npm ci` (101 giây ở đây), script `prepare` mới đặt `core.hooksPath` thành `.githooks`. Phần 4 cần thêm bước này, trước commit chép kit.
+- **Chỗ thiếu nhỏ:** repo có code không nhận `roster.local.yaml`, nên không có skill theo stack (`vercel-react-best-practices`, `nestjs-best-practices`), dù `init` đoán được profile `nextjs` và `nestjs`. `doctor` không báo điều này.
+- `setup jira ao-brown`: space `AOG` và board đã có, `jira:check` sạch, lệnh không in "By hand".
