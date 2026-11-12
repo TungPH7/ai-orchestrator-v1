@@ -8,7 +8,7 @@
 // Jira is read with ATLASSIAN_AGENT_TOKEN, GitHub with a read-only token of the ao-review App. Run it from the project
 // root; the kit is in AO_KIT_DIR when set.
 import { spawn, spawnSync } from 'node:child_process';
-import { appendFileSync, copyFileSync, existsSync, mkdirSync, openSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { appendFileSync, copyFileSync, existsSync, mkdirSync, openSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { connect } from 'node:net';
 import { tmpdir } from 'node:os';
 import { basename, dirname, isAbsolute, join, relative, resolve } from 'node:path';
@@ -635,12 +635,13 @@ async function hotfixShip({ version, sha, backMerges }, { repo, settings, userTo
   return notes;
 }
 
-// The files under a folder, with forward slashes; [] when there is none.
+// The files under a folder, with forward slashes and the time each was last written; [] when there is none.
 function listFiles(dir) {
   if (!existsSync(dir)) return [];
   return readdirSync(dir, { recursive: true, withFileTypes: true })
     .filter((entry) => entry.isFile())
-    .map((entry) => join(entry.parentPath ?? entry.path, entry.name).replaceAll('\\', '/'));
+    .map((entry) => join(entry.parentPath ?? entry.path, entry.name))
+    .map((path) => ({ path: path.replaceAll('\\', '/'), mtimeMs: statSync(path).mtimeMs }));
 }
 
 // After a qa run, before its worktree goes: the evidence to the item with the CI token, which only this session holds,
