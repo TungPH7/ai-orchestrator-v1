@@ -11,7 +11,7 @@
 ## Chuẩn bị
 
 - [x] **T1: tài liệu.** Spec ghi đã duyệt, plan, todo, nhật ký Lượt 151–154. PR tài liệu từ nhánh `task/project-scaffold`, tự merge khi CI xanh.
-- [ ] **T2 [bạn]: tiền đề Jira.**
+- [x] **T2 [bạn]: tiền đề Jira.**
   - **Bạn:** tạo một API token thường (không scope) ở trang Atlassian account, rồi đặt làm biến môi trường user `JIRA_ADMIN_CLASSIC_TOKEN` trên Windows. Token không đi qua chat.
   - **Mình:** bằng một script tạm, thử lần lượt:
     1. tạo space `AOG`, loại company-managed;
@@ -22,7 +22,7 @@
   - **Kiểm:** kết quả ghi vào `tasks/verification.md`.
 
 ### Checkpoint 1: sau T2
-- [ ] Biết bước Jira nào làm được bằng API. Mục 2.4 của spec đã sửa nếu cần, và bạn duyệt bản sửa trước T12.
+- [x] Biết bước Jira nào làm được bằng API: mọi thứ trừ cột của board và Kanban backlog (`verification.md`). Mục 2.4 của spec đã sửa (Lượt 156); chờ bạn duyệt trước T12.
 
 ## Chặng 1: cấu hình, nhánh `task/project-scaffold-1`
 
