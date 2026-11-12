@@ -137,4 +137,9 @@ Lỗi chỉ lần chạy thật bắt được:
   - `ao-sample` đã gặp chính lỗi này ở `release/v0.1.0` (run 42752980376, 2026-11-10): lượt đầu đỏ, lượt push sau xanh nhờ có baseline. Chưa ai ghi lại. T18 (`release/v0.2.0`) sẽ gặp lại.
   - Kit đã sửa (`fix(scaffold): start npm without a shell …`, test đỏ trước): `scripts/dev.mjs` của khung chạy `npm-cli.js` bằng `node` (`npm_execpath`, hoặc file cạnh `node`), như `lib/quality/npm.mjs`. Đã chạy thật trong `ao-green`: web 200, api 200 sau 37 giây, dừng cây tiến trình xong thì cổng được giải phóng.
   - Với `ao-brown`, theo đúng Task `AOG-2`: CI đỏ thì mở Bug riêng và sửa qua PR.
+- Phỏng vấn Bug hỏi thêm một câu: PR do người mở và tự merge, không có review của agent, đúng không. Claude đoán đúng, kèm lo ngại `audit` sẽ chặn lần deploy đầu. Lo ngại này không đúng ở đây: deployer chỉ audit từ một commit mốc đặt lúc đưa dự án lên VPS (`lib/release/deployer.mjs`, `auditsOf`). Bug tạo ra là `AOG-3`.
+- PR `ao-brown` #1 `fix(scripts): start npm without a shell in the dev script (AOG-3)`, nhánh `bugfix/AOG-3-dev-script-shell`. Trước khi push, mình chạy thử bản mới của `scripts/dev.mjs`: web 307 (sang `/notes`), api 200, sau 11 giây.
+  - CI của PR: `sast` xanh (có baseline), `policy`, `secrets`, `jira-sync` xanh.
+  - `build-test` đỏ ở bước coverage của dòng đổi: `coverage-diff: scripts/dev.mjs is not in any lcov file`. Luật `coverage` của `quality/gates.yaml` coi mọi file `.mjs` là source, chỉ trừ config, test, `e2e/` và bản kit. Vì vậy script chạy app ở máy cũng phải có trong lcov. Khung `next-nest` cũng có `scripts/dev.mjs`, nên mọi sửa ở đó trong dự án dựng mới đều vấp luật này.
+- Lượt cập nhật bảo mật `minimatch` của Dependabot đỏ. Chưa tìm hiểu, vì không chặn T17.
 - Ở Lượt 171 mình đoán lượt CI đầu trên `develop` sẽ không kéo theo `jira-sync`. Đoán sai: `jira-sync` vẫn chạy (`workflow_run`, xanh), vì `setup github` đã đổi nhánh mặc định sang `develop` trước khi CI chạy xong.
