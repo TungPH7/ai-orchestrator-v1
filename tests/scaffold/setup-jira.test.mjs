@@ -48,7 +48,19 @@ test('a new space gets the schemes of the sample space, with no permission schem
   const text = notes.join('\n');
   assert.match(text, /Created the space SHOP/);
   assert.match(text, /jira:check: 5 difference\(s\)/);
+  // Each difference, so a limit forgotten on one column shows (T16).
+  assert.match(text, /^jira:check found SHOP: the board columns are "Backlog", "To Do"$/m);
   assert.match(text, /By hand: the columns of the board and its Kanban backlog/);
+});
+
+test('once jira:check finds no difference, no step is left for you', async () => {
+  const fake = jira({ space: true, board: { jql: JQL } });
+  const run = () => ({ status: 0, stdout: 'Check by hand: GitHub for Atlassian is connected\nJira space SHOP matches tracker/jira.yaml\n', stderr: '' });
+  const { ok, notes } = await setup(fake, { run });
+  assert.equal(ok, true);
+  const text = notes.join('\n');
+  assert.match(text, /jira:check: Jira space SHOP matches tracker\/jira\.yaml/);
+  assert.doesNotMatch(text, /By hand/);
 });
 
 test('a space and board that exist keep them; a board filter with the wrong JQL is set right; a second run writes nothing', async () => {
