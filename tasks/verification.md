@@ -153,3 +153,28 @@ Lỗi chỉ lần chạy thật bắt được:
 - Phần 4 của hướng dẫn viết lại thành 8 bước, theo đúng những gì đã chạy. Đoạn mẫu của `/ao-intake` có thêm hai ý mà phỏng vấn đã hỏi: `main` giữ nguyên tới lần release đầu, và cách sửa khi `doctor` chưa đạt.
 - Lượt cập nhật bảo mật `minimatch` của Dependabot đỏ. Chưa tìm hiểu, vì không chặn T17.
 - Ở Lượt 171 mình đoán lượt CI đầu trên `develop` sẽ không kéo theo `jira-sync`. Đoán sai: `jira-sync` vẫn chạy (`workflow_run`, xanh), vì `setup github` đã đổi nhánh mặc định sang `develop` trước khi CI chạy xong.
+- `AOG-2`, `AOG-3` Cancelled (Lượt 180). Kit PR #257 (`506b002`).
+
+**T18, release `v0.2.0` của `ao-sample`, 2026-11-13 (đang làm).** Từ Lượt 181, bạn cho mình tự làm theo đề xuất; mình chỉ hỏi khi tới merge, gate ④ và ⑤, và các nút bấm trên Jira.
+- `/ao-release` (dòng kiểm, 13 giây):
+  - `develop` có 5 commit kể từ `v0.1.0`; điểm cắt là `61f4cec`, cũng là đầu `develop`;
+  - item vào `v0.2.0`: `SMP-22`, `SMP-24`;
+  - `STOP: gate ④ waits for the Fix Version v0.3.0 on Jira`. Bạn tạo `v0.3.0` rồi duyệt gate ④.
+- `/ao-release v0.2.0 61f4cec --go`, 35 giây, không chạy agent:
+  - Fix Version `v0.2.0` được gắn vào `SMP-22`, `SMP-24`;
+  - nhánh `release/v0.2.0` được tạo tại `61f4cec`, dưới tên `tungph7-ao-dev[bot]`.
+
+  Deployer đưa lên Staging: deployment 7745767125 tạo lúc 18:16:12Z, `success` lúc 18:16:40Z.
+- `/ao-ship v0.2.0`: dòng kiểm in `GO` với ba bước: `qa` regression (`high`), `devops` release notes (`high`), rồi script mở PR release. Lượt chạy thật bắt đầu lúc 18:17:34Z, tổng cộng 396 giây.
+
+| Lượt | Model, effort | Kết quả | USD | Phút |
+|---|---|---|---|---|
+| `qa` regression trên Staging | Opus, `high` | 54/54 E2E qua (1 `@local`, 53 trên Staging), 43,5 giây; `Result: PASS`; không có Bug mở | 0,42 | 2 |
+| `devops` release notes | Opus, `high` | `changelog.md`, `pr-description.md`, `fix-version.md` | 0,63 | 1,6 |
+
+  - `gh-guard` chặn một lệnh của `qa`: "do not put the basic auth password on a command line". Lệnh đó là bước kiểm `qa` tự thêm, nên agent bỏ qua và đi tiếp, đúng luật.
+  - Script commit `docs/releases/v0.2.0.md` và `CHANGELOG.md` (`33a2933`, tên `tungph7-ao-dev[bot]`), rồi mở PR #28 từ `release/v0.2.0` vào `main`. Kết quả: `STOP: gate ⑤: PR #28 … waits for your approval on its head 33a29330`.
+- **CI của `release/v0.2.0` đúng như đã báo trước:**
+  - Lượt push đầu (`61f4cec`, run 43278006032) đỏ ở `sast`, vì `scripts/dev.mjs` (`spawn-shell-true`). Ba job kia xanh.
+  - Lượt push và lượt PR của `33a2933` đều xanh, nhờ có baseline.
+  - Staging đã deploy `33a2933` lúc 18:24:04Z. Lượt đỏ đầu tiên không chặn gì.
