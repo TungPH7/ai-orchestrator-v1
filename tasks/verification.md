@@ -206,3 +206,17 @@ Lỗi chỉ lần chạy thật bắt được:
   - commit `20f90e3` `chore(kit): copy the kit at 8a8d8ef9 (SMP-27)` trên `feature/SMP-27-kit-copy`, 31 file, +1658/−261. Lệnh không push.
 - `project.yaml` sinh ra khớp cấu hình thật: `name: sample`, space `SMP`, hai App, `kit_peers: [TungPH7/ao-pilot]`, `api` ở 3001 với `/health`, `web` ở 3000 với `/notes` và `public: true`. `ao-kit check` báo OK. `doctor ao-sample` trên nhánh này: `Every row passes.`
 - Nhánh đã push. Chờ bạn bấm `Refine` (duyệt Task trực tiếp).
+- Lượt 187, bạn nhờ bấm Refine:
+  - mô tả `SMP-27` được ghi lại với ô DoR cuối đã đánh dấu, ghi rõ "Lượt 187, trong chat"; ô này là chữ `[x]` trong mô tả, không phải task list của Jira;
+  - `Refine` chạy bằng token admin của bạn, nhận 204, item sang Ready.
+- Start làm như với `SMP-22`: token CI ghi trường Agent là DevOps Engineer và comment lý do (Task chép kit, không có agent build), rồi `Start` qua Rovo MCP bằng token agent. `SMP-27` sang In Progress.
+- `ao-pr create` mở PR nháp #30 dưới tên bot `ao-dev`. Trong shell của phiên chính, `ao-pr` báo `AO_DEV_APP_ID is not set`: Claude Code đặt các biến `AO_*` từ `settings.json` cho phiên trong dự án, còn shell của phiên chính ở thư mục khác thì không có. Lấy giá trị từ `.claude/settings.json` (không phải secret) thì chạy được. Câu Risks trong mô tả PR được sửa lại: `/ao-review` chạy bằng bản kit của `develop` (`c6fdfa8`).
+- CI của PR #30 xanh: `policy`, `build-test`, `secrets`, `sast`, `jira-sync`.
+- `/ao-review 30`, dòng kiểm: `pr-ready`, rồi `reviewer` (`xhigh`), rồi `security` (`max`, vì PR chạm đường dẫn được bảo vệ). Lượt chạy thật bắt đầu.
+- `/ao-review 30` chạy 1732 giây, 8,89 USD:
+  - `pr-ready` chuyển PR sang sẵn sàng; `jira-sync` đưa `SMP-27` sang In Review.
+  - `reviewer` (`xhigh`, 47 lượt, 6,8 phút, 2,31 USD): Critical 0, High 0, Medium 1, Low 4. Bản chép khớp từng file với kit `8a8d8ef`, bốn mục checklist của Task đạt.
+  - `security` (`max`, 68 lượt, 21 phút, 6,58 USD): Critical 0, High 0, Medium 1, Low 0. Kết luận Approve.
+  - **Medium chung của hai báo cáo, `ci.yml:12`:** `workflow_dispatch` (thêm ở T16) nhận mọi nhánh. Chạy tay trên nhánh của một PR thì bốn check cùng tên vẫn ghi lên head của PR, nhưng bỏ các phần chỉ chạy trên PR: quy ước, suppression, hạ chuẩn, coverage của dòng đổi, gitleaks quá commit đầu. `gh-guard` không chặn `gh workflow run`. Cách sửa đề xuất: mỗi job thoát 1 khi chạy tay trên nhánh không phải `develop`, `main`, `release/*` (thoát lỗi chứ không bỏ qua, vì job bị bỏ qua vẫn tính là đạt); chặn `gh workflow run` với agent.
+  - **Low của `reviewer`:** comment của `gates.yaml` còn nhắc `preview.yaml`; hook `commit-msg` coi "git không chạy được" và nhánh mồ côi là commit gốc; một ca hiếm trong `runner.mjs` (stash đã áp lại rồi mà lần chạy tiếp vẫn trỏ tới nó); khoảng 715 dòng code `ao-kit` được chép vào dự án dù dự án không gọi (đúng thiết kế).
+- `/ao-review` dừng ở gate ③: PR sửa đường dẫn được bảo vệ, nên bạn approve rồi tự merge.
