@@ -22,7 +22,7 @@ No agent runs here (human-loop spec 4.3).
   project folder is on now, with any file it names that appeared during the preview, and stop. Do not read, change or
   delete such a file yourself.
 - On STOP, tell the human the reason and the command or clicks it names, in Vietnamese, and stop. When the check
-  prints a sample `preview.yaml`, show it as it is.
+  prints a sample of the apps of `project.yaml`, show it as it is.
 - On GO, run `node .ai-orchestrator/scripts/ao-step.mjs preview $0 --go` with the Bash tool, with a timeout of
   600000 ms, and wait for it. It puts the project folder on the PR branch, runs `npm ci` when the lockfile changed,
   and starts the apps, which keep running after it ends. Do not start, stop or change anything yourself.
