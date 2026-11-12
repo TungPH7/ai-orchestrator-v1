@@ -74,6 +74,9 @@ test('a PR that changes a protected path passes when you merged it, and fails wh
     f.pull.merged_by = YOU;
   }), PASSED);
   assert.deepEqual(audit(touches).problems, ['PR #12 changes .github/workflows/ci.yml, which only you merge, but tungph7-ao-dev[bot] merged it']);
+  // In another case too: on Windows .Claude/ is written into .claude/ (live-run-fixes spec 2.9).
+  const cased = (f) => f.files.push({ filename: '.Claude/rules/x.md', status: 'added' });
+  assert.deepEqual(audit(cased).problems, ['PR #12 changes .Claude/rules/x.md, which only you merge, but tungph7-ao-dev[bot] merged it']);
 });
 
 test('a PR you opened counts as approved by you, since GitHub does not let you approve it', () => {
