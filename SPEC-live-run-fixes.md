@@ -1,6 +1,6 @@
 # SPEC: live-run-fixes
 
-> **Trạng thái:** chờ duyệt. Bạn chọn làm module này trước B1 ở Phiên 27 · Lượt 148. Nguồn: mục T19 và T20 trong [tasks/archive/human-loop/verification.md](tasks/archive/human-loop/verification.md), và hai báo cáo review vòng hai của `ao-sample` PR #21 (`.ai/reviews/21-reviewer.md`, `21-security.md` trên máy).
+> **Trạng thái:** đã duyệt 2026-11-12 (Phiên 27 · Lượt 149), cả ba câu ở mục 9 theo đề xuất. Plan: [tasks/plan.md](tasks/plan.md). Bạn chọn làm module này trước B1 ở Phiên 27 · Lượt 148. Nguồn: mục T19 và T20 trong [tasks/archive/human-loop/verification.md](tasks/archive/human-loop/verification.md), và hai báo cáo review vòng hai của `ao-sample` PR #21 (`.ai/reviews/21-reviewer.md`, `21-security.md` trên máy).
 
 ## 1. Mục tiêu
 
@@ -8,7 +8,7 @@ Lần chạy thật của human-loop (T19, T20) để lại một số lỗi kit
 
 1. Bốn trong năm lỗ hổng mà T20 tìm ra. Lỗ hổng thứ năm, hook Jira chặn nhầm, được giữ nguyên có chủ đích (2.3).
 2. Hai Medium và ba Low mà vòng review thứ hai của PR #21 (T19) để lại.
-3. Câu hỏi còn treo từ T19: `merge-gate` và `audit` có so đường dẫn được bảo vệ không phân biệt hoa thường không (2.9, cần bạn quyết).
+3. Câu hỏi còn treo từ T19: `merge-gate` và `audit` có so đường dẫn được bảo vệ không phân biệt hoa thường không (2.9; bạn đồng ý ở Lượt 149).
 
 Lỗ hổng 1 và 2 chắc chắn gặp lại ở Pilot 3: gói Pro hay chạm giới hạn 5 giờ, và sửa AC trên PR là việc thường ngày.
 
@@ -48,7 +48,7 @@ Mọi chỗ sửa đều làm theo kiểu test trước: test đỏ xác nhận 
 - Lần làm lại sau `QA fail` cũng gặp lỗi này: `spec-sync` thêm AC12 vào `spec.md`, nhưng `plan.md` vẫn chỉ ghi AC1–AC11.
 
 **Cách sửa:**
-- Khi item có Epic cha, facts của `/ao-fix` và `/ao-build` đọc thêm các yêu cầu đang mở trên Epic đó.
+- Khi item có Epic cha, `/ao-fix` và `/ao-build` xét thêm các yêu cầu đang mở trên Epic đó. Facts đã đọc sẵn chúng: `facts.epic` là Epic đọc bằng `readWorkItem`, có cả `requests`.
 - **Yêu cầu do lượt đổi tài liệu ghi** là yêu cầu thỏa cả ba điều:
   - đang mở;
   - gửi tới `ba`, `ux` hoặc `sa`, trên item hoặc trên Epic của nó;
@@ -113,7 +113,7 @@ Mọi chỗ sửa đều làm theo kiểu test trước: test đỏ xác nhận 
   - thêm câu: app ghi được vào thư mục dự án, kể cả file không được track như `CLAUDE.local.md` hay `.claude/settings.local.json`, và `--stop` không xóa những file đó.
   - `stopPreview` in cảnh báo khi có file chỉ dẫn chưa track mới xuất hiện so với lúc bắt đầu. Danh sách lúc bắt đầu được ghi trong `active.json`.
 
-### 2.9 Đường dẫn được bảo vệ, không phân biệt hoa thường (cần bạn quyết)
+### 2.9 Đường dẫn được bảo vệ, không phân biệt hoa thường (bạn đồng ý ở Lượt 149)
 
 **Hiện trạng.**
 - `protectedPaths` (`merge-gate.mjs:335`) so phân biệt hoa thường.
@@ -139,7 +139,7 @@ Không có lệnh mới. Có bốn hành vi đổi:
 ```text
 lib/workflow/wip.mjs             # 2.1: cất và áp lại phần dở, git truyền vào
 lib/workflow/runner.mjs          # 2.1: hiệu ứng wip
-lib/workflow/facts.mjs           # 2.2: yêu cầu mở trên Epic; 2.8: fromFork
+lib/workflow/facts.mjs           # 2.7: số file của PR; 2.8: fromFork
 lib/workflow/steps.mjs           # 2.2: decideFix, rebuild; 2.4: nextFor; 2.7: decidePreview
 lib/workflow/prompts.mjs         # 2.1: câu chạy tiếp; 2.2: request trên nhánh item, bỏ "flag"
 lib/workflow/qa.mjs              # 2.5
@@ -201,7 +201,9 @@ Dùng `node:test`, theo mẫu test sẵn có của `runGo`, `decideFix`, `rebuil
 | 2.2: chưa kiểm thật đường này | Lần sửa AC thật đầu tiên ở Pilot 3 là lần kiểm thật; test bao các nhánh của quyết định |
 | 2.7: `git diff` với `develop` mới làm nhánh cắt từ `develop` cũ bị từ chối | Câu dừng bảo bạn merge `develop` vào nhánh đó. Đây là điều review muốn: bản kit cũ không được vào thư mục |
 
-## 9. Câu hỏi cần bạn trả lời
+## 9. Câu hỏi đã trả lời
+
+Bạn duyệt cả ba đề xuất dưới đây ở Lượt 149.
 
 1. **Mục 2.9: `merge-gate` và `audit` có so đường dẫn được bảo vệ không phân biệt hoa thường không?** Mình đề xuất **có**, vì luật chặt hơn và gần như không có PR thật nào bị ảnh hưởng. Phần `audit` chỉ có hiệu lực khi kit trên VPS được cập nhật, việc đó mình sẽ hỏi riêng.
 2. **Phạm vi kiểm thật.** Mình đề xuất:
@@ -211,7 +213,7 @@ Dùng `node:test`, theo mẫu test sẵn có của `runGo`, `decideFix`, `rebuil
 3. **`plan.md` và `design.md` của `SMP-23` đang lệch, trong khi Epic đã qua gate ②.** Kit chưa có đường để agent sửa tài liệu đã merge sau gate ②. Một PR tài liệu do người mở cũng cần review đủ, vì nếu không `audit` sẽ báo lỗi. Mình đề xuất:
    - không làm trong module này, chỉ ghi lại;
    - thêm một comment trên `SMP-19`, nói rằng thứ tự ghim lấy theo Rules 1 và 4 của SPEC `SMP-23`, không theo quyết định 3 của plan, vì `SMP-19` sẽ đọc quyết định đó;
-   - sau đó bạn bấm Complete trên `SMP-23`.
+   - sau đó bạn bấm Complete trên `SMP-23`, khi `SMP-24` đã lên Production trong một bản phát hành: luật `complete` cần điều đó.
 
    Nếu bạn muốn sửa hẳn, cần một đường mới cho tài liệu sau gate ②; đường đó nên là một module riêng.
 
