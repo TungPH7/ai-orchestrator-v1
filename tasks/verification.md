@@ -141,5 +141,12 @@ Lỗi chỉ lần chạy thật bắt được:
 - PR `ao-brown` #1 `fix(scripts): start npm without a shell in the dev script (AOG-3)`, nhánh `bugfix/AOG-3-dev-script-shell`. Trước khi push, mình chạy thử bản mới của `scripts/dev.mjs`: web 307 (sang `/notes`), api 200, sau 11 giây.
   - CI của PR: `sast` xanh (có baseline), `policy`, `secrets`, `jira-sync` xanh.
   - `build-test` đỏ ở bước coverage của dòng đổi: `coverage-diff: scripts/dev.mjs is not in any lcov file`. Luật `coverage` của `quality/gates.yaml` coi mọi file `.mjs` là source, chỉ trừ config, test, `e2e/` và bản kit. Vì vậy script chạy app ở máy cũng phải có trong lcov. Khung `next-nest` cũng có `scripts/dev.mjs`, nên mọi sửa ở đó trong dự án dựng mới đều vấp luật này.
+- Bạn duyệt hai luật (Lượt 177). Kit sửa ở hai commit, mỗi commit có test đỏ trước:
+  - `quality/gates.yaml`: `coverage.exclude` thêm `scripts/**`;
+  - `ci.yml`: push nhánh mới thì Semgrep chỉ quét commit đầu nhánh, còn commit gốc và lượt chạy tay thì quét toàn bộ. Test chạy thật đoạn script của job bằng bash, với `uvx` giả, đủ năm trường hợp.
+
+  Lần chạy test đầu, bash gọi nhầm `uvx` thật trên máy: đường dẫn Windows có `:` làm tách `PATH`. Test giờ dùng `$PWD/bin`.
+  - `check-policy` không coi việc thêm mục vào `coverage.exclude` là hạ chuẩn: `loweredThresholds` chỉ xét `changed_lines_min`, `audit_level` và các danh sách bị mất mục. Chỗ này được giữ bởi việc `gates.yaml` là đường dẫn được bảo vệ, chỉ bạn merge.
+- Bạn hỏi vì sao lại merge một PR có CI đỏ (Lượt 178). Mình đổi cách: đưa luật coverage mới vào chính bản kit của `ao-brown` trong PR #1 (`ee0bc2e`, chép `quality/gates.yaml` của kit). CI chạy lại xanh đủ: `policy`, `build-test`, `secrets`, `sast`, `jira-sync`. GitHub vẫn cho bấm merge PR đỏ, vì repo private trên gói Free không có ruleset (soft mode). Hướng dẫn nên nói rõ điều này: CI đỏ thì không merge, kể cả khi nút vẫn bấm được.
 - Lượt cập nhật bảo mật `minimatch` của Dependabot đỏ. Chưa tìm hiểu, vì không chặn T17.
 - Ở Lượt 171 mình đoán lượt CI đầu trên `develop` sẽ không kéo theo `jira-sync`. Đoán sai: `jira-sync` vẫn chạy (`workflow_run`, xanh), vì `setup github` đã đổi nhánh mặc định sang `develop` trước khi CI chạy xong.
