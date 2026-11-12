@@ -22,7 +22,7 @@
   - **Kiểm:** kết quả ghi vào `tasks/verification.md`.
 
 ### Checkpoint 1: sau T2
-- [x] Biết bước Jira nào làm được bằng API: mọi thứ trừ cột của board và Kanban backlog (`verification.md`). Mục 2.4 của spec đã sửa (Lượt 156); chờ bạn duyệt trước T12.
+- [x] Biết bước Jira nào làm được bằng API: mọi thứ trừ cột của board và Kanban backlog (`verification.md`). Mục 2.4 của spec đã sửa (Lượt 156); bạn duyệt ở Lượt 157.
 
 ## Chặng 1: cấu hình, nhánh `task/project-scaffold-1`
 
