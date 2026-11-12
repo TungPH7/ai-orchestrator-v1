@@ -50,7 +50,8 @@ test('init in an empty folder: the skeleton of the profile, project.yaml, the ki
   assert.deepEqual(parse(readFileSync(join(dir, '.ai-orchestrator/roster.local.yaml'), 'utf8')).roles['be-dev'].skills, ['nestjs-best-practices']);
   assert.match(readFileSync(join(dir, '.gitignore'), 'utf8'), /^\.ai\/$/m);
   assert.equal(JSON.parse(readFileSync(join(dir, 'package.json'), 'utf8')).scripts.prepare, 'node .ai-orchestrator/scripts/install-hooks.mjs');
-  assert.deepEqual(fx.calls.run.map(([argv]) => argv), ['node .ai-orchestrator/scripts/render-agents.mjs --project .', 'npm ci', 'npx playwright install chromium']);
+  // The packages of the kit copy first: render-agents imports yaml and ajv from .ai-orchestrator/node_modules (T16).
+  assert.deepEqual(fx.calls.run.map(([argv]) => argv), ['npm ci --prefix .ai-orchestrator --no-audit --no-fund', 'node .ai-orchestrator/scripts/render-agents.mjs --project .', 'npm ci', 'npx playwright install chromium']);
   assert.ok(fx.calls.run.every(([, cwd]) => cwd === dir));
   assert.match(notes.join('\n'), /Next: open claude in the folder/);
 });
@@ -112,7 +113,8 @@ test('init in a repo that has code: no app file changes, a draft project.yaml fr
   assert.match(text, /no \.ai-orchestrator\/deploy\.yaml/);
   assert.match(text, /no develop branch/);
   assert.match(text, /commit header/);
-  assert.equal(fx.calls.run.some(([argv]) => argv.startsWith('npm')), false, 'nothing is installed in a repo that has code');
+  // Only the packages of the kit copy, in .ai-orchestrator/: none of the apps.
+  assert.deepEqual(fx.calls.run.map(([argv]) => argv).filter((argv) => argv.startsWith('npm') || argv.startsWith('npx')), ['npm ci --prefix .ai-orchestrator --no-audit --no-fund'], 'no package of the apps is installed in a repo that has code');
 });
 
 test('sync: a branch from develop for the Task of the copy, the kit, the render, and one commit; nothing is pushed', (t) => {
@@ -124,7 +126,7 @@ test('sync: a branch from develop for the Task of the copy, the kit, the render,
   assert.equal(ok, true, notes.join('\n'));
   assert.equal(existsSync(join(dir, '.ai-orchestrator/lib/gone.mjs')), false);
   assert.deepEqual(fx.calls.git.filter((c) => !c.startsWith('-C')), ['status --porcelain', 'fetch --quiet origin', 'switch --quiet --no-track -c feature/SHOP-5-kit-copy origin/develop', 'add --all', 'commit --quiet -m chore(kit): copy the kit at abcdef12 (SHOP-5)']);
-  assert.deepEqual(fx.calls.run.map(([argv]) => argv), ['node .ai-orchestrator/scripts/render-agents.mjs --project .']);
+  assert.deepEqual(fx.calls.run.map(([argv]) => argv), ['npm ci --prefix .ai-orchestrator --no-audit --no-fund', 'node .ai-orchestrator/scripts/render-agents.mjs --project .']);
   assert.equal(fx.calls.git.some((c) => c.startsWith('push')), false);
   assert.match(notes.at(-1), /Push feature\/SHOP-5-kit-copy and open its PR/);
 });
