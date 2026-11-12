@@ -142,7 +142,7 @@ Bốn lệnh đưa code từ `develop` lên Development, Staging và Production 
 
 ## Cài kit vào repo dự án
 
-Thư mục `kit/` chứa các file đặt vào repo dự án, giữ đúng đường dẫn tương đối. Tới khi có `project-scaffold`, bạn chép tay như đã làm với `ao-pilot` và `ao-sample`. Từng bước ở Pilot 1, ai làm và vướng ở đâu: mục "Đầu vào cho `project-scaffold`" của [tasks/archive/pilot-1/verification.md](tasks/archive/pilot-1/verification.md).
+Thư mục `kit/` chứa các file đặt vào repo dự án, giữ đúng đường dẫn tương đối. Từ `project-scaffold`, `node <kit>/scripts/ao-kit.mjs init <thư mục>` làm các bước 1–4 dưới đây: thư mục trống thì dựng thêm khung app theo profile `next-nest`; repo đang có code thì chỉ chép kit và liệt kê việc còn thiếu. `ao-kit sync` chép bản kit mới vào dự án trên một nhánh riêng. Các bước còn lại vẫn làm theo danh sách dưới đây, cho tới khi có `docs/getting-started.md`. Từng bước ở Pilot 1, ai làm và vướng ở đâu: mục "Đầu vào cho `project-scaffold`" của [tasks/archive/pilot-1/verification.md](tasks/archive/pilot-1/verification.md).
 
 1. Tạo `.ai-orchestrator/` ở gốc repo dự án. Chép vào đó `contract/`, `lib/`, `tracker/`, `quality/`, `agents/`, `templates/`, cùng `package.json` và `package-lock.json` của kit, và chép `docs/sdlc.md` thành `.ai-orchestrator/docs/sdlc.md`, vì template trỏ tới DoD trong đó. Chép vào `.ai-orchestrator/scripts/` các script `ao-agent.mjs`, `ao-git-credential.mjs`, `ao-pr.mjs`, `ao-step.mjs`, `audit.mjs`, `check-design.mjs`, `check-policy.mjs`, `commit-msg.mjs`, `coverage-diff.mjs`, `install-hooks.mjs`, `jira-sync.mjs`, `merge-gate.mjs`, `pre-commit.mjs`, `pre-push.mjs`, `render-agents.mjs`. Chạy `npm ci --prefix .ai-orchestrator`, như các workflow.
 2. Chép `kit/.claude/`, `kit/.githooks/`, `kit/.mcp.json`, `kit/.jira/config.yml` và ba workflow trong `kit/.github/workflows/` (`ci.yml`, `jira-sync.yml`, `merge-gate.yml`) vào gốc repo. Viết `.ai-orchestrator/project.yaml`, file cấu hình của dự án ([SPEC-project-scaffold.md](SPEC-project-scaffold.md) mục 2.1): mã space, login GitHub của bạn, slug và App ID của hai App, các app. `node <kit>/scripts/ao-kit.mjs check .` kiểm file này. Rồi chạy `node .ai-orchestrator/scripts/render-agents.mjs --project .`. Lệnh này sinh `.claude/settings.json` từ hook, quyền của kit và `env` của `project.yaml`, điền mã space vào agent, và gộp skill theo stack của `.ai-orchestrator/roster.local.yaml`, nếu có. Đừng sửa tay `settings.json`: sửa `project.yaml` rồi chạy lại lệnh.
@@ -198,7 +198,11 @@ npm run gh:protect -- --repo <owner>/<name>  # áp ruleset khi repo hỗ trợ; 
 npm run agents          # sinh lại kit/.claude/agents/, kit/.claude/rules/ai-orchestrator.md và kit/.claude/settings.json từ agents/ và hợp đồng
 npm run agents:check    # báo lỗi nếu agent hay file quy ước sinh ra cũ hơn nguồn
 npm run skills:vendor -- <name>  # tải lại một skill chép vào kit, đúng commit ghim trong agents/roster.yaml
+node scripts/ao-kit.mjs init <thư mục dự án> --name <tên> --space <KEY> --repo <owner/name> --approvers <login>  # dựng dự án mới hay cài kit vào repo đang có
+node scripts/ao-kit.mjs sync <thư mục dự án> --key <KEY>  # chép bản kit này vào dự án, trên nhánh feature/<KEY>-kit-copy, một commit, không push
+node scripts/ao-kit.mjs render <thư mục dự án>  # sinh lại .claude/settings.json và agent từ project.yaml
 node scripts/ao-kit.mjs check <thư mục dự án>  # kiểm project.yaml của dự án với schema, deploy.yaml, package.json và thư mục app
+npm run profiles:check  # dựng từng profile vào thư mục tạm, rồi chạy npm ci, lint, typecheck, test:coverage, build
 ```
 
 Trong repo dự án, với bản chép ở `.ai-orchestrator/`:
@@ -239,7 +243,8 @@ lib/tracker/        ánh xạ và quy tắc J1–J4, quy ước mã Jira, client
 lib/quality/        đọc và kiểm quality/gates.yaml, token của App, coverage, mẫu tắt kiểm tra, mô tả PR, merge-gate, audit, luật của gh-guard
 lib/release/        deployer, Docker, Caddy, điểm cắt, số bản, PR release, smoke test
 lib/agents/         đọc roster và roster.local.yaml, sinh agent và file quy ước, dựng lệnh của ao-agent.mjs, luật ghi file và git theo vai trò, chép skill
-lib/scaffold/       project.yaml của dự án: schema, đọc, kiểm, đối chiếu với deploy.yaml và package.json
+lib/scaffold/       project.yaml của dự án (schema, đọc, kiểm, đối chiếu), chép kit vào dự án, profile, ao-kit init và sync
+profiles/           profile theo stack: profile.yaml và khung app ghim (next-nest: Next.js + NestJS)
 scripts/            lệnh của kit: kiểm và sinh tài liệu, Jira, ao-pr.mjs, ao-agent.mjs, job policy, check-design, coverage, merge-gate, audit, gh-protect, hook git
 kit/                file đặt vào repo dự án: .mcp.json, .claude/ (agent, file quy ước, skill, hook), .githooks/, .jira/config.yml, workflow CI, jira-sync, merge-gate, audit
 docs/sdlc.md        sinh tự động, không sửa tay
