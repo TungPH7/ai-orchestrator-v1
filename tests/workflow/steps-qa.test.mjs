@@ -56,7 +56,7 @@ test('on Production qa gets no basic auth: Production is open', () => {
 });
 
 test('/ao-qa stops while the item is not in Ready for QA, and says what comes instead', () => {
-  const inReview = decide(qaFacts({ item: { state: 'in-review', status: 'In Review' } }));
+  const inReview = decide(qaFacts({ item: { state: 'in-review', status: 'In Review' }, pr: { state: 'open', merged: false, mergeCommit: null } }));
   assert.equal(inReview.go, false);
   assert.equal(inReview.reason, 'DEMO-21 is In Review, not Ready for QA');
   assert.equal(inReview.next, '/ao-review 15 or /ao-fix 15');
@@ -97,6 +97,17 @@ test('/ao-qa stops while the QA environment does not run a release that holds th
 
 test('Next of an item in Ready for QA is /ao-qa', () => {
   assert.equal(nextFor({ key: 'DEMO-21', workType: 'story', state: 'ready-for-qa', flagged: false }), '/ao-qa DEMO-21');
+});
+
+// After QA fail the item is In Progress and its PR is merged: the fix is a rebuild on a new branch (live-run-fixes 2.4).
+test('after QA fail, /ao-qa says /ao-build, not the review of the merged PR', () => {
+  const failed = decide(qaFacts({ item: { state: 'in-progress', status: 'In Progress' } }));
+  assert.equal(failed.reason, 'DEMO-21 is In Progress, not Ready for QA');
+  assert.equal(failed.next, '/ao-build DEMO-21');
+  const item = { key: 'DEMO-21', workType: 'story', state: 'in-progress', flagged: false };
+  assert.equal(nextFor(item, { number: 15, state: 'closed', merged: true, draft: false }), '/ao-build DEMO-21');
+  assert.equal(nextFor(item, { number: 15, state: 'closed', merged: false, draft: false }), '/ao-build DEMO-21');
+  assert.equal(nextFor(item, { number: 15, state: 'open', merged: false, draft: false }), '/ao-review 15');
 });
 
 test('/ao-qa stops when the deployment that runs has no URL: a deploy by another tool, such as the old fake deploy.yml', () => {
