@@ -86,6 +86,26 @@ test('when ba changed the criteria on Jira after the merge, ba copies them into 
   assert.deepEqual(plan(decide(failed({ runs: [before] }), SPLIT)), ['be-dev build', 'fe-dev build'], 'a change before the merge is in the SPEC already');
 });
 
+// T20 of human-loop, SMP-24: ba added AC12 in QA and spec-sync put it in spec.md on -r2, but plan.md kept AC1–AC11. The
+// requests to ba, ux or sa written since ba changed the criteria now run on the new branch, after spec-sync and before
+// the dev agents (live-run-fixes spec 2.2).
+test('the requests to ba, ux or sa written since ba changed the criteria run on the new branch, after spec-sync, before the dev agents', () => {
+  const qaRun = { command: 'qa', role: 'ba', purpose: 'ac-add', outcome: 'done', startedAt: '2026-11-12T03:00:00Z', endedAt: '2026-11-12T03:05:00Z' };
+  const at = (min) => Date.parse('2026-11-12T03:00:00Z') + min * 60000;
+  const epic = { key: 'DEMO-20', type: 'Epic', workType: 'epic', requests: [{ from: 'ba', to: 'ux', text: 'S1.4 theo AC12', at: at(4) }, { from: 'ba', to: 'sa', text: 'plan.md: thêm AC12', at: at(30) }, { from: null, to: 'sa', text: 'một yêu cầu cũ', at: at(-600) }] };
+  const facts = { ...failed({ runs: [qaRun] }), epic };
+  const decision = decide(facts, SPLIT);
+  assert.deepEqual(plan(decision), ['ba spec-sync', 'ux request', 'sa request', 'be-dev build', 'fe-dev build']);
+  const ux = decision.runs[1];
+  assert.deepEqual([ux.key, ux.checkout, ux.rebuild, ux.request], ['DEMO-21', { branch: R2, from: 'develop' }, AT, at(4)]);
+  assert.equal(ux.prompt, PURPOSES.request({ key: 'DEMO-20', role: 'ux', from: 'ba', at: at(4), branch: R2, item: 'DEMO-21' }));
+  assert.match(ux.prompt, /The branch feature\/DEMO-21-remove-line-r2 of DEMO-21 is checked out, new from develop: change only documents there, such as those in docs\/specs\/, commit, and push the branch\. Change no code: the dev agents of DEMO-21 go on after you\./);
+  const synced = { ...failed({ runs: [qaRun, { role: 'ba', purpose: 'spec-sync', outcome: 'done', rebuild: AT }] }), epic };
+  assert.deepEqual(plan(decide(synced, SPLIT)), ['ux request', 'sa request', 'be-dev build', 'fe-dev build']);
+  // With no change of the criteria after the merge, they still go through /ao-request.
+  assert.deepEqual(plan(decide({ ...failed(), epic }, SPLIT)), ['be-dev build', 'fe-dev build']);
+});
+
 test('a side done for this QA report is not run again; a later QA fail is a rebuild of its own', () => {
   const half = decide(failed({ runs: [{ role: 'be-dev', purpose: 'build', outcome: 'done', rebuild: AT }] }), SPLIT);
   assert.deepEqual(plan(half), ['fe-dev build']);
