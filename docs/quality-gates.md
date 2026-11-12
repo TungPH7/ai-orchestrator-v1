@@ -61,7 +61,12 @@ Job summary có mục **Coverage of changed lines: N%**, với bảng gồm các
 - các dòng mà PR thêm hoặc sửa có coverage dưới 80% (`coverage.changed_lines_min`). Viết test chạy qua các dòng ở cột Lines not run.
 - một file nguồn thay đổi mà không có trong lcov. Cấu hình coverage của dự án phải gồm mọi file nguồn, kể cả file chưa có test.
 
-Bước này chỉ tính dòng thực thi được. File test, file cấu hình (`*.config.*`), migration và bản chép kit (`.ai-orchestrator/`, `.claude/`, có test ở kit) không được tính. Muốn kiểm trước khi push, chạy `npm run test:coverage`, rồi `node .ai-orchestrator/scripts/coverage-diff.mjs --base origin/develop`.
+Bước này chỉ tính dòng thực thi được. Những file không được tính:
+- file test;
+- file cấu hình (`*.config.*`);
+- migration;
+- script ở gốc dự án (`scripts/`, như `scripts/dev.mjs` chạy hai app ở máy);
+- bản chép kit (`.ai-orchestrator/`, `.claude/`), vì đã có test ở kit. Muốn kiểm trước khi push, chạy `npm run test:coverage`, rồi `node .ai-orchestrator/scripts/coverage-diff.mjs --base origin/develop`.
 
 ### `secrets`
 
@@ -76,7 +81,13 @@ Chỉ thêm `gitleaks:allow` khi chắc chắn đó không phải secret, và gh
 
 ### `sast`
 
-Semgrep CE chạy với bộ rule `p/default` và `p/owasp-top-ten`, và chỉ báo finding mới so với nhánh đích. Job đỏ khi có finding mức ERROR. Log của bước **Semgrep on the changes** ghi rule, file và dòng.
+Semgrep CE chạy với bộ rule `p/default` và `p/owasp-top-ten`. Job đỏ khi có finding mức ERROR. Log của bước **Semgrep on the changes** ghi rule, file và dòng.
+
+Semgrep chỉ báo finding do thay đổi mang vào:
+- Trên PR: so với nhánh đích.
+- Khi push lên một nhánh đã có trên GitHub: so với commit trước lần push.
+- Khi push một nhánh mới, như `develop` lần đầu hay một nhánh `release/*`: chỉ xét commit đầu nhánh, giống `gitleaks`. Nhờ vậy finding có từ trước kit không chặn nhánh mới (`project-scaffold`, T17).
+- Commit gốc của một repo, và lượt chạy tay `gh workflow run CI --ref <nhánh>`, được quét toàn bộ. Muốn xem các finding cũ của một repo đang có thì chạy tay.
 
 Sửa code theo gợi ý của rule. Nếu là báo nhầm, thêm `nosemgrep` kèm `reason:` trên cùng dòng; reviewer sẽ đọc lý do.
 

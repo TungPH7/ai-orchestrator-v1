@@ -72,7 +72,7 @@ Cùng nhánh: câu "By hand" của `setup github` giờ trỏ đúng đường m
 
 **Một lần commit test đỏ.** Commit `d91c398` sửa câu "By hand" kèm test, nhưng heredoc làm mất dấu `\` trong regex của test. Chuỗi lệnh vẫn commit vì `&&` đứng sau `grep`, chỉ xét kết quả của `grep`. Test được sửa ở `57955f7`, trước khi push; năm lệnh kiểm xanh (1269 test).
 
-**T16, dựng mới `ao-green`, 2026-11-12 (đang làm).** Repo private `TungPH7/ao-green` được tạo rỗng. `ao-kit init` vào thư mục trống cạnh `ao-sample` chạy hết trong 144 giây: chép khung 162 file, chép kit, thêm `prepare`, `npm ci --prefix .ai-orchestrator`, render, `npm ci`, cài Chromium của Playwright. `setup jira` thấy space `AOG` và board 36 đã có từ T2, `jira:check` còn 5 chỗ lệch về cột.
+**T16, dựng mới `ao-green`, 2026-11-12 (xong).** Repo private `TungPH7/ao-green` được tạo rỗng. `ao-kit init` vào thư mục trống cạnh `ao-sample` chạy hết trong 144 giây: chép khung 162 file, chép kit, thêm `prepare`, `npm ci --prefix .ai-orchestrator`, render, `npm ci`, cài Chromium của Playwright. `setup jira` thấy space `AOG` và board 36 đã có từ T2, `jira:check` còn 5 chỗ lệch về cột.
 
 Lỗi chỉ lần chạy thật bắt được:
 - Lần chạy `init` đầu tiên dừng ở render với `ERR_MODULE_NOT_FOUND`: bản kit trong dự án chưa có package. Giờ `init` và `sync` chạy `npm ci --prefix .ai-orchestrator` trước render (`533eb67`, có test đỏ trước). Thư mục được xóa và chạy lại từ đầu.
@@ -111,3 +111,45 @@ Lỗi chỉ lần chạy thật bắt được:
 - `ao-step status` trong `ao-green` chạy được: `AOG-1` ở New, ba môi trường trống.
 - `setup github` với key thứ hai (người dùng tải về `ao-keys`, không đổi tên) đã đặt: xóa nhánh sau merge, Dependabot, bốn environment, luật nhánh của `merge-gate`, `JIRA_CI_TOKEN`, `AO_DEV_APP_KEY`. Lệnh nhắc xóa file key. `gh:protect` báo soft mode: repo private trên gói Free không có ruleset, nên `merge-gate` và `audit` giữ gate. Vì vậy mục "bật ruleset ao-protected" trong bản nháp `AOG-1` không xảy ra. Chạy lần hai, lệnh không ghi gì và in `Already set: …` đủ bảy mục.
 - Sau lỗi `App … is not installed`, Node trên Windows in thêm `Assertion failed: !(handle->flags & UV_HANDLE_CLOSING)` khi thoát. Đây là tiếng ồn của libuv, lệnh vẫn dừng đúng. Cần ghi nhận, chưa sửa.
+- **T16 xong (Lượt 169).** Kit PR #256 (`bd01ebc`) chứa các sửa ở trên, bản nháp hướng dẫn với phần 3 viết lại thành 10 bước, và log các lượt 157–169.
+
+**T17, repo đang có `ao-brown`, 2026-11-12–13 (xong, chờ Cancel `AOG-2`, `AOG-3`).** Bạn duyệt cách làm ở Lượt 170: Task chép kit, commit lên `develop` mới, rồi Cancel Task, 0 USD tiền agent.
+- Dựng repo giả "đang phát triển": `gh repo create TungPH7/ao-brown --private`. Code lấy từ `main` của `ao-sample` (`2e69e47`, v0.1.0) bằng `git archive`. Gỡ `.ai-orchestrator/`, `.claude/`, `.githooks/`, `.github/`, `.jira/`, `.mcp.json`, `docs/`, `CHANGELOG.md`, script `prepare` và bốn dòng của kit trong `.gitignore`. Kết quả: 70 file, một commit `Initial commit` trên `main`, đã push. Repo chưa có workflow nào.
+- `ao-kit init ao-brown` (kit `bd01ebc`), 12 giây:
+  - `init` thấy repo có code, nên chỉ chép kit, không đụng file app. Lệnh thêm bốn dòng `.gitignore` và script `prepare`, chạy `npm ci --prefix .ai-orchestrator` và render. `origin` đã có và đúng repo, nên không có ghi chú gì về nó.
+  - `Missing` báo đúng hai việc: `deploy.yaml` và nhánh `develop`. Bốn script và `playwright.config` đã có, nên không bị báo.
+  - Dòng `Next:` là bản cho repo có code.
+- `project.yaml` nháp đoán đúng cổng (`api` 3001, `web` 3000) và `health` của `api` (`/health`). `health` của web đoán là `/`, nhưng `ao-sample` chuyển `/` sang `/notes`. Đúng như hướng dẫn dặn, người dùng phải kiểm lại phần này.
+- Bước 2 (mình làm như một dev): viết `deploy.yaml` từ bản của `ao-sample`, rồi `git switch -c develop`. `ao-kit check` bắt hai chỗ lệch giữa `project.yaml` và `deploy.yaml`: `C1 apps.web.health` (`/` và `/notes`) và `C1 apps.web.public`. Sửa `project.yaml` (`health: /notes`, `public: true`), chạy lại thì `project.yaml OK`. `render` không đổi file nào.
+- **Chỗ thiếu của hướng dẫn và của `Next:`:** với repo có code, `init` không chạy `npm ci` của app. Vì vậy hook git chưa được cài: `core.hooksPath` trống. Phải chạy `npm ci` (101 giây ở đây), script `prepare` mới đặt `core.hooksPath` thành `.githooks`. Phần 4 cần thêm bước này, trước commit chép kit.
+- **Chỗ thiếu nhỏ:** repo có code không nhận `roster.local.yaml`, nên không có skill theo stack (`vercel-react-best-practices`, `nestjs-best-practices`), dù `init` đoán được profile `nextjs` và `nestjs`. `doctor` không báo điều này.
+- `setup jira ao-brown`: space `AOG` và board đã có, `jira:check` sạch, lệnh không in "By hand".
+- Người dùng cài hai App, nối GitHub for Atlassian, tạo key thứ hai và mở `claude`, chọn **Enable selected**. Sau đó chạy `/ao-intake` với đoạn mẫu đủ ba ý: phạm vi, tiêu chí xong, CI đỏ. Phiên phỏng vấn vẫn hỏi thêm hai câu, và lần nào cũng tự đoán đúng:
+  - `main` có giữ nguyên tới lần release đầu không, và sau Task này nhánh mặc định là gì. Lý do của câu hỏi: `jira-sync` và `merge-gate` chạy theo `workflow_run`, chỉ đọc từ nhánh mặc định.
+  - Nếu CI xanh mà `doctor` còn dòng chưa đạt thì làm sao.
+  Bản cuối sẽ thêm hai ý này vào đoạn mẫu. Task tạo ra là `AOG-2`.
+- Bốn lệnh kiểm trong `ao-brown` đều xanh: `lint` 59 giây, `typecheck` 13 giây, `test:coverage` 44 giây, `build` 29 giây. Commit `7592738` `chore(kit): add the ai-orchestrator kit (AOG-2)` lên `develop` mới, không có file nhạy cảm. `.claude/skills` có 110 file, không có skill theo stack. Push `develop` qua được `pre-push`, vì nhánh này chưa có trên remote.
+- `setup github ao-brown` chạy ngay sau push, lần này cả bảy mục đều là `Set …`, gồm đổi nhánh mặc định sang `develop`.
+- Lần push này kéo theo lượt `CI` theo sự kiện ngay: GitHub ghi nhận 4 workflow (`CI`, `jira-sync`, `merge-gate`, `Dependabot Updates`). Khác `ao-green` vì workflow lên ở lần push thứ hai, khi repo đã có commit. Ở `ao-pilot` cũng vậy. Dependabot chạy ngay một lượt cập nhật bảo mật `minimatch`, vì `setup github` vừa bật nó.
+- **CI đầu trên `develop` đỏ ở `sast`** (run 43266874472; `policy`, `build-test`, `secrets` xanh). Semgrep bắt `spawn-shell-true` ở `scripts/dev.mjs`, dòng `spawn('npm', args, { …, shell: process.platform === 'win32' })`.
+  - Push một nhánh mới thì `github.event.before` toàn số 0, nên `ci.yml` cho Semgrep quét **toàn bộ repo**, không có baseline. Comment của job lại ghi "only findings the changes bring count". `gitleaks` thì chỉ quét commit đầu nhánh.
+  - Dòng đó có ở ba nơi: code cũ của `ao-brown`, `develop` của `ao-sample`, và **khung `next-nest` của kit**. Trước giờ không lần nào bắt được: mọi lượt CI của PR và của push có commit trước đều có baseline. Lần đầu của `ao-green` đáng lẽ quét toàn bộ, nhưng lúc đó Actions tắt.
+  - `ao-sample` đã gặp chính lỗi này ở `release/v0.1.0` (run 42752980376, 2026-11-10): lượt đầu đỏ, lượt push sau xanh nhờ có baseline. Chưa ai ghi lại. T18 (`release/v0.2.0`) sẽ gặp lại.
+  - Kit đã sửa (`fix(scaffold): start npm without a shell …`, test đỏ trước): `scripts/dev.mjs` của khung chạy `npm-cli.js` bằng `node` (`npm_execpath`, hoặc file cạnh `node`), như `lib/quality/npm.mjs`. Đã chạy thật trong `ao-green`: web 200, api 200 sau 37 giây, dừng cây tiến trình xong thì cổng được giải phóng.
+  - Với `ao-brown`, theo đúng Task `AOG-2`: CI đỏ thì mở Bug riêng và sửa qua PR.
+- Phỏng vấn Bug hỏi thêm một câu: PR do người mở và tự merge, không có review của agent, đúng không. Claude đoán đúng, kèm lo ngại `audit` sẽ chặn lần deploy đầu. Lo ngại này không đúng ở đây: deployer chỉ audit từ một commit mốc đặt lúc đưa dự án lên VPS (`lib/release/deployer.mjs`, `auditsOf`). Bug tạo ra là `AOG-3`.
+- PR `ao-brown` #1 `fix(scripts): start npm without a shell in the dev script (AOG-3)`, nhánh `bugfix/AOG-3-dev-script-shell`. Trước khi push, mình chạy thử bản mới của `scripts/dev.mjs`: web 307 (sang `/notes`), api 200, sau 11 giây.
+  - CI của PR: `sast` xanh (có baseline), `policy`, `secrets`, `jira-sync` xanh.
+  - `build-test` đỏ ở bước coverage của dòng đổi: `coverage-diff: scripts/dev.mjs is not in any lcov file`. Luật `coverage` của `quality/gates.yaml` coi mọi file `.mjs` là source, chỉ trừ config, test, `e2e/` và bản kit. Vì vậy script chạy app ở máy cũng phải có trong lcov. Khung `next-nest` cũng có `scripts/dev.mjs`, nên mọi sửa ở đó trong dự án dựng mới đều vấp luật này.
+- Bạn duyệt hai luật (Lượt 177). Kit sửa ở hai commit, mỗi commit có test đỏ trước:
+  - `quality/gates.yaml`: `coverage.exclude` thêm `scripts/**`;
+  - `ci.yml`: push nhánh mới thì Semgrep chỉ quét commit đầu nhánh, còn commit gốc và lượt chạy tay thì quét toàn bộ. Test chạy thật đoạn script của job bằng bash, với `uvx` giả, đủ năm trường hợp.
+
+  Lần chạy test đầu, bash gọi nhầm `uvx` thật trên máy: đường dẫn Windows có `:` làm tách `PATH`. Test giờ dùng `$PWD/bin`.
+  - `check-policy` không coi việc thêm mục vào `coverage.exclude` là hạ chuẩn: `loweredThresholds` chỉ xét `changed_lines_min`, `audit_level` và các danh sách bị mất mục. Chỗ này được giữ bởi việc `gates.yaml` là đường dẫn được bảo vệ, chỉ bạn merge.
+- Bạn hỏi vì sao lại merge một PR có CI đỏ (Lượt 178). Mình đổi cách: đưa luật coverage mới vào chính bản kit của `ao-brown` trong PR #1 (`ee0bc2e`, chép `quality/gates.yaml` của kit). CI chạy lại xanh đủ: `policy`, `build-test`, `secrets`, `sast`, `jira-sync`. GitHub vẫn cho bấm merge PR đỏ, vì repo private trên gói Free không có ruleset (soft mode). Hướng dẫn nên nói rõ điều này: CI đỏ thì không merge, kể cả khi nút vẫn bấm được.
+- Bạn merge PR #1 bằng Squash (`498c769`). Lượt `CI` theo push trên `develop` (run 43273419038) xanh đủ bốn job, kể cả `sast`.
+- `doctor ao-brown`: mọi dòng đạt, gồm cả MCP và tin cậy thư mục, trừ "the kit files are those of this clone". Dòng này lệch 1 file: `.github/workflows/ci.yml`. Đó là luật Semgrep mới, sửa sau khi kit đã chép vào `ao-brown`. Mong đợi, như 6 file của `ao-green` ở T16.
+- Phần 4 của hướng dẫn viết lại thành 8 bước, theo đúng những gì đã chạy. Đoạn mẫu của `/ao-intake` có thêm hai ý mà phỏng vấn đã hỏi: `main` giữ nguyên tới lần release đầu, và cách sửa khi `doctor` chưa đạt.
+- Lượt cập nhật bảo mật `minimatch` của Dependabot đỏ. Chưa tìm hiểu, vì không chặn T17.
+- Ở Lượt 171 mình đoán lượt CI đầu trên `develop` sẽ không kéo theo `jira-sync`. Đoán sai: `jira-sync` vẫn chạy (`workflow_run`, xanh), vì `setup github` đã đổi nhánh mặc định sang `develop` trước khi CI chạy xong.

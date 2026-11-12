@@ -141,7 +141,12 @@
   - **Bạn:** cài hai App vào repo, nối GitHub for Jira, tin cậy thư mục, chạy `/ao-intake` cho Task đầu; bấm tạo space và board nếu T2 thấy API không làm được.
   - **Đạt khi:** `doctor` báo mọi dòng đạt, CI xanh trên `develop`, `/ao-status` chạy được.
   - Mỗi chỗ vướng ghi vào `verification.md` và sửa bản nháp. Lỗi của kit sửa bằng PR nhỏ, test đỏ trước.
-- [ ] **T17 [bạn]: kiểm thật repo đang có** (tiêu chí 3), làm đúng theo phần 4 của bản nháp.
+- [x] **T17 [bạn]: kiểm thật repo đang có** (tiêu chí 3), làm đúng theo phần 4 của bản nháp. Xong 2026-11-13, Lượt 170–179:
+  - `init` báo đúng hai việc còn thiếu: `deploy.yaml` và `develop`. `check` bắt hai chỗ đoán sai trong `project.yaml`.
+  - CI xanh trên `develop` (`498c769`). `doctor` đạt mọi dòng, trừ `ci.yml`, sửa sau khi kit đã chép.
+  - Bug `AOG-3` sửa lỗi cũ `scripts/dev.mjs`, qua PR `ao-brown` #1.
+  - Bạn duyệt hai luật ở Lượt 177: coverage bỏ `scripts/**`, và Semgrep chỉ quét commit đầu khi push nhánh mới.
+  - Phần 4 của hướng dẫn viết lại thành 8 bước.
   - Repo `TungPH7/ao-brown` (private): code của `ao-sample` đã gỡ hết file của kit, chỉ có nhánh `main`. Dùng chung space `AOG`.
   - **Bạn:** cài hai App, nối GitHub for Jira.
   - **Đạt khi:** `init` báo đúng việc còn thiếu; làm xong các việc đó thì `doctor` đạt và CI xanh.

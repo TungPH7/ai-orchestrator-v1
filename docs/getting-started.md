@@ -1,6 +1,6 @@
 # Bắt đầu với AO Kit
 
-> **Bản nháp** (project-scaffold). Phần 3 đã được làm thật trên `ao-green` (T16) và sửa theo những gì gặp. Phần 4 sẽ được làm thật ở T17. Phần 5 và 7 viết ở bản cuối (T19). Spec: [SPEC-project-scaffold.md](../SPEC-project-scaffold.md) mục 2.7.
+> **Bản nháp** (project-scaffold). Phần 3 và 4 đã được làm thật trên `ao-green` (T16) và `ao-brown` (T17), rồi sửa theo những gì gặp. Phần 5 và 7 viết ở bản cuối (T19). Spec: [SPEC-project-scaffold.md](../SPEC-project-scaffold.md) mục 2.7.
 
 Tài liệu này dành cho dev chưa dùng kit. Bạn đọc từ trên xuống: chuẩn bị một lần, dựng dự án, rồi làm một tính năng từ ý tưởng tới Production. Mỗi lệnh có bốn ý: làm gì, gõ khi nào, kết quả mong đợi, lỗi thì làm gì.
 
@@ -258,20 +258,32 @@ Trong Claude Code, gõ `/ao-status`. Lệnh in việc đang chờ bạn và lệ
 
 ## 4. Dự án đang phát triển
 
-Ví dụ: repo `TungPH7/ao-brown` đã có app Next.js và NestJS, nhánh `main`, chưa có kit. Kit dùng chung space `AOG`.
+Ví dụ: repo `TungPH7/ao-brown` có sẵn app Next.js (`apps/web`) và NestJS (`apps/api`), chỉ có nhánh `main`, chưa có kit. Kit dùng chung space `AOG`. Mỗi bước dưới đây đã được làm thật trên `ao-brown` (T17), và đầu ra ghi ở đây là đầu ra thật.
+
+Khác với dự án mới ở ba điểm:
+- `init` không đụng file của app, chỉ liệt kê việc còn thiếu.
+- Repo đã có commit, nên commit chép kit cần một Task trên Jira. Vì vậy Claude Code và hai App đi trước commit.
+- CI lần đầu có thể gặp lỗi có sẵn trong code cũ. Lỗi đó được sửa như mọi Bug.
 
 ### Bước 1. Cài kit
 
 ```
-git switch main && git status
+git -C ao-brown switch main && git -C ao-brown status
 node <kit>/scripts/ao-kit.mjs init ao-brown --name ao-brown --space AOG --repo TungPH7/ao-brown --approvers TungPH7 --dev-app tungph7-ao-dev --dev-app-id 5514949 --review-app tungph7-ao-review --review-app-id 5514961
 ```
 
 - **Ý nghĩa:**
   - Thư mục có code, nên `init` không dựng khung và không sửa file nào của app.
-  - Lệnh viết `project.yaml` từ các workspace của `package.json`. Cổng và `health` của từng app là phỏng đoán; bạn mở file kiểm lại.
-  - Lệnh chép kit, sinh `settings.json` và agent.
+  - Lệnh viết `project.yaml` từ các workspace của `package.json`. Cổng và `health` của từng app chỉ là phỏng đoán.
+  - Lệnh chép kit, thêm bốn dòng vào `.gitignore` và script `prepare` vào `package.json`, rồi sinh `settings.json` và agent.
+  - Nếu thư mục chưa có remote `origin`, lệnh thêm nó từ `--repo`. Nếu `origin` trỏ tới repo khác, lệnh báo.
   - Lệnh in danh sách `Missing:`, những gì repo còn thiếu để qua cổng của kit.
+- **Kết quả mong đợi** (khoảng 12 giây):
+  - `The repo has code, so ao-kit init copies the kit only…`;
+  - `Ran npm ci --prefix .ai-orchestrator`, `Ran node .ai-orchestrator/scripts/render-agents.mjs --project .`;
+  - các dòng `Missing:`, ở T17 là `no .ai-orchestrator/deploy.yaml` và `no develop branch`;
+  - dòng `Next:`.
+- **Khác dự án mới:** `init` không thêm skill theo stack, như `vercel-react-best-practices` hay `nestjs-best-practices`. Muốn có thì làm theo mục "Skill" của [docs/AGENTS.md](AGENTS.md).
 
 ### Bước 2. Làm từng việc còn thiếu
 
@@ -280,15 +292,77 @@ node <kit>/scripts/ao-kit.mjs init ao-brown --name ao-brown --space AOG --repo T
 | Script `lint`, `typecheck`, `test:coverage`, `build` | Thêm vào `package.json` gốc. `test:coverage` phải ghi `coverage/lcov.info`. CI chỉ tính coverage của dòng mới đổi, nên code cũ chưa có test không chặn PR |
 | Playwright | Cài `@playwright/test`, viết `playwright.config.ts` và ít nhất một smoke test |
 | `.ai-orchestrator/deploy.yaml`, `Dockerfile` | Theo [docs/release-workflow.md](release-workflow.md), mục yêu cầu với dự án |
-| Nhánh `develop` | `git switch -c develop` |
+| Nhánh `develop` | `git switch -c develop`, từ `main` |
+| Phỏng đoán của `project.yaml` | Mở file, sửa `port`, `health` và `public` của từng app cho khớp app thật và `deploy.yaml`. `health` phải là trang trả 200, không phải trang chuyển hướng |
+| Hook git | `npm ci` trong thư mục. Script `prepare` cài hook. Với repo có code, `init` không cài package của app, nên hook chưa có cho tới bước này (khoảng 2 phút) |
 | Quy ước commit | Từ commit kế tiếp, dòng đầu là `type(scope): subject (<KEY>)`. Lịch sử cũ giữ nguyên |
 
-### Bước 3. Commit, GitHub, Jira, kiểm
+Rồi kiểm:
 
-Làm như bước 3 đến 10 của phần 3, với ba điểm khác (sẽ kiểm thật ở T17):
-- Repo đã có commit, nên commit chép kit cần mã Jira. Làm bước 4 (App) và bước 8 (Claude Code) trước, gõ `/ao-intake` để tạo Task cho việc chép kit, rồi commit lên `develop` với mã đó.
-- Space `AOG` đã có, nên `setup jira` chỉ kiểm.
-- Nếu có PR đang mở trên `main` từ trước, merge hoặc đóng chúng trước khi đổi nhánh mặc định sang `develop`.
+```
+node <kit>/scripts/ao-kit.mjs check ao-brown
+```
+
+- **Kết quả mong đợi:** `project.yaml OK: 2 apps (api, web), space AOG, repo TungPH7/ao-brown`.
+- **Ở T17:** lần đầu lệnh bắt hai chỗ lệch với `deploy.yaml`: `C1 apps.web.health` (`/` và `/notes`) và `C1 apps.web.public`. Sửa `project.yaml` xong thì lệnh báo OK.
+
+### Bước 3. Jira, App và Claude Code
+
+1. `node <kit>/scripts/ao-kit.mjs setup jira ao-brown`. Space `AOG` đã có, nên lệnh chỉ kiểm. Kết quả mong đợi: `jira:check: Jira space AOG matches tracker/jira.yaml`.
+2. Cài hai App vào repo, như bước 4 của phần 3.
+3. Nối GitHub for Atlassian với repo, như bước 6 của phần 3.
+4. Mở `claude` trong thư mục, tin cậy thư mục, chọn **Enable selected** cho hai server MCP, như bước 8 của phần 3.
+
+### Bước 4. Task cho việc chép kit
+
+Trong Claude Code, gõ nguyên đoạn sau, đổi tên repo:
+
+```
+/ao-intake Task chép kit vào ao-brown: tôi tự commit bản kit mà ao-kit init vừa chép, cùng deploy.yaml và project.yaml đã sửa, lên nhánh develop mới, rồi push develop; sau đó chạy ao-kit setup github, lệnh này đổi nhánh mặc định sang develop. main giữ nguyên tới lần release đầu. Không agent nào code. Trước khi push tôi chạy lint, typecheck, test:coverage, build ở máy. Xong khi CI trên develop xanh và ao-kit doctor đạt mọi dòng. CI đỏ, hay doctor báo thiếu một file trong repo, thì mở Bug riêng sửa qua PR; thiếu ngoài repo (App, secret, Jira) thì sửa tay trong Task này. Task này sẽ được Cancel khi xong, vì nó không đi qua PR.
+```
+
+- Claude có thể hỏi thêm. Trả lời theo đoạn trên.
+- Khi Claude đưa bản nháp, trả lời **"ok"**. Lúc đó Task mới được tạo; ở T17 là `AOG-2`.
+
+### Bước 5. Commit chép kit và push `develop`
+
+```
+cd ao-brown
+npm run lint && npm run typecheck && npm run test:coverage && npm run build
+git add -A
+git commit -m "chore(kit): add the ai-orchestrator kit (AOG-2)"
+git push -u origin develop
+```
+
+- **Ý nghĩa:**
+  - `develop` tạo từ `main` ở bước 2. Hook `pre-push` cho tạo nhánh này vì nó chưa có trên GitHub.
+  - `main` giữ nguyên tới lần release đầu.
+- **Kết quả mong đợi:** bốn lệnh kiểm xanh, tổng cộng khoảng 2,5 phút, và dòng `* [new branch] develop -> develop`.
+
+### Bước 6. Phần GitHub
+
+Tạo key thứ hai của `ao-dev` cho repo này, chạy `setup github`, rồi xóa file key, như bước 6 của phần 3. Chạy lệnh **ngay sau khi push**:
+- Lệnh đổi nhánh mặc định sang `develop`. `jira-sync` và `merge-gate` chỉ chạy theo bản workflow của nhánh mặc định.
+- Nếu có PR đang mở trên `main` từ trước, merge hoặc đóng chúng trước khi chạy lệnh.
+
+### Bước 7. CI lần đầu
+
+- Workflow lên repo ở lần push này, khi repo đã có commit. Vì vậy GitHub chạy `CI` ngay, không cần bấm **Enable Actions** như ở dự án mới. Nếu tab Actions vẫn báo tắt, làm như bước 7 của phần 3.
+- Lượt đầu chỉ quét commit chép kit, không quét code cũ. Ở T17, trước khi có luật này, Semgrep quét toàn bộ repo và chặn một lỗi có sẵn trong `scripts/dev.mjs`. Muốn xem các lỗi cũ của repo, chạy tay `gh workflow run CI --repo TungPH7/ao-brown --ref develop`.
+- **Nếu CI đỏ:**
+  1. Gõ `/ao-intake` để mở một Bug.
+  2. Sửa trên nhánh `bugfix/<KEY>-<slug>` tách từ `develop`, rồi mở PR.
+  3. Chờ CI của PR xanh rồi mới merge. Repo private trên gói Free không có ruleset, nên nút merge vẫn bấm được khi CI đỏ. Đừng merge khi CI còn đỏ.
+
+### Bước 8. Kiểm và đóng Task
+
+```
+node <kit>/scripts/ao-kit.mjs doctor ao-brown
+```
+
+- **Kết quả mong đợi:** `Every row passes.`
+- **Đóng Task:** Task chép kit, và Bug nếu có, do bạn làm, không đi qua agent. Hợp đồng không có đường tới Done cho chúng. Vì vậy bấm **Cancel**, kèm comment trỏ tới commit hay PR đã làm.
+- Gõ `/ao-status` trong Claude Code: dự án đã sẵn sàng cho việc đầu tiên (phần 5).
 
 ## 5. Một tính năng lớn, từ ý tưởng tới Production
 
