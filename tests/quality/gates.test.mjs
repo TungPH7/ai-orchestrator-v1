@@ -6,6 +6,7 @@ import { join } from 'node:path';
 import { parse } from 'yaml';
 import { readContract } from '../../lib/contract.mjs';
 import { docsRule, epicOfDocsBranch, readCiJobs, readGates, validateGates } from '../../lib/quality/gates.mjs';
+import { matchesGlob } from '../../lib/quality/glob.mjs';
 import { CONTRACT_DIR, ROOT, makeKit } from '../helpers/kit.mjs';
 import { applyPatch } from '../helpers/patch.mjs';
 
@@ -27,6 +28,14 @@ test('the gates hold the values of the spec: four checks, 80% of changed lines, 
   assert.deepEqual(gates.suppressions.never, ['.only(']);
   for (const left of ['**/*.config.*', '**/migrations/**']) assert.ok(gates.coverage.exclude.includes(left), left);
   assert.deepEqual(gates.protected_branches, ['develop', 'main', 'release/*']);
+});
+
+// The scripts at the root of a project run on your machine, as scripts/dev.mjs starts the apps; no test covers them
+// (project-scaffold T17, approved on turn 177). The code of the apps still counts.
+test('coverage leaves out the scripts at the root of a project, and still counts the apps', () => {
+  const counted = (file) => gates.coverage.source.some((glob) => matchesGlob(glob, file)) && !gates.coverage.exclude.some((glob) => matchesGlob(glob, file));
+  assert.equal(counted('scripts/dev.mjs'), false);
+  for (const file of ['apps/api/src/main.ts', 'apps/web/src/app/page.tsx', 'apps/api/src/scripts/seed.ts']) assert.equal(counted(file), true, file);
 });
 
 test('a full security review is at high unless the PR touches a path of security_review (Pilot 1, review cost)', () => {
