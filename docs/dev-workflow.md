@@ -83,9 +83,11 @@ Có cả hai thì `be-dev` chạy trước. Mỗi agent nhận phần của mìn
 | `epic` | `sa` sửa SPEC, plan hay ADR trên nhánh PR, và liệt kê các item khác bị ảnh hưởng trên Epic |
 | `story` | `ba` đổi Task thành Story, viết AC mới và thêm chúng vào `spec.md` |
 
+Lượt đổi tài liệu có thể nhờ `ux` hay `sa` sửa `design.md` hay `plan.md` cho khớp, bằng `Cần ux:` / `Cần sa:` trên item hoặc Epic. Các yêu cầu tới `ba`, `ux`, `sa` viết sau lúc lượt đổi tài liệu bắt đầu được chạy ngay trong `/ao-fix`, cũ trước. Chúng chạy trên nhánh PR, sau lượt đổi tài liệu và trước dev agent; role commit tài liệu rồi push, nên PR hiện cả phần sửa này. Các yêu cầu khác vẫn đi qua `/ao-request`. Lần làm lại sau `QA fail` cũng vậy: các yêu cầu viết từ lúc `ba` thêm AC chạy trên nhánh `-rN`, sau `spec-sync`.
+
 Khả năng mới, đổi kết quả mong đợi của một Bug, hay đổi hướng cả Epic thì không sửa trên PR này: Claude dừng và trỏ sang `/ao-intake`.
 
-**Yêu cầu giữa các vai trò.** Agent nhờ role khác bằng comment `Cần <role>:` trên item; bạn cũng nhờ được bằng một comment như vậy, không có tên Agent ở đầu. `/ao-request <KEY>` chạy các yêu cầu gửi `ba`, `ux` hoặc `sa`. Trên Epic đang ở Specifying hay Planning, role làm trên nhánh tài liệu; ở chỗ khác, role chỉ làm trên Jira và không commit. Yêu cầu xong khi role đó comment trả lời trên item. `/ao-spec` và `/ao-plan` tự chạy các yêu cầu này trên Epic của mình trước khi dừng ở cổng. Yêu cầu gửi dev role hay `qa` chỉ hiện trong `/ao-status`.
+**Yêu cầu giữa các vai trò.** Agent nhờ role khác bằng comment `Cần <role>:` trên item; bạn cũng nhờ được bằng một comment như vậy, không có tên Agent ở đầu. `/ao-request <KEY>` chạy các yêu cầu gửi `ba`, `ux` hoặc `sa`. Trên Epic đang ở Specifying hay Planning, role làm trên nhánh tài liệu; ở chỗ khác, role chỉ làm trên Jira và không commit. Khi yêu cầu cần sửa một tài liệu đã merge, role ghi phần cần sửa trong comment và trong câu trả lời cuối, để Claude báo bạn. Yêu cầu xong khi role đó comment trả lời trên item. `/ao-spec` và `/ao-plan` tự chạy các yêu cầu này trên Epic của mình trước khi dừng ở cổng. Yêu cầu gửi dev role hay `qa` chỉ hiện trong `/ao-status`.
 
 ## Một vòng Epic từ đầu tới cuối
 
@@ -155,8 +157,14 @@ Bản nháp của `/ao-intake` nằm ở `.ai/intake/<YYYYMMDD-HHmm>-<slug>.md`.
 
 - **Agent bỏ lại server:** `claude -p` không thoát khi agent còn để một lệnh chạy ở nền, ví dụ `npm run dev` sau khi xem trang trên trình duyệt. Ở Pilot 1, lượt chạy vì thế treo 1 đến 12 phút, và khi lệnh nền kết thúc thì agent tỉnh dậy thêm một turn, tốn một lần ghi cache. Từ T10, `ao-step` dừng tiến trình của agent 60 giây sau khi nó có kết quả mà chưa thoát. Trên Windows, lệnh dừng (`taskkill /T`) lấy cả cây tiến trình, nên các server cũng tắt. Ở nơi khác chỉ tiến trình của agent bị dừng; server nó bỏ lại bạn tự tắt. Lượt chạy giữ nguyên câu trả lời và kết quả, `state.json` ghi thêm `stoppedAfterResult: true`, và `ao-step` in một dòng báo.
 - **Hết usage:** lượt đang chạy ghi `usage-limit`. Sau khi reset, chạy lại đúng lệnh đó. `ao-step` mở lại session cũ bằng `--resume`, không chạy lại các lượt đã xong.
+- **Phần làm dở của lượt dừng giữa chừng.** Lượt chạy trên nhánh của item mà dừng vì `usage-limit` hay `unfinished`, trong khi `ao-step` còn chạy, có thể để lại thay đổi chưa commit. Khi đó `ao-step` cất các thay đổi này, kể cả file chưa track, vào stash có nhãn `ao-step <KEY> run <n> <role>`. Stash chỉ dùng cho việc này; file bị ignore như `.ai/` không đi theo. Câu dừng ghi tên stash, và `state.json` ghi SHA của nó ở `wip`. Lần chạy tiếp làm theo thứ tự:
+  1. Sau bước checkout, `ao-step` về nhánh đó.
+  2. Nó áp lại stash theo SHA, rồi xóa entry theo SHA. Stash dùng chung cho mọi worktree, nên `ao-step` không dùng `stash pop` hay vị trí `stash@{n}` đoán trước.
+  3. Prompt nhắc agent xem `git status` trước khi làm tiếp.
+
+  Thư mục có thay đổi khác, hay nhánh đã có commit mới từ lúc cất, thì `ao-step` không áp và dừng trước agent, kèm SHA để bạn tự `git stash apply <SHA>`.
 - **Tiến trình bị tắt giữa chừng:** máy thiếu RAM, hoặc bạn tắt Claude Code. Lượt dở nằm trong `state.json` với kết quả `unfinished`, và lần chạy lại đi tiếp trong session lấy từ log của lượt đó. Lượt bị tắt trước khi có dòng log đầu tiên thì không có session để đi tiếp.
-  - Thay đổi chưa commit còn trên bản checkout làm `ao-step` từ chối chạy. Dùng `git stash` để cất chúng.
+  - Lúc này `ao-step` không tự cất thay đổi chưa commit, vì không chắc đó là của agent. Nếu thay đổi làm `ao-step` từ chối chạy, cất bằng `git stash push --include-untracked -m "<mô tả>"`, rồi áp lại theo SHA khi lượt đi tiếp.
   - Nhãn hay cờ agent đã đặt trên Jira thì vẫn còn.
 - **Thiếu RAM:** mỗi lượt agent là một phiên Claude Code, kèm các server MCP. Ở Epic thử, Claude Code tắt lệnh nền ba lần, khi máy 16 GB còn trống dưới khoảng 3 GB.
   - Đóng bớt các phiên Claude Code khác trước khi chạy.
