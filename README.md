@@ -145,7 +145,7 @@ Bốn lệnh đưa code từ `develop` lên Development, Staging và Production 
 Thư mục `kit/` chứa các file đặt vào repo dự án, giữ đúng đường dẫn tương đối. Tới khi có `project-scaffold`, bạn chép tay như đã làm với `ao-pilot` và `ao-sample`. Từng bước ở Pilot 1, ai làm và vướng ở đâu: mục "Đầu vào cho `project-scaffold`" của [tasks/archive/pilot-1/verification.md](tasks/archive/pilot-1/verification.md).
 
 1. Tạo `.ai-orchestrator/` ở gốc repo dự án. Chép vào đó `contract/`, `lib/`, `tracker/`, `quality/`, `agents/`, `templates/`, cùng `package.json` và `package-lock.json` của kit, và chép `docs/sdlc.md` thành `.ai-orchestrator/docs/sdlc.md`, vì template trỏ tới DoD trong đó. Chép vào `.ai-orchestrator/scripts/` các script `ao-agent.mjs`, `ao-git-credential.mjs`, `ao-pr.mjs`, `ao-step.mjs`, `audit.mjs`, `check-design.mjs`, `check-policy.mjs`, `commit-msg.mjs`, `coverage-diff.mjs`, `install-hooks.mjs`, `jira-sync.mjs`, `merge-gate.mjs`, `pre-commit.mjs`, `pre-push.mjs`, `render-agents.mjs`. Chạy `npm ci --prefix .ai-orchestrator`, như các workflow.
-2. Chép `kit/.claude/`, `kit/.githooks/`, `kit/.mcp.json`, `kit/.jira/config.yml` và ba workflow trong `kit/.github/workflows/` (`ci.yml`, `jira-sync.yml`, `merge-gate.yml`) vào gốc repo. Trong `.claude/settings.json`, thay các giá trị mẫu: `AO_JIRA_SPACE` bằng mã space, `AO_APPROVERS` bằng login GitHub của bạn, còn `AO_DEV_APP`, `AO_DEV_APP_ID`, `AO_REVIEW_APP`, `AO_REVIEW_APP_ID` bằng slug và App ID của hai App. Rồi chạy `node .ai-orchestrator/scripts/render-agents.mjs --project .`. Lệnh này điền mã space vào agent và gộp skill theo stack của `.ai-orchestrator/roster.local.yaml`, nếu có.
+2. Chép `kit/.claude/`, `kit/.githooks/`, `kit/.mcp.json`, `kit/.jira/config.yml` và ba workflow trong `kit/.github/workflows/` (`ci.yml`, `jira-sync.yml`, `merge-gate.yml`) vào gốc repo. Viết `.ai-orchestrator/project.yaml`, file cấu hình của dự án ([SPEC-project-scaffold.md](SPEC-project-scaffold.md) mục 2.1): mã space, login GitHub của bạn, slug và App ID của hai App, các app. `node <kit>/scripts/ao-kit.mjs check .` kiểm file này. Rồi chạy `node .ai-orchestrator/scripts/render-agents.mjs --project .`. Lệnh này sinh `.claude/settings.json` từ hook, quyền của kit và `env` của `project.yaml`, điền mã space vào agent, và gộp skill theo stack của `.ai-orchestrator/roster.local.yaml`, nếu có. Đừng sửa tay `settings.json`: sửa `project.yaml` rồi chạy lại lệnh.
 3. Thêm `.ai-orchestrator/node_modules/`, `.claude/settings.local.json`, `.ai/` và `.playwright-cli/` vào `.gitignore`. `.ai/` giữ ledger, báo cáo và ảnh của agent; `.playwright-cli/` là snapshot mà `playwright-cli` tự ghi.
 4. Trong `package.json` của dự án, khai các script mà job `build-test` chạy: `lint`, `typecheck`, `test:coverage` (ghi lcov vào `coverage/lcov.info`) và `build`. Thêm `"prepare": "node .ai-orchestrator/scripts/install-hooks.mjs"` để `npm install` tự cài hook git. Script `precommit`, ví dụ lint các file đã stage, là tùy chọn; hook `pre-commit` gọi nó sau secretlint.
 5. Tạo hai GitHub App theo [docs/github-apps-setup.md](docs/github-apps-setup.md), cài vào repo, rồi đặt `AO_DEV_APP_KEY_FILE` và `AO_REVIEW_APP_KEY_FILE` trên máy bạn.
@@ -168,13 +168,13 @@ Về sau, cập nhật bản chép kit cũng phải đi qua PR, và PR đó do b
 |---|---|---|
 | `ATLASSIAN_AGENT_TOKEN` | Biến môi trường user trên máy chạy Claude Code | `.mcp.json` gửi token này cho Rovo MCP; hook `jira-guard` và `jira-rework` đọc dữ kiện Jira bằng nó |
 | `JIRA_CI_TOKEN` | Secret của repo dự án trên GitHub | `jira-sync`; `audit` dùng nó để gắn cờ item; `merge-gate` đọc Epic của PR tài liệu và gắn cờ item của PR bạn tự merge |
-| `AO_JIRA_SPACE`, `AO_APPROVERS` | Mục `env` trong `.claude/settings.json` của dự án; biến môi trường cùng tên được ưu tiên | Các hook, `jira-sync`, `merge-gate` và `audit`. `AO_APPROVERS` nhận nhiều login, cách nhau bằng dấu phẩy |
-| `AO_KIT_PEERS` | Mục `env` trong `.claude/settings.json` của dự án; biến môi trường cùng tên được ưu tiên. Các repo đã review kit, cách nhau bằng dấu phẩy, dùng cho [PR chép một bản kit đã được review](docs/quality-gates.md#pr-chép-một-bản-kit-đã-được-review) |
+| `AO_JIRA_SPACE`, `AO_APPROVERS` | Mục `env` trong `.claude/settings.json` của dự án, sinh từ `project.yaml` (`jira.space`, `github.approvers`); biến môi trường cùng tên được ưu tiên | Các hook, `jira-sync`, `merge-gate` và `audit`. `AO_APPROVERS` nhận nhiều login, cách nhau bằng dấu phẩy |
+| `AO_KIT_PEERS` | Mục `env` trong `.claude/settings.json` của dự án, sinh từ `github.kit_peers` của `project.yaml`; biến môi trường cùng tên được ưu tiên. Các repo đã review kit, cách nhau bằng dấu phẩy, dùng cho [PR chép một bản kit đã được review](docs/quality-gates.md#pr-chép-một-bản-kit-đã-được-review) |
 | `GITHUB_TOKEN` | Có sẵn trong GitHub Actions; ở máy, không đặt thì lấy từ GitHub CLI | `jira-sync`, `merge-gate` và `audit` đọc PR, review, check bằng nó; `jira-guard` đọc dữ kiện PR, CI |
 | `AO_KIT_DIR` | Không bắt buộc | Các hook tìm kit ở đây thay cho `.ai-orchestrator/` |
 | `AO_ENV_AUTH` | Biến môi trường user trên máy bạn; giá trị `ao:<mật khẩu>` | Basic auth của Development và Staging. `ao-step` chỉ truyền cho `qa`, dưới dạng `E2E_HTTP_USER` và `E2E_HTTP_PASSWORD` ([docs/release-workflow.md](docs/release-workflow.md)) |
 | `JIRA_ADMIN_EMAIL`, `JIRA_ADMIN_TOKEN` | Biến môi trường user trên máy bạn | `jira:check` |
-| `AO_DEV_APP`, `AO_DEV_APP_ID`, `AO_REVIEW_APP`, `AO_REVIEW_APP_ID` | Mục `env` trong `.claude/settings.json` của dự án | `ao-pr.mjs`: slug và App ID của hai GitHub App, không bí mật ([docs/github-apps-setup.md](docs/github-apps-setup.md)) |
+| `AO_DEV_APP`, `AO_DEV_APP_ID`, `AO_REVIEW_APP`, `AO_REVIEW_APP_ID` | Mục `env` trong `.claude/settings.json` của dự án, sinh từ `github.apps` của `project.yaml` | `ao-pr.mjs`: slug và App ID của hai GitHub App, không bí mật ([docs/github-apps-setup.md](docs/github-apps-setup.md)) |
 | `AO_DEV_APP_KEY_FILE`, `AO_REVIEW_APP_KEY_FILE` | Biến môi trường user trên máy bạn; giá trị là đường dẫn tới file private key | `ao-pr.mjs`. Thiếu trong môi trường của tiến trình thì đọc từ biến user trên Windows |
 | `AO_DEV_APP_KEY` | Secret của environment `merge-gate` trên GitHub | `merge-gate` merge bằng App `ao-dev`. Đây là private key thứ hai của App, khác file key trên máy bạn |
 | `NO_UPDATE_NOTIFIER` | Mục `env` trong `.claude/settings.json` của dự án, giá trị `1` | Tắt việc `playwright-cli` hỏi npm có bản mới mỗi lần chạy |
@@ -195,9 +195,10 @@ npm run jira:checklist  # sinh lại docs/jira-setup.md, checklist dựng Jira
 npm run jira:checklist:check  # báo lỗi nếu docs/jira-setup.md cũ hơn YAML
 npm run jira:check -- --space DEMO  # chỉ đọc: so cấu hình Jira thật của space với tracker/jira.yaml
 npm run gh:protect -- --repo <owner>/<name>  # áp ruleset khi repo hỗ trợ; repo private gói Free: chỉ báo soft mode
-npm run agents          # sinh lại kit/.claude/agents/ và kit/.claude/rules/ai-orchestrator.md từ agents/ và hợp đồng
+npm run agents          # sinh lại kit/.claude/agents/, kit/.claude/rules/ai-orchestrator.md và kit/.claude/settings.json từ agents/ và hợp đồng
 npm run agents:check    # báo lỗi nếu agent hay file quy ước sinh ra cũ hơn nguồn
 npm run skills:vendor -- <name>  # tải lại một skill chép vào kit, đúng commit ghim trong agents/roster.yaml
+node scripts/ao-kit.mjs check <thư mục dự án>  # kiểm project.yaml của dự án với schema, deploy.yaml, package.json và thư mục app
 ```
 
 Trong repo dự án, với bản chép ở `.ai-orchestrator/`:
@@ -228,7 +229,7 @@ CI ([.github/workflows/contract.yml](.github/workflows/contract.yml)) chạy `np
 ```
 contract/           6 file YAML của hợp đồng; JSON Schema của từng file nằm trong contract/schema/
 templates/          13 template artifact: spec, design, plan, ADR, Story, Task, Bug, PR, các báo cáo, release note, ledger
-agents/             roster.yaml (model, effort, max_turns, tool, quyền, skill), prompt của từng vai trò, rules.md; JSON Schema trong agents/schema/
+agents/             roster.yaml (model, effort, max_turns, tool, quyền, skill), prompt của từng vai trò, rules.md, settings.json (nguồn của .claude/settings.json); JSON Schema trong agents/schema/
 tracker/jira.yaml   ánh xạ hợp đồng sang Jira, cloud id, hạn token; JSON Schema trong tracker/schema/
 quality/gates.yaml  check bắt buộc, ngưỡng coverage, mẫu tắt kiểm tra, nhánh và file được bảo vệ, hai App; JSON Schema trong quality/schema/
 lib/contract.mjs    thư viện chỉ đọc: loadContract, validateContract, allowedTransitions, checkTransition, routeBug
@@ -238,6 +239,7 @@ lib/tracker/        ánh xạ và quy tắc J1–J4, quy ước mã Jira, client
 lib/quality/        đọc và kiểm quality/gates.yaml, token của App, coverage, mẫu tắt kiểm tra, mô tả PR, merge-gate, audit, luật của gh-guard
 lib/release/        deployer, Docker, Caddy, điểm cắt, số bản, PR release, smoke test
 lib/agents/         đọc roster và roster.local.yaml, sinh agent và file quy ước, dựng lệnh của ao-agent.mjs, luật ghi file và git theo vai trò, chép skill
+lib/scaffold/       project.yaml của dự án: schema, đọc, kiểm, đối chiếu với deploy.yaml và package.json
 scripts/            lệnh của kit: kiểm và sinh tài liệu, Jira, ao-pr.mjs, ao-agent.mjs, job policy, check-design, coverage, merge-gate, audit, gh-protect, hook git
 kit/                file đặt vào repo dự án: .mcp.json, .claude/ (agent, file quy ước, skill, hook), .githooks/, .jira/config.yml, workflow CI, jira-sync, merge-gate, audit
 docs/sdlc.md        sinh tự động, không sửa tay
