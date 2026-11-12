@@ -81,7 +81,7 @@ Kit chép thư mục `.githooks/` vào dự án. `node .ai-orchestrator/scripts/
 | Hook | Kiểm | Chặn khi |
 |---|---|---|
 | `pre-commit` | secretlint trên các file đã stage; rồi `npm run precommit --if-present` của dự án | Có secret; script của dự án lỗi |
-| `commit-msg` | `checkCommit` của `conventions.mjs` | Header sai `type(scope): subject (<KEY>)`. Commit merge và commit revert do git tạo thì cho qua |
+| `commit-msg` | `checkCommit` của `conventions.mjs` | Header sai `type(scope): subject (<KEY>)`. Commit merge và commit revert do git tạo thì cho qua. Commit gốc của repo (chưa có `HEAD`) không cần mã Jira (`project-scaffold`, T16) |
 | `pre-push` | Ref đích của lần push | Cập nhật `develop`, `main` hoặc một nhánh `release/*` đã có. Tạo nhánh `release/*` mới thì cho qua |
 
 Script `precommit` là chỗ `project-scaffold` đặt lint cho file đã stage, theo stack. Ở local chỉ dùng secretlint (gói npm) cho nhẹ; Semgrep cần Python, gitleaks là binary riêng, nên hai công cụ này và `npm audit` chỉ chạy ở CI. CI là nơi quyết định.

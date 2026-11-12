@@ -20,6 +20,15 @@ test('commit-msg accepts a header with the Jira key and refuses one without, wit
   assert.match(result.reason, /type\(scope\): subject \(<KEY>\)/);
 });
 
+// The first commit of a new repository comes before its Jira space has any item, and no PR can carry it
+// (project-scaffold T16): its header needs no key, but still follows type(scope): subject.
+test('commit-msg lets the root commit through without a key, in the same header format', () => {
+  assert.equal(checkCommitMessage('chore(scaffold): set up the project with ao-kit\n', { root: true }).ok, true);
+  assert.equal(checkCommitMessage('chore(scaffold): set up the project with ao-kit (SHOP-1)\n', { root: true }).ok, true);
+  assert.equal(checkCommitMessage('initial commit\n', { root: true }).ok, false);
+  assert.equal(checkCommitMessage('chore(scaffold): set up the project with ao-kit\n').ok, false);
+});
+
 test('commit-msg lets through the merge and revert messages git writes itself', () => {
   for (const message of [
     "Merge branch 'develop' into feature/DEMO-12-email-login\n",
@@ -96,6 +105,19 @@ test('the commit-msg script exits non-zero on a bad header and names the convent
   assert.match(bad.stderr, /type\(scope\): subject \(<KEY>\)/);
   writeFileSync(file, 'feat(api): add login endpoint (DEMO-12)\n');
   assert.equal(run('commit-msg.mjs', [file]).status, 0);
+});
+
+test('the commit-msg script asks no key of the first commit of a repository, and asks it of the next', (t) => {
+  const dir = gitRepo(t);
+  const file = join(dir, 'COMMIT_EDITMSG');
+  writeFileSync(file, 'chore(scaffold): set up the project with ao-kit\n');
+  const first = run('commit-msg.mjs', [file], { cwd: dir });
+  assert.equal(first.status, 0, first.stderr);
+  const git = (...args) => spawnSync('git', ['-c', 'user.name=t', '-c', 'user.email=t@example.com', ...args], { cwd: dir, encoding: 'utf8' });
+  assert.equal(git('commit', '-q', '--allow-empty', '--no-verify', '-m', 'chore(scaffold): set up the project with ao-kit').status, 0);
+  const next = run('commit-msg.mjs', [file], { cwd: dir });
+  assert.notEqual(next.status, 0);
+  assert.match(next.stderr, /Jira key/);
 });
 
 test('the pre-push script reads the refs on stdin and the protected branches of quality/gates.yaml', () => {
