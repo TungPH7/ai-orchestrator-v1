@@ -2,7 +2,7 @@
 
 > **Module:** `human-loop`, gồm ba việc A3, A4 và A5 trong [misc/thao-luan/concerns.md](misc/thao-luan/concerns.md). Làm sau A1 và trước `project-scaffold` (B1). **Sửa:** mục 2.1 và 2.8 của [SPEC-dev-workflow.md](SPEC-dev-workflow.md), mục 2.5 của [SPEC-release-workflow.md](SPEC-release-workflow.md).
 >
-> **Trạng thái:** đã duyệt 2026-11-11 (Phiên 27 · Lượt 120), cả 11 điểm ở mục 12. Plan và danh sách task: [tasks/plan.md](tasks/plan.md), [tasks/todo.md](tasks/todo.md). **Nguồn thảo luận:** [misc/brainstorm-discussion.md](misc/brainstorm-discussion.md), Phiên 27 · Lượt 102–118; [misc/thao-luan/git-khi-dung-kit.md](misc/thao-luan/git-khi-dung-kit.md).
+> **Trạng thái:** đã duyệt 2026-11-11 (Phiên 27 · Lượt 120), cả 11 điểm ở mục 12. Hoàn thành 2026-11-12 (Lượt 147): kiểm thật trọn vòng trên `ao-sample` với Epic `SMP-23`, chi phí 54,08 USD. Plan, danh sách task và kết quả lưu ở [tasks/archive/human-loop/](tasks/archive/human-loop/verification.md). **Nguồn thảo luận:** [misc/brainstorm-discussion.md](misc/brainstorm-discussion.md), Phiên 27 · Lượt 102–118; [misc/thao-luan/git-khi-dung-kit.md](misc/thao-luan/git-khi-dung-kit.md).
 
 Tên module: các chỗ bạn lái agent giữa chừng, ngoài 5 cổng duyệt.
 
