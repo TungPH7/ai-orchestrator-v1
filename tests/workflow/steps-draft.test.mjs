@@ -131,6 +131,46 @@ test('what a request changes runs first: ba for the criteria, sa for the API con
   assert.deepEqual(fixPlan(decideStep('fix', after, { ...options, note: REQUEST, change: 'ac' })), ['be-dev fix', 'fe-dev fix']);
 });
 
+// T20 of human-loop: ba changed AC1 and AC2 on PR #23 and asked sa and ux on the Epic to follow in plan.md and design.md.
+// Those requests ran only through /ao-request, on develop and Jira only, so the merged plan and design kept the old
+// order. Now the requests a document change wrote run in the same /ao-fix, on the PR branch, before the dev agents
+// (live-run-fixes spec 2.2).
+const STARTED = '2026-11-12T03:00:00.000Z';
+const minutes = (n) => Date.parse(STARTED) + n * 60000;
+const acRevised = { n: 1, command: 'fix', role: 'ba', purpose: 'ac-revise', outcome: 'done', head: OLDER, session: 's-ba', note: noteKey(REQUEST), startedAt: STARTED, endedAt: '2026-11-12T03:06:00.000Z' };
+const withRequests = ({ epic = [], item = [], runs = [acRevised] } = {}) => {
+  const facts = fixFacts({}, { run: { key: 'DEMO-21', runs } });
+  facts.item = { ...facts.item, requests: item };
+  facts.epic = { key: 'DEMO-20', type: 'Epic', workType: 'epic', requests: epic };
+  return facts;
+};
+const asked = (from, to, at, text = 'theo AC mới') => ({ from, to, text, at });
+
+test('the requests to ba, ux or sa a document change wrote run on the PR branch, oldest first, before the dev agents', () => {
+  const facts = withRequests({
+    epic: [asked('ba', 'ux', minutes(4)), asked('ba', 'sa', minutes(3)), asked(null, 'sa', minutes(-90), 'a request from before')],
+    item: [asked('ba', 'be-dev', minutes(5)), asked(null, 'ba', minutes(1), 'on the item itself')],
+  });
+  const decision = decideStep('fix', facts, { ...options, note: REQUEST, change: 'ac' });
+  assert.deepEqual(fixPlan(decision), ['ba request', 'sa request', 'ux request', 'be-dev fix', 'fe-dev fix']);
+  const [ba, sa] = decision.runs;
+  assert.deepEqual([sa.key, sa.request, sa.checkout], ['DEMO-21', minutes(3), { branch: 'feature/DEMO-21-remove-line', pull: true }]);
+  assert.equal(ba.request, minutes(1));
+  assert.equal(sa.prompt, PURPOSES.request({ key: 'DEMO-20', role: 'sa', from: 'ba', at: minutes(3), branch: 'feature/DEMO-21-remove-line', pr: 15, item: 'DEMO-21' }));
+  assert.match(sa.prompt, /^ba asked you on DEMO-20 in a comment that starts "Cần sa:", written at 2026-11-12T03:03:00\.000Z\. /);
+  assert.match(sa.prompt, /The branch feature\/DEMO-21-remove-line of DEMO-21 is checked out and up to date with origin, with its PR #15 open: change only documents there, such as those in docs\/specs\/, commit, and push the branch, so PR #15 shows it\. Change no code: the dev agents of DEMO-21 go on after you\./);
+  assert.match(ba.prompt, /^The human asked you on DEMO-21 in a comment that starts "Cần ba:"/);
+});
+
+test('without a document change, or before it ran, no request runs in /ao-fix: the others still go through /ao-request', () => {
+  const later = { epic: [asked('ba', 'sa', minutes(3))] };
+  assert.deepEqual(fixPlan(decideStep('fix', withRequests(later), { ...options, note: REQUEST })), ['be-dev fix', 'fe-dev fix']);
+  assert.deepEqual(fixPlan(decideStep('fix', withRequests({ ...later, runs: [] }), { ...options, note: REQUEST, change: 'ac' })), ['ba ac-revise', 'be-dev fix', 'fe-dev fix']);
+  // A change run of another request does not count: its requests were for that one.
+  const other = { ...acRevised, note: noteKey('fe: một yêu cầu khác') };
+  assert.deepEqual(fixPlan(decideStep('fix', withRequests({ ...later, runs: [other] }), { ...options, note: REQUEST, change: 'ac' })), ['ba ac-revise', 'be-dev fix', 'fe-dev fix']);
+});
+
 test('a Task of an Epic becomes a Story through ba; anything else, or a Task with no Epic, stops', () => {
   const task = fixFacts();
   task.item = { ...task.item, type: 'Task', workType: 'task', subtasks: [], role: 'fe-dev', roles: ['fe-dev'], agent: 'fe-dev' };
