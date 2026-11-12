@@ -1,0 +1,16 @@
+# How the deployer of the kit builds, runs and smoke-tests __TITLE__ on the VPS (release-workflow spec 2.3). The web is
+# the only public app; it reaches the API as http://api:3001 on the network of the environment. Neither app reads a
+# variable from /etc/ao/secrets/__NAME__/<environment>.env yet: name each one under env when an app needs it.
+apps:
+  web:
+    dockerfile: apps/web/Dockerfile
+    port: 3000
+    health: /
+    public: true
+  api:
+    dockerfile: apps/api/Dockerfile
+    port: 3001
+    health: /health
+smoke:
+  - { app: web, path: /, expect_status: 200, expect_text: "__TITLE__" }
+  - { app: api, path: /health, expect_status: 200, expect_text: '"status":"ok"' }

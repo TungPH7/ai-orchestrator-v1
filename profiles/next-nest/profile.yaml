@@ -1,0 +1,30 @@
+# The profile next-nest (project-scaffold spec 2.6): Next.js in apps/web, NestJS in apps/api, in one npm workspace. Its
+# files are the skeleton of ao-sample without its notes, with the fixes Pilot 1 made by hand: no @nestjs/mau and no
+# apps/api/AGENTS.md, next typegen before tsc, Vitest in both apps, the integration tests of the API in test:coverage,
+# a health endpoint, and the port of each app from PORT. ao-kit init copies files/ into an empty folder, with __NAME__
+# and __TITLE__ replaced, then runs `after` there. npm run profiles:check builds it in a temporary folder.
+name: next-nest
+node: ">=24.2"
+# The apps part of project.yaml.
+apps:
+  web:
+    path: apps/web
+    profile: nextjs
+    dev: npm run dev -w apps/web
+    port: { env: PORT, default: 3000 }
+    health: /
+    public: true
+  api:
+    path: apps/api
+    profile: nestjs
+    dev: npm run start:dev -w apps/api
+    port: { env: PORT, default: 3001 }
+    health: /health
+# roster.local.yaml: the stack skills, which files/.claude/skills/ holds.
+skills:
+  fe-dev: [vercel-react-best-practices]
+  be-dev: [nestjs-best-practices]
+# Run in the project once the files are copied, each with no shell.
+after:
+  - npm ci
+  - npx playwright install chromium

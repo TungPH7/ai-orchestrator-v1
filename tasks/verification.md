@@ -33,3 +33,17 @@ Space `AOG` và board 36 dùng tiếp cho T16. Cột của board sẽ được b
 **Thứ tự test.** Test của lệnh `ao-kit check` (T3) được viết cùng lượt với script, chạy lần đầu khi script đã có, nên không có lần đỏ trước. Các phần còn lại của chặng 1 có test đỏ trước.
 
 Năm lệnh kiểm xanh (1238 test).
+
+## Chặng 2: cài kit, 2026-11-12
+
+| Task | Kết quả |
+|---|---|
+| T7 | `lib/scaffold/install.mjs`: chép kit theo `kit_copy` của `gates.yaml`, mỗi thư mục của kit chép mới nên file kit đã bỏ cũng mất theo; giữ mọi file của dự án và skill riêng. Danh sách script chia hai: 15 script chép vào dự án, 10 script chỉ dùng trong kit; test bắt mọi script mới phải được xếp vào một bên. `draftFromOldConfig` dựng `project.yaml` từ `settings.json`, `preview.yaml`, `deploy.yaml` của dự án cũ, và ra đúng `project.yaml` mẫu của `ao-sample`. `misc/scaffold-input/` đã xóa |
+| T8 | `profiles/next-nest/`: 43 file khung lấy từ `ao-sample` (bỏ phần ghi chú), cộng hai skill theo stack. `npm run profiles:check` xanh trên máy: `npm ci` 86 giây, `lint`, `typecheck`, `test:coverage`, `build` 29 giây. Workflow `profiles.yml` chạy lệnh này khi PR đụng profile |
+| T9 | `ao-kit init` (thư mục trống, repo đang có), `sync`, `render`. Chạy thử thật: thư mục trống nhận khung 162 file và kit; thiếu App thì dừng và nói cần điền gì; chạy lại thì không đổi gì |
+
+**Hai chỗ khác plan, ở T8:**
+- Khung bỏ cả `apps/api/src/common/` (bộ lọc lỗi chung của API), không chỉ phần ghi chú. Thư mục này gắn với tính năng ghi chú: lỗi giới hạn số ghi chú, lỗi ghim, id của `/notes/:id/pin`. Nó là quyết định thiết kế riêng của `ao-sample` (ADR-0003), không phải chỗ Pilot 1 sửa tay. Epic đầu của dự án tự đặt cách báo lỗi.
+- `profiles:check` lần đầu đỏ ở `test:coverage` của web: vitest không thấy file test dưới đường dẫn tạm dạng rút gọn của Windows (`HUUTUN~1`). Script dùng đường dẫn dài (`realpathSync.native`) thì xanh.
+
+Năm lệnh kiểm xanh (1258 test).

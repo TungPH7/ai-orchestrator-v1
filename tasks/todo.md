@@ -22,7 +22,7 @@
   - **Kiểm:** kết quả ghi vào `tasks/verification.md`.
 
 ### Checkpoint 1: sau T2
-- [x] Biết bước Jira nào làm được bằng API: mọi thứ trừ cột của board và Kanban backlog (`verification.md`). Mục 2.4 của spec đã sửa (Lượt 156); chờ bạn duyệt trước T12.
+- [x] Biết bước Jira nào làm được bằng API: mọi thứ trừ cột của board và Kanban backlog (`verification.md`). Mục 2.4 của spec đã sửa (Lượt 156); bạn duyệt ở Lượt 157.
 
 ## Chặng 1: cấu hình, nhánh `task/project-scaffold-1`
 
@@ -57,11 +57,11 @@
   - **Kiểm:** năm lệnh kiểm; CI xanh; PR merge.
 
 ### Checkpoint 2: sau T6
-- [ ] PR chặng 1 đã merge, `main` xanh.
+- [x] PR chặng 1 đã merge, `main` xanh (#253).
 
 ## Chặng 2: cài kit, nhánh `task/project-scaffold-2`
 
-- [ ] **T7: `install.mjs`** (spec 2.2; plan, quyết định 4, 5).
+- [x] **T7: `install.mjs`** (spec 2.2; plan, quyết định 4, 5).
   - **Đạt khi:**
     - chép đúng các thư mục và file trong `kit_copy.same`, cùng danh sách script của bản chép;
     - thay skill của kit, giữ skill riêng của dự án;
@@ -71,7 +71,7 @@
     - danh sách script có test đối chiếu `kit_copy.same`; `misc/scaffold-input/` bị xóa.
   - **Kiểm:** `tests/scaffold/install.test.mjs` trên thư mục tạm thật, gồm một bản sao cấu trúc `ao-sample`.
   - **File:** `lib/scaffold/install.mjs`, test, xóa `misc/scaffold-input/`.
-- [ ] **T8: khung `next-nest`, `profiles:check`** (spec 2.6; plan, quyết định 7).
+- [x] **T8: khung `next-nest`, `profiles:check`** (spec 2.6; plan, quyết định 7).
   - **Đạt khi:**
     - `profiles/next-nest/files/` có khung lấy từ `ao-sample` (bỏ tính năng ghi chú), app đọc cổng từ biến môi trường;
     - `profile.yaml` khai app, lệnh, skill, phiên bản Node, việc sau khi chép;
@@ -79,7 +79,7 @@
     - workflow `profiles.yml` của kit chạy lệnh này khi PR đụng `profiles/` hay `lib/scaffold/`.
   - **Kiểm:** `profiles:check` xanh trên máy và trong CI; test đọc `profile.yaml`.
   - **File:** `profiles/next-nest/`, `scripts/profiles-check.mjs`, `package.json`, `.github/workflows/profiles.yml`, test.
-- [ ] **T9: `ao-kit init`, `sync`, `render`** (spec 2.2, 2.3).
+- [x] **T9: `ao-kit init`, `sync`, `render`** (spec 2.2, 2.3).
   - **Đạt khi:**
     - **`init` vào thư mục trống:** chép khung của profile, viết `project.yaml`, cài kit, rồi chạy việc sau khi chép;
     - **`init` vào repo đang có:**
@@ -91,7 +91,7 @@
     - chạy lại lần hai thì không đổi gì và nói vậy.
   - **Kiểm:** test đỏ trước trong `tests/scaffold/ao-kit.test.mjs`, với effect giả cho `npm` và `git`.
   - **File:** `scripts/ao-kit.mjs`, `lib/scaffold/init.mjs`, test.
-- [ ] **T10: tài liệu chặng 2, PR.**
+- [x] **T10: tài liệu chặng 2, PR.**
   - **Đạt khi:** `README.md` có lệnh `ao-kit` và `profiles:check`; cấu trúc thư mục có `profiles/` và `lib/scaffold/`.
   - **Kiểm:** năm lệnh kiểm và `profiles:check`; CI xanh; PR merge.
 
