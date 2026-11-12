@@ -51,7 +51,7 @@ test('a new repo gets develop as its default branch, branch deletion, Dependabot
   assert.deepEqual(fake.runs, [`node /kit/scripts/gh-protect.mjs --repo ${REPO}`]);
   const text = notes.join('\n');
   assert.match(text, /Delete \/keys\/ao-dev-2\.pem now/);
-  assert.match(text, /By hand: add acme/shop to the two GitHub Apps: on GitHub, Settings → Applications → Installed GitHub Apps/);
+  assert.match(text, /By hand: add acme\/shop to the two GitHub Apps: on GitHub, Settings → Applications → Installed GitHub Apps/);
   assert.match(text, /GitHub for Atlassian/);
 });
 
