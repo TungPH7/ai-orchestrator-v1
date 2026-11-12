@@ -49,8 +49,8 @@ Theo contract, lỗi tìm thấy khi QA một item chưa Done thì không tạo 
 
 1. `/ao-qa SMP-21 fail: xóa dòng cuối thì giỏ vẫn hiện tổng 120.000 đ; bước: thêm 1 sản phẩm rồi xóa; mong đợi: "Giỏ hàng trống"`. Claude hỏi lỗi này vi phạm AC nào của item, hay là mong đợi mới. Lỗi nằm ngoài item thì báo bằng Bug qua `/ao-intake`.
 2. Mong đợi mới thì `ba` thêm AC trên Jira trước (comment AC cũ và mới), chưa sửa SPEC.
-3. `qa` tái hiện lỗi trên môi trường QA, ghi báo cáo FAIL kèm bằng chứng, rồi bấm `QA fail`. Không tái hiện được thì `qa` không fail item, mà comment những gì đã thử và gắn cờ Needs you.
-4. `/ao-build SMP-21`: `ao-step` tạo nhánh `-r2` từ `develop`. Nếu `ba` đã đổi AC, `ba` chép phần đổi vào `spec.md` trước. Story có Sub-task cả BE và FE thì Claude liệt kê lỗi trong báo cáo FAIL và đề xuất chia theo `be:` / `fe:` để bạn duyệt; Sub-task đã Done giữ nguyên, lượt sửa làm ở mức Story.
+3. `qa` tái hiện lỗi trên môi trường QA, ghi báo cáo FAIL kèm bằng chứng, rồi bấm `QA fail`. Không tái hiện được thì `qa` không fail item, mà comment những gì đã thử và gắn cờ Needs you. `ao-step` chỉ gắn lên item những file `qa` ghi trong lượt đó. Ảnh của lượt trước không được gắn lại, kể cả khi `qa` dời chúng vào thư mục con.
+4. `/ao-build SMP-21`, đúng như dòng `Next:` của `/ao-qa` sau `QA fail`: `ao-step` tạo nhánh `-r2` từ `develop`. Nếu `ba` đã đổi AC, `ba` chép phần đổi vào `spec.md` trước. Story có Sub-task cả BE và FE thì Claude liệt kê lỗi trong báo cáo FAIL và đề xuất chia theo `be:` / `fe:` để bạn duyệt; Sub-task đã Done giữ nguyên, lượt sửa làm ở mức Story.
 5. Phần sau đi như thường: PR nháp, xem trước, review, gate ③, deploy, rồi `/ao-qa` lại. `QA fail` tăng Rework; chạm 3 thì item mang cờ.
 
 ## Fix Version trên Jira
