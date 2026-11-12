@@ -1,6 +1,6 @@
 # SPEC: live-run-fixes
 
-> **Trạng thái:** đã duyệt 2026-11-12 (Phiên 27 · Lượt 149), cả ba câu ở mục 9 theo đề xuất. Plan: [tasks/plan.md](tasks/plan.md). Bạn chọn làm module này trước B1 ở Phiên 27 · Lượt 148. Nguồn: mục T19 và T20 trong [tasks/archive/human-loop/verification.md](tasks/archive/human-loop/verification.md), và hai báo cáo review vòng hai của `ao-sample` PR #21 (`.ai/reviews/21-reviewer.md`, `21-security.md` trên máy).
+> **Trạng thái:** hoàn thành 2026-11-12 (Phiên 27 · Lượt 151): kit PR #247 (spec, plan), #248, #249, #250 (`7dd1a4d`), 0 USD agent. Duyệt ở Lượt 149, cả ba câu ở mục 9 theo đề xuất. Plan, todo, verification: [tasks/archive/live-run-fixes/](tasks/archive/live-run-fixes/). Bạn chọn làm module này trước B1 ở Phiên 27 · Lượt 148. Nguồn: mục T19 và T20 trong [tasks/archive/human-loop/verification.md](tasks/archive/human-loop/verification.md), và hai báo cáo review vòng hai của `ao-sample` PR #21 (`.ai/reviews/21-reviewer.md`, `21-security.md` trên máy).
 
 ## 1. Mục tiêu
 

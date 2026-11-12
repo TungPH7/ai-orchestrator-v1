@@ -1,6 +1,6 @@
 # Plan triển khai: live-run-fixes
 
-> **Spec:** [SPEC-live-run-fixes.md](../SPEC-live-run-fixes.md), đã duyệt 2026-11-12 (Phiên 27 · Lượt 149). **Trạng thái:** đã duyệt 2026-11-12 (Phiên 27 · Lượt 150). **Danh sách task:** [todo.md](todo.md).
+> **Spec:** [SPEC-live-run-fixes.md](../../../SPEC-live-run-fixes.md), đã duyệt 2026-11-12 (Phiên 27 · Lượt 149). **Trạng thái:** đã duyệt 2026-11-12 (Phiên 27 · Lượt 150); hoàn thành 2026-11-12 (Lượt 151), kết quả ở [verification.md](verification.md). **Danh sách task:** [todo.md](todo.md).
 
 ## Tổng quan
 

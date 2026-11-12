@@ -1,6 +1,6 @@
 # Task: live-run-fixes
 
-> **Plan:** [plan.md](plan.md). **Spec:** [SPEC-live-run-fixes.md](../SPEC-live-run-fixes.md). Làm theo thứ tự. Mỗi task viết test đỏ trước.
+> **Plan:** [plan.md](plan.md). **Spec:** [SPEC-live-run-fixes.md](../../../SPEC-live-run-fixes.md). Làm theo thứ tự. Mỗi task viết test đỏ trước.
 
 **Quy ước:**
 - Xong mỗi task thì năm lệnh kiểm phải xanh: `npm test`, `npm run validate`, `npm run render:check`, `npm run jira:checklist:check`, `npm run agents:check`.
@@ -79,7 +79,7 @@
     1. Một PR mà app không lên, trong khi CI vẫn xanh (ví dụ đổi script chỉ xem trước dùng): thư mục về `develop`, package của `develop` được cài lại, `active.json` không còn, và lệnh sau không bị chặn nhầm.
     2. Một PR đổi file chỉ dẫn, như `apps/web/AGENTS.md`: `/ao-preview` từ chối.
     3. Một nhánh cắt từ `develop` cũ: `/ao-preview` từ chối, và bảo merge `develop` vào nhánh.
-  - Xong thì đóng PR thử và xóa nhánh. Kết quả ghi vào `tasks/verification.md`.
+  - Xong thì đóng PR thử và xóa nhánh. Kết quả ghi vào [verification.md](verification.md).
 - [x] **T12: tài liệu phần 2, PR phần 2.**
   - **Đạt khi:** `docs/dev-workflow.md` tả các trường hợp `/ao-preview` từ chối thêm, đường lỗi khi bật, và cảnh báo file chưa track.
   - **Kiểm:** năm lệnh kiểm; CI xanh; PR merge.
@@ -126,4 +126,4 @@
 
 ## Đóng module
 
-- [ ] **T18: đóng module.** `tasks/verification.md` ghi kết quả từng task và T11; plan, todo, verification dời vào `tasks/archive/live-run-fixes/`; `SPEC.md`, `SPEC-live-run-fixes.md`, `concerns.md` (A6 Xong), memory cập nhật. PR tài liệu, tự merge khi CI xanh.
+- [x] **T18: đóng module.** `verification.md` ghi kết quả từng task và T11; plan, todo, verification dời vào `tasks/archive/live-run-fixes/`; `SPEC.md`, `SPEC-live-run-fixes.md`, `concerns.md` (A6 Xong), memory cập nhật. PR tài liệu, tự merge khi CI xanh.

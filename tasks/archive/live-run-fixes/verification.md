@@ -1,6 +1,6 @@
 # Kiểm chứng: live-run-fixes
 
-> **Spec:** [SPEC-live-run-fixes.md](../SPEC-live-run-fixes.md). **Plan:** [plan.md](plan.md). Ghi kết quả từng task khi xong.
+> **Spec:** [SPEC-live-run-fixes.md](../../../SPEC-live-run-fixes.md). **Plan:** [plan.md](plan.md). Module hoàn thành 2026-11-12 (Phiên 27 · Lượt 151).
 
 ## Phần 1: kit PR #248 (`cdf4ab3`), 2026-11-12
 
@@ -41,7 +41,7 @@ Không gọi agent, 0 USD. Kit chạy từ worktree `ao-kit-lrf` của nhánh `t
 
 **Thấy thêm trên `ao-sample`.** Lần chạy CI đầu của PR #25 đỏ ở một test web không liên quan: `notes-view.test.tsx`, "a pin the API refuses because 3 notes are pinned already (AC10)", lỗi `Found multiple elements with the text: Bỏ ghim một ghi chú để ghim ghi chú này`. Chạy lại job thì xanh, nên test này chập chờn. Nó gần với Low "câu gợi ý lặp" còn lại từ `SMP-24`; ghi vào việc còn lại của `ao-sample`.
 
-## Phần 3: lượt chạy, 2026-11-12
+## Phần 3: kit PR #250 (`7dd1a4d`), 2026-11-12
 
 | Task | Kết quả |
 |---|---|
@@ -59,3 +59,24 @@ Sau đó module trở lại bản đúng, 6 test xanh. Các task khác của ph�
 **Hai chỗ lệch so với plan, quyết định 3:**
 - Xóa nhầm entry khi bỏ stash: plan định cất lại rồi dừng lệnh. Code cất lại entry bị xóa nhầm, giữ entry của lượt trong danh sách, ghi một dòng báo, và cho agent chạy tiếp. Lý do: lúc đó phần dở đã nằm trong thư mục, nên dừng lệnh chỉ làm lần chạy sau vướng thư mục bẩn.
 - Áp lại chỉ khi HEAD của nhánh trùng commit lúc cất, và thư mục sạch. Không trùng thì dừng trước agent, kèm SHA. Lý do: áp lên một HEAD khác có thể để lại dấu xung đột trong thư mục.
+
+Năm lệnh kiểm xanh (1225 test), CI xanh.
+
+## Tiêu chí hoàn thành (spec mục 7)
+
+| Tiêu chí | Kết quả |
+|---|---|
+| 1. Năm lệnh kiểm xanh | Đạt, sau mỗi task và trên `main` (1225 test) |
+| 2. Mỗi mục 2.1, 2.2, 2.4–2.9 có test đỏ trước khi sửa | Đạt, trừ `wip.mjs` của T13: test viết sau code, bù bằng lần cố ý làm hỏng module (mục Phần 3) |
+| 3. Kiểm thật `/ao-preview` không tốn tiền | Đạt cả hai trường hợp của spec, thêm trường hợp nhánh cắt từ `develop` cũ (T11) |
+| 4. Kit merge vào `main` qua PR, CI xanh | Đạt: #247, #248, #249, #250 |
+
+Chi phí: 0 USD lượt agent. T11 chỉ tốn phút CI của `ao-sample` cho PR #25 và #27.
+
+## Việc còn lại
+
+- **Kit trên VPS:** `audit` chỉ so đường dẫn không phân biệt hoa thường khi kit trên VPS được cập nhật. Việc này cần bạn duyệt riêng.
+- **Bản chép kit trong `ao-sample`:** vẫn là `c6fdfa8`. Theo câu 2 của spec, chép sau B1, để một lần review mang cả hai module.
+- **Kiểm thật 2.1 và 2.2:** lần đầu ở Pilot 3, khi một lượt chạm giới hạn 5 giờ, và khi sửa AC trên PR.
+- **`SMP-23`:** bấm Complete khi một bản phát hành có `SMP-24` lên Production. Comment 10223 trên `SMP-19` ghi thứ tự ghim đúng.
+- **`ao-sample`:** test AC10 của `notes-view` chập chờn (mục T11), cùng các Low còn lại từ `SMP-24`.

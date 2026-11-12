@@ -136,7 +136,7 @@ agent-roster  → figma-integration (thêm ngày 2026-10-30; làm lúc nào do b
 | `release-workflow` | [`SPEC-release-workflow.md`](SPEC-release-workflow.md) | Hoàn thành 2026-11-07; plan lưu ở [`tasks/archive/release-workflow/`](tasks/archive/release-workflow/plan.md), việc để lại ở cuối `verification.md` |
 | `kit-copy-review` | [`SPEC-kit-copy-review.md`](SPEC-kit-copy-review.md) | Hoàn thành 2026-11-07, chen trước Pilot 2; plan lưu ở [`tasks/archive/kit-copy-review/`](tasks/archive/kit-copy-review/plan.md) |
 | `human-loop` | [`SPEC-human-loop.md`](SPEC-human-loop.md) | Hoàn thành 2026-11-12; plan lưu ở [`tasks/archive/human-loop/`](tasks/archive/human-loop/plan.md). Gồm A3, A4, A5 của [misc/thao-luan/concerns.md](misc/thao-luan/concerns.md): intake, xem trước giữa build và review, sửa lỗi sau QA fail. Kiểm thật trọn vòng trên `ao-sample` với Epic `SMP-23`; việc kit còn lại ở mục T20 của verification |
-| `live-run-fixes` | [`SPEC-live-run-fixes.md`](SPEC-live-run-fixes.md) | Đang làm: spec và plan duyệt 2026-11-12 ([tasks/plan.md](tasks/plan.md)). Việc A6 của [misc/thao-luan/concerns.md](misc/thao-luan/concerns.md): vá lỗi kit mà lần chạy thật của human-loop (T19, T20) tìm ra. Làm trước `project-scaffold` |
+| `live-run-fixes` | [`SPEC-live-run-fixes.md`](SPEC-live-run-fixes.md) | Hoàn thành 2026-11-12: kit PR #247–#250, plan, todo và verification ở [tasks/archive/live-run-fixes/](tasks/archive/live-run-fixes/). Việc A6 của [misc/thao-luan/concerns.md](misc/thao-luan/concerns.md): vá lỗi kit mà lần chạy thật của human-loop (T19, T20) tìm ra. Làm trước `project-scaffold` |
 | `project-scaffold` | `SPEC-project-scaffold.md` | Chưa viết |
 
 ## Câu hỏi mở
