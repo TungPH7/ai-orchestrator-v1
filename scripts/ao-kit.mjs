@@ -10,6 +10,8 @@
 //                 before project-scaffold
 //   render <dir>  .claude/settings.json and the agents again, from project.yaml
 //   check <dir>   project.yaml against its schema, deploy.yaml, package.json and the folders; writes nothing
+//   setup github <dir>   the GitHub side, with your gh login: default branch, branch deletion, Dependabot, the four
+//                 environments, JIRA_CI_TOKEN and AO_DEV_APP_KEY (--dev-app-key-file <path>), the ruleset check
 // Exit: 0 when it did what it says, 1 when the project has a problem it names, 2 on a wrong command line.
 import { spawnSync } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
@@ -17,13 +19,29 @@ import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 import { runNpm } from '../lib/quality/npm.mjs';
+import { appCredentials, userVariable } from '../lib/quality/github-app.mjs';
 import { initProject, syncKit } from '../lib/scaffold/init.mjs';
+import { setupGithub } from '../lib/scaffold/setup-github.mjs';
 import { checkProject, PROJECT_FILE, readProjectConfig } from '../lib/scaffold/project-config.mjs';
 
-const USAGE = 'usage: node <kit>/scripts/ao-kit.mjs <init|sync|render|check> <project dir> [options]; see the top of scripts/ao-kit.mjs';
+const USAGE = 'usage: node <kit>/scripts/ao-kit.mjs <init|sync|render|check|setup github> <project dir> [options]; see the top of scripts/ao-kit.mjs';
 const kitDir = fileURLToPath(new URL('..', import.meta.url));
 
 const git = (args, cwd) => spawnSync('git', args, { cwd, encoding: 'utf8' });
+const gh = (args, { input } = {}) => spawnSync('gh', args, { encoding: 'utf8', input });
+// A variable of your environment, else of your Windows user, as the hooks read them; its value is never printed.
+const secret = (name) => process.env[name] || userVariable(name) || null;
+// The project.yaml of a project, read and valid, or null after printing why.
+function projectConfig(dir) {
+  const file = join(dir, PROJECT_FILE);
+  if (!existsSync(file)) {
+    console.log(`no ${PROJECT_FILE} in ${dir}: run ao-kit init first`);
+    return null;
+  }
+  const { config, errors } = readProjectConfig(readFileSync(file, 'utf8'));
+  for (const { rule, path, message } of errors) console.log(`${rule} ${path}: ${message}`);
+  return errors.length > 0 ? null : config;
+}
 // npm, npx and node with no shell; what installs shows its progress.
 function run(argv, cwd) {
   const [tool, ...words] = argv;
@@ -68,7 +86,7 @@ function render(dir) {
 
 const OPTIONS = {
   profile: { type: 'string' }, name: { type: 'string' }, title: { type: 'string' }, space: { type: 'string' }, repo: { type: 'string' }, approvers: { type: 'string' },
-  'dev-app': { type: 'string' }, 'dev-app-id': { type: 'string' }, 'review-app': { type: 'string' }, 'review-app-id': { type: 'string' }, 'kit-peers': { type: 'string' }, key: { type: 'string' },
+  'dev-app-key-file': { type: 'string' }, 'dev-app': { type: 'string' }, 'dev-app-id': { type: 'string' }, 'review-app': { type: 'string' }, 'review-app-id': { type: 'string' }, 'kit-peers': { type: 'string' }, key: { type: 'string' },
 };
 let parsed;
 try {
@@ -77,7 +95,10 @@ try {
   console.error(`${error.message}\n${USAGE}`);
   process.exit(2);
 }
-const [command, dirArg] = parsed.positionals;
+// setup takes a part first: ao-kit setup github <dir>.
+const [first, ...rest] = parsed.positionals;
+const command = first === 'setup' ? `setup ${rest.shift() ?? ''}` : first;
+const [dirArg] = rest;
 const v = parsed.values;
 const options = { profile: v.profile, name: v.name, title: v.title, space: v.space, repo: v.repo, approvers: v.approvers, devApp: v['dev-app'], devAppId: v['dev-app-id'], reviewApp: v['review-app'], reviewAppId: v['review-app-id'], kitPeers: v['kit-peers'], key: v.key };
 const COMMANDS = {
@@ -85,6 +106,11 @@ const COMMANDS = {
   render,
   init: (dir) => print(initProject({ kitDir, projectDir: dir, options, git, run })),
   sync: (dir) => print(syncKit({ kitDir, projectDir: dir, options, git, run })),
+  'setup github': (dir) => {
+    const config = projectConfig(dir);
+    if (!config) return 1;
+    return print(setupGithub({ kitDir, repo: config.github.repo, devAppKeyFile: v['dev-app-key-file'], secret, readFile: (path) => readFileSync(path, 'utf8'), gh, run }));
+  },
 };
 if (!COMMANDS[command] || !dirArg) {
   console.error(USAGE);
