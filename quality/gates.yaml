@@ -127,7 +127,8 @@ kit_copy:
   # A project adds the skills of its stack, so only the files the PR changes are compared.
   same_when_changed: [".claude/skills/**"]
   # They hold the space key and the stack skills of the project: ao-step renders them again.
-  rendered: [".claude/agents/**", ".claude/rules/ai-orchestrator.md"]
+  # settings.json takes the env of the project from its project.yaml (project-scaffold spec 2.1).
+  rendered: [".claude/agents/**", ".claude/rules/ai-orchestrator.md", ".claude/settings.json"]
   # A copy may point only at the newest PR of the other project on this path and branch, so it cannot go back to an older
   # kit.
   newest_path: .ai-orchestrator/lib

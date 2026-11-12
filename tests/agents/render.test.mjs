@@ -131,5 +131,6 @@ test('renderAll gives the ten agents and the rules file, by path under .claude/'
 test('the generated files of the kit are up to date (npm run agents:check)', () => {
   const result = spawnSync(process.execPath, [join(ROOT, 'scripts', 'render-agents.mjs'), '--check'], { cwd: ROOT, encoding: 'utf8' });
   assert.equal(result.status, 0, result.stdout + result.stderr);
-  assert.match(result.stdout, /11 files up to date/);
+  // Ten agents, the rules file, and settings.json (project-scaffold spec 2.1).
+  assert.match(result.stdout, /12 files up to date/);
 });

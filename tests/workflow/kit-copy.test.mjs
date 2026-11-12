@@ -27,7 +27,8 @@ const KIT = [
   blob('.github/workflows/ci.yml', 'c1'),
 ];
 const OURS = [blob('.claude/settings.json', 'our-settings'), blob('.claude/skills/stack-skill/SKILL.md', 'stack'), blob('apps/api/main.ts', 'x2')];
-// The peer's own files and the project's differ, and neither is compared. The rendered agent holds the space key of each.
+// The peer's own files and the project's differ, and neither is compared. The rendered agent holds the space key of each,
+// and settings.json the env of each (project-scaffold spec 2.1).
 const peerTree = (more = []) => treeOf([...KIT, blob('.ai-orchestrator/deploy.yaml', 'peer'), blob('.claude/settings.json', 'peer-settings'), blob('src/peer.ts', 'x1'), ...more]);
 const ourKit = (without = []) => KIT.filter(({ path }) => !without.includes(path)).map((e) => (e.path === '.claude/agents/security.md' ? { ...e, sha: 'our-agent' } : e));
 const headTree = (more = [], without = []) => treeOf([...ourKit(without), ...OURS, ...more]);
@@ -60,7 +61,7 @@ test('the line of the PR description names one repository and PR; anything else 
 });
 
 test('a PR whose kit files match the reviewed head passes, and the files of one project only do not count', () => {
-  assert.deepEqual(decide(), { ok: true, compared: 5, reference: { ...claim, head: REF_HEAD } });
+  assert.deepEqual(decide(), { ok: true, compared: 6, reference: { ...claim, head: REF_HEAD } });
 });
 
 test('the reference must be a reviewed, merged PR of a listed repository', () => {
@@ -90,12 +91,14 @@ test('the reference is the newest kit of its repository, so a PR cannot go back 
 // The files a PR changes come from its trees, by SHA: the list of GET /pulls/{n}/files stops at 3000 and is read by
 // number (review of ao-pilot PR #24).
 test('a PR that changes anything outside the kit files is reviewed as usual, however many files it has', () => {
-  for (const path of ['apps/api/main.ts', '.claude/settings.json', '.ai-orchestrator/deploy.yaml', '.ai-orchestrator/roster.local.yaml', '.github/workflows/deploy.yml', 'src/zz-after-3000-files.ts']) {
+  for (const path of ['apps/api/main.ts', '.ai-orchestrator/project.yaml', '.ai-orchestrator/deploy.yaml', '.ai-orchestrator/roster.local.yaml', '.github/workflows/deploy.yml', 'src/zz-after-3000-files.ts']) {
     const changed = blob(path, 'new');
     const head = headTree().tree.some((e) => e.path === path) ? swap(headTree(), changed) : headTree([changed]);
     refused({ headTree: head }, new RegExp(`changes ${path.replaceAll('.', '\\.')}, which is not a kit file`));
   }
   refused({ baseTree: baseTree([blob('apps/api/gone.ts', 'g1')]) }, /changes apps\/api\/gone\.ts, which is not a kit file/);
+  // settings.json is rendered now: a copy that changes it goes on to the render check, which judges its content.
+  assert.equal(decide({ headTree: swap(headTree(), blob('.claude/settings.json', 'new')) }).ok, true);
 });
 
 test('every file the PR changes matches the reference by content, mode and kind', () => {
@@ -190,8 +193,8 @@ function world({ peerRead = () => {}, headNow = HEAD, render = async () => null 
 test('readKitCopy reads the trees by SHA, decides, and always renders; without the line of the description it reads nothing', async () => {
   const rendered = [];
   const { input, asked } = world({ render: async (sha, paths) => { rendered.push([sha, paths]); return null; } });
-  assert.deepEqual(await readKitCopy(input), { ok: true, compared: 5, reference: { ...claim, head: REF_HEAD } });
-  assert.deepEqual(rendered, [[HEAD, ['.claude/agents/security.md']]], 'with the rendered files of the head, for the render to name any other');
+  assert.deepEqual(await readKitCopy(input), { ok: true, compared: 6, reference: { ...claim, head: REF_HEAD } });
+  assert.deepEqual(rendered, [[HEAD, ['.claude/agents/security.md', '.claude/settings.json']]], 'with the rendered files of the head, for the render to name any other');
   // The newest kit of the peer is on develop, whatever branch the reference was merged into (review of ao-pilot PR #24).
   assert.equal(gates.kit_copy.newest_branch, 'develop');
   assert.deepEqual(asked.find(([, path]) => path === '/commits')[2], { path: '.ai-orchestrator/lib', sha: 'develop', per_page: 1 });
