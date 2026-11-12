@@ -1,6 +1,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { spawnSync } from 'node:child_process';
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { parse } from 'yaml';
 import { ROOT } from '../helpers/kit.mjs';
@@ -43,4 +45,34 @@ test('every job checks out the commit under test with its history, for the merge
 
 test('the policy job runs the kit script', () => {
   assert.match(steps('policy'), /node \.ai-orchestrator\/scripts\/check-policy\.mjs/);
+});
+
+// Semgrep counts only the findings the changes bring. A new branch has no commit before its push, so it gets its head
+// commit alone, as gitleaks does: a full scan blocked the first push of develop on a repo that has code, and a new
+// release branch, on a finding older than the kit (project-scaffold T17, approved on turn 177). The root commit of a
+// repository, and a run by hand, still get every file. The step runs in bash with a uvx that prints what it gets.
+test('Semgrep scans the changes of a PR or a push, the head commit of a new branch, and every file of a root commit or a run by hand', (t) => {
+  const dir = mkdtempSync(join(tmpdir(), 'sast-'));
+  t.after(() => rmSync(dir, { recursive: true, force: true }));
+  const git = (...args) => spawnSync('git', ['-c', 'user.name=t', '-c', 'user.email=t@example.com', ...args], { cwd: dir, encoding: 'utf8' }).stdout.trim();
+  git('init', '-q');
+  git('commit', '-q', '--allow-empty', '-m', 'root');
+  const root = git('rev-parse', 'HEAD');
+  git('commit', '-q', '--allow-empty', '-m', 'next');
+  const head = git('rev-parse', 'HEAD');
+  mkdirSync(join(dir, 'bin'));
+  writeFileSync(join(dir, 'bin', 'uvx'), '#!/bin/sh\necho "$@"\n', { mode: 0o755 });
+  const script = workflow.jobs.sast.steps.find((step) => step.name === 'Semgrep on the changes').run;
+  const scan = (event, base, sha) => {
+    // $PWD, not the path Node knows: a Windows path holds a colon, which splits PATH.
+    const result = spawnSync('bash', ['-c', `PATH="$PWD/bin:$PATH"\n${script}`], { cwd: dir, encoding: 'utf8', env: { ...process.env, GITHUB_EVENT_NAME: event, BASE_SHA: base, HEAD_SHA: sha, SEMGREP_VERSION: '1.0.0' } });
+    assert.equal(result.status, 0, result.stderr);
+    return result.stdout.match(/--baseline-commit (\w+)/)?.[1] ?? 'every file';
+  };
+  const ZERO = '0'.repeat(40);
+  assert.equal(scan('pull_request', root, head), root, 'a PR: from the merge base');
+  assert.equal(scan('push', root, head), root, 'a push: from the commit before');
+  assert.equal(scan('push', ZERO, head), root, 'a new branch: its head commit alone');
+  assert.equal(scan('push', ZERO, root), 'every file', 'the root commit of a repository');
+  assert.equal(scan('workflow_dispatch', '', head), 'every file', 'a run by hand');
 });
