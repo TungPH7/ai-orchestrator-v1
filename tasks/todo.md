@@ -57,7 +57,7 @@
   - **Kiểm:** năm lệnh kiểm; CI xanh; PR merge.
 
 ### Checkpoint 2: sau T6
-- [ ] PR chặng 1 đã merge, `main` xanh.
+- [x] PR chặng 1 đã merge, `main` xanh (#253).
 
 ## Chặng 2: cài kit, nhánh `task/project-scaffold-2`
 
