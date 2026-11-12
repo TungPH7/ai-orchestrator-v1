@@ -4,7 +4,7 @@ import { isAbsolute, join, relative, resolve } from 'node:path';
 import { readRoster } from '../../lib/agents/roster.mjs';
 import { readContract } from '../../lib/contract.mjs';
 import { readGates } from '../../lib/quality/gates.mjs';
-import { answersPrompt, packNote, qaWorktreeNote, resumePrompt, worktreeNote } from '../../lib/workflow/prompts.mjs';
+import { answersPrompt, packNote, qaWorktreeNote, resumePrompt, wipNote, worktreeNote } from '../../lib/workflow/prompts.mjs';
 import { agentCommand, formatDecision, lastReport, runGo } from '../../lib/workflow/runner.mjs';
 import { withLoggedSession } from '../../lib/workflow/runs.mjs';
 import { decideStep } from '../../lib/workflow/steps.mjs';
@@ -88,7 +88,7 @@ function harness(world, effects, { outcomes = [], texts = [], throws = false, st
     last,
     checkouts,
     run: (more = {}) =>
-      runGo({ command: 'spec', arg: 'DEMO-20', options: { ...options, ...more.options }, gather: more.gather, decide: more.decide, pack: more.pack, worktree: more.worktree, after: more.after, act: more.act, log: more.log, agent, git: async (c) => (checkouts.push(c), { ok: true }), dispatch: async () => {}, store, sleep: async (ms) => (clock += ms), now: () => clock, limits: { maxRuns: 8, ciWaitMs: 120000, syncWaitMs: 60000, pollMs: 30000, ...more.limits } }),
+      runGo({ command: 'spec', arg: 'DEMO-20', options: { ...options, ...more.options }, gather: more.gather, decide: more.decide, pack: more.pack, worktree: more.worktree, after: more.after, act: more.act, log: more.log, wip: more.wip, agent, git: async (c) => (checkouts.push(c), { ok: true }), dispatch: async () => {}, store, sleep: async (ms) => (clock += ms), now: () => clock, limits: { maxRuns: 8, ciWaitMs: 120000, syncWaitMs: 60000, pollMs: 30000, ...more.limits } }),
   };
 }
 const SPEC_EFFECTS = {
@@ -284,6 +284,54 @@ test('the usage limit and a run without a result stop the runner; the next comma
   const cut = specWorld();
   const h2 = harness(cut.world, SPEC_EFFECTS, { outcomes: ['cut'] });
   assert.match((await h2.run({ gather: cut.gather })).decision.reason, /^ba stopped without a result/);
+});
+
+// T20 of human-loop: fe-dev hit the usage limit with its work not committed, and the next command could not switch the
+// checkout. ao-step puts that work aside when a run stops, and the run that goes on in its session gets it back first,
+// after its checkout and before its agent (live-run-fixes spec 2.1).
+const STASH = 'f'.repeat(40);
+const wipEffect = (events, { saved = { stash: STASH, branch: BRANCH }, restored = { ok: true, notes: [`The work the stopped run left uncommitted, put aside in stash ffffffff, is back on ${BRANCH}.`] } } = {}) => ({
+  save: async (run) => (events.push(['save', run.n, run.role, run.outcome]), saved),
+  restore: async (wip) => (events.push(['restore', wip.stash.slice(0, 8)]), restored),
+});
+
+test('a run the usage limit stops has its uncommitted work put aside; the run that goes on in its session gets it back first', async () => {
+  const { world, gather } = specWorld();
+  const events = [];
+  const h = harness(world, SPEC_EFFECTS, { outcomes: ['success', 'limit'] });
+  const stopped = await h.run({ gather, wip: wipEffect(events) });
+  assert.deepEqual(events, [['save', 2, 'ux', 'usage-limit']], 'only the run that stopped, not the one that ended well');
+  assert.deepEqual(world.run.runs.at(-1).wip, { stash: STASH, branch: BRANCH });
+  assert.match(stopped.decision.reason, /the run goes on in its session\. Its work not committed is in stash ffffffff, and comes back when the run goes on$/);
+
+  const again = harness(world, SPEC_EFFECTS);
+  await again.run({ gather, wip: wipEffect(events) });
+  assert.deepEqual(events.at(-1), ['restore', 'ffffffff']);
+  assert.equal(again.calls[0].prompt, [resumePrompt('DEMO-20'), wipNote].join('\n\n'));
+  const resumed = world.run.runs.find(({ n }) => n === 3);
+  assert.equal(resumed.wip, undefined);
+  assert.deepEqual(resumed.notes, [`The work the stopped run left uncommitted, put aside in stash ffffffff, is back on ${BRANCH}.`]);
+  assert.match(wipNote, /has put it back in the checkout: run git status and read the diff before you go on/);
+});
+
+test('work that cannot come back stops the command before its agent; work that cannot be put aside is said, and nothing is on record', async () => {
+  const { world, gather } = specWorld();
+  const events = [];
+  await harness(world, SPEC_EFFECTS, { outcomes: ['success', 'limit'] }).run({ gather, wip: wipEffect(events) });
+  const refused = { ok: false, reason: `the work the run left is in stash ${STASH}, made on ${BRANCH} at aaaaaaaa, but ${BRANCH} is at bbbbbbbb now: apply it yourself with git stash apply ${STASH}, then drop it, and settle what conflicts` };
+  const again = harness(world, SPEC_EFFECTS);
+  const { decision } = await again.run({ gather, wip: wipEffect(events, { restored: refused }) });
+  assert.equal(again.calls.length, 0);
+  assert.equal(decision.reason, refused.reason);
+
+  const other = specWorld();
+  const failing = await harness(other.world, SPEC_EFFECTS, { outcomes: ['limit'] }).run({ gather: other.gather, wip: wipEffect([], { saved: { error: 'git stash push failed: Permission denied' } }) });
+  assert.equal(other.world.run.runs.at(-1).wip, undefined);
+  assert.match(failing.decision.reason, /Its work not committed could not be put aside \(git stash push failed: Permission denied\): put it aside yourself with git stash push --include-untracked before the next command$/);
+
+  const clean = specWorld();
+  const quiet = await harness(clean.world, SPEC_EFFECTS, { outcomes: ['cut'] }).run({ gather: clean.gather, wip: wipEffect([], { saved: null }) });
+  assert.match(quiet.decision.reason, /^ba stopped without a result: run the same command again; the run goes on in its session$/);
 });
 
 test('an agent that fails twice in a row stops the command; a flag raised by an agent stops it too', async () => {
@@ -498,7 +546,9 @@ test('/ao-review and /ao-fix start only on a protected branch; a command that en
   assert.equal(checkoutStop('review', 'develop', branches), null);
   assert.equal(checkoutStop('fix', 'release/v1.2.0', branches), null);
   assert.equal(checkoutStop('build', 'feature/DEMO-21-remove-line', branches), null, 'a build goes on on its branch');
-  assert.equal(checkoutStop('review', 'feature/DEMO-21-remove-line', branches), 'the checkout is on feature/DEMO-21-remove-line, not a protected branch (develop, main, release/*): ao-step, the kit and the instructions of the agents would come from it. Switch it to the base of the PR (git switch develop), then run /ao-review again');
+  // A shell killed during a run leaves the checkout there, maybe with work not committed, which ao-step does not put
+  // aside itself: it cannot tell that work is the agent's (live-run-fixes spec 2.1).
+  assert.equal(checkoutStop('review', 'feature/DEMO-21-remove-line', branches), 'the checkout is on feature/DEMO-21-remove-line, not a protected branch (develop, main, release/*): ao-step, the kit and the instructions of the agents would come from it. Switch it to the base of the PR (git switch develop), then run /ao-review again. If git refuses to switch because a run stopped with its shell and left work not committed, put that work aside first with git stash push --include-untracked -m "<what it is>", and apply it again by its SHA once the run goes on');
   assert.match(checkoutStop('fix', '', branches), /^the checkout is on a detached HEAD, not a protected branch/);
   const open = { pr: { state: 'open', base: 'develop' } };
   for (const command of ['build', 'review', 'fix']) assert.equal(homeBranch(command, open, branches), 'develop', command);

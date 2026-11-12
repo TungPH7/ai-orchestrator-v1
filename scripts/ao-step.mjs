@@ -41,6 +41,7 @@ import { postKitCopyReports, readKitCopy, renderedReason } from '../lib/workflow
 import { removeInstructions } from '../lib/workflow/review-tree.mjs';
 import { agentCommand, formatDecision, runGo } from '../lib/workflow/runner.mjs';
 import { CHANGES, decideStep } from '../lib/workflow/steps.mjs';
+import { restoreWip, saveWip } from '../lib/workflow/wip.mjs';
 
 const COMMANDS = ['status', 'intake', 'preview', 'spec', 'plan', 'request', 'build', 'review', 'fix', 'qa', 'release', 'ship', 'rollback'];
 const USAGE = 'usage: node .ai-orchestrator/scripts/ao-step.mjs <status|intake|preview|spec|plan|request|build|review|fix|qa|release|ship|rollback> [<KEY>|<PR>|<vX.Y.0> <sha>|<vX.Y.Z>|<environment> [<sha>]] [--go] [--answers <file>] [--note <file>] [--change <word>] [--stop]';
@@ -126,7 +127,9 @@ export function checkChange(command, change, hasNote) {
 const isProtected = (branch, protectedBranches) => protectedBranches.some((pattern) => matchesGlob(pattern, branch));
 export function checkoutStop(command, branch, protectedBranches) {
   if (!['review', 'fix'].includes(command) || isProtected(branch, protectedBranches)) return null;
-  return `the checkout is on ${branch || 'a detached HEAD'}, not a protected branch (${protectedBranches.join(', ')}): ao-step, the kit and the instructions of the agents would come from it. Switch it to the base of the PR (git switch develop), then run /ao-${command} again`;
+  // ao-step puts aside only what a run left while ao-step still ran; after a killed shell it cannot tell whose the work
+  // is, so you put it aside (live-run-fixes spec 2.1).
+  return `the checkout is on ${branch || 'a detached HEAD'}, not a protected branch (${protectedBranches.join(', ')}): ao-step, the kit and the instructions of the agents would come from it. Switch it to the base of the PR (git switch develop), then run /ao-${command} again. If git refuses to switch because a run stopped with its shell and left work not committed, put that work aside first with git stash push --include-untracked -m "<what it is>", and apply it again by its SHA once the run goes on`;
 }
 
 // The branch the checkout goes back to when a command ends: the base of the item's open PR, so the next /ao-review or
@@ -286,6 +289,11 @@ async function main() {
         return releaseCut(step, { repo, mapping, settings });
       },
       git: (checkout) => prepareCheckout(checkout),
+      // The work a run left uncommitted when it stopped goes aside, and comes back when it goes on (live-run-fixes 2.1).
+      wip: {
+        save: (run) => saveWip({ git, run, isProtected: (branch) => isProtected(branch, gates.protected_branches) }),
+        restore: (aside) => restoreWip({ git, wip: aside }),
+      },
       dispatch: (action) => dispatchJiraSync(action.key),
       pack: reviewPackWriter({ github, jira }),
       worktree: { add: addWorktree, remove: removeWorktree },
