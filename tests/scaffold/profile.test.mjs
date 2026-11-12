@@ -37,6 +37,15 @@ test('the skeleton names no part of ao-sample: no notes, no item of SMP, no ADR 
   }
 });
 
+// The first CI run of a project scans every file with Semgrep, whose spawn-shell-true rule blocks a process started
+// through a shell (T17: scripts/dev.mjs of ao-sample, which the skeleton had copied).
+test('the skeleton starts no process through a shell', () => {
+  const dir = join(ROOT, 'profiles', 'next-nest', 'files');
+  for (const path of filesOf(dir).filter((p) => /\.(m?[jt]s|tsx)$/.test(p) && !p.startsWith('.claude/skills/'))) {
+    assert.doesNotMatch(readFileSync(join(dir, path), 'utf8'), /\bshell\s*:/, path);
+  }
+});
+
 test('a copy into a folder fills the name and title in, keeps binary files as they are, and agrees with ao-kit check', (t) => {
   const dir = mkdtempSync(join(tmpdir(), 'profile-'));
   t.after(() => rmSync(dir, { recursive: true, force: true }));
