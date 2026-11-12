@@ -1,6 +1,6 @@
 # Bắt đầu với AO Kit
 
-> **Bản nháp** (project-scaffold, T15). Phần 3 và 4 sẽ được làm đúng theo từng bước ở T16 và T17, rồi sửa theo những gì gặp; phần 5 và 7 viết ở bản cuối (T19). Spec: [SPEC-project-scaffold.md](../SPEC-project-scaffold.md) mục 2.7.
+> **Bản nháp** (project-scaffold). Phần 3 đã được làm thật trên `ao-green` (T16) và sửa theo những gì gặp. Phần 4 sẽ được làm thật ở T17. Phần 5 và 7 viết ở bản cuối (T19). Spec: [SPEC-project-scaffold.md](../SPEC-project-scaffold.md) mục 2.7.
 
 Tài liệu này dành cho dev chưa dùng kit. Bạn đọc từ trên xuống: chuẩn bị một lần, dựng dự án, rồi làm một tính năng từ ý tưởng tới Production. Mỗi lệnh có bốn ý: làm gì, gõ khi nào, kết quả mong đợi, lỗi thì làm gì.
 
@@ -91,7 +91,12 @@ cd <kit> && npm ci
 
 ## 3. Dự án mới, từ thư mục trống
 
-Ví dụ: dự án `ao-green`, repo `TungPH7/ao-green`, space Jira `AOG`, dựng bằng profile `next-nest` (Next.js ở `apps/web`, NestJS ở `apps/api`).
+Ví dụ: dự án `ao-green`, repo `TungPH7/ao-green`, space Jira `AOG`, dựng bằng profile `next-nest` (Next.js ở `apps/web`, NestJS ở `apps/api`). Mỗi bước dưới đây đã được làm thật trên `ao-green` (T16), và đầu ra ghi ở đây là đầu ra thật.
+
+Thứ tự các bước là có lý do:
+- Jira và hai App đi trước Claude Code, vì mọi lệnh `/ao-*` cần cả hai.
+- Commit đầu không cần item Jira nào.
+- Phần GitHub (`setup github`) chạy sau lần push đầu, vì nó cần nhánh `develop` có trên GitHub.
 
 ### Bước 1. Tạo repo trống trên GitHub
 
@@ -99,7 +104,8 @@ Ví dụ: dự án `ao-green`, repo `TungPH7/ao-green`, space Jira `AOG`, dựng
 gh repo create TungPH7/ao-green --private
 ```
 
-- **Ý nghĩa:** repo chưa có file nào. Đừng thêm README hay `.gitignore` ở đây; `ao-kit init` viết chúng.
+- **Ý nghĩa:** tạo repo chưa có file nào. Đừng thêm README hay `.gitignore` ở đây, vì `ao-kit init` sẽ viết chúng.
+- **Kết quả mong đợi:** dòng `https://github.com/TungPH7/ao-green`.
 
 ### Bước 2. Dựng khung và cài kit
 
@@ -108,16 +114,23 @@ mkdir ao-green
 node <kit>/scripts/ao-kit.mjs init ao-green --name ao-green --title "AO Green" --space AOG --repo TungPH7/ao-green --approvers TungPH7 --dev-app tungph7-ao-dev --dev-app-id 5514949 --review-app tungph7-ao-review --review-app-id 5514961
 ```
 
-- **Ý nghĩa:** `init` chép khung app của profile, viết `.ai-orchestrator/project.yaml` (file cấu hình của dự án), chép kit, sinh `.claude/settings.json` và agent, rồi chạy `npm ci` và tải Chromium cho Playwright.
-  - `--name`: tên dự án, chữ thường, cũng là tên trên VPS.
+- **Ý nghĩa:** `init` làm lần lượt:
+  - tạo repo git với nhánh `develop`, rồi thêm remote `origin` trỏ tới `--repo`;
+  - chép khung app của profile;
+  - viết `.ai-orchestrator/project.yaml`, file cấu hình của dự án;
+  - chép kit, sinh `.claude/settings.json` và các agent;
+  - chạy `npm ci` và tải Chromium cho Playwright.
+
+  Ý nghĩa của từng cờ:
+  - `--name`: tên dự án, viết chữ thường, cũng là tên dùng trên VPS.
   - `--title`: tên hiển thị, hiện ở tiêu đề trang.
   - `--space`: mã space Jira.
   - `--approvers`: login GitHub của người duyệt.
   - `--dev-app…`, `--review-app…`: slug và App ID của hai App, như nhau cho mọi dự án.
-- **Kết quả mong đợi:** các dòng `Copied the next-nest skeleton`, `Copied the kit`, `Ran npm ci`, và cuối cùng là dòng `Next:`.
+- **Kết quả mong đợi** (khoảng 2,5 phút): các dòng `Copied the next-nest skeleton: 162 files`, `Copied the kit`, `Added the remote origin: https://github.com/TungPH7/ao-green.git`, `Ran npm ci`, `Ran npx playwright install chromium`, và cuối cùng là dòng `Next:` liệt kê các bước dưới đây.
 - **Nếu lỗi:**
-  - thiếu giá trị nào thì lệnh dừng và ghi `Fill in .ai-orchestrator/project.yaml: …`. Sửa file đó, rồi chạy `ao-kit render ao-green` và `npm ci` trong thư mục;
-  - chạy lại `init` trên thư mục đã có `project.yaml` thì lệnh không làm gì.
+  - Thiếu giá trị nào thì lệnh dừng và ghi `Fill in .ai-orchestrator/project.yaml: …`. Sửa file đó, rồi chạy `ao-kit render ao-green` và `npm ci` trong thư mục.
+  - Chạy lại `init` trên thư mục đã có `project.yaml` thì lệnh không làm gì.
 
 ### Bước 3. Dựng space Jira
 
@@ -126,70 +139,122 @@ node <kit>/scripts/ao-kit.mjs setup jira ao-green
 ```
 
 - **Ý nghĩa:** tạo space `AOG` với workflow và field của space mẫu `DEMO`, tạo board và bộ lọc của board, rồi chạy `jira:check`.
-- **Kết quả mong đợi:** `Created the space AOG …`, `Created the kanban board …`. Dòng `jira:check` báo còn lệch ở cột của board: API không sửa được cột.
-- **Bạn bấm:** cột của board, theo [docs/jira-setup.md](jira-setup.md) mục 10, phần **Cột**. Bấm xong thì chạy lại lệnh, tới khi `jira:check` không còn lệch.
+- **Kết quả mong đợi:** `Created the space AOG …`, `Created the kanban board …`. Sau đó mỗi chỗ còn lệch là một dòng `jira:check found …`, kèm dòng `By hand`. API của Jira không sửa được cột của board, nên lần đầu luôn còn lệch.
+- **Bạn bấm, phần cột:**
+  1. Mở board **AOG board**, bấm **More actions** (•••), chọn **Configure columns**. Nếu board không có mục này, vào **Board settings → Columns**.
+  2. Sửa danh sách cột cho đúng tên và thứ tự: **Backlog, Ready, In Progress, In Review, QA, Done**. Đổi tên cột có sẵn, thêm cột bằng nút **+**, xóa cột thừa.
+  3. Kéo status vào cột:
+     - `New` vào ô **Backlog** (Kanban backlog);
+     - `Ready`, `To Do` vào **Ready**;
+     - `In Progress` vào **In Progress**;
+     - `In Review` vào **In Review**;
+     - `Ready for QA`, `In QA` vào **QA**;
+     - `Done` vào **Done**;
+     - `Cancelled` vào ô **Hidden statuses**.
+  4. Bấm **Publish**.
+- **Bạn bấm, phần giới hạn cột** (T16 sót bước này ở lần đầu):
+  1. Ở chế độ **Configure columns**: rê chuột lên tên cột **In Review**, bấm ••• trên đầu cột, chọn **Set column limit**, gõ **2**, rồi bấm **Publish**.
+  2. Ở trang kiểu cũ **Board settings → Columns**: mục **Column constraint** chọn **Issue Count**, gõ **2** vào ô **Max** của **In Review**, rồi bấm **Tab** để rời ô. Trang này chỉ lưu khi con trỏ rời ô.
+- **Chạy lại lệnh** tới khi lệnh in `jira:check: Jira space AOG matches tracker/jira.yaml` và không còn dòng `By hand`.
 
-### Bước 4. Mở Claude Code trong thư mục
+### Bước 4. Cài hai App vào repo
+
+- **Bạn bấm:**
+  1. Trên GitHub, bấm ảnh đại diện → **Settings** → **Applications** → tab **Installed GitHub Apps**.
+  2. Bấm **Configure** cạnh `tungph7-ao-dev`.
+  3. Ở **Repository access** (đang chọn **Only select repositories**), bấm **Select repositories**, gõ `ao-green`, chọn repo đó.
+  4. Bấm **Save**. GitHub có thể hỏi lại mật khẩu hoặc mã 2FA.
+  5. Làm lại bước 2–4 cho `tungph7-ao-review`.
+- **Ý nghĩa:** mọi lệnh `/ao-*`, kể cả `/ao-status` và `/ao-intake`, lấy token đọc của `ao-review` trên repo trước khi đọc Jira. Thiếu App thì lệnh dừng với `App <id> is not installed on TungPH7/ao-green`.
+
+### Bước 5. Commit đầu và push
 
 ```
 cd ao-green
+npm run lint && npm run typecheck && npm run test:coverage && npm run build
+git add -A
+git commit -m "chore(scaffold): set up the project with ao-kit"
+git push -u origin develop
+git push origin develop:main
+```
+
+- **Ý nghĩa:**
+  - Bốn lệnh kiểm là bốn việc CI làm. Chạy ở máy trước để lần push đầu không mang lỗi.
+  - Commit đầu của repo không cần mã Jira: hook `commit-msg` cho qua commit gốc. Header vẫn phải đúng dạng `type(scope): subject`.
+  - `develop` là nhánh làm việc, `main` là nhánh của Production. Hook `pre-push` cho tạo hai nhánh này trên remote trống. Đây là lần duy nhất bạn push thẳng lên hai nhánh đó; từ sau, mọi thay đổi đi qua PR.
+- **Kết quả mong đợi:**
+  - Bốn lệnh kiểm đều xanh, tổng cộng khoảng 2,5 phút.
+  - Hai dòng `* [new branch]`, một cho `develop`, một cho `main`.
+  - GitHub tự lấy `develop`, nhánh được push đầu tiên, làm nhánh mặc định.
+  - Git có thể cảnh báo `CRLF will be replaced by LF` cho vài file. Bỏ qua cảnh báo này: repo vẫn lưu LF.
+
+### Bước 6. Dựng phần GitHub
+
+`merge-gate` merge bằng một key thứ hai của `ao-dev`, mỗi repo một key. Bạn tạo key trước:
+1. Trên GitHub: ảnh đại diện → **Settings** → **Developer settings** → **GitHub Apps** → bấm **Edit** cạnh `tungph7-ao-dev`.
+2. Bấm **Credentials** → **Key pairs** → **New key**. Nếu không thấy **Credentials**, kéo xuống cuối trang **General** tới **Private keys**, bấm **Generate a private key**.
+3. Trình duyệt tải về một file `.pem`. Cắt file đó (không sao chép) vào thư mục `ao-keys` của bạn. Không mở file.
+
+```
+node <kit>/scripts/ao-kit.mjs setup github ao-green --dev-app-key-file "C:/Users/<bạn>/ao-keys/<file key vừa tải>.pem"
+```
+
+- **Ý nghĩa:**
+  - Đặt `develop` làm nhánh mặc định, bật tự xóa nhánh sau merge và bật Dependabot.
+  - Tạo bốn environment, trong đó `merge-gate` chỉ dành cho `develop`.
+  - Đưa `JIRA_CI_TOKEN` và key thứ hai của `ao-dev` lên làm secret, qua stdin, không qua dòng lệnh.
+  - Chạy `gh:protect`. Repo private trên gói Free không có ruleset, nên lệnh báo `soft mode: merge-gate and audit enforce the gates`.
+- **Kết quả mong đợi:** các dòng `Set …`, rồi `Delete <file> now`. Chạy lại lệnh thì nó không đổi gì, chỉ in `Already set: …`.
+- **Bạn làm:**
+  - Xóa file key: chọn file trong File Explorer, bấm **Shift+Delete**, chọn **Yes**. GitHub đã giữ key, không nên còn bản nào khác.
+  - Nối GitHub for Atlassian với repo. Nếu app đã cài cho dự án khác: GitHub → **Settings** → **Applications** → **Installed GitHub Apps** → **Configure** cạnh app **Jira** → **Select repositories** → chọn repo → **Save**. Nếu chưa cài, làm theo [docs/jira-setup.md](jira-setup.md) mục 11.
+
+### Bước 7. Bật Actions và chạy CI lần đầu
+
+- **Bạn mở** tab **Actions** của repo trên GitHub.
+  - Nếu trang ghi "Workflows aren't being run on this repository", bấm **Enable Actions on this repository**.
+  - Nếu `develop` chưa có lượt `CI` nào, chạy:
+
+    ```
+    gh workflow run CI --repo TungPH7/ao-green --ref develop
+    ```
+
+- **Ý nghĩa:** lần push đầu chở workflow lên repo trống thì GitHub có thể không chạy workflow nào. Ở Pilot 1, workflow ở trạng thái active mà không chạy. Ở T16, Actions bị tắt hẳn, dù API vẫn báo bật, nên chỉ trang này cho thấy.
+- **Kết quả mong đợi:** lượt `CI` trên `develop` xanh đủ bốn job `policy`, `build-test`, `secrets`, `sast`, khoảng 2 phút. Sau đó `jira-sync` và `merge-gate` chạy theo.
+
+### Bước 8. Mở Claude Code trong thư mục
+
+```
 claude
 ```
 
 - **Bạn bấm:**
   1. Claude hỏi có tin cậy thư mục không: chọn đồng ý.
-  2. Claude hỏi cho phép hai server MCP `atlassian` và `chrome-devtools`: đồng ý cả hai.
-  3. Gõ `/mcp`: cả hai phải báo connected.
-- **Ý nghĩa:** chưa tin cậy thư mục thì Claude Code bỏ qua luật `allow` của dự án; chưa bật `atlassian` thì agent không đọc được Jira.
-
-### Bước 5. Task đầu, commit đầu, push
-
-Hook `commit-msg` đòi mã Jira ở cuối dòng commit, nên commit đầu cần một Task.
-
-```
-/ao-intake dựng khung dự án ao-green bằng ao-kit
-```
-
-Claude hỏi vài câu, viết bản nháp Task; bạn trả lời "ok" thì Task, ví dụ `AOG-1`, được tạo. Rồi trong Git Bash:
-
-```
-git add -A
-git commit -m "chore(scaffold): set up the project with ao-kit (AOG-1)"
-git remote add origin https://github.com/TungPH7/ao-green.git
-git push -u origin develop
-git push origin develop:main
-```
-
-- **Ý nghĩa:** `develop` là nhánh làm việc, `main` là nhánh của Production. Đây là lần duy nhất bạn push thẳng lên hai nhánh này; từ sau, mọi thay đổi đi qua PR.
-
-### Bước 6. Dựng phần GitHub
-
-```
-node <kit>/scripts/ao-kit.mjs setup github ao-green --dev-app-key-file <file key thứ hai của ao-dev>
-```
-
+  2. Claude báo "2 new MCP servers found in this project". Giữ nguyên hai ô `atlassian` và `chrome-devtools` đã đánh dấu, đưa con trỏ xuống **Enable selected**, rồi bấm **Enter**. Bấm Esc là từ chối cả hai.
+  3. Gõ `/mcp`: cả hai server phải báo connected.
 - **Ý nghĩa:**
-  - đặt `develop` làm nhánh mặc định, bật tự xóa nhánh sau merge và Dependabot;
-  - tạo bốn environment, trong đó `merge-gate` chỉ dành cho `develop`;
-  - đưa `JIRA_CI_TOKEN` và key thứ hai của `ao-dev` lên làm secret, rồi chạy `gh:protect`.
-- **Key thứ hai:** tạo theo [docs/github-apps-setup.md](github-apps-setup.md) mục 2. Lệnh xong thì xóa file đó.
-- **Bạn bấm:**
-  - cài hai App vào repo, theo [docs/github-apps-setup.md](github-apps-setup.md) mục 3, đoạn "Dự án sau";
-  - nối GitHub for Atlassian với repo, theo [docs/jira-setup.md](jira-setup.md) mục 11.
+  - Chưa tin cậy thư mục thì Claude Code bỏ qua luật `allow` của dự án.
+  - Lựa chọn MCP được lưu ở `.claude/settings.local.json`. Thiếu file đó thì agent chạy bằng `claude -p` không có hai server.
+- **Kiểm:** `claude mcp list` trong thư mục phải in `✔ Connected` cho cả hai. Nếu in `Pending approval`, mở lại `claude` và làm lại bước 2.
 
-### Bước 7. Kiểm tới khi đủ
+### Bước 9. Kiểm tới khi đủ
 
 ```
 node <kit>/scripts/ao-kit.mjs doctor ao-green
 ```
 
-- **Ý nghĩa:** chỉ đọc. Mỗi dòng `✘` kèm việc cần làm; dòng `?` của VPS là câu hỏi.
+- **Ý nghĩa:** chỉ đọc. Mỗi dòng `✘` kèm việc cần làm. Dòng `?` của VPS là câu hỏi.
 - **Kết quả mong đợi:** `Every row passes.`
 - **Thêm vào VPS:** dán đoạn mà `doctor` in ra vào `/etc/ao/deployer.yaml` trên VPS, theo [docs/vps-setup.md](vps-setup.md) mục 11.
 
-### Bước 8. Lệnh đầu tiên
+### Bước 10. Lệnh đầu tiên
 
-Trong Claude Code: `/ao-status`. Lệnh in việc đang chờ bạn và lệnh kế tiếp của từng item. Dự án sẵn sàng cho Epic đầu tiên (phần 5).
+Trong Claude Code, gõ `/ao-status`. Lệnh in việc đang chờ bạn và lệnh kế tiếp của từng item. Space còn trống thì lệnh chỉ in ba môi trường. Dự án đã sẵn sàng: việc đầu tiên bắt đầu bằng `/ao-intake` (phần 5).
+
+**Nếu lỗi khi gõ lệnh `/ao-*`:**
+- `the origin remote is not a GitHub repository`: thư mục chưa có `origin`. Chạy `git remote add origin https://github.com/<owner>/<repo>.git`.
+- `App <id> is not installed on <repo>`: làm bước 4.
+- Sau một lỗi như trên, Node trên Windows có thể in thêm `Assertion failed: !(handle->flags & UV_HANDLE_CLOSING)`. Dòng này vô hại, bỏ qua.
 
 ## 4. Dự án đang phát triển
 
@@ -220,9 +285,10 @@ node <kit>/scripts/ao-kit.mjs init ao-brown --name ao-brown --space AOG --repo T
 
 ### Bước 3. Commit, GitHub, Jira, kiểm
 
-Làm như bước 4 đến 7 của phần 3. Có hai điểm khác:
-- space `AOG` đã có, nên `setup jira` chỉ kiểm;
-- PR đang mở trên `main` từ trước: merge hoặc đóng chúng trước khi đổi nhánh mặc định sang `develop`.
+Làm như bước 3 đến 10 của phần 3, với ba điểm khác (sẽ kiểm thật ở T17):
+- Repo đã có commit, nên commit chép kit cần mã Jira. Làm bước 4 (App) và bước 8 (Claude Code) trước, gõ `/ao-intake` để tạo Task cho việc chép kit, rồi commit lên `develop` với mã đó.
+- Space `AOG` đã có, nên `setup jira` chỉ kiểm.
+- Nếu có PR đang mở trên `main` từ trước, merge hoặc đóng chúng trước khi đổi nhánh mặc định sang `develop`.
 
 ## 5. Một tính năng lớn, từ ý tưởng tới Production
 
