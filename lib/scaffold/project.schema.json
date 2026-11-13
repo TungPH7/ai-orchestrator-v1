@@ -12,6 +12,10 @@
       "type": "string",
       "pattern": "^[a-z][a-z0-9-]{0,30}$"
     },
+    "package_manager": {
+      "description": "How the project installs its packages and runs its scripts (project-scaffold part 2, spec 2.1); npm when absent.",
+      "enum": ["npm", "pnpm"]
+    },
     "jira": {
       "type": "object",
       "additionalProperties": false,

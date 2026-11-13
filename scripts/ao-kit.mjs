@@ -76,7 +76,7 @@ function check(dir) {
   const problems = [
     ...errors,
     ...(config && errors.length === 0
-      ? checkProject({ config, deployText: read('.ai-orchestrator/deploy.yaml'), packageJson: packageText ? JSON.parse(packageText) : null, exists: (path) => existsSync(join(dir, path)) })
+      ? checkProject({ config, deployText: read('.ai-orchestrator/deploy.yaml'), packageJson: packageText ? JSON.parse(packageText) : null, workspaceText: read('pnpm-workspace.yaml'), exists: (path) => existsSync(join(dir, path)) })
       : []),
   ];
   for (const { rule, path, message } of problems) console.log(`${rule} ${path}: ${message}`);
@@ -107,7 +107,7 @@ async function doctorFacts(dir, config) {
   const projectFile = readFileSync(join(dir, PROJECT_FILE), 'utf8');
   const { errors } = readProjectConfig(projectFile);
   const read = (path) => (existsSync(join(dir, path)) ? readFileSync(join(dir, path), 'utf8') : null);
-  const problems = errors.length > 0 ? errors : checkProject({ config, deployText: read('.ai-orchestrator/deploy.yaml'), packageJson: read('package.json') ? JSON.parse(read('package.json')) : null, exists: (path) => existsSync(join(dir, path)) });
+  const problems = errors.length > 0 ? errors : checkProject({ config, deployText: read('.ai-orchestrator/deploy.yaml'), packageJson: read('package.json') ? JSON.parse(read('package.json')) : null, workspaceText: read('pnpm-workspace.yaml'), exists: (path) => existsSync(join(dir, path)) });
   const render = run(['node', '.ai-orchestrator/scripts/render-agents.mjs', '--check', '--project', '.'], dir);
   const repo = config.github.repo;
   const ghJson = (args) => {

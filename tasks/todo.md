@@ -10,11 +10,11 @@
 
 ## Chuẩn bị
 
-- [ ] **T1: tài liệu.** Spec ghi đã duyệt; plan, todo; nhật ký Lượt 198–201. PR tài liệu từ nhánh `task/project-scaffold-2`, tự merge khi CI xanh.
+- [x] **T1: tài liệu.** Spec ghi đã duyệt; plan, todo; nhật ký Lượt 198–201. PR tài liệu từ nhánh `task/project-scaffold-2`, tự merge khi CI xanh.
 
 ## Chặng 1: pnpm, nhánh `task/scaffold2-1`
 
-- [ ] **T2: `package-manager.mjs` và `package_manager`** (spec 2.1; plan, quyết định 3, 4).
+- [x] **T2: `package-manager.mjs` và `package_manager`** (spec 2.1; plan, quyết định 3, 4).
   - **Đạt khi:**
     - `lib/quality/package-manager.mjs` trả về, cho npm và pnpm: lockfile, lệnh cài, lệnh cài `--ignore-scripts`, lệnh chạy script, dạng lệnh `dev` cho một app, lệnh audit;
     - nó chạy pnpm không qua shell: trên Windows qua `node <pnpm.cjs>`, và không thấy file đó thì báo lỗi nói cách cài;
