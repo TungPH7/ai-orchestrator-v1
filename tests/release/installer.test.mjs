@@ -10,9 +10,9 @@ const SHA = 'c'.repeat(40);
 const TREE = 'f'.repeat(40);
 const DIR = `/var/lib/ao/pilot/work/${TREE}`;
 const DEPLOY_YAML = readFileSync(join(ROOT, 'tests/fixtures/release/deploy.yaml'), 'utf8');
-const PROJECT = { name: 'pilot', repo: 'TungPH7/ao-pilot', urls: { development: 'https://pilot-dev.ao.t2g.io.vn' } };
+const PROJECT = { name: 'pilot', repo: 'TungPH7/ao-pilot', hosts: { development: 'pilot-dev.ao.t2g.io.vn', staging: 'pilot-staging.ao.t2g.io.vn', production: 'pilot.ao.t2g.io.vn' } };
 
-function fakes({ deployYaml = DEPLOY_YAML, build = '', smoke = { ok: true, failures: [] }, open = null } = {}) {
+function fakes({ deployYaml = DEPLOY_YAML, build = '', smoke = { ok: true, failures: [] }, open = null, project = PROJECT } = {}) {
   const gitCalls = [];
   const dockerCalls = [];
   const git = async (args) => {
@@ -32,7 +32,7 @@ function fakes({ deployYaml = DEPLOY_YAML, build = '', smoke = { ok: true, failu
   const asked = [];
   const opened = [];
   const installer = createInstaller({
-    project: PROJECT,
+    project,
     git,
     docker,
     open: async (dir) => {
@@ -80,7 +80,7 @@ test('the worktree is opened for reading after checkout and before the build: th
 test('install builds every app from a worktree at the commit, removes the worktree, and swaps the new containers in', async () => {
   const f = fakes();
   // The public app and its port tell Caddy where the environment now answers.
-  assert.deepEqual(await f.installer.install({ env: 'development', sha: SHA, tree: TREE }), { outcome: 'success', public: { app: 'web', port: 3000 } });
+  assert.deepEqual(await f.installer.install({ env: 'development', sha: SHA, tree: TREE }), { outcome: 'success', public: [{ app: 'web', port: 3000 }] });
   assert.deepEqual(f.gitCalls, [
     `show ${SHA}:.ai-orchestrator/deploy.yaml`,
     `worktree remove --force ${DIR}`,
@@ -116,4 +116,34 @@ test('a missing secret or a failed build is an error, and the worktree still goe
   assert.deepEqual(await b.installer.install({ env: 'development', sha: SHA, tree: TREE }), { outcome: 'error', reason: 'the build of web failed: npm ci exited with 1' });
   assert.equal(b.gitCalls.at(-1), `worktree remove --force ${DIR}`);
   assert.ok(!b.dockerCalls.some((line) => line.startsWith('run ')));
+});
+
+// project-scaffold part 2, spec 2.4: two public apps, each on its own host of /etc/ao/deployer.yaml.
+const TWO_PUBLIC = DEPLOY_YAML.replace('apps:\n', 'apps:\n  admin:\n    dockerfile: apps/admin/Dockerfile\n    port: 5173\n    health: /\n    public: true\n');
+const SHOP_HOSTS = {
+  web: { development: 'shop-dev.ao.t2g.io.vn', staging: 'shop-staging.ao.t2g.io.vn', production: 'shop.ao.t2g.io.vn' },
+  admin: { development: 'shop-admin-dev.ao.t2g.io.vn', staging: 'shop-admin-staging.ao.t2g.io.vn', production: 'shop-admin.ao.t2g.io.vn' },
+};
+
+test('two public apps: each gets AO_PUBLIC_URL and the smoke test of its own host, and both go to Caddy', async () => {
+  const f = fakes({ deployYaml: TWO_PUBLIC, project: { ...PROJECT, hosts: SHOP_HOSTS } });
+  assert.deepEqual(await f.installer.install({ env: 'development', sha: SHA, tree: TREE }), { outcome: 'success', public: [{ app: 'admin', port: 5173 }, { app: 'web', port: 3000 }] });
+  assert.deepEqual(f.asked, [
+    { admin: { origin: 'http://172.18.0.9:5173', host: 'shop-admin-dev.ao.t2g.io.vn' } },
+    { web: { origin: 'http://172.18.0.9:3000', host: 'shop-dev.ao.t2g.io.vn' } },
+  ]);
+  const runs = f.dockerCalls.filter((line) => line.startsWith('run --detach'));
+  assert.equal(runs.length, 2);
+  for (const line of runs) assert.match(line, /--env AO_PUBLIC_URL /);
+});
+
+test('two public apps with one host for each environment, or a public app with no host, deploy nothing', async () => {
+  const single = fakes({ deployYaml: TWO_PUBLIC });
+  const refused = await single.installer.install({ env: 'development', sha: SHA, tree: TREE });
+  assert.equal(refused.outcome, 'error');
+  assert.match(refused.reason, /^deploy\.yaml has 2 public apps \(admin, web\), and \/etc\/ao\/deployer\.yaml names one host for each environment: give each public app its own hosts there/);
+  assert.deepEqual(single.dockerCalls, []);
+  const partial = fakes({ deployYaml: TWO_PUBLIC, project: { ...PROJECT, hosts: { web: SHOP_HOSTS.web } } });
+  assert.match((await partial.installer.install({ env: 'development', sha: SHA, tree: TREE })).reason, /^admin is public in deploy\.yaml but has no development host in \/etc\/ao\/deployer\.yaml$/);
+  assert.deepEqual(partial.dockerCalls, []);
 });

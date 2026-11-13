@@ -86,17 +86,16 @@ async function tickAll(config, { dryRun }) {
     try {
       const c = await connect(config, project, { dryRun });
       states[project.name] = c.state;
-      const urls = Object.fromEntries(Object.entries(project.hosts ?? {}).map(([env, host]) => [env, `https://${host}`]));
       const docker = (args, options = {}) => execute('docker', args, options.env);
       await tick({
-        project: { ...project, urls },
+        project,
         state: c.state,
         save: async (state) => saveState(c.stateFile, state),
         git: c.git,
         token: c.token,
         github: c.github,
         audit: ({ since, head, branch }) => auditRange({ git: c.git, github: c.reader, docs, since, head, branch, gates, apps: config.apps, approvers: config.approvers, space: project.space }),
-        installer: createInstaller({ project: { ...project, urls }, git: c.git, docker, workDir: join(c.dir, 'work'), readSecrets: (env) => readFile(join(config.secrets_dir, project.name, `${env}.env`), 'utf8') }),
+        installer: createInstaller({ project, git: c.git, docker, workDir: join(c.dir, 'work'), readSecrets: (env) => readFile(join(config.secrets_dir, project.name, `${env}.env`), 'utf8') }),
         approvers: config.approvers,
         log,
         dryRun,

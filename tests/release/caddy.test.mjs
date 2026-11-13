@@ -100,3 +100,32 @@ test('the deployer writes the Caddyfile and reloads Caddy only when it changed; 
   assert.deepEqual([dry.writes, dry.docker], [[], []]);
   assert.match(lines.join('\n'), /would write .*Caddyfile and reload Caddy/);
 });
+
+// project-scaffold part 2, spec 2.4: hosts app by app give each public app its own site.
+test('two public apps: a site for each host, each to its own app, and 503 for an app that runs nowhere yet', () => {
+  const shop = { name: 'shop', repo: 'TungPH7/shop', space: 'SHOP', hosts: {
+    user: { development: 'shop-dev.ao.t2g.io.vn', staging: 'shop-staging.ao.t2g.io.vn', production: 'shop.ao.t2g.io.vn' },
+    admin: { development: 'shop-admin-dev.ao.t2g.io.vn', staging: 'shop-admin-staging.ao.t2g.io.vn', production: 'shop-admin.ao.t2g.io.vn' },
+  } };
+  const state = emptyState();
+  state.environments.development.current = { sha: 'c'.repeat(40), tree: 'f'.repeat(40), branch: 'develop', public: [{ app: 'user', port: 3000 }, { app: 'admin', port: 5173 }] };
+  state.environments.staging.current = { sha: 'c'.repeat(40), tree: 'f'.repeat(40), branch: 'release/v0.1.0', public: [{ app: 'user', port: 3000 }] };
+  const sites = caddySites({ ...example, projects: [shop] }, { shop: state });
+  assert.deepEqual(sites.map(({ host, upstream, auth }) => `${host} ${upstream ?? '503'} ${auth ? 'auth' : 'open'}`), [
+    'shop-dev.ao.t2g.io.vn ao-shop-development-user:3000 auth',
+    'shop-admin-dev.ao.t2g.io.vn ao-shop-development-admin:5173 auth',
+    'shop-staging.ao.t2g.io.vn ao-shop-staging-user:3000 auth',
+    'shop-admin-staging.ao.t2g.io.vn 503 auth',
+    'shop.ao.t2g.io.vn 503 open',
+    'shop-admin.ao.t2g.io.vn 503 open',
+  ]);
+});
+
+test('a record from before part 2, with one public app as an object, still reaches its site', () => {
+  const pilot = emptyState();
+  pilot.environments.development.current = { sha: 'c'.repeat(40), tree: 'f'.repeat(40), branch: 'develop', public: { app: 'web', port: 3000 } };
+  const listed = emptyState();
+  listed.environments.development.current = { ...pilot.environments.development.current, public: [{ app: 'web', port: 3000 }] };
+  const project = { ...example, projects: [example.projects[0]] };
+  assert.equal(caddyfile({ sites: caddySites(project, { pilot }), credentials: CREDENTIALS }), caddyfile({ sites: caddySites(project, { pilot: listed }), credentials: CREDENTIALS }));
+});

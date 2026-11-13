@@ -10,7 +10,8 @@ const sha = (ch) => ch.repeat(40);
 const tree = (ch) => `${ch}0`.repeat(20);
 const [A, B, C, D, H, M, R] = ['a', 'b', 'c', 'd', '1', '2', '3'].map(sha); // develop: A, B, C, D; main: H (hotfix), M (release merge); release head R
 const URLS = { development: 'https://pilot-dev.ao.t2g.io.vn', staging: 'https://pilot-staging.ao.t2g.io.vn', production: 'https://pilot.ao.t2g.io.vn' };
-const PROJECT = { name: 'pilot', repo: 'TungPH7/ao-pilot', urls: URLS };
+// The hosts of /etc/ao/deployer.yaml: one host for each environment, that of the one public app.
+const PROJECT = { name: 'pilot', repo: 'TungPH7/ao-pilot', hosts: Object.fromEntries(Object.entries(URLS).map(([env, url]) => [env, new URL(url).host])) };
 const pass = (s, pull = { number: 7, head: 'feature/DEMO-21-cart' }) => ({ sha: s, ok: true, problems: [], pull });
 const fail = (s, problem) => ({ sha: s, ok: false, problems: [problem], pull: null });
 
@@ -64,7 +65,8 @@ function fakeInstaller(results = []) {
     pruned,
     install: async ({ env, sha: s, tree: t }) => {
       installs.push(`${env} ${s.slice(0, 1)}`);
-      const next = results.shift() ?? { outcome: 'success' };
+      // As the installer of the kit answers: the public apps it switched to, in the order of deploy.yaml.
+      const next = results.shift() ?? { outcome: 'success', public: [{ app: 'web', port: 3000 }] };
       if (next instanceof Error) throw next;
       return next;
     },
@@ -72,7 +74,7 @@ function fakeInstaller(results = []) {
   };
 }
 
-async function run({ repo, state, deployments, audits = {}, results, dryRun = false }) {
+async function run({ repo, state, deployments, audits = {}, results, dryRun = false, project = PROJECT }) {
   const g = fakeGit(repo);
   const gh = fakeGitHub(deployments);
   const inst = fakeInstaller(results);
@@ -81,7 +83,7 @@ async function run({ repo, state, deployments, audits = {}, results, dryRun = fa
   let error = null;
   try {
     await tick({
-      project: PROJECT,
+      project,
       state,
       save: async (s) => saved.push(JSON.parse(stateText(s))),
       git: g.git,
@@ -127,7 +129,7 @@ test('Development runs a new head of develop once every new commit passed audit,
   assert.equal(r.gh.writes.at(-1).body.environment_url, URLS.development);
   assert.deepEqual(r.inst.installs, ['development c']);
   const env = r.state.environments.development;
-  assert.deepEqual(env.current, { sha: C, tree: tree('c'), branch: 'develop' });
+  assert.deepEqual(env.current, { sha: C, tree: tree('c'), branch: 'develop', public: [{ app: 'web', port: 3000 }] });
   assert.deepEqual([env.seen.develop, r.state.branches.develop.audited, env.pending], [C, C, null]);
   assert.deepEqual(r.inst.pruned, [1], 'images are pruned after a deploy');
   // Nothing new on the next tick.
@@ -175,7 +177,7 @@ test('a hotfix merged into main runs on Staging first; Production waits for your
   const shipped = await run({ repo: { heads: { develop: A, main: H }, open: [], trees: TREES }, state: r.state, deployments: { production: [request] } });
   assert.deepEqual(created(shipped.gh), [], 'the request is the deployment');
   assert.deepEqual(statuses(shipped.gh), ['55 in_progress', '55 success']);
-  assert.deepEqual(shipped.state.environments.production.current, { sha: H, tree: tree('1'), branch: null });
+  assert.deepEqual(shipped.state.environments.production.current, { sha: H, tree: tree('1'), branch: null, public: [{ app: 'web', port: 3000 }] });
   assert.deepEqual(shipped.state.requests, [55]);
 });
 
@@ -285,4 +287,12 @@ test('the token reaches git through its environment only: no argument and no log
 test('readHeads lists develop, main and the open release branches, and ignores any other branch', async () => {
   const { git } = fakeGit({ heads: { develop: A, main: H, 'release/v0.1.0': R, 'release/v0.0.9': B, 'feature/DEMO-1-x': C }, open: ['release/v0.1.0'], trees: TREES });
   assert.deepEqual(await readHeads(git), { develop: A, main: H, releases: { 'release/v0.1.0': R } });
+});
+
+// project-scaffold part 2, spec 2.4: with two public apps, the deployment names the URL of the first one of deploy.yaml.
+test('the deployment of two public apps names the URL of the first, on its own host', async () => {
+  const hosts = { admin: { development: 'shop-admin-dev.ao.t2g.io.vn', staging: 'shop-admin-staging.ao.t2g.io.vn', production: 'shop-admin.ao.t2g.io.vn' }, user: { development: 'shop-dev.ao.t2g.io.vn', staging: 'shop-staging.ao.t2g.io.vn', production: 'shop.ao.t2g.io.vn' } };
+  const r = await run({ project: { ...PROJECT, hosts }, repo: { heads: { develop: C, main: H0 }, open: [], trees: TREES }, state: started(), audits: { [`develop ${C}`]: [pass(B), pass(C)] }, results: [{ outcome: 'success', public: [{ app: 'user', port: 3000 }, { app: 'admin', port: 5173 }] }] });
+  assert.equal(r.gh.writes.at(-1).body.environment_url, 'https://shop-dev.ao.t2g.io.vn');
+  assert.deepEqual(r.state.environments.development.current.public, [{ app: 'user', port: 3000 }, { app: 'admin', port: 5173 }]);
 });

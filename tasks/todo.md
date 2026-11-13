@@ -108,7 +108,7 @@
     - `doctor` in đoạn `deployer.yaml` theo dạng đúng: một app công khai thì dạng cũ, từ hai app thì dạng theo app.
   - **Kiểm:** fixture đúng và sai cho hai dạng; `npm run validate` vẫn qua `vps/deployer.example.yaml`.
   - **File:** `lib/release/deploy-config.mjs`, `lib/release/deployer.schema.json`, `lib/release/deployer-config.mjs`, `lib/scaffold/project.schema.json`, `lib/scaffold/project-config.mjs`, `lib/scaffold/doctor.mjs`, fixture, test.
-- [ ] **T15: deployer, Caddy, bản ghi** (spec 2.4).
+- [x] **T15: deployer, Caddy, bản ghi** (spec 2.4).
   - **Đạt khi:**
     - deployer tìm host của từng app công khai; thiếu thì không deploy, và ghi lý do;
     - `AO_PUBLIC_URL` và host của smoke test theo từng app;
