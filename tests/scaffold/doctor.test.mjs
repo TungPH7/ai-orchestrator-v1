@@ -113,3 +113,10 @@ test('a public repo: the interaction limit runs for 30 days more at least', () =
   assert.match(soon.fix, /^The interaction limit ends in 17 days: ao-kit setup github <dir> sets it again for six months$/);
   assert.match(row({ interactionLimit: {} }).fix, /^No interaction limit runs: /);
 });
+
+// project-scaffold part 2, spec 2.4: the lines of /etc/ao/deployer.yaml for two public apps, with their hosts.
+test('two public apps: doctor prints the hosts of each app for /etc/ao/deployer.yaml', () => {
+  const two = { ...config, apps: { ...config.apps, web: { ...config.apps.web, hosts: { development: 'sample-dev.ao.t2g.io.vn', staging: 'sample-staging.ao.t2g.io.vn', production: 'sample.ao.t2g.io.vn' } }, api: { ...config.apps.api, public: true } } };
+  const vps = doctor(facts({ config: two })).find(({ group }) => group === 'VPS');
+  assert.match(vps.fix, /\n {4}hosts:\n {6}web:\n {8}development: sample-dev\.ao\.t2g\.io\.vn\n {8}staging: sample-staging\.ao\.t2g\.io\.vn\n {8}production: sample\.ao\.t2g\.io\.vn\n {6}api:\n {8}development: sample-api-dev\.<your domain>\n/);
+});

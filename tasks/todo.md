@@ -100,7 +100,7 @@
 
 ## Chặng 3: nhiều app công khai, nhánh `task/scaffold2-3`
 
-- [ ] **T14: luật và cấu hình** (spec 2.4; plan, quyết định 8).
+- [x] **T14: luật và cấu hình** (spec 2.4; plan, quyết định 8).
   - **Đạt khi:**
     - D2 của `deploy.yaml` đòi ít nhất một app công khai;
     - `deployer.schema.json` và `deployer-config.mjs` nhận cả hai dạng `hosts`; host không trùng trên cả VPS;
