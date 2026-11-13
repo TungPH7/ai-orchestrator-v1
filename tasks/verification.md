@@ -244,3 +244,6 @@ Lỗi chỉ lần chạy thật bắt được:
   - `--stop` tắt app, thư mục về `develop`, sạch. Bằng chứng ở `.ai/qa/SMP-27/preview.txt` của `ao-sample`;
   - PR #31 đóng không merge, nhánh đã xóa.
 - Còn lại: gỡ cờ, chạy lại `/ao-qa SMP-27` để có báo cáo PASS (guard `qa-report-passed` của `accept` chỉ nhận PASS), rồi bạn bấm `Accept`.
+- Lượt 196, bạn nhờ gỡ cờ: token admin bỏ Flagged và nhãn `needs-you` của `SMP-27`, kèm comment 10234 ghi kết quả preview (204, 201).
+  - `/ao-qa SMP-27` không chạy lại được: "SMP-27 is In QA, not Ready for QA". Spec `agent-roster` mục 2.9 ghi với NOT TESTED: "Bạn tự kiểm rồi `Accept`, hoặc sửa môi trường rồi gọi `qa` kiểm lại", nhưng `ao-step` chỉ cho `qa` chạy từ Ready for QA. Chỗ lệch nhỏ của kit, ghi lại để sửa sau.
+  - Guard `qa-report-passed` của `accept` chỉ ràng buộc automation và agent. Lượt chuyển `Accept` trong Jira chỉ giới hạn nhóm `ao-humans`; REST liệt kê `Accept -> Done` cho bạn. Đúng với mục 2.9, bạn tự kiểm (ở đây là phiên chính kiểm thay, có comment 10234) rồi bấm `Accept`.
