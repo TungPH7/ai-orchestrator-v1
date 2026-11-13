@@ -22399,3 +22399,50 @@ Còn ba câu ở mục 9 chờ bạn:
 3. B3 tốn 0 USD agent; `be-dev` làm việc với Java lần đầu ở B4.
 
 Bạn trả lời **"duyệt"** nếu đồng ý cả ba, hoặc nói câu nào cần đổi.
+
+# Phiên 28 · Lượt 6 — 2026-11-14 khoảng 01:00
+
+**Bạn:**
+
+```markdown
+nãy tôi nó làm trên nhánh codebase, nhưng giờ tôi suy nghĩ lại, bạn hãy check 2 nhánh 'base-3/implement-features-to-learn-postgresql' và 'codebase', xem thử nên làm trên nhánh nào?
+```
+
+**Bạn (gửi thêm trong lúc Claude đang kiểm):**
+
+```markdown
+'base-3/implement-features-to-learn-postgresql' thì đầy đủ hơn nhưng lại bị dính code của các feature e-commerce đã làm
+```
+
+**Claude:**
+
+Mình so hai nhánh: lịch sử commit, quan hệ giữa chúng, và khác nhau ở những file nào.
+
+Nhánh `base-3` tách ra từ `codebase` trước commit dọn dẹp cuối của nó (`0a0ccac`), rồi thêm 54 commit gồm tám tính năng e-commerce: catalog, customer, inventory, coupon, order, payment, dashboard, search. 11 commit cuối (F06–F08) mới chỉ có ở máy bạn, chưa push. Mình đo tiếp phần code sản phẩm của hai nhánh.
+
+Bạn nói đúng, và đó cũng là điểm mình đang cân nhắc. Trước khi đề xuất, mình xem phần hạ tầng chung (`common/`) của `base-3` có gì hơn `codebase` mà không dính tính năng e-commerce, và `base-3` còn mang theo gì mà `codebase` đã dọn.
+
+**Mình đề xuất giữ nhánh `codebase`.** Đúng như bạn nói, `base-3` đầy đủ hơn nhưng mang theo code của các tính năng e-commerce. Mình so hai nhánh:
+
+| | `codebase` | `base-3/implement-features-to-learn-postgresql` |
+|---|---|---|
+| Code chính | 35 file Java: hạ tầng chung, `health`, `product` mẫu | 213 file Java: thêm 9 tính năng (catalog, customer, inventory, coupon, order, payment, dashboard, search, admin) |
+| Test | 14 file | 99 file |
+| Migration | 3 | 20 |
+| Tiếng Việt trong code | 1 file; phần còn lại đã dịch sang tiếng Anh ở commit dọn `0a0ccac` | 179/213 file |
+| Ghi chú riêng | Đã dọn | Tách ra trước commit dọn, nên còn `note.md`, `docs/readme`, `docs/research-coding-convention`, và một file `backups/*.sql` rỗng |
+| Trên GitHub | Đã push | 11 commit cuối (F06–F08) mới có ở máy bạn |
+
+**Vì sao chọn `codebase`:**
+1. **B4 cần tính năng đi qua quy trình của kit.** Pilot 3 viết spec, plan, code, review và QA cho Epic đầu của `shop`. Nếu `api` đã có sẵn order, payment, coupon, thì phần lớn code của sản phẩm chưa từng qua `reviewer` và `security`, vì kit chỉ review và đo coverage trên phần mới đổi. Thiết kế của các tính năng đó cũng được chọn để học PostgreSQL (view cho dashboard, index cho search), không xuất phát từ yêu cầu của `shop`.
+2. **Bảo mật.** Ở cả hai nhánh, `SecurityConfig` cho `/api/**` chạy không cần đăng nhập (`PHASE-2: đổi thành .authenticated() khi có JWT`).
+   - Với `codebase`, chỗ lộ ra chỉ là `health` và `product` mẫu.
+   - Với `base-3`, lộ cả dữ liệu khách hàng, đơn hàng, thanh toán, và các endpoint chẩn đoán database như `/api/v1/admin/tables/{name}/analyze` hay `/api/v1/admin/slow-queries`.
+   - Trên `shop`, Caddy của `admin` chuyển `/api/*` ra ngoài, và Production không có basic auth.
+3. **Sạch hơn:** code tiếng Anh, không có ghi chú riêng.
+
+**Phần đáng giữ của `base-3`** nằm ở `common/` và không dính tính năng nào: `PagedResponse`, `SqlStatement` và `RecordRowMapper` (JDBC), kiểu `TstzRange`, `ClockConfig`, ba exception `Forbidden`, `UnprocessableContent`, `ServiceUnavailable`, cùng test của chúng. Riêng `ErrorCode` trộn mã chung với mã của tính năng (`ORD_`, `PAY_`, `CPN_`…), nên không chép nguyên được. Có hai cách lấy phần này:
+- **Mình đề xuất:** đưa vào `shop` qua một Task bình thường khi Epic đầu cần tới, ví dụ `PagedResponse` cho danh sách đầu tiên. Như vậy phần này cũng được kit review.
+- Cách khác: tạo trước một nhánh mới trong template, ví dụ `codebase-2`, gồm `codebase` cộng phần `common/` chung của `base-3`, bỏ mã lỗi của tính năng. Việc này sửa repo template của bạn, nên mình chỉ làm khi bạn đồng ý.
+
+Spec B3 vẫn dùng nhánh `codebase`. Ba câu ở mục 9 vẫn chờ bạn: trả lời **"duyệt"**, hoặc nói câu nào cần đổi.
