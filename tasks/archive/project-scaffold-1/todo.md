@@ -1,6 +1,6 @@
 # Task: project-scaffold, phần 1 (B1)
 
-> **Plan:** [plan.md](plan.md). **Spec:** [SPEC-project-scaffold.md](../SPEC-project-scaffold.md). Làm theo thứ tự. Mỗi task viết test đỏ trước.
+> **Plan:** [plan.md](plan.md). **Spec:** [SPEC-project-scaffold.md](../../../SPEC-project-scaffold.md). Làm theo thứ tự. Mỗi task viết test đỏ trước.
 
 **Quy ước:**
 - Xong mỗi task thì năm lệnh kiểm phải xanh: `npm test`, `npm run validate`, `npm run render:check`, `npm run jira:checklist:check`, `npm run agents:check`. Từ T8 thêm `npm run profiles:check` khi task đụng `profiles/` hay `lib/scaffold/`.
@@ -170,16 +170,16 @@
   - **Kiểm:** năm lệnh kiểm; CI xanh; PR merge.
 
 ### Checkpoint 5: sau T19
-- [ ] Hướng dẫn đã merge. Mình hỏi bạn trước T20.
+- [x] Hướng dẫn đã merge. Mình hỏi bạn trước T20.
 
-- [ ] **T20 [bạn]: chép kit vào `ao-sample`** (tiêu chí 4).
+- [x] **T20 [bạn]: chép kit vào `ao-sample`** (tiêu chí 4).
   - **Mình:** dùng `/ao-intake` tạo Task chép kit, chạy `ao-kit sync --key <KEY>`, kiểm `project.yaml` sinh ra và việc xóa `preview.yaml`, push, mở PR, chạy `/ao-review`.
   - **Bạn:** đọc báo cáo, approve, tự merge vì PR sửa đường dẫn được bảo vệ.
   - **Đạt khi:** `/ao-preview` trên `ao-sample` chạy được từ `project.yaml`.
 
 ## Đóng module
 
-- [ ] **T21: đóng module.**
+- [x] **T21: đóng module.**
   - `verification.md` ghi kết quả từng task.
   - Plan, todo, verification dời vào `tasks/archive/project-scaffold-1/`.
   - Cập nhật `SPEC.md`, `SPEC-project-scaffold.md`, `concerns.md` (B1 Xong), memory.

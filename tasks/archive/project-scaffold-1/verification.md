@@ -1,6 +1,6 @@
 # Kiểm chứng: project-scaffold, phần 1 (B1)
 
-> **Spec:** [SPEC-project-scaffold.md](../SPEC-project-scaffold.md). **Plan:** [plan.md](plan.md). Ghi kết quả từng task khi xong.
+> **Spec:** [SPEC-project-scaffold.md](../../../SPEC-project-scaffold.md). **Plan:** [plan.md](plan.md). Module hoàn thành 2026-11-13 (Phiên 27 · Lượt 198).
 
 ## T2: tiền đề Jira, 2026-11-12
 
@@ -113,7 +113,7 @@ Lỗi chỉ lần chạy thật bắt được:
 - Sau lỗi `App … is not installed`, Node trên Windows in thêm `Assertion failed: !(handle->flags & UV_HANDLE_CLOSING)` khi thoát. Đây là tiếng ồn của libuv, lệnh vẫn dừng đúng. Cần ghi nhận, chưa sửa.
 - **T16 xong (Lượt 169).** Kit PR #256 (`bd01ebc`) chứa các sửa ở trên, bản nháp hướng dẫn với phần 3 viết lại thành 10 bước, và log các lượt 157–169.
 
-**T17, repo đang có `ao-brown`, 2026-11-12–13 (xong, chờ Cancel `AOG-2`, `AOG-3`).** Bạn duyệt cách làm ở Lượt 170: Task chép kit, commit lên `develop` mới, rồi Cancel Task, 0 USD tiền agent.
+**T17, repo đang có `ao-brown`, 2026-11-12–13 (xong; `AOG-2`, `AOG-3` Cancelled ở Lượt 180).** Bạn duyệt cách làm ở Lượt 170: Task chép kit, commit lên `develop` mới, rồi Cancel Task, 0 USD tiền agent.
 - Dựng repo giả "đang phát triển": `gh repo create TungPH7/ao-brown --private`. Code lấy từ `main` của `ao-sample` (`2e69e47`, v0.1.0) bằng `git archive`. Gỡ `.ai-orchestrator/`, `.claude/`, `.githooks/`, `.github/`, `.jira/`, `.mcp.json`, `docs/`, `CHANGELOG.md`, script `prepare` và bốn dòng của kit trong `.gitignore`. Kết quả: 70 file, một commit `Initial commit` trên `main`, đã push. Repo chưa có workflow nào.
 - `ao-kit init ao-brown` (kit `bd01ebc`), 12 giây:
   - `init` thấy repo có code, nên chỉ chép kit, không đụng file app. Lệnh thêm bốn dòng `.gitignore` và script `prepare`, chạy `npm ci --prefix .ai-orchestrator` và render. `origin` đã có và đúng repo, nên không có ghi chú gì về nó.
@@ -198,7 +198,7 @@ Lỗi chỉ lần chạy thật bắt được:
 - Test mới trong `tests/repo.test.mjs` kiểm: README trỏ tới hướng dẫn và không còn danh sách bước; hướng dẫn có đủ bảy phần; không còn ghi chú "Bản nháp"; phần 5 có `SMP-23` tới `Complete`. Test này viết sau khi nội dung đã có, nên không có lần đỏ trước. Lần chạy đầu của nó đỏ vì chính nó bắt nhầm chữ "bản nháp" của `/ao-intake`, đã thu hẹp lại.
 - Năm lệnh kiểm xanh (1278 test).
 
-**T20, chép kit `8a8d8ef` vào `ao-sample`, 2026-11-13 (đang làm).** Bạn duyệt ở Lượt 186.
+**T20, chép kit `8a8d8ef` vào `ao-sample`, 2026-11-13 (xong).** Bạn duyệt ở Lượt 186.
 - Task `SMP-27` "Chép kit 8a8d8ef vào ao-sample bằng ao-kit sync" (New, nhãn `ao-devops`) được tạo bằng token CI, mô tả theo template Task, giống cách đã làm với `SMP-22`. Kế hoạch ghi dùng `/ao-intake`, nhưng phiên phỏng vấn cần bạn trả lời từng câu; với một Task mà nội dung đã rõ, tạo thẳng thì nhanh hơn. Đây là một chỗ lệch so với plan.
 - `ao-kit sync ao-sample --key SMP-27 --name sample`, 17 giây:
   - viết `project.yaml` từ `.claude/settings.json`, `preview.yaml` và `deploy.yaml`, rồi xóa `preview.yaml`;
@@ -247,3 +247,35 @@ Lỗi chỉ lần chạy thật bắt được:
 - Lượt 196, bạn nhờ gỡ cờ: token admin bỏ Flagged và nhãn `needs-you` của `SMP-27`, kèm comment 10234 ghi kết quả preview (204, 201).
   - `/ao-qa SMP-27` không chạy lại được: "SMP-27 is In QA, not Ready for QA". Spec `agent-roster` mục 2.9 ghi với NOT TESTED: "Bạn tự kiểm rồi `Accept`, hoặc sửa môi trường rồi gọi `qa` kiểm lại", nhưng `ao-step` chỉ cho `qa` chạy từ Ready for QA. Chỗ lệch nhỏ của kit, ghi lại để sửa sau.
   - Guard `qa-report-passed` của `accept` chỉ ràng buộc automation và agent. Lượt chuyển `Accept` trong Jira chỉ giới hạn nhóm `ao-humans`; REST liệt kê `Accept -> Done` cho bạn. Đúng với mục 2.9, bạn tự kiểm (ở đây là phiên chính kiểm thay, có comment 10234) rồi bấm `Accept`.
+- Lượt 198: bạn bấm `Accept`; `SMP-27` sang Done. Kit PR #259 (`af40e08`) mang bản sửa của review và ghi chép T20, CI xanh trên PR và trên `main`. **T20 xong**, tiêu chí 4 đạt.
+
+## T21: đóng module, 2026-11-13
+
+Bạn chọn giữ `ao-green`, `ao-brown` và space `AOG` (Lượt 198). Plan, todo và verification dời vào `tasks/archive/project-scaffold-1/`. `SPEC.md`, `SPEC-project-scaffold.md` và `concerns.md` (B1 xong) cập nhật theo.
+
+### Tiêu chí hoàn thành (spec mục 7)
+
+| # | Tiêu chí | Kết quả |
+|---|---|---|
+| 1 | Năm lệnh kiểm của kit xanh, cùng `profiles:check` | Đạt: 1281 test ở `af40e08`; `profiles:check` xanh từ T8 |
+| 2 | Dựng mới thật theo `docs/getting-started.md`, từ thư mục trống tới `doctor` đạt, CI xanh trên `develop`, `/ao-status` chạy được, không gọi agent trả tiền | Đạt ở T16 (`ao-green`). Chỗ hướng dẫn sai hay thiếu được sửa trước khi đi tiếp: thiếu `origin`, cài App trước `/ao-intake`, Actions tắt ở lần push đầu, lưu giới hạn cột, bật MCP |
+| 3 | Cài vào repo đang có thật: `init` báo đúng việc còn thiếu; làm xong thì `doctor` đạt và CI xanh | Đạt ở T17 (`ao-brown`), sau hai sửa của kit: Semgrep chỉ quét commit đầu khi push nhánh mới, và coverage bỏ `scripts/**` |
+| 4 | `sync` trên `ao-sample` thật, qua PR chép kit có review đầy đủ | Đạt ở T20: PR #30, review 8,89 USD (Medium 1, Low 4, đã sửa ở kit PR #259); QA 1,41 USD; `/ao-preview` kiểm thật trên PR nháp #31; bạn `Accept` |
+| 5 | Hướng dẫn đủ bảy phần ở 2.7; ví dụ từ ý tưởng tới Production chỉ dùng số liệu thật | Đạt ở T19: phần 5 theo `SMP-23`, 35 lượt, khoảng 55,1 USD |
+| 6 | Kit merge vào `main` qua PR, CI xanh | Đạt: kit PR #252–#259 |
+
+### Chi phí agent của module
+
+- T18, `/ao-ship v0.2.0`: 1,05 USD.
+- T20, `SMP-27`: review 8,89 USD, QA 1,41 USD, cộng 10,30 USD.
+- Các lần `/ao-intake` ở T16, T17 chạy trong phiên của bạn, không qua `ao-step`, nên không có số.
+- Tổng ghi được: 11,35 USD.
+
+### Việc còn lại, ngoài module
+
+- **`qa` không chạy lại được sau NOT TESTED.** Spec `agent-roster` mục 2.9 cho cách "sửa môi trường rồi gọi `qa` kiểm lại", nhưng `ao-step` chỉ cho `qa` chạy từ Ready for QA. Lần này bạn tự kiểm rồi `Accept`, cũng đúng theo mục 2.9.
+- **Hợp đồng chưa có đường tới Done cho Task không có PR** do người làm (`AOG-1`, `AOG-2`, `AOG-3` phải Cancel). Bàn sau.
+- **Bản sửa `workflow_dispatch` của kit PR #259** tới `ao-sample`, `ao-pilot` ở lần chép kit sau. `ao-green`, `ao-brown` giữ bản kit cũ hơn.
+- **Repo public:** `ao-sample`, `ao-pilot` và repo kit public từ 2026-11-13 để có phút Actions miễn phí. Giới hạn tương tác hết hạn 2027-05-13, cần gia hạn. `ao-green`, `ao-brown` vẫn private và tính vào 2.000 phút mỗi tháng. Job ngắn của `jira-sync` và `merge-gate` bị tính tròn 1 phút; chỉ cần tối ưu nếu repo private lại hết phút.
+- **Bản kit trên VPS** chưa cập nhật. Hỏi bạn trước khi làm.
+- Báo cáo QA của `SMP-27` nêu hai dòng `doctor` chưa đạt trong môi trường của agent: secret của `merge-gate` và kiểm Jira thiếu `JIRA_ADMIN_TOKEN`. `doctor` chạy từ phiên chính thì đạt; đây là khác biệt môi trường, không phải lỗi.
