@@ -80,7 +80,8 @@ node <kit>/scripts/ao-kit.mjs add e-commerce/shop api --stack spring-boot --from
 - **Báo chỗ code phải đổi**, ví dụ với template của bạn:
   - `server.port` lấy từ `SERVER_PORT`, mặc định 8080: đổi thành `${PORT:3001}`, và sửa `EXPOSE`, `HEALTHCHECK` của Dockerfile theo;
   - Dockerfile đặt `SPRING_PROFILES_ACTIVE=prod` cho mọi môi trường. Deployer chạy một image ở cả ba môi trường, nên biến này phải nằm trong `env` của `deploy.yaml`, để file secret của từng môi trường chọn `dev`, `staging` hay `prod`;
-  - JaCoCo không ghi báo cáo XML. Template của bạn có ghi, nên `add` sẽ không báo dòng này.
+  - JaCoCo không ghi báo cáo XML. Template của bạn có ghi, nên `add` sẽ không báo dòng này;
+  - `.dockerignore` có comment cuối dòng. File này không hiểu comment cuối dòng, nên cả dòng thành một mẫu; dòng 61 của template (`!README.md   # giữ README chính …`) làm Docker 24 từ chối build (T2).
 
 `project.yaml` có app `api`: `profile: spring-boot`, `dev: pnpm --filter ./apps/api run dev`, cổng `PORT` mặc định 3001, `health: /actuator/health`, không công khai. `deploy.yaml` có app `api` với `context`, `memory`, `start_timeout` (2.5), và khóa `database` (2.4).
 
@@ -88,7 +89,7 @@ node <kit>/scripts/ao-kit.mjs add e-commerce/shop api --stack spring-boot --from
 
 **Script `scripts/mvnw.mjs` của kit** chạy wrapper của app:
 - Linux và macOS: `./mvnw <tham số>`, không qua shell.
-- Windows: `mvnw.cmd` là file batch, mà Node không chạy được file `.cmd` nếu không qua shell. Script gọi `cmd.exe /d /s /c mvnw.cmd <tham số>`, và chỉ nhận tham số cố định của `package.json`, không nhận chữ từ ngoài vào.
+- Windows: `mvnw.cmd` là file batch, mà Node không chạy được file `.cmd` nếu không qua shell. Script gọi `cmd.exe /d /s /c <đường dẫn đầy đủ>\mvnw.cmd <tham số>`, và chỉ nhận tham số cố định của `package.json`, không nhận chữ từ ngoài vào. Đường dẫn phải đầy đủ, vì phiên Claude Code đặt `NoDefaultCurrentDirectoryInExePath=1`, nên `cmd` không tìm lệnh trong thư mục hiện hành (T2).
 - Chọn JDK theo `<java.version>` của `pom.xml`, theo thứ tự:
   1. `JAVA_HOME`, khi bản của nó khớp;
   2. biến `JAVA_HOME_<bản>` nếu có, như `JAVA_HOME_21`, theo cách runner của GitHub đặt tên;
@@ -118,7 +119,7 @@ node <kit>/scripts/ao-kit.mjs add e-commerce/shop api --stack spring-boot --from
 | Cổng | JS (hiện nay) | Java (thêm) |
 |---|---|---|
 | Coverage của dòng đổi | lcov | Báo cáo XML của JaCoCo, `apps/*/target/site/jacoco/jacoco.xml`. Nguồn: `**/src/main/java/**/*.java`. Ngưỡng 80% như hiện nay |
-| Kiểm dependency | `pnpm audit` | `osv-scanner` trên `apps/*/pom.xml`, gồm dependency bắc cầu; cùng `audit_level: high` và cùng danh sách ngoại lệ có hạn. Bản cài ghim theo bản và SHA-256, như gitleaks |
+| Kiểm dependency | `pnpm audit` | `osv-scanner` v2.7.0 trên `apps/*/pom.xml`, với `--data-source native` (đọc Maven Central như Maven), gồm dependency bắc cầu; cùng `audit_level: high` và cùng danh sách ngoại lệ có hạn. Bản cài ghim theo bản và SHA-256, như gitleaks. T2: nó thấy đủ 171 dependency mà Maven liệt kê |
 | Dòng tắt check (cần `reason:` trên cùng dòng) | `eslint-disable`, `.skip(`… | `@SuppressWarnings`, `NOSONAR`, `@Disabled`, `CHECKSTYLE:OFF`, `CHECKSTYLE.OFF`, `spotless:off`, `@SuppressFBWarnings`, `NOPMD`, và `@Generated` (JaCoCo bỏ qua class có annotation này) |
 | Path làm `security` review ở effort của roster | NestJS, Next.js | `**/pom.xml`, `**/.mvn/**`, `**/mvnw*`, `**/application*.{yml,yaml,properties}`, `**/*Controller.java`, `**/*Filter.java`, `**/*Interceptor.java`, `**/*Security*.java`, `**/*Auth*.java`, `**/security/**`, `**/*Repository.java`, `**/domain/**`, `**/dto/**`. Migration SQL đã có qua `**/*.sql` |
 | SAST | Semgrep `p/default`, `p/owasp-top-ten` | Không đổi: hai bộ luật này đã quét Java |
@@ -139,7 +140,7 @@ node <kit>/scripts/ao-kit.mjs add e-commerce/shop api --stack spring-boot --from
 
 ```yaml
 database:
-  image: postgres:17-alpine@sha256:<digest>
+  image: postgres:17-alpine@sha256:d3244e8ce3f165ee3c93d9c4a4b1d0fe48b3a89e2287b717fdcbbde92d405065
   init: apps/api/docker/postgres/init   # chạy một lần, khi volume còn trống
   memory: 256m
 ```
@@ -245,7 +246,7 @@ tests/                           test của từng phần trên
 ## 6. Chiến lược test
 
 `node:test`, hàm thuần, effect truyền vào, như hai phần trước.
-- **`mvnw.mjs`:** tham số đúng cho Windows (`cmd.exe /d /s /c mvnw.cmd`) và Linux; chỉ nhận tên script đã biết; chọn JDK theo `pom.xml`; đọc `.env`.
+- **`mvnw.mjs`:** tham số đúng cho Windows (`cmd.exe /d /s /c` với đường dẫn đầy đủ của `mvnw.cmd`) và Linux; chỉ nhận tên script đã biết; chọn JDK theo `pom.xml`; đọc `.env`.
 - **`add --stack spring-boot`:** trên thư mục tạm thật, với template Java giả có `.githooks/`, `.github/`, `.claude/`, `prompt.md`, `docs/coding-conventions/`. Kiểm: danh sách file bỏ, `package.json` của app, `project.yaml`, `deploy.yaml`, `roster.local.yaml`, các dòng báo; chạy lại không đổi gì.
 - **Coverage:** báo cáo JaCoCo mẫu; dòng đổi được tính đúng; `coverage_exclude`; luật cũ của lcov không đổi.
 - **`osv-scanner`:** kết quả JSON mẫu; ngưỡng `high`; ngoại lệ còn hạn và hết hạn.

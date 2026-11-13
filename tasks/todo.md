@@ -11,7 +11,7 @@
 ## Chuẩn bị
 
 - [x] **T1: tài liệu.** Spec ghi đã duyệt; plan, todo; nhật ký Phiên 28 · Lượt 1–6. PR tài liệu từ nhánh `task/project-scaffold-3`, tự merge khi CI xanh.
-- [ ] **T2: tiền đề** (spec mục 8; plan, rủi ro). Mình bật Docker Desktop, rồi tắt khi xong. Không commit code; kết quả ghi vào `verification.md`:
+- [x] **T2: tiền đề** (spec mục 8; plan, rủi ro). Mình bật Docker Desktop, rồi tắt khi xong. Không commit code; kết quả ghi vào `verification.md`:
   1. `./mvnw -B -ntp verify` của template (nhánh `codebase`) với JDK `C:\opt\jdk-21`: thời gian, số test, có `target/site/jacoco/jacoco.xml` không;
   2. `osv-scanner` (bản ghim) trên `pom.xml` của template: định dạng JSON; số dependency nó thấy, so với `mvnw dependency:tree`;
   3. `postgres:17-alpine` chạy với `--user postgres`, `--cap-drop ALL`, `--security-opt no-new-privileges`, trên volume mới, với script init của template: khởi động được không, RAM lúc rảnh;
@@ -21,14 +21,14 @@
   - **Đạt khi:** cả năm mục có kết quả. Mục nào sai với spec thì sửa spec trước chặng 1.
 
 ### Checkpoint 1: sau T2
-- [ ] Năm tiền đề có kết quả; spec sửa nếu cần.
+- [x] Năm tiền đề đạt (Phiên 28 · Lượt 7). Spec sửa ba chỗ: đường dẫn đầy đủ của `mvnw.cmd`, `osv-scanner --data-source native` bản v2.7.0, luật báo comment cuối dòng của `.dockerignore`; digest của Postgres.
 
 ## Chặng 1: Maven trong workspace pnpm, nhánh `task/scaffold3-1`
 
 - [ ] **T3: `maven.mjs` và `mvnw.mjs`** (spec 2.2; plan, quyết định 3, 4).
   - **Đạt khi:**
     - `lib/quality/maven.mjs` trả về tham số Maven cho `lint` (`validate`), `typecheck` (`compile`, bỏ hai bước lint), `test:coverage` (`verify`), `build` (`package -DskipTests`), `dev` (`spring-boot:run`); luôn có `-B -ntp`; tên script lạ thì báo lỗi;
-    - cách gọi wrapper: `./mvnw` trên Linux và macOS, không qua shell; `cmd.exe /d /s /c mvnw.cmd` trên Windows;
+    - cách gọi wrapper: `./mvnw` trên Linux và macOS, không qua shell; `cmd.exe /d /s /c <đường dẫn đầy đủ>\mvnw.cmd` trên Windows, vì `NoDefaultCurrentDirectoryInExePath=1` (T2);
     - đọc `<java.version>` của `pom.xml`, cả khi nó nằm trong `<properties>`;
     - chọn JDK theo thứ tự của spec 2.2: `JAVA_HOME` khớp bản, `JAVA_HOME_<bản>`, JDK cạnh `JAVA_HOME`, thư mục cài thường gặp; đọc bản của JDK từ file `release` của nó, không chạy `java`; không thấy thì báo bản cần cài;
     - `dev`: đọc `.env` của app (không in giá trị), chạy `docker compose up -d --wait` khi app có `docker-compose.yml`, rồi chạy Maven với `PORT`;
