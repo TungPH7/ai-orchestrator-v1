@@ -20145,7 +20145,7 @@ Test đã đỏ đúng như mong đợi. Giờ mình sửa `ci.yml`.
 
 Giờ đến comment ở đầu file, rồi phần `gh-guard`.
 
-Đã xem xong `ci.yml` và `gh-guard`. Mình đang cập nhật spec và tài liệu cho chốt chặn mới. Sau đó sẽ sửa ba lỗi Low.
+Mình đang cập nhật spec và tài liệu cho chốt chặn mới. Sau đó sẽ sửa ba lỗi Low.
 
 Phần sửa chính đã xanh. Giờ mình cập nhật tài liệu chỗ nói về chạy tay và `gh-guard`.
 
