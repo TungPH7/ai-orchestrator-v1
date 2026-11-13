@@ -53,6 +53,9 @@ test('P5–P7: optional roles the kit has, dev commands with no shell, and one p
   assert.deepEqual(readProjectConfig(stringify({ ...parse(text), roles: { optional: ['seo'] } }), { optionalRoles: ['seo'] }).errors, []);
   assert.deepEqual(rules(edited((d) => (d.apps.web.dev = 'npm run dev -w apps/web && rm -rf .'))), ['P6 apps.web.dev']);
   assert.deepEqual(rules(edited((d) => (d.apps.web.dev = 'next dev'))), ['P6 apps.web.dev']);
+  // pnpm starts an app with plain words too (project-scaffold part 2, spec 2.1).
+  assert.deepEqual(rules(edited((d) => (d.apps.web.dev = 'pnpm --filter ./apps/web run dev'))), []);
+  assert.deepEqual(rules(edited((d) => (d.apps.web.dev = 'pnpm --filter ./apps/web run dev; rm -rf .'))), ['P6 apps.web.dev']);
   assert.deepEqual(rules(edited((d) => (d.apps.api.port.default = 3000))), ['P7 apps.api.port.default']);
 });
 

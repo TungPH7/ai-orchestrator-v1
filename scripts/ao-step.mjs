@@ -23,7 +23,8 @@ import { readGates } from '../lib/quality/gates.mjs';
 import { matchesGlob } from '../lib/quality/glob.mjs';
 import { markReadyForReview, READY_PERMISSIONS } from '../lib/quality/pr-ready.mjs';
 import { appCredentials, botIdentity, githubRepoOf, installationToken, userVariable } from '../lib/quality/github-app.mjs';
-import { npmCli, runNpm } from '../lib/quality/npm.mjs';
+import { npmCli } from '../lib/quality/npm.mjs';
+import { installArgs, managerFromLockfile, pnpmCli, runManager } from '../lib/quality/package-manager.mjs';
 import { attachEvidence } from '../lib/tracker/attachments.mjs';
 import { createGitHubClient, readGitHubToken } from '../lib/tracker/github-client.mjs';
 import { bearerAuth, createJiraClient } from '../lib/tracker/jira-client.mjs';
@@ -61,7 +62,7 @@ const preview = previewRunner({
   projectDir,
   git,
   checkout: (spec) => prepareCheckout(spec),
-  npm: runNpm,
+  runPackages: runManager,
   spawn,
   fs: { existsSync, readFileSync, writeFileSync, rmSync, mkdirSync, openSync },
   portBusy,
@@ -70,7 +71,7 @@ const preview = previewRunner({
   sleep: (ms) => new Promise((done) => setTimeout(done, ms)),
   env: process.env,
   execPath: process.execPath,
-  npmCli,
+  cliOf: (tool) => (tool === 'pnpm' ? pnpmCli() : npmCli()),
   cleared: CLEARED_ENV,
   // The lock of this very process, taken for --go, is not another run.
   agentRunning: () => {
@@ -482,10 +483,12 @@ function addWorktree({ name, sha, install = false, keepInstructions = false }) {
   if (install) {
     const env = { ...process.env };
     for (const name of CLEARED_ENV) delete env[name];
-    const installed = runNpm(['ci', '--ignore-scripts', '--no-audit', '--no-fund'], { cwd: path, env, encoding: 'utf8' });
+    // npm or pnpm, by the lockfile of that commit (project-scaffold part 2, spec 2.1).
+    const manager = managerFromLockfile((file) => existsSync(join(path, file))) ?? 'npm';
+    const installed = runManager(manager, installArgs(manager, { ignoreScripts: true }), { cwd: path, env, encoding: 'utf8' });
     if (installed.status !== 0) {
       removeWorktree({ name });
-      return { ok: false, reason: `npm ci failed in the worktree of ${name} at ${sha.slice(0, 7)}: ${(installed.stderr || installed.error?.message || '').trim().slice(-500)}` };
+      return { ok: false, reason: `${manager === 'npm' ? 'npm ci' : 'pnpm install'} failed in the worktree of ${name} at ${sha.slice(0, 7)}: ${(installed.stderr || installed.error?.message || '').trim().slice(-500)}` };
     }
   }
   return { ok: true, path: path.replaceAll('\\', '/') };

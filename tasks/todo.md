@@ -30,7 +30,7 @@
     - `scripts/check-policy.mjs` chạy `pnpm audit --json` khi có `pnpm-lock.yaml`, và đọc kết quả như `npm audit`.
   - **Kiểm:** `tests/quality/ci-workflow.test.mjs` chạy các bước bằng bash với cả hai loại lockfile, như test chặn `workflow_dispatch` hiện có; test của `check-policy` với kết quả `pnpm audit` mẫu.
   - **File:** `kit/.github/workflows/ci.yml`, `scripts/check-policy.mjs`, test.
-- [ ] **T4: `/ao-preview` và worktree cho pnpm** (spec 2.1).
+- [x] **T4: `/ao-preview` và worktree cho pnpm** (spec 2.1).
   - **Đạt khi:**
     - lệnh `dev` được nhận khi là `pnpm` với các từ thường, như `pnpm --filter ./apps/user run dev`, ngoài `npm` và `node`;
     - `/ao-preview` so `pnpm-lock.yaml` để biết có phải cài lại không, và cài bằng `pnpm install --frozen-lockfile --ignore-scripts`;
