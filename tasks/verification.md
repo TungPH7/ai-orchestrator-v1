@@ -208,7 +208,7 @@ Kết quả: đĩa dùng giảm từ 13 GB xuống 7,9 GB, còn trống 30 GB; 1
     - `ao-pr.mjs` chạy từ phiên ngoài thư mục dự án cần `AO_DEV_APP*` lấy từ `.claude/settings.json`.
     - Ngoài kit: sau `pnpm add` và đổi nhánh, `node_modules` trên máy mất link `zod` được treo lên. `pnpm install` báo "Already up to date"; phải cài lại từ đầu.
 
-**T24, `shop` lên Development (Lượt 210, đang làm; bạn mở VPS).**
+**T24, `shop` lên Development (Lượt 210–211; bạn mở VPS).**
 1. **Trước khi sửa:** VPS như cuối Lượt 207: 10 container, Caddyfile `7966209d…`, còn 2.910 MB RAM trên 3.915 MB, đĩa còn trống 30 GB.
 2. **Secret Development:** `/etc/ao/secrets/shop/development.env`, `root:aodeploy 640`, có hai dòng:
    - `API_URL=http://api:3001`. Tên `api` sẽ có ở B3, khi `shop` có API;
@@ -219,3 +219,21 @@ Kết quả: đĩa dùng giảm từ 13 GB xuống 7,9 GB, còn trống 30 GB; 1
    - `deployer.yaml` đã được trả về bản sao lưu, và timer đã bật lại. `tick --dry-run` không in gì, Caddyfile vẫn `7966209d…`.
    - **Lỗ hổng của kit:** bước 4 phần 3 của `getting-started.md` và bước 5 phần 5 chỉ cài `ao-dev` và `ao-review`. Bước 8 phần 5 (lên Development) cũng không nhắc tới `ao-deploy`, và `doctor` không kiểm App này. T25 phải thêm bước cài `ao-deploy` vào bước 8. `doctor` nên có một dòng kiểm App này, đọc qua token của `ao-deploy` hoặc hỏi bạn.
 5. **Lần deploy đầu:** sau `baseline --confirm`, deployer coi head hiện tại của `develop` là đã xem, nên không tự deploy. Cách đúng là `/ao-rollback development <sha>` bằng login `gh` của bạn: lệnh tạo yêu cầu deploy, và deployer ghi rằng bạn đã duyệt lịch sử tới commit đó (`approveHistory`).
+6. **Lượt 211, bạn cài `ao-deploy` trên `shop`:**
+   - `baseline shop` in `develop` `91b699c` và `main` `e4a708a`, khớp với GitHub. Sau đó `--confirm`.
+   - `tick --dry-run` chỉ báo `caddy: would write … and reload Caddy`.
+   - Bật lại timer. Lượt đầu ghi Caddyfile: không dòng nào bị xóa, thêm 36 dòng cho sáu site của `shop`, mỗi site trả 503.
+7. **Deploy:**
+   - Bước kiểm của `ao-step.mjs rollback development 91b699c…` báo GO. Chạy từ phiên ngoài thư mục `shop` thì phải nạp `env` của `.claude/settings.json`, như `ao-pr.mjs` ở T23.
+   - `--go` tạo yêu cầu `#7769885492`.
+   - Deployer nhận yêu cầu sau khoảng 15 giây (`you approved the history of develop up to 91b699c`). Nó build hai image trên VPS rồi deploy xong sau 8 phút 50 giây (`deployed 91b699c`). GitHub ghi deployment là `success`.
+8. **Kiểm từ máy bạn:**
+   - `shop-dev`: `/` trả 307 sang `/en`. `/en` trả 200 (26 KB, title "Server-first enterprise foundation"), `/en/products` trả 200, `robots.txt` trả 200.
+   - `shop-admin-dev`: `/` và `/login` trả 200, đó là SPA fallback. `/api/health` trả 502 vì chưa có API (B3).
+   - Không có basic auth thì Development và Staging trả 401. Staging và Production của `shop` trả 503.
+   - `sample.ao…` vẫn trả 307, `pilot.ao…` 200, `sample-dev.ao…` 401.
+   - Lần gọi `/` đầu tiên trả `000` (không kết nối được), ngay sau lúc Caddy reload. Gọi lại thì bình thường.
+9. **Sau deploy:**
+   - Caddyfile vẫn không có dòng nào bị xóa, thêm 36 dòng; các site cũ giữ nguyên.
+   - RAM còn sẵn 2.794 MB, trước đó 2.910. Hai container của `shop` dùng 55 MiB (`user`) và 11 MiB (`admin`). Swap dùng 6 MB.
+   - Image trên VPS: `user` 400 MB, `admin` 144 MB. Đĩa dùng 11 GB, còn trống 28 GB.
