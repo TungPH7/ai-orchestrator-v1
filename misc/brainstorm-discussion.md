@@ -22260,3 +22260,29 @@ B3 bắt đầu bằng spec chi tiết để bạn duyệt. Xong B3, `shop` có 
 Bạn trả lời giúp mình hai câu:
 1. Bạn muốn bắt đầu B3 không?
 2. Quyền tự làm theo đề xuất (từ Lượt 181) có áp dụng tiếp cho B3 không? Quyền này đã dừng khi B2 đóng.
+
+# Phiên 28 · Lượt 3 — 2026-11-14 khoảng 00:10
+
+**Bạn:**
+
+```markdown
+Trả lời ngắn gọn trước câu hỏi:
+Bạn sẽ dùng template Java /d/Document/1Khoahoc/4LapTrinh/java/tungph7-learnPostgresql-api-java này của tôi phải không? Template này dùng Maven
+```
+
+**Claude:**
+
+Đúng, mình sẽ dùng template này cho `apps/api` của `shop`. Bạn đã chỉ nó ở Lượt 199.
+
+Vì template dùng Maven, mình đề xuất stack `spring-boot` của B3 chỉ làm Maven (chạy qua `./mvnw`). Gradle chỉ thêm khi có dự án cần.
+
+Mình đã xem qua template, chỉ đọc, không sửa gì:
+- Spring Boot 4.0.6, Java 21;
+- đã có PostgreSQL, Flyway và JaCoCo, nên B3 dùng luôn Flyway làm công cụ migration;
+- có `.githooks/`, `.github/` và `.claude/`: `add` bỏ chúng, như với hai template JS;
+- có `study-guide-impl/`: mình đề xuất bỏ, như hai template kia;
+- `.env` không được commit ở `codebase` và `main`, nên chép vào repo public `shop` không lộ secret.
+
+Còn một chỗ phải chọn: dùng nhánh nào của template. Template đang ở nhánh `codebase`; ngoài ra có `main`, `base-1/build-project`, `base-2/fix-code-quality`, `base-3/implement-features-to-learn-postgresql` và `write-query-framework`. Mình sẽ đưa câu này vào spec của B3, kèm đề xuất.
+
+Hai câu ở lượt trước vẫn chờ bạn: có bắt đầu B3 không, và quyền tự làm theo đề xuất có áp dụng cho B3 không.
