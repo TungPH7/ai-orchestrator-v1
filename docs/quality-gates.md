@@ -88,6 +88,7 @@ Semgrep chỉ báo finding do thay đổi mang vào:
 - Khi push lên một nhánh đã có trên GitHub: so với commit trước lần push.
 - Khi push một nhánh mới, như `develop` lần đầu hay một nhánh `release/*`: chỉ xét commit đầu nhánh, giống `gitleaks`. Nhờ vậy finding có từ trước kit không chặn nhánh mới (`project-scaffold`, T17).
 - Commit gốc của một repo, và lượt chạy tay `gh workflow run CI --ref <nhánh>`, được quét toàn bộ. Muốn xem các finding cũ của một repo đang có thì chạy tay.
+- Chỉ chạy tay được trên `develop`, `main` hay `release/*`. Trên nhánh khác, mọi job đỏ ngay ở bước đầu **By hand only on develop, main or release/\***. Lượt chạy tay không có các phần chỉ chạy trên PR, nên nó không được phép ghi check xanh lên commit của PR.
 
 Sửa code theo gợi ý của rule. Nếu là báo nhầm, thêm `nosemgrep` kèm `reason:` trên cùng dòng; reviewer sẽ đọc lý do.
 
@@ -254,7 +255,7 @@ Job của `merge-gate` khai `environment: { name: merge-gate, deployment: false 
 - push lên `develop`, `main`, `release/*`;
 - làm việc với PR bằng tài khoản của bạn: `gh pr merge`, `review`, `create`, `revert`, `update-branch` và các lệnh ghi khác, hay `gh api` với method khác GET;
 - lấy token hoặc key: `gh auth token`, `gh auth status -t`, đọc `hosts.yml` của `gh` hay file PEM của App;
-- đổi cấu hình repo, như `gh secret set`, `gh repo edit`, `gh repo autolink create`; hoặc xóa lần chạy workflow bằng `gh run delete`;
+- đổi cấu hình repo, như `gh secret set`, `gh repo edit`, `gh repo autolink create`; hoặc xóa lần chạy workflow bằng `gh run delete`; chạy tay, bật hay tắt workflow bằng `gh workflow run`, `enable`, `disable`;
 - sửa file được bảo vệ bằng `Edit`, `Write`, `NotebookEdit`. Riêng `devops` được sửa `.github/workflows/**`, nhưng PR đó vẫn do bạn merge;
 - từ `dev-workflow`: tự mở agent hay tự lấy token, tức chạy `ao-step.mjs`, `ao-agent.mjs`, `ao-git-credential.mjs`; đặt credential helper cho git (`git -c credential.*`, `git config credential.*`); sửa file trong `.git/`;
 - từ A1 sau Pilot 2: đưa mật khẩu basic auth của Development và Staging (`$E2E_HTTP_PASSWORD`, `$AO_ENV_AUTH`) vào tham số của một lệnh, như `curl -u`, vì process nào trên máy cũng đọc được dòng lệnh. Chỉ `printf`, lệnh có sẵn của shell, được nhắc tới biến này. `qa` đưa mật khẩu cho `curl` qua stdin: `printf 'user = "%s:%s"\n' "$E2E_HTTP_USER" "$E2E_HTTP_PASSWORD" | curl -K - <url>`.

@@ -314,6 +314,29 @@ test('a run the usage limit stops has its uncommitted work put aside; the run th
   assert.match(wipNote, /has put it back in the checkout: run git status and read the diff before you go on/);
 });
 
+// Review of ao-sample PR #30: the work came back and its stash was dropped, but the run did not start, as when its
+// worktree could not be added. The record still named the stash, so the next command refused the changed checkout.
+test('work that came back is off the record at once, even when the run cannot start after it', async () => {
+  const { world, gather } = specWorld();
+  const events = [];
+  await harness(world, SPEC_EFFECTS, { outcomes: ['success', 'limit'] }).run({ gather, wip: wipEffect(events) });
+  const withTree = (command, facts, opts) => {
+    const decision = decideStep(command, facts, opts);
+    return decision.go ? { ...decision, runs: decision.runs.map((run) => ({ ...run, worktree: { name: 'pr-15', sha: 'abc1234def5678' } })) } : decision;
+  };
+  const failing = { add: async () => ({ ok: false, reason: 'git could not add the worktree of PR #15' }), remove: async () => assert.fail('nothing to remove') };
+  const again = harness(world, SPEC_EFFECTS);
+  const { decision } = await again.run({ gather, decide: withTree, worktree: failing, wip: wipEffect(events) });
+  assert.equal(decision.reason, 'git could not add the worktree of PR #15');
+  assert.equal(again.calls.length, 0);
+  assert.equal(world.run.runs.find(({ n }) => n === 2).wip, undefined, 'the dropped stash is not named');
+
+  const third = harness(world, SPEC_EFFECTS);
+  await third.run({ gather, wip: wipEffect(events) });
+  assert.deepEqual(events.filter(([what]) => what === 'restore'), [['restore', 'ffffffff']], 'restored once');
+  assert.equal(third.calls[0].resume, 's-ux-2');
+});
+
 test('work that cannot come back stops the command before its agent; work that cannot be put aside is said, and nothing is on record', async () => {
   const { world, gather } = specWorld();
   const events = [];

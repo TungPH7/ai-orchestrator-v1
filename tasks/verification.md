@@ -197,3 +197,53 @@ Lỗi chỉ lần chạy thật bắt được:
 - `README.md`: mục cài kit bỏ danh sách 9 bước, chỉ còn trỏ tới hướng dẫn, kèm danh sách những gì `init` và `sync` chép vào dự án (test `repo.test.mjs` đòi các ý này).
 - Test mới trong `tests/repo.test.mjs` kiểm: README trỏ tới hướng dẫn và không còn danh sách bước; hướng dẫn có đủ bảy phần; không còn ghi chú "Bản nháp"; phần 5 có `SMP-23` tới `Complete`. Test này viết sau khi nội dung đã có, nên không có lần đỏ trước. Lần chạy đầu của nó đỏ vì chính nó bắt nhầm chữ "bản nháp" của `/ao-intake`, đã thu hẹp lại.
 - Năm lệnh kiểm xanh (1278 test).
+
+**T20, chép kit `8a8d8ef` vào `ao-sample`, 2026-11-13 (đang làm).** Bạn duyệt ở Lượt 186.
+- Task `SMP-27` "Chép kit 8a8d8ef vào ao-sample bằng ao-kit sync" (New, nhãn `ao-devops`) được tạo bằng token CI, mô tả theo template Task, giống cách đã làm với `SMP-22`. Kế hoạch ghi dùng `/ao-intake`, nhưng phiên phỏng vấn cần bạn trả lời từng câu; với một Task mà nội dung đã rõ, tạo thẳng thì nhanh hơn. Đây là một chỗ lệch so với plan.
+- `ao-kit sync ao-sample --key SMP-27 --name sample`, 17 giây:
+  - viết `project.yaml` từ `.claude/settings.json`, `preview.yaml` và `deploy.yaml`, rồi xóa `preview.yaml`;
+  - chép kit, chạy `npm ci --prefix .ai-orchestrator` và render;
+  - commit `20f90e3` `chore(kit): copy the kit at 8a8d8ef9 (SMP-27)` trên `feature/SMP-27-kit-copy`, 31 file, +1658/−261. Lệnh không push.
+- `project.yaml` sinh ra khớp cấu hình thật: `name: sample`, space `SMP`, hai App, `kit_peers: [TungPH7/ao-pilot]`, `api` ở 3001 với `/health`, `web` ở 3000 với `/notes` và `public: true`. `ao-kit check` báo OK. `doctor ao-sample` trên nhánh này: `Every row passes.`
+- Nhánh đã push. Chờ bạn bấm `Refine` (duyệt Task trực tiếp).
+- Lượt 187, bạn nhờ bấm Refine:
+  - mô tả `SMP-27` được ghi lại với ô DoR cuối đã đánh dấu, ghi rõ "Lượt 187, trong chat"; ô này là chữ `[x]` trong mô tả, không phải task list của Jira;
+  - `Refine` chạy bằng token admin của bạn, nhận 204, item sang Ready.
+- Start làm như với `SMP-22`: token CI ghi trường Agent là DevOps Engineer và comment lý do (Task chép kit, không có agent build), rồi `Start` qua Rovo MCP bằng token agent. `SMP-27` sang In Progress.
+- `ao-pr create` mở PR nháp #30 dưới tên bot `ao-dev`. Trong shell của phiên chính, `ao-pr` báo `AO_DEV_APP_ID is not set`: Claude Code đặt các biến `AO_*` từ `settings.json` cho phiên trong dự án, còn shell của phiên chính ở thư mục khác thì không có. Lấy giá trị từ `.claude/settings.json` (không phải secret) thì chạy được. Câu Risks trong mô tả PR được sửa lại: `/ao-review` chạy bằng bản kit của `develop` (`c6fdfa8`).
+- CI của PR #30 xanh: `policy`, `build-test`, `secrets`, `sast`, `jira-sync`.
+- `/ao-review 30`, dòng kiểm: `pr-ready`, rồi `reviewer` (`xhigh`), rồi `security` (`max`, vì PR chạm đường dẫn được bảo vệ). Lượt chạy thật bắt đầu.
+- `/ao-review 30` chạy 1732 giây, 8,89 USD:
+  - `pr-ready` chuyển PR sang sẵn sàng; `jira-sync` đưa `SMP-27` sang In Review.
+  - `reviewer` (`xhigh`, 47 lượt, 6,8 phút, 2,31 USD): Critical 0, High 0, Medium 1, Low 4. Bản chép khớp từng file với kit `8a8d8ef`, bốn mục checklist của Task đạt.
+  - `security` (`max`, 68 lượt, 21 phút, 6,58 USD): Critical 0, High 0, Medium 1, Low 0. Kết luận Approve.
+  - **Medium chung của hai báo cáo, `ci.yml:12`:** `workflow_dispatch` (thêm ở T16) nhận mọi nhánh. Chạy tay trên nhánh của một PR thì bốn check cùng tên vẫn ghi lên head của PR, nhưng bỏ các phần chỉ chạy trên PR: quy ước, suppression, hạ chuẩn, coverage của dòng đổi, gitleaks quá commit đầu. `gh-guard` không chặn `gh workflow run`. Cách sửa đề xuất: mỗi job thoát 1 khi chạy tay trên nhánh không phải `develop`, `main`, `release/*` (thoát lỗi chứ không bỏ qua, vì job bị bỏ qua vẫn tính là đạt); chặn `gh workflow run` với agent.
+  - **Low của `reviewer`:** comment của `gates.yaml` còn nhắc `preview.yaml`; hook `commit-msg` coi "git không chạy được" và nhánh mồ côi là commit gốc; một ca hiếm trong `runner.mjs` (stash đã áp lại rồi mà lần chạy tiếp vẫn trỏ tới nó); khoảng 715 dòng code `ao-kit` được chép vào dự án dù dự án không gọi (đúng thiết kế).
+- `/ao-review` dừng ở gate ③: PR sửa đường dẫn được bảo vệ, nên bạn approve rồi tự merge.
+- Lượt 188: bạn approve và merge PR #30 lúc 00:41:53 UTC, commit `fd5c848` trên `develop`.
+  - CI của push xanh (00:43:13). Deploy lên Development `success` lúc 00:43:35 (deployment 7753776646).
+  - Từ 00:43:10, GitHub không khởi động job nào nữa: "The job was not started because recent account payments have failed or your spending limit needs to be increased". Hai lượt `jira-sync` theo `deployment_status` và hai lượt `merge-gate` đỏ vì lý do này, không phải vì code. `SMP-27` vẫn ở In Review.
+  - Spec `quality-gates` mục "Phút Actions" đã lường trước: một vòng PR chuẩn tốn khoảng 37 phút, tức khoảng 54 vòng mỗi tháng ở gói Free. Tháng 11 có năm repo riêng tư chạy CI (kit, `ao-sample`, `ao-pilot`, `ao-green`, `ao-brown`).
+  - Đang chặn: `/ao-preview` (cần CI xanh trên PR), `/ao-qa SMP-27` (cần `jira-sync` đưa item sang In QA; chạy lại lượt 43339342556 khi Actions chạy lại được), và CI của kit PR.
+- Sửa trong kit theo review, có test đỏ trước, chưa push:
+  - **Medium:** mỗi job của `ci.yml` có bước đầu "By hand only on develop, main or release/*", chỉ chạy khi `workflow_dispatch`, thoát 1 trên nhánh khác. Test kiểm bốn job cùng bước đầu và chạy đoạn script bằng bash với 3 ref được phép, 6 ref bị chặn. `gh-guard` chặn agent chạy `gh workflow run`, `enable`, `disable`; vẫn cho `gh workflow list`, `view` và `gh run rerun`.
+  - **Low:** comment của `gates.yaml` nói đúng `project.yaml`; `commit-msg` coi là commit gốc chỉ khi `git rev-list -n 1 --all` chạy được và không ra commit nào (nhánh orphan và lúc `git` lỗi vẫn cần mã); `runner.mjs` bỏ `wip` khỏi bản ghi ngay sau khi áp lại stash, nên lượt không bắt đầu được thì lệnh sau không nhắc stash đã xóa.
+  - Low thứ tư (code `ao-kit` chép vào dự án) đúng thiết kế, không sửa.
+  - Spec `quality-gates`, `project-scaffold`, `live-run-fixes` và `docs/quality-gates.md` đổi theo.
+  - Năm lệnh kiểm xanh (1281 test).
+- Lượt 189–192, hạn mức Actions:
+  - Tháng 11 dùng 2.005 phút (đếm qua API, khớp trang Billing): `ao-sample` 1.062, `ao-pilot` 460, kit 426, `ao-brown` và `ao-green` 57. Khoảng 45% là job `jira-sync` và `merge-gate` chạy dưới 30 giây nhưng bị tính tròn 1 phút. Gói Free gồm 12 USD (2.000 phút Linux, 0,006 USD/phút), reset ngày 1/12.
+  - Bạn không đặt budget. Tài liệu GitHub ghi runner thường miễn phí, không giới hạn ở repo public.
+  - Thử thật: repo public `TungPH7/test` (trống trước đó), commit `9a68e5d` thêm workflow in một dòng; run 43353450862 (push) xanh lúc 02:37 UTC trên `ubuntu-latest`; commit `21f13db` xóa workflow. Một phút sau, `jira-sync` chạy tay trên `ao-sample` (private, run 43353562018) vẫn bị chặn với cùng lỗi billing.
+- Lượt 193: `ao-sample`, `ao-pilot` đổi sang public sau khi `gitleaks` quét toàn bộ lịch sử ba repo (5 báo nhầm: badge CircleCI mẫu, hằng `SECRET` trong test). Giới hạn tương tác chỉ cho collaborator tới 2027-05-13; workflow từ PR của người ngoài cần duyệt. Repo kit giữ private, chờ bạn chọn cách (có chi tiết sự cố VPS cũ trong log).
+  - `jira-sync` chạy tay (run 43354032265) xanh: `SMP-27` In Review → Ready for QA. `/ao-qa SMP-27` đưa item sang In QA.
+- `/ao-qa SMP-27` (`qa`, `high`, 40 lượt, 6 phút, 1,41 USD): **NOT TESTED**. Tám tiêu chí PASS (280/280 file của kit khớp `8a8d8ef`, `project.yaml` đúng, skill và `roster.local.yaml` giữ nguyên, không đổi code app, E2E 54/54 trên Development, CI xanh, hai review, deploy `success`). Tiêu chí `/ao-preview` không chạy được vì `gh-guard` chặn agent chạy `ao-step.mjs`; `qa` gắn cờ Needs you (comment 10233). Tổng chi phí agent của `SMP-27`: 10,30 USD.
+- Phiên chính kiểm `/ao-preview` bằng PR nháp #31 (một commit rỗng `0340c17` trên `develop`, CI xanh, không tốn phút vì repo đã public):
+  - dòng kiểm đọc hai app từ `project.yaml`: `api` http://localhost:3001/health, `web` http://localhost:3000/notes;
+  - `--go` 99 giây: thư mục sang nhánh của PR, hai app lên, `curl` trả 200 cho cả hai (`{"status":"ok"}`);
+  - `--stop` tắt app, thư mục về `develop`, sạch. Bằng chứng ở `.ai/qa/SMP-27/preview.txt` của `ao-sample`;
+  - PR #31 đóng không merge, nhánh đã xóa.
+- Còn lại: gỡ cờ, chạy lại `/ao-qa SMP-27` để có báo cáo PASS (guard `qa-report-passed` của `accept` chỉ nhận PASS), rồi bạn bấm `Accept`.
+- Lượt 196, bạn nhờ gỡ cờ: token admin bỏ Flagged và nhãn `needs-you` của `SMP-27`, kèm comment 10234 ghi kết quả preview (204, 201).
+  - `/ao-qa SMP-27` không chạy lại được: "SMP-27 is In QA, not Ready for QA". Spec `agent-roster` mục 2.9 ghi với NOT TESTED: "Bạn tự kiểm rồi `Accept`, hoặc sửa môi trường rồi gọi `qa` kiểm lại", nhưng `ao-step` chỉ cho `qa` chạy từ Ready for QA. Chỗ lệch nhỏ của kit, ghi lại để sửa sau.
+  - Guard `qa-report-passed` của `accept` chỉ ràng buộc automation và agent. Lượt chuyển `Accept` trong Jira chỉ giới hạn nhóm `ao-humans`; REST liệt kê `Accept -> Done` cho bạn. Đúng với mục 2.9, bạn tự kiểm (ở đây là phiên chính kiểm thay, có comment 10234) rồi bấm `Accept`.

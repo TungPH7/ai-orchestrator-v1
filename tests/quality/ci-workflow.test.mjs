@@ -43,6 +43,23 @@ test('every job checks out the commit under test with its history, for the merge
   }
 });
 
+// A run by hand writes checks of the same four names on the commit, but skips what runs only on a PR: conventions,
+// suppressions, lowered thresholds, the coverage of changed lines, gitleaks on the earlier commits (review of ao-sample
+// PR #30). So every job fails first when it is started by hand on a branch that is not protected. It fails rather than
+// skips: a skipped job counts as passing, for the kit's check reader and for the required checks of GitHub.
+test('a run by hand fails every job on a branch that is not develop, main or release/*', () => {
+  const guard = workflow.jobs.policy.steps[0];
+  for (const [name, job] of Object.entries(workflow.jobs)) {
+    assert.deepEqual(job.steps[0], guard, `${name}: the guard is its first step`);
+  }
+  assert.equal(guard.if, "github.event_name == 'workflow_dispatch'");
+  const status = (ref) => spawnSync('bash', ['-c', guard.run], { encoding: 'utf8', env: { ...process.env, GITHUB_REF: ref, GITHUB_REF_NAME: ref.replace(/^refs\/\w+\//, '') } }).status;
+  for (const ref of ['refs/heads/develop', 'refs/heads/main', 'refs/heads/release/1.2.0']) assert.equal(status(ref), 0, ref);
+  for (const ref of ['refs/heads/feature/SMP-1-x', 'refs/heads/developer', 'refs/heads/main2', 'refs/heads/x/release/1.0', 'refs/tags/v1.0.0', '']) {
+    assert.equal(status(ref), 1, ref);
+  }
+});
+
 test('the policy job runs the kit script', () => {
   assert.match(steps('policy'), /node \.ai-orchestrator\/scripts\/check-policy\.mjs/);
 });

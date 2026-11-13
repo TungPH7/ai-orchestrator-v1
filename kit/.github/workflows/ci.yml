@@ -7,8 +7,11 @@ on:
   pull_request:
   push:
     branches: [develop, main, 'release/**']
-  # By hand, on a branch: gh workflow run CI --ref develop. For a push made while Actions was off on the repository,
-  # which then has no run (project-scaffold T16). With no PR and no push, the jobs check the head commit alone.
+  # By hand, on a protected branch: gh workflow run CI --ref develop. For a push made while Actions was off on the
+  # repository, which then has no run (project-scaffold T16). With no PR and no push, the jobs check the head commit
+  # alone. On any other branch every job fails at its first step: such a run would write green checks on a PR's commit
+  # without the checks of a PR (review of ao-sample PR #30), and a skipped job counts as passing. gh-guard refuses
+  # gh workflow run to agents.
   workflow_dispatch:
 
 permissions:
@@ -29,6 +32,13 @@ jobs:
   policy:
     runs-on: ubuntu-latest
     steps:
+      - name: By hand only on develop, main or release/*
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          case "$GITHUB_REF" in
+            refs/heads/develop|refs/heads/main|refs/heads/release/*) ;;
+            *) echo "::error::CI runs by hand only on develop, main or release/*, not on $GITHUB_REF"; exit 1 ;;
+          esac
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ env.HEAD_SHA }}
@@ -42,6 +52,13 @@ jobs:
   build-test:
     runs-on: ubuntu-latest
     steps:
+      - name: By hand only on develop, main or release/*
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          case "$GITHUB_REF" in
+            refs/heads/develop|refs/heads/main|refs/heads/release/*) ;;
+            *) echo "::error::CI runs by hand only on develop, main or release/*, not on $GITHUB_REF"; exit 1 ;;
+          esac
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ env.HEAD_SHA }}
@@ -67,6 +84,13 @@ jobs:
       GITLEAKS_VERSION: 8.30.1
       GITLEAKS_SHA256: 551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb
     steps:
+      - name: By hand only on develop, main or release/*
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          case "$GITHUB_REF" in
+            refs/heads/develop|refs/heads/main|refs/heads/release/*) ;;
+            *) echo "::error::CI runs by hand only on develop, main or release/*, not on $GITHUB_REF"; exit 1 ;;
+          esac
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ env.HEAD_SHA }}
@@ -91,6 +115,13 @@ jobs:
     env:
       SEMGREP_VERSION: 1.180.0
     steps:
+      - name: By hand only on develop, main or release/*
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          case "$GITHUB_REF" in
+            refs/heads/develop|refs/heads/main|refs/heads/release/*) ;;
+            *) echo "::error::CI runs by hand only on develop, main or release/*, not on $GITHUB_REF"; exit 1 ;;
+          esac
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ env.HEAD_SHA }}

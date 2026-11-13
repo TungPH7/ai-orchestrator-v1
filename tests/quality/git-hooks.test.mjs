@@ -118,6 +118,13 @@ test('the commit-msg script asks no key of the first commit of a repository, and
   const next = run('commit-msg.mjs', [file], { cwd: dir });
   assert.notEqual(next.status, 0);
   assert.match(next.stderr, /Jira key/);
+  // An orphan branch has no HEAD either, but the repository has commits; a git that fails proves nothing (review of
+  // ao-sample PR #30).
+  assert.equal(git('checkout', '-q', '--orphan', 'other').status, 0);
+  assert.notEqual(run('commit-msg.mjs', [file], { cwd: dir }).status, 0, 'an orphan branch');
+  const outside = mkdtempSync(join(tmpdir(), 'no-git-'));
+  t.after(() => rmSync(outside, { recursive: true, force: true }));
+  assert.notEqual(run('commit-msg.mjs', [file], { cwd: outside, env: { ...process.env, GIT_CEILING_DIRECTORIES: tmpdir() } }).status, 0, 'no repository');
 });
 
 test('the pre-push script reads the refs on stdin and the protected branches of quality/gates.yaml', () => {
