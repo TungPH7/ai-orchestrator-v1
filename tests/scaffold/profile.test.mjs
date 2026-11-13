@@ -4,7 +4,7 @@ import { existsSync, mkdtempSync, readdirSync, readFileSync, rmSync } from 'node
 import { tmpdir } from 'node:os';
 import { join, relative } from 'node:path';
 import { readDeployConfig } from '../../lib/release/deploy-config.mjs';
-import { copyProfile, projectYaml, readProfile } from '../../lib/scaffold/profile.mjs';
+import { copyProfile, copyStack, findSkill, projectYaml, readProfile, readStack, stackNames } from '../../lib/scaffold/profile.mjs';
 import { checkProject, readProjectConfig } from '../../lib/scaffold/project-config.mjs';
 import { ROOT } from '../helpers/kit.mjs';
 
@@ -61,4 +61,40 @@ test('a copy into a folder fills the name and title in, keeps binary files as th
   assert.deepEqual(readDeployConfig(deployText).errors, []);
   const { config } = readProjectConfig(projectYaml(profile, PROJECT));
   assert.deepEqual(checkProject({ config, deployText, packageJson: JSON.parse(readFileSync(join(dir, 'package.json'), 'utf8')), exists: (path) => existsSync(join(dir, path)) }), []);
+});
+
+// project-scaffold part 2, spec 2.3: the stacks of ao-kit add, one app each.
+test('the kit has the stacks nextjs and react, each with the defaults of its app in project.yaml and its skills', () => {
+  assert.deepEqual(stackNames(ROOT), ['nextjs', 'react']);
+  const nextjs = readStack(ROOT, 'nextjs');
+  assert.deepEqual([nextjs.package_manager, nextjs.profile, nextjs.dev_script, nextjs.port, nextjs.health, nextjs.dockerfile], ['pnpm', 'nextjs', 'dev', 3000, '/', 'Dockerfile']);
+  assert.deepEqual(nextjs.container_files, ['Dockerfile']);
+  const react = readStack(ROOT, 'react');
+  assert.deepEqual([react.profile, react.port, react.health], ['react', 5173, '/']);
+  assert.deepEqual(react.container_files, ['Dockerfile', 'Caddyfile']);
+  assert.deepEqual(react.skills, { 'fe-dev': ['vercel-react-best-practices'] });
+  assert.throws(() => readStack(ROOT, 'angular'), /no stack angular in profiles\/stacks\/; the kit has nextjs, react/);
+});
+
+test('copyStack writes the app into apps/<app> with its name, port and the project in place of the placeholders', (t) => {
+  const dir = mkdtempSync(join(tmpdir(), 'stack-'));
+  t.after(() => rmSync(dir, { recursive: true, force: true }));
+  const written = copyStack({ stack: readStack(ROOT, 'react'), projectDir: dir, app: 'admin', port: 5174, name: 'shop', title: 'Shop' });
+  for (const path of ['apps/admin/package.json', 'apps/admin/Dockerfile', 'apps/admin/Caddyfile', 'apps/admin/src/App.tsx', 'apps/admin/vite.config.ts']) assert.ok(written.includes(path), path);
+  assert.equal(JSON.parse(readFileSync(join(dir, 'apps/admin/package.json'), 'utf8')).name, 'admin');
+  assert.match(readFileSync(join(dir, 'apps/admin/Caddyfile'), 'utf8'), /^:5174 \{$/m);
+  assert.match(readFileSync(join(dir, 'apps/admin/Dockerfile'), 'utf8'), /^COPY --from=build \/app\/apps\/admin\/dist\/ \/srv\/$/m);
+  assert.match(readFileSync(join(dir, 'apps/admin/index.html'), 'utf8'), /<title>Shop<\/title>/);
+  for (const path of written) assert.doesNotMatch(readFileSync(join(dir, path), 'utf8'), /__(APP|PORT|NAME|TITLE)__/, path);
+
+  // Next to the code of a template, only the files of the container.
+  const only = copyStack({ stack: readStack(ROOT, 'nextjs'), projectDir: dir, app: 'user', port: 3000, name: 'shop', title: 'Shop', only: ['Dockerfile'] });
+  assert.deepEqual(only, ['apps/user/Dockerfile']);
+  assert.match(readFileSync(join(dir, 'apps/user/Dockerfile'), 'utf8'), /^CMD \["node", "apps\/user\/server\.js"\]$/m);
+  assert.equal(existsSync(join(dir, 'apps/user/package.json')), false);
+});
+
+test('a stack skill comes from where the kit keeps it, so it is not copied twice into the kit', () => {
+  assert.equal(findSkill(ROOT, 'vercel-react-best-practices'), join(ROOT, 'profiles', 'next-nest', 'files', '.claude', 'skills', 'vercel-react-best-practices'));
+  assert.equal(findSkill(ROOT, 'angular-best-practices'), null);
 });

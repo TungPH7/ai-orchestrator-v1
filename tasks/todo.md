@@ -52,13 +52,13 @@
 
 ## Chặng 2: stack và `ao-kit add`, nhánh `task/scaffold2-2`
 
-- [ ] **T7: stack `nextjs` (pnpm)** (spec 2.3).
+- [x] **T7: stack `nextjs` (pnpm)** (spec 2.3).
   - **Đạt khi:**
     - `profiles/stacks/nextjs/stack.yaml` có giá trị mặc định của app (lệnh `dev`, cổng, `health`), skill của `fe-dev`, và các luật báo chỗ code phải đổi;
     - `files/` là `apps/web` của `next-nest` chuyển sang pnpm, với `output: 'standalone'`;
     - Dockerfile cài bằng pnpm từ lockfile ở gốc, build Next.js standalone, chạy bằng user `node`, không phải root.
   - **File:** `profiles/stacks/nextjs/`, `lib/scaffold/profile.mjs` (`readStack`), test.
-- [ ] **T8: stack `react`** (spec 2.3).
+- [x] **T8: stack `react`** (spec 2.3).
   - **Đạt khi:**
     - khung app Vite + React + TypeScript, Vitest (ghi lcov), ESLint, ghim bản;
     - app đọc cổng từ `PORT`; `vite.config.ts` chuyển `/api` sang API ở máy;
