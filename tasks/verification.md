@@ -132,3 +132,23 @@ Phần này được kiểm thật lần đầu ở Epic đầu của B4 (câu h
 - build cache: 4,7 GB, không bản nào đang dùng, nên xóa hết bằng `docker buildx prune --all`. Deployer tự giữ tối đa 4 GB (`PRUNE_CACHE`), nên lần build kế tiếp của mỗi dự án sẽ chậm hơn.
 
 Kết quả: đĩa dùng giảm từ 13 GB xuống 7,9 GB, còn trống 30 GB; 10 container vẫn chạy. Đăng nhập root đã đóng lại.
+
+**T22, dựng `shop` (Lượt 207, đang làm).** Bạn chọn nhánh `write-cv` cho cả hai template.
+1. Tạo repo public `TungPH7/shop`. Thư mục dự án là `AI-for-coding/e-commerce/shop/`.
+2. `init --package-manager pnpm`: 25 giây, chép 7 file của `base-pnpm`, thêm `origin`, chạy `pnpm install` và tải Chromium.
+3. `add user --stack nextjs --from <template Next.js> --ref write-cv --exclude study-guide-impl/ --exclude frontend-technical/ --exclude docs/readme/ --public`: 35 giây, 237 file.
+   - Playwright ở gốc đổi từ 1.64.1 sang 1.61.1, bản của template.
+   - Chép thêm Dockerfile của stack, vì template chưa có.
+   - Báo ba chỗ phải sửa: reporter lcov, `output: 'standalone'`, `NEXT_PUBLIC_API_URL` và `NEXT_PUBLIC_SITE_URL`.
+4. `add admin --stack react --from <template React> --ref write-cv --exclude study-guide-impl/ --exclude docs/readme/ --public`: 31 giây, 170 file.
+   - Playwright của app đổi từ 1.61.0 sang 1.61.1, bản của repo.
+   - Chép thêm Dockerfile và Caddyfile của stack.
+   - Báo bốn chỗ phải sửa: reporter lcov, cổng lấy từ `PORT`, proxy cho `/api`, `VITE_API_URL`.
+5. Khai `hosts` của hai app (`shop-dev`, `shop-admin-dev`… thuộc `ao.t2g.io.vn`). `ao-kit check`: `project.yaml OK: 2 apps (user, admin), space SHOP, repo TungPH7/shop`.
+6. `setup jira`:
+   - lần đầu hỏng vì DNS chập chờn (`ENOTFOUND`, lỗi không được bắt, việc nhỏ cho kit);
+   - lần hai tạo space `SHOP` cùng board và bộ lọc. Cột của board vẫn phải bấm tay, như với `AOG`.
+7. **gitleaks báo nhầm một dòng** của template React: `STORAGE_KEY = 'tungph7.i18n.lang'`, tên một khóa localStorage. Dòng đó được đánh dấu `gitleaks:allow` kèm `reason:` trên cùng dòng, đúng luật của kit, trong commit đầu. Quét lại thì sạch.
+8. **Commit đầu** `e4a708a` (799 file), 143 giây qua hook. lint-staged ở gốc tìm được config của từng app. Push `develop` và `main`.
+9. **Lỗi mới, đã sửa trong kit (`5bc8120`):** typecheck của `apps/user` đỏ, vì `@axe-core/playwright` 4.12.1 kéo `playwright-core` 1.64.1 khi lockfile được tạo lại. Kit giờ ghim `overrides.playwright-core` trong `pnpm-workspace.yaml` theo bản Playwright của repo. Cách sửa này đã thử trên `shop` và typecheck xanh; thay đổi đó (chưa commit) sẽ vào PR của T23.
+10. **Như ở T16:** GitHub chưa ghi nhận workflow nào sau lần push đầu, dù API báo Actions đang bật. Phải chờ bạn bấm bật trên tab Actions.
