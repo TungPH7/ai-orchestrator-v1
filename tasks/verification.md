@@ -235,3 +235,12 @@ Lỗi chỉ lần chạy thật bắt được:
   - Tháng 11 dùng 2.005 phút (đếm qua API, khớp trang Billing): `ao-sample` 1.062, `ao-pilot` 460, kit 426, `ao-brown` và `ao-green` 57. Khoảng 45% là job `jira-sync` và `merge-gate` chạy dưới 30 giây nhưng bị tính tròn 1 phút. Gói Free gồm 12 USD (2.000 phút Linux, 0,006 USD/phút), reset ngày 1/12.
   - Bạn không đặt budget. Tài liệu GitHub ghi runner thường miễn phí, không giới hạn ở repo public.
   - Thử thật: repo public `TungPH7/test` (trống trước đó), commit `9a68e5d` thêm workflow in một dòng; run 43353450862 (push) xanh lúc 02:37 UTC trên `ubuntu-latest`; commit `21f13db` xóa workflow. Một phút sau, `jira-sync` chạy tay trên `ao-sample` (private, run 43353562018) vẫn bị chặn với cùng lỗi billing.
+- Lượt 193: `ao-sample`, `ao-pilot` đổi sang public sau khi `gitleaks` quét toàn bộ lịch sử ba repo (5 báo nhầm: badge CircleCI mẫu, hằng `SECRET` trong test). Giới hạn tương tác chỉ cho collaborator tới 2027-05-13; workflow từ PR của người ngoài cần duyệt. Repo kit giữ private, chờ bạn chọn cách (có chi tiết sự cố VPS cũ trong log).
+  - `jira-sync` chạy tay (run 43354032265) xanh: `SMP-27` In Review → Ready for QA. `/ao-qa SMP-27` đưa item sang In QA.
+- `/ao-qa SMP-27` (`qa`, `high`, 40 lượt, 6 phút, 1,41 USD): **NOT TESTED**. Tám tiêu chí PASS (280/280 file của kit khớp `8a8d8ef`, `project.yaml` đúng, skill và `roster.local.yaml` giữ nguyên, không đổi code app, E2E 54/54 trên Development, CI xanh, hai review, deploy `success`). Tiêu chí `/ao-preview` không chạy được vì `gh-guard` chặn agent chạy `ao-step.mjs`; `qa` gắn cờ Needs you (comment 10233). Tổng chi phí agent của `SMP-27`: 10,30 USD.
+- Phiên chính kiểm `/ao-preview` bằng PR nháp #31 (một commit rỗng `0340c17` trên `develop`, CI xanh, không tốn phút vì repo đã public):
+  - dòng kiểm đọc hai app từ `project.yaml`: `api` http://localhost:3001/health, `web` http://localhost:3000/notes;
+  - `--go` 99 giây: thư mục sang nhánh của PR, hai app lên, `curl` trả 200 cho cả hai (`{"status":"ok"}`);
+  - `--stop` tắt app, thư mục về `develop`, sạch. Bằng chứng ở `.ai/qa/SMP-27/preview.txt` của `ao-sample`;
+  - PR #31 đóng không merge, nhánh đã xóa.
+- Còn lại: gỡ cờ, chạy lại `/ao-qa SMP-27` để có báo cáo PASS (guard `qa-report-passed` của `accept` chỉ nhận PASS), rồi bạn bấm `Accept`.
