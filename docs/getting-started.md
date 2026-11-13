@@ -1,6 +1,6 @@
 # Bắt đầu với AO Kit
 
-> Spec: [SPEC-project-scaffold.md](../SPEC-project-scaffold.md) mục 2.7. Mọi lệnh, đầu ra, thời gian và chi phí trong tài liệu này lấy từ lần chạy thật: `ao-green` (phần 3), `ao-brown` (phần 4), Epic `SMP-23` của `ao-sample` (phần 5).
+> Spec: [SPEC-project-scaffold.md](../SPEC-project-scaffold.md) mục 2.7. Mọi lệnh, đầu ra, thời gian và chi phí trong tài liệu này lấy từ lần chạy thật: `ao-green` (phần 3), `ao-brown` (phần 4), `shop` (phần 5, đang làm), Epic `SMP-23` của `ao-sample` (phần 6).
 
 Tài liệu này dành cho dev chưa dùng kit. Bạn đọc từ trên xuống: chuẩn bị một lần, dựng dự án, rồi làm một tính năng từ ý tưởng tới Production. Mỗi lệnh có bốn ý: làm gì, gõ khi nào, kết quả mong đợi, lỗi thì làm gì.
 
@@ -86,7 +86,7 @@ git clone https://github.com/TungPH7/ai-orchestrator-v1 <kit>
 cd <kit> && npm ci
 ```
 
-- **Ý nghĩa:** `ao-kit` chạy từ bản clone này. Khi kit có bản mới, `git pull` rồi `npm ci` ở đây, sau đó `ao-kit sync` cho từng dự án (phần 7).
+- **Ý nghĩa:** `ao-kit` chạy từ bản clone này. Khi kit có bản mới, `git pull` rồi `npm ci` ở đây, sau đó `ao-kit sync` cho từng dự án (phần 8).
 - **Kết quả mong đợi:** `npm ci` kết thúc không lỗi.
 
 ## 3. Dự án mới, từ thư mục trống
@@ -249,7 +249,7 @@ node <kit>/scripts/ao-kit.mjs doctor ao-green
 
 ### Bước 10. Lệnh đầu tiên
 
-Trong Claude Code, gõ `/ao-status`. Lệnh in việc đang chờ bạn và lệnh kế tiếp của từng item. Space còn trống thì lệnh chỉ in ba môi trường. Dự án đã sẵn sàng: việc đầu tiên bắt đầu bằng `/ao-intake` (phần 5).
+Trong Claude Code, gõ `/ao-status`. Lệnh in việc đang chờ bạn và lệnh kế tiếp của từng item. Space còn trống thì lệnh chỉ in ba môi trường. Dự án đã sẵn sàng: việc đầu tiên bắt đầu bằng `/ao-intake` (phần 6).
 
 **Nếu lỗi khi gõ lệnh `/ao-*`:**
 - `the origin remote is not a GitHub repository`: thư mục chưa có `origin`. Chạy `git remote add origin https://github.com/<owner>/<repo>.git`.
@@ -362,9 +362,133 @@ node <kit>/scripts/ao-kit.mjs doctor ao-brown
 
 - **Kết quả mong đợi:** `Every row passes.`
 - **Đóng Task:** Task chép kit, và Bug nếu có, do bạn làm, không đi qua agent. Hợp đồng không có đường tới Done cho chúng. Vì vậy bấm **Cancel**, kèm comment trỏ tới commit hay PR đã làm.
-- Gõ `/ao-status` trong Claude Code: dự án đã sẵn sàng cho việc đầu tiên (phần 5).
+- Gõ `/ao-status` trong Claude Code: dự án đã sẵn sàng cho việc đầu tiên (phần 6).
 
-## 5. Một tính năng lớn, từ ý tưởng tới Production
+## 5. Dự án nhiều app, dựng từ template của bạn
+
+Ví dụ: sản phẩm e-commerce `shop`, repo public `TungPH7/shop`, space Jira `SHOP`, với hai app công khai:
+- `user` (Next.js), cho khách mua hàng, lấy từ template Next.js của bạn;
+- `admin` (React và Vite), cho người quản trị, lấy từ template React của bạn.
+
+`apps/api` bằng Spring Boot đến ở phần 3 của module (B3). Phần này là bản nháp (T20 của B2); đầu ra thật được chép vào sau khi dựng `shop` (T22–T24).
+
+Khác với phần 3 ở bốn điểm:
+- pnpm thay cho npm, đúng bản mà `packageManager` của `package.json` ghi.
+- `init` chỉ dựng phần gốc của dự án; mỗi app được thêm bằng `ao-kit add`.
+- `add` lấy code từ template của bạn, bỏ những gì kit thay thế, và báo chỗ code app còn phải sửa.
+- Có hai app công khai, mỗi app một host.
+
+### Bước 1. Bố cục thư mục
+
+```
+my-workspace/
+  e-commerce/              thư mục của bạn, không phải repo
+    shop/                  repo git TungPH7/shop; mở Claude Code ở đây
+      .ai-orchestrator/    kit, ở gốc repo
+      apps/user/           Next.js
+      apps/admin/          React
+      docs/                SPEC, thiết kế, plan, ADR, design system
+    misc/                  ghi chú riêng của bạn, ngoài git
+```
+
+- **Vì sao kit nằm trong repo:** CI, hook git và `ao-step` đều chạy theo repo. Mỗi item Jira là một nhánh và một PR, nên một Story có cả màn hình và API chỉ cần một PR.
+- **Nếu lỗi:** đặt kit ở `e-commerce/` (ngoài repo) thì không lệnh nào chạy, vì thư mục đó không có git.
+
+### Bước 2. Repo và phần gốc của dự án
+
+```
+gh repo create TungPH7/shop --public
+mkdir -p e-commerce/shop
+node <kit>/scripts/ao-kit.mjs init e-commerce/shop --package-manager pnpm --name shop --title "Shop" --space SHOP --repo TungPH7/shop --approvers TungPH7 --dev-app tungph7-ao-dev --dev-app-id 5514949 --review-app tungph7-ao-review --review-app-id 5514961
+```
+
+- **Ý nghĩa:** `init --package-manager pnpm` dựng phần gốc của một dự án pnpm (profile `base-pnpm`), chưa có app. Phần gốc gồm:
+  - `package.json` với bốn script chạy cho mọi app (`pnpm -r run lint`…);
+  - `pnpm-workspace.yaml`;
+  - `playwright.config.ts`, đọc app từ `project.yaml`;
+  - kit, và `project.yaml` có `package_manager: pnpm`.
+
+  Sau đó lệnh chạy `pnpm install` và tải Chromium.
+- **Repo public:** mọi commit đều công khai. Job `secrets` của CI chặn secret lọt vào commit, và `setup github` (bước 6) đặt giới hạn tương tác cho repo.
+- **Nếu lỗi:** `doctor` báo `pnpm 11.8.0` chưa đạt khi pnpm trên máy khác bản đó. Cách sửa: `npm install -g pnpm@11.8.0`, hoặc `corepack enable` để corepack tự lấy đúng bản.
+
+### Bước 3. Thêm hai app từ template
+
+Template phải là repo git, và mọi thay đổi đã được commit, vì `add` chỉ chép những gì `HEAD` có:
+
+```
+node <kit>/scripts/ao-kit.mjs add e-commerce/shop user --stack nextjs --from <thư mục template Next.js> --exclude study-guide-impl/ --exclude frontend-technical/ --exclude docs/readme/ --public
+node <kit>/scripts/ao-kit.mjs add e-commerce/shop admin --stack react --from <thư mục template React> --exclude study-guide-impl/ --exclude docs/readme/ --public
+```
+
+- **Ý nghĩa:** `add` làm lần lượt:
+  - chép code đã commit của template vào `apps/<app>`. Template không bị sửa gì. `--exclude` bỏ những thư mục không thuộc sản phẩm;
+  - bỏ những gì kit thay thế, và nói lý do từng thứ:
+    - husky và commitlint: hook git của kit làm thay;
+    - `.github/`: CI của kit chạy ở gốc repo;
+    - `.claude/`: agent của kit có cài đặt riêng;
+    - lockfile, `pnpm-workspace.yaml`, `.nvmrc`, `playwright.config`: mỗi thứ chỉ có một bản, ở gốc repo;
+  - gộp cài đặt pnpm của template, như `allowBuilds`, vào `pnpm-workspace.yaml` ở gốc, giữ cả comment. Hai template đặt khác nhau cùng một khóa thì lệnh dừng, chưa ghi gì;
+  - đưa lint-staged lên script `precommit` ở gốc, mà hook `pre-commit` của kit gọi;
+  - biến `CLAUDE.md` của template thành skill `<app>-conventions`, gán cho `fe-dev`. Luật của kit vẫn thắng skill;
+  - giữ một bản Playwright cho cả repo;
+  - ghi app vào `project.yaml`, `deploy.yaml` (kèm smoke test) và `roster.local.yaml`; chép Dockerfile của stack khi template chưa có; chạy `pnpm install` và render.
+- **Kết quả mong đợi:** từng dòng `Left out …` kèm lý do. Sau đó là danh sách "The code of `<app>` still has to change". Ở hai template của bạn, lần thử ngày 2026-11-13 cho thấy:
+  - `apps/admin` không ghi `coverage/lcov.info`, mà CI cần file này để tính coverage của dòng mới;
+  - `vite.config.ts` của `admin` chưa lấy cổng từ `PORT`, và chưa chuyển `/api` sang API;
+  - `NEXT_PUBLIC_API_URL`, `NEXT_PUBLIC_SITE_URL` và `VITE_API_URL` được nhúng lúc build. Deployer build một image rồi chạy nó ở cả ba môi trường, nên các biến này mang cùng một giá trị ở mọi nơi. Cách sửa: gọi API qua `/api`; URL của chính app thì đọc lúc chạy, từ `AO_PUBLIC_URL`.
+
+  Các chỗ này được sửa ở bước 7, qua một Task và một PR.
+- **Nếu lỗi:** `add` dừng khi app đã có, khi tên app sai dạng (chữ thường, số, gạch nối, tối đa 20 ký tự), hoặc khi dự án không dùng pnpm.
+
+### Bước 4. Host của hai app
+
+Hai app công khai thì mỗi app khai host của ba môi trường trong `.ai-orchestrator/project.yaml`:
+
+```yaml
+  user:
+    public: true
+    hosts: { development: shop-dev.ao.t2g.io.vn, staging: shop-staging.ao.t2g.io.vn, production: shop.ao.t2g.io.vn }
+  admin:
+    public: true
+    hosts: { development: shop-admin-dev.ao.t2g.io.vn, staging: shop-admin-staging.ao.t2g.io.vn, production: shop-admin.ao.t2g.io.vn }
+```
+
+- **Ý nghĩa:**
+  - `qa` dùng các host này để kiểm từng app (`E2E_USER_URL`, `E2E_ADMIN_URL`);
+  - `doctor` in đoạn cần chép vào `/etc/ao/deployer.yaml` trên VPS;
+  - bản ghi DNS wildcard `*.ao.t2g.io.vn` đã trỏ mọi host này về VPS.
+- **Nếu lỗi:** `ao-kit check` báo C5 khi một app công khai chưa có `hosts`, và P9 khi một host bị dùng hai lần.
+
+### Bước 5. Jira, App và commit đầu
+
+Làm như bước 3, 4 và 5 của phần 3:
+1. `ao-kit setup jira e-commerce/shop`.
+2. Cài hai App vào repo.
+3. Commit đầu (không cần mã Jira), rồi push `develop` và `main`.
+
+### Bước 6. Phần GitHub và CI lần đầu
+
+Làm như bước 6 và 7 của phần 3. Repo là public, nên `setup github` làm thêm hai việc:
+- đặt giới hạn tương tác sáu tháng: chỉ người cộng tác được mở issue, PR và comment. Chạy lại lệnh trước khi hết hạn để gia hạn; `doctor` báo khi còn dưới 30 ngày;
+- bắt workflow của PR từ fork chờ bạn duyệt rồi mới chạy.
+
+CI cài pnpm đúng bản, rồi chạy bốn script cho mọi app. Lần chạy đầu có thể đỏ ở hai chỗ, đúng như lần thử: `policy` vì `pnpm audit` thấy lỗ hổng trong dependency của template, và `build` vì biến nhúng lúc build. Bước 7 sửa cả hai.
+
+### Bước 7. Sửa code app theo báo cáo của `add`
+
+1. `/ao-intake` tạo một Task cho các chỗ `add` đã báo.
+2. Code sửa trên nhánh của Task, rồi mở PR. Thường thì dev agent làm, rồi `/ao-review`.
+3. `/ao-preview <KEY>` chạy hai app của PR trên máy bạn bằng pnpm.
+4. CI xanh thì merge.
+
+### Bước 8. Lên Development, mỗi app một host
+
+1. Claude thêm `shop` vào `/etc/ao/deployer.yaml` trên VPS, theo đoạn mà `doctor` in ra, cùng secret của Development ([docs/vps-setup.md](vps-setup.md) mục 11). Việc này cần bạn mở VPS như mục 9.
+2. Deployer deploy `develop`.
+3. Mở `https://shop-dev.ao.t2g.io.vn` và `https://shop-admin-dev.ao.t2g.io.vn`, đăng nhập basic auth, và thấy hai app.
+
+## 6. Một tính năng lớn, từ ý tưởng tới Production
 
 Ví dụ thật: Epic `SMP-23` "Ghim ghi chú lên đầu danh sách" của `ao-sample`. Người dùng ghim tối đa 3 ghi chú lên đầu danh sách, rồi bỏ ghim khi không cần nữa. Đoạn từ ý tưởng tới QA chạy ngày 11–12/11/2026 với kit `c6fdfa8`. Đoạn release chạy ngày 13/11 (giờ Việt Nam) với kit hiện tại. Mọi lệnh, đầu ra, thời gian và chi phí dưới đây là của lần chạy đó.
 
@@ -384,7 +508,7 @@ Ví dụ thật: Epic `SMP-23` "Ghim ghi chú lên đầu danh sách" của `ao-
 | 10 | Production | | Bấm `Release`, `Complete` | 0 | 28 giây | 0 |
 | | **Tổng** | | | **35** | **khoảng 3,5 giờ** | **khoảng 55,1** |
 
-Ba lượt chạm giới hạn usage 5 giờ của tài khoản. Lần nào cũng vậy: chạy lại đúng lệnh khi hạn mức mở lại, và agent chạy tiếp đúng phiên của nó (phần 7).
+Ba lượt chạm giới hạn usage 5 giờ của tài khoản. Lần nào cũng vậy: chạy lại đúng lệnh khi hạn mức mở lại, và agent chạy tiếp đúng phiên của nó (phần 8).
 
 ### Bước 1. Ý tưởng thành Epic: `/ao-intake`
 
@@ -416,6 +540,10 @@ Ba lượt chạm giới hạn usage 5 giờ của tài khoản. Lần nào cũn
   ```
 
   `ba` gộp Story và giữ nguyên AC1–AC11, rồi comment `Cần ux:`. Lệnh tự gọi `ux` sửa cột User story của `design.md`.
+- **Có ảnh chụp màn hình thay cho Figma** (project-scaffold phần 2, mục 2.5; chưa chạy thật, lần đầu là Epic đầu của B4):
+  - Trước khi gõ `/ao-spec`, chép ảnh vào `.ai/design-inbox/<EPIC>/`. Mỗi ảnh tối đa 1 MB, cạnh dài tối đa 2.000 px; [docs/agents.md](agents.md) chỉ cách thu nhỏ bằng Paint.
+  - `ux` biến các ảnh này thành màn hình kiểu Ảnh, ghi `screenshot:`, và rút màu, font, khoảng cách và component vào mục Design System của `design.md`.
+  - Ở `/ao-plan`, nếu app chưa có `docs/design-system/<app>.md`, hoặc có mục "mới", thì `sa` đặt Task "Design system của <app>" lên đầu plan. `fe-dev` làm Task đó trước mọi Story có giao diện.
 - **Gate ①:** đọc `spec.md` và `design.md` trong PR #22, rồi bấm `Approve spec` trên Epic.
 - **Thời gian, chi phí:** 9 lượt (`ba` 6, `ux` 3), 24 phút, 6,10 USD. Lượt đắt nhất là `ba` viết SPEC (7,9 phút, 1,73 USD).
 
@@ -567,7 +695,7 @@ Bạn tự thử trên Development và thấy lỗi: `id` có mã `%` hỏng, nh
 
   Ở lần chạy này, hai việc trên do Claude làm qua API theo lời bạn nhờ. Kit chưa có lệnh riêng cho chúng.
 
-## 6. Bảng tra lệnh
+## 7. Bảng tra lệnh
 
 **Lệnh `/ao-*`**, gõ trong Claude Code ở thư mục dự án:
 
@@ -591,7 +719,8 @@ Bạn tự thử trên Development và thấy lỗi: `id` có mã `%` hỏng, nh
 
 | Lệnh | Làm gì | Gõ khi nào |
 |---|---|---|
-| `init` | Dựng khung (thư mục trống) hoặc chỉ cài kit (repo có code); thêm `origin` nếu thiếu | Lần đầu của mỗi dự án |
+| `init` | Dựng khung (thư mục trống) hoặc chỉ cài kit (repo có code); thêm `origin` nếu thiếu. Có `--package-manager pnpm` thì chỉ dựng phần gốc của dự án pnpm | Lần đầu của mỗi dự án |
+| `add <app> --stack nextjs\|react [--from <template>] [--exclude <đường dẫn>] [--public]` | Thêm một app vào dự án pnpm, từ khung của stack hoặc từ template của bạn; báo chỗ code app còn phải sửa | Sau `init --package-manager pnpm`, mỗi app một lần |
 | `setup jira` | Space, board, bộ lọc, rồi `jira:check`; in từng chỗ còn lệch | Sau `init` |
 | `setup github` | Nhánh mặc định, Dependabot, environment, secret, ruleset | Ngay sau khi `develop` lên GitHub |
 | `doctor` | Kiểm máy, repo, GitHub, Jira, Claude Code; mỗi dòng kèm việc cần làm | Sau mỗi bước, và khi có gì lạ |
@@ -599,7 +728,7 @@ Bạn tự thử trên Development và thấy lỗi: `id` có mã `%` hỏng, nh
 | `render` | Sinh lại `settings.json` và agent | Sau khi sửa `project.yaml` |
 | `sync --key <KEY>` | Chép bản kit mới vào dự án, trên nhánh riêng, một commit, không push | Khi kit có bản mới |
 
-## 7. Việc thường ngày và khi gặp sự cố
+## 8. Việc thường ngày và khi gặp sự cố
 
 ### Cập nhật kit trong dự án
 

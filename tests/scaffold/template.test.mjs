@@ -152,10 +152,30 @@ test('one Playwright for the repo: the root takes the version of the first templ
   assert.match(first.notes.join('\n'), /@playwright\/test of the root: 1\.64\.1 → 1\.61\.0, the version of the template, so the repo has one Playwright/);
   assert.equal(JSON.parse(readFileSync(join(dir, 'package.json'), 'utf8')).devDependencies['@playwright/test'], '1.61.0');
   assert.equal(JSON.parse(readFileSync(join(dir, 'apps/user/package.json'), 'utf8')).devDependencies['@playwright/test'], '1.61.0');
+  // playwright-core follows, so a package such as @axe-core/playwright cannot pull a newer one (Lượt 207).
+  assert.equal(parse(readFileSync(join(dir, 'pnpm-workspace.yaml'), 'utf8')).overrides['playwright-core'], '1.61.0');
+  assert.match(first.notes.join('\n'), /pnpm-workspace\.yaml at the root pins playwright-core to 1\.61\.0, the Playwright of the repo/);
 
   const admin = template(t, { 'package.json': JSON.stringify({ name: 'a', devDependencies: { '@playwright/test': '1.60.0' } }), 'src/b.ts': 'x\n' });
   const second = copyTemplate({ from: admin, projectDir: dir, app: 'admin', git });
   assert.match(second.notes.join('\n'), /package\.json of apps\/admin: name a → admin; @playwright\/test 1\.60\.0 → 1\.61\.0, the version of the repo/);
   assert.equal(JSON.parse(readFileSync(join(dir, 'apps/admin/package.json'), 'utf8')).devDependencies['@playwright/test'], '1.61.0');
   assert.equal(JSON.parse(readFileSync(join(dir, 'package.json'), 'utf8')).devDependencies['@playwright/test'], '1.61.0');
+});
+
+// Lượt 206: the templates of the user keep their work on several branches; --ref copies one that is not checked out.
+test('copyTemplate copies a branch of the template given by ref, without checking it out there', (t) => {
+  const from = template(t, { 'package.json': '{ "name": "admin" }', 'src/main.tsx': 'main\n' });
+  git(['switch', '--quiet', '-c', 'ui-integration'], from);
+  write(from, 'src/theme.ts', 'tokens\n');
+  git(['add', '-A'], from);
+  git(['commit', '--quiet', '-m', 'theme'], from);
+  git(['switch', '--quiet', '-'], from);
+  const dir = project(t);
+  const result = copyTemplate({ from, ref: 'ui-integration', projectDir: dir, app: 'admin', git });
+  assert.equal(result.ok, true, result.notes.join('\n'));
+  assert.ok(existsSync(join(dir, 'apps/admin/src/theme.ts')));
+  assert.match(result.notes[0], /^Copied 3 files of tpl-\S+ ui-integration at [0-9a-f]{8} into apps\/admin$/);
+  assert.notEqual(git(['branch', '--show-current'], from).stdout.trim(), 'ui-integration', 'the template stays on its branch');
+  assert.match(copyTemplate({ from, ref: 'nowhere', projectDir: dir, app: 'web', git }).notes[0], /has no branch or tag nowhere/);
 });

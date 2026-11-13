@@ -319,7 +319,7 @@ journalctl -u ao-deploy --since "10 min ago"
 
 ## 12. Cập nhật bản kit trên VPS
 
-Bản kit ghim theo một commit của `main`, nên bản sửa của deployer hay `audit` chỉ có hiệu lực khi được chép lên. Commit ghim hiện tại: `521e03179908062080de9fd6b8fd9c77dfece2fc`. Việc này cần đăng nhập root (mục 9), và bạn đồng ý từng lần.
+Bản kit ghim theo một commit của `main`, nên bản sửa của deployer hay `audit` chỉ có hiệu lực khi được chép lên. Commit ghim hiện tại: `c49b0510030098e2ef15c279fbe8ba4462c9a4ef` (2026-11-13, project-scaffold phần 2, T21). Bản trước nằm ở `/opt/ao/kit.prev`. Việc này cần đăng nhập root (mục 9), và bạn đồng ý từng lần.
 
 Trên máy bạn, ở repo kit:
 
@@ -333,7 +333,7 @@ Trên VPS:
 ```
 systemctl stop ao-deploy.timer
 until [ "$(systemctl is-active ao-deploy.service)" != "activating" ]; do sleep 5; done
-rm -rf /opt/ao/kit && install -d -o root -g root -m 755 /opt/ao/kit
+rm -rf /opt/ao/kit.prev && mv /opt/ao/kit /opt/ao/kit.prev && install -d -o root -g root -m 755 /opt/ao/kit
 tar -xzf /tmp/ao-kit.tar.gz -C /opt/ao/kit && rm /tmp/ao-kit.tar.gz
 cd /opt/ao/kit && npm ci --omit=dev --ignore-scripts
 cd /var/lib/ao && sudo -u aodeploy -H node /opt/ao/kit/scripts/ao-deploy.mjs tick --dry-run
