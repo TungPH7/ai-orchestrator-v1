@@ -208,7 +208,7 @@ Kết quả: đĩa dùng giảm từ 13 GB xuống 7,9 GB, còn trống 30 GB; 1
     - `ao-pr.mjs` chạy từ phiên ngoài thư mục dự án cần `AO_DEV_APP*` lấy từ `.claude/settings.json`.
     - Ngoài kit: sau `pnpm add` và đổi nhánh, `node_modules` trên máy mất link `zod` được treo lên. `pnpm install` báo "Already up to date"; phải cài lại từ đầu.
 
-**T24, `shop` lên Development (Lượt 210–211; bạn mở VPS).**
+**T24, `shop` lên Development (Lượt 210–212, xong; bạn mở VPS).**
 1. **Trước khi sửa:** VPS như cuối Lượt 207: 10 container, Caddyfile `7966209d…`, còn 2.910 MB RAM trên 3.915 MB, đĩa còn trống 30 GB.
 2. **Secret Development:** `/etc/ao/secrets/shop/development.env`, `root:aodeploy 640`, có hai dòng:
    - `API_URL=http://api:3001`. Tên `api` sẽ có ở B3, khi `shop` có API;
@@ -237,3 +237,9 @@ Kết quả: đĩa dùng giảm từ 13 GB xuống 7,9 GB, còn trống 30 GB; 1
    - Caddyfile vẫn không có dòng nào bị xóa, thêm 36 dòng; các site cũ giữ nguyên.
    - RAM còn sẵn 2.794 MB, trước đó 2.910. Hai container của `shop` dùng 55 MiB (`user`) và 11 MiB (`admin`). Swap dùng 6 MB.
    - Image trên VPS: `user` 400 MB, `admin` 144 MB. Đĩa dùng 11 GB, còn trống 28 GB.
+10. **Lượt 212, đóng lại:**
+    - Bạn đổi mật khẩu basic auth bằng `ao-secret.sh basic-auth`. Deployer ghi lại Caddyfile và reload Caddy sau 13 giây.
+    - Kiểm bằng mã trạng thái, không in giá trị: mật khẩu cũ trả 401, mật khẩu mới vào được trên Development và Staging của cả ba dự án.
+    - Bản sao Caddyfile ở `/root` đã bị xóa bằng `shred`. Bản sao `deployer.yaml` được giữ lại để quay lại khi cần; file này không có thông tin đăng nhập.
+    - Đăng nhập root đã đóng (`PermitRootLogin no`), và SSH bằng root bị từ chối. Key VPS đã được gỡ khỏi ssh-agent.
+    - 12 container đang chạy: 10 container cũ và 2 của `shop`.

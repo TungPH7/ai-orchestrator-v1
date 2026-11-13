@@ -173,7 +173,7 @@
   - `/ao-intake` tạo một Task cho các chỗ `add` đã báo. Phiên chính sửa trên nhánh của Task, rồi mở PR.
   - `/ao-preview` chạy hai app của PR trên máy bạn. **Bạn** xem, rồi merge khi CI xanh.
   - Task được Cancel, kèm comment trỏ tới PR, như `AOG-3`.
-- [ ] **T24 [bạn]: Development chạy hai host** (tiêu chí 4).
+- [x] **T24 [bạn]: Development chạy hai host** (tiêu chí 4; xong ở Lượt 212: `91b699c` chạy trên Development, hai host đạt, Caddyfile chỉ thêm site của `shop`, RAM còn 2.794 MB; bạn phải cài thêm App `ao-deploy`, T25 thêm bước này).
   1. DNS: bản ghi wildcard `*.ao.t2g.io.vn` đã có (`docs/vps-setup.md`, mục 7), nên không phải thêm bản ghi;
   2. mình hỏi rồi thêm `shop` vào `deployer.yaml` trên VPS, cùng secret của Development;
   3. deployer deploy `develop`: smoke test đạt; hai host qua basic auth;
