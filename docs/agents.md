@@ -101,13 +101,20 @@ node .ai-orchestrator/scripts/ao-agent.mjs fe-dev --effort max -p "..."
 
 ## `design.md`
 
-`ux` viết `docs/specs/<EPIC-KEY>/design.md` theo template `design.md`, khi Epic có giao diện. Mỗi màn hình có một trong hai kiểu:
+`ux` viết `docs/specs/<EPIC-KEY>/design.md` theo template `design.md`, khi Epic có giao diện. Mỗi màn hình có một trong ba kiểu:
 
-| | Kiểu ASCII | Kiểu Figma |
-|---|---|---|
-| Dùng khi | Màn hình chưa có thiết kế Figma | Màn hình đã có thiết kế Figma |
-| Bố cục | Hình ASCII có đánh số khối | Ảnh export từ Figma trong `docs/specs/<EPIC-KEY>/design/` |
-| Hành vi | YAML ngay dưới hình | YAML ngay dưới ảnh, như kiểu ASCII |
+| | Kiểu ASCII | Kiểu Figma | Kiểu Ảnh |
+|---|---|---|---|
+| Dùng khi | Màn hình chưa có thiết kế | Màn hình đã có thiết kế Figma | Bạn có ảnh chụp màn hình, hoặc mockup vẽ bằng công cụ khác |
+| Bố cục | Hình ASCII có đánh số khối | Ảnh export từ Figma trong `docs/specs/<EPIC-KEY>/design/` | Ảnh của bạn, cũng trong `docs/specs/<EPIC-KEY>/design/` |
+| YAML ghi nguồn | | `figma:`, link của frame có `node-id` | `screenshot:`, ảnh lấy từ đâu |
+| Hành vi | YAML ngay dưới hình | YAML ngay dưới ảnh | YAML ngay dưới ảnh |
+
+Khi có màn hình Figma hay Ảnh, `design.md` có thêm mục **Design System** (project-scaffold phần 2, mục 2.5):
+- `ux` rút từ ảnh ra màu, font, cỡ chữ, khoảng cách, bo góc, bóng, điểm ngắt, và các component lặp lại cùng trạng thái của chúng.
+- Mỗi mục ghi "có" nếu `docs/design-system/<app>.md` đã có nó, hoặc "mới".
+- Có mục "mới", hoặc app chưa có file design system, thì `sa` đặt một Task `fe-dev` "Design system của <app>" lên đầu plan. Task đó đưa token vào code, dựng component dùng chung và viết `docs/design-system/<app>.md`.
+- `check-design` báo lỗi D9 khi thiếu mục này.
 
 Năm quy tắc:
 
@@ -118,6 +125,18 @@ Năm quy tắc:
 5. `node .ai-orchestrator/scripts/check-design.mjs <file>` kiểm file; `ux` chạy lệnh này trước khi giao, và job `policy` của CI chạy lại trên mọi PR đụng tới `design.md` hay ảnh của nó.
 
 Ảnh: export 1x, PNG hoặc JPG, mỗi ảnh tối đa 1 MB, cạnh dài tối đa 2.000 px, và mọi ảnh trong `design/` phải được `design.md` nhắc tới. Chỉ commit bản đã duyệt, vì ảnh bị thay vẫn nằm trong lịch sử Git.
+
+## Đưa ảnh chụp màn hình vào repo
+
+Với màn hình kiểu Ảnh, bạn chỉ cần chép ảnh, không cần Figma:
+
+1. Chụp hay xuất ảnh của từng màn hình, bản desktop và bản mobile nếu có. Mỗi ảnh là PNG hay JPG, tối đa 1 MB, cạnh dài tối đa 2.000 px.
+2. Ảnh lớn hơn thì thu nhỏ bằng Paint: mở ảnh, bấm **Resize**, chọn **Pixels**, giữ **Maintain aspect ratio**, đặt cạnh dài 2.000 hoặc nhỏ hơn, rồi **File** → **Save as** → **JPEG picture** (đối chiếu giao diện).
+3. Chép ảnh vào `.ai/design-inbox/<EPIC-KEY>/` của dự án. Thư mục này không được commit.
+4. Ghi vào mô tả Epic trên Jira mỗi ảnh là màn hình nào, và ảnh lấy từ đâu.
+5. Gõ `/ao-spec <EPIC-KEY>`. `ux` đổi tên ảnh theo mã màn hình, chuyển vào `docs/specs/<EPIC-KEY>/design/`, viết YAML và mục Design System, chạy `check-design`, rồi commit.
+
+Ảnh chụp từ trang của người khác chỉ để tham khảo bố cục: đừng chép logo, ảnh sản phẩm hay chữ của họ vào sản phẩm.
 
 ## Đưa ảnh từ Figma vào repo
 

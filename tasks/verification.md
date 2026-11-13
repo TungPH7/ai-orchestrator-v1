@@ -86,3 +86,25 @@ Dự án không khai `hosts` thì vẫn chỉ có `E2E_BASE_URL`, như cũ.
 - `docs/vps-setup.md`, mục 11, thêm dạng host theo app.
 - `vps/deployer.example.yaml` thêm ví dụ dạng đó trong comment.
 - DNS đã có bản ghi wildcard `*.ao.t2g.io.vn` (mục 7), nên các host của `shop` không cần bản ghi mới. Bước DNS của T24 không còn việc gì.
+
+## Chặng 4: ảnh chụp và design system (T18–T19), nhánh `task/scaffold2-4`
+
+**T18.** `check-design`:
+- màn hình có ảnh khai đúng một trong `figma` hoặc `screenshot` (D7). Dòng `Figma version:` chỉ bắt buộc khi có màn hình Figma;
+- có màn hình Figma hay Ảnh thì phải có mục `## Design System` (D9, luật mới).
+
+Thay đổi đi kèm:
+- Các fixture D7 cũ và `figma.md` có thêm mục Design System ở cuối, nên số dòng mà test kiểm không đổi.
+- Fixture mới: `d7-figma-and-screenshot`, `d9-no-design-system`. Một test dựng màn hình Ảnh từ `figma.md` và kiểm bốn trường hợp: hợp lệ, `screenshot` rỗng, thiếu cả hai khóa, thiếu mục Design System.
+- Template `design.md` có kiểu Ảnh, màn hình mẫu `S3` dùng `screenshot:`, và mục Design System ở cả phần hướng dẫn lẫn phần Example.
+- Ghi chú của `contract/policies.yaml` về thư mục `design/` nhắc tới cả kiểu Ảnh; `docs/sdlc.md` và rules đã render lại.
+
+**T19.** Prompt:
+- `ux`: màn hình Ảnh lấy ảnh từ `.ai/design-inbox/<EPIC>/` và ghi `screenshot:`; mục Design System so với `docs/design-system/<app>.md`, đánh dấu "có" hay "mới";
+- `sa`: Task `fe-dev` "Design system của <app>" đứng đầu Task List;
+- `fe-dev`: dựng màn hình Ảnh như màn hình Figma; Task design system viết `docs/design-system/<app>.md`;
+- `qa`: so trang với ảnh bằng mắt.
+
+`templates/plan.md` và `docs/agents.md` cũng cập nhật theo. `docs/agents.md` có thêm mục "Đưa ảnh chụp màn hình vào repo": thu nhỏ ảnh bằng Paint, và ảnh chụp trang của người khác chỉ dùng để tham khảo bố cục.
+
+Phần này được kiểm thật lần đầu ở Epic đầu của B4 (câu hỏi 2, mục 9 của spec).
