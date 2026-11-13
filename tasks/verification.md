@@ -152,3 +152,48 @@ Kết quả: đĩa dùng giảm từ 13 GB xuống 7,9 GB, còn trống 30 GB; 1
 8. **Commit đầu** `e4a708a` (799 file), 143 giây qua hook. lint-staged ở gốc tìm được config của từng app. Push `develop` và `main`.
 9. **Lỗi mới, đã sửa trong kit (`5bc8120`):** typecheck của `apps/user` đỏ, vì `@axe-core/playwright` 4.12.1 kéo `playwright-core` 1.64.1 khi lockfile được tạo lại. Kit giờ ghim `overrides.playwright-core` trong `pnpm-workspace.yaml` theo bản Playwright của repo. Cách sửa này đã thử trên `shop` và typecheck xanh; thay đổi đó (chưa commit) sẽ vào PR của T23.
 10. **Như ở T16:** GitHub chưa ghi nhận workflow nào sau lần push đầu, dù API báo Actions đang bật. Phải chờ bạn bấm bật trên tab Actions.
+11. **Lượt 208, phần của bạn đã xong:** sắp cột board `SHOP`, cài hai App, bật Actions, tạo key thứ hai của `ao-dev`.
+    - `setup jira` chạy lại: `jira:check` đạt, nghĩa là cột, status và giới hạn WIP đều khớp.
+    - GitHub nhận ba workflow (`CI`, `jira-sync`, `merge-gate`).
+    - `setup github --dev-app-key-file`: 12 mục `Set …`, gồm ruleset `ao-protected` (id 27192121), giới hạn tương tác tới 2027-05-13, và luật duyệt workflow của PR từ fork.
+    - Mình xóa hai file key thứ hai: của `shop`, và một file còn sót từ `ao-brown` (2026-11-12). Key mà agent dùng là file khác, giữ nguyên. Mình cũng gỡ key SSH của VPS khỏi agent.
+12. **`doctor` còn 4 dòng chưa đạt:**
+    - một file kit lệch: `lib/scaffold/template.mjs`, sửa sau `init`;
+    - CI chưa chạy trên `develop`;
+    - Claude Code chưa tin cậy thư mục;
+    - hai server MCP chưa bật.
+13. **CI đầu trên `develop`** (run 43406626761, chạy tay):
+    - `secrets` và `sast` xanh;
+    - `build-test`: cài pnpm và lint chạy được trên CI thật; typecheck đỏ, đúng lỗi hai bản `playwright-core`;
+    - `policy`: 6 critical và 22 high (đếm theo advisory), ở 8 gói, đến từ cả hai template. `next` 16.2.9 có 5 critical. Ghi chú trước đây "từ template React" là sai.
+14. **Dependabot** mở 4 PR ngay khi `setup github` bật cập nhật bảo mật: #1 `vite`, #2 `zod`, #3 `dompurify`, #4 `next`.
+
+**T23, sửa code app (Lượt 208, đang làm).** Bạn cho làm tiếp theo đề xuất: "những việc bạn không có quyền thì nói tôi làm, còn lại cứ làm theo đề xuất nhé".
+1. **Task `SHOP-1`** được tạo bằng token CI, theo template Task, nhãn `ao-fe-dev`, như `SMP-27`. Cách này thay cho `/ao-intake`, vì nội dung Task đã rõ.
+2. `ao-kit sync --key SHOP-1` (21 giây) tạo commit `e7148a2`, 1 file. Nhánh được đổi tên thành `feature/SHOP-1-app-fixes`, vì Task này còn sửa code app.
+3. **Gói:** `next` và `eslint-config-next` 16.4.6 (kéo theo `postcss` 8.5.23, `sharp` 0.35.5), `zod` 4.6.7, `react-router` 7.18.5, `axios` 1.21.1, `vite` 8.3.8, `dompurify` 3.4.17. Kết quả `pnpm audit`: 0 high, 0 critical, 4 moderate.
+4. **`user`:**
+   - `output: 'standalone'`;
+   - script `build` không cần secret: `server.ts` bỏ qua bước kiểm khi `npm_lifecycle_event` là `build`. Server kiểm `API_URL` và `AUTH_SECRET` lúc chạy;
+   - bỏ `NEXT_PUBLIC_API_URL`, vì server gọi API qua `API_URL`;
+   - `NEXT_PUBLIC_SITE_URL` mặc định là origin của Production, cho cả ba môi trường;
+   - `GET /api/products/count` gọi `connection()`. Trước đó build gọi API thật lúc prerender (template dựa vào API `ecom-nest` của bạn khi build);
+   - coverage giữ `src/app/api/**`.
+   - **Lần thử đầu** dùng `phase` của `next.config.ts` với `import()` động. Build qua, nhưng `next dev` hỏng (`Cannot find module './src/config/env/server'`). Lý do: Next chỉ bật require hook cho file `.ts` trong lúc chạy thân file config, còn hàm theo `phase` được gọi sau đó. Commit `1344a04` sửa lại.
+5. **`admin`:**
+   - `VITE_API_URL` không bắt buộc, mặc định `/api`;
+   - dev server lấy cổng từ `PORT` (`strictPort`), và chuyển `/api` sang `API_URL` hay `http://localhost:3001`.
+6. **`deploy.yaml`:**
+   - `user` nhận `API_URL` và `AUTH_SECRET`;
+   - `health` và đường smoke là `/en`, vì next-intl đặt `localePrefix: 'always'` nên `/` trả 307, và smoke test không theo chuyển hướng. `project.yaml` sửa theo.
+7. **Image**, chạy với `--cap-drop ALL`:
+   - `user`: 278 MB, 87 MiB RAM; `/en` 200, `robots.txt` ghi host Production;
+   - `admin`: 104 MB, 15 MiB RAM; SPA fallback 200, `/api` 502 vì chưa có API.
+8. **PR #5** (draft) được mở bằng `ao-pr.mjs`, qua App `ao-dev`. Lần CI đầu xanh đủ năm job.
+9. **`/ao-preview SHOP-1` dừng có chủ ý**, vì PR sửa `.ai-orchestrator/`. Thay vào đó, mình tự chạy dev server của hai app trên nhánh PR. Bài học cho hướng dẫn: chép kit trong một PR riêng.
+10. **Việc kit để sau:**
+    - `coverage.exclude` có `e2e/**` và `scripts/**`, chỉ khớp ở gốc repo. Trong dự án pnpm, `apps/<app>/e2e/` và `apps/<app>/scripts/` vẫn bị tính là nguồn;
+    - luật "file đổi phải có trong lcov" đụng với coverage exclude của template (`src/app/**`);
+    - stack `nextjs` của `add` ghi `health: /`, mà với next-intl `localePrefix: 'always'` thì `/` trả 307;
+    - `ao-pr.mjs` chạy từ phiên ngoài thư mục dự án cần `AO_DEV_APP*` lấy từ `.claude/settings.json`.
+    - Ngoài kit: sau `pnpm add` và đổi nhánh, `node_modules` trên máy mất link `zod` được treo lên. `pnpm install` báo "Already up to date"; phải cài lại từ đầu.
