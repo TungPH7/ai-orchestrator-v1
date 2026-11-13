@@ -154,7 +154,7 @@
 
 ## Chặng 5: kiểm thật và hướng dẫn
 
-- [ ] **T20: bản nháp của hướng dẫn** (spec 2.6). Phần "Dự án nhiều app, dựng từ template của bạn" theo năm bước của spec; đoạn ảnh chụp và Task design system trong phần 5; `ao-kit add` trong bảng tra lệnh. Đi cùng PR của T25.
+- [x] **T20: bản nháp của hướng dẫn** (spec 2.6). Phần "Dự án nhiều app, dựng từ template của bạn" theo năm bước của spec; đoạn ảnh chụp và Task design system trong phần 5; `ao-kit add` trong bảng tra lệnh. Đi cùng PR của T25.
 - [x] **T21 [bạn]: VPS** (câu 3 của mục 9). Mỗi bước hỏi bạn trước:
   1. đo RAM bằng lệnh chỉ đọc (`free -m`, `docker stats --no-stream`);
   2. cập nhật kit trên VPS lên bản có chặng 3, giữ bản cũ để quay lại;
