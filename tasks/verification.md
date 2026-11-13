@@ -207,3 +207,15 @@ Kết quả: đĩa dùng giảm từ 13 GB xuống 7,9 GB, còn trống 30 GB; 1
     - stack `nextjs` của `add` ghi `health: /`, mà với next-intl `localePrefix: 'always'` thì `/` trả 307;
     - `ao-pr.mjs` chạy từ phiên ngoài thư mục dự án cần `AO_DEV_APP*` lấy từ `.claude/settings.json`.
     - Ngoài kit: sau `pnpm add` và đổi nhánh, `node_modules` trên máy mất link `zod` được treo lên. `pnpm install` báo "Already up to date"; phải cài lại từ đầu.
+
+**T24, `shop` lên Development (Lượt 210, đang làm; bạn mở VPS).**
+1. **Trước khi sửa:** VPS như cuối Lượt 207: 10 container, Caddyfile `7966209d…`, còn 2.910 MB RAM trên 3.915 MB, đĩa còn trống 30 GB.
+2. **Secret Development:** `/etc/ao/secrets/shop/development.env`, `root:aodeploy 640`, có hai dòng:
+   - `API_URL=http://api:3001`. Tên `api` sẽ có ở B3, khi `shop` có API;
+   - `AUTH_SECRET` dài 64 ký tự, sinh bằng `openssl rand -base64 48` ngay trên VPS. Giá trị đi qua `printf` có sẵn trong shell, nên không nằm trong tham số của tiến trình nào và không bị in ra.
+   - Staging và Production chưa có file env. Deployer chỉ đọc file này khi deploy môi trường đó, và cả hai còn chờ bản release đầu.
+3. **`deployer.yaml`:** timer được dừng, rồi chờ tới khi service không còn `activating`. Bản sao lưu nằm ở `/root/deployer.yaml.2026-11-13.bak`, Caddyfile ở `/root/Caddyfile.2026-11-13.before`. Mục `shop` có host theo từng app, đúng đoạn `doctor` in ra.
+4. **`baseline shop` dừng:** `App 5624698 is not installed on TungPH7/shop`. Ở Lượt 208, bạn mới cài `ao-dev` và `ao-review`; `ao-deploy` thì chưa.
+   - `deployer.yaml` đã được trả về bản sao lưu, và timer đã bật lại. `tick --dry-run` không in gì, Caddyfile vẫn `7966209d…`.
+   - **Lỗ hổng của kit:** bước 4 phần 3 của `getting-started.md` và bước 5 phần 5 chỉ cài `ao-dev` và `ao-review`. Bước 8 phần 5 (lên Development) cũng không nhắc tới `ao-deploy`, và `doctor` không kiểm App này. T25 phải thêm bước cài `ao-deploy` vào bước 8. `doctor` nên có một dòng kiểm App này, đọc qua token của `ao-deploy` hoặc hỏi bạn.
+5. **Lần deploy đầu:** sau `baseline --confirm`, deployer coi head hiện tại của `develop` là đã xem, nên không tự deploy. Cách đúng là `/ao-rollback development <sha>` bằng login `gh` của bạn: lệnh tạo yêu cầu deploy, và deployer ghi rằng bạn đã duyệt lịch sử tới commit đó (`approveHistory`).
