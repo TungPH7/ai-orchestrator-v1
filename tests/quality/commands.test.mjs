@@ -136,6 +136,14 @@ test('deleting a workflow run is refused; reading runs is not', () => {
   for (const command of ['gh run view 123 --log-failed', 'gh run list --workflow CI']) allowed(bash(command), command);
 });
 
+// A run by hand of CI skips the checks of a PR, and disabling a workflow stops its gates (review of ao-sample PR #30).
+test('starting, enabling or disabling a workflow is refused; reading workflows is not', () => {
+  for (const command of ['gh workflow run CI --ref feature/SMP-1-x', 'gh workflow run ci.yml', 'gh -R o/r workflow run CI', 'gh workflow disable merge-gate', 'gh workflow enable CI']) {
+    denied(bash(command), /workflow/, command);
+  }
+  for (const command of ['gh workflow list', 'gh workflow view CI', 'gh run rerun 123 --failed']) allowed(bash(command), command);
+});
+
 test('each role runs ao-pr.mjs only with its own App', () => {
   allowed(bash('node .ai-orchestrator/scripts/ao-pr.mjs create --base develop --title "feat(api): x (DEMO-1)" --body-file pr.md'), 'fe-dev create');
   allowed(bash('node .ai-orchestrator/scripts/ao-pr.mjs review 12 --event REQUEST_CHANGES --body-file r.md', 'reviewer'), 'reviewer review');

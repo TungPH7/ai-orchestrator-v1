@@ -32,7 +32,7 @@ Mọi chỗ sửa đều làm theo kiểu test trước: test đỏ xác nhận 
 - **Lúc chạy tiếp.** Khi lệnh sau chạy tiếp đúng session đó, `ao-step` làm theo thứ tự:
   1. Sau bước checkout của lượt, nếu thư mục chưa ở `wip.branch` thì switch sang nhánh đó.
   2. Chạy `git stash apply <sha>`.
-  3. Áp được thì tìm entry theo SHA rồi xóa. Prompt chạy tiếp thêm một câu: phần chưa commit lúc dừng đã được cất rồi trả lại vào thư mục, nên kiểm `git status` trước khi làm tiếp.
+  3. Áp được thì tìm entry theo SHA rồi xóa. Prompt chạy tiếp thêm một câu: phần chưa commit lúc dừng đã được cất rồi trả lại vào thư mục, nên kiểm `git status` trước khi làm tiếp. `wip` bị bỏ khỏi lượt cũ trong `state.json` ngay lúc đó, nên nếu lượt mới không bắt đầu được (ví dụ không thêm được worktree), lệnh sau không nhắc lại stash đã xóa (`project-scaffold` T20, review PR #30 của `ao-sample`).
   4. Áp không được thì dừng, không chạy agent, và in SHA để bạn tự xử lý.
 - **Stash dùng chung** giữa mọi worktree của repo. Vì vậy `ao-step` chỉ áp và xóa theo SHA, không dùng `stash pop`, và không đoán vị trí `stash@{n}`.
 - **Shell của `ao-step` bị tắt.** `ao-step` không tự cất trong trường hợp này, vì không chắc thay đổi là của agent. Câu dừng của `checkoutStop` nói thêm cách cất bằng tay.

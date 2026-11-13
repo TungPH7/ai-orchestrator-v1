@@ -220,3 +220,14 @@ Lỗi chỉ lần chạy thật bắt được:
   - **Medium chung của hai báo cáo, `ci.yml:12`:** `workflow_dispatch` (thêm ở T16) nhận mọi nhánh. Chạy tay trên nhánh của một PR thì bốn check cùng tên vẫn ghi lên head của PR, nhưng bỏ các phần chỉ chạy trên PR: quy ước, suppression, hạ chuẩn, coverage của dòng đổi, gitleaks quá commit đầu. `gh-guard` không chặn `gh workflow run`. Cách sửa đề xuất: mỗi job thoát 1 khi chạy tay trên nhánh không phải `develop`, `main`, `release/*` (thoát lỗi chứ không bỏ qua, vì job bị bỏ qua vẫn tính là đạt); chặn `gh workflow run` với agent.
   - **Low của `reviewer`:** comment của `gates.yaml` còn nhắc `preview.yaml`; hook `commit-msg` coi "git không chạy được" và nhánh mồ côi là commit gốc; một ca hiếm trong `runner.mjs` (stash đã áp lại rồi mà lần chạy tiếp vẫn trỏ tới nó); khoảng 715 dòng code `ao-kit` được chép vào dự án dù dự án không gọi (đúng thiết kế).
 - `/ao-review` dừng ở gate ③: PR sửa đường dẫn được bảo vệ, nên bạn approve rồi tự merge.
+- Lượt 188: bạn approve và merge PR #30 lúc 00:41:53 UTC, commit `fd5c848` trên `develop`.
+  - CI của push xanh (00:43:13). Deploy lên Development `success` lúc 00:43:35 (deployment 7753776646).
+  - Từ 00:43:10, GitHub không khởi động job nào nữa: "The job was not started because recent account payments have failed or your spending limit needs to be increased". Hai lượt `jira-sync` theo `deployment_status` và hai lượt `merge-gate` đỏ vì lý do này, không phải vì code. `SMP-27` vẫn ở In Review.
+  - Spec `quality-gates` mục "Phút Actions" đã lường trước: một vòng PR chuẩn tốn khoảng 37 phút, tức khoảng 54 vòng mỗi tháng ở gói Free. Tháng 11 có năm repo riêng tư chạy CI (kit, `ao-sample`, `ao-pilot`, `ao-green`, `ao-brown`).
+  - Đang chặn: `/ao-preview` (cần CI xanh trên PR), `/ao-qa SMP-27` (cần `jira-sync` đưa item sang In QA; chạy lại lượt 43339342556 khi Actions chạy lại được), và CI của kit PR.
+- Sửa trong kit theo review, có test đỏ trước, chưa push:
+  - **Medium:** mỗi job của `ci.yml` có bước đầu "By hand only on develop, main or release/*", chỉ chạy khi `workflow_dispatch`, thoát 1 trên nhánh khác. Test kiểm bốn job cùng bước đầu và chạy đoạn script bằng bash với 3 ref được phép, 6 ref bị chặn. `gh-guard` chặn agent chạy `gh workflow run`, `enable`, `disable`; vẫn cho `gh workflow list`, `view` và `gh run rerun`.
+  - **Low:** comment của `gates.yaml` nói đúng `project.yaml`; `commit-msg` coi là commit gốc chỉ khi `git rev-list -n 1 --all` chạy được và không ra commit nào (nhánh orphan và lúc `git` lỗi vẫn cần mã); `runner.mjs` bỏ `wip` khỏi bản ghi ngay sau khi áp lại stash, nên lượt không bắt đầu được thì lệnh sau không nhắc stash đã xóa.
+  - Low thứ tư (code `ao-kit` chép vào dự án) đúng thiết kế, không sửa.
+  - Spec `quality-gates`, `project-scaffold`, `live-run-fixes` và `docs/quality-gates.md` đổi theo.
+  - Năm lệnh kiểm xanh (1281 test).

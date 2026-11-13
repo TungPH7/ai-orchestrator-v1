@@ -4,8 +4,10 @@ import { spawnSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { checkCommitMessage } from '../lib/quality/git-hooks.mjs';
 
-// No HEAD yet: this is the root commit of the repository, which needs no Jira key.
-const root = spawnSync('git', ['rev-parse', '--verify', '--quiet', 'HEAD'], { stdio: 'ignore' }).status !== 0;
+// No commit on any ref yet: this is the root commit of the repository, which needs no Jira key. An orphan branch of a
+// repository that has commits, and a git that fails, still need it (review of ao-sample PR #30).
+const commits = spawnSync('git', ['rev-list', '-n', '1', '--all'], { encoding: 'utf8' });
+const root = commits.status === 0 && commits.stdout.trim() === '';
 const result = checkCommitMessage(readFileSync(process.argv[2], 'utf8'), { root });
 if (!result.ok) {
   console.error(`commit-msg: ${result.reason}`);

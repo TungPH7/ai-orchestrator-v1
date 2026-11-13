@@ -81,14 +81,14 @@ Kit chép thư mục `.githooks/` vào dự án. `node .ai-orchestrator/scripts/
 | Hook | Kiểm | Chặn khi |
 |---|---|---|
 | `pre-commit` | secretlint trên các file đã stage; rồi `npm run precommit --if-present` của dự án | Có secret; script của dự án lỗi |
-| `commit-msg` | `checkCommit` của `conventions.mjs` | Header sai `type(scope): subject (<KEY>)`. Commit merge và commit revert do git tạo thì cho qua. Commit gốc của repo (chưa có `HEAD`) không cần mã Jira (`project-scaffold`, T16) |
+| `commit-msg` | `checkCommit` của `conventions.mjs` | Header sai `type(scope): subject (<KEY>)`. Commit merge và commit revert do git tạo thì cho qua. Commit gốc của repo (chưa có commit nào trên mọi ref) không cần mã Jira (`project-scaffold`, T16). Nhánh orphan trong repo đã có commit, hay lúc `git` lỗi, vẫn cần mã (T20) |
 | `pre-push` | Ref đích của lần push | Cập nhật `develop`, `main` hoặc một nhánh `release/*` đã có. Tạo nhánh `release/*` mới thì cho qua |
 
 Script `precommit` là chỗ `project-scaffold` đặt lint cho file đã stage, theo stack. Ở local chỉ dùng secretlint (gói npm) cho nhẹ; Semgrep cần Python, gitleaks là binary riêng, nên hai công cụ này và `npm audit` chỉ chạy ở CI. CI là nơi quyết định.
 
 ### 2.4 CI trên PR
 
-Workflow `kit/.github/workflows/ci.yml` tên `CI`, là tên `jira-sync` đang chờ. Workflow chạy khi có `pull_request` và khi push lên `develop`, `main`, `release/**`. Có bốn job, mỗi job là một check:
+Workflow `kit/.github/workflows/ci.yml` tên `CI`, là tên `jira-sync` đang chờ. Workflow chạy khi có `pull_request` và khi push lên `develop`, `main`, `release/**`. Bạn chạy tay được (`workflow_dispatch`, `project-scaffold` T16), nhưng chỉ trên `develop`, `main`, `release/*`. Trên nhánh khác, bước đầu của mỗi job thoát lỗi. Lý do: lượt chạy tay ghi bốn check xanh lên commit của PR mà bỏ qua các phần chỉ chạy trên PR (review PR #30 của `ao-sample`), và job bị bỏ qua vẫn được tính là đạt. Có bốn job, mỗi job là một check:
 
 | Job | Bước | Đỏ khi |
 |---|---|---|
@@ -148,6 +148,7 @@ Hook mới `kit/.claude/hooks/gh-guard.mjs` khai báo trong `kit/.claude/setting
 | Lấy token hoặc key | `gh auth token`, `login`, `switch`, `refresh`; `gh auth status` kèm `-t` hoặc `--show-token`; đọc `hosts.yml` của `gh`; đọc file PEM của App |
 | Đổi cấu hình repo (thêm ở T8) | `gh secret` và `gh variable` với `set`, `delete`; `gh repo edit`, `delete`, `rename`, `archive`, `unarchive`; `gh repo autolink create`, `delete` |
 | Xóa dấu vết của các cổng | `gh run delete` |
+| Chạy tay, bật hay tắt workflow (thêm ở `project-scaffold` T20, sau review PR #30 của `ao-sample`) | `gh workflow run`, `enable`, `disable` |
 | Sửa file được bảo vệ | `Edit`, `Write`, `NotebookEdit` vào `protected_paths`. Riêng `devops` được sửa `.github/workflows/**`; PR đó vẫn phải do bạn merge |
 | Dùng sai App | Vai trò dev chạy `ao-pr.mjs review`; vai trò review chạy `ao-pr.mjs create`, `edit` hoặc `comment` |
 | Đưa mật khẩu basic auth lên dòng lệnh (thêm ở A1, 2026-11-11, sau khi `qa` chạy `curl -u` ở Pilot 2) | Tham số của một lệnh nhắc tới `$E2E_HTTP_PASSWORD` hay `$AO_ENV_AUTH` (cả `${…}`, `$env:…`, `%…%`), trừ `printf` có sẵn của shell |
