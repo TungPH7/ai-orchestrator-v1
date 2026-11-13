@@ -1,0 +1,31 @@
+# The stack spring-boot (project-scaffold part 3, spec 2.1): one Spring Boot app built with Maven, in a pnpm project.
+# It has no skeleton of its own: ao-kit add takes the code of your template (--from), and adds the package.json of
+# files/ when the template has none. Its scripts run the Maven wrapper of the app through
+# .ai-orchestrator/scripts/mvnw.mjs, so pnpm -r, CI and /ao-preview run the app as they run a JS one.
+name: spring-boot
+package_manager: pnpm
+# The profile of the app in project.yaml.
+profile: spring-boot
+# ao-kit add refuses the stack without --from.
+requires_template: true
+# The app in project.yaml: the script its dev command runs, the first port tried, and the path that answers once it is
+# up. 3001 is where the other apps of the stacks call the app api: API_URL of nextjs, the Caddyfile of react.
+dev_script: dev
+port: 3001
+health: /actuator/health
+# What the health path answers once the app is up, for the smoke test of deploy.yaml.
+smoke_text: '"status":"UP"'
+# Where the Dockerfile sits in the app folder, for deploy.yaml. The Dockerfile of a Spring Boot template builds from
+# the app folder, so deploy.yaml names that folder as its context.
+dockerfile: Dockerfile
+build_context: app
+# deploy.yaml: the memory cap of the container, and how long its smoke test waits for the JVM and the migrations. A
+# Spring Boot app of the user's template used 290 MiB at rest and answered after 18 s on a laptop (T2).
+memory: 768m
+start_timeout: 180
+# Files of the stack that ao-kit add copies next to the code of a template, when the template has none.
+container_files: [package.json]
+# The dev agent that builds the app: it gets the skill <app>-conventions a template brings.
+dev_role: be-dev
+# roster.local.yaml: the stack skills; ao-kit add copies each one from where the kit keeps it (T10 adds java-springboot).
+skills: {}

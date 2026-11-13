@@ -70,7 +70,7 @@ test('copyTemplate brings what HEAD of the template holds, and leaves out what t
   const text = result.notes.join('\n');
   assert.match(text, /^Copied 7 files of tpl-\S+ at [0-9a-f]{8} into apps\/user$/m);
   assert.match(text, /has 1 changes not committed: only what [0-9a-f]{8} holds is copied/);
-  assert.match(text, /Left out \.husky\/: the git hooks of the kit replace husky/);
+  assert.match(text, /Left out \.husky\/ \(2 files\): the git hooks of the kit replace husky/);
   assert.match(text, /Left out \.commitlintrc\.json: the commit-msg hook of the kit checks commit headers/);
   assert.match(text, /Left out \.github\/: the CI of the kit runs at the root of the repo/);
   assert.match(text, /Left out \.claude\/: /);

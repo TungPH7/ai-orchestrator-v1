@@ -45,8 +45,24 @@
           "type": "string",
           "pattern": "^[A-Za-z0-9._-]+(/[A-Za-z0-9._-]+)*$"
         },
+        "context": {
+          "description": "The folder the image builds from, from the root of the repo; the root when absent. A Dockerfile made for the folder of its app, such as that of a Spring Boot template, needs it (project-scaffold part 3, spec 2.5).",
+          "type": "string",
+          "pattern": "^(?!.*(^|/)\\.\\.?(/|$))[A-Za-z0-9._-]+(/[A-Za-z0-9._-]+)*$"
+        },
         "port": { "type": "integer", "minimum": 1, "maximum": 65535 },
         "health": { "$ref": "#/$defs/path" },
+        "memory": {
+          "description": "The memory cap of the container, such as 512m or 1g; 512m when absent (project-scaffold part 3, spec 2.5).",
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,4}[mg]$"
+        },
+        "start_timeout": {
+          "description": "Seconds the smoke test waits for the app to answer; 60 when absent. A JVM app that migrates its database at start needs more.",
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 300
+        },
         "public": { "type": "boolean" },
         "env": {
           "description": "Names of the environment variables; their values live on the VPS in /etc/ao/secrets.",
