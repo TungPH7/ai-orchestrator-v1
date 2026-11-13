@@ -108,3 +108,18 @@ Thay đổi đi kèm:
 `templates/plan.md` và `docs/agents.md` cũng cập nhật theo. `docs/agents.md` có thêm mục "Đưa ảnh chụp màn hình vào repo": thu nhỏ ảnh bằng Paint, và ảnh chụp trang của người khác chỉ dùng để tham khảo bố cục.
 
 Phần này được kiểm thật lần đầu ở Epic đầu của B4 (câu hỏi 2, mục 9 của spec).
+
+## Chặng 5: kiểm thật và hướng dẫn
+
+**T21, VPS (Lượt 206, bạn mở VPS: nạp key và mở đăng nhập root).**
+- **RAM trước khi thêm `shop`:**
+  - tổng 3.915 MB, đã dùng 1.000 MB, còn sẵn 2.914 MB; swap 4.095 MB chưa dùng;
+  - mười container, ba môi trường của `ao-pilot` và `ao-sample` cộng Caddy, dùng khoảng 480 MiB, mỗi container 32–68 MiB;
+  - đĩa còn trống 26 GB trên 38 GB.
+- **Cập nhật kit** lên `c49b0510030098e2ef15c279fbe8ba4462c9a4ef`, theo mục 12 của `docs/vps-setup.md`:
+  - bản cũ (`521e031`) không bị xóa mà được đổi tên thành `/opt/ao/kit.prev`, để quay lại khi cần; mục 12 giờ ghi cách này;
+  - `tick --dry-run` không in gì;
+  - mã băm của Caddyfile (`7966209d…`) không đổi qua cả `--dry-run` lẫn một lượt chạy thật;
+  - lượt chạy thật thành công sau 15 giây, log không có lỗi, 10 container vẫn chạy.
+- **Kiểm từ máy bạn:** `sample.ao.t2g.io.vn` trả 307 (chuyển sang `/notes`), `pilot.ao.t2g.io.vn` trả 200, các host Development và Staging trả 401.
+- **Đóng lại:** đăng nhập root đã tắt (`PermitRootLogin no`), và SSH bằng root bị từ chối. Bạn cần gỡ key khỏi ssh-agent. T24 sẽ cần mở lại như mục 9.
