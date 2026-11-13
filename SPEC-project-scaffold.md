@@ -1,6 +1,6 @@
 # SPEC: project-scaffold
 
-> **Trạng thái:** đã duyệt 2026-11-12 (Phiên 27 · Lượt 154), cả năm câu ở mục 9 theo đề xuất. **Phần 1 hoàn thành 2026-11-13** (Phiên 27 · Lượt 198): kit PR #252–#259, sáu tiêu chí ở mục 7 đạt, 11,35 USD agent. Plan, todo, verification: [tasks/archive/project-scaffold-1/](tasks/archive/project-scaffold-1/). Spec này viết chi tiết **phần 1 (B1)**. Phần 2 (B2) và phần 3 (B3) mới có phạm vi (mục 4); mỗi phần sẽ có spec chi tiết riêng, bạn duyệt trước khi phần đó bắt đầu. Nguồn: hàng B1–B3 của [misc/thao-luan/concerns.md](misc/thao-luan/concerns.md), mục "Đầu vào cho `project-scaffold`" của [tasks/archive/pilot-1/verification.md](tasks/archive/pilot-1/verification.md), và yêu cầu của bạn ở Lượt 105 và Lượt 153.
+> **Trạng thái:** đã duyệt 2026-11-12 (Phiên 27 · Lượt 154), cả năm câu ở mục 9 theo đề xuất. **Phần 1 hoàn thành 2026-11-13** (Phiên 27 · Lượt 198): kit PR #252–#259, sáu tiêu chí ở mục 7 đạt, 11,35 USD agent. Plan, todo, verification: [tasks/archive/project-scaffold-1/](tasks/archive/project-scaffold-1/). Spec này viết chi tiết **phần 1 (B1)**. Phần 2 (B2) có spec chi tiết riêng: [SPEC-project-scaffold-2.md](SPEC-project-scaffold-2.md). Phần 3 (B3) mới có phạm vi (mục 4), và sẽ có spec riêng, bạn duyệt trước khi phần đó bắt đầu. Nguồn: hàng B1–B3 của [misc/thao-luan/concerns.md](misc/thao-luan/concerns.md), mục "Đầu vào cho `project-scaffold`" của [tasks/archive/pilot-1/verification.md](tasks/archive/pilot-1/verification.md), và yêu cầu của bạn ở Lượt 105 và Lượt 153.
 
 ## 1. Mục tiêu
 
@@ -229,19 +229,25 @@ Các lệnh `/ao-*` không đổi. `/ao-preview` đọc app từ `project.yaml` 
 
 ## 4. Phần 2 và phần 3 (phạm vi, chưa chi tiết)
 
-- **Phần 2 (B2):**
-  - nhiều app công khai, mỗi app một host: bỏ luật D2 của `deploy.yaml`, deployer và Caddy theo `host` trong `project.yaml`;
-  - profile React;
+- **Phần 2 (B2):** spec chi tiết ở [SPEC-project-scaffold-2.md](SPEC-project-scaffold-2.md), viết ở Lượt 200 sau bốn quyết định về dự án e-commerce: một repo cho cả dự án; kit hỗ trợ pnpm; hook, workflow và `.claude/` của template nhường cho kit; database vào phần 3. Gồm:
+  - pnpm;
+  - lệnh `ao-kit add` thêm app từ khung của kit hay từ template của bạn;
+  - stack `nextjs` cho pnpm và stack `react`;
+  - nhiều app công khai, mỗi app một host: bỏ luật D2 của `deploy.yaml`; host theo app khai trong `deployer.yaml` trên VPS, `project.yaml` khai cùng các host đó cho `qa` và `doctor`;
   - **thêm từ Lượt 153:** màn hình thiết kế bằng ảnh chụp, không cần Figma (luật D7 của `check-design` chỉ áp cho màn hình Figma); mục Design System trong `design.md` do `ux` rút từ ảnh; luật plan để `sa` thêm Task dựng design system cho `fe-dev` khi dự án chưa có;
-  - hướng dẫn thêm ví dụ React.
+  - hướng dẫn cho dự án nhiều app dựng từ template.
 
-  Xong phần 2 là có trường hợp 1.
+  Xong phần 2, repo `shop` của e-commerce có `apps/user` (Next.js) và `apps/admin` (React) chạy trên Development. Trường hợp 1 với NestJS dùng pnpm chỉ làm khi có dự án cần.
 - **Phần 3 (B3):**
   - profile Spring Boot: Gradle hoặc Maven, JaCoCo, kiểm dependency Java, dòng tắt check và path security của Java, skill cho `be-dev`;
+  - `ao-kit add --stack spring-boot --from <template>`: bỏ `.githooks/` và `.claude/` của template; skill hữu ích của template thành skill theo stack (Lượt 200);
+  - CI chạy lint, typecheck, test và build của app Java;
+  - **database (Lượt 200):** Postgres trên máy bạn cho `/ao-preview`, trong CI cho test tích hợp, và ở cả ba môi trường trên VPS; công cụ migration (Flyway hoặc Liquibase, chọn ở spec phần 3); backup;
+  - **đo RAM của VPS** khi chạy đủ ba app và Postgres ở ba môi trường, rồi mới quyết có nâng VPS hay không (Lượt 200);
   - deployer có trần RAM cho mỗi container và dọn build cache;
   - hướng dẫn thêm ví dụ Spring Boot.
 
-  Xong phần 3 là có trường hợp 2, rồi tới Pilot 3 (B4).
+  Xong phần 3 là có trường hợp 2, rồi tới Pilot 3 (B4) trên repo `shop`.
 
 ## 5. Cấu trúc
 
