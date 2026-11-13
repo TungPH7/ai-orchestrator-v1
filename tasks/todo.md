@@ -128,7 +128,7 @@
     - `playwright.config.ts` của `base-pnpm` dựng project từ app công khai của `project.yaml`, với basic auth cho đúng origin của từng app.
   - **Kiểm:** test của `steps`, `prompts`, `facts`; dự án một app vẫn chỉ có `E2E_BASE_URL` như cũ.
   - **File:** `lib/workflow/steps.mjs`, `lib/workflow/prompts.mjs`, `lib/workflow/facts.mjs`, `agents/prompts/qa.md`, `profiles/base-pnpm/playwright.config.ts`, test.
-- [ ] **T17: tài liệu chặng 3; PR.** `docs/vps-setup.md` (`hosts` theo app, DNS), `docs/release-workflow.md`, `vps/deployer.example.yaml`; PR chặng 3.
+- [x] **T17: tài liệu chặng 3; PR.** `docs/vps-setup.md` (`hosts` theo app, DNS), `docs/release-workflow.md`, `vps/deployer.example.yaml`; PR chặng 3.
 
 ## Chặng 4: ảnh chụp và design system, nhánh `task/scaffold2-4`
 
@@ -174,7 +174,7 @@
   - `/ao-preview` chạy hai app của PR trên máy bạn. **Bạn** xem, rồi merge khi CI xanh.
   - Task được Cancel, kèm comment trỏ tới PR, như `AOG-3`.
 - [ ] **T24 [bạn]: Development chạy hai host** (tiêu chí 4).
-  1. **Bạn:** thêm bản ghi DNS cho `shop-dev` và `shop-admin-dev`, nếu domain chưa có wildcard;
+  1. DNS: bản ghi wildcard `*.ao.t2g.io.vn` đã có (`docs/vps-setup.md`, mục 7), nên không phải thêm bản ghi;
   2. mình hỏi rồi thêm `shop` vào `deployer.yaml` trên VPS, cùng secret của Development;
   3. deployer deploy `develop`: smoke test đạt; hai host qua basic auth;
   4. Caddyfile của `ao-sample` và `ao-pilot` không đổi, hai dự án vẫn chạy;

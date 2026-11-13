@@ -54,3 +54,35 @@ Skill `vercel-react-best-practices` không chép thêm bản nào: `add` lấy n
 | RAM lúc rảnh | 51 MiB | 16 MiB |
 
 Cả hai trang có `<html`, nên smoke check mà `add` ghi vào `deploy.yaml` qua được. Sau khi kiểm, container, image và thư mục tạm đã được xóa.
+
+## Chặng 3: nhiều app công khai (T14–T17), nhánh `task/scaffold2-3`
+
+**T14.**
+- `lib/release/hosts.mjs` đọc `hosts` của `deployer.yaml` ở hai dạng: một host cho mỗi môi trường (dạng cũ), hoặc host theo từng app. Hai dạng phân biệt bằng kiểu giá trị, không bằng tên khóa.
+- Schema dùng `if/then/else`, nên các fixture V1 cũ vẫn báo đúng đường dẫn lỗi.
+- D2 đòi ít nhất một app công khai. Fixture `d2-second-public-app` đã xóa, vì giờ đó là file hợp lệ.
+- `project.yaml` có thêm luật:
+  - P8: chỉ app công khai mới có `hosts`;
+  - P9: không host nào dùng hai lần;
+  - C5: từ hai app công khai trở lên thì mỗi app khai `hosts`. C5 nằm ở `checkProject`, nên `add` và render vẫn chạy trong lúc bạn chưa điền host.
+- `doctor` in đoạn `deployer.yaml` theo dạng host theo app khi có từ hai app công khai.
+
+**T15.**
+- Caddyfile của cấu hình một app công khai giống hệt chữ bản cũ: test so nguyên văn vẫn xanh.
+- Bản ghi cũ, lưu `public` dạng object, cho cùng Caddyfile với bản ghi mới lưu dạng danh sách.
+- Hai app công khai cho hai site ở mỗi môi trường. App chưa chạy ở môi trường nào thì site đó trả 503.
+- Installer đặt `AO_PUBLIC_URL` và host của smoke test theo từng app. Thiếu host, hoặc có hai app công khai mà chỉ khai một host cho mỗi môi trường, thì installer không build gì và trả `error` kèm lý do.
+
+**T16.** `facts.mjs` đọc `project.yaml` ở commit đang chạy qua API `contents` của GitHub, rồi:
+- `/ao-qa` và regression của `/ao-ship` nhận `E2E_<APP>_URL` của từng app công khai;
+- prompt của `qa` nêu URL của từng app;
+- `/ao-qa` dừng khi host của `environment_url` không khớp app nào trong `project.yaml`;
+- `/ao-status` in URL của mọi app công khai ở mỗi môi trường đang chạy.
+
+Dự án không khai `hosts` thì vẫn chỉ có `E2E_BASE_URL`, như cũ.
+
+**T17.**
+- `docs/release-workflow.md` thêm phần nhiều app công khai, `AO_PUBLIC_URL` của từng app và `E2E_<APP>_URL`.
+- `docs/vps-setup.md`, mục 11, thêm dạng host theo app.
+- `vps/deployer.example.yaml` thêm ví dụ dạng đó trong comment.
+- DNS đã có bản ghi wildcard `*.ao.t2g.io.vn` (mục 7), nên các host của `shop` không cần bản ghi mới. Bước DNS của T24 không còn việc gì.
