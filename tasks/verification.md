@@ -123,3 +123,12 @@ Phần này được kiểm thật lần đầu ở Epic đầu của B4 (câu h
   - lượt chạy thật thành công sau 15 giây, log không có lỗi, 10 container vẫn chạy.
 - **Kiểm từ máy bạn:** `sample.ao.t2g.io.vn` trả 307 (chuyển sang `/notes`), `pilot.ao.t2g.io.vn` trả 200, các host Development và Staging trả 401.
 - **Đóng lại:** đăng nhập root đã tắt (`PermitRootLogin no`), và SSH bằng root bị từ chối. Bạn cần gỡ key khỏi ssh-agent. T24 sẽ cần mở lại như mục 9.
+
+**Dọn VPS (Lượt 207, bạn yêu cầu, bạn mở lại root).** Mình kiểm kê trước, rồi mới xóa:
+- container: 10, cả 10 đang chạy, không có container dừng;
+- volume: `caddy_config` và `caddy_data`, Caddy đang dùng nên giữ;
+- network: sáu network, mỗi dự án ba môi trường, không thừa cái nào;
+- image: 15, cộng lại 560 MB, nhưng chỉ thu lại được 57 MB vì các bản dùng chung layer. Mình giữ các image `ao-*`, là các bản deployer giữ để rollback (`treesToKeep`) và tự dọn sau mỗi lần deploy, và giữ `node:24-bookworm-slim`, image gốc của mọi lần build;
+- build cache: 4,7 GB, không bản nào đang dùng, nên xóa hết bằng `docker buildx prune --all`. Deployer tự giữ tối đa 4 GB (`PRUNE_CACHE`), nên lần build kế tiếp của mỗi dự án sẽ chậm hơn.
+
+Kết quả: đĩa dùng giảm từ 13 GB xuống 7,9 GB, còn trống 30 GB; 10 container vẫn chạy. Đăng nhập root đã đóng lại.
