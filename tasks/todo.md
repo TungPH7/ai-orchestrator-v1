@@ -48,7 +48,7 @@
 - [x] **T6: tài liệu chặng 1; PR.** `docs/quality-gates.md` (CI cho pnpm), `README.md` (cây thư mục), comment đầu file; PR chặng 1.
 
 ### Checkpoint 1: sau T6
-- [ ] PR chặng 1 merge, CI xanh. Năm lệnh kiểm xanh; test của dự án npm không đổi.
+- [x] PR chặng 1 merge, CI xanh. Năm lệnh kiểm xanh; test của dự án npm không đổi. Kit PR #262 (`9c5796b`).
 
 ## Chặng 2: stack và `ao-kit add`, nhánh `task/scaffold2-2`
 
