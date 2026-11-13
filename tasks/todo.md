@@ -23,7 +23,7 @@
     - `ao-kit check` báo khi `package_manager` không khớp lockfile ở gốc, hay khi dự án pnpm thiếu `packageManager`.
   - **Kiểm:** `tests/quality/package-manager.test.mjs`; thêm ca vào `tests/scaffold/project-config.test.mjs`. `project.yaml` của `ao-sample` vẫn hợp lệ.
   - **File:** `lib/quality/package-manager.mjs`, `lib/scaffold/project.schema.json`, `lib/scaffold/project-config.mjs`, test.
-- [ ] **T3: CI cho pnpm** (spec 2.1).
+- [x] **T3: CI cho pnpm** (spec 2.1).
   - **Đạt khi:**
     - job `build-test` của `kit/.github/workflows/ci.yml`: có `pnpm-lock.yaml` ở gốc thì cài pnpm đúng bản, `pnpm install --frozen-lockfile`, rồi chạy bốn script bằng `pnpm run`; không có thì giữ nguyên bước npm;
     - `setup-node` dùng cache đúng loại lockfile;

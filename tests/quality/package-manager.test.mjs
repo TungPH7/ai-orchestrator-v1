@@ -5,6 +5,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import {
   auditArgs,
+  ciPackageManager,
   devCommand,
   installArgs,
   lockfileOf,
@@ -103,4 +104,26 @@ test('pnpm runs without a shell through runManager, when this machine has it', (
   }
   assert.equal(result.status, 0, result.stderr);
   assert.match(result.stdout.trim(), /^\d+\.\d+\.\d+/);
+});
+
+test('CI: npm or pnpm by the lockfile, and pnpm installed at the version of packageManager', async () => {
+  const installed = [];
+  const installPnpm = async (version) => {
+    installed.push(version);
+    return true;
+  };
+  const npm = await ciPackageManager({ exists: (path) => path === 'package-lock.json', packageJson: {}, installPnpm });
+  assert.deepEqual(npm, { env: { PM: 'npm', PM_INSTALL: 'npm ci --no-audit --no-fund' } });
+  // No lockfile: npm, so npm ci says what is missing, as before.
+  assert.equal((await ciPackageManager({ exists: () => false, packageJson: {}, installPnpm })).env.PM, 'npm');
+  assert.deepEqual(installed, []);
+
+  const pnpm = await ciPackageManager({ exists: (path) => path === 'pnpm-lock.yaml', packageJson: { packageManager: 'pnpm@11.8.0+sha512.abc' }, installPnpm });
+  assert.deepEqual(pnpm, { env: { PM: 'pnpm', PM_INSTALL: 'pnpm install --frozen-lockfile' } });
+  assert.deepEqual(installed, ['11.8.0']);
+
+  const unpinned = await ciPackageManager({ exists: (path) => path === 'pnpm-lock.yaml', packageJson: {}, installPnpm });
+  assert.match(unpinned.error, /names no pnpm version in packageManager/);
+  const failed = await ciPackageManager({ exists: (path) => path === 'pnpm-lock.yaml', packageJson: { packageManager: 'pnpm@11.8.0' }, installPnpm: async () => false });
+  assert.equal(failed.error, 'npm install --global pnpm@11.8.0 failed');
 });
