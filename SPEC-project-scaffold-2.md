@@ -107,7 +107,7 @@ Mỗi stack là một app, gồm:
 |---|---|---|
 | Khung app | `apps/web` của `next-nest`, chuyển sang pnpm | Vite + React + TypeScript, Vitest, ESLint, ghim bản |
 | Chạy ở máy | `next dev`, cổng lấy từ `PORT` | `vite`, cổng lấy từ `PORT`; `/api` chuyển sang API ở máy |
-| Container | Next.js standalone, chạy bằng user `node`, không phải root | File tĩnh phục vụ bằng Caddy trong container, không root, cổng 8080. `/api/*` chuyển tới app `api` trên mạng Docker của môi trường; đường dẫn lạ trả `index.html` |
+| Container | Next.js standalone, chạy bằng user `node`, không phải root | File tĩnh phục vụ bằng Caddy trong container, không root, ở cổng của app (mặc định 5173), cùng cổng với `project.yaml` và `deploy.yaml`. `/api/*` chuyển tới app `api` trên mạng Docker của môi trường; đường dẫn lạ trả `index.html` |
 | `health` | `/`, hoặc một trang không gọi API | `/` |
 | Skill của `fe-dev` | `vercel-react-best-practices` | `vercel-react-best-practices` |
 

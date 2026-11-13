@@ -62,7 +62,7 @@
   - **Đạt khi:**
     - khung app Vite + React + TypeScript, Vitest (ghi lcov), ESLint, ghim bản;
     - app đọc cổng từ `PORT`; `vite.config.ts` chuyển `/api` sang API ở máy;
-    - Dockerfile build file tĩnh rồi phục vụ bằng Caddy trong container: không root, cổng 8080, tắt admin API của Caddy, `/api/*` chuyển tới `api` trên mạng Docker của môi trường, đường dẫn lạ trả `index.html`.
+    - Dockerfile build file tĩnh rồi phục vụ bằng Caddy trong container: không root, ở cổng của app (mặc định 5173, cùng cổng với `project.yaml` và `deploy.yaml`), tắt admin API của Caddy, `/api/*` chuyển tới `api` trên mạng Docker của môi trường, đường dẫn lạ trả `index.html`.
   - **File:** `profiles/stacks/react/`, test.
 - [x] **T9: `profiles:check` cho dự án pnpm** (spec 2.3; plan, quyết định 5).
   - **Đạt khi:** `npm run profiles:check` dựng `next-nest` như hiện nay, và dựng thêm một dự án gồm `base-pnpm`, app `web` (stack `nextjs`) và app `admin` (stack `react`). Trên dự án đó, lệnh chạy `pnpm install` và bốn script ở gốc. Workflow `profiles.yml` cài pnpm.
@@ -96,7 +96,7 @@
 - [x] **T13: tài liệu chặng 2; PR.** `README.md`, comment đầu file; PR chặng 2.
 
 ### Checkpoint 2: sau T13
-- [ ] PR chặng 2 merge; `profiles:check` xanh trong CI của kit, với dự án pnpm.
+- [x] PR chặng 2 merge; `profiles:check` xanh trong CI của kit, với dự án pnpm. Kit PR #263 (`7f92d92`).
 
 ## Chặng 3: nhiều app công khai, nhánh `task/scaffold2-3`
 
