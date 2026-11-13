@@ -72,9 +72,9 @@ for (const file of readdirSync(join(FIXTURES, 'invalid')).filter((name) => /^d\d
   });
 }
 
-test('every rule from D1 to D7 has at least one invalid fixture; D8 needs image files, so its tests build them', () => {
+test('every rule from D1 to D7, and D9, has at least one invalid fixture; D8 needs image files, so its tests build them', () => {
   const rules = new Set(readdirSync(join(FIXTURES, 'invalid')).map((name) => name.slice(0, 2).toUpperCase()));
-  for (const rule of ['D1', 'D2', 'D3', 'D4', 'D5', 'D6', 'D7']) assert.ok(rules.has(rule), rule);
+  for (const rule of ['D1', 'D2', 'D3', 'D4', 'D5', 'D6', 'D7', 'D9']) assert.ok(rules.has(rule), rule);
 });
 
 test('errors name what is wrong and point to its line', () => {
@@ -164,4 +164,19 @@ test('check-design reads the images in the design/ folder next to the file', (t)
   const failed = run();
   assert.equal(failed.status, 1);
   assert.match(failed.stderr, /design\.md:\d+ D8 design\/S1-mobile\.jpg does not exist/);
+});
+
+// project-scaffold part 2, spec 2.5: a screen shown by a screenshot or a mockup, with no Figma behind it.
+test('an Image screen names where its screenshot comes from, needs no Figma version, and the file has a Design System section', () => {
+  const screenshot = figma
+    .replace('figma: https://www.figma.com/design/AbCdEf123/Shop?node-id=12-345\n', 'screenshot: ảnh bạn gửi ngày 2026-11-13, chụp trang thanh toán của shop mẫu\n')
+    .replace(/^> \*\*Figma version:\*\*.*$/m, '> **Figma version:** none')
+    .replace(/^ {4}figma: ".*"\n/gm, '');
+  assert.deepEqual(checkDesign(screenshot, { images: figmaImages() }), []);
+  const empty = screenshot.replace(/^screenshot: .*$/m, "screenshot: ''");
+  assert.deepEqual(checkDesign(empty, { images: figmaImages() }).map(({ rule, message }) => `${rule} ${message}`), ['D7 screenshot of S1 names where the screenshot or mockup comes from, such as the page it was taken of']);
+  const neither = screenshot.replace(/^screenshot: .*\n/m, '');
+  assert.match(checkDesign(neither, { images: figmaImages() })[0].message, /^S1 is shown by images, so its YAML says where they come from: figma, the link of its frame with node-id, or screenshot/);
+  const noSection = screenshot.slice(0, screenshot.indexOf('\n## Design System'));
+  assert.deepEqual(checkDesign(noSection, { images: figmaImages() }).map(({ rule }) => rule), ['D9']);
 });

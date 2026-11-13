@@ -132,14 +132,14 @@
 
 ## Chặng 4: ảnh chụp và design system, nhánh `task/scaffold2-4`
 
-- [ ] **T18: `check-design` và template** (spec 2.5).
+- [x] **T18: `check-design` và template** (spec 2.5).
   - **Đạt khi:**
     - D7: màn hình có ảnh khai đúng một trong `figma`, `screenshot`; dòng `Figma version:` chỉ bắt buộc khi có màn hình Figma;
     - D9: có màn hình Figma hay Ảnh thì phải có mục `## Design System`;
     - `templates/design.md` có kiểu Ảnh, khóa `screenshot`, mục Design System, và ví dụ có một màn hình Ảnh.
   - **Kiểm:** fixture âm cho D7 mới và D9; ví dụ của template qua; fixture Figma cũ vẫn qua.
   - **File:** `lib/quality/design.mjs`, `templates/design.md`, `tests/fixtures/design/`, `tests/quality/design.test.mjs`.
-- [ ] **T19: prompt; PR** (spec 2.5).
+- [x] **T19: prompt; PR** (spec 2.5).
   - **Đạt khi:**
     - `ux`: màn hình Ảnh, lấy ảnh từ `.ai/design-inbox/<EPIC>/`, mục Design System so với `docs/design-system/<app>.md`;
     - `sa`: Task "Design system của <app>" đứng đầu Task List khi app chưa có `docs/design-system/<app>.md` hay có mục "mới";

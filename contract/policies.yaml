@@ -75,7 +75,7 @@ artifacts:
     created_by: [ux]
     stored_in:
       - { place: git, path: "docs/specs/<EPIC-KEY>/design.md" }
-      - { place: git, path: "docs/specs/<EPIC-KEY>/design/", note: "ảnh của màn hình kiểu Figma" }
+      - { place: git, path: "docs/specs/<EPIC-KEY>/design/", note: "ảnh của màn hình kiểu Figma hay Ảnh" }
   - id: plan
     name: "Plan"
     template: templates/plan.md

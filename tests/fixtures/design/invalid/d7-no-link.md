@@ -62,3 +62,9 @@ blocks:
 
 ## Open Questions
 Không có.
+
+## Design System
+
+| Loại | Tên | Giá trị | Có hay mới |
+|---|---|---|---|
+| Màu | primary | #1A73E8, nút chính | mới |

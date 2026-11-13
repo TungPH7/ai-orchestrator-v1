@@ -26,7 +26,9 @@ The BE Sub-task puts the types in the shared types package of the monorepo, so a
 ## Task List
 
 <!-- Ordered index of the Jira Stories and Tasks this plan creates, grouped by phase, with a checkpoint after each phase.
-Shared groundwork, such as the auth module or the schema of the Epic, is an independent Task that comes first.
+Shared groundwork, such as the auth module or the schema of the Epic, is an independent Task that comes first. So is the
+design system of an app, when design.md has a Design System item marked "mới" or the app has no
+docs/design-system/<app>.md: a Task fe-dev "Design system của <app>" before every Story with a screen of that app.
 The details of each item live in Jira, written from templates/story.md or templates/task.md.
 After each title: the dev roles that build the item (be-dev, fe-dev, devops), with "(Sub-task)" when each role gets a
 Sub-task of a Story; and, only for a hard item, its effort xhigh or max with the reason. You approve the efforts at gate

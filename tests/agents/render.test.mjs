@@ -115,7 +115,7 @@ test('the rules file keeps agents/rules.md and fills each render marker from the
   assert.match(text, /When the same step fails 2 times in a row, flag the item "Needs you" and stop\./);
   assert.match(text, /^- Story and Task: `feature\/<KEY>-<slug>` from `develop`; QA on development\.$/m);
   assert.match(text, /^\| Production \| critical, high \| `main` \| staging, production \|$/m);
-  assert.match(text, /^\| Thiết kế màn hình \| `\.ai-orchestrator\/templates\/design\.md` \| `ux` \| Git: `docs\/specs\/<EPIC-KEY>\/design\.md`; Git: `docs\/specs\/<EPIC-KEY>\/design\/` \(ảnh của màn hình kiểu Figma\) \|$/m);
+  assert.match(text, /^\| Thiết kế màn hình \| `\.ai-orchestrator\/templates\/design\.md` \| `ux` \| Git: `docs\/specs\/<EPIC-KEY>\/design\.md`; Git: `docs\/specs\/<EPIC-KEY>\/design\/` \(ảnh của màn hình kiểu Figma hay Ảnh\) \|$/m);
   assert.match(text, /^ {2}- `\.github\/workflows\/\*\*`: only `devops`$/m);
   assert.match(text, /^ {2}- `\.claude\/\*\*`: no agent$/m);
   assert.match(renderRules({ ...sources, space: 'DEMO' }), /space `DEMO`/);
