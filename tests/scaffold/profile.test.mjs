@@ -19,7 +19,7 @@ test('profile.yaml says the apps, the stack skills, the version of Node and what
   assert.deepEqual(profile.skills, { 'fe-dev': ['vercel-react-best-practices'], 'be-dev': ['nestjs-best-practices'] });
   assert.deepEqual(profile.after, [['npm', 'ci'], ['npx', 'playwright', 'install', 'chromium']]);
   assert.equal(profile.node, '>=24.2');
-  assert.throws(() => readProfile(ROOT, 'cobol'), /no profile cobol in profiles\/; the kit has next-nest/);
+  assert.throws(() => readProfile(ROOT, 'cobol'), /no profile cobol in profiles\/; the kit has base-pnpm, next-nest/);
 });
 
 test('the project.yaml of a new project is valid, with the apps of the profile', () => {

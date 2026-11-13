@@ -37,7 +37,7 @@
     - worktree của `ao-step` (cho `qa`) cài bằng lệnh cài `--ignore-scripts` của đúng loại.
   - **Kiểm:** test của `preview`, `preview-run` và worktree, với dự án pnpm giả; ca npm cũ không đổi.
   - **File:** `lib/workflow/preview.mjs`, `lib/workflow/preview-run.mjs`, `scripts/ao-step.mjs`, test.
-- [ ] **T5: `init` và `doctor` cho pnpm** (spec 2.1, 2.2).
+- [x] **T5: `init` và `doctor` cho pnpm** (spec 2.1, 2.2).
   - **Đạt khi:**
     - `ao-kit init <dir> --package-manager pnpm` trên thư mục trống chép profile `base-pnpm`: `package.json` (có `packageManager`, bốn script `pnpm -r run`, script `prepare` và `precommit`), `pnpm-workspace.yaml`, `playwright.config.ts`, `e2e/`, cùng kit và `project.yaml` chưa có app;
     - `init` trên repo pnpm đang có đọc app từ `packages` của `pnpm-workspace.yaml`, và nhận ra app React chạy bằng Vite là stack `react`;

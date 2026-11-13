@@ -2,19 +2,24 @@
 // init would, then runs npm ci and the four scripts the build-test job of CI runs. Kit only: the workflow profiles.yml
 // runs it when a PR changes a profile or lib/scaffold/. It needs the network, for npm ci, and a few minutes.
 // Usage: node scripts/profiles-check.mjs [<profile> ...]
-import { mkdtempSync, readdirSync, realpathSync, rmSync } from 'node:fs';
+import { mkdtempSync, realpathSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { runNpm } from '../lib/quality/npm.mjs';
 import { REQUIRED_SCRIPTS } from '../lib/scaffold/project-config.mjs';
-import { copyProfile, readProfile } from '../lib/scaffold/profile.mjs';
+import { copyProfile, profileNames, readProfile } from '../lib/scaffold/profile.mjs';
 
 const kitDir = fileURLToPath(new URL('..', import.meta.url));
-const names = process.argv.slice(2).length > 0 ? process.argv.slice(2) : readdirSync(join(kitDir, 'profiles'));
+const names = process.argv.slice(2).length > 0 ? process.argv.slice(2) : profileNames(kitDir);
 let failed = 0;
 for (const name of names) {
   const profile = readProfile(kitDir, name);
+  // A root with no app, such as base-pnpm, has nothing to lint or build on its own.
+  if (Object.keys(profile.apps ?? {}).length === 0) {
+    console.log(`${name}: no app of its own, skipped`);
+    continue;
+  }
   // The long form of the temp folder: Vite does not find the tests under a Windows short name such as HUUTUN~1.
   const dir = mkdtempSync(join(realpathSync.native(tmpdir()), `profile-${name}-`));
   try {

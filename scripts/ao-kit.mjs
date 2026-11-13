@@ -1,7 +1,8 @@
 // ao-kit (project-scaffold spec 2.2): sets a project up with the kit, from the clone of the kit on your machine. It is
 // not copied into projects. Each command can run again: what is done already is skipped and said so.
 // Usage: node <kit>/scripts/ao-kit.mjs <command> <project dir> [options]
-//   init <dir>    an empty folder: the skeleton of --profile (next-nest), project.yaml, the kit, npm ci; a repo that has
+//   init <dir>    an empty folder: the skeleton of --profile (next-nest), project.yaml, the kit, npm ci; with
+//                 --package-manager pnpm, the root of a pnpm project (base-pnpm) and no app yet; a repo that has
 //                 code: project.yaml from its workspaces and the kit, and what it still lacks. Options: --name --title
 //                 --space --repo <owner/name> --approvers <a,b> --dev-app --dev-app-id --review-app --review-app-id
 //                 --kit-peers <owner/name,...>; the App values default to AO_DEV_APP… of your environment
@@ -23,6 +24,7 @@ import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 import { runNpm } from '../lib/quality/npm.mjs';
+import { managerOf, pnpmVersion, runManager } from '../lib/quality/package-manager.mjs';
 import { homedir } from 'node:os';
 import { appCredentials, installationToken, userVariable } from '../lib/quality/github-app.mjs';
 import { doctor, formatDoctor } from '../lib/scaffold/doctor.mjs';
@@ -51,13 +53,14 @@ function projectConfig(dir) {
   for (const { rule, path, message } of errors) console.log(`${rule} ${path}: ${message}`);
   return errors.length > 0 ? null : config;
 }
-// npm, npx and node with no shell; what installs shows its progress.
+// npm, npx, pnpm and node with no shell; what installs shows its progress.
 function run(argv, cwd) {
   const [tool, ...words] = argv;
   if (tool === 'node') return spawnSync(process.execPath, words, { cwd, encoding: 'utf8' });
   if (tool === 'npm') return runNpm(words, { cwd, stdio: 'inherit' });
   if (tool === 'npx') return runNpm(['exec', '--', ...words], { cwd, stdio: 'inherit' });
-  throw new Error(`ao-kit runs npm, npx or node only, not ${tool}`);
+  if (tool === 'pnpm') return runManager('pnpm', words, { cwd, stdio: 'inherit' });
+  throw new Error(`ao-kit runs npm, npx, pnpm or node only, not ${tool}`);
 }
 const print = ({ ok, notes }) => {
   for (const note of notes) console.log(`- ${note}`);
@@ -96,6 +99,12 @@ function render(dir) {
 // The facts of ao-kit doctor, read on this machine, from GitHub with your gh login, from the two Apps, and from Jira
 // with jira:check. Reading only; a secret is passed on as a value to judge, never printed.
 async function doctorFacts(dir, config) {
+  // The pnpm a command runs in the project folder: corepack gives the version of packageManager there.
+  const pnpmOnMachine = () => {
+    if (managerOf(config) !== 'pnpm') return null;
+    const done = runManager('pnpm', ['--version'], { cwd: dir, encoding: 'utf8' });
+    return done.status === 0 ? done.stdout.trim() : null;
+  };
   const version = (tool, args) => {
     // claude may be a .cmd on Windows, which starts only through a shell: whether it is on the PATH is enough.
     const done = tool === 'git' ? git(args, dir) : tool === 'claude' ? spawnSync(process.platform === 'win32' ? 'where' : 'which', ['claude'], { encoding: 'utf8' }) : spawnSync(tool, args, { encoding: 'utf8' });
@@ -142,7 +151,8 @@ async function doctorFacts(dir, config) {
     config,
     projectProblems: problems.map(({ rule, path, message }) => `${rule} ${path}: ${message}`),
     nodeVersion: process.versions.node,
-    versions: { gh: version('gh', ['--version']), claude: version('claude', ['--version']), git: version('git', ['--version']) },
+    versions: { gh: version('gh', ['--version']), claude: version('claude', ['--version']), git: version('git', ['--version']), pnpm: pnpmOnMachine() },
+    pnpmWanted: pnpmVersion(read('package.json') ? JSON.parse(read('package.json')) : null),
     env,
     files,
     kitDrift: kitDrift({ kitDir, projectDir: dir }),
@@ -164,7 +174,7 @@ async function doctorFacts(dir, config) {
 }
 
 const OPTIONS = {
-  profile: { type: 'string' }, name: { type: 'string' }, title: { type: 'string' }, space: { type: 'string' }, repo: { type: 'string' }, approvers: { type: 'string' },
+  profile: { type: 'string' }, 'package-manager': { type: 'string' }, name: { type: 'string' }, title: { type: 'string' }, space: { type: 'string' }, repo: { type: 'string' }, approvers: { type: 'string' },
   'dev-app-key-file': { type: 'string' }, template: { type: 'string' }, 'space-name': { type: 'string' }, 'dev-app': { type: 'string' }, 'dev-app-id': { type: 'string' }, 'review-app': { type: 'string' }, 'review-app-id': { type: 'string' }, 'kit-peers': { type: 'string' }, key: { type: 'string' },
 };
 let parsed;
@@ -179,7 +189,7 @@ const [first, ...rest] = parsed.positionals;
 const command = first === 'setup' ? `setup ${rest.shift() ?? ''}` : first;
 const [dirArg] = rest;
 const v = parsed.values;
-const options = { profile: v.profile, name: v.name, title: v.title, space: v.space, repo: v.repo, approvers: v.approvers, devApp: v['dev-app'], devAppId: v['dev-app-id'], reviewApp: v['review-app'], reviewAppId: v['review-app-id'], kitPeers: v['kit-peers'], key: v.key };
+const options = { profile: v.profile, packageManager: v['package-manager'], name: v.name, title: v.title, space: v.space, repo: v.repo, approvers: v.approvers, devApp: v['dev-app'], devAppId: v['dev-app-id'], reviewApp: v['review-app'], reviewAppId: v['review-app-id'], kitPeers: v['kit-peers'], key: v.key };
 const COMMANDS = {
   check,
   render,

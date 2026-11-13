@@ -189,3 +189,55 @@ test('without the name, sync writes nothing and makes no branch: it says what it
   assert.equal(fx.calls.git.some((c) => c.startsWith('switch')), false);
   assert.ok(existsSync(join(dir, '.ai-orchestrator/preview.yaml')));
 });
+
+// project-scaffold part 2, spec 2.2: a pnpm project starts from its root alone, and ao-kit add brings each app.
+test('init --package-manager pnpm in an empty folder: the root of base-pnpm, no app, the kit, then pnpm install', (t) => {
+  const dir = temp(t);
+  mkdirSync(join(dir, '.git'));
+  const fx = effects({ answers: noOrigin });
+  const options = { ...OPTIONS, profile: undefined, packageManager: 'pnpm' };
+  const { notes, ok } = initProject({ kitDir: ROOT, projectDir: dir, options, ...fx });
+  assert.equal(ok, true, notes.join('\n'));
+  for (const path of ['package.json', 'pnpm-workspace.yaml', 'playwright.config.ts', 'e2e/README.md', '.ai-orchestrator/scripts/ao-step.mjs']) assert.ok(existsSync(join(dir, path)), path);
+  assert.equal(existsSync(join(dir, 'apps')), false, 'no app before ao-kit add');
+  assert.equal(existsSync(join(dir, '.ai-orchestrator/deploy.yaml')), false, 'deploy.yaml comes with the first app');
+  const { config, errors } = readProjectConfig(readFileSync(join(dir, '.ai-orchestrator/project.yaml'), 'utf8'));
+  assert.deepEqual(errors, []);
+  assert.equal(config.package_manager, 'pnpm');
+  assert.deepEqual(config.apps, {});
+  const pkg = JSON.parse(readFileSync(join(dir, 'package.json'), 'utf8'));
+  assert.equal(pkg.name, 'shop');
+  assert.equal(pkg.packageManager, 'pnpm@11.8.0');
+  assert.equal(pkg.scripts.lint, 'pnpm -r run lint');
+  assert.equal(pkg.scripts.prepare, 'node .ai-orchestrator/scripts/install-hooks.mjs');
+  assert.match(readFileSync(join(dir, '.gitignore'), 'utf8'), /^!\.env\.example$/m);
+  assert.deepEqual(fx.calls.run.map(([argv]) => argv), ['npm ci --prefix .ai-orchestrator --no-audit --no-fund', 'node .ai-orchestrator/scripts/render-agents.mjs --project .', 'pnpm install', 'pnpm exec playwright install chromium']);
+  assert.match(notes.join('\n'), /Next: add each app with ao-kit add <dir> <app> --stack nextjs\|react/);
+});
+
+test('init refuses a package manager the profile does not use, and one the kit does not know', (t) => {
+  const fx = effects({ answers: noOrigin });
+  const npmProfile = initProject({ kitDir: ROOT, projectDir: temp(t), options: { ...OPTIONS, packageManager: 'pnpm' }, ...fx });
+  assert.equal(npmProfile.ok, false);
+  assert.match(npmProfile.notes[0], /The profile next-nest uses npm, not pnpm: leave out --profile, so ao-kit init copies base-pnpm/);
+  const yarn = initProject({ kitDir: ROOT, projectDir: temp(t), options: { ...OPTIONS, packageManager: 'yarn' }, ...fx });
+  assert.deepEqual(yarn, { ok: false, notes: ['--package-manager is npm or pnpm, not yarn'] });
+  assert.deepEqual(fx.calls.run, []);
+});
+
+test('init in a pnpm repo that has code: the apps of pnpm-workspace.yaml, a React app built with Vite, and pnpm dev commands', (t) => {
+  const dir = temp(t);
+  write(dir, 'package.json', JSON.stringify({ name: 'shop', packageManager: 'pnpm@11.8.0', scripts: { lint: 'pnpm -r run lint', typecheck: 'x', 'test:coverage': 'y', build: 'z' } }));
+  write(dir, 'pnpm-workspace.yaml', 'packages:\n  - apps/*\n');
+  write(dir, 'pnpm-lock.yaml', "lockfileVersion: '9.0'\n");
+  write(dir, 'apps/user/package.json', JSON.stringify({ name: 'user', scripts: { dev: 'next dev' }, dependencies: { next: '16.2.9', react: '19.2.7' } }));
+  write(dir, 'apps/admin/package.json', JSON.stringify({ name: 'admin', scripts: { dev: 'vite' }, dependencies: { react: '19.2.7' }, devDependencies: { vite: '8.0.0' } }));
+  const fx = effects({ answers: { 'branch --list': { status: 0, stdout: '* develop\n  main\n', stderr: '' } } });
+  const { notes } = initProject({ kitDir: ROOT, projectDir: dir, options: { ...OPTIONS, profile: undefined }, ...fx });
+  const config = parse(readFileSync(join(dir, '.ai-orchestrator/project.yaml'), 'utf8'));
+  assert.equal(config.package_manager, 'pnpm');
+  assert.deepEqual(config.apps.user, { repo: 'shop', path: 'apps/user', profile: 'nextjs', dev: 'pnpm --filter ./apps/user run dev', port: { env: 'PORT', default: 3000 }, health: '/' });
+  assert.deepEqual(config.apps.admin, { repo: 'shop', path: 'apps/admin', profile: 'react', dev: 'pnpm --filter ./apps/admin run dev', port: { env: 'PORT', default: 5173 }, health: '/' });
+  assert.match(notes.join('\n'), /guessed: check the port and health of admin, user/);
+  assert.deepEqual(fx.calls.run.map(([argv]) => argv).filter((argv) => /^(npm|npx|pnpm)\b/.test(argv)), ['npm ci --prefix .ai-orchestrator --no-audit --no-fund']);
+});

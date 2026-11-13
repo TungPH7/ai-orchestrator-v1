@@ -1,11 +1,12 @@
 // The pre-commit hook (quality-gates spec section 2.3): secretlint on the staged text of every added or changed file,
-// then the project's own precommit npm script, where project-scaffold puts the lint of staged files for its stack.
+// then the project's own precommit script, run with npm or pnpm, where project-scaffold puts the lint of staged files
+// for its stack.
 // Usage, from kit/.githooks/pre-commit: node .ai-orchestrator/scripts/pre-commit.mjs
 import { spawnSync } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { createEngine } from '@secretlint/node';
-import { runNpm } from '../lib/quality/npm.mjs';
+import { managerFromLockfile, runManager } from '../lib/quality/package-manager.mjs';
 import { scanStaged } from '../lib/quality/pre-commit.mjs';
 
 const git = (...args) => spawnSync('git', args, { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
@@ -29,7 +30,9 @@ if (!scan.ok) {
 const packageFile = join(root, 'package.json');
 const scripts = existsSync(packageFile) ? (JSON.parse(readFileSync(packageFile, 'utf8')).scripts ?? {}) : {};
 if (scripts.precommit) {
-  const run = runNpm(['run', 'precommit'], { cwd: root, stdio: 'inherit' });
+  // npm or pnpm, by the lockfile at the root (project-scaffold part 2, spec 2.1).
+  const manager = managerFromLockfile((path) => existsSync(join(root, path))) ?? 'npm';
+  const run = runManager(manager, ['run', 'precommit'], { cwd: root, stdio: 'inherit' });
   if (run.status !== 0) {
     console.error(`pre-commit: the project's precommit script failed (exit ${run.status})`);
     process.exit(1);
