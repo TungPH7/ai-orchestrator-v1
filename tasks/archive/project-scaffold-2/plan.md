@@ -1,6 +1,6 @@
 # Plan triển khai: project-scaffold, phần 2 (B2)
 
-> **Spec:** [SPEC-project-scaffold-2.md](../SPEC-project-scaffold-2.md), đã duyệt 2026-11-13 (Phiên 27 · Lượt 201). **Trạng thái:** viết ở Lượt 201. Quyền tự làm theo đề xuất (Lượt 181) áp dụng cho B2, nên plan không chờ duyệt riêng; bạn muốn đổi gì thì nói lúc nào cũng được. **Danh sách task:** [todo.md](todo.md).
+> **Spec:** [SPEC-project-scaffold-2.md](../../../SPEC-project-scaffold-2.md), đã duyệt 2026-11-13 (Phiên 27 · Lượt 201). **Trạng thái:** viết ở Lượt 201; hoàn thành 2026-11-13 (Phiên 28 · Lượt 2), kết quả ở [verification.md](verification.md). Quyền tự làm theo đề xuất (Lượt 181) áp dụng cho B2, nên plan không chờ duyệt riêng; bạn muốn đổi gì thì nói lúc nào cũng được. **Danh sách task:** [todo.md](todo.md).
 
 ## Tổng quan
 

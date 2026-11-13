@@ -1,6 +1,6 @@
 # Kiểm thật: project-scaffold, phần 2 (B2)
 
-> **Spec:** [SPEC-project-scaffold-2.md](../SPEC-project-scaffold-2.md). **Plan:** [plan.md](plan.md). **Task:** [todo.md](todo.md).
+> **Spec:** [SPEC-project-scaffold-2.md](../../../SPEC-project-scaffold-2.md). **Plan:** [plan.md](plan.md). **Task:** [todo.md](todo.md). Module hoàn thành 2026-11-13 (Phiên 28 · Lượt 2).
 
 ## T1 (2026-11-13)
 
@@ -267,3 +267,43 @@ Kết quả: đĩa dùng giảm từ 13 GB xuống 7,9 GB, còn trống 30 GB; 1
   - `coverage.exclude` cho `apps/<app>/e2e/` và `apps/<app>/scripts/`;
   - luật "file đổi phải có trong lcov" đụng coverage exclude của template;
   - script của kit chạy ngoài thư mục dự án không có `env` của `.claude/settings.json`.
+
+## T26: đóng module, 2026-11-13 (Phiên 28 · Lượt 2)
+
+Plan, todo và verification dời vào `tasks/archive/project-scaffold-2/`. `SPEC.md`, `SPEC-project-scaffold-2.md` và `concerns.md` (B2 xong) cập nhật theo.
+
+### Tiêu chí hoàn thành (spec mục 7)
+
+| # | Tiêu chí | Kết quả |
+|---|---|---|
+| 1 | Năm lệnh kiểm của kit xanh, cùng `profiles:check` | Đạt: 1.332 test ở `1dcae6d`. `profiles:check` dựng `base-pnpm` với hai stack, xanh trong CI của kit từ PR #263 |
+| 2 | Repo `shop` thật, dựng đúng theo phần mới của hướng dẫn, từ hai template của bạn, tới khi `doctor` đạt mọi dòng và CI xanh trên `develop` | Đạt ở T22: `doctor` đạt mọi dòng, CI xanh đủ bốn job trên `develop` ở `91b699c`. Chỗ hướng dẫn sai hay thiếu đã sửa ở T25 |
+| 3 | Các sửa code app mà `add` báo đi qua một Task và một PR, và `/ao-preview` chạy được hai app của PR đó trên máy bạn bằng pnpm | **Đạt một phần** ở T23. Task `SHOP-1` và PR #5 đạt. `/ao-preview SHOP-1` dừng có chủ ý, vì PR #5 sửa `.ai-orchestrator/`; hai app của PR được chạy tay bằng `pnpm dev`. Phần `/ao-preview` cho pnpm có test, nhưng chưa chạy thật: lần đầu sẽ là PR app đầu tiên của B3 |
+| 4 | Development chạy hai app công khai, mỗi app một host, có basic auth, smoke test đạt; Caddyfile của `ao-sample` và `ao-pilot` không đổi, hai dự án vẫn chạy | Đạt ở T24: `91b699c` trên `shop-dev` và `shop-admin-dev`, Caddyfile chỉ thêm 36 dòng cho sáu site của `shop` |
+| 5 | Hướng dẫn có phần mới, với số liệu và đầu ra thật | Đạt ở T25: phần 5 của `getting-started.md` và mục 13 của `vps-setup.md` (PR #267) |
+| 6 | Kit merge vào `main` qua PR, CI xanh | Đạt: kit PR #261–#267, và PR đóng module này |
+
+### Chi phí agent của module
+
+0 USD, đúng như spec: B2 không gọi agent trả tiền. Task `SHOP-1` do phiên chính làm.
+
+### Việc còn lại, ngoài module
+
+- **Kiểm thật còn chờ:**
+  - `/ao-preview` cho dự án pnpm, trên PR app đầu tiên của B3 (tiêu chí 3);
+  - ảnh chụp màn hình và Task design system, ở Epic đầu của B4 (câu 2, mục 9 của spec);
+  - worktree của `qa` cài bằng pnpm, ở `/ao-qa` đầu tiên trên `shop` (ghi chú T4).
+- **Việc kit để sau,** gom vào B3 khi B3 sửa tới chỗ đó:
+  - `doctor` kiểm App `ao-deploy` đã được cài trên repo;
+  - `setup jira` bắt lỗi mạng như `ENOTFOUND`, thay vì để lệnh hỏng giữa chừng;
+  - stack `nextjs` ghi `health: /`, mà với next-intl `localePrefix: 'always'` thì `/` trả 307;
+  - `coverage.exclude` chỉ khớp `e2e/**` và `scripts/**` ở gốc repo, chưa khớp `apps/<app>/e2e/` và `apps/<app>/scripts/`;
+  - luật "file đổi phải có trong lcov" đụng với coverage exclude của template (`src/app/**`);
+  - script của kit chạy ngoài thư mục dự án, như `ao-pr.mjs` hay bước kiểm của `/ao-rollback`, không có `env` của `.claude/settings.json`.
+- **`shop` trước bản release đầu:**
+  - file env của Staging và Production trên VPS;
+  - `admin` trên Production chưa có basic auth, chỉ dựa vào đăng nhập của app (rủi ro ở mục 8 của spec). Trước lần release đầu, `admin` phải có đăng nhập thật, hoặc deployer thêm basic auth cho app đó.
+- **`shop` trên GitHub:**
+  - giới hạn tương tác hết hạn 2027-05-13. Chạy lại `ao-kit setup github` trước ngày đó;
+  - PR #6 của Dependabot (`vitest` 4.1.9 → 4.1.11, lỗ hổng moderate) còn mở. Nó không có mã Jira, nên đi qua một Task khi bạn muốn nâng.
+- **Bản kit trên VPS** ở `c49b051`, đã có deployer cho nhiều app công khai. PR #266 và #267 không đổi deployer, nên chưa cần chép bản mới.
