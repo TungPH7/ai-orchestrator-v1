@@ -45,7 +45,7 @@
     - `readProfile` bỏ qua thư mục không có `profile.yaml`.
   - **Kiểm:** test của `init` trên thư mục tạm thật với cả hai trường hợp; test của `doctor`.
   - **File:** `profiles/base-pnpm/`, `lib/scaffold/init.mjs`, `lib/scaffold/profile.mjs`, `lib/scaffold/doctor.mjs`, `scripts/ao-kit.mjs`, test.
-- [ ] **T6: tài liệu chặng 1; PR.** `docs/quality-gates.md` (CI cho pnpm), `README.md` (cây thư mục), comment đầu file; PR chặng 1.
+- [x] **T6: tài liệu chặng 1; PR.** `docs/quality-gates.md` (CI cho pnpm), `README.md` (cây thư mục), comment đầu file; PR chặng 1.
 
 ### Checkpoint 1: sau T6
 - [ ] PR chặng 1 merge, CI xanh. Năm lệnh kiểm xanh; test của dự án npm không đổi.
