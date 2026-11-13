@@ -22363,3 +22363,39 @@ Mình đã viết spec của B3: **`SPEC-project-scaffold-3.md`**, ở nhánh `t
 4. **JDK 21:** máy bạn đang có JDK 17. Mình đề xuất tự cài Temurin 21 bằng `winget`; bạn chỉ bấm **Yes** khi Windows hỏi quyền. `JAVA_HOME` giữ JDK 17 cho các dự án khác.
 
 Bạn trả lời **"duyệt"** nếu đồng ý cả bốn đề xuất, hoặc nói câu nào cần đổi. Sau khi duyệt, mình viết plan và danh sách task, rồi mở PR tài liệu gồm spec và plan, như ở B2.
+
+# Phiên 28 · Lượt 5 — 2026-11-14 khoảng 00:50
+
+**Bạn:**
+
+```markdown
+4. JDK 21 tôi có tại C:\opt\jdk-21 rồi mà ??
+```
+
+**Claude:**
+
+Bạn nói đúng, để mình kiểm lại ngay.
+
+Đúng là máy bạn có JDK 21 (21.0.10) ở `C:\opt\jdk-21`. Mình đã bỏ sót vì chỉ tìm theo `JAVA_HOME` và `Program Files`. Mình sửa spec: bỏ câu 4, và cho `mvnw.mjs` tìm JDK ở cạnh `JAVA_HOME`.
+
+Giờ mình sửa memory cho đúng: máy bạn có JDK 17 và JDK 21 ở `C:\opt`, không chỉ có Node.
+
+Bạn nói đúng, mình xin lỗi. Máy bạn có JDK 21 (Oracle 21.0.10) ở `C:\opt\jdk-21`, ngay cạnh JDK 17 mà `JAVA_HOME` đang trỏ tới. Lúc nãy mình chỉ xem `JAVA_HOME` và `C:\Program Files`, nên bỏ sót.
+
+**Mình đã sửa spec:**
+- Bỏ câu 4, vì không phải cài gì.
+- `mvnw.mjs` tìm JDK đúng bản của `pom.xml` theo thứ tự:
+  1. `JAVA_HOME`, nếu khớp bản;
+  2. biến `JAVA_HOME_21`, nếu bạn đặt;
+  3. các JDK nằm cạnh `JAVA_HOME`: trên máy bạn là `C:\opt\jdk-21`;
+  4. các thư mục cài thường gặp.
+
+  Script chỉ đặt `JAVA_HOME` cho tiến trình nó chạy, nên `JAVA_HOME` của bạn vẫn là JDK 17.
+- Memory đã ghi rằng máy bạn có JDK 17, JDK 21 và Maven 3.9.0 trong `C:\opt`, để lần sau mình xem ở đó trước.
+
+Còn ba câu ở mục 9 chờ bạn:
+1. B3 chỉ deploy Development; Staging và Production lên ở B4.
+2. B3 chỉ giữ backup trên VPS; chỗ để bản sao chọn trước B4.
+3. B3 tốn 0 USD agent; `be-dev` làm việc với Java lần đầu ở B4.
+
+Bạn trả lời **"duyệt"** nếu đồng ý cả ba, hoặc nói câu nào cần đổi.
