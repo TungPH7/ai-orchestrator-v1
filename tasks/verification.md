@@ -133,7 +133,7 @@ Phần này được kiểm thật lần đầu ở Epic đầu của B4 (câu h
 
 Kết quả: đĩa dùng giảm từ 13 GB xuống 7,9 GB, còn trống 30 GB; 10 container vẫn chạy. Đăng nhập root đã đóng lại.
 
-**T22, dựng `shop` (Lượt 207, đang làm).** Bạn chọn nhánh `write-cv` cho cả hai template.
+**T22, dựng `shop` (Lượt 207–209, xong).** Bạn chọn nhánh `write-cv` cho cả hai template.
 1. Tạo repo public `TungPH7/shop`. Thư mục dự án là `AI-for-coding/e-commerce/shop/`.
 2. `init --package-manager pnpm`: 25 giây, chép 7 file của `base-pnpm`, thêm `origin`, chạy `pnpm install` và tải Chromium.
 3. `add user --stack nextjs --from <template Next.js> --ref write-cv --exclude study-guide-impl/ --exclude frontend-technical/ --exclude docs/readme/ --public`: 35 giây, 237 file.
@@ -152,3 +152,118 @@ Kết quả: đĩa dùng giảm từ 13 GB xuống 7,9 GB, còn trống 30 GB; 1
 8. **Commit đầu** `e4a708a` (799 file), 143 giây qua hook. lint-staged ở gốc tìm được config của từng app. Push `develop` và `main`.
 9. **Lỗi mới, đã sửa trong kit (`5bc8120`):** typecheck của `apps/user` đỏ, vì `@axe-core/playwright` 4.12.1 kéo `playwright-core` 1.64.1 khi lockfile được tạo lại. Kit giờ ghim `overrides.playwright-core` trong `pnpm-workspace.yaml` theo bản Playwright của repo. Cách sửa này đã thử trên `shop` và typecheck xanh; thay đổi đó (chưa commit) sẽ vào PR của T23.
 10. **Như ở T16:** GitHub chưa ghi nhận workflow nào sau lần push đầu, dù API báo Actions đang bật. Phải chờ bạn bấm bật trên tab Actions.
+11. **Lượt 208, phần của bạn đã xong:** sắp cột board `SHOP`, cài hai App, bật Actions, tạo key thứ hai của `ao-dev`.
+    - `setup jira` chạy lại: `jira:check` đạt, nghĩa là cột, status và giới hạn WIP đều khớp.
+    - GitHub nhận ba workflow (`CI`, `jira-sync`, `merge-gate`).
+    - `setup github --dev-app-key-file`: 12 mục `Set …`, gồm ruleset `ao-protected` (id 27192121), giới hạn tương tác tới 2027-05-13, và luật duyệt workflow của PR từ fork.
+    - Mình xóa hai file key thứ hai: của `shop`, và một file còn sót từ `ao-brown` (2026-11-12). Key mà agent dùng là file khác, giữ nguyên. Mình cũng gỡ key SSH của VPS khỏi agent.
+12. **`doctor` còn 4 dòng chưa đạt:**
+    - một file kit lệch: `lib/scaffold/template.mjs`, sửa sau `init`;
+    - CI chưa chạy trên `develop`;
+    - Claude Code chưa tin cậy thư mục;
+    - hai server MCP chưa bật.
+13. **CI đầu trên `develop`** (run 43406626761, chạy tay):
+    - `secrets` và `sast` xanh;
+    - `build-test`: cài pnpm và lint chạy được trên CI thật; typecheck đỏ, đúng lỗi hai bản `playwright-core`;
+    - `policy`: 6 critical và 22 high (đếm theo advisory), ở 8 gói, đến từ cả hai template. `next` 16.2.9 có 5 critical. Ghi chú trước đây "từ template React" là sai.
+14. **Dependabot** mở 4 PR ngay khi `setup github` bật cập nhật bảo mật: #1 `vite`, #2 `zod`, #3 `dompurify`, #4 `next`.
+15. **Lượt 209, `doctor` đạt mọi dòng** sau khi PR #5 merge, và CI trên `develop` ở `91b699c` xanh đủ bốn job. Dòng VPS chỉ là câu hỏi, dành cho T24.
+    - Bạn nhờ mình làm hai bước cuối. Claude Code không có lệnh CLI để tin cậy thư mục hay duyệt server MCP, nên mình ghi đúng hai giá trị mà hộp thoại vẫn ghi:
+      - `shop/.claude/settings.local.json` có `enabledMcpjsonServers: [atlassian, chrome-devtools]`, giống file mà hộp thoại đã ghi cho `ao-brown`;
+      - mục của `shop` trong `~/.claude.json` có `hasTrustDialogAccepted: true`. Mình sao lưu file trước, ghi ra tên tạm rồi đổi tên đè lên file cũ.
+    - `claude mcp list` trong `shop` báo cả hai server `✔ Connected`.
+    - Ghi chú cho T25: hướng dẫn vẫn giữ hộp thoại là cách chính. Cách ghi file chỉ là đường tắt khi chính bạn nhờ.
+
+**T23, sửa code app (Lượt 208–209, xong).** Bạn cho làm tiếp theo đề xuất: "những việc bạn không có quyền thì nói tôi làm, còn lại cứ làm theo đề xuất nhé".
+1. **Task `SHOP-1`** được tạo bằng token CI, theo template Task, nhãn `ao-fe-dev`, như `SMP-27`. Cách này thay cho `/ao-intake`, vì nội dung Task đã rõ.
+2. `ao-kit sync --key SHOP-1` (21 giây) tạo commit `e7148a2`, 1 file. Nhánh được đổi tên thành `feature/SHOP-1-app-fixes`, vì Task này còn sửa code app.
+3. **Gói:** `next` và `eslint-config-next` 16.4.6 (kéo theo `postcss` 8.5.23, `sharp` 0.35.5), `zod` 4.6.7, `react-router` 7.18.5, `axios` 1.21.1, `vite` 8.3.8, `dompurify` 3.4.17. Kết quả `pnpm audit`: 0 high, 0 critical, 4 moderate.
+4. **`user`:**
+   - `output: 'standalone'`;
+   - script `build` không cần secret: `server.ts` bỏ qua bước kiểm khi `npm_lifecycle_event` là `build`. Server kiểm `API_URL` và `AUTH_SECRET` lúc chạy;
+   - bỏ `NEXT_PUBLIC_API_URL`, vì server gọi API qua `API_URL`;
+   - `NEXT_PUBLIC_SITE_URL` mặc định là origin của Production, cho cả ba môi trường;
+   - `GET /api/products/count` gọi `connection()`. Trước đó build gọi API thật lúc prerender (template dựa vào API `ecom-nest` của bạn khi build);
+   - coverage giữ `src/app/api/**`.
+   - **Lần thử đầu** dùng `phase` của `next.config.ts` với `import()` động. Build qua, nhưng `next dev` hỏng (`Cannot find module './src/config/env/server'`). Lý do: Next chỉ bật require hook cho file `.ts` trong lúc chạy thân file config, còn hàm theo `phase` được gọi sau đó. Commit `1344a04` sửa lại.
+5. **`admin`:**
+   - `VITE_API_URL` không bắt buộc, mặc định `/api`;
+   - dev server lấy cổng từ `PORT` (`strictPort`), và chuyển `/api` sang `API_URL` hay `http://localhost:3001`.
+6. **`deploy.yaml`:**
+   - `user` nhận `API_URL` và `AUTH_SECRET`;
+   - `health` và đường smoke là `/en`, vì next-intl đặt `localePrefix: 'always'` nên `/` trả 307, và smoke test không theo chuyển hướng. `project.yaml` sửa theo.
+7. **Image**, chạy với `--cap-drop ALL`:
+   - `user`: 278 MB, 87 MiB RAM; `/en` 200, `robots.txt` ghi host Production;
+   - `admin`: 104 MB, 15 MiB RAM; SPA fallback 200, `/api` 502 vì chưa có API.
+8. **PR #5** (draft) được mở bằng `ao-pr.mjs`, qua App `ao-dev`. Lần CI đầu xanh đủ năm job.
+9. **`/ao-preview SHOP-1` dừng có chủ ý**, vì PR sửa `.ai-orchestrator/`. Thay vào đó, mình tự chạy dev server của hai app trên nhánh PR. Bài học cho hướng dẫn: chép kit trong một PR riêng.
+10. **Lượt 209, bạn nhờ mình làm các bước bấm:**
+    - PR #5 được Ready, Approve và Squash merge (`91b699c`) bằng login `gh` của bạn. Trước đó `merge-gate` báo "Needs you #5", vì PR sửa đường dẫn được bảo vệ, và thiếu báo cáo `reviewer` và `security`. Deployer chỉ audit từ commit mốc đặt lúc đưa dự án lên VPS (T24), nên lần merge này không chặn deploy;
+    - `SHOP-1` có comment trỏ tới PR #5, rồi chuyển Cancel với Resolution Done, qua REST bằng token admin của bạn, như `SMP-23`;
+    - Dependabot tự đóng PR #1–#4, rồi mở PR #6 (`vitest` 4.1.9 → 4.1.11, lỗ hổng moderate). Hai lượt cập nhật của nó hỏng (`@vitest/mocker`, `minimatch`).
+11. **Việc kit để sau:**
+    - `coverage.exclude` có `e2e/**` và `scripts/**`, chỉ khớp ở gốc repo. Trong dự án pnpm, `apps/<app>/e2e/` và `apps/<app>/scripts/` vẫn bị tính là nguồn;
+    - luật "file đổi phải có trong lcov" đụng với coverage exclude của template (`src/app/**`);
+    - stack `nextjs` của `add` ghi `health: /`, mà với next-intl `localePrefix: 'always'` thì `/` trả 307;
+    - `ao-pr.mjs` chạy từ phiên ngoài thư mục dự án cần `AO_DEV_APP*` lấy từ `.claude/settings.json`.
+    - Ngoài kit: sau `pnpm add` và đổi nhánh, `node_modules` trên máy mất link `zod` được treo lên. `pnpm install` báo "Already up to date"; phải cài lại từ đầu.
+
+**T24, `shop` lên Development (Lượt 210–212, xong; bạn mở VPS).**
+1. **Trước khi sửa:** VPS như cuối Lượt 207: 10 container, Caddyfile `7966209d…`, còn 2.910 MB RAM trên 3.915 MB, đĩa còn trống 30 GB.
+2. **Secret Development:** `/etc/ao/secrets/shop/development.env`, `root:aodeploy 640`, có hai dòng:
+   - `API_URL=http://api:3001`. Tên `api` sẽ có ở B3, khi `shop` có API;
+   - `AUTH_SECRET` dài 64 ký tự, sinh bằng `openssl rand -base64 48` ngay trên VPS. Giá trị đi qua `printf` có sẵn trong shell, nên không nằm trong tham số của tiến trình nào và không bị in ra.
+   - Staging và Production chưa có file env. Deployer chỉ đọc file này khi deploy môi trường đó, và cả hai còn chờ bản release đầu.
+3. **`deployer.yaml`:** timer được dừng, rồi chờ tới khi service không còn `activating`. Bản sao lưu nằm ở `/root/deployer.yaml.2026-11-13.bak`, Caddyfile ở `/root/Caddyfile.2026-11-13.before`. Mục `shop` có host theo từng app, đúng đoạn `doctor` in ra.
+4. **`baseline shop` dừng:** `App 5624698 is not installed on TungPH7/shop`. Ở Lượt 208, bạn mới cài `ao-dev` và `ao-review`; `ao-deploy` thì chưa.
+   - `deployer.yaml` đã được trả về bản sao lưu, và timer đã bật lại. `tick --dry-run` không in gì, Caddyfile vẫn `7966209d…`.
+   - **Lỗ hổng của kit:** bước 4 phần 3 của `getting-started.md` và bước 5 phần 5 chỉ cài `ao-dev` và `ao-review`. Bước 8 phần 5 (lên Development) cũng không nhắc tới `ao-deploy`, và `doctor` không kiểm App này. T25 phải thêm bước cài `ao-deploy` vào bước 8. `doctor` nên có một dòng kiểm App này, đọc qua token của `ao-deploy` hoặc hỏi bạn.
+5. **Lần deploy đầu:** sau `baseline --confirm`, deployer coi head hiện tại của `develop` là đã xem, nên không tự deploy. Cách đúng là `/ao-rollback development <sha>` bằng login `gh` của bạn: lệnh tạo yêu cầu deploy, và deployer ghi rằng bạn đã duyệt lịch sử tới commit đó (`approveHistory`).
+6. **Lượt 211, bạn cài `ao-deploy` trên `shop`:**
+   - `baseline shop` in `develop` `91b699c` và `main` `e4a708a`, khớp với GitHub. Sau đó `--confirm`.
+   - `tick --dry-run` chỉ báo `caddy: would write … and reload Caddy`.
+   - Bật lại timer. Lượt đầu ghi Caddyfile: không dòng nào bị xóa, thêm 36 dòng cho sáu site của `shop`, mỗi site trả 503.
+7. **Deploy:**
+   - Bước kiểm của `ao-step.mjs rollback development 91b699c…` báo GO. Chạy từ phiên ngoài thư mục `shop` thì phải nạp `env` của `.claude/settings.json`, như `ao-pr.mjs` ở T23.
+   - `--go` tạo yêu cầu `#7769885492`.
+   - Deployer nhận yêu cầu sau khoảng 15 giây (`you approved the history of develop up to 91b699c`). Nó build hai image trên VPS rồi deploy xong sau 8 phút 50 giây (`deployed 91b699c`). GitHub ghi deployment là `success`.
+8. **Kiểm từ máy bạn:**
+   - `shop-dev`: `/` trả 307 sang `/en`. `/en` trả 200 (26 KB, title "Server-first enterprise foundation"), `/en/products` trả 200, `robots.txt` trả 200.
+   - `shop-admin-dev`: `/` và `/login` trả 200, đó là SPA fallback. `/api/health` trả 502 vì chưa có API (B3).
+   - Không có basic auth thì Development và Staging trả 401. Staging và Production của `shop` trả 503.
+   - `sample.ao…` vẫn trả 307, `pilot.ao…` 200, `sample-dev.ao…` 401.
+   - Lần gọi `/` đầu tiên trả `000` (không kết nối được), ngay sau lúc Caddy reload. Gọi lại thì bình thường.
+9. **Sau deploy:**
+   - Caddyfile vẫn không có dòng nào bị xóa, thêm 36 dòng; các site cũ giữ nguyên.
+   - RAM còn sẵn 2.794 MB, trước đó 2.910. Hai container của `shop` dùng 55 MiB (`user`) và 11 MiB (`admin`). Swap dùng 6 MB.
+   - Image trên VPS: `user` 400 MB, `admin` 144 MB. Đĩa dùng 11 GB, còn trống 28 GB.
+10. **Lượt 212, đóng lại:**
+    - Bạn đổi mật khẩu basic auth bằng `ao-secret.sh basic-auth`. Deployer ghi lại Caddyfile và reload Caddy sau 13 giây.
+    - Kiểm bằng mã trạng thái, không in giá trị: mật khẩu cũ trả 401, mật khẩu mới vào được trên Development và Staging của cả ba dự án.
+    - Bản sao Caddyfile ở `/root` đã bị xóa bằng `shred`. Bản sao `deployer.yaml` được giữ lại để quay lại khi cần; file này không có thông tin đăng nhập.
+    - Đăng nhập root đã đóng (`PermitRootLogin no`), và SSH bằng root bị từ chối. Key VPS đã được gỡ khỏi ssh-agent.
+    - 12 container đang chạy: 10 container cũ và 2 của `shop`.
+
+**T25, bản cuối của hướng dẫn (Phiên 28 · Lượt 1).**
+- **`docs/getting-started.md`, phần 5,** viết lại theo đầu ra thật của T22–T24:
+  - bảng thời gian đo được: `init` 25 giây, hai lệnh `add` 35 và 31 giây, commit đầu 143 giây, deploy đầu 8 phút 50 giây;
+  - lệnh `add` thật, có `--ref write-cv`, và những gì mỗi lệnh báo;
+  - bước 4 thêm `health: /en` cho next-intl, ở ba chỗ của `project.yaml` và `deploy.yaml`;
+  - bước 5: commit đầu không chạy bốn lệnh kiểm, vì code của template còn những chỗ `add` đã báo; gitleaks báo nhầm và cách ghi `gitleaks:allow`;
+  - bước 6: `setup github` trên repo public, Dependabot, CI đầu đỏ ở đâu, bốn dòng của `doctor`, và mở Claude Code;
+  - bước 7: những gì PR #5 sửa; vì sao một image cho ba môi trường buộc phải đọc giá trị lúc chạy; chép kit trong một PR riêng, vì `/ao-preview` dừng với PR sửa kit;
+  - bước 8: cài App `ao-deploy`, thêm dự án vào deployer, deploy lần đầu bằng `/ao-rollback development <sha>`, kết quả kiểm và tài nguyên.
+- **Các phần khác của hướng dẫn:**
+  - phần 2.2 nói tới App `ao-deploy`;
+  - bước 9 của phần 3 trỏ tới bước 8 của phần 5;
+  - bảng tra lệnh có `--ref`;
+  - phần 8 có lỗi `AO_DEV_APP_ID is not set` khi Claude Code không mở ở thư mục dự án.
+- **`docs/vps-setup.md` mục 13 (mới):** thêm một dự án vào deployer đang chạy, theo đúng các bước của T24. README có `--ref`.
+- Năm lệnh kiểm xanh, 1.332 test.
+- **Việc kit để sau,** ghi vào `concerns.md` ở T26:
+  - `doctor` kiểm App `ao-deploy`;
+  - `setup jira` bắt lỗi mạng như `ENOTFOUND`;
+  - stack `nextjs` ghi `health: /`;
+  - `coverage.exclude` cho `apps/<app>/e2e/` và `apps/<app>/scripts/`;
+  - luật "file đổi phải có trong lcov" đụng coverage exclude của template;
+  - script của kit chạy ngoài thư mục dự án không có `env` của `.claude/settings.json`.

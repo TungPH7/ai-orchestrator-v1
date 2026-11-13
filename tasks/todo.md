@@ -161,7 +161,7 @@
   3. chạy deployer `--dry-run`: Caddyfile của `ao-sample` và `ao-pilot` không đổi;
   4. bật lại deployer.
   - **Kiểm:** ghi vào `tasks/verification.md`, không ghi nội dung file có thông tin đăng nhập.
-- [ ] **T22 [bạn]: dựng repo `shop`** (tiêu chí 2). Làm đúng theo bản nháp:
+- [x] **T22 [bạn]: dựng repo `shop`** (tiêu chí 2; xong ở Lượt 209: `doctor` đạt mọi dòng, CI xanh trên `develop` ở `91b699c`; chỗ hướng dẫn cần sửa ghi trong `verification.md`, sửa ở T25). Làm đúng theo bản nháp:
   1. tạo thư mục `e-commerce/shop/` và repo public `TungPH7/shop`;
   2. `init --package-manager pnpm`;
   3. `add user --stack nextjs --from <template Next.js> --public` và `add admin --stack react --from <template React> --public`, bỏ `study-guide-impl/`, `frontend-technical/`, `docs/readme/`;
@@ -169,19 +169,19 @@
   5. **bạn:** cài hai App vào repo, nối GitHub for Jira;
   6. `doctor`.
   - **Kiểm:** `doctor` đạt mọi dòng; CI xanh trên `develop`. Chỗ nào hướng dẫn sai hay thiếu thì sửa hướng dẫn trước khi đi tiếp.
-- [ ] **T23 [bạn]: sửa code app** (tiêu chí 3).
+- [x] **T23 [bạn]: sửa code app** (tiêu chí 3; xong ở Lượt 209: `SHOP-1` tạo bằng token CI, PR #5 merge thành `91b699c`, `/ao-preview` dừng vì PR chép kit nên dev server thay, `SHOP-1` Cancelled).
   - `/ao-intake` tạo một Task cho các chỗ `add` đã báo. Phiên chính sửa trên nhánh của Task, rồi mở PR.
   - `/ao-preview` chạy hai app của PR trên máy bạn. **Bạn** xem, rồi merge khi CI xanh.
   - Task được Cancel, kèm comment trỏ tới PR, như `AOG-3`.
-- [ ] **T24 [bạn]: Development chạy hai host** (tiêu chí 4).
+- [x] **T24 [bạn]: Development chạy hai host** (tiêu chí 4; xong ở Lượt 212: `91b699c` chạy trên Development, hai host đạt, Caddyfile chỉ thêm site của `shop`, RAM còn 2.794 MB; bạn phải cài thêm App `ao-deploy`, T25 thêm bước này).
   1. DNS: bản ghi wildcard `*.ao.t2g.io.vn` đã có (`docs/vps-setup.md`, mục 7), nên không phải thêm bản ghi;
   2. mình hỏi rồi thêm `shop` vào `deployer.yaml` trên VPS, cùng secret của Development;
   3. deployer deploy `develop`: smoke test đạt; hai host qua basic auth;
   4. Caddyfile của `ao-sample` và `ao-pilot` không đổi, hai dự án vẫn chạy;
   5. đo RAM lần nữa.
-- [ ] **T25: bản cuối của hướng dẫn; PR** (tiêu chí 5). Chép đầu ra thật của T21–T24.
+- [x] **T25: bản cuối của hướng dẫn; PR** (tiêu chí 5; xong ở Phiên 28 · Lượt 1: phần 5 của `getting-started.md` theo đầu ra thật của T22–T24, mục 13 mới của `vps-setup.md`). Chép đầu ra thật của T21–T24.
 
 ### Checkpoint 4: sau T25
-- [ ] Tiêu chí 2, 3, 4, 5 của spec đạt.
+- [ ] Tiêu chí 2, 4, 5 của spec đạt. Tiêu chí 3 đạt một phần: Task `SHOP-1` và PR #5 đạt, nhưng `/ao-preview` dừng có chủ ý vì PR #5 sửa kit, nên hai app chạy tay bằng `pnpm dev`. Chốt ở T26.
 
 - [ ] **T26: đóng module.** Bảng sáu tiêu chí trong `verification.md`; dời plan, todo, verification vào `tasks/archive/project-scaffold-2/`; cập nhật `SPEC.md`, spec và `concerns.md`; PR tài liệu.

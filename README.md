@@ -197,7 +197,7 @@ npm run agents:check    # báo lỗi nếu agent hay file quy ước sinh ra cũ
 npm run skills:vendor -- <name>  # tải lại một skill chép vào kit, đúng commit ghim trong agents/roster.yaml
 node scripts/ao-kit.mjs init <thư mục dự án> --name <tên> --space <KEY> --repo <owner/name> --approvers <login>  # dựng dự án mới hay cài kit vào repo đang có
 node scripts/ao-kit.mjs init <thư mục trống> --package-manager pnpm ...  # phần gốc của dự án pnpm, chưa có app
-node scripts/ao-kit.mjs add <thư mục dự án> <app> --stack nextjs|react [--from <template>] [--exclude <đường dẫn>]... [--public]  # thêm một app vào dự án pnpm
+node scripts/ao-kit.mjs add <thư mục dự án> <app> --stack nextjs|react [--from <template> [--ref <nhánh hay tag>]] [--exclude <đường dẫn>]... [--public]  # thêm một app vào dự án pnpm
 node scripts/ao-kit.mjs sync <thư mục dự án> --key <KEY>  # chép bản kit này vào dự án, trên nhánh feature/<KEY>-kit-copy, một commit, không push
 node scripts/ao-kit.mjs render <thư mục dự án>  # sinh lại .claude/settings.json và agent từ project.yaml
 node scripts/ao-kit.mjs check <thư mục dự án>  # kiểm project.yaml của dự án với schema, deploy.yaml, package.json và thư mục app
