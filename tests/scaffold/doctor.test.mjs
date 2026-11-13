@@ -102,3 +102,14 @@ test('a pnpm project: the pnpm in the project folder is the version packageManag
   assert.match(row({ versions: { ...facts().versions, pnpm: null }, pnpmWanted: null }).fix, /Name the pnpm version in packageManager/);
   assert.match(doctor(facts({ config: pnpm, hooksPath: '' })).find(({ name }) => name === 'git hooks are installed').fix, /^pnpm install in the project/);
 });
+
+// A public repo keeps its interaction limit (SPEC-project-scaffold-2.md, section 9, question 1).
+test('a public repo: the interaction limit runs for 30 days more at least', () => {
+  const row = (github) => doctor(facts({ now: '2026-11-13T00:00:00Z', github: { ...facts().github, public: true, ...github } })).find(({ name }) => name.startsWith('a public repo'));
+  assert.equal(doctor(facts()).some(({ name }) => name.startsWith('a public repo')), false, 'a private repo has no such row');
+  assert.equal(row({ interactionLimit: { limit: 'collaborators_only', expires_at: '2027-05-13T00:00:00Z' } }).ok, true);
+  const soon = row({ interactionLimit: { limit: 'collaborators_only', expires_at: '2026-11-30T00:00:00Z' } });
+  assert.equal(soon.ok, false);
+  assert.match(soon.fix, /^The interaction limit ends in 17 days: ao-kit setup github <dir> sets it again for six months$/);
+  assert.match(row({ interactionLimit: {} }).fix, /^No interaction limit runs: /);
+});

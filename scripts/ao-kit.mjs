@@ -131,6 +131,7 @@ async function doctorFacts(dir, config) {
       return null;
     }
   };
+  const repoInfo = ghJson(['api', `repos/${repo}`]);
   const app = async (kind) => {
     const appEnv = { ...process.env, [`AO_${kind.toUpperCase()}_APP`]: config.github.apps[kind], [`AO_${kind.toUpperCase()}_APP_ID`]: String(config.github.apps[`${kind}_id`]) };
     try {
@@ -163,8 +164,12 @@ async function doctorFacts(dir, config) {
     renderCheck: { status: render.status, text: `${render.stdout ?? ''}${render.stderr ?? ''}`.trim() },
     hooksPath: git(['config', 'core.hooksPath'], dir).stdout.trim(),
     gitignoreMissing: gitignoreMissing(dir),
+    now: new Date().toISOString(),
     github: {
-      defaultBranch: ghJson(['api', `repos/${repo}`])?.default_branch ?? null,
+      defaultBranch: repoInfo?.default_branch ?? null,
+      public: repoInfo?.private === false,
+      // {} when no limit runs.
+      interactionLimit: ghJson(['api', `repos/${repo}/interaction-limits`]),
       environments: (ghJson(['api', `repos/${repo}/environments`])?.environments ?? []).map(({ name }) => name),
       secrets: (ghJson(['secret', 'list', '--repo', repo, '--json', 'name']) ?? []).map(({ name }) => name),
       envSecrets: (ghJson(['secret', 'list', '--env', 'merge-gate', '--repo', repo, '--json', 'name']) ?? []).map(({ name }) => name),

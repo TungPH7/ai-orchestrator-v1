@@ -86,7 +86,7 @@
     - từ chối dự án npm, và app đã có.
   - **Kiểm:** `tests/scaffold/add.test.mjs` trên thư mục tạm thật, với hàm cài giả; chạy lại không đổi gì.
   - **File:** `lib/scaffold/add.mjs`, `lib/scaffold/app-report.mjs`, `scripts/ao-kit.mjs`, test.
-- [ ] **T12: repo public** (spec 2.2, câu 1 của mục 9).
+- [x] **T12: repo public** (spec 2.2, câu 1 của mục 9).
   - **Đạt khi:**
     - `setup github` trên repo public đặt giới hạn tương tác `collaborators_only` sáu tháng và luật duyệt workflow `all_external_contributors`; chạy lại thì gia hạn giới hạn tương tác;
     - repo private thì bỏ qua hai việc này, và nói vậy;

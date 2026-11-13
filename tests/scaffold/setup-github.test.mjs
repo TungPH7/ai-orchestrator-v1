@@ -7,15 +7,18 @@ import { setupGithub } from '../../lib/scaffold/setup-github.mjs';
 const REPO = 'acme/shop';
 const TOKEN = 'jira-ci-token-value-1234567890';
 const KEY = '-----BEGIN RSA PRIVATE KEY-----\nabc\n-----END RSA PRIVATE KEY-----\n';
-function github({ develop = true } = {}) {
-  const state = { default_branch: 'main', delete_branch_on_merge: false, alerts: false, autofix: false, envs: [], policies: [], secrets: [], envSecrets: [] };
+function github({ develop = true, isPublic = false } = {}) {
+  const state = { default_branch: 'main', delete_branch_on_merge: false, alerts: false, autofix: false, envs: [], policies: [], secrets: [], envSecrets: [], ...(isPublic && { limits: 0, forkApproval: 'first_time_contributors' }) };
   const calls = [];
   const ok = (body = '') => ({ status: 0, stdout: typeof body === 'string' ? body : JSON.stringify(body), stderr: '' });
   const missing = { status: 1, stdout: '', stderr: 'gh: Not Found (HTTP 404)' };
   const gh = (args, { input } = {}) => {
     calls.push({ args: [...args], input });
     const line = args.join(' ');
-    if (line === `api repos/${REPO}`) return ok({ default_branch: state.default_branch, delete_branch_on_merge: state.delete_branch_on_merge });
+    if (line === `api repos/${REPO}`) return ok({ default_branch: state.default_branch, delete_branch_on_merge: state.delete_branch_on_merge, private: !isPublic });
+    if (line === `api -X PUT repos/${REPO}/interaction-limits --input -`) return (state.limits += 1, ok({ limit: JSON.parse(input).limit, origin: 'repository', expires_at: '2027-05-14T10:00:00Z' }));
+    if (line === `api repos/${REPO}/actions/permissions/fork-pr-contributor-approval`) return ok({ approval_policy: state.forkApproval });
+    if (line === `api -X PUT repos/${REPO}/actions/permissions/fork-pr-contributor-approval -f approval_policy=all_external_contributors`) return (state.forkApproval = 'all_external_contributors', ok());
     if (line === `api repos/${REPO}/branches/develop`) return develop ? ok({ name: 'develop' }) : missing;
     if (line === `api -X PATCH repos/${REPO} -f default_branch=develop`) return (state.default_branch = 'develop', ok({}));
     if (line === `api -X PATCH repos/${REPO} -F delete_branch_on_merge=true`) return (state.delete_branch_on_merge = true, ok({}));
@@ -83,4 +86,27 @@ test('with no develop on GitHub, no token and no key file, it sets the rest and 
   assert.match(text, /AO_DEV_APP_KEY: give the second private key of ao-dev with --dev-app-key-file <path>/);
   assert.equal(fake.state.default_branch, 'main');
   assert.equal(fake.state.alerts, true, 'what does not wait on develop is done');
+});
+
+// A public repo (SPEC-project-scaffold-2.md, section 9, question 1), as the three repos made public on 2026-11-13.
+test('a public repo gets an interaction limit of six months and approval of the workflows of fork PRs; a second run renews the limit only', () => {
+  const fake = github({ isPublic: true });
+  const first = setup(fake);
+  assert.equal(first.ok, true, first.notes.join('\n'));
+  const limit = fake.calls.find(({ args }) => args.join(' ') === `api -X PUT repos/${REPO}/interaction-limits --input -`);
+  assert.deepEqual(JSON.parse(limit.input), { limit: 'collaborators_only', expiry: 'six_months' });
+  assert.equal(fake.state.forkApproval, 'all_external_contributors');
+  assert.match(first.notes.join('\n'), /Set the interaction limit of a public repo: collaborators only, until 2027-05-14T10:00:00Z\. Run ao-kit setup github again before then to renew it/);
+  const before = fake.calls.length;
+  const second = setup(fake);
+  assert.deepEqual(writes(fake.calls.slice(before)), [`api -X PUT repos/${REPO}/interaction-limits --input -`]);
+  assert.equal(fake.state.limits, 2);
+  assert.match(second.notes.join('\n'), /approval of the workflows of every PR from a fork/);
+});
+
+test('a private repo gets no interaction limit, and says why', () => {
+  const fake = github();
+  const { notes } = setup(fake);
+  assert.ok(!fake.calls.some(({ args }) => args.join(' ').includes('interaction-limits') || args.join(' ').includes('fork-pr')));
+  assert.match(notes.join('\n'), /acme\/shop is private: it needs no interaction limit and no approval of the workflows of forks/);
 });
