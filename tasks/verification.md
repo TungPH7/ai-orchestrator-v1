@@ -44,4 +44,13 @@ Skill `vercel-react-best-practices` không chép thêm bản nào: `add` lấy n
 
 **T12.** `setup github` trên repo public đặt giới hạn tương tác (`collaborators_only`, sáu tháng) mỗi lần chạy, nên chạy lại là gia hạn. Lệnh cũng đặt luật duyệt workflow `all_external_contributors` khi chưa có. `doctor` báo chưa đạt khi giới hạn còn dưới 30 ngày hoặc không còn. Định dạng trả về của hai API này khớp với lần đọc thật trên `ao-sample`: `expires_at` là 2027-05-13T02:42:22Z, `approval_policy` là `all_external_contributors`.
 
-**Chưa kiểm được trên máy:** build Docker của hai stack, vì Docker Desktop chưa chạy. Lần build đầu sẽ là deployer ở T24, trừ khi bạn bật Docker trước để mình build thử.
+**Build Docker của hai stack trên máy (Lượt 204).** Mình bật Docker Desktop bằng `Start-Process`; engine 24.0.7 chạy sau 13 giây. Dự án tạm gồm `base-pnpm`, `web` (stack `nextjs`) và `admin` (stack `react`), build từ gốc repo như deployer:
+
+| | `web` (Next.js) | `admin` (React, Caddy) |
+|---|---|---|
+| `docker build` | 50 s, image 268 MB | 40 s, image 103 MB |
+| Chạy với `--cap-drop ALL --security-opt no-new-privileges` | chạy, `GET /` 200 | chạy, `GET /` 200 |
+| Khác | | `GET /orders/42` 200 (trả `index.html`); `GET /api/health` 502, vì chưa có app `api` |
+| RAM lúc rảnh | 51 MiB | 16 MiB |
+
+Cả hai trang có `<html`, nên smoke check mà `add` ghi vào `deploy.yaml` qua được. Sau khi kiểm, container, image và thư mục tạm đã được xóa.
