@@ -150,7 +150,7 @@
   - **File:** `agents/prompts/ux.md`, `sa.md`, `fe-dev.md`, `qa.md`, `templates/plan.md`, `kit/.claude/agents/` (sinh lại), `docs/agents.md`; PR chặng 4.
 
 ### Checkpoint 3: sau T17 và T19
-- [ ] Hai PR merge, CI xanh. Caddyfile của dự án một app giống hệt bản cũ.
+- [x] Hai PR merge, CI xanh. Caddyfile của dự án một app giống hệt bản cũ. Kit PR #264 (`253f180`), #265 (`c49b051`).
 
 ## Chặng 5: kiểm thật và hướng dẫn
 
