@@ -129,3 +129,38 @@ test('Semgrep scans the changes of a PR or a push, the head commit of a new bran
   assert.equal(scan('push', ZERO, root), 'every file', 'the root commit of a repository');
   assert.equal(scan('workflow_dispatch', '', head), 'every file', 'a run by hand');
 });
+
+// project-scaffold part 3, spec 2.2: a repo with a Java app gets the JDKs its pom.xml files ask for, and the Maven
+// cache; any other repo runs the same steps as before.
+test('build-test installs the JDKs of apps/*/pom.xml, pinned, only when the repo has a Java app', () => {
+  const list = workflow.jobs['build-test'].steps;
+  const at = (find) => list.findIndex(find);
+  const java = list[at((step) => step.id === 'java')];
+  const setup = list[at((step) => step.uses?.startsWith('actions/setup-java@'))];
+  assert.equal(java.run, 'node .ai-orchestrator/scripts/ci-java.mjs');
+  assert.equal(java.if, "hashFiles('apps/*/pom.xml') != ''");
+  assert.match(setup.uses, /^actions\/setup-java@[0-9a-f]{40}$/);
+  assert.equal(setup.if, "hashFiles('apps/*/pom.xml') != ''");
+  assert.deepEqual(setup.with, { distribution: 'temurin', 'java-version': '${{ steps.java.outputs.versions }}', cache: 'maven', 'cache-dependency-path': 'apps/*/pom.xml' });
+  const kit = at((step) => step.run === 'npm ci --prefix .ai-orchestrator');
+  const install = at((step) => step.run === '$PM_INSTALL');
+  assert.ok(kit < at((step) => step.id === 'java') && at((step) => step.id === 'java') < at((step) => step === setup) && at((step) => step === setup) < install);
+});
+
+test('ci-java prints the Java versions of apps/*/pom.xml, and stops on a pom that names none', (t) => {
+  const dir = mkdtempSync(join(tmpdir(), 'ci-java-'));
+  t.after(() => rmSync(dir, { recursive: true, force: true }));
+  const pom = (app, body) => {
+    mkdirSync(join(dir, 'apps', app), { recursive: true });
+    writeFileSync(join(dir, 'apps', app, 'pom.xml'), body);
+  };
+  pom('api', '<properties><java.version>21</java.version></properties>');
+  mkdirSync(join(dir, 'apps', 'web'));
+  const env = { ...process.env, GITHUB_OUTPUT: '' };
+  const run = () => spawnSync(process.execPath, [join(ROOT, 'scripts', 'ci-java.mjs')], { cwd: dir, env, encoding: 'utf8' });
+  assert.equal(run().stdout, '21\n');
+  pom('jobs', '<project/>');
+  const failed = run();
+  assert.equal(failed.status, 1);
+  assert.match(failed.stderr, /::error::apps\/jobs\/pom\.xml names no <java\.version>/);
+});

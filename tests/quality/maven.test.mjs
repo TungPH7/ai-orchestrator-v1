@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { posix, win32 } from 'node:path';
 import {
   COMPOSE_UP,
+  ciJavaVersions,
   MAVEN_SCRIPTS,
   devEnv,
   findJdk,
@@ -104,4 +105,11 @@ test('dev reads the .env of the app, and a variable already set, such as PORT fr
 
 test('dev starts the database of the compose file and waits until it is healthy', () => {
   assert.deepEqual(COMPOSE_UP, ['compose', 'up', '--detach', '--wait']);
+});
+
+test('CI installs each Java version the apps ask for, once, and stops on a pom that names none', () => {
+  const pom = (version) => `<properties><java.version>${version}</java.version></properties>`;
+  assert.deepEqual(ciJavaVersions([{ path: 'apps/api/pom.xml', text: pom(21) }, { path: 'apps/jobs/pom.xml', text: pom(17) }, { path: 'apps/b/pom.xml', text: pom(21) }]), { versions: [17, 21] });
+  assert.deepEqual(ciJavaVersions([]), { versions: [] });
+  assert.match(ciJavaVersions([{ path: 'apps/api/pom.xml', text: '<project/>' }]).error, /apps\/api\/pom\.xml names no <java\.version>/);
 });

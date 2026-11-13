@@ -79,6 +79,19 @@ jobs:
         with:
           node-version: 24
       - run: npm ci --prefix .ai-orchestrator
+      # A Java app (project-scaffold part 3, spec 2.2): the JDK each apps/*/pom.xml asks for, and the Maven cache. The
+      # app's package.json runs Maven through mvnw.mjs, which finds the JDK by JAVA_HOME_<version>_X64.
+      - name: Java versions
+        id: java
+        if: hashFiles('apps/*/pom.xml') != ''
+        run: node .ai-orchestrator/scripts/ci-java.mjs
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        if: hashFiles('apps/*/pom.xml') != ''
+        with:
+          distribution: temurin
+          java-version: ${{ steps.java.outputs.versions }}
+          cache: maven
+          cache-dependency-path: apps/*/pom.xml
       # npm or pnpm, by the lockfile at the root (project-scaffold part 2, spec 2.1): sets PM and PM_INSTALL.
       - name: npm or pnpm
         run: node .ai-orchestrator/scripts/ci-package-manager.mjs
