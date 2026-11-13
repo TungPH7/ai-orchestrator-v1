@@ -120,3 +120,27 @@ test('two public apps: doctor prints the hosts of each app for /etc/ao/deployer.
   const vps = doctor(facts({ config: two })).find(({ group }) => group === 'VPS');
   assert.match(vps.fix, /\n {4}hosts:\n {6}web:\n {8}development: sample-dev\.ao\.t2g\.io\.vn\n {8}staging: sample-staging\.ao\.t2g\.io\.vn\n {8}production: sample\.ao\.t2g\.io\.vn\n {6}api:\n {8}development: sample-api-dev\.<your domain>\n/);
 });
+
+// project-scaffold part 3, spec 2.2, 2.6.
+test('a project with a Java app: the JDK its pom asks for, and Docker running for its tests and its database', () => {
+  const java = (jdk) => [{ app: 'api', want: 21, jdk }];
+  const names = (rows) => rows.map(({ name }) => name);
+  const ok = doctor(facts({ java: java({ home: 'C:/opt/jdk-21', from: 'next to JAVA_HOME' }), docker: { running: true } }));
+  assert.deepEqual(failed(ok), []);
+  assert.ok(names(ok).includes('JDK 21 for api') && names(ok).includes('Docker is running'));
+
+  const bad = doctor(facts({ java: java(null), docker: { running: false } }));
+  assert.deepEqual(failed(bad), ['JDK 21 for api', 'Docker is running']);
+  assert.match(bad.find(({ name }) => name === 'JDK 21 for api').fix, /JDK 21 was not found: install it, or set JAVA_HOME_21/);
+  assert.match(bad.find(({ name }) => name === 'Docker is running').fix, /Start Docker Desktop/);
+
+  // No Java app, no such row.
+  assert.ok(!names(doctor(facts())).some((name) => /JDK|Docker/.test(name)));
+});
+
+test('doctor asks whether ao-deploy is on the repo, since GitHub does not let it read the installs of an App', () => {
+  const row = doctor(facts()).find(({ name }) => /ao-deploy/.test(name));
+  assert.equal(row.group, 'GitHub');
+  assert.equal(row.ok, null);
+  assert.match(row.fix, /Installed GitHub Apps → Configure next to the App ao-deploy/);
+});

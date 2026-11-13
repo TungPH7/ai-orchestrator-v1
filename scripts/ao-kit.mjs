@@ -6,7 +6,7 @@
 //                 code: project.yaml from its workspaces and the kit, and what it still lacks. Options: --name --title
 //                 --space --repo <owner/name> --approvers <a,b> --dev-app --dev-app-id --review-app --review-app-id
 //                 --kit-peers <owner/name,...>; the App values default to AO_DEV_APP… of your environment
-//   add <dir> <app>   one app more in a pnpm project: --stack nextjs|react, its skeleton, or --from <template>
+//   add <dir> <app>   one app more in a pnpm project: --stack nextjs|react|spring-boot, its skeleton (not spring-boot), or --from <template>
 //                 (--ref <branch or tag>, its HEAD otherwise) with what the kit replaces left out (--exclude <path>, again for each path); --public; then pnpm install,
 //                 the render, and what the code of the app still has to change
 //   sync <dir>    the kit of this clone into the project, on a new branch feature/<KEY>-kit-copy from develop, in one
@@ -22,10 +22,11 @@
 //                 jira:check; with JIRA_ADMIN_EMAIL and JIRA_ADMIN_CLASSIC_TOKEN. --space-name <name> (the project name)
 // Exit: 0 when it did what it says, 1 when the project has a problem it names, 2 on a wrong command line.
 import { spawnSync } from 'node:child_process';
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
+import { findJdk, javaVersionOf } from '../lib/quality/maven.mjs';
 import { runNpm } from '../lib/quality/npm.mjs';
 import { managerOf, pnpmVersion, runManager } from '../lib/quality/package-manager.mjs';
 import { homedir } from 'node:os';
@@ -152,8 +153,17 @@ async function doctorFacts(dir, config) {
   }
   const local = read('.claude/settings.local.json');
   const localSettings = local ? JSON.parse(local) : {};
+  // project-scaffold part 3, spec 2.2: the JDK each Java app asks for, found as mvnw.mjs finds it; Docker only then.
+  const java = Object.entries(config.apps ?? {}).filter(([, app]) => app.profile === 'spring-boot').map(([app, spec]) => {
+    const pom = read(`${spec.path}/pom.xml`);
+    const want = pom ? javaVersionOf(pom) : null;
+    return { app, want: want ?? '?', jdk: want ? findJdk({ want, readFile: (file) => readFileSync(file, 'utf8'), listDir: (folder) => readdirSync(folder) }) : null };
+  });
+  const docker = java.length > 0 ? { running: spawnSync('docker', ['info', '--format', '{{.ServerVersion}}'], { encoding: 'utf8', timeout: 20000 }).status === 0 } : null;
   return {
     config,
+    java,
+    docker,
     projectProblems: problems.map(({ rule, path, message }) => `${rule} ${path}: ${message}`),
     nodeVersion: process.versions.node,
     versions: { gh: version('gh', ['--version']), claude: version('claude', ['--version']), git: version('git', ['--version']), pnpm: pnpmOnMachine() },
