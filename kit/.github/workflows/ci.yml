@@ -1,6 +1,7 @@
 # CI of a project (ai-orchestrator, quality-gates spec section 2.4): four jobs, one check each. jira-sync watches this
 # workflow by its name, CI. merge-gate, audit and the ruleset require the four jobs, which .ai-orchestrator/quality/gates.yaml
-# lists under `checks`. The project provides the npm scripts lint, typecheck, test:coverage (writing lcov) and build.
+# lists under `checks`. The project provides the scripts lint, typecheck, test:coverage (writing lcov) and build, run
+# with npm or pnpm by the lockfile at its root.
 name: CI
 
 on:
@@ -28,7 +29,8 @@ env:
   BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
 
 jobs:
-  # Conventions, suppressions, lowered thresholds and design.md files of a PR, and npm audit (scripts/check-policy.mjs).
+  # Conventions, suppressions, lowered thresholds and design.md files of a PR, and npm audit or pnpm audit
+  # (scripts/check-policy.mjs).
   policy:
     runs-on: ubuntu-latest
     steps:
@@ -47,6 +49,9 @@ jobs:
         with:
           node-version: 24
       - run: npm ci --prefix .ai-orchestrator
+      # npm or pnpm, by the lockfile at the root (project-scaffold part 2, spec 2.1): the audit runs with it.
+      - name: npm or pnpm
+        run: node .ai-orchestrator/scripts/ci-package-manager.mjs
       - run: node .ai-orchestrator/scripts/check-policy.mjs
 
   build-test:
@@ -64,18 +69,27 @@ jobs:
           ref: ${{ env.HEAD_SHA }}
           fetch-depth: 0
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        if: hashFiles('pnpm-lock.yaml') == ''
         with:
           node-version: 24
           cache: npm
+      # A pnpm project has no cache: setup-node would ask a pnpm that is not installed yet where its store is.
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        if: hashFiles('pnpm-lock.yaml') != ''
+        with:
+          node-version: 24
       - run: npm ci --prefix .ai-orchestrator
-      - run: npm ci
-      - run: npm run lint
-      - run: npm run typecheck
-      - run: npm run test:coverage
+      # npm or pnpm, by the lockfile at the root (project-scaffold part 2, spec 2.1): sets PM and PM_INSTALL.
+      - name: npm or pnpm
+        run: node .ai-orchestrator/scripts/ci-package-manager.mjs
+      - run: $PM_INSTALL
+      - run: $PM run lint
+      - run: $PM run typecheck
+      - run: $PM run test:coverage
       - name: Coverage of changed lines
         if: github.event_name == 'pull_request'
         run: node .ai-orchestrator/scripts/coverage-diff.mjs --base "$BASE_SHA"
-      - run: npm run build
+      - run: $PM run build
 
   # gitleaks on the commits the PR or the push brings, pinned and checked against its published checksum.
   secrets:

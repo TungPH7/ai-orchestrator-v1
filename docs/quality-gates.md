@@ -48,13 +48,15 @@ Job summary có mục **Policy**. Mỗi dòng là một phần kiểm: ✅ là �
 | Conventions | Tên nhánh, header của một commit trong PR, hoặc tiêu đề PR sai quy ước. Nhánh `feature/` chỉ vào `develop`; `bugfix/` vào `develop` hoặc `release/*`; `hotfix/` vào `main` | Sai tên nhánh thì mở PR mới từ nhánh đúng tên. Sai header thì viết lại commit rồi force push lên nhánh của PR. Sai tiêu đề thì sửa bằng `ao-pr.mjs edit` |
 | Suppressions | Dòng thêm vào có mẫu tắt kiểm tra (`eslint-disable`, `oxlint-disable`, `@ts-ignore`, `.skip(`, `nosemgrep`, `gitleaks:allow`…) mà không ghi `reason: <lý do>` trên cùng dòng; hoặc có `.only(` | Sửa lỗi thay vì tắt kiểm tra. Nếu thật sự phải tắt, ghi `reason:` trên cùng dòng để reviewer đọc. `.only(` luôn đỏ, nên phải xóa |
 | Thresholds | PR hạ một ngưỡng trong `quality/gates.yaml`, ví dụ `changed_lines_min` | Trả ngưỡng về như cũ. Hạ ngưỡng là quyết định của bạn, và file này được bảo vệ, nên PR đó do bạn merge |
-| Dependencies | `npm audit` thấy lỗ hổng high hoặc critical không nằm trong danh sách ngoại lệ còn hạn | Cập nhật dependency. Nếu chưa có bản vá, thêm một ngoại lệ có hạn vào `dependencies.exceptions`, gồm mã advisory, lý do và ngày hết hạn. Đây cũng là file được bảo vệ, nên bạn quyết định và tự merge |
+| Dependencies | `npm audit`, hay `pnpm audit` với dự án pnpm, thấy lỗ hổng high hoặc critical không nằm trong danh sách ngoại lệ còn hạn | Cập nhật dependency. Nếu chưa có bản vá, thêm một ngoại lệ có hạn vào `dependencies.exceptions`, gồm mã advisory, lý do và ngày hết hạn. Đây cũng là file được bảo vệ, nên bạn quyết định và tự merge |
 
-Dòng ℹ️ chỉ để báo, không làm job đỏ. Ví dụ `test file deleted: <file>` nhắc reviewer xem vì sao file test bị xóa. Khi push mà không có PR, `policy` chỉ chạy `npm audit`.
+Dòng ℹ️ chỉ để báo, không làm job đỏ. Ví dụ `test file deleted: <file>` nhắc reviewer xem vì sao file test bị xóa. Khi push mà không có PR, `policy` chỉ chạy audit của npm hay pnpm.
 
 ### `build-test`
 
 Job chạy `npm ci`, `npm run lint`, `npm run typecheck`, `npm run test:coverage`, bước **Coverage of changed lines**, rồi `npm run build`. Bước nào lỗi thì job đỏ ở bước đó, và log của bước cho biết lý do.
+
+**Dự án pnpm** (project-scaffold phần 2, mục 2.1): repo có `pnpm-lock.yaml` ở gốc thì bước **npm or pnpm** (`ci-package-manager.mjs`) cài đúng bản pnpm mà `packageManager` của `package.json` ghi. Sau đó job chạy `pnpm install --frozen-lockfile` và `pnpm run <script>` thay cho npm, và job `policy` chạy `pnpm audit`. Thiếu `packageManager` thì bước này đỏ và nói vậy. Package của chính kit trong `.ai-orchestrator/` vẫn cài bằng npm.
 
 Job summary có mục **Coverage of changed lines: N%**, với bảng gồm các cột File, Covered và Lines not run. Bước này đỏ khi:
 

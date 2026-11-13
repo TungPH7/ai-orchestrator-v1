@@ -1,0 +1,15 @@
+# The profile base-pnpm (project-scaffold part 2, spec 2.2): the root of a pnpm project with no app yet. ao-kit init
+# <dir> --package-manager pnpm copies files/ into an empty folder, with __NAME__ and __TITLE__ replaced, then runs
+# `after` there. ao-kit add then brings each app, from a stack of the kit or from a template of yours. npm run
+# profiles:check builds it with the stacks.
+name: base-pnpm
+package_manager: pnpm
+node: ">=24.2"
+# The apps part of project.yaml: none until ao-kit add.
+apps: {}
+# roster.local.yaml: each stack adds its skills.
+skills: {}
+# Run in the project once the files are copied, each with no shell.
+after:
+  - pnpm install
+  - pnpm exec playwright install chromium

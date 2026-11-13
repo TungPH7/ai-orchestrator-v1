@@ -1,6 +1,7 @@
 // The policy job of CI (quality-gates spec section 2.4). On a PR: the conventions of its branch, commits and title, the
 // suppressions its added lines bring, the thresholds it lowers in quality/gates.yaml, the design.md files it touches
-// (agent-roster spec 2.8), and npm audit. On a push: npm audit only. Results go to the job summary in CI.
+// (agent-roster spec 2.8), and the audit of npm or pnpm, by the lockfile at the root. On a push: the audit only. Results
+// go to the job summary in CI.
 // In CI the PR comes from the GitHub event; elsewhere: --base <ref> --branch <name> --title "<title>".
 import { spawnSync } from 'node:child_process';
 import { appendFileSync, existsSync, readFileSync } from 'node:fs';
@@ -10,7 +11,7 @@ import { parseArgs } from 'node:util';
 import { parse } from 'yaml';
 import { unquotePath } from '../lib/quality/diff-paths.mjs';
 import { readGates } from '../lib/quality/gates.mjs';
-import { runNpm } from '../lib/quality/npm.mjs';
+import { auditArgs, managerFromLockfile, PNPM_MISSING, runManager } from '../lib/quality/package-manager.mjs';
 import { checkDesignFile } from '../lib/quality/design-files.mjs';
 import { auditProblems, checkConventions, designFilesToCheck } from '../lib/quality/policy.mjs';
 import { addedLines, deletedTests, findSuppressions, loweredThresholds } from '../lib/quality/suppressions.mjs';
@@ -68,13 +69,15 @@ try {
     sections.push(['Design', designs.flatMap((path) => checkDesignFile(join(root, path)).map(({ rule, line, message }) => `${path}:${line} ${rule} ${message}`))]);
   }
 
-  if (existsSync(join(root, 'package-lock.json'))) {
-    // npm audit exits non-zero when it finds anything; its JSON is what counts.
-    const audit = runNpm(['audit', '--json'], { cwd: root, encoding: 'utf8', maxBuffer: 256 * 1024 * 1024 });
+  const manager = managerFromLockfile((path) => existsSync(join(root, path)));
+  if (manager) {
+    // The audit exits non-zero when it finds anything; its JSON is what counts.
+    const audit = runManager(manager, auditArgs(manager), { cwd: root, encoding: 'utf8', maxBuffer: 256 * 1024 * 1024 });
+    if (audit.error) throw new Error(`${manager} audit: ${manager === 'pnpm' ? PNPM_MISSING : audit.error.message}`);
     const report = JSON.parse(audit.stdout || '{}');
-    if (report.error) throw new Error(`npm audit: ${report.error.summary ?? report.error.code}`);
+    if (report.error) throw new Error(`${manager} audit: ${report.error.summary ?? report.error.message ?? report.error.code}`);
     sections.push(['Dependencies', auditProblems(report, gates.dependencies, new Date().toISOString().slice(0, 10))]);
-  } else notes.push('no package-lock.json: npm audit skipped');
+  } else notes.push('no package-lock.json or pnpm-lock.yaml: the audit is skipped');
 } catch (error) {
   sections.push(['Policy', [error.message]]);
 }

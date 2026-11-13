@@ -88,3 +88,17 @@ test('the printout names no secret, only whether it is there and has the right s
   assert.match(text, /^\? VPS: /m);
   assert.match(text, /1 row to fix/);
 });
+
+// project-scaffold part 2, spec 2.1: a pnpm project needs the pnpm that packageManager names, in its folder.
+test('a pnpm project: the pnpm in the project folder is the version packageManager names', () => {
+  const pnpm = { ...config, package_manager: 'pnpm' };
+  const row = (change) => doctor(facts({ config: pnpm, ...change })).find(({ name }) => name.startsWith('pnpm '));
+  assert.equal(doctor(facts()).some(({ name }) => name.startsWith('pnpm ')), false, 'an npm project has no pnpm row');
+  assert.equal(row({ versions: { ...facts().versions, pnpm: '11.8.0' }, pnpmWanted: '11.8.0' }).ok, true);
+  const old = row({ versions: { ...facts().versions, pnpm: '9.15.0' }, pnpmWanted: '11.8.0' });
+  assert.equal(old.ok, false);
+  assert.equal(old.name, 'pnpm 11.8.0');
+  assert.match(old.fix, /runs pnpm 9\.15\.0: npm install -g pnpm@11\.8\.0, or corepack enable/);
+  assert.match(row({ versions: { ...facts().versions, pnpm: null }, pnpmWanted: null }).fix, /Name the pnpm version in packageManager/);
+  assert.match(doctor(facts({ config: pnpm, hooksPath: '' })).find(({ name }) => name === 'git hooks are installed').fix, /^pnpm install in the project/);
+});

@@ -60,6 +60,9 @@ test('/ao-preview starts the apps on the PR branch: a script step, with or witho
   assert.equal(decision.go, true);
   assert.deepEqual(decision.runs, [{ action: 'preview-start', key: 'DEMO-21', number: 15, branch: 'feature/DEMO-21-remove-line', head: HEAD, install: true, protected: [] }]);
   assert.match(decision.lines.at(-1), /^Preview of PR #15 \(draft\): feature\/DEMO-21-remove-line at d1d2d3d4; npm ci first, since package-lock\.json differs from the one installed; apps web http:\/\/localhost:3000\/notes, api http:\/\/localhost:3001\/health$/);
+  // A pnpm project (project-scaffold part 2, spec 2.1).
+  const pnpm = decide(facts({ install: true, manager: 'pnpm' }));
+  assert.match(pnpm.lines.at(-1), /; pnpm install first, since pnpm-lock\.yaml differs from the one installed; /);
 });
 
 test('/ao-preview stops: no open PR, a PR on protected paths, an agent running, changes not committed, no or a wrong config, a busy port, a preview running', () => {

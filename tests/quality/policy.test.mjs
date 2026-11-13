@@ -173,6 +173,26 @@ test('npm audit fails on advisories at the level and above, counting each adviso
   ]);
 });
 
+// pnpm audit --json lists advisories by id, as npm did before version 7 (pnpm 11.8.0, run on a template in Lượt 201).
+test('pnpm audit: advisories by id, each counted once, at the level and above', () => {
+  const pnpmAdvisory = (id, ghsa, severity, name) => ({ id, title: `${severity} issue`, module_name: name, severity, url: `https://github.com/advisories/${ghsa}`, github_advisory_id: ghsa, findings: [] });
+  const report = {
+    advisories: {
+      1123897: pnpmAdvisory(1123897, 'GHSA-3jxr-9vmj-r5cp', 'high', 'brace-expansion'),
+      1100001: pnpmAdvisory(1100001, 'GHSA-xvch-5gv4-984h', 'moderate', 'minimist'),
+      1100002: pnpmAdvisory(1100002, 'GHSA-jf85-cpcp-j695', 'critical', 'lodash'),
+    },
+    metadata: { vulnerabilities: { high: 1, moderate: 1, critical: 1 } },
+  };
+  // In the order of their ids, as JavaScript keeps keys that are numbers.
+  assert.deepEqual(auditProblems(report, gates.dependencies, '2026-11-13'), [
+    'lodash critical: critical issue (GHSA-jf85-cpcp-j695)',
+    'brace-expansion high: high issue (GHSA-3jxr-9vmj-r5cp)',
+  ]);
+  const excepted = { audit_level: 'high', exceptions: [{ advisory: 'GHSA-3jxr-9vmj-r5cp', reason: 'only in a dev tool', expires: '2026-12-31' }] };
+  assert.deepEqual(auditProblems(report, excepted, '2026-11-13'), ['lodash critical: critical issue (GHSA-jf85-cpcp-j695)']);
+});
+
 test('an exception hides its advisory until it expires', () => {
   const dependencies = {
     audit_level: 'high',
@@ -224,7 +244,7 @@ test('the check-policy script reports each step of a PR and fails on any problem
   assert.match(bad.stdout, /^ok {2}Thresholds$/m);
   assert.match(bad.stdout, /^FAIL {2}Conventions\n {6}commit \w+ "wip": /m);
   assert.match(bad.stdout, /^FAIL {2}Suppressions\n {6}src\/a\.ts:2 eslint-disable needs "reason: <why>"/m);
-  assert.match(bad.stdout, /^note {2}no package-lock\.json: npm audit skipped$/m);
+  assert.match(bad.stdout, /^note {2}no package-lock\.json or pnpm-lock\.yaml: the audit is skipped$/m);
   assert.match(bad.stdout, /^FAIL {2}Design\n {6}docs\/specs\/DEMO-2\/design\.md:31 D2 \[5\] of S1 has no entry under blocks in its YAML$/m);
 
   git('commit', '-q', '--amend', '-m', 'feat(a): add b (DEMO-2)');

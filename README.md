@@ -196,6 +196,7 @@ npm run agents          # sinh lại kit/.claude/agents/, kit/.claude/rules/ai-o
 npm run agents:check    # báo lỗi nếu agent hay file quy ước sinh ra cũ hơn nguồn
 npm run skills:vendor -- <name>  # tải lại một skill chép vào kit, đúng commit ghim trong agents/roster.yaml
 node scripts/ao-kit.mjs init <thư mục dự án> --name <tên> --space <KEY> --repo <owner/name> --approvers <login>  # dựng dự án mới hay cài kit vào repo đang có
+node scripts/ao-kit.mjs init <thư mục trống> --package-manager pnpm ...  # phần gốc của dự án pnpm, chưa có app
 node scripts/ao-kit.mjs sync <thư mục dự án> --key <KEY>  # chép bản kit này vào dự án, trên nhánh feature/<KEY>-kit-copy, một commit, không push
 node scripts/ao-kit.mjs render <thư mục dự án>  # sinh lại .claude/settings.json và agent từ project.yaml
 node scripts/ao-kit.mjs check <thư mục dự án>  # kiểm project.yaml của dự án với schema, deploy.yaml, package.json và thư mục app
@@ -240,11 +241,11 @@ lib/contract.mjs    thư viện chỉ đọc: loadContract, validateContract, al
 lib/rules/          8 quy tắc kiểm tra hợp đồng, mỗi quy tắc một file
 lib/render.mjs      sinh nội dung docs/sdlc.md
 lib/tracker/        ánh xạ và quy tắc J1–J4, quy ước mã Jira, client Jira và GitHub, dữ kiện cho guard, hook, đối soát
-lib/quality/        đọc và kiểm quality/gates.yaml, token của App, coverage, mẫu tắt kiểm tra, mô tả PR, merge-gate, audit, luật của gh-guard
+lib/quality/        đọc và kiểm quality/gates.yaml, token của App, coverage, mẫu tắt kiểm tra, mô tả PR, merge-gate, audit, luật của gh-guard, npm hay pnpm
 lib/release/        deployer, Docker, Caddy, điểm cắt, số bản, PR release, smoke test
 lib/agents/         đọc roster và roster.local.yaml, sinh agent và file quy ước, dựng lệnh của ao-agent.mjs, luật ghi file và git theo vai trò, chép skill
 lib/scaffold/       project.yaml của dự án (schema, đọc, kiểm, đối chiếu), chép kit vào dự án, profile, ao-kit init và sync
-profiles/           profile theo stack: profile.yaml và khung app ghim (next-nest: Next.js + NestJS)
+profiles/           profile theo stack: profile.yaml và khung app ghim (next-nest: Next.js + NestJS); base-pnpm: phần gốc của dự án pnpm
 scripts/            lệnh của kit: kiểm và sinh tài liệu, Jira, ao-pr.mjs, ao-agent.mjs, job policy, check-design, coverage, merge-gate, audit, gh-protect, hook git
 kit/                file đặt vào repo dự án: .mcp.json, .claude/ (agent, file quy ước, skill, hook), .githooks/, .jira/config.yml, workflow CI, jira-sync, merge-gate, audit
 docs/sdlc.md        sinh tự động, không sửa tay

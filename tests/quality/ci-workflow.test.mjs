@@ -29,11 +29,44 @@ test('every action is pinned to a commit, and gitleaks and Semgrep to a version'
   assert.match(steps('sast'), /uvx "semgrep==\$\{SEMGREP_VERSION\}" scan --config p\/default --config p\/owasp-top-ten --severity ERROR --error/);
 });
 
-test('build-test runs the four npm scripts of the project, and the coverage of changed lines on a PR', () => {
-  const run = steps('build-test');
-  for (const script of ['npm run lint', 'npm run typecheck', 'npm run test:coverage', 'npm run build']) assert.match(run, new RegExp(script.replace(':', '\\:')), script);
+test('build-test installs and runs the four scripts of the project with its package manager, and the coverage of changed lines on a PR', () => {
+  const runs = workflow.jobs['build-test'].steps.map((step) => step.run).filter(Boolean);
+  const at = (run) => runs.indexOf(run);
+  assert.ok(at('node .ai-orchestrator/scripts/ci-package-manager.mjs') > at('npm ci --prefix .ai-orchestrator'));
+  assert.ok(at('$PM_INSTALL') > at('node .ai-orchestrator/scripts/ci-package-manager.mjs'));
+  for (const script of ['lint', 'typecheck', 'test:coverage', 'build']) assert.ok(at(`$PM run ${script}`) > at('$PM_INSTALL'), script);
+  // npm still installs the packages of the kit itself.
+  assert.doesNotMatch(runs.filter((run) => run !== 'npm ci --prefix .ai-orchestrator').join('\n'), /^npm (ci|run)\b/m);
   const coverage = workflow.jobs['build-test'].steps.find((step) => step.run?.includes('coverage-diff.mjs'));
   assert.equal(coverage.if, "github.event_name == 'pull_request'");
+});
+
+// project-scaffold part 2, spec 2.1: setup-node caches npm packages only when the repo has no pnpm-lock.yaml, since it
+// would ask a pnpm that is not installed yet where its store is.
+test('build-test sets up node with the npm cache for an npm project, and without a cache for a pnpm project', () => {
+  const nodes = workflow.jobs['build-test'].steps.filter((step) => step.uses?.startsWith('actions/setup-node@'));
+  assert.deepEqual(nodes.map((step) => [step.if, step.with]), [
+    ["hashFiles('pnpm-lock.yaml') == ''", { 'node-version': 24, cache: 'npm' }],
+    ["hashFiles('pnpm-lock.yaml') != ''", { 'node-version': 24 }],
+  ]);
+});
+
+test('ci-package-manager.mjs writes PM and PM_INSTALL of an npm project to $GITHUB_ENV, and fails a pnpm project with no packageManager', (t) => {
+  const dir = mkdtempSync(join(tmpdir(), 'ao-ci-pm-'));
+  t.after(() => rmSync(dir, { recursive: true, force: true }));
+  const script = join(ROOT, 'scripts', 'ci-package-manager.mjs');
+  const envFile = join(dir, 'github-env');
+  writeFileSync(join(dir, 'package.json'), '{}');
+  writeFileSync(join(dir, 'package-lock.json'), '{}');
+  const npm = spawnSync(process.execPath, [script], { cwd: dir, encoding: 'utf8', env: { ...process.env, GITHUB_ENV: envFile } });
+  assert.equal(npm.status, 0, npm.stderr);
+  assert.equal(readFileSync(envFile, 'utf8'), 'PM=npm\nPM_INSTALL=npm ci --no-audit --no-fund\n');
+
+  rmSync(join(dir, 'package-lock.json'));
+  writeFileSync(join(dir, 'pnpm-lock.yaml'), "lockfileVersion: '9.0'\n");
+  const pnpm = spawnSync(process.execPath, [script], { cwd: dir, encoding: 'utf8', env: { ...process.env, GITHUB_ENV: envFile } });
+  assert.equal(pnpm.status, 1);
+  assert.match(pnpm.stderr, /^::error::the repo has pnpm-lock\.yaml, but package\.json names no pnpm version in packageManager/m);
 });
 
 test('every job checks out the commit under test with its history, for the merge base', () => {
@@ -60,8 +93,11 @@ test('a run by hand fails every job on a branch that is not develop, main or rel
   }
 });
 
-test('the policy job runs the kit script', () => {
-  assert.match(steps('policy'), /node \.ai-orchestrator\/scripts\/check-policy\.mjs/);
+test('the policy job runs the kit script, after it knows npm or pnpm for the audit', () => {
+  const runs = workflow.jobs.policy.steps.map((step) => step.run).filter(Boolean);
+  const policy = runs.indexOf('node .ai-orchestrator/scripts/check-policy.mjs');
+  assert.ok(policy > runs.indexOf('node .ai-orchestrator/scripts/ci-package-manager.mjs'));
+  assert.ok(runs.indexOf('node .ai-orchestrator/scripts/ci-package-manager.mjs') > runs.indexOf('npm ci --prefix .ai-orchestrator'));
 });
 
 // Semgrep counts only the findings the changes bring. A new branch has no commit before its push, so it gets its head

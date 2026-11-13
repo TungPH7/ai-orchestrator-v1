@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { cpSync, mkdirSync, mkdtempSync, rmSync } from 'node:fs';
+import { cpSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { ROOT } from '../helpers/kit.mjs';
@@ -10,7 +10,8 @@ import { ROOT } from '../helpers/kit.mjs';
 const SAMPLE = join(ROOT, 'tests/fixtures/scaffold/sample');
 const aoKit = (...args) => spawnSync(process.execPath, [join(ROOT, 'scripts', 'ao-kit.mjs'), ...args], { encoding: 'utf8' });
 
-// A project folder shaped like ao-sample: project.yaml and deploy.yaml in .ai-orchestrator/, package.json, the apps.
+// A project folder shaped like ao-sample: project.yaml and deploy.yaml in .ai-orchestrator/, package.json and its
+// lockfile, the apps.
 function sampleProject(t, { apps = ['apps/web', 'apps/api'] } = {}) {
   const dir = mkdtempSync(join(tmpdir(), 'ao-kit-'));
   t.after(() => rmSync(dir, { recursive: true, force: true }));
@@ -18,6 +19,8 @@ function sampleProject(t, { apps = ['apps/web', 'apps/api'] } = {}) {
   cpSync(join(SAMPLE, 'project.yaml'), join(dir, '.ai-orchestrator', 'project.yaml'));
   cpSync(join(SAMPLE, 'deploy.yaml'), join(dir, '.ai-orchestrator', 'deploy.yaml'));
   cpSync(join(SAMPLE, 'package.json'), join(dir, 'package.json'));
+  // The lockfile of npm, which project.yaml names by not naming another (rule C4).
+  writeFileSync(join(dir, 'package-lock.json'), '{}\n');
   for (const app of apps) mkdirSync(join(dir, app), { recursive: true });
   return dir;
 }

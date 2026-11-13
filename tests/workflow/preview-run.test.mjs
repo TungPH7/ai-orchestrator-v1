@@ -38,16 +38,16 @@ const paths = previewPaths(PROJECT);
 const PROTECTED = ['.github/workflows/**', '.githooks/**', '.claude/**', '.ai-orchestrator/**', '.mcp.json'];
 const START = { key: 'DEMO-21', number: 15, branch: BRANCH, head: HEAD, protected: PROTECTED };
 
-// files: path → text. The folder starts on `on`. checkoutFails: branch → { reason, switched }. npmStatus: the exit of
+// config: the text of project.yaml; lockName: the lockfile of its package manager. files: path → text. The folder starts on `on`. checkoutFails: branch → { reason, switched }. npmStatus: the exit of
 // npm ci. up(url): whether an app answers. origin: the head of the branch on origin after git fetch. own: what git diff
 // lists from the fork point of the branch, the PR's own changes; all: what it lists from the tip of develop.
 // untracked: what git status lists as untracked (??) or ignored (!!), as `?? CLAUDE.local.md`; m.untracked changes it.
-function machine({ files = {}, on = 'develop', checkoutFails = {}, npmStatus = 0, up = () => true, busyPorts = [], head = HEAD, dirty = '', agent = null, origin = HEAD, own = ['apps/web/src/page.tsx'], all = own, fetched = true, untracked = [] } = {}) {
+function machine({ config = CONFIG, lockName = 'package-lock.json', files = {}, on = 'develop', checkoutFails = {}, npmStatus = 0, up = () => true, busyPorts = [], head = HEAD, dirty = '', agent = null, origin = HEAD, own = ['apps/web/src/page.tsx'], all = own, fetched = true, untracked = [] } = {}) {
   let others = untracked;
-  const store = new Map(Object.entries({ [join(PROJECT, '.ai-orchestrator/project.yaml')]: CONFIG, ...files }));
+  const store = new Map(Object.entries({ [join(PROJECT, '.ai-orchestrator/project.yaml')]: config, ...files }));
   const events = [];
   let branch = on;
-  const lockFile = join(PROJECT, 'package-lock.json');
+  const lockFile = join(PROJECT, lockName);
   const sync = () => store.set(lockFile, branch === 'develop' ? DEVELOP_LOCK : PR_LOCK);
   sync();
   const fs = {
@@ -86,8 +86,8 @@ function machine({ files = {}, on = 'develop', checkoutFails = {}, npmStatus = 0
     projectDir: PROJECT,
     git,
     checkout,
-    npm: (args, { env }) => {
-      events.push(['npm', args.join(' '), branch, 'SECRET_TOKEN' in env ? 'with a secret' : 'no secret']);
+    runPackages: (manager, args, { env }) => {
+      events.push([manager, args.join(' '), branch, 'SECRET_TOKEN' in env ? 'with a secret' : 'no secret']);
       const status = typeof npmStatus === 'function' ? npmStatus(branch) : npmStatus;
       return { status, stderr: status ? 'npm ERR! the lockfile does not match' : '' };
     },
@@ -103,7 +103,7 @@ function machine({ files = {}, on = 'develop', checkoutFails = {}, npmStatus = 0
     sleep: async () => {},
     env: { PATH: 'C:/bin', SECRET_TOKEN: 's3cr3t' },
     execPath: 'node',
-    npmCli: () => 'npm-cli.js',
+    cliOf: (tool) => (tool === 'pnpm' ? 'pnpm.cjs' : 'npm-cli.js'),
     agentRunning: () => agent,
     now: () => Date.parse('2026-11-12T08:00:00Z'),
   });
@@ -303,4 +303,26 @@ test('a branch cut from an older develop is refused: the old kit and instruction
   const kit = Array.from({ length: 55 }, (_, i) => `.ai-orchestrator/lib/f${i}.mjs`);
   assert.match(await failing(machine({ own: [], all: kit })), /: \.ai-orchestrator\/lib\/f0\.mjs, (?:[^,]+, ){6}\.ai-orchestrator\/lib\/f7\.mjs and 47 more differ from develop there/);
   assert.match(await failing(machine({ own: kit })), /^PR #15 changes \.ai-orchestrator\/lib\/f0\.mjs, (?:[^,]+, ){6}\.ai-orchestrator\/lib\/f7\.mjs and 47 more, which steer/);
+});
+
+// project-scaffold part 2, spec 2.1: a pnpm project installs with pnpm, from pnpm-lock.yaml, and starts its apps with
+// pnpm.cjs next to node; corepack does not stop to ask for the pnpm of packageManager.
+test('start and stop of a pnpm project: pnpm install from pnpm-lock.yaml, and the apps through pnpm.cjs', async () => {
+  const pnpmConfig = CONFIG.replace('name: shop', 'name: shop\npackage_manager: pnpm')
+    .replace('dev: npm run start:dev -w apps/api', 'dev: pnpm --filter ./apps/api run start:dev')
+    .replace('dev: npm run dev -w apps/web', 'dev: pnpm --filter ./apps/web run dev');
+  const m = machine({ config: pnpmConfig, lockName: 'pnpm-lock.yaml', files: installedFor(DEVELOP_LOCK) });
+  const notes = await m.runner.start(START);
+  assert.deepEqual(m.events, [
+    ['checkout', BRANCH],
+    ['pnpm', 'install --frozen-lockfile --ignore-scripts', BRANCH, 'no secret'],
+    ['spawn', 101, 'node pnpm.cjs --filter ./apps/api run start:dev', '-', 'PORT 3001', 'no secret'],
+    ['spawn', 102, 'node pnpm.cjs --filter ./apps/web run dev', 'http://localhost:3001', 'PORT 3000', 'no secret'],
+  ]);
+  assert.equal(notes[1], 'Ran pnpm install --ignore-scripts, since pnpm-lock.yaml differs from the one installed before.');
+  const facts = await m.runner.facts(false, { headSha: HEAD });
+  assert.equal(facts.manager, 'pnpm');
+  const stopped = await m.runner.stop();
+  assert.deepEqual(m.events.slice(-1), [['pnpm', 'install --frozen-lockfile --ignore-scripts', 'develop', 'no secret']]);
+  assert.equal(stopped.notes.at(-1), 'Ran pnpm install --ignore-scripts again, for the packages of develop.');
 });

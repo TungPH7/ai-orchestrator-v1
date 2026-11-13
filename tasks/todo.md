@@ -10,11 +10,11 @@
 
 ## Chuẩn bị
 
-- [ ] **T1: tài liệu.** Spec ghi đã duyệt; plan, todo; nhật ký Lượt 198–201. PR tài liệu từ nhánh `task/project-scaffold-2`, tự merge khi CI xanh.
+- [x] **T1: tài liệu.** Spec ghi đã duyệt; plan, todo; nhật ký Lượt 198–201. PR tài liệu từ nhánh `task/project-scaffold-2`, tự merge khi CI xanh.
 
 ## Chặng 1: pnpm, nhánh `task/scaffold2-1`
 
-- [ ] **T2: `package-manager.mjs` và `package_manager`** (spec 2.1; plan, quyết định 3, 4).
+- [x] **T2: `package-manager.mjs` và `package_manager`** (spec 2.1; plan, quyết định 3, 4).
   - **Đạt khi:**
     - `lib/quality/package-manager.mjs` trả về, cho npm và pnpm: lockfile, lệnh cài, lệnh cài `--ignore-scripts`, lệnh chạy script, dạng lệnh `dev` cho một app, lệnh audit;
     - nó chạy pnpm không qua shell: trên Windows qua `node <pnpm.cjs>`, và không thấy file đó thì báo lỗi nói cách cài;
@@ -23,21 +23,21 @@
     - `ao-kit check` báo khi `package_manager` không khớp lockfile ở gốc, hay khi dự án pnpm thiếu `packageManager`.
   - **Kiểm:** `tests/quality/package-manager.test.mjs`; thêm ca vào `tests/scaffold/project-config.test.mjs`. `project.yaml` của `ao-sample` vẫn hợp lệ.
   - **File:** `lib/quality/package-manager.mjs`, `lib/scaffold/project.schema.json`, `lib/scaffold/project-config.mjs`, test.
-- [ ] **T3: CI cho pnpm** (spec 2.1).
+- [x] **T3: CI cho pnpm** (spec 2.1).
   - **Đạt khi:**
     - job `build-test` của `kit/.github/workflows/ci.yml`: có `pnpm-lock.yaml` ở gốc thì cài pnpm đúng bản, `pnpm install --frozen-lockfile`, rồi chạy bốn script bằng `pnpm run`; không có thì giữ nguyên bước npm;
     - `setup-node` dùng cache đúng loại lockfile;
     - `scripts/check-policy.mjs` chạy `pnpm audit --json` khi có `pnpm-lock.yaml`, và đọc kết quả như `npm audit`.
   - **Kiểm:** `tests/quality/ci-workflow.test.mjs` chạy các bước bằng bash với cả hai loại lockfile, như test chặn `workflow_dispatch` hiện có; test của `check-policy` với kết quả `pnpm audit` mẫu.
   - **File:** `kit/.github/workflows/ci.yml`, `scripts/check-policy.mjs`, test.
-- [ ] **T4: `/ao-preview` và worktree cho pnpm** (spec 2.1).
+- [x] **T4: `/ao-preview` và worktree cho pnpm** (spec 2.1).
   - **Đạt khi:**
     - lệnh `dev` được nhận khi là `pnpm` với các từ thường, như `pnpm --filter ./apps/user run dev`, ngoài `npm` và `node`;
     - `/ao-preview` so `pnpm-lock.yaml` để biết có phải cài lại không, và cài bằng `pnpm install --frozen-lockfile --ignore-scripts`;
     - worktree của `ao-step` (cho `qa`) cài bằng lệnh cài `--ignore-scripts` của đúng loại.
   - **Kiểm:** test của `preview`, `preview-run` và worktree, với dự án pnpm giả; ca npm cũ không đổi.
   - **File:** `lib/workflow/preview.mjs`, `lib/workflow/preview-run.mjs`, `scripts/ao-step.mjs`, test.
-- [ ] **T5: `init` và `doctor` cho pnpm** (spec 2.1, 2.2).
+- [x] **T5: `init` và `doctor` cho pnpm** (spec 2.1, 2.2).
   - **Đạt khi:**
     - `ao-kit init <dir> --package-manager pnpm` trên thư mục trống chép profile `base-pnpm`: `package.json` (có `packageManager`, bốn script `pnpm -r run`, script `prepare` và `precommit`), `pnpm-workspace.yaml`, `playwright.config.ts`, `e2e/`, cùng kit và `project.yaml` chưa có app;
     - `init` trên repo pnpm đang có đọc app từ `packages` của `pnpm-workspace.yaml`, và nhận ra app React chạy bằng Vite là stack `react`;
@@ -45,7 +45,7 @@
     - `readProfile` bỏ qua thư mục không có `profile.yaml`.
   - **Kiểm:** test của `init` trên thư mục tạm thật với cả hai trường hợp; test của `doctor`.
   - **File:** `profiles/base-pnpm/`, `lib/scaffold/init.mjs`, `lib/scaffold/profile.mjs`, `lib/scaffold/doctor.mjs`, `scripts/ao-kit.mjs`, test.
-- [ ] **T6: tài liệu chặng 1; PR.** `docs/quality-gates.md` (CI cho pnpm), `README.md` (cây thư mục), comment đầu file; PR chặng 1.
+- [x] **T6: tài liệu chặng 1; PR.** `docs/quality-gates.md` (CI cho pnpm), `README.md` (cây thư mục), comment đầu file; PR chặng 1.
 
 ### Checkpoint 1: sau T6
 - [ ] PR chặng 1 merge, CI xanh. Năm lệnh kiểm xanh; test của dự án npm không đổi.

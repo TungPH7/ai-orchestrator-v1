@@ -1,0 +1,4 @@
+# The pnpm workspace of __TITLE__ (ai-orchestrator, project-scaffold part 2): every app in apps/, one pnpm-lock.yaml for
+# the repo. pnpm 10 and later read their settings here too; ao-kit add merges in those of a template, such as allowBuilds.
+packages:
+  - apps/*

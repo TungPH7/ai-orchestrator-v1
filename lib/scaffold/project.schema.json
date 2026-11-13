@@ -12,6 +12,10 @@
       "type": "string",
       "pattern": "^[a-z][a-z0-9-]{0,30}$"
     },
+    "package_manager": {
+      "description": "How the project installs its packages and runs its scripts (project-scaffold part 2, spec 2.1); npm when absent.",
+      "enum": ["npm", "pnpm"]
+    },
     "jira": {
       "type": "object",
       "additionalProperties": false,
@@ -55,8 +59,8 @@
       }
     },
     "apps": {
+      "description": "The apps of the project; none until ao-kit add brings the first one to a pnpm project (project-scaffold part 2, spec 2.2).",
       "type": "object",
-      "minProperties": 1,
       "propertyNames": { "pattern": "^[a-z][a-z0-9-]*$" },
       "additionalProperties": { "$ref": "#/$defs/app" }
     },
@@ -86,8 +90,8 @@
       "properties": {
         "repo": { "type": "string" },
         "path": { "type": "string", "minLength": 1 },
-        "profile": { "description": "The stack of the app; B2 and B3 add react and spring-boot.", "enum": ["nextjs", "nestjs"] },
-        "dev": { "description": "The command that runs the app on this machine, npm or node with no shell.", "type": "string" },
+        "profile": { "description": "The stack of the app; react since project-scaffold part 2, B3 adds spring-boot.", "enum": ["nextjs", "nestjs", "react"] },
+        "dev": { "description": "The command that runs the app on this machine, npm, pnpm or node with no shell.", "type": "string" },
         "port": {
           "type": "object",
           "additionalProperties": false,
