@@ -1,6 +1,6 @@
 # SPEC: project-scaffold
 
-> **Trạng thái:** đã duyệt 2026-11-12 (Phiên 27 · Lượt 154), cả năm câu ở mục 9 theo đề xuất. **Phần 1 hoàn thành 2026-11-13** (Phiên 27 · Lượt 198): kit PR #252–#259, sáu tiêu chí ở mục 7 đạt, 11,35 USD agent. Plan, todo, verification: [tasks/archive/project-scaffold-1/](tasks/archive/project-scaffold-1/). Spec này viết chi tiết **phần 1 (B1)**. Phần 2 (B2) có spec chi tiết riêng: [SPEC-project-scaffold-2.md](SPEC-project-scaffold-2.md). Phần 3 (B3) mới có phạm vi (mục 4), và sẽ có spec riêng, bạn duyệt trước khi phần đó bắt đầu. Nguồn: hàng B1–B3 của [misc/thao-luan/concerns.md](misc/thao-luan/concerns.md), mục "Đầu vào cho `project-scaffold`" của [tasks/archive/pilot-1/verification.md](tasks/archive/pilot-1/verification.md), và yêu cầu của bạn ở Lượt 105 và Lượt 153.
+> **Trạng thái:** đã duyệt 2026-11-12 (Phiên 27 · Lượt 154), cả năm câu ở mục 9 theo đề xuất. **Phần 1 hoàn thành 2026-11-13** (Phiên 27 · Lượt 198): kit PR #252–#259, sáu tiêu chí ở mục 7 đạt, 11,35 USD agent. Plan, todo, verification: [tasks/archive/project-scaffold-1/](tasks/archive/project-scaffold-1/). Spec này viết chi tiết **phần 1 (B1)**. Phần 2 (B2) có spec chi tiết riêng: [SPEC-project-scaffold-2.md](SPEC-project-scaffold-2.md). Phần 3 (B3) có spec chi tiết riêng: [SPEC-project-scaffold-3.md](SPEC-project-scaffold-3.md), duyệt 2026-11-14. Nguồn: hàng B1–B3 của [misc/thao-luan/concerns.md](misc/thao-luan/concerns.md), mục "Đầu vào cho `project-scaffold`" của [tasks/archive/pilot-1/verification.md](tasks/archive/pilot-1/verification.md), và yêu cầu của bạn ở Lượt 105 và Lượt 153.
 
 ## 1. Mục tiêu
 
@@ -238,7 +238,7 @@ Các lệnh `/ao-*` không đổi. `/ao-preview` đọc app từ `project.yaml` 
   - hướng dẫn cho dự án nhiều app dựng từ template.
 
   Xong phần 2, repo `shop` của e-commerce có `apps/user` (Next.js) và `apps/admin` (React) chạy trên Development. Trường hợp 1 với NestJS dùng pnpm chỉ làm khi có dự án cần.
-- **Phần 3 (B3):**
+- **Phần 3 (B3):** spec chi tiết ở [SPEC-project-scaffold-3.md](SPEC-project-scaffold-3.md), viết ở Phiên 28 · Lượt 4, với template Java của bạn (nhánh `codebase`, Maven). Phạm vi ban đầu:
   - profile Spring Boot: Gradle hoặc Maven, JaCoCo, kiểm dependency Java, dòng tắt check và path security của Java, skill cho `be-dev`;
   - `ao-kit add --stack spring-boot --from <template>`: bỏ `.githooks/` và `.claude/` của template; skill hữu ích của template thành skill theo stack (Lượt 200);
   - CI chạy lint, typecheck, test và build của app Java;
