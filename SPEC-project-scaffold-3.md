@@ -52,7 +52,7 @@ Bạn sửa ngay nếu điều nào sai:
 4. **PostgreSQL 17**, cùng bản với Testcontainers và `docker-compose.yml` của template.
 5. **`api` không công khai.** Chỉ Caddy trong container `admin` (`/api/*`) và server của `user` (`API_URL`) gọi nó, trên mạng Docker của môi trường.
 6. **`api` chạy ở cổng 3001** trong container, vì `API_URL=http://api:3001` trên VPS và Caddyfile của stack `react` đã dùng cổng này.
-7. **Máy bạn cần JDK 21.** Hiện máy có JDK 17 (Corretto, `JAVA_HOME=C:\opt\jdk-17.0.10`). Câu 4, mục 9.
+7. **Máy bạn đã có JDK 21:** `C:\opt\jdk-21` (21.0.10), cạnh JDK 17 (`C:\opt\jdk-17.0.10`, Corretto), mà `JAVA_HOME` đang trỏ tới. Không phải cài gì, và `JAVA_HOME` giữ nguyên (2.2).
 8. **Phần 3 chỉ deploy Development của `shop`.** Staging và Production đi cùng bản release đầu, ở B4 (câu 1, mục 9).
 9. **Phần 3 không gọi agent trả tiền** (câu 3, mục 9).
 
@@ -85,7 +85,13 @@ node <kit>/scripts/ao-kit.mjs add e-commerce/shop api --stack spring-boot --from
 **Script `scripts/mvnw.mjs` của kit** chạy wrapper của app:
 - Linux và macOS: `./mvnw <tham số>`, không qua shell.
 - Windows: `mvnw.cmd` là file batch, mà Node không chạy được file `.cmd` nếu không qua shell. Script gọi `cmd.exe /d /s /c mvnw.cmd <tham số>`, và chỉ nhận tham số cố định của `package.json`, không nhận chữ từ ngoài vào.
-- Chọn JDK: dùng `JAVA_HOME` khi bản của nó khớp `<java.version>` của `pom.xml`; không khớp thì tìm JDK đúng bản ở các thư mục cài thường gặp, và chỉ đặt `JAVA_HOME` cho tiến trình con. Như vậy `JAVA_HOME` của bạn (JDK 17, cho dự án khác) giữ nguyên.
+- Chọn JDK theo `<java.version>` của `pom.xml`, theo thứ tự:
+  1. `JAVA_HOME`, khi bản của nó khớp;
+  2. biến `JAVA_HOME_<bản>` nếu có, như `JAVA_HOME_21`, theo cách runner của GitHub đặt tên;
+  3. các JDK nằm cạnh `JAVA_HOME`: trên máy bạn là `C:\opt\jdk-21`;
+  4. các thư mục cài thường gặp, như `C:\Program Files\Eclipse Adoptium`.
+
+  Script chỉ đặt `JAVA_HOME` cho tiến trình con, nên `JAVA_HOME` của bạn (JDK 17, cho dự án khác) giữ nguyên. Không tìm thấy thì dừng, và nói bản cần cài.
 - Với `dev`: đọc `apps/api/.env` (không commit), bật Postgres bằng `docker compose up -d --wait`, rồi `spring-boot:run` với `PORT` của `/ao-preview`.
 
 | Script của `apps/api/package.json` | Maven |
@@ -281,7 +287,8 @@ tests/                           test của từng phần trên
    - Google Drive qua `rclone`, với token chỉ ghi được file nó tạo;
    - snapshot của nhà cung cấp VPS.
 3. **Kiểm thật bằng agent:** mình đề xuất phần 3 tốn 0 USD agent. Task sửa code `api` do phiên chính làm, như `SHOP-1` ở B2. `be-dev` chạy Java lần đầu ở Epic đầu của B4. Cách khác: một Task nhỏ cho `be-dev` ngay ở phần 3, khoảng 8–15 USD [Ước] gồm cả review.
-4. **JDK 21 trên máy bạn:** mình đề xuất tự cài Temurin 21 bằng `winget install EclipseAdoptium.Temurin.21.JDK`. Bạn chỉ bấm **Yes** khi Windows hỏi quyền. `JAVA_HOME` giữ JDK 17 cho các dự án khác, vì `mvnw.mjs` tự chọn JDK theo `pom.xml` (2.2).
+
+Câu 4 của bản nháp đầu (cài JDK 21) đã bỏ ở Lượt 5: máy bạn có sẵn JDK 21 ở `C:\opt\jdk-21`.
 
 ## Nguồn
 
