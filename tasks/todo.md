@@ -68,7 +68,7 @@
   - **Đạt khi:** `npm run profiles:check` dựng `next-nest` như hiện nay, và dựng thêm một dự án gồm `base-pnpm`, app `web` (stack `nextjs`) và app `admin` (stack `react`). Trên dự án đó, lệnh chạy `pnpm install` và bốn script ở gốc. Workflow `profiles.yml` cài pnpm.
   - **Kiểm:** chạy trên máy và trong CI của kit.
   - **File:** `scripts/profiles-check.mjs`, `.github/workflows/profiles.yml`.
-- [ ] **T10: chép template** (spec 2.2; plan, quyết định 6, 7).
+- [x] **T10: chép template** (spec 2.2; plan, quyết định 6, 7).
   - **Đạt khi:**
     - chép đúng file đã commit ở `HEAD` của template; bỏ những gì `--exclude` chỉ ra; báo khi template có thay đổi chưa commit;
     - bỏ đúng danh sách của spec 2.2, và in từng file đã bỏ;
