@@ -62,7 +62,7 @@
   - **Đạt khi:**
     - khung app Vite + React + TypeScript, Vitest (ghi lcov), ESLint, ghim bản;
     - app đọc cổng từ `PORT`; `vite.config.ts` chuyển `/api` sang API ở máy;
-    - Dockerfile build file tĩnh rồi phục vụ bằng Caddy trong container: không root, cổng 8080, tắt admin API của Caddy, `/api/*` chuyển tới `api` trên mạng Docker của môi trường, đường dẫn lạ trả `index.html`.
+    - Dockerfile build file tĩnh rồi phục vụ bằng Caddy trong container: không root, ở cổng của app (mặc định 5173, cùng cổng với `project.yaml` và `deploy.yaml`), tắt admin API của Caddy, `/api/*` chuyển tới `api` trên mạng Docker của môi trường, đường dẫn lạ trả `index.html`.
   - **File:** `profiles/stacks/react/`, test.
 - [x] **T9: `profiles:check` cho dự án pnpm** (spec 2.3; plan, quyết định 5).
   - **Đạt khi:** `npm run profiles:check` dựng `next-nest` như hiện nay, và dựng thêm một dự án gồm `base-pnpm`, app `web` (stack `nextjs`) và app `admin` (stack `react`). Trên dự án đó, lệnh chạy `pnpm install` và bốn script ở gốc. Workflow `profiles.yml` cài pnpm.
@@ -96,11 +96,11 @@
 - [x] **T13: tài liệu chặng 2; PR.** `README.md`, comment đầu file; PR chặng 2.
 
 ### Checkpoint 2: sau T13
-- [ ] PR chặng 2 merge; `profiles:check` xanh trong CI của kit, với dự án pnpm.
+- [x] PR chặng 2 merge; `profiles:check` xanh trong CI của kit, với dự án pnpm. Kit PR #263 (`7f92d92`).
 
 ## Chặng 3: nhiều app công khai, nhánh `task/scaffold2-3`
 
-- [ ] **T14: luật và cấu hình** (spec 2.4; plan, quyết định 8).
+- [x] **T14: luật và cấu hình** (spec 2.4; plan, quyết định 8).
   - **Đạt khi:**
     - D2 của `deploy.yaml` đòi ít nhất một app công khai;
     - `deployer.schema.json` và `deployer-config.mjs` nhận cả hai dạng `hosts`; host không trùng trên cả VPS;
@@ -108,7 +108,7 @@
     - `doctor` in đoạn `deployer.yaml` theo dạng đúng: một app công khai thì dạng cũ, từ hai app thì dạng theo app.
   - **Kiểm:** fixture đúng và sai cho hai dạng; `npm run validate` vẫn qua `vps/deployer.example.yaml`.
   - **File:** `lib/release/deploy-config.mjs`, `lib/release/deployer.schema.json`, `lib/release/deployer-config.mjs`, `lib/scaffold/project.schema.json`, `lib/scaffold/project-config.mjs`, `lib/scaffold/doctor.mjs`, fixture, test.
-- [ ] **T15: deployer, Caddy, bản ghi** (spec 2.4).
+- [x] **T15: deployer, Caddy, bản ghi** (spec 2.4).
   - **Đạt khi:**
     - deployer tìm host của từng app công khai; thiếu thì không deploy, và ghi lý do;
     - `AO_PUBLIC_URL` và host của smoke test theo từng app;
@@ -119,7 +119,7 @@
     - test đỏ trước: Caddyfile của cấu hình một app công khai giống hệt chữ với bản hiện nay;
     - hai app công khai ra hai site; thiếu host thì từ chối; bản ghi cũ đọc được.
   - **File:** `lib/release/caddy.mjs`, `lib/release/docker.mjs`, `lib/release/deployer.mjs`, `lib/release/record.mjs`, `scripts/ao-deploy.mjs`, test.
-- [ ] **T16: `qa`, `/ao-status`, Playwright** (spec 2.4; plan, quyết định 9).
+- [x] **T16: `qa`, `/ao-status`, Playwright** (spec 2.4; plan, quyết định 9).
   - **Đạt khi:**
     - `/ao-qa` và regression của `/ao-release` truyền `E2E_<APP>_URL` cho từng app công khai, lấy từ `project.yaml` của commit đang chạy;
     - `ao-step` dừng, và nói hai file lệch nhau, khi host của `environment_url` không khớp app nào;
@@ -128,7 +128,7 @@
     - `playwright.config.ts` của `base-pnpm` dựng project từ app công khai của `project.yaml`, với basic auth cho đúng origin của từng app.
   - **Kiểm:** test của `steps`, `prompts`, `facts`; dự án một app vẫn chỉ có `E2E_BASE_URL` như cũ.
   - **File:** `lib/workflow/steps.mjs`, `lib/workflow/prompts.mjs`, `lib/workflow/facts.mjs`, `agents/prompts/qa.md`, `profiles/base-pnpm/playwright.config.ts`, test.
-- [ ] **T17: tài liệu chặng 3; PR.** `docs/vps-setup.md` (`hosts` theo app, DNS), `docs/release-workflow.md`, `vps/deployer.example.yaml`; PR chặng 3.
+- [x] **T17: tài liệu chặng 3; PR.** `docs/vps-setup.md` (`hosts` theo app, DNS), `docs/release-workflow.md`, `vps/deployer.example.yaml`; PR chặng 3.
 
 ## Chặng 4: ảnh chụp và design system, nhánh `task/scaffold2-4`
 
@@ -174,7 +174,7 @@
   - `/ao-preview` chạy hai app của PR trên máy bạn. **Bạn** xem, rồi merge khi CI xanh.
   - Task được Cancel, kèm comment trỏ tới PR, như `AOG-3`.
 - [ ] **T24 [bạn]: Development chạy hai host** (tiêu chí 4).
-  1. **Bạn:** thêm bản ghi DNS cho `shop-dev` và `shop-admin-dev`, nếu domain chưa có wildcard;
+  1. DNS: bản ghi wildcard `*.ao.t2g.io.vn` đã có (`docs/vps-setup.md`, mục 7), nên không phải thêm bản ghi;
   2. mình hỏi rồi thêm `shop` vào `deployer.yaml` trên VPS, cùng secret của Development;
   3. deployer deploy `develop`: smoke test đạt; hai host qua basic auth;
   4. Caddyfile của `ao-sample` và `ao-pilot` không đổi, hai dự án vẫn chạy;

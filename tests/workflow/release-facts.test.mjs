@@ -31,6 +31,8 @@ const answers = {
   [`/compare/main...${sha('f')}`]: { status: 'ahead', ahead_by: 3 },
   [`/compare/main...${sha('d')}`]: { status: 'behind', ahead_by: 0 },
   '/tags': [{ name: 'v0.1.0', commit: { sha: sha('d') } }],
+  // project.yaml at what runs (project-scaffold part 2, spec 2.4): none at b, as before part 2.
+  [`/contents/.ai-orchestrator/project.yaml?ref=${sha('b')}`]: { $status: 404 },
 };
 const github = recordedClient(answers);
 
@@ -82,7 +84,7 @@ test('the QA facts of an item: the QA environment of its route, the release that
   // New work merges into develop and is tested on Development; a hotfix merges into main and is tested on Staging.
   assert.deepEqual(await readQaFacts(github, { base: 'develop', mergeCommit: sha('a') }, { contract, mapping }), {
     environment: 'development',
-    running: { sha: sha('b'), deployment: 2, url: 'https://pilot-dev.ao.t2g.io.vn' },
+    running: { sha: sha('b'), deployment: 2, url: 'https://pilot-dev.ao.t2g.io.vn', projectText: null },
     contains: true,
   });
   assert.deepEqual(await readQaFacts(github, { base: 'main', mergeCommit: sha('a') }, { contract, mapping }), { environment: 'staging', running: null, contains: false });
@@ -160,6 +162,7 @@ test('the ship facts: the release branch, what Staging runs, the open Bugs Criti
     '/deployments/41/statuses?per_page=1': latest('success', 'https://pilot-staging.ao.t2g.io.vn'),
     [`/compare/${sha('e')}...${sha('f')}`]: { status: 'ahead', files: [{ filename: 'CHANGELOG.md' }, { filename: 'docs/releases/v0.2.0.md', previous_filename: 'docs/releases/draft.md' }] },
     '/pulls?base=main&state=open': [{ number: 30, head: { ref: 'release/v0.2.0', sha: sha('f') } }, { number: 31, head: { ref: 'hotfix/DEMO-40-x', sha: sha('1') } }],
+    [`/contents/.ai-orchestrator/project.yaml?ref=${sha('f')}`]: { content: Buffer.from('name: pilot\n').toString('base64'), encoding: 'base64' },
   });
   const severity = (name) => `project = "DEMO" AND issuetype = "Bug" AND fixVersion = "v0.2.0" AND statusCategory != Done AND "Severity" = "${name}"`;
   const jira = fakeJira({ gets: { '/rest/api/3/project/DEMO/versions': [] }, search: { [severity('High')]: [{ key: 'DEMO-30' }] } });
@@ -168,6 +171,7 @@ test('the ship facts: the release branch, what Staging runs, the open Bugs Criti
   const facts = await readShipFacts({ jira, github: ship, deploys: ship, local, contract, mapping, space: 'DEMO', version: 'v0.2.0' });
   assert.deepEqual(facts.branch, { name: 'release/v0.2.0', version: '0.2.0', sha: sha('f') });
   assert.equal(facts.staging.sha, sha('f'));
+  assert.equal(facts.staging.projectText, 'name: pilot\n');
   assert.deepEqual(facts.bugs, [{ key: 'DEMO-30', severity: 'High' }]);
   assert.deepEqual(facts.regression, { sha: sha('e'), result: 'PASS' });
   assert.deepEqual(facts.changedSinceRegression, ['CHANGELOG.md', 'docs/releases/draft.md', 'docs/releases/v0.2.0.md']);

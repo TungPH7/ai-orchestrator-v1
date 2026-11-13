@@ -52,7 +52,7 @@ function fakeSmoke(results) {
   return { asked, smoke };
 }
 const PASS = { ok: true, failures: [] };
-const deploy = (d, s, options = {}) => swap({ run: d.run, smoke: s.smoke, project: 'sample', env: 'development', tree: T, config: CONFIG, secrets: SECRETS, publicUrl: PUBLIC_URL, ...options });
+const deploy = (d, s, options = {}) => swap({ run: d.run, smoke: s.smoke, project: 'sample', env: 'development', tree: T, config: CONFIG, secrets: SECRETS, publicUrls: { web: PUBLIC_URL }, ...options });
 
 const runLine = (app, env) => `run --detach --name ${name(app, T)} --network ${NET} --restart unless-stopped --pull never --security-opt no-new-privileges --cap-drop ALL --label ao.project=sample --label ao.env=development --label ao.app=${app} --label ao.tree=${T} ${env.map((n) => `--env ${n}`).join(' ')} ao-sample-${app}:${T}`;
 const give = (app, tree) => [`network disconnect ${NET} ${name(app, tree)}`, `network connect --alias ${app} --alias ao-sample-development-${app} ${NET} ${name(app, tree)}`];

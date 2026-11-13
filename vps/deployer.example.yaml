@@ -12,6 +12,11 @@ apps:                                       # the slugs of the agents' two Apps,
   review: tungph7-ao-review
 jira_token_file: /etc/ao/jira-read.token    # read-only token of the CI account, for the docs PR rule of audit
 approvers: [TungPH7]                        # AO_APPROVERS: the logins whose deployment requests count
+# A project with one public app gives one host for each environment, as below. With two or more public apps, each app
+# gives its own (project-scaffold part 2, spec 2.4; docs/vps-setup.md, section 11):
+#   hosts:
+#     user: { development: shop-dev.ao.t2g.io.vn, staging: shop-staging.ao.t2g.io.vn, production: shop.ao.t2g.io.vn }
+#     admin: { development: shop-admin-dev.ao.t2g.io.vn, staging: shop-admin-staging.ao.t2g.io.vn, production: shop-admin.ao.t2g.io.vn }
 projects:
   - name: pilot
     repo: TungPH7/ao-pilot

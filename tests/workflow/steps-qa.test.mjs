@@ -114,3 +114,26 @@ test('/ao-qa stops when the deployment that runs has no URL: a deploy by another
   const decision = decide(qaFacts({ qa: { running: { sha: RUNNING, deployment: 7, url: null } } }));
   assert.equal(decision.reason, 'the deployment of cccccccc on Development has no URL: only the deployer of the kit deploys there with one (spec 2.3)');
 });
+
+// project-scaffold part 2, spec 2.4: two public apps, each on its own host of project.yaml at the commit that runs.
+const SHOP = [
+  'apps:',
+  '  user: { repo: shop, path: apps/user, profile: nextjs, dev: x, port: { env: PORT, default: 3000 }, health: /, public: true, hosts: { development: shop-dev.ao.t2g.io.vn, staging: shop-staging.ao.t2g.io.vn, production: shop.ao.t2g.io.vn } }',
+  '  shop-admin: { repo: shop, path: apps/shop-admin, profile: react, dev: x, port: { env: PORT, default: 5173 }, health: /, public: true, hosts: { development: shop-admin-dev.ao.t2g.io.vn, staging: shop-admin-staging.ao.t2g.io.vn, production: shop-admin.ao.t2g.io.vn } }',
+  '  api: { repo: shop, path: apps/api, profile: nestjs, dev: x, port: { env: PORT, default: 3001 }, health: /health }',
+].join('\n');
+
+test('/ao-qa with two public apps: qa gets the URL of each, and the prompt names them', () => {
+  const running = { sha: RUNNING, deployment: 7, url: 'https://shop-dev.ao.t2g.io.vn', projectText: SHOP };
+  const [run] = decide(qaFacts({ qa: { running } })).runs;
+  assert.deepEqual(run.env, { E2E_BASE_URL: 'https://shop-dev.ao.t2g.io.vn', E2E_USER_URL: 'https://shop-dev.ao.t2g.io.vn', E2E_SHOP_ADMIN_URL: 'https://shop-admin-dev.ao.t2g.io.vn' });
+  assert.match(run.prompt, /Its public apps answer at: user https:\/\/shop-dev\.ao\.t2g\.io\.vn, shop-admin https:\/\/shop-admin-dev\.ao\.t2g\.io\.vn\. Check DEMO-21/);
+  assert.match(run.prompt, /run the E2E of the repo with E2E_BASE_URL, the E2E_<APP>_URL of each app, E2E_HTTP_USER and E2E_HTTP_PASSWORD, which are set/);
+});
+
+test('/ao-qa stops when the deployment answers on a host project.yaml does not name: the two files differ', () => {
+  const running = { sha: RUNNING, deployment: 7, url: 'https://elsewhere.ao.t2g.io.vn', projectText: SHOP };
+  const decision = decide(qaFacts({ qa: { running } }));
+  assert.equal(decision.go, false);
+  assert.match(decision.reason, /^development answers at https:\/\/elsewhere\.ao\.t2g\.io\.vn, which is the host of no public app in \.ai-orchestrator\/project\.yaml: the hosts there and in \/etc\/ao\/deployer\.yaml differ/);
+});

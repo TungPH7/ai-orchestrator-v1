@@ -105,3 +105,23 @@ test('checkProject C4: the lockfile at the root is the one of package_manager, a
   assert.deepEqual(checkPnpm({ workspaceText: 'packages: [' }), ['C2 apps.web.path', 'C2 apps.api.path']);
   assert.match(checkProject({ config: pnpm, deployText, packageJson: pnpmJson, workspaceText: null, exists: pnpmRepo })[0].message, /workspace of pnpm-workspace\.yaml/);
 });
+
+// project-scaffold part 2, spec 2.4: the hosts of public apps.
+test('hosts: only a public app has them, no host twice, and each public app names them once two or more are public', () => {
+  const HOSTS = { development: 'shop-dev.ao.t2g.io.vn', staging: 'shop-staging.ao.t2g.io.vn', production: 'shop.ao.t2g.io.vn' };
+  assert.deepEqual(rules(edited((d) => (d.apps.web.hosts = HOSTS))), []);
+  assert.deepEqual(rules(edited((d) => (d.apps.api.hosts = HOSTS))), ['P8 apps.api.hosts']);
+  assert.deepEqual(rules(edited((d) => (d.apps.web.hosts = { ...HOSTS, staging: 'not a host' }))), ['P1 apps.web.hosts.staging']);
+  assert.deepEqual(rules(edited((d) => { d.apps.api.public = true; d.apps.web.hosts = HOSTS; d.apps.api.hosts = { ...HOSTS, development: 'api-dev.ao.t2g.io.vn', staging: 'api-staging.ao.t2g.io.vn' }; })), ['P9 apps.api.hosts.production']);
+
+  // C5: two public apps, one without hosts.
+  const two = parse(text);
+  two.apps.api.public = true;
+  two.apps.web.hosts = HOSTS;
+  const { config, errors } = readProjectConfig(stringify(two));
+  assert.deepEqual(errors, []);
+  const twoDeploy = deployText.replace('health: /health\n', 'health: /health\n    public: true\n');
+  assert.deepEqual(checkProject({ config, deployText: twoDeploy, packageJson, exists: npmRepo }).map(({ rule, path }) => `${rule} ${path}`), ['C5 apps.api.hosts']);
+  // One public app needs none: the hosts of its project on the VPS serve it, as before.
+  assert.deepEqual(checkProject({ config: readProjectConfig(text).config, deployText, packageJson, exists: npmRepo }), []);
+});

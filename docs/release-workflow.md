@@ -128,8 +128,12 @@ Deployer không tự thử lại một yêu cầu đã `failure`. Trong bài th�
   ```
 
   Giá trị của biến nằm ở `/etc/ao/secrets/<dự án>/<môi trường>.env` trên VPS. Biến không khai trong `env` thì không tới container.
-- **`AO_PUBLIC_URL`:** deployer đặt biến này cho app `public`. Server phải nhận Host và Origin của URL đó, vì Caddy đứng trước app. `ao-pilot` ghi lý do ở ADR-0003.
-- **`playwright.config.ts`:** có `E2E_BASE_URL` thì test chạy vào URL đó, với `httpCredentials` từ `E2E_HTTP_USER` và `E2E_HTTP_PASSWORD` khi có cả hai. Test gửi request mà trình duyệt không gửi được mang tag `@local` và chạy trên server tại chỗ.
+- **Nhiều app công khai** (project-scaffold phần 2, mục 2.4): `deploy.yaml` cần ít nhất một app `public`, và có thể có nhiều hơn, như `user` và `admin` của `shop`.
+  - Khi có từ hai app công khai, mỗi app khai `hosts` của ba môi trường trong `project.yaml`, và `/etc/ao/deployer.yaml` trên VPS khai đúng các host đó, theo dạng host theo app (`docs/vps-setup.md`, mục 11). `ao-kit doctor` in sẵn các dòng cần chép.
+  - Deployer không deploy khi một app công khai thiếu host, và giữ bản đang chạy.
+  - Deployment trên GitHub mang URL của app công khai đầu tiên trong `deploy.yaml`.
+- **`AO_PUBLIC_URL`:** deployer đặt biến này cho mỗi app `public`, là URL host của chính app đó. Server phải nhận Host và Origin của URL đó, vì Caddy đứng trước app. `ao-pilot` ghi lý do ở ADR-0003.
+- **`playwright.config.ts`:** có `E2E_BASE_URL` thì test chạy vào URL đó, với `httpCredentials` từ `E2E_HTTP_USER` và `E2E_HTTP_PASSWORD` khi có cả hai. Test gửi request mà trình duyệt không gửi được mang tag `@local` và chạy trên server tại chỗ. Với nhiều app công khai, `qa` còn nhận `E2E_<APP>_URL` cho từng app, như `E2E_ADMIN_URL`, lấy từ `hosts` của `project.yaml` ở commit đang chạy. `playwright.config.ts` của profile `base-pnpm` đọc sẵn các biến này. `/ao-qa` dừng khi URL của deployment không phải host của app nào trong `project.yaml`, vì như vậy là hai file đang lệch nhau.
 - **`AO_ENV_AUTH`:** biến môi trường user trên máy bạn, giá trị `ao:<mật khẩu>`, là basic auth của Development và Staging. `ao-step` chỉ truyền nó cho `qa`, dưới dạng biến môi trường.
 
 Trace của Playwright giữ `httpCredentials` ở dạng rõ. Vì vậy sau `qa` trên Development và Staging, trace nằm lại `.ai/runs/<KEY>/traces/` trên máy bạn, và chỉ ảnh, video được gắn lên Jira. Đừng đưa `test-results/` lên nơi nào khác.

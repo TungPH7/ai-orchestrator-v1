@@ -82,6 +82,7 @@
   "$defs": {
     "repo": { "type": "string", "pattern": "^[A-Za-z0-9-]+/[A-Za-z0-9._-]+$" },
     "slug": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+    "host": { "type": "string", "maxLength": 253, "pattern": "^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)+$" },
     "id": { "anyOf": [{ "type": "integer", "minimum": 1 }, { "type": "string", "pattern": "^[0-9]+$" }] },
     "app": {
       "type": "object",
@@ -103,6 +104,17 @@
         },
         "health": { "description": "The path that answers 200 once the app is up.", "type": "string", "pattern": "^/" },
         "public": { "type": "boolean" },
+        "hosts": {
+          "description": "The host of a public app in each environment, the same as under projects of /etc/ao/deployer.yaml on the VPS: qa reaches the app there, and ao-kit doctor prints those lines (project-scaffold part 2, spec 2.4).",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["development", "staging", "production"],
+          "properties": {
+            "development": { "$ref": "#/$defs/host" },
+            "staging": { "$ref": "#/$defs/host" },
+            "production": { "$ref": "#/$defs/host" }
+          }
+        },
         "env": { "type": "object", "additionalProperties": { "type": "string" } }
       }
     }

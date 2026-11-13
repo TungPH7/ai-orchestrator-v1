@@ -271,6 +271,28 @@ done
 install -o root -g aodeploy -m 640 /opt/ao/kit/vps/deployer.example.yaml /etc/ao/deployer.yaml
 ```
 
+**Dự án có nhiều app công khai** (project-scaffold phần 2, mục 2.4). Một app công khai thì dùng `hosts` một host cho mỗi môi trường, như `pilot` ở trên. Từ hai app công khai trở lên, mỗi app có host riêng cho từng môi trường:
+
+```yaml
+  - name: shop
+    repo: TungPH7/shop
+    space: SHOP
+    hosts:
+      user:
+        development: shop-dev.ao.t2g.io.vn
+        staging: shop-staging.ao.t2g.io.vn
+        production: shop.ao.t2g.io.vn
+      admin:
+        development: shop-admin-dev.ao.t2g.io.vn
+        staging: shop-admin-staging.ao.t2g.io.vn
+        production: shop-admin.ao.t2g.io.vn
+```
+
+- Tên app là tên trong `deploy.yaml`; các host phải giống `hosts` của từng app trong `project.yaml`. `ao-kit doctor` in sẵn đoạn này.
+- Bản ghi wildcard `*.ao.t2g.io.vn` (mục 7) đã trỏ mọi host này về VPS, nên không phải thêm bản ghi DNS.
+- Caddy có một site cho mỗi host; site của app chưa chạy ở môi trường đó trả 503.
+- Không host nào được dùng hai lần trên VPS: `npm run validate` của kit và deployer đều kiểm.
+
 **7. Điểm bắt đầu và systemd.** `baseline` in head hiện tại của `develop`, `main` và nhánh release đang mở. Có `--confirm` thì deployer ghi các head đó là đã kiểm, và chỉ deploy từ commit kế tiếp, hoặc từ yêu cầu deploy của bạn.
 
 ```

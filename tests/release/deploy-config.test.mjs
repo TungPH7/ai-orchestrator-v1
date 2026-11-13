@@ -54,11 +54,17 @@ test('schema errors come alone: the other rules only read a file of the right sh
   assert.deepEqual(validateDeployConfig(broken).map(({ rule, path }) => `${rule} ${path}`), ['D1 apps.web.public']);
 });
 
+// project-scaffold part 2, spec 2.4: D2 asks for one public app at least; two are fine, each on its own host.
+test('two public apps make a valid deploy.yaml', () => {
+  const two = applyPatch(config, [{ op: 'set', path: 'apps.admin', value: { dockerfile: 'apps/admin/Dockerfile', port: 5173, health: '/', public: true } }]);
+  assert.deepEqual(validateDeployConfig(two), []);
+});
+
 // Each fixture breaks exactly one rule: { description, rule, expect: [paths], patch: [ops] }
 const fixtures = readdirSync(FIXTURE_DIR).filter((file) => file.endsWith('.yaml')).sort();
 
 test('the fixtures cover what the schema must refuse (spec 2.3, 7)', () => {
-  for (const name of ['d1-volume', 'd1-privileged', 'd1-host-port', 'd1-host-network', 'd2-second-public-app', 'd3-smoke-unknown-app']) {
+  for (const name of ['d1-volume', 'd1-privileged', 'd1-host-port', 'd1-host-network', 'd2-no-public-app', 'd3-smoke-unknown-app']) {
     assert.ok(fixtures.includes(`${name}.yaml`), name);
   }
 });
