@@ -1,6 +1,6 @@
 # SPEC: project-scaffold, phần 3 (B3)
 
-> **Trạng thái:** bản nháp, viết ở Phiên 28 · Lượt 4 (2026-11-14), chờ bạn duyệt. Phần 1 ở [SPEC-project-scaffold.md](SPEC-project-scaffold.md) (mục 4 ghi phạm vi phần 3), phần 2 ở [SPEC-project-scaffold-2.md](SPEC-project-scaffold-2.md). Nguồn: hàng B3 của [misc/thao-luan/concerns.md](misc/thao-luan/concerns.md), Lượt 199–200 của Phiên 27, Lượt 3–4 của Phiên 28, và mục T26 "Việc kit để sau" của [tasks/archive/project-scaffold-2/verification.md](tasks/archive/project-scaffold-2/verification.md).
+> **Trạng thái:** viết ở Phiên 28 · Lượt 4, **đã duyệt 2026-11-14 (Lượt 7)**, cả ba câu ở mục 9 theo đề xuất. Plan và task: [tasks/plan.md](tasks/plan.md), [tasks/todo.md](tasks/todo.md). Phần 1 ở [SPEC-project-scaffold.md](SPEC-project-scaffold.md) (mục 4 ghi phạm vi phần 3), phần 2 ở [SPEC-project-scaffold-2.md](SPEC-project-scaffold-2.md). Nguồn: hàng B3 của [misc/thao-luan/concerns.md](misc/thao-luan/concerns.md), Lượt 199–200 của Phiên 27, Lượt 3–4 của Phiên 28, và mục T26 "Việc kit để sau" của [tasks/archive/project-scaffold-2/verification.md](tasks/archive/project-scaffold-2/verification.md).
 
 ## 1. Mục tiêu
 
@@ -22,6 +22,10 @@ Xong phần 3, `shop` có đủ ba app và database trên Development, và `/ao-
   - template Java là `D:/Document/1Khoahoc/4LapTrinh/java/tungph7-learnPostgresql-api-java`, nhánh `codebase`;
   - template dùng Maven, nên stack chỉ làm Maven;
   - bắt đầu B3, và quyền tự làm theo đề xuất (Lượt 181) áp dụng tiếp cho B3.
+- **Lượt 5–7 (Phiên 28):**
+  - máy bạn đã có JDK 21 ở `C:\opt\jdk-21`, nên câu 4 của bản nháp đầu (cài JDK) bỏ đi;
+  - bạn hỏi nên dùng `codebase` hay `base-3/implement-features-to-learn-postgresql`. Giữ `codebase`: `base-3` mang theo chín tính năng e-commerce chưa qua review của kit, có endpoint chẩn đoán database mở cho mọi người (`/api/**` chưa cần đăng nhập), và chưa qua commit dọn `0a0ccac`. Phần `common/` dùng chung của `base-3` (`PagedResponse`, `SqlStatement`, `TstzRange`, `ClockConfig`, ba exception) vào `shop` qua một Task khi Epic đầu cần;
+  - bạn duyệt spec, cả ba câu ở mục 9 theo đề xuất.
 
 ### 1.2 Template Java, nhánh `codebase` (`0a0ccac`)
 
@@ -279,7 +283,10 @@ tests/                           test của từng phần trên
 | Backup chứa dữ liệu người dùng | Chỉ root đọc được; không rời VPS cho tới khi bạn chọn chỗ (câu 2) |
 | `.claude/` của template có 1.943 file | `add` bỏ cả thư mục và in số file đã bỏ |
 
-## 9. Câu hỏi
+## 9. Câu hỏi đã trả lời
+
+Ở Lượt 7, bạn duyệt cả ba đề xuất.
+
 
 1. **Staging và Production của `shop`:** mình đề xuất phần 3 chỉ deploy Development, đo RAM, rồi ước cho ba môi trường. Staging và Production lên cùng bản release đầu ở B4, vì trước đó `admin` cần đăng nhập thật, và backup cần chỗ ngoài VPS.
 2. **Bản sao backup ngoài VPS:** mình đề xuất phần 3 chỉ giữ backup trên VPS và thử khôi phục thật. Chỗ để bản sao chọn trước bản release đầu (B4), giữa ba cách:
