@@ -1,0 +1,22 @@
+# The stack react (project-scaffold part 2, spec 2.3): one React app built with Vite, in a pnpm project. ao-kit add
+# copies files/ into apps/<app> with __APP__, __PORT__, __NAME__ and __TITLE__ replaced. With --from it takes the code
+# of your template instead, and copies the Dockerfile and the Caddyfile of the container when the template has none.
+# Built, the app is static files: Caddy in its container serves them, and sends /api/* to the app api.
+name: react
+package_manager: pnpm
+# The profile of the app in project.yaml.
+profile: react
+# The app in project.yaml: the script its dev command runs, the first port tried, and the path that answers once it is
+# up. On the VPS the container listens on the same port.
+dev_script: dev
+port: 5173
+health: /
+# Where the Dockerfile sits in the app folder, for deploy.yaml.
+dockerfile: Dockerfile
+# Files of the stack that ao-kit add copies next to the code of a template, when the template has none.
+container_files: [Dockerfile, Caddyfile]
+# The dev agent that builds the app: it gets the skill <app>-conventions a template brings.
+dev_role: fe-dev
+# roster.local.yaml: the stack skills; ao-kit add copies each one from where the kit keeps it.
+skills:
+  fe-dev: [vercel-react-best-practices]

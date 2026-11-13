@@ -80,6 +80,8 @@ security_review:
     - "**/compose*.{yml,yaml}"
     - "**/.npmrc"
     - "**/pnpm-lock.yaml"
+    # pnpm 10 and later: which packages run install scripts (allowBuilds), skip the release cooldown, or are overridden
+    - "**/pnpm-workspace.yaml"
     - "**/yarn.lock"
     - "**/.env*"
     - "**/next.config.*"

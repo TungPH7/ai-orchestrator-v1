@@ -21,3 +21,27 @@ Module tìm gói toàn cục trước, rồi tới corepack, và chạy bằng `
 **T4.** `/ao-preview` cài bằng `pnpm install --frozen-lockfile --ignore-scripts` khi `pnpm-lock.yaml` khác lần cài trước, và chạy app qua `pnpm.cjs`. Thông báo của dự án npm giữ nguyên chữ. Phần cài trong worktree của `qa` nằm thẳng trong `scripts/ao-step.mjs` (`addWorktree`), nên chưa có test riêng. Phần đó dùng `managerFromLockfile` và `installArgs`, vốn đã có test; lần chạy thật đầu tiên sẽ là `/ao-qa` trên `shop`.
 
 **T5.** Thử thật profile `base-pnpm` trên thư mục tạm: `pnpm install` dùng pnpm 11.8.0, tạo `pnpm-lock.yaml` trong khoảng 5 giây. `pnpm -r run lint` khi chưa có app in "No projects matched the filters" và thoát mã 0. `.gitignore` của profile giữ `.env.example`, vì template của bạn commit file này.
+
+## Chặng 2: stack và `ao-kit add` (T7–T13), nhánh `task/scaffold2-2`
+
+**Luật cổng (Lượt 203):** bạn đồng ý thêm `**/pnpm-workspace.yaml` vào `security_review.roster_effort_paths`.
+
+**T7–T9.** `profiles:check` dựng `base-pnpm` cùng app `web` (stack `nextjs`) và app `admin` (stack `react`):
+- `pnpm install` mất 186 giây ở lần tải gói đầu tiên;
+- lint, typecheck, test:coverage, build đều xanh;
+- `next-nest` vẫn qua đủ năm bước, chạy qua `runManager`.
+
+Skill `vercel-react-best-practices` không chép thêm bản nào: `add` lấy nó ở `profiles/next-nest/files/.claude/skills/` (`findSkill`).
+
+**T10–T11, thử trên hai template thật của bạn** (Next.js `2660424f`, React `06f0cf54`), trong một dự án tạm:
+- `copyTemplate` chép 237 và 170 file, bỏ `study-guide-impl/`, `frontend-technical/`, `docs/readme/`. Các thư mục và file bị bỏ: `.husky/`, `.commitlintrc.json`, `.github/`, `.nvmrc`, `playwright.config.ts`, lockfile, workspace. `CLAUDE.md` thành skill `user-conventions` và `admin-conventions`.
+- `pnpm-workspace.yaml` ở gốc gộp đủ `allowBuilds` của hai template (`sharp: true`; `unrs-resolver`, `msw`, `esbuild`, `@parcel/watcher`, `@swc/core`: `false`) và `minimumReleaseAgeExclude: [lint-staged]`, không xung đột.
+- `pnpm install` 81 giây; lint xanh.
+- **Typecheck đỏ ở `apps/user/e2e/accessibility.spec.ts`:** repo có hai bản Playwright, 1.64.1 ở gốc (`base-pnpm`) và 1.61.0 ở template. Đã sửa trong `template.mjs`: gốc lấy bản của template đầu tiên, app sau lấy bản của gốc.
+- `test:coverage` xanh, 98 giây, nhưng `apps/admin/coverage/` không có `lcov.info`. `add` báo đúng chỗ này.
+- **Build đỏ ở `apps/user`:** schema env của template (`src/config/env/client.ts`) đòi `NEXT_PUBLIC_API_URL` và `NEXT_PUBLIC_SITE_URL` lúc build. `add` báo hai biến này; việc sửa thuộc T23, và CI cũng cần chúng có giá trị chung cho ba môi trường.
+- `rm -rf .next` trong script `dev` và `build` của template chạy được qua pnpm trên Windows.
+
+**T12.** `setup github` trên repo public đặt giới hạn tương tác (`collaborators_only`, sáu tháng) mỗi lần chạy, nên chạy lại là gia hạn. Lệnh cũng đặt luật duyệt workflow `all_external_contributors` khi chưa có. `doctor` báo chưa đạt khi giới hạn còn dưới 30 ngày hoặc không còn. Định dạng trả về của hai API này khớp với lần đọc thật trên `ao-sample`: `expires_at` là 2027-05-13T02:42:22Z, `approval_policy` là `all_external_contributors`.
+
+**Chưa kiểm được trên máy:** build Docker của hai stack, vì Docker Desktop chưa chạy. Lần build đầu sẽ là deployer ở T24, trừ khi bạn bật Docker trước để mình build thử.

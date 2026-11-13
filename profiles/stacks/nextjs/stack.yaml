@@ -1,0 +1,21 @@
+# The stack nextjs (project-scaffold part 2, spec 2.3): one Next.js app of a pnpm project. ao-kit add copies files/ into
+# apps/<app> with __APP__, __PORT__, __NAME__ and __TITLE__ replaced. With --from it takes the code of your template
+# instead, and copies only the Dockerfile when the template has none. The skeleton is apps/web of the profile next-nest,
+# moved to pnpm.
+name: nextjs
+package_manager: pnpm
+# The profile of the app in project.yaml.
+profile: nextjs
+# The app in project.yaml: the script its dev command runs, the first port tried, and the path that answers once it is up.
+dev_script: dev
+port: 3000
+health: /
+# Where the Dockerfile sits in the app folder, for deploy.yaml.
+dockerfile: Dockerfile
+# Files of the stack that ao-kit add copies next to the code of a template, when the template has none.
+container_files: [Dockerfile]
+# The dev agent that builds the app: it gets the skill <app>-conventions a template brings.
+dev_role: fe-dev
+# roster.local.yaml: the stack skills; ao-kit add copies each one from where the kit keeps it.
+skills:
+  fe-dev: [vercel-react-best-practices]

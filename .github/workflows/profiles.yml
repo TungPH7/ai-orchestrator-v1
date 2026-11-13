@@ -1,14 +1,15 @@
 # Builds each profile of profiles/ in a temporary folder and runs its lint, typecheck, test:coverage and build
-# (project-scaffold spec 3). Only when a PR or a push to main changes a profile or what copies one: npm ci of a profile
-# takes a minute or two.
+# (project-scaffold spec 3), and base-pnpm with the stacks of profiles/stacks/ (part 2, spec 2.3). Only when a PR or a
+# push to main changes a profile or what copies one: installing the packages of a profile takes a few minutes. pnpm
+# comes from corepack, which Node 24 ships, at the version that packageManager of base-pnpm names.
 name: profiles
 
 on:
   pull_request:
-    paths: ['profiles/**', 'lib/scaffold/**', 'scripts/profiles-check.mjs', '.github/workflows/profiles.yml']
+    paths: ['profiles/**', 'lib/scaffold/**', 'lib/quality/package-manager.mjs', 'scripts/profiles-check.mjs', '.github/workflows/profiles.yml']
   push:
     branches: [main]
-    paths: ['profiles/**', 'lib/scaffold/**', 'scripts/profiles-check.mjs', '.github/workflows/profiles.yml']
+    paths: ['profiles/**', 'lib/scaffold/**', 'lib/quality/package-manager.mjs', 'scripts/profiles-check.mjs', '.github/workflows/profiles.yml']
 
 permissions:
   contents: read
@@ -27,4 +28,6 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
+      # The root scripts of a pnpm project call pnpm through a shell, so it must be on the PATH: the shims of corepack.
+      - run: corepack enable pnpm
       - run: npm run profiles:check

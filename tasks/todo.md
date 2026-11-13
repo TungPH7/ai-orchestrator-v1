@@ -48,27 +48,27 @@
 - [x] **T6: tài liệu chặng 1; PR.** `docs/quality-gates.md` (CI cho pnpm), `README.md` (cây thư mục), comment đầu file; PR chặng 1.
 
 ### Checkpoint 1: sau T6
-- [ ] PR chặng 1 merge, CI xanh. Năm lệnh kiểm xanh; test của dự án npm không đổi.
+- [x] PR chặng 1 merge, CI xanh. Năm lệnh kiểm xanh; test của dự án npm không đổi. Kit PR #262 (`9c5796b`).
 
 ## Chặng 2: stack và `ao-kit add`, nhánh `task/scaffold2-2`
 
-- [ ] **T7: stack `nextjs` (pnpm)** (spec 2.3).
+- [x] **T7: stack `nextjs` (pnpm)** (spec 2.3).
   - **Đạt khi:**
     - `profiles/stacks/nextjs/stack.yaml` có giá trị mặc định của app (lệnh `dev`, cổng, `health`), skill của `fe-dev`, và các luật báo chỗ code phải đổi;
     - `files/` là `apps/web` của `next-nest` chuyển sang pnpm, với `output: 'standalone'`;
     - Dockerfile cài bằng pnpm từ lockfile ở gốc, build Next.js standalone, chạy bằng user `node`, không phải root.
   - **File:** `profiles/stacks/nextjs/`, `lib/scaffold/profile.mjs` (`readStack`), test.
-- [ ] **T8: stack `react`** (spec 2.3).
+- [x] **T8: stack `react`** (spec 2.3).
   - **Đạt khi:**
     - khung app Vite + React + TypeScript, Vitest (ghi lcov), ESLint, ghim bản;
     - app đọc cổng từ `PORT`; `vite.config.ts` chuyển `/api` sang API ở máy;
     - Dockerfile build file tĩnh rồi phục vụ bằng Caddy trong container: không root, cổng 8080, tắt admin API của Caddy, `/api/*` chuyển tới `api` trên mạng Docker của môi trường, đường dẫn lạ trả `index.html`.
   - **File:** `profiles/stacks/react/`, test.
-- [ ] **T9: `profiles:check` cho dự án pnpm** (spec 2.3; plan, quyết định 5).
+- [x] **T9: `profiles:check` cho dự án pnpm** (spec 2.3; plan, quyết định 5).
   - **Đạt khi:** `npm run profiles:check` dựng `next-nest` như hiện nay, và dựng thêm một dự án gồm `base-pnpm`, app `web` (stack `nextjs`) và app `admin` (stack `react`). Trên dự án đó, lệnh chạy `pnpm install` và bốn script ở gốc. Workflow `profiles.yml` cài pnpm.
   - **Kiểm:** chạy trên máy và trong CI của kit.
   - **File:** `scripts/profiles-check.mjs`, `.github/workflows/profiles.yml`.
-- [ ] **T10: chép template** (spec 2.2; plan, quyết định 6, 7).
+- [x] **T10: chép template** (spec 2.2; plan, quyết định 6, 7).
   - **Đạt khi:**
     - chép đúng file đã commit ở `HEAD` của template; bỏ những gì `--exclude` chỉ ra; báo khi template có thay đổi chưa commit;
     - bỏ đúng danh sách của spec 2.2, và in từng file đã bỏ;
@@ -77,7 +77,7 @@
     - `CLAUDE.md` thành skill `<app>-conventions`.
   - **Kiểm:** `tests/scaffold/template.test.mjs`, trên thư mục tạm thật, với hai template giả có husky, commitlint, `.github/`, `.claude/`, `CLAUDE.md` và lockfile riêng.
   - **File:** `lib/scaffold/template.mjs`, test.
-- [ ] **T11: `ao-kit add`** (spec 2.2, 2.3).
+- [x] **T11: `ao-kit add`** (spec 2.2, 2.3).
   - **Đạt khi:**
     - không có `--from` thì chép khung của stack; có `--from` thì dùng T10;
     - ghi app vào `project.yaml` (`hosts` là `TODO` khi `--public`), `deploy.yaml` và `roster.local.yaml`; chép Dockerfile của stack khi app chưa có;
@@ -86,14 +86,14 @@
     - từ chối dự án npm, và app đã có.
   - **Kiểm:** `tests/scaffold/add.test.mjs` trên thư mục tạm thật, với hàm cài giả; chạy lại không đổi gì.
   - **File:** `lib/scaffold/add.mjs`, `lib/scaffold/app-report.mjs`, `scripts/ao-kit.mjs`, test.
-- [ ] **T12: repo public** (spec 2.2, câu 1 của mục 9).
+- [x] **T12: repo public** (spec 2.2, câu 1 của mục 9).
   - **Đạt khi:**
     - `setup github` trên repo public đặt giới hạn tương tác `collaborators_only` sáu tháng và luật duyệt workflow `all_external_contributors`; chạy lại thì gia hạn giới hạn tương tác;
     - repo private thì bỏ qua hai việc này, và nói vậy;
     - `doctor` báo khi giới hạn tương tác hết hạn trong vòng 30 ngày, hoặc không còn.
   - **Kiểm:** test với GitHub giả, như test của `setup github` hiện có.
   - **File:** `lib/scaffold/setup-github.mjs`, `lib/scaffold/doctor.mjs`, test.
-- [ ] **T13: tài liệu chặng 2; PR.** `README.md`, comment đầu file; PR chặng 2.
+- [x] **T13: tài liệu chặng 2; PR.** `README.md`, comment đầu file; PR chặng 2.
 
 ### Checkpoint 2: sau T13
 - [ ] PR chặng 2 merge; `profiles:check` xanh trong CI của kit, với dự án pnpm.
