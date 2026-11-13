@@ -1,6 +1,6 @@
 # SPEC: project-scaffold
 
-> **Trạng thái:** đã duyệt 2026-11-12 (Phiên 27 · Lượt 154), cả năm câu ở mục 9 theo đề xuất. Plan: [tasks/plan.md](tasks/plan.md). Spec này viết chi tiết **phần 1 (B1)**. Phần 2 (B2) và phần 3 (B3) mới có phạm vi (mục 4); mỗi phần sẽ có spec chi tiết riêng, bạn duyệt trước khi phần đó bắt đầu. Nguồn: hàng B1–B3 của [misc/thao-luan/concerns.md](misc/thao-luan/concerns.md), mục "Đầu vào cho `project-scaffold`" của [tasks/archive/pilot-1/verification.md](tasks/archive/pilot-1/verification.md), và yêu cầu của bạn ở Lượt 105 và Lượt 153.
+> **Trạng thái:** đã duyệt 2026-11-12 (Phiên 27 · Lượt 154), cả năm câu ở mục 9 theo đề xuất. **Phần 1 hoàn thành 2026-11-13** (Phiên 27 · Lượt 198): kit PR #252–#259, sáu tiêu chí ở mục 7 đạt, 11,35 USD agent. Plan, todo, verification: [tasks/archive/project-scaffold-1/](tasks/archive/project-scaffold-1/). Spec này viết chi tiết **phần 1 (B1)**. Phần 2 (B2) và phần 3 (B3) mới có phạm vi (mục 4); mỗi phần sẽ có spec chi tiết riêng, bạn duyệt trước khi phần đó bắt đầu. Nguồn: hàng B1–B3 của [misc/thao-luan/concerns.md](misc/thao-luan/concerns.md), mục "Đầu vào cho `project-scaffold`" của [tasks/archive/pilot-1/verification.md](tasks/archive/pilot-1/verification.md), và yêu cầu của bạn ở Lượt 105 và Lượt 153.
 
 ## 1. Mục tiêu
 
