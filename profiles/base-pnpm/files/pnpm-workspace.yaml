@@ -2,3 +2,7 @@
 # the repo. pnpm 10 and later read their settings here too; ao-kit add merges in those of a template, such as allowBuilds.
 packages:
   - apps/*
+# One Playwright for the repo, the version of @playwright/test in package.json: a package such as @axe-core/playwright
+# would pull a newer playwright-core, and the types of the tests break. ao-kit add keeps the two the same.
+overrides:
+  playwright-core: 1.64.1

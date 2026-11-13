@@ -152,6 +152,9 @@ test('one Playwright for the repo: the root takes the version of the first templ
   assert.match(first.notes.join('\n'), /@playwright\/test of the root: 1\.64\.1 → 1\.61\.0, the version of the template, so the repo has one Playwright/);
   assert.equal(JSON.parse(readFileSync(join(dir, 'package.json'), 'utf8')).devDependencies['@playwright/test'], '1.61.0');
   assert.equal(JSON.parse(readFileSync(join(dir, 'apps/user/package.json'), 'utf8')).devDependencies['@playwright/test'], '1.61.0');
+  // playwright-core follows, so a package such as @axe-core/playwright cannot pull a newer one (Lượt 207).
+  assert.equal(parse(readFileSync(join(dir, 'pnpm-workspace.yaml'), 'utf8')).overrides['playwright-core'], '1.61.0');
+  assert.match(first.notes.join('\n'), /pnpm-workspace\.yaml at the root pins playwright-core to 1\.61\.0, the Playwright of the repo/);
 
   const admin = template(t, { 'package.json': JSON.stringify({ name: 'a', devDependencies: { '@playwright/test': '1.60.0' } }), 'src/b.ts': 'x\n' });
   const second = copyTemplate({ from: admin, projectDir: dir, app: 'admin', git });
