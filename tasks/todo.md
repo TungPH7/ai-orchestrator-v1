@@ -64,7 +64,7 @@
     - app đọc cổng từ `PORT`; `vite.config.ts` chuyển `/api` sang API ở máy;
     - Dockerfile build file tĩnh rồi phục vụ bằng Caddy trong container: không root, cổng 8080, tắt admin API của Caddy, `/api/*` chuyển tới `api` trên mạng Docker của môi trường, đường dẫn lạ trả `index.html`.
   - **File:** `profiles/stacks/react/`, test.
-- [ ] **T9: `profiles:check` cho dự án pnpm** (spec 2.3; plan, quyết định 5).
+- [x] **T9: `profiles:check` cho dự án pnpm** (spec 2.3; plan, quyết định 5).
   - **Đạt khi:** `npm run profiles:check` dựng `next-nest` như hiện nay, và dựng thêm một dự án gồm `base-pnpm`, app `web` (stack `nextjs`) và app `admin` (stack `react`). Trên dự án đó, lệnh chạy `pnpm install` và bốn script ở gốc. Workflow `profiles.yml` cài pnpm.
   - **Kiểm:** chạy trên máy và trong CI của kit.
   - **File:** `scripts/profiles-check.mjs`, `.github/workflows/profiles.yml`.
