@@ -93,7 +93,7 @@
     - `doctor` báo khi giới hạn tương tác hết hạn trong vòng 30 ngày, hoặc không còn.
   - **Kiểm:** test với GitHub giả, như test của `setup github` hiện có.
   - **File:** `lib/scaffold/setup-github.mjs`, `lib/scaffold/doctor.mjs`, test.
-- [ ] **T13: tài liệu chặng 2; PR.** `README.md`, comment đầu file; PR chặng 2.
+- [x] **T13: tài liệu chặng 2; PR.** `README.md`, comment đầu file; PR chặng 2.
 
 ### Checkpoint 2: sau T13
 - [ ] PR chặng 2 merge; `profiles:check` xanh trong CI của kit, với dự án pnpm.

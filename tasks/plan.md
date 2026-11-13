@@ -31,7 +31,9 @@ Chặng 1 đi trước, vì mọi chặng sau đều cài package bằng pnpm. C
 8. **Hai dạng `hosts` trong `deployer.yaml` phân biệt bằng kiểu giá trị:** chuỗi là dạng cũ (một host cho mỗi môi trường); object là dạng theo app. Không dựa vào tên khóa, vì một app có thể tên là `staging`.
 9. **`qa` đọc host từ `project.yaml` của chính commit đang chạy trên môi trường đó** (`git show <sha>:.ai-orchestrator/project.yaml`), không đọc từ nhánh đang mở.
 10. **Hướng dẫn viết hai lượt,** như phần 1: bản nháp trước kiểm thật để T22 làm đúng theo nó, bản cuối sau, với đầu ra thật.
-11. **Việc trên VPS:** mỗi bước mình hỏi bạn ngay trước khi làm. Chỉ phiên chính SSH. Không in file chứa thông tin đăng nhập, như Caddyfile hay file basic auth.
+11. **Skill theo stack không chép thêm bản nào** (thêm ở T7). `stack.yaml` nêu tên skill, và `add` lấy skill ở chỗ kit đang giữ: `profiles/stacks/<stack>/skills/` trước, rồi `.claude/skills/` của một profile. Ví dụ `vercel-react-best-practices` (418 KB) nằm ở `profiles/next-nest/files/.claude/skills/`.
+12. **Một bản Playwright cho cả repo** (thêm ở T11, sau khi thử trên hai template thật). `playwright.config.ts` ở gốc chạy `e2e/` của mọi app. Khi chưa app nào ghim bản, gốc lấy bản của template; sau đó app lấy bản của gốc.
+13. **Việc trên VPS:** mỗi bước mình hỏi bạn ngay trước khi làm. Chỉ phiên chính SSH. Không in file chứa thông tin đăng nhập, như Caddyfile hay file basic auth.
 
 ## Task
 

@@ -41,3 +41,7 @@ Skill `vercel-react-best-practices` không chép thêm bản nào: `add` lấy n
 - `test:coverage` xanh, 98 giây, nhưng `apps/admin/coverage/` không có `lcov.info`. `add` báo đúng chỗ này.
 - **Build đỏ ở `apps/user`:** schema env của template (`src/config/env/client.ts`) đòi `NEXT_PUBLIC_API_URL` và `NEXT_PUBLIC_SITE_URL` lúc build. `add` báo hai biến này; việc sửa thuộc T23, và CI cũng cần chúng có giá trị chung cho ba môi trường.
 - `rm -rf .next` trong script `dev` và `build` của template chạy được qua pnpm trên Windows.
+
+**T12.** `setup github` trên repo public đặt giới hạn tương tác (`collaborators_only`, sáu tháng) mỗi lần chạy, nên chạy lại là gia hạn. Lệnh cũng đặt luật duyệt workflow `all_external_contributors` khi chưa có. `doctor` báo chưa đạt khi giới hạn còn dưới 30 ngày hoặc không còn. Định dạng trả về của hai API này khớp với lần đọc thật trên `ao-sample`: `expires_at` là 2027-05-13T02:42:22Z, `approval_policy` là `all_external_contributors`.
+
+**Chưa kiểm được trên máy:** build Docker của hai stack, vì Docker Desktop chưa chạy. Lần build đầu sẽ là deployer ở T24, trừ khi bạn bật Docker trước để mình build thử.
