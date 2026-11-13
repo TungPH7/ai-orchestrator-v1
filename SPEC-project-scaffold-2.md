@@ -1,6 +1,6 @@
 # SPEC: project-scaffold, phần 2 (B2)
 
-> **Trạng thái:** bản nháp 2026-11-13 (Phiên 27 · Lượt 200), chờ bạn duyệt. Phần 1 ở [SPEC-project-scaffold.md](SPEC-project-scaffold.md); mục 4 của file đó ghi phạm vi phần 2 và 3. Nguồn: hàng B2 của [misc/thao-luan/concerns.md](misc/thao-luan/concerns.md), Lượt 152–153 (ảnh chụp và design system), Lượt 199–200 (bố cục dự án e-commerce và bốn quyết định).
+> **Trạng thái:** đã duyệt 2026-11-13 (Phiên 27 · Lượt 201): repo `shop` để public (câu 1), ba câu còn lại theo đề xuất (mục 9). Plan và task: [tasks/plan.md](tasks/plan.md), [tasks/todo.md](tasks/todo.md). Phần 1 ở [SPEC-project-scaffold.md](SPEC-project-scaffold.md); mục 4 của file đó ghi phạm vi phần 2 và 3. Nguồn: hàng B2 của [misc/thao-luan/concerns.md](misc/thao-luan/concerns.md), Lượt 152–153 (ảnh chụp và design system), Lượt 199–200 (bố cục dự án e-commerce và bốn quyết định).
 
 ## 1. Mục tiêu
 
@@ -33,7 +33,7 @@ Quyền tự làm theo đề xuất mà bạn cho ở Lượt 181 áp dụng ti�
 ### 1.2 Giả định
 
 Bạn sửa ngay nếu điều nào sai:
-1. Repo e-commerce là `TungPH7/shop`, space Jira `SHOP`, tên trên VPS `shop` (câu hỏi 1, mục 9).
+1. Repo e-commerce là `TungPH7/shop`, public, space Jira `SHOP`, tên trên VPS `shop` (câu 1, mục 9).
 2. pnpm dùng cho dự án mới dựng bằng `ao-kit add`, và cho repo pnpm đang có. Profile `next-nest` của phần 1 và hai dự án đang chạy, `ao-sample` và `ao-pilot`, vẫn dùng npm và không phải sửa gì.
 3. Kit vẫn cài package của chính nó trong `.ai-orchestrator/` bằng npm (`npm ci --prefix .ai-orchestrator`), vì đó là package của kit, không phải của dự án.
 4. Phần 2 chưa có `apps/api`. Vì vậy trang kiểm sức khỏe (`health`) của app nào cũng không được gọi tới API.
@@ -122,7 +122,7 @@ Mỗi stack là một app, gồm:
 
   Ở template của bạn, có ba biến như vậy: `VITE_API_URL`, `NEXT_PUBLIC_API_URL` và `NEXT_PUBLIC_SITE_URL`.
 
-Các sửa này là việc của dự án. Chúng đi qua một Task và một PR như mọi thay đổi khác, nên được review đầy đủ.
+Các sửa này là việc của dự án. Chúng đi qua một Task và một PR như mọi thay đổi khác. Thường thì dev agent làm, rồi `/ao-review`. Ở phần kiểm thật của B2, phiên chính mở PR, còn bạn review và merge, như PR `AOG-3` ở B1, để không tốn tiền agent.
 
 `profiles:check` dựng thêm hai khung mới, rồi chạy `pnpm install` và bốn script của chúng.
 
@@ -240,6 +240,8 @@ lib/scaffold/app-report.mjs      những chỗ code app còn phải đổi
 lib/quality/package-manager.mjs  npm hay pnpm: lệnh cài, lệnh chạy, lockfile, chạy không qua shell
 lib/release/                     deploy-config (D2), deployer-config và deployer.schema.json (host theo app),
                                  caddy, docker, deployer, record (nhiều app công khai)
+lib/scaffold/setup-github.mjs    repo public: giới hạn tương tác, duyệt workflow của fork (câu 1, mục 9)
+lib/scaffold/doctor.mjs          bản pnpm, hạn của giới hạn tương tác
 lib/quality/design.mjs           D7 mới, D9
 lib/workflow/                    preview, steps, prompts, facts: pnpm, E2E_<APP>_URL, URL trong /ao-status
 templates/design.md; agents/prompts/ux.md, sa.md, fe-dev.md, qa.md
@@ -263,6 +265,7 @@ tests/                           test của từng phần trên
   - hai app công khai ra hai site; thiếu host thì không deploy;
   - bản ghi cũ vẫn đọc được.
 - **QA:** có biến `E2E_<APP>_URL`; dừng khi host lệch.
+- **`setup github`, `doctor`:** repo public thì đặt giới hạn tương tác và luật duyệt workflow của fork; repo private thì không; `doctor` báo giới hạn sắp hết hạn.
 - **`check-design`:** fixture âm cho D7 mới và cho D9; ví dụ trong template qua.
 - **CI:** `build-test` với một dự án pnpm, chạy bằng bash như test hiện có của `ci.yml`.
 - **`profiles:check`:** hai stack mới.
@@ -290,12 +293,13 @@ Phần 2 không gọi agent trả tiền. Phần ảnh chụp và design system 
 | `admin` trên Production không có basic auth, chỉ dựa vào đăng nhập của chính app | Phần 2 chỉ deploy Development. Trước lần release đầu của `shop`, `admin` phải có đăng nhập; nếu chưa có thì thêm basic auth cho app đó ở Production, một sửa nhỏ ở deployer |
 | Template của bạn đổi sau khi đã chép | `add` chép một lần; về sau sửa thẳng trong repo `shop` |
 
-## 9. Câu hỏi
+## 9. Câu hỏi đã trả lời
 
-1. **Repo e-commerce:** `TungPH7/shop`, space `SHOP`, tên trên VPS `shop`. Repo private hay public?
-   - Mình đề xuất **private**, vì đây là sản phẩm thật. Repo kit và hai repo thử đã public, nên 2.000 phút miễn phí mỗi tháng chỉ còn `shop` dùng.
-   - Mỗi Story tốn khoảng 60–80 phút CI [Ước], tức khoảng 25 Story mỗi tháng.
-   - Nếu hết phút, đổi sang public vẫn được, nhưng lịch sử repo khi đó cũng công khai theo.
+Ở Lượt 201, bạn chọn public cho câu 1, và đồng ý ba đề xuất còn lại.
+
+1. **Repo e-commerce:** `TungPH7/shop`, space `SHOP`, tên trên VPS `shop`. Mình đề xuất private; **bạn chọn public**, nên CI chạy miễn phí, như repo kit, `ao-sample` và `ao-pilot`.
+   - Ba repo kia đã được đặt thêm hai lớp chắn (Lượt 193, 197): chỉ người cộng tác được mở issue, PR và comment, trong sáu tháng; workflow của PR từ fork phải được duyệt mới chạy. `ao-kit setup github` làm hai việc này khi repo là public, và chạy lại lệnh là gia hạn. `doctor` báo khi giới hạn tương tác sắp hết hạn.
+   - Repo public thì mọi commit đều công khai, nên secret không bao giờ được commit. Job `secrets` của CI (gitleaks) đã chặn việc này.
 2. **Kiểm thật ảnh chụp và design system:** mình đề xuất **để tới Epic đầu của B4**. Epic đó vẫn phải chạy `/ao-spec` và `/ao-plan`, nên phần 2 tốn 0 USD agent. Như vậy Epic đầu cần có ảnh chụp màn hình. Cách khác là chạy một Epic nhỏ ngay ở phần 2, khoảng 10–15 USD [Ước].
 3. **VPS:** mình đề xuất làm cả bốn việc dưới đây; mỗi việc mình vẫn hỏi lại bạn ngay trước khi làm.
    - Cập nhật kit trên VPS với deployer mới, chạy `--dry-run` trước.
