@@ -72,7 +72,7 @@ test('a full review keeps the roster effort on a protected path, a path of secur
     assert.equal(effort([file]).effort, 'max', file);
   }
   // Whatever the case of the name, and the other names of the same files (review test of 2026-11-07, head d049513).
-  for (const file of ['apps/web/src/AuthProvider.tsx', 'apps/web/src/hooks/useAuth.ts', 'apps/web/src/lib/OAuth.ts', 'apps/web/src/hooks/useSession.ts', 'docker-compose.yaml', 'compose.yml', 'apps/api/compose.dev.yaml', '.npmrc', 'apps/web/src/proxy.ts', 'pnpm-lock.yaml', 'yarn.lock']) {
+  for (const file of ['apps/web/src/AuthProvider.tsx', 'apps/web/src/hooks/useAuth.ts', 'apps/web/src/lib/OAuth.ts', 'apps/web/src/hooks/useSession.ts', 'docker-compose.yaml', 'compose.yml', 'apps/api/compose.dev.yaml', '.npmrc', 'apps/web/src/proxy.ts', 'pnpm-lock.yaml', 'yarn.lock', 'pnpm-workspace.yaml']) {
     assert.equal(effort([file]).effort, 'max', file);
   }
   assert.deepEqual(effort(['.ai-orchestrator/lib/x.mjs'], { protectedPaths: ['.ai-orchestrator/lib/x.mjs'] }), { effort: 'max', reason: 'the PR touches the protected path .ai-orchestrator/lib/x.mjs' });
