@@ -179,9 +179,9 @@
   3. deployer deploy `develop`: smoke test đạt; hai host qua basic auth;
   4. Caddyfile của `ao-sample` và `ao-pilot` không đổi, hai dự án vẫn chạy;
   5. đo RAM lần nữa.
-- [ ] **T25: bản cuối của hướng dẫn; PR** (tiêu chí 5). Chép đầu ra thật của T21–T24.
+- [x] **T25: bản cuối của hướng dẫn; PR** (tiêu chí 5; xong ở Phiên 28 · Lượt 1: phần 5 của `getting-started.md` theo đầu ra thật của T22–T24, mục 13 mới của `vps-setup.md`). Chép đầu ra thật của T21–T24.
 
 ### Checkpoint 4: sau T25
-- [ ] Tiêu chí 2, 3, 4, 5 của spec đạt.
+- [ ] Tiêu chí 2, 4, 5 của spec đạt. Tiêu chí 3 đạt một phần: Task `SHOP-1` và PR #5 đạt, nhưng `/ao-preview` dừng có chủ ý vì PR #5 sửa kit, nên hai app chạy tay bằng `pnpm dev`. Chốt ở T26.
 
 - [ ] **T26: đóng module.** Bảng sáu tiêu chí trong `verification.md`; dời plan, todo, verification vào `tasks/archive/project-scaffold-2/`; cập nhật `SPEC.md`, spec và `concerns.md`; PR tài liệu.

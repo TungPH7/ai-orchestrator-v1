@@ -4,7 +4,7 @@ Hướng dẫn này thuộc module `release-workflow` ([SPEC-release-workflow.md
 
 - Chỉ phiên chính của Claude dùng SSH vào VPS, khi bạn yêu cầu. Agent của kit không bao giờ SSH.
 - Key, mật khẩu và token không bao giờ đi qua chat, repo hay log. Bạn tự gõ chúng trong terminal của bạn.
-- Phần cài deployer nằm ở mục 11.
+- Phần cài deployer nằm ở mục 11. Thêm một dự án vào deployer đang chạy: mục 13.
 
 **VPS của kit:** BKNS, gói VPS MMO4, IP `42.96.4.120`, cổng SSH `26266`, hostname `vps.ao.t2g.io.vn`, Ubuntu 24.04. Host key ED25519: `SHA256:nxU5j2RoNi+ffPow22zT35H+4F/Kthn/Tmnpi79V1ko`.
 
@@ -343,3 +343,53 @@ systemctl start ao-deploy.timer
 - Service kiểu `oneshot` báo `activating` suốt lúc chạy, nên vòng `until` chờ đúng trạng thái đó. Dừng timer không dừng lượt đang chạy, và `systemctl is-active --quiet` trả lỗi với `activating`, nên không dùng lệnh đó để chờ.
 - `tick --dry-run` không in gì khi không có việc.
 - Xong thì tắt đăng nhập root (mục 9), rồi ghi commit ghim mới vào mục này.
+
+## 13. Thêm một dự án vào deployer
+
+Làm khi một dự án lên VPS lần đầu. Các lệnh dưới đây là của `shop` (project-scaffold phần 2, T24, 2026-11-13). Việc này cần đăng nhập root (mục 9), và bạn đồng ý từng lần.
+
+**1. App `ao-deploy` (bạn làm).** Cài App vào repo của dự án, như [docs/getting-started.md](getting-started.md) phần 5, bước 8. Thiếu App thì `baseline` dừng với `App 5624698 is not installed on TungPH7/shop`.
+
+**2. Dừng deployer, sao lưu `deployer.yaml`.**
+
+```
+systemctl stop ao-deploy.timer
+until [ "$(systemctl is-active ao-deploy.service)" != "activating" ]; do sleep 5; done
+cp -p /etc/ao/deployer.yaml /root/deployer.yaml.$(date +%F).bak
+cp -p /etc/ao/caddy/Caddyfile /root/Caddyfile.$(date +%F).before
+```
+
+Bản sao Caddyfile chỉ để so ở bước 5. Nó có bản băm của basic auth, nên bị xóa ở bước 7.
+
+**3. Biến của app.** Một file cho mỗi môi trường, chỉ cho môi trường mà dự án sắp chạy. Ở `shop` chỉ có Development; Staging và Production có file khi tới bản release đầu.
+
+```
+install -d -o root -g aodeploy -m 750 /etc/ao/secrets/shop
+install -o root -g aodeploy -m 640 /dev/null /etc/ao/secrets/shop/development.env
+printf 'API_URL=http://api:3001\nAUTH_SECRET=%s\n' "$(openssl rand -base64 48)" > /etc/ao/secrets/shop/development.env
+```
+
+- `printf` là lệnh có sẵn trong shell, nên giá trị sinh ra không nằm trong tham số của tiến trình nào và không bị in ra. `AUTH_SECRET` dài 64 ký tự.
+- Giá trị do bạn đặt thì bạn gõ bằng `ao-secret.sh` (mục 11, bước 4): `bash /opt/ao/kit/vps/ao-secret.sh env shop development <TÊN>`.
+- Kiểm bằng tên biến và độ dài giá trị, không in giá trị.
+
+**4. Thêm dự án vào `deployer.yaml`.** Claude nối đoạn mà `ao-kit doctor` in ra vào cuối `projects:`, qua stdin. Quyền file giữ nguyên `root:aodeploy 640`. Dự án có từ hai app công khai thì `hosts` theo từng app, như ví dụ `shop` ở mục 11, bước 6.
+
+**5. Điểm bắt đầu, rồi bật lại timer.**
+
+```
+cd /var/lib/ao
+sudo -u aodeploy -H node /opt/ao/kit/scripts/ao-deploy.mjs baseline shop
+sudo -u aodeploy -H node /opt/ao/kit/scripts/ao-deploy.mjs baseline shop --confirm
+sudo -u aodeploy -H node /opt/ao/kit/scripts/ao-deploy.mjs tick --dry-run
+systemctl start ao-deploy.timer
+```
+
+- `baseline` không có `--confirm` in head của `develop` và `main`. Ở `shop` là `91b699c` và `e4a708a`, khớp với GitHub.
+- `tick --dry-run` chỉ in `caddy: would write … and reload Caddy`. Không gì được deploy.
+- Lượt đầu sau khi bật timer ghi Caddyfile: ở `shop`, thêm 36 dòng cho sáu site, mỗi site trả 503 tới lần deploy đầu. Không dòng nào của dự án khác bị xóa hay sửa. Kiểm bằng cách đếm dòng thêm và xóa so với bản trước, không in Caddyfile, vì file có bản băm của basic auth.
+- Nếu `baseline` dừng, chép bản sao lưu về `/etc/ao/deployer.yaml` rồi bật lại timer, để các dự án khác vẫn được deploy trong lúc bạn sửa.
+
+**6. Deploy lần đầu (bạn gõ).** Sau `baseline`, deployer coi head hiện tại của `develop` là đã kiểm, nên không tự deploy nó. Trong Claude Code ở thư mục dự án, gõ `/ao-rollback development <sha của develop>`. Ở `shop`, deployer nhận yêu cầu sau khoảng 15 giây, build hai image trên VPS, rồi deploy xong sau 8 phút 50 giây. Từ lần merge kế tiếp vào `develop`, deployer tự deploy.
+
+**7. Đóng lại.** Đo RAM bằng `free -m` và `docker stats --no-stream`, xóa bản sao Caddyfile bằng `shred -u`, rồi tắt đăng nhập root (mục 9). Bản sao `deployer.yaml` ở `/root` được giữ lại để quay lại khi cần, vì file này không có thông tin đăng nhập.

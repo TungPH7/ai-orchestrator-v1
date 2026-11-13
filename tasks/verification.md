@@ -243,3 +243,27 @@ Kết quả: đĩa dùng giảm từ 13 GB xuống 7,9 GB, còn trống 30 GB; 1
     - Bản sao Caddyfile ở `/root` đã bị xóa bằng `shred`. Bản sao `deployer.yaml` được giữ lại để quay lại khi cần; file này không có thông tin đăng nhập.
     - Đăng nhập root đã đóng (`PermitRootLogin no`), và SSH bằng root bị từ chối. Key VPS đã được gỡ khỏi ssh-agent.
     - 12 container đang chạy: 10 container cũ và 2 của `shop`.
+
+**T25, bản cuối của hướng dẫn (Phiên 28 · Lượt 1).**
+- **`docs/getting-started.md`, phần 5,** viết lại theo đầu ra thật của T22–T24:
+  - bảng thời gian đo được: `init` 25 giây, hai lệnh `add` 35 và 31 giây, commit đầu 143 giây, deploy đầu 8 phút 50 giây;
+  - lệnh `add` thật, có `--ref write-cv`, và những gì mỗi lệnh báo;
+  - bước 4 thêm `health: /en` cho next-intl, ở ba chỗ của `project.yaml` và `deploy.yaml`;
+  - bước 5: commit đầu không chạy bốn lệnh kiểm, vì code của template còn những chỗ `add` đã báo; gitleaks báo nhầm và cách ghi `gitleaks:allow`;
+  - bước 6: `setup github` trên repo public, Dependabot, CI đầu đỏ ở đâu, bốn dòng của `doctor`, và mở Claude Code;
+  - bước 7: những gì PR #5 sửa; vì sao một image cho ba môi trường buộc phải đọc giá trị lúc chạy; chép kit trong một PR riêng, vì `/ao-preview` dừng với PR sửa kit;
+  - bước 8: cài App `ao-deploy`, thêm dự án vào deployer, deploy lần đầu bằng `/ao-rollback development <sha>`, kết quả kiểm và tài nguyên.
+- **Các phần khác của hướng dẫn:**
+  - phần 2.2 nói tới App `ao-deploy`;
+  - bước 9 của phần 3 trỏ tới bước 8 của phần 5;
+  - bảng tra lệnh có `--ref`;
+  - phần 8 có lỗi `AO_DEV_APP_ID is not set` khi Claude Code không mở ở thư mục dự án.
+- **`docs/vps-setup.md` mục 13 (mới):** thêm một dự án vào deployer đang chạy, theo đúng các bước của T24. README có `--ref`.
+- Năm lệnh kiểm xanh, 1.332 test.
+- **Việc kit để sau,** ghi vào `concerns.md` ở T26:
+  - `doctor` kiểm App `ao-deploy`;
+  - `setup jira` bắt lỗi mạng như `ENOTFOUND`;
+  - stack `nextjs` ghi `health: /`;
+  - `coverage.exclude` cho `apps/<app>/e2e/` và `apps/<app>/scripts/`;
+  - luật "file đổi phải có trong lcov" đụng coverage exclude của template;
+  - script của kit chạy ngoài thư mục dự án không có `env` của `.claude/settings.json`.
