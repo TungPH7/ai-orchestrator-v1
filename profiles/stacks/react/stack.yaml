@@ -15,6 +15,8 @@ health: /
 dockerfile: Dockerfile
 # Files of the stack that ao-kit add copies next to the code of a template, when the template has none.
 container_files: [Dockerfile, Caddyfile]
+# The dev agent that builds the app: it gets the skill <app>-conventions a template brings.
+dev_role: fe-dev
 # roster.local.yaml: the stack skills; ao-kit add copies each one from where the kit keeps it.
 skills:
   fe-dev: [vercel-react-best-practices]

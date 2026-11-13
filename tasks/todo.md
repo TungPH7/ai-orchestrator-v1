@@ -77,7 +77,7 @@
     - `CLAUDE.md` thành skill `<app>-conventions`.
   - **Kiểm:** `tests/scaffold/template.test.mjs`, trên thư mục tạm thật, với hai template giả có husky, commitlint, `.github/`, `.claude/`, `CLAUDE.md` và lockfile riêng.
   - **File:** `lib/scaffold/template.mjs`, test.
-- [ ] **T11: `ao-kit add`** (spec 2.2, 2.3).
+- [x] **T11: `ao-kit add`** (spec 2.2, 2.3).
   - **Đạt khi:**
     - không có `--from` thì chép khung của stack; có `--from` thì dùng T10;
     - ghi app vào `project.yaml` (`hosts` là `TODO` khi `--public`), `deploy.yaml` và `roster.local.yaml`; chép Dockerfile của stack khi app chưa có;

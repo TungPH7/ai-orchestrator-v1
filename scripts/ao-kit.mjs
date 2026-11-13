@@ -6,6 +6,9 @@
 //                 code: project.yaml from its workspaces and the kit, and what it still lacks. Options: --name --title
 //                 --space --repo <owner/name> --approvers <a,b> --dev-app --dev-app-id --review-app --review-app-id
 //                 --kit-peers <owner/name,...>; the App values default to AO_DEV_APP… of your environment
+//   add <dir> <app>   one app more in a pnpm project: --stack nextjs|react, its skeleton, or --from <template> with
+//                 what the kit replaces left out (--exclude <path>, again for each path); --public; then pnpm install,
+//                 the render, and what the code of the app still has to change
 //   sync <dir>    the kit of this clone into the project, on a new branch feature/<KEY>-kit-copy from develop, in one
 //                 commit; nothing is pushed. --key <KEY> of the Task; --name <project on the VPS> for a project from
 //                 before project-scaffold
@@ -29,13 +32,14 @@ import { homedir } from 'node:os';
 import { appCredentials, installationToken, userVariable } from '../lib/quality/github-app.mjs';
 import { doctor, formatDoctor } from '../lib/scaffold/doctor.mjs';
 import { gitignoreMissing, kitDrift } from '../lib/scaffold/install.mjs';
+import { addApp } from '../lib/scaffold/add.mjs';
 import { initProject, syncKit } from '../lib/scaffold/init.mjs';
 import { setupGithub } from '../lib/scaffold/setup-github.mjs';
 import { setupJira } from '../lib/scaffold/setup-jira.mjs';
 import { readMapping } from '../lib/tracker/mapping.mjs';
 import { checkProject, PROJECT_FILE, readProjectConfig } from '../lib/scaffold/project-config.mjs';
 
-const USAGE = 'usage: node <kit>/scripts/ao-kit.mjs <init|sync|render|check|doctor|setup github|setup jira> <project dir> [options]; see the top of scripts/ao-kit.mjs';
+const USAGE = 'usage: node <kit>/scripts/ao-kit.mjs <init|add|sync|render|check|doctor|setup github|setup jira> <project dir> [options]; see the top of scripts/ao-kit.mjs';
 const kitDir = fileURLToPath(new URL('..', import.meta.url));
 
 const git = (args, cwd) => spawnSync('git', args, { cwd, encoding: 'utf8' });
@@ -176,6 +180,7 @@ async function doctorFacts(dir, config) {
 const OPTIONS = {
   profile: { type: 'string' }, 'package-manager': { type: 'string' }, name: { type: 'string' }, title: { type: 'string' }, space: { type: 'string' }, repo: { type: 'string' }, approvers: { type: 'string' },
   'dev-app-key-file': { type: 'string' }, template: { type: 'string' }, 'space-name': { type: 'string' }, 'dev-app': { type: 'string' }, 'dev-app-id': { type: 'string' }, 'review-app': { type: 'string' }, 'review-app-id': { type: 'string' }, 'kit-peers': { type: 'string' }, key: { type: 'string' },
+  stack: { type: 'string' }, from: { type: 'string' }, exclude: { type: 'string', multiple: true }, public: { type: 'boolean' },
 };
 let parsed;
 try {
@@ -194,6 +199,7 @@ const COMMANDS = {
   check,
   render,
   init: (dir) => print(initProject({ kitDir, projectDir: dir, options, git, run })),
+  add: (dir) => print(addApp({ kitDir, projectDir: dir, app: rest[1], options: { stack: v.stack, from: v.from, exclude: v.exclude ?? [], public: v.public === true, title: v.title }, git, run })),
   sync: (dir) => print(syncKit({ kitDir, projectDir: dir, options, git, run })),
   'setup github': (dir) => {
     const config = projectConfig(dir);

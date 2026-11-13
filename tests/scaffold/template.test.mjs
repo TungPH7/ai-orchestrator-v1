@@ -140,3 +140,22 @@ test('mergeWorkspace: maps and lists gain what they lack, and a value set in bot
   assert.deepEqual(parse(merged.text), { packages: ['apps/*'], allowBuilds: { sharp: true, msw: false }, minimumReleaseAgeExclude: ['lint-staged', 'vite'], nodeLinker: 'isolated' });
   assert.deepEqual(mergeWorkspace('packages: [apps/*]\nnodeLinker: hoisted\n', 'nodeLinker: isolated\n').conflicts, ['nodeLinker: "hoisted" at the root, "isolated" in the template']);
 });
+
+// Found with the two templates of the user (Lượt 203): the root pinned @playwright/test 1.64.1 and the Next.js template
+// 1.61.0, so the types of its e2e tests broke.
+test('one Playwright for the repo: the root takes the version of the first template, and a later template takes the version of the root', (t) => {
+  const dir = project(t);
+  const rootPackage = JSON.parse(readFileSync(join(dir, 'package.json'), 'utf8'));
+  writeFileSync(join(dir, 'package.json'), JSON.stringify({ ...rootPackage, devDependencies: { '@playwright/test': '1.64.1' } }, null, 2));
+  const user = template(t, { 'package.json': JSON.stringify({ name: 'u', devDependencies: { '@playwright/test': '1.61.0' } }), 'src/a.ts': 'x\n' });
+  const first = copyTemplate({ from: user, projectDir: dir, app: 'user', git });
+  assert.match(first.notes.join('\n'), /@playwright\/test of the root: 1\.64\.1 → 1\.61\.0, the version of the template, so the repo has one Playwright/);
+  assert.equal(JSON.parse(readFileSync(join(dir, 'package.json'), 'utf8')).devDependencies['@playwright/test'], '1.61.0');
+  assert.equal(JSON.parse(readFileSync(join(dir, 'apps/user/package.json'), 'utf8')).devDependencies['@playwright/test'], '1.61.0');
+
+  const admin = template(t, { 'package.json': JSON.stringify({ name: 'a', devDependencies: { '@playwright/test': '1.60.0' } }), 'src/b.ts': 'x\n' });
+  const second = copyTemplate({ from: admin, projectDir: dir, app: 'admin', git });
+  assert.match(second.notes.join('\n'), /package\.json of apps\/admin: name a → admin; @playwright\/test 1\.60\.0 → 1\.61\.0, the version of the repo/);
+  assert.equal(JSON.parse(readFileSync(join(dir, 'apps/admin/package.json'), 'utf8')).devDependencies['@playwright/test'], '1.61.0');
+  assert.equal(JSON.parse(readFileSync(join(dir, 'package.json'), 'utf8')).devDependencies['@playwright/test'], '1.61.0');
+});
