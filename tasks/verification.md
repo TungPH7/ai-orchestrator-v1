@@ -231,3 +231,7 @@ Lỗi chỉ lần chạy thật bắt được:
   - Low thứ tư (code `ao-kit` chép vào dự án) đúng thiết kế, không sửa.
   - Spec `quality-gates`, `project-scaffold`, `live-run-fixes` và `docs/quality-gates.md` đổi theo.
   - Năm lệnh kiểm xanh (1281 test).
+- Lượt 189–192, hạn mức Actions:
+  - Tháng 11 dùng 2.005 phút (đếm qua API, khớp trang Billing): `ao-sample` 1.062, `ao-pilot` 460, kit 426, `ao-brown` và `ao-green` 57. Khoảng 45% là job `jira-sync` và `merge-gate` chạy dưới 30 giây nhưng bị tính tròn 1 phút. Gói Free gồm 12 USD (2.000 phút Linux, 0,006 USD/phút), reset ngày 1/12.
+  - Bạn không đặt budget. Tài liệu GitHub ghi runner thường miễn phí, không giới hạn ở repo public.
+  - Thử thật: repo public `TungPH7/test` (trống trước đó), commit `9a68e5d` thêm workflow in một dòng; run 43353450862 (push) xanh lúc 02:37 UTC trên `ubuntu-latest`; commit `21f13db` xóa workflow. Một phút sau, `jira-sync` chạy tay trên `ao-sample` (private, run 43353562018) vẫn bị chặn với cùng lỗi billing.
