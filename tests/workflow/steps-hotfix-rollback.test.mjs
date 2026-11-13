@@ -133,3 +133,21 @@ test('/ao-status of the space also says what runs where, the open release branch
   ]);
   assert.equal(status.next, 'v0.1.0: click Release on it in Jira: it runs on Production');
 });
+
+// project-scaffold part 2, spec 2.4: where each public app answers, from project.yaml at what runs there.
+test('/ao-status names the URL of each public app in each environment that runs a release with hosts', () => {
+  const projectText = [
+    'apps:',
+    '  user: { public: true, hosts: { development: shop-dev.ao.t2g.io.vn, staging: shop-staging.ao.t2g.io.vn, production: shop.ao.t2g.io.vn } }',
+    '  admin: { public: true, hosts: { development: shop-admin-dev.ao.t2g.io.vn, staging: shop-admin-staging.ao.t2g.io.vn, production: shop-admin.ao.t2g.io.vn } }',
+  ].join('\n');
+  const status = decide('status', {
+    command: 'status',
+    space: 'DEMO',
+    items: [],
+    pulls: [],
+    runs: [],
+    release: { running: { development: { sha: HOTFIX, projectText }, staging: null, production: null }, productionVersion: null, releaseBranches: [], doneUnreleased: [] },
+  });
+  assert.deepEqual(status.lines, ['Running: Development aaaaaaaa, Staging nothing, Production nothing', '  Development: user https://shop-dev.ao.t2g.io.vn, admin https://shop-admin-dev.ao.t2g.io.vn']);
+});

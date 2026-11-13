@@ -119,7 +119,7 @@
     - test đỏ trước: Caddyfile của cấu hình một app công khai giống hệt chữ với bản hiện nay;
     - hai app công khai ra hai site; thiếu host thì từ chối; bản ghi cũ đọc được.
   - **File:** `lib/release/caddy.mjs`, `lib/release/docker.mjs`, `lib/release/deployer.mjs`, `lib/release/record.mjs`, `scripts/ao-deploy.mjs`, test.
-- [ ] **T16: `qa`, `/ao-status`, Playwright** (spec 2.4; plan, quyết định 9).
+- [x] **T16: `qa`, `/ao-status`, Playwright** (spec 2.4; plan, quyết định 9).
   - **Đạt khi:**
     - `/ao-qa` và regression của `/ao-release` truyền `E2E_<APP>_URL` cho từng app công khai, lấy từ `project.yaml` của commit đang chạy;
     - `ao-step` dừng, và nói hai file lệch nhau, khi host của `environment_url` không khớp app nào;
