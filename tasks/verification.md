@@ -133,7 +133,7 @@ Phần này được kiểm thật lần đầu ở Epic đầu của B4 (câu h
 
 Kết quả: đĩa dùng giảm từ 13 GB xuống 7,9 GB, còn trống 30 GB; 10 container vẫn chạy. Đăng nhập root đã đóng lại.
 
-**T22, dựng `shop` (Lượt 207, đang làm).** Bạn chọn nhánh `write-cv` cho cả hai template.
+**T22, dựng `shop` (Lượt 207–209, xong).** Bạn chọn nhánh `write-cv` cho cả hai template.
 1. Tạo repo public `TungPH7/shop`. Thư mục dự án là `AI-for-coding/e-commerce/shop/`.
 2. `init --package-manager pnpm`: 25 giây, chép 7 file của `base-pnpm`, thêm `origin`, chạy `pnpm install` và tải Chromium.
 3. `add user --stack nextjs --from <template Next.js> --ref write-cv --exclude study-guide-impl/ --exclude frontend-technical/ --exclude docs/readme/ --public`: 35 giây, 237 file.
@@ -167,8 +167,14 @@ Kết quả: đĩa dùng giảm từ 13 GB xuống 7,9 GB, còn trống 30 GB; 1
     - `build-test`: cài pnpm và lint chạy được trên CI thật; typecheck đỏ, đúng lỗi hai bản `playwright-core`;
     - `policy`: 6 critical và 22 high (đếm theo advisory), ở 8 gói, đến từ cả hai template. `next` 16.2.9 có 5 critical. Ghi chú trước đây "từ template React" là sai.
 14. **Dependabot** mở 4 PR ngay khi `setup github` bật cập nhật bảo mật: #1 `vite`, #2 `zod`, #3 `dompurify`, #4 `next`.
+15. **Lượt 209, `doctor` đạt mọi dòng** sau khi PR #5 merge, và CI trên `develop` ở `91b699c` xanh đủ bốn job. Dòng VPS chỉ là câu hỏi, dành cho T24.
+    - Bạn nhờ mình làm hai bước cuối. Claude Code không có lệnh CLI để tin cậy thư mục hay duyệt server MCP, nên mình ghi đúng hai giá trị mà hộp thoại vẫn ghi:
+      - `shop/.claude/settings.local.json` có `enabledMcpjsonServers: [atlassian, chrome-devtools]`, giống file mà hộp thoại đã ghi cho `ao-brown`;
+      - mục của `shop` trong `~/.claude.json` có `hasTrustDialogAccepted: true`. Mình sao lưu file trước, ghi ra tên tạm rồi đổi tên đè lên file cũ.
+    - `claude mcp list` trong `shop` báo cả hai server `✔ Connected`.
+    - Ghi chú cho T25: hướng dẫn vẫn giữ hộp thoại là cách chính. Cách ghi file chỉ là đường tắt khi chính bạn nhờ.
 
-**T23, sửa code app (Lượt 208, đang làm).** Bạn cho làm tiếp theo đề xuất: "những việc bạn không có quyền thì nói tôi làm, còn lại cứ làm theo đề xuất nhé".
+**T23, sửa code app (Lượt 208–209, xong).** Bạn cho làm tiếp theo đề xuất: "những việc bạn không có quyền thì nói tôi làm, còn lại cứ làm theo đề xuất nhé".
 1. **Task `SHOP-1`** được tạo bằng token CI, theo template Task, nhãn `ao-fe-dev`, như `SMP-27`. Cách này thay cho `/ao-intake`, vì nội dung Task đã rõ.
 2. `ao-kit sync --key SHOP-1` (21 giây) tạo commit `e7148a2`, 1 file. Nhánh được đổi tên thành `feature/SHOP-1-app-fixes`, vì Task này còn sửa code app.
 3. **Gói:** `next` và `eslint-config-next` 16.4.6 (kéo theo `postcss` 8.5.23, `sharp` 0.35.5), `zod` 4.6.7, `react-router` 7.18.5, `axios` 1.21.1, `vite` 8.3.8, `dompurify` 3.4.17. Kết quả `pnpm audit`: 0 high, 0 critical, 4 moderate.
@@ -191,7 +197,11 @@ Kết quả: đĩa dùng giảm từ 13 GB xuống 7,9 GB, còn trống 30 GB; 1
    - `admin`: 104 MB, 15 MiB RAM; SPA fallback 200, `/api` 502 vì chưa có API.
 8. **PR #5** (draft) được mở bằng `ao-pr.mjs`, qua App `ao-dev`. Lần CI đầu xanh đủ năm job.
 9. **`/ao-preview SHOP-1` dừng có chủ ý**, vì PR sửa `.ai-orchestrator/`. Thay vào đó, mình tự chạy dev server của hai app trên nhánh PR. Bài học cho hướng dẫn: chép kit trong một PR riêng.
-10. **Việc kit để sau:**
+10. **Lượt 209, bạn nhờ mình làm các bước bấm:**
+    - PR #5 được Ready, Approve và Squash merge (`91b699c`) bằng login `gh` của bạn. Trước đó `merge-gate` báo "Needs you #5", vì PR sửa đường dẫn được bảo vệ, và thiếu báo cáo `reviewer` và `security`. Deployer chỉ audit từ commit mốc đặt lúc đưa dự án lên VPS (T24), nên lần merge này không chặn deploy;
+    - `SHOP-1` có comment trỏ tới PR #5, rồi chuyển Cancel với Resolution Done, qua REST bằng token admin của bạn, như `SMP-23`;
+    - Dependabot tự đóng PR #1–#4, rồi mở PR #6 (`vitest` 4.1.9 → 4.1.11, lỗ hổng moderate). Hai lượt cập nhật của nó hỏng (`@vitest/mocker`, `minimatch`).
+11. **Việc kit để sau:**
     - `coverage.exclude` có `e2e/**` và `scripts/**`, chỉ khớp ở gốc repo. Trong dự án pnpm, `apps/<app>/e2e/` và `apps/<app>/scripts/` vẫn bị tính là nguồn;
     - luật "file đổi phải có trong lcov" đụng với coverage exclude của template (`src/app/**`);
     - stack `nextjs` của `add` ghi `health: /`, mà với next-intl `localePrefix: 'always'` thì `/` trả 307;

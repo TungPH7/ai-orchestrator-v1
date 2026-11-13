@@ -161,7 +161,7 @@
   3. chạy deployer `--dry-run`: Caddyfile của `ao-sample` và `ao-pilot` không đổi;
   4. bật lại deployer.
   - **Kiểm:** ghi vào `tasks/verification.md`, không ghi nội dung file có thông tin đăng nhập.
-- [ ] **T22 [bạn]: dựng repo `shop`** (tiêu chí 2). Làm đúng theo bản nháp:
+- [x] **T22 [bạn]: dựng repo `shop`** (tiêu chí 2; xong ở Lượt 209: `doctor` đạt mọi dòng, CI xanh trên `develop` ở `91b699c`; chỗ hướng dẫn cần sửa ghi trong `verification.md`, sửa ở T25). Làm đúng theo bản nháp:
   1. tạo thư mục `e-commerce/shop/` và repo public `TungPH7/shop`;
   2. `init --package-manager pnpm`;
   3. `add user --stack nextjs --from <template Next.js> --public` và `add admin --stack react --from <template React> --public`, bỏ `study-guide-impl/`, `frontend-technical/`, `docs/readme/`;
@@ -169,7 +169,7 @@
   5. **bạn:** cài hai App vào repo, nối GitHub for Jira;
   6. `doctor`.
   - **Kiểm:** `doctor` đạt mọi dòng; CI xanh trên `develop`. Chỗ nào hướng dẫn sai hay thiếu thì sửa hướng dẫn trước khi đi tiếp.
-- [ ] **T23 [bạn]: sửa code app** (tiêu chí 3).
+- [x] **T23 [bạn]: sửa code app** (tiêu chí 3; xong ở Lượt 209: `SHOP-1` tạo bằng token CI, PR #5 merge thành `91b699c`, `/ao-preview` dừng vì PR chép kit nên dev server thay, `SHOP-1` Cancelled).
   - `/ao-intake` tạo một Task cho các chỗ `add` đã báo. Phiên chính sửa trên nhánh của Task, rồi mở PR.
   - `/ao-preview` chạy hai app của PR trên máy bạn. **Bạn** xem, rồi merge khi CI xanh.
   - Task được Cancel, kèm comment trỏ tới PR, như `AOG-3`.
