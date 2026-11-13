@@ -1,6 +1,6 @@
 # SPEC: project-scaffold, phần 2 (B2)
 
-> **Trạng thái:** đã duyệt 2026-11-13 (Phiên 27 · Lượt 201): repo `shop` để public (câu 1), ba câu còn lại theo đề xuất (mục 9). Plan và task: [tasks/plan.md](tasks/plan.md), [tasks/todo.md](tasks/todo.md). Phần 1 ở [SPEC-project-scaffold.md](SPEC-project-scaffold.md); mục 4 của file đó ghi phạm vi phần 2 và 3. Nguồn: hàng B2 của [misc/thao-luan/concerns.md](misc/thao-luan/concerns.md), Lượt 152–153 (ảnh chụp và design system), Lượt 199–200 (bố cục dự án e-commerce và bốn quyết định).
+> **Trạng thái:** đã duyệt 2026-11-13 (Phiên 27 · Lượt 201): repo `shop` để public (câu 1), ba câu còn lại theo đề xuất (mục 9). **Hoàn thành 2026-11-13** (Phiên 28 · Lượt 2): kit PR #261–#267, 0 USD agent; tiêu chí 1, 2, 4, 5, 6 ở mục 7 đạt, tiêu chí 3 đạt một phần (`/ao-preview` chờ PR app đầu tiên của B3). Plan, todo, verification: [tasks/archive/project-scaffold-2/](tasks/archive/project-scaffold-2/). Phần 1 ở [SPEC-project-scaffold.md](SPEC-project-scaffold.md); mục 4 của file đó ghi phạm vi phần 2 và 3. Nguồn: hàng B2 của [misc/thao-luan/concerns.md](misc/thao-luan/concerns.md), Lượt 152–153 (ảnh chụp và design system), Lượt 199–200 (bố cục dự án e-commerce và bốn quyết định).
 
 ## 1. Mục tiêu
 
