@@ -1,6 +1,6 @@
 <!--
 Template for the `design` artifact in contract/policies.yaml: the screens of one Epic, saved as docs/specs/<EPIC-KEY>/design.md
-by `ux` when the Epic touches the UI. Images of Figma screens go to docs/specs/<EPIC-KEY>/design/.
+by `ux` when the Epic touches the UI. The images of Figma and Image screens go to docs/specs/<EPIC-KEY>/design/.
 Keep headings and YAML keys in English and write the content in Vietnamese.
 Run `node .ai-orchestrator/scripts/check-design.mjs <this file>` until it reports no error, then commit.
 Delete the guidance comments and the Example section when you are done.
@@ -15,12 +15,14 @@ Delete the guidance comments and the Example section when you are done.
 ## Screens
 
 <!-- One row per screen. Codes S1, S2… never change after the SPEC is approved: a removed screen leaves its code unused.
-Kind is ASCII when the screen has no Figma design yet, and Figma when it has one. -->
+Kind is ASCII when the screen has no design yet, Figma when it has a Figma design, and Image when the human gave a
+screenshot or a mockup made with another tool. -->
 
 | Code | Name | Route | User story | Kind |
 |---|---|---|---|---|
 | S1 | <name> | <route> | <user story of the SPEC> | ASCII |
 | S2 | <name> | <route> | <user story of the SPEC> | Figma |
+| S3 | <name> | <route> | <user story of the SPEC> | Image |
 
 ## Flow
 
@@ -29,6 +31,7 @@ Kind is ASCII when the screen has no Figma design yet, and Figma when it has one
 ```mermaid
 flowchart LR
   S1[S1 <name>] -->|"[n] <action>"| S2[S2 <name>]
+  S2 -->|"[n] <action>"| S3[S3 <name>]
 ```
 
 ## Screen Details
@@ -41,8 +44,11 @@ flowchart LR
 - Figma: the exported images, desktop and mobile when there is one, as ![S<n> · <name> · <screen size>](design/S<n>-<size>.png).
   Export at 1x as PNG or JPG; each image at most 1 MB and at most 2,000 px on its long side; slice a long frame.
   Commit only approved images, with the SPEC.
+- Image: a screenshot or a mockup the human put in .ai/design-inbox/<EPIC-KEY>/, shown the same way and with the same
+  limits. An image over them goes back to the human: never edit one.
 Right under the drawing or the images comes one ```yaml block with `screen`, `route`, `blocks`, and for a Figma screen
-`figma`, the link of the frame with its node-id. Each block has `name` and `type`, and when needed `content`, `behavior`,
+`figma`, the link of the frame with its node-id, or for an Image screen `screenshot`, where the screenshot or mockup
+comes from. Each block has `name` and `type`, and when needed `content`, `behavior`,
 `validation`, `states`, `a11y`, `ac` (AC<n> codes of the SPEC) and `figma` (node id of the layer). Elsewhere, point to a
 block by its full code, for example S1.4. After approval a removed block leaves its number unused, and a new block takes
 the next number. -->
@@ -86,10 +92,43 @@ blocks:
     figma: "<layer node id>"
 ```
 
+### S3 · <name>
+
+![S3 · <name> · desktop](design/S3-desktop.png)
+
+```yaml
+screen: S3
+route: <route>
+screenshot: <where it comes from, such as "ảnh bạn gửi ngày <date>, chụp trang <page>">
+blocks:
+  1:
+    name: <name as seen in the image>
+    type: <type>
+```
+
+## Design System
+
+<!-- When a screen is Figma or Image: the tokens and components read from its images, so every screen of the Epic is
+built the same way. Compare each with docs/design-system/<app>.md when the app has one: "có" when it has the item,
+"mới" when it does not. Values read from an image are estimates: write what the image does not settle under Open
+Questions. When an item is "mới", or the app has no docs/design-system/<app>.md, sa puts a Task "Design system của
+<app>" first in the plan. -->
+
+**App:** <app in apps/, such as user> · **Design system của app:** docs/design-system/<app>.md | chưa có
+
+| Loại | Tên | Giá trị | Có hay mới |
+|---|---|---|---|
+| Màu | <name, such as primary> | <hex and where it is used> | <có / mới> |
+| Font | <name, such as body> | <family size/line height, weight> | <có / mới> |
+| Khoảng cách | spacing | <the steps, such as 4, 8, 12, 16, 24, 32 px> | <có / mới> |
+| Bo góc, bóng | <name> | <value> | <có / mới> |
+| Điểm ngắt | <name> | <width> | <có / mới> |
+| Component | <name, such as Button> | <variants and states> | <có / mới> |
+
 ## Open Questions
 
-<!-- What the design does not settle yet. For a Figma screen, also what Figma lacks: error states, the mobile layout,
-message texts. -->
+<!-- What the design does not settle yet. For a Figma or Image screen, also what the images lack: error states, the
+mobile layout, message texts, values the image does not show clearly. -->
 
 ## Example
 
@@ -198,8 +237,20 @@ blocks:
     figma: "12:372"
 ```
 
+## Design System
+
+**App:** shop · **Design system của app:** docs/design-system/shop.md
+
+| Loại | Tên | Giá trị | Có hay mới |
+|---|---|---|---|
+| Màu | primary | #1A73E8, nút Đặt hàng và liên kết | có |
+| Màu | success | #188038, dòng Giảm giá ở S2.2 | mới |
+| Font | body | Inter 16/24, 400 | có |
+| Component | Dòng tiền | nhãn trái, số tiền phải; bản giảm giá có dấu trừ | mới |
+
 ## Open Questions
 - Figma chưa có trạng thái khi mã hết hạn giữa lúc thanh toán. Đề xuất: quay về S1 và hiện S1.4.
+- Màu success đọc từ ảnh xuất của Figma; xin mã màu chính xác trong Figma.
 ````
 
 </details>

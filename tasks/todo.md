@@ -132,7 +132,7 @@
 
 ## Chặng 4: ảnh chụp và design system, nhánh `task/scaffold2-4`
 
-- [ ] **T18: `check-design` và template** (spec 2.5).
+- [x] **T18: `check-design` và template** (spec 2.5).
   - **Đạt khi:**
     - D7: màn hình có ảnh khai đúng một trong `figma`, `screenshot`; dòng `Figma version:` chỉ bắt buộc khi có màn hình Figma;
     - D9: có màn hình Figma hay Ảnh thì phải có mục `## Design System`;
