@@ -193,12 +193,26 @@ async function doctorFacts(dir, config) {
       secrets: (ghJson(['secret', 'list', '--repo', repo, '--json', 'name']) ?? []).map(({ name }) => name),
       envSecrets: (ghJson(['secret', 'list', '--env', 'merge-gate', '--repo', repo, '--json', 'name']) ?? []).map(({ name }) => name),
       workflows: ghJson(['api', `repos/${repo}/actions/workflows`])?.total_count ?? 0,
+      // .github/CODEOWNERS on main and on each release branch with commits main lacks (review round 3 of shop PR #13).
+      codeownersOn: codeownersOnBranches(repo, ghJson),
       ciRuns: (ghJson(['run', 'list', '--repo', repo, '--workflow', 'CI', '--branch', 'develop', '--limit', '1', '--json', 'databaseId']) ?? []).length,
     },
     apps: { dev: await app('dev'), review: await app('review') },
     jiraCheck: { status: jiraCheck.status, text: `${jiraCheck.stdout ?? ''}${jiraCheck.stderr ?? ''}`.trim() },
     claude: { trusted, mcp: localSettings.enableAllProjectMcpServers ? ['atlassian', 'chrome-devtools'] : (localSettings.enabledMcpjsonServers ?? []) },
   };
+}
+
+// .github/CODEOWNERS as main and each open release branch hold it on GitHub, or null where a branch has none: { ref:
+// text }. A release branch is open while it has commits main lacks. Read with your gh login.
+function codeownersOnBranches(repo, ghJson) {
+  const release = (ghJson(['api', `repos/${repo}/branches?per_page=100`]) ?? []).map(({ name }) => name).filter((name) => /^release\/v\d+\.\d+\.\d+$/.test(name));
+  const open = release.filter((name) => (ghJson(['api', `repos/${repo}/compare/main...${name}`])?.ahead_by ?? 1) > 0);
+  const read = (ref) => {
+    const file = ghJson(['api', `repos/${repo}/contents/.github/CODEOWNERS?ref=${encodeURIComponent(ref)}`]);
+    return file?.content ? Buffer.from(file.content, 'base64').toString('utf8') : null;
+  };
+  return Object.fromEntries(['main', ...open].map((ref) => [ref, read(ref)]));
 }
 
 const OPTIONS = {

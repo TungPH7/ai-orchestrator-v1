@@ -4,6 +4,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { readGates } from '../../lib/quality/gates.mjs';
 import { decideMerge, runMergeGate } from '../../lib/quality/merge-gate.mjs';
+import { findingId, readReviewReport } from '../../lib/quality/pull-request.mjs';
 import { recordedClient } from '../helpers/jira.mjs';
 import { ROOT } from '../helpers/kit.mjs';
 
@@ -162,7 +163,9 @@ test('CI, a request for changes, the title, the description, the base branch and
 
 // A run of merge-gate over the recorded repository, after `change` edits a copy of the answers. The writing client
 // records each request; `refuse` makes the merge call fail with that HTTP status.
-async function runOnce({ change = () => {}, dryRun = false, refuse, reply = () => ({ merged: true }) } = {}) {
+// `auditMain` audits the commits a merge back brings from main: by default each passes; null gives merge-gate none.
+const passAll = async (pr) => [{ sha: pr.head.sha, ok: true, problems: [] }];
+async function runOnce({ change = () => {}, dryRun = false, refuse, reply = () => ({ merged: true }), auditMain = passAll } = {}) {
   const copy = structuredClone(answers);
   change(copy);
   const sent = [];
@@ -185,6 +188,7 @@ async function runOnce({ change = () => {}, dryRun = false, refuse, reply = () =
     apps: { dev: 'tungph7-ao-dev', review: 'tungph7-ao-review', merge: 'tungph7-ao-merge' },
     approvers: ['approver'],
     dryRun,
+    ...(auditMain && { auditMain }),
     log: (line) => lines.push(line),
   });
   return { lines, sent, writers, failures };
@@ -322,6 +326,7 @@ test('a merge back from main needs only green CI, a release tag on its head and 
     asBackMerge(f.pr);
     f.reviews.splice(0);
     f.tags = [{ name: 'v0.1.0', sha: HEAD }];
+    f.brought = [{ sha: HEAD, ok: true, problems: [] }];
   };
   assert.deepEqual(decide(noReviews), { action: 'merge', method: 'merge', sha: HEAD, title: 'Merge main into develop after v0.1.0 (#12)' });
   assert.deepEqual(decide((f) => {
@@ -345,6 +350,7 @@ test('a merge back waits until the head of main is the commit of a release tag',
     asBackMerge(f.pr);
     f.reviews.splice(0);
     f.tags = tags;
+    f.brought = [{ sha: HEAD, ok: true, problems: [] }];
   };
   const waits = { action: 'wait', missing: ['a release tag vX.Y.Z on head a1b2c3d: main merges back only once its head is a version you shipped'] };
   assert.deepEqual(decide(backMerge([])), waits);
@@ -359,6 +365,7 @@ test('merge-gate opens the merge back with ao-merge, so a merge back ao-merge op
     f.pr.user.login = 'tungph7-ao-merge[bot]';
     f.reviews.splice(0);
     f.tags = [{ name: 'v0.1.0', sha: HEAD }];
+    f.brought = [{ sha: HEAD, ok: true, problems: [] }];
   };
   assert.equal(decide(byMerge).action, 'merge');
   assert.deepEqual(decide((f) => (f.pr.user.login = 'tungph7-ao-merge[bot]')), { action: 'skip', reason: 'opened by tungph7-ao-merge[bot], not by tungph7-ao-dev: whoever opened it merges it' });
@@ -369,10 +376,13 @@ test('merge-gate opens the merge back with ao-merge, so a merge back ao-merge op
 // when it changes nothing but the report and the changelog of that version.
 const asNotes = (pr) => Object.assign(pr, { title: 'release notes: v0.1.0', body: '', head: { ...pr.head, ref: 'release-notes/v0.1.0', repo: REPO }, base: { ...pr.base, ref: 'release/v0.1.0', repo: REPO } });
 const NOTES_FILES = [{ filename: 'docs/releases/v0.1.0.md', status: 'added' }, { filename: 'CHANGELOG.md', status: 'modified' }];
+// One commit on the head of the release branch, as /ao-ship makes it (review round 3 of shop PR #13).
 const notesOf = (f) => {
   asNotes(f.pr);
   f.files = structuredClone(NOTES_FILES);
   f.reviews.splice(0);
+  f.commits = [{ sha: HEAD, parents: [{ sha: 'c'.repeat(40) }], commit: { message: 'docs(release): the report of v0.1.0' } }];
+  f.baseHead = 'c'.repeat(40);
 };
 
 test('the PR of the release report is squashed once CI is green, with no review and no approval', () => {
@@ -422,9 +432,10 @@ test('only main of this repository merges back, and only into develop or a relea
 
 // A run with only PR #12 open, as the release PR or the merge back; the writer answers each request in turn.
 const MERGED = 'f'.repeat(40);
-async function runRelease({ change = asRelease, more = () => {}, answers: replies = {}, dryRun = false } = {}) {
+async function runRelease({ change = asRelease, more = () => {}, answers: replies = {}, dryRun = false, auditMain } = {}) {
   return runOnce({
     dryRun,
+    ...(auditMain !== undefined && { auditMain }),
     change: (a) => {
       a['/pulls?direction=asc&sort=created&state=open'] = [change(a['/pulls/12'])];
       a['/pulls?base=develop&state=open'] = [];
@@ -500,4 +511,110 @@ test('a run reads the tags of the repository for a merge back: a lightweight tag
   } });
   assert.deepEqual(annotated.sent, []);
   assert.match(annotated.lines[0], /^Waiting #12: a release tag vX\.Y\.Z on head a1b2c3d/);
+});
+
+// Pilot 3, spec 2.9 part 5: a High you accept, by its id, in your approval of the head (review round 3 of shop PR #13).
+test('a High you accept in your approval of the head no longer makes the PR wait, up to its last day', () => {
+  const withHigh = (f) => {
+    const report = reportOf(f, 'reviewer');
+    report.body = report.body.replace('| Low |', '| High |');
+  };
+  const idOf = (f) => findingId(readReviewReport(reportOf(f, 'reviewer').body, ['reviewer', 'security']).blocking[0]);
+  let id;
+  const accepting = (until) => (f) => {
+    withHigh(f);
+    id = idOf(f);
+    approval(f).body = `Accept risk: ${id} until ${until}: the fix comes with the ao-agent account`;
+  };
+  assert.equal(decideMerge({ ...facts(accepting('2026-12-31')), today: '2026-11-14' }).action, 'merge');
+  assert.equal(decide(accepting('2026-12-31')).action, 'wait', 'with no day to hold on, no acceptance counts');
+  assert.deepEqual(decideMerge({ ...facts(accepting('2026-11-13')), today: '2026-11-14' }), {
+    action: 'wait',
+    missing: [`reviewer report on head a1b2c3d without Critical or High findings (1 open; Accept risk: ${id} of approver: until 2026-11-13, before 2026-11-14)`],
+  });
+});
+
+// Review round 3 of shop PR #13: a commit that reached main without you must not flow into develop with the merge back.
+const BROUGHT_OK = [{ sha: HEAD, ok: true, problems: [] }];
+test('a merge back waits while a commit main brings back did not pass audit, or while merge-gate could not audit them', () => {
+  const backMerge = (brought) => (f) => {
+    asBackMerge(f.pr);
+    f.reviews.splice(0);
+    f.tags = [{ name: 'v0.1.1', sha: HEAD }];
+    f.brought = brought;
+  };
+  assert.equal(decide(backMerge(BROUGHT_OK)).action, 'merge');
+  const pushed = `${FIRST.slice(0, 7)} on main is not the merge of a PR into main: it was pushed without one`;
+  assert.deepEqual(decide(backMerge([...BROUGHT_OK, { sha: FIRST, ok: false, problems: [pushed] }])), { action: 'wait', missing: [`${FIRST.slice(0, 7)} on main passing audit (${pushed})`] });
+  assert.deepEqual(decide(backMerge(undefined)), { action: 'wait', missing: ['an audit of the commits main brings back'] });
+});
+
+const BASE_HEAD = 'c'.repeat(40);
+test('the PR of the release report merges only as one commit on the head of its release branch', () => {
+  const waits = (missing) => ({ action: 'wait', missing: [missing] });
+  const one = 'one commit on the head ccccccc of release/v0.1.0';
+  assert.deepEqual(decide((f) => {
+    notesOf(f);
+    f.commits.push({ sha: 'e'.repeat(40), parents: [{ sha: HEAD }] });
+  }), waits(`${one} (2 commits)`));
+  assert.deepEqual(decide((f) => {
+    notesOf(f);
+    f.commits[0].parents.push({ sha: 'd'.repeat(40) });
+  }), waits(`${one} (a merge commit)`));
+  assert.deepEqual(decide((f) => {
+    notesOf(f);
+    f.baseHead = 'd'.repeat(40);
+  }), waits('one commit on the head ddddddd of release/v0.1.0 (it is on ccccccc)'));
+  assert.deepEqual(decide((f) => {
+    notesOf(f);
+    f.baseHead = undefined;
+  }), waits('the head of release/v0.1.0'));
+});
+
+test('a PR whose files GitHub does not list in full waits: merge-gate cannot check their paths', () => {
+  const truncated = 'every file listed: GitHub listed 2 of the 3001 files, so merge-gate cannot check their paths; read the PR and merge it yourself';
+  assert.deepEqual(decide((f) => (f.pr.changed_files = 3001)), { action: 'wait', missing: [truncated] });
+  assert.equal(decide((f) => (f.pr.changed_files = 2)).action, 'merge');
+  assert.deepEqual(decide((f) => {
+    notesOf(f);
+    f.pr.changed_files = 3001;
+  }), { action: 'wait', missing: [truncated] });
+});
+
+test('merge-gate buys its token before it reads the PR again, so nothing but the merge call comes after that read', async () => {
+  const recorded = recordedClient(structuredClone(answers));
+  const events = [];
+  let reads = 0;
+  const github = { ...recorded, get: async (path, query) => (path === '/pulls/12' && events.push(`read ${++reads}`), recorded.get(path, query)) };
+  const writer = async () => (events.push('token'), { request: async (method, path) => (events.push(`${method} ${path}`), { merged: true }) });
+  await runMergeGate({ github, mergeClient: writer, gates, apps: { dev: 'tungph7-ao-dev', review: 'tungph7-ao-review', merge: 'tungph7-ao-merge' }, approvers: ['approver'], log: () => {} });
+  assert.deepEqual(events.slice(0, 4), ['read 1', 'token', 'read 2', 'PUT /pulls/12/merge']);
+});
+
+test('a PR that ends up merged into another base than the one merge-gate read is a failure, said loudly', async () => {
+  const recorded = recordedClient(structuredClone(answers));
+  let reads = 0;
+  const github = {
+    ...recorded,
+    get: async (path, query) => {
+      const answer = await recorded.get(path, query);
+      if (path === '/pulls/12' && ++reads === 3) answer.base.ref = 'main';
+      return answer;
+    },
+  };
+  const lines = [];
+  const writer = async () => ({ request: async () => ({ merged: true }) });
+  const { failures } = await runMergeGate({ github, mergeClient: writer, gates, apps: { dev: 'tungph7-ao-dev', review: 'tungph7-ao-review', merge: 'tungph7-ao-merge' }, approvers: ['approver'], log: (line) => lines.push(line) });
+  assert.deepEqual(failures.map(({ number }) => number), [12]);
+  assert.match(lines.join('\n'), /Failed #12: PR #12 was merged into main, not develop as merge-gate read it: check that merge by hand/);
+});
+
+test('a run audits the commits main brings back, with the function it is given, and waits without one', async () => {
+  const seen = [];
+  const backMerge = { change: (pr) => asBackMerge(pr), more: (a) => (a['/pulls/12/reviews'] = []) };
+  const merged = await runRelease({ ...backMerge, auditMain: async (pr) => (seen.push(pr.number), BROUGHT_OK) });
+  assert.deepEqual(seen, [12]);
+  assert.deepEqual(merged.lines, ['Merged #12: Merge main into develop after v0.1.0 (#12) (merge at a1b2c3d)']);
+  const none = await runRelease({ ...backMerge, auditMain: null });
+  assert.deepEqual(none.lines, ['Waiting #12: an audit of the commits main brings back']);
 });

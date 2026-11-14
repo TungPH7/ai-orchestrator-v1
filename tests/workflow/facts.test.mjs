@@ -6,6 +6,7 @@ import { readRoster } from '../../lib/agents/roster.mjs';
 import { readContract } from '../../lib/contract.mjs';
 import { readGates } from '../../lib/quality/gates.mjs';
 import { readMapping } from '../../lib/tracker/mapping.mjs';
+import { findingId } from '../../lib/quality/pull-request.mjs';
 import { agentNames, gatherFacts, reviewReports, workLabels } from '../../lib/workflow/facts.mjs';
 import { fakeJira, recordedClient } from '../helpers/jira.mjs';
 import { CONTRACT_DIR, ROOT } from '../helpers/kit.mjs';
@@ -87,7 +88,7 @@ test('a Story with Sub-tasks: its state, Agent, parent Epic, each Sub-task, its 
 
   assert.deepEqual([pr.number, pr.state, pr.merged, pr.headRef, pr.base, pr.docsEpic], [11, 'closed', true, 'feature/DEMO-12-coupon-code', 'develop', null]);
   assert.deepEqual(pr.ci, { green: true, failed: false, pending: false, started: true });
-  assert.deepEqual(pr.reports.reviewer, { sha: pr.headSha, at: '2026-10-30T19:46:40Z', ok: true, blocking: 0, open: [], state: 'COMMENTED', onHead: true });
+  assert.deepEqual(pr.reports.reviewer, { sha: pr.headSha, at: '2026-10-30T19:46:40Z', ok: true, blocking: 0, open: [], ids: [], state: 'COMMENTED', onHead: true });
   assert.equal(pr.reports.security.onHead, true);
   assert.deepEqual([pr.changesRequested, pr.approved, pr.protectedPaths], [false, true, []]);
   assert.deepEqual([facts.dependenciesMerged, facts.ledger, facts.run], [true, false, null]);
@@ -158,7 +159,7 @@ test('the newest report of each role, and the newest full security report the ne
   ];
   const { reports, securityFull } = reviewReports(reviews, { roles: ['reviewer', 'security'], bot, head: Z });
   assert.deepEqual([reports.reviewer.sha, reports.security.sha, reports.security.onHead], [Y, Y, false], 'a report of another login does not count');
-  assert.deepEqual(securityFull, { sha: X, at: '2026-11-04T08:00:00Z', ok: true, blocking: 0, open: [], state: 'COMMENTED', onHead: false });
+  assert.deepEqual(securityFull, { sha: X, at: '2026-11-04T08:00:00Z', ok: true, blocking: 0, open: [], ids: [], state: 'COMMENTED', onHead: false });
   assert.equal(reviewReports(reviews.slice(2, 3), { roles: ['reviewer', 'security'], bot, head: Z }).securityFull, null, 'only a report of the new part');
 });
 
@@ -267,4 +268,22 @@ test('a PR is from a fork unless its head and base are both this repository; a d
   assert.equal((await gather('review', '11', { change: repoOf(here, here) })).pr.fromFork, false);
   assert.equal((await gather('review', '11', { change: repoOf({ full_name: 'someone/ao-pilot' }, here) })).pr.fromFork, true);
   assert.equal((await gather('review', '11', { change: repoOf(null, here) })).pr.fromFork, true);
+});
+
+// Pilot 3, spec 2.9 part 5: on the head, a High you accept in your approval no longer counts as blocking, and each
+// finding that still blocks comes with the id you would accept it by.
+test('the reports on the head count a High you accept as no longer blocking, and give the ids of those that still block', () => {
+  const bot = 'tungph7-ao-review[bot]';
+  const Y = 'b'.repeat(40);
+  const ROWS = '| Severity | Axis | Where | Finding | Suggested fix |\n|---|---|---|---|---|\n| High | Security | ruleset.mjs:22 | agents reach your login | ao-agent |\n| High | Security | merge-gate.mjs:56 | the base can change | read again |\n';
+  const report = { user: { login: bot }, commit_id: Y, submitted_at: '2026-11-14T09:00:00Z', state: 'CHANGES_REQUESTED', body: `# Review: chore(kit): copy (SHOP-6)\n\nRole: security\n\n## Findings\n${ROWS}\n## Verdict\n- [x] **Request changes**\n` };
+  const [login, base] = [{ severity: 'High', where: 'ruleset.mjs:22', finding: 'agents reach your login' }, { severity: 'High', where: 'merge-gate.mjs:56', finding: 'the base can change' }];
+  const yours = { user: { login: 'you' }, commit_id: Y, submitted_at: '2026-11-14T10:00:00Z', state: 'APPROVED', body: `Accept risk: ${findingId(login)} until 2026-12-31: until ao-agent` };
+  const read = (reviews, on) => reviewReports(reviews, { roles: ['security'], bot, head: Y, approvers: ['you'], on }).reports.security;
+  const before = read([report], '2026-11-14');
+  assert.deepEqual([before.blocking, before.ids], [2, [findingId(login), findingId(base)]]);
+  const after = read([report, yours], '2026-11-14');
+  assert.deepEqual([after.blocking, after.ids, after.open.length], [1, [findingId(base)], 2], 'the accepted High stays open, for the next review to check');
+  assert.equal(read([report, yours], '2027-01-01').blocking, 2, 'past its last day it blocks again');
+  assert.equal(read([report, yours]).blocking, 2, 'with no day to hold on, no acceptance counts');
 });
