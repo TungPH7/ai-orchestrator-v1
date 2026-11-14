@@ -30,7 +30,7 @@ import { DOCKER_INFO, dockerAnswered, findJdk, javaVersionOf } from '../lib/qual
 import { runNpm } from '../lib/quality/npm.mjs';
 import { managerOf, pnpmVersion, runManager } from '../lib/quality/package-manager.mjs';
 import { homedir } from 'node:os';
-import { appCredentials, installationToken, userVariable } from '../lib/quality/github-app.mjs';
+import { appCredentials, installationToken, userSecret } from '../lib/quality/github-app.mjs';
 import { doctor, formatDoctor } from '../lib/scaffold/doctor.mjs';
 import { gitignoreMissing, kitDrift } from '../lib/scaffold/install.mjs';
 import { addApp } from '../lib/scaffold/add.mjs';
@@ -45,8 +45,8 @@ const kitDir = fileURLToPath(new URL('..', import.meta.url));
 
 const git = (args, cwd) => spawnSync('git', args, { cwd, encoding: 'utf8' });
 const gh = (args, { input } = {}) => spawnSync('gh', args, { encoding: 'utf8', input });
-// A variable of your environment, else of your Windows user, as the hooks read them; its value is never printed.
-const secret = (name) => process.env[name] || userVariable(name) || null;
+// A token or password of yours: your Windows user variable first, else the environment (Pilot 3, T2); never printed.
+const secret = (name) => userSecret(name) ?? null;
 // The project.yaml of a project, read and valid, or null after printing why.
 function projectConfig(dir) {
   const file = join(dir, PROJECT_FILE);

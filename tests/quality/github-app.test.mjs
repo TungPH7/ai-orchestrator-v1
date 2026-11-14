@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createVerify, generateKeyPairSync } from 'node:crypto';
-import { appCredentials, appJwt, botIdentity, githubRepoOf, installationToken } from '../../lib/quality/github-app.mjs';
+import { appCredentials, appJwt, botIdentity, githubRepoOf, installationToken, userSecret } from '../../lib/quality/github-app.mjs';
 
 const { privateKey, publicKey } = generateKeyPairSync('rsa', {
   modulusLength: 2048,
@@ -118,4 +118,13 @@ test('the repository of a GitHub remote, by HTTPS or SSH', () => {
   assert.equal(githubRepoOf('https://github.com/TungPH7/ao-pilot'), 'TungPH7/ao-pilot');
   assert.equal(githubRepoOf('git@github.com:TungPH7/ao-pilot.git'), 'TungPH7/ao-pilot');
   for (const url of ['', 'https://gitlab.com/a/b.git', 'https://github.com/a/b;rm.git']) assert.throws(() => githubRepoOf(url), /not a GitHub repository/, url);
+});
+
+test('a secret comes from your Windows user variables first: Claude Code keeps the value it started with, even after you change it (Pilot 3, T2)', () => {
+  const stored = { AO_ENV_AUTH: 'ao:new' };
+  const read = (name) => stored[name];
+  assert.equal(userSecret('AO_ENV_AUTH', { env: { AO_ENV_AUTH: 'ao:old' }, readUserVariable: read }), 'ao:new');
+  // Not a user variable: the environment, such as a CI job or a shell that set it for one command.
+  assert.equal(userSecret('JIRA_CI_TOKEN', { env: { JIRA_CI_TOKEN: 'ci' }, readUserVariable: read }), 'ci');
+  assert.equal(userSecret('JIRA_CI_TOKEN', { env: {}, readUserVariable: read }), undefined);
 });
