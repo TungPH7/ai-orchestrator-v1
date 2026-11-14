@@ -63,3 +63,7 @@ Sửa plan và todo: T4 thêm `playwright.config.ts` của profile; T5 đưa b�
   - task `ao-backup-pull` của Windows: hằng ngày 09:00 và lúc đăng nhập, `StartWhenAvailable`; chạy thử trả 0.
 - **Fix Version** `v0.1.0` (id 10006) và `v0.2.0` (id 10007) tạo qua REST bằng token admin (`scratchpad/shop-versions.mjs`).
 - **Bước kiểm của `/ao-release`** (Lượt 6): điểm cắt `28394b8`; `v0.1.0` gồm `SHOP-5` (Done); code của `SHOP-1`–`SHOP-4` (Cancelled, không Fix Version) đi cùng, vì đó là phần scaffold; hai Fix Version chưa Release. Chờ gate ④ của bạn.
+- **T9, gate ④** (Lượt 7, bạn duyệt): `/ao-release v0.1.0 28394b8 --go` tạo `release/v0.1.0` tại `28394b8` và gắn Fix Version. Deployer deploy Staging (deployment `7784679035`, success 08:00:42 UTC):
+  - dùng lại image của Development (`2a2cb61d…`, cùng cây code), không build lại;
+  - tạo `ao-shop-staging-db`; Flyway chạy 3 migration, đều thành công; `api` `healthy`;
+  - RAM còn trống 2.290 MB khi `shop` có Development và Staging. Bộ nhớ: `api` 279–296 MiB, `user` 53–72 MiB, `admin` 11–12 MiB, database 42–44 MiB mỗi môi trường.
