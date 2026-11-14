@@ -48,10 +48,11 @@ test('dev roles open PRs with ao-dev and review roles post reports with ao-revie
   assert.deepEqual(gates.github_apps.review, { env: 'AO_REVIEW_APP', roles: ['reviewer', 'security'], commands: ['review'] });
 });
 
-test('only devops may edit workflows; no agent may edit the hooks, the Claude settings, the kit copy or the MCP servers (spec 2.7)', () => {
+test('only devops may edit workflows; no agent may edit the hooks, the Claude settings, the kit copy, the MCP servers or the code owners (spec 2.7)', () => {
   assert.deepEqual(
     gates.protected_paths.map(({ path, editors = [] }) => `${path} ${editors.join(',')}`.trim()),
-    ['.github/workflows/** devops', '.githooks/**', '.claude/**', '.ai-orchestrator/**', '.mcp.json'],
+    // .github/CODEOWNERS since review round 2 of shop PR #13 (Pilot 3, spec 2.9): the rulesets count only its owners.
+    ['.github/workflows/** devops', '.githooks/**', '.claude/**', '.ai-orchestrator/**', '.mcp.json', '.github/CODEOWNERS'],
   );
 });
 

@@ -1,6 +1,7 @@
-// gh:protect (quality-gates spec section 2.8): applies the rulesets ao-protected and ao-protected-merge to a project
-// repository, with your GitHub CLI login, since it takes admin rights, and deletes ao-protected-release of Pilot 3, T9.
-// Only the ao-merge App bypasses the ruleset of PRs (lib/quality/ruleset.mjs), so its id is needed:
+// gh:protect (quality-gates spec section 2.8): applies the rulesets ao-protected-merge, ao-protected-main,
+// ao-release-branches, ao-release-tags and ao-protected to a project repository, with your GitHub CLI login, since it
+// takes admin rights, and deletes ao-protected-release of Pilot 3, T9. Only the ao-merge App bypasses the ruleset of PRs
+// on develop and release/*, and makes v* tags besides you (lib/quality/ruleset.mjs), so its id is needed:
 // github.apps.merge_id of project.yaml. Run it from the kit repository, or let ao-kit setup github run it:
 //   npm run gh:protect -- --repo <owner>/<name> --merge-app-id <id>
 // A repository without rulesets, such as a private one on the Free plan, is left as it is: soft mode, exit code 0.

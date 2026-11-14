@@ -180,6 +180,7 @@ async function doctorFacts(dir, config) {
     renderCheck: { status: render.status, text: `${render.stdout ?? ''}${render.stderr ?? ''}`.trim() },
     hooksPath: git(['config', 'core.hooksPath'], dir).stdout.trim(),
     gitignoreMissing: gitignoreMissing(dir),
+    codeowners: read('.github/CODEOWNERS'),
     now: new Date().toISOString(),
     // The backup copies this machine pulls, or null when it does not (Pilot 3, spec 2.4).
     backupCopies: pulledCopyAges(),

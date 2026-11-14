@@ -154,6 +154,28 @@ test('the backups are not the agents\' to touch: the age identity, the copies, t
   allowed(call('qa', 'Read', { file_path: `${PROJECT}\\docs\\backup.md` }), 'a document about backups');
 });
 
+// Review round 2 of shop PR #13 (Pilot 3, spec 2.9): Grep with output_mode content prints a file, and Glob lists one,
+// so they get the rules of Read; and the key of ao-merge is a key like the others.
+test('Grep and Glob are checked like Read: keys, the gh hosts file, the backups and the folder of the backup state', () => {
+  for (const agent of ['qa', 'be-dev']) {
+    for (const [tool, input, pattern] of [
+      ['Grep', { pattern: 'BEGIN', path: 'C:\\Users\\me\\ao-keys' }, /key/],
+      ['Grep', { pattern: 'BEGIN', path: 'C:\\Users\\me', glob: '*.pem' }, /key/],
+      ['Glob', { pattern: '**/*.pem', path: 'C:\\Users\\me' }, /key/],
+      ['Grep', { pattern: 'oauth_token', path: 'C:\\Users\\me\\AppData\\Roaming\\GitHub CLI\\hosts.yml' }, /token/],
+      ['Grep', { pattern: 'AGE-SECRET-KEY', path: 'C:\\Users\\me\\.ao' }, /backup copies/],
+      ['Grep', { pattern: 'x', path: 'C:\\Users\\me', glob: '*.agekey' }, /backup copies/],
+      ['Glob', { pattern: '**/*.dump.age', path: 'D:\\' }, /backup copies/],
+      ['Glob', { pattern: '*', path: 'D:\\ao-backups\\shop\\production' }, /backup copies/],
+    ]) {
+      denied(call(agent, tool, input), pattern, `${agent}: ${tool} ${JSON.stringify(input)}`);
+    }
+    allowed(call(agent, 'Grep', { pattern: 'TODO', path: `${PROJECT}\\src`, glob: '*.ts' }), `${agent}: Grep in the project`);
+    allowed(call(agent, 'Glob', { pattern: 'apps/**/*.tsx', path: PROJECT }), `${agent}: Glob in the project`);
+  }
+  denied(bash('cat $AO_MERGE_APP_KEY'), /key/, 'the key of ao-merge by its variable');
+});
+
 test('deleting a workflow run is refused; reading runs is not', () => {
   denied(bash('gh run delete 123'), /workflow runs/, 'gh run delete');
   for (const command of ['gh run view 123 --log-failed', 'gh run list --workflow CI']) allowed(bash(command), command);
@@ -319,11 +341,12 @@ test('without the kit the hook refuses git and gh commands of agents, and lets t
   assert.equal(agent('npm test').stdout, '');
 });
 
-test('the kit settings run gh-guard before Bash, Read, Edit, Write and NotebookEdit', async () => {
+test('the kit settings run gh-guard before Bash, Read, Edit, Write, NotebookEdit, Grep and Glob', async () => {
   const { default: settings } = await import('../../kit/.claude/settings.json', { with: { type: 'json' } });
   const entry = settings.hooks.PreToolUse.find(({ hooks }) => hooks.some(({ command }) => command.includes('gh-guard.mjs')));
   assert.ok(entry, 'gh-guard is declared');
-  assert.deepEqual(entry.matcher.split('|').sort(), ['Bash', 'Edit', 'NotebookEdit', 'Read', 'Write']);
+  // Grep and Glob since review round 2 of shop PR #13 (Pilot 3, spec 2.9): Grep prints a file as Read does.
+  assert.deepEqual(entry.matcher.split('|').sort(), ['Bash', 'Edit', 'Glob', 'Grep', 'NotebookEdit', 'Read', 'Write']);
 });
 
 // The ways around gh-guard that the reviews of ao-pilot PR #14 found (dev-workflow T15b). The session of an agent holds

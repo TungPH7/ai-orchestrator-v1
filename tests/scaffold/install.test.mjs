@@ -6,7 +6,7 @@ import { join, relative } from 'node:path';
 import { parse } from 'yaml';
 import { readGates } from '../../lib/quality/gates.mjs';
 import { matchesGlob } from '../../lib/quality/glob.mjs';
-import { draftFromOldConfig, ensureGitignore, ensurePrepare, gitignoreMissing, installKit, kitDrift, KIT_ONLY_SCRIPTS, PROJECT_SCRIPTS } from '../../lib/scaffold/install.mjs';
+import { codeownersText, draftFromOldConfig, ensureCodeowners, ensureGitignore, ensurePrepare, gitignoreMissing, installKit, kitDrift, KIT_ONLY_SCRIPTS, PROJECT_SCRIPTS } from '../../lib/scaffold/install.mjs';
 import { readProjectConfig } from '../../lib/scaffold/project-config.mjs';
 import { ROOT } from '../helpers/kit.mjs';
 
@@ -73,6 +73,20 @@ test('.gitignore gets the lines the kit needs, once, and keeps the project\'s ow
   assert.deepEqual(ensureGitignore(dir), ['Added to .gitignore: .ai-orchestrator/node_modules/, .claude/settings.local.json, .playwright-cli/']);
   assert.equal(readFileSync(join(dir, '.gitignore'), 'utf8'), 'node_modules/\n.ai/\n.ai-orchestrator/node_modules/\n.claude/settings.local.json\n.playwright-cli/\n');
   assert.deepEqual(ensureGitignore(dir), []);
+});
+
+// Pilot 3, review of shop PR #13 (spec 2.9): the rulesets count only the approval of a code owner, so no App with write
+// access approves a PR in your place; .github/CODEOWNERS names your logins.
+test('.github/CODEOWNERS names every approver as owner of every file; written when missing or different, else left', (t) => {
+  const dir = temp(t, 'install-');
+  assert.equal(codeownersText(['TungPH7']).split('\n').filter((line) => line && !line.startsWith('#')).join('\n'), '* @TungPH7');
+  assert.match(codeownersText(['a', 'b']), /^\* @a @b$/m);
+  assert.deepEqual(ensureCodeowners(dir, ['TungPH7']), ['Wrote .github/CODEOWNERS: * @TungPH7, so the rulesets count only your approval']);
+  assert.equal(readFileSync(join(dir, '.github', 'CODEOWNERS'), 'utf8'), codeownersText(['TungPH7']));
+  assert.deepEqual(ensureCodeowners(dir, ['TungPH7']), []);
+  write(dir, '.github/CODEOWNERS', '* @someone-else\n');
+  assert.deepEqual(ensureCodeowners(dir, ['TungPH7']), ['Wrote .github/CODEOWNERS: * @TungPH7, so the rulesets count only your approval']);
+  assert.throws(() => codeownersText([]), /at least one approver/);
 });
 
 test('package.json gets the prepare script that installs the git hooks; another prepare is left alone and named', (t) => {

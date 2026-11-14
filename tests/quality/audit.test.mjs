@@ -245,8 +245,13 @@ const notesPr = (change = () => {}) => (f) => {
 test('the PR of a release report passes with green CI when ao-dev opened it, merge-gate or you merged it, and it changes only the report and the changelog of its version', () => {
   assert.deepEqual(audit(notesPr()), { ok: true, pr: 12, problems: [], keys: [] });
   assert.equal(audit(notesPr((f) => (f.pull.merged_by = YOU))).ok, true);
-  // A project with no ao-merge yet merges with ao-dev.
-  assert.equal(audit(notesPr((f) => (f.pull.merged_by = BOT))).ok, true);
+  // A project with no ao-merge yet merges with ao-dev; one with ao-merge does not take a merge of the agents' App
+  // (review round 2 of shop PR #13).
+  assert.equal(audit(notesPr((f) => {
+    f.pull.merged_by = BOT;
+    f.apps = { dev: 'tungph7-ao-dev', review: 'tungph7-ao-review' };
+  })).ok, true);
+  assert.deepEqual(audit(notesPr((f) => (f.pull.merged_by = BOT))).problems, ['PR #12 is the report of v0.1.0, which merge-gate or you merge, but tungph7-ao-dev[bot] merged it']);
 });
 
 test('the PR of a release report fails on any other file, without green CI, or opened or merged by anyone else', () => {
@@ -274,9 +279,14 @@ test('the merge of a PR from main back into develop or the open release branch p
     f.pull.base.ref = 'release/v0.1.0';
     f.branch = 'release/v0.1.0';
   })), { ok: true, pr: 12, problems: [], keys: [] });
-  // You may merge it by hand too, for instance while merge-gate is down; a project with no ao-merge merges with ao-dev.
+  // You may merge it by hand too, for instance while merge-gate is down; a project with no ao-merge merges with ao-dev,
+  // and one with ao-merge does not take a merge of the agents' App (review round 2 of shop PR #13).
   assert.deepEqual(audit(backMerge((f) => (f.pull.merged_by = YOU))).ok, true);
-  assert.deepEqual(audit(backMerge((f) => (f.pull.merged_by = BOT))).ok, true);
+  assert.deepEqual(audit(backMerge((f) => {
+    f.pull.merged_by = BOT;
+    f.apps = { dev: 'tungph7-ao-dev', review: 'tungph7-ao-review' };
+  })).ok, true);
+  assert.deepEqual(audit(backMerge((f) => (f.pull.merged_by = BOT))).problems, ['PR #12 merges main back into develop, which merge-gate or you merge, but tungph7-ao-dev[bot] merged it']);
 });
 
 test('a merge back from main fails without green CI on its head, without a release tag there, or when someone else merged it', () => {
