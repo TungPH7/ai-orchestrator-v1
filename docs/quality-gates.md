@@ -309,17 +309,22 @@ Các việc sau còn để ngỏ, vì cần bạn quyết:
 
 ## Ruleset
 
-`npm run gh:protect -- --repo <owner>/<name> --merge-app-id <id>` chạy từ repo kit, bằng `gh` của bạn; `ao-kit setup github` tự chạy lệnh này, với id của App `ao-merge` lấy từ `github.apps.merge_id` của `project.yaml`. Lệnh áp hai ruleset (Pilot 3, spec 2.9):
+`npm run gh:protect -- --repo <owner>/<name> --merge-app-id <id>` chạy từ repo kit, bằng `gh` của bạn; `ao-kit setup github` tự chạy lệnh này, với id của App `ao-merge` lấy từ `github.apps.merge_id` của `project.yaml`. Lệnh áp năm ruleset (Pilot 3, spec 2.9):
 
-| Ruleset | Nhánh | Luật | Ai được bỏ qua |
+| Ruleset | Nhánh hay tag | Luật | Ai được bỏ qua |
 |---|---|---|---|
+| `ao-protected-merge` | `develop`, `release/*` | Bắt buộc qua PR, một approve của code owner, bỏ approve cũ khi có push mới, bốn check của `CI` | App `ao-merge`, chỉ khi merge PR |
+| `ao-protected-main` | `main` | Như dòng trên | Không ai |
+| `ao-release-branches` | `release/*` | Chặn tạo nhánh | Admin của repo (bạn) |
+| `ao-release-tags` | tag `v*` | Chặn tạo, sửa, xóa tag | App `ao-merge` và admin của repo (bạn) |
 | `ao-protected` | `develop`, `main`, `release/*` | Chặn xóa nhánh và force push | Không ai |
-| `ao-protected-merge` | `develop`, `main`, `release/*` | Bắt buộc qua PR, một approve, bỏ approve cũ khi có push mới, bốn check của `CI` | App `ao-merge`, chỉ khi merge PR |
 
-- **Vì sao App `ao-merge` được bỏ qua:** `merge-gate` merge bằng App này cả những PR không có approve trên GitHub: PR tài liệu của Epic sau gate ② (bạn duyệt trên Jira), PR report của `/ao-ship` vào nhánh release, PR merge ngược `main` về `develop`. Một ruleset không ai được bỏ qua chặn cả ba việc này (Pilot 3, T9).
+- **Chỉ approve của bạn được tính.** File `.github/CODEOWNERS` ghi `* @<login của bạn>`, lấy từ `github.approvers` của `project.yaml`; `ao-kit sync` và `init` viết file này, và nó là đường dẫn được bảo vệ. Trước vòng 2 của review `shop` PR #13, một approve của bất kỳ ai có quyền ghi đều được tính. Khóa của `ao-dev` và `ao-review` cùng nằm trên máy, nên agent có thể mở PR bằng App này, approve bằng App kia, rồi merge. "Require approval of the most recent push" vẫn tắt: GitHub tính bạn là người push cuối ở các PR phiên chính push bằng git của bạn, và approve cũ đã bị bỏ khi có push mới.
+- **Vì sao App `ao-merge` được bỏ qua trên `develop` và `release/*`:** `merge-gate` merge bằng App này cả những PR không có approve trên GitHub: PR tài liệu của Epic sau gate ② (bạn duyệt trên Jira), PR report của `/ao-ship` vào nhánh release, PR merge ngược `main` về `develop`. Mọi PR vào `main` là bản release hay hotfix đã có approve của bạn, nên `main` không ai được bỏ qua.
 - **Vì sao không phải `ao-dev`:** ở Phiên 30 · Lượt 9, quyền bỏ qua thuộc về `ao-dev`, nhưng mọi agent có quyền ghi git đều cầm token của App này. Review của `shop` PR #13 chỉ ra rằng một agent bị văn bản lạ dẫn dắt có thể lấy token đó, rồi merge một PR chưa ai duyệt. Key của `ao-merge` chỉ nằm trong environment `merge-gate`.
-- **Bot vẫn bị giữ:** `merge-gate` chỉ merge PR đạt đủ cổng của nó: PR report chỉ được đổi `docs/releases/vX.Y.Z.md` và `CHANGELOG.md`; PR merge ngược chỉ được merge khi đầu nhánh `main` là commit của một tag `vX.Y.Z`. `audit` của deployer kiểm lại đúng các điều đó, và không nhận commit nào không qua PR. Không ai push thẳng lên `develop`, `main` hay `release/*` được, kể cả bot.
-- Lệnh viết ruleset có PR trước, rồi mới bỏ các luật đó khỏi `ao-protected`, nên một repo đã có ruleset cũ không lúc nào bị bảo vệ lỏng hơn. Ruleset `ao-protected-release` của Pilot 3, T9 bị xóa sau cùng. Chạy lại thì cập nhật các ruleset đang có theo tên, không tạo bản trùng.
+- **Chỉ bạn cắt nhánh release và gắn tag hotfix.** `/ao-release` tạo `release/vX.Y.0` bằng login `gh` của bạn; `/ao-ship` của hotfix gắn tag bằng login `gh` của bạn; `merge-gate` gắn tag sau release bằng `ao-merge`. Agent không tạo được nhánh release ở một commit chưa ai review, và không tạo được tag mà phép kiểm của PR merge ngược tin vào. Kiểm thật trên repo nháp: `RepositoryRole 5` là vai trò admin.
+- **Bot vẫn bị giữ:** `merge-gate` chỉ merge PR đạt đủ cổng của nó: PR report chỉ được đổi `docs/releases/vX.Y.Z.md` và `CHANGELOG.md`; PR merge ngược chỉ được merge khi đầu nhánh `main` là commit của một tag `vX.Y.Z`. Ngay trước khi merge, nó đọc lại PR, và bỏ qua nếu đích hay đầu đã đổi. `audit` của deployer kiểm lại đúng các điều đó, và không nhận commit nào không qua PR. Không ai push thẳng lên `develop`, `main` hay `release/*` được, kể cả bot.
+- Lệnh viết các ruleset mới trước, rồi mới bỏ các luật PR khỏi `ao-protected`, nên một repo đã có ruleset cũ không lúc nào bị bảo vệ lỏng hơn. Ruleset `ao-protected-release` của Pilot 3, T9 bị xóa sau cùng. Chạy lại thì cập nhật các ruleset đang có theo tên, không tạo bản trùng.
 
 Repo private ở gói Free không có ruleset (API trả 403). Khi đó lệnh in `soft mode: merge-gate and audit enforce the gates`, không đổi gì, và thoát với mã 0.
 

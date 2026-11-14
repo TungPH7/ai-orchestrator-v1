@@ -1,7 +1,7 @@
 // ao-backup-pull.mjs (Pilot 3, spec 2.4; docs/vps-setup.md, section 16): your machine pulls the encrypted copies of the
 // database backups from the VPS, as aobackup over SFTP, read only. It runs from the kit on your machine, not from a
-// project. It removes nothing on the VPS; on your machine it keeps the copies the VPS keeps (Pilot 3, spec 2.9). The
-// decisions are in lib/release/backup-pull.mjs.
+// project, and never removes a file on either side: the names of the copies come from the VPS (review round 2 of shop
+// PR #13). The decisions are in lib/release/backup-pull.mjs.
 //   node scripts/ao-backup-pull.mjs keygen --identity <file>       a new age key pair: the identity goes to <file>, which
 //                                                                  you move into your password manager; the recipient
 //                                                                  (age1…) is printed for deployer.yaml
@@ -9,7 +9,8 @@
 //   node scripts/ao-backup-pull.mjs install --host <ssh host> --dest <folder>   the task of Windows that runs pull
 //   node scripts/ao-backup-pull.mjs status [--dest <folder>]       the age of the newest copies; exit 1 past 36 hours
 //   node scripts/ao-backup-pull.mjs decrypt <copy.age> --identity - --out <file>   the identity pasted on stdin, as
-//                                                                  Get-Clipboard | node … gives it; or a file, such as on a USB key
+//                                                                  Get-Clipboard | node … gives it; or a file, such as on a USB key;
+//                                                                  --out - writes the dump to stdout, for pg_restore
 // <ssh host> is a Host of your ~/.ssh/config, such as ao-backup, with the user aobackup and its own key. The identity
 // never stays on this machine: an agent runs as your Windows user and reads what you read (review of shop PR #13).
 import { spawnSync } from 'node:child_process';
@@ -18,7 +19,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 import { decryptFile, newKeyPair } from '../lib/release/backup-copy.mjs';
-import { LIST_BATCH, PULL_CONFIG, TASK_NAME, copyAges, getBatch, isFuture, localCopies, localPath, parseListing, taskScript, toPrune, toPull } from '../lib/release/backup-pull.mjs';
+import { LIST_BATCH, PULL_CONFIG, TASK_NAME, copyAges, getBatch, isFuture, localCopies, localPath, parseListing, taskScript, toPull } from '../lib/release/backup-pull.mjs';
 
 const STALE_HOURS = 36;
 const CONFIG = PULL_CONFIG;
@@ -74,11 +75,11 @@ function pull(host, dest) {
       pulled.push(file.name);
     } else rmSync(part, { force: true });
   }
-  // This machine keeps the copies the VPS keeps, and lets the older ones go (Pilot 3, spec 2.9).
-  const pruned = toPrune(localCopies(dest).filter((file) => !isFuture(file, now)));
-  for (const file of pruned) rmSync(localPath(dest, file), { force: true });
-  writeFileSync(join(dest, 'last-pull.json'), `${JSON.stringify({ at: new Date().toISOString(), host, listed: remote.length, future: future.map(({ path }) => path), pulled, pruned: pruned.map(({ name }) => name), error }, null, 2)}\n`);
-  console.log(`ao-backup-pull: ${remote.length} copies on ${host}, ${pulled.length} pulled into ${dest}, ${pruned.length} older ones let go${error ? `; ${error}` : ''}`);
+  // Nothing on this machine is removed: the names come from the VPS, and a VPS taken over could name copies so that a
+  // rule of keeping by name lets the real ones go (review round 2 of shop PR #13). The copies are encrypted, the identity
+  // is off the machine, and one is about 15 KB.
+  writeFileSync(join(dest, 'last-pull.json'), `${JSON.stringify({ at: new Date().toISOString(), host, listed: remote.length, future: future.map(({ path }) => path), pulled, error }, null, 2)}\n`);
+  console.log(`ao-backup-pull: ${remote.length} copies on ${host}, ${pulled.length} pulled into ${dest}${error ? `; ${error}` : ''}`);
   return report(dest) && !error && future.length === 0;
 }
 
@@ -114,8 +115,10 @@ try {
     if (!dest) throw new Error(`no --dest and no ${CONFIG}: run install first`);
     process.exitCode = report(dest) ? 0 : 1;
   } else if (command === 'decrypt' && file && values.identity && values.out) {
-    await decryptFile(file, values.out, readIdentity(values.identity));
-    console.log(`ao-backup-pull: ${values.out} written, ${statSync(values.out).size} bytes`);
+    // --out - writes the dump to stdout, so it can go straight to pg_restore and never lie in a file.
+    if (values.out === '-' && values.identity === '-') throw new Error('stdin takes the identity, so --out - needs --identity <file>, such as one on a USB key');
+    await decryptFile(file, values.out === '-' ? process.stdout : values.out, readIdentity(values.identity));
+    if (values.out !== '-') console.log(`ao-backup-pull: ${values.out} written, ${statSync(values.out).size} bytes`);
   } else {
     console.error(USAGE);
     process.exitCode = 2;

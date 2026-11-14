@@ -35,7 +35,7 @@ Deployer chạy mỗi phút trên VPS và kiểm mọi commit mới trên lịch
 3. Bạn đọc báo cáo, rồi `Accept` để item sang Done. Bạn thấy lỗi trước khi bấm `Accept` thì dùng `/ao-qa <KEY> fail: …` (mục "Lỗi bạn thấy khi QA" ở dưới).
 4. Bạn tạo trên Jira Fix Version của bản này và bản kế tiếp, nếu chưa có. Từng bước ở mục dưới.
 5. `/ao-release`: đọc điểm cắt và danh sách item. Lệnh dừng ở gate ④.
-6. **Gate ④:** `/ao-release <vX.Y.0> <sha>`. Script tạo nhánh release, gắn Fix Version cho item trong điểm cắt, và chuyển item sau điểm cắt sang bản kế tiếp. Deployer đưa bản lên Staging.
+6. **Gate ④:** `/ao-release <vX.Y.0> <sha>`. Script tạo nhánh release bằng login `gh` của bạn, gắn Fix Version cho item trong điểm cắt, và chuyển item sau điểm cắt sang bản kế tiếp. Deployer đưa bản lên Staging. Chỉ admin của repo tạo được nhánh `release/*` (ruleset `ao-release-branches`, Pilot 3, spec 2.9), nên agent không cắt được một nhánh release ở commit chưa ai review.
 7. `/ao-ship <vX.Y.0>`: `qa` chạy full regression, `devops` viết release note, rồi script làm hai việc:
    - bot `ao-dev` commit báo cáo regression (`docs/releases/vX.Y.0.md`) và `CHANGELOG.md` lên nhánh `release-notes/vX.Y.0`, và mở PR vào nhánh release, tiêu đề `release notes: vX.Y.0`. `merge-gate` merge PR này bằng `ao-merge` khi CI xanh, vì nó chỉ đổi hai file đó. Lệnh chờ tối đa 15 phút; quá thì dừng, và gõ lại lệnh là chạy tiếp (Pilot 3, spec 2.9: ruleset không cho App nào push thẳng lên `release/*`);
    - mở PR release vào `main` với tiêu đề `release: vX.Y.0`.

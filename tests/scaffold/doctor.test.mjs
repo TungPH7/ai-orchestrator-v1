@@ -4,6 +4,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { parse } from 'yaml';
 import { doctor, formatDoctor } from '../../lib/scaffold/doctor.mjs';
+import { codeownersText } from '../../lib/scaffold/install.mjs';
 import { ROOT } from '../helpers/kit.mjs';
 
 // ao-kit doctor (project-scaffold spec 2.5): what a project still lacks, on this machine, in the repo, on GitHub, on
@@ -25,6 +26,7 @@ function facts(change = {}) {
     renderCheck: { status: 0, text: '12 files up to date in .claude/' },
     hooksPath: '.githooks',
     gitignoreMissing: [],
+    codeowners: codeownersText(config.github.approvers),
     github: { defaultBranch: 'develop', environments: ['development', 'staging', 'production', 'merge-gate'], secrets: ['JIRA_CI_TOKEN'], envSecrets: ['AO_MERGE_APP_KEY'], workflows: 3, ciRuns: 3 },
     apps: { dev: { ok: true }, review: { ok: true } },
     jiraCheck: { status: 0, text: 'AOG matches tracker/jira.yaml' },
@@ -55,6 +57,8 @@ test('each part that is missing fails its own row, with what to do', () => {
     [{ kitDrift: ['.ai-orchestrator/lib/a.mjs'] }, 'the kit files are those of this clone'],
     [{ renderCheck: { status: 1, text: 'stale: .claude/settings.json' } }, 'settings.json and the agents are rendered'],
     [{ hooksPath: '' }, 'git hooks'],
+    [{ codeowners: null }, '.github/CODEOWNERS'],
+    [{ codeowners: '* @someone-else\n' }, '.github/CODEOWNERS'],
     [{ github: { ...facts().github, defaultBranch: 'main' } }, 'default branch develop'],
     [{ github: { ...facts().github, environments: ['development'] } }, 'environments'],
     [{ github: { ...facts().github, envSecrets: [] } }, 'secrets'],

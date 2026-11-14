@@ -537,7 +537,7 @@ systemctl start ao-deploy.timer
 Mỗi bản dump mà mục 15 giữ lại có một bản sao mã hóa, và máy bạn tự kéo bản sao về (Pilot 3, spec mục 2.4). Bản sao giúp dữ liệu còn lại khi VPS hỏng hay bị chiếm:
 - **Mã hóa bằng `age`.** Khóa công khai (`age1…`) nằm trong `/etc/ao/deployer.yaml`. Khóa bí mật nằm trong trình quản lý mật khẩu của bạn, **không nằm trên máy**: agent chạy bằng chính user Windows của bạn, nên đọc được mọi file bạn đọc được (review của `shop` PR #13). Người đọc được VPS hay máy bạn đều không đọc được bản sao.
 - **Tài khoản `aobackup` chỉ đọc.** Nó dùng SFTP với key riêng, bị nhốt trong `/var/backups/ao-offsite` (`vps/sshd-aobackup.conf`): không shell, không chuyển cổng. VPS không giữ quyền gì vào máy bạn, nên kẻ chiếm VPS không xóa được bản trên máy bạn.
-- **Máy bạn kéo về** bằng `scripts/ao-backup-pull.mjs`, chạy theo task của Windows mỗi ngày lúc 09:00 và mỗi lần bạn đăng nhập. Máy tắt thì lần sau kéo bù, vì VPS giữ bản của 7 ngày và 4 tuần. Máy bạn giữ đúng những bản VPS giữ (48 giờ, 7 ngày, 4 tuần) và bỏ bản cũ hơn. Bản sao mang thời điểm ở tương lai thì không được kéo về, và lệnh báo ra.
+- **Máy bạn kéo về** bằng `scripts/ao-backup-pull.mjs`, chạy theo task của Windows mỗi ngày lúc 09:00 và mỗi lần bạn đăng nhập. Máy tắt thì lần sau kéo bù, vì VPS giữ bản của 7 ngày và 4 tuần. Script không xóa gì trên máy bạn: tên bản sao do VPS đặt, và một VPS bị chiếm có thể đặt tên để một luật dọn theo tên xóa mất bản thật (vòng 2 của review `shop` PR #13). Bản sao đã mã hóa, mỗi bản khoảng 15 KB. Bản sao mang thời điểm ở tương lai thì không được kéo về, và lệnh báo ra.
 - `ao-kit doctor` báo khi bản sao mới nhất của dự án trên máy bạn cũ hơn 36 giờ, và khi thấy một file khóa `.agekey` trong `%USERPROFILE%\.ao\`.
 - `gh-guard` chặn agent đọc file `.agekey`, file `.dump.age`, thư mục `ao-backups`, và chạy `ao-backup-pull.mjs` ([quality-gates.md](quality-gates.md)).
 
@@ -610,6 +610,8 @@ Get-Clipboard | node scripts/ao-backup-pull.mjs decrypt D:\ao-backups\shop\produ
 ```
 
 `--identity -` đọc khóa từ stdin, nên khóa không nằm trong file nào, cũng không nằm trên dòng lệnh. Xong thì chép thứ khác vào clipboard. Khóa cất trên USB thì truyền đường dẫn file thay cho `-`.
+
+Bản giải mã chứa toàn bộ dữ liệu của môi trường đó. Agent chạy bằng user Windows của bạn và đọc được file này, nên: khôi phục lúc không có agent nào chạy, và xóa bản giải mã ngay khi xong. Muốn bản giải mã không nằm trong file nào, dùng `--out -`: lệnh ghi bản dump ra stdout để đổ thẳng vào `pg_restore`. Khi đó khóa phải là một file (`--identity <file trên USB>`), vì stdin đã dành cho dữ liệu khác. PowerShell 5 làm hỏng dữ liệu nhị phân khi nối ống giữa hai chương trình, nên chạy lệnh có `--out -` trong Git Bash hay `cmd`.
 
 Bản giải mã là đúng bản dump của mục 15: khôi phục như bước 4 của mục 15, hoặc vào một Postgres chạy trên Docker ở máy bạn để kiểm. Xong thì xóa bản giải mã, vì nó chứa dữ liệu người dùng.
 

@@ -1,8 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { join } from 'node:path';
-import { LIST_BATCH, copyAges, getBatch, isFuture, localPath, parseListing, pulledCopyAges, taskScript, toPrune, toPull } from '../../lib/release/backup-pull.mjs';
-import { backupsToKeep } from '../../lib/release/backup.mjs';
+import { LIST_BATCH, copyAges, getBatch, isFuture, localPath, parseListing, pulledCopyAges, taskScript, toPull } from '../../lib/release/backup-pull.mjs';
 
 // Your machine pulls the encrypted copies over SFTP as aobackup, read only, inside the copies folder (Pilot 3,
 // spec 2.4; plan, decision 3).
@@ -128,6 +127,13 @@ test('ao-backup-pull.mjs: keygen says to move the identity off this machine, and
     const empty = run(['decrypt', `${dump}.age`, '--identity', '-', '--out', join(dir, 'x.dump')], '');
     assert.equal(empty.status, 1);
     assert.match(empty.stderr, /no identity on stdin/);
+    // --out - writes the dump to stdout, for pg_restore, so it never lies in a file (review round 2 of shop PR #13).
+    const piped = run(['decrypt', `${dump}.age`, '--identity', key, '--out', '-']);
+    assert.equal(piped.status, 0, piped.stderr);
+    assert.equal(piped.stdout, 'PGDMP the dump');
+    const both = run(['decrypt', `${dump}.age`, '--identity', '-', '--out', '-'], readFileSync(key, 'utf8'));
+    assert.equal(both.status, 1);
+    assert.match(both.stderr, /stdin takes the identity, so --out - needs --identity <file>/);
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }
@@ -143,23 +149,6 @@ test('a copy dated in the future is neither pulled nor the newest: a VPS taken o
   // Four minutes ahead is clock drift, not the future.
   assert.deepEqual(files.filter((file) => isFuture(file, now)).map(({ name }) => name), ['shop-production-20991231T000000Z.dump.age']);
   assert.deepEqual(copyAges(files, now), [{ project: 'shop', env: 'production', name: 'shop-production-20261114T100400Z.dump.age', hours: 0 }]);
-});
-
-test('this machine keeps the copies the VPS keeps, each project and environment on its own, and lets the others go', () => {
-  const stamp = (date) => date.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}Z$/, 'Z');
-  const lines = [];
-  for (let day = 0; day < 45; day++) lines.push(`/shop/production/shop-production-${stamp(new Date(Date.UTC(2026, 9, 1 + day, 19, 30)))}.dump.age`);
-  lines.push('/shop/production/shop-production-20261114T080000Z.dump.age', '/shop/staging/shop-staging-20261001T193000Z.dump.age');
-  const files = parseListing(lines.join('\n'));
-  const prune = toPrune(files).map(({ name }) => name);
-  const production = files.filter(({ env }) => env === 'production').map(({ name }) => name);
-  const keep = backupsToKeep(production.map((name) => name.slice(0, -'.age'.length)));
-  assert.deepEqual(prune, production.filter((name) => !keep.has(name.slice(0, -'.age'.length))));
-  assert.ok(prune.includes('shop-production-20261024T193000Z.dump.age'));
-  assert.ok(!prune.includes('shop-production-20261025T193000Z.dump.age'), 'the newest of its week stays');
-  assert.ok(!prune.includes('shop-production-20261112T193000Z.dump.age'), 'exactly 48 hours before the newest stays');
-  assert.ok(!prune.some((name) => name.startsWith('shop-staging-')), 'the one copy of staging stays');
-  assert.deepEqual(toPrune([]), []);
 });
 
 test('the record of the pull: none means no doctor row; one that cannot be read is said, not thrown (review of shop PR #13)', async () => {

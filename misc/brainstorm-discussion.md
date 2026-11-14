@@ -36,7 +36,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 28 | `0ac542d7-954f-44a8-bd4c-868cd5f9cdc3` | 2026-11-13 khoảng 23:35 → | Bạn dán đoạn cuối của Phiên 27 để làm tiếp; T25: phần 5 của hướng dẫn theo đầu ra thật của `shop`, bước cài App `ao-deploy` và deploy lần đầu bằng `/ao-rollback`, mục 13 của `vps-setup.md`; kit PR #267 merge; tiêu chí 3 mới đạt một phần; bạn "Ok", T26 đóng B2 (kit PR #268); template Java của B3 (Maven, nhánh `codebase`); bạn cho bắt đầu B3, quyền tự làm áp dụng tiếp; spec B3 duyệt (Lượt 7), kit PR #269–#271, chặng 3 tới T15 |
 | 29 | `3f959e28-f038-49ee-ae3f-592c7a55eecb` | 2026-11-14 khoảng 09:35 → | Bạn dán đoạn cuối của Phiên 28, bảo làm T16 và mở VPS cho chặng 5, để mở tới khi bạn bảo đóng; T16 (tài liệu chặng 3, kit PR #272) và T17 (ba việc B2 để lại, kit PR #273) xong; Claude đưa hai lệnh mở VPS trong dòng báo giữa chừng nên bạn không thấy, bạn nhắc hai lần, Claude đưa lại ở câu trả lời cuối; lượt 2: lệnh mở đăng nhập root chưa có tác dụng, bạn chạy lại; lượt 3: T18 bản nháp bước 9, T19 kit `3a1c729` lên VPS, T20: `SHOP-2` và `shop` PR #7, `SHOP-3` với `add api` và Spring Boot 4.0.9, kit PR #274 (coverage của interface Java); Claude xóa nhầm toàn bộ container, image và volume Docker Desktop của bạn khi dọn sau test; lượt 4: không có Previous Versions, bạn dặn hỏi trước mọi việc xóa không hoàn tác được, và cho Claude merge PR `shop` khi CI xanh; PR #7, #8 merge (T20 xong), kit PR #275, #276, `SHOP-4` và PR #9 xanh, biến database của Development trên VPS; chờ bạn quyết bật Docker Desktop cho `/ao-preview`; lượt 5: bạn chọn bật Docker; `/ao-preview SHOP-4` chạy `user`, `admin`, `api` và Postgres, ba app trả 200, `/api` qua `admin` tới `api`; `user` còn trỏ API NestJS cũ, việc của B4; chờ bạn xem rồi trả lời merge; lượt 6: PR #9 merge (T21 xong), `/ao-rollback development 05b1a63` gỡ chặn, deploy 18,5 phút, database, Flyway, `/api/v1/health` qua `admin` 200, RAM còn trống 2.508 MB, backup và `restore-check` đạt; chờ bạn đồng ý thử khôi phục vào database đang chạy và đóng `SHOP-2`–`SHOP-4`; lượt 7: khôi phục vào database đang chạy đạt sau khi lộ lỗi luật giữ bản (sửa: giữ 48 giờ, kit PR #277), `SHOP-2`–`SHOP-4` Cancelled, kit trên VPS `97db806`, B3 đóng; chờ bạn chọn module kế tiếp |
 | 30 | `07e0a424-ef4e-437a-b766-0ca9955be037` | 2026-11-14 khoảng 12:15 → | Bạn dán đoạn cuối của Phiên 29 và chọn B4 (Pilot 3); Claude viết bản nháp `SPEC-pilot-3.md`: `v0.1.0` của scaffold lên ba môi trường trước, rồi Epic đầu "Danh mục sản phẩm" lên `v0.2.0`; tìm ra Production đang luôn mở trong khi `/api/**` để `permitAll` (đề xuất `production_auth`), `/ao-release` cần một item Done (`SHOP-5`), ba app lệch hợp đồng API sản phẩm; chờ bạn trả lời 5 câu: Epic, scaffold trước, chỗ để bản sao backup (đề xuất Backblaze B2), basic auth cho Production, quyền tự làm cho B4; lượt 2: bạn duyệt câu 1, 2, 4, 5, hỏi câu 3 có cần chọn trước không và sẽ gửi ảnh; Claude hiểu sai "chưa làm" và bắt đầu viết plan, bạn nhắc, Claude dừng (spec và `tasks/plan.md` chưa commit); bạn hỏi Google Drive cho bản sao: được, với OAuth client riêng đã Publish, nhưng token trên VPS xóa hẳn được bản sao; lượt 3: bạn hỏi bản sao backup là gì và vì sao cần mới đạt; Claude giải thích: backup đang nằm chung máy với database, tiêu chí 2 do spec đặt chứ không phải giới hạn kỹ thuật, chỉ bắt buộc trước khi mở bán; lượt 4: bạn hỏi backup về máy bạn có đạt không, và cơ chế có giống B2 để sau này chuyển: đạt (máy bạn kéo về bằng tài khoản chỉ đọc trên VPS), khác hướng chép (kéo về và VPS đẩy lên), đề xuất mã hóa `age` từ đầu và khối cấu hình B2 tắt sẵn để chuyển dễ; lượt 5: bạn chọn backup về máy bạn và hỏi làm gì tiếp, rồi gửi giao diện mẫu cho Epic (trang vitrea, hai ảnh); Claude bắt đầu B4: kit PR #279–#283 (`production_auth`, dòng trạng thái của `/ao-preview`, Playwright chỉ dựng app tại chỗ cho test `@local`, bản sao backup kéo về máy bạn, đọc mật khẩu từ biến của Windows trước), `SHOP-5` PR #10 merge, review 3,52 USD và QA 0,92 USD (NOT TESTED vì một bước chỉ VPS kiểm được, đã trả lời), VPS kit `dbbf318` với bí mật Staging và Production, Production của `shop` hỏi basic auth, bản sao về `D:\ao-backups` khôi phục khớp; chờ bạn Accept `SHOP-5`, cất bản thứ hai của khóa `age`, và gate ④ của `v0.1.0`; lượt 6: bạn nhờ bấm Accept (`SHOP-5` Done), hỏi cất khóa sau được không (được, nên trước khi mở bán), bảo làm như đề xuất; Claude gửi danh sách gate ④ (`28394b8`, `SHOP-5`, scaffold của `SHOP-1`–`SHOP-4`), tạo Fix Version, chụp 5 màn hình và đo 94 token của trang mẫu; lượt 7: bạn duyệt gate ④; `release/v0.1.0` lên Staging (dùng lại image, Flyway 3 migration, RAM còn 2.290 MB), regression PASS, `/ao-ship` dừng vì ruleset `ao-protected` của repo public chặn bot `ao-dev` commit lên nhánh release (cũng sẽ chặn merge PR tài liệu của Epic và merge ngược); chờ bạn chọn cách sửa ruleset; lượt 8: bạn hỏi sao commit thẳng lên nhánh được, nhất là nhánh release (chưa làm gì); Claude giải thích PR là luật GitHub chỉ có khi bật, cách kit bù ở repo không ruleset, vì sao `/ao-ship` commit hai file tài liệu lên nhánh release, và một cách giữa: PR nhỏ do `merge-gate` tự merge; lượt 9: bạn chọn tách ruleset thành ba; kit PR #284, ba ruleset áp lên `shop`, `/ao-ship` chạy lại mở PR release #11 (CI xanh, Staging deploy lại); chờ bạn approve PR #11 ở gate ⑤; lượt 10: bạn approve; `merge-gate` merge, tag `v0.1.0`, tự merge ngược PR #12; Production lên, hỏi basic auth; RAM còn 1.867 MB khi đủ ba môi trường; backup và bản sao cả ba database; chờ bạn chọn ai bấm Release `v0.1.0` và cách chép kit ở T10 |
-| 31 | `d80cd357-3fde-4be6-a978-12fadc7d8553` | 2026-11-14 khoảng 15:58 → | Bạn dán đoạn cuối của Phiên 30, nhờ mình bấm Release `v0.1.0` và chọn review đầy đủ cho T10; Release qua REST bằng token admin; `SHOP-6` và PR #13 chép kit `ceee70c` vào `shop`, CI xanh, `/ao-review 13` chạy (`reviewer` `xhigh`, `security` `max`); T11 bắt đầu song song: câu hỏi PO đầu tiên về đơn vị giá; review xong (8,13 USD): `security` thấy 2 High do lỗi của Claude (ruleset cho App `ao-dev` của agent đi tắt, khóa `age` nằm trên laptop); Claude đề xuất gỡ bypass ngay, bạn cất khóa rồi xóa file, App `ao-merge` riêng cho merge, review vòng 2; chờ bạn quyết; lượt 2: bạn đồng ý cả năm việc, đã cất khóa, chốt giá VND và giao Claude chọn các trường, cách tìm, sắp xếp theo chuẩn ngành; Claude gỡ bypass trên `shop`, xóa file khóa, thêm loại App `ao-merge` vào kit và mở trang tạo App; chốt các trường và cách tìm theo Shopify, Google Merchant Center, Baymard; hỏi câu 2 về ảnh sản phẩm; lượt 3: bạn tạo App `ao-merge` và chọn ảnh giữ chỗ; khóa của App vào environment `merge-gate`, file khóa trên máy xóa; bản nháp Epic "Danh mục sản phẩm" chờ bạn OK |
+| 31 | `d80cd357-3fde-4be6-a978-12fadc7d8553` | 2026-11-14 khoảng 15:58 → | Bạn dán đoạn cuối của Phiên 30, nhờ mình bấm Release `v0.1.0` và chọn review đầy đủ cho T10; Release qua REST bằng token admin; `SHOP-6` và PR #13 chép kit `ceee70c` vào `shop`, CI xanh, `/ao-review 13` chạy (`reviewer` `xhigh`, `security` `max`); T11 bắt đầu song song: câu hỏi PO đầu tiên về đơn vị giá; review xong (8,13 USD): `security` thấy 2 High do lỗi của Claude (ruleset cho App `ao-dev` của agent đi tắt, khóa `age` nằm trên laptop); Claude đề xuất gỡ bypass ngay, bạn cất khóa rồi xóa file, App `ao-merge` riêng cho merge, review vòng 2; chờ bạn quyết; lượt 2: bạn đồng ý cả năm việc, đã cất khóa, chốt giá VND và giao Claude chọn các trường, cách tìm, sắp xếp theo chuẩn ngành; Claude gỡ bypass trên `shop`, xóa file khóa, thêm loại App `ao-merge` vào kit và mở trang tạo App; chốt các trường và cách tìm theo Shopify, Google Merchant Center, Baymard; hỏi câu 2 về ảnh sản phẩm; lượt 3: bạn tạo App `ao-merge` và chọn ảnh giữ chỗ; khóa của App vào environment `merge-gate`, file khóa trên máy xóa; bản nháp Epic "Danh mục sản phẩm" chờ bạn OK; lượt 4: bạn OK; Epic `SHOP-7` tạo qua Rovo MCP; kit PR #285 sửa hai High (App `ao-merge`, PR report của `/ao-ship`, tag cho merge ngược, khóa `age` ngoài máy, `gh-guard`), ruleset mới trên `shop`, VPS lên `18d79eb`, PR #13 chép lại kit; `/ao-review 13` vòng 2 chạy; chờ bạn bấm `Start spec` và kiểm khóa `age` đã cất; review vòng 2 (11,18 USD, vượt ước): `security` thấy 2 High mới về ruleset (hai App của agent approve cho nhau, nhánh release giả lách PR report) và 2 Medium (tag không được bảo vệ, dọn bản sao theo tên do VPS đặt); Claude đề xuất Code Owners, chặn tạo nhánh release, ruleset cho tag, review vòng 3; chờ bạn quyết |
 
 ---
 
@@ -23555,3 +23555,84 @@ câu 2: làm như đề xuất, chưa có ảnh thật. Mỗi sản phẩm hiệ
   3. trước gate ④ của `v0.2.0`, mình thêm 5 sản phẩm thử vào Production qua API đang chạy, để lần nâng database chạy trên dữ liệu thật.
 
 Bạn trả lời "OK" thì mình tạo Epic trên Jira và chép 5 ảnh vào thư mục của Epic. Muốn sửa gì thì bạn nói, mình sửa rồi gửi lại tóm tắt. Sau đó bạn bấm `Start spec`. Còn `/ao-spec` thì chạy sau khi PR chép kit của `SHOP-6` merge.
+
+# Phiên 31 · Lượt 4 — 2026-11-14 khoảng 17:22 → 18:08
+
+**Bạn:**
+
+```markdown
+OK
+```
+
+**Claude:**
+
+**Epic `SHOP-7` đã có trên Jira. Hai lỗi High đã sửa trong kit, đã áp lên `shop` và VPS, và đang được review lại.**
+
+**T11: Epic `SHOP-7` "Danh mục sản phẩm"** đã tạo đúng bản nháp bạn OK: https://phunghuutung12b4.atlassian.net/browse/SHOP-7. 5 ảnh của trang mẫu đã vào `.ai/design-inbox/SHOP-7/`.
+- **Việc của bạn, lúc nào tiện:** mở link trên → bấm nút trạng thái **New** ở góc trên bên phải → chọn **Start spec**.
+- `/ao-spec SHOP-7` chạy sau khi PR chép kit của `SHOP-6` merge.
+
+**T10: hai lỗi High đã sửa và áp xong.**
+- Kit PR #285 (`18d79eb`) đã merge; 1.439 test xanh, thêm 21 test, test viết đỏ trước.
+  - Chỉ App `ao-merge` được đi tắt ruleset, và `merge-gate` merge bằng App này.
+  - Report của `/ao-ship` đi qua một PR nhỏ vào nhánh release. PR merge ngược chỉ được merge khi đầu `main` là commit của một tag phát hành. `audit` kiểm đúng các điều đó.
+  - `decrypt` đọc khóa `age` từ stdin. Máy bạn chỉ giữ những bản sao VPS giữ. `gh-guard` chặn agent đụng tới khóa, bản sao và script kéo. `doctor` báo đỏ khi thấy khóa nằm sai chỗ.
+  - Các lỗi Low và tài liệu cũng đã sửa.
+- **Ruleset của `shop`:** `ao-protected-merge` phủ cả `develop`, `main`, `release/*`, và chỉ `ao-merge` được đi tắt khi merge PR. `ao-protected-release` đã xóa.
+- **VPS:** kit lên `18d79eb`, `deployer.yaml` có thêm `apps.merge`. Caddyfile không đổi, deployer chạy bình thường.
+- **PR #13:** thêm commit `6489d52` chép kit mới, kèm `project.yaml` khai `ao-merge`. `doctor` đạt mọi dòng trừ Docker (đang tắt cố ý); CI xanh.
+- **`/ao-review 13` vòng 2 đang chạy:** `reviewer` ở `xhigh`, rồi `security` ở `max` (vì phần mới có 426 dòng). Ước khoảng 8 USD, ở mức trên của khoảng bạn đã đồng ý. Mình báo tiến độ 3 phút một lần.
+- Review không còn Critical hay High thì mình approve và merge bằng login `gh` của bạn, chạy `/ao-qa SHOP-6` (khoảng 1 USD), rồi nhờ bạn Accept.
+
+**Nên làm một lần, khi tiện: kiểm khóa `age` bạn đã cất.** File khóa trên máy đã xóa, nên cần chắc bản bạn cất là đúng:
+1. Mở PowerShell của bạn (**Win + X** → **Windows PowerShell**), không gõ trong Claude Code.
+2. Trong trình quản lý mật khẩu, chép dòng `AGE-SECRET-KEY-1…`.
+3. Dán lệnh này vào PowerShell rồi Enter:
+
+   ```
+   Get-Clipboard | node "D:\Document\1Khoahoc\4LapTrinh\AI-for-coding\ai-orchestrator\scripts\ao-backup-pull.mjs" decrypt "D:\ao-backups\shop\production\shop-production-20261114T084915Z.dump.age" --identity - --out "$env:TEMP\ao-key-check.dump"
+   ```
+
+4. Thấy dòng `... ao-key-check.dump written, ... bytes` là khóa đúng. Thấy dòng báo lỗi là khóa đã cất bị sai.
+5. Chép một thứ khác vào clipboard, để khóa không còn nằm trong đó.
+6. Nhắn "đã giải mã". Mình so mã băm với bản trên VPS (`efab6842…`), rồi xóa file giải mã.
+
+**Claude (tiếp, cùng lượt, sau review vòng 2, khoảng 18:58; bạn chưa nhắn thêm):**
+
+**Review vòng 2 của PR #13 xong: hai High cũ đã được sửa, nhưng `security` tìm ra 2 High mới, đều về ruleset trên GitHub. PR chưa merge.**
+
+**Chi phí:** vòng 2 tốn 11,18 USD (`reviewer` 3,00, `security` 8,18), vượt khoảng 4–8 USD mình ước. Mình ước thấp, vì `security` ở mức `max` đọc lại toàn bộ phần mới và kiểm ruleset thật. Tổng review của T10 là 19,31 USD; chi phí agent của Pilot 3 tới giờ là 24,69 USD.
+
+**Hai High mới:**
+1. **Hai App của agent approve cho nhau.** Ruleset chỉ đòi "1 approve" của bất kỳ ai có quyền ghi, không nhất thiết là bạn. Khóa của `ao-dev` và `ao-review` đều nằm trên máy để agent dùng. Agent có thể mở PR bằng App này, approve bằng App kia, rồi tự merge. GitHub có tính approve của một App (thảo luận cộng đồng GitHub xác nhận). Lỗ này có từ khi kit bắt đầu dùng ruleset, trước Pilot 3.
+   - **Cách sửa:** bật "Require review from Code Owners" với file `.github/CODEOWNERS` ghi `* @TungPH7`, và bật "Require approval of the most recent push". Khi đó chỉ approve của bạn được tính.
+2. **Nhánh release giả để lách PR report.** Agent tạo được nhánh `release/v9.9.9` ở một commit chưa ai review, mở PR report vào nhánh đó, rồi đổi đích của PR sang `develop` đúng lúc `merge-gate` merge.
+   - **Cách sửa:** chỉ bạn tạo được nhánh `release/*` (ruleset chặn tạo nhánh, chỉ admin được đi tắt); `/ao-release` cắt nhánh bằng login `gh` của bạn; `merge-gate` đọc lại đích của PR ngay trước khi merge; `main` không cho ai đi tắt.
+
+**Hai Medium:**
+- **Tag `v*` không được bảo vệ:** agent tự gắn tag được, nên phép kiểm "đầu `main` là commit của tag" chưa đủ tin. Cách sửa: thêm một ruleset cho tag, chỉ `ao-merge` và bạn được tạo, sửa, xóa tag `v*`.
+- **Luật dọn bản sao trên máy dựa vào giờ trong tên file, mà tên do VPS đặt:** một VPS bị chiếm đẩy được bản giả làm máy xóa bản thật. Cách sửa: thôi tự xóa trên máy. Bản sao đã mã hóa, khóa không còn trên máy, và mỗi bản chỉ khoảng 15 KB.
+
+**Cùng sửa luôn các Medium và Low của `reviewer`:**
+- `/ao-ship` so nội dung của PR report;
+- `gh-guard` kiểm cả hai tool `Grep`, `Glob`;
+- `decrypt` ghi được ra stdout, để đổ thẳng vào `pg_restore`;
+- vài chỗ dọn code.
+
+Mô tả của `SHOP-6` trên Jira mình đã sửa xong.
+
+**Mình đề xuất:**
+- sửa tất cả trong một PR kit, như vòng trước;
+- áp ruleset mới lên `shop`, kèm file `CODEOWNERS` đi trong PR #13;
+- chép lại kit, rồi chạy review vòng 3, khoảng 10–12 USD (ước lại theo vòng 2);
+- tổng cộng mất khoảng 3 giờ, rồi mới merge, QA và Accept `SHOP-6`.
+
+Cách khác là dừng review ở đây và bạn tự quyết merge PR #13 khi còn 2 High. Ruleset trên GitHub vẫn y như vậy dù merge hay không. Mình không đề xuất cách này, vì agent của Epic sẽ chạy trên một repo còn lỗ.
+
+**Bạn trả lời giúp mình:**
+1. Đồng ý cách sửa trên, gồm đổi ruleset (Code Owners, chặn tạo nhánh release, ruleset cho tag) và để `/ao-release` cắt nhánh bằng login `gh` của bạn? Mình đề xuất: có.
+2. Đồng ý thêm khoảng 10–12 USD cho review vòng 3? Mình đề xuất: có.
+
+Hai việc ở lượt trước vẫn chờ bạn, lúc nào tiện cũng được: bấm `Start spec` cho `SHOP-7`, và kiểm khóa `age` đã cất.
+
+Nguồn: [GitHub community #181487, review của GitHub App được tính vào số approve bắt buộc](https://github.com/orgs/community/discussions/181487).

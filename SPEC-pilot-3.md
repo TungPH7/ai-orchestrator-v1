@@ -151,7 +151,7 @@ Review đầy đủ của bản kit `ceee70c` (`security` ở `max`) tìm ra hai
 **2. Khóa giải mã backup không nằm trên máy agent** (High 2).
 - Bạn cất khóa `age` trong trình quản lý mật khẩu; file trên laptop đã xóa ở Lượt 2.
 - `ao-backup-pull.mjs decrypt --identity -` đọc khóa từ stdin. `keygen` nhắc chuyển khóa ra khỏi máy. `doctor` báo đỏ khi thấy file khóa trong `%USERPROFILE%\.ao\`.
-- `pull` giữ bản sao trên máy theo đúng luật giữ bản của VPS (`backupsToKeep`: 48 giờ, 7 ngày, 4 tuần) và xóa bản cũ hơn.
+- ~~`pull` giữ bản sao trên máy theo đúng luật giữ bản của VPS (`backupsToKeep`: 48 giờ, 7 ngày, 4 tuần) và xóa bản cũ hơn.~~ Bỏ ở vòng 2 (mục 4 dưới đây): tên bản sao do VPS đặt.
 - `gh-guard` chặn agent đọc file `.agekey`, bản sao `.dump.age`, thư mục `ao-backups`, và chạy `ao-backup-pull.mjs`.
 
 **3. Các lỗi Low.**
@@ -162,6 +162,27 @@ Review đầy đủ của bản kit `ceee70c` (`security` ở `max`) tìm ra hai
 - Gói `age-encryption` vẫn được cài trong dự án: đó là thiết kế, và lần kiểm chuỗi cung ứng không thấy rủi ro.
 
 Sau khi sửa: chép lại kit vào PR #13, chạy `/ao-review 13` vòng 2 (khoảng 4–8 USD, bạn đã đồng ý), rồi merge, QA và Accept `SHOP-6`.
+
+**4. Vòng 2 của review** (head `6489d52`, 11,18 USD) tìm thêm hai High, hai Medium về ruleset và bản sao; bạn duyệt cách sửa ở Phiên 31 · Lượt 5 ("Có. Làm như đề xuất").
+- **High, hai App approve cho nhau:** ruleset đòi một approval của bất kỳ ai có quyền ghi, và khóa của `ao-dev`, `ao-review` đều trên máy. Sửa: `require_code_owner_review`, với `.github/CODEOWNERS` ghi `* @<github.approvers>`. `ao-kit sync` và `init` viết file này từ `project.yaml`; nó là đường dẫn được bảo vệ, và `doctor` kiểm nó.
+  - **Lệch so với đề xuất:** `require_last_push_approval` vẫn tắt. GitHub tính người push cuối là login của bạn ở mọi PR mà phiên chính push bằng git của bạn (như `SHOP-5`, `SHOP-6`), nên khi bật, approval của bạn không còn được tính ở các PR đó. Approval cũ cũng đã bị xóa khi có push mới (`dismiss_stale_reviews_on_push`), và chỉ code owner mới approve được.
+- **High, nhánh release giả:** agent tạo được `release/v9.9.9` ở một commit chưa ai review, rồi đổi đích của PR report sang `develop` giữa lúc `merge-gate` đọc và lúc merge. Sửa:
+  - ruleset `ao-release-branches` chỉ cho admin (bạn) tạo `release/*`; `/ao-release` cắt nhánh bằng login `gh` của bạn;
+  - `merge-gate` đọc lại PR ngay trước khi merge, và bỏ qua nếu đích hay đầu đã đổi;
+  - `main` có ruleset riêng `ao-protected-main`, không ai bypass.
+- **Medium, tag không được bảo vệ:** ruleset `ao-release-tags` cho `refs/tags/v*` (tạo, sửa, xóa), chỉ `ao-merge` và admin bypass.
+- **Medium, dọn bản sao theo tên do VPS đặt:** `pull` không xóa gì trên máy nữa. Bản sao đã mã hóa, khóa không còn trên máy, mỗi bản khoảng 15 KB.
+- **Low và các Medium của `reviewer`:**
+  - `/ao-ship` so PR report đang mở với bản nó vừa dựng (khác thì dựng lại nhánh), và sau khi merge thì kiểm lại nhánh release;
+  - `decrypt --out -` ghi ra stdout;
+  - `gh-guard` kiểm `Grep`, `Glob` và key `AO_MERGE_APP_KEY`;
+  - `audit` chỉ nhận `ao-merge` (hay `ao-dev` khi dự án chưa có `ao-merge`) và bạn làm người merge PR merge ngược và PR report;
+  - `touchedPaths` dùng chung;
+  - lời báo của PR merge ngược nêu đủ người mở được nhận;
+  - `doctor` hỏi khi không đọc được các file khóa.
+- Kiểm thật trước khi viết: trên repo nháp `TungPH7/test`, bypass `RepositoryRole 5` cho login của bạn tạo nhánh `release/*` và tag `v*`, còn cùng ruleset không bypass thì từ chối (422).
+
+Sau vòng sửa này: chép lại kit vào PR #13 (kèm `.github/CODEOWNERS`), áp ruleset mới lên `shop`, rồi chạy `/ao-review 13` vòng 3 (khoảng 10–12 USD, bạn đã đồng ý).
 
 ## 3. Chi phí ước tính
 

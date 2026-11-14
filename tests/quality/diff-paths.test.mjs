@@ -5,7 +5,7 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { changedLines } from '../../lib/quality/coverage.mjs';
-import { headerPath, unquotePath } from '../../lib/quality/diff-paths.mjs';
+import { headerPath, touchedPaths, unquotePath } from '../../lib/quality/diff-paths.mjs';
 import { addedLines, deletedTests } from '../../lib/quality/suppressions.mjs';
 
 test('unquotePath reads the octal bytes and C escapes of a path git quotes, and leaves a plain path as it is', () => {
@@ -74,4 +74,16 @@ test('on a real git diff, a file with a name outside ASCII or with a space keeps
   ]);
   assert.deepEqual(deletedTests(diff), ['src/cũ.test.ts']);
   assert.deepEqual([...changedLines(diff)], [['src/a b.ts', [2]], ['src/ghi-chú.ts', [1]]]);
+});
+
+// Review round 2 of shop PR #13 (Pilot 3, spec 2.9): one helper for the paths a GitHub file list touches, used by
+// merge-gate, audit, the docs PR rule and /ao-ship.
+test('the paths a list of changed files touches: each name, and the old name of a renamed file, once each', () => {
+  assert.deepEqual(touchedPaths([
+    { filename: 'CHANGELOG.md', status: 'modified' },
+    { filename: 'docs/releases/v0.2.0.md', previous_filename: 'apps/api/src/main.ts', status: 'renamed' },
+    { filename: 'CHANGELOG.md', status: 'modified' },
+  ]), ['CHANGELOG.md', 'apps/api/src/main.ts', 'docs/releases/v0.2.0.md']);
+  assert.deepEqual(touchedPaths([]), []);
+  assert.deepEqual(touchedPaths(), []);
 });

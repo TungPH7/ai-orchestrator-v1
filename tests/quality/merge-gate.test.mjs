@@ -210,6 +210,30 @@ test('a run merges the PR that meets every condition with the ao-dev App, at its
   assert.deepEqual(failures, []);
 });
 
+// Review round 2 of shop PR #13 (Pilot 3, spec 2.9): the merge call pins the head, not the base, so merge-gate reads the
+// PR again right before it merges, and leaves it to the next run when its base or its head moved in between.
+test('a PR whose base or head changed after merge-gate read it is left for the next run, and nothing is merged', async () => {
+  for (const [what, change] of [['base', (pr) => (pr.base.ref = 'main')], ['head', (pr) => (pr.head.sha = 'b'.repeat(40))]]) {
+    const recorded = recordedClient(structuredClone(answers));
+    let reads = 0;
+    const github = {
+      ...recorded,
+      get: async (path, query) => {
+        const answer = await recorded.get(path, query);
+        if (path === '/pulls/12' && ++reads > 1) change(answer);
+        return answer;
+      },
+    };
+    const sent = [];
+    const lines = [];
+    const writer = async () => ({ request: async (method, path) => (sent.push(`${method} ${path}`), { merged: true }) });
+    await runMergeGate({ github, mergeClient: writer, gates, apps: { dev: 'tungph7-ao-dev', review: 'tungph7-ao-review', merge: 'tungph7-ao-merge' }, approvers: ['approver'], log: (line) => lines.push(line) });
+    assert.deepEqual(sent, [], what);
+    assert.match(lines[0], /^Waiting #12: the PR changed while merge-gate read it/, what);
+    assert.equal(reads, 2, `${what}: read once to decide, once right before the merge`);
+  }
+});
+
 test('a dry run prints the same decisions, and never buys an App token or sends a request', async () => {
   const { lines, writers, sent } = await runOnce({ dryRun: true });
   assert.deepEqual(lines, ['Would merge #12: feat(auth): add email and password login (DEMO-12) (squash at a1b2c3d)', SKIPPED_13]);
