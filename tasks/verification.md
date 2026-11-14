@@ -5,3 +5,55 @@
 ## T1 (2026-11-14)
 
 Spec duyệt ở Phiên 28 · Lượt 7, cả ba câu ở mục 9 theo đề xuất; nhánh `codebase` của template Java giữ nguyên sau khi so với `base-3` (Lượt 6). PR tài liệu gồm spec, plan, todo và nhật ký Phiên 28 · Lượt 1–6.
+
+Kit PR #269 (`ef38260`).
+
+## T2: tiền đề (2026-11-14)
+
+Mình chép nhánh `codebase` của template (`0a0ccac`) ra thư mục tạm bằng `git archive`, đúng những gì `add` sẽ chép, rồi bật Docker Desktop (engine sẵn sàng sau 12 giây). Xong thì xóa container, volume, network và image thử, rồi tắt Docker Desktop.
+
+| # | Tiền đề | Kết quả |
+|---|---|---|
+| 1 | `mvnw verify` với JDK `C:\opt\jdk-21` | **Đạt**: 76 giây, 59 test (Testcontainers với `postgres:17-alpine`), JaCoCo check đạt, có `target/site/jacoco/jacoco.xml` |
+| 2 | `osv-scanner` đọc đủ dependency Maven | **Đạt**, với `--data-source native`: 185 gói, chứa đủ 171 dependency mà `mvnw dependency:list` liệt kê (116 compile/runtime, 55 test), khớp từng tên và bản |
+| 3 | Postgres với `--user postgres`, `--cap-drop ALL`, `no-new-privileges` | **Đạt**: sẵn sàng sau 4 giây; script init tạo role, bốn extension và schema `app`; RAM 30 MiB lúc rảnh, 55 MiB sau migration, trần 256 MB |
+| 4 | Image `api` với trần RAM | **Đạt** sau khi sửa một dòng `.dockerignore` (bên dưới): build 162 giây, image 277 MB; với `--memory 768m --cap-drop ALL`, `/actuator/health` báo UP sau 18 giây; Flyway chạy đủ 3 migration; `/api/v1/health` trả lời; RAM 290 MiB lúc rảnh |
+| 5 | Skill `java-springboot` | **Dùng**: `github/awesome-copilot` (MIT), commit `f65ff3955a6b` (2026-10-22). Viết cho Spring Boot 4; luật khớp kit: kiểm bằng build của dự án, không tự nâng bản, hỏi trước khi thêm hạ tầng. `SKILL.md` đã đọc hết; năm file `references/` (33 KB) đọc ở T10 trước khi chép |
+
+**Năm điều tiền đề tìm ra, đã đưa vào spec:**
+1. **`mvnw.cmd` phải gọi bằng đường dẫn đầy đủ.** Phiên Claude Code đặt `NoDefaultCurrentDirectoryInExePath=1`, nên `cmd.exe` không tìm lệnh trong thư mục hiện hành: `mvnw.cmd` trần báo "not recognized", còn `.\mvnw.cmd` chạy được.
+2. **`osv-scanner` dùng `--data-source native`.** Nguồn mặc định là deps.dev qua gRPC; trên máy, lần gọi đó hỏng vì DNS ("name resolver error"). Nguồn `native` đọc Maven Central qua HTTPS, như Maven. DNS trên máy cũng có lúc không phân giải được `repo.maven.apache.org`, giống `ENOTFOUND` ở B2. Bản ghim: v2.7.0 (2026-10-12), không lấy v2.7.1 vì mới ra 5 ngày. SHA-256: Windows `9964ed64ec9a387391eb4cc006ad5c531154821aef29b793e02c448de4686438`, Linux `160c6253e2922e9e0a6a9771c5c4c40a4b3c6090b34a3cdd5e80c96cc2e4218b`.
+3. **Template có nhiều lỗ hổng:** 16 gói có advisory, 10 nhóm từ 9,0 điểm trở lên (như `tomcat-embed-core` 11.0.21, `spring-webmvc` 7.0.7) và 29 nhóm từ 7,0 tới dưới 9,0. Job `policy` của `shop` sẽ đỏ cho tới khi Task ở T21 nâng Spring Boot, như hai template JS ở B2.
+4. **`.dockerignore` của template có comment cuối dòng** (dòng 61: `!README.md   # giữ README chính …`). `.dockerignore` không hiểu comment cuối dòng, nên cả dòng thành một mẫu; Docker 24 trên máy từ chối build ("exclude-patterns contains value with non-printable ASCII characters"). `add` thêm một luật báo dạng này; sửa ở T21.
+5. **`study-guide-impl/build-project/99-troubleshoot/eol.md` làm Spotless đỏ** ngay trên nhánh `codebase`. Thư mục này bị `--exclude`, nên `shop` không gặp.
+
+Image Postgres: `postgres:17-alpine@sha256:d3244e8ce3f165ee3c93d9c4a4b1d0fe48b3a89e2287b717fdcbbde92d405065`.
+
+## Chặng 1: Maven trong workspace pnpm (T3–T7), nhánh `task/scaffold3-1`
+
+**T3.** `lib/quality/maven.mjs` và `scripts/mvnw.mjs`:
+- Năm script ra năm lần chạy Maven cố định; `typecheck` và `build` bỏ Spotless và Checkstyle, vì `lint` đã chạy hai bước đó.
+- Trên Windows: `cmd.exe /d /s /c ".\mvnw.cmd …"` trong thư mục app, với `windowsVerbatimArguments`. Tham số nào có ký tự ngoài chữ, số và `: . _ = -` thì bị từ chối. Nơi khác: `sh ./mvnw`, nên không cần bit thực thi.
+- Chọn JDK bằng file `release` của JDK, không chạy `java`.
+- **Chạy thật** trên bản chép của template, với `JAVA_HOME` vẫn là JDK 17: `lint` xanh sau 9 giây; `typecheck` biên dịch 35 file với `release 21` và xanh sau 8 giây. Script đã tự chọn `C:\opt\jdk-21`, nằm cạnh `JAVA_HOME`.
+
+**T4.** Stack `spring-boot` và `add`:
+- Stack không có khung riêng (`requires_template`); `add` không có `--from` thì dừng. `package.json` của stack chỉ được chép khi template chưa có.
+- `template.mjs`: dòng "Left out" in số file của mỗi thư mục (`.claude/ (1977 files)`). Template không có `CLAUDE.md` mà có `docs/coding-conventions/` thì skill `<app>-conventions` trỏ tới các file đó.
+- `app-report.mjs` thêm sáu luật cho Spring Boot: cổng không lấy từ `PORT`; biến không có giá trị mặc định; `EXPOSE` hay `HEALTHCHECK` khác cổng của app; `SPRING_PROFILES_ACTIVE` đặt cứng trong Dockerfile; JaCoCo không ghi XML; và cho mọi app: comment cuối dòng trong `.dockerignore`. Luật lcov của Vitest không áp cho app Java.
+- `deploy.schema.json` nhận `context`, `memory`, `start_timeout` ngay ở task này, vì `add` ghi ba khóa đó. Phần deployer dùng chúng vẫn ở T13.
+- **Chạy thật** trên template của bạn (`codebase`, `0a0ccac`) trong một dự án tạm: `init --package-manager pnpm` 19 giây, `add api` 6 giây.
+  - Chép 93 file; bỏ `.claude/` (1.977 file), `.githooks/`, `.github/` (4 file); `docs/coding-conventions/` (16 file) thành skill `api-conventions`.
+  - Báo năm chỗ: cổng từ `SERVER_PORT`; `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD` không có giá trị mặc định; Dockerfile mở 8080; `SPRING_PROFILES_ACTIVE` đặt cứng; dòng 61 của `.dockerignore`.
+  - Lần đầu, luật Dockerfile không thấy cổng của `HEALTHCHECK`, vì dòng đó xuống dòng bằng `\`. Luật giờ nối các dòng tiếp nối trước khi đọc, và test giả lập đúng dạng đó.
+  - `pnpm --filter ./apps/api run typecheck` ở gốc dự án tạm xanh sau 12 giây: chuỗi `pnpm` → `package.json` → `mvnw.mjs` → JDK 21 chạy được.
+- `profiles:check` xanh (295 giây); nó vẫn chỉ dựng `nextjs` và `react`.
+
+**T5.** CI: bước **Java versions** (`ci-java.mjs`) đọc bản Java của `apps/*/pom.xml`, rồi `actions/setup-java` v6.1.0 (`b843ebf9…`, ra ngày 14/10) cài đúng các bản đó và giữ cache Maven, chỉ khi repo có `apps/*/pom.xml`. Test của task này viết sau khi sửa `ci.yml`, nên không có lần đỏ trước.
+
+**T6.**
+- `doctor` có dòng JDK cho từng app Java và dòng Docker đang chạy, chỉ khi dự án có app Java.
+- `doctor` có dòng hỏi về `ao-deploy` (nhóm GitHub, dấu `?`). Login `gh` không đọc được bản cài của App: `GET /user/installations` trả 403 với token OAuth của `gh`.
+- `ao-step` dừng trước lượt `be-dev` của dự án có app Java khi Docker chưa chạy (`dockerGate`). **Khác spec đã duyệt:** spec ghi cả `qa`, nhưng `qa` kiểm trên môi trường đã deploy và không chạy Testcontainers; spec mục 2.2 đã sửa theo.
+
+Năm lệnh kiểm xanh: 1.353 test.

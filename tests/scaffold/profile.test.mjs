@@ -64,8 +64,8 @@ test('a copy into a folder fills the name and title in, keeps binary files as th
 });
 
 // project-scaffold part 2, spec 2.3: the stacks of ao-kit add, one app each.
-test('the kit has the stacks nextjs and react, each with the defaults of its app in project.yaml and its skills', () => {
-  assert.deepEqual(stackNames(ROOT), ['nextjs', 'react']);
+test('the kit has the stacks nextjs, react and spring-boot, each with the defaults of its app in project.yaml and its skills', () => {
+  assert.deepEqual(stackNames(ROOT), ['nextjs', 'react', 'spring-boot']);
   const nextjs = readStack(ROOT, 'nextjs');
   assert.deepEqual([nextjs.package_manager, nextjs.profile, nextjs.dev_script, nextjs.port, nextjs.health, nextjs.dockerfile], ['pnpm', 'nextjs', 'dev', 3000, '/', 'Dockerfile']);
   assert.deepEqual(nextjs.container_files, ['Dockerfile']);
@@ -73,7 +73,10 @@ test('the kit has the stacks nextjs and react, each with the defaults of its app
   assert.deepEqual([react.profile, react.port, react.health], ['react', 5173, '/']);
   assert.deepEqual(react.container_files, ['Dockerfile', 'Caddyfile']);
   assert.deepEqual(react.skills, { 'fe-dev': ['vercel-react-best-practices'] });
-  assert.throws(() => readStack(ROOT, 'angular'), /no stack angular in profiles\/stacks\/; the kit has nextjs, react/);
+  const java = readStack(ROOT, 'spring-boot');
+  assert.deepEqual([java.profile, java.port, java.health, java.dev_role, java.requires_template, java.build_context], ['spring-boot', 3001, '/actuator/health', 'be-dev', true, 'app']);
+  assert.deepEqual(java.container_files, ['package.json']);
+  assert.throws(() => readStack(ROOT, 'angular'), /no stack angular in profiles\/stacks\/; the kit has nextjs, react, spring-boot/);
 });
 
 test('copyStack writes the app into apps/<app> with its name, port and the project in place of the placeholders', (t) => {

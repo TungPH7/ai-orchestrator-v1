@@ -11,7 +11,7 @@
 ## Chuẩn bị
 
 - [x] **T1: tài liệu.** Spec ghi đã duyệt; plan, todo; nhật ký Phiên 28 · Lượt 1–6. PR tài liệu từ nhánh `task/project-scaffold-3`, tự merge khi CI xanh.
-- [ ] **T2: tiền đề** (spec mục 8; plan, rủi ro). Mình bật Docker Desktop, rồi tắt khi xong. Không commit code; kết quả ghi vào `verification.md`:
+- [x] **T2: tiền đề** (spec mục 8; plan, rủi ro). Mình bật Docker Desktop, rồi tắt khi xong. Không commit code; kết quả ghi vào `verification.md`:
   1. `./mvnw -B -ntp verify` của template (nhánh `codebase`) với JDK `C:\opt\jdk-21`: thời gian, số test, có `target/site/jacoco/jacoco.xml` không;
   2. `osv-scanner` (bản ghim) trên `pom.xml` của template: định dạng JSON; số dependency nó thấy, so với `mvnw dependency:tree`;
   3. `postgres:17-alpine` chạy với `--user postgres`, `--cap-drop ALL`, `--security-opt no-new-privileges`, trên volume mới, với script init của template: khởi động được không, RAM lúc rảnh;
@@ -21,21 +21,21 @@
   - **Đạt khi:** cả năm mục có kết quả. Mục nào sai với spec thì sửa spec trước chặng 1.
 
 ### Checkpoint 1: sau T2
-- [ ] Năm tiền đề có kết quả; spec sửa nếu cần.
+- [x] Năm tiền đề đạt (Phiên 28 · Lượt 7). Spec sửa ba chỗ: đường dẫn đầy đủ của `mvnw.cmd`, `osv-scanner --data-source native` bản v2.7.0, luật báo comment cuối dòng của `.dockerignore`; digest của Postgres.
 
 ## Chặng 1: Maven trong workspace pnpm, nhánh `task/scaffold3-1`
 
-- [ ] **T3: `maven.mjs` và `mvnw.mjs`** (spec 2.2; plan, quyết định 3, 4).
+- [x] **T3: `maven.mjs` và `mvnw.mjs`** (spec 2.2; plan, quyết định 3, 4). Wrapper gọi bằng `.\mvnw.cmd` trong thư mục app.
   - **Đạt khi:**
     - `lib/quality/maven.mjs` trả về tham số Maven cho `lint` (`validate`), `typecheck` (`compile`, bỏ hai bước lint), `test:coverage` (`verify`), `build` (`package -DskipTests`), `dev` (`spring-boot:run`); luôn có `-B -ntp`; tên script lạ thì báo lỗi;
-    - cách gọi wrapper: `./mvnw` trên Linux và macOS, không qua shell; `cmd.exe /d /s /c mvnw.cmd` trên Windows;
+    - cách gọi wrapper: `./mvnw` trên Linux và macOS, không qua shell; `cmd.exe /d /s /c <đường dẫn đầy đủ>\mvnw.cmd` trên Windows, vì `NoDefaultCurrentDirectoryInExePath=1` (T2);
     - đọc `<java.version>` của `pom.xml`, cả khi nó nằm trong `<properties>`;
     - chọn JDK theo thứ tự của spec 2.2: `JAVA_HOME` khớp bản, `JAVA_HOME_<bản>`, JDK cạnh `JAVA_HOME`, thư mục cài thường gặp; đọc bản của JDK từ file `release` của nó, không chạy `java`; không thấy thì báo bản cần cài;
     - `dev`: đọc `.env` của app (không in giá trị), chạy `docker compose up -d --wait` khi app có `docker-compose.yml`, rồi chạy Maven với `PORT`;
     - `scripts/mvnw.mjs <dir của app> <script>` chỉ ghép tham số và gọi lib.
   - **Kiểm:** `tests/quality/maven.test.mjs`: tham số từng script trên hai hệ điều hành, chọn JDK với cây thư mục giả, `.env`, lỗi khi thiếu JDK.
   - **File:** `lib/quality/maven.mjs`, `scripts/mvnw.mjs`, test; `quality/gates.yaml` (`mvnw.mjs` vào danh sách script chép vào dự án), `lib/scaffold/install.mjs` nếu cần.
-- [ ] **T4: stack `spring-boot` và `add`** (spec 2.1).
+- [x] **T4: stack `spring-boot` và `add`** (spec 2.1). Làm sớm ở đây phần schema của T12: `deploy.yaml` nhận `context`, `memory`, `start_timeout`, vì `add` ghi ba khóa này.
   - **Đạt khi:**
     - `profiles/stacks/spring-boot/stack.yaml`: `profile: spring-boot`, cổng 3001, `health: /actuator/health`, `dev_role: be-dev`, `package.json` mẫu của app Java;
     - `add --stack spring-boot` không có `--from` thì dừng, và nói cần template;
@@ -47,18 +47,18 @@
     - chạy lại không đổi gì.
   - **Kiểm:** `tests/scaffold/add.test.mjs` thêm ca Java, trên thư mục tạm thật, với template Java giả; thử thật trên template của bạn (nhánh `codebase`) trong thư mục tạm, ghi kết quả vào `verification.md`.
   - **File:** `profiles/stacks/spring-boot/`, `lib/scaffold/add.mjs`, `lib/scaffold/template.mjs`, `lib/scaffold/app-report.mjs`, `lib/scaffold/profile.mjs` (`readStack`), test.
-- [ ] **T5: CI cho app Java** (spec 2.2).
+- [x] **T5: CI cho app Java** (spec 2.2).
   - **Đạt khi:** job `build-test` có bước `actions/setup-java` ghim SHA (Temurin, cache Maven) chỉ khi có `apps/*/pom.xml`; bản Java lấy từ `pom.xml` qua `maven.mjs`. Repo không có app Java thì các bước như hiện nay.
   - **Kiểm:** `tests/quality/ci-workflow.test.mjs` chạy các bước bằng bash, với repo có và không có `apps/*/pom.xml`.
   - **File:** `kit/.github/workflows/ci.yml`, `scripts/ci-package-manager.mjs` hoặc script mới in bản Java, test.
-- [ ] **T6: `doctor` và `ao-step`** (spec 2.2, 2.6).
+- [x] **T6: `doctor` và `ao-step`** (spec 2.2, 2.6).
   - **Đạt khi:**
     - dự án có app Java: `doctor` có dòng JDK đúng bản của `pom.xml` (theo cách chọn của T3), và dòng Docker đang chạy;
     - `doctor` có dòng hỏi "App `ao-deploy` đã cài vào repo chưa", kèm đường bấm, như dòng VPS;
-    - `ao-step` dừng trước lượt `be-dev` hay `qa` của dự án có app Java khi Docker chưa chạy, và nói cách bật.
+    - `ao-step` dừng trước lượt `be-dev` của dự án có app Java khi Docker chưa chạy, và nói cách bật. `qa` kiểm trên môi trường đã deploy, nên không cần Docker (spec 2.2 sửa theo).
   - **Kiểm:** test của `doctor` và `steps` với effect giả; dự án không có Java không có dòng mới.
   - **File:** `lib/scaffold/doctor.mjs`, `lib/workflow/steps.mjs`, `scripts/ao-step.mjs`, test.
-- [ ] **T7: tài liệu chặng 1; PR.** `docs/quality-gates.md` (app Java trong CI), `README.md` (cây thư mục, lệnh `add`), comment đầu file; PR chặng 1.
+- [x] **T7: tài liệu chặng 1; PR.** `docs/quality-gates.md` (app Java trong CI), `README.md` (cây thư mục, lệnh `add`), comment đầu file; PR chặng 1.
 
 ## Chặng 2: cổng chất lượng cho Java, nhánh `task/scaffold3-2`
 
@@ -92,7 +92,7 @@
 ## Chặng 3: deployer và database, nhánh `task/scaffold3-3`
 
 - [ ] **T12: `deploy.yaml`** (spec 2.4, 2.5).
-  - **Đạt khi:** schema và `deploy-config.mjs` nhận `context`, `memory` (dạng `<số>m` hay `<số>g`), `start_timeout` (1–300) cho mỗi app, và `database` (`image` có digest, `init`, `memory`); `context` và `init` phải nằm trong repo; `ao-kit check` đối chiếu như hiện nay.
+  - **Đạt khi:** (`context`, `memory`, `start_timeout` đã có từ T4) schema và `deploy-config.mjs` nhận `database` (`image` có digest, `init`, `memory`); `context` và `init` phải nằm trong repo; `ao-kit check` đối chiếu như hiện nay.
   - **Kiểm:** fixture đúng và sai; `deploy.yaml` của `ao-sample` và `ao-pilot` vẫn hợp lệ.
   - **File:** `lib/release/deploy.schema.json`, `lib/release/deploy-config.mjs`, fixture, test.
 - [ ] **T13: build context, trần RAM, thời gian chờ** (spec 2.5).
