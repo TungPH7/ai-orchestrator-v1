@@ -23,8 +23,9 @@ test('the job only runs from the default branch, takes the key from the merge-ga
   assert.deepEqual(job.environment, { name: 'merge-gate', deployment: false });
   const step = job.steps.at(-1);
   assert.equal(step.run, 'node .ai-orchestrator/scripts/merge-gate.mjs');
-  // JIRA_CI_TOKEN reads the Epic of a docs PR (dev-workflow spec 2.4).
-  assert.deepEqual(step.env, { AO_DEV_APP_KEY: '${{ secrets.AO_DEV_APP_KEY }}', JIRA_CI_TOKEN: '${{ secrets.JIRA_CI_TOKEN }}', GITHUB_TOKEN: '${{ github.token }}' });
+  // JIRA_CI_TOKEN reads the Epic of a docs PR (dev-workflow spec 2.4). The key of ao-merge merges (Pilot 3, spec 2.9);
+  // that of ao-dev only in a project that has no ao-merge yet.
+  assert.deepEqual(step.env, { AO_MERGE_APP_KEY: '${{ secrets.AO_MERGE_APP_KEY }}', AO_DEV_APP_KEY: '${{ secrets.AO_DEV_APP_KEY }}', JIRA_CI_TOKEN: '${{ secrets.JIRA_CI_TOKEN }}', GITHUB_TOKEN: '${{ github.token }}' });
 });
 
 test('the workflow token only reads, one run at a time, and every action is pinned to a commit', () => {

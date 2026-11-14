@@ -30,13 +30,14 @@ const facts = (change = () => {}) => {
     reviews: copy['/pulls/12/reviews'],
     checks: { green: true, failed: false },
     gates,
-    apps: { dev: 'tungph7-ao-dev', review: 'tungph7-ao-review' },
+    apps: { dev: 'tungph7-ao-dev', review: 'tungph7-ao-review', merge: 'tungph7-ao-merge' },
     approvers: ['approver'],
   };
   change(f);
   return f;
 };
 const audit = (change) => decideAudit(facts(change));
+const MERGE_BOT = { login: 'tungph7-ao-merge[bot]', type: 'Bot' };
 const PASSED = { ok: true, pr: 12, problems: [], keys: ['DEMO-12'] };
 const noApproval = (f) => f.reviews.pop();
 
@@ -210,7 +211,8 @@ test('a failed run flags only items of the project space, and a dry run flags no
   assert.deepEqual(jira.writes, []);
 });
 
-// A commit pushed to a release branch without a PR, as the script of /ao-ship commits the report (spec 2.7 step 4).
+// A commit pushed to a release branch without a PR, as the script of /ao-ship committed the report before Pilot 3,
+// spec 2.9.
 const pushed = (files, change = () => {}) => (f) => {
   Object.assign(f, { pull: null, branch: 'release/v0.1.0', message: 'docs(release): add the report of v0.1.0' });
   f.commit = { author: BOT.login, committer: BOT.login, parents: 1, files: files.map((filename) => ({ filename, status: 'modified' })) };
@@ -218,51 +220,70 @@ const pushed = (files, change = () => {}) => (f) => {
 };
 const REPORT = ['docs/releases/v0.1.0.md', 'CHANGELOG.md'];
 
-test('a commit of ao-dev on a release branch that only changes the release report and CHANGELOG.md passes (spec 2.10)', () => {
-  assert.deepEqual(audit(pushed(REPORT)), { ok: true, pr: null, problems: [], keys: [] });
-  assert.deepEqual(audit(pushed(['CHANGELOG.md'])), { ok: true, pr: null, problems: [], keys: [] });
-});
-
-test('a commit of ao-dev on a release branch that changes any other file fails, and says which', () => {
-  const only = 'e1e2e3e on release/v0.1.0 is a commit of tungph7-ao-dev[bot] without a PR, which may only change docs/releases/** and CHANGELOG.md';
-  assert.deepEqual(audit(pushed([...REPORT, 'apps/web/src/page.tsx'])).problems, [`${only}, but it changes apps/web/src/page.tsx`]);
-  assert.deepEqual(audit(pushed(['apps/web/CHANGELOG.md', 'docs/releases-old/v0.1.0.md'])).problems, [`${only}, but it changes apps/web/CHANGELOG.md, docs/releases-old/v0.1.0.md`]);
-  // A file moved into docs/releases/ leaves its old path, which the image held.
-  const moved = pushed(REPORT, (f) => f.commit.files.push({ filename: 'docs/releases/main.ts', previous_filename: 'apps/api/src/main.ts', status: 'renamed' }));
-  assert.deepEqual(audit(moved).problems, [`${only}, but it changes apps/api/src/main.ts`]);
-  assert.deepEqual(audit(pushed([])).problems, [`${only}, but it changes no file`]);
-});
-
-test('only a plain commit of ao-dev on a release branch counts: anyone else, a merge, or another branch is a push without a PR', () => {
+// Pilot 3, review of shop PR #13 (spec 2.9): whoever holds the token of ao-dev, an agent included, could change the
+// release notes sent to customers that way. The report comes through its own PR now.
+test('every commit pushed without a PR fails, a commit of ao-dev that only changes the release report included', () => {
   const without = (branch) => [`e1e2e3e on ${branch} is not the merge of a PR into ${branch}: it was pushed without one`];
+  assert.deepEqual(audit(pushed(REPORT)).problems, without('release/v0.1.0'));
+  assert.deepEqual(audit(pushed(['CHANGELOG.md'])).problems, without('release/v0.1.0'));
   assert.deepEqual(audit(pushed(REPORT, (f) => (f.commit.author = YOU.login))).problems, without('release/v0.1.0'));
-  assert.deepEqual(audit(pushed(REPORT, (f) => (f.commit.committer = 'someone'))).problems, without('release/v0.1.0'));
-  assert.deepEqual(audit(pushed(REPORT, (f) => (f.commit.parents = 2))).problems, without('release/v0.1.0'));
   assert.deepEqual(audit(pushed(REPORT, (f) => (f.branch = 'develop'))).problems, without('develop'));
-  assert.deepEqual(audit(pushed(REPORT, (f) => (f.branch = 'main'))).problems, without('main'));
   assert.deepEqual(audit(pushed(REPORT, (f) => delete f.commit)).problems, without('release/v0.1.0'));
 });
 
-// The PR that merges main back into develop after a release or a hotfix (spec 2.7), merged by merge-gate as ao-dev.
-const backMerge = (change = () => {}) => (f) => {
+// The PR of the release report (Pilot 3, spec 2.9): release-notes/vX.Y.Z into release/vX.Y.Z, which ao-dev opens and
+// merge-gate merges with ao-merge.
+const notesPr = (change = () => {}) => (f) => {
   const repo = { full_name: 'TungPH7/ao-pilot' };
-  Object.assign(f.pull, { title: 'Merge main into develop after v0.1.0', body: '', head: { ref: 'main', sha: HEAD, repo }, base: { ref: 'develop', repo } });
+  Object.assign(f, { branch: 'release/v0.1.0', message: 'release notes: v0.1.0 (#12)' });
+  Object.assign(f.pull, { title: 'release notes: v0.1.0', body: '', head: { ref: 'release-notes/v0.1.0', sha: HEAD, repo }, base: { ref: 'release/v0.1.0', repo }, merged_by: MERGE_BOT });
+  f.files = REPORT.map((filename) => ({ filename, status: 'modified' }));
   f.reviews.splice(0);
   change(f);
 };
 
-test('the merge of a PR from main back into develop or the open release branch passes with green CI, merged by merge-gate (spec 2.10)', () => {
+test('the PR of a release report passes with green CI when ao-dev opened it, merge-gate or you merged it, and it changes only the report and the changelog of its version', () => {
+  assert.deepEqual(audit(notesPr()), { ok: true, pr: 12, problems: [], keys: [] });
+  assert.equal(audit(notesPr((f) => (f.pull.merged_by = YOU))).ok, true);
+  // A project with no ao-merge yet merges with ao-dev.
+  assert.equal(audit(notesPr((f) => (f.pull.merged_by = BOT))).ok, true);
+});
+
+test('the PR of a release report fails on any other file, without green CI, or opened or merged by anyone else', () => {
+  const only = 'PR #12 is the report of v0.1.0, which may only change docs/releases/v0.1.0.md and CHANGELOG.md, but it changes';
+  assert.deepEqual(audit(notesPr((f) => f.files.push({ filename: 'apps/web/src/page.tsx', status: 'modified' }))).problems, [`${only} apps/web/src/page.tsx`]);
+  // A file moved into an allowed path leaves its old path, which the image held.
+  assert.deepEqual(audit(notesPr((f) => (f.files[1] = { filename: 'CHANGELOG.md', previous_filename: 'apps/api/src/main.ts', status: 'renamed' }))).problems, [`${only} apps/api/src/main.ts`]);
+  assert.deepEqual(audit(notesPr((f) => (f.checks = { green: false, failed: true }))).problems, ['PR #12 was merged without: CI green on head a1b2c3d']);
+  assert.deepEqual(audit(notesPr((f) => (f.pull.user = YOU))).problems, ['PR #12 is the report of v0.1.0, which ao-dev opens, but approver opened it']);
+  assert.deepEqual(audit(notesPr((f) => (f.pull.merged_by = { login: 'someone', type: 'User' }))).problems, ['PR #12 is the report of v0.1.0, which merge-gate or you merge, but someone merged it']);
+});
+
+// The PR that merges main back into develop after a release or a hotfix (spec 2.7), merged by merge-gate.
+const backMerge = (change = () => {}) => (f) => {
+  const repo = { full_name: 'TungPH7/ao-pilot' };
+  Object.assign(f.pull, { title: 'Merge main into develop after v0.1.0', body: '', head: { ref: 'main', sha: HEAD, repo }, base: { ref: 'develop', repo }, merged_by: MERGE_BOT });
+  f.reviews.splice(0);
+  f.tags = [{ name: 'v0.1.0', sha: HEAD }];
+  change(f);
+};
+
+test('the merge of a PR from main back into develop or the open release branch passes with green CI and a release tag on its head, merged by merge-gate (spec 2.10)', () => {
   assert.deepEqual(audit(backMerge()), { ok: true, pr: 12, problems: [], keys: [] });
   assert.deepEqual(audit(backMerge((f) => {
     f.pull.base.ref = 'release/v0.1.0';
     f.branch = 'release/v0.1.0';
   })), { ok: true, pr: 12, problems: [], keys: [] });
-  // You may merge it by hand too, for instance while merge-gate is down.
+  // You may merge it by hand too, for instance while merge-gate is down; a project with no ao-merge merges with ao-dev.
   assert.deepEqual(audit(backMerge((f) => (f.pull.merged_by = YOU))).ok, true);
+  assert.deepEqual(audit(backMerge((f) => (f.pull.merged_by = BOT))).ok, true);
 });
 
-test('a merge back from main fails without green CI on its head, or when someone else merged it', () => {
+test('a merge back from main fails without green CI on its head, without a release tag there, or when someone else merged it', () => {
   assert.deepEqual(audit(backMerge((f) => (f.checks = { green: false, failed: true }))).problems, ['PR #12 was merged without: CI green on head a1b2c3d']);
+  // Pilot 3, spec 2.9: a commit that reached main without a release does not flow into develop on CI alone.
+  assert.deepEqual(audit(backMerge((f) => (f.tags = [{ name: 'v0.1.0', sha: SQUASH }]))).problems, ['PR #12 was merged without: a release tag vX.Y.Z on head a1b2c3d']);
+  assert.deepEqual(audit(backMerge((f) => delete f.tags)).problems, ['PR #12 was merged without: a release tag vX.Y.Z on head a1b2c3d']);
   assert.deepEqual(audit(backMerge((f) => (f.pull.merged_by = { login: 'someone', type: 'User' }))).problems, [
     'PR #12 merges main back into develop, which merge-gate or you merge, but someone merged it',
   ]);

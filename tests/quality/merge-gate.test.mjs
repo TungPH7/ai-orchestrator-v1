@@ -26,7 +26,7 @@ const facts = (change = () => {}) => {
     reviews: copy['/pulls/12/reviews'],
     checks: { green: true, failed: false },
     gates,
-    apps: { dev: 'tungph7-ao-dev', review: 'tungph7-ao-review' },
+    apps: { dev: 'tungph7-ao-dev', review: 'tungph7-ao-review', merge: 'tungph7-ao-merge' },
     approvers: ['approver'],
   };
   change(f);
@@ -182,7 +182,7 @@ async function runOnce({ change = () => {}, dryRun = false, refuse, reply = () =
     github: recordedClient(copy),
     mergeClient: writer,
     gates,
-    apps: { dev: 'tungph7-ao-dev', review: 'tungph7-ao-review' },
+    apps: { dev: 'tungph7-ao-dev', review: 'tungph7-ao-review', merge: 'tungph7-ao-merge' },
     approvers: ['approver'],
     dryRun,
     log: (line) => lines.push(line),
@@ -293,10 +293,11 @@ test('a release PR waits for green CI and your approval on its head commit', () 
   }), { action: 'wait', missing: ['approval on head a1b2c3d'] });
 });
 
-test('a merge back from main needs only green CI and no conflict; a conflict is yours to resolve', () => {
+test('a merge back from main needs only green CI, a release tag on its head and no conflict; a conflict is yours to resolve', () => {
   const noReviews = (f) => {
     asBackMerge(f.pr);
     f.reviews.splice(0);
+    f.tags = [{ name: 'v0.1.0', sha: HEAD }];
   };
   assert.deepEqual(decide(noReviews), { action: 'merge', method: 'merge', sha: HEAD, title: 'Merge main into develop after v0.1.0 (#12)' });
   assert.deepEqual(decide((f) => {
@@ -311,6 +312,78 @@ test('a merge back from main needs only green CI and no conflict; a conflict is 
     noReviews(f);
     f.pr.mergeable = false;
   }), { action: 'conflict', base: 'develop' });
+});
+
+// Pilot 3, review of shop PR #13 (spec 2.9): what main brings back must be a released version, a commit a tag vX.Y.Z
+// names, so a commit that reached main some other way does not flow into develop on CI alone.
+test('a merge back waits until the head of main is the commit of a release tag', () => {
+  const backMerge = (tags) => (f) => {
+    asBackMerge(f.pr);
+    f.reviews.splice(0);
+    f.tags = tags;
+  };
+  const waits = { action: 'wait', missing: ['a release tag vX.Y.Z on head a1b2c3d: main merges back only once its head is a version you shipped'] };
+  assert.deepEqual(decide(backMerge([])), waits);
+  assert.deepEqual(decide(backMerge([{ name: 'v0.1.0', sha: FIRST }])), waits);
+  assert.deepEqual(decide(backMerge(undefined)), waits);
+  assert.equal(decide(backMerge([{ name: 'v0.1.0', sha: FIRST }, { name: 'v0.1.1', sha: HEAD }])).action, 'merge');
+});
+
+test('merge-gate opens the merge back with ao-merge, so a merge back ao-merge opened is merge-gate\'s; any other PR of ao-merge is skipped', () => {
+  const byMerge = (f) => {
+    asBackMerge(f.pr);
+    f.pr.user.login = 'tungph7-ao-merge[bot]';
+    f.reviews.splice(0);
+    f.tags = [{ name: 'v0.1.0', sha: HEAD }];
+  };
+  assert.equal(decide(byMerge).action, 'merge');
+  assert.deepEqual(decide((f) => (f.pr.user.login = 'tungph7-ao-merge[bot]')), { action: 'skip', reason: 'opened by tungph7-ao-merge[bot], not by tungph7-ao-dev: whoever opened it merges it' });
+});
+
+// Pilot 3, review of shop PR #13 (spec 2.9): /ao-ship no longer commits its report straight onto the release branch,
+// which only a bypass of ao-dev allowed. ao-dev opens release-notes/vX.Y.Z into release/vX.Y.Z, and merge-gate merges it
+// when it changes nothing but the report and the changelog of that version.
+const asNotes = (pr) => Object.assign(pr, { title: 'release notes: v0.1.0', body: '', head: { ...pr.head, ref: 'release-notes/v0.1.0', repo: REPO }, base: { ...pr.base, ref: 'release/v0.1.0', repo: REPO } });
+const NOTES_FILES = [{ filename: 'docs/releases/v0.1.0.md', status: 'added' }, { filename: 'CHANGELOG.md', status: 'modified' }];
+const notesOf = (f) => {
+  asNotes(f.pr);
+  f.files = structuredClone(NOTES_FILES);
+  f.reviews.splice(0);
+};
+
+test('the PR of the release report is squashed once CI is green, with no review and no approval', () => {
+  assert.deepEqual(decide(notesOf), { action: 'merge', method: 'squash', sha: HEAD, title: 'release notes: v0.1.0 (#12)' });
+  assert.deepEqual(decide((f) => {
+    notesOf(f);
+    f.checks = { green: false, failed: false };
+    f.pr.mergeable = false;
+  }), { action: 'wait', missing: ['CI green on head a1b2c3d', 'conflicts with release/v0.1.0 resolved'] });
+});
+
+test('a PR of the release report that changes any other file, the report of another version included, is yours to read and merge', () => {
+  const plus = (file) => (f) => {
+    notesOf(f);
+    f.files.push(file);
+  };
+  assert.deepEqual(decide(plus({ filename: 'apps/api/pom.xml', status: 'modified' })), { action: 'needs-you', paths: ['apps/api/pom.xml'], missing: [] });
+  assert.deepEqual(decide(plus({ filename: 'docs/releases/v0.2.0.md', status: 'added' })), { action: 'needs-you', paths: ['docs/releases/v0.2.0.md'], missing: [] });
+  // A file renamed into an allowed path counts by its old name too.
+  assert.deepEqual(decide(plus({ filename: 'CHANGELOG.md', previous_filename: 'apps/user/next.config.ts', status: 'renamed' })), { action: 'needs-you', paths: ['apps/user/next.config.ts'], missing: [] });
+});
+
+test('only ao-dev opens the PR of the release report, from release-notes/vX.Y.Z of this repository into release/vX.Y.Z', () => {
+  assert.deepEqual(decide((f) => {
+    notesOf(f);
+    f.pr.user.login = 'tungph7-ao-merge[bot]';
+  }), { action: 'skip', reason: 'opened by tungph7-ao-merge[bot], not by tungph7-ao-dev: whoever opened it merges it' });
+  assert.deepEqual(decide((f) => {
+    notesOf(f);
+    f.pr.base.ref = 'release/v0.2.0';
+  }), { action: 'skip', reason: 'release-notes/v0.1.0 is not the branch of a work item' });
+  assert.deepEqual(decide((f) => {
+    notesOf(f);
+    f.pr.head.repo = { full_name: 'someone/ao-pilot' };
+  }), { action: 'skip', reason: 'release-notes/v0.1.0 is not the branch of a work item' });
 });
 
 test('only main of this repository merges back, and only into develop or a release branch', () => {
@@ -331,6 +404,8 @@ async function runRelease({ change = asRelease, more = () => {}, answers: replie
     change: (a) => {
       a['/pulls?direction=asc&sort=created&state=open'] = [change(a['/pulls/12'])];
       a['/pulls?base=develop&state=open'] = [];
+      // The tags of the repository, as GET /git/matching-refs/tags/v lists them: an annotated tag names a tag object.
+      a['/git/matching-refs/tags/v'] = [{ ref: 'refs/tags/v0.1.0', object: { sha: HEAD, type: 'commit' } }, { ref: 'refs/tags/v0.0.9', object: { sha: FIRST, type: 'tag' } }];
       more(a);
     },
     reply: (method, path) => {
@@ -386,4 +461,19 @@ test('a merge back with a conflict gets one comment per head commit, and is not 
   assert.equal(first.sent[0].body.body, 'merge-gate: needs you at a1b2c3d on PR #12. Merging main back into develop conflicts, so merge-gate does not merge it: resolve the conflicts as docs/quality-gates.md says (case 3).');
   const again = await runRelease({ change: conflict, more: (a) => (a['/issues/12/comments'] = [{ body: first.sent[0].body.body, user: { login: 'tungph7-ao-dev[bot]' } }]) });
   assert.deepEqual(again.sent, []);
+  // merge-gate writes with ao-merge now (Pilot 3, spec 2.9): its own comment counts too.
+  const byMerge = await runRelease({ change: conflict, more: (a) => (a['/issues/12/comments'] = [{ body: first.sent[0].body.body, user: { login: 'tungph7-ao-merge[bot]' } }]) });
+  assert.deepEqual(byMerge.sent, []);
+});
+
+test('a run reads the tags of the repository for a merge back: a lightweight tag on the head of main lets it merge', async () => {
+  const merged = await runRelease({ change: (pr) => asBackMerge(pr), more: (a) => (a['/pulls/12/reviews'] = []) });
+  assert.deepEqual(merged.lines, ['Merged #12: Merge main into develop after v0.1.0 (#12) (merge at a1b2c3d)']);
+  // An annotated tag names a tag object, not the commit: merge-gate does not take it for the commit.
+  const annotated = await runRelease({ change: (pr) => asBackMerge(pr), more: (a) => {
+    a['/pulls/12/reviews'] = [];
+    a['/git/matching-refs/tags/v'] = [{ ref: 'refs/tags/v0.1.0', object: { sha: HEAD, type: 'tag' } }];
+  } });
+  assert.deepEqual(annotated.sent, []);
+  assert.match(annotated.lines[0], /^Waiting #12: a release tag vX\.Y\.Z on head a1b2c3d/);
 });
