@@ -287,3 +287,12 @@ test('the reports on the head count a High you accept as no longer blocking, and
   assert.equal(read([report, yours], '2027-01-01').blocking, 2, 'past its last day it blocks again');
   assert.equal(read([report, yours]).blocking, 2, 'with no day to hold on, no acceptance counts');
 });
+
+test('the ids /ao-review gives are those of the Highs, since a Critical cannot be accepted', () => {
+  const bot = 'tungph7-ao-review[bot]';
+  const Y = 'b'.repeat(40);
+  const ROWS = '| Severity | Axis | Where | Finding | Suggested fix |\n|---|---|---|---|---|\n| Critical | Security | a.ts:1 | secrets leak | remove |\n| High | Security | b.ts:2 | login reachable | ao-agent |\n';
+  const report = { user: { login: bot }, commit_id: Y, submitted_at: '2026-11-14T09:00:00Z', state: 'CHANGES_REQUESTED', body: `# Review: chore(kit): copy (SHOP-6)\n\nRole: security\n\n## Findings\n${ROWS}\n## Verdict\n- [x] **Request changes**\n` };
+  const security = reviewReports([report], { roles: ['security'], bot, head: Y, approvers: ['you'], on: '2026-11-14' }).reports.security;
+  assert.deepEqual([security.blocking, security.ids], [2, [findingId({ severity: 'High', where: 'b.ts:2', finding: 'login reachable' })]]);
+});

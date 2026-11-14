@@ -4,6 +4,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { loadContract } from '../../lib/contract.mjs';
 import { readMapping } from '../../lib/tracker/mapping.mjs';
+import { ciAccount } from '../../lib/tracker/flags.mjs';
 import { planMoves, reconcile } from '../../lib/tracker/reconcile.mjs';
 import { fakeJira, jiraIssue, jiraStatus, recordedClient } from '../helpers/jira.mjs';
 import { CONTRACT_DIR, ROOT } from '../helpers/kit.mjs';
@@ -79,6 +80,10 @@ test('the rework that reaches the limit flags the item, and a flag an agent miss
   assert.equal(plan('in-progress', [], { reworkCount: 3 }).flag, true);
   assert.equal(plan('in-progress', [], { reworkCount: 3, flagged: true }).flag, false);
   assert.equal(plan('in-progress', [], { reworkCount: 2 }).flag, false);
+  // Review round 4 of shop PR #13: once you cleared the flag of a count, the same count does not raise it again; one
+  // more rework does.
+  assert.equal(plan('in-progress', [], { reworkCount: 3, flaggedAt: 3 }).flag, false);
+  assert.equal(plan('in-review', ['changes-requested'], { reworkCount: 3, flaggedAt: 3 }).flag, true);
 });
 
 // reconcile reads the item, its history and the facts. Jira answers in the shape of GET /issue; GitHub from the
@@ -138,6 +143,14 @@ test('flags an item whose rework reached the limit, once', async () => {
   const story = (labels) => issue({ key: 'DEMO-12', st: status('In Progress', 'indeterminate'), subtasks: [['DEMO-13', status('To Do', 'new')]], labels });
   assert.deepEqual(await run('DEMO-12', fakeJira({ issues: [story([])], changelogs })), [{ key: 'DEMO-12', effect: 'flag-needs-you', reworkCount: 3 }]);
   assert.deepEqual(await run('DEMO-12', fakeJira({ issues: [story(['needs-you'])], changelogs })), []);
+  // You cleared the flag after jira-sync raised it at this count: it stays cleared. A comment of anyone else in the same
+  // words does not count, since an agent could write it.
+  const comment = (accountId, count) => ({ created: '2026-11-04T10:00:00.000+0700', author: { accountId }, body: `jira-sync: DEMO-12 went back ${count} times, the limit in policies.yaml. It is flagged with the label needs-you and waits for you.` });
+  const lists = (comments) => ({ '/rest/api/3/issue/DEMO-12/comment': comments });
+  const ci = ciAccount(mapping);
+  assert.deepEqual(await run('DEMO-12', fakeJira({ issues: [story([])], changelogs, lists: lists([comment(ci, 3)]) })), []);
+  assert.deepEqual(await run('DEMO-12', fakeJira({ issues: [story([])], changelogs, lists: lists([comment('someone-else', 3)]) })), [{ key: 'DEMO-12', effect: 'flag-needs-you', reworkCount: 3 }]);
+  assert.deepEqual(await run('DEMO-12', fakeJira({ issues: [story([])], changelogs, lists: lists([comment(ci, 2)]) })), [{ key: 'DEMO-12', effect: 'flag-needs-you', reworkCount: 3 }]);
 });
 
 test('an Epic in progress refines its children that meet DoR, and nothing before its plan is approved', async () => {

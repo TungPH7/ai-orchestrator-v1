@@ -380,3 +380,15 @@ test('auditBroughtBack does not check a merge back of 250 commits or more in par
   const audits = await auditBroughtBack({ github: many, pr: { number: 40, head: { sha: 'f'.repeat(40) } }, gates, apps: { dev: 'd', review: 'r', merge: 'm' }, approvers: [] });
   assert.deepEqual(audits, [{ sha: 'f'.repeat(40), ok: false, problems: ['the merge back brings 250 commits or more, more than GitHub lists: check them by hand'] }]);
 });
+
+// Review round 4 of shop PR #13: audit holds a file list cut short where merge-gate does, everywhere but a release PR
+// into main and a merge back.
+test('a file list GitHub cut short fails every PR but a release PR into main, as in merge-gate', () => {
+  const release = (base) => (f) => {
+    Object.assign(f.pull, { title: 'Release v1.2.0', body: '', head: { ref: 'release/v1.2.0', sha: HEAD }, base: { ref: base }, changed_files: 3001 });
+    f.reviews.splice(0, 3);
+    f.branch = base;
+  };
+  assert.deepEqual(audit(release('main')).problems, []);
+  assert.deepEqual(audit(release('develop')).problems, ['PR #12 changes 3001 files, of which GitHub listed 2: check its paths by hand']);
+});
