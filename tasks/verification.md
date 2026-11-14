@@ -196,3 +196,25 @@ Profile của Development là `staging`: `dev` của template dành cho máy cá
 - Bạn trả lời "merge". PR #9 được Ready, Approve, Squash merge: `05b1a63`. Docker Desktop đã tắt, không xóa gì.
 
 **T22, bước 2 (Lượt 6).** `c405b19`, `866dc15`, `05b1a63` không qua `audit`; bạn đã duyệt cả ba PR. Bước kiểm của `/ao-rollback development 05b1a63` báo GO, và yêu cầu deploy `#7782564110` được gửi bằng login `gh` của bạn.
+
+**T22, bước 3–6 (Lượt 6, 2026-11-14 04:28–04:50 UTC).**
+- **Deploy:** deployer nhận yêu cầu lúc 04:28:37 (`you approved the history of develop up to 05b1a63`). Lúc 04:47:04 nó ghi `deployed 05b1a63`, tức 18,5 phút: build `user` khoảng 6 phút, `admin` dùng cache, `api` khoảng 6,5 phút (Maven trong Docker), rồi tạo database, chạy smoke test và đổi bản.
+- **Database:** `ao-shop-development-db` chạy với user `postgres`, `cap-drop ALL`, `no-new-privileges`, trần 256 MB, không mở cổng, nhãn `ao.role=database`.
+  - Script init chép sang `/var/lib/ao/shop/db-init/development/` và chạy một lần: role `shop_app`, extension `citext`, `pg_trgm`, `pgcrypto`, `uuid-ossp`, schema `app`.
+  - Flyway chạy đủ 3 migration (`init`, `app helpers`, `create products table`), đều `success`.
+- **`api`:** profile `staging`, trần 768 MB, swap bằng trần. Từ lúc bật tới `Started` mất 66 giây trên VPS (18 giây trên laptop ở T2), vẫn dưới `start_timeout` 180. Log không có dòng ERROR hay WARN.
+- **Kiểm từ ngoài, qua basic auth:** `https://shop-admin-dev.ao.t2g.io.vn/api/v1/health` 200 (`Application is running`), `/api/products` 200 `[]`, `admin` `/` 200, `user` `/en` 200. `/actuator/health` qua host `admin` trả trang của `admin`, tức actuator không lộ ra ngoài (tiêu chí 4).
+  - Lần đầu, cả `pilot-dev` cũng 401: `AO_ENV_AUTH` của phiên Claude Code là mật khẩu cũ, từ trước lần đổi ở B2. Đọc biến user của Windows thì qua.
+- **Docker đánh dấu `api` là `unhealthy`:** `HEALTHCHECK` của template gọi `/actuator/health/liveness`, mà Spring Security trả 401 cho đường này. Chỉ `/actuator/health` được mở. Deployer không dùng health của Docker, nên deploy không bị ảnh hưởng. Lỗi có sẵn trong template; để sửa ở một Task sau.
+- **RAM (tiêu chí 5)**, đo 5 giây một lần trong lúc deploy:
+  - trước: dùng 1.131 MB, còn trống 2.790 MB;
+  - đỉnh: dùng 2.441 MB, còn trống 1.474 MB lúc build `user`; swap tối đa 214 MB. Lúc đổi bản, đỉnh là 1.479 MB;
+  - sau, lúc rảnh: dùng 1.407 MB, còn trống 2.508 MB; `api` 286 MiB, Postgres 45 MiB, `user` 60 MiB, `admin` 14 MiB;
+  - **ước cho ba môi trường** [Ước]: Staging và Production mỗi môi trường thêm khoảng 410 MB (`api`, Postgres, `user`, `admin`), tổng khoảng 820 MB. Vậy lúc rảnh còn khoảng 1,7 GB. Image chỉ build một lần cho mỗi commit, nên đỉnh lúc build (khoảng 1 GB trên mức rảnh) không nhân lên theo số môi trường. VPS 4 GB vẫn đủ; đo lại khi Staging và Production lên ở B4, và nâng lên 8 GB nếu lúc build còn trống dưới 1 GB.
+  - đĩa: 15 GB trên 38 GB; build cache 6,5 GB (trước là 2,8 GB).
+- **Backup (tiêu chí 6):** timer `ao-backup` đã cài, lượt đầu lúc 19:34 UTC.
+  - `systemctl start ao-backup.service`: 2 giây, bản dump 15.243 byte; thư mục 0700, file 0600, chủ là root.
+  - `restore-check shop development`: 17 giây, ra 3 bảng và 6 dòng, khớp database đang chạy, thoát mã 0; container tạm đã bị xóa.
+  - Khôi phục vào database đang chạy (mục 15, bước 4) chưa thử, vì nó xóa rồi tạo lại các đối tượng của database; việc này chờ bạn đồng ý.
+- `ao-sample` và `ao-pilot` vẫn chạy đủ 9 container; `pilot-dev` 200, `sample-dev` 307, `pilot` 200, `sample` 307, giống trước.
+- Vòng đo RAM đã dừng; hai script tạm trên `/root` đã xóa; `/root/ram-t22.log` (158 dòng) giữ lại làm số liệu.
