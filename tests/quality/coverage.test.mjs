@@ -4,7 +4,7 @@ import { spawnSync } from 'node:child_process';
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { changedLineCoverage, changedLines, parseLcov } from '../../lib/quality/coverage.mjs';
+import { changedLineCoverage, changedLines, parseJacoco, parseLcov, projectCoverageExcludes } from '../../lib/quality/coverage.mjs';
 import { readGates } from '../../lib/quality/gates.mjs';
 import { ROOT } from '../helpers/kit.mjs';
 
@@ -81,7 +81,7 @@ test('a changed source file missing from lcov fails; config files, migrations, t
     .join('');
   const result = changedLineCoverage({ changed: changedLines(diff), lcov: new Map(), coverage: gates.coverage });
   assert.equal(result.ok, false);
-  assert.deepEqual(result.problems, ['src/new.ts is not in any lcov file: the coverage of the tests must include every source file']);
+  assert.deepEqual(result.problems, ['src/new.ts is not in any coverage report: the coverage of the tests must include every source file']);
 });
 
 test('NestJS end-to-end tests named *.e2e-spec.ts are tests, not source (Pilot 1, PR #4 of ao-sample)', () => {
@@ -120,4 +120,47 @@ test('the coverage-diff script compares HEAD with the merge base and exits non-z
   assert.match(low.stderr, /50% \(1 of 2\), below 80%/);
   const high = run(4);
   assert.equal(high.status, 0, high.stderr);
+});
+
+// project-scaffold part 3, spec 2.3: the coverage of a Java app comes from its JaCoCo report.
+const JACOCO = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><!DOCTYPE report PUBLIC "-//JACOCO//DTD Report 1.1//EN" "report.dtd">'
+  + '<report name=""><sessioninfo id="x" start="1" dump="2"/>'
+  + '<package name="com/acme/health"><class name="com/acme/health/HealthService" sourcefilename="HealthService.java"><method name="up" desc="()Z" line="22"><counter type="LINE" missed="0" covered="1"/></method></class>'
+  + '<sourcefile name="HealthService.java"><line nr="22" mi="0" ci="2" mb="0" cb="0"/><line nr="23" mi="3" ci="0" mb="1" cb="0"/><counter type="LINE" missed="1" covered="1"/></sourcefile></package>'
+  + '<package name="com/acme"><sourcefile name="App.java"><line nr="5" mi="0" ci="4" mb="0" cb="0"/></sourcefile></package></report>';
+
+test('a JaCoCo report gives the lines of each Java file, in src/main/java of its app', () => {
+  const files = parseJacoco(JACOCO, { appDir: 'apps/api' });
+  assert.deepEqual([...files.keys()], ['apps/api/src/main/java/com/acme/health/HealthService.java', 'apps/api/src/main/java/com/acme/App.java']);
+  assert.deepEqual([...files.get('apps/api/src/main/java/com/acme/health/HealthService.java')], [[22, 2], [23, 0]]);
+  assert.deepEqual(parseJacoco('<report name=""></report>', { appDir: 'apps/api' }).size, 0);
+});
+
+test('a changed Java file is counted from the report, and one the report lacks is named', () => {
+  const file = 'apps/api/src/main/java/com/acme/health/HealthService.java';
+  const missing = 'apps/api/src/main/java/com/acme/order/OrderService.java';
+  const diff = [`diff --git a/${file} b/${file}\n--- a/${file}\n+++ b/${file}\n@@ -22,2 +22,2 @@\n-a\n-b\n+a\n+b\n`, `diff --git a/${missing} b/${missing}\n--- /dev/null\n+++ b/${missing}\n@@ -0,0 +1 @@\n+x\n`].join('');
+  const result = changedLineCoverage({ changed: changedLines(diff), lcov: parseJacoco(JACOCO, { appDir: 'apps/api' }), coverage: gates.coverage });
+  assert.deepEqual(result.files, [{ file, covered: 1, total: 2, uncovered: [23] }]);
+  assert.deepEqual(result.problems.slice(0, 1), [`${missing} is not in any coverage report: the coverage of the tests must include every source file`]);
+});
+
+test('gates: Java sources count, Java tests do not, and the e2e/ and scripts/ of each app are left out', () => {
+  const diff = ['apps/api/src/main/java/com/acme/App.java', 'apps/api/src/test/java/com/acme/AppTest.java', 'apps/user/e2e/home.spec.ts', 'apps/user/scripts/seed.ts', 'e2e/smoke.spec.ts', 'scripts/dev.mjs']
+    .map((file) => `diff --git a/${file} b/${file}\n--- /dev/null\n+++ b/${file}\n@@ -0,0 +1 @@\n+x\n`)
+    .join('');
+  const result = changedLineCoverage({ changed: changedLines(diff), lcov: new Map(), coverage: gates.coverage });
+  assert.deepEqual(result.problems, ['apps/api/src/main/java/com/acme/App.java is not in any coverage report: the coverage of the tests must include every source file']);
+  assert.deepEqual(gates.coverage.jacoco, ['apps/*/target/site/jacoco/jacoco.xml']);
+});
+
+test('coverage_exclude of an app in project.yaml is read from the app folder, and leaves those files out', () => {
+  const config = { apps: { api: { path: 'apps/api', coverage_exclude: ['src/main/java/**/dto/**', '**/*Properties.java'] }, user: { path: 'apps/user' } } };
+  const excludes = projectCoverageExcludes(config);
+  assert.deepEqual(excludes, ['apps/api/src/main/java/**/dto/**', 'apps/api/**/*Properties.java']);
+  const dto = 'apps/api/src/main/java/com/acme/order/dto/OrderRequest.java';
+  const diff = `diff --git a/${dto} b/${dto}\n--- /dev/null\n+++ b/${dto}\n@@ -0,0 +1 @@\n+x\n`;
+  const coverage = { ...gates.coverage, exclude: [...gates.coverage.exclude, ...excludes] };
+  assert.deepEqual(changedLineCoverage({ changed: changedLines(diff), lcov: new Map(), coverage }).problems, []);
+  assert.deepEqual(projectCoverageExcludes(null), []);
 });

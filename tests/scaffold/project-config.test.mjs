@@ -125,3 +125,16 @@ test('hosts: only a public app has them, no host twice, and each public app name
   // One public app needs none: the hosts of its project on the VPS serve it, as before.
   assert.deepEqual(checkProject({ config: readProjectConfig(text).config, deployText, packageJson, exists: npmRepo }), []);
 });
+
+// project-scaffold part 3, spec 2.3: the globs an app leaves out of the coverage of changed lines, inside its folder.
+test('coverage_exclude of an app holds globs inside the app folder', () => {
+  const withExclude = (globs) => {
+    const data = parse(text);
+    data.apps.api.coverage_exclude = globs;
+    return readProjectConfig(stringify(data));
+  };
+  assert.deepEqual(withExclude(['src/main/java/**/dto/**', '**/*Properties.java']).errors, []);
+  for (const bad of ['/etc/passwd', '../web/src/**', 'src/../../x', '\\server\\share']) {
+    assert.ok(withExclude([bad]).errors.some(({ path }) => /coverage_exclude/.test(path)), bad);
+  }
+});
