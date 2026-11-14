@@ -27,5 +27,6 @@ start_timeout: 180
 container_files: [package.json]
 # The dev agent that builds the app: it gets the skill <app>-conventions a template brings.
 dev_role: be-dev
-# roster.local.yaml: the stack skills; ao-kit add copies each one from where the kit keeps it (T10 adds java-springboot).
-skills: {}
+# roster.local.yaml: the stack skills; ao-kit add copies each one from skills/ of this stack (SOURCE.md names its origin).
+skills:
+  be-dev: [java-springboot]

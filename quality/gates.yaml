@@ -42,6 +42,17 @@ suppressions:
     - "nosemgrep"
     - "gitleaks:allow"
     - "secretlint-disable"
+    # Java (project-scaffold part 3, spec 2.3): javac, SonarQube, JUnit, Checkstyle, Spotless, SpotBugs, PMD, and
+    # @Generated, which JaCoCo leaves out of the coverage.
+    - "@SuppressWarnings"
+    - "NOSONAR"
+    - "@Disabled"
+    - "CHECKSTYLE:OFF"
+    - "CHECKSTYLE.OFF"
+    - "spotless:off"
+    - "@SuppressFBWarnings"
+    - "NOPMD"
+    - "@Generated"
   never: [".only("]
 
 # Branches only a PR may change, and the merge method of each kind of work item branch.
@@ -115,6 +126,21 @@ security_review:
     - "**/prisma/**"
     - "**/migrations/**"
     - "**/*.sql"
+    # Spring Boot (project-scaffold part 3, spec 2.3): how it is built, its config, where requests come in or are
+    # checked, who the user is, and what it reads and writes. Services stay out, as for NestJS.
+    - "**/pom.xml"
+    - "**/.mvn/**"
+    - "**/mvnw*"
+    - "**/application*.{yml,yaml,properties}"
+    - "**/*Controller.java"
+    - "**/*Filter.java"
+    - "**/*Interceptor.java"
+    - "**/*Security*.java"
+    - "**/*Auth*.java"
+    - "**/security/**"
+    - "**/*Repository.java"
+    - "**/domain/**"
+    - "**/dto/**"
   lower_effort: high
 
 # A PR that copies a kit another project reviewed in full (kit-copy-review spec 2.2, 2.3): ao-step compares it with the

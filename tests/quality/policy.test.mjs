@@ -4,6 +4,7 @@ import { join } from 'node:path';
 import { readGates } from '../../lib/quality/gates.mjs';
 import { auditProblems, checkConventions, designFilesToCheck, osvProblems } from '../../lib/quality/policy.mjs';
 import { addedLines, deletedTests, findSuppressions, loweredThresholds } from '../../lib/quality/suppressions.mjs';
+import { matchesGlob } from '../../lib/quality/glob.mjs';
 import { ROOT } from '../helpers/kit.mjs';
 
 const gates = readGates(join(ROOT, 'quality'));
@@ -306,4 +307,45 @@ test('an exception holds by the GHSA id or a CVE alias of the group, until it ex
   const high = osvProblems(OSV, { audit_level: 'high', exceptions }, '2026-11-14');
   assert.match(high[0], /postgresql@42\.7\.10 high 7\.5: .*; its exception expired on 2026-11-01/);
   assert.ok(!high.some((line) => /tomcat/.test(line)));
+});
+
+// project-scaffold part 3, spec 2.3: the lines that switch a check off in Java, Checkstyle, Spotless, SpotBugs, PMD and
+// JaCoCo need a reason, as those of JS do.
+test('a Java line that switches a check off needs a reason on the same line', () => {
+  const file = 'apps/api/src/main/java/com/acme/OrderService.java';
+  const texts = [
+    '@SuppressWarnings("unchecked")',
+    'int x = y; // NOSONAR',
+    '@Disabled',
+    '// CHECKSTYLE:OFF',
+    '// CHECKSTYLE.OFF: MagicNumber',
+    '// spotless:off',
+    '@SuppressFBWarnings("EI_EXPOSE_REP")',
+    'catch (Exception e) {} // NOPMD',
+    '@Generated',
+  ];
+  const lines = texts.map((text, i) => ({ file, line: i + 1, text }));
+  assert.deepEqual(findSuppressions(lines, gates.suppressions).map((problem) => problem.split(' ')[0]), texts.map((_, i) => `${file}:${i + 1}`));
+  const reasoned = [{ file, line: 1, text: '@SuppressWarnings("unchecked") // reason: the cast is checked above' }, { file, line: 2, text: '@Disabled("reason: flaky on Windows until #12")' }];
+  assert.deepEqual(findSuppressions(reasoned, gates.suppressions), []);
+});
+
+test('Java paths that decide who calls the API, what it reads and how it is built raise the security review', () => {
+  const paths = gates.security_review.roster_effort_paths;
+  const raises = (file) => paths.some((glob) => matchesGlob(glob, file));
+  for (const file of [
+    'apps/api/pom.xml',
+    'apps/api/.mvn/wrapper/maven-wrapper.properties',
+    'apps/api/mvnw',
+    'apps/api/src/main/resources/application-prod.yml',
+    'apps/api/src/main/java/com/acme/order/controller/OrderController.java',
+    'apps/api/src/main/java/com/acme/common/logging/CorrelationIdFilter.java',
+    'apps/api/src/main/java/com/acme/common/security/SecurityConfig.java',
+    'apps/api/src/main/java/com/acme/auth/AuthService.java',
+    'apps/api/src/main/java/com/acme/order/repository/OrderRepository.java',
+    'apps/api/src/main/java/com/acme/order/dto/CreateOrderRequest.java',
+    'apps/api/src/main/java/com/acme/order/domain/Order.java',
+    'apps/api/src/main/resources/db/migration/V4__orders.sql',
+  ]) assert.ok(raises(file), file);
+  assert.ok(!raises('apps/api/src/main/java/com/acme/order/service/OrderService.java'));
 });

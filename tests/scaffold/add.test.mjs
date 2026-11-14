@@ -166,7 +166,10 @@ test('add a Java app from a template: a package.json that runs its Maven wrapper
   assert.match(skill, /^name: api-conventions$/m);
   assert.match(skill, /apps\/api\/docs\/coding-conventions\/README\.md/);
   assert.match(skill, /apps\/api\/docs\/coding-conventions\/v1\/02-naming\.md/);
-  assert.deepEqual(parse(read(p.dir, '.ai-orchestrator/roster.local.yaml')).roles['be-dev'].skills, ['api-conventions']);
+  // The stack skill of be-dev first, then the conventions of the template.
+  assert.deepEqual(parse(read(p.dir, '.ai-orchestrator/roster.local.yaml')).roles['be-dev'].skills, ['java-springboot', 'api-conventions']);
+  for (const file of ['SKILL.md', 'SOURCE.md', 'references/data.md']) assert.ok(existsSync(join(p.dir, '.claude/skills/java-springboot', file)), file);
+  assert.match(text, /Copied the stack skill java-springboot into \.claude\/skills\//);
 
   // project.yaml and deploy.yaml.
   const { config, errors } = readProjectConfig(read(p.dir, '.ai-orchestrator/project.yaml'));
