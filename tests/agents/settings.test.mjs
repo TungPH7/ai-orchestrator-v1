@@ -36,6 +36,15 @@ test('the allow rules of a project come after those of the kit, once each; a pro
   assert.deepEqual(settings.hooks, template.hooks);
 });
 
+// Pilot 3, review of shop PR #13 (spec 2.9): merge-gate reads the slug and the id of ao-merge from the settings.
+test('a project with the ao-merge App gets AO_MERGE_APP and AO_MERGE_APP_ID after those of ao-review; one without has neither', () => {
+  const own = { ...sample, github: { ...sample.github, apps: { ...sample.github.apps, merge: 'acme-ao-merge', merge_id: 31 } } };
+  const env = Object.keys(JSON.parse(renderSettings(template, own)).env);
+  assert.deepEqual(env.slice(env.indexOf('AO_REVIEW_APP_ID') + 1, env.indexOf('AO_REVIEW_APP_ID') + 3), ['AO_MERGE_APP', 'AO_MERGE_APP_ID']);
+  assert.equal(JSON.parse(renderSettings(template, own)).env.AO_MERGE_APP_ID, '31');
+  assert.equal('AO_MERGE_APP' in JSON.parse(renderSettings(template, sample)).env, false);
+});
+
 // A project with the kit copy in .ai-orchestrator/ and its project.yaml.
 function project(t, { yaml = true } = {}) {
   const dir = mkdtempSync(join(tmpdir(), 'settings-'));

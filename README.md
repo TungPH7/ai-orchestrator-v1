@@ -171,9 +171,9 @@ Về sau, cập nhật bản chép kit phải đi qua PR, và bạn tự merge P
 | `AO_KIT_DIR` | Không bắt buộc | Các hook tìm kit ở đây thay cho `.ai-orchestrator/` |
 | `AO_ENV_AUTH` | Biến môi trường user trên máy bạn; giá trị `ao:<mật khẩu>` | Basic auth của Development và Staging. `ao-step` chỉ truyền cho `qa`, dưới dạng `E2E_HTTP_USER` và `E2E_HTTP_PASSWORD` ([docs/release-workflow.md](docs/release-workflow.md)) |
 | `JIRA_ADMIN_EMAIL`, `JIRA_ADMIN_TOKEN` | Biến môi trường user trên máy bạn | `jira:check` |
-| `AO_DEV_APP`, `AO_DEV_APP_ID`, `AO_REVIEW_APP`, `AO_REVIEW_APP_ID` | Mục `env` trong `.claude/settings.json` của dự án, sinh từ `github.apps` của `project.yaml` | `ao-pr.mjs`: slug và App ID của hai GitHub App, không bí mật ([docs/github-apps-setup.md](docs/github-apps-setup.md)) |
+| `AO_DEV_APP`, `AO_DEV_APP_ID`, `AO_REVIEW_APP`, `AO_REVIEW_APP_ID`, `AO_MERGE_APP`, `AO_MERGE_APP_ID` | Mục `env` trong `.claude/settings.json` của dự án, sinh từ `github.apps` của `project.yaml` | `ao-pr.mjs`, `merge-gate`: slug và App ID của các GitHub App, không bí mật ([docs/github-apps-setup.md](docs/github-apps-setup.md)) |
 | `AO_DEV_APP_KEY_FILE`, `AO_REVIEW_APP_KEY_FILE` | Biến môi trường user trên máy bạn; giá trị là đường dẫn tới file private key | `ao-pr.mjs`. Thiếu trong môi trường của tiến trình thì đọc từ biến user trên Windows |
-| `AO_DEV_APP_KEY` | Secret của environment `merge-gate` trên GitHub | `merge-gate` merge bằng App `ao-dev`. Đây là private key thứ hai của App, khác file key trên máy bạn |
+| `AO_MERGE_APP_KEY` | Secret của environment `merge-gate` trên GitHub, không có trên máy nào | `merge-gate` merge bằng App `ao-merge`, App duy nhất ruleset cho merge khi chưa có approve của bạn (Pilot 3, spec 2.9). Dự án chưa có `ao-merge` thì `merge-gate` dùng `AO_DEV_APP_KEY`, key thứ hai của `ao-dev` |
 | `NO_UPDATE_NOTIFIER` | Mục `env` trong `.claude/settings.json` của dự án, giá trị `1` | Tắt việc `playwright-cli` hỏi npm có bản mới mỗi lần chạy |
 
 Token đặt bằng hộp thoại Environment Variables của Windows, không gõ qua chat. Secret của GitHub đặt bằng cách pipe token vào `gh secret set`, để token không nằm trong lịch sử lệnh.
@@ -201,7 +201,7 @@ node scripts/ao-kit.mjs add <thư mục dự án> <app> --stack nextjs|react|spr
 node scripts/ao-kit.mjs sync <thư mục dự án> --key <KEY>  # chép bản kit này vào dự án, trên nhánh feature/<KEY>-kit-copy, một commit, không push
 node scripts/ao-kit.mjs render <thư mục dự án>  # sinh lại .claude/settings.json và agent từ project.yaml
 node scripts/ao-kit.mjs check <thư mục dự án>  # kiểm project.yaml của dự án với schema, deploy.yaml, package.json và thư mục app
-node scripts/ao-kit.mjs setup github <thư mục dự án> [--dev-app-key-file <key thứ hai của ao-dev>]  # nhánh mặc định, xóa nhánh sau merge, Dependabot, bốn environment, hai secret, ruleset
+node scripts/ao-kit.mjs setup github <thư mục dự án> [--merge-app-key-file <key của ao-merge>]  # nhánh mặc định, xóa nhánh sau merge, Dependabot, bốn environment, hai secret, hai ruleset
 node scripts/ao-kit.mjs setup jira <thư mục dự án> [--template DEMO]  # tạo space với scheme của space mẫu, bộ lọc và board, rồi jira:check
 node scripts/ao-kit.mjs doctor <thư mục dự án>  # chỉ đọc: dự án còn thiếu gì trên máy, repo, GitHub, Jira, Claude Code, mỗi dòng kèm việc cần làm
 npm run profiles:check  # dựng từng profile vào thư mục tạm, rồi chạy npm ci, lint, typecheck, test:coverage, build

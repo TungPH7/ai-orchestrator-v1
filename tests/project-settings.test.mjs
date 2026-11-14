@@ -11,7 +11,7 @@ import { APP_SETTINGS, appSettings, projectSettings } from '../lib/project-setti
 test('the settings of the Apps: the environment first, then .claude/settings.json; placeholders of the kit count as unset', () => {
   const settings = { AO_DEV_APP: 'acme-ao-dev', AO_DEV_APP_ID: '11', AO_REVIEW_APP: '<review-app-slug>', AO_REVIEW_APP_ID: '12', AO_JIRA_SPACE: 'SHOP' };
   assert.deepEqual(appSettings(settings, { AO_DEV_APP_ID: '99' }), { AO_DEV_APP: 'acme-ao-dev', AO_DEV_APP_ID: '99', AO_REVIEW_APP_ID: '12' });
-  assert.deepEqual(APP_SETTINGS, ['AO_DEV_APP', 'AO_DEV_APP_ID', 'AO_REVIEW_APP', 'AO_REVIEW_APP_ID']);
+  assert.deepEqual(APP_SETTINGS, ['AO_DEV_APP', 'AO_DEV_APP_ID', 'AO_REVIEW_APP', 'AO_REVIEW_APP_ID', 'AO_MERGE_APP', 'AO_MERGE_APP_ID']);
   assert.deepEqual(appSettings({}, {}), {});
 });
 

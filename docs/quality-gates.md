@@ -257,12 +257,14 @@ Lý do `max` vẫn giữ ở lượt review đầu tiên: bài thử mù ngày 2
 
 ## Environment `merge-gate`
 
-`merge-gate` merge bằng một private key thứ hai của App `ao-dev`, lưu ở secret `AO_DEV_APP_KEY` của environment `merge-gate`. Environment này chỉ cho nhánh mặc định (`develop`), nên workflow chạy trên nhánh khác không đọc được key (đã kiểm ở T3 và T19). Cài một lần cho mỗi repo:
+`merge-gate` merge bằng App `ao-merge`, App duy nhất mà ruleset cho merge khi chưa có approve của bạn (Pilot 3, spec 2.9). Key của App này chỉ nằm ở secret `AO_MERGE_APP_KEY` của environment `merge-gate`, không nằm trên máy nào agent chạy. Environment này chỉ cho nhánh mặc định (`develop`), nên workflow chạy trên nhánh khác không đọc được key (đã kiểm ở T3 và T19). `ao-kit setup github` làm cả bốn bước dưới đây. Làm tay thì cài một lần cho mỗi repo:
 
-1. Tạo key thứ hai cho `ao-dev`, theo mục 2 của [github-apps-setup.md](github-apps-setup.md). Key đầu tiên, dùng cho `ao-pr.mjs` ở máy bạn, giữ nguyên.
+1. Tạo App `ao-merge` và cài nó vào repo, theo mục 7 của [github-apps-setup.md](github-apps-setup.md).
 2. Trên trang repo: **Settings** → **Environments** → **New environment**. Đặt tên `merge-gate`, rồi bấm **Configure environment** **(đối chiếu giao diện)**.
 3. Ở **Deployment branches and tags**, chọn **Selected branches and tags**, bấm **Add deployment branch or tag rule**, gõ tên nhánh mặc định (`develop`), rồi bấm **Add rule** **(đối chiếu giao diện)**. Về sau nếu đổi nhánh mặc định, hãy đổi rule này theo; nếu không, `merge-gate` sẽ không đọc được key.
-4. Đặt secret bằng cách pipe file key, để key không nằm trong lịch sử lệnh: `gh secret set AO_DEV_APP_KEY --env merge-gate -R <owner>/<repo> < path/to/key.pem`. Xong thì xóa file key thứ hai khỏi máy.
+4. Đặt secret bằng cách pipe file key, để key không nằm trong lịch sử lệnh: `gh secret set AO_MERGE_APP_KEY --env merge-gate -R <owner>/<repo> < path/to/key.pem`. Xong thì xóa file key khỏi máy.
+
+**Vì sao không dùng `ao-dev`:** mọi agent có quyền ghi git đều cầm token của `ao-dev`, và `gh-guard` chỉ chặn được nhầm lẫn. Trước Pilot 3, `merge-gate` merge bằng một key thứ hai của `ao-dev` (secret `AO_DEV_APP_KEY`). Từ khi ruleset cho App merge đi tắt, App đó không được là App của agent (review của `shop` PR #13). Dự án chưa có `ao-merge` thì `merge-gate` vẫn merge bằng `ao-dev` và in một dòng cảnh báo.
 
 Job của `merge-gate` khai `environment: { name: merge-gate, deployment: false }`. Bỏ `deployment: false` thì mỗi lần chạy tạo một deployment, và sự kiện của nó kích hoạt `jira-sync`, rồi lại `merge-gate`, thành vòng lặp.
 
@@ -277,7 +279,8 @@ Job của `merge-gate` khai `environment: { name: merge-gate, deployment: false 
 - đổi cấu hình repo, như `gh secret set`, `gh repo edit`, `gh repo autolink create`; hoặc xóa lần chạy workflow bằng `gh run delete`; chạy tay, bật hay tắt workflow bằng `gh workflow run`, `enable`, `disable`;
 - sửa file được bảo vệ bằng `Edit`, `Write`, `NotebookEdit`. Riêng `devops` được sửa `.github/workflows/**`, nhưng PR đó vẫn do bạn merge;
 - từ `dev-workflow`: tự mở agent hay tự lấy token, tức chạy `ao-step.mjs`, `ao-agent.mjs`, `ao-git-credential.mjs`; đặt credential helper cho git (`git -c credential.*`, `git config credential.*`); sửa file trong `.git/`;
-- từ A1 sau Pilot 2: đưa mật khẩu basic auth của Development và Staging (`$E2E_HTTP_PASSWORD`, `$AO_ENV_AUTH`) vào tham số của một lệnh, như `curl -u`, vì process nào trên máy cũng đọc được dòng lệnh. Chỉ `printf`, lệnh có sẵn của shell, được nhắc tới biến này. `qa` đưa mật khẩu cho `curl` qua stdin: `printf 'user = "%s:%s"\n' "$E2E_HTTP_USER" "$E2E_HTTP_PASSWORD" | curl -K - <url>`.
+- từ A1 sau Pilot 2: đưa mật khẩu basic auth của Development và Staging (`$E2E_HTTP_PASSWORD`, `$AO_ENV_AUTH`) vào tham số của một lệnh, như `curl -u`, vì process nào trên máy cũng đọc được dòng lệnh. Chỉ `printf`, lệnh có sẵn của shell, được nhắc tới biến này. `qa` đưa mật khẩu cho `curl` qua stdin: `printf 'user = "%s:%s"\n' "$E2E_HTTP_USER" "$E2E_HTTP_PASSWORD" | curl -K - <url>`;
+- từ Pilot 3 (review của `shop` PR #13): đọc hay nhắc tới bản sao backup và khóa mở chúng, tức file `.agekey`, file `.dump.age`, thư mục `ao-backups` và script `ao-backup-pull.mjs`. Lớp giữ thật là khóa `age` không nằm trên máy ([vps-setup.md](vps-setup.md), mục 16).
 
 Khi bị chặn, agent nhận lý do bắt đầu bằng `gh-guard:`, kèm cách làm đúng, ví dụ dùng `ao-pr.mjs`.
 
@@ -306,17 +309,17 @@ Các việc sau còn để ngỏ, vì cần bạn quyết:
 
 ## Ruleset
 
-`npm run gh:protect -- --repo <owner>/<name> --dev-app-id <id>` chạy từ repo kit, bằng `gh` của bạn; `ao-kit setup github` tự chạy lệnh này, với id của App `ao-dev` lấy từ `github.apps.dev_id` của `project.yaml`. Lệnh áp ba ruleset (Pilot 3, Phiên 30 · Lượt 9):
+`npm run gh:protect -- --repo <owner>/<name> --merge-app-id <id>` chạy từ repo kit, bằng `gh` của bạn; `ao-kit setup github` tự chạy lệnh này, với id của App `ao-merge` lấy từ `github.apps.merge_id` của `project.yaml`. Lệnh áp hai ruleset (Pilot 3, spec 2.9):
 
 | Ruleset | Nhánh | Luật | Ai được bỏ qua |
 |---|---|---|---|
 | `ao-protected` | `develop`, `main`, `release/*` | Chặn xóa nhánh và force push | Không ai |
-| `ao-protected-merge` | `develop`, `main` | Bắt buộc qua PR, một approve, bỏ approve cũ khi có push mới, bốn check của `CI` | App `ao-dev`, chỉ khi merge PR |
-| `ao-protected-release` | `release/*` | Như dòng trên | App `ao-dev`, luôn luôn |
+| `ao-protected-merge` | `develop`, `main`, `release/*` | Bắt buộc qua PR, một approve, bỏ approve cũ khi có push mới, bốn check của `CI` | App `ao-merge`, chỉ khi merge PR |
 
-- **Vì sao App `ao-dev` được bỏ qua:** `merge-gate` merge bằng App này cả những PR không có approve trên GitHub: PR tài liệu của Epic sau gate ② (bạn duyệt trên Jira), PR merge ngược `main` về `develop`. `/ao-ship` commit báo cáo regression và `CHANGELOG.md` thẳng lên nhánh release. Một ruleset không ai được bỏ qua chặn cả ba việc này (Pilot 3, T9).
-- **Bot vẫn bị giữ:** `merge-gate` chỉ merge PR đạt đủ cổng của nó, và `audit` của deployer chỉ cho commit của `ao-dev` trên nhánh release đổi `docs/releases/vX.Y.Z.md` và `CHANGELOG.md`. Không ai push thẳng lên `develop` hay `main` được, kể cả bot. Mọi người khác vẫn bị GitHub chặn như trước.
-- Lệnh tạo hai ruleset có PR trước, rồi mới bỏ các luật đó khỏi `ao-protected`, nên một repo đã có ruleset cũ không lúc nào bị bảo vệ lỏng hơn. Chạy lại thì cập nhật các ruleset đang có theo tên, không tạo bản trùng.
+- **Vì sao App `ao-merge` được bỏ qua:** `merge-gate` merge bằng App này cả những PR không có approve trên GitHub: PR tài liệu của Epic sau gate ② (bạn duyệt trên Jira), PR report của `/ao-ship` vào nhánh release, PR merge ngược `main` về `develop`. Một ruleset không ai được bỏ qua chặn cả ba việc này (Pilot 3, T9).
+- **Vì sao không phải `ao-dev`:** ở Phiên 30 · Lượt 9, quyền bỏ qua thuộc về `ao-dev`, nhưng mọi agent có quyền ghi git đều cầm token của App này. Review của `shop` PR #13 chỉ ra rằng một agent bị văn bản lạ dẫn dắt có thể lấy token đó, rồi merge một PR chưa ai duyệt. Key của `ao-merge` chỉ nằm trong environment `merge-gate`.
+- **Bot vẫn bị giữ:** `merge-gate` chỉ merge PR đạt đủ cổng của nó: PR report chỉ được đổi `docs/releases/vX.Y.Z.md` và `CHANGELOG.md`; PR merge ngược chỉ được merge khi đầu nhánh `main` là commit của một tag `vX.Y.Z`. `audit` của deployer kiểm lại đúng các điều đó, và không nhận commit nào không qua PR. Không ai push thẳng lên `develop`, `main` hay `release/*` được, kể cả bot.
+- Lệnh viết ruleset có PR trước, rồi mới bỏ các luật đó khỏi `ao-protected`, nên một repo đã có ruleset cũ không lúc nào bị bảo vệ lỏng hơn. Ruleset `ao-protected-release` của Pilot 3, T9 bị xóa sau cùng. Chạy lại thì cập nhật các ruleset đang có theo tên, không tạo bản trùng.
 
 Repo private ở gói Free không có ruleset (API trả 403). Khi đó lệnh in `soft mode: merge-gate and audit enforce the gates`, không đổi gì, và thoát với mã 0.
 

@@ -42,6 +42,17 @@ test('every dump of the 48 hours before the newest stays; an older day keeps its
   assert.ok(keep.has(at('2026-11-10T21:00:00Z')) && !keep.has(at('2026-11-10T19:30:00Z')), 'an older day past 48 hours keeps its newest only');
 });
 
+// Review of shop PR #13 (Pilot 3, spec 2.9): the bound is inclusive, which no test held, so < in place of <= passed.
+test('a dump exactly 48 hours before the newest still stays; one second more and the older run of its day goes', () => {
+  const at = (iso) => backupFile('shop', 'development', new Date(iso));
+  const newest = at('2026-11-14T19:30:00Z');
+  const exactly = at('2026-11-12T19:30:00Z');
+  const later = at('2026-11-12T21:00:00Z');
+  assert.ok(backupsToKeep([newest, exactly, later]).has(exactly), 'exactly 48 hours: within the bound');
+  const past = at('2026-11-12T19:29:59Z');
+  assert.ok(!backupsToKeep([newest, past, later]).has(past), '48 hours and one second: only the newest of that day');
+});
+
 test('the databases come from docker by their label, with the project and environment of each', () => {
   assert.deepEqual(LIST_DATABASES, ['ps', '--filter', 'label=ao.role=database', '--filter', 'status=running', '--format', '{{.Names}}\t{{.Label "ao.project"}}\t{{.Label "ao.env"}}']);
   assert.deepEqual(parseDatabases('ao-shop-production-db\tshop\tproduction\nao-shop-development-db\tshop\tdevelopment\n'), [

@@ -157,14 +157,14 @@ node <kit>/scripts/ao-kit.mjs setup jira ao-green
   2. Ở trang kiểu cũ **Board settings → Columns**: mục **Column constraint** chọn **Issue Count**, gõ **2** vào ô **Max** của **In Review**, rồi bấm **Tab** để rời ô. Trang này chỉ lưu khi con trỏ rời ô.
 - **Chạy lại lệnh** tới khi lệnh in `jira:check: Jira space AOG matches tracker/jira.yaml` và không còn dòng `By hand`.
 
-### Bước 4. Cài hai App vào repo
+### Bước 4. Cài các App vào repo
 
 - **Bạn bấm:**
   1. Trên GitHub, bấm ảnh đại diện → **Settings** → **Applications** → tab **Installed GitHub Apps**.
   2. Bấm **Configure** cạnh `tungph7-ao-dev`.
   3. Ở **Repository access** (đang chọn **Only select repositories**), bấm **Select repositories**, gõ `ao-green`, chọn repo đó.
   4. Bấm **Save**. GitHub có thể hỏi lại mật khẩu hoặc mã 2FA.
-  5. Làm lại bước 2–4 cho `tungph7-ao-review`.
+  5. Làm lại bước 2–4 cho `tungph7-ao-review` và `tungph7-ao-merge`. Chưa có `tungph7-ao-merge` thì tạo theo mục 8 của [github-apps-setup.md](github-apps-setup.md), rồi ghi slug và id của nó vào `github.apps.merge`, `github.apps.merge_id` của `project.yaml`.
 - **Ý nghĩa:** mọi lệnh `/ao-*`, kể cả `/ao-status` và `/ao-intake`, lấy token đọc của `ao-review` trên repo trước khi đọc Jira. Thiếu App thì lệnh dừng với `App <id> is not installed on TungPH7/ao-green`.
 
 ### Bước 5. Commit đầu và push
@@ -190,19 +190,21 @@ git push origin develop:main
 
 ### Bước 6. Dựng phần GitHub
 
-`merge-gate` merge bằng một key thứ hai của `ao-dev`, mỗi repo một key. Bạn tạo key trước:
-1. Trên GitHub: ảnh đại diện → **Settings** → **Developer settings** → **GitHub Apps** → bấm **Edit** cạnh `tungph7-ao-dev`.
+`merge-gate` merge bằng App `ao-merge`, mỗi repo một key. Key này chỉ nằm trong environment `merge-gate` trên GitHub, không nằm trên máy nào agent chạy (Pilot 3, spec 2.9). Bạn tạo key trước:
+1. Trên GitHub: ảnh đại diện → **Settings** → **Developer settings** → **GitHub Apps** → bấm **Edit** cạnh `tungph7-ao-merge`.
 2. Bấm **Credentials** → **Key pairs** → **New key**. Nếu không thấy **Credentials**, kéo xuống cuối trang **General** tới **Private keys**, bấm **Generate a private key**.
-3. Trình duyệt tải về một file `.pem`. Cắt file đó (không sao chép) vào thư mục `ao-keys` của bạn. Không mở file.
+3. Trình duyệt tải về một file `.pem`. Không mở file.
 
 ```
-node <kit>/scripts/ao-kit.mjs setup github ao-green --dev-app-key-file "C:/Users/<bạn>/ao-keys/<file key vừa tải>.pem"
+node <kit>/scripts/ao-kit.mjs setup github ao-green --merge-app-key-file "C:/Users/<bạn>/Downloads/<file key vừa tải>.pem"
 ```
+
+Xong thì xóa file key. `doctor` báo đỏ khi thấy key của `ao-merge` trong `ao-keys`.
 
 - **Ý nghĩa:**
   - Đặt `develop` làm nhánh mặc định, bật tự xóa nhánh sau merge và bật Dependabot.
   - Tạo bốn environment, trong đó `merge-gate` chỉ dành cho `develop`.
-  - Đưa `JIRA_CI_TOKEN` và key thứ hai của `ao-dev` lên làm secret, qua stdin, không qua dòng lệnh.
+  - Đưa `JIRA_CI_TOKEN` và key của `ao-merge` lên làm secret, qua stdin, không qua dòng lệnh.
   - Chạy `gh:protect`. Repo private trên gói Free không có ruleset, nên lệnh báo `soft mode: merge-gate and audit enforce the gates`.
 - **Kết quả mong đợi:** các dòng `Set …`, rồi `Delete <file> now`. Chạy lại lệnh thì nó không đổi gì, chỉ in `Already set: …`.
 - **Bạn làm:**
@@ -503,7 +505,7 @@ node <kit>/scripts/ao-kit.mjs check e-commerce/shop
    ```
 
    Lệnh tạo space, board và bộ lọc. Cột của board bạn bấm tay, rồi chạy lại lệnh tới khi nó in `jira:check: Jira space SHOP matches tracker/jira.yaml`. Ở `shop`, lần chạy đầu dừng vì `ENOTFOUND`, lỗi DNS chập chờn trên máy. Chạy lại là qua.
-2. Cài hai App `ao-dev` và `ao-review` vào repo, như bước 4 của phần 3.
+2. Cài ba App `ao-dev`, `ao-review` và `ao-merge` vào repo, như bước 4 của phần 3. Ở `shop`, `ao-merge` có từ Pilot 3 (Phiên 31).
 3. Commit đầu và push:
 
    ```
@@ -526,12 +528,12 @@ node <kit>/scripts/ao-kit.mjs check e-commerce/shop
 
 ### Bước 6. Phần GitHub, CI lần đầu, Claude Code
 
-1. Tạo key thứ hai của `ao-dev`, chạy `setup github --dev-app-key-file …`, xóa file key, rồi nối GitHub for Atlassian với repo, như bước 6 của phần 3.
+1. Tạo key của `ao-merge`, chạy `setup github --merge-app-key-file …`, xóa file key, rồi nối GitHub for Atlassian với repo, như bước 6 của phần 3.
 2. Bật Actions và chạy CI lần đầu, như bước 7 của phần 3. Ở `shop`, GitHub chưa nhận workflow nào sau lần push đầu, dù API báo Actions đang bật. Phải bấm bật trên tab **Actions**, rồi chạy `gh workflow run CI --repo TungPH7/shop --ref develop`.
 3. Mở `claude` trong `e-commerce/shop`, tin cậy thư mục, chọn **Enable selected** cho hai server MCP, như bước 8 của phần 3.
 
 - **`setup github` trên repo public** in 12 dòng `Set …`, và làm thêm ba việc so với repo private:
-  - tạo ba ruleset `ao-protected`, `ao-protected-merge`, `ao-protected-release` ([docs/quality-gates.md](quality-gates.md#ruleset)). Gói Free có ruleset cho repo public, nên lệnh không báo `soft mode`;
+  - tạo hai ruleset `ao-protected` và `ao-protected-merge` ([docs/quality-gates.md](quality-gates.md#ruleset)). Gói Free có ruleset cho repo public, nên lệnh không báo `soft mode`;
   - đặt giới hạn tương tác sáu tháng: chỉ người cộng tác được mở issue, PR và comment. Ở `shop`, hạn là 2027-05-13. Chạy lại lệnh trước khi hết hạn để gia hạn; `doctor` báo khi còn dưới 30 ngày;
   - bắt workflow của PR từ fork chờ bạn duyệt rồi mới chạy.
 - **Dependabot** mở PR ngay khi lệnh bật cập nhật bảo mật. Ở `shop` có bốn PR: `vite`, `zod`, `dompurify`, `next`. Không cần merge từng PR: bước 7 nâng các gói này, rồi Dependabot tự đóng PR của nó.

@@ -158,6 +158,19 @@ test('a release PR and a merge back are named by the release: their commits pass
   assert.match(checkConventions({ branch: 'main', base: 'feature/DEMO-1-x', commits: [], title: 'Merge main into feature/DEMO-1-x after v0.2.0' })[0], /^branch main: /);
 });
 
+// Pilot 3, review of shop PR #13 (spec 2.9): /ao-ship opens the report of a release as a PR of release-notes/vX.Y.Z into
+// release/vX.Y.Z, titled by the release; its one commit is the bot's report commit.
+test('the PR of a release report is named by the release, from release-notes/vX.Y.Z into the release branch of the same version', () => {
+  const commits = [{ sha: '0e02f6e', parents: 1, subject: 'docs(release): add the regression report and the changelog of v0.2.0' }];
+  assert.deepEqual(checkConventions({ branch: 'release-notes/v0.2.0', base: 'release/v0.2.0', commits, title: 'release notes: v0.2.0' }), []);
+  assert.deepEqual(checkConventions({ branch: 'release-notes/v0.2.0', base: 'release/v0.2.0', commits, title: 'notes' }), [
+    'title "notes": the PR of release-notes/v0.2.0 into release/v0.2.0 is titled "release notes: v0.2.0"',
+  ]);
+  // Into the release branch of another version, or into develop, it is no report PR: its branch name fails.
+  assert.match(checkConventions({ branch: 'release-notes/v0.2.0', base: 'release/v0.3.0', commits, title: 'release notes: v0.2.0' })[0], /^branch release-notes\/v0\.2\.0: /);
+  assert.match(checkConventions({ branch: 'release-notes/v0.2.0', base: 'develop', commits, title: 'release notes: v0.2.0' })[0], /^branch release-notes\/v0\.2\.0: /);
+});
+
 const advisory = (id, severity, name = 'lodash') => ({ source: 1, name, title: `${severity} issue`, url: `https://github.com/advisories/${id}`, severity });
 const REPORT = {
   vulnerabilities: {

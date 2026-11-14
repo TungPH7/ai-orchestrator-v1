@@ -8,7 +8,9 @@ import { ROOT } from '../helpers/kit.mjs';
 
 // ao-kit doctor (project-scaffold spec 2.5): what a project still lacks, on this machine, in the repo, on GitHub, on
 // Jira and in Claude Code, each row with what to do. It reads only, and never prints a secret.
-const config = parse(readFileSync(join(ROOT, 'tests/fixtures/scaffold/sample/project.yaml'), 'utf8'));
+const sample = parse(readFileSync(join(ROOT, 'tests/fixtures/scaffold/sample/project.yaml'), 'utf8'));
+// With merge-gate's own App (Pilot 3, spec 2.9), as a project set up now has it.
+const config = { ...sample, github: { ...sample.github, apps: { ...sample.github.apps, merge: 'tungph7-ao-merge', merge_id: 5756976 } } };
 const SECRETS = { ATLASSIAN_AGENT_TOKEN: 'atl-secret-0001', JIRA_CI_TOKEN: 'ci-secret-0002', AO_ENV_AUTH: 'ao:pass-secret-0003', AO_DEV_APP_KEY_FILE: 'C:/keys/dev.pem', AO_REVIEW_APP_KEY_FILE: 'C:/keys/review.pem' };
 // A project where everything is in place; `change` breaks one part.
 function facts(change = {}) {
@@ -23,7 +25,7 @@ function facts(change = {}) {
     renderCheck: { status: 0, text: '12 files up to date in .claude/' },
     hooksPath: '.githooks',
     gitignoreMissing: [],
-    github: { defaultBranch: 'develop', environments: ['development', 'staging', 'production', 'merge-gate'], secrets: ['JIRA_CI_TOKEN'], envSecrets: ['AO_DEV_APP_KEY'], workflows: 3, ciRuns: 3 },
+    github: { defaultBranch: 'develop', environments: ['development', 'staging', 'production', 'merge-gate'], secrets: ['JIRA_CI_TOKEN'], envSecrets: ['AO_MERGE_APP_KEY'], workflows: 3, ciRuns: 3 },
     apps: { dev: { ok: true }, review: { ok: true } },
     jiraCheck: { status: 0, text: 'AOG matches tracker/jira.yaml' },
     claude: { trusted: true, mcp: ['atlassian', 'chrome-devtools'] },
@@ -138,6 +140,28 @@ test('a project with a Java app: the JDK its pom asks for, and Docker running fo
   assert.ok(!names(doctor(facts())).some((name) => /JDK|Docker/.test(name)));
 });
 
+// Pilot 3, review of shop PR #13 (spec 2.9): only ao-merge may merge without your approval, so its key lives only in
+// the merge-gate environment; and the age identity that opens the backup copies lives off the machine agents run on.
+test('a project with ao-merge needs its key in merge-gate; a project without it fails a row that says how to make the App', () => {
+  const secrets = doctor(facts()).find(({ name }) => name.includes('of merge-gate'));
+  assert.equal(secrets.name, 'secrets JIRA_CI_TOKEN, and AO_MERGE_APP_KEY of merge-gate');
+  assert.equal(secrets.ok, true);
+  const missing = doctor(facts({ github: { ...facts().github, envSecrets: ['AO_DEV_APP_KEY'] } })).find(({ name }) => name.includes('of merge-gate'));
+  assert.equal(missing.ok, false);
+  assert.match(missing.fix, /--merge-app-key-file <the key of ao-merge>/);
+  const old = doctor(facts({ config: sample }));
+  assert.deepEqual(failed(old), ['the ao-merge App, the only one the rulesets let merge without your approval']);
+  assert.match(old.find(({ name }) => name.startsWith('the ao-merge App')).fix, /github-app-create\.mjs .*--apps merge/);
+});
+
+test('no key of ao-merge and no age identity on this machine: each found file fails its row, by path', () => {
+  const rows = doctor(facts({ strayKeys: { merge: ['C:/Users/me/ao-keys/tungph7-ao-merge.pem'], age: ['C:/Users/me/.ao/ao-backup.agekey'] } }));
+  assert.deepEqual(failed(rows), ['no key of ao-merge on this machine', 'no age identity of the backups on this machine']);
+  assert.match(rows.find(({ name }) => name === 'no key of ao-merge on this machine').fix, /Delete C:\/Users\/me\/ao-keys\/tungph7-ao-merge\.pem/);
+  assert.match(rows.find(({ name }) => name.startsWith('no age identity')).fix, /password manager.*decrypt --identity -/);
+  assert.deepEqual(failed(doctor(facts({ strayKeys: { merge: [], age: [] } }))), []);
+});
+
 test('doctor asks whether ao-deploy is on the repo, since GitHub does not let it read the installs of an App', () => {
   const row = doctor(facts()).find(({ name }) => /ao-deploy/.test(name));
   assert.equal(row.group, 'GitHub');
@@ -159,4 +183,8 @@ test('a machine that pulls the backup copies: a row for the copies of this proje
   const empty = doctor(facts({ backupCopies: [] })).find(({ name: text }) => text.includes('backup copies'));
   assert.equal(empty.ok, false);
   assert.match(empty.fix, /no copy/i);
+  // A record of the pull that cannot be read is a row to fix, not a stop (review of shop PR #13).
+  const broken = doctor(facts({ backupCopies: { broken: 'C:/Users/me/.ao/backup-pull.json is not JSON' } })).find(({ name: text }) => text.includes('backup copies'));
+  assert.equal(broken.ok, false);
+  assert.match(broken.fix, /backup-pull\.json is not JSON: run node <kit>\/scripts\/ao-backup-pull\.mjs install/);
 });

@@ -1,7 +1,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { join } from 'node:path';
-import { LIST_BATCH, copyAges, getBatch, localPath, parseListing, taskScript, toPull } from '../../lib/release/backup-pull.mjs';
+import { LIST_BATCH, copyAges, getBatch, isFuture, localPath, parseListing, pulledCopyAges, taskScript, toPrune, toPull } from '../../lib/release/backup-pull.mjs';
+import { backupsToKeep } from '../../lib/release/backup.mjs';
 
 // Your machine pulls the encrypted copies over SFTP as aobackup, read only, inside the copies folder (Pilot 3,
 // spec 2.4; plan, decision 3).
@@ -95,6 +96,81 @@ test('ao-backup-pull.mjs: usage on a wrong command line; keygen writes the ident
     const status = run('status', '--dest', dest);
     assert.equal(status.status, 0, status.stdout + status.stderr);
     assert.match(status.stdout, /shop\/production: newest copy shop-production-\d{8}T\d{6}Z\.dump\.age, 0 h old/);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+// Pilot 3, review of shop PR #13 (spec 2.9): the identity that opens the copies does not stay on the machine agents run
+// on. keygen says to move it into your password manager; decrypt reads it from stdin.
+test('ao-backup-pull.mjs: keygen says to move the identity off this machine, and decrypt reads it from stdin with --identity -', async () => {
+  const { spawnSync } = await import('node:child_process');
+  const { mkdtempSync, readFileSync, rmSync, writeFileSync } = await import('node:fs');
+  const { tmpdir } = await import('node:os');
+  const { ROOT } = await import('../helpers/kit.mjs');
+  const { encryptFile } = await import('../../lib/release/backup-copy.mjs');
+  const run = (args, input) => spawnSync(process.execPath, [join(ROOT, 'scripts/ao-backup-pull.mjs'), ...args], { encoding: 'utf8', input });
+  const dir = mkdtempSync(join(tmpdir(), 'ao-pull-'));
+  try {
+    const key = join(dir, 'ao-backup.agekey');
+    const made = run(['keygen', '--identity', key]);
+    assert.equal(made.status, 0, made.stderr);
+    assert.match(made.stdout, /move it into your password manager, then delete .*ao-backup\.agekey/);
+    const recipient = made.stdout.trim().split('\n').at(-1);
+    const dump = join(dir, 'shop-production-20261114T193006Z.dump');
+    writeFileSync(dump, 'PGDMP the dump');
+    await encryptFile(dump, `${dump}.age`, recipient);
+    const out = join(dir, 'restored.dump');
+    const done = run(['decrypt', `${dump}.age`, '--identity', '-', '--out', out], readFileSync(key, 'utf8'));
+    assert.equal(done.status, 0, done.stderr);
+    assert.equal(readFileSync(out, 'utf8'), 'PGDMP the dump');
+    assert.doesNotMatch(done.stdout + done.stderr, /AGE-SECRET-KEY/, 'the identity is never printed');
+    const empty = run(['decrypt', `${dump}.age`, '--identity', '-', '--out', join(dir, 'x.dump')], '');
+    assert.equal(empty.status, 1);
+    assert.match(empty.stderr, /no identity on stdin/);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test('a copy dated in the future is neither pulled nor the newest: a VPS taken over cannot keep the 36-hour row green', () => {
+  const now = new Date('2026-11-14T10:00:00Z');
+  const files = parseListing([
+    '/shop/production/shop-production-20261114T090000Z.dump.age',
+    '/shop/production/shop-production-20261114T100400Z.dump.age',
+    '/shop/production/shop-production-20991231T000000Z.dump.age',
+  ].join('\n'));
+  // Four minutes ahead is clock drift, not the future.
+  assert.deepEqual(files.filter((file) => isFuture(file, now)).map(({ name }) => name), ['shop-production-20991231T000000Z.dump.age']);
+  assert.deepEqual(copyAges(files, now), [{ project: 'shop', env: 'production', name: 'shop-production-20261114T100400Z.dump.age', hours: 0 }]);
+});
+
+test('this machine keeps the copies the VPS keeps, each project and environment on its own, and lets the others go', () => {
+  const stamp = (date) => date.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}Z$/, 'Z');
+  const lines = [];
+  for (let day = 0; day < 45; day++) lines.push(`/shop/production/shop-production-${stamp(new Date(Date.UTC(2026, 9, 1 + day, 19, 30)))}.dump.age`);
+  lines.push('/shop/production/shop-production-20261114T080000Z.dump.age', '/shop/staging/shop-staging-20261001T193000Z.dump.age');
+  const files = parseListing(lines.join('\n'));
+  const prune = toPrune(files).map(({ name }) => name);
+  const production = files.filter(({ env }) => env === 'production').map(({ name }) => name);
+  const keep = backupsToKeep(production.map((name) => name.slice(0, -'.age'.length)));
+  assert.deepEqual(prune, production.filter((name) => !keep.has(name.slice(0, -'.age'.length))));
+  assert.ok(prune.includes('shop-production-20261024T193000Z.dump.age'));
+  assert.ok(!prune.includes('shop-production-20261025T193000Z.dump.age'), 'the newest of its week stays');
+  assert.ok(!prune.includes('shop-production-20261112T193000Z.dump.age'), 'exactly 48 hours before the newest stays');
+  assert.ok(!prune.some((name) => name.startsWith('shop-staging-')), 'the one copy of staging stays');
+  assert.deepEqual(toPrune([]), []);
+});
+
+test('the record of the pull: none means no doctor row; one that cannot be read is said, not thrown (review of shop PR #13)', async () => {
+  const { mkdtempSync, rmSync, writeFileSync } = await import('node:fs');
+  const { tmpdir } = await import('node:os');
+  const dir = mkdtempSync(join(tmpdir(), 'ao-pull-'));
+  try {
+    assert.equal(pulledCopyAges(new Date(), join(dir, 'none.json')), null);
+    writeFileSync(join(dir, 'broken.json'), '{ "dest": ');
+    const broken = pulledCopyAges(new Date(), join(dir, 'broken.json'));
+    assert.match(broken.broken, /broken\.json is not JSON/);
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }

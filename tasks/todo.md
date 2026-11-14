@@ -71,20 +71,20 @@
   - mình sinh key kéo về, đưa khóa công khai lên VPS, chạy `ao-backup-pull.mjs install`;
   - một lần khôi phục thật: giải mã một bản, so mã băm với bản trên VPS, khôi phục vào Postgres trên Docker ở máy bạn, so số bảng và số dòng.
   - **Đạt khi:** tiêu chí 2 của spec đạt cho Development; Staging và Production được phủ sau T9.
-- [ ] **T9: [bạn] `v0.1.0`** (spec 2.5).
+- [x] **T9: [bạn] `v0.1.0`** (spec 2.5).
   - Fix Version `v0.1.0`, `v0.2.0` qua REST bằng token admin;
   - **gate ④:** `/ao-release v0.1.0 <sha>`; Staging deploy, database Staging, Flyway;
   - `/ao-ship v0.1.0`; **gate ⑤:** bạn approve PR release; Production deploy;
   - đo RAM khi đủ ba môi trường cùng hai dự án kia; backup và bản sao phủ ba database;
-  - **bạn** bấm Release `v0.1.0`, hoặc bảo mình làm qua REST.
+  - **bạn** bấm Release `v0.1.0`, hoặc bảo mình làm qua REST. Phiên 31 · Lượt 1: bạn bảo mình làm; đã Release qua REST.
 
 ### Checkpoint 3: sau T9
-- [ ] `v0.1.0` chạy trên Production và hỏi basic auth; RAM ba môi trường đo được; bản sao trên máy bạn khôi phục được.
+- [x] `v0.1.0` chạy trên Production và hỏi basic auth; RAM ba môi trường đo được; bản sao trên máy bạn khôi phục được (Lượt 10).
 
 ## Chặng 3: Epic tới gate ②
 
 - [ ] **T10: chép kit vào `shop`** trong PR riêng, nếu kit đã đổi những file được chép từ lần `SHOP-2`.
-- [ ] **T11: [bạn] ảnh và intake.**
+- [x] **T11: [bạn] ảnh và intake.** Epic `SHOP-7` (Phiên 31 · Lượt 4); chờ bạn bấm `Start spec`.
   - **Giao diện mẫu bạn chọn ở Lượt 5:** trang `https://demo.codeandchill.store/vitrea/#/growth` (hai ảnh dán trong chat: trang Growth Lab và hộp thoại "New experiment"). Trang danh sách, trang chi tiết của `user` và form của `admin` theo style, design token và cách bố trí của trang này.
   - Ảnh dán trong chat không được lưu thành file, nên mình đọc trang bằng trình duyệt headless (Playwright với Chromium; phiên này chưa có chrome-devtools MCP, cả hai cùng điều khiển Chromium qua CDP): lấy biến CSS, font, màu, bo góc, đổ bóng, hiệu ứng kính và khoảng cách của từng thành phần (thanh điều hướng, thẻ, bảng, nút, nhãn trạng thái, ô nhập, hộp thoại).
   - Chụp các màn hình vào `.ai/design-inbox/<EPIC>/` (mỗi ảnh tối đa 1 MB, cạnh dài tối đa 2.000 px), kèm file ghi token đo được và nguồn.
