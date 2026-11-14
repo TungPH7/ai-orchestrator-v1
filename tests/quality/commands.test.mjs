@@ -500,3 +500,35 @@ test('the basic auth password stays off command lines: only printf, a builtin of
     allowed(bash(command, 'qa'), command);
   }
 });
+
+// Review round 3 of shop PR #13: Grep and Glob read the files under their path, so they stay in the project and the
+// temp folder, as Edit and Write do; Grep looks for no private key; and the folder .ao counts after a space or a quote.
+test('Grep and Glob stay in the project and the temp folder, nothing looks for a private key, and .ao counts wherever a path starts', () => {
+  for (const [tool, input, pattern] of [
+    ['Grep', { pattern: 'BEGIN', path: 'C:\\Users\\me', output_mode: 'content' }, /outside the project/],
+    ['Grep', { pattern: 'token', path: '~' }, /outside the project/],
+    ['Grep', { pattern: 'token', path: '~/AppData' }, /outside the project/],
+    ['Grep', { pattern: 'x', path: '..\\other' }, /outside the project/],
+    ['Grep', { pattern: 'x', path: 'D:\\work\\shop-other' }, /outside the project/],
+    ['Glob', { pattern: 'C:/Users/me/**/*.json' }, /outside the project/],
+    ['Glob', { pattern: '*', path: 'C:\\Users\\me\\AppData' }, /outside the project/],
+    ['Grep', { pattern: 'BEGIN RSA PRIVATE KEY', path: PROJECT }, /private key/],
+    ['Grep', { pattern: 'age-secret-key-1', path: `${PROJECT}\\src` }, /private key/],
+  ]) {
+    denied(call('be-dev', tool, input), pattern, `${tool} ${JSON.stringify(input)}`);
+  }
+  allowed(call('be-dev', 'Grep', { pattern: 'TODO' }), 'Grep with no path, in the working folder');
+  allowed(call('be-dev', 'Grep', { pattern: 'x', path: 'apps/api' }), 'a relative path inside the project');
+  allowed(call('be-dev', 'Grep', { pattern: 'x', path: PROJECT }), 'the project folder itself');
+  allowed(call('be-dev', 'Grep', { pattern: 'x', path: 'D:/work/shop/' }), 'the project folder with forward slashes');
+  allowed(call('be-dev', 'Grep', { pattern: 'x', path: `${TEMP}\\ao-reviews\\shop-pr-13` }), 'the temp folder, where the review worktrees are');
+  allowed(call('be-dev', 'Glob', { pattern: '**/*.ts' }), 'a relative pattern');
+  // A drive with no slash is the working folder of that drive, wherever it is: outside, for Grep and for Write alike.
+  denied(call('be-dev', 'Grep', { pattern: 'x', path: 'C:' }), /outside the project/, 'Grep C:');
+  denied(call('be-dev', 'Write', { file_path: 'C:notes.txt', content: 'x' }), /outside the project/, 'Write C:notes.txt');
+  for (const command of ['cd ~ && cat .ao/backup-pull.json', "cat '.ao/backup-pull.json'", 'type ".ao\\backup-pull.json"', 'ls -la .ao']) {
+    denied(bash(command, 'be-dev'), /backup copies/, command);
+  }
+  for (const command of ['grep -r "PRIVATE KEY" ~', 'rg AGE-SECRET-KEY C:/Users/me']) denied(bash(command, 'be-dev'), /private key/, command);
+  allowed(bash('npm run build -- --config .aot.json', 'be-dev'), 'a name that only starts with .ao');
+});

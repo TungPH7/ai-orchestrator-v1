@@ -163,3 +163,44 @@ Sửa plan và todo: T4 thêm `playwright.config.ts` của profile; T5 đưa b�
   - **Lệch so với đề xuất:** `require_last_push_approval` vẫn tắt. GitHub tính bạn là người push cuối ở các PR phiên chính push bằng git của bạn (`SHOP-5`, `SHOP-6`), nên khi bật thì approval của bạn không được tính ở các PR đó. `dismiss_stale_reviews_on_push` cùng luật code owner đã đủ.
   - Tài liệu (`99f971e`): spec 2.9 mục 4, `quality-gates.md` (Ruleset), `release-workflow.md` (gate ④), `vps-setup.md` mục 16, `getting-started.md`.
   - Năm lệnh kiểm xanh, 1.444 test (trước là 1.439).
+- **T10e, áp bản sửa vòng 2** (Phiên 31 · Lượt 5):
+  - Kit PR #286 merge (`e95ffa5`), CI xanh.
+  - `npm run gh:protect -- --repo TungPH7/shop --merge-app-id 5756976` từ kit `e95ffa5`: tạo `ao-protected-main` (27262065), `ao-release-branches` (27262067), `ao-release-tags` (27262068); cập nhật `ao-protected-merge` (27256309, nay chỉ `develop` và `release/*`, đòi approval của code owner) và `ao-protected` (27192121). Đọc lại:
+    - `ao-protected-merge`: bypass duy nhất `Integration:5756976:pull_request`;
+    - `ao-protected-main`: không ai bypass;
+    - `ao-release-branches`: bypass `RepositoryRole 5` (admin);
+    - `ao-release-tags`: bypass `RepositoryRole 5` và `Integration:5756976`, cả hai `always`.
+  - VPS (`scratchpad/t10-vps.sh`, bằng root): kit lên `e95ffa5`, bản trước ở `/opt/ao/kit.prev`; `apps.merge` đã có từ T10b; mã băm Caddyfile trước và sau như nhau (`4f0f02a42c51`); timer chạy lại; RAM trống khoảng 1,9 GB.
+  - PR #13: commit thứ ba `cd37612` `chore(kit): copy the kit at e95ffa5a (SHOP-6)`, 17 file, +166/−73:
+    - kit `e95ffa5`;
+    - `.github/CODEOWNERS` mới, `* @TungPH7`;
+    - luật dự án thêm `.github/CODEOWNERS` vào các đường dẫn được bảo vệ;
+    - matcher của `gh-guard` trong `.claude/settings.json` thêm `Grep|Glob`.
+  - CI xanh đủ năm check. Mô tả PR có thêm mục cho commit thứ ba, kể cả điểm lệch `require_last_push_approval`.
+  - Dòng kiểm của `/ao-review 13`: GO; `reviewer` (`xhigh`) đọc cả PR, `security` (`max`) chỉ đọc phần đổi từ `6489d52` (`review-delta`, 239 dòng).
+- **T10f, review vòng 3 của PR #13** (head `cd37612`, 19:36–20:13): 8,52 USD, dưới mức 10–12 USD đã ước. Tổng review của T10 là 27,83 USD; chi phí agent của Pilot 3 tới giờ là 33,21 USD.
+  - `reviewer` (`xhigh`, 39 lượt, 9,7 phút, 2,93 USD): Approve; Medium 2, Low 4.
+    - Medium: `main` và `release/v0.1.0` chưa có `.github/CODEOWNERS`, mà GitHub đọc file ở nhánh đích, nên trên `main` luật code owner chưa có ai để đòi.
+    - Medium: mô tả `SHOP-6` còn ghi kit `18d79eb`. Phiên chính viết lại tên và mô tả theo `e95ffa5` và năm ruleset, kèm comment, bằng token CI (`scratchpad/task-kit-copy-p3-v3.json`, `task-update.mjs --summary`).
+    - Low: `gh-guard` còn hai lối (`cd ~ && cat .ao/...`; `Grep` thư mục home tìm `PRIVATE KEY`); `merge-gate` mua token sau lần đọc lại; hai câu chú thích cũ (`releaseCut`, `devops.md`); `age-encryption` (lặp lại).
+  - `security` (`max`, review-delta, 45 lượt, 25,5 phút, 5,59 USD): **High 2**, Low 3, Request changes.
+    - **High mới, login GitHub của bạn:** agent chạy dưới user Windows của bạn. Script agent tự viết gọi `gh auth token` (đúng cách `readGitHubToken` lấy token) hay `git credential fill`, và lấy credential của bạn mà không có lời hỏi. Sau vòng 2, chỉ approval của bạn được tính và chỉ admin tạo `release/*`, tag `v*`, nên ai cầm login đó thì GitHub coi là bạn. Đề xuất: chạy agent tách khỏi user Windows của bạn (user riêng, hoặc WSL2 có sandbox), như mục còn để ngỏ của `docs/quality-gates.md`; trong lúc chờ, ghi rủi ro vào spec, sửa comment của `ruleset.mjs` và đoạn về keyring.
+    - **High của vòng 2, còn mở:** chưa nhánh được bảo vệ nào có `CODEOWNERS`. Sau merge `develop` có; `main` chờ bản release kế tiếp; `release/v0.1.0` không bao giờ có. Lối còn mở: hai App merge commit X vào `main`, rồi lần merge ngược sau bản release kế tiếp mang X về `develop`. Đề xuất: đưa `CODEOWNERS` lên `main` và `release/v0.1.0` bằng PR bạn approve, hoặc để `merge-gate` từ chối merge ngược khi `main` có commit chưa qua bạn; `doctor` đọc file trên các nhánh qua API.
+    - **Đã sửa:** nhánh release giả (năm ruleset đang chạy khớp code, đọc bằng GET).
+    - **Low:** khe giữa lần đọc lại và lệnh PUT (đổi base kéo `develop` về bản cũ; đề xuất PR report chỉ có một commit, cha là `base.sha`); `gh-guard` chỉ xét chuỗi của `Grep`, `Glob`; `GET /pulls/{n}/files` trả tối đa 3.000 file (đề xuất so với `changed_files`).
+  - `/ao-review` dừng: `STOP: SHOP-6 is flagged Needs you by the rework limit`. `SHOP-6` về In Progress, gắn cờ.
+  - Merge khi còn High không được: `audit` của deployer đòi báo cáo không còn Critical hay High mở (`reportGaps`). Nó sẽ từ chối deploy Development của commit merge và gắn cờ `SHOP-6`; các commit sau trên `develop` cũng bị chặn cho tới khi có `/ao-rollback`. Kit chưa có cách ghi việc bạn chấp nhận rủi ro.
+  - **Lỗi của mình:** ở Lượt 4, mình đề xuất dồn quyền về login của bạn mà không nói login đó cũng nằm trong tầm của agent, theo cùng cách khóa App bị lấy.
+- **Lượt 7–15 (Phiên 31):** bạn hỏi lại cho rõ hai High; bạn chấp nhận High 1 (agent lấy được login GitHub của bạn), làm tài khoản Windows `ao-agent` sau Pilot 3, hạn 2026-12-31 (Lượt 15). Lượt 16: "bắt đầu", dặn sửa cho kỹ vì đã ba vòng review.
+- **T10g, kit sửa theo vòng 3** (spec 2.9 mục 5; nhánh `task/pilot3-10`, 0 USD agent), test viết đỏ trước:
+  - **Chấp nhận một High:** `findingId` (8 ký tự hex từ Where và Finding), `acceptedRisks` (dòng `Accept risk: <id> until <YYYY-MM-DD>: <lý do>` trong quyết định mới nhất của bạn trên commit đầu, là approve; hạn không trước ngày cần giữ, không quá 90 ngày sau ngày approve; có lý do), `stillBlocking` (High đã chấp nhận thôi chặn, Critical luôn chặn). `merge-gate` tính theo hôm nay; `audit` theo ngày merge; `/ao-review` in mã của finding còn chặn và cách chấp nhận. Một dòng sai thì lý do hiện trong dòng `Waiting`.
+  - **Merge ngược:** `auditBroughtBack` kiểm từng commit PR mang từ `main` về, trên dòng cha thứ nhất, bằng `decideAudit` như khi deploy, dừng ở commit đầu tiên hỏng; PR từ 250 commit trở lên thì hỏng luôn. `merge-gate` nhận hàm này từ script và chờ khi không có nó; `audit` kiểm lại đúng điều đó.
+  - **`doctor`:** đọc `.github/CODEOWNERS` trên `main` và các nhánh release còn có commit mà `main` chưa có, qua API.
+  - **Low:** `merge-gate` lấy token trước lần đọc lại, đọc lại sau khi merge và báo đỏ nếu PR rơi vào đích khác; PR report phải là một commit trên đầu nhánh release (`onReleaseHead`), `/ao-ship` dựng lại nhánh report khi nhánh release đã đi tiếp; `merge-gate` và `audit` không tin danh sách file bị cắt ở 3.000; `gh-guard`: `Grep`, `Glob` chỉ đọc trong dự án và thư mục temp, không tìm `PRIVATE KEY` hay `AGE-SECRET-KEY`, `.ao` nhận ra sau dấu cách hay dấu nháy, ổ đĩa không kèm `/` (`C:notes.txt`) tính là ngoài dự án; hai câu chú thích cũ.
+  - **Kiểm thật** (`scratchpad/rename-probe.mjs`, repo nháp `TungPH7/test`): đổi tên một nhánh thành `release/v0.0.3` bị luật `creation` chặn (422), như tạo thẳng. Ruleset và nhánh thử đã xóa; repo nháp không còn ruleset nào, chỉ còn `main`.
+  - **Tài liệu:** spec 2.9 mục 5; `quality-gates.md` (mục chấp nhận rủi ro, merge ngược, `gh-guard`, keyring, việc còn để ngỏ); `release-workflow.md`; comment của `ruleset.mjs` không còn nói GitHub giữ được agent.
+  - Năm lệnh kiểm xanh, 1.465 test (trước là 1.444).
+  - **Cách làm từ giờ** (bạn nhắc ở Lượt 16): trước mỗi vòng review trả phí, mình đọc lại từng dòng báo cáo vòng trước; lập danh sách các chỗ bản sửa trao quyền (ai approve, ai merge, ai tạo nhánh và tag, code nào chạy cùng secret) và ai với tới được chúng; nói gốc chung ngay khi có; sửa cả Low.
+- **Lượt 6 (Phiên 31), bạn: "Đã start spec"; hỏi kiểm khóa `age` làm sau được không:**
+  - `ao-step status SHOP-7`: Specifying, chưa có nhánh docs; `Next: /ao-spec SHOP-7`, chạy sau khi `SHOP-6` merge.
+  - Kiểm khóa đã cất: bạn làm sau. Đây không phải điều kiện của tiêu chí 2, vì lần khôi phục thật từ bản sao đã đạt ở T8. Việc kiểm chỉ để chắc bản trong trình quản lý mật khẩu, nay là bản duy nhất của khóa, là đúng. Nên làm trước T17; T19 nhắc lại.

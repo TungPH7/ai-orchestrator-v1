@@ -27,7 +27,7 @@ function facts(change = {}) {
     hooksPath: '.githooks',
     gitignoreMissing: [],
     codeowners: codeownersText(config.github.approvers),
-    github: { defaultBranch: 'develop', environments: ['development', 'staging', 'production', 'merge-gate'], secrets: ['JIRA_CI_TOKEN'], envSecrets: ['AO_MERGE_APP_KEY'], workflows: 3, ciRuns: 3 },
+    github: { defaultBranch: 'develop', environments: ['development', 'staging', 'production', 'merge-gate'], secrets: ['JIRA_CI_TOKEN'], envSecrets: ['AO_MERGE_APP_KEY'], workflows: 3, ciRuns: 3, codeownersOn: { main: codeownersText(config.github.approvers) } },
     apps: { dev: { ok: true }, review: { ok: true } },
     jiraCheck: { status: 0, text: 'AOG matches tracker/jira.yaml' },
     claude: { trusted: true, mcp: ['atlassian', 'chrome-devtools'] },
@@ -60,6 +60,9 @@ test('each part that is missing fails its own row, with what to do', () => {
     [{ codeowners: null }, '.github/CODEOWNERS'],
     [{ codeowners: '* @someone-else\n' }, '.github/CODEOWNERS'],
     [{ github: { ...facts().github, defaultBranch: 'main' } }, 'default branch develop'],
+    // Review round 3 of shop PR #13: GitHub reads CODEOWNERS from the base of a PR.
+    [{ github: { ...facts().github, codeownersOn: { main: null, 'release/v0.2.0': codeownersText(config.github.approvers) } } }, '.github/CODEOWNERS is on main and on the open release branches'],
+    [{ github: { ...facts().github, codeownersOn: { main: codeownersText(config.github.approvers), 'release/v0.2.0': '* @someone-else\n' } } }, '.github/CODEOWNERS is on main and on the open release branches'],
     [{ github: { ...facts().github, environments: ['development'] } }, 'environments'],
     [{ github: { ...facts().github, envSecrets: [] } }, 'secrets'],
     [{ apps: { dev: { ok: true }, review: { ok: false, reason: 'the App is not installed on TungPH7/ao-sample' } } }, 'ao-review installed'],

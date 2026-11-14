@@ -184,6 +184,33 @@ Sau khi sửa: chép lại kit vào PR #13, chạy `/ao-review 13` vòng 2 (kho�
 
 Sau vòng sửa này: chép lại kit vào PR #13 (kèm `.github/CODEOWNERS`), áp ruleset mới lên `shop`, rồi chạy `/ao-review 13` vòng 3 (khoảng 10–12 USD, bạn đã đồng ý).
 
+**5. Vòng 3 của review** (head `cd37612`, 8,52 USD): `reviewer` cho Approve, `security` còn hai High. Bạn chấp nhận High thứ nhất và cho sửa phần còn lại ở Phiên 31 · Lượt 15 ("Giờ chấp nhận High 1 này") và Lượt 16 ("bắt đầu").
+- **High, agent lấy được login GitHub của bạn: bạn chấp nhận, tới 2026-12-31.**
+  - Agent chạy dưới tài khoản Windows của bạn, nên một script nó tự viết gọi được `gh auth token` và lấy token của bạn. Sau vòng 2, chỉ approval của bạn được tính và chỉ admin tạo nhánh release và tag, nên ai cầm token đó thì GitHub coi là bạn.
+  - Đây là gốc chung của cả ba vòng. Nó có từ Pilot 1, và `docs/quality-gates.md` đã ghi là việc còn để ngỏ. Không luật nào trên GitHub sửa được.
+  - Cách sửa: agent chạy dưới tài khoản Windows riêng `ao-agent`, không có keyring, credential git, khóa SSH hay token Jira của bạn. Việc này làm ngay sau Pilot 3, trước 2026-12-31.
+  - Cho tới lúc đó: tài liệu kit nói đúng giới hạn này (comment của `ruleset.mjs`, đoạn keyring và `gh-guard` trong `quality-gates.md`).
+- **Kit có cách ghi một High bạn chấp nhận** (chuẩn ngành: người chịu rủi ro, lý do, ngày hết hạn):
+  - `/ao-review` in mã 8 ký tự của mỗi finding còn chặn, tính từ cột Where và Finding;
+  - bạn approve PR trên commit đầu, với một dòng `Accept risk: <mã> until <YYYY-MM-DD>: <lý do>` cho mỗi finding;
+  - `merge-gate`, `audit` và `/ao-review` không tính finding đó là đang chặn, khi dòng đó nằm trong quyết định mới nhất của bạn trên commit đầu, finding là High, chưa tới hạn (tính theo hôm nay, hay ngày merge với `audit`), và hạn không quá 90 ngày sau ngày approve;
+  - Critical không chấp nhận được; finding đã chấp nhận vẫn được đưa cho lần review sau kiểm lại;
+  - việc chấp nhận chỉ có tác dụng trên chính PR đó: một PR chép kit sau này không lấy PR #13 làm `Kit review:` được, nên dự án đó review riêng, hoặc bạn chấp nhận lại ở đó.
+- **High của vòng 2 còn mở trên `main`:** GitHub đọc `CODEOWNERS` ở nhánh đích của PR, mà `main` chưa có file này. Sửa:
+  - `merge-gate` chỉ merge ngược khi mọi commit PR mang từ `main` về, trên dòng cha thứ nhất, qua được `audit` như khi deploy (`auditBroughtBack`); `audit` kiểm lại đúng điều đó. PR mang 250 commit trở lên thì phải xem tay;
+  - `doctor` đọc `CODEOWNERS` trên `main` và các nhánh release còn mở qua API;
+  - bản `v0.1.1`, ngay sau `SHOP-6`, đưa `CODEOWNERS` lên `main`. `release/v0.1.0` đã ship xong: một commit lọt vào đó không đi đâu được, vì deploy cần `audit`, và PR vào `main` cần approval của bạn khi `main` đã có file.
+- **Các Low:**
+  - `merge-gate` lấy token trước khi đọc lại PR, và đọc lại sau khi merge; PR rơi vào một đích khác thì lượt chạy báo đỏ;
+  - PR report phải là đúng một commit trên đầu nhánh release; `/ao-ship` dựng lại nhánh report khi nhánh release đã đi tiếp;
+  - `merge-gate` và `audit` không tin danh sách file khi GitHub liệt kê ít hơn số file PR đổi (giới hạn 3.000);
+  - `gh-guard`: `Grep` và `Glob` chỉ đọc trong dự án và thư mục temp; không tìm dấu hiệu khóa bí mật; `.ao` được nhận ra cả sau dấu cách hay dấu nháy; một ổ đĩa không kèm dấu `/`, như `C:notes.txt`, tính là ngoài dự án, với `Edit` và `Write` cũng vậy;
+  - hai câu chú thích cũ (`releaseCut`, prompt của `devops`);
+  - gói `age-encryption` vẫn được cài trong dự án, như vòng 1 và 2 đã ghi.
+- Kiểm thật: trên repo nháp `TungPH7/test`, luật `creation` cũng chặn việc đổi tên một nhánh thành `release/*` (422). Ruleset và nhánh thử đã xóa.
+
+Sau vòng sửa này: chép lại kit vào PR #13, chạy `/ao-review 13` vòng 4 (khoảng 6–9 USD). Nếu chỉ còn High đã chấp nhận, phiên chính approve kèm dòng chấp nhận bằng login của bạn, merge, chạy QA; rồi làm bản `v0.1.1`.
+
 ## 3. Chi phí ước tính
 
 | Việc | USD [Ước tính] |

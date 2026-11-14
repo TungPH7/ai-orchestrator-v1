@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { checkConventions } from '../../lib/quality/policy.mjs';
 import { notesPaths, notesVersion } from '../../lib/quality/merge-gate.mjs';
-import { changelogWith, notesPullRequest, regressionResult, waitForMerge } from '../../lib/release/release-pr.mjs';
+import { changelogWith, notesPullRequest, onReleaseHead, regressionResult, waitForMerge } from '../../lib/release/release-pr.mjs';
 
 const SECTION = '## v0.1.0 — 2026-11-06\n\n### Added\n\n- Xóa một dòng khỏi giỏ hàng (DEMO-21)\n';
 
@@ -66,4 +66,15 @@ test('waiting for the merge of the report: merged, closed without a merge, or st
   const open = poll([{ state: 'open', merged: false }]);
   assert.equal(await waitForMerge(open.read, open.options), 'waiting');
   assert.deepEqual(open.waits, [20_000, 20_000, 20_000]);
+});
+
+// Review round 3 of shop PR #13: merge-gate merges the report only as one commit on the head of the release branch, so
+// /ao-ship makes the branch of the report again when the release branch moved on under it.
+test('the branch of the report is one commit on the head of the release branch, or it is made again', () => {
+  const HEAD = 'c'.repeat(40);
+  assert.equal(onReleaseHead({ parents: [{ sha: HEAD }] }, HEAD), true);
+  assert.equal(onReleaseHead({ parents: [{ sha: 'd'.repeat(40) }] }, HEAD), false, 'the release branch moved on');
+  assert.equal(onReleaseHead({ parents: [{ sha: HEAD }, { sha: 'd'.repeat(40) }] }, HEAD), false, 'a merge commit');
+  assert.equal(onReleaseHead({ parents: [] }, HEAD), false);
+  assert.equal(onReleaseHead(undefined, HEAD), false);
 });

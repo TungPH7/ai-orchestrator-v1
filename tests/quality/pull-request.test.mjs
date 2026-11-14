@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { PLACEHOLDERS, PR_SECTIONS, checkPullRequest, checkReviewHeader, openCounts, openFindings, readReviewReport, SEVERITIES } from '../../lib/quality/pull-request.mjs';
+import { ACCEPT_MAX_DAYS, PLACEHOLDERS, PR_SECTIONS, acceptedRisks, checkPullRequest, checkReviewHeader, findingId, openCounts, openFindings, readReviewReport, SEVERITIES, stillBlocking } from '../../lib/quality/pull-request.mjs';
 import { ROOT } from '../helpers/kit.mjs';
 
 const template = readFileSync(join(ROOT, 'templates', 'pull-request.md'), 'utf8');
@@ -157,4 +157,72 @@ test('the findings open after each report: a finding clears only by its own row'
 
   const open = openFindings([full('a', 'b'), part([], [row('a')]), part([], [])]);
   assert.deepEqual(open.map((list) => list.map(({ where }) => where)), [['a.ts:1', 'b.ts:1'], ['b.ts:1'], ['b.ts:1']], 'one left out keeps its name, for the next review to check');
+});
+
+// Pilot 3, spec 2.9 part 5: a High you accept, by its id, in your approval of the head.
+const HIGH = { severity: 'High', where: '`ruleset.mjs:22`', finding: 'agents reach your login' };
+const approval = (login, body, { state = 'APPROVED', sha = 'h1', at = '2026-11-14T10:00:00Z' } = {}) => ({ user: { login }, state, commit_id: sha, body, submitted_at: at });
+const accept = (reviews, on = '2026-11-14') => acceptedRisks(reviews, { approvers: ['you'], head: 'h1', on });
+
+test('a finding has a short id of its Where and Finding, the same through case, spaces and Markdown', () => {
+  const id = findingId(HIGH);
+  assert.match(id, /^[0-9a-f]{8}$/);
+  assert.equal(findingId({ ...HIGH, where: 'ruleset.mjs:22', finding: 'Agents  reach **your** login' }), id);
+  assert.notEqual(findingId({ ...HIGH, finding: 'agents reached your login' }), id, 'reworded, it is another finding');
+});
+
+test('you accept a High with a line of your approval of the head: its id, the last day, and why', () => {
+  const id = findingId(HIGH);
+  const result = accept([approval('you', `Read it.\n\nAccept risk: ${id} until 2026-12-31: agents run under your Windows user until ao-agent\n`)]);
+  assert.deepEqual(result.problems, []);
+  assert.deepEqual([...result.accepted], [[id, { until: '2026-12-31', reason: 'agents run under your Windows user until ao-agent', by: 'you' }]]);
+  assert.equal(accept([approval('you', `accept risk: ${id.toUpperCase()} until 2026-12-31: why`)]).accepted.has(id), true, 'in any letter case');
+  const two = accept([approval('you', `Accept risk: ${id} until 2026-12-31: why\nAccept risk: 0a1b2c3d until 2026-12-01: other`)]);
+  assert.deepEqual([...two.accepted.keys()], [id, '0a1b2c3d']);
+});
+
+test('only your latest decision on the head accepts: not an App, not a comment, not an older head, not one you took back', () => {
+  const line = `Accept risk: ${findingId(HIGH)} until 2026-12-31: why`;
+  for (const reviews of [
+    [approval('ao-review[bot]', line)],
+    [approval('you', line, { state: 'COMMENTED' })],
+    [approval('you', line, { sha: 'h0' })],
+    [approval('you', line), approval('you', 'Not yet.', { state: 'CHANGES_REQUESTED' })],
+    [approval('you', line), approval('you', 'Approve again, without it.')],
+  ]) {
+    assert.equal(accept(reviews).accepted.size, 0, JSON.stringify(reviews.map(({ user, state, commit_id: sha }) => [user.login, state, sha])));
+  }
+});
+
+test('an acceptance needs a valid id, a real day no earlier than the day it must hold and at most 90 days on, and a reason', () => {
+  const id = findingId(HIGH);
+  const one = (line, on) => accept([approval('you', line)], on);
+  const refused = [
+    [`Accept risk: ${id} until 2026-11-13: why`, /until 2026-11-13, before 2026-11-14/],
+    [`Accept risk: ${id} until 2027-02-13: why`, /more than 90 days after the approval of 2026-11-14/],
+    [`Accept risk: ${id} until 2026-02-30: why`, /2026-02-30 is not a day/],
+    [`Accept risk: ${id} until 31/12/2026: why`, /31\/12\/2026 is not a day/],
+    [`Accept risk: ${id} until 2026-12-31:`, /needs a reason/],
+    [`Accept risk: xyz until 2026-12-31: why`, /xyz is not the id of a finding/],
+  ];
+  for (const [line, problem] of refused) {
+    const result = one(line);
+    assert.equal(result.accepted.size, 0, line);
+    assert.match(result.problems.join('\n'), problem, line);
+  }
+  assert.match(one(`Accept risk ${id} until 2026-12-31 why`).problems[0], /write it as "Accept risk: <id> until <YYYY-MM-DD>: <why>"/);
+  assert.equal(ACCEPT_MAX_DAYS, 90);
+  assert.equal(one(`Accept risk: ${id} until 2027-02-12: why`).accepted.has(id), true, 'the 90th day still counts');
+  assert.equal(one(`- Accept risk: ${id} until 2026-12-31: why`).accepted.has(id), true, 'as an item of a list too');
+  assert.equal(one(`I will not accept risk here.`).problems.length, 0, 'a sentence that only mentions it is no acceptance');
+  assert.equal(one(`Accept risk: ${id} until 2026-12-31: why`, '2026-12-31').accepted.has(id), true, 'the last day still holds');
+  assert.equal(one(`Accept risk: ${id} until 2026-12-31: why`, '2027-01-01').accepted.size, 0, 'the day after, it no longer does');
+});
+
+test('a High you accept no longer blocks; a Critical always does, and an acceptance of another id changes nothing', () => {
+  const critical = { ...HIGH, severity: 'Critical', where: 'b.ts:1' };
+  const other = { ...HIGH, where: 'c.ts:1' };
+  const accepted = new Map([[findingId(HIGH), {}], [findingId(critical), {}]]);
+  assert.deepEqual(stillBlocking([HIGH, critical, other], accepted), [critical, other]);
+  assert.deepEqual(stillBlocking([HIGH], new Map()), [HIGH]);
 });

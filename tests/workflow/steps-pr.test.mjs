@@ -367,3 +367,12 @@ test('/ao-review and /ao-fix stop on a PR whose branch names an item outside the
     assert.match(decision.reason ?? JSON.stringify(decision), /SHOP-5 .*not in DEMO|not in DEMO/);
   }
 });
+
+// Pilot 3, spec 2.9 part 5: the ids of the findings that still block, and how to accept a High.
+test('/ao-review that stops on Critical or High findings gives their ids, and how you accept a High', () => {
+  const facts = prFacts('review', { reports: { reviewer: report(), security: report({ blocking: 2, ids: ['1a2b3c4d', '5e6f7a8b'], state: 'CHANGES_REQUESTED' }) } });
+  const decision = decide('review', facts);
+  assert.equal(decision.go, false);
+  assert.equal(decision.reason, 'the reports on the head of PR #15 ask for changes (Critical or High: security 2: 1a2b3c4d 5e6f7a8b). To accept a High instead of fixing it, approve PR #15 on its head with one line per finding: Accept risk: <id> until <YYYY-MM-DD>: <why> (docs/quality-gates.md)');
+  assert.equal(decision.next, '/ao-fix 15');
+});

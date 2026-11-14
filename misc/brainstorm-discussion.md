@@ -36,7 +36,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 28 | `0ac542d7-954f-44a8-bd4c-868cd5f9cdc3` | 2026-11-13 khoảng 23:35 → | Bạn dán đoạn cuối của Phiên 27 để làm tiếp; T25: phần 5 của hướng dẫn theo đầu ra thật của `shop`, bước cài App `ao-deploy` và deploy lần đầu bằng `/ao-rollback`, mục 13 của `vps-setup.md`; kit PR #267 merge; tiêu chí 3 mới đạt một phần; bạn "Ok", T26 đóng B2 (kit PR #268); template Java của B3 (Maven, nhánh `codebase`); bạn cho bắt đầu B3, quyền tự làm áp dụng tiếp; spec B3 duyệt (Lượt 7), kit PR #269–#271, chặng 3 tới T15 |
 | 29 | `3f959e28-f038-49ee-ae3f-592c7a55eecb` | 2026-11-14 khoảng 09:35 → | Bạn dán đoạn cuối của Phiên 28, bảo làm T16 và mở VPS cho chặng 5, để mở tới khi bạn bảo đóng; T16 (tài liệu chặng 3, kit PR #272) và T17 (ba việc B2 để lại, kit PR #273) xong; Claude đưa hai lệnh mở VPS trong dòng báo giữa chừng nên bạn không thấy, bạn nhắc hai lần, Claude đưa lại ở câu trả lời cuối; lượt 2: lệnh mở đăng nhập root chưa có tác dụng, bạn chạy lại; lượt 3: T18 bản nháp bước 9, T19 kit `3a1c729` lên VPS, T20: `SHOP-2` và `shop` PR #7, `SHOP-3` với `add api` và Spring Boot 4.0.9, kit PR #274 (coverage của interface Java); Claude xóa nhầm toàn bộ container, image và volume Docker Desktop của bạn khi dọn sau test; lượt 4: không có Previous Versions, bạn dặn hỏi trước mọi việc xóa không hoàn tác được, và cho Claude merge PR `shop` khi CI xanh; PR #7, #8 merge (T20 xong), kit PR #275, #276, `SHOP-4` và PR #9 xanh, biến database của Development trên VPS; chờ bạn quyết bật Docker Desktop cho `/ao-preview`; lượt 5: bạn chọn bật Docker; `/ao-preview SHOP-4` chạy `user`, `admin`, `api` và Postgres, ba app trả 200, `/api` qua `admin` tới `api`; `user` còn trỏ API NestJS cũ, việc của B4; chờ bạn xem rồi trả lời merge; lượt 6: PR #9 merge (T21 xong), `/ao-rollback development 05b1a63` gỡ chặn, deploy 18,5 phút, database, Flyway, `/api/v1/health` qua `admin` 200, RAM còn trống 2.508 MB, backup và `restore-check` đạt; chờ bạn đồng ý thử khôi phục vào database đang chạy và đóng `SHOP-2`–`SHOP-4`; lượt 7: khôi phục vào database đang chạy đạt sau khi lộ lỗi luật giữ bản (sửa: giữ 48 giờ, kit PR #277), `SHOP-2`–`SHOP-4` Cancelled, kit trên VPS `97db806`, B3 đóng; chờ bạn chọn module kế tiếp |
 | 30 | `07e0a424-ef4e-437a-b766-0ca9955be037` | 2026-11-14 khoảng 12:15 → | Bạn dán đoạn cuối của Phiên 29 và chọn B4 (Pilot 3); Claude viết bản nháp `SPEC-pilot-3.md`: `v0.1.0` của scaffold lên ba môi trường trước, rồi Epic đầu "Danh mục sản phẩm" lên `v0.2.0`; tìm ra Production đang luôn mở trong khi `/api/**` để `permitAll` (đề xuất `production_auth`), `/ao-release` cần một item Done (`SHOP-5`), ba app lệch hợp đồng API sản phẩm; chờ bạn trả lời 5 câu: Epic, scaffold trước, chỗ để bản sao backup (đề xuất Backblaze B2), basic auth cho Production, quyền tự làm cho B4; lượt 2: bạn duyệt câu 1, 2, 4, 5, hỏi câu 3 có cần chọn trước không và sẽ gửi ảnh; Claude hiểu sai "chưa làm" và bắt đầu viết plan, bạn nhắc, Claude dừng (spec và `tasks/plan.md` chưa commit); bạn hỏi Google Drive cho bản sao: được, với OAuth client riêng đã Publish, nhưng token trên VPS xóa hẳn được bản sao; lượt 3: bạn hỏi bản sao backup là gì và vì sao cần mới đạt; Claude giải thích: backup đang nằm chung máy với database, tiêu chí 2 do spec đặt chứ không phải giới hạn kỹ thuật, chỉ bắt buộc trước khi mở bán; lượt 4: bạn hỏi backup về máy bạn có đạt không, và cơ chế có giống B2 để sau này chuyển: đạt (máy bạn kéo về bằng tài khoản chỉ đọc trên VPS), khác hướng chép (kéo về và VPS đẩy lên), đề xuất mã hóa `age` từ đầu và khối cấu hình B2 tắt sẵn để chuyển dễ; lượt 5: bạn chọn backup về máy bạn và hỏi làm gì tiếp, rồi gửi giao diện mẫu cho Epic (trang vitrea, hai ảnh); Claude bắt đầu B4: kit PR #279–#283 (`production_auth`, dòng trạng thái của `/ao-preview`, Playwright chỉ dựng app tại chỗ cho test `@local`, bản sao backup kéo về máy bạn, đọc mật khẩu từ biến của Windows trước), `SHOP-5` PR #10 merge, review 3,52 USD và QA 0,92 USD (NOT TESTED vì một bước chỉ VPS kiểm được, đã trả lời), VPS kit `dbbf318` với bí mật Staging và Production, Production của `shop` hỏi basic auth, bản sao về `D:\ao-backups` khôi phục khớp; chờ bạn Accept `SHOP-5`, cất bản thứ hai của khóa `age`, và gate ④ của `v0.1.0`; lượt 6: bạn nhờ bấm Accept (`SHOP-5` Done), hỏi cất khóa sau được không (được, nên trước khi mở bán), bảo làm như đề xuất; Claude gửi danh sách gate ④ (`28394b8`, `SHOP-5`, scaffold của `SHOP-1`–`SHOP-4`), tạo Fix Version, chụp 5 màn hình và đo 94 token của trang mẫu; lượt 7: bạn duyệt gate ④; `release/v0.1.0` lên Staging (dùng lại image, Flyway 3 migration, RAM còn 2.290 MB), regression PASS, `/ao-ship` dừng vì ruleset `ao-protected` của repo public chặn bot `ao-dev` commit lên nhánh release (cũng sẽ chặn merge PR tài liệu của Epic và merge ngược); chờ bạn chọn cách sửa ruleset; lượt 8: bạn hỏi sao commit thẳng lên nhánh được, nhất là nhánh release (chưa làm gì); Claude giải thích PR là luật GitHub chỉ có khi bật, cách kit bù ở repo không ruleset, vì sao `/ao-ship` commit hai file tài liệu lên nhánh release, và một cách giữa: PR nhỏ do `merge-gate` tự merge; lượt 9: bạn chọn tách ruleset thành ba; kit PR #284, ba ruleset áp lên `shop`, `/ao-ship` chạy lại mở PR release #11 (CI xanh, Staging deploy lại); chờ bạn approve PR #11 ở gate ⑤; lượt 10: bạn approve; `merge-gate` merge, tag `v0.1.0`, tự merge ngược PR #12; Production lên, hỏi basic auth; RAM còn 1.867 MB khi đủ ba môi trường; backup và bản sao cả ba database; chờ bạn chọn ai bấm Release `v0.1.0` và cách chép kit ở T10 |
-| 31 | `d80cd357-3fde-4be6-a978-12fadc7d8553` | 2026-11-14 khoảng 15:58 → | Bạn dán đoạn cuối của Phiên 30, nhờ mình bấm Release `v0.1.0` và chọn review đầy đủ cho T10; Release qua REST bằng token admin; `SHOP-6` và PR #13 chép kit `ceee70c` vào `shop`, CI xanh, `/ao-review 13` chạy (`reviewer` `xhigh`, `security` `max`); T11 bắt đầu song song: câu hỏi PO đầu tiên về đơn vị giá; review xong (8,13 USD): `security` thấy 2 High do lỗi của Claude (ruleset cho App `ao-dev` của agent đi tắt, khóa `age` nằm trên laptop); Claude đề xuất gỡ bypass ngay, bạn cất khóa rồi xóa file, App `ao-merge` riêng cho merge, review vòng 2; chờ bạn quyết; lượt 2: bạn đồng ý cả năm việc, đã cất khóa, chốt giá VND và giao Claude chọn các trường, cách tìm, sắp xếp theo chuẩn ngành; Claude gỡ bypass trên `shop`, xóa file khóa, thêm loại App `ao-merge` vào kit và mở trang tạo App; chốt các trường và cách tìm theo Shopify, Google Merchant Center, Baymard; hỏi câu 2 về ảnh sản phẩm; lượt 3: bạn tạo App `ao-merge` và chọn ảnh giữ chỗ; khóa của App vào environment `merge-gate`, file khóa trên máy xóa; bản nháp Epic "Danh mục sản phẩm" chờ bạn OK; lượt 4: bạn OK; Epic `SHOP-7` tạo qua Rovo MCP; kit PR #285 sửa hai High (App `ao-merge`, PR report của `/ao-ship`, tag cho merge ngược, khóa `age` ngoài máy, `gh-guard`), ruleset mới trên `shop`, VPS lên `18d79eb`, PR #13 chép lại kit; `/ao-review 13` vòng 2 chạy; chờ bạn bấm `Start spec` và kiểm khóa `age` đã cất; review vòng 2 (11,18 USD, vượt ước): `security` thấy 2 High mới về ruleset (hai App của agent approve cho nhau, nhánh release giả lách PR report) và 2 Medium (tag không được bảo vệ, dọn bản sao theo tên do VPS đặt); Claude đề xuất Code Owners, chặn tạo nhánh release, ruleset cho tag, review vòng 3; chờ bạn quyết |
+| 31 | `d80cd357-3fde-4be6-a978-12fadc7d8553` | 2026-11-14 khoảng 15:58 → | Bạn dán đoạn cuối của Phiên 30, nhờ mình bấm Release `v0.1.0` và chọn review đầy đủ cho T10; Release qua REST bằng token admin; `SHOP-6` và PR #13 chép kit `ceee70c` vào `shop`, CI xanh, `/ao-review 13` chạy (`reviewer` `xhigh`, `security` `max`); T11 bắt đầu song song: câu hỏi PO đầu tiên về đơn vị giá; review xong (8,13 USD): `security` thấy 2 High do lỗi của Claude (ruleset cho App `ao-dev` của agent đi tắt, khóa `age` nằm trên laptop); Claude đề xuất gỡ bypass ngay, bạn cất khóa rồi xóa file, App `ao-merge` riêng cho merge, review vòng 2; chờ bạn quyết; lượt 2: bạn đồng ý cả năm việc, đã cất khóa, chốt giá VND và giao Claude chọn các trường, cách tìm, sắp xếp theo chuẩn ngành; Claude gỡ bypass trên `shop`, xóa file khóa, thêm loại App `ao-merge` vào kit và mở trang tạo App; chốt các trường và cách tìm theo Shopify, Google Merchant Center, Baymard; hỏi câu 2 về ảnh sản phẩm; lượt 3: bạn tạo App `ao-merge` và chọn ảnh giữ chỗ; khóa của App vào environment `merge-gate`, file khóa trên máy xóa; bản nháp Epic "Danh mục sản phẩm" chờ bạn OK; lượt 4: bạn OK; Epic `SHOP-7` tạo qua Rovo MCP; kit PR #285 sửa hai High (App `ao-merge`, PR report của `/ao-ship`, tag cho merge ngược, khóa `age` ngoài máy, `gh-guard`), ruleset mới trên `shop`, VPS lên `18d79eb`, PR #13 chép lại kit; `/ao-review 13` vòng 2 chạy; chờ bạn bấm `Start spec` và kiểm khóa `age` đã cất; review vòng 2 (11,18 USD, vượt ước): `security` thấy 2 High mới về ruleset (hai App của agent approve cho nhau, nhánh release giả lách PR report) và 2 Medium (tag không được bảo vệ, dọn bản sao theo tên do VPS đặt); Claude đề xuất Code Owners, chặn tạo nhánh release, ruleset cho tag, review vòng 3; chờ bạn quyết; lượt 5: bạn đồng ý; kit PR #286 merge (Code Owners, chặn tạo nhánh release và tag `v*`, `main` không ai đi tắt; `require_last_push_approval` để tắt, lệch đề xuất), năm ruleset trên `shop`, VPS lên `e95ffa5`, PR #13 thêm commit `cd37612` kèm `CODEOWNERS`; `/ao-review 13` vòng 3 chạy; lượt 6: bạn đã bấm `Start spec` (`SHOP-7` Specifying) và hỏi kiểm khóa `age` làm sau được không; Claude: được, không phải điều kiện của pilot, nên làm trước T17; review vòng 3 (8,52 USD): `reviewer` Approve, `security` 2 High (agent lấy được login GitHub của bạn vì chạy dưới user Windows của bạn; `main` chưa có `CODEOWNERS`), `SHOP-6` gắn cờ Needs you, `audit` chặn merge khi còn High; Claude nhận lỗi không nêu sớm gốc chung của ba vòng; đề xuất chấp nhận High 1 có thời hạn (kit thêm cách ghi chấp nhận rủi ro), sửa High 2 (merge ngược, `doctor`, `v0.1.1`), hoặc làm sandbox trước; chờ bạn chọn; lượt 7: bạn dặn chưa làm, hỏi lại cho rõ; Claude: High 2 sửa được ngay, High 1 cần sandbox (1–2 ngày), nên cách 1 tạm chấp nhận High 1, cách 2 dừng để làm sandbox trước; chờ bạn chọn; lượt 8: bạn phản đối 1–2 ngày và WSL (máy chỉ dùng Windows), hỏi kit có vấn đề không; Claude nhận nghĩ quá xa và nhận gốc là kit cho agent chạy dưới user của bạn; đề xuất mới: một user Windows riêng cho agent (khoảng nửa ngày, flow của bạn không đổi), sửa cả hai High ngay; chờ bạn nói bắt đầu; lượt 9: bạn hỏi việc agent chạy dưới user của bạn có từ trước, sao giờ mới thành High; Claude: có từ Pilot 1, các vòng trước bắt lối dễ hơn, sau vòng 2 login của bạn thành chìa khóa duy nhất; nhận lỗi không nhắc ở vòng 2; chờ bạn chọn tạm chấp nhận hay user riêng; lượt 10: bạn hỏi agent có thấy mật khẩu GitHub không, nhắc trả lời ngắn và dễ hiểu; Claude giải thích lại theo 5 bước: không thấy mật khẩu, nhưng mở được chìa khóa (token) mà `gh` cất trong tài khoản Windows của bạn; lượt 11: bạn hỏi tài khoản Windows thứ hai nằm ở đâu, có dùng được chương trình của account 1 không; Claude: nằm ngay trên máy, bạn vẫn đăng nhập account 1, agent chạy ngầm dưới `ao-agent`, dùng được chương trình cài chung nhưng không mở được đồ riêng của account 1; lượt 12: bạn hỏi `ao-agent` làm những gì; Claude: chưa tạo; khi có, các agent làm đúng việc cũ ở đó bằng chìa khóa riêng của agent, còn việc cần quyền của bạn vẫn ở account 1; lượt 13: bạn hỏi có phải kit chưa có agent nào, chỉ phiên chính dùng token `gh` của bạn, và `ao-agent` là sub agent đầu tiên; Claude: kit có sẵn 10 agent chạy bằng App, phiên chính chỉ bật chúng; `ao-agent` là tài khoản Windows, như phòng riêng cho 10 agent; lượt 14: bạn hỏi đặt quy tắc cấm agent đọc chìa khóa `gh` có đủ không; Claude: không, kit đã có quy tắc và `gh-guard` nhưng agent bị lừa thì lách được bằng file chương trình tự viết; tài khoản riêng thì Windows khóa hẳn, đúng cách `security` đề xuất; lượt 15: bạn chấp nhận High 1, hỏi làm `ao-agent` sau thì đi tiếp được không; Claude: được, kit thêm chỗ ghi chấp nhận rủi ro (dòng trong lần approve từ login của bạn, hạn 2026-12-31), High 2 vẫn sửa (chặn merge ngược, `v0.1.1`), review vòng 4, khoảng 4–5 giờ; chờ bạn nói bắt đầu |
 
 ---
 
@@ -23636,3 +23636,315 @@ Cách khác là dừng review ở đây và bạn tự quyết merge PR #13 khi 
 Hai việc ở lượt trước vẫn chờ bạn, lúc nào tiện cũng được: bấm `Start spec` cho `SHOP-7`, và kiểm khóa `age` đã cất.
 
 Nguồn: [GitHub community #181487, review của GitHub App được tính vào số approve bắt buộc](https://github.com/orgs/community/discussions/181487).
+
+# Phiên 31 · Lượt 5 — 2026-11-14 khoảng 19:11 → 19:45
+
+**Bạn:**
+
+```markdown
+Có. Làm như đề xuất
+```
+
+**Claude:**
+
+**Các bản sửa của vòng 2 đã vào kit, đã áp lên `shop` và VPS. Review vòng 3 của PR #13 đang chạy.**
+
+**Kit PR #286 (`e95ffa5`) đã merge;** 1.444 test xanh, thêm 5 test, test viết đỏ trước.
+- **Chỉ approve của bạn được tính.** Ruleset đòi approve của code owner. File `.github/CODEOWNERS` ghi `* @TungPH7`; kit viết nó từ `github.approvers` của `project.yaml`, và agent không được sửa nó.
+- **Chỉ bạn cắt nhánh release và gắn tag phát hành.**
+  - Ruleset `ao-release-branches` chặn tạo nhánh `release/*`; ruleset `ao-release-tags` chặn tạo, sửa, xóa tag `v*`.
+  - Chỉ bạn (quyền admin) được đi tắt hai ruleset này; với tag thì có thêm `ao-merge`.
+  - `/ao-release` cắt nhánh bằng login `gh` của bạn.
+- **`main` có ruleset riêng, không ai được đi tắt.** `merge-gate` đọc lại PR ngay trước khi merge.
+- **Cùng sửa:**
+  - `/ao-ship` so nội dung PR report, và kiểm lại nhánh release sau khi merge;
+  - `gh-guard` kiểm cả `Grep`, `Glob`;
+  - máy bạn thôi tự xóa bản sao backup;
+  - `decrypt --out -` ghi ra stdout;
+  - `audit` chỉ nhận merge của `ao-merge` và của bạn.
+- **Một chỗ lệch so với đề xuất:** mình không bật "Require approval of the most recent push".
+  - PR của phiên chính, như PR #13 của `SHOP-6`, được push bằng git của bạn. Khi bật luật này, GitHub coi bạn là người push cuối, nên approve của bạn không được tính trên chính các PR đó.
+  - Approve cũ vẫn tự mất khi có commit mới, và chỉ bạn là code owner, nên agent vẫn không tự merge được.
+
+**Đã áp:**
+- **Ruleset của `shop`:** đủ năm ruleset, đọc lại đúng như thiết kế.
+- **VPS:** kit lên `e95ffa5`; Caddyfile không đổi; deployer chạy bình thường.
+- **PR #13:** thêm commit `cd37612` chép kit mới, kèm file `.github/CODEOWNERS`; CI xanh đủ năm check.
+
+**`/ao-review 13` vòng 3 đang chạy từ khoảng 19:36:**
+- `reviewer` ở `xhigh` đọc cả PR; `security` ở `max` chỉ đọc phần mới (239 dòng).
+- Ước khoảng 10–12 USD, như bạn đã đồng ý. Mình báo tiến độ 3 phút một lần.
+- Không còn Critical hay High thì mình approve và merge bằng login `gh` của bạn, chạy `/ao-qa SHOP-6` (khoảng 1 USD), rồi nhờ bạn Accept. Còn High thì mình báo bạn, kèm đề xuất.
+
+**Hai việc vẫn chờ bạn, lúc nào tiện:**
+1. Bấm `Start spec` cho Epic `SHOP-7`: mở https://phunghuutung12b4.atlassian.net/browse/SHOP-7 → bấm nút trạng thái **New** ở góc trên bên phải → chọn **Start spec**.
+2. Kiểm khóa `age` đã cất, theo 6 bước mình gửi ở lượt 4 (lúc 18:08).
+
+# Phiên 31 · Lượt 6 — 2026-11-14 khoảng 19:45 → 20:22
+
+**Bạn:**
+
+```markdown
+1. Đã start spec
+2. Kiểm này tôi làm sau được không? Có bắt buộc làm mới đạt không?
+```
+
+**Claude:**
+
+**1. Đã ghi nhận:** `SHOP-7` đã sang Specifying. Bước tiếp theo là `/ao-spec SHOP-7` (agent `ba` viết SPEC). Bước này chạy sau khi PR #13 của `SHOP-6` merge, như đã định.
+
+**2. Có, bạn làm sau được. Pilot không đòi việc này.**
+- Tiêu chí "một lần khôi phục thật từ bản sao ngoài VPS" đã đạt ở T8. Lúc đó mình giải mã một bản sao bằng file khóa trên máy, khôi phục vào Postgres, và số bảng, số dòng khớp với VPS.
+- Việc kiểm này chỉ để chắc bản khóa bạn cất là đúng. File khóa trên máy đã xóa, nên bản trong trình quản lý mật khẩu là bản duy nhất. Nếu nó thiếu hay sai một ký tự, mọi bản sao trên máy bạn sẽ không mở được.
+- Hiện chưa có nguy cơ mất dữ liệu: VPS vẫn giữ bản dump gốc, và database chưa có dữ liệu thật. Khóa chỉ cần đúng khi VPS hỏng.
+- **Nên làm trước T17,** bước bạn nhập vài sản phẩm thử lên Production. Nếu khóa sai, mình sinh cặp khóa mới, bạn cất lại, và VPS mã hóa các bản sau bằng khóa mới. Không mất gì, vì VPS còn bản gốc.
+- Nếu tới lúc đóng pilot (T19) bạn chưa làm, mình sẽ nhắc lại.
+
+Review vòng 3 vẫn chạy bình thường; mình tiếp tục báo tiến độ 3 phút một lần.
+
+**Claude (tiếp, cùng lượt, sau review vòng 3, khoảng 20:22; bạn chưa nhắn thêm):**
+
+**Review vòng 3 đã xong. `reviewer` cho Approve, nhưng `security` còn 2 High, nên `SHOP-6` bị gắn cờ Needs you. PR #13 chưa merge.** Vòng 3 tốn 8,52 USD, dưới mức ước. Chi phí agent của Pilot 3 tới giờ là 33,21 USD.
+
+**High 1 (mới): agent lấy được login GitHub của bạn.**
+- Agent chạy dưới user Windows của bạn. Một script do agent tự viết rồi chạy có thể gọi `gh auth token` để lấy token của bạn, mà không có lời hỏi nào. Agent lấy được theo cùng cách:
+  - credential git;
+  - khóa SSH vào VPS đang nạp trong ssh-agent;
+  - các token Jira trong biến môi trường của bạn.
+- Sau vòng 2, chỉ approve của bạn được tính, và chỉ bạn tạo được nhánh release và tag. Vì vậy ai cầm token của bạn thì GitHub coi là bạn.
+- Lỗ này có từ Pilot 1, không do PR #13 tạo ra; PR #13 chỉ đóng các lối dễ hơn. Không luật nào trên GitHub sửa được lỗ này.
+  - Cách sửa thật là cho agent chạy tách khỏi user của bạn: trong WSL2 có sandbox, hoặc dưới một user Windows riêng.
+  - Tài liệu kit đã ghi việc này là "còn để ngỏ, cần bạn quyết".
+- **Lỗi của mình:** ở lượt 4, khi đề xuất dồn quyền về login của bạn, mình không nói rằng login đó cũng nằm trong tầm của agent, theo đúng cách khóa App bị lấy. Nếu mình nói sớm, bạn đã chọn được hướng trước vòng 3.
+
+**High 2 (của vòng 2, còn mở một phần): `main` chưa có file `CODEOWNERS`.** `reviewer` cũng nêu điểm này ở mức Medium. Phần này sửa được ngay.
+
+Mô tả `SHOP-6` trên Jira mình đã sửa theo kit `e95ffa5`, đúng Medium thứ hai của `reviewer`.
+
+**Vì sao chưa merge được, kể cả khi bạn đồng ý:** khi báo cáo của PR còn High mở, `audit` của deployer từ chối deploy commit merge và gắn cờ `SHOP-6`. Các commit sau trên `develop` cũng bị chặn theo. Kit chưa có cách ghi "bạn chấp nhận rủi ro này".
+
+**Bạn chọn một trong hai:**
+1. **Chấp nhận có thời hạn, rồi đi tiếp (mình đề xuất):**
+   - Bạn chấp nhận High 1 cho tới khi kit chạy agent trong sandbox. Mình đề xuất làm sandbox thành phần mở rộng kit kế tiếp, ngay sau Pilot 3, hạn chót 2026-12-31.
+   - Kit thêm cách ghi chấp nhận rủi ro theo chuẩn ngành: lần approve của bạn nêu mã của finding, lý do và ngày hết hạn. `merge-gate` và `audit` chỉ nhận dòng đó từ login của bạn, và chỉ trước ngày hết hạn.
+   - High 2 được sửa thật:
+     - `merge-gate` thôi merge ngược khi `main` có commit chưa qua bạn; đây là một cách sửa `security` đã nêu;
+     - `doctor` kiểm file `CODEOWNERS` trên `main` qua API;
+     - một bản release nhỏ `v0.1.1` ngay sau `SHOP-6` đưa `CODEOWNERS` lên `main`. Đây cũng là lần chạy thử luồng release mới trước Epic; bạn duyệt gate ④ và ⑤ như ở `v0.1.0`.
+   - Các Low cũng được sửa. Tài liệu được sửa cho đúng: luật GitHub không giữ được agent khi agent cầm login của bạn.
+   - Chi phí: review vòng 4 cho phần mới khoảng 6–9 USD, QA khoảng 1 USD, release `v0.1.1` khoảng 1 USD. Mất khoảng nửa ngày trước `/ao-spec SHOP-7`.
+2. **Làm sandbox trước:** dừng Pilot 3 để làm phần chạy agent trong WSL2, tách khỏi file và login của bạn. Mất khoảng 1–2 ngày, cộng một vòng review, rồi mới merge và chạy Epic. Cách này an toàn nhất nhưng chậm nhất.
+
+**Dù chọn cách nào, bạn nên giảm rủi ro ngay:** lúc không cần mình làm trên VPS, bạn nói "đóng VPS". Khóa root của VPS đang nạp trong ssh-agent, và agent lấy được nó theo cùng cách.
+
+# Phiên 31 · Lượt 7 — 2026-11-14 khoảng 20:32 → 20:34
+
+**Bạn:**
+
+```markdown
+Chưa Làm gì cả nhé, trả lời ngắn gọn dễ hiểu cho tôi là bây giờ sẽ fix High 1, còn High 2 không fix được ngay à?
+```
+
+**Claude:**
+
+**Ngược lại: High 2 sửa được ngay, còn High 1 thì chưa sửa ngay được.**
+
+- **High 2** (`main` chưa có file `CODEOWNERS`): **sửa được ngay**, bằng một bản sửa kit và một bản release nhỏ `v0.1.1`.
+- **High 1** (agent lấy được login GitHub của bạn): **chưa sửa ngay được.** Muốn sửa hẳn thì agent phải chạy tách khỏi user Windows của bạn (sandbox), mất khoảng 1–2 ngày.
+
+Vì vậy hai cách mình đưa ra là:
+- **Cách 1 (mình đề xuất):** bây giờ sửa High 2; bạn tạm chấp nhận High 1 tới một hạn chót, để Pilot 3 đi tiếp; làm sandbox ngay sau Pilot 3.
+- **Cách 2:** dừng Pilot 3 khoảng 1–2 ngày để làm sandbox, sửa hẳn High 1 trước, rồi mới đi tiếp.
+
+Mình chưa làm gì, chờ bạn chọn cách 1 hay cách 2.
+
+# Phiên 31 · Lượt 8 — 2026-11-14 khoảng 20:36 → 20:44
+
+**Bạn:**
+
+```markdown
+High 1 Làm gì tận 1 - 2 ngày ???!!! Cách làm kit của bạn có vấn đề à??? Agent ở máy Windows của tôi và agent đó lấy được thông tin login Github của tôi, vậy giải quyết bằng cách là không cho lấy nữa thôi như vậy có ảnh hưởng tới flow hiện tại không?
+```
+
+**Bạn (nhắn thêm trong lúc Claude đang trả lời):**
+
+```markdown
+Môi trường là Windows, không dùng WSL gì ở đây cả? Bạn chạy Opus với max effort nên bị over thinking à??
+```
+
+**Claude:**
+
+**Đúng, mình đã nghĩ quá xa. Không cần WSL, và không mất 1–2 ngày.**
+
+**Kit có vấn đề không?** Có. Kit cho agent chạy thẳng dưới user Windows của bạn, nên agent đọc được mọi thứ bạn đang đăng nhập. Đây là gốc của cả ba vòng High. Lẽ ra mình phải nói điều này ngay từ vòng 1, thay vì vá từng lối.
+
+**"Không cho lấy nữa" làm thế nào?**
+- Trong cùng một user Windows thì không chặn được: chặn kiểu gì, một script do agent tự viết cũng lách được, như đã lách `gh-guard`.
+- Cách đơn giản trên Windows: tạo thêm một user Windows riêng cho agent, ví dụ `ao-agent`, giống thêm một tài khoản đăng nhập thứ hai trên máy.
+- Windows tự ngăn user đó đọc login GitHub, git, khóa SSH và token Jira của bạn.
+
+**Ảnh hưởng tới flow:**
+- **Bạn:** không đổi. Chỉ lần đầu bạn bấm cho phép tạo user, và đăng nhập Claude một lần cho user đó.
+- **Mình (phiên chính):** không đổi. Mình vẫn dùng login của bạn để approve, merge và cắt nhánh release.
+- **Agent:** vẫn đúng các bước cũ, vẫn dùng token của App như bây giờ, chỉ là chạy dưới user mới. Lần chạy đầu chậm hơn một chút.
+
+**Thời gian:** khoảng nửa ngày, phần lớn là cài đặt và chạy thử một agent; cộng review vòng 4, khoảng 6–9 USD.
+
+Vì vậy mình đổi đề xuất: **sửa cả hai High ngay**, không cần "tạm chấp nhận" nữa.
+
+Mình chưa làm gì; bạn nói "bắt đầu" thì mình làm.
+
+# Phiên 31 · Lượt 9 — 2026-11-14 khoảng 21:05 → 21:08
+
+**Bạn:**
+
+```markdown
+"Kit cho agent chạy thẳng dưới user Windows của bạn" tôi nghĩ vấn đề này đã có từ trước rồi chứ nhỉ? Như vậy thì Agent mới có quyền làm mà không hỏi approve của tôi. Tôi thấy cũng hợp lý mà. Sao giờ bạn mới bắt được high security này?
+```
+
+**Claude:**
+
+**Đúng, việc này có từ Pilot 1.** Cho agent tự làm mà không hỏi bạn là hợp lý, và điều đó giữ nguyên.
+
+**Vấn đề không nằm ở chỗ "không hỏi", mà ở chỗ agent dùng được login của bạn.** Agent chỉ cần token của App để làm việc, không cần login của bạn. Chạy dưới một user riêng thì agent vẫn tự làm, không hỏi bạn, nhưng không chạm được login của bạn.
+
+**Sao tới giờ mới thành High:**
+- Trước đây có những lối dễ hơn, nên review bắt những lối đó trước:
+  - vòng 1: App `ao-dev` của agent được đi tắt ruleset;
+  - vòng 2: hai App của agent approve cho nhau.
+- Mỗi vòng, mình đóng lối dễ nhất. Sau vòng 2, login của bạn thành chìa khóa duy nhất, nên lấy được nó là qua được hết. Vì vậy `security` xếp nó High.
+- Kit đã ghi điểm yếu này từ trước, ở mục "còn để ngỏ".
+- **Lỗi của mình:** ở vòng 2, khi đề xuất dồn quyền về login của bạn, mình không nhắc rằng agent với tới được login đó.
+
+**Bạn chọn một trong hai:**
+- Thấy rủi ro này chấp nhận được trong pilot: tạm chấp nhận có hạn chót (cách 1).
+- Muốn đóng hẳn: làm user riêng cho agent, khoảng nửa ngày. Mình đề xuất cách này, vì nó không lâu hơn cách 1 bao nhiêu, và các lần review sau sẽ không bắt lại lỗi này.
+
+Mình chưa làm gì.
+
+# Phiên 31 · Lượt 10 — 2026-11-14 khoảng 21:09 → 21:11
+
+**Bạn:**
+
+```markdown
+Lấy được login Github là sao nhỉ? Agent thấy được mật khẩu Github của tôi à? Tôi bảo bạn giải thích ngắn gọn, chậm, từng bước, dùng từ dễ hiểu mà bạn cứ nói dài và khó hiểu quá
+```
+
+**Claude:**
+
+Xin lỗi bạn, mình nói lại ngắn gọn.
+
+**Không, agent không thấy mật khẩu GitHub của bạn.**
+
+1. Khi bạn đăng nhập GitHub trong chương trình `gh` trên máy, `gh` cất một **chìa khóa** (token) trong Windows. Chìa khóa này không phải mật khẩu.
+2. Ai cầm chìa khóa này thì làm được mọi việc trên GitHub **dưới tên bạn**, như approve, merge, tạo nhánh, mà không cần mật khẩu.
+3. Mọi chương trình chạy trong tài khoản Windows của bạn đều mở được chìa khóa đó. Mình cũng dùng nó để approve và merge giúp bạn.
+4. Agent cũng chạy trong tài khoản Windows của bạn, nên agent cũng mở được chìa khóa, nếu nó cố tình làm vậy.
+5. Bình thường agent không làm vậy. Rủi ro chỉ xảy ra khi agent bị lừa, ví dụ đọc phải một trang có cài sẵn lệnh xấu.
+
+**Cách sửa:** cho agent chạy trong một tài khoản Windows khác. Tài khoản đó không mở được chìa khóa của bạn.
+
+# Phiên 31 · Lượt 11 — 2026-11-14 khoảng 21:14 → 21:16
+
+**Bạn:**
+
+```markdown
+Khi login vào máy tính thì chỉ có 1 tài khoản windows (account 1) thôi chứ, "cho agent chạy trong một tài khoản Windows khác" thì tài khoản này nằm ở đâu? Có truy cập được các chương trình của account 1 không?
+```
+
+**Claude:**
+
+**Tài khoản này nằm ngay trên máy bạn. Nó chạy được các chương trình cài chung, nhưng không mở được đồ riêng của account 1.**
+
+1. Windows cho một máy có nhiều tài khoản, như mỗi người trong nhà một tài khoản. Mình tạo thêm một tài khoản, ví dụ `ao-agent`, chỉ một lần.
+2. Bạn vẫn đăng nhập máy bằng account 1 như bình thường, không cần chuyển sang `ao-agent`. Màn hình đăng nhập sẽ có thêm tên `ao-agent`; bạn cứ bỏ qua.
+3. Khi cần chạy agent, mình (đang chạy trong account 1) bật agent dưới tên `ao-agent`. Agent chạy ngầm, không hiện cửa sổ nào.
+4. `ao-agent` chạy được các chương trình cài chung cho cả máy, như Node, Git, Java.
+5. Nhưng `ao-agent` không mở được đồ riêng của account 1: thư mục cá nhân, chìa khóa của `gh`, login git, khóa SSH, các token Jira. Windows tự chặn việc này.
+6. Mình chỉ mở cho `ao-agent` thư mục dự án mà agent cần làm việc.
+
+Mình chưa làm gì; bạn nói "bắt đầu" thì mình làm.
+
+# Phiên 31 · Lượt 12 — 2026-11-14 khoảng 21:19 → 21:21
+
+**Bạn:**
+
+```markdown
+Mà ao-agent đang làm những gì?
+```
+
+**Claude:**
+
+**Hiện `ao-agent` chưa có, vì mình chưa tạo. Khi có, nó chỉ là chỗ làm việc của các agent: việc của agent không đổi, chỉ đổi chỗ chạy.**
+
+Trong `ao-agent`, các agent làm đúng những việc như bây giờ:
+1. `ba` viết SPEC của Epic, như bước `/ao-spec SHOP-7` sắp tới.
+2. `ux` làm thiết kế màn hình; `sa` viết plan kỹ thuật.
+3. `fe-dev` và `be-dev` viết code và test, đẩy lên GitHub, mở PR.
+4. `reviewer` và `security` đọc PR, viết báo cáo review.
+5. `qa` chạy test trên môi trường thử; `devops` viết release notes.
+
+Để làm những việc đó, agent chỉ dùng chìa khóa riêng của agent: App `ao-dev`, `ao-review` cho GitHub, và token Jira của agent.
+
+Những việc cần quyền của bạn (approve, merge, cắt nhánh release) vẫn do bạn, hoặc mình thay bạn, làm trong account 1.
+
+# Phiên 31 · Lượt 13 — 2026-11-14 khoảng 21:23 → 21:25
+
+**Bạn:**
+
+```markdown
+Là hiện tại kit không có agent nào cả ngoại trừ Chỉ có bạn là agent chính, dùng gh token của tôi để làm ba, ux, fe-dev,... à? Nếu tạo ao-agent thì nó là sub agent đầu tiên của kit à?
+```
+
+**Claude:**
+
+**Không phải vậy. Kit đã có 10 agent từ trước, và `ao-agent` không phải agent mới.**
+
+1. Kit có sẵn 10 agent: `pm`, `ba`, `ux`, `sa`, `fe-dev`, `be-dev`, `reviewer`, `security`, `qa`, `devops`. Mỗi agent là một chương trình Claude riêng.
+2. Mình (phiên chính) không làm thay việc của chúng. Mình chỉ bật chúng lên bằng lệnh như `/ao-review`, rồi đọc kết quả. `reviewer` và `security` vừa chạy vòng 3 là hai agent như vậy.
+3. Agent làm việc với GitHub bằng chìa khóa của App `ao-dev`, `ao-review`, không dùng chìa khóa `gh` của bạn.
+4. Nhưng hiện các agent đang chạy trong account 1 của bạn, cùng chỗ với chìa khóa `gh` của bạn. Vì vậy, nếu bị lừa, chúng mở được chìa khóa đó.
+5. `ao-agent` không phải agent. Nó là một tài khoản Windows, giống một căn phòng riêng: mình chuyển 10 agent sang đó làm việc, xa chỗ cất chìa khóa của bạn.
+
+# Phiên 31 · Lượt 14 — 2026-11-14 khoảng 21:28 → 21:30
+
+**Bạn:**
+
+```markdown
+Vậy thì đưa ra quy tắc 10 agent này tuyệt đối không được đọc gh key là được chứ gì? Làm như vậy security vẫn không chấp nhận pass à?
+```
+
+**Claude:**
+
+**Đúng, chỉ có quy tắc thì `security` vẫn không cho qua.**
+
+1. Kit đã có quy tắc này rồi. Có cả một bộ chặn (`gh-guard`) từ chối khi agent gõ lệnh đọc chìa khóa. Ở vòng 3, chính agent `security` đã bị bộ chặn này từ chối một lệnh.
+2. Nhưng quy tắc chỉ có tác dụng khi agent chịu nghe. Lúc nguy hiểm lại là lúc agent bị lừa, và khi đó nó không còn nghe quy tắc nữa.
+3. Bộ chặn chỉ đọc từng lệnh agent gõ. Agent có thể viết một file chương trình nhỏ rồi chạy file đó; bộ chặn không đọc bên trong file. Vì vậy vẫn lách được.
+4. `security` chấm theo câu hỏi "có xảy ra được không", chứ không theo "agent ngoan có làm không". Chỉ có quy tắc thì vẫn xảy ra được, nên vẫn là High.
+5. Tài khoản riêng thì khác: chính Windows khóa chìa khóa lại, nên agent bị lừa cũng không mở được. Đây cũng là cách chính `security` đề xuất.
+
+Nói gọn: quy tắc giống tấm biển "cấm mở ngăn kéo"; tài khoản riêng là ngăn kéo có khóa mà agent không có chìa.
+
+# Phiên 31 · Lượt 15 — 2026-11-14 khoảng 21:44 → 21:47
+
+**Bạn:**
+
+```markdown
+Giờ chấp nhận High 1 này. làm 'ao-agent ở accoutn windows khác' sau thì có đi tiếp được không hay bắt buộc phải fix?
+```
+
+**Claude:**
+
+**Đi tiếp được, không bắt buộc sửa ngay. Nhưng kit cần thêm một chỗ để ghi việc bạn chấp nhận.**
+
+1. Hiện kit chặn merge khi PR còn High: deployer không deploy và gắn cờ `SHOP-6`. Kit chưa có chỗ ghi "bạn đã chấp nhận".
+2. Mình thêm chỗ ghi đó vào kit: lúc approve PR, ghi thêm dòng "chấp nhận High 1 tới ngày 2026-12-31". Kit chỉ tin dòng này khi nó đến từ login của bạn, và hết hạn thì thôi tin.
+3. High 2 vẫn sửa: kit chặn commit lạ trên `main` đi về `develop`; rồi một bản release nhỏ `v0.1.1` đưa `CODEOWNERS` lên `main`, bạn duyệt như `v0.1.0`.
+4. Review vòng 4 đọc phần sửa, khoảng 6–9 USD.
+5. Nếu chỉ còn High 1, mình approve PR #13 bằng login của bạn, kèm dòng chấp nhận, rồi merge, chạy QA và chạy tiếp Epic.
+6. Làm `ao-agent` sau Pilot 3, trước ngày 2026-12-31.
+
+**Thời gian:** khoảng 4–5 giờ trước khi chạy tiếp Epic. Làm `ao-agent` ngay thì lâu hơn khoảng 2 giờ.
+
+Bạn nói "bắt đầu" thì mình làm.
