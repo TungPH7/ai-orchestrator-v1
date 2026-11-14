@@ -113,3 +113,9 @@ Sửa plan và todo: T4 thêm `playwright.config.ts` của profile; T5 đưa b�
   - **App `ao-merge`:** `tungph7-ao-merge`, id 5756976, cài trên `shop` (installation 181873485). Khóa ghi vào scratchpad, đưa lên secret `AO_MERGE_APP_KEY` của environment `merge-gate` bằng `gh secret set --env`, rồi xóa (`shred -u`). Environment `merge-gate` chỉ cho nhánh `develop` (custom branch policy). Secret cũ `AO_DEV_APP_KEY` vẫn ở đó, cho tới khi `merge-gate` chuyển sang App mới.
   - **T11, câu 2:** chưa có ảnh thật; mọi sản phẩm dùng ảnh giữ chỗ chung theo design system (chữ cái đầu của tên trên nền màu).
   - **Bản nháp Epic** `shop/.ai/intake/20261114-1725-danh-muc-san-pham.md` (17.772 ký tự): phạm vi theo câu 1–2 và chuẩn ngành; ba điểm mở có đề xuất (giao diện sáng, thứ tự "Liên quan nhất", 5 sản phẩm thử trên Production trước gate ④); mục Reference Design với 5 ảnh và bảng token của `tokens.md`; Original Request trích lời bạn ở Phiên 30 · Lượt 2, 5 và Phiên 31 · Lượt 2, 3. Chờ bạn OK rồi mới tạo trên Jira.
+- **Lượt 4 (Phiên 31), bạn: "OK".** Bước 5 của `/ao-intake`:
+  - `createJiraIssue` của Rovo MCP nhận markdown, nhưng chỉ dựng bảng khi mô tả ở dạng HTML. Vì vậy 94 dòng bảng token của bản nháp được đổi thành danh sách, giữ nguyên giá trị.
+  - Epic **`SHOP-7` "Danh mục sản phẩm"** tạo một lần bằng token agent (`scratchpad/epic-create.mjs`): New, người tạo `orchestratoragent`. Đọc lại qua REST bằng token CI (`scratchpad/epic-read.mjs`): 32 heading đúng thứ tự của template, 2 khung trích dẫn, 34 danh sách, 15.119 ký tự chữ.
+  - `ao-step status SHOP-7`: `New; no docs branch`, `Next: Click Start spec on SHOP-7`.
+  - 5 ảnh chép từ `.ai/design-inbox/_reference/` vào `.ai/design-inbox/SHOP-7/`.
+  - Chờ bạn bấm `Start spec`. `/ao-spec SHOP-7` chạy sau khi `SHOP-6` merge.

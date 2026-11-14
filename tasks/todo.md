@@ -84,7 +84,7 @@
 ## Chặng 3: Epic tới gate ②
 
 - [ ] **T10: chép kit vào `shop`** trong PR riêng, nếu kit đã đổi những file được chép từ lần `SHOP-2`.
-- [ ] **T11: [bạn] ảnh và intake.**
+- [x] **T11: [bạn] ảnh và intake.** Epic `SHOP-7` (Phiên 31 · Lượt 4); chờ bạn bấm `Start spec`.
   - **Giao diện mẫu bạn chọn ở Lượt 5:** trang `https://demo.codeandchill.store/vitrea/#/growth` (hai ảnh dán trong chat: trang Growth Lab và hộp thoại "New experiment"). Trang danh sách, trang chi tiết của `user` và form của `admin` theo style, design token và cách bố trí của trang này.
   - Ảnh dán trong chat không được lưu thành file, nên mình đọc trang bằng trình duyệt headless (Playwright với Chromium; phiên này chưa có chrome-devtools MCP, cả hai cùng điều khiển Chromium qua CDP): lấy biến CSS, font, màu, bo góc, đổ bóng, hiệu ứng kính và khoảng cách của từng thành phần (thanh điều hướng, thẻ, bảng, nút, nhãn trạng thái, ô nhập, hộp thoại).
   - Chụp các màn hình vào `.ai/design-inbox/<EPIC>/` (mỗi ảnh tối đa 1 MB, cạnh dài tối đa 2.000 px), kèm file ghi token đo được và nguồn.
