@@ -9,18 +9,18 @@
 Pilot 3 chạy "trường hợp 2" của concern 1 trên repo thật `TungPH7/shop`, từ spec tới Production. Repo có ba app và Postgres: `user` (Next.js), `admin` (React + Vite), `api` (Spring Boot). Pilot đi hai chặng lớn, theo cách chạy đã duyệt ở Lượt 112:
 
 1. **Kiểm scaffold, không cần agent viết code.** Bản `v0.1.0` là ba app khung đang có trên `develop`. Bản này đi qua Development, Staging rồi Production. Mỗi môi trường có database riêng, backup mỗi đêm và bản sao ngoài VPS.
-2. **Epic đầu của `shop`, làm bằng agent.** Epic nhỏ, chạm cả ba app, không đụng tới đăng nhập hay thanh toán. Epic đi từ `/ao-intake` tới Production trong bản `v0.2.0`.
+2. **Epic đầu của `shop`, làm bằng agent.** Epic nhỏ, chạm cả ba app, không đụng tới đăng nhập hay thanh toán. Epic đi từ `/ao-intake` tới Production trong bản `v0.3.0` (mục 2.9 phần 7).
 
 **Những thứ chạy thật lần đầu:**
 - `be-dev` viết Java (Spring Boot 4, Maven, Testcontainers, JaCoCo). `fe-dev` viết cả React + Vite lẫn Next.js trong cùng một Epic.
 - Màn hình kiểu Ảnh (`screenshot:`), mục Design System của `design.md`, và Task "Design system của <app>" (mục 2.5 của `project-scaffold` phần 2).
 - `/ao-preview` cho một PR có code của cả ba app. `qa` chạy E2E trên hai host công khai, qua `E2E_USER_URL` và `E2E_ADMIN_URL`.
-- Bản release đầu của một dự án có database: Flyway chạy trên Staging và Production. Bản thứ hai (`v0.2.0`) nâng một database Production đã có dữ liệu.
+- Bản release đầu của một dự án có database: Flyway chạy trên Staging và Production. Bản của Epic (`v0.3.0`) nâng một database Production đã có dữ liệu.
 - Nếu xảy ra: chạy tiếp sau giới hạn 5 giờ, và sửa AC trên PR đang mở (mục 2.1, 2.2 của `live-run-fixes`).
 
 **Sau Pilot 3:**
-- `user` và `admin` chạy `v0.2.0` ở cả ba môi trường. Production vẫn hỏi basic auth cho tới khi bạn quyết mở bán (mục 2.2).
-- Mọi item của Epic Done; Fix Version `v0.1.0` và `v0.2.0` đã Release; Epic Complete.
+- `user` và `admin` chạy `v0.3.0` ở cả ba môi trường. Production vẫn hỏi basic auth cho tới khi bạn quyết mở bán (mục 2.2).
+- Mọi item của Epic Done; Fix Version `v0.1.0`, `v0.2.0` và `v0.3.0` đã Release; Epic Complete.
 - Có số đo RAM khi ba môi trường của `shop` chạy cùng `ao-pilot` và `ao-sample`, và quyết định giữ hay nâng VPS.
 - Hướng dẫn có một ví dụ trọn vòng với Spring Boot. Lỗi kit gặp trong lúc chạy được sửa, có test.
 
@@ -116,10 +116,10 @@ Phạm vi cuối do bạn chốt lúc `/ao-intake`, vì bạn là PO; `ba` và `
    2. `/ao-preview`: bạn xem ba app trên máy;
    3. `/ao-review`, rồi gate ③;
    4. `/ao-qa` trên Development, rồi bạn Accept.
-4. `/ao-release v0.2.0` (gate ④), `/ao-ship v0.2.0`, gate ⑤, lên Production.
+4. `/ao-release v0.3.0` (gate ④), `/ao-ship v0.3.0`, gate ⑤, lên Production.
    - Sau `v0.1.0`, mình thêm vài sản phẩm vào Production qua `admin`.
    - Nếu Epic có migration, đây là lần đầu luật expand/contract chạy trên một database Production có dữ liệu.
-5. Bạn Release `v0.2.0` và Complete Epic.
+5. Bạn Release `v0.3.0` và Complete Epic.
 
 Agent chạy lần lượt, kèm báo tiến độ 3 phút một lần. `be-dev` và `/ao-preview` cần Docker Desktop (Testcontainers, Postgres): mình bật trước các lượt đó và tắt ngay sau.
 
@@ -199,7 +199,7 @@ Sau vòng sửa này: chép lại kit vào PR #13 (kèm `.github/CODEOWNERS`), �
 - **High của vòng 2 còn mở trên `main`:** GitHub đọc `CODEOWNERS` ở nhánh đích của PR, mà `main` chưa có file này. Sửa:
   - `merge-gate` chỉ merge ngược khi mọi commit PR mang từ `main` về, trên dòng cha thứ nhất, qua được `audit` như khi deploy (`auditBroughtBack`); `audit` kiểm lại đúng điều đó. PR mang 250 commit trở lên thì phải xem tay;
   - `doctor` đọc `CODEOWNERS` trên `main` và các nhánh release còn mở qua API;
-  - bản `v0.1.1`, ngay sau `SHOP-6`, đưa `CODEOWNERS` lên `main`. `release/v0.1.0` đã ship xong: một commit lọt vào đó không đi đâu được, vì deploy cần `audit`, và PR vào `main` cần approval của bạn khi `main` đã có file.
+  - bản `v0.2.0` (lúc đầu viết là `v0.1.1`, xem phần 7), ngay sau `SHOP-6`, đưa `CODEOWNERS` lên `main`. `release/v0.1.0` đã ship xong: một commit lọt vào đó không đi đâu được, vì deploy cần `audit`, và PR vào `main` cần approval của bạn khi `main` đã có file.
 - **Các Low:**
   - `merge-gate` lấy token trước khi đọc lại PR, và đọc lại sau khi merge; PR rơi vào một đích khác thì lượt chạy báo đỏ;
   - PR report phải là đúng một commit trên đầu nhánh release; `/ao-ship` dựng lại nhánh report khi nhánh release đã đi tiếp;
@@ -209,7 +209,7 @@ Sau vòng sửa này: chép lại kit vào PR #13 (kèm `.github/CODEOWNERS`), �
   - gói `age-encryption` vẫn được cài trong dự án, như vòng 1 và 2 đã ghi.
 - Kiểm thật: trên repo nháp `TungPH7/test`, luật `creation` cũng chặn việc đổi tên một nhánh thành `release/*` (422). Ruleset và nhánh thử đã xóa.
 
-Sau vòng sửa này: chép lại kit vào PR #13, chạy `/ao-review 13` vòng 4 (khoảng 6–9 USD). Nếu chỉ còn High đã chấp nhận, phiên chính approve kèm dòng chấp nhận bằng login của bạn, merge, chạy QA; rồi làm bản `v0.1.1`.
+Sau vòng sửa này: chép lại kit vào PR #13, chạy `/ao-review 13` vòng 4 (khoảng 6–9 USD). Nếu chỉ còn High đã chấp nhận, phiên chính approve kèm dòng chấp nhận bằng login của bạn, merge, chạy QA; rồi làm bản `v0.2.0` (phần 7).
 
 **6. Vòng 4 của review** (head `3ef07c6`; `reviewer` 3,08 USD, `security` review đầy đủ): `reviewer` Approve, không Critical, không High; `security` còn đúng High đã chấp nhận (mã `72ec4e38`), hai Medium, không Low. Phiên chính approve kèm dòng `Accept risk:` và merge PR #13 (`fdc2ee0`). Các finding còn lại sửa trong kit, và vào `shop` với bản chép kit sau:
 - **`reviewer`, hai Medium:** mã của finding chỉ có trên báo cáo đầu tiên của vòng (phiên chính tính lại bằng `findingId` trên báo cáo cuối, và kiểm bằng mã kit mà VPS chạy trước khi approve); mô tả `SHOP-6` và câu `Kit review:` của PR (đã sửa, không đổi commit).
@@ -221,9 +221,15 @@ Sau vòng sửa này: chép lại kit vào PR #13, chạy `/ao-review 13` vòng 
   - comment của `decideShip`.
 - **`jira-sync` gắn lại cờ giới hạn rework ở mọi sự kiện** khi số lần đã chạm 3, dù bạn đã gỡ cờ của đúng số đó: giờ chỉ gắn lại khi có một lần quay lại mới. Lỗi này làm `/ao-review` vòng 4 dừng giữa `reviewer` và `security`.
 - **`security`, Medium:**
-  - `CODEOWNERS` chưa có trên `develop`, `main`, `release/v0.1.0`: `develop` có từ khi PR #13 merge, `main` có với bản `v0.1.1`, `release/v0.1.0` là nhánh cũ đã nằm trong `main`;
+  - `CODEOWNERS` chưa có trên `develop`, `main`, `release/v0.1.0`: `develop` có từ khi PR #13 merge, `main` có với bản `v0.2.0`, `release/v0.1.0` là nhánh cũ đã nằm trong `main`;
   - khóa `age` đi qua clipboard và script của kit khi khôi phục trên máy agent chạy dưới tài khoản của bạn: `vps-setup.md` mục 16 nay bảo khôi phục trên máy chưa từng chạy agent, hay sau khi có `ao-agent`, và sinh cặp khóa mới khi có `ao-agent`.
 - **`security`, ghi nhận ngoài PR:** `JIRA_CI_TOKEN` là secret của cả repo, nên workflow mà một agent thêm vào PR của nó đọc được. Việc này đi cùng `ao-agent`.
+
+**7. Bản `v0.2.0`: `CODEOWNERS` lên `main`, và chạy thử luồng release mới** (T10h; Phiên 32 · Lượt 1).
+- Lúc đầu viết là `v0.1.1`. Kit chỉ cắt bản `vX.Y.0` từ `develop`; `vX.Y.Z` với Z lớn hơn 0 là hotfix, đi từ nhánh `hotfix/…` cắt từ `main`, với một Bug (`release-workflow` spec 2.7, 2.8). Bước kiểm của `/ao-release` gọi bản kế tiếp là `v0.2.0`.
+- Vì vậy bản này là `v0.2.0`, và Epic `SHOP-7` lên Production trong `v0.3.0`. Epic chưa có Fix Version, nên Jira không phải đổi gì. Fix Version `v0.3.0` tạo qua REST bằng token admin (id 10008).
+- Không đi đường hotfix: đường đó không thử nhánh release cắt bằng login của bạn, PR report, tag của `ao-merge` và merge ngược có `audit`, là những thứ T10h cần thử trước Epic; nó còn cần một Bug, `/ao-review` và `/ao-qa`.
+- Trong bản: `SHOP-6` (Done), điểm cắt `fdc2ee0`. `main` nhận `.github/CODEOWNERS` cùng bản chép kit `05da881`. Gate ④ và ⑤ của bạn như mọi bản.
 
 ## 3. Chi phí ước tính
 
@@ -234,9 +240,9 @@ Sau vòng sửa này: chép lại kit vào PR #13, chạy `/ao-review 13` vòng 
 | Intake, spec, plan | 15–20 (`SMP-23`: 14,90) |
 | Task design system | 5–10 |
 | 2 Story: build, sửa sau khi xem trước, review, QA | 50–70 |
-| `/ao-ship v0.2.0` | 2–3 |
+| `/ao-ship v0.2.0` (T10h) và `/ao-ship v0.3.0` | 3–5 |
 | Dự phòng cho lỗi tìm ra khi chạy | 10 |
-| **Tổng** | **Khoảng 90–125** |
+| **Tổng** | **Khoảng 90–127** |
 
 Phần VPS, `/ao-release`, `/ao-rollback` và việc của phiên chính không gọi agent, nên 0 USD.
 
@@ -259,9 +265,9 @@ Phần VPS, `/ao-release`, `/ao-rollback` và việc của phiên chính không 
 
 ## 5. Tiêu chí hoàn thành
 
-1. `https://shop.ao.t2g.io.vn` và `https://shop-admin.ao.t2g.io.vn` chạy `v0.2.0` và hỏi basic auth; Staging và Development cũng vậy. Smoke test xanh ở cả ba môi trường.
+1. `https://shop.ao.t2g.io.vn` và `https://shop-admin.ao.t2g.io.vn` chạy `v0.3.0` và hỏi basic auth; Staging và Development cũng vậy. Smoke test xanh ở cả ba môi trường.
 2. Ba database có backup mỗi đêm và bản sao ngoài VPS. Một lần khôi phục thật từ bản sao ngoài VPS đạt.
-3. `SHOP-5` và các item của Epic Done; Fix Version `v0.1.0`, `v0.2.0` đã Release; Epic Complete.
+3. `SHOP-5` và các item của Epic Done; Fix Version `v0.1.0`, `v0.2.0`, `v0.3.0` đã Release; Epic Complete.
 4. Code Java do `be-dev` viết qua CI (Testcontainers, JaCoCo, `osv-scanner`); code React và Next.js do `fe-dev` viết.
 5. `design.md` có màn hình kiểu Ảnh và mục Design System; `docs/design-system/<app>.md` có trong `shop`, và các Story có giao diện dùng nó.
 6. `/ao-preview` chạy ba app và Postgres cho một PR của Epic; `qa` chạy E2E qua `E2E_USER_URL` và `E2E_ADMIN_URL`.
@@ -276,7 +282,7 @@ Phần VPS, `/ao-release`, `/ao-rollback` và việc của phiên chính không 
 | Deploy lâu (B3: 18,5 phút cho lần đầu có `api`) làm release chậm | Chấp nhận; ghi số đo |
 | E2E của template gọi API cũ làm regression của `v0.1.0` đỏ | `SHOP-5` cho các test đó chờ Epic (mục 2.1) |
 | `be-dev` chưa từng viết Java; Maven và Testcontainers chậm, dễ chạm giới hạn 5 giờ | Đây cũng là lần kiểm thật mục 2.1 của `live-run-fixes`; ghi thời gian từng lượt |
-| Hợp đồng API mới có thể cần migration, ví dụ nếu giá đổi sang tính theo xu | `sa` theo luật expand/contract; `v0.2.0` là lần kiểm thật đầu |
+| Hợp đồng API mới có thể cần migration, ví dụ nếu giá đổi sang tính theo xu | `sa` theo luật expand/contract; `v0.3.0` là lần kiểm thật đầu |
 | Bỏ lớp đăng nhập khỏi trang sửa của `admin` | Chỉ an toàn khi host có basic auth: mục 2.2 và tiêu chí 1 |
 | Docker Desktop chiếm RAM máy bạn trong lượt `be-dev` và `/ao-preview` | Bật ngay trước, tắt ngay sau |
 | Bản sao trên máy bạn trễ khi máy tắt, và chỉ có một bản trên một laptop | VPS giữ 7 ngày và 4 tuần nên máy kéo bù được; cảnh báo khi bản mới nhất cũ hơn 36 giờ; chuyển hay thêm B2 trước khi mở bán nếu bạn muốn |
@@ -288,7 +294,7 @@ Plan chia chi tiết thành năm chặng:
 2. VPS: Staging, Production, bản sao kéo về máy bạn. Bản `v0.1.0`.
 3. Epic: intake, spec, plan.
 4. Build, xem trước, review và QA từng item.
-5. `v0.2.0` lên Production; hướng dẫn; đóng pilot.
+5. `v0.3.0` lên Production; hướng dẫn; đóng pilot.
 
 ## 8. Câu hỏi
 

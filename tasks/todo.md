@@ -83,7 +83,7 @@
 
 ## Chặng 3: Epic tới gate ②
 
-- [ ] **T10: chép kit vào `shop`** trong PR riêng, nếu kit đã đổi những file được chép từ lần `SHOP-2`.
+- [x] **T10: chép kit vào `shop`** trong PR riêng, nếu kit đã đổi những file được chép từ lần `SHOP-2`.
 - [x] **T11: [bạn] ảnh và intake.** Epic `SHOP-7` (Phiên 31 · Lượt 4); chờ bạn bấm `Start spec`.
   - **Giao diện mẫu bạn chọn ở Lượt 5:** trang `https://demo.codeandchill.store/vitrea/#/growth` (hai ảnh dán trong chat: trang Growth Lab và hộp thoại "New experiment"). Trang danh sách, trang chi tiết của `user` và form của `admin` theo style, design token và cách bố trí của trang này.
   - Ảnh dán trong chat không được lưu thành file, nên mình đọc trang bằng trình duyệt headless (Playwright với Chromium; phiên này chưa có chrome-devtools MCP, cả hai cùng điều khiển Chromium qua CDP): lấy biến CSS, font, màu, bo góc, đổ bóng, hiệu ứng kính và khoảng cách của từng thành phần (thanh điều hướng, thẻ, bảng, nút, nhãn trạng thái, ô nhập, hộp thoại).
@@ -94,7 +94,7 @@
   - Ở T11: chép 5 ảnh vào `.ai/design-inbox/<EPIC>/`. `tokens.md` không vào đó, vì `ux` trả lại mọi file không phải PNG/JPG; token đi vào mô tả Epic, phần `ux` đọc về ảnh.
   - `/ao-intake` (mình phỏng vấn bạn, tạo Epic); **bạn** bấm `Start spec`.
 - [x] **T10g: sửa theo review vòng 3 của `shop` PR #13** (spec 2.9 mục 5; Phiên 31 · Lượt 16): kit có cách ghi một High bạn chấp nhận; merge ngược chờ `audit` của các commit mang từ `main` về; `doctor` kiểm `CODEOWNERS` trên `main`; các Low. Chép kit vào PR #13, review vòng 4; còn High 1 thì approve kèm dòng `Accept risk:` tới 2026-12-31; merge, QA, bạn Accept `SHOP-6`.
-- [ ] **T10h: [bạn] bản `v0.1.1`** ngay sau `SHOP-6`: đưa `.github/CODEOWNERS` lên `main`, và chạy thử luồng release mới (nhánh release cắt bằng login của bạn, PR report, tag của `ao-merge`, merge ngược có `audit`) trước Epic. Fix Version `v0.1.1`; gate ④ và ⑤ của bạn.
+- [ ] **T10h: [bạn] bản `v0.2.0`** ngay sau `SHOP-6`: đưa `.github/CODEOWNERS` lên `main`, và chạy thử luồng release mới (nhánh release cắt bằng login của bạn, PR report, tag của `ao-merge`, merge ngược có `audit`) trước Epic. Lúc đầu viết là `v0.1.1`, nhưng kit chỉ cắt `vX.Y.0` từ `develop` (spec 2.9 phần 7), nên Epic lên `v0.3.0`. Fix Version `v0.3.0` tạo qua REST; gate ④ và ⑤ của bạn.
 - [ ] **T12: [bạn] `/ao-spec <EPIC>`** tới **gate ①**.
 - [ ] **T13: [bạn] `/ao-plan <EPIC>`** tới **gate ②**. Sửa chặng 4 của todo theo plan của `sa`.
   - Plan của Epic phải xử lý ba Low của review `shop` PR #10: viết lại hoặc xóa 8 E2E đang bỏ qua trên môi trường cùng mock của API NestJS cũ (4 test đăng nhập chờ Epic đăng nhập); gom `isLocal` vào một helper cho mỗi app; test probe kiểm thêm `/actuator/health/db` trả 401.
@@ -113,9 +113,9 @@ Mỗi item: `/ao-build`, `/ao-preview` (bạn xem), `/ao-review`, **gate ③**, 
 ### Checkpoint 5: sau T16
 - [ ] Mọi item của Epic Done (tiêu chí 4–6 của spec).
 
-## Chặng 5: `v0.2.0` và đóng
+## Chặng 5: `v0.3.0` và đóng
 
-- [ ] **T17: [bạn] `v0.2.0`** (spec 2.7): vài sản phẩm thử trên Production qua `admin`; **gate ④**; `/ao-ship v0.2.0`; **gate ⑤**; Production, Flyway trên database có dữ liệu; **bạn** Release `v0.2.0` và Complete Epic.
+- [ ] **T17: [bạn] `v0.3.0`** (spec 2.7): vài sản phẩm thử trên Production qua `admin`; **gate ④**; `/ao-ship v0.3.0`; **gate ⑤**; Production, Flyway trên database có dữ liệu; **bạn** Release `v0.3.0` và Complete Epic.
 - [ ] **T18: hướng dẫn.** Phần mới của `docs/getting-started.md` với đầu ra thật của Epic; `production_auth` và bản sao trong `docs/vps-setup.md`; PR.
 - [ ] **T19: đóng pilot.** Kiểm khóa `age` đã cất (giải mã một bản sao bằng `decrypt --identity -`, khóa lấy từ trình quản lý mật khẩu) trên máy chưa từng chạy agent, hoặc sau khi có `ao-agent`; rồi sinh cặp khóa mới (review vòng 4 của `shop` PR #13, `vps-setup.md` mục 16). File khóa trên máy đã xóa ở Phiên 31 · Lượt 2. Bảng tám tiêu chí và chi phí trong `verification.md`; plan, todo, verification vào `tasks/archive/pilot-3/`; `SPEC.md`, `concerns.md`; PR tài liệu.
 

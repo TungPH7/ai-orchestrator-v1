@@ -9,7 +9,7 @@ Pilot 3 chia năm chặng:
 - **Chặng 2, ba môi trường và `v0.1.0`:** Staging và Production trên VPS; bản sao backup kéo về máy bạn; bản `v0.1.0` của scaffold lên Production.
 - **Chặng 3, Epic tới gate ②:** chép kit mới vào `shop` nếu cần; ảnh của bạn; `/ao-intake`, `/ao-spec`, `/ao-plan`.
 - **Chặng 4, các item của Epic:** Task design system, rồi từng Story: build, xem trước, review, QA.
-- **Chặng 5, `v0.2.0` và đóng:** bản `v0.2.0` lên Production, có database đã có dữ liệu; hướng dẫn; đóng pilot.
+- **Chặng 5, `v0.3.0` và đóng:** bản `v0.3.0` của Epic lên Production, có database đã có dữ liệu; hướng dẫn; đóng pilot. (`v0.2.0` là bản đưa `CODEOWNERS` lên `main` ở T10h, spec 2.9 phần 7.)
 
 Task đầu kiểm các tiền đề bằng đọc code và chạy thật, vì kết quả có thể đổi chặng 1 và 2.
 
@@ -50,7 +50,7 @@ Task đầu kiểm các tiền đề bằng đọc code và chạy thật, vì k
 | T14 | **[bạn]** Task design system: build, xem trước, review, gate ③, QA, Accept | 4 |
 | T15 | **[bạn]** Story thứ nhất: như T14 | 4 |
 | T16 | **[bạn]** Story thứ hai: như T14 | 4 |
-| T17 | **[bạn]** `v0.2.0`: vài sản phẩm thử trên Production, gate ④, `/ao-ship`, gate ⑤, Production, Release, Complete Epic | 5 |
+| T17 | **[bạn]** `v0.3.0`: vài sản phẩm thử trên Production, gate ④, `/ao-ship`, gate ⑤, Production, Release, Complete Epic | 5 |
 | T18 | Hướng dẫn; PR | 5 |
 | T19 | Đóng pilot | PR tài liệu |
 
