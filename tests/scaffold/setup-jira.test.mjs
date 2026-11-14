@@ -74,6 +74,31 @@ test('a space and board that exist keep them; a board filter with the wrong JQL 
   assert.equal(fake.writes.length, before);
 });
 
+test('a network error says to run the command again, keeps the steps already done, and shows no stack trace (part 3, spec 2.6)', async () => {
+  const offline = (code) => Object.assign(new TypeError('fetch failed'), { cause: Object.assign(new Error(`getaddrinfo ${code} example.atlassian.net`), { code }) });
+  for (const [error, reason] of [
+    [offline('ENOTFOUND'), 'ENOTFOUND'],
+    [offline('ECONNRESET'), 'ECONNRESET'],
+    [Object.assign(new Error('The operation was aborted due to timeout'), { name: 'TimeoutError' }), 'timed out'],
+  ]) {
+    const fake = jira({ space: true });
+    const call = async (method, path, body) => {
+      if (path.startsWith('/rest/agile/')) throw error;
+      return fake.call(method, path, body);
+    };
+    const { ok, notes } = await setup(fake, { jira: call });
+    assert.equal(ok, false);
+    assert.match(notes.join('\n'), /The space SHOP exists/, 'the steps done before stay in the report');
+    assert.equal(notes.at(-1), `Jira could not be reached (${reason}): check the network, then run ao-kit setup jira again; the steps already done are not repeated`);
+    assert.doesNotMatch(notes.join('\n'), /\bat .*\.mjs:\d+/);
+  }
+});
+
+test('an error that is not of the network still throws, so a bug of the kit is not hidden', async () => {
+  const fake = jira();
+  await assert.rejects(setup(fake, { jira: async () => { throw new TypeError("Cannot read properties of undefined (reading 'id')"); } }), /Cannot read properties/);
+});
+
 test('a token that cannot sign in stops before anything is written', async () => {
   const fake = jira({ signedIn: false });
   const { ok, notes } = await setup(fake);

@@ -235,8 +235,9 @@ const COMMANDS = {
     if (!email || !token) return print({ ok: false, notes: ['Set JIRA_ADMIN_EMAIL and JIRA_ADMIN_CLASSIC_TOKEN, a classic API token of your Atlassian account, as user variables (docs/getting-started.md)'] });
     const mapping = readMapping(join(kitDir, 'tracker'));
     const auth = `Basic ${Buffer.from(`${email}:${token}`).toString('base64')}`;
+    // A call that hangs ends after 30 s, and setupJira reports it as a network error (project-scaffold part 3, 2.6).
     const jira = async (method, path, body) => {
-      const res = await fetch(`https://${mapping.site}${path}`, { method, headers: { Authorization: auth, Accept: 'application/json', 'Accept-Language': 'en-US', ...(body && { 'Content-Type': 'application/json' }) }, body: body && JSON.stringify(body) });
+      const res = await fetch(`https://${mapping.site}${path}`, { method, headers: { Authorization: auth, Accept: 'application/json', 'Accept-Language': 'en-US', ...(body && { 'Content-Type': 'application/json' }) }, body: body && JSON.stringify(body), signal: AbortSignal.timeout(30_000) });
       const text = await res.text();
       let json = null;
       try {

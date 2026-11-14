@@ -93,6 +93,27 @@ test('add from a template: its code without what the kit replaces, the files of 
   assert.match(text, /apps\/admin\/\.env\.example names VITE_API_URL, VITE_SENTRY_DSN, which the build writes into the code/);
 });
 
+test('add a Next.js template with next-intl: / redirects to the default locale, so health and the smoke test use /<locale> (part 3, spec 2.6)', (t) => {
+  const p = pnpmProject(t);
+  const from = temp(t, 'tpl-intl-');
+  realGit(['init', '--quiet'], from);
+  write(from, 'package.json', JSON.stringify({ name: 'tpl', scripts: { dev: 'next dev', build: 'next build', lint: 'eslint .', typecheck: 'tsc --noEmit', 'test:coverage': 'vitest run --coverage' }, dependencies: { next: '16.0.0', 'next-intl': '4.13.0' } }));
+  write(from, 'next.config.ts', "export default { output: 'standalone' };\n");
+  write(from, 'vitest.config.ts', "export default { test: { coverage: { reporter: ['lcov'] } } };\n");
+  write(from, 'src/i18n/routing.ts', "import { defineRouting } from 'next-intl/routing';\nimport { defaultLocale, locales } from '~/config/i18n';\nexport const routing = defineRouting({ locales, defaultLocale });\n");
+  write(from, 'src/config/i18n.ts', "export const locales = ['en', 'vi'] as const;\nexport const defaultLocale = 'en';\n");
+  realGit(['add', '-A'], from);
+  realGit(['commit', '--quiet', '-m', 'template'], from);
+
+  const result = addApp({ kitDir: ROOT, projectDir: p.dir, app: 'user', options: { stack: 'nextjs', from, public: true }, git: realGit, run: p.run });
+  assert.equal(result.ok, true, result.notes.join('\n'));
+  assert.equal(readProjectConfig(read(p.dir, '.ai-orchestrator/project.yaml')).config.apps.user.health, '/en');
+  const { config } = readDeployConfig(read(p.dir, '.ai-orchestrator/deploy.yaml'));
+  assert.equal(config.apps.user.health, '/en');
+  assert.deepEqual(config.smoke, [{ app: 'user', path: '/en', expect_status: 200, expect_text: '<html' }]);
+  assert.match(result.notes.join('\n'), /next-intl in apps\/user\/src\/i18n\/routing\.ts sends \/ to \/en: health is \/en/);
+});
+
 test('add refuses an npm project, a bad name, an app that is there, and a stack the kit has not, and changes nothing', (t) => {
   const p = pnpmProject(t);
   const add = (app, options, dir = p.dir) => addApp({ kitDir: ROOT, projectDir: dir, app, options, git: realGit, run: p.run });

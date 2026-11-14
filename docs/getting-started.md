@@ -485,10 +485,12 @@ node <kit>/scripts/ao-kit.mjs check e-commerce/shop
   - `qa` dùng các host này để kiểm từng app (`E2E_USER_URL`, `E2E_ADMIN_URL`);
   - `doctor` in đoạn cần chép vào `/etc/ao/deployer.yaml` trên VPS;
   - bản ghi DNS wildcard `*.ao.t2g.io.vn` đã trỏ mọi host này về VPS, nên không phải thêm bản ghi DNS.
-- **`health` phải là trang trả 200.** Template Next.js của bạn dùng next-intl với `localePrefix: 'always'`, nên `/` trả 307 sang `/en`, mà smoke test không theo chuyển hướng. `add` ghi `health: /` cho stack `nextjs`, nên bạn đổi thành `/en` ở cả ba chỗ:
+- **`health` phải là trang trả 200.** Template Next.js của bạn dùng next-intl với `localePrefix: 'always'`, nên `/` trả 307 sang `/en`, mà smoke test không theo chuyển hướng. Từ project-scaffold phần 3, `add` đọc `defineRouting` của app và ghi `/en` vào cả ba chỗ:
   - `health` của app trong `project.yaml`;
   - `health` của app trong `deploy.yaml`;
   - `path` của smoke test của app đó, cũng trong `deploy.yaml`.
+
+  `add` in dòng `next-intl in apps/user/src/i18n/routing.ts sends / to /en`. Khi không đọc được `defaultLocale`, `add` báo trong danh sách chỗ phải sửa, và bạn tự ghi ba chỗ trên. Ở B2, `add` chưa đọc next-intl, nên `shop` được sửa tay.
 - **Kết quả mong đợi:** `project.yaml OK: 2 apps (user, admin), space SHOP, repo TungPH7/shop`.
 - **Nếu lỗi:** lệnh báo C5 khi một app công khai chưa có `hosts`, P9 khi một host bị dùng hai lần, và C1 khi `project.yaml` lệch `deploy.yaml`.
 
@@ -896,7 +898,7 @@ Bạn tự thử trên Development và thấy lỗi: `id` có mã `%` hỏng, nh
 - Đọc dòng `STOP:` và dòng `Next:`: lệnh luôn nói lý do và việc kế tiếp. Báo cáo đầy đủ nằm ở `.ai/runs/<KEY>/last.md`.
 - Agent cần bạn quyết thì gắn cờ "Needs you" lên item và dừng. `/ao-status` liệt kê những item đó.
 - Hook từ chối một lệnh của agent thì agent trích nguyên văn lý do rồi dừng, không tìm đường khác.
-- Lệnh báo `AO_DEV_APP_ID is not set` hay thiếu một biến `AO_*` khác: Claude Code không mở ở thư mục dự án. Các biến này nằm trong `env` của `.claude/settings.json`, và Claude Code chỉ nạp chúng khi mở đúng thư mục đó. Mở `claude` trong thư mục dự án, rồi gõ lại lệnh. Ở `shop`, `ao-pr.mjs` và bước kiểm của `/ao-rollback` chạy từ một phiên mở ở thư mục khác đều cần nạp các biến này.
+- Lệnh báo `AO_DEV_APP_ID is not set` hay thiếu một biến `AO_*` khác: Claude Code không mở ở thư mục dự án. Các biến này nằm trong `env` của `.claude/settings.json`, và Claude Code chỉ nạp chúng khi mở đúng thư mục đó. Mở `claude` trong thư mục dự án, rồi gõ lại lệnh. Ở `shop`, bước kiểm của `/ao-rollback` chạy từ một phiên mở ở thư mục khác cần nạp các biến này. Từ project-scaffold phần 3, `ao-pr.mjs` tự đọc bốn biến của App từ `.claude/settings.json` của repo nó chạy, khi môi trường thiếu chúng.
 
 ### Đọc sâu hơn
 

@@ -122,3 +122,16 @@ Năm lệnh kiểm xanh: 1.385 test.
 - `docs/release-workflow.md`: ba khóa `context`, `memory`, `start_timeout` của app; khóa `database`, backup; bảng "Khi deploy không thành" thêm các lý do `error` mới và `start_timeout`.
 - `vps/deployer.example.yaml`: comment của `secrets_dir` nhắc file `.db.env`.
 - Từ Phiên 29 · Lượt 1, VPS để mở cho tới khi bạn bảo đóng, nên T19 và T22 không còn bước đóng VPS.
+
+## Chặng 4: việc B2 để lại, nhánh `task/scaffold3-4`
+
+Kit PR #272 (`b676282`) merge chặng 3.
+
+**T17.**
+- `setup jira`: lỗi mạng (`ENOTFOUND`, `EAI_AGAIN`, `ECONNRESET`, `ECONNREFUSED`, `ETIMEDOUT`, lỗi kết nối của undici) và lần gọi quá 30 giây cho ra một dòng "Jira could not be reached (…): … run ao-kit setup jira again", sau các bước đã làm, không có stack trace. Lỗi khác vẫn ném ra, để lỗi của kit không bị che.
+- `ao-pr.mjs` lấy `AO_DEV_APP`, `AO_DEV_APP_ID`, `AO_REVIEW_APP`, `AO_REVIEW_APP_ID` từ môi trường, thiếu thì từ `.claude/settings.json` của repo nó chạy (`git rev-parse --show-toplevel`). `ao-agent.mjs` dùng chung hàm `appSettings` trong `lib/project-settings.mjs`.
+- `add --stack nextjs`: `lib/scaffold/next-intl.mjs` tìm `defineRouting`; `localePrefix` là `always` hay không có thì `health` và smoke test là `/<defaultLocale>`. `defaultLocale` đọc ngay trong file, hoặc theo import (`~/`, `@/` là `src/`, đường dẫn tương đối). Không đọc được thì `add` báo trong danh sách chỗ phải sửa.
+- Chạy `nextIntlHealth` trên app `user` thật của `shop` (chỉ đọc) ra `/en` từ `src/i18n/routing.ts`, khớp giá trị đã sửa tay ở B2; app `admin` (React, không next-intl) ra `null`.
+- `docs/getting-started.md`: hai đoạn của B2 (sửa tay `/en`, `ao-pr.mjs` thiếu biến `AO_*`) ghi cách làm mới.
+
+Năm lệnh kiểm và `profiles:check` xanh: 1.395 test.
