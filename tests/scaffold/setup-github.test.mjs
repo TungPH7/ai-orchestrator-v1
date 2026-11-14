@@ -34,27 +34,27 @@ function github({ develop = true, isPublic = false } = {}) {
     if (line === `secret list --repo ${REPO} --json name`) return ok(state.secrets.map((name) => ({ name })));
     if (line === `secret list --env merge-gate --repo ${REPO} --json name`) return ok(state.envSecrets.map((name) => ({ name })));
     if (line === `secret set JIRA_CI_TOKEN --repo ${REPO}`) return (state.secrets.push('JIRA_CI_TOKEN'), ok());
-    if (line === `secret set AO_DEV_APP_KEY --env merge-gate --repo ${REPO}`) return (state.envSecrets.push('AO_DEV_APP_KEY'), ok());
+    if (line === `secret set AO_MERGE_APP_KEY --env merge-gate --repo ${REPO}`) return (state.envSecrets.push('AO_MERGE_APP_KEY'), ok());
     throw new Error(`unexpected gh ${line}`);
   };
   const runs = [];
   const run = (argv) => (runs.push(argv.join(' ')), { status: 0, stdout: 'Soft mode: the repository is private on the Free plan\n', stderr: '' });
   return { state, calls, gh, run, runs };
 }
-const setup = (fake, more = {}) => setupGithub({ kitDir: '/kit', repo: REPO, devAppId: 5514949, devAppKeyFile: '/keys/ao-dev-2.pem', secret: (name) => (name === 'JIRA_CI_TOKEN' ? TOKEN : null), readFile: () => KEY, gh: fake.gh, run: fake.run, ...more });
+const setup = (fake, more = {}) => setupGithub({ kitDir: '/kit', repo: REPO, mergeAppId: 5756976, mergeAppKeyFile: '/keys/acme-ao-merge.pem', secret: (name) => (name === 'JIRA_CI_TOKEN' ? TOKEN : null), readFile: () => KEY, gh: fake.gh, run: fake.run, ...more });
 const writes = (calls) => calls.filter(({ args }) => args.includes('-X') || args[1] === 'set').map(({ args }) => args.join(' '));
 
-test('a new repo gets develop as its default branch, branch deletion, Dependabot, four environments, two secrets and the ruleset check', () => {
+test('a new repo gets develop as its default branch, branch deletion, Dependabot, four environments, two secrets and the rulesets', () => {
   const fake = github();
   const { ok, notes } = setup(fake);
   assert.equal(ok, true, notes.join('\n'));
-  assert.deepEqual(fake.state, { default_branch: 'develop', delete_branch_on_merge: true, alerts: true, autofix: true, envs: ['development', 'staging', 'production', 'merge-gate'], policies: ['develop'], secrets: ['JIRA_CI_TOKEN'], envSecrets: ['AO_DEV_APP_KEY'] });
+  assert.deepEqual(fake.state, { default_branch: 'develop', delete_branch_on_merge: true, alerts: true, autofix: true, envs: ['development', 'staging', 'production', 'merge-gate'], policies: ['develop'], secrets: ['JIRA_CI_TOKEN'], envSecrets: ['AO_MERGE_APP_KEY'] });
   const mergeGate = fake.calls.find(({ args }) => args.join(' ') === `api -X PUT repos/${REPO}/environments/merge-gate --input -`);
   assert.deepEqual(JSON.parse(mergeGate.input), { deployment_branch_policy: { protected_branches: false, custom_branch_policies: true } });
-  assert.deepEqual(fake.runs, [`node /kit/scripts/gh-protect.mjs --repo ${REPO} --dev-app-id 5514949`]);
+  assert.deepEqual(fake.runs, [`node /kit/scripts/gh-protect.mjs --repo ${REPO} --merge-app-id 5756976`]);
   const text = notes.join('\n');
-  assert.match(text, /Delete \/keys\/ao-dev-2\.pem now/);
-  assert.match(text, /By hand: add acme\/shop to the two GitHub Apps: on GitHub, Settings → Applications → Installed GitHub Apps/);
+  assert.match(text, /Delete \/keys\/acme-ao-merge\.pem now: GitHub holds the key of ao-merge, and no machine an agent uses should/);
+  assert.match(text, /By hand: add acme\/shop to the three GitHub Apps \(ao-dev, ao-review, ao-merge\): on GitHub, Settings → Applications → Installed GitHub Apps/);
   assert.match(text, /GitHub for Atlassian/);
 });
 
@@ -63,7 +63,7 @@ test('no secret reaches an argument: the token and the key go through stdin only
   setup(fake);
   for (const { args } of fake.calls) assert.ok(!args.some((arg) => arg.includes(TOKEN) || arg.includes('PRIVATE KEY')), args.join(' '));
   assert.equal(fake.calls.find(({ args }) => args.join(' ') === `secret set JIRA_CI_TOKEN --repo ${REPO}`).input, TOKEN);
-  assert.equal(fake.calls.find(({ args }) => args.includes('AO_DEV_APP_KEY')).input, KEY);
+  assert.equal(fake.calls.find(({ args }) => args.includes('AO_MERGE_APP_KEY')).input, KEY);
 });
 
 test('a second run finds everything set, changes nothing, and says so', () => {
@@ -73,17 +73,17 @@ test('a second run finds everything set, changes nothing, and says so', () => {
   const { ok, notes } = setup(fake);
   assert.equal(ok, true);
   assert.deepEqual(writes(fake.calls.slice(before)), []);
-  assert.match(notes.join('\n'), /Already set: default branch develop, branch deletion, Dependabot security updates, environments, the branch rule of merge-gate, JIRA_CI_TOKEN, AO_DEV_APP_KEY/);
+  assert.match(notes.join('\n'), /Already set: default branch develop, branch deletion, Dependabot security updates, environments, the branch rule of merge-gate, JIRA_CI_TOKEN, AO_MERGE_APP_KEY/);
 });
 
 test('with no develop on GitHub, no token and no key file, it sets the rest and says what is left', () => {
   const fake = github({ develop: false });
-  const { ok, notes } = setup(fake, { secret: () => null, devAppKeyFile: undefined });
+  const { ok, notes } = setup(fake, { secret: () => null, mergeAppKeyFile: undefined });
   assert.equal(ok, false);
   const text = notes.join('\n');
   assert.match(text, /develop is not on GitHub yet: push it, then run ao-kit setup github again/);
   assert.match(text, /JIRA_CI_TOKEN is not set on this machine/);
-  assert.match(text, /AO_DEV_APP_KEY: give the second private key of ao-dev with --dev-app-key-file <path>/);
+  assert.match(text, /AO_MERGE_APP_KEY: give the private key of ao-merge with --merge-app-key-file <path>/);
   assert.equal(fake.state.default_branch, 'main');
   assert.equal(fake.state.alerts, true, 'what does not wait on develop is done');
 });
@@ -102,6 +102,15 @@ test('a public repo gets an interaction limit of six months and approval of the 
   assert.deepEqual(writes(fake.calls.slice(before)), [`api -X PUT repos/${REPO}/interaction-limits --input -`]);
   assert.equal(fake.state.limits, 2);
   assert.match(second.notes.join('\n'), /approval of the workflows of every PR from a fork/);
+});
+
+// Pilot 3, review of shop PR #13 (spec 2.9): only ao-merge bypasses the ruleset of PRs, so the rulesets wait for its id.
+test('with no ao-merge App in project.yaml, it applies no ruleset and says how to make the App', () => {
+  const fake = github();
+  const { ok, notes } = setup(fake, { mergeAppId: undefined });
+  assert.equal(ok, false);
+  assert.deepEqual(fake.runs, []);
+  assert.match(notes.join('\n'), /github\.apps\.merge and merge_id are not in project\.yaml: create the ao-merge App with node <kit>\/scripts\/github-app-create\.mjs --apps merge/);
 });
 
 test('a private repo gets no interaction limit, and says why', () => {

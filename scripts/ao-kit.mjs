@@ -15,7 +15,7 @@
 //   render <dir>  .claude/settings.json and the agents again, from project.yaml
 //   check <dir>   project.yaml against its schema, deploy.yaml, package.json and the folders; writes nothing
 //   setup github <dir>   the GitHub side, with your gh login: default branch, branch deletion, Dependabot, the four
-//                 environments, JIRA_CI_TOKEN and AO_DEV_APP_KEY (--dev-app-key-file <path>), the ruleset check
+//                 environments, JIRA_CI_TOKEN and AO_MERGE_APP_KEY (--merge-app-key-file <path>), the rulesets
 //   doctor <dir>  what the project still lacks, on this machine, in the repo, on GitHub, on Jira and in Claude Code, row
 //                 by row with what to do; reads only, and prints no secret
 //   setup jira <dir>     the space of project.yaml with the schemes of --template (DEMO), its board and filter, then
@@ -197,7 +197,7 @@ async function doctorFacts(dir, config) {
 
 const OPTIONS = {
   profile: { type: 'string' }, 'package-manager': { type: 'string' }, name: { type: 'string' }, title: { type: 'string' }, space: { type: 'string' }, repo: { type: 'string' }, approvers: { type: 'string' },
-  'dev-app-key-file': { type: 'string' }, template: { type: 'string' }, 'space-name': { type: 'string' }, 'dev-app': { type: 'string' }, 'dev-app-id': { type: 'string' }, 'review-app': { type: 'string' }, 'review-app-id': { type: 'string' }, 'kit-peers': { type: 'string' }, key: { type: 'string' },
+  'merge-app-key-file': { type: 'string' }, template: { type: 'string' }, 'space-name': { type: 'string' }, 'dev-app': { type: 'string' }, 'dev-app-id': { type: 'string' }, 'review-app': { type: 'string' }, 'review-app-id': { type: 'string' }, 'kit-peers': { type: 'string' }, key: { type: 'string' },
   stack: { type: 'string' }, from: { type: 'string' }, ref: { type: 'string' }, exclude: { type: 'string', multiple: true }, public: { type: 'boolean' },
 };
 let parsed;
@@ -222,7 +222,7 @@ const COMMANDS = {
   'setup github': (dir) => {
     const config = projectConfig(dir);
     if (!config) return 1;
-    return print(setupGithub({ kitDir, repo: config.github.repo, devAppId: config.github.apps.dev_id, devAppKeyFile: v['dev-app-key-file'], secret, readFile: (path) => readFileSync(path, 'utf8'), gh, run }));
+    return print(setupGithub({ kitDir, repo: config.github.repo, mergeAppId: config.github.apps.merge_id, mergeAppKeyFile: v['merge-app-key-file'], secret, readFile: (path) => readFileSync(path, 'utf8'), gh, run }));
   },
   doctor: async (dir) => {
     const config = projectConfig(dir);

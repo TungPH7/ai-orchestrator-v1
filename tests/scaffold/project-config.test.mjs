@@ -40,6 +40,14 @@ test('P1: the schema, with the path of each problem', () => {
   assert.match(readProjectConfig('').errors[0].message, /is empty/);
 });
 
+// Pilot 3, review of shop PR #13 (spec 2.9): the ao-merge App is optional, its slug and id come as a pair.
+test('P1: the ao-merge App, its slug and its id together, or neither', () => {
+  assert.deepEqual(rules(edited((d) => Object.assign(d.github.apps, { merge: 'acme-ao-merge', merge_id: 31 }))), []);
+  assert.deepEqual(rules(edited((d) => Object.assign(d.github.apps, { merge: 'acme-ao-merge' }))), ['P1 github.apps']);
+  assert.deepEqual(rules(edited((d) => Object.assign(d.github.apps, { merge_id: 31 }))), ['P1 github.apps']);
+  assert.deepEqual(rules(edited((d) => Object.assign(d.github.apps, { merge: 'acme-ao-merge', merge_id: 'TODO' }))), ['P1 github.apps.merge_id']);
+});
+
 test('P2–P4: one repo for now, each app in a repo of the file, and paths inside the repo', () => {
   assert.deepEqual(rules(edited((d) => d.repos.push({ name: 'ao-api', path: '../ao-api' }))), ['P2 repos']);
   assert.deepEqual(rules(edited((d) => (d.apps.api.repo = 'ao-api'))), ['P3 apps.api.repo']);
