@@ -46,6 +46,7 @@
           "name": { "type": "string", "maxLength": 20, "pattern": "^[a-z]([a-z0-9-]*[a-z0-9])?$" },
           "repo": { "type": "string", "pattern": "^[A-Za-z0-9-]+/[A-Za-z0-9_.-]+$" },
           "space": { "type": "string", "pattern": "^[A-Z][A-Z0-9]*$" },
+          "production_auth": { "description": "Production asks for the basic auth of Development and Staging too, until the project opens to everyone (Pilot 3, spec 2.2). Only root sets it, on the VPS.", "type": "boolean" },
           "hosts": {
             "description": "One host for each environment, those of the one public app; or one for each environment of each public app (project-scaffold part 2, spec 2.4).",
             "type": "object",

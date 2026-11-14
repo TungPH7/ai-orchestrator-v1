@@ -129,3 +129,25 @@ test('a record from before part 2, with one public app as an object, still reach
   const project = { ...example, projects: [example.projects[0]] };
   assert.equal(caddyfile({ sites: caddySites(project, { pilot }), credentials: CREDENTIALS }), caddyfile({ sites: caddySites(project, { pilot: listed }), credentials: CREDENTIALS }));
 });
+
+test('production_auth: Production of that project asks for basic auth too, and the other projects stay as they were (Pilot 3, spec 2.2)', () => {
+  const before = caddyfile({ sites: caddySites(example, states()), credentials: CREDENTIALS });
+  const config = { ...example, projects: example.projects.map((project) => (project.name === 'sample' ? { ...project, production_auth: true } : project)) };
+  const sites = caddySites(config, states());
+  assert.deepEqual(sites.map(({ host, auth }) => `${host} ${auth ? 'auth' : 'open'}`), [
+    'pilot-dev.ao.t2g.io.vn auth',
+    'pilot-staging.ao.t2g.io.vn auth',
+    'pilot.ao.t2g.io.vn open',
+    'sample-dev.ao.t2g.io.vn auth',
+    'sample-staging.ao.t2g.io.vn auth',
+    'sample.ao.t2g.io.vn auth',
+  ]);
+  const text = caddyfile({ sites, credentials: CREDENTIALS });
+  assert.equal(text.match(/basic_auth \{/g).length, 5);
+  // The pilot sites are the same text as before.
+  const pilot = (body) => body.split('\n\n').filter((block) => block.startsWith('pilot')).join('\n\n');
+  assert.equal(pilot(text), pilot(before));
+  // false is the same as no key.
+  const off = { ...example, projects: example.projects.map((project) => ({ ...project, production_auth: false })) };
+  assert.equal(caddyfile({ sites: caddySites(off, states()), credentials: CREDENTIALS }), before);
+});

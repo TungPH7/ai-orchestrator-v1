@@ -4,7 +4,8 @@ state_dir: /var/lib/ao                      # a mirror, a record (state.json) an
 secrets_dir: /etc/ao/secrets                # <project>/<environment>.env: the values of the variables apps name;
                                             # <project>/<environment>.db.env: those of the database, when deploy.yaml has one
 caddyfile: /etc/ao/caddy/Caddyfile          # written by the deployer, read by the Caddy container
-basic_auth_file: /etc/ao/caddy/basic-auth   # one line "<user> <bcrypt hash>" for Development and Staging
+basic_auth_file: /etc/ao/caddy/basic-auth   # one line "<user> <bcrypt hash>" for Development and Staging (and Production
+                                            # of a project with production_auth)
 app:                                        # the GitHub App ao-deploy
   id: 5624698
   key_file: /etc/ao/ao-deploy.pem
@@ -18,6 +19,8 @@ approvers: [TungPH7]                        # AO_APPROVERS: the logins whose dep
 #   hosts:
 #     user: { development: shop-dev.ao.t2g.io.vn, staging: shop-staging.ao.t2g.io.vn, production: shop.ao.t2g.io.vn }
 #     admin: { development: shop-admin-dev.ao.t2g.io.vn, staging: shop-admin-staging.ao.t2g.io.vn, production: shop-admin.ao.t2g.io.vn }
+# production_auth: true keeps Production behind the same basic auth until the project opens to everyone (Pilot 3,
+# spec 2.2). Only root sets it here, so no pull request can open Production.
 projects:
   - name: pilot
     repo: TungPH7/ao-pilot

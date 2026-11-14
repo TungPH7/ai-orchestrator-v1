@@ -1,0 +1,8 @@
+description: production_auth is true or false, not a word that looks like one
+rule: V1
+expect:
+  - "projects[1].production_auth"
+patch:
+  - op: set
+    path: "projects.1.production_auth"
+    value: "yes"

@@ -48,3 +48,10 @@ test('hosts app by app: valid, each host once on the VPS, each app with its thre
   assert.deepEqual(rules(withShop({ ...BY_APP, Admin: BY_APP.admin })).filter((line) => line.startsWith('V1')).length > 0, true);
   assert.deepEqual(rules(withShop({})), ['V1 projects[2].hosts']);
 });
+
+test('production_auth: true or false on a project is valid (Pilot 3, spec 2.2)', () => {
+  for (const value of [true, false]) {
+    const config = { ...example, projects: example.projects.map((project, i) => (i === 1 ? { ...project, production_auth: value } : project)) };
+    assert.deepEqual(validateDeployerConfig(config), [], String(value));
+  }
+});
