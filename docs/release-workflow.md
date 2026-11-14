@@ -36,10 +36,12 @@ Deployer chạy mỗi phút trên VPS và kiểm mọi commit mới trên lịch
 4. Bạn tạo trên Jira Fix Version của bản này và bản kế tiếp, nếu chưa có. Từng bước ở mục dưới.
 5. `/ao-release`: đọc điểm cắt và danh sách item. Lệnh dừng ở gate ④.
 6. **Gate ④:** `/ao-release <vX.Y.0> <sha>`. Script tạo nhánh release, gắn Fix Version cho item trong điểm cắt, và chuyển item sau điểm cắt sang bản kế tiếp. Deployer đưa bản lên Staging.
-7. `/ao-ship <vX.Y.0>`: `qa` chạy full regression, `devops` viết release note, và script mở PR release vào `main` với tiêu đề `release: vX.Y.0`.
+7. `/ao-ship <vX.Y.0>`: `qa` chạy full regression, `devops` viết release note, rồi script làm hai việc:
+   - bot `ao-dev` commit báo cáo regression (`docs/releases/vX.Y.0.md`) và `CHANGELOG.md` lên nhánh `release-notes/vX.Y.0`, và mở PR vào nhánh release, tiêu đề `release notes: vX.Y.0`. `merge-gate` merge PR này bằng `ao-merge` khi CI xanh, vì nó chỉ đổi hai file đó. Lệnh chờ tối đa 15 phút; quá thì dừng, và gõ lại lệnh là chạy tiếp (Pilot 3, spec 2.9: ruleset không cho App nào push thẳng lên `release/*`);
+   - mở PR release vào `main` với tiêu đề `release: vX.Y.0`.
    - Regression FAIL thì lệnh dừng, và báo cáo có bản nháp Bug. Bug Critical hay High sửa trên nhánh `bugfix/<BUG>-…` vào nhánh release.
    - Có commit mới trên nhánh release thì chạy lại `/ao-ship`: lệnh chạy lại regression và viết lại release note.
-8. **Gate ⑤:** bạn đọc PR rồi approve. Bạn không bấm merge. `merge-gate` merge bằng merge commit, gắn tag, và mở PR merge ngược vào `develop`.
+8. **Gate ⑤:** bạn đọc PR rồi approve. Bạn không bấm merge. `merge-gate` merge bằng merge commit, gắn tag, và mở PR merge ngược vào `develop`. PR merge ngược chỉ được merge khi đầu nhánh `main` đúng là commit của tag vừa gắn, nên một commit lọt vào `main` mà không qua bản phát hành không chảy về `develop` chỉ nhờ CI xanh.
 9. Deployer đưa merge commit lên Production và chạy smoke test.
 10. Bạn bấm Release cho Fix Version trên Jira. Từ đó, Epic có mọi item đã lên Production mới `Complete` được.
 

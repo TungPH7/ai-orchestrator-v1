@@ -535,10 +535,11 @@ systemctl start ao-deploy.timer
 ## 16. Bản sao backup về máy bạn
 
 Mỗi bản dump mà mục 15 giữ lại có một bản sao mã hóa, và máy bạn tự kéo bản sao về (Pilot 3, spec mục 2.4). Bản sao giúp dữ liệu còn lại khi VPS hỏng hay bị chiếm:
-- **Mã hóa bằng `age`.** Khóa công khai (`age1…`) nằm trong `/etc/ao/deployer.yaml`. Khóa bí mật chỉ nằm trên máy bạn, và bạn cất thêm một bản ở chỗ khác. Người đọc được VPS không đọc được bản sao.
+- **Mã hóa bằng `age`.** Khóa công khai (`age1…`) nằm trong `/etc/ao/deployer.yaml`. Khóa bí mật nằm trong trình quản lý mật khẩu của bạn, **không nằm trên máy**: agent chạy bằng chính user Windows của bạn, nên đọc được mọi file bạn đọc được (review của `shop` PR #13). Người đọc được VPS hay máy bạn đều không đọc được bản sao.
 - **Tài khoản `aobackup` chỉ đọc.** Nó dùng SFTP với key riêng, bị nhốt trong `/var/backups/ao-offsite` (`vps/sshd-aobackup.conf`): không shell, không chuyển cổng. VPS không giữ quyền gì vào máy bạn, nên kẻ chiếm VPS không xóa được bản trên máy bạn.
-- **Máy bạn kéo về** bằng `scripts/ao-backup-pull.mjs`, chạy theo task của Windows mỗi ngày lúc 09:00 và mỗi lần bạn đăng nhập. Máy tắt thì lần sau kéo bù, vì VPS giữ bản của 7 ngày và 4 tuần. Script không xóa gì trên máy bạn.
-- `ao-kit doctor` báo khi bản sao mới nhất của dự án trên máy bạn cũ hơn 36 giờ.
+- **Máy bạn kéo về** bằng `scripts/ao-backup-pull.mjs`, chạy theo task của Windows mỗi ngày lúc 09:00 và mỗi lần bạn đăng nhập. Máy tắt thì lần sau kéo bù, vì VPS giữ bản của 7 ngày và 4 tuần. Máy bạn giữ đúng những bản VPS giữ (48 giờ, 7 ngày, 4 tuần) và bỏ bản cũ hơn. Bản sao mang thời điểm ở tương lai thì không được kéo về, và lệnh báo ra.
+- `ao-kit doctor` báo khi bản sao mới nhất của dự án trên máy bạn cũ hơn 36 giờ, và khi thấy một file khóa `.agekey` trong `%USERPROFILE%\.ao\`.
+- `gh-guard` chặn agent đọc file `.agekey`, file `.dump.age`, thư mục `ao-backups`, và chạy `ao-backup-pull.mjs` ([quality-gates.md](quality-gates.md)).
 
 **1. Khóa `age` (trên máy bạn).**
 
@@ -546,7 +547,12 @@ Mỗi bản dump mà mục 15 giữ lại có một bản sao mã hóa, và máy
 node scripts/ao-backup-pull.mjs keygen --identity %USERPROFILE%\.ao\ao-backup.agekey
 ```
 
-Lệnh ghi khóa bí mật vào file đó và in khóa công khai `age1…`. Cất một bản của file khóa ở chỗ khác ngoài máy, như trình quản lý mật khẩu: mất khóa là mất mọi bản sao. Lệnh không ghi đè một khóa đã có.
+Lệnh ghi khóa bí mật vào file đó và in khóa công khai `age1…`. Lệnh không ghi đè một khóa đã có. Rồi:
+1. bấm **Win + R**, gõ `notepad %USERPROFILE%\.ao\ao-backup.agekey`, Enter;
+2. chép dòng `AGE-SECRET-KEY-1…` vào một mục mới trong trình quản lý mật khẩu, hoặc một USB cất riêng. Đừng để trong thư mục đồng bộ của máy (OneDrive, Google Drive): agent đọc được thư mục đó;
+3. đóng Notepad, rồi xóa file khóa. Mất khóa là mất mọi bản sao, nên kiểm bản đã cất bằng một lần khôi phục thử (bước 6).
+
+Ở Pilot 3, T8, khóa nằm lại trên máy; bạn chuyển nó vào trình quản lý mật khẩu và xóa file ở Phiên 31 · Lượt 2.
 
 **2. Key SSH để kéo về (trên máy bạn).** Key không có passphrase, vì task của Windows không gõ được. Key này chỉ đọc được bản sao đã mã hóa.
 
@@ -597,11 +603,13 @@ node scripts/ao-backup-pull.mjs install --host ao-backup --dest D:\ao-backups
 node scripts/ao-backup-pull.mjs status
 ```
 
-**6. Khôi phục từ bản sao.** Giải mã trên máy bạn:
+**6. Khôi phục từ bản sao.** Giải mã trên máy bạn, trong PowerShell của bạn, không qua Claude Code. Chép khóa từ trình quản lý mật khẩu vào clipboard, rồi:
 
 ```
-node scripts/ao-backup-pull.mjs decrypt D:\ao-backups\shop\production\<tên>.dump.age --identity %USERPROFILE%\.ao\ao-backup.agekey --out D:\ao-restore\<tên>.dump
+Get-Clipboard | node scripts/ao-backup-pull.mjs decrypt D:\ao-backups\shop\production\<tên>.dump.age --identity - --out D:\ao-restore\<tên>.dump
 ```
+
+`--identity -` đọc khóa từ stdin, nên khóa không nằm trong file nào, cũng không nằm trên dòng lệnh. Xong thì chép thứ khác vào clipboard. Khóa cất trên USB thì truyền đường dẫn file thay cho `-`.
 
 Bản giải mã là đúng bản dump của mục 15: khôi phục như bước 4 của mục 15, hoặc vào một Postgres chạy trên Docker ở máy bạn để kiểm. Xong thì xóa bản giải mã, vì nó chứa dữ liệu người dùng.
 

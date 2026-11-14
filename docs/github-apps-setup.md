@@ -159,8 +159,27 @@ App `tungph7-ao-deploy` tạo bằng bản script trước bản sửa ngày 202
 
 **Key của `ao-deploy` cuối cùng chỉ nằm trên VPS.** Lúc kiểm tiền đề, key nằm ở `ao-keys` trên máy bạn, như hai App kia. Khi cài deployer, Claude chép file lên VPS bằng `scp` mà không mở file (`docs/vps-setup.md`). Sau đó bạn xóa file ở máy và biến `AO_DEPLOY_APP_KEY_FILE`.
 
+## 8. App `ao-merge` cho merge-gate
+
+Từ Pilot 3 (spec 2.9), `merge-gate` merge bằng App thứ tư `<owner>-ao-merge`. Ruleset chỉ cho App này merge khi chưa có approve của bạn ([quality-gates.md](quality-gates.md#ruleset)). App có ba quyền ghi: **Contents**, **Pull requests** (merge, gắn tag, mở PR merge ngược) và **Workflows** (merge PR có đổi file workflow). Nó không đọc gì thêm, vì `merge-gate` đọc bằng token của workflow. Key của nó chỉ nằm trong secret `AO_MERGE_APP_KEY` của environment `merge-gate`. Lý do: mọi agent có quyền ghi git đều cầm token của `ao-dev`, nên App được đi tắt không được là `ao-dev` (review của `shop` PR #13).
+
+1. Chạy, từ thư mục kit, với một thư mục tạm cho key:
+
+   ```
+   node scripts/github-app-create.mjs --owner TungPH7 --repo <repo của dự án> --apps merge --keys-dir <thư mục tạm>
+   ```
+
+2. Mở `http://127.0.0.1:47100/`, bấm **Tạo App trên GitHub**, rồi **Create GitHub App for TungPH7**. GitHub có thể hỏi lại mật khẩu hoặc mã xác thực hai bước.
+3. GitHub chuyển sang trang cài App, đã chọn sẵn repo của dự án: bấm **Install**. Script in slug và App ID.
+4. Ghi slug và App ID vào `project.yaml`, ở `github.apps.merge` và `github.apps.merge_id`, rồi `ao-kit render`.
+5. `ao-kit setup github <thư mục dự án> --merge-app-key-file <thư mục tạm>/<slug>.pem` đưa key vào secret `AO_MERGE_APP_KEY` của environment `merge-gate`, và áp ruleset với id của App.
+6. **Xóa file key** trong thư mục tạm. `doctor` báo đỏ khi thấy file `*-ao-merge.pem` trong `ao-keys`.
+
+Dự án khác dùng lại App này: chỉ cài App vào repo (mục 3), ghi slug và id vào `project.yaml`, rồi đặt secret. Key thì tạo mới cho mỗi repo trên trang của App (mục 2), để thu hồi riêng được.
+
 ## Giữ an toàn private key
 
 - Private key là bí mật quan trọng nhất của App: ai có file này đều làm được mọi việc App được phép, trên mọi repo App được cài.
-- Key của `ao-dev` và `ao-review` chỉ nằm ở hai nơi: thư mục `ao-keys` trên máy bạn, và secret của GitHub Actions cho `merge-gate`. Key của `ao-deploy` chỉ nằm trên VPS (mục 7). Mỗi nơi một key riêng, để thu hồi riêng được. Một App có tối đa 25 key.
+- Key của `ao-dev` và `ao-review` nằm trong thư mục `ao-keys` trên máy bạn. Key của `ao-merge` chỉ nằm trong secret của environment `merge-gate` (mục 8). Key của `ao-deploy` chỉ nằm trên VPS (mục 7). Mỗi nơi một key riêng, để thu hồi riêng được. Một App có tối đa 25 key.
+- Key thứ hai của `ao-dev` mà `merge-gate` dùng trước Pilot 3 (secret `AO_DEV_APP_KEY` của environment `merge-gate`) không còn cần cho dự án đã có `ao-merge`. Bạn xóa secret đó và key đó trên trang của App khi muốn.
 - Nghi key bị lộ: vào trang cài đặt của App, **Credentials** → **Key pairs** (hoặc mục **Private keys**), xóa key đó, tạo key mới, rồi cập nhật file và biến môi trường.
