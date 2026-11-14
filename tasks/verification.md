@@ -36,6 +36,11 @@ Sửa plan và todo: T4 thêm `playwright.config.ts` của profile; T5 đưa b�
   - `/ao-review 10`: `reviewer` (xhigh, 28 lượt, 5,6 phút, 1,38 USD) 5 Low; `security` (max, vì PR chạm `SecurityConfig`; 37 lượt, 8,9 phút, 2,14 USD) không finding. Cộng 3,52 USD.
   - Năm Low không sửa trên PR này, vì head mới phải review lại. Hai Low của `playwright.config.ts` sửa ở kit (T6b dưới đây). Ba Low còn lại đi cùng Epic đầu, vì Epic viết lại chính các test đó: `isLocal` lặp ở 4 file; test của probe nên kiểm thêm `/actuator/health/db` trả 401; `reason:` trỏ `SHOP-5` thay vì Epic chưa có.
   - Gate ③: mình approve bằng login `gh` của bạn (câu 5); `merge-gate` merge `28394b8`.
+  - Deployer deploy `28394b8` lên Development trong 10 phút; container `api` lần đầu `healthy`.
+  - `/ao-qa SHOP-5` (`qa`, high, 31 lượt, 3,9 phút, 0,92 USD): **NOT TESTED**. Sáu mục PASS, trong đó E2E trên Development 9 đạt, 8 bỏ qua trong 25 giây, không dựng app nào tại chỗ. Mục "`docker inspect` của `api` là `healthy`" cần VPS, mà `qa` không vào được, nên `qa` gắn cờ Needs you (comment 10245). `gh-guard` chặn lệnh đầu của `qa` vì lệnh có tên biến mật khẩu; `qa` chạy lại không có biến đó.
+  - Phiên chính kiểm trên VPS lúc 07:31 UTC: `healthy`, FailingStreak 0. Comment bằng chứng, gỡ cờ và nhãn bằng token admin. `SHOP-5` ở In QA, chờ bạn `Accept`.
+  - **Bài học cho kit:** Verification của một Task cho `qa` không được có bước chỉ vào được VPS. Cách sửa để sau: deployer chờ HEALTHCHECK của Docker báo `healthy` (khi image có HEALTHCHECK) và ghi vào status của deployment, để `qa` đọc được từ GitHub.
+  - Chi phí agent của `SHOP-5`: 4,44 USD.
 
 ## Chặng 2: ba môi trường và `v0.1.0`
 

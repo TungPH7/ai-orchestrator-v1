@@ -89,9 +89,11 @@
   - Ảnh dán trong chat không được lưu thành file, nên mình đọc trang bằng trình duyệt headless (Playwright với Chromium; phiên này chưa có chrome-devtools MCP, cả hai cùng điều khiển Chromium qua CDP): lấy biến CSS, font, màu, bo góc, đổ bóng, hiệu ứng kính và khoảng cách của từng thành phần (thanh điều hướng, thẻ, bảng, nút, nhãn trạng thái, ô nhập, hộp thoại).
   - Chụp các màn hình vào `.ai/design-inbox/<EPIC>/` (mỗi ảnh tối đa 1 MB, cạnh dài tối đa 2.000 px), kèm file ghi token đo được và nguồn.
   - Chỉ lấy style. Không chép code, logo, ảnh hay font có giấy phép riêng của trang mẫu; font kiểm giấy phép trước khi dùng.
+  - Theo roster, chỉ `fe-dev` có chrome-devtools MCP (`get_css_styles`, `take_screenshot`, `evaluate_script`); `ux` thì không. Vì vậy URL của trang mẫu đi vào `design.md` và vào Task design system, để `fe-dev` đối chiếu từng style bằng MCP lúc làm.
   - `/ao-intake` (mình phỏng vấn bạn, tạo Epic); **bạn** bấm `Start spec`.
 - [ ] **T12: [bạn] `/ao-spec <EPIC>`** tới **gate ①**.
 - [ ] **T13: [bạn] `/ao-plan <EPIC>`** tới **gate ②**. Sửa chặng 4 của todo theo plan của `sa`.
+  - Plan của Epic phải xử lý ba Low của review `shop` PR #10: viết lại hoặc xóa 8 E2E đang bỏ qua trên môi trường cùng mock của API NestJS cũ (4 test đăng nhập chờ Epic đăng nhập); gom `isLocal` vào một helper cho mỗi app; test probe kiểm thêm `/actuator/health/db` trả 401.
 
 ### Checkpoint 4: sau T13
 - [ ] Gate ① và ② qua; `design.md` có màn hình kiểu Ảnh và mục Design System.
