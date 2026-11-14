@@ -649,3 +649,11 @@ test('a script step of a release command runs once through act, no agent; its no
   assert.match(h.last['DEMO-20'], /\| - \| release-cut \| v0\.1\.0 \|/);
   assert.match(h.last['DEMO-20'], /- Created release\/v0\.1\.0 at 22327a5b as tungph7-ao-dev\[bot\]\./);
 });
+
+test('last.md after a command that ends on a state, such as /ao-preview --go: Next with the state, no "Stopped" (Pilot 3, T4)', () => {
+  const made = [{ action: 'preview-start', key: 'DEMO-21' }];
+  const decision = { status: true, lines: ['The preview of DEMO-21 runs on feature/DEMO-21-x: web http://localhost:3000/'], next: '/ao-preview DEMO-21 --stop, when you are done with it' };
+  const text = lastReport({ command: 'preview', key: 'DEMO-21', made, decision, state: { runs: [] } });
+  assert.match(text, /## Next\n\nThe preview of DEMO-21 runs on feature\/DEMO-21-x: web http:\/\/localhost:3000\/\nNext: \/ao-preview DEMO-21 --stop, when you are done with it\n/);
+  assert.doesNotMatch(text, /Stopped|undefined/);
+});
