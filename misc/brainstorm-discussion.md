@@ -35,6 +35,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 27 | `6fe2d487-8a5e-4cfb-a02c-e03e1598a124` | 2026-11-06 khoảng 00:21 → | Bạn báo đã merge PR #173 và nhắc đọc memory; Claude đánh dấu Checkpoint 1 đạt, làm T3 (`versions.mjs`, `cut.mjs`, PR #174), T4 (kiểm `deploy.yaml`, schema chuyển vào `lib/release/`) và T5 (`targets.mjs`), rồi đề xuất báo lần từ chối bằng status `error`, để `jira-sync` không tạo Bug Critical sai; bạn merge #174 và duyệt đề xuất; Claude sửa spec, mở PR #175 của T4, làm T6 (`auditRange`, commit báo cáo của bot trên `release/*`, PR merge ngược); bạn merge #175; Claude mở PR #176 của T5, làm T7 (`smoke.mjs`, `docker.mjs`: đổi bản theo từng app, hai alias, bí mật qua môi trường của lệnh `docker`); bạn merge #176; Claude mở PR #177 của T6, làm T8 (`deployer.mjs`, `record.mjs`, `scripts/ao-deploy.mjs`), chạy thử `tick --dry-run` vào `ao-pilot`: dừng đúng ở `3fdd514`; bạn merge #177; Claude mở PR #178 của T7, làm T9 (Caddyfile do deployer sinh, schema của `deployer.yaml`, systemd, `ao-secret.sh`, mục 11 của `docs/vps-setup.md`); bạn hỏi Claude có tự merge được không; Claude trả lời được (repo kit private gói Free không có branch protection, `gh` có quyền admin), quy ước hiện tại là quyết định 10 của plan, và đề xuất để Claude merge PR của kit khi CI xanh, bạn xem ở checkpoint; bạn cho Claude tự merge tới Checkpoint 2; Claude ghi quyết định vào plan, merge #179 (T8), #180 (T9), #181 (T10: `merge-gate` cho PR release và PR merge ngược), #182 (T11: `jira-sync` tạo Bug Critical, gắn cờ khi deploy lên môi trường QA thất bại); bạn nhắn tiếp; Claude merge #183–#188 (T12–T17: dữ kiện môi trường, `/ao-qa`, `/ao-release`, `/ao-ship`, hotfix, `/ao-rollback`, bốn skill), sửa chỗ hở `JIRA_CI_TOKEN` trong phiên agent, chạm giới hạn usage giữa T15 rồi làm tiếp; tới Checkpoint 2, kiểm chỉ đọc trong `ao-pilot`, đề xuất ba việc trước kiểm thật; bạn hỏi `DEMO-5`, `DEMO-19` có phải hai Task trong ảnh không, vì Jira chỉ cho chuyển sang Cancelled, và PR #189 có chỉ cần Rebase and merge; Claude đính chính: từ New bạn chỉ `Refine` hoặc `Cancel`, mười item có commit trên `develop` chỉ `DEMO-12` Done, điểm cắt tính cả key của Epic là lỗi, xóa tag `v0.1.0` làm `DEMO-3` chặn điểm cắt; đề xuất A (điểm cắt bỏ qua Epic), B (sửa dữ liệu Jira của item cũ bằng token bot), C (giữ tag `v0.1.0`); bạn hỏi nên chọn phương án nào, dặn chưa làm gì; Claude nói đó là ba việc riêng, chọn B1; bạn merge #189, duyệt cả ba, cho tiếp tục tự merge; Claude merge #190 (việc A); việc B dừng sau `DEMO-19`, vì token của `ao-agents` không ghi được qua REST, và hỏi bạn có cho gọi Rovo MCP bằng script không; bạn đồng ý và nạp key SSH; Claude sửa xong dữ liệu Jira qua Rovo MCP, cài phần T18 của mình trên VPS, chuyển 11 deployment cũ sang `inactive`, rồi dừng để bạn bấm `Accept` và nhập hai bí mật; bạn làm xong; Claude kiểm, chạy `baseline pilot`, và hỏi bạn duyệt hai head trước `--confirm`; bạn hỏi có cần merge `develop` vào `main` không; Claude trả lời không cần và không nên, hai hướng merge đều không xung đột; bạn duyệt hai head; Claude ghi điểm bắt đầu, bật timer, thấy `AO_ENV_AUTH` không khớp mật khẩu trên VPS, báo đã in bản băm của mật khẩu ra output, và nhờ bạn nhập mật khẩu mới; bạn nhập lại; Claude thấy basic auth đã khớp, tắt đăng nhập root, và nhờ bạn gỡ key SSH, xóa file key `ao-deploy`; bạn làm xong; Claude đóng T18, tạo Task `DEMO-26` của T19, và nhờ bạn đọc rồi bấm `Refine`; bạn bấm `Refine`; lượt build đầu của `devops` dừng vì hook `jira-guard` nhận 401, do Claude quên đặt `AO_KIT_DIR`; Claude nhờ bạn gỡ cờ trên `DEMO-26`; bạn gỡ cờ; `devops` mở ao-pilot PR #17; Claude thấy trace của Playwright giữ mật khẩu basic auth và sửa kit (#198); bạn yêu cầu báo tiến độ 3 phút một lần; `/ao-review`, `/ao-fix` chạy, `policy` đọc nhầm `exit(` (#199), chạm giới hạn 5 giờ rồi chạy tiếp; không còn Critical hay High, ba Medium trong kit sửa ở #200; chi phí của `DEMO-26` là 20,53 USD; Claude nhờ bạn duyệt và merge PR #17 ở gate ③; bạn merge; deploy đầu lên Development thất bại vì `UMask=0077` làm image không đọc được code; Claude dựng lại lỗi bằng Docker Desktop, sửa kit ở #202, và hỏi bạn có đồng ý chép bản kit mới lên VPS; bạn đồng ý; Claude chép kit lên VPS, deploy lại `fb71de5` thành công, E2E vào Development 24/24 xanh, rồi làm T20: deployer chặn commit push thẳng, GitHub từ chối token `ao-dev`; bạn đồng ý gỡ chặn; Development chạy `fbbc47d`; tới Checkpoint 3, Claude hỏi bạn có chạy T21–T22 không; bạn hỏi vì sao T19 chưa được đánh xong; Claude giải thích hai mục còn mở và nhận đã nói quá; bạn đồng ý đánh xong T19, chép kit lại sau T22, và chạy T21–T22; `qa` kiểm bốn item trên Development, hai lượt chạm giới hạn 5 giờ, Claude sửa lỗi chạy tiếp lượt `qa` (#207); cả bốn PASS, bạn `Accept`; Claude đưa link trang Releases sai, bạn thêm tab Releases và tạo `v0.2.0`, `v0.3.0`; `/ao-release` dừng ở gate ④ với 10 item, chờ bạn duyệt; bạn duyệt; Staging chạy `v0.2.0`, regression PASS, PR release #18 đỏ ở `policy`; Claude sửa kit (#209); bạn đồng ý đi luồng Bug `DEMO-27` không review; `audit` chặn bản sửa trên Staging vì thiếu báo cáo review, Claude nhận đã đề xuất sai; bạn gỡ chặn; `DEMO-27` qua QA trên Staging, bạn `Accept`; regression chạy lại, Claude sửa lỗi gate ⑤ đến quá sớm (#211), release note viết lại; bạn approve PR #18; `merge-gate` merge, gắn tag `v0.2.0`, merge ngược; Production chạy `v0.2.0`, cùng tree với Staging; bạn bấm Release; T22: bạn chọn Bug thử `/favicon.ico` với Severity High, Claude tạo `DEMO-28`; `be-dev` sửa, đo được câu "console có lỗi" của Claude là sai, Claude sửa Bug; `merge-gate` merge PR #21; lượt `qa` bị tắt vì máy thiếu RAM, bạn giải phóng RAM, `qa` PASS; bạn `Accept`; `/ao-ship v0.2.1` chờ gate ⑤; bạn duyệt, `v0.2.1` lên Production; bạn bấm Release; rollback về `v0.2.0` và lên lại `v0.2.1` đều đạt; smoke fail có chủ đích đạt, `jira-sync` tạo Bug `DEMO-29`, Production giữ `v0.2.1`; T22 đóng; Claude rà việc tồn ở kit, Jira và hai pilot, sửa hai Medium của Pilot 1 (PR #218); chép kit lên VPS (`521e031`); Checkpoint 4 đóng, `docs/release-workflow.md` (PR #219); T22b: ao-pilot PR #23, review tìm lỗi High trong PR #217, sửa ở PR #220, chép lại, merge (`0f86022`), `qa` PASS, bạn Accept; T22b và T23 xong, plan lưu ở `tasks/archive/release-workflow/`, bạn xác nhận `release-workflow` hoàn thành; bạn hỏi Pilot 2 khác gì Pilot 1 và cách giảm chi phí review PR chép kit; Claude thử mù review (`max`, `high`, `open-code-review`), viết và được duyệt spec `kit-copy-review`; Claude làm `kit-copy-review` (kit PR #224–#230), review đầy đủ bản kit ở `ao-pilot` PR #24 (15,59 USD, một High được sửa), chép sang `ao-sample` PR #14 không cần agent (0 USD); đóng `kit-copy-review`, bạn duyệt spec Pilot 2; Lượt 74–93: duyệt spec Pilot 2, SMP-17 và SMP-18 (đổi thành Story, Epic SMP-19), QA 9 item, sửa điểm cắt (PR #234), v0.1.0 lên Staging rồi Production, rollback trên Development, checkpoint cuối (PR #235), đóng root login; Bạn hỏi kit có chỉ dùng cho monorepo Next.js + NestJS không; Claude trả lời trong misc/thao-luan/kit-voi-stack-khac-va-nhieu-repo.md: không cần làm lại, có hai mức sửa (stack profile, nhiều repo), khuyên gom monorepo; Bạn hỏi ba trường hợp mở rộng (user/admin/api NestJS, Spring Boot, hai repo); Claude khuyên làm cả ba trong kit hiện tại, không clone; trường hợp 1 và 2 trong project-scaffold, trường hợp 3 thành module multi-repo sau; Bạn bảo ghi concern 1 vào file chỉ mục và hỏi concern 2 (chạy song song) sửa kit hay clone; Claude lập misc/thao-luan/concerns.md và sdlc-song-song-sua-kit-hay-clone.md: sửa kit hiện tại, chỉ thay lớp chạy, trần mặc định 1; Bạn bảo ghi quyết định của concern 2 vào concerns.md; Claude viết lại file thành mỗi concern một mục, concern 2 có 5 quyết định và link tới hai file thảo luận; Bạn hỏi concern 3 (thêm role mới: SEO Content Writer, SEO lúc spec và plan); Claude viết misc/thao-luan/role-moi-trong-sdlc.md: ba kiểu role, seo là cố vấn trong /ao-spec, viết bài trong database là workflow nội dung riêng, sửa kit và đưa thứ tự chạy sang contract; Bạn hỏi concern 4 (cập nhật skill và agent, chọn lọc); Claude viết misc/thao-luan/cap-nhat-skill-va-agent.md: bốn cách đưa vào kit, tám nguyên tắc phải giữ, quy trình 5 bước, sửa kit không clone; Bạn hỏi thứ tự làm các concern; Claude thêm bảng Thứ tự làm và tiến độ (A1–D3) vào misc/thao-luan/concerns.md, chờ bạn duyệt; Bạn hỏi reviewer có song song với security được không, Pilot 3 chạy thế nào, trần A2; Claude trả lời: song song được (4 chỗ dùng chung phải sửa), Pilot 3 dùng Epic đầu của dự án thật sau khi kiểm scaffold không agent, trần 1 với gói Pro và đề xuất gộp A2 vào C2; Bạn đồng ý gộp A2 vào C2 và hỏi các bước làm một tính năng khi dùng kit; Claude ghi quyết định vào concerns.md và trả lời: ở Cấp 1 bạn gõ /ao-* từng bước, dừng ở 5 cổng; Cấp 2 bộ điều phối tự chạy; Bạn hỏi sao PO phải tự tạo Epic, sao /ao-spec không phỏng vấn từ mô tả sơ khai; Claude giải thích ba giả định của Cấp 1 và đề xuất bước intake (/ao-intake) trước /ao-spec, đặt trước B1; Bạn đồng ý thêm intake; Claude thêm A3 /ao-intake trước B1 và mục concern 5 vào concerns.md; Bạn hỏi cách sửa SPEC sau /ao-spec và yêu cầu hướng dẫn green/brown trong project-scaffold; Claude trả lời kit chưa có lệnh sửa SPEC, đề xuất /ao-spec và /ao-plan kèm yêu cầu sửa gom vào A3, và ghi yêu cầu hướng dẫn vào B1; Bạn hỏi item dừng ở đâu để hỏi bạn sau /ao-spec; Claude liệt kê 12 chỗ dừng theo kế hoạch (5 cổng, Accept, câu hỏi spec/plan) và 7 chỗ dừng bất thường; Bạn nêu vấn đề kit không dừng để bạn xem trước sau /ao-build; Claude xác nhận ba lỗ hổng và đề xuất bước xem trước bằng PR nháp, /ao-preview, /ao-fix không kéo review, đặt thành A4 trước B1; Bạn hỏi sao xem trước phải dùng worktree thay vì chuyển nhánh; Claude đồng ý, giải thích worktree là vì agent (review, QA, C2), sửa /ao-preview sang chuyển nhánh trong checkout chính; Bạn hỏi lại về nhánh, checkout và pull khi xem trước; Claude giải thích chậm kèm sơ đồ mermaid trong misc/thao-luan/git-khi-dung-kit.md; Bạn báo lỗi Mermaid trong VS Code; Claude sửa gitGraph (mainBranchName develop) và dấu ; trong sequenceDiagram; Bạn đồng ý thêm A4 và gom sửa SPEC/plan cùng trả lời Cần ba/sa vào A3; Claude cập nhật bảng tiến độ, concern 5 và mục concern 6 trong concerns.md; Bạn duyệt bảng và cách chạy Pilot 3, hỏi lệnh yêu cầu sửa sau xem trước; Claude ghi quyết định vào concerns.md, đề xuất /ao-fix <PR> với tiền tố be:/fe:, và hỏi AC khi yêu cầu đổi AC; Bạn đồng ý: yêu cầu sửa làm đổi AC thì ba cập nhật AC trước; Claude ghi vào A4 và concern 6 trong concerns.md; Bạn hỏi ba có sửa AC khi Story In Progress được không; Claude trả lời được (guard, Jira, tiền lệ SMP-18) và nêu ba việc đi kèm cho spec A4; Bạn hỏi yêu cầu sửa có đổi AC của Epic hay Task không; Claude nêu các trường hợp Epic, Task, Bug và hợp đồng API, đề xuất A4 hỏi rộng hơn và chuyển lệnh đổi Task thành Story sang A4; Bạn đồng ý hai điểm của A4 và hỏi về lỗi bạn thấy khi item In QA; Claude ghi quyết định, chỉ ra ba chỗ chưa thông của đường QA fail và đề xuất A5 (/ao-qa <KEY> fail:, build lại sau QA fail); Bạn đồng ý thêm A5; Claude thêm A5 (sửa lỗi tìm thấy khi QA) và mục concern 7 vào concerns.md; Bạn bảo bắt đầu; Claude làm A1 (kit PR #237: mật khẩu basic auth không lên dòng lệnh, audit nhận SHA rút gọn) và hỏi gộp một spec cho A3–A5; Bạn đồng ý gộp một spec cho A3–A5; Claude viết SPEC-human-loop.md (ba phần, 11 điểm tự chốt, 4 tiền đề) và chờ bạn duyệt; Bạn duyệt spec human-loop; Claude viết plan (21 task, 4 checkpoint, ba PR theo phần), ghi thêm 10–16 USD review PR chép kit, chờ bạn duyệt plan; Bạn duyệt plan; Claude merge PR tài liệu #239, kiểm bốn tiền đề (đều đạt; token ao-dev cần contents write), làm T3–T6 của phần 1 (/ao-request, sửa SPEC và plan, epic.md, idea-refine, /ao-intake), hỏi bạn có cho ux quyền comment Jira; Bạn chọn cách A (ux được comment Jira) và hủy hai item thử; Claude merge phần 1–3 của human-loop (kit PR #240, #241, #242), chạy thật /ao-preview trên ao-sample, hỏi bạn trước T19–T20 (35–51 USD) và đề xuất Epic Ghim ghi chú; Bạn đồng ý chạy T19–T20 và Epic Ghim ghi chú; Claude tạo Task SMP-22, chuẩn bị bản chép kit 669fb62 trên nhánh feature/SMP-22-kit-copy (bot ao-dev, b09f751), nhờ bạn bấm Refine; Bạn bấm Refine SMP-22; Claude mở PR nháp ao-sample #21, sửa lỗi shell của /ao-preview do sast bắt (kit PR #244), chạy /ao-review 21 (pr-ready chạy thật), bắt đầu intake Epic Ghim ghi chú; lượt 125–130: theo dõi review PR #21 ba phút một lần, sửa kit #245, review vòng hai, bạn merge PR #21, QA PASS và Accept SMP-22, intake tạo Epic SMP-23; lượt 131–136: /ao-spec SMP-23 với hai vòng câu hỏi, thử sửa SPEC (gộp Story), gate ①, /ao-plan, thử sửa plan (chuyển E2E AC11), gate ②; lượt 137–140: /ao-build SMP-24 (BE rồi FE, chạm giới hạn), PR nháp #23 và xem trước, /ao-fix 23 với be:/fe: và --change ac, /ao-request SMP-23, hai lỗ hổng kit; lượt 141–143: /ao-review 23, gate ③ và merge, thử lỗi id sai dạng trên Development, /ao-qa SMP-24 với --change ac (AC12, QA fail), duyệt cách chia be:/fe: cho -r2; lượt 144–146: /ao-build SMP-24 trên -r2 (spec-sync, be-dev, fe-dev), PR #24, /ao-review 24, gate ③, /ao-qa PASS, Accept; lượt 147: đóng human-loop (kit #246), đề xuất module vá lỗi; lượt 148: spec live-run-fixes (A6); lượt 149: duyệt spec, plan và todo của live-run-fixes; lượt 150: duyệt plan; live-run-fixes T1–T17 (kit #247–#250), kiểm thật /ao-preview trên ao-sample; lượt 151: đóng live-run-fixes (kit #251); lượt 152: ảnh chụp màn hình làm design, đề xuất kiểu màn hình Ảnh và design system; lượt 153: ảnh chụp và design system vào B2; spec project-scaffold (B1); lượt 154: duyệt spec, plan và todo của project-scaffold phần 1; lượt 155–156: duyệt plan; T1–T6 của project-scaffold phần 1 (kit #252, #253), tiền đề Jira, space AOG; lượt 157: duyệt mục 2.4; chặng 1–3 của project-scaffold (kit #253–#255), bản nháp hướng dẫn; lượt 158–159: T16 bắt đầu; `/ao-intake` trong `ao-green` dừng vì `init` không thêm remote `origin` và hai App chưa được cài vào repo; lượt 160: chọn câu trả lời cho phỏng vấn `/ao-intake` (Task cho commit đầu, không agent); lượt 161: Task đầu gồm cả cài đặt GitHub; cột `In Review` còn thiếu giới hạn 2; lượt 162: CI đỏ sau push đầu thì mở Bug qua PR; Max của cột `In Review` chưa được lưu; lượt 163: trả lời "ok" cho bản nháp intake thì mới có mã Task; cột board AOG đã khớp; lượt 164: `AOG-1` được tạo; commit đầu `c251670` lên `develop` và `main`; CI chưa được GitHub ghi nhận; bước tạo key thứ hai của `ao-dev`; lượt 165: Actions của `ao-green` bị tắt dù API báo bật; `setup github` xong (soft mode); đề xuất PR commit rỗng cho CI lần đầu, Cancel `AOG-1`, `workflow_dispatch` và commit gốc không cần mã; lượt 166: duyệt ba đề xuất; PR #1 của `ao-green` xanh, chờ bạn merge; sửa lại: `ao-sample` đã gặp lỗi Actions ở Pilot 1; bắt đầu sửa kit; lượt 167: CI trên `develop` của `ao-green` xanh; `doctor` còn 2 dòng (6 file kit mới sửa, MCP chưa lưu duyệt); bạn duyệt MCP và Cancel `AOG-1`; lượt 168: `AOG-1` Cancelled; hộp thoại MCP "Enable selected" của Claude Code 2.1.322; duyệt MCP chưa được lưu; lượt 169: MCP của `ao-green` đã lưu; T16 xong; kit PR #256 sửa bảy điểm và đưa bản nháp hướng dẫn với phần 3 viết lại; đề xuất cách làm T17; lượt 170: T17 bắt đầu; `ao-brown` dựng từ `ao-sample` không kit; `init`, `check`, `setup jira` chạy; thiếu bước `npm ci` cho hook; năm việc của bạn; lượt 171–173: `/ao-intake` hỏi thêm hai câu rồi tạo `AOG-2`; kit chép lên `develop` của `ao-brown`; CI đầu đỏ ở `sast` vì `scripts/dev.mjs` (cả trong khung `next-nest`); đề xuất Semgrep chỉ quét commit đầu khi push nhánh mới; lượt 174: phỏng vấn Bug hỏi về PR không review; mốc audit của deployer nằm sau các commit dựng; lượt 175–176: `AOG-3`; PR `ao-brown` #1 sửa `scripts/dev.mjs`, `sast` xanh nhưng `build-test` đỏ vì luật coverage coi `scripts/` là source; hai đề xuất đổi luật gate chờ duyệt; lượt 177: bạn duyệt hai luật (coverage bỏ `scripts/`, Semgrep chỉ quét commit đầu khi push nhánh mới) và merge tay PR `ao-brown` #1; kit sửa xong cả hai; lượt 178: không merge PR đỏ; luật coverage mới vào bản kit của `ao-brown` trong PR #1, CI xanh; lượt 179: T17 xong; CI xanh trên `develop` của `ao-brown`; phần 4 của hướng dẫn viết lại; kit PR ba sửa; bạn Cancel `AOG-2`, `AOG-3`; lượt 180: `AOG-2`, `AOG-3` Cancelled, T17 xong; hỏi trước T18 (release `v0.2.0`, khoảng 1–2 USD); lượt 181: bạn cho làm theo đề xuất, chỉ hỏi khi merge, gate và bấm Jira; T18 bắt đầu, `/ao-release` cắt ở `61f4cec` (`SMP-22`, `SMP-24`), chờ Fix Version `v0.3.0`; lượt 182: gate ④ duyệt; `release/v0.2.0` cắt và lên Staging; `/ao-ship` 1,05 USD, 54/54 E2E, PR #28 chờ gate ⑤; lượt 183: gate ⑤ approve; `merge-gate` merge PR #28, tag `v0.2.0`, Production `success` sau 28 giây; bạn Release `v0.2.0` và Complete `SMP-23`; lượt 184: mình Release `v0.2.0` trên Jira bằng token admin, mô tả là nguyên văn `fix-version.md`; PR #29 đã merge; còn Complete `SMP-23`; lượt 185: `SMP-23` Complete, T18 xong; T19 xong (hướng dẫn bản cuối, README); hỏi trước T20; lượt 186: T20 bắt đầu; Task `SMP-27`; `ao-kit sync` vào `ao-sample` (`20f90e3`), `project.yaml` khớp, `doctor` đạt hết; chờ bạn bấm Refine; lượt 187: mình bấm Refine và Start `SMP-27`, mở PR nháp #30; `/ao-review` 8,89 USD, không Critical hay High, một Medium chung về `workflow_dispatch`; chờ gate ③; lượt 188: PR #30 merge, deploy Development xong; Actions bị chặn vì billing nên `jira-sync` không đưa `SMP-27` sang In QA; sửa Medium và ba Low của review trong kit ở local (`f05e50d`, 1281 test), chờ bạn quyết budget Actions; lượt 189: hết 2.000 phút Actions (12 USD), 45% là job ngắn của `jira-sync` và `merge-gate` bị làm tròn 1 phút; không khuyên Jenkins hay tài khoản thứ hai; đề xuất budget 5 USD rồi một task giảm phút; lượt 190: bạn loại budget; tài liệu GitHub xác nhận runner thường miễn phí, không giới hạn ở repo public; public `ao-sample` là công khai kit; hỏi bạn có chấp nhận công khai kit; lượt 191: đổi về private được bất cứ lúc nào, nhưng fork, log Actions và bản sao bên ngoài không thu hồi được; vẫn chờ bạn quyết có công khai kit; lượt 192: thử thật, workflow trên repo public `test` chạy xanh lúc 02:37 UTC, `ao-sample` private vẫn bị chặn lúc 02:38; vẫn chờ bạn quyết có công khai kit; lượt 193: quét gitleaks toàn lịch sử sạch; `ao-sample`, `ao-pilot` public kèm giới hạn tương tác và duyệt workflow người ngoài; `SMP-27` sang Ready for QA, `/ao-qa` chạy nền; repo kit chưa đổi vì có chi tiết sự cố VPS cũ, hỏi bạn chọn public nguyên trạng hay runner trên máy; lượt 194: chỉ xóa file thì còn trong lịch sử; viết lại lịch sử vẫn còn trong 258 PR; đề xuất repo kit mới public với lịch sử mới, repo cũ private làm kho; lượt 195: `/ao-qa SMP-27` NOT TESTED (1,41 USD) vì agent không chạy được `/ao-preview`; phiên chính kiểm bằng PR nháp #31, hai app lên từ `project.yaml`; chờ gỡ cờ để chạy lại QA ra PASS; lượt 196: gỡ cờ `SMP-27`; `qa` không chạy lại được từ In QA; sửa lại: bạn bấm `Accept` được ngay theo spec mục 2.9, không cần QA PASS; lượt 197: repo kit public sau khi kiểm không có secret hay private key; kit PR #259 (sửa review, ghi T20) merge `af40e08`; chờ bạn Accept `SMP-27` và chọn giữ hay xóa `ao-green`, `ao-brown`, `AOG`; lượt 198: bạn Accept `SMP-27`, giữ `ao-green`, `ao-brown`, `AOG`; T21 đóng B1 (sáu tiêu chí đạt, 11,35 USD agent), kit PR #260 `f370618`; hỏi bạn có bắt đầu B2; lượt 199: kit phải nằm trong repo; đề xuất monorepo `shop/` với `apps/user`, `apps/admin`, `apps/api` (đúng kế hoạch B2–B4); bốn điều template đặt ra cho B2, B3: pnpm, hook và workflow riêng, database, RAM của VPS; lượt 200: bạn trả lời "có" cho bốn câu và giữ quyền tự làm theo đề xuất cho B2; Claude viết `SPEC-project-scaffold-2.md` (pnpm, `ao-kit add` từ template, stack `react`, nhiều app công khai mỗi app một host, ảnh chụp và design system), bốn câu hỏi chờ duyệt; lượt 201: bạn duyệt spec B2, repo `shop` public; Claude viết plan (26 task, năm chặng), merge kit PR #261 (spec, plan) và #262 (chặng 1, pnpm: `package-manager.mjs`, CI, `/ao-preview`, `init --package-manager pnpm`, `doctor`); Checkpoint 1 đạt; đề xuất thêm `pnpm-workspace.yaml` vào đường dẫn review bảo mật; lượt 202: giải thích "mức effort của roster": PR sửa đường dẫn trong `roster_effort_paths` thì `security` chạy `max` thay vì `high`; vì sao đề xuất thêm `pnpm-workspace.yaml`; lượt 203: bạn đồng ý thêm `pnpm-workspace.yaml` vào đường dẫn review bảo mật; Claude làm chặng 2 (T7–T13): stack `nextjs` và `react`, `ao-kit add --from <template>`, `setup github` cho repo public; thử trên hai template thật (hai bản Playwright, đã sửa; thiếu lcov; build cần `NEXT_PUBLIC_*`); kit PR #263 merge; Checkpoint 2 đạt; nhờ bật Docker để build thử image; lượt 204: bạn hỏi sao không tự bật Docker Desktop; Claude bật bằng `Start-Process`, build thử hai stack (Next.js 50 giây, 268 MB, 51 MiB RAM; React và Caddy 40 giây, 103 MB, 16 MiB), cả hai chạy với `--cap-drop ALL` và trả 200; lượt 205: Claude tắt Docker Desktop (ghi memory: bật khi cần, xong thì tắt); làm chặng 3 (nhiều app công khai, kit PR #264) và chặng 4 (ảnh chụp và design system, kit PR #265); Checkpoint 3 đạt; DNS wildcard có sẵn; xin bạn đồng ý T21 trên VPS, kèm hai lệnh bạn chạy (nạp key, mở đăng nhập root); lượt 206: T21 trên VPS xong (RAM còn 2.914 MB, kit lên `c49b051`, giữ bản cũ ở `/opt/ao/kit.prev`, Caddyfile không đổi, root đóng lại); T20 bản nháp phần 5 của hướng dẫn; thêm `ao-kit add --ref`; bạn nhờ dọn container, image, volume không dùng trên VPS, cần mở lại root; T22 chờ bạn chọn nhánh của template React; lượt 207: dọn VPS (thu 4,7 GB build cache, root đóng lại); T22 dựng `TungPH7/shop` (public), `init` pnpm, `add` hai template ở nhánh `write-cv`, space `SHOP`, commit đầu `e4a708a`; kit PR #266 (`78baf0f`: `--ref`, ghim `playwright-core`); lượt 208: bạn làm xong phần web (board, hai App, Actions, key thứ hai); `setup github` đặt ruleset và giới hạn tương tác; CI đầu trên `develop` đỏ đúng hai chỗ đã đoán; bạn cho làm tiếp theo đề xuất; T23: Task `SHOP-1` (token CI), PR `shop` #5 (chép kit, nâng 8 gói, `user` build không cần secret và chạy standalone, `admin` gọi `/api`, health `/en`), CI xanh; `/ao-preview` dừng vì PR sửa `.ai-orchestrator/`; chờ bạn merge PR #5 và mở `claude` trong `shop`; lượt 209: bạn nhờ Claude làm hai bước còn lại; Claude merge PR `shop` #5 (`91b699c`) bằng login `gh` của bạn, ghi cờ tin cậy thư mục và duyệt MCP như hộp thoại vẫn ghi (`claude mcp list` báo cả hai Connected); CI trên `develop` xanh, `doctor` đạt mọi dòng; plan mode, bạn duyệt kế hoạch; `SHOP-1` Cancelled qua token admin; Dependabot tự đóng PR #1–#4; T22 và T23 xong; hỏi bạn đồng ý T24 trên VPS; lượt 210: bạn mở VPS; T24 bắt đầu: tạo secret Development của `shop` (`AUTH_SECRET` sinh trên VPS), thêm `shop` vào `deployer.yaml`; `baseline` dừng vì App `ao-deploy` chưa cài trên `shop` (hướng dẫn và `doctor` không nhắc); trả `deployer.yaml` về bản cũ, bật lại timer; nhờ bạn cài App; lượt 211: bạn cài `ao-deploy`; `baseline shop`, yêu cầu deploy `#7769885492` qua `/ao-rollback development` bằng login `gh` của bạn; `shop` chạy trên Development sau 9 phút, hai host đạt, Caddyfile chỉ thêm site của `shop`, RAM còn 2.794 MB; một việc ngoài log chờ bạn trước khi đóng root; lượt 212: bạn đổi mật khẩu basic auth; mật khẩu cũ 401, mới vào được ở cả ba dự án; xóa bản sao Caddyfile, đóng root, gỡ key VPS khỏi ssh-agent; T24 xong; T25 ở lượt sau |
 | 28 | `0ac542d7-954f-44a8-bd4c-868cd5f9cdc3` | 2026-11-13 khoảng 23:35 → | Bạn dán đoạn cuối của Phiên 27 để làm tiếp; T25: phần 5 của hướng dẫn theo đầu ra thật của `shop`, bước cài App `ao-deploy` và deploy lần đầu bằng `/ao-rollback`, mục 13 của `vps-setup.md`; kit PR #267 merge; tiêu chí 3 mới đạt một phần; bạn "Ok", T26 đóng B2 (kit PR #268); template Java của B3 (Maven, nhánh `codebase`); bạn cho bắt đầu B3, quyền tự làm áp dụng tiếp; spec B3 duyệt (Lượt 7), kit PR #269–#271, chặng 3 tới T15 |
 | 29 | `3f959e28-f038-49ee-ae3f-592c7a55eecb` | 2026-11-14 khoảng 09:35 → | Bạn dán đoạn cuối của Phiên 28, bảo làm T16 và mở VPS cho chặng 5, để mở tới khi bạn bảo đóng; T16 (tài liệu chặng 3, kit PR #272) và T17 (ba việc B2 để lại, kit PR #273) xong; Claude đưa hai lệnh mở VPS trong dòng báo giữa chừng nên bạn không thấy, bạn nhắc hai lần, Claude đưa lại ở câu trả lời cuối; lượt 2: lệnh mở đăng nhập root chưa có tác dụng, bạn chạy lại; lượt 3: T18 bản nháp bước 9, T19 kit `3a1c729` lên VPS, T20: `SHOP-2` và `shop` PR #7, `SHOP-3` với `add api` và Spring Boot 4.0.9, kit PR #274 (coverage của interface Java); Claude xóa nhầm toàn bộ container, image và volume Docker Desktop của bạn khi dọn sau test; lượt 4: không có Previous Versions, bạn dặn hỏi trước mọi việc xóa không hoàn tác được, và cho Claude merge PR `shop` khi CI xanh; PR #7, #8 merge (T20 xong), kit PR #275, #276, `SHOP-4` và PR #9 xanh, biến database của Development trên VPS; chờ bạn quyết bật Docker Desktop cho `/ao-preview`; lượt 5: bạn chọn bật Docker; `/ao-preview SHOP-4` chạy `user`, `admin`, `api` và Postgres, ba app trả 200, `/api` qua `admin` tới `api`; `user` còn trỏ API NestJS cũ, việc của B4; chờ bạn xem rồi trả lời merge; lượt 6: PR #9 merge (T21 xong), `/ao-rollback development 05b1a63` gỡ chặn, deploy 18,5 phút, database, Flyway, `/api/v1/health` qua `admin` 200, RAM còn trống 2.508 MB, backup và `restore-check` đạt; chờ bạn đồng ý thử khôi phục vào database đang chạy và đóng `SHOP-2`–`SHOP-4`; lượt 7: khôi phục vào database đang chạy đạt sau khi lộ lỗi luật giữ bản (sửa: giữ 48 giờ, kit PR #277), `SHOP-2`–`SHOP-4` Cancelled, kit trên VPS `97db806`, B3 đóng; chờ bạn chọn module kế tiếp |
+| 30 | `07e0a424-ef4e-437a-b766-0ca9955be037` | 2026-11-14 khoảng 12:15 → | Bạn dán đoạn cuối của Phiên 29 và chọn B4 (Pilot 3); Claude viết bản nháp `SPEC-pilot-3.md`: `v0.1.0` của scaffold lên ba môi trường trước, rồi Epic đầu "Danh mục sản phẩm" lên `v0.2.0`; tìm ra Production đang luôn mở trong khi `/api/**` để `permitAll` (đề xuất `production_auth`), `/ao-release` cần một item Done (`SHOP-5`), ba app lệch hợp đồng API sản phẩm; chờ bạn trả lời 5 câu: Epic, scaffold trước, chỗ để bản sao backup (đề xuất Backblaze B2), basic auth cho Production, quyền tự làm cho B4; lượt 2: bạn duyệt câu 1, 2, 4, 5, hỏi câu 3 có cần chọn trước không và sẽ gửi ảnh; Claude hiểu sai "chưa làm" và bắt đầu viết plan, bạn nhắc, Claude dừng (spec và `tasks/plan.md` chưa commit); bạn hỏi Google Drive cho bản sao: được, với OAuth client riêng đã Publish, nhưng token trên VPS xóa hẳn được bản sao; lượt 3: bạn hỏi bản sao backup là gì và vì sao cần mới đạt; Claude giải thích: backup đang nằm chung máy với database, tiêu chí 2 do spec đặt chứ không phải giới hạn kỹ thuật, chỉ bắt buộc trước khi mở bán; lượt 4: bạn hỏi backup về máy bạn có đạt không, và cơ chế có giống B2 để sau này chuyển: đạt (máy bạn kéo về bằng tài khoản chỉ đọc trên VPS), khác hướng chép (kéo về và VPS đẩy lên), đề xuất mã hóa `age` từ đầu và khối cấu hình B2 tắt sẵn để chuyển dễ |
 
 ---
 
@@ -22808,3 +22809,280 @@ Hai việc bạn giao đã xong. B3 (`project-scaffold` phần 3) cũng đã xon
 - đưa Staging và Production của `shop` lên.
 
 Theo thứ tự trong `concerns.md`, việc tiếp theo là **B4: Pilot 3 trên `shop`**. Trước khi bắt đầu, mình chờ bạn chọn và xác nhận.
+
+# Phiên 30 · Lượt 1 — 2026-11-14 khoảng 12:20
+
+**Bạn:**
+
+````markdown
+Làm tiếp session id: 3f959e28-f038-49ee-ae3f-592c7a55eecb
+
+làm tiếp B4: Pilot 3
+
+đoạn chat của session id: 3f959e28-f038-49ee-ae3f-592c7a55eecb
+```
+Mình làm việc 1 trước: thử khôi phục vào database đang chạy trên Development, theo đúng mục 15, bước 4. Để an toàn, mình chạy thêm một lượt backup trước khi khôi phục; việc này chỉ thêm một bản dump mới, không xóa gì. Script được chép lên VPS để tránh lỗi trích dẫn.
+
+Khôi phục dừng vì bản dump lúc 04:49 đã bị bản backup 04:55 thay thế theo luật giữ một bản mỗi ngày, nhưng hai bản có nội dung giống nhau. Tôi sẽ bật lại timer của deployer trước rồi chạy tiếp.
+
+Deployer chạy lại cho thấy hướng dẫn ở T16 sai: bước "chạy backup trước khi khôi phục" sẽ xóa bản dump trong ngày. Mình sẽ sửa hướng dẫn và luật giữ bản, rồi khôi phục bằng bản 04:55 đã chép sang /root.
+
+Khôi phục vào database đang chạy đã thành công: pg_restore thoát mã 0, 3 bảng và các extension còn nguyên, api và restore-check đều khớp, timer đã chạy lại. Giờ mình xóa hai file tạm trên /root rồi chuyển sang việc 2 trên Jira, bắt đầu bằng đọc comment đóng SHOP-1.
+
+Token CI chỉ có quyền chuyển trạng thái `Refine`, còn `Cancel` thuộc về bạn, nên tôi sẽ dùng token admin của bạn để gỡ cờ và nhãn `needs-you`, ghi comment trỏ tới PR rồi đóng với Resolution Done; script sẽ đọc token từ biến của bạn và không in ra.
+
+Ba task SHOP-2, SHOP-3 và SHOP-4 đã đóng với resolution Done, cờ và nhãn needs-you đã gỡ, mỗi task có comment trỏ tới PR. Tiếp theo mình sửa lỗi backup xóa bản dump cùng ngày bằng cách giữ mọi bản của 48 giờ gần nhất, rồi rebase nhánh chặng 5 lên main.
+
+Mình sẽ sửa test hiện có cho khớp luật mới, rồi thêm một ca kiểm thử giống hệt sự cố vừa xảy ra trên VPS.
+
+Test cũ so danh sách ngày, mà ngày 14 giờ có hai bản. Mình so theo ngày không trùng.
+
+Giờ sửa phần tài liệu nói về luật giữ bản: mục 15 của `docs/vps-setup.md`, bước 4 khôi phục, và comment đầu file của hai script.
+
+Mình đã sửa hai chỗ trong hướng dẫn và `vps-setup.md` cho khớp với các mục đã chạy thật, giờ chạy năm lệnh kiểm.
+
+Dòng `printf` có dấu `\` bị mất một lớp khi đi qua shell, đúng như memory đã cảnh báo. Mình dùng Edit cho dòng này; câu của `getting-started.md` đã sửa xong.
+
+Năm lệnh kiểm xanh: 1.398 test. Mình tách hai commit, một cho bản sửa luật giữ bản và một cho tài liệu, rồi mở kit PR của chặng 5 (T18–T23).
+
+Kit PR #277 đã được merge (97db806), nên mình sẽ cập nhật kit trên VPS lên bản đó theo mục 12 của docs/vps-setup.md.
+
+Kit trên VPS đã lên `97db806` và chạy ổn; T23 xong (kit PR #277). Tiếp theo mình làm T24 để đóng module, theo cách B2 đã được đóng ở kit PR #268.
+
+Mình đang đóng module theo đúng quy trình B2: chuyển plan, todo và verification sang thư mục archive, rồi cập nhật SPEC.md, spec, concerns.md và commit ghim trong vps-setup.md.
+
+Giờ mình thêm phần đóng module: bảng bảy tiêu chí và chi phí vào `verification.md`, đánh dấu T23–T24 và hai checkpoint trong `todo.md`.
+
+Giờ cập nhật `SPEC.md`, trạng thái của spec phần 3, hàng B3 trong `concerns.md`, và commit ghim ở mục 12 của `vps-setup.md`.
+
+Mình viết câu trả lời cho lượt này, ghi nhật ký, rồi chạy năm lệnh kiểm và mở PR đóng module.
+
+PR đóng module #278 đã merge (`63f4bb6`). Mình cập nhật memory về tiến độ và quyền tự làm, vì quyền này hết khi B3 đóng.
+
+B3 (`project-scaffold` phần 3) đã đóng, đủ cả bảy tiêu chí. Hai việc bạn giao cũng đã xong.
+
+**1. Khôi phục vào database đang chạy: đạt.** Lần thử này lộ ra một lỗi, và mình đã sửa.
+- **Lần đầu dừng trước khi động vào database,** vì bản dump lúc 04:49 đã mất.
+  - Hướng dẫn mình viết khuyên chạy backup trước khi khôi phục. Kit lại chỉ giữ bản mới nhất của mỗi ngày, nên lượt backup lúc 04:55 đã xóa bản 04:49.
+  - Lần này không mất gì, vì hai bản cùng nội dung. Ở Production thì lượt chạy tay đó có thể xóa đúng bản tốt của đêm trước.
+  - Script dừng sau khi đã tắt timer của deployer, nên mình bật lại ngay.
+- **Đã sửa ở kit PR #277:**
+  - kit giữ mọi bản dump của 48 giờ gần nhất, ngoài bản mỗi ngày và mỗi tuần như cũ;
+  - hướng dẫn chép bản dump ra `/root` trước khi khôi phục.
+- **Lần hai, khôi phục từ bản 04:55:** `pg_restore` xong trong 1 giây.
+  - Trước và sau đều có 3 bảng, 3 dòng lịch sử Flyway và đủ các extension.
+  - `api` vẫn trả lời trong suốt lúc khôi phục, và `restore-check` khớp.
+
+**2. Jira:** `SHOP-2`, `SHOP-3`, `SHOP-4` đã gỡ cờ và nhãn `needs-you`. Mỗi Task có comment trỏ tới PR #7, #8, #9, và đã Cancel với Resolution Done, như `SHOP-1`.
+
+**Kết quả của B3:**
+- **Kit PR #269–#278**, 0 USD agent. Có bốn lỗ hổng chỉ lộ ra khi chạy thật, đều đã sửa:
+  - luật coverage đòi báo cáo cho cả interface Java;
+  - `dev` dựng thừa service `app` của template;
+  - `doctor` báo Docker đang chạy dù đã tắt;
+  - luật giữ bản backup.
+- **`shop` trên Development** chạy `user`, `admin`, `api` và Postgres, có backup mỗi đêm.
+- **RAM:** VPS còn trống 2.508 MB. Mình ước khi đủ ba môi trường vẫn còn khoảng 1,7 GB, nên giữ VPS 4 GB và đo lại ở B4.
+- **VPS** chạy kit `97db806`, Caddyfile không đổi. VPS vẫn mở, theo lời bạn dặn.
+- **Hướng dẫn:** bước 9 của phần 5 trong `docs/getting-started.md`, cùng mục 14 và 15 của `docs/vps-setup.md`, đã ghi đầu ra thật.
+- **PR đóng module #278 đã merge.** Plan, todo và verification đã dời vào `tasks/archive/project-scaffold-3/`.
+
+**Việc để lại cho B4:**
+- sửa `HEALTHCHECK` của `api`. Docker đang đánh dấu container này `unhealthy`, nhưng deploy không bị ảnh hưởng;
+- ghép `user` với API Java, vì `user` vẫn viết theo API NestJS cũ;
+- chọn chỗ để bản sao backup ngoài VPS;
+- đưa Staging và Production của `shop` lên.
+
+Theo thứ tự trong `concerns.md`, việc tiếp theo là **B4: Pilot 3 trên `shop`**. Bạn chọn và xác nhận thì mình mới bắt đầu.
+```
+````
+
+**Claude:**
+
+B4 (Pilot 3) đã bắt đầu. Mình viết bản nháp `SPEC-pilot-3.md` trên nhánh `task/pilot-3` (commit `13a021a`, chưa push). Spec chờ bạn duyệt và trả lời 5 câu ở cuối.
+
+**Pilot 3 đi hai chặng lớn,** theo cách đã duyệt ở Lượt 112:
+1. **Kiểm scaffold, không cần agent viết code.** Ba app khung hiện có lên `v0.1.0`, qua Development, Staging rồi Production. Mỗi môi trường có database riêng, backup mỗi đêm và bản sao ngoài VPS.
+2. **Epic đầu của `shop`, làm bằng agent,** từ `/ao-intake` tới Production trong `v0.2.0`. Đây là lần đầu:
+   - `be-dev` viết Java;
+   - chạy màn hình kiểu Ảnh và design system;
+   - nâng một database Production đã có dữ liệu.
+
+**Bốn điều mình tìm ra khi đọc code, đã đưa vào spec:**
+- **Production hiện luôn mở,** trong khi `api` để `/api/**` ở `permitAll`. Lên Production lúc này là để Internet ghi thẳng vào database.
+  - Mình đề xuất khóa `production_auth: true` trong `/etc/ao/deployer.yaml`: Production của `shop` hỏi basic auth cho tới khi bạn mở bán.
+  - Khóa nằm trên VPS, nên không PR nào mở được Production.
+- **`/ao-release` cần ít nhất một item Done** để có điểm cắt, mà `SHOP-1` tới `SHOP-4` đều đã Cancelled.
+  - Vì vậy `SHOP-5` đi trọn đường review, QA và Accept.
+  - `SHOP-5` sửa `HEALTHCHECK` của `api`, và cho các E2E gọi API cũ chờ tới Epic.
+- **Ba app đều có phần sản phẩm, nhưng lệch nhau:**
+  - `api` không phân trang, và chỉ sửa được giá;
+  - `admin` dùng `priceCents` và `PUT /products/{id}`;
+  - `user` gọi API NestJS cũ, và còn nút xóa sản phẩm.
+
+  Vì vậy mình đề xuất Epic đầu là "Danh mục sản phẩm": làm ba app khớp một hợp đồng API.
+- **Trang sửa sản phẩm của `admin` nằm sau lớp đăng nhập của template,** mà lớp đó viết cho API NestJS cũ. Epic đưa trang này ra ngoài; basic auth của host bảo vệ nó cho tới Epic đăng nhập.
+
+**Chi phí ước tính:** khoảng 90–125 USD agent, phần lớn cho hai Story (50–70 USD). Phần VPS và release là 0 USD.
+
+**Năm câu cần bạn trả lời** (mục 8 của spec):
+1. **Epic đầu:** "Danh mục sản phẩm" với 2 Story (mình đề xuất). Cách nhỏ hơn: một Story "admin thêm sản phẩm, khách thấy trong danh sách", khoảng 65–90 USD. Hoặc bạn có Epic khác cho `shop`.
+2. **Làm `v0.1.0` của scaffold trước Epic:** mình đề xuất giữ. Bỏ thì bớt khoảng 6–12 USD, nhưng lỗi hạ tầng và lỗi agent dồn vào một lần.
+3. **Chỗ để bản sao backup ngoài VPS:** mình đề xuất Backblaze B2.
+   - Theo Backblaze, 10 GB đầu miễn phí và đăng ký không cần thẻ.
+   - Key trên VPS không có quyền `deleteFiles`. Theo tài liệu, thiếu quyền này thì không xóa được từng phiên bản, nên kẻ chiếm VPS không xóa hẳn được bản cũ. Mình sẽ kiểm thật điều này.
+   - Các cách khác: Google Drive, máy bạn kéo về, hoặc snapshot của BKNS.
+4. **Production giữ basic auth tới khi bạn mở bán:** mình đề xuất đồng ý.
+5. **Quyền tự làm cho B4:** như B3, cộng thêm việc mình Ready, Approve và merge PR `shop` do phiên chính làm khi CI xanh. Gate ①–⑤ và Accept của item do agent làm vẫn là của bạn.
+
+Ngoài ra, nếu bạn có ảnh giao diện muốn dùng cho Epic (trang danh sách, trang chi tiết, form của `admin`), hãy chuẩn bị 2–4 ảnh. Nếu chưa có, mình chụp giao diện hiện tại của hai app.
+
+Nguồn về Backblaze B2:
+- [B2 Pricing](https://www.backblaze.com/pricing.md)
+- [Application Key Capabilities](https://www.backblaze.com/docs/cloud-storage-application-key-capabilities)
+- [Free Isn't Always Free](https://www.backblaze.com/blog/free-isnt-always-free-a-guide-to-free-cloud-tiers/)
+
+# Phiên 30 · Lượt 2 — 2026-11-14 khoảng 12:40
+
+**Bạn:**
+
+```markdown
+1, 2, 4, 5 làm như đề xuất. Tôi hỏi chỗ này trước chưa làm:
+
+* mục 3 cần Chỗ để bản sao backup trước khi làm tiếp à?
+* ảnh giao diện muốn dùng cho Epic tôi sẽ gửi
+```
+
+Claude hiểu sai câu "chưa làm" và bắt đầu ghi duyệt vào spec rồi viết `tasks/plan.md`. Giữa lượt, bạn nhắn thêm hai lần:
+
+```markdown
+tôi hỏi tiếp, tôi nói chưa làm mà
+```
+
+```markdown
+để bản sao backup tại Google Drive có được không? kiểm tra giúp tôi
+```
+
+**Claude:**
+
+Mình xin lỗi: mình hiểu sai câu "Tôi hỏi chỗ này trước chưa làm" và đã bắt đầu viết plan. Mình đã dừng.
+- Có hai thay đổi chưa commit:
+  - `SPEC-pilot-3.md`: ghi bạn duyệt câu 1, 2, 4, 5, câu 3 còn mở;
+  - `tasks/plan.md`: bản nháp plan.
+- Chưa chạy gì trên VPS, Jira hay `shop`. Mình để nguyên hai file đó cho tới khi bạn bảo bắt đầu.
+
+**1. Mục 3 không cần chọn trước khi làm tiếp.**
+- Chặng 1 (kit `production_auth`, dòng `STOP:`, `SHOP-5`) không dùng tới bản sao.
+- Mình cần câu trả lời trước bước cài bản sao ở chặng 2, ngay trước khi `v0.1.0` lên Production.
+- Nếu tới đó bạn vẫn chưa chọn, `v0.1.0` vẫn lên được, vì Production chỉ có dữ liệu thử và còn basic auth.
+  - Bản sao chỉ bắt buộc trước khi Production giữ dữ liệu thật, tức trước khi mở bán.
+  - Khi chưa có bản sao, tiêu chí 2 của spec chưa đạt.
+
+**2. Ảnh giao diện:** mình cần ảnh trước `/ao-spec` ở chặng 3, nên không gấp.
+- Bạn gửi đường dẫn thư mục ảnh trên máy, 2–4 ảnh: trang danh sách và trang chi tiết của `user`, form của `admin`.
+- Ảnh lớn hơn 1 MB hay có cạnh dài hơn 2.000 px thì mình tự thu nhỏ.
+- Mình chép ảnh vào `.ai/design-inbox/<EPIC>/` sau `/ao-intake`, khi đã có mã Epic.
+
+**3. Google Drive cho bản sao backup: được,** với ba điều kiện và một điểm yếu.
+
+**Đã kiểm:**
+- VPS chạy Ubuntu 24.04. `apt` có `rclone` 1.60.1 và `age` 1.1.1, chưa cài; mình chỉ đọc, không cài gì.
+- Dung lượng không thành vấn đề: bản dump của `shop` hiện chỉ vài KB, còn Drive miễn phí 15 GB (dùng chung với Gmail và Photos).
+
+**Ba điều kiện:**
+- **Bạn tạo OAuth client riêng trên Google Cloud.** Theo tài liệu của `rclone`, client dùng chung của `rclone` sẽ ngừng chạy trong năm 2026.
+- **Bạn bấm "PUBLISH APP" cho client đó.**
+  - Nếu client còn ở trạng thái Testing, quyền cấp cho `rclone` hết hạn sau một tuần, và việc chép bản sao dừng.
+  - Với quyền `drive.file`, tài liệu `rclone` nói thường không cần Google xác minh app.
+- **Bạn bấm đồng ý một lần trên trình duyệt** (`rclone authorize "drive"` trên máy bạn). Sau đó mình đưa token lên VPS mà không in ra. Mình sẽ ghi từng bước bấm khi tới bước này.
+
+**Điểm yếu so với B2:**
+- Quyền `drive.file` chỉ cho `rclone` thấy các file nó tạo. Mã hóa `age` làm kẻ chiếm VPS không đọc được bản cũ.
+- Nhưng cũng token đó xóa hẳn được các file nó đã tạo, qua API, không qua thùng rác. Nếu VPS bị chiếm lần nữa, kẻ chiếm có thể xóa cả bản trên VPS lẫn bản trên Drive.
+- Key B2 thiếu quyền `deleteFiles` thì không xóa được phiên bản cũ, nên chịu được trường hợp này. Đổi lại, B2 là thêm một tài khoản mới.
+- Cách nào cũng cần kit báo cho bạn khi một lần chép thất bại, ví dụ khi token hết hạn. Mình sẽ đưa việc này vào plan.
+
+**Kết luận:** Drive dùng được. Nếu bạn chấp nhận điểm yếu về xóa, mình làm theo Drive. Nếu muốn chịu được cả trường hợp VPS bị chiếm, B2 vẫn tốt hơn.
+
+Mình chờ câu hỏi tiếp của bạn, và chưa làm gì thêm cho tới khi bạn bảo bắt đầu.
+
+Nguồn:
+- [rclone: Google Drive](https://rclone.org/drive/)
+- [Google Cloud: OAuth và trạng thái Testing](https://support.google.com/cloud/answer/15549945)
+- [Google Drive API: chọn scope](https://developers.google.com/workspace/drive/api/guides/api-specific-auth)
+- [Google Drive API: files.delete](https://developers.google.com/drive/v3/reference/files/delete)
+- [Berkeley Research IT: rclone authorize trên máy có trình duyệt](https://docs-research-it.berkeley.edu/services/high-performance-computing/user-guide/data/transferring-data/rclone-bdrive-auth)
+- [Backblaze: Application Key Capabilities](https://www.backblaze.com/docs/cloud-storage-application-key-capabilities)
+
+# Phiên 30 · Lượt 3 — 2026-11-14 khoảng 12:56
+
+**Bạn:**
+
+```markdown
+bản sao backup này là gì thế? Tại sao bắt buộc cần thì mới đạt, giải thích ngắn gọn và dễ hiểu giúp tôi
+```
+
+**Claude:**
+
+**Bản sao backup ngoài VPS là gì?**
+- Mỗi đêm, VPS tự lưu một bản chụp database của `shop` (bản dump). Hiện bản dump nằm ngay trên chính VPS đó.
+- Bản sao ngoài VPS là chép thêm bản dump ra một chỗ khác: Google Drive, Backblaze B2, hoặc máy bạn.
+
+**Vì sao cần?**
+- Database và backup đang nằm chung một máy. Nếu VPS hỏng ổ đĩa, nhà cung cấp mất máy, hay VPS bị chiếm quyền như `dtddeploy` trước đây, bạn mất cả hai cùng lúc.
+- Giống như cất chìa khóa dự phòng ngay trong xe: mất xe là mất luôn chìa dự phòng.
+- Có bản sao ở ngoài thì khi VPS mất, vẫn dựng lại được database từ bản đó.
+
+**Vì sao "có thì mới đạt"?**
+- Đây là tiêu chí 2 mình đặt trong spec Pilot 3, không phải giới hạn kỹ thuật. Kit vẫn deploy, chạy và backup bình thường khi chưa có bản sao.
+- Mình đặt tiêu chí này vì Pilot 3 đưa `shop` lên Production lần đầu. Pilot phải chứng minh dữ liệu Production giữ được.
+- Tiêu chí đòi cả một lần khôi phục thật từ bản sao, vì một bản backup chưa từng khôi phục thử thì chưa chắc dùng được.
+- Lúc này Production chưa có dữ liệu thật, nên chưa gấp. Bản sao chỉ thật sự bắt buộc trước khi bạn mở bán, tức khi có khách hàng và đơn hàng thật.
+- Nếu bạn muốn để việc này sau Pilot 3, mình ghi tiêu chí 2 là "để sau", không ghi "đạt".
+
+Mình vẫn chưa làm gì thêm, chờ bạn bảo bắt đầu.
+
+# Phiên 30 · Lượt 4 — 2026-11-14 khoảng 12:59
+
+**Bạn:**
+
+```markdown
+Tôi không backup ở Google Drive, Backblaze B2 mà backup về máy tính của tôi thì có đạt không?
+```
+
+Giữa lượt, bạn nhắn thêm:
+
+```markdown
+cơ chế backup có giống B2 không? để tương lại tôi chuyển backup từ máy tính local sang B2
+```
+
+**Claude:**
+
+**1. Backup về máy bạn: có, vẫn đạt.** Tiêu chí 2 chỉ cần bản sao nằm ngoài VPS và khôi phục thật được từ bản đó. Máy bạn là một chỗ ngoài VPS.
+
+**Cách chạy:**
+- Task Scheduler của Windows tự kéo các bản dump mới từ VPS về một thư mục trên máy bạn, mỗi ngày và mỗi lần bạn đăng nhập.
+- Máy bạn kéo bằng một tài khoản riêng trên VPS, chỉ đọc được thư mục backup. Không dùng root, vì root bị đóng khi bạn bảo "đóng VPS".
+- Đạt khi mình khôi phục một bản trên máy bạn vào Postgres chạy trên Docker của máy bạn, và số bảng, số dòng khớp.
+
+Mình sửa lại một câu ở lượt 2: cách này vẫn cần một tài khoản chỉ đọc trên VPS và một script Windows trong kit, chứ không phải "kit không đổi".
+
+**Điểm mạnh:**
+- Miễn phí, không thêm tài khoản dịch vụ nào.
+- Chịu được trường hợp VPS bị chiếm: VPS không giữ quyền gì vào máy bạn, nên kẻ chiếm không xóa được bản trên máy bạn.
+
+**Điểm yếu:**
+- Chỉ chép khi máy bật. Máy tắt vài ngày thì bản sao trễ vài ngày; bật lại thì nó kéo bù, vì VPS giữ bản của 7 ngày và 4 tuần.
+- Chỉ có một bản trên một laptop: hỏng ổ, mất máy hay dính mã độc là mất bản sao.
+
+**2. Cơ chế có giống B2 không: khác hướng chép, nhưng sau này chuyển sang B2 dễ.**
+- **Giống:** cùng bản dump, cùng lịch giữ bản trên VPS, cùng cách khôi phục.
+- **Khác:** máy bạn tự kéo về, còn VPS không biết gì về máy bạn. Với B2, VPS tự đẩy lên sau mỗi lần backup.
+- **Để chuyển dễ, mình đề xuất:**
+  - Mã hóa bản sao bằng `age` ngay từ bây giờ, cả bản kéo về máy bạn.
+    - Khi chuyển, khóa và cách khôi phục giữ nguyên. Mất laptop cũng không lộ dữ liệu khách.
+    - Đổi lại, bạn phải cất khóa bí mật của `age` ở chỗ khác ngoài laptop, ví dụ trình quản lý mật khẩu. Mất khóa là mất mọi bản sao.
+  - Bước đẩy lên B2 là một khối cấu hình trong `/etc/ao/deployer.yaml`, tắt lúc đầu.
+- **Khi chuyển:** bạn đăng ký B2 và tạo key. Mình cài `rclone`, bật khối cấu hình đó, và chép các bản cũ trên máy bạn lên B2 nếu bạn muốn. Task kéo về có thể giữ song song, thành hai bản sao.
+
+Mình vẫn chưa làm gì thêm, chờ bạn bảo bắt đầu.
