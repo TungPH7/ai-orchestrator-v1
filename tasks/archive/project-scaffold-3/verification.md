@@ -1,6 +1,6 @@
 # Kiểm thật: project-scaffold, phần 3 (B3)
 
-> **Spec:** [SPEC-project-scaffold-3.md](../SPEC-project-scaffold-3.md). **Plan:** [plan.md](plan.md). **Task:** [todo.md](todo.md).
+> **Spec:** [SPEC-project-scaffold-3.md](../../../SPEC-project-scaffold-3.md). **Plan:** [plan.md](plan.md). **Task:** [todo.md](todo.md).
 
 ## T1 (2026-11-14)
 
@@ -230,3 +230,51 @@ Profile của Development là `staging`: `dev` của template dành cho máy cá
 **Jira (Lượt 7, bạn đồng ý):** `SHOP-2`, `SHOP-3`, `SHOP-4` đã gỡ cờ và nhãn `needs-you`, có comment trỏ tới PR #7, #8, #9, rồi Cancel với Resolution Done, bằng token admin của bạn, như `SHOP-1`.
 
 **T22 xong.** Tiêu chí 4, 5, 6 đạt. VPS để mở theo lời bạn dặn.
+
+**T23 xong (Lượt 7).** Kit PR #277 (`97db806`):
+- bản cuối của bước 9, phần 5 của `docs/getting-started.md`;
+- `docs/vps-setup.md` và `docs/release-workflow.md` ghi đầu ra thật;
+- bản sửa luật giữ bản backup 48 giờ (test đỏ trước).
+
+Kit trên VPS cập nhật lên `97db806`: `tick --dry-run` không in gì, Caddyfile không đổi, timer chạy lại.
+
+### Checkpoint 4: đạt
+
+Tiêu chí 2–7 đạt, xem bảng dưới.
+
+## T24: đóng module (2026-11-14, Phiên 29 · Lượt 7)
+
+| # | Tiêu chí (spec mục 7) | Kết quả |
+|---|---|---|
+| 1 | Năm lệnh kiểm của kit xanh, cùng `profiles:check` | **Đạt.** 1.398 test ở kit PR #277; `profiles:check` xanh ở T17 |
+| 2 | `apps/api` của `shop` thêm bằng `ao-kit add`; CI trên `develop` xanh (lint, compile, Testcontainers, JaCoCo, `osv-scanner`); `doctor` đạt mọi dòng | **Đạt.** PR #8 (`866dc15`): `build-test` chạy 59 test, coverage dòng đổi 87,6%; `osv-scanner` không còn lỗ hổng sau khi nâng Spring Boot 4.0.9. `doctor` đạt mọi dòng, có JDK 21 và Docker |
+| 3 | Sửa code `api` qua Task và PR không sửa kit; `/ao-preview` chạy `user`, `admin`, `api` và Postgres | **Đạt.** `SHOP-4`, PR #9 (`05b1a63`). `/ao-preview SHOP-4` chạy cả ba app và Postgres; `/api` qua `admin` trả 200. Tiêu chí này cũng đóng phần còn thiếu của tiêu chí 3 ở B2 (lần đầu chạy `/ao-preview` với pnpm) |
+| 4 | Development chạy `api` và Postgres: smoke test đạt; `/api/v1/health` qua Caddy của `admin` trả 200; Flyway đủ migration; `ao-sample`, `ao-pilot` không đổi | **Đạt.** Deploy `05b1a63` sau 18,5 phút; 3 migration; `https://shop-admin-dev.ao.t2g.io.vn/api/v1/health` trả 200; Caddyfile không đổi; 9 container của hai dự án kia vẫn chạy |
+| 5 | Backup chạy theo lịch, và một lần khôi phục thật thành công | **Đạt.** Timer `ao-backup` đã bật (lượt đầu 19:34 UTC). `restore-check` khớp (3 bảng, 6 dòng). Khôi phục vào database đang chạy thoát mã 0 sau 1 giây |
+| 6 | Số đo RAM lúc rảnh, lúc build, lúc đổi bản; ước cho ba môi trường; đề xuất về VPS | **Đạt.** Còn trống 2.790 MB trước, 1.474 MB ở đỉnh (lúc build `user`), 2.508 MB lúc rảnh sau. Ước ba môi trường còn trống khoảng 1,7 GB; giữ VPS 4 GB, đo lại ở B4 |
+| 7 | Hướng dẫn có phần mới với số liệu thật; kit merge qua PR, CI xanh | **Đạt.** Bước 9, phần 5 của `docs/getting-started.md`; mục 14, 15 của `docs/vps-setup.md`. Kit PR #269–#277 đều merge khi CI xanh |
+
+**Kit PR của phần 3:** #269 (spec, plan), #270 (chặng 1), #271 (chặng 2), #272 (chặng 3), #273 (chặng 4), #274, #275, #276 (ba lỗ hổng gặp khi chạy thật), #277 (chặng 5). Phần đóng module đi trong PR tài liệu này.
+
+**Chi phí:** 0 USD agent, đúng như spec câu 3. Mọi Task của `shop` (`SHOP-2`, `SHOP-3`, `SHOP-4`) do phiên chính làm. CI của `shop` và kit chạy trên repo public, không tốn phút.
+
+**Khác plan và spec đã duyệt:**
+- `ao-step` chỉ chặn `be-dev` khi Docker chưa chạy, không chặn `qa` (T6).
+- `context`, `memory`, `start_timeout` làm sớm ở T4.
+- Việc nâng Spring Boot chuyển từ PR sửa code (T21) sang PR thêm `api` (T20), vì PR phải xanh mới merge được.
+- Hai lần chép kit đi trong PR #8 (thêm `api`), không trong PR riêng, vì PR đó đã sửa đường dẫn được bảo vệ.
+- Luật giữ bản backup thêm 48 giờ (T22).
+- Profile `staging` cho Development.
+
+**Việc để sau, cho B4 hay một module sau:**
+- `HEALTHCHECK` của `api` gọi `/actuator/health/liveness`, mà Spring Security trả 401, nên Docker đánh dấu container `unhealthy` (deployer không bị ảnh hưởng). Sửa trong Task đầu của B4.
+- `user` được viết theo API NestJS cũ: ghép với API Java là việc của Epic đầu ở B4. `apps/user/.env.development` trên máy bạn còn trỏ `API_URL` tới `ecom-nest.t2g.io.vn`.
+- Bản sao backup ra ngoài VPS: chọn trước bản release đầu ở B4 (spec câu 2).
+- `/ao-preview --go` và `--stop` kết thúc bằng một dòng `STOP:` mô tả trạng thái mới, nghe như báo lỗi. Sửa cách hiển thị của `ao-step`.
+- Build cache trên VPS lên 6,5 GB, quá mốc `PRUNE_CACHE` 4 GB; xem lại lúc dọn sau vài lượt build Maven.
+- Đổi bản Postgres (mục 14 của `docs/vps-setup.md`) chưa chạy thật.
+- Staging và Production của `shop` (đo RAM ba môi trường thật) đi cùng bản release đầu ở B4.
+
+### Checkpoint 5: đạt
+
+Đủ bảy tiêu chí. Module `project-scaffold` phần 3 (B3) hoàn thành ngày 2026-11-14.

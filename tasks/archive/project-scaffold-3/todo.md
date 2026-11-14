@@ -1,6 +1,6 @@
 # Task: project-scaffold, phần 3 (B3)
 
-> **Plan:** [plan.md](plan.md). **Spec:** [SPEC-project-scaffold-3.md](../SPEC-project-scaffold-3.md). Làm theo thứ tự. Mỗi task viết test đỏ trước.
+> **Plan:** [plan.md](plan.md). **Spec:** [SPEC-project-scaffold-3.md](../../../SPEC-project-scaffold-3.md). Làm theo thứ tự. Mỗi task viết test đỏ trước.
 
 **Quy ước:**
 - Xong mỗi task thì năm lệnh kiểm phải xanh: `npm test`, `npm run validate`, `npm run render:check`, `npm run jira:checklist:check`, `npm run agents:check`. Task đụng `profiles/` hay `lib/scaffold/` thì chạy thêm `npm run profiles:check`.
@@ -148,9 +148,9 @@
   4. đo RAM lúc build, lúc rảnh, lúc đổi bản; ước cho ba môi trường;
   5. cài timer backup, chạy một lần, rồi `restore-check`; thử khôi phục vào database đang chạy (mục 15, bước 4 của `docs/vps-setup.md`, chưa chạy thật ở T16);
   6. `ao-sample` và `ao-pilot` vẫn chạy. VPS để mở cho tới khi bạn bảo đóng.
-- [ ] **T23: bản cuối của hướng dẫn; PR** (tiêu chí 7). Chép đầu ra thật của T19–T22.
+- [x] **T23: bản cuối của hướng dẫn; PR** (tiêu chí 7). Chép đầu ra thật của T19–T22.
 
 ### Checkpoint 4: sau T23
-- [ ] Tiêu chí 2–7 của spec đạt.
+- [x] Tiêu chí 2–7 của spec đạt.
 
-- [ ] **T24: đóng module.** Bảng bảy tiêu chí trong `verification.md`; dời plan, todo, verification vào `tasks/archive/project-scaffold-3/`; cập nhật `SPEC.md`, spec và `concerns.md`; PR tài liệu.
+- [x] **T24: đóng module.** Bảng bảy tiêu chí trong `verification.md`; dời plan, todo, verification vào `tasks/archive/project-scaffold-3/`; cập nhật `SPEC.md`, spec và `concerns.md`; PR tài liệu.
