@@ -163,3 +163,18 @@ Sửa plan và todo: T4 thêm `playwright.config.ts` của profile; T5 đưa b�
   - **Lệch so với đề xuất:** `require_last_push_approval` vẫn tắt. GitHub tính bạn là người push cuối ở các PR phiên chính push bằng git của bạn (`SHOP-5`, `SHOP-6`), nên khi bật thì approval của bạn không được tính ở các PR đó. `dismiss_stale_reviews_on_push` cùng luật code owner đã đủ.
   - Tài liệu (`99f971e`): spec 2.9 mục 4, `quality-gates.md` (Ruleset), `release-workflow.md` (gate ④), `vps-setup.md` mục 16, `getting-started.md`.
   - Năm lệnh kiểm xanh, 1.444 test (trước là 1.439).
+- **T10e, áp bản sửa vòng 2** (Phiên 31 · Lượt 5):
+  - Kit PR #286 merge (`e95ffa5`), CI xanh.
+  - `npm run gh:protect -- --repo TungPH7/shop --merge-app-id 5756976` từ kit `e95ffa5`: tạo `ao-protected-main` (27262065), `ao-release-branches` (27262067), `ao-release-tags` (27262068); cập nhật `ao-protected-merge` (27256309, nay chỉ `develop` và `release/*`, đòi approval của code owner) và `ao-protected` (27192121). Đọc lại:
+    - `ao-protected-merge`: bypass duy nhất `Integration:5756976:pull_request`;
+    - `ao-protected-main`: không ai bypass;
+    - `ao-release-branches`: bypass `RepositoryRole 5` (admin);
+    - `ao-release-tags`: bypass `RepositoryRole 5` và `Integration:5756976`, cả hai `always`.
+  - VPS (`scratchpad/t10-vps.sh`, bằng root): kit lên `e95ffa5`, bản trước ở `/opt/ao/kit.prev`; `apps.merge` đã có từ T10b; mã băm Caddyfile trước và sau như nhau (`4f0f02a42c51`); timer chạy lại; RAM trống khoảng 1,9 GB.
+  - PR #13: commit thứ ba `cd37612` `chore(kit): copy the kit at e95ffa5a (SHOP-6)`, 17 file, +166/−73:
+    - kit `e95ffa5`;
+    - `.github/CODEOWNERS` mới, `* @TungPH7`;
+    - luật dự án thêm `.github/CODEOWNERS` vào các đường dẫn được bảo vệ;
+    - matcher của `gh-guard` trong `.claude/settings.json` thêm `Grep|Glob`.
+  - CI xanh đủ năm check. Mô tả PR có thêm mục cho commit thứ ba, kể cả điểm lệch `require_last_push_approval`.
+  - Dòng kiểm của `/ao-review 13`: GO; `reviewer` (`xhigh`) đọc cả PR, `security` (`max`) chỉ đọc phần đổi từ `6489d52` (`review-delta`, 239 dòng).
