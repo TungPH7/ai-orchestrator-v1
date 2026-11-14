@@ -4,7 +4,7 @@ Hướng dẫn này thuộc module `release-workflow` ([SPEC-release-workflow.md
 
 - Chỉ phiên chính của Claude dùng SSH vào VPS, khi bạn yêu cầu. Agent của kit không bao giờ SSH.
 - Key, mật khẩu và token không bao giờ đi qua chat, repo hay log. Bạn tự gõ chúng trong terminal của bạn.
-- Phần cài deployer nằm ở mục 11. Thêm một dự án vào deployer đang chạy: mục 13.
+- Phần cài deployer nằm ở mục 11. Thêm một dự án vào deployer đang chạy: mục 13. Database của dự án: mục 14. Backup và khôi phục: mục 15.
 
 **VPS của kit:** BKNS, gói VPS MMO4, IP `42.96.4.120`, cổng SSH `26266`, hostname `vps.ao.t2g.io.vn`, Ubuntu 24.04. Host key ED25519: `SHA256:nxU5j2RoNi+ffPow22zT35H+4F/Kthn/Tmnpi79V1ko`.
 
@@ -372,6 +372,7 @@ printf 'API_URL=http://api:3001\nAUTH_SECRET=%s\n' "$(openssl rand -base64 48)" 
 - `printf` là lệnh có sẵn trong shell, nên giá trị sinh ra không nằm trong tham số của tiến trình nào và không bị in ra. `AUTH_SECRET` dài 64 ký tự.
 - Giá trị do bạn đặt thì bạn gõ bằng `ao-secret.sh` (mục 11, bước 4): `bash /opt/ao/kit/vps/ao-secret.sh env shop development <TÊN>`.
 - Kiểm bằng tên biến và độ dài giá trị, không in giá trị.
+- Dự án có khóa `database` trong `deploy.yaml` cần thêm file `<môi trường>.db.env`, và các biến database trong `<môi trường>.env`. Cách ghi ở mục 14, bước 2. Thiếu file `.db.env` thì deployer không deploy, và status `error` nói đúng file thiếu.
 
 **4. Thêm dự án vào `deployer.yaml`.** Claude nối đoạn mà `ao-kit doctor` in ra vào cuối `projects:`, qua stdin. Quyền file giữ nguyên `root:aodeploy 640`. Dự án có từ hai app công khai thì `hosts` theo từng app, như ví dụ `shop` ở mục 11, bước 6.
 
@@ -393,3 +394,135 @@ systemctl start ao-deploy.timer
 **6. Deploy lần đầu (bạn gõ).** Sau `baseline`, deployer coi head hiện tại của `develop` là đã kiểm, nên không tự deploy nó. Trong Claude Code ở thư mục dự án, gõ `/ao-rollback development <sha của develop>`. Ở `shop`, deployer nhận yêu cầu sau khoảng 15 giây, build hai image trên VPS, rồi deploy xong sau 8 phút 50 giây. Từ lần merge kế tiếp vào `develop`, deployer tự deploy.
 
 **7. Đóng lại.** Đo RAM bằng `free -m` và `docker stats --no-stream`, xóa bản sao Caddyfile bằng `shred -u`, rồi tắt đăng nhập root (mục 9). Bản sao `deployer.yaml` ở `/root` được giữ lại để quay lại khi cần, vì file này không có thông tin đăng nhập.
+
+## 14. Database của dự án
+
+Từ project-scaffold phần 3 (spec mục 2.4), một dự án khai database PostgreSQL trong `.ai-orchestrator/deploy.yaml`:
+
+```yaml
+database:
+  image: postgres:17-alpine@sha256:<64 ký tự hex>   # bắt buộc ghim digest
+  init: apps/api/docker/postgres/init                # chạy một lần, khi volume còn trống
+  memory: 256m                                       # không bắt buộc; mặc định 256m
+```
+
+**1. Deployer làm gì.**
+- Mỗi môi trường có một container `ao-<dự án>-<môi trường>-db`. Dữ liệu nằm trong volume cùng tên. Container có alias `db` trên mạng của môi trường, nên app gọi nó ở `db:5432`.
+- Container chạy bằng user `postgres`, với `--cap-drop ALL`, `no-new-privileges` và trần RAM, như container app. Nó không mở cổng nào ra ngoài VPS.
+- Deployer tạo container ở lần deploy đầu có khóa `database`: sau khi build image của app, trước khi bật container app mới.
+  - Container đang chạy thì để yên; đã dừng thì bật lại.
+  - Database phải trả lời `pg_isready` trong 60 giây, nếu không thì deploy dừng với status `error`.
+- Volume còn trống thì script trong thư mục `init` chạy một lần. Deployer chép các script này từ commit đang deploy sang `/var/lib/ao/<dự án>/db-init/<môi trường>/`, rồi gắn chỉ đọc vào container. Từ đó, schema đổi bằng migration của app (Flyway), không bằng script init.
+- Container mang nhãn `ao.role=database` và không có nhãn `ao.app`. Vì vậy deploy, rollback và dọn image không bao giờ đổi, dừng hay xóa nó.
+
+**2. Biến: hai file cho mỗi môi trường.** Hai file tách nhau vì cùng tên `POSTGRES_PASSWORD` mang hai giá trị: mật khẩu superuser cho container database, và mật khẩu của user app cho app.
+
+| File | Ai nhận | Biến |
+|---|---|---|
+| `<môi trường>.db.env` | Container database, mọi biến trong file | `POSTGRES_DB`; `POSTGRES_USER=postgres`; `POSTGRES_PASSWORD` là mật khẩu superuser; các biến script init đọc, với template Java là `APP_DB_NAME`, `APP_DB_USER`, `APP_DB_PASSWORD` |
+| `<môi trường>.env` | App, chỉ biến có tên trong `env` của app ở `deploy.yaml` | `DB_HOST=db`, `DB_PORT=5432`, `POSTGRES_DB`; `POSTGRES_USER` và `POSTGRES_PASSWORD` là user và mật khẩu của app |
+
+- `POSTGRES_USER` của database phải là `postgres`, vì lệnh chờ `pg_isready` và backup chạy bằng user đó.
+- `POSTGRES_DB` phải có, vì backup đọc biến này để biết dump database nào.
+
+Ví dụ cho Development của `shop`, Claude chạy bằng root. Hai mật khẩu được sinh ngay trên VPS và không bị in. Mật khẩu của app nằm trong một biến của shell, rồi được ghi vào cả hai file:
+
+```
+f=/etc/ao/secrets/shop/development
+install -o root -g aodeploy -m 640 /dev/null $f.db.env
+app_password="$(openssl rand -hex 32)"
+printf 'POSTGRES_DB=shop\nPOSTGRES_USER=postgres\nPOSTGRES_PASSWORD=%s\nAPP_DB_NAME=shop\nAPP_DB_USER=shop_app\nAPP_DB_PASSWORD=%s\n' "$(openssl rand -hex 32)" "$app_password" > $f.db.env
+printf 'DB_HOST=db\nDB_PORT=5432\nPOSTGRES_DB=shop\nPOSTGRES_USER=shop_app\nPOSTGRES_PASSWORD=%s\n' "$app_password" >> $f.env
+unset app_password
+awk -F= '{print $1, length($2)}' $f.db.env $f.env
+```
+
+- Mật khẩu dạng hex, dài 64 ký tự, vì script init của template đặt mật khẩu vào giữa hai dấu `'` của một câu SQL.
+- Dòng `>>` chỉ chạy một lần cho mỗi môi trường. Kiểm trước bằng `grep -c '^POSTGRES_' $f.env`.
+- Biến của `.db.env` chỉ có tác dụng khi volume còn trống. Muốn đổi mật khẩu sau đó thì phải đổi cả trong database (`ALTER ROLE`) lẫn trong hai file. Kit chưa có lệnh cho việc này.
+
+**3. Xem database,** bằng lệnh chỉ đọc:
+
+```
+docker ps --filter label=ao.role=database --format '{{.Names}}\t{{.Status}}'
+docker exec ao-shop-development-db sh -c 'psql -U postgres -d "$POSTGRES_DB" -c "\dt app.*"'
+docker stats --no-stream ao-shop-development-db
+```
+
+Đừng chạy `docker inspect` không có `--format` trên container database hay container app: lệnh đó in giá trị của mọi biến, kể cả mật khẩu.
+
+**4. Đổi bản Postgres** (chưa chạy thật). Container đang chạy thì deployer để yên, nên PR đổi `image` trong `deploy.yaml` chưa đổi gì trên VPS.
+
+Trong cùng bản chính, ví dụ 17.x lên 17.y để lấy bản vá, dữ liệu dùng lại được:
+1. Mở PR đổi digest của `database.image`. Chờ CI xanh nhưng chưa merge.
+2. Trên VPS, dừng deployer, backup mọi database, rồi xóa container. Volume giữ nguyên:
+
+   ```
+   systemctl stop ao-deploy.timer
+   until [ "$(systemctl is-active ao-deploy.service)" != "activating" ]; do sleep 5; done
+   systemctl start ao-backup.service
+   docker rm --force ao-shop-development-db
+   ```
+
+3. Merge PR, rồi bật lại deployer: `systemctl start ao-deploy.timer`.
+   - Lượt deploy của commit đó tạo lại container bằng image mới, trên volume cũ. Script init không chạy lại.
+   - App không có database từ lúc xóa container tới khi container mới trả lời, tức khoảng thời gian build.
+   - Build lỗi thì `/ao-rollback development` đưa bản trước lên, và container database được tạo lại bằng image cũ.
+4. Với Staging và Production, làm lại bước 2 trên container của môi trường đó, ngay trước khi commit mang digest mới lên đó: trước `/ao-release` với Staging, trước khi bạn approve ở gate ⑤ với Production.
+
+Sang bản chính khác, ví dụ 17 lên 18, thì file dữ liệu không dùng lại được. Khi đó phải dump, rồi khôi phục vào volume mới trước khi app mới chạy migration. Kit chưa có luồng này; khi cần sẽ làm thành một task riêng.
+
+## 15. Backup và khôi phục
+
+Timer `ao-backup` chạy `scripts/ao-backup.mjs run` bằng root, mỗi ngày lúc 02:30 giờ Việt Nam (spec mục 2.4):
+- Mỗi container database đang chạy được dump bằng `pg_dump -Fc` vào `/var/backups/ao/<dự án>/<môi trường>/<dự án>-<môi trường>-<giờ UTC>.dump`.
+- Thư mục có quyền 0700 và file có quyền 0600, nên chỉ root đọc được, vì bản dump chứa dữ liệu của người dùng.
+- Dump được ghi vào `<tên>.part`, và chỉ đổi tên khi `pg_dump` xong. Nhờ vậy bản dump dở dang không bao giờ được tính.
+- Mỗi môi trường giữ bản mới nhất của 7 ngày gần nhất và của 4 tuần gần nhất. Các bản khác bị xóa sau mỗi lần chạy.
+- Lúc 02:30 mà VPS đang tắt thì lượt đó chạy khi VPS khởi động lại (`Persistent=true`).
+- Bản sao ra ngoài VPS chưa có. Chỗ để bản sao sẽ được chọn trước bản release đầu của `shop` (spec mục 9, câu 2).
+
+**1. Cài timer.** Làm một lần cho VPS, khi dự án đầu tiên có database:
+
+```
+install -m 644 /opt/ao/kit/vps/ao-backup.service /opt/ao/kit/vps/ao-backup.timer /etc/systemd/system/
+systemctl daemon-reload
+systemctl enable --now ao-backup.timer
+systemctl list-timers ao-backup.timer
+```
+
+**2. Chạy ngay một lần,** không chờ tới 02:30:
+
+```
+systemctl start ao-backup.service
+journalctl -u ao-backup --since "10 min ago"
+ls -l /var/backups/ao/shop/development/
+```
+
+Log chỉ in tên file và số byte của mỗi bản dump, không in dữ liệu.
+
+**3. Kiểm bản mới nhất khôi phục được:**
+
+```
+node /opt/ao/kit/scripts/ao-backup.mjs restore-check shop development
+```
+
+- Lệnh khôi phục bản mới nhất vào container tạm `ao-restore-check-<dự án>-<môi trường>`, cùng image và không có mạng. Sau đó lệnh so số bảng và số dòng với database đang chạy. Container tạm luôn bị xóa.
+- Khớp thì lệnh thoát mã 0.
+- Lệch thì lệnh thoát mã 1. Nghĩa là có dòng được ghi sau lúc dump, hoặc bản dump không khôi phục được. Chạy ngay sau bước 2 để hai bên cùng thời điểm.
+- Ở T15, lệnh chạy thật trên Docker của máy: 2 bảng, 32 dòng, khớp.
+
+**4. Khôi phục vào database đang chạy** (chưa chạy thật). Làm khi dữ liệu của một môi trường bị hỏng, ví dụ sau một migration sai:
+
+```
+systemctl stop ao-deploy.timer
+until [ "$(systemctl is-active ao-deploy.service)" != "activating" ]; do sleep 5; done
+ls -l /var/backups/ao/shop/development/
+docker exec -i ao-shop-development-db sh -c 'exec pg_restore -U postgres --clean --if-exists --single-transaction -d "$POSTGRES_DB"' < /var/backups/ao/shop/development/<file>.dump
+systemctl start ao-deploy.timer
+```
+
+- `--clean --if-exists` xóa rồi tạo lại từng đối tượng có trong bản dump, trong một transaction. Lỗi giữa chừng thì database giữ nguyên như trước.
+- Dữ liệu ghi sau lúc dump bị mất. Với Production, chạy `systemctl start ao-backup.service` trước, để còn một bản của trạng thái hiện tại.
+- Bản dump đi qua stdin của `docker exec`, không bị chép vào container.
+- Bản dump có cả bảng lịch sử của Flyway, nên schema quay về đúng lúc dump. Nếu app đang chạy có migration mới hơn bản dump, Flyway chỉ chạy lại các migration đó khi app khởi động lại.

@@ -104,8 +104,8 @@ Hotfix chiếm Staging tới khi lên Production. Nếu đang có bản release 
 
 | Status | Nghĩa là | Điều xảy ra |
 |---|---|---|
-| `error` | Deployer từ chối trước khi deploy: commit không qua `audit`, thiếu điều kiện của Production, người yêu cầu ngoài `AO_APPROVERS` | Không môi trường nào đổi. Trên Development và Staging, `jira-sync` gắn cờ Needs you |
-| `failure` | Smoke test fail sau 60 giây | Container mới bị gỡ, container cũ vẫn phục vụ. Trên Development và Staging, item được gắn cờ. Trên Production, `jira-sync` tạo Bug Critical, Found in Production, Affects Version là bản vừa thử |
+| `error` | Deployer từ chối trước khi deploy: commit không qua `audit`, thiếu điều kiện của Production, người yêu cầu ngoài `AO_APPROVERS`, thiếu biến hay file `.db.env`, build lỗi, database không trả lời trong 60 giây | Không môi trường nào đổi. Trên Development và Staging, `jira-sync` gắn cờ Needs you |
+| `failure` | Container mới không chạy, hoặc smoke test fail sau `start_timeout` giây (mặc định 60) | Container mới bị gỡ, container cũ vẫn phục vụ. Trên Development và Staging, item được gắn cờ. Trên Production, `jira-sync` tạo Bug Critical, Found in Production, Affects Version là bản vừa thử |
 
 Deployer không tự thử lại một yêu cầu đã `failure`. Trong bài thử trên `ao-pilot`, Production không lỗi lần nào suốt lúc smoke fail. Mức độ của Bug tự tạo nằm ở trường Severity; trường Priority vẫn là mặc định của Jira.
 
@@ -128,6 +128,16 @@ Deployer không tự thử lại một yêu cầu đã `failure`. Trong bài th�
   ```
 
   Giá trị của biến nằm ở `/etc/ao/secrets/<dự án>/<môi trường>.env` trên VPS. Biến không khai trong `env` thì không tới container.
+
+  Mỗi app có thêm ba khóa không bắt buộc (project-scaffold phần 3, spec mục 2.5):
+
+  | Khóa | Nghĩa | Mặc định |
+  |---|---|---|
+  | `context` | Thư mục build, tính từ gốc repo, cho Dockerfile viết cho thư mục của app, như Dockerfile của template Java. `dockerfile` vẫn tính từ gốc repo | Gốc repo |
+  | `memory` | Trần RAM của container, như `768m`. Container không được dùng swap quá trần này | `512m` |
+  | `start_timeout` | Số giây smoke test chờ app trả lời, tối đa 300. App JVM chạy migration lúc khởi động cần lâu hơn | 60 |
+
+  Lúc đổi bản, container cũ và mới chạy cùng lúc, nên đỉnh RAM của một app bằng hai lần trần của nó.
 - **Nhiều app công khai** (project-scaffold phần 2, mục 2.4): `deploy.yaml` cần ít nhất một app `public`, và có thể có nhiều hơn, như `user` và `admin` của `shop`.
   - Khi có từ hai app công khai, mỗi app khai `hosts` của ba môi trường trong `project.yaml`, và `/etc/ao/deployer.yaml` trên VPS khai đúng các host đó, theo dạng host theo app (`docs/vps-setup.md`, mục 11). `ao-kit doctor` in sẵn các dòng cần chép.
   - Deployer không deploy khi một app công khai thiếu host, và giữ bản đang chạy.
@@ -140,7 +150,21 @@ Trace của Playwright giữ `httpCredentials` ở dạng rõ. Vì vậy sau `qa
 
 ## Cơ sở dữ liệu
 
-Từ project-scaffold phần 3, một dự án có database PostgreSQL ở mỗi môi trường, và migration chạy khi app khởi động: với Spring Boot là Flyway, như template Java đã đặt. Deployer bật container mới cạnh container cũ rồi mới chuyển, nên trong lúc chuyển, bản cũ chạy trên schema mới. Rollback chỉ đổi image, không lùi schema.
+Từ project-scaffold phần 3, một dự án có database PostgreSQL ở mỗi môi trường, khai bằng khóa `database` của `deploy.yaml`:
+
+```yaml
+database:
+  image: postgres:17-alpine@sha256:<64 ký tự hex>
+  init: apps/api/docker/postgres/init
+  memory: 256m
+```
+
+- Deployer giữ một container `ao-<dự án>-<môi trường>-db` cho mỗi môi trường, với alias `db` trên mạng của môi trường. Container được tạo ở lần deploy đầu, trước khi app mới chạy. Script trong `init` chạy một lần, khi volume còn trống.
+- Deploy và rollback không bao giờ đổi, dừng hay xóa container database. Đổi bản Postgres là việc tay ([vps-setup.md](vps-setup.md), mục 14).
+- Biến của database nằm ở `/etc/ao/secrets/<dự án>/<môi trường>.db.env`, tách khỏi `<môi trường>.env` của app. Thiếu file đó thì deployer không deploy.
+- Mỗi ngày lúc 02:30, timer `ao-backup` dump mọi database, giữ 7 bản ngày và 4 bản tuần. Lệnh `restore-check` kiểm bản mới nhất khôi phục được ([vps-setup.md](vps-setup.md), mục 15).
+
+Migration chạy khi app khởi động: với Spring Boot là Flyway, như template Java đã đặt. Deployer bật container mới cạnh container cũ rồi mới chuyển, nên trong lúc chuyển, bản cũ chạy trên schema mới. Rollback chỉ đổi image, không lùi schema.
 
 Vì vậy mỗi migration phải chạy được với bản trước nó. Prompt của `be-dev` và `sa` ghi luật này, và `reviewer` coi một migration phá bản trước là finding High. Đổi schema theo kiểu expand/contract:
 

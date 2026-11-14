@@ -1,7 +1,8 @@
 # /etc/ao/deployer.yaml: what the deployer on the VPS deploys (release-workflow spec 2.3, 2.11; docs/vps-setup.md).
 # No secret lives here: only the paths of the files that hold them, each root:aodeploy 0640.
 state_dir: /var/lib/ao                      # a mirror, a record (state.json) and a work folder per project
-secrets_dir: /etc/ao/secrets                # <project>/<environment>.env: the values of the variables apps name
+secrets_dir: /etc/ao/secrets                # <project>/<environment>.env: the values of the variables apps name;
+                                            # <project>/<environment>.db.env: those of the database, when deploy.yaml has one
 caddyfile: /etc/ao/caddy/Caddyfile          # written by the deployer, read by the Caddy container
 basic_auth_file: /etc/ao/caddy/basic-auth   # one line "<user> <bcrypt hash>" for Development and Staging
 app:                                        # the GitHub App ao-deploy

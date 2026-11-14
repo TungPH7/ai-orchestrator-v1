@@ -111,7 +111,7 @@
   - **Đạt khi:** `scripts/ao-backup.mjs run` dump mọi database đang chạy bằng `pg_dump -Fc` vào `/var/backups/ao/<dự án>/<môi trường>/`, quyền 0600; giữ 7 bản ngày và 4 bản tuần; `restore-check <dự án> <môi trường>` khôi phục bản mới nhất vào container tạm và in số bảng, số dòng; `vps/ao-backup.service` và `.timer`.
   - **Kiểm:** hàm chọn bản giữ lại; tham số `pg_dump`, `pg_restore`; không có giá trị bí mật trong tham số.
   - **File:** `scripts/ao-backup.mjs`, `lib/release/backup.mjs`, `vps/ao-backup.service`, `vps/ao-backup.timer`, test.
-- [ ] **T16: tài liệu chặng 3; PR.** `docs/vps-setup.md` (database của dự án, backup, khôi phục, đổi bản Postgres; mục 13 thêm file `.db.env`), `docs/release-workflow.md`, `vps/deployer.example.yaml`; PR chặng 3.
+- [x] **T16: tài liệu chặng 3; PR.** `docs/vps-setup.md` (database của dự án, backup, khôi phục, đổi bản Postgres; mục 13 thêm file `.db.env`), `docs/release-workflow.md`, `vps/deployer.example.yaml`; PR chặng 3.
 
 ## Chặng 4: việc B2 để lại, nhánh `task/scaffold3-4`
 
@@ -133,7 +133,7 @@
   1. đo RAM bằng lệnh chỉ đọc;
   2. cập nhật kit trên VPS lên bản có chặng 3, giữ bản cũ ở `/opt/ao/kit.prev`;
   3. chạy `tick --dry-run`: Caddyfile không đổi;
-  4. bật lại deployer, đóng VPS.
+  4. bật lại deployer. VPS để mở cho tới khi bạn bảo đóng (Phiên 29 · Lượt 1).
   - **Kiểm:** ghi vào `verification.md`, không ghi nội dung file có thông tin đăng nhập.
 - [ ] **T20 [bạn]: `shop` có `api`** (tiêu chí 2). Theo bản nháp:
   1. Task chép kit B3, `ao-kit sync`, PR; bạn merge;
@@ -146,8 +146,8 @@
   2. gỡ chặn của `audit` bằng `/ao-rollback development <sha>` nếu cần;
   3. deploy: smoke test đạt; `/api/v1/health` qua host của `admin` trả 200; Flyway chạy đủ migration;
   4. đo RAM lúc build, lúc rảnh, lúc đổi bản; ước cho ba môi trường;
-  5. cài timer backup, chạy một lần, rồi `restore-check`;
-  6. `ao-sample` và `ao-pilot` vẫn chạy; đóng VPS.
+  5. cài timer backup, chạy một lần, rồi `restore-check`; thử khôi phục vào database đang chạy (mục 15, bước 4 của `docs/vps-setup.md`, chưa chạy thật ở T16);
+  6. `ao-sample` và `ao-pilot` vẫn chạy. VPS để mở cho tới khi bạn bảo đóng.
 - [ ] **T23: bản cuối của hướng dẫn; PR** (tiêu chí 7). Chép đầu ra thật của T19–T22.
 
 ### Checkpoint 4: sau T23

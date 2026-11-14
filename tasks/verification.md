@@ -88,7 +88,7 @@ Năm lệnh kiểm xanh: 1.363 test.
 
 Kit PR #271 (`b278aea`) merge chặng 2; Checkpoint 2 đạt.
 
-## Chặng 3: deployer và database (T12–T15 xong, T16 chưa), nhánh `task/scaffold3-3`
+## Chặng 3: deployer và database, nhánh `task/scaffold3-3`
 
 **T12.** `deploy.yaml` có khóa `database`: `image` phải ghim digest; `init` là thư mục trong repo (không đường dẫn tuyệt đối, không `..`); `memory` theo dạng `<số>m` hay `<số>g`; không nhận khóa nào khác.
 
@@ -110,3 +110,15 @@ Kit PR #271 (`b278aea`) merge chặng 2; Checkpoint 2 đạt.
 - **Chạy thật** trên Docker của máy, với database dựng đúng bằng `databaseRunArgs` (image ghim digest, user `postgres`, `--cap-drop ALL`): database sẵn sàng sau 21 giây, tính cả lúc tải image. `ao-backup.mjs run` ghi một bản dump 2.546 byte. `restore-check` ra 2 bảng và 32 dòng, khớp database đang chạy, và thoát mã 0. Sau đó container, volume, network, image thử đều đã xóa, và Docker Desktop đã tắt.
 
 Năm lệnh kiểm xanh: 1.385 test.
+
+**T16.**
+- `docs/vps-setup.md`:
+  - mục 13, bước 3, nhắc file `.db.env` của dự án có database;
+  - mục 14 mới, database của dự án: deployer làm gì; hai file biến, kèm lệnh sinh mật khẩu ngay trên VPS mà không in ra; lệnh xem database chỉ đọc; đổi bản Postgres trong cùng bản chính;
+  - mục 15 mới, backup và khôi phục: cài timer, chạy một lần, `restore-check`, khôi phục vào database đang chạy.
+- Hai chỗ ghi "chưa chạy thật": đổi bản Postgres, và khôi phục vào database đang chạy. T22 thử việc khôi phục trên Development.
+- Khi soát code để viết mục 14, mình thấy deployer bỏ qua bước cài khi commit có cùng tree với bản đang chạy. Vì vậy yêu cầu deploy lại đúng commit đang chạy không tạo lại container database. Đổi bản Postgres phải xóa container trước khi commit mang digest mới được deploy, và mục 14 ghi đúng thứ tự đó.
+- Đổi sang bản chính khác (17 lên 18) cần dump và khôi phục trước khi app mới chạy migration. Kit chưa có luồng này; mục 14 ghi nó là một task riêng khi cần.
+- `docs/release-workflow.md`: ba khóa `context`, `memory`, `start_timeout` của app; khóa `database`, backup; bảng "Khi deploy không thành" thêm các lý do `error` mới và `start_timeout`.
+- `vps/deployer.example.yaml`: comment của `secrets_dir` nhắc file `.db.env`.
+- Từ Phiên 29 · Lượt 1, VPS để mở cho tới khi bạn bảo đóng, nên T19 và T22 không còn bước đóng VPS.
