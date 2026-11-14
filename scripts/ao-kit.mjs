@@ -31,6 +31,7 @@ import { runNpm } from '../lib/quality/npm.mjs';
 import { managerOf, pnpmVersion, runManager } from '../lib/quality/package-manager.mjs';
 import { homedir } from 'node:os';
 import { appCredentials, installationToken, userSecret } from '../lib/quality/github-app.mjs';
+import { pulledCopyAges } from '../lib/release/backup-pull.mjs';
 import { doctor, formatDoctor } from '../lib/scaffold/doctor.mjs';
 import { gitignoreMissing, kitDrift } from '../lib/scaffold/install.mjs';
 import { addApp } from '../lib/scaffold/add.mjs';
@@ -175,6 +176,8 @@ async function doctorFacts(dir, config) {
     hooksPath: git(['config', 'core.hooksPath'], dir).stdout.trim(),
     gitignoreMissing: gitignoreMissing(dir),
     now: new Date().toISOString(),
+    // The backup copies this machine pulls, or null when it does not (Pilot 3, spec 2.4).
+    backupCopies: pulledCopyAges(),
     github: {
       defaultBranch: repoInfo?.default_branch ?? null,
       public: repoInfo?.private === false,

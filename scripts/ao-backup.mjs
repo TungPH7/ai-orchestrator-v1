@@ -1,15 +1,20 @@
 // ao-backup.mjs (project-scaffold part 3, spec 2.4; docs/vps-setup.md): the daily dump of each running database of the
 // VPS, kept 48 hours, 7 days and 4 weeks, and the check that the newest dump of one restores. ao-backup.service runs `run` as root;
 // the decisions are in lib/release/backup.mjs. A dump is written to <name>.part, readable by root only, and renamed once
-// pg_dump succeeded, so a half dump never counts.
+// pg_dump succeeded, so a half dump never counts. When /etc/ao/deployer.yaml has a backup: block, each dump kept also gets
+// an encrypted copy in /var/backups/ao-offsite/, which your machine pulls as aobackup (Pilot 3, spec 2.4;
+// lib/release/backup-copy.mjs).
 //   node /opt/ao/kit/scripts/ao-backup.mjs run
 //   node /opt/ao/kit/scripts/ao-backup.mjs restore-check <project> <environment>
 import { spawnSync } from 'node:child_process';
-import { closeSync, existsSync, mkdirSync, openSync, readdirSync, renameSync, rmSync, statSync } from 'node:fs';
+import { closeSync, existsSync, mkdirSync, openSync, readdirSync, readFileSync, renameSync, rmSync, statSync } from 'node:fs';
 import { join } from 'node:path';
+import { parse } from 'yaml';
+import { syncCopies } from '../lib/release/backup-copy.mjs';
 import { LIST_DATABASES, backupFile, backupTime, backupsToKeep, dumpArgs, parseDatabases, restoreCheck } from '../lib/release/backup.mjs';
 
 const ROOT_DIR = process.env.AO_BACKUP_DIR ?? '/var/backups/ao';
+const CONFIG = process.env.AO_DEPLOYER_CONFIG ?? '/etc/ao/deployer.yaml';
 const USAGE = 'usage: node ao-backup.mjs run | restore-check <project> <environment>';
 
 function docker(args, options = {}) {
@@ -59,7 +64,22 @@ async function backupAll() {
       console.log(`ao-backup: ${project}/${env}: removed ${old}`);
     }
   }
-  return failed === 0 ? 0 : 1;
+  const copiesFailed = await copyAll();
+  return failed + copiesFailed === 0 ? 0 : 1;
+}
+
+// The encrypted copies, when deployer.yaml asks for them; the number that failed.
+async function copyAll() {
+  const backup = existsSync(CONFIG) ? parse(readFileSync(CONFIG, 'utf8'))?.backup : null;
+  if (!backup?.age_recipient) return 0;
+  const group = backup.copies_group ?? 'aobackup';
+  const line = readFileSync('/etc/group', 'utf8').split('\n').find((entry) => entry.startsWith(`${group}:`));
+  if (!line) {
+    console.error(`ao-backup: no group ${group} on this machine, so no copy is made (docs/vps-setup.md, section 16)`);
+    return 1;
+  }
+  const gid = Number(line.split(':')[2]);
+  return syncCopies({ dumpsRoot: ROOT_DIR, copiesRoot: backup.copies_dir ?? '/var/backups/ao-offsite', recipient: backup.age_recipient, gid, log: (text) => console.log(`ao-backup: ${text}`) });
 }
 
 async function check(project, env) {

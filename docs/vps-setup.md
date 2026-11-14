@@ -531,3 +531,78 @@ systemctl start ao-deploy.timer
 - Ở T22, trên Development của `shop`: `pg_restore` xong trong 1 giây, thoát mã 0. Số bảng, số dòng lịch sử Flyway và extension trước và sau như nhau. `api` vẫn trả lời trong lúc khôi phục, và `restore-check` sau đó khớp.
 - Bản dump đi qua stdin của `docker exec`, không bị chép vào container.
 - Bản dump có cả bảng lịch sử của Flyway, nên schema quay về đúng lúc dump. Nếu app đang chạy có migration mới hơn bản dump, Flyway chỉ chạy lại các migration đó khi app khởi động lại.
+
+## 16. Bản sao backup về máy bạn
+
+Mỗi bản dump mà mục 15 giữ lại có một bản sao mã hóa, và máy bạn tự kéo bản sao về (Pilot 3, spec mục 2.4). Bản sao giúp dữ liệu còn lại khi VPS hỏng hay bị chiếm:
+- **Mã hóa bằng `age`.** Khóa công khai (`age1…`) nằm trong `/etc/ao/deployer.yaml`. Khóa bí mật chỉ nằm trên máy bạn, và bạn cất thêm một bản ở chỗ khác. Người đọc được VPS không đọc được bản sao.
+- **Tài khoản `aobackup` chỉ đọc.** Nó dùng SFTP với key riêng, bị nhốt trong `/var/backups/ao-offsite` (`vps/sshd-aobackup.conf`): không shell, không chuyển cổng. VPS không giữ quyền gì vào máy bạn, nên kẻ chiếm VPS không xóa được bản trên máy bạn.
+- **Máy bạn kéo về** bằng `scripts/ao-backup-pull.mjs`, chạy theo task của Windows mỗi ngày lúc 09:00 và mỗi lần bạn đăng nhập. Máy tắt thì lần sau kéo bù, vì VPS giữ bản của 7 ngày và 4 tuần. Script không xóa gì trên máy bạn.
+- `ao-kit doctor` báo khi bản sao mới nhất của dự án trên máy bạn cũ hơn 36 giờ.
+
+**1. Khóa `age` (trên máy bạn).**
+
+```
+node scripts/ao-backup-pull.mjs keygen --identity %USERPROFILE%\.ao\ao-backup.agekey
+```
+
+Lệnh ghi khóa bí mật vào file đó và in khóa công khai `age1…`. Cất một bản của file khóa ở chỗ khác ngoài máy, như trình quản lý mật khẩu: mất khóa là mất mọi bản sao. Lệnh không ghi đè một khóa đã có.
+
+**2. Key SSH để kéo về (trên máy bạn).** Key không có passphrase, vì task của Windows không gõ được. Key này chỉ đọc được bản sao đã mã hóa.
+
+```
+ssh-keygen -t ed25519 -N "" -C ao-backup-pull -f %USERPROFILE%\.ssh\ao_backup_pull
+```
+
+Thêm vào `%USERPROFILE%\.ssh\config`:
+
+```
+Host ao-backup
+    HostName 42.96.4.120
+    Port 26266
+    User aobackup
+    IdentityFile ~/.ssh/ao_backup_pull
+    IdentitiesOnly yes
+```
+
+**3. Tài khoản `aobackup` (trên VPS, bằng root).**
+
+```
+groupadd --system aobackup
+useradd --system --gid aobackup --create-home --shell /usr/sbin/nologin aobackup
+install -d -o aobackup -g aobackup -m 700 /home/aobackup/.ssh
+printf 'restrict %s\n' "<dòng .pub của key ở bước 2>" > /home/aobackup/.ssh/authorized_keys
+chown aobackup:aobackup /home/aobackup/.ssh/authorized_keys && chmod 600 /home/aobackup/.ssh/authorized_keys
+install -d -o root -g root -m 755 /var/backups/ao-offsite
+install -o root -g root -m 644 /opt/ao/kit/vps/sshd-aobackup.conf /etc/ssh/sshd_config.d/60-aobackup.conf
+sshd -t && systemctl reload ssh
+```
+
+Nếu `sshd_config` có dòng `AllowUsers`, thêm `aobackup` vào dòng đó.
+
+**4. Bật bản sao.** Thêm vào `/etc/ao/deployer.yaml` khóa công khai ở bước 1:
+
+```
+backup:
+  age_recipient: age1…
+```
+
+Rồi chạy `systemctl start ao-backup.service` một lần. Log in thêm một dòng `copy <tên>.dump.age` cho mỗi bản dump.
+
+**5. Kéo về và đặt task (trên máy bạn).**
+
+```
+node scripts/ao-backup-pull.mjs pull --host ao-backup --dest D:\ao-backups
+node scripts/ao-backup-pull.mjs install --host ao-backup --dest D:\ao-backups
+node scripts/ao-backup-pull.mjs status
+```
+
+**6. Khôi phục từ bản sao.** Giải mã trên máy bạn:
+
+```
+node scripts/ao-backup-pull.mjs decrypt D:\ao-backups\shop\production\<tên>.dump.age --identity %USERPROFILE%\.ao\ao-backup.agekey --out D:\ao-restore\<tên>.dump
+```
+
+Bản giải mã là đúng bản dump của mục 15: khôi phục như bước 4 của mục 15, hoặc vào một Postgres chạy trên Docker ở máy bạn để kiểm. Xong thì xóa bản giải mã, vì nó chứa dữ liệu người dùng.
+
+**7. Chuyển sang B2 sau này.** Thư mục bản sao và khóa giữ nguyên. Kit sẽ thêm bước đẩy thư mục đó lên B2 bằng `rclone`; cách khôi phục không đổi.

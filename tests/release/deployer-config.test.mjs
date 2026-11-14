@@ -55,3 +55,10 @@ test('production_auth: true or false on a project is valid (Pilot 3, spec 2.2)',
     assert.deepEqual(validateDeployerConfig(config), [], String(value));
   }
 });
+
+test('backup: an age recipient, with the folder and group of the copies optional, is valid (Pilot 3, spec 2.4)', () => {
+  const recipient = `age1${'q'.repeat(58)}`;
+  assert.deepEqual(validateDeployerConfig({ ...example, backup: { age_recipient: recipient } }), []);
+  assert.deepEqual(validateDeployerConfig({ ...example, backup: { age_recipient: recipient, copies_dir: '/var/backups/ao-offsite', copies_group: 'aobackup' } }), []);
+  assert.notDeepEqual(validateDeployerConfig({ ...example, backup: { copies_group: 'aobackup' } }), []);
+});
