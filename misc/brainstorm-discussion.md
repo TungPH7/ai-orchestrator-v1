@@ -36,6 +36,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 28 | `0ac542d7-954f-44a8-bd4c-868cd5f9cdc3` | 2026-11-13 khoảng 23:35 → | Bạn dán đoạn cuối của Phiên 27 để làm tiếp; T25: phần 5 của hướng dẫn theo đầu ra thật của `shop`, bước cài App `ao-deploy` và deploy lần đầu bằng `/ao-rollback`, mục 13 của `vps-setup.md`; kit PR #267 merge; tiêu chí 3 mới đạt một phần; bạn "Ok", T26 đóng B2 (kit PR #268); template Java của B3 (Maven, nhánh `codebase`); bạn cho bắt đầu B3, quyền tự làm áp dụng tiếp; spec B3 duyệt (Lượt 7), kit PR #269–#271, chặng 3 tới T15 |
 | 29 | `3f959e28-f038-49ee-ae3f-592c7a55eecb` | 2026-11-14 khoảng 09:35 → | Bạn dán đoạn cuối của Phiên 28, bảo làm T16 và mở VPS cho chặng 5, để mở tới khi bạn bảo đóng; T16 (tài liệu chặng 3, kit PR #272) và T17 (ba việc B2 để lại, kit PR #273) xong; Claude đưa hai lệnh mở VPS trong dòng báo giữa chừng nên bạn không thấy, bạn nhắc hai lần, Claude đưa lại ở câu trả lời cuối; lượt 2: lệnh mở đăng nhập root chưa có tác dụng, bạn chạy lại; lượt 3: T18 bản nháp bước 9, T19 kit `3a1c729` lên VPS, T20: `SHOP-2` và `shop` PR #7, `SHOP-3` với `add api` và Spring Boot 4.0.9, kit PR #274 (coverage của interface Java); Claude xóa nhầm toàn bộ container, image và volume Docker Desktop của bạn khi dọn sau test; lượt 4: không có Previous Versions, bạn dặn hỏi trước mọi việc xóa không hoàn tác được, và cho Claude merge PR `shop` khi CI xanh; PR #7, #8 merge (T20 xong), kit PR #275, #276, `SHOP-4` và PR #9 xanh, biến database của Development trên VPS; chờ bạn quyết bật Docker Desktop cho `/ao-preview`; lượt 5: bạn chọn bật Docker; `/ao-preview SHOP-4` chạy `user`, `admin`, `api` và Postgres, ba app trả 200, `/api` qua `admin` tới `api`; `user` còn trỏ API NestJS cũ, việc của B4; chờ bạn xem rồi trả lời merge; lượt 6: PR #9 merge (T21 xong), `/ao-rollback development 05b1a63` gỡ chặn, deploy 18,5 phút, database, Flyway, `/api/v1/health` qua `admin` 200, RAM còn trống 2.508 MB, backup và `restore-check` đạt; chờ bạn đồng ý thử khôi phục vào database đang chạy và đóng `SHOP-2`–`SHOP-4`; lượt 7: khôi phục vào database đang chạy đạt sau khi lộ lỗi luật giữ bản (sửa: giữ 48 giờ, kit PR #277), `SHOP-2`–`SHOP-4` Cancelled, kit trên VPS `97db806`, B3 đóng; chờ bạn chọn module kế tiếp |
 | 30 | `07e0a424-ef4e-437a-b766-0ca9955be037` | 2026-11-14 khoảng 12:15 → | Bạn dán đoạn cuối của Phiên 29 và chọn B4 (Pilot 3); Claude viết bản nháp `SPEC-pilot-3.md`: `v0.1.0` của scaffold lên ba môi trường trước, rồi Epic đầu "Danh mục sản phẩm" lên `v0.2.0`; tìm ra Production đang luôn mở trong khi `/api/**` để `permitAll` (đề xuất `production_auth`), `/ao-release` cần một item Done (`SHOP-5`), ba app lệch hợp đồng API sản phẩm; chờ bạn trả lời 5 câu: Epic, scaffold trước, chỗ để bản sao backup (đề xuất Backblaze B2), basic auth cho Production, quyền tự làm cho B4; lượt 2: bạn duyệt câu 1, 2, 4, 5, hỏi câu 3 có cần chọn trước không và sẽ gửi ảnh; Claude hiểu sai "chưa làm" và bắt đầu viết plan, bạn nhắc, Claude dừng (spec và `tasks/plan.md` chưa commit); bạn hỏi Google Drive cho bản sao: được, với OAuth client riêng đã Publish, nhưng token trên VPS xóa hẳn được bản sao; lượt 3: bạn hỏi bản sao backup là gì và vì sao cần mới đạt; Claude giải thích: backup đang nằm chung máy với database, tiêu chí 2 do spec đặt chứ không phải giới hạn kỹ thuật, chỉ bắt buộc trước khi mở bán; lượt 4: bạn hỏi backup về máy bạn có đạt không, và cơ chế có giống B2 để sau này chuyển: đạt (máy bạn kéo về bằng tài khoản chỉ đọc trên VPS), khác hướng chép (kéo về và VPS đẩy lên), đề xuất mã hóa `age` từ đầu và khối cấu hình B2 tắt sẵn để chuyển dễ; lượt 5: bạn chọn backup về máy bạn và hỏi làm gì tiếp, rồi gửi giao diện mẫu cho Epic (trang vitrea, hai ảnh); Claude bắt đầu B4: kit PR #279–#283 (`production_auth`, dòng trạng thái của `/ao-preview`, Playwright chỉ dựng app tại chỗ cho test `@local`, bản sao backup kéo về máy bạn, đọc mật khẩu từ biến của Windows trước), `SHOP-5` PR #10 merge, review 3,52 USD và QA 0,92 USD (NOT TESTED vì một bước chỉ VPS kiểm được, đã trả lời), VPS kit `dbbf318` với bí mật Staging và Production, Production của `shop` hỏi basic auth, bản sao về `D:\ao-backups` khôi phục khớp; chờ bạn Accept `SHOP-5`, cất bản thứ hai của khóa `age`, và gate ④ của `v0.1.0`; lượt 6: bạn nhờ bấm Accept (`SHOP-5` Done), hỏi cất khóa sau được không (được, nên trước khi mở bán), bảo làm như đề xuất; Claude gửi danh sách gate ④ (`28394b8`, `SHOP-5`, scaffold của `SHOP-1`–`SHOP-4`), tạo Fix Version, chụp 5 màn hình và đo 94 token của trang mẫu; lượt 7: bạn duyệt gate ④; `release/v0.1.0` lên Staging (dùng lại image, Flyway 3 migration, RAM còn 2.290 MB), regression PASS, `/ao-ship` dừng vì ruleset `ao-protected` của repo public chặn bot `ao-dev` commit lên nhánh release (cũng sẽ chặn merge PR tài liệu của Epic và merge ngược); chờ bạn chọn cách sửa ruleset; lượt 8: bạn hỏi sao commit thẳng lên nhánh được, nhất là nhánh release (chưa làm gì); Claude giải thích PR là luật GitHub chỉ có khi bật, cách kit bù ở repo không ruleset, vì sao `/ao-ship` commit hai file tài liệu lên nhánh release, và một cách giữa: PR nhỏ do `merge-gate` tự merge; lượt 9: bạn chọn tách ruleset thành ba; kit PR #284, ba ruleset áp lên `shop`, `/ao-ship` chạy lại mở PR release #11 (CI xanh, Staging deploy lại); chờ bạn approve PR #11 ở gate ⑤; lượt 10: bạn approve; `merge-gate` merge, tag `v0.1.0`, tự merge ngược PR #12; Production lên, hỏi basic auth; RAM còn 1.867 MB khi đủ ba môi trường; backup và bản sao cả ba database; chờ bạn chọn ai bấm Release `v0.1.0` và cách chép kit ở T10 |
+| 31 | `d80cd357-3fde-4be6-a978-12fadc7d8553` | 2026-11-14 khoảng 15:58 → | Bạn dán đoạn cuối của Phiên 30, nhờ mình bấm Release `v0.1.0` và chọn review đầy đủ cho T10; Release qua REST bằng token admin; `SHOP-6` và PR #13 chép kit `ceee70c` vào `shop`, CI xanh, `/ao-review 13` chạy (`reviewer` `xhigh`, `security` `max`); T11 bắt đầu song song: câu hỏi PO đầu tiên về đơn vị giá |
 
 ---
 
@@ -23331,3 +23332,87 @@ PR #11 gồm 100 file, vì `main` mới chỉ có commit đầu. Hai file nên �
    - **Không review (0 USD),** như `SHOP-2` ở B3: deployer chặn deploy Development, và mình gỡ chặn bằng `/ao-rollback development <sha>` với login `gh` của bạn, tức bạn chấp nhận phần code chưa được review.
 
 Sau T10 là T11: `/ao-intake` để mở Epic "Danh mục sản phẩm". Ở bước đó mình phỏng vấn bạn với vai trò PO, từng câu một.
+
+# Phiên 31 · Lượt 1 — 2026-11-14 khoảng 15:58 → 16:17
+
+**Bạn:**
+
+````markdown
+Làm tiếp session id: 07e0a424-ef4e-437a-b766-0ca9955be037
+
+Trả lời 2 việc:
+1. Làm giúp tôi nhé
+2. Review đầy đủ
+
+đoạn chat của session id: 07e0a424-ef4e-437a-b766-0ca9955be037
+```
+Mình theo dõi tiếp: `merge-gate` merge PR #11, gắn tag `v0.1.0`, merge ngược về `develop`, rồi deployer đưa lên Production.
+
+PR #11 đã merge (`ac7a63c`). `merge-gate` đang chạy tiếp để gắn tag và mở PR merge ngược; mình chờ thêm.
+
+Tag `v0.1.0` đã gắn ở `ac7a63c`, PR #12 do bot mở. Mình đang chờ PR #12 được `merge-gate` tự merge (lần đầu ruleset mới chạy thật) và deployment Production.
+
+PR #12 đã được merge-gate tự merge và Production lên lúc 15:47. Mình đang kiểm container, healthcheck của `api`, Flyway, RAM ở cả ba môi trường và basic auth bằng mật khẩu mới.
+
+Production đang chạy ổn: `api` healthy, Flyway đủ 3 migration, `shop-admin` và `admin` đều phản hồi đúng, còn RAM trống 1.867 MB. Mình thử lại host báo `ENOTFOUND` rồi chạy backup cho cả ba database.
+
+Cả ba database đã có đủ bản dump và bản sao mã hóa trên máy bạn. Mình sẽ giải mã thử bản sao Production để so mã băm với VPS, rồi xóa bản giải mã ngay sau đó.
+
+Mã băm trùng khớp. Tiêu chí 2 giờ đạt cho cả ba môi trường. Mình ghi kết quả T9 và Checkpoint 3 vào `verification.md`.
+
+**`v0.1.0` của `shop` đã chạy trên Production.** Chặng 2 xong, Checkpoint 3 đạt.
+
+**Sau khi bạn approve, các bước tự động đã chạy xong:**
+- `merge-gate` merge PR #11 vào `main` (`ac7a63c`) và gắn tag `v0.1.0`.
+- Bot mở PR #12 để merge ngược `main` về `develop`, và `merge-gate` tự merge. Đây là lần đầu bot merge một PR chưa có approve trên GitHub theo ruleset mới, và nó chạy đúng.
+- **Production** lên lúc 15:47:
+  - `api` báo `healthy`, Flyway chạy đủ 3 migration;
+  - `shop.ao.t2g.io.vn` và `shop-admin.ao.t2g.io.vn` trả 401 khi chưa đăng nhập, 200 khi đã đăng nhập;
+  - Production của `ao-sample` vẫn mở như cũ.
+- **RAM:** khi `shop` chạy đủ ba môi trường cùng `ao-pilot` và `ao-sample`, VPS còn trống 1.867 MB trên 3.915 MB (22 container dùng tổng cộng 1,42 GB). Ở B3 mình ước còn khoảng 1,7 GB. Mình đề xuất giữ VPS 4 GB.
+- **Backup:** cả ba database đều có bản dump và bản sao mã hóa, và máy bạn đã kéo về đủ. Bản sao Production sau khi giải mã trùng mã băm với bản trên VPS. Tiêu chí 2 đạt cho cả ba môi trường.
+- **Chi phí agent:** vẫn 5,38 USD.
+
+**Còn hai việc cần bạn trả lời:**
+1. **Bấm Release `v0.1.0` trên Jira:** bạn tự bấm, hay để mình làm qua REST bằng token admin? Nếu bạn tự bấm:
+   1. mở space `SHOP`, chọn **Releases**;
+   2. ở dòng `v0.1.0`, bấm **⋯**;
+   3. chọn **Release**.
+2. **T10, chép bản kit mới vào `shop`.** Kit đã đổi nhiều so với lần chép ở `SHOP-2`: ruleset, bản sao backup, cách đọc mật khẩu, dòng trạng thái của `/ao-preview`. Agent của Epic dùng bản kit nằm trong `shop`, nên phải chép trước khi bắt đầu Epic. PR này sửa các thư mục được bảo vệ (`.ai-orchestrator/`, `.claude/`), nên có hai cách:
+   - **Review đầy đủ một lần (mình đề xuất):** tốn khoảng 9 USD (`reviewer` ở mức `xhigh`, `security` ở mức `max`), giống lần chép kit `SMP-27` ở B1. Lần thử so sánh trong tháng 11 cho thấy review ở mức `max` một lần cho mỗi bản kit vẫn tiết kiệm được mà không bỏ sót lỗi. Các dự án khác chép cùng bản kit này về sau dùng lại được báo cáo review đó.
+   - **Không review (0 USD),** như `SHOP-2` ở B3: deployer sẽ chặn deploy lên Development, và mình gỡ chặn bằng `/ao-rollback development <sha>` với login `gh` của bạn. Làm vậy nghĩa là bạn chấp nhận cho deploy phần code chưa được review.
+
+Sau T10 là T11: chạy `/ao-intake` để mở Epic "Danh mục sản phẩm". Ở bước đó mình hỏi bạn, với vai trò PO, từng câu một.
+```
+````
+
+**Claude:**
+
+**Việc 1 xong, việc 2 đang review. T11 bắt đầu luôn, song song với review.**
+
+**1. Release `v0.1.0` trên Jira: xong.** Mình làm qua REST bằng token admin của bạn, như lần `v0.2.0` của `ao-sample` ở B1.
+- Trước khi ghi, script kiểm mọi item trong Fix Version đã Done: chỉ có `SHOP-5`, đã Done.
+- `v0.1.0` giờ là Released, ngày 2026-11-14. Mô tả là nguyên văn release notes do `devops` viết (`.ai/runs/v0.1.0/fix-version.md`).
+- Checkpoint 3 đạt trọn.
+
+**2. T10, chép kit vào `shop` với review đầy đủ: đang review.**
+- Task `SHOP-6` "Chép kit Pilot 3 (ceee70c) vào shop, trước Epic đầu": mình tạo, bấm Refine thay bạn (comment ghi rõ bạn duyệt ở đâu), rồi Start như `SHOP-5`. Task đang In Progress.
+- `ao-kit sync` chép kit `ceee70c` (bản `main` sau kit PR #280–#284) trong 24 giây. Có 15 file đổi, đều nằm trong `.ai-orchestrator/`: ruleset, `production_auth`, bản sao backup, cách đọc mật khẩu, dòng trạng thái của `/ao-preview`, gói `age-encryption`. `.claude/` và workflow không đổi.
+- `ao-kit check` đạt. `doctor` đạt mọi dòng, trừ dòng Docker, vì Docker Desktop đang tắt (cố ý, bước này chưa cần).
+- PR #13 do bot `ao-dev` mở; CI xanh đủ năm check.
+- `/ao-review 13` chạy từ 16:11: `reviewer` ở `xhigh`, rồi `security` ở `max`. Dự kiến khoảng 30 phút và khoảng 9 USD. Mình báo tiến độ 3 phút một lần.
+- Khi review xong:
+  - không có Critical hay High: mình approve và merge bằng login `gh` của bạn (theo quyền của B4), rồi chạy `/ao-qa SHOP-6` trên Development (khoảng 1 USD); sau đó chờ bạn Accept;
+  - có Critical hay High: mình sửa trong kit, chép lại, rồi review phần mới.
+
+**T11: phỏng vấn PO để mở Epic "Danh mục sản phẩm".** Bước này chỉ cần bạn trả lời, không chạy agent, nên mình bắt đầu luôn trong lúc chờ review. Space `SHOP` chưa có Epic nào. Mình hỏi từng câu, mỗi câu kèm phỏng đoán của mình; bạn chỉ cần trả lời "đúng", hoặc sửa lại.
+
+**Mình đang hiểu (chắc khoảng 60%):** bạn muốn danh mục sản phẩm đầu tiên của `shop` chạy thật. Quản trị viên thêm, sửa, xóa sản phẩm trong `admin`; khách xem danh sách và trang chi tiết trong `user`; ba app dùng chung một hợp đồng API của `api`; giao diện theo trang mẫu vitrea. Còn thiếu: đơn vị giá, các trường của sản phẩm, cách khách tìm và sắp xếp, xóa hẳn hay chỉ ẩn, và thế nào là "xong" trên Production.
+
+**Câu 1: Giá sản phẩm tính bằng tiền gì?**
+- **Mình đoán:** đồng Việt Nam, số nguyên, không có số lẻ, hiển thị kiểu `1.250.000 ₫` ở cả trang tiếng Việt lẫn tiếng Anh.
+- **Vì sao phải chọn:** hiện ba app hiểu giá theo ba cách khác nhau:
+  - `user` (trang của khách) dùng VND;
+  - `api` lưu số có 2 chữ số thập phân, ghi chú là USD;
+  - `admin` dùng xu USD (`priceCents`).
+- Nếu chọn VND, `sa` sẽ sửa `api` và `admin` theo. Hiện chưa có sản phẩm thật nào, nên đổi đơn vị không phải chuyển dữ liệu cũ.
