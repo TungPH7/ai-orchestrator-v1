@@ -147,3 +147,68 @@ test('two public apps with one host for each environment, or a public app with n
   assert.match((await partial.installer.install({ env: 'development', sha: SHA, tree: TREE })).reason, /^admin is public in deploy\.yaml but has no development host in \/etc\/ao\/deployer\.yaml$/);
   assert.deepEqual(partial.dockerCalls, []);
 });
+
+// project-scaffold part 3, spec 2.5: a Dockerfile made for its app folder builds from that folder.
+test('an app with a context builds from that folder of the worktree, with its Dockerfile named from the root', async () => {
+  const withApi = DEPLOY_YAML.replace('apps:\n', 'apps:\n  api:\n    dockerfile: apps/api/Dockerfile\n    context: apps/api\n    port: 3001\n    health: /actuator/health\n    memory: 768m\n    start_timeout: 180\n');
+  const f = fakes({ deployYaml: withApi });
+  assert.equal((await f.installer.install({ env: 'development', sha: SHA, tree: TREE })).outcome, 'success');
+  assert.equal(f.dockerCalls[0], `build --file ${DIR}/apps/api/Dockerfile --tag ao-pilot-api:${TREE} --label ao.project=pilot --label ao.app=api --label ao.tree=${TREE} ${DIR}/apps/api`);
+  assert.ok(f.dockerCalls.some((line) => line.startsWith(`run --detach --name ao-pilot-development-api-${TREE.slice(0, 12)} `) && line.includes('--memory 768m --memory-swap 768m')));
+});
+
+// project-scaffold part 3, spec 2.4: the database of a project runs before its apps, made once from its .db.env.
+const WITH_DB = `${DEPLOY_YAML}database:\n  image: postgres:17-alpine@sha256:${'d'.repeat(64)}\n  init: db/init\n`;
+function dbFakes({ dbEnv = 'POSTGRES_PASSWORD=root-secret\nPOSTGRES_DB=pilot\n', exists = false } = {}) {
+  const dockerCalls = [];
+  const copied = [];
+  const docker = async (args) => {
+    const line = args.join(' ');
+    dockerCalls.push(line);
+    if (!exists && (line.startsWith('container inspect') || line.startsWith('volume inspect'))) throw new Error('Error: No such object');
+    if (exists && line.startsWith('container inspect')) return 'running\n';
+    if (args[0] === 'inspect') return '{"ao-pilot-development":{"IPAddress":"172.18.0.9"}}';
+    return '';
+  };
+  const installer = createInstaller({
+    project: PROJECT,
+    git: async (args) => (args[0] === 'show' ? WITH_DB : ''),
+    docker,
+    open: async () => {},
+    copyInit: async (from, to) => copied.push({ from, to }),
+    smoke: async () => ({ ok: true, failures: [] }),
+    workDir: '/var/lib/ao/pilot/work',
+    readSecrets: async (name) => {
+      if (name === 'development') return 'HOST=0.0.0.0\nPORT=3000\n';
+      if (name === 'development.db' && dbEnv !== null) return dbEnv;
+      throw new Error(`ENOENT: no such file, open '/etc/ao/secrets/pilot/${name}.env'`);
+    },
+  });
+  return { installer, dockerCalls, copied };
+}
+
+test('the first deploy of a project with a database makes it from its init scripts, before the apps run', async () => {
+  const f = dbFakes();
+  assert.equal((await f.installer.install({ env: 'development', sha: SHA, tree: TREE })).outcome, 'success');
+  assert.deepEqual(f.copied, [{ from: `${DIR}/db/init`, to: '/var/lib/ao/pilot/db-init/development' }]);
+  const at = (prefix) => f.dockerCalls.findIndex((line) => line.startsWith(prefix));
+  assert.ok(at('build ') < at('run --detach --name ao-pilot-development-db '), 'the build first');
+  assert.ok(at('run --detach --name ao-pilot-development-db ') < at('exec ao-pilot-development-db pg_isready'));
+  assert.ok(at('exec ao-pilot-development-db pg_isready') < at(`run --detach --name ao-pilot-development-web-${TREE.slice(0, 12)} `), 'the database answers before the app runs');
+  assert.ok(!f.dockerCalls.some((line) => line.includes('root-secret')));
+});
+
+test('a database that runs already is left alone, and its init scripts are not copied again', async () => {
+  const f = dbFakes({ exists: true });
+  assert.equal((await f.installer.install({ env: 'development', sha: SHA, tree: TREE })).outcome, 'success');
+  assert.deepEqual(f.copied, []);
+  assert.ok(!f.dockerCalls.some((line) => line.startsWith('run --detach --name ao-pilot-development-db ')));
+});
+
+test('without its .db.env the project deploys nothing, and says which file is missing', async () => {
+  const f = dbFakes({ dbEnv: null });
+  const result = await f.installer.install({ env: 'development', sha: SHA, tree: TREE });
+  assert.equal(result.outcome, 'error');
+  assert.match(result.reason, /the database of development needs \/etc\/ao\/secrets\/pilot\/development\.db\.env/);
+  assert.deepEqual(f.dockerCalls, []);
+});

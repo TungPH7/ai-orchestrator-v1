@@ -102,3 +102,24 @@ test('the kit itself has no deploy.yaml, so validate skips the check there', () 
   assert.equal(result.status, 0, result.stderr);
   assert.doesNotMatch(result.stdout, /Deploy config/);
 });
+
+// project-scaffold part 3, spec 2.4, 2.5: the database of a project, and what a JVM app needs from the deployer.
+const DIGEST = 'postgres:17-alpine@sha256:d3244e8ce3f165ee3c93d9c4a4b1d0fe48b3a89e2287b717fdcbbde92d405065';
+const withJava = (database, api = {}) => ({
+  ...config,
+  apps: { ...config.apps, api: { dockerfile: 'apps/api/Dockerfile', context: 'apps/api', port: 3001, health: '/actuator/health', memory: '768m', start_timeout: 180, ...api } },
+  ...(database !== undefined && { database }),
+});
+
+test('a database names an image pinned by digest, the init scripts inside the repo, and a memory cap', () => {
+  assert.deepEqual(validateDeployConfig(withJava({ image: DIGEST, init: 'apps/api/docker/postgres/init', memory: '256m' })), []);
+  assert.deepEqual(validateDeployConfig(withJava({ image: DIGEST })), []);
+  const rules = (database, api) => validateDeployConfig(withJava(database, api)).map(({ path }) => path);
+  assert.ok(rules({ image: 'postgres:17-alpine' }).some((path) => /database/.test(path)), 'a tag is not a pinned image');
+  assert.ok(rules({ image: DIGEST, init: '../outside' }).some((path) => /database/.test(path)));
+  assert.ok(rules({ image: DIGEST, init: '/etc' }).some((path) => /database/.test(path)));
+  assert.ok(rules({ image: DIGEST, memory: '1TB' }).some((path) => /database/.test(path)));
+  assert.ok(rules({ image: DIGEST, volume: '/data' }).some((path) => /database/.test(path)), 'no other key');
+  assert.ok(rules(undefined, { context: '../web' }).some((path) => /context/.test(path)));
+  assert.ok(rules(undefined, { start_timeout: 900 }).some((path) => /start_timeout/.test(path)));
+});

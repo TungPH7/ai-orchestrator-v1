@@ -91,15 +91,15 @@
 
 ## Chặng 3: deployer và database, nhánh `task/scaffold3-3`
 
-- [ ] **T12: `deploy.yaml`** (spec 2.4, 2.5).
+- [x] **T12: `deploy.yaml`** (spec 2.4, 2.5).
   - **Đạt khi:** (`context`, `memory`, `start_timeout` đã có từ T4) schema và `deploy-config.mjs` nhận `database` (`image` có digest, `init`, `memory`); `context` và `init` phải nằm trong repo; `ao-kit check` đối chiếu như hiện nay.
   - **Kiểm:** fixture đúng và sai; `deploy.yaml` của `ao-sample` và `ao-pilot` vẫn hợp lệ.
   - **File:** `lib/release/deploy.schema.json`, `lib/release/deploy-config.mjs`, fixture, test.
-- [ ] **T13: build context, trần RAM, thời gian chờ** (spec 2.5).
+- [x] **T13: build context, trần RAM, thời gian chờ** (spec 2.5).
   - **Đạt khi:** `buildArgs` dùng `context` khi có; `runArgs` có `--memory` và `--memory-swap` (mặc định `512m`); `swap` truyền `start_timeout` cho smoke test.
   - **Kiểm:** test tham số docker; Caddyfile của cấu hình một app công khai giống hệt chữ bản cũ.
   - **File:** `lib/release/docker.mjs`, `lib/release/smoke.mjs`, `lib/release/deployer.mjs`, test.
-- [ ] **T14: container database** (spec 2.4; plan, quyết định 5, 6).
+- [x] **T14: container database** (spec 2.4; plan, quyết định 5, 6).
   - **Đạt khi:**
     - deployer tạo `ao-<dự án>-<môi trường>-db` khi chưa có, trước khi deploy app: volume cùng tên, alias `db`, `--user postgres`, `--cap-drop ALL`, `no-new-privileges`, trần RAM, không mở cổng, nhãn `ao.role=database`;
     - biến của container lấy từ `/etc/ao/secrets/<dự án>/<môi trường>.db.env`; thiếu file thì không deploy, và ghi lý do;
@@ -107,11 +107,11 @@
     - `swap`, rollback và dọn image không đụng tới container này.
   - **Kiểm:** test với docker giả: tạo một lần, lần sau không tạo lại; deploy và rollback không dừng database; thiếu file biến thì từ chối.
   - **File:** `lib/release/database.mjs`, `lib/release/docker.mjs`, `lib/release/deployer.mjs`, test.
-- [ ] **T15: backup** (spec 2.4; plan, quyết định 8).
+- [x] **T15: backup** (spec 2.4; plan, quyết định 8).
   - **Đạt khi:** `scripts/ao-backup.mjs run` dump mọi database đang chạy bằng `pg_dump -Fc` vào `/var/backups/ao/<dự án>/<môi trường>/`, quyền 0600; giữ 7 bản ngày và 4 bản tuần; `restore-check <dự án> <môi trường>` khôi phục bản mới nhất vào container tạm và in số bảng, số dòng; `vps/ao-backup.service` và `.timer`.
   - **Kiểm:** hàm chọn bản giữ lại; tham số `pg_dump`, `pg_restore`; không có giá trị bí mật trong tham số.
   - **File:** `scripts/ao-backup.mjs`, `lib/release/backup.mjs`, `vps/ao-backup.service`, `vps/ao-backup.timer`, test.
-- [ ] **T16: tài liệu chặng 3; PR.** `docs/vps-setup.md` (database của dự án, backup, khôi phục, đổi bản Postgres; mục 13 thêm file `.db.env`), `docs/release-workflow.md`, `vps/deployer.example.yaml`; PR chặng 3.
+- [x] **T16: tài liệu chặng 3; PR.** `docs/vps-setup.md` (database của dự án, backup, khôi phục, đổi bản Postgres; mục 13 thêm file `.db.env`), `docs/release-workflow.md`, `vps/deployer.example.yaml`; PR chặng 3.
 
 ## Chặng 4: việc B2 để lại, nhánh `task/scaffold3-4`
 
@@ -133,7 +133,7 @@
   1. đo RAM bằng lệnh chỉ đọc;
   2. cập nhật kit trên VPS lên bản có chặng 3, giữ bản cũ ở `/opt/ao/kit.prev`;
   3. chạy `tick --dry-run`: Caddyfile không đổi;
-  4. bật lại deployer, đóng VPS.
+  4. bật lại deployer. VPS để mở cho tới khi bạn bảo đóng (Phiên 29 · Lượt 1).
   - **Kiểm:** ghi vào `verification.md`, không ghi nội dung file có thông tin đăng nhập.
 - [ ] **T20 [bạn]: `shop` có `api`** (tiêu chí 2). Theo bản nháp:
   1. Task chép kit B3, `ao-kit sync`, PR; bạn merge;
@@ -146,8 +146,8 @@
   2. gỡ chặn của `audit` bằng `/ao-rollback development <sha>` nếu cần;
   3. deploy: smoke test đạt; `/api/v1/health` qua host của `admin` trả 200; Flyway chạy đủ migration;
   4. đo RAM lúc build, lúc rảnh, lúc đổi bản; ước cho ba môi trường;
-  5. cài timer backup, chạy một lần, rồi `restore-check`;
-  6. `ao-sample` và `ao-pilot` vẫn chạy; đóng VPS.
+  5. cài timer backup, chạy một lần, rồi `restore-check`; thử khôi phục vào database đang chạy (mục 15, bước 4 của `docs/vps-setup.md`, chưa chạy thật ở T16);
+  6. `ao-sample` và `ao-pilot` vẫn chạy. VPS để mở cho tới khi bạn bảo đóng.
 - [ ] **T23: bản cuối của hướng dẫn; PR** (tiêu chí 7). Chép đầu ra thật của T19–T22.
 
 ### Checkpoint 4: sau T23

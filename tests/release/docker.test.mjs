@@ -37,7 +37,7 @@ function fakeDocker(answers = {}) {
 const docker = (extra = {}) =>
   fakeDocker({
     [`network inspect --format {{json .Containers}} ${NET}`]: '{"c1":{"Name":"caddy"}}',
-    [`ps --all --filter label=ao.project=sample --filter label=ao.env=development --format {{.Names}}\t{{.State}}\t{{.Label "ao.app"}}\t{{.Label "ao.tree"}}`]: RUNNING,
+    [`ps --all --filter label=ao.project=sample --filter label=ao.env=development --filter label=ao.app --format {{.Names}}\t{{.State}}\t{{.Label "ao.app"}}\t{{.Label "ao.tree"}}`]: RUNNING,
     [`inspect --format {{json .NetworkSettings.Networks}} ${name('api', T)}`]: `{"${NET}":{"IPAddress":"172.18.0.7"}}`,
     [`inspect --format {{json .NetworkSettings.Networks}} ${name('web', T)}`]: `{"${NET}":{"IPAddress":"172.18.0.8"}}`,
     ...extra,
@@ -45,8 +45,8 @@ const docker = (extra = {}) =>
 // A smoke test that answers from a list, one result per app, and records what it was asked.
 function fakeSmoke(results) {
   const asked = [];
-  const smoke = async (checks, targets) => {
-    asked.push({ checks, targets });
+  const smoke = async (checks, targets, options) => {
+    asked.push({ checks, targets, options });
     return results.shift();
   };
   return { asked, smoke };
@@ -54,7 +54,7 @@ function fakeSmoke(results) {
 const PASS = { ok: true, failures: [] };
 const deploy = (d, s, options = {}) => swap({ run: d.run, smoke: s.smoke, project: 'sample', env: 'development', tree: T, config: CONFIG, secrets: SECRETS, publicUrls: { web: PUBLIC_URL }, ...options });
 
-const runLine = (app, env) => `run --detach --name ${name(app, T)} --network ${NET} --restart unless-stopped --pull never --security-opt no-new-privileges --cap-drop ALL --label ao.project=sample --label ao.env=development --label ao.app=${app} --label ao.tree=${T} ${env.map((n) => `--env ${n}`).join(' ')} ao-sample-${app}:${T}`;
+const runLine = (app, env, memory = '512m') => `run --detach --name ${name(app, T)} --network ${NET} --restart unless-stopped --pull never --security-opt no-new-privileges --cap-drop ALL --memory ${memory} --memory-swap ${memory} --label ao.project=sample --label ao.env=development --label ao.app=${app} --label ao.tree=${T} ${env.map((n) => `--env ${n}`).join(' ')} ao-sample-${app}:${T}`;
 const give = (app, tree) => [`network disconnect ${NET} ${name(app, tree)}`, `network connect --alias ${app} --alias ao-sample-development-${app} ${NET} ${name(app, tree)}`];
 const strip = (app, tree) => [`network disconnect ${NET} ${name(app, tree)}`, `network connect ${NET} ${name(app, tree)}`];
 
@@ -65,6 +65,11 @@ test('buildArgs tags the image by tree and builds from the root of the checkout,
   ]);
   assert.throws(() => buildArgs({ project: 'sample', app: 'web', tree: T, dockerfile: '../Dockerfile', context: '/var/lib/ao/work/x' }), /dockerfile/);
   assert.throws(() => buildArgs({ project: 'sample', app: 'web', tree: T, dockerfile: 'Dockerfile', context: 'relative' }), /context/);
+  // project-scaffold part 3, spec 2.5: a Dockerfile made for the app folder builds from it; the file is still named
+  // from the root of the checkout.
+  assert.deepEqual(buildArgs({ project: 'shop', app: 'api', tree: T, dockerfile: 'apps/api/Dockerfile', context: '/var/lib/ao/work/x', folder: 'apps/api' }).slice(-1), ['/var/lib/ao/work/x/apps/api']);
+  assert.equal(buildArgs({ project: 'shop', app: 'api', tree: T, dockerfile: 'apps/api/Dockerfile', context: '/var/lib/ao/work/x', folder: 'apps/api' })[2], '/var/lib/ao/work/x/apps/api/Dockerfile');
+  for (const folder of ['../x', 'apps/../..', '/etc']) assert.throws(() => buildArgs({ project: 'shop', app: 'api', tree: T, dockerfile: 'Dockerfile', context: '/var/lib/ao/work/x', folder }), /folder/, folder);
 });
 
 test('runArgs never publishes a port, mounts a volume, joins the host network or runs privileged', () => {
@@ -122,10 +127,12 @@ test('swap runs each new container next to the old one, smoke-tests it, moves th
     {
       checks: [{ app: 'api', path: '/api/health', expect_status: 200, expect_text: 'ok' }],
       targets: { api: { origin: 'http://172.18.0.7:4000', host: 'api:4000' } },
+      options: { timeout: 60000 },
     },
     {
       checks: [{ app: 'web', path: '/', expect_status: 200, expect_text: '' }, { app: 'web', path: '/notes', expect_status: 200, expect_text: 'Ghi chú' }],
       targets: { web: { origin: 'http://172.18.0.8:3000', host: 'sample-dev.ao.t2g.io.vn' } },
+      options: { timeout: 60000 },
     },
   ]);
   // Secrets reach docker through its environment, one app at a time, and no call carries a forbidden flag.
@@ -192,20 +199,20 @@ test('a container with no address is not running: the deploy says how it stands,
 test('the first deploy creates the network, connects Caddy, and has nothing old to stop', async () => {
   const d = docker({
     [`network inspect --format {{json .Containers}} ${NET}`]: new Error('network ao-sample-development not found'),
-    [`ps --all --filter label=ao.project=sample --filter label=ao.env=development --format {{.Names}}\t{{.State}}\t{{.Label "ao.app"}}\t{{.Label "ao.tree"}}`]: '',
+    [`ps --all --filter label=ao.project=sample --filter label=ao.env=development --filter label=ao.app --format {{.Names}}\t{{.State}}\t{{.Label "ao.app"}}\t{{.Label "ao.tree"}}`]: '',
   });
   assert.deepEqual(await deploy(d, fakeSmoke([PASS, PASS])), { outcome: 'switched', failures: [], stopped: [] });
   assert.deepEqual(d.lines().slice(1, 4), [
     `network create --driver bridge --label ao.project=sample --label ao.env=development ${NET}`,
     `network connect ${NET} caddy`,
-    `ps --all --filter label=ao.project=sample --filter label=ao.env=development --format {{.Names}}\t{{.State}}\t{{.Label "ao.app"}}\t{{.Label "ao.tree"}}`,
+    `ps --all --filter label=ao.project=sample --filter label=ao.env=development --filter label=ao.app --format {{.Names}}\t{{.State}}\t{{.Label "ao.app"}}\t{{.Label "ao.tree"}}`,
   ]);
   assert.ok(!d.lines().some((line) => line.startsWith('stop ') || line === `network connect ${NET} ${name('api', O)}`));
 });
 
 test('a leftover container of the same tree, from a deploy cut short, is removed before the new one runs', async () => {
   const d = docker({
-    [`ps --all --filter label=ao.project=sample --filter label=ao.env=development --format {{.Names}}\t{{.State}}\t{{.Label "ao.app"}}\t{{.Label "ao.tree"}}`]: ps(
+    [`ps --all --filter label=ao.project=sample --filter label=ao.env=development --filter label=ao.app --format {{.Names}}\t{{.State}}\t{{.Label "ao.app"}}\t{{.Label "ao.tree"}}`]: ps(
       [name('api', O), 'running', 'api', O],
       [name('web', O), 'running', 'web', O],
       [name('api', T), 'exited', 'api', T],
@@ -247,4 +254,24 @@ test('an image still in use is left alone', async () => {
 
 test('the build cache is trimmed to the 4 GB used most recently (T2: six builds left 7.25 GB)', () => {
   assert.deepEqual(PRUNE_CACHE, ['buildx', 'prune', '--force', '--max-used-space', '4gb']);
+});
+
+// project-scaffold part 3, spec 2.5: a memory cap on every container, and time for a JVM app to start.
+test('each container has a memory cap, 512m unless deploy.yaml names one, and no swap beyond it', () => {
+  const good = { project: 'shop', env: 'development', app: 'api', tree: T, names: [] };
+  const args = runArgs({ ...good, memory: '768m' });
+  const at = args.indexOf('--memory');
+  assert.deepEqual(args.slice(at, at + 4), ['--memory', '768m', '--memory-swap', '768m']);
+  assert.deepEqual(runArgs(good).slice(at, at + 4), ['--memory', '512m', '--memory-swap', '512m']);
+  for (const memory of ['1TB', '768', '--privileged']) assert.throws(() => runArgs({ ...good, memory }), /not allowed in a docker argument/, memory);
+});
+
+test('the smoke test of an app waits as long as its start_timeout, 60 s by default, and its cap reaches docker', async () => {
+  const d = docker();
+  const s = fakeSmoke([PASS, PASS]);
+  const config = { ...CONFIG, apps: { ...CONFIG.apps, api: { ...CONFIG.apps.api, start_timeout: 180, memory: '768m' } } };
+  assert.equal((await deploy(d, s, { config })).outcome, 'switched');
+  assert.deepEqual(s.asked.map(({ options }) => options), [{ timeout: 180000 }, { timeout: 60000 }]);
+  assert.ok(d.lines().includes(runLine('api', ['DATABASE_URL'], '768m')));
+  assert.ok(d.lines().includes(runLine('web', ['API_URL', 'AO_PUBLIC_URL'])));
 });
