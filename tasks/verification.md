@@ -129,3 +129,8 @@ Sửa plan và todo: T4 thêm `playwright.config.ts` của profile; T5 đưa b�
   - Không sửa: gói `age-encryption` vẫn được cài trong dự án (Low của `reviewer`): đúng thiết kế, kiểm chuỗi cung ứng không thấy rủi ro.
   - Năm lệnh kiểm xanh, 1.439 test (trước là 1.418).
   - `doctor` chạy thật trên `shop`: hai dòng khóa mới xanh trên máy này; dòng `ao-merge` đỏ đúng như dự kiến, vì `project.yaml` của `shop` chưa có App này.
+- **T10b, áp bản sửa** (Phiên 31 · Lượt 4):
+  - Kit PR #285 merge (`18d79eb`), CI xanh (contract, profiles).
+  - `npm run gh:protect -- --repo TungPH7/shop --merge-app-id 5756976`: cập nhật `ao-protected-merge` (27256309) và `ao-protected` (27192121), xóa `ao-protected-release` (27256310). Đọc lại: `ao-protected-merge` phủ `develop`, `main`, `release/*`, bypass duy nhất `Integration:5756976:pull_request`; `ao-protected` không ai bypass.
+  - VPS (`scratchpad/t10-vps.sh`, bằng root): kit lên `18d79eb`, bản trước ở `/opt/ao/kit.prev`; `apps.merge: tungph7-ao-merge` thêm vào `/etc/ao/deployer.yaml` (bản sao lưu ở `/root`); `tick --dry-run` không có việc; mã băm Caddyfile trước và sau như nhau (`4f0f02a42c51`); timer chạy lại, các lần tick sau đó kết thúc bình thường. RAM còn trống 1.883 MB.
+  - PR #13: commit thứ hai `6489d52` `chore(kit): copy the kit at 18d79ebe (SHOP-6)` (`scratchpad/recopy-kit.mjs`: các bước của `ao-kit sync` trên chính nhánh này, để review vòng 2 chỉ đọc phần mới). 21 file: kit, `project.yaml` thêm `github.apps.merge` và `merge_id`, `.claude/settings.json` thêm `AO_MERGE_APP` và `AO_MERGE_APP_ID`, skill `ao-preview`, workflow `merge-gate.yml`. `ao-kit check` đạt; `doctor` đạt mọi dòng trừ Docker (tắt cố ý), kể cả `AO_MERGE_APP_KEY` của `merge-gate`. Mô tả PR có thêm mục cho commit thứ hai.
