@@ -11,8 +11,8 @@
 
 ## Chuẩn bị
 
-- [ ] **T1: tài liệu.** Spec ghi đã duyệt; plan, todo; nhật ký Phiên 30 · Lượt 1–4. PR tài liệu từ nhánh `task/pilot-3`, tự merge khi CI xanh.
-- [ ] **T2: tiền đề** (plan, rủi ro). Không commit code; kết quả ghi vào `verification.md`:
+- [x] **T1: tài liệu.** Spec ghi đã duyệt; plan, todo; nhật ký Phiên 30 · Lượt 1–4. PR tài liệu từ nhánh `task/pilot-3`, tự merge khi CI xanh.
+- [x] **T2: tiền đề** (plan, rủi ro). Không commit code; kết quả ghi vào `verification.md`:
   1. mọi chỗ trong kit đọc host Production (`doctor`, `/ao-status`, `jira-sync`, `qa`, smoke): chỗ nào sẽ gặp basic auth sau `production_auth`;
   2. đường của `SMP-27` (T20 của B1): ai mở PR, `/ao-review` và `/ao-qa` đọc gì, cách item tới Done;
   3. các E2E của `shop` gọi API NestJS cũ, chạy trên Development hiện tại: test nào đỏ;
@@ -22,7 +22,7 @@
   - **Đạt khi:** sáu mục có kết quả. Mục nào sai với spec hay plan thì sửa trước chặng 1.
 
 ### Checkpoint 1: sau T2
-- [ ] Tiền đề đạt; spec và plan sửa nếu cần.
+- [x] Tiền đề đạt (Lượt 5). T4 thêm `playwright.config.ts` của profile; T5 đưa bản sửa vào `shop`.
 
 ## Chặng 1: kit và `SHOP-5`, nhánh `task/pilot3-1`
 
@@ -33,11 +33,14 @@
     - các chỗ T2 mục 1 tìm ra được sửa cùng;
     - `vps/deployer.example.yaml` có khóa này, kèm chú thích.
   - **Kiểm:** test của `caddy.mjs` và của schema; Caddyfile của một cấu hình có `ao-sample`, `ao-pilot` giống hệt bản trước.
-- [ ] **T4: dòng `STOP:` của `/ao-preview --go` và `--stop`** (việc B3 để lại). Khi lệnh làm xong việc, dòng cuối mô tả trạng thái mới mà không mở đầu bằng `STOP:`; `STOP:` chỉ còn cho lúc lệnh không làm được. PR của chặng 1.
-  - **Kiểm:** test của `runner.mjs` hoặc `ao-step` cho hai trường hợp.
+- [ ] **T4: dòng `STOP:` của `/ao-preview --go` và `--stop`, và `playwright.config.ts` của profile** (việc B3 để lại; T2 mục 3).
+  - Khi lệnh làm xong việc, dòng cuối mô tả trạng thái mới mà không mở đầu bằng `STOP:`; `STOP:` chỉ còn cho lúc lệnh không làm được.
+  - `playwright.config.ts` của `profiles/base-pnpm` và `profiles/next-nest`: khi test chạy trên một môi trường, chỉ dựng app tại chỗ nếu có test `@local`.
+  - PR của chặng 1.
+  - **Kiểm:** test của `ao-step` hoặc `runner.mjs` cho hai trường hợp; `profiles:check`.
 - [ ] **T5: [bạn] `SHOP-5`** (spec 2.1; plan, quyết định 4).
   - Task tạo bằng token CI, nhãn `ao-devops`; bạn bấm Refine nếu contract đòi.
-  - Phiên chính viết code trên `feature/SHOP-5-…`: `HEALTHCHECK` của `api`; các E2E gọi API cũ chờ Epic bằng `test.skip(` kèm `reason:`.
+  - Phiên chính viết code trên `feature/SHOP-5-…`: `HEALTHCHECK` của `api`; `playwright.config.ts` theo bản sửa của T4; 8 E2E đỏ ở T2 chờ bằng `test.skip(` kèm `reason:` (4 test đăng nhập chờ Epic đăng nhập, 4 test sản phẩm chờ Epic "Danh mục sản phẩm").
   - PR do bot `ao-dev` mở; CI xanh; `/ao-review SHOP-5`; mình merge khi CI xanh (câu 5).
   - Deployer deploy Development; container `api` báo `healthy`.
   - `/ao-qa SHOP-5` trên Development; **bạn Accept**.
