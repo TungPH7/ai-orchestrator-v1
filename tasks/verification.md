@@ -230,3 +230,16 @@ Sửa plan và todo: T4 thêm `playwright.config.ts` của profile; T5 đưa b�
 - **Lượt 6 (Phiên 31), bạn: "Đã start spec"; hỏi kiểm khóa `age` làm sau được không:**
   - `ao-step status SHOP-7`: Specifying, chưa có nhánh docs; `Next: /ao-spec SHOP-7`, chạy sau khi `SHOP-6` merge.
   - Kiểm khóa đã cất: bạn làm sau. Đây không phải điều kiện của tiêu chí 2, vì lần khôi phục thật từ bản sao đã đạt ở T8. Việc kiểm chỉ để chắc bản trong trình quản lý mật khẩu, nay là bản duy nhất của khóa, là đúng. Nên làm trước T17; T19 nhắc lại.
+- **Bản `v0.2.0`, T10h của todo** (Phiên 32 · Lượt 1–2; lúc đầu viết là `v0.1.1`, spec 2.9 phần 7):
+  - `SHOP-6` Done (bạn Accept); T10 xong.
+  - Bước kiểm của `/ao-release` gọi bản kế tiếp là `v0.2.0`, vì kit chỉ cắt `vX.Y.0` từ `develop`. Fix Version `v0.3.0` (id 10008) tạo qua REST bằng token admin (`scratchpad/shop-version-030.mjs`). Epic `SHOP-7` chưa có Fix Version.
+  - Gate ④ (Lượt 1): điểm cắt `fdc2ee0`; trong bản: `SHOP-6`. So với `main`: 41 file, chỉ trong `.ai-orchestrator/`, `.claude/`, `.github/`. Thử trước: nhánh release mới bắt đầu từ commit của `develop` mà Development đã kiểm (`fdc2ee0`), nên deployer không phải `audit` thêm commit nào.
+  - Lượt 2, bạn duyệt gate ④. `/ao-release v0.2.0 fdc2ee0 --go`: Fix Version `v0.2.0` cho `SHOP-6`; `release/v0.2.0` tạo tại `fdc2ee0` bằng login của bạn. Staging deploy thành công (deployment `7792382706`, 19:03:12Z → 19:04:51Z).
+  - `AO_ENV_AUTH` của tiến trình Claude Code vẫn là bản cũ. `/ao-ship` chạy với giá trị đọc từ biến người dùng của Windows (`scratchpad/user-var.mjs`, không in), và `AO_KIT_DIR` trỏ vào kit.
+  - `/ao-ship v0.2.0` (02:07–02:16):
+    - `qa` regression trên Staging (`high`, 12 lượt, 0,39 USD): **PASS**, 9 đạt, 0 lỗi, 8 bỏ qua có lý do như `v0.1.0`. `gh-guard` từ chối `git tag --list` (`qa` chỉ đọc git) và một lệnh có mật khẩu basic auth trên dòng lệnh.
+    - `devops` viết release notes (`high`, 12 lượt, 0,53 USD). Hai nhắc: `package.json` vẫn ghi `0.1.0` (kit không nâng số này, như `v0.1.0`); và hỏi `AO_MERGE_APP_KEY` có chưa: có, PR #14 vừa được App `ao-merge` merge.
+    - **PR report, chạy thật lần đầu:** bot `ao-dev` mở PR #14 `release-notes/v0.2.0` → `release/v0.2.0` (2 file). CI xanh đủ năm check; `merge-gate` merge bằng App `ao-merge` lúc 19:13:11Z (`21002cd`).
+    - Deployer `audit` cho qua `21002cd` và deploy lại Staging (deployment `7792516878`, success 19:15:44Z).
+    - Script mở PR release #15 `release/v0.2.0` → `main`: 43 file (+1.114/−210): `.ai-orchestrator/` 35, `.claude/` 4, `.github/` 2 (`CODEOWNERS`, `merge-gate.yml`), `CHANGELOG.md`, `docs/releases/v0.2.0.md`. CI xanh đủ năm check. Chờ gate ⑤ của bạn.
+  - Chi phí agent của `v0.2.0`: 0,92 USD; của Pilot 3 tới giờ: 46,48 USD.
