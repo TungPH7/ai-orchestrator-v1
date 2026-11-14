@@ -2,7 +2,7 @@
 
 > **Loại:** pilot, không phải module. Hàng B4 của [misc/thao-luan/concerns.md](misc/thao-luan/concerns.md). **Dùng:** mọi module Cấp 1, `human-loop`, `live-run-fixes` và `project-scaffold` phần 1–3. **Là đầu vào cho:** C1 (thứ tự chạy trong contract, role `seo`) và C2.
 >
-> **Trạng thái:** bản nháp ngày 2026-11-14 (Phiên 30 · Lượt 1). Chờ bạn duyệt và trả lời 5 câu ở mục 8.
+> **Trạng thái:** viết ngày 2026-11-14 (Phiên 30 · Lượt 1). Đã duyệt: câu 1, 2, 4, 5 theo đề xuất ở Lượt 2; câu 3 ở Lượt 5, bản sao backup kéo về máy bạn (mục 2.4, 8). Plan và danh sách task: [tasks/plan.md](tasks/plan.md), [tasks/todo.md](tasks/todo.md).
 
 ## 1. Mục tiêu
 
@@ -64,18 +64,23 @@ Phiên chính làm theo mục 12–15 của [docs/vps-setup.md](docs/vps-setup.m
 
 ### 2.4 Bản sao backup ngoài VPS
 
-Chỗ để bản sao do bạn chọn ở câu 3, mục 8. Có bốn cách:
+Ở Lượt 5, bạn chọn: **máy bạn kéo bản sao về.** Các cách khác (B2, Google Drive, snapshot của BKNS) được so ở Lượt 1–4 của nhật ký.
 
-| Cách | Tự chạy | Khi VPS bị chiếm | Bạn cần làm |
-|---|---|---|---|
-| **Backblaze B2** qua `rclone`, mã hóa bằng `age`. 10 GB miễn phí; theo Backblaze thì đăng ký không cần thẻ | Có, sau mỗi lượt backup | Key B2 trên VPS không có quyền `deleteFiles`: xóa theo tên chỉ ẩn file, các phiên bản cũ vẫn còn [cần kiểm thật]. Khóa bí mật của `age` chỉ ở máy bạn, nên kẻ chiếm không đọc được bản cũ | Đăng ký B2, tạo bucket và key theo từng bước mình ghi; giữ khóa `age` |
-| **Google Drive** qua `rclone`, quyền `drive.file`, mã hóa bằng `age` | Có | Không đọc được bản cũ, nhưng xóa hẳn được các file `rclone` đã tạo | Bấm đồng ý OAuth một lần; giữ khóa `age` |
-| **Máy bạn kéo về** bằng `scp` | Chỉ khi máy bật và key SSH đã nạp | Không chạm được bản sao | Chạy lệnh tay, hoặc đặt Task Scheduler |
-| **Snapshot của BKNS** | Tùy gói | Bản sao ở cùng nhà cung cấp | Hỏi BKNS; có thể tốn tiền |
+- **Trên VPS:** sau mỗi bản dump, `ao-backup` mã hóa nó bằng khóa công khai `age`, rồi đặt bản mã hóa vào `/var/backups/ao-offsite/<dự án>/<môi trường>/`. Bản mã hóa được giữ theo cùng luật với bản dump. Bản dump gốc vẫn chỉ root đọc được.
+- **Tài khoản `aobackup` trên VPS:** chỉ dùng SFTP, chỉ đọc, bị nhốt trong thư mục bản mã hóa (`ChrootDirectory`, `internal-sftp -R`), đăng nhập bằng một key riêng. Không dùng root, vì root bị đóng khi bạn bảo "đóng VPS".
+- **Trên máy bạn:** `scripts/ao-backup-pull.mjs` chạy bằng Task Scheduler, mỗi ngày và mỗi lần bạn đăng nhập.
+  - Script chỉ tải các file chưa có, và không xóa gì trên máy bạn.
+  - Khi bản mới nhất đã cũ hơn 36 giờ, script để lại cảnh báo; cách hiện cảnh báo chọn ở plan.
+- **Khóa bí mật của `age`** sinh trên máy bạn, không bao giờ lên VPS. Bạn cất một bản ở ngoài laptop, ví dụ trong trình quản lý mật khẩu. Mất khóa là mất mọi bản sao.
+- **Chuyển sang B2 sau này:** phần mã hóa và thư mục bản mã hóa dùng chung.
+  - Khi bạn chuyển, kit thêm bước đẩy thư mục đó lên B2 bằng `rclone`; khóa và cách khôi phục giữ nguyên.
+  - Phần đẩy lên B2 chỉ viết khi bạn chuyển, để kit không có code chưa từng chạy thật.
 
-**Đề xuất B2.** Kit thêm bước `offsite` vào `ao-backup`: sau mỗi bản dump, mã hóa bằng khóa công khai `age` rồi `rclone copy` lên bucket. Cấu hình nằm trong `deployer.yaml`.
-
-Kiểm bằng một lần khôi phục thật từ bản sao ngoài VPS: tải về máy bạn, giải mã, rồi chạy `restore-check` trên Docker ở máy bạn.
+**Kiểm bằng một lần khôi phục thật:**
+1. lấy một bản mã hóa trên máy bạn và giải mã;
+2. so mã băm với bản dump gốc trên VPS;
+3. khôi phục vào Postgres trên Docker ở máy bạn;
+4. so số bảng và số dòng với `restore-check` của cùng bản trên VPS.
 
 ### 2.5 Bản `v0.1.0` của scaffold
 
@@ -120,7 +125,7 @@ Agent chạy lần lượt, kèm báo tiến độ 3 phút một lần. `be-dev`
 
 ### 2.8 Việc kit đi kèm
 
-- `production_auth` (mục 2.2) và bước `offsite` của `ao-backup` (mục 2.4), có test và tài liệu.
+- `production_auth` (mục 2.2) và bản sao kéo về máy bạn (mục 2.4): bản mã hóa của `ao-backup`, tài khoản `aobackup`, `scripts/ao-backup-pull.mjs`; có test và tài liệu.
 - Dòng `STOP:` ở cuối `/ao-preview --go` và `--stop` nghe như báo lỗi, dù chỉ mô tả trạng thái mới. Sửa cách hiển thị của `ao-step` (việc B3 để lại).
 - Lỗi kit gặp khi chạy: sửa trong kit PR riêng, có test, rồi chép vào `shop` trong một PR riêng (bài học của B2).
 
@@ -178,21 +183,29 @@ Phần VPS, `/ao-release`, `/ao-rollback` và việc của phiên chính không 
 | Hợp đồng API mới có thể cần migration, ví dụ nếu giá đổi sang tính theo xu | `sa` theo luật expand/contract; `v0.2.0` là lần kiểm thật đầu |
 | Bỏ lớp đăng nhập khỏi trang sửa của `admin` | Chỉ an toàn khi host có basic auth: mục 2.2 và tiêu chí 1 |
 | Docker Desktop chiếm RAM máy bạn trong lượt `be-dev` và `/ao-preview` | Bật ngay trước, tắt ngay sau |
+| Bản sao trên máy bạn trễ khi máy tắt, và chỉ có một bản trên một laptop | VPS giữ 7 ngày và 4 tuần nên máy kéo bù được; cảnh báo khi bản mới nhất cũ hơn 36 giờ; chuyển hay thêm B2 trước khi mở bán nếu bạn muốn |
 
 ## 7. Thứ tự
 
-Plan sẽ chia chi tiết; dự kiến năm chặng:
-1. Kit: `production_auth`, bước `offsite`, dòng `STOP:`. Task `SHOP-5`.
-2. VPS: Staging, Production, bản sao ngoài VPS. Bản `v0.1.0`.
+Plan chia chi tiết thành năm chặng:
+1. Kit: `production_auth`, dòng `STOP:`. Task `SHOP-5`.
+2. VPS: Staging, Production, bản sao kéo về máy bạn. Bản `v0.1.0`.
 3. Epic: intake, spec, plan.
 4. Build, xem trước, review và QA từng item.
 5. `v0.2.0` lên Production; hướng dẫn; đóng pilot.
 
-## 8. Câu hỏi mở
+## 8. Câu hỏi
+
+Đã trả lời hết:
+- Lượt 2: câu 1, 2, 4, 5 theo đề xuất.
+- Lượt 5: câu 3, bản sao kéo về máy bạn, mã hóa bằng `age` ngay từ đầu để sau này chuyển sang B2 dễ (mục 2.4). Lượt 3 và 4 giải thích vì sao cần bản sao, và so cách này với B2.
+- Bạn sẽ gửi ảnh giao diện cho Epic (mục 2.6), trước `/ao-spec`.
+
+Các câu như lúc hỏi:
 
 1. **Epic đầu:** "Danh mục sản phẩm" như mục 2.6, với 2 Story, tổng Pilot 3 khoảng 90–125 USD. Hay nhỏ hơn: một Story "admin thêm sản phẩm, khách thấy trong danh sách", khoảng 65–90 USD. Hay bạn có Epic khác cho `shop`? Mình đề xuất bản 2 Story.
 2. **Làm `v0.1.0` của scaffold trước Epic,** như cách đã duyệt ở Lượt 112: mình đề xuất giữ. Nếu bỏ, Epic lên thẳng `v0.1.0`: bớt khoảng 6–12 USD và một vòng release, nhưng lỗi hạ tầng và lỗi agent dồn vào một lần, và mất lần thử nâng một database Production có dữ liệu.
-3. **Chỗ để bản sao backup:** B2 (đề xuất), Google Drive, máy bạn, hay snapshot của BKNS (bảng ở mục 2.4)?
+3. **Chỗ để bản sao backup:** B2 (đề xuất), Google Drive, máy bạn, hay snapshot của BKNS (Lượt 1–4 của nhật ký)?
 4. **Production giữ basic auth** cho tới khi bạn mở bán (mục 2.2): mình đề xuất đồng ý.
 5. **Quyền tự làm cho B4:** như B3, tức làm theo đề xuất mà không dừng hỏi; chỉ dừng khi cần bạn bấm, cấp quyền, hoặc xóa thứ không hoàn tác được. Thêm: mình Ready, Approve và merge PR `shop` do phiên chính làm khi CI xanh. Gate ①–⑤ và Accept của item do agent làm vẫn là của bạn, vì Pilot 3 kiểm cả trải nghiệm của bạn ở các gate.
 
