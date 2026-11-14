@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { posix, win32 } from 'node:path';
 import {
-  COMPOSE_UP,
+  composeUpArgs,
   ciJavaVersions,
   MAVEN_SCRIPTS,
   devEnv,
@@ -103,8 +103,15 @@ test('dev reads the .env of the app, and a variable already set, such as PORT fr
   assert.deepEqual(devEnv({ A: '1' }, null), { A: '1' });
 });
 
-test('dev starts the database of the compose file and waits until it is healthy', () => {
-  assert.deepEqual(COMPOSE_UP, ['compose', 'up', '--detach', '--wait']);
+// The compose file of the user's Java template has postgres and app; app builds the image of the API itself and runs it
+// on 8080, next to the one Maven runs for dev. dev starts only the services made from an image (project-scaffold part 3,
+// T21): a database, a cache.
+test('dev starts the services of the compose file that are not built from the app, and waits until they are healthy', () => {
+  const template = 'name: "learn"\nservices:\n  postgres:\n    image: "${POSTGRES_IMAGE:-postgres:17-alpine}"\n    healthcheck:\n      test: ["CMD-SHELL", "pg_isready"]\n  app:\n    build:\n      context: "."\n    depends_on:\n      postgres:\n        condition: "service_healthy"\n  redis:\n    image: redis:8-alpine\n';
+  assert.deepEqual(composeUpArgs(template), ['compose', 'up', '--detach', '--wait', 'postgres', 'redis']);
+  assert.equal(composeUpArgs('services:\n  app:\n    build: .\n'), null);
+  assert.equal(composeUpArgs('services: {}\n'), null);
+  assert.throws(() => composeUpArgs('services: [\n'), /docker-compose\.yml of the app cannot be read/);
 });
 
 test('CI installs each Java version the apps ask for, once, and stops on a pom that names none', () => {
