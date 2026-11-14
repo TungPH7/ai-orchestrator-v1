@@ -129,6 +129,40 @@ Agent chạy lần lượt, kèm báo tiến độ 3 phút một lần. `be-dev`
 - Dòng `STOP:` ở cuối `/ao-preview --go` và `--stop` nghe như báo lỗi, dù chỉ mô tả trạng thái mới. Sửa cách hiển thị của `ao-step` (việc B3 để lại).
 - Lỗi kit gặp khi chạy: sửa trong kit PR riêng, có test, rồi chép vào `shop` trong một PR riêng (bài học của B2).
 
+### 2.9 Sửa theo review của PR chép kit `shop` #13 (T10)
+
+Review đầy đủ của bản kit `ceee70c` (`security` ở `max`) tìm ra hai lỗi High; bạn duyệt cách sửa ở Phiên 31 · Lượt 2 ("Làm như đề xuất"). Cả hai do thiết kế của Claude: ở Phiên 30 · Lượt 9 Claude chỉ tính tới `merge-gate` mà quên agent cũng cầm token `ao-dev`; ở T8 khóa giải mã nằm trên laptop dù plan ghi phải cất ngoài.
+
+**1. Chỉ App `ao-merge` được đi tắt ruleset** (High 1).
+- Mọi role `git: write` cầm token `ao-dev`, và `gh-guard` chỉ chặn nhầm lẫn, không chặn được agent cố tình lách. Vì vậy App mà ruleset cho đi tắt không được là App của agent.
+- App mới `<owner>-ao-merge` (`contents`, `pull_requests`, `workflows` ghi). Khóa của nó chỉ nằm trong secret `AO_MERGE_APP_KEY` của environment `merge-gate`, nơi chỉ `develop` dùng được; không có trên máy nào agent chạy. `project.yaml` ghi `github.apps.merge` và `merge_id`; render đưa chúng vào `AO_MERGE_APP`, `AO_MERGE_APP_ID`.
+- Hai ruleset thay cho ba:
+  - `ao-protected` trên `develop`, `main`, `release/*`: cấm xóa và force push, không ai đi tắt;
+  - `ao-protected-merge` trên cả ba: PR, 1 approve (push mới xóa approve cũ), đủ các check; chỉ `ao-merge` đi tắt, và chỉ khi merge một PR.
+  - `gh-protect --merge-app-id` xóa ruleset `ao-protected-release` cũ.
+- `merge-gate` merge, gắn tag và mở PR merge ngược bằng `ao-merge`. Dự án chưa có `ao-merge` thì `merge-gate` dùng `ao-dev` như trước và báo điều đó.
+- **Report của `/ao-ship`** không còn commit thẳng lên `release/vX.Y.Z`:
+  - bot `ao-dev` commit report lên nhánh `release-notes/vX.Y.Z` và mở PR vào `release/vX.Y.Z`, tên `release notes: vX.Y.Z`;
+  - `merge-gate` merge PR đó khi: bot `ao-dev` mở, PR chỉ đổi `CHANGELOG.md` và `docs/releases/vX.Y.Z.md`, CI xanh;
+  - `/ao-ship` chờ PR đó merge (tối đa 15 phút), rồi mới mở PR release vào `main` như cũ. Quá hạn thì lệnh dừng; gõ lại lệnh là chạy tiếp.
+- **PR merge ngược** (`main` về `develop`) chỉ được merge khi đầu nhánh `main` đúng là commit của một tag `vX.Y.Z`, tức của một bản đã qua gate ⑤ hay một hotfix đã phát hành. `audit` kiểm cùng điều đó, và người merge phải là `ao-merge`, `ao-dev` hoặc bạn.
+- **`audit`** bỏ luật cũ cho commit không qua PR của `ao-dev` trên nhánh release. Nó nhận PR report theo đúng các điều kiện `merge-gate` dùng để merge. Kit trên VPS cập nhật theo; `deployer.yaml` có thêm `apps.merge`.
+
+**2. Khóa giải mã backup không nằm trên máy agent** (High 2).
+- Bạn cất khóa `age` trong trình quản lý mật khẩu; file trên laptop đã xóa ở Lượt 2.
+- `ao-backup-pull.mjs decrypt --identity -` đọc khóa từ stdin. `keygen` nhắc chuyển khóa ra khỏi máy. `doctor` báo đỏ khi thấy file khóa trong `%USERPROFILE%\.ao\`.
+- `pull` giữ bản sao trên máy theo đúng luật giữ bản của VPS (`backupsToKeep`: 48 giờ, 7 ngày, 4 tuần) và xóa bản cũ hơn.
+- `gh-guard` chặn agent đọc file `.agekey`, bản sao `.dump.age`, thư mục `ao-backups`, và chạy `ao-backup-pull.mjs`.
+
+**3. Các lỗi Low.**
+- `pull` bỏ qua và báo bản sao mang thời điểm muộn hơn lúc kéo quá 5 phút. Nhờ vậy một VPS bị chiếm không làm dòng `doctor` xanh mãi, cũng không đặt được bản "mới nhất" giả.
+- `doctor` báo đỏ, kèm cách sửa, khi file trạng thái của lần kéo bị hỏng, thay vì dừng hẳn.
+- Có test chốt mốc đúng 48 giờ của `backupsToKeep`.
+- Skill `ao-preview` có chỉ dẫn cho kết quả trạng thái mới.
+- Gói `age-encryption` vẫn được cài trong dự án: đó là thiết kế, và lần kiểm chuỗi cung ứng không thấy rủi ro.
+
+Sau khi sửa: chép lại kit vào PR #13, chạy `/ao-review 13` vòng 2 (khoảng 4–8 USD, bạn đã đồng ý), rồi merge, QA và Accept `SHOP-6`.
+
 ## 3. Chi phí ước tính
 
 | Việc | USD [Ước tính] |
