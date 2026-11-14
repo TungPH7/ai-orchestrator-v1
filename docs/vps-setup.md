@@ -510,7 +510,7 @@ node /opt/ao/kit/scripts/ao-backup.mjs restore-check shop development
 - Lệnh khôi phục bản mới nhất vào container tạm `ao-restore-check-<dự án>-<môi trường>`, cùng image và không có mạng. Sau đó lệnh so số bảng và số dòng với database đang chạy. Container tạm luôn bị xóa.
 - Khớp thì lệnh thoát mã 0.
 - Lệch thì lệnh thoát mã 1. Nghĩa là có dòng được ghi sau lúc dump, hoặc bản dump không khôi phục được. Chạy ngay sau bước 2 để hai bên cùng thời điểm.
-- Ở T15, lệnh chạy thật trên Docker của máy: 2 bảng, 32 dòng, khớp.
+- Ở T15, lệnh chạy thật trên Docker của máy: 2 bảng, 32 dòng, khớp. Ở T22, trên Development của `shop`: 17 giây, `restored: 3 tables, 6 rows; shop now: 3 tables, 6 rows`.
 
 **4. Khôi phục vào database đang chạy** (chưa chạy thật). Làm khi dữ liệu của một môi trường bị hỏng, ví dụ sau một migration sai:
 

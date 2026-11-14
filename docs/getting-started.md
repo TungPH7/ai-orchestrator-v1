@@ -679,12 +679,20 @@ node <kit>/scripts/ao-kit.mjs check e-commerce/shop
      - `lint` đỏ vì Spotless định dạng lại `application.yml` và không giữ comment. Chạy `pnpm --filter ./apps/api run lint` trên máy trước khi push; bước này không cần Docker.
      - `user` gọi API qua `API_URL` của `apps/user/.env.development`. File đó ở máy bạn trỏ tới API NestJS cũ, và `user` được viết theo endpoint của API đó, nên `/api/products/count` của `user` trả 500. Ghép `user` với API Java là việc của Epic đầu.
 5. **Lên Development.** VPS đang mở; Claude làm theo mục 14 và 15 của [docs/vps-setup.md](vps-setup.md):
-   - sinh hai mật khẩu ngay trên VPS: `development.db.env` cho container database, và các biến database trong `development.env` cho app, cùng `SPRING_PROFILES_ACTIVE=staging`. Profile `dev` của template dành cho máy cá nhân (ghi tham số SQL ở mức TRACE), còn `prod` để dành cho Production;
-   - ba PR trên merge mà không có báo cáo review, nên `audit` chặn deploy từ commit chép kit. Bạn đã duyệt cả ba, nên gõ `/ao-rollback development <sha của develop>` để gỡ chặn;
-   - deployer build `api` từ `apps/api`, tạo container `ao-shop-development-db`, chạy script init một lần, rồi bật `api`. Flyway chạy migration khi `api` khởi động;
-   - kiểm: smoke test đạt, và `https://shop-admin-dev.ao.t2g.io.vn/api/v1/health` qua basic auth trả 200;
-   - cài timer backup, chạy một lần, rồi `restore-check`.
-6. **RAM.** Ước trước khi chạy thật: một JVM của `api` lúc rảnh khoảng 250–400 MB, Postgres khoảng 30–80 MB. Lúc đổi bản, hai JVM chạy cùng lúc.
+   - **Biến:** hai mật khẩu sinh ngay trên VPS. `development.db.env` có 6 biến cho container database. `development.env` thêm 6 biến cho app: `SPRING_PROFILES_ACTIVE=staging`, `DB_HOST=db`, `DB_PORT`, `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD`. Profile `dev` của template dành cho máy cá nhân (ghi tham số SQL ở mức TRACE), còn `prod` để dành cho Production.
+   - **Gỡ chặn:** ba PR trên merge mà không có báo cáo review, nên deployer từ chối từ commit chép kit (`c405b19 did not pass audit`), và `jira-sync` gắn cờ Needs you lên ba Task. Bạn đã duyệt cả ba PR, nên gõ `/ao-rollback development 05b1a63`. Ở `shop`, đó là yêu cầu deploy `#7782564110`.
+   - **Kết quả mong đợi** (18,5 phút): deployer ghi `you approved the history of develop up to 05b1a63`, build `user` (khoảng 6 phút), dùng cache cho `admin`, build `api` (khoảng 6,5 phút, Maven trong Docker). Rồi nó tạo `ao-shop-development-db`, chạy script init một lần, bật ba app mới, chạy smoke test, và ghi `deployed 05b1a63`.
+     - Flyway chạy đủ 3 migration khi `api` khởi động. `api` mất 66 giây để khởi động trên VPS, dưới `start_timeout` 180.
+     - Qua basic auth: `https://shop-admin-dev.ao.t2g.io.vn/api/v1/health` trả 200 (`Application is running`), `/api/products` trả `[]`, `user` `/en` và `admin` `/` trả 200. `/actuator/*` không lộ ra ngoài, vì Caddy của `admin` chỉ chuyển `/api/*`.
+   - **Backup:** cài timer `ao-backup`, chạy một lần (2 giây, bản dump 15.243 byte, chỉ root đọc được), rồi `restore-check shop development` (17 giây): `restored: 3 tables, 6 rows; shop now: 3 tables, 6 rows`.
+   - **Nếu lỗi:**
+     - Mọi host Development và Staging trả 401 với `AO_ENV_AUTH` đúng: terminal hay phiên Claude Code mở trước lần đổi mật khẩu vẫn giữ giá trị cũ. Mở lại chúng.
+     - Docker đánh dấu container `api` là `unhealthy`: `HEALTHCHECK` của template gọi `/actuator/health/liveness`, mà Spring Security trả 401 cho đường này. Deployer kiểm bằng smoke test trên `/actuator/health`, nên deploy vẫn đạt. Sửa `HEALTHCHECK` hoặc luật bảo mật trong một Task.
+6. **RAM trên VPS 4 GB**, đo 5 giây một lần:
+   - trước khi có `api`: còn trống 2.790 MB;
+   - đỉnh, lúc build `user`: dùng 2.441 MB, còn trống 1.474 MB, swap 214 MB. Lúc đổi bản: dùng 1.479 MB;
+   - sau, lúc rảnh: còn trống 2.508 MB. `api` dùng 286 MiB, Postgres 45 MiB;
+   - ước cho ba môi trường: Staging và Production thêm khoảng 820 MB, còn trống khoảng 1,7 GB lúc rảnh. Image chỉ build một lần cho mỗi commit, nên đỉnh lúc build không nhân lên. VPS 4 GB vẫn đủ; đo lại khi Staging và Production lên.
 
 Dự án đã sẵn sàng cho việc đầu tiên: `/ao-intake` (phần 6). Nếu bạn có ảnh chụp màn hình thay cho Figma, xem bước 2 của phần 6.
 
