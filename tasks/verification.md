@@ -143,3 +143,23 @@ Sửa plan và todo: T4 thêm `playwright.config.ts` của profile; T5 đưa b�
     - **Medium, `toPrune` theo giờ trong tên:** VPS bị chiếm thả bản giả mang giờ muộn hơn trong các ngày đã qua; bản giả thành bản mới nhất mỗi ngày, mỗi tuần, và máy xóa bản thật cũ hơn 48 giờ. Thử: 28 bản thật, 28 bản giả, còn 2/9 bản thật mà dòng `doctor` vẫn xanh. Đề xuất: không để tên do VPS đặt quyết định việc xóa trên máy.
     - **Low:** PR report đang mở được dùng lại mà không so nội dung (trùng Medium của `reviewer`); `decrypt --out` ghi bản giải mã ra file mà agent đọc được.
   - `/ao-review` dừng: `STOP: the reports on the head of PR #13 ask for changes (Critical or High: security 2)`. `SHOP-6` về In Progress.
+- **T10d, kit sửa theo vòng 2** (Phiên 31 · Lượt 5, bạn: "Có. Làm như đề xuất"; nhánh `task/pilot3-9`, 0 USD agent), test viết đỏ trước:
+  - **Kiểm thật trước:** trên repo nháp `TungPH7/test` (`scratchpad/ruleset-probe.mjs`), ruleset chặn tạo `release/*` và tag `v*` với bypass `RepositoryRole 5`: login của bạn tạo được `release/v0.0.1` và tag `v0.0.1`; cùng ruleset không bypass thì GitHub từ chối (422). Ruleset, nhánh, tag thử đều đã xóa; repo nháp không còn ruleset nào.
+  - Năm ruleset (`e0d53fa`):
+    - `ao-protected-merge` (`develop`, `release/*`) đòi approval của code owner, chỉ `ao-merge` bypass khi merge PR;
+    - `ao-protected-main` cùng luật, không ai bypass;
+    - `ao-release-branches` chặn tạo `release/*`, admin bypass;
+    - `ao-release-tags` chặn tạo, sửa, xóa tag `v*`, bypass là `ao-merge` và admin;
+    - `ao-protected` cấm xóa và force push.
+  - Cùng commit `e0d53fa`:
+    - `.github/CODEOWNERS` do `ao-kit init` và `sync` viết từ `github.approvers`; được bảo vệ; `doctor` kiểm nó;
+    - `/ao-release` cắt nhánh bằng login `gh` của bạn;
+    - `merge-gate` đọc lại PR ngay trước khi merge;
+    - `/ao-ship` so PR report đang mở với bản vừa dựng, và kiểm lại nhánh release sau khi merge;
+    - `audit` chỉ nhận người merge là `ao-merge` (hay `ao-dev` khi dự án chưa có `ao-merge`) và bạn;
+    - `gh-guard` kiểm `Grep`, `Glob` (matcher và luật) và key `AO_MERGE_APP_KEY`;
+    - `pull` thôi xóa bản sao trên máy; `decrypt --out -`;
+    - `touchedPaths` dùng chung; lời báo của merge back nêu đủ người mở được nhận; `doctor` hỏi khi không đọc được file khóa; comment của `gates.yaml`.
+  - **Lệch so với đề xuất:** `require_last_push_approval` vẫn tắt. GitHub tính bạn là người push cuối ở các PR phiên chính push bằng git của bạn (`SHOP-5`, `SHOP-6`), nên khi bật thì approval của bạn không được tính ở các PR đó. `dismiss_stale_reviews_on_push` cùng luật code owner đã đủ.
+  - Tài liệu (`99f971e`): spec 2.9 mục 4, `quality-gates.md` (Ruleset), `release-workflow.md` (gate ④), `vps-setup.md` mục 16, `getting-started.md`.
+  - Năm lệnh kiểm xanh, 1.444 test (trước là 1.439).
