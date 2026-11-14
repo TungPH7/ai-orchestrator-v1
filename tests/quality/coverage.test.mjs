@@ -154,6 +154,27 @@ test('gates: Java sources count, Java tests do not, and the e2e/ and scripts/ of
   assert.deepEqual(gates.coverage.jacoco, ['apps/*/target/site/jacoco/jacoco.xml']);
 });
 
+// JaCoCo reports a class only when it has code to run: package-info.java, module-info.java and an interface whose
+// methods have no body are never in the report (project-scaffold part 3, T20: ProductMapper and ProductRepository of
+// the user's template). Such a file has no line to cover; a class missing from the report is still named.
+test('a Java file with no code to run passes when the report lacks it; a class, or an interface with a body, does not', () => {
+  const sources = {
+    'apps/api/src/main/java/com/acme/order/package-info.java': '/** Orders. */\n@NonNullApi\npackage com.acme.order;\n\nimport org.springframework.lang.NonNullApi;\n',
+    'apps/api/src/main/java/module-info.java': 'module com.acme { requires spring.boot; }\n',
+    'apps/api/src/main/java/com/acme/order/OrderRepository.java': 'package com.acme.order;\n\n/** Orders; { not code } */\npublic interface OrderRepository extends JpaRepository<Order, UUID> {\n  @Query("select o from Order o where o.sku = :sku and o.note <> \'{x}\'")\n  Optional<Order> findBySku(@Param("sku") String sku);\n\n  @EntityGraph(attributePaths = {"lines"})\n  List<Order> findAll();\n}\n',
+    'apps/api/src/main/java/com/acme/order/OrderMapper.java': '@Mapper(componentModel = "spring")\npublic interface OrderMapper {\n  OrderResponse toResponse(Order order);\n}\n',
+    'apps/api/src/main/java/com/acme/order/Audited.java': 'public @interface Audited {\n  String value() default "";\n}\n',
+    'apps/api/src/main/java/com/acme/order/OrderService.java': 'public class OrderService {\n  void place() {}\n}\n',
+    'apps/api/src/main/java/com/acme/order/Pricing.java': 'public interface Pricing {\n  default long total(long a, long b) {\n    return a + b;\n  }\n}\n',
+    'apps/api/src/main/java/com/acme/order/Status.java': 'public enum Status { NEW, PAID }\n',
+  };
+  const diff = Object.keys(sources).map((file) => `diff --git a/${file} b/${file}\n--- /dev/null\n+++ b/${file}\n@@ -0,0 +1 @@\n+x\n`).join('');
+  const result = changedLineCoverage({ changed: changedLines(diff), lcov: new Map(), coverage: gates.coverage, read: (file) => sources[file] ?? null });
+  assert.deepEqual(result.problems, ['OrderService', 'Pricing', 'Status'].map((name) => `apps/api/src/main/java/com/acme/order/${name}.java is not in any coverage report: the coverage of the tests must include every source file`));
+  // Without the text of the file, nothing is assumed.
+  assert.equal(changedLineCoverage({ changed: changedLines(diff), lcov: new Map(), coverage: gates.coverage }).problems.length, 8);
+});
+
 test('coverage_exclude of an app in project.yaml is read from the app folder, and leaves those files out', () => {
   const config = { apps: { api: { path: 'apps/api', coverage_exclude: ['src/main/java/**/dto/**', '**/*Properties.java'] }, user: { path: 'apps/user' } } };
   const excludes = projectCoverageExcludes(config);

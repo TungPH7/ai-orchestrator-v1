@@ -46,7 +46,15 @@ try {
   const projectFile = join(root, '.ai-orchestrator', 'project.yaml');
   const extra = existsSync(projectFile) ? projectCoverageExcludes(parse(readFileSync(projectFile, 'utf8'))) : [];
 
-  const result = changedLineCoverage({ changed, lcov, coverage: { ...coverage, exclude: [...coverage.exclude, ...extra] } });
+  // The text of a changed file, as the tests ran it: a Java interface with no body is in no JaCoCo report (part 3, T20).
+  const read = (file) => {
+    try {
+      return readFileSync(join(root, file), 'utf8');
+    } catch {
+      return null;
+    }
+  };
+  const result = changedLineCoverage({ changed, lcov, coverage: { ...coverage, exclude: [...coverage.exclude, ...extra] }, read });
   const rows = result.files.map(({ file, covered, total, uncovered }) => `${file}  ${covered} of ${total}${uncovered.length ? `  not run: ${uncovered.join(', ')}` : ''}`);
   console.log([...rows, `changed lines covered: ${result.percent}% (${result.covered} of ${result.total}); at least ${coverage.changed_lines_min}%`].join('\n'));
   if (process.env.GITHUB_STEP_SUMMARY) {

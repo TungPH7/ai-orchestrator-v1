@@ -83,6 +83,7 @@ Báo cáo coverage là lcov của app JS (`coverage/lcov.info`), và báo cáo X
 - file cấu hình (`*.config.*`);
 - migration;
 - `e2e/` và `scripts/`, ở gốc dự án và trong mỗi app (như `scripts/dev.mjs` chạy hai app ở máy);
+- file Java không có code chạy, mà JaCoCo không đưa vào báo cáo: `package-info.java`, `module-info.java`, và interface hay annotation mà method không có thân, như repository của Spring Data hay mapper của MapStruct. Interface có method `default` hay `static` có thân, class, enum và record vẫn phải có trong báo cáo;
 - file khớp `coverage_exclude` của app trong `project.yaml`, glob tính từ thư mục app, ví dụ `src/main/java/**/dto/**`. Ghi ở đây đúng những gì cấu hình coverage của app đã loại, như phần `<excludes>` của JaCoCo. `project.yaml` là đường dẫn được bảo vệ, nên chỉ PR do bạn merge mới nới được danh sách;
 - bản chép kit (`.ai-orchestrator/`, `.claude/`), vì đã có test ở kit. Muốn kiểm trước khi push, chạy `npm run test:coverage`, rồi `node .ai-orchestrator/scripts/coverage-diff.mjs --base origin/develop`.
 
