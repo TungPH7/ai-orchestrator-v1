@@ -6,6 +6,8 @@ import {
   ciJavaVersions,
   MAVEN_SCRIPTS,
   devEnv,
+  DOCKER_INFO,
+  dockerAnswered,
   findJdk,
   javaVersionOf,
   jdkMajor,
@@ -119,4 +121,15 @@ test('CI installs each Java version the apps ask for, once, and stops on a pom t
   assert.deepEqual(ciJavaVersions([{ path: 'apps/api/pom.xml', text: pom(21) }, { path: 'apps/jobs/pom.xml', text: pom(17) }, { path: 'apps/b/pom.xml', text: pom(21) }]), { versions: [17, 21] });
   assert.deepEqual(ciJavaVersions([]), { versions: [] });
   assert.match(ciJavaVersions([{ path: 'apps/api/pom.xml', text: '<project/>' }]).error, /apps\/api\/pom\.xml names no <java\.version>/);
+});
+
+// Docker 24 on Windows, with Docker Desktop stopped: `docker info --format {{.ServerVersion}}` exits 0 and prints an
+// empty line, the error going to stderr (project-scaffold part 3, T21). doctor said "Docker is running", and ao-step
+// would have let be-dev run tests that need it.
+test('Docker counts as running only when its server answered with a version', () => {
+  assert.deepEqual(DOCKER_INFO, ['info', '--format', '{{.ServerVersion}}']);
+  assert.equal(dockerAnswered({ status: 0, stdout: '24.0.7\n' }), true);
+  assert.equal(dockerAnswered({ status: 0, stdout: '\n' }), false);
+  assert.equal(dockerAnswered({ status: 1, stdout: '' }), false);
+  assert.equal(dockerAnswered({ status: null, stdout: null, error: new Error('ETIMEDOUT') }), false);
 });

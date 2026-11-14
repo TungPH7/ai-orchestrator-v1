@@ -26,7 +26,7 @@ import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
-import { findJdk, javaVersionOf } from '../lib/quality/maven.mjs';
+import { DOCKER_INFO, dockerAnswered, findJdk, javaVersionOf } from '../lib/quality/maven.mjs';
 import { runNpm } from '../lib/quality/npm.mjs';
 import { managerOf, pnpmVersion, runManager } from '../lib/quality/package-manager.mjs';
 import { homedir } from 'node:os';
@@ -159,7 +159,7 @@ async function doctorFacts(dir, config) {
     const want = pom ? javaVersionOf(pom) : null;
     return { app, want: want ?? '?', jdk: want ? findJdk({ want, readFile: (file) => readFileSync(file, 'utf8'), listDir: (folder) => readdirSync(folder) }) : null };
   });
-  const docker = java.length > 0 ? { running: spawnSync('docker', ['info', '--format', '{{.ServerVersion}}'], { encoding: 'utf8', timeout: 20000 }).status === 0 } : null;
+  const docker = java.length > 0 ? { running: dockerAnswered(spawnSync('docker', DOCKER_INFO, { encoding: 'utf8', timeout: 20000 })) } : null;
   return {
     config,
     java,
