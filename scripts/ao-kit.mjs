@@ -161,8 +161,13 @@ async function doctorFacts(dir, config) {
     return { app, want: want ?? '?', jdk: want ? findJdk({ want, readFile: (file) => readFileSync(file, 'utf8'), listDir: (folder) => readdirSync(folder) }) : null };
   });
   const docker = java.length > 0 ? { running: dockerAnswered(spawnSync('docker', DOCKER_INFO, { encoding: 'utf8', timeout: 20000 })) } : null;
+  // Keys that must not stay on a machine where agents run (Pilot 3, spec 2.9): a key of ao-merge where
+  // github-app-create.mjs writes keys, and an age identity where the backup guide once kept it. Names only, never read.
+  const named = (folder, test) => (existsSync(folder) ? readdirSync(folder).filter(test).map((name) => join(folder, name).replaceAll('\\', '/')) : []);
+  const strayKeys = { merge: named(join(homedir(), 'ao-keys'), (name) => name.endsWith('-ao-merge.pem')), age: named(join(homedir(), '.ao'), (name) => name.endsWith('.agekey')) };
   return {
     config,
+    strayKeys,
     java,
     docker,
     projectProblems: problems.map(({ rule, path, message }) => `${rule} ${path}: ${message}`),
