@@ -79,6 +79,21 @@ Sửa plan và todo: T4 thêm `playwright.config.ts` của profile; T5 đưa b�
 - **RAM với ba môi trường của `shop` cùng `ao-pilot`, `ao-sample`** (22 container, cộng 1.422 MiB): còn trống 1.867 MB trên 3.915 MB; B3 ước khoảng 1,7 GB. Đĩa còn 23 GB; build cache 7,07 GB, quá mốc `PRUNE_CACHE` 4 GB. Đề xuất giữ VPS 4 GB.
 - **Backup ba database:** `ao-backup` ghi dump của Production, Staging, Development (15.235–15.246 byte) và ba bản sao mã hóa; máy bạn kéo về 3 bản. Bản sao Production giải mã trên máy bạn trùng SHA-256 với bản trên VPS (`efab6842…`). Tiêu chí 2 đạt cho cả ba môi trường.
 
-### Checkpoint 3: đạt (trừ bấm Release `v0.1.0` trên Jira)
+- **Release `v0.1.0` trên Jira** (Phiên 31 · Lượt 1, bạn nhờ mình làm): như T18 của B1, một script dùng token admin của bạn (`scratchpad/shop-release-v010.mjs`). Nó kiểm mọi item của Fix Version đã Done (chỉ có `SHOP-5`, Done), rồi gọi `PUT /rest/api/3/version/10006`: `released: true`, `releaseDate` 2026-11-14, mô tả là nguyên văn `.ai/runs/v0.1.0/fix-version.md` do `devops` viết (1.616 ký tự, đọc lại khớp từng ký tự).
 
-`v0.1.0` chạy trên Production và hỏi basic auth; RAM ba môi trường đo được; bản sao trên máy bạn khôi phục được. Chi phí agent của chặng 1–2: 5,38 USD.
+### Checkpoint 3: đạt
+
+`v0.1.0` chạy trên Production và hỏi basic auth; RAM ba môi trường đo được; bản sao trên máy bạn khôi phục được; Fix Version `v0.1.0` đã Release. Chi phí agent của chặng 1–2: 5,38 USD.
+
+## Chặng 3: Epic tới gate ②
+
+- **T10, chép kit `ceee70c` vào `shop`** (Phiên 31 · Lượt 1: bạn chọn review đầy đủ, khoảng 9 USD):
+  - Task `SHOP-6` "Chép kit Pilot 3 (ceee70c) vào shop, trước Epic đầu" (nhãn `ao-devops`), đi như `SHOP-5`: tạo bằng token CI; `Refine` bằng token admin, kèm comment nguồn duyệt (plan T10, Phiên 31 · Lượt 1); trường Agent DevOps Engineer; `Start` qua Rovo MCP bằng token agent (`scratchpad/task-open.mjs`, `task-kit-copy-p3.json`). In Progress.
+  - Clone kit chuyển sang `main` (`ceee70c`) trước khi chép, để commit ghi đúng bản kit. Nhánh ghi chép `task/pilot3-7` chỉ khác `main` ở `tasks/` và `misc/`, hai thư mục không được chép.
+  - `ao-kit sync e-commerce/shop --key SHOP-6`, 24 giây: commit `d3ed768` trên `feature/SHOP-6-kit-copy`, 15 file, +405/−64, đều trong `.ai-orchestrator/`: 12 file `lib/`, `scripts/ao-step.mjs`, `package.json` và `package-lock.json` (`age-encryption` 0.3.1, 8 mục trong lockfile). Render cho ra đúng các file cũ, nên `.claude/` và workflow không đổi. Kit chỉ chép `docs/sdlc.md` và các script dự án dùng, nên tài liệu khác và script chỉ chạy từ kit (`ao-backup-pull.mjs`, `gh-protect.mjs`) không vào dự án.
+  - `ao-kit check`: OK. `ao-kit doctor`: mọi dòng đạt, trừ "Docker is running" (Docker Desktop tắt, không liên quan).
+  - PR nháp #13 do bot `ao-dev` mở (`ao-pr.mjs create`). CI khởi động trong vòng 1 phút, xanh đủ năm check.
+  - `/ao-review 13`: dòng kiểm GO với `pr-ready`, `reviewer` (`xhigh`), `security` (`max`, vì PR chạm `.ai-orchestrator/`). Lượt chạy thật bắt đầu 16:11.
+- **T11, chuẩn bị** (song song với review của T10, không agent):
+  - bước kiểm của `/ao-intake`: space `SHOP` chưa có Epic nào; WIP epic-shaping 0/1;
+  - ba app hiểu giá theo ba cách: `api` lưu `NUMERIC(12,2)` với chú thích USD; `admin` dùng `priceCents` (xu USD) và `inStock`; `user` dùng `priceVnd`, `originalPriceVnd` và `images` theo API NestJS cũ. Câu hỏi PO đầu tiên là đơn vị tiền.

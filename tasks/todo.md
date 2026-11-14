@@ -76,7 +76,7 @@
   - **gate ④:** `/ao-release v0.1.0 <sha>`; Staging deploy, database Staging, Flyway;
   - `/ao-ship v0.1.0`; **gate ⑤:** bạn approve PR release; Production deploy;
   - đo RAM khi đủ ba môi trường cùng hai dự án kia; backup và bản sao phủ ba database;
-  - **bạn** bấm Release `v0.1.0`, hoặc bảo mình làm qua REST.
+  - **bạn** bấm Release `v0.1.0`, hoặc bảo mình làm qua REST. Phiên 31 · Lượt 1: bạn bảo mình làm; đã Release qua REST.
 
 ### Checkpoint 3: sau T9
 - [x] `v0.1.0` chạy trên Production và hỏi basic auth; RAM ba môi trường đo được; bản sao trên máy bạn khôi phục được (Lượt 10).
