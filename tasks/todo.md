@@ -124,24 +124,24 @@
   - **File:** `lib/scaffold/setup-jira.mjs`, `scripts/ao-pr.mjs` hoặc `lib/quality/github-app.mjs`, `lib/scaffold/add.mjs`, `lib/scaffold/app-report.mjs`, test; PR chặng 4.
 
 ### Checkpoint 3: sau T16 và T17
-- [ ] Hai PR merge, CI xanh. Caddyfile của `ao-sample` và `ao-pilot` giống hệt bản cũ.
+- [x] Hai PR merge, CI xanh. Caddyfile của `ao-sample` và `ao-pilot` giống hệt bản cũ.
 
 ## Chặng 5: kiểm thật và hướng dẫn
 
-- [ ] **T18: bản nháp của hướng dẫn** (spec 2.7). Phần 5 của `getting-started.md` thêm bước "API Spring Boot và database". Đi cùng PR của T23.
-- [ ] **T19 [bạn]: VPS.** Bạn mở VPS; mình:
+- [x] **T18: bản nháp của hướng dẫn** (spec 2.7). Phần 5 của `getting-started.md` thêm bước "API Spring Boot và database". Đi cùng PR của T23.
+- [x] **T19 [bạn]: VPS.** Bạn mở VPS; mình:
   1. đo RAM bằng lệnh chỉ đọc;
   2. cập nhật kit trên VPS lên bản có chặng 3, giữ bản cũ ở `/opt/ao/kit.prev`;
   3. chạy `tick --dry-run`: Caddyfile không đổi;
   4. bật lại deployer. VPS để mở cho tới khi bạn bảo đóng (Phiên 29 · Lượt 1).
   - **Kiểm:** ghi vào `verification.md`, không ghi nội dung file có thông tin đăng nhập.
-- [ ] **T20 [bạn]: `shop` có `api`** (tiêu chí 2). Theo bản nháp:
+- [x] **T20 [bạn]: `shop` có `api`** (tiêu chí 2). Theo bản nháp:
   1. Task chép kit B3, `ao-kit sync`, PR; bạn merge;
   2. Task thêm `api`: `add api --stack spring-boot --from <template Java> --ref codebase --exclude study-guide-impl/ --exclude prompt.md`, PR; bạn merge;
   3. CI xanh trên `develop`; `doctor` đạt mọi dòng.
   - **Kiểm:** chỗ hướng dẫn sai hay thiếu thì sửa hướng dẫn trước khi đi tiếp.
-- [ ] **T21 [bạn]: sửa code `api`** (tiêu chí 3). Task cho các chỗ `add` báo; phiên chính sửa trên nhánh của Task, mở PR không đụng `.ai-orchestrator/`; `/ao-preview` chạy `user`, `admin`, `api` và Postgres; bạn xem rồi merge; Task được Cancel, kèm comment trỏ tới PR.
-- [ ] **T22 [bạn]: Development có `api` và Postgres** (tiêu chí 4, 5, 6). Bạn mở VPS; mình:
+- [x] **T21 [bạn]: sửa code `api`** (tiêu chí 3). Task cho các chỗ `add` báo; phiên chính sửa trên nhánh của Task, mở PR không đụng `.ai-orchestrator/`; `/ao-preview` chạy `user`, `admin`, `api` và Postgres; bạn xem rồi merge; Task được Cancel, kèm comment trỏ tới PR.
+- [x] **T22 [bạn]: Development có `api` và Postgres** (tiêu chí 4, 5, 6). Bạn mở VPS; mình:
   1. sinh mật khẩu database và ghi `development.env`, `development.db.env`;
   2. gỡ chặn của `audit` bằng `/ao-rollback development <sha>` nếu cần;
   3. deploy: smoke test đạt; `/api/v1/health` qua host của `admin` trả 200; Flyway chạy đủ migration;

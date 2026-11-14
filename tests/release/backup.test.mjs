@@ -22,12 +22,24 @@ test('the newest dump of each of the 7 newest days and of the 4 newest weeks sta
   const keep = backupsToKeep(names);
   const days = [...keep].map((name) => backupTime(name).toISOString().slice(0, 10)).sort().reverse();
   // 7 days in a row, then the newest of each older week.
-  assert.deepEqual(days.slice(0, 7), ['2026-11-14', '2026-11-13', '2026-11-12', '2026-11-11', '2026-11-10', '2026-11-09', '2026-11-08']);
+  assert.deepEqual([...new Set(days)].slice(0, 7), ['2026-11-14', '2026-11-13', '2026-11-12', '2026-11-11', '2026-11-10', '2026-11-09', '2026-11-08']);
   assert.ok(keep.has('shop-production-20261114T210000Z.dump'), 'the newest of a day');
-  assert.ok(!keep.has('shop-production-20261114T193000Z.dump'), 'an older one of the same day goes');
-  assert.ok(keep.size <= 11 && keep.size >= 8, `kept ${keep.size}`);
+  assert.ok(keep.has('shop-production-20261114T193000Z.dump'), 'an older one of the same day stays while it is within 48 hours');
+  assert.ok(keep.size <= 13 && keep.size >= 9, `kept ${keep.size}`);
   assert.ok(days.at(-1) >= '2026-10-12', 'nothing older than four weeks');
   assert.deepEqual(backupsToKeep([]), new Set());
+});
+
+// T22 on the VPS: a backup run by hand at 04:55 removed the dump of 04:49, the one the restore was to use, since only
+// the newest of a day stayed. A hand run before a restore, as docs/vps-setup.md section 15 advises for Production,
+// must not remove the night's dump of the same day.
+test('every dump of the 48 hours before the newest stays; an older day keeps its newest only', () => {
+  const at = (iso) => backupFile('shop', 'development', new Date(iso));
+  const names = [at('2026-11-14T04:49:11Z'), at('2026-11-14T04:55:36Z'), at('2026-11-12T19:30:00Z'), at('2026-11-10T19:30:00Z'), at('2026-11-10T21:00:00Z')];
+  const keep = backupsToKeep(names);
+  assert.ok(keep.has(at('2026-11-14T04:49:11Z')) && keep.has(at('2026-11-14T04:55:36Z')), 'both runs of today');
+  assert.ok(keep.has(at('2026-11-12T19:30:00Z')), 'the newest of an older day');
+  assert.ok(keep.has(at('2026-11-10T21:00:00Z')) && !keep.has(at('2026-11-10T19:30:00Z')), 'an older day past 48 hours keeps its newest only');
 });
 
 test('the databases come from docker by their label, with the project and environment of each', () => {
