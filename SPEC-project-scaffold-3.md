@@ -1,6 +1,6 @@
 # SPEC: project-scaffold, phần 3 (B3)
 
-> **Trạng thái:** viết ở Phiên 28 · Lượt 4, **đã duyệt 2026-11-14 (Lượt 7)**, cả ba câu ở mục 9 theo đề xuất. Plan và task: [tasks/plan.md](tasks/plan.md), [tasks/todo.md](tasks/todo.md). Phần 1 ở [SPEC-project-scaffold.md](SPEC-project-scaffold.md) (mục 4 ghi phạm vi phần 3), phần 2 ở [SPEC-project-scaffold-2.md](SPEC-project-scaffold-2.md). Nguồn: hàng B3 của [misc/thao-luan/concerns.md](misc/thao-luan/concerns.md), Lượt 199–200 của Phiên 27, Lượt 3–4 của Phiên 28, và mục T26 "Việc kit để sau" của [tasks/archive/project-scaffold-2/verification.md](tasks/archive/project-scaffold-2/verification.md).
+> **Trạng thái:** viết ở Phiên 28 · Lượt 4, **đã duyệt 2026-11-14 (Lượt 7)**, cả ba câu ở mục 9 theo đề xuất. **Hoàn thành 2026-11-14** (Phiên 29 · Lượt 7): kit PR #269–#277, 0 USD agent; đủ bảy tiêu chí. Plan, task và kết quả: [tasks/archive/project-scaffold-3/](tasks/archive/project-scaffold-3/). Phần 1 ở [SPEC-project-scaffold.md](SPEC-project-scaffold.md) (mục 4 ghi phạm vi phần 3), phần 2 ở [SPEC-project-scaffold-2.md](SPEC-project-scaffold-2.md). Nguồn: hàng B3 của [misc/thao-luan/concerns.md](misc/thao-luan/concerns.md), Lượt 199–200 của Phiên 27, Lượt 3–4 của Phiên 28, và mục T26 "Việc kit để sau" của [tasks/archive/project-scaffold-2/verification.md](tasks/archive/project-scaffold-2/verification.md).
 
 ## 1. Mục tiêu
 

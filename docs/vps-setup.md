@@ -319,7 +319,7 @@ journalctl -u ao-deploy --since "10 min ago"
 
 ## 12. Cập nhật bản kit trên VPS
 
-Bản kit ghim theo một commit của `main`, nên bản sửa của deployer hay `audit` chỉ có hiệu lực khi được chép lên. Commit ghim hiện tại: `3a1c7292c22cd94114e08e912b5375f2a289a3b5` (2026-11-14, project-scaffold phần 3, T19). Trước đó là `c49b051` (phần 2, T21). Bản trước nằm ở `/opt/ao/kit.prev`. Việc này cần đăng nhập root (mục 9), và bạn đồng ý từng lần.
+Bản kit ghim theo một commit của `main`, nên bản sửa của deployer hay `audit` chỉ có hiệu lực khi được chép lên. Commit ghim hiện tại: `97db806c09b7a5922be4ee16f2d1b0ad2f878348` (2026-11-14, project-scaffold phần 3, T23: luật giữ bản backup 48 giờ). Trước đó là `3a1c729` (phần 3, T19), ở `/opt/ao/kit.prev`. Bản trước nằm ở `/opt/ao/kit.prev`. Việc này cần đăng nhập root (mục 9), và bạn đồng ý từng lần.
 
 Trên máy bạn, ở repo kit:
 

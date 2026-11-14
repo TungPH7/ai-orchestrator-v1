@@ -1,6 +1,6 @@
 # Plan triển khai: project-scaffold, phần 3 (B3)
 
-> **Spec:** [SPEC-project-scaffold-3.md](../SPEC-project-scaffold-3.md), đã duyệt 2026-11-14 (Phiên 28 · Lượt 7). **Trạng thái:** viết ở Lượt 7. Quyền tự làm theo đề xuất áp dụng cho B3 (Lượt 4), nên plan không chờ duyệt riêng; bạn muốn đổi gì thì nói lúc nào cũng được. **Danh sách task:** [todo.md](todo.md).
+> **Spec:** [SPEC-project-scaffold-3.md](../../../SPEC-project-scaffold-3.md), đã duyệt 2026-11-14 (Phiên 28 · Lượt 7). **Trạng thái:** viết ở Lượt 7; hoàn thành 2026-11-14 (Phiên 29 · Lượt 7), kết quả ở [verification.md](verification.md). Quyền tự làm theo đề xuất áp dụng cho B3 (Lượt 4), nên plan không chờ duyệt riêng; bạn muốn đổi gì thì nói lúc nào cũng được. **Danh sách task:** [todo.md](todo.md).
 
 ## Tổng quan
 
