@@ -67,3 +67,7 @@ Sửa plan và todo: T4 thêm `playwright.config.ts` của profile; T5 đưa b�
   - dùng lại image của Development (`2a2cb61d…`, cùng cây code), không build lại;
   - tạo `ao-shop-staging-db`; Flyway chạy 3 migration, đều thành công; `api` `healthy`;
   - RAM còn trống 2.290 MB khi `shop` có Development và Staging. Bộ nhớ: `api` 279–296 MiB, `user` 53–72 MiB, `admin` 11–12 MiB, database 42–44 MiB mỗi môi trường.
+- **`/ao-ship v0.1.0`** (Lượt 7): `qa` regression trên Staging (high, 13 lượt, 0,43 USD): **PASS**, 9/9 test chạy đạt (8 test bỏ qua có lý do như ở Development); `devops` viết release notes (13 lượt, 0,50 USD). Bước script `release-pr` dừng: GitHub trả 422 khi bot `ao-dev` cập nhật `refs/heads/release/v0.1.0`, "Changes must be made through a pull request. 4 of 4 required status checks are expected".
+  - **Nguyên nhân:** ruleset `ao-protected` (spec `quality-gates` 2.8, do `setup github` đặt cho repo public) bảo vệ `develop`, `main`, `release/*`, đòi PR có 1 approve và 4 check, không có bypass. Ruleset này có trước `release-workflow`; mọi dự án trước chạy "soft mode" (repo private gói Free không có ruleset), nên các bước tự động của `release-workflow` chưa từng gặp nó.
+  - **Cũng sẽ bị chặn:** `merge-gate` merge PR tài liệu của Epic sau gate ② (chỉ có duyệt trên Jira) và PR merge ngược `main` về `develop` (không ai approve trên GitHub). `merge-gate` merge bằng token của App `ao-dev`.
+  - Chờ bạn chọn cách sửa (Lượt 7).
