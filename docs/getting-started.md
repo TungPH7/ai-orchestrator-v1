@@ -531,7 +531,7 @@ node <kit>/scripts/ao-kit.mjs check e-commerce/shop
 3. Mở `claude` trong `e-commerce/shop`, tin cậy thư mục, chọn **Enable selected** cho hai server MCP, như bước 8 của phần 3.
 
 - **`setup github` trên repo public** in 12 dòng `Set …`, và làm thêm ba việc so với repo private:
-  - tạo ruleset `ao-protected`. Gói Free có ruleset cho repo public, nên lệnh không báo `soft mode`;
+  - tạo ba ruleset `ao-protected`, `ao-protected-merge`, `ao-protected-release` ([docs/quality-gates.md](quality-gates.md#ruleset)). Gói Free có ruleset cho repo public, nên lệnh không báo `soft mode`;
   - đặt giới hạn tương tác sáu tháng: chỉ người cộng tác được mở issue, PR và comment. Ở `shop`, hạn là 2027-05-13. Chạy lại lệnh trước khi hết hạn để gia hạn; `doctor` báo khi còn dưới 30 ngày;
   - bắt workflow của PR từ fork chờ bạn duyệt rồi mới chạy.
 - **Dependabot** mở PR ngay khi lệnh bật cập nhật bảo mật. Ở `shop` có bốn PR: `vite`, `zod`, `dompurify`, `next`. Không cần merge từng PR: bước 7 nâng các gói này, rồi Dependabot tự đóng PR của nó.
