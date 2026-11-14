@@ -147,3 +147,12 @@ test('two public apps with one host for each environment, or a public app with n
   assert.match((await partial.installer.install({ env: 'development', sha: SHA, tree: TREE })).reason, /^admin is public in deploy\.yaml but has no development host in \/etc\/ao\/deployer\.yaml$/);
   assert.deepEqual(partial.dockerCalls, []);
 });
+
+// project-scaffold part 3, spec 2.5: a Dockerfile made for its app folder builds from that folder.
+test('an app with a context builds from that folder of the worktree, with its Dockerfile named from the root', async () => {
+  const withApi = DEPLOY_YAML.replace('apps:\n', 'apps:\n  api:\n    dockerfile: apps/api/Dockerfile\n    context: apps/api\n    port: 3001\n    health: /actuator/health\n    memory: 768m\n    start_timeout: 180\n');
+  const f = fakes({ deployYaml: withApi });
+  assert.equal((await f.installer.install({ env: 'development', sha: SHA, tree: TREE })).outcome, 'success');
+  assert.equal(f.dockerCalls[0], `build --file ${DIR}/apps/api/Dockerfile --tag ao-pilot-api:${TREE} --label ao.project=pilot --label ao.app=api --label ao.tree=${TREE} ${DIR}/apps/api`);
+  assert.ok(f.dockerCalls.some((line) => line.startsWith(`run --detach --name ao-pilot-development-api-${TREE.slice(0, 12)} `) && line.includes('--memory 768m --memory-swap 768m')));
+});
