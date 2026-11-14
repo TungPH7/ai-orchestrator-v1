@@ -91,15 +91,15 @@
 
 ## Chặng 3: deployer và database, nhánh `task/scaffold3-3`
 
-- [ ] **T12: `deploy.yaml`** (spec 2.4, 2.5).
+- [x] **T12: `deploy.yaml`** (spec 2.4, 2.5).
   - **Đạt khi:** (`context`, `memory`, `start_timeout` đã có từ T4) schema và `deploy-config.mjs` nhận `database` (`image` có digest, `init`, `memory`); `context` và `init` phải nằm trong repo; `ao-kit check` đối chiếu như hiện nay.
   - **Kiểm:** fixture đúng và sai; `deploy.yaml` của `ao-sample` và `ao-pilot` vẫn hợp lệ.
   - **File:** `lib/release/deploy.schema.json`, `lib/release/deploy-config.mjs`, fixture, test.
-- [ ] **T13: build context, trần RAM, thời gian chờ** (spec 2.5).
+- [x] **T13: build context, trần RAM, thời gian chờ** (spec 2.5).
   - **Đạt khi:** `buildArgs` dùng `context` khi có; `runArgs` có `--memory` và `--memory-swap` (mặc định `512m`); `swap` truyền `start_timeout` cho smoke test.
   - **Kiểm:** test tham số docker; Caddyfile của cấu hình một app công khai giống hệt chữ bản cũ.
   - **File:** `lib/release/docker.mjs`, `lib/release/smoke.mjs`, `lib/release/deployer.mjs`, test.
-- [ ] **T14: container database** (spec 2.4; plan, quyết định 5, 6).
+- [x] **T14: container database** (spec 2.4; plan, quyết định 5, 6).
   - **Đạt khi:**
     - deployer tạo `ao-<dự án>-<môi trường>-db` khi chưa có, trước khi deploy app: volume cùng tên, alias `db`, `--user postgres`, `--cap-drop ALL`, `no-new-privileges`, trần RAM, không mở cổng, nhãn `ao.role=database`;
     - biến của container lấy từ `/etc/ao/secrets/<dự án>/<môi trường>.db.env`; thiếu file thì không deploy, và ghi lý do;
@@ -107,7 +107,7 @@
     - `swap`, rollback và dọn image không đụng tới container này.
   - **Kiểm:** test với docker giả: tạo một lần, lần sau không tạo lại; deploy và rollback không dừng database; thiếu file biến thì từ chối.
   - **File:** `lib/release/database.mjs`, `lib/release/docker.mjs`, `lib/release/deployer.mjs`, test.
-- [ ] **T15: backup** (spec 2.4; plan, quyết định 8).
+- [x] **T15: backup** (spec 2.4; plan, quyết định 8).
   - **Đạt khi:** `scripts/ao-backup.mjs run` dump mọi database đang chạy bằng `pg_dump -Fc` vào `/var/backups/ao/<dự án>/<môi trường>/`, quyền 0600; giữ 7 bản ngày và 4 bản tuần; `restore-check <dự án> <môi trường>` khôi phục bản mới nhất vào container tạm và in số bảng, số dòng; `vps/ao-backup.service` và `.timer`.
   - **Kiểm:** hàm chọn bản giữ lại; tham số `pg_dump`, `pg_restore`; không có giá trị bí mật trong tham số.
   - **File:** `scripts/ao-backup.mjs`, `lib/release/backup.mjs`, `vps/ao-backup.service`, `vps/ao-backup.timer`, test.

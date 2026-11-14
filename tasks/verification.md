@@ -85,3 +85,28 @@ Kit PR #270 (`f29a873`) merge chặng 1; CI xanh cả `contract` và `profiles`.
 - Agent đã sinh lại; `agents:check` xanh.
 
 Năm lệnh kiểm xanh: 1.363 test.
+
+Kit PR #271 (`b278aea`) merge chặng 2; Checkpoint 2 đạt.
+
+## Chặng 3: deployer và database (T12–T15 xong, T16 chưa), nhánh `task/scaffold3-3`
+
+**T12.** `deploy.yaml` có khóa `database`: `image` phải ghim digest; `init` là thư mục trong repo (không đường dẫn tuyệt đối, không `..`); `memory` theo dạng `<số>m` hay `<số>g`; không nhận khóa nào khác.
+
+**T13.**
+- `buildArgs` nhận `folder`, tức `context` của app: build từ thư mục đó, còn `--file` vẫn tính từ gốc checkout. `folder` có `..`, `.` hay đường dẫn tuyệt đối thì bị từ chối.
+- Mọi container app có `--memory` và `--memory-swap` bằng nhau, mặc định `512m`, nên container vượt trần thì dừng, không lấn sang swap của VPS.
+- Smoke test của mỗi app chờ theo `start_timeout` (mặc định 60 giây).
+- `swap` chỉ liệt kê container có nhãn `ao.app` (`--filter label=ao.app`), nên container database không bao giờ bị đổi bản, dừng hay xóa.
+- Test của installer cho app có `context` viết sau code, nên không có lần đỏ trước.
+
+**T14.** `lib/release/database.mjs`:
+- `databaseRunArgs`: một container `ao-<dự án>-<môi trường>-db` với alias `db`, user `postgres`, `--cap-drop ALL`, `no-new-privileges`, trần RAM (mặc định `256m`), nhãn `ao.role=database` và không có `ao.app`, volume cùng tên, không mở cổng. Script init gắn chỉ đọc. Giá trị biến chỉ nằm trong môi trường của lệnh docker, không nằm trong tham số.
+- `ensureDatabase`: database đang chạy thì để yên; đã dừng thì bật lại; chưa có thì tạo. Chỉ volume mới mới nhận script init. Lệnh chờ `pg_isready` tối đa 60 giây, quá thì deploy dừng và nói lý do.
+- Installer đọc `<môi trường>.db.env` trước khi build; thiếu file thì không chạy gì, và nói đúng file thiếu. Database được đảm bảo sau khi build và trước khi đổi bản app. Script init chép từ worktree của commit sang `/var/lib/ao/<dự án>/db-init/<môi trường>/`, mở quyền đọc như thư mục build.
+
+**T15.** `lib/release/backup.mjs`, `scripts/ao-backup.mjs`, `vps/ao-backup.service`, `vps/ao-backup.timer`:
+- Mỗi ngày lúc 02:30 giờ Việt Nam, chạy bằng root (`UMask=0077`): `pg_dump -Fc` của từng database đang chạy, ghi vào `<tên>.part` rồi mới đổi tên khi xong. Giữ bản mới nhất của 7 ngày gần nhất và của 4 tuần gần nhất.
+- `restore-check <dự án> <môi trường>`: khôi phục bản mới nhất vào container tạm `--network none`, cùng image, rồi so số bảng và số dòng đếm chính xác với database đang chạy. Container tạm luôn bị xóa.
+- **Chạy thật** trên Docker của máy, với database dựng đúng bằng `databaseRunArgs` (image ghim digest, user `postgres`, `--cap-drop ALL`): database sẵn sàng sau 21 giây, tính cả lúc tải image. `ao-backup.mjs run` ghi một bản dump 2.546 byte. `restore-check` ra 2 bảng và 32 dòng, khớp database đang chạy, và thoát mã 0. Sau đó container, volume, network, image thử đều đã xóa, và Docker Desktop đã tắt.
+
+Năm lệnh kiểm xanh: 1.385 test.

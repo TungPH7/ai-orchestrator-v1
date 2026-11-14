@@ -1,0 +1,11 @@
+# Starts the backup of the databases once a day, at 02:30 in Vietnam; a run missed while the VPS was off starts at boot.
+[Unit]
+Description=Back up the ai-orchestrator databases every day
+
+[Timer]
+OnCalendar=*-*-* 19:30:00 UTC
+Persistent=true
+RandomizedDelaySec=5min
+
+[Install]
+WantedBy=timers.target

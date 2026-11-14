@@ -1,0 +1,16 @@
+# The daily backup of the project databases (project-scaffold part 3, spec 2.4; docs/vps-setup.md). It runs as root,
+# since the dumps hold the data of the users and only root reads them; it only runs docker ps, exec and pg_dump.
+[Unit]
+Description=ai-orchestrator: back up the databases of the projects
+Requires=docker.service
+After=docker.service
+
+[Service]
+Type=oneshot
+User=root
+Environment=HOME=/root
+ExecStart=/usr/bin/node /opt/ao/kit/scripts/ao-backup.mjs run
+TimeoutStartSec=30min
+UMask=0077
+NoNewPrivileges=yes
+PrivateTmp=yes
