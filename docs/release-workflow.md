@@ -140,9 +140,9 @@ Trace của Playwright giữ `httpCredentials` ở dạng rõ. Vì vậy sau `qa
 
 ## Cơ sở dữ liệu
 
-Kit chưa chạy migration. Khi dự án có cơ sở dữ liệu, `deploy.yaml` sẽ có thêm lệnh migration, chạy trước khi bật container mới.
+Từ project-scaffold phần 3, một dự án có database PostgreSQL ở mỗi môi trường, và migration chạy khi app khởi động: với Spring Boot là Flyway, như template Java đã đặt. Deployer bật container mới cạnh container cũ rồi mới chuyển, nên trong lúc chuyển, bản cũ chạy trên schema mới. Rollback chỉ đổi image, không lùi schema.
 
-Đổi schema theo kiểu expand/contract, để image trước vẫn chạy được trên schema mới, nhờ đó rollback không cần đảo migration:
+Vì vậy mỗi migration phải chạy được với bản trước nó. Prompt của `be-dev` và `sa` ghi luật này, và `reviewer` coi một migration phá bản trước là finding High. Đổi schema theo kiểu expand/contract:
 
 1. **Expand:** bản N thêm cột hay bảng mới, code ghi cả hai nơi. Không xóa gì.
 2. **Migrate:** chép dữ liệu cũ sang chỗ mới.

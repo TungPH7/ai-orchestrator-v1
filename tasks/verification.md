@@ -57,3 +57,31 @@ Image Postgres: `postgres:17-alpine@sha256:d3244e8ce3f165ee3c93d9c4a4b1d0fe48b3a
 - `ao-step` dừng trước lượt `be-dev` của dự án có app Java khi Docker chưa chạy (`dockerGate`). **Khác spec đã duyệt:** spec ghi cả `qa`, nhưng `qa` kiểm trên môi trường đã deploy và không chạy Testcontainers; spec mục 2.2 đã sửa theo.
 
 Năm lệnh kiểm xanh: 1.353 test.
+
+Kit PR #270 (`f29a873`) merge chặng 1; CI xanh cả `contract` và `profiles`.
+
+## Chặng 2: cổng chất lượng cho Java (T8–T11), nhánh `task/scaffold3-2`
+
+**T8.**
+- `parseJacoco` đọc báo cáo XML của JaCoCo: mỗi `sourcefile` của mỗi `package` thành `<app>/src/main/java/<package>/<file>`; số lệnh đã chạy (`ci`) của một dòng là số lần chạy, 0 là chưa chạy.
+- `gates.yaml`: nguồn thêm `**/src/main/java/**/*.java`; khóa mới `jacoco: [apps/*/target/site/jacoco/jacoco.xml]`; `e2e/**` và `scripts/**` thành `{,apps/*/}e2e/**`, `{,apps/*/}scripts/**`, nên `e2e/` và `scripts/` của từng app cũng không bị tính (việc B2 để lại).
+- `project.yaml` có `apps.<app>.coverage_exclude`. Glob phải nằm trong thư mục app: đường dẫn tuyệt đối hay có `..` bị schema từ chối. `coverage-diff` cộng các glob này vào danh sách loại trừ.
+- Câu báo đổi từ "is not in any lcov file" thành "is not in any coverage report".
+
+**T9.**
+- Job `policy` cài `osv-scanner` v2.7.0 vào `$RUNNER_TEMP`, kiểm SHA-256 như gitleaks, chỉ khi repo có `apps/*/pom.xml`.
+- `check-policy.mjs` quét từng `pom.xml` với `--data-source native`. Lệnh trả 0 khi không thấy gì, 1 khi thấy advisory; mã khác là quét hỏng, và job đỏ.
+- `osvProblems` tính mỗi nhóm advisory một lần cho mỗi gói, theo điểm CVSS cao nhất: từ 9,0 là critical, từ 7,0 là high. Nhóm chưa có điểm được tính là high, để không lọt qua mà chưa ai đọc. Ngoại lệ khớp theo mã GHSA hay bất kỳ alias nào, như CVE.
+- **Chạy thật** `check-policy.mjs` của kit trong dự án tạm của T4, với `osv-scanner` bản Windows: 21 giây, mục **Java dependencies** đỏ với 39 advisory high và critical của template, khớp 10 + 29 nhóm đếm ở T2. Mục **Dependencies** của pnpm vẫn xanh.
+
+**T10.**
+- `suppressions.patterns` thêm chín mẫu Java: `@SuppressWarnings`, `NOSONAR`, `@Disabled`, `CHECKSTYLE:OFF`, `CHECKSTYLE.OFF`, `spotless:off`, `@SuppressFBWarnings`, `NOPMD`, `@Generated`.
+- `security_review.roster_effort_paths` thêm 13 path của Spring Boot; service vẫn không nâng effort, như với NestJS.
+- Skill `java-springboot` chép vào `profiles/stacks/spring-boot/skills/` với `SOURCE.md` (MIT, commit `f65ff3955a6b`, không sửa gì). Mình đã đọc cả năm file `references/` trước khi chép: chỉ có hướng dẫn kỹ thuật về Spring Boot 3 và 4, không có chỉ dẫn nào đi ngược luật của kit. Stack khai skill này cho `be-dev`, đứng trước `<app>-conventions`.
+
+**T11.**
+- Prompt của `be-dev`, `sa` và `reviewer` có luật "migration phải chạy được với bản trước". Với `reviewer`, vi phạm là finding High.
+- `docs/release-workflow.md`, mục Cơ sở dữ liệu, bỏ câu "kit chưa chạy migration": Flyway chạy khi app khởi động, và deployer bật bản mới cạnh bản cũ.
+- Agent đã sinh lại; `agents:check` xanh.
+
+Năm lệnh kiểm xanh: 1.363 test.

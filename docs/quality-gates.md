@@ -46,9 +46,10 @@ Job summary có mục **Policy**. Mỗi dòng là một phần kiểm: ✅ là �
 | Phần | Đỏ khi | Cách sửa |
 |---|---|---|
 | Conventions | Tên nhánh, header của một commit trong PR, hoặc tiêu đề PR sai quy ước. Nhánh `feature/` chỉ vào `develop`; `bugfix/` vào `develop` hoặc `release/*`; `hotfix/` vào `main` | Sai tên nhánh thì mở PR mới từ nhánh đúng tên. Sai header thì viết lại commit rồi force push lên nhánh của PR. Sai tiêu đề thì sửa bằng `ao-pr.mjs edit` |
-| Suppressions | Dòng thêm vào có mẫu tắt kiểm tra (`eslint-disable`, `oxlint-disable`, `@ts-ignore`, `.skip(`, `nosemgrep`, `gitleaks:allow`…) mà không ghi `reason: <lý do>` trên cùng dòng; hoặc có `.only(` | Sửa lỗi thay vì tắt kiểm tra. Nếu thật sự phải tắt, ghi `reason:` trên cùng dòng để reviewer đọc. `.only(` luôn đỏ, nên phải xóa |
+| Suppressions | Dòng thêm vào có mẫu tắt kiểm tra (`eslint-disable`, `oxlint-disable`, `@ts-ignore`, `.skip(`, `nosemgrep`, `gitleaks:allow`…; với Java: `@SuppressWarnings`, `NOSONAR`, `@Disabled`, `CHECKSTYLE:OFF`, `spotless:off`, `@SuppressFBWarnings`, `NOPMD`, `@Generated`) mà không ghi `reason: <lý do>` trên cùng dòng; hoặc có `.only(` | Sửa lỗi thay vì tắt kiểm tra. Nếu thật sự phải tắt, ghi `reason:` trên cùng dòng để reviewer đọc. `.only(` luôn đỏ, nên phải xóa |
 | Thresholds | PR hạ một ngưỡng trong `quality/gates.yaml`, ví dụ `changed_lines_min` | Trả ngưỡng về như cũ. Hạ ngưỡng là quyết định của bạn, và file này được bảo vệ, nên PR đó do bạn merge |
 | Dependencies | `npm audit`, hay `pnpm audit` với dự án pnpm, thấy lỗ hổng high hoặc critical không nằm trong danh sách ngoại lệ còn hạn | Cập nhật dependency. Nếu chưa có bản vá, thêm một ngoại lệ có hạn vào `dependencies.exceptions`, gồm mã advisory, lý do và ngày hết hạn. Đây cũng là file được bảo vệ, nên bạn quyết định và tự merge |
+| Java dependencies | Với mỗi `apps/*/pom.xml`: `osv-scanner` (v2.7.0, ghim và kiểm SHA-256, đọc Maven Central như Maven, gồm dependency bắc cầu) thấy nhóm advisory từ 7,0 điểm CVSS trở lên, ngoài danh sách ngoại lệ còn hạn. Advisory chưa có điểm được tính là high | Như dòng trên. Ngoại lệ ghi mã GHSA hay CVE của nhóm. Với Spring Boot, thường chỉ cần nâng bản của parent `spring-boot-starter-parent` |
 
 Dòng ℹ️ chỉ để báo, không làm job đỏ. Ví dụ `test file deleted: <file>` nhắc reviewer xem vì sao file test bị xóa. Khi push mà không có PR, `policy` chỉ chạy audit của npm hay pnpm.
 
@@ -75,13 +76,14 @@ Job chạy `npm ci`, `npm run lint`, `npm run typecheck`, `npm run test:coverage
 Job summary có mục **Coverage of changed lines: N%**, với bảng gồm các cột File, Covered và Lines not run. Bước này đỏ khi:
 
 - các dòng mà PR thêm hoặc sửa có coverage dưới 80% (`coverage.changed_lines_min`). Viết test chạy qua các dòng ở cột Lines not run.
-- một file nguồn thay đổi mà không có trong lcov. Cấu hình coverage của dự án phải gồm mọi file nguồn, kể cả file chưa có test.
+- một file nguồn thay đổi mà không có trong báo cáo coverage nào. Cấu hình coverage của dự án phải gồm mọi file nguồn, kể cả file chưa có test.
 
-Bước này chỉ tính dòng thực thi được. Những file không được tính:
+Báo cáo coverage là lcov của app JS (`coverage/lcov.info`), và báo cáo XML của JaCoCo của app Java (`target/site/jacoco/jacoco.xml`, file nguồn ở `src/main/java/`). Bước này chỉ tính dòng thực thi được. Những file không được tính:
 - file test;
 - file cấu hình (`*.config.*`);
 - migration;
-- script ở gốc dự án (`scripts/`, như `scripts/dev.mjs` chạy hai app ở máy);
+- `e2e/` và `scripts/`, ở gốc dự án và trong mỗi app (như `scripts/dev.mjs` chạy hai app ở máy);
+- file khớp `coverage_exclude` của app trong `project.yaml`, glob tính từ thư mục app, ví dụ `src/main/java/**/dto/**`. Ghi ở đây đúng những gì cấu hình coverage của app đã loại, như phần `<excludes>` của JaCoCo. `project.yaml` là đường dẫn được bảo vệ, nên chỉ PR do bạn merge mới nới được danh sách;
 - bản chép kit (`.ai-orchestrator/`, `.claude/`), vì đã có test ở kit. Muốn kiểm trước khi push, chạy `npm run test:coverage`, rồi `node .ai-orchestrator/scripts/coverage-diff.mjs --base origin/develop`.
 
 ### `secrets`

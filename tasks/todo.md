@@ -62,7 +62,7 @@
 
 ## Chặng 2: cổng chất lượng cho Java, nhánh `task/scaffold3-2`
 
-- [ ] **T8: coverage** (spec 2.3, 2.6).
+- [x] **T8: coverage** (spec 2.3, 2.6).
   - **Đạt khi:**
     - `lib/quality/coverage.mjs` đọc báo cáo XML của JaCoCo: mỗi `sourcefile` của mỗi `package` thành `apps/<app>/src/main/java/<package>/<file>`, dòng có lệnh đã chạy (`ci > 0`) là đã phủ;
     - `gates.yaml`: nguồn thêm `**/src/main/java/**/*.java`; báo cáo thêm `apps/*/target/site/jacoco/jacoco.xml`; `e2e/**`, `scripts/**` khớp cả dưới `apps/*/`;
@@ -70,24 +70,24 @@
     - luật lcov hiện có không đổi.
   - **Kiểm:** báo cáo JaCoCo mẫu lấy từ T2; ca `coverage_exclude`; test lcov cũ vẫn xanh.
   - **File:** `lib/quality/coverage.mjs`, `scripts/coverage-diff.mjs`, `quality/gates.yaml`, `lib/scaffold/project.schema.json`, `lib/scaffold/project-config.mjs`, fixture, test.
-- [ ] **T9: `osv-scanner`** (spec 2.3).
+- [x] **T9: `osv-scanner`** (spec 2.3).
   - **Đạt khi:** job `policy` cài `osv-scanner` bản ghim, kiểm SHA-256, chạy trên `apps/*/pom.xml` khi có; `lib/quality/policy.mjs` đọc JSON của nó, áp `audit_level` và ngoại lệ có hạn như `npm audit`. Repo không có `pom.xml` thì không cài.
   - **Kiểm:** kết quả JSON mẫu từ T2: dưới ngưỡng, trên ngưỡng, ngoại lệ còn hạn và hết hạn.
   - **File:** `kit/.github/workflows/ci.yml`, `scripts/check-policy.mjs`, `lib/quality/policy.mjs`, fixture, test.
-- [ ] **T10: dòng tắt check, path security, skill** (spec 2.3).
+- [x] **T10: dòng tắt check, path security, skill** (spec 2.3).
   - **Đạt khi:**
     - `suppressions.patterns` thêm chín mẫu Java của spec 2.3;
     - `security_review.roster_effort_paths` thêm các path Java của spec 2.3;
     - skill `java-springboot` (nếu T2 chọn) chép vào `profiles/stacks/spring-boot/skills/`, ghim commit; stack khai skill này và `<app>-conventions` cho `be-dev`.
   - **Kiểm:** test của `suppressions` cho từng mẫu, có và không có `reason:`; test của effort với path Java; `npm run agents:check`.
   - **File:** `quality/gates.yaml`, `profiles/stacks/spring-boot/`, test.
-- [ ] **T11: luật migration; PR** (spec 2.4).
+- [x] **T11: luật migration; PR** (spec 2.4).
   - **Đạt khi:** prompt của `be-dev`, `sa`, `reviewer` có luật "migration phải chạy được với bản trước" (expand/contract) cho dự án có database; `docs/release-workflow.md` có mục database và luật này; agent sinh lại.
   - **Kiểm:** `npm run agents:check`; test của prompt nếu có.
   - **File:** `agents/prompts/be-dev.md`, `sa.md`, `reviewer.md`, `kit/.claude/agents/` (sinh lại), `docs/release-workflow.md`, `docs/quality-gates.md`; PR chặng 2.
 
 ### Checkpoint 2: sau T7 và T11
-- [ ] Hai PR merge, CI xanh. Năm lệnh kiểm xanh; dự án không có Java không đổi hành vi.
+- [x] Hai PR merge, CI xanh. Năm lệnh kiểm xanh; dự án không có Java không đổi hành vi. Kit PR #270 (`f29a873`) và PR của chặng 2.
 
 ## Chặng 3: deployer và database, nhánh `task/scaffold3-3`
 
