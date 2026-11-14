@@ -370,7 +370,7 @@ Ví dụ: sản phẩm e-commerce `shop`, repo public `TungPH7/shop`, space Jira
 - `user` (Next.js), cho khách mua hàng, lấy từ template Next.js của bạn;
 - `admin` (React và Vite), cho người quản trị, lấy từ template React của bạn.
 
-Mỗi bước dưới đây đã được làm thật trên `shop` ngày 13/11/2026 (T22–T24 của project-scaffold phần 2), và đầu ra ghi ở đây là đầu ra thật. `apps/api` bằng Spring Boot đến ở phần 3 của module (B3). Tới lúc đó, trang nào gọi API cũng báo lỗi.
+Bước 1–8 đã được làm thật trên `shop` ngày 13/11/2026 (T22–T24 của project-scaffold phần 2), và đầu ra ghi ở đó là đầu ra thật. Bước 9 thêm `apps/api` bằng Spring Boot, cùng database PostgreSQL (project-scaffold phần 3). Tới lúc có `api`, trang nào gọi API cũng báo lỗi.
 
 Khác với phần 3 ở bốn điểm:
 - pnpm thay cho npm, đúng bản mà `packageManager` của `package.json` ghi.
@@ -611,6 +611,62 @@ node <kit>/scripts/ao-kit.mjs check e-commerce/shop
 
 - **Tài nguyên trên VPS 4 GB:** RAM còn sẵn 2.794 MB, trước khi thêm `shop` là 2.910 MB. Container `user` dùng 55 MiB, `admin` 11 MiB. Image trên VPS: `user` 400 MB, `admin` 144 MB.
 - **Nếu lỗi:** ngay sau khi Caddy reload, lần gọi đầu tiên có thể không kết nối được. Gọi lại là bình thường.
+
+### Bước 9. API Spring Boot và database
+
+> **Bản nháp** (project-scaffold phần 3, T18), viết trước khi chạy thật. Đầu ra thật của `shop` thay vào ở T23.
+
+`apps/api` (Spring Boot 4, Java 21, Maven, PostgreSQL 17, Flyway) lấy từ template Java của bạn, nhánh `codebase`. App này không công khai: chỉ Caddy trong container `admin` (`/api/*`) và server của `user` (`API_URL`) gọi nó, trên mạng Docker của môi trường.
+
+**Máy bạn cần thêm hai thứ:**
+- **JDK đúng bản `<java.version>` của `pom.xml`**, ở đây là 21. `JAVA_HOME` không cần đổi: `mvnw.mjs` tự tìm JDK 21, lần lượt ở `JAVA_HOME` nếu đúng bản, ở `JAVA_HOME_21`, ở JDK nằm cạnh `JAVA_HOME`, rồi ở các thư mục cài thường gặp. Máy bạn có sẵn `C:\opt\jdk-21`.
+- **Docker đang chạy** khi chạy test (Testcontainers) và `pnpm dev` (Postgres của `docker-compose.yml`). `ao-step` dừng trước lượt `be-dev` khi Docker chưa chạy, và `doctor` có dòng JDK và Docker khi dự án có app Java.
+
+1. **Chép kit B3, trong một Task và PR riêng.** Kit của `shop` là bản B2. Chép bản mới trước khi thêm `api` (phần 8):
+
+   ```
+   node <kit>/scripts/ao-kit.mjs sync e-commerce/shop
+   ```
+
+   PR sửa đường dẫn được bảo vệ, nên bạn approve và merge tay.
+2. **Thêm `api`**, trên nhánh của một Task:
+
+   ```
+   node <kit>/scripts/ao-kit.mjs add e-commerce/shop api --stack spring-boot --from <thư mục template Java> --ref codebase --exclude study-guide-impl/ --exclude prompt.md
+   ```
+
+   - **Ý nghĩa:** `add` làm như bước 3, cộng phần riêng của Java:
+     - bỏ `.githooks/`, `.github/` và `.claude/` của template; giữ Maven wrapper, `docker-compose.yml`, `docker/`, `Dockerfile`, `.env.example`;
+     - viết `apps/api/package.json` không có dependency, với năm script gọi `mvnw.mjs`. Nhờ vậy `pnpm -r run lint`, CI và `/ao-preview` chạy `api` như một app JS;
+     - `docs/coding-conventions/` của template thành skill `api-conventions` của `be-dev`, cùng skill `java-springboot`;
+     - ghi `api` vào `project.yaml` (cổng 3001, `health: /actuator/health`, không công khai), `deploy.yaml` (`context: apps/api`, `memory: 768m`, `start_timeout: 180`) và `roster.local.yaml`.
+   - **Thêm tay vào `deploy.yaml` trong cùng PR:**
+     - khóa `database`, như mục 14 của [docs/vps-setup.md](vps-setup.md), với image ghim digest và `init: apps/api/docker/postgres/init`;
+     - `env` của `api`: tên các biến app đọc lúc chạy, gồm `DB_HOST`, `DB_PORT`, `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD` và `SPRING_PROFILES_ACTIVE`.
+
+     `deploy.yaml` nằm trong `.ai-orchestrator/`, nên phải đi trong PR này, không trong PR sửa code ở mục 4.
+   - **Kết quả mong đợi** (thử trên một dự án tạm ở T4): `add` chép 93 file, bỏ `.claude/` (1.977 file), và báo năm chỗ phải sửa:
+     - cổng lấy từ `SERVER_PORT`;
+     - `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD` không có giá trị mặc định;
+     - Dockerfile mở cổng 8080;
+     - `SPRING_PROFILES_ACTIVE` đặt cứng trong Dockerfile;
+     - dòng 61 của `.dockerignore` có comment cuối dòng.
+   - **CI của PR này:** `build-test` cài JDK 21 khi thấy `apps/api/pom.xml`. `policy` đỏ, vì template có 10 nhóm lỗ hổng từ 9 điểm trở lên. Spring Boot được nâng ở mục 4.
+3. **`.env` trên máy.** Chép `apps/api/.env.example` thành `apps/api/.env` rồi điền giá trị. File này không được commit. `pnpm --filter ./apps/api run dev` bật Postgres của `docker-compose.yml` trước, rồi chạy Spring Boot ở cổng `PORT`.
+4. **Sửa code `api` theo báo cáo**, qua một Task và một PR không đụng `.ai-orchestrator/`, như bước 7:
+   - `server.port: ${PORT:3001}`;
+   - biến database có giá trị mặc định cho máy, và lấy từ môi trường trên VPS;
+   - Dockerfile mở cổng 3001, `HEALTHCHECK` gọi 3001, bỏ `SPRING_PROFILES_ACTIVE` đặt cứng;
+   - đưa comment ở dòng 61 của `.dockerignore` lên dòng riêng;
+   - nâng Spring Boot để `policy` xanh.
+
+   `/ao-preview <KEY>` chạy `user`, `admin`, `api` và Postgres trên máy bạn.
+5. **Lên Development.** VPS đang mở; Claude làm theo mục 14 và 15 của [docs/vps-setup.md](vps-setup.md):
+   - sinh hai mật khẩu ngay trên VPS: `development.db.env` cho container database, và các biến database trong `development.env` cho app;
+   - deploy: deployer build `api` từ `apps/api`, tạo container `ao-shop-development-db`, chạy script init một lần, rồi bật `api`. Flyway chạy migration khi `api` khởi động;
+   - kiểm: smoke test đạt, và `https://shop-admin-dev.ao.t2g.io.vn/api/v1/health` qua basic auth trả 200;
+   - cài timer backup, chạy một lần, rồi `restore-check`.
+6. **RAM.** Ước trước khi chạy thật: một JVM của `api` lúc rảnh khoảng 250–400 MB, Postgres khoảng 30–80 MB. Lúc đổi bản, hai JVM chạy cùng lúc. Số đo thật thay vào đây ở T23, kèm ước cho ba môi trường.
 
 Dự án đã sẵn sàng cho việc đầu tiên: `/ao-intake` (phần 6). Nếu bạn có ảnh chụp màn hình thay cho Figma, xem bước 2 của phần 6.
 

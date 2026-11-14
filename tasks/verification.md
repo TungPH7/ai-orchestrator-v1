@@ -135,3 +135,29 @@ Kit PR #272 (`b676282`) merge chặng 3.
 - `docs/getting-started.md`: hai đoạn của B2 (sửa tay `/en`, `ao-pr.mjs` thiếu biến `AO_*`) ghi cách làm mới.
 
 Năm lệnh kiểm và `profiles:check` xanh: 1.395 test.
+
+Kit PR #273 (`3a1c729`) merge chặng 4.
+
+### Checkpoint 3: đạt
+
+Hai PR #272 và #273 merge, CI xanh. Bản kit mới trên VPS (T19) chạy `tick --dry-run` mà không in gì, và mã băm của Caddyfile trước và sau là một. Vậy Caddyfile của `ao-sample` và `ao-pilot` giữ nguyên từng chữ.
+
+## Chặng 5: kiểm thật và hướng dẫn, nhánh `task/scaffold3-5`
+
+**VPS mở từ Phiên 29 · Lượt 3** (key `ao_vps` trong ssh-agent, root đăng nhập bằng key), và để mở cho tới khi bạn bảo đóng. Lượt 2, lệnh mở đăng nhập root chưa có tác dụng (file vẫn `PermitRootLogin no`); bạn chạy lại ở Lượt 3.
+
+**T18.** `docs/getting-started.md` phần 5 có bước 9 "API Spring Boot và database", ghi rõ là bản nháp. `add` không ghi khóa `database`, nên bản nháp ghi thêm tay khóa này và `env` của `api` trong PR thêm `api`.
+
+**T19, VPS (2026-11-14 khoảng 10:15).**
+1. RAM trước khi đổi gì: còn sẵn 2.790 MB trên 3.915 MB; swap dùng 6 MB. 12 container dùng tổng khoảng 461 MiB (11–68 MiB mỗi container), chưa có trần RAM. Đĩa: 11 GB trên 38 GB; build cache 2,8 GB.
+2. Kit trên VPS: `c49b051` → `3a1c729` (gói 15 MB), bản cũ ở `/opt/ao/kit.prev`, `npm ci --omit=dev` báo 0 lỗ hổng.
+3. `tick --dry-run` (15 giây) không in gì; mã băm của Caddyfile không đổi.
+4. Timer bật lại; hai lượt chạy đầu xong bình thường, 12 container vẫn chạy, RAM còn 2.797 MB. VPS để mở.
+
+**T20, `shop` (đang làm).**
+1. `SHOP-2` (Task, nhãn `ao-devops`) tạo bằng token CI theo template Task. `ao-kit sync --key SHOP-2` từ kit ở `3a1c729` (30 giây): commit `641e93c`, 34 file. PR #7 mở bằng `ao-pr.mjs` từ một shell không có biến `AO_*`: script đọc chúng từ `.claude/settings.json`, tức bản sửa T17 chạy đúng ngoài thực tế. CI xanh đủ năm job.
+2. `SHOP-3` (Task, nhãn `ao-be-dev`). `add api --stack spring-boot --from <template> --ref codebase --exclude study-guide-impl/ --exclude prompt.md` (13 giây): 93 file, bỏ `.claude/` (1.977 file), `.githooks/`, `.github/` (4 file); skill `api-conventions` và `java-springboot`; năm chỗ phải sửa, giống lần thử ở T4.
+   - Thêm tay: `database` và `env` của `api` trong `deploy.yaml`; `coverage_exclude` của `api` trong `project.yaml`, chép từ `<excludes>` của JaCoCo.
+   - Spring Boot 4.0.6 → 4.0.9 (bản vá mới nhất của 4.0). `osv-scanner` v2.7.0 trên máy: bản 4.0.9 không còn gói nào có advisory; đối chứng với `pom.xml` gốc (4.0.6) ra 16 gói, đúng số của T2. `check-policy.mjs` báo `ok` cả hai dòng.
+   - **Khác plan:** plan để Spring Boot được nâng ở PR sửa code (T21). Nhưng PR thêm `api` phải xanh mới merge được, nên việc nâng chuyển vào PR này.
+   - `ao-pr.mjs` từ chối mở PR chồng lên nhánh của PR #7 ("a feature/ branch is cut from develop"), đúng luật của kit. PR của `SHOP-3` mở sau khi PR #7 merge.

@@ -124,12 +124,12 @@
   - **File:** `lib/scaffold/setup-jira.mjs`, `scripts/ao-pr.mjs` hoặc `lib/quality/github-app.mjs`, `lib/scaffold/add.mjs`, `lib/scaffold/app-report.mjs`, test; PR chặng 4.
 
 ### Checkpoint 3: sau T16 và T17
-- [ ] Hai PR merge, CI xanh. Caddyfile của `ao-sample` và `ao-pilot` giống hệt bản cũ.
+- [x] Hai PR merge, CI xanh. Caddyfile của `ao-sample` và `ao-pilot` giống hệt bản cũ.
 
 ## Chặng 5: kiểm thật và hướng dẫn
 
-- [ ] **T18: bản nháp của hướng dẫn** (spec 2.7). Phần 5 của `getting-started.md` thêm bước "API Spring Boot và database". Đi cùng PR của T23.
-- [ ] **T19 [bạn]: VPS.** Bạn mở VPS; mình:
+- [x] **T18: bản nháp của hướng dẫn** (spec 2.7). Phần 5 của `getting-started.md` thêm bước "API Spring Boot và database". Đi cùng PR của T23.
+- [x] **T19 [bạn]: VPS.** Bạn mở VPS; mình:
   1. đo RAM bằng lệnh chỉ đọc;
   2. cập nhật kit trên VPS lên bản có chặng 3, giữ bản cũ ở `/opt/ao/kit.prev`;
   3. chạy `tick --dry-run`: Caddyfile không đổi;
