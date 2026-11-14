@@ -93,7 +93,7 @@
   - **Đã chuẩn bị ở Lượt 6:** 5 ảnh (Growth, hộp thoại "New experiment", Apps, Overview, `#/apps/tally`; PNG, dưới 1 MB, cạnh dài tối đa 1.903 px) và 94 token của giao diện tối trong `shop/.ai/design-inbox/_reference/` (`tokens.md`, `reference.json`; `scratchpad/ref-capture.mjs`). Font Urbanist (Google Fonts, OFL). Trang có nút "BUY THIS TEMPLATE": template bán thương mại, chỉ lấy style.
   - Ở T11: chép 5 ảnh vào `.ai/design-inbox/<EPIC>/`. `tokens.md` không vào đó, vì `ux` trả lại mọi file không phải PNG/JPG; token đi vào mô tả Epic, phần `ux` đọc về ảnh.
   - `/ao-intake` (mình phỏng vấn bạn, tạo Epic); **bạn** bấm `Start spec`.
-- [ ] **T10g: sửa theo review vòng 3 của `shop` PR #13** (spec 2.9 mục 5; Phiên 31 · Lượt 16): kit có cách ghi một High bạn chấp nhận; merge ngược chờ `audit` của các commit mang từ `main` về; `doctor` kiểm `CODEOWNERS` trên `main`; các Low. Chép kit vào PR #13, review vòng 4; còn High 1 thì approve kèm dòng `Accept risk:` tới 2026-12-31; merge, QA, bạn Accept `SHOP-6`.
+- [x] **T10g: sửa theo review vòng 3 của `shop` PR #13** (spec 2.9 mục 5; Phiên 31 · Lượt 16): kit có cách ghi một High bạn chấp nhận; merge ngược chờ `audit` của các commit mang từ `main` về; `doctor` kiểm `CODEOWNERS` trên `main`; các Low. Chép kit vào PR #13, review vòng 4; còn High 1 thì approve kèm dòng `Accept risk:` tới 2026-12-31; merge, QA, bạn Accept `SHOP-6`.
 - [ ] **T10h: [bạn] bản `v0.1.1`** ngay sau `SHOP-6`: đưa `.github/CODEOWNERS` lên `main`, và chạy thử luồng release mới (nhánh release cắt bằng login của bạn, PR report, tag của `ao-merge`, merge ngược có `audit`) trước Epic. Fix Version `v0.1.1`; gate ④ và ⑤ của bạn.
 - [ ] **T12: [bạn] `/ao-spec <EPIC>`** tới **gate ①**.
 - [ ] **T13: [bạn] `/ao-plan <EPIC>`** tới **gate ②**. Sửa chặng 4 của todo theo plan của `sa`.
@@ -117,7 +117,7 @@ Mỗi item: `/ao-build`, `/ao-preview` (bạn xem), `/ao-review`, **gate ③**, 
 
 - [ ] **T17: [bạn] `v0.2.0`** (spec 2.7): vài sản phẩm thử trên Production qua `admin`; **gate ④**; `/ao-ship v0.2.0`; **gate ⑤**; Production, Flyway trên database có dữ liệu; **bạn** Release `v0.2.0` và Complete Epic.
 - [ ] **T18: hướng dẫn.** Phần mới của `docs/getting-started.md` với đầu ra thật của Epic; `production_auth` và bản sao trong `docs/vps-setup.md`; PR.
-- [ ] **T19: đóng pilot.** Nhắc bạn kiểm khóa `age` đã cất (giải mã một bản sao bằng `decrypt --identity -`, khóa lấy từ trình quản lý mật khẩu) nếu chưa làm; file khóa trên máy đã xóa ở Phiên 31 · Lượt 2 (Phiên 31 · Lượt 6: bạn làm sau, nên làm trước T17). Bảng tám tiêu chí và chi phí trong `verification.md`; plan, todo, verification vào `tasks/archive/pilot-3/`; `SPEC.md`, `concerns.md`; PR tài liệu.
+- [ ] **T19: đóng pilot.** Kiểm khóa `age` đã cất (giải mã một bản sao bằng `decrypt --identity -`, khóa lấy từ trình quản lý mật khẩu) trên máy chưa từng chạy agent, hoặc sau khi có `ao-agent`; rồi sinh cặp khóa mới (review vòng 4 của `shop` PR #13, `vps-setup.md` mục 16). File khóa trên máy đã xóa ở Phiên 31 · Lượt 2. Bảng tám tiêu chí và chi phí trong `verification.md`; plan, todo, verification vào `tasks/archive/pilot-3/`; `SPEC.md`, `concerns.md`; PR tài liệu.
 
 - [ ] **Sau Pilot 3, trước 2026-12-31: tài khoản Windows `ao-agent`** cho mọi agent, không có keyring, credential git, khóa SSH hay token Jira của bạn (High 1 của review vòng 3 `shop` PR #13, bạn chấp nhận tới ngày đó ở Phiên 31 · Lượt 15). Khoảng nửa ngày: tạo tài khoản, cài Claude Code và đăng nhập cho nó, `ao-step` bật agent dưới tài khoản đó, chạy thử một agent.
 

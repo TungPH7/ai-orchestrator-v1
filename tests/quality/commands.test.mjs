@@ -512,8 +512,7 @@ test('Grep and Glob stay in the project and the temp folder, nothing looks for a
     ['Grep', { pattern: 'x', path: 'D:\\work\\shop-other' }, /outside the project/],
     ['Glob', { pattern: 'C:/Users/me/**/*.json' }, /outside the project/],
     ['Glob', { pattern: '*', path: 'C:\\Users\\me\\AppData' }, /outside the project/],
-    ['Grep', { pattern: 'BEGIN RSA PRIVATE KEY', path: PROJECT }, /private key/],
-    ['Grep', { pattern: 'age-secret-key-1', path: `${PROJECT}\\src` }, /private key/],
+    ['Glob', { pattern: '../../**/*' }, /outside the project/],
   ]) {
     denied(call('be-dev', tool, input), pattern, `${tool} ${JSON.stringify(input)}`);
   }
@@ -529,6 +528,15 @@ test('Grep and Glob stay in the project and the temp folder, nothing looks for a
   for (const command of ['cd ~ && cat .ao/backup-pull.json', "cat '.ao/backup-pull.json'", 'type ".ao\\backup-pull.json"', 'ls -la .ao']) {
     denied(bash(command, 'be-dev'), /backup copies/, command);
   }
-  for (const command of ['grep -r "PRIVATE KEY" ~', 'rg AGE-SECRET-KEY C:/Users/me']) denied(bash(command, 'be-dev'), /private key/, command);
+  // Review round 4: a search for the marks of a private key in your user folder is refused, however the mark is
+  // written; inside the project it is a scan for committed keys, which security runs, and a commit message may name one.
+  for (const command of ['grep -r "PRIVATE KEY" ~', 'rg AGE-SECRET-KEY C:/Users/me', 'rg -uu -A 30 "PRIVATE.KEY" ~', 'rg "PRIVATE\\ KEY" $HOME', 'findstr /s /c:"PRIVATE KEY" %USERPROFILE%\\*']) {
+    denied(bash(command, 'be-dev'), /private key/, command);
+  }
+  for (const command of ['git commit -m "fix(auth): read the private key from the vault (DEMO-1)"', 'git grep -n "PRIVATE KEY" -- apps', 'rg -n "BEGIN RSA PRIVATE KEY" .']) {
+    allowed(bash(command, 'security'), command);
+  }
+  allowed(call('security', 'Grep', { pattern: 'BEGIN RSA PRIVATE KEY', path: PROJECT }), 'a scan of the project for committed keys');
+  allowed(call('security', 'Grep', { pattern: 'age-secret-key-1', path: `${PROJECT}\\src` }), 'the same for age identities');
   allowed(bash('npm run build -- --config .aot.json', 'be-dev'), 'a name that only starts with .ao');
 });

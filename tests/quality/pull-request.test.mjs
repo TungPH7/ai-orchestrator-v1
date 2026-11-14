@@ -214,6 +214,10 @@ test('an acceptance needs a valid id, a real day no earlier than the day it must
   assert.equal(ACCEPT_MAX_DAYS, 90);
   assert.equal(one(`Accept risk: ${id} until 2027-02-12: why`).accepted.has(id), true, 'the 90th day still counts');
   assert.equal(one(`- Accept risk: ${id} until 2026-12-31: why`).accepted.has(id), true, 'as an item of a list too');
+  // Review round 4 of shop PR #13: Markdown around the line or the id does not make it silently do nothing.
+  for (const line of [`**Accept risk:** ${id} until 2026-12-31: why`, `> Accept risk: ${id} until 2026-12-31: why`, `Accept risk: \`${id}\` until 2026-12-31: why`, `_Accept risk_: ${id} until 2026-12-31: why`]) {
+    assert.equal(one(line).accepted.has(id), true, line);
+  }
   assert.equal(one(`I will not accept risk here.`).problems.length, 0, 'a sentence that only mentions it is no acceptance');
   assert.equal(one(`Accept risk: ${id} until 2026-12-31: why`, '2026-12-31').accepted.has(id), true, 'the last day still holds');
   assert.equal(one(`Accept risk: ${id} until 2026-12-31: why`, '2027-01-01').accepted.size, 0, 'the day after, it no longer does');

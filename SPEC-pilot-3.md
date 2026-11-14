@@ -211,6 +211,20 @@ Sau vòng sửa này: chép lại kit vào PR #13 (kèm `.github/CODEOWNERS`), �
 
 Sau vòng sửa này: chép lại kit vào PR #13, chạy `/ao-review 13` vòng 4 (khoảng 6–9 USD). Nếu chỉ còn High đã chấp nhận, phiên chính approve kèm dòng chấp nhận bằng login của bạn, merge, chạy QA; rồi làm bản `v0.1.1`.
 
+**6. Vòng 4 của review** (head `3ef07c6`; `reviewer` 3,08 USD, `security` review đầy đủ): `reviewer` Approve, không Critical, không High; `security` còn đúng High đã chấp nhận (mã `72ec4e38`), hai Medium, không Low. Phiên chính approve kèm dòng `Accept risk:` và merge PR #13 (`fdc2ee0`). Các finding còn lại sửa trong kit, và vào `shop` với bản chép kit sau:
+- **`reviewer`, hai Medium:** mã của finding chỉ có trên báo cáo đầu tiên của vòng (phiên chính tính lại bằng `findingId` trên báo cáo cuối, và kiểm bằng mã kit mà VPS chạy trước khi approve); mô tả `SHOP-6` và câu `Kit review:` của PR (đã sửa, không đổi commit).
+- **`reviewer`, Low:**
+  - dòng `Accept risk` viết trong trích dẫn, chữ đậm hay có dấu `` ` `` không còn bị bỏ qua; một dòng nêu mã của một Critical thì nói lý do; `/ao-review` chỉ in mã của các High;
+  - `gh-guard` chỉ chặn việc tìm dấu hiệu khóa khi lệnh nhắm vào thư mục cá nhân, viết cách nào cũng vậy; `security` được quét khóa bị commit trong dự án; `Glob` không đi ra ngoài bằng `..`;
+  - đọc lại PR sau khi merge mà lỗi thì vẫn gắn tag và mở merge ngược, rồi báo đỏ;
+  - `audit` và `merge-gate` dùng chung một điều kiện cho danh sách file bị cắt;
+  - comment của `decideShip`.
+- **`jira-sync` gắn lại cờ giới hạn rework ở mọi sự kiện** khi số lần đã chạm 3, dù bạn đã gỡ cờ của đúng số đó: giờ chỉ gắn lại khi có một lần quay lại mới. Lỗi này làm `/ao-review` vòng 4 dừng giữa `reviewer` và `security`.
+- **`security`, Medium:**
+  - `CODEOWNERS` chưa có trên `develop`, `main`, `release/v0.1.0`: `develop` có từ khi PR #13 merge, `main` có với bản `v0.1.1`, `release/v0.1.0` là nhánh cũ đã nằm trong `main`;
+  - khóa `age` đi qua clipboard và script của kit khi khôi phục trên máy agent chạy dưới tài khoản của bạn: `vps-setup.md` mục 16 nay bảo khôi phục trên máy chưa từng chạy agent, hay sau khi có `ao-agent`, và sinh cặp khóa mới khi có `ao-agent`.
+- **`security`, ghi nhận ngoài PR:** `JIRA_CI_TOKEN` là secret của cả repo, nên workflow mà một agent thêm vào PR của nó đọc được. Việc này đi cùng `ao-agent`.
+
 ## 3. Chi phí ước tính
 
 | Việc | USD [Ước tính] |

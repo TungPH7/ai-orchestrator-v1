@@ -618,3 +618,48 @@ test('a run audits the commits main brings back, with the function it is given, 
   const none = await runRelease({ ...backMerge, auditMain: null });
   assert.deepEqual(none.lines, ['Waiting #12: an audit of the commits main brings back']);
 });
+
+// Review round 4 of shop PR #13: an acceptance of a Critical says why it does nothing.
+test('an acceptance that names a Critical does nothing, and the wait says so', () => {
+  let id;
+  const critical = (f) => {
+    const report = reportOf(f, 'reviewer');
+    report.body = report.body.replace('| Low |', '| Critical |');
+    id = findingId(readReviewReport(report.body, ['reviewer', 'security']).blocking[0]);
+    approval(f).body = `Accept risk: ${id} until 2026-12-31: we will fix it later`;
+  };
+  assert.deepEqual(decideMerge({ ...facts(critical), today: '2026-11-14' }), {
+    action: 'wait',
+    missing: [`reviewer report on head a1b2c3d without Critical or High findings (1 open; Accept risk: ${id} names a Critical, which cannot be accepted)`],
+  });
+});
+
+test('a release PR is not held by a file list GitHub cut short: each of its changes passed its own PR', () => {
+  assert.equal(decide((f) => {
+    asRelease(f.pr);
+    f.pr.changed_files = 3001;
+  }).action, 'merge');
+});
+
+// Review round 4 of shop PR #13: the read after the merge must not cost a release its tag and its merge back.
+test('when the read after merging a release PR fails, the run still tags it and opens the merge back, and fails loudly', async () => {
+  let reads = 0;
+  const lines = [];
+  const sent = [];
+  const copy = structuredClone(answers);
+  copy['/pulls?direction=asc&sort=created&state=open'] = [asRelease(copy['/pulls/12'])];
+  copy['/pulls?base=develop&state=open'] = [];
+  const recorded = recordedClient(copy);
+  const github = {
+    ...recorded,
+    get: async (path, query) => {
+      if (path === '/pulls/12' && ++reads === 3) throw Object.assign(new Error('GitHub GET /pulls/12 returned 502: Bad Gateway'), { status: 502 });
+      return recorded.get(path, query);
+    },
+  };
+  const writer = async () => ({ request: async (method, path, query, body) => (sent.push(`${method} ${path}`), method === 'PUT' ? { merged: true, sha: 'f'.repeat(40) } : method === 'POST' && path === '/pulls' ? { number: 40 } : {}) });
+  const { failures } = await runMergeGate({ github, mergeClient: writer, gates, apps: { dev: 'tungph7-ao-dev', review: 'tungph7-ao-review', merge: 'tungph7-ao-merge' }, approvers: ['approver'], log: (line) => lines.push(line) });
+  assert.deepEqual(sent, ['PUT /pulls/12/merge', 'POST /git/refs', 'POST /pulls']);
+  assert.deepEqual(failures.map(({ number }) => number), [12]);
+  assert.match(lines.join('\n'), /Failed #12: could not read PR #12 again after the merge \(GitHub GET \/pulls\/12 returned 502: Bad Gateway\): check by hand that it went into main/);
+});

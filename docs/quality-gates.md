@@ -140,7 +140,7 @@ Dòng chấp nhận chỉ có tác dụng khi:
 - ngày hết hạn chưa qua: `merge-gate` và `/ao-review` tính theo hôm nay, `audit` tính theo ngày merge;
 - ngày hết hạn cách ngày approve không quá 90 ngày, và có lý do sau dấu hai chấm.
 
-Một dòng sai cách viết thì không chấp nhận gì, và lý do hiện ngay trong dòng `Waiting` của `merge-gate`. Finding đã chấp nhận vẫn được liệt kê cho lần review sau kiểm lại.
+Dòng viết trong trích dẫn, gạch đầu dòng, chữ đậm hay chữ nghiêng, và mã đặt trong dấu `` ` ``, vẫn được đọc. Một dòng sai cách viết, hay một dòng nêu mã của một Critical, thì không chấp nhận gì, và lý do hiện ngay trong dòng `Waiting` của `merge-gate`. `/ao-review` chỉ in mã của các High. Finding đã chấp nhận vẫn được liệt kê cho lần review sau kiểm lại.
 
 ## `merge-gate`
 
@@ -304,7 +304,7 @@ Job của `merge-gate` khai `environment: { name: merge-gate, deployment: false 
 - từ `dev-workflow`: tự mở agent hay tự lấy token, tức chạy `ao-step.mjs`, `ao-agent.mjs`, `ao-git-credential.mjs`; đặt credential helper cho git (`git -c credential.*`, `git config credential.*`); sửa file trong `.git/`;
 - từ A1 sau Pilot 2: đưa mật khẩu basic auth của Development và Staging (`$E2E_HTTP_PASSWORD`, `$AO_ENV_AUTH`) vào tham số của một lệnh, như `curl -u`, vì process nào trên máy cũng đọc được dòng lệnh. Chỉ `printf`, lệnh có sẵn của shell, được nhắc tới biến này. `qa` đưa mật khẩu cho `curl` qua stdin: `printf 'user = "%s:%s"\n' "$E2E_HTTP_USER" "$E2E_HTTP_PASSWORD" | curl -K - <url>`;
 - từ Pilot 3 (review của `shop` PR #13): đọc hay nhắc tới bản sao backup và khóa mở chúng, tức file `.agekey`, file `.dump.age`, thư mục `ao-backups`, thư mục `.ao` và script `ao-backup-pull.mjs`. Lớp giữ thật là khóa `age` không nằm trên máy ([vps-setup.md](vps-setup.md), mục 16);
-- từ review vòng 2 và 3 của `shop` PR #13: `Grep` và `Glob` theo luật của `Read`, và chỉ đọc trong dự án và thư mục temp, như `Edit` và `Write`; tìm dấu hiệu của khóa bí mật (`PRIVATE KEY`, `AGE-SECRET-KEY`) bằng `Grep` hay bằng lệnh.
+- từ review vòng 2 đến 4 của `shop` PR #13: `Grep` và `Glob` theo luật của `Read`, và chỉ đọc trong dự án và thư mục temp, như `Edit` và `Write`, kể cả `pattern` của `Glob` đi ra ngoài bằng `..`; một lệnh tìm dấu hiệu của khóa bí mật (`PRIVATE KEY`, `AGE-SECRET-KEY`, viết cách nào cũng vậy) mà nhắm vào thư mục cá nhân của bạn (`~`, `$HOME`, `%USERPROFILE%`, `C:\Users`). Trong dự án thì được: đó là cách `security` tìm khóa bị commit.
 
 Khi bị chặn, agent nhận lý do bắt đầu bằng `gh-guard:`, kèm cách làm đúng, ví dụ dùng `ao-pr.mjs`.
 
