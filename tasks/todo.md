@@ -51,7 +51,7 @@
 
 ## Chặng 2: ba môi trường và `v0.1.0`, nhánh `task/pilot3-2`
 
-- [ ] **T6: bản sao kéo về máy bạn, phần kit** (spec 2.4; plan, quyết định 3).
+- [x] **T6: bản sao kéo về máy bạn, phần kit** (spec 2.4; plan, quyết định 3).
   - **Đạt khi:**
     - `ao-backup run` có khóa công khai `age` thì ghi thêm `<tên>.dump.age` vào `/var/backups/ao-offsite/<dự án>/<môi trường>/`, nhóm `aobackup` đọc được; bản mã hóa giữ theo cùng `backupsToKeep`;
     - không có khóa thì `ao-backup` chạy như cũ;

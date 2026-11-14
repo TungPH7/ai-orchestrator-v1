@@ -29,3 +29,13 @@ test('the timer starts a tick one minute after the previous one ended, so ticks 
   assert.equal(timer.OnCalendar, undefined, 'a calendar timer would start a tick while one still runs');
   assert.deepEqual(timer.WantedBy, ['timers.target']);
 });
+
+test('aobackup: SFTP read only, inside the copies folder, with a key, nothing forwarded; the Match block is closed (Pilot 3, spec 2.4)', () => {
+  const lines = readFileSync(join(ROOT, 'vps', 'sshd-aobackup.conf'), 'utf8').split('\n').map((line) => line.trim()).filter((line) => line && !line.startsWith('#'));
+  assert.equal(lines[0], 'Match User aobackup');
+  assert.equal(lines.at(-1), 'Match all');
+  for (const wanted of ['ChrootDirectory /var/backups/ao-offsite', 'ForceCommand internal-sftp -R', 'AuthenticationMethods publickey', 'PasswordAuthentication no', 'AllowTcpForwarding no', 'AllowAgentForwarding no', 'AllowStreamLocalForwarding no', 'PermitTunnel no', 'X11Forwarding no', 'PermitTTY no']) {
+    assert.ok(lines.includes(wanted), wanted);
+  }
+  assert.equal(lines.filter((line) => line.startsWith('Match')).length, 2);
+});

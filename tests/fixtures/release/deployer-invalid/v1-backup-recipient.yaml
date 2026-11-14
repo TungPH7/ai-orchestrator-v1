@@ -1,0 +1,9 @@
+description: the age recipient of the backup copies is an X25519 one, age1 and 58 letters
+rule: V1
+expect:
+  - "backup.age_recipient"
+patch:
+  - op: set
+    path: "backup"
+    value:
+      age_recipient: "age1pq1notforubuntu"

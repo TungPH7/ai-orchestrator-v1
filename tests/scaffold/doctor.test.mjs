@@ -144,3 +144,19 @@ test('doctor asks whether ao-deploy is on the repo, since GitHub does not let it
   assert.equal(row.ok, null);
   assert.match(row.fix, /Installed GitHub Apps → Configure next to the App ao-deploy/);
 });
+
+test('a machine that pulls the backup copies: a row for the copies of this project, which fails past 36 hours (Pilot 3, spec 2.4)', () => {
+  const name = facts().config.name;
+  const none = doctor(facts());
+  assert.equal(none.some(({ name: row }) => row.includes('backup copies')), false, 'no row on a machine that does not pull them');
+  const fresh = doctor(facts({ backupCopies: [{ project: name, env: 'production', name: 'x', hours: 20 }, { project: 'other', env: 'production', name: 'y', hours: 90 }] }));
+  const row = fresh.find(({ name: text }) => text.includes('backup copies'));
+  assert.equal(row.ok, true, 'another project does not count');
+  const old = doctor(facts({ backupCopies: [{ project: name, env: 'production', name: 'x', hours: 40 }] })).find(({ name: text }) => text.includes('backup copies'));
+  assert.equal(old.ok, false);
+  assert.match(old.fix, /production: 40 h/);
+  assert.match(old.fix, /ao-backup-pull\.mjs pull/);
+  const empty = doctor(facts({ backupCopies: [] })).find(({ name: text }) => text.includes('backup copies'));
+  assert.equal(empty.ok, false);
+  assert.match(empty.fix, /no copy/i);
+});
