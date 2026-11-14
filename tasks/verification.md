@@ -41,6 +41,7 @@ Sửa plan và todo: T4 thêm `playwright.config.ts` của profile; T5 đưa b�
   - Phiên chính kiểm trên VPS lúc 07:31 UTC: `healthy`, FailingStreak 0. Comment bằng chứng, gỡ cờ và nhãn bằng token admin. `SHOP-5` ở In QA, chờ bạn `Accept`.
   - **Bài học cho kit:** Verification của một Task cho `qa` không được có bước chỉ vào được VPS. Cách sửa để sau: deployer chờ HEALTHCHECK của Docker báo `healthy` (khi image có HEALTHCHECK) và ghi vào status của deployment, để `qa` đọc được từ GitHub.
   - Chi phí agent của `SHOP-5`: 4,44 USD.
+  - Lượt 6: bạn bảo bấm `Accept`; token admin chuyển `SHOP-5` sang Done (resolution Done), kèm comment nguồn. **T5 xong.**
 
 ## Chặng 2: ba môi trường và `v0.1.0`
 
@@ -60,3 +61,5 @@ Sửa plan và todo: T4 thêm `playwright.config.ts` của profile; T5 đưa b�
   - `aobackup` thử `put`, `rm`, `mkdir`: đều `Permission denied`; `ssh` vào: "This service allows sftp connections only.";
   - khôi phục thật: giải mã `shop-development-20261114T071020Z.dump.age`; SHA-256 trùng bản trên VPS (`2d88c1dd…`); Postgres tạm trên Docker của máy bạn (không mạng, đúng digest của `deploy.yaml`) khôi phục trong 674 ms: 3 bảng, 6 dòng, Flyway 1–3; `restore-check` trên VPS cũng 3 bảng, 6 dòng. Container tạm và bản giải mã đã xóa; Docker Desktop đã tắt;
   - task `ao-backup-pull` của Windows: hằng ngày 09:00 và lúc đăng nhập, `StartWhenAvailable`; chạy thử trả 0.
+- **Fix Version** `v0.1.0` (id 10006) và `v0.2.0` (id 10007) tạo qua REST bằng token admin (`scratchpad/shop-versions.mjs`).
+- **Bước kiểm của `/ao-release`** (Lượt 6): điểm cắt `28394b8`; `v0.1.0` gồm `SHOP-5` (Done); code của `SHOP-1`–`SHOP-4` (Cancelled, không Fix Version) đi cùng, vì đó là phần scaffold; hai Fix Version chưa Release. Chờ gate ④ của bạn.

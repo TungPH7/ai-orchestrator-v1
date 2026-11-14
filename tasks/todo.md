@@ -38,7 +38,7 @@
   - `playwright.config.ts` của `profiles/base-pnpm` và `profiles/next-nest`: khi test chạy trên một môi trường, chỉ dựng app tại chỗ nếu có test `@local`.
   - PR của chặng 1.
   - **Kiểm:** test của `ao-step` hoặc `runner.mjs` cho hai trường hợp; `profiles:check`.
-- [ ] **T5: [bạn] `SHOP-5`** (spec 2.1; plan, quyết định 4).
+- [x] **T5: [bạn] `SHOP-5`** (spec 2.1; plan, quyết định 4).
   - Task tạo bằng token CI, nhãn `ao-devops`; bạn bấm Refine nếu contract đòi.
   - Phiên chính viết code trên `feature/SHOP-5-…`: `HEALTHCHECK` của `api`; `playwright.config.ts` theo bản sửa của T4; 8 E2E đỏ ở T2 chờ bằng `test.skip(` kèm `reason:` (4 test đăng nhập chờ Epic đăng nhập, 4 test sản phẩm chờ Epic "Danh mục sản phẩm").
   - PR do bot `ao-dev` mở; CI xanh; `/ao-review SHOP-5`; mình merge khi CI xanh (câu 5).
@@ -90,6 +90,8 @@
   - Chụp các màn hình vào `.ai/design-inbox/<EPIC>/` (mỗi ảnh tối đa 1 MB, cạnh dài tối đa 2.000 px), kèm file ghi token đo được và nguồn.
   - Chỉ lấy style. Không chép code, logo, ảnh hay font có giấy phép riêng của trang mẫu; font kiểm giấy phép trước khi dùng.
   - Theo roster, chỉ `fe-dev` có chrome-devtools MCP (`get_css_styles`, `take_screenshot`, `evaluate_script`); `ux` thì không. Vì vậy URL của trang mẫu đi vào `design.md` và vào Task design system, để `fe-dev` đối chiếu từng style bằng MCP lúc làm.
+  - **Đã chuẩn bị ở Lượt 6:** 5 ảnh (Growth, hộp thoại "New experiment", Apps, Overview, `#/apps/tally`; PNG, dưới 1 MB, cạnh dài tối đa 1.903 px) và 94 token của giao diện tối trong `shop/.ai/design-inbox/_reference/` (`tokens.md`, `reference.json`; `scratchpad/ref-capture.mjs`). Font Urbanist (Google Fonts, OFL). Trang có nút "BUY THIS TEMPLATE": template bán thương mại, chỉ lấy style.
+  - Ở T11: chép 5 ảnh vào `.ai/design-inbox/<EPIC>/`. `tokens.md` không vào đó, vì `ux` trả lại mọi file không phải PNG/JPG; token đi vào mô tả Epic, phần `ux` đọc về ảnh.
   - `/ao-intake` (mình phỏng vấn bạn, tạo Epic); **bạn** bấm `Start spec`.
 - [ ] **T12: [bạn] `/ao-spec <EPIC>`** tới **gate ①**.
 - [ ] **T13: [bạn] `/ao-plan <EPIC>`** tới **gate ②**. Sửa chặng 4 của todo theo plan của `sa`.
@@ -113,7 +115,7 @@ Mỗi item: `/ao-build`, `/ao-preview` (bạn xem), `/ao-review`, **gate ③**, 
 
 - [ ] **T17: [bạn] `v0.2.0`** (spec 2.7): vài sản phẩm thử trên Production qua `admin`; **gate ④**; `/ao-ship v0.2.0`; **gate ⑤**; Production, Flyway trên database có dữ liệu; **bạn** Release `v0.2.0` và Complete Epic.
 - [ ] **T18: hướng dẫn.** Phần mới của `docs/getting-started.md` với đầu ra thật của Epic; `production_auth` và bản sao trong `docs/vps-setup.md`; PR.
-- [ ] **T19: đóng pilot.** Bảng tám tiêu chí và chi phí trong `verification.md`; plan, todo, verification vào `tasks/archive/pilot-3/`; `SPEC.md`, `concerns.md`; PR tài liệu.
+- [ ] **T19: đóng pilot.** Nhắc bạn cất bản thứ hai của khóa `age` (`%USERPROFILE%\.ao\ao-backup.agekey`) nếu chưa làm (Lượt 6: bạn làm sau). Bảng tám tiêu chí và chi phí trong `verification.md`; plan, todo, verification vào `tasks/archive/pilot-3/`; `SPEC.md`, `concerns.md`; PR tài liệu.
 
 ### Checkpoint 6: sau T19
 - [ ] Đủ tám tiêu chí của spec.
