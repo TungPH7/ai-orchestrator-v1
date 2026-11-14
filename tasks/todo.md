@@ -135,12 +135,12 @@
   3. chạy `tick --dry-run`: Caddyfile không đổi;
   4. bật lại deployer. VPS để mở cho tới khi bạn bảo đóng (Phiên 29 · Lượt 1).
   - **Kiểm:** ghi vào `verification.md`, không ghi nội dung file có thông tin đăng nhập.
-- [ ] **T20 [bạn]: `shop` có `api`** (tiêu chí 2). Theo bản nháp:
+- [x] **T20 [bạn]: `shop` có `api`** (tiêu chí 2). Theo bản nháp:
   1. Task chép kit B3, `ao-kit sync`, PR; bạn merge;
   2. Task thêm `api`: `add api --stack spring-boot --from <template Java> --ref codebase --exclude study-guide-impl/ --exclude prompt.md`, PR; bạn merge;
   3. CI xanh trên `develop`; `doctor` đạt mọi dòng.
   - **Kiểm:** chỗ hướng dẫn sai hay thiếu thì sửa hướng dẫn trước khi đi tiếp.
-- [ ] **T21 [bạn]: sửa code `api`** (tiêu chí 3). Task cho các chỗ `add` báo; phiên chính sửa trên nhánh của Task, mở PR không đụng `.ai-orchestrator/`; `/ao-preview` chạy `user`, `admin`, `api` và Postgres; bạn xem rồi merge; Task được Cancel, kèm comment trỏ tới PR.
+- [x] **T21 [bạn]: sửa code `api`** (tiêu chí 3). Task cho các chỗ `add` báo; phiên chính sửa trên nhánh của Task, mở PR không đụng `.ai-orchestrator/`; `/ao-preview` chạy `user`, `admin`, `api` và Postgres; bạn xem rồi merge; Task được Cancel, kèm comment trỏ tới PR.
 - [ ] **T22 [bạn]: Development có `api` và Postgres** (tiêu chí 4, 5, 6). Bạn mở VPS; mình:
   1. sinh mật khẩu database và ghi `development.env`, `development.db.env`;
   2. gỡ chặn của `audit` bằng `/ao-rollback development <sha>` nếu cần;

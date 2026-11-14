@@ -181,3 +181,18 @@ Hai PR #272 và #273 merge, CI xanh. Bản kit mới trên VPS (T19) chạy `tic
 - mỗi mật khẩu dài 64 ký tự hex. Mật khẩu của app giống nhau ở hai file, mật khẩu superuser thì khác; mình kiểm bằng mã băm, không in giá trị.
 
 Profile của Development là `staging`: `dev` của template dành cho máy cá nhân (ghi tham số SQL ở mức TRACE, Flyway `out-of-order`), còn `prod` để dành cho Production.
+
+**T21 xong (Lượt 5–6).**
+- `/ao-preview SHOP-4` chạy thật lần đầu với pnpm và một app Java (tiêu chí 3).
+  - Bước kiểm báo GO cho ba app, với URL lấy từ `project.yaml`. Lệnh `--go` chạy `pnpm install` vì lockfile đổi, rồi bật ba app trong 2 phút 39 giây.
+  - Kết quả: `user` `/en` 200, `admin` `/` 200, `api` `/actuator/health` và `/api/v1/health` 200, `/api/products` trả `[]` (Flyway đã tạo bảng).
+  - `/api/v1/health` gọi qua `admin` (proxy `/api`) trả 200.
+  - Docker chỉ chạy `learn-postgres`, không dựng service `app` của template, tức bản sửa của kit PR #275 chạy đúng.
+  - `apps/api/.env` tạo từ `.env.example`, với hai mật khẩu Postgres sinh ngẫu nhiên trên máy; git bỏ qua file này.
+- `user` gọi `/api/products/count` thì 500. `apps/user/.env.development` trên máy trỏ `API_URL` tới API NestJS cũ (`ecom-nest.t2g.io.vn`), và `user` được viết theo endpoint của API NestJS. Ghép `user` với API Java là việc của B4.
+- **Lần đỏ ở CI:** commit đầu của PR #9 thêm một comment vào `application.yml`, và Spotless (`lint`) xóa nó. Lẽ ra phải chạy `lint` trên máy trước khi push; bước này không cần Docker. Commit sau bỏ comment, CI xanh.
+- Khi chạy, cả `--go` lẫn `--stop` đều kết thúc bằng một dòng `STOP:` mô tả trạng thái mới ("the preview of SHOP-4 runs already", "no preview runs"). Nghe như báo lỗi, dù việc đã xong. Đây là điểm nhỏ về cách hiển thị của `ao-step`, để sửa sau.
+- `--stop` tắt ba app, đưa thư mục về `develop`, và không nêu file mới nào. Container `learn-postgres` vẫn chạy cho tới khi Docker Desktop tắt.
+- Bạn trả lời "merge". PR #9 được Ready, Approve, Squash merge: `05b1a63`. Docker Desktop đã tắt, không xóa gì.
+
+**T22, bước 2 (Lượt 6).** `c405b19`, `866dc15`, `05b1a63` không qua `audit`; bạn đã duyệt cả ba PR. Bước kiểm của `/ao-rollback development 05b1a63` báo GO, và yêu cầu deploy `#7782564110` được gửi bằng login `gh` của bạn.
