@@ -26,14 +26,14 @@
 
 ## Chặng 1: kit và `SHOP-5`, nhánh `task/pilot3-1`
 
-- [ ] **T3: `production_auth`** (spec 2.2; plan, quyết định 2).
+- [x] **T3: `production_auth`** (spec 2.2; plan, quyết định 2).
   - **Đạt khi:**
     - schema của `deployer.yaml` nhận `production_auth` (boolean) cho từng dự án, mặc định `false`;
     - `caddySites` đặt basic auth cho host Production của dự án có khóa này; dự án khác không đổi;
     - các chỗ T2 mục 1 tìm ra được sửa cùng;
     - `vps/deployer.example.yaml` có khóa này, kèm chú thích.
   - **Kiểm:** test của `caddy.mjs` và của schema; Caddyfile của một cấu hình có `ao-sample`, `ao-pilot` giống hệt bản trước.
-- [ ] **T4: dòng `STOP:` của `/ao-preview --go` và `--stop`, và `playwright.config.ts` của profile** (việc B3 để lại; T2 mục 3).
+- [x] **T4: dòng `STOP:` của `/ao-preview --go` và `--stop`, và `playwright.config.ts` của profile** (việc B3 để lại; T2 mục 3).
   - Khi lệnh làm xong việc, dòng cuối mô tả trạng thái mới mà không mở đầu bằng `STOP:`; `STOP:` chỉ còn cho lúc lệnh không làm được.
   - `playwright.config.ts` của `profiles/base-pnpm` và `profiles/next-nest`: khi test chạy trên một môi trường, chỉ dựng app tại chỗ nếu có test `@local`.
   - PR của chặng 1.
@@ -84,7 +84,12 @@
 ## Chặng 3: Epic tới gate ②
 
 - [ ] **T10: chép kit vào `shop`** trong PR riêng, nếu kit đã đổi những file được chép từ lần `SHOP-2`.
-- [ ] **T11: [bạn] ảnh và intake.** Bạn gửi 2–4 ảnh; `/ao-intake` (mình phỏng vấn bạn, tạo Epic); mình chép ảnh vào `.ai/design-inbox/<EPIC>/`, thu nhỏ nếu cần; **bạn** bấm `Start spec`.
+- [ ] **T11: [bạn] ảnh và intake.**
+  - **Giao diện mẫu bạn chọn ở Lượt 5:** trang `https://demo.codeandchill.store/vitrea/#/growth` (hai ảnh dán trong chat: trang Growth Lab và hộp thoại "New experiment"). Trang danh sách, trang chi tiết của `user` và form của `admin` theo style, design token và cách bố trí của trang này.
+  - Ảnh dán trong chat không được lưu thành file, nên mình đọc trang bằng trình duyệt headless (Playwright với Chromium; phiên này chưa có chrome-devtools MCP, cả hai cùng điều khiển Chromium qua CDP): lấy biến CSS, font, màu, bo góc, đổ bóng, hiệu ứng kính và khoảng cách của từng thành phần (thanh điều hướng, thẻ, bảng, nút, nhãn trạng thái, ô nhập, hộp thoại).
+  - Chụp các màn hình vào `.ai/design-inbox/<EPIC>/` (mỗi ảnh tối đa 1 MB, cạnh dài tối đa 2.000 px), kèm file ghi token đo được và nguồn.
+  - Chỉ lấy style. Không chép code, logo, ảnh hay font có giấy phép riêng của trang mẫu; font kiểm giấy phép trước khi dùng.
+  - `/ao-intake` (mình phỏng vấn bạn, tạo Epic); **bạn** bấm `Start spec`.
 - [ ] **T12: [bạn] `/ao-spec <EPIC>`** tới **gate ①**.
 - [ ] **T13: [bạn] `/ao-plan <EPIC>`** tới **gate ②**. Sửa chặng 4 của todo theo plan của `sa`.
 
