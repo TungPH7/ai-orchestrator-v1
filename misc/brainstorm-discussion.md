@@ -36,7 +36,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 28 | `0ac542d7-954f-44a8-bd4c-868cd5f9cdc3` | 2026-11-13 khoảng 23:35 → | Bạn dán đoạn cuối của Phiên 27 để làm tiếp; T25: phần 5 của hướng dẫn theo đầu ra thật của `shop`, bước cài App `ao-deploy` và deploy lần đầu bằng `/ao-rollback`, mục 13 của `vps-setup.md`; kit PR #267 merge; tiêu chí 3 mới đạt một phần; bạn "Ok", T26 đóng B2 (kit PR #268); template Java của B3 (Maven, nhánh `codebase`); bạn cho bắt đầu B3, quyền tự làm áp dụng tiếp; spec B3 duyệt (Lượt 7), kit PR #269–#271, chặng 3 tới T15 |
 | 29 | `3f959e28-f038-49ee-ae3f-592c7a55eecb` | 2026-11-14 khoảng 09:35 → | Bạn dán đoạn cuối của Phiên 28, bảo làm T16 và mở VPS cho chặng 5, để mở tới khi bạn bảo đóng; T16 (tài liệu chặng 3, kit PR #272) và T17 (ba việc B2 để lại, kit PR #273) xong; Claude đưa hai lệnh mở VPS trong dòng báo giữa chừng nên bạn không thấy, bạn nhắc hai lần, Claude đưa lại ở câu trả lời cuối; lượt 2: lệnh mở đăng nhập root chưa có tác dụng, bạn chạy lại; lượt 3: T18 bản nháp bước 9, T19 kit `3a1c729` lên VPS, T20: `SHOP-2` và `shop` PR #7, `SHOP-3` với `add api` và Spring Boot 4.0.9, kit PR #274 (coverage của interface Java); Claude xóa nhầm toàn bộ container, image và volume Docker Desktop của bạn khi dọn sau test; lượt 4: không có Previous Versions, bạn dặn hỏi trước mọi việc xóa không hoàn tác được, và cho Claude merge PR `shop` khi CI xanh; PR #7, #8 merge (T20 xong), kit PR #275, #276, `SHOP-4` và PR #9 xanh, biến database của Development trên VPS; chờ bạn quyết bật Docker Desktop cho `/ao-preview`; lượt 5: bạn chọn bật Docker; `/ao-preview SHOP-4` chạy `user`, `admin`, `api` và Postgres, ba app trả 200, `/api` qua `admin` tới `api`; `user` còn trỏ API NestJS cũ, việc của B4; chờ bạn xem rồi trả lời merge; lượt 6: PR #9 merge (T21 xong), `/ao-rollback development 05b1a63` gỡ chặn, deploy 18,5 phút, database, Flyway, `/api/v1/health` qua `admin` 200, RAM còn trống 2.508 MB, backup và `restore-check` đạt; chờ bạn đồng ý thử khôi phục vào database đang chạy và đóng `SHOP-2`–`SHOP-4`; lượt 7: khôi phục vào database đang chạy đạt sau khi lộ lỗi luật giữ bản (sửa: giữ 48 giờ, kit PR #277), `SHOP-2`–`SHOP-4` Cancelled, kit trên VPS `97db806`, B3 đóng; chờ bạn chọn module kế tiếp |
 | 30 | `07e0a424-ef4e-437a-b766-0ca9955be037` | 2026-11-14 khoảng 12:15 → | Bạn dán đoạn cuối của Phiên 29 và chọn B4 (Pilot 3); Claude viết bản nháp `SPEC-pilot-3.md`: `v0.1.0` của scaffold lên ba môi trường trước, rồi Epic đầu "Danh mục sản phẩm" lên `v0.2.0`; tìm ra Production đang luôn mở trong khi `/api/**` để `permitAll` (đề xuất `production_auth`), `/ao-release` cần một item Done (`SHOP-5`), ba app lệch hợp đồng API sản phẩm; chờ bạn trả lời 5 câu: Epic, scaffold trước, chỗ để bản sao backup (đề xuất Backblaze B2), basic auth cho Production, quyền tự làm cho B4; lượt 2: bạn duyệt câu 1, 2, 4, 5, hỏi câu 3 có cần chọn trước không và sẽ gửi ảnh; Claude hiểu sai "chưa làm" và bắt đầu viết plan, bạn nhắc, Claude dừng (spec và `tasks/plan.md` chưa commit); bạn hỏi Google Drive cho bản sao: được, với OAuth client riêng đã Publish, nhưng token trên VPS xóa hẳn được bản sao; lượt 3: bạn hỏi bản sao backup là gì và vì sao cần mới đạt; Claude giải thích: backup đang nằm chung máy với database, tiêu chí 2 do spec đặt chứ không phải giới hạn kỹ thuật, chỉ bắt buộc trước khi mở bán; lượt 4: bạn hỏi backup về máy bạn có đạt không, và cơ chế có giống B2 để sau này chuyển: đạt (máy bạn kéo về bằng tài khoản chỉ đọc trên VPS), khác hướng chép (kéo về và VPS đẩy lên), đề xuất mã hóa `age` từ đầu và khối cấu hình B2 tắt sẵn để chuyển dễ; lượt 5: bạn chọn backup về máy bạn và hỏi làm gì tiếp, rồi gửi giao diện mẫu cho Epic (trang vitrea, hai ảnh); Claude bắt đầu B4: kit PR #279–#283 (`production_auth`, dòng trạng thái của `/ao-preview`, Playwright chỉ dựng app tại chỗ cho test `@local`, bản sao backup kéo về máy bạn, đọc mật khẩu từ biến của Windows trước), `SHOP-5` PR #10 merge, review 3,52 USD và QA 0,92 USD (NOT TESTED vì một bước chỉ VPS kiểm được, đã trả lời), VPS kit `dbbf318` với bí mật Staging và Production, Production của `shop` hỏi basic auth, bản sao về `D:\ao-backups` khôi phục khớp; chờ bạn Accept `SHOP-5`, cất bản thứ hai của khóa `age`, và gate ④ của `v0.1.0`; lượt 6: bạn nhờ bấm Accept (`SHOP-5` Done), hỏi cất khóa sau được không (được, nên trước khi mở bán), bảo làm như đề xuất; Claude gửi danh sách gate ④ (`28394b8`, `SHOP-5`, scaffold của `SHOP-1`–`SHOP-4`), tạo Fix Version, chụp 5 màn hình và đo 94 token của trang mẫu; lượt 7: bạn duyệt gate ④; `release/v0.1.0` lên Staging (dùng lại image, Flyway 3 migration, RAM còn 2.290 MB), regression PASS, `/ao-ship` dừng vì ruleset `ao-protected` của repo public chặn bot `ao-dev` commit lên nhánh release (cũng sẽ chặn merge PR tài liệu của Epic và merge ngược); chờ bạn chọn cách sửa ruleset; lượt 8: bạn hỏi sao commit thẳng lên nhánh được, nhất là nhánh release (chưa làm gì); Claude giải thích PR là luật GitHub chỉ có khi bật, cách kit bù ở repo không ruleset, vì sao `/ao-ship` commit hai file tài liệu lên nhánh release, và một cách giữa: PR nhỏ do `merge-gate` tự merge; lượt 9: bạn chọn tách ruleset thành ba; kit PR #284, ba ruleset áp lên `shop`, `/ao-ship` chạy lại mở PR release #11 (CI xanh, Staging deploy lại); chờ bạn approve PR #11 ở gate ⑤; lượt 10: bạn approve; `merge-gate` merge, tag `v0.1.0`, tự merge ngược PR #12; Production lên, hỏi basic auth; RAM còn 1.867 MB khi đủ ba môi trường; backup và bản sao cả ba database; chờ bạn chọn ai bấm Release `v0.1.0` và cách chép kit ở T10 |
-| 31 | `d80cd357-3fde-4be6-a978-12fadc7d8553` | 2026-11-14 khoảng 15:58 → | Bạn dán đoạn cuối của Phiên 30, nhờ mình bấm Release `v0.1.0` và chọn review đầy đủ cho T10; Release qua REST bằng token admin; `SHOP-6` và PR #13 chép kit `ceee70c` vào `shop`, CI xanh, `/ao-review 13` chạy (`reviewer` `xhigh`, `security` `max`); T11 bắt đầu song song: câu hỏi PO đầu tiên về đơn vị giá; review xong (8,13 USD): `security` thấy 2 High do lỗi của Claude (ruleset cho App `ao-dev` của agent đi tắt, khóa `age` nằm trên laptop); Claude đề xuất gỡ bypass ngay, bạn cất khóa rồi xóa file, App `ao-merge` riêng cho merge, review vòng 2; chờ bạn quyết |
+| 31 | `d80cd357-3fde-4be6-a978-12fadc7d8553` | 2026-11-14 khoảng 15:58 → | Bạn dán đoạn cuối của Phiên 30, nhờ mình bấm Release `v0.1.0` và chọn review đầy đủ cho T10; Release qua REST bằng token admin; `SHOP-6` và PR #13 chép kit `ceee70c` vào `shop`, CI xanh, `/ao-review 13` chạy (`reviewer` `xhigh`, `security` `max`); T11 bắt đầu song song: câu hỏi PO đầu tiên về đơn vị giá; review xong (8,13 USD): `security` thấy 2 High do lỗi của Claude (ruleset cho App `ao-dev` của agent đi tắt, khóa `age` nằm trên laptop); Claude đề xuất gỡ bypass ngay, bạn cất khóa rồi xóa file, App `ao-merge` riêng cho merge, review vòng 2; chờ bạn quyết; lượt 2: bạn đồng ý cả năm việc, đã cất khóa, chốt giá VND và giao Claude chọn các trường, cách tìm, sắp xếp theo chuẩn ngành; Claude gỡ bypass trên `shop`, xóa file khóa, thêm loại App `ao-merge` vào kit và mở trang tạo App; chốt các trường và cách tìm theo Shopify, Google Merchant Center, Baymard; hỏi câu 2 về ảnh sản phẩm |
 
 ---
 
@@ -23463,3 +23463,58 @@ Phần d và e chỉ là code kit, không tốn tiền agent, nên mình bắt �
 3. Đồng ý thêm khoảng 4–8 USD cho review vòng 2? Mình đề xuất: có.
 
 Câu 1 của T11 (giá tính bằng tiền gì) vẫn chờ bạn. Bạn trả lời chung một lần cũng được.
+
+# Phiên 31 · Lượt 2 — 2026-11-14 khoảng 17:00 → 17:15
+
+**Bạn:**
+
+```markdown
+Làm như đề xuất.
+
+b. đã cất khóa
+
+Câu 1:
+
+- đồng Việt Nam, số nguyên, không có số lẻ, hiển thị kiểu 1.250.000 ₫ ở cả trang tiếng Việt lẫn tiếng Anh.
+- các điểm còn thiếu 'các trường của sản phẩm, cách khách tìm và sắp xếp' bạn nghiên cứu và làm theo chuẩn nghành nhé. Cần gì cứ hỏi tôi trước
+```
+
+**Claude:**
+
+**a và b xong; c đang chờ bạn bấm hai nút; T11 còn một câu hỏi.**
+
+**a. Gỡ quyền đi tắt: xong.** Hai ruleset của `shop` không còn ai đi tắt; luật PR (1 approve, 4 check) và các nhánh giữ nguyên.
+
+**b. Khóa `age`: đã xóa khỏi laptop.** Trước khi xóa file `%USERPROFILE%\.ao\ao-backup.agekey`, mình kiểm trên máy không còn bản nào khác của khóa. Task kéo bản sao hằng ngày vẫn chạy, vì nó không dùng khóa. Khi xong phần d, mình nhờ bạn khôi phục thử một lần bằng khóa đã cất, để chắc bản bạn cất là đúng. Nếu sai thì mình đổi khóa mới; VPS vẫn giữ các bản dump chưa mã hóa, nên không mất gì.
+
+**c. Tạo App `ao-merge`: cần bạn bấm.** Mình đã mở trang `http://127.0.0.1:47100/` trong trình duyệt:
+1. bấm **Tạo App trên GitHub**;
+2. trên GitHub, bấm **Create GitHub App for TungPH7**. Nếu GitHub hỏi mật khẩu hay mã 2FA, bạn nhập như thường;
+3. GitHub chuyển sang trang cài App, đã chọn sẵn repo `shop`: bấm **Install**;
+4. trang quay về và báo xong.
+
+Bạn không cần nhắn lại. Mình tự đưa khóa của App vào environment `merge-gate` trên GitHub, rồi xóa file khóa trên máy. Sau đó mình làm tiếp phần còn lại của c, d, e trong kit.
+
+**T11: các trường và cách tìm, sắp xếp mình chốt theo chuẩn ngành** (Shopify, Google Merchant Center, nghiên cứu UX của Baymard). Chỗ nào bạn thấy không hợp thì nói; không thì mình giữ như dưới đây.
+- **Các trường của sản phẩm:**
+  - tên: bắt buộc, tối đa 150 ký tự (mức của Google Shopping);
+  - slug: tự sinh từ tên và bỏ dấu, ví dụ `ao-thun-co-tron`; không trùng; quản trị viên sửa được;
+  - mô tả: chữ thường có xuống dòng, tối đa 5.000 ký tự, không nhận HTML;
+  - giá bán: VND, số nguyên, lớn hơn 0;
+  - giá gốc: không bắt buộc, phải lớn hơn giá bán. Trang của khách gạch ngang giá gốc và hiện phần trăm giảm ("giá gạch");
+  - trạng thái: Đang bán hoặc Ẩn. Khách chỉ thấy sản phẩm Đang bán;
+  - tình trạng: Còn hàng hoặc Hết hàng. Chưa đếm số lượng tồn kho;
+  - xóa: xóa hẳn, có hộp thoại xác nhận. Muốn tạm ngừng bán thì chọn Ẩn.
+- **Khách tìm và sắp xếp:**
+  - tìm theo tên, không phân biệt chữ hoa, chữ thường hay có dấu: gõ "ao thun" vẫn ra "Áo thun";
+  - sắp xếp: Mới nhất (mặc định), Giá thấp đến cao, Giá cao đến thấp. Khi đang tìm thì mặc định là Liên quan nhất. Baymard coi giá, mới nhất, bán chạy và đánh giá là bốn kiểu sắp xếp cần có; hai kiểu sau cần có đơn hàng và đánh giá, nên để tới Epic sau;
+  - danh sách hiện 24 sản phẩm mỗi lần, có nút "Xem thêm" thay cho số trang, vì Baymard thấy "Xem thêm" dễ dùng hơn phân trang. Đường dẫn giữ từ khóa tìm, kiểu sắp xếp và số sản phẩm đã xem, để chia sẻ được;
+  - trang chi tiết mở theo slug: tên, giá, giá gạch, tình trạng, mô tả. Trang có thẻ meta, có dữ liệu cấu trúc `Product` cho Google, và có trong sitemap.
+- **Trang quản trị:** danh sách tìm được theo tên, lọc được theo trạng thái, có phân trang; thêm, sửa, xóa sản phẩm.
+
+**Câu 2: Trong Epic này, ảnh sản phẩm làm thế nào?**
+- **Mình đoán:** chưa có ảnh thật. Mỗi sản phẩm hiện một ảnh giữ chỗ chung theo design system, ví dụ chữ cái đầu của tên trên nền màu. Tính năng tải ảnh lên để một Epic riêng, đúng như spec đã để ngoài phạm vi.
+- **Vì sao:**
+  - tải ảnh lên cần chỗ lưu file, thu nhỏ ảnh và kiểm file tải lên, làm Epic này lớn hơn nhiều;
+  - cách ở giữa là quản trị viên dán link ảnh có sẵn trên mạng. Cách này rẻ hơn, nhưng trang của khách phải tải ảnh từ những host lạ. Khi đó phải giới hạn các host được phép, không thì máy chủ của `user` thành chỗ tải hộ ảnh từ bất kỳ đâu (lỗi SSRF). Ảnh cũng hỏng khi link chết;
+  - Google Shopping đòi có ảnh, nhưng đó là việc của lúc mở bán.
