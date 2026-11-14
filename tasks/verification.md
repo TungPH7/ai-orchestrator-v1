@@ -209,6 +209,24 @@ Sửa plan và todo: T4 thêm `playwright.config.ts` của profile; T5 đưa b�
     - CI xanh đủ năm check. Mô tả PR có thêm mục cho commit thứ tư (`ao-pr.mjs edit`).
   - `SHOP-6`: comment ghi quyết định của bạn ở Lượt 15 và 16, rồi gỡ cờ Needs you và nhãn `needs-you` bằng token CI (`scratchpad/item-unflag.mjs`, hàm `clearFlag` của kit). Item ở In Review.
   - Dòng kiểm của `/ao-review 13`: GO. `reviewer` (`xhigh`) đọc cả PR; `security` (`max`) review đầy đủ, vì phần đổi từ báo cáo đầy đủ gần nhất (`6489d52`) là 530 dòng, quá ngưỡng 300. Ước 10–12 USD, cao hơn mức 6–9 USD đã nói ở Lượt 15. Bắt đầu khoảng 22:35.
+- **T10i, review vòng 4, merge và QA** (Phiên 31 · Lượt 16):
+  - `reviewer` (`xhigh`, 42 lượt, 11,2 phút, 3,08 USD): Approve; Medium 2, Low 6.
+    - Medium: kit trên `develop` chưa in mã của finding, nên `reviewer` tính sẵn từ báo cáo vòng 3 và nhắc tính lại trên báo cáo cuối; mô tả `SHOP-6` và câu `Kit review:` của PR còn lệch. Phiên chính sửa cả hai, không đổi commit.
+    - Low: dòng `Accept risk` bị bỏ qua không báo (nêu Critical, hay viết trong trích dẫn, chữ đậm); luật tìm khóa của `gh-guard` chặn nhầm lệnh hợp lệ mà vẫn lách được, `Glob` với `../`; đọc lại PR release sau merge mà lỗi thì mất tag và merge ngược; `audit` và `merge-gate` xét danh sách file bị cắt khác nhau; comment của `decideShip`; `age-encryption` (lặp lại).
+  - `jira-sync` gắn lại cờ (mức 3) ngay sau báo cáo của `reviewer`, nên `/ao-review` dừng trước `security`. Phiên chính gỡ cờ lần hai rồi chạy `security`. Đây là lỗi của kit, sửa ở kit PR #288.
+  - `security` (`max`, review đầy đủ vì phần đổi từ báo cáo đầy đủ gần nhất là 530 dòng, quá ngưỡng 300; 8,07 USD): High 1, Medium 2, không Low.
+    - High: đúng High đã chấp nhận, mã `72ec4e38` (khác mã vòng 3 vì báo cáo đầy đủ viết lại finding; `security` tự tính và thử).
+    - Medium: `CODEOWNERS` chưa có trên `develop`, `main`, `release/v0.1.0`; khóa `age` đi qua clipboard và script của kit khi khôi phục trên máy agent chạy dưới tài khoản của bạn.
+    - Ghi nhận ngoài PR: `JIRA_CI_TOKEN` là secret của cả repo, nên workflow mà agent thêm vào PR của nó đọc được.
+    - `gh-guard` từ chối hai lệnh của `security`: `git tag -l` (vai trò chỉ đọc theo roster), và một lần sửa báo cáo có tên biến của khóa.
+  - Vòng 4 tốn 11,15 USD (ước 10–12). Tổng review của T10: 38,98 USD.
+  - Kiểm trước khi approve (`scratchpad/accept-check.mjs`, bằng mã kit `05da881` mà VPS chạy): không có lần approve thì còn ba điều chặn; có lần approve kèm `Accept risk: 72ec4e38 until 2026-12-31: …` thì không còn gì.
+  - Phiên chính approve PR #13 bằng login của bạn, kèm dòng chấp nhận (`scratchpad/approve-shop13.md`, 16:23:15Z), sau cả hai báo cáo; rồi merge squash: `fdc2ee0`, người merge `TungPH7`, 16:23:51Z.
+  - Deployer: `audit` cho qua `fdc2ee0`; Development deploy thành công lúc 23:27 (deployment `7790343641`).
+  - `jira-sync` đưa `SHOP-6` sang Ready for QA, kèm cờ mức 4 (do báo cáo `security` yêu cầu sửa). Phiên chính gỡ cờ kèm comment, rồi chạy `/ao-qa SHOP-6`.
+  - `qa` (`high`, 1,20 USD): NOT TESTED. V1, V2, V3, V5, V6 và checklist đạt (E2E: 9 đạt, 8 bỏ qua có lý do, như `SHOP-5`); V4 cần quyền admin để đọc `bypass_actors`. Phiên chính đọc bằng login của bạn: năm ruleset đúng như spec. Kết quả ghi lên `SHOP-6`, cờ đã gỡ, item chờ bạn Accept.
+  - Chi phí agent của `SHOP-6`: 40,18 USD; của Pilot 3 tới giờ: 45,56 USD.
+  - Kit PR #288: các Low của `reviewer` vòng 4, `jira-sync` gắn cờ một lần cho mỗi mức, hướng dẫn khôi phục backup. Vào `shop` với bản chép kit sau.
 - **Lượt 6 (Phiên 31), bạn: "Đã start spec"; hỏi kiểm khóa `age` làm sau được không:**
   - `ao-step status SHOP-7`: Specifying, chưa có nhánh docs; `Next: /ao-spec SHOP-7`, chạy sau khi `SHOP-6` merge.
   - Kiểm khóa đã cất: bạn làm sau. Đây không phải điều kiện của tiêu chí 2, vì lần khôi phục thật từ bản sao đã đạt ở T8. Việc kiểm chỉ để chắc bản trong trình quản lý mật khẩu, nay là bản duy nhất của khóa, là đúng. Nên làm trước T17; T19 nhắc lại.
