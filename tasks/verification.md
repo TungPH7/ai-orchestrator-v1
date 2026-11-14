@@ -41,6 +41,7 @@ Sửa plan và todo: T4 thêm `playwright.config.ts` của profile; T5 đưa b�
   - Phiên chính kiểm trên VPS lúc 07:31 UTC: `healthy`, FailingStreak 0. Comment bằng chứng, gỡ cờ và nhãn bằng token admin. `SHOP-5` ở In QA, chờ bạn `Accept`.
   - **Bài học cho kit:** Verification của một Task cho `qa` không được có bước chỉ vào được VPS. Cách sửa để sau: deployer chờ HEALTHCHECK của Docker báo `healthy` (khi image có HEALTHCHECK) và ghi vào status của deployment, để `qa` đọc được từ GitHub.
   - Chi phí agent của `SHOP-5`: 4,44 USD.
+  - Lượt 6: bạn bảo bấm `Accept`; token admin chuyển `SHOP-5` sang Done (resolution Done), kèm comment nguồn. **T5 xong.**
 
 ## Chặng 2: ba môi trường và `v0.1.0`
 
@@ -60,3 +61,14 @@ Sửa plan và todo: T4 thêm `playwright.config.ts` của profile; T5 đưa b�
   - `aobackup` thử `put`, `rm`, `mkdir`: đều `Permission denied`; `ssh` vào: "This service allows sftp connections only.";
   - khôi phục thật: giải mã `shop-development-20261114T071020Z.dump.age`; SHA-256 trùng bản trên VPS (`2d88c1dd…`); Postgres tạm trên Docker của máy bạn (không mạng, đúng digest của `deploy.yaml`) khôi phục trong 674 ms: 3 bảng, 6 dòng, Flyway 1–3; `restore-check` trên VPS cũng 3 bảng, 6 dòng. Container tạm và bản giải mã đã xóa; Docker Desktop đã tắt;
   - task `ao-backup-pull` của Windows: hằng ngày 09:00 và lúc đăng nhập, `StartWhenAvailable`; chạy thử trả 0.
+- **Fix Version** `v0.1.0` (id 10006) và `v0.2.0` (id 10007) tạo qua REST bằng token admin (`scratchpad/shop-versions.mjs`).
+- **Bước kiểm của `/ao-release`** (Lượt 6): điểm cắt `28394b8`; `v0.1.0` gồm `SHOP-5` (Done); code của `SHOP-1`–`SHOP-4` (Cancelled, không Fix Version) đi cùng, vì đó là phần scaffold; hai Fix Version chưa Release. Chờ gate ④ của bạn.
+- **T9, gate ④** (Lượt 7, bạn duyệt): `/ao-release v0.1.0 28394b8 --go` tạo `release/v0.1.0` tại `28394b8` và gắn Fix Version. Deployer deploy Staging (deployment `7784679035`, success 08:00:42 UTC):
+  - dùng lại image của Development (`2a2cb61d…`, cùng cây code), không build lại;
+  - tạo `ao-shop-staging-db`; Flyway chạy 3 migration, đều thành công; `api` `healthy`;
+  - RAM còn trống 2.290 MB khi `shop` có Development và Staging. Bộ nhớ: `api` 279–296 MiB, `user` 53–72 MiB, `admin` 11–12 MiB, database 42–44 MiB mỗi môi trường.
+- **`/ao-ship v0.1.0`** (Lượt 7): `qa` regression trên Staging (high, 13 lượt, 0,43 USD): **PASS**, 9/9 test chạy đạt (8 test bỏ qua có lý do như ở Development); `devops` viết release notes (13 lượt, 0,50 USD). Bước script `release-pr` dừng: GitHub trả 422 khi bot `ao-dev` cập nhật `refs/heads/release/v0.1.0`, "Changes must be made through a pull request. 4 of 4 required status checks are expected".
+  - **Nguyên nhân:** ruleset `ao-protected` (spec `quality-gates` 2.8, do `setup github` đặt cho repo public) bảo vệ `develop`, `main`, `release/*`, đòi PR có 1 approve và 4 check, không có bypass. Ruleset này có trước `release-workflow`; mọi dự án trước chạy "soft mode" (repo private gói Free không có ruleset), nên các bước tự động của `release-workflow` chưa từng gặp nó.
+  - **Cũng sẽ bị chặn:** `merge-gate` merge PR tài liệu của Epic sau gate ② (chỉ có duyệt trên Jira) và PR merge ngược `main` về `develop` (không ai approve trên GitHub). `merge-gate` merge bằng token của App `ao-dev`.
+  - Chờ bạn chọn cách sửa (Lượt 7).
+  - **Lượt 9: bạn chọn cách 1, tách ruleset thành ba** (`lib/quality/ruleset.mjs`, `scripts/gh-protect.mjs` nhận `--dev-app-id`, `setup github` truyền `github.apps.dev_id`; `docs/quality-gates.md` mục Ruleset). Lệnh tạo hai ruleset có PR trước, rồi mới thu hẹp `ao-protected`.

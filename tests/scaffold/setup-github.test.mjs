@@ -41,7 +41,7 @@ function github({ develop = true, isPublic = false } = {}) {
   const run = (argv) => (runs.push(argv.join(' ')), { status: 0, stdout: 'Soft mode: the repository is private on the Free plan\n', stderr: '' });
   return { state, calls, gh, run, runs };
 }
-const setup = (fake, more = {}) => setupGithub({ kitDir: '/kit', repo: REPO, devAppKeyFile: '/keys/ao-dev-2.pem', secret: (name) => (name === 'JIRA_CI_TOKEN' ? TOKEN : null), readFile: () => KEY, gh: fake.gh, run: fake.run, ...more });
+const setup = (fake, more = {}) => setupGithub({ kitDir: '/kit', repo: REPO, devAppId: 5514949, devAppKeyFile: '/keys/ao-dev-2.pem', secret: (name) => (name === 'JIRA_CI_TOKEN' ? TOKEN : null), readFile: () => KEY, gh: fake.gh, run: fake.run, ...more });
 const writes = (calls) => calls.filter(({ args }) => args.includes('-X') || args[1] === 'set').map(({ args }) => args.join(' '));
 
 test('a new repo gets develop as its default branch, branch deletion, Dependabot, four environments, two secrets and the ruleset check', () => {
@@ -51,7 +51,7 @@ test('a new repo gets develop as its default branch, branch deletion, Dependabot
   assert.deepEqual(fake.state, { default_branch: 'develop', delete_branch_on_merge: true, alerts: true, autofix: true, envs: ['development', 'staging', 'production', 'merge-gate'], policies: ['develop'], secrets: ['JIRA_CI_TOKEN'], envSecrets: ['AO_DEV_APP_KEY'] });
   const mergeGate = fake.calls.find(({ args }) => args.join(' ') === `api -X PUT repos/${REPO}/environments/merge-gate --input -`);
   assert.deepEqual(JSON.parse(mergeGate.input), { deployment_branch_policy: { protected_branches: false, custom_branch_policies: true } });
-  assert.deepEqual(fake.runs, [`node /kit/scripts/gh-protect.mjs --repo ${REPO}`]);
+  assert.deepEqual(fake.runs, [`node /kit/scripts/gh-protect.mjs --repo ${REPO} --dev-app-id 5514949`]);
   const text = notes.join('\n');
   assert.match(text, /Delete \/keys\/ao-dev-2\.pem now/);
   assert.match(text, /By hand: add acme\/shop to the two GitHub Apps: on GitHub, Settings → Applications → Installed GitHub Apps/);

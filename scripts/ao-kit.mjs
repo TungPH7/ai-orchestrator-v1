@@ -222,7 +222,7 @@ const COMMANDS = {
   'setup github': (dir) => {
     const config = projectConfig(dir);
     if (!config) return 1;
-    return print(setupGithub({ kitDir, repo: config.github.repo, devAppKeyFile: v['dev-app-key-file'], secret, readFile: (path) => readFileSync(path, 'utf8'), gh, run }));
+    return print(setupGithub({ kitDir, repo: config.github.repo, devAppId: config.github.apps.dev_id, devAppKeyFile: v['dev-app-key-file'], secret, readFile: (path) => readFileSync(path, 'utf8'), gh, run }));
   },
   doctor: async (dir) => {
     const config = projectConfig(dir);

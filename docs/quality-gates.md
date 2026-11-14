@@ -306,7 +306,17 @@ Các việc sau còn để ngỏ, vì cần bạn quyết:
 
 ## Ruleset
 
-`npm run gh:protect -- --repo <owner>/<name>` chạy từ repo kit, bằng `gh` của bạn. Lệnh áp ruleset `ao-protected` cho `develop`, `main` và `release/*`: chặn xóa nhánh và force push, bắt buộc qua PR, bắt buộc bốn check của `CI`, cần một approve, và bỏ approve cũ khi có push mới. Chạy lại thì cập nhật ruleset đang có, không tạo bản trùng.
+`npm run gh:protect -- --repo <owner>/<name> --dev-app-id <id>` chạy từ repo kit, bằng `gh` của bạn; `ao-kit setup github` tự chạy lệnh này, với id của App `ao-dev` lấy từ `github.apps.dev_id` của `project.yaml`. Lệnh áp ba ruleset (Pilot 3, Phiên 30 · Lượt 9):
+
+| Ruleset | Nhánh | Luật | Ai được bỏ qua |
+|---|---|---|---|
+| `ao-protected` | `develop`, `main`, `release/*` | Chặn xóa nhánh và force push | Không ai |
+| `ao-protected-merge` | `develop`, `main` | Bắt buộc qua PR, một approve, bỏ approve cũ khi có push mới, bốn check của `CI` | App `ao-dev`, chỉ khi merge PR |
+| `ao-protected-release` | `release/*` | Như dòng trên | App `ao-dev`, luôn luôn |
+
+- **Vì sao App `ao-dev` được bỏ qua:** `merge-gate` merge bằng App này cả những PR không có approve trên GitHub: PR tài liệu của Epic sau gate ② (bạn duyệt trên Jira), PR merge ngược `main` về `develop`. `/ao-ship` commit báo cáo regression và `CHANGELOG.md` thẳng lên nhánh release. Một ruleset không ai được bỏ qua chặn cả ba việc này (Pilot 3, T9).
+- **Bot vẫn bị giữ:** `merge-gate` chỉ merge PR đạt đủ cổng của nó, và `audit` của deployer chỉ cho commit của `ao-dev` trên nhánh release đổi `docs/releases/vX.Y.Z.md` và `CHANGELOG.md`. Không ai push thẳng lên `develop` hay `main` được, kể cả bot. Mọi người khác vẫn bị GitHub chặn như trước.
+- Lệnh tạo hai ruleset có PR trước, rồi mới bỏ các luật đó khỏi `ao-protected`, nên một repo đã có ruleset cũ không lúc nào bị bảo vệ lỏng hơn. Chạy lại thì cập nhật các ruleset đang có theo tên, không tạo bản trùng.
 
 Repo private ở gói Free không có ruleset (API trả 403). Khi đó lệnh in `soft mode: merge-gate and audit enforce the gates`, không đổi gì, và thoát với mã 0.
 
