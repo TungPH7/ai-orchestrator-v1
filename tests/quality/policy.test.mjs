@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { join } from 'node:path';
 import { readGates } from '../../lib/quality/gates.mjs';
-import { auditProblems, checkConventions, designFilesToCheck } from '../../lib/quality/policy.mjs';
+import { auditProblems, checkConventions, designFilesToCheck, osvProblems } from '../../lib/quality/policy.mjs';
 import { addedLines, deletedTests, findSuppressions, loweredThresholds } from '../../lib/quality/suppressions.mjs';
 import { ROOT } from '../helpers/kit.mjs';
 
@@ -253,4 +253,57 @@ test('the check-policy script reports each step of a PR and fails on any problem
   git('commit', '-q', '-am', 'fix(a): give the reason (DEMO-2)');
   const good = policy('feat(a): add b (DEMO-2)');
   assert.equal(good.status, 0, good.stdout + good.stderr);
+});
+
+// project-scaffold part 3, spec 2.3: osv-scanner reads the pom.xml of a Java app, with its transitive dependencies.
+const OSV = {
+  results: [{
+    source: { path: 'apps/api/pom.xml', type: 'unknown' },
+    packages: [
+      {
+        package: { name: 'org.postgresql:postgresql', version: '42.7.10', ecosystem: 'Maven' },
+        groups: [
+          { ids: ['GHSA-98qh-xjc8-98pq'], aliases: ['CVE-2026-42198', 'GHSA-98qh-xjc8-98pq'], max_severity: '7.5' },
+          { ids: ['GHSA-low0-0000-0000'], aliases: ['GHSA-low0-0000-0000'], max_severity: '3.7' },
+        ],
+        vulnerabilities: [
+          { id: 'GHSA-98qh-xjc8-98pq', summary: 'pgjdbc: Unbounded PBKDF2 iterations allows CPU exhaustion DoS' },
+          { id: 'GHSA-low0-0000-0000', summary: 'a low one' },
+        ],
+      },
+      {
+        package: { name: 'org.apache.tomcat.embed:tomcat-embed-core', version: '11.0.21', ecosystem: 'Maven' },
+        groups: [{ ids: ['GHSA-9xv2-5v5q-p794'], aliases: ['CVE-2026-1111', 'GHSA-9xv2-5v5q-p794'], max_severity: '9.8' }],
+        vulnerabilities: [{ id: 'GHSA-9xv2-5v5q-p794', summary: 'Tomcat request smuggling' }],
+      },
+      {
+        package: { name: 'com.acme:unscored', version: '1.0.0', ecosystem: 'Maven' },
+        groups: [{ ids: ['GHSA-none-0000-0000'], aliases: [], max_severity: '' }],
+        vulnerabilities: [{ id: 'GHSA-none-0000-0000', summary: 'no score yet' }],
+      },
+    ],
+  }],
+};
+
+test('osv-scanner advisories at the audit level and above fail, each with its package, score and ids', () => {
+  const problems = osvProblems(OSV, { audit_level: 'high', exceptions: [] }, '2026-11-14');
+  assert.deepEqual(problems, [
+    'org.postgresql:postgresql@42.7.10 high 7.5: pgjdbc: Unbounded PBKDF2 iterations allows CPU exhaustion DoS (GHSA-98qh-xjc8-98pq)',
+    'org.apache.tomcat.embed:tomcat-embed-core@11.0.21 critical 9.8: Tomcat request smuggling (GHSA-9xv2-5v5q-p794)',
+    'com.acme:unscored@1.0.0 high, not scored: no score yet (GHSA-none-0000-0000)',
+  ]);
+  assert.deepEqual(osvProblems({ results: [] }, { audit_level: 'high', exceptions: [] }, '2026-11-14'), []);
+});
+
+test('an exception holds by the GHSA id or a CVE alias of the group, until it expires', () => {
+  const exceptions = [
+    { advisory: 'GHSA-9xv2-5v5q-p794', reason: 'no fix yet', expires: '2026-12-01' },
+    { advisory: 'CVE-2026-42198', reason: 'not reachable', expires: '2026-11-01' },
+  ];
+  const problems = osvProblems(OSV, { audit_level: 'critical', exceptions }, '2026-11-14');
+  // At critical, the excepted Tomcat advisory is the only one left, and it holds: an unscored one counts as high.
+  assert.deepEqual(problems, []);
+  const high = osvProblems(OSV, { audit_level: 'high', exceptions }, '2026-11-14');
+  assert.match(high[0], /postgresql@42\.7\.10 high 7\.5: .*; its exception expired on 2026-11-01/);
+  assert.ok(!high.some((line) => /tomcat/.test(line)));
 });

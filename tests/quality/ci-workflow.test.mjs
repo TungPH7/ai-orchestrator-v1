@@ -164,3 +164,17 @@ test('ci-java prints the Java versions of apps/*/pom.xml, and stops on a pom tha
   assert.equal(failed.status, 1);
   assert.match(failed.stderr, /::error::apps\/jobs\/pom\.xml names no <java\.version>/);
 });
+
+// project-scaffold part 3, spec 2.3: osv-scanner checks the Maven dependencies of a Java app, pinned and checked.
+test('policy installs osv-scanner, pinned and checked against its checksum, only when the repo has a Java app', () => {
+  const job = workflow.jobs.policy;
+  assert.equal(job.env.OSV_SCANNER_VERSION, '2.7.0');
+  assert.match(job.env.OSV_SCANNER_SHA256, /^[0-9a-f]{64}$/);
+  const install = job.steps.find((step) => step.name === 'Install osv-scanner');
+  assert.equal(install.if, "hashFiles('apps/*/pom.xml') != ''");
+  assert.match(install.run, /releases\/download\/v\$\{OSV_SCANNER_VERSION\}\/osv-scanner_linux_amd64/);
+  assert.match(install.run, /sha256sum --check --strict/);
+  assert.match(install.run, /OSV_SCANNER=\$RUNNER_TEMP\/osv-scanner" >> "\$GITHUB_ENV"/);
+  const order = job.steps.map((step) => step.name ?? step.run);
+  assert.ok(order.indexOf('Install osv-scanner') < order.indexOf('node .ai-orchestrator/scripts/check-policy.mjs'));
+});
