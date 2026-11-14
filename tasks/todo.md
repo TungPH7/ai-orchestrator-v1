@@ -115,7 +115,7 @@
 
 ## Chặng 4: việc B2 để lại, nhánh `task/scaffold3-4`
 
-- [ ] **T17: ba việc nhỏ; PR** (spec 2.6).
+- [x] **T17: ba việc nhỏ; PR** (spec 2.6).
   - **Đạt khi:**
     - `setup jira` bắt `ENOTFOUND`, `ECONNRESET` và timeout, in "chạy lại lệnh", không in stack trace;
     - `ao-pr.mjs` đọc `AO_*` từ `.claude/settings.json` của repo khi biến môi trường thiếu, như `ao-step`;
