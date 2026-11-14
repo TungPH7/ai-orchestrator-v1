@@ -164,7 +164,7 @@ Bản nháp của `/ao-intake` nằm ở `.ai/intake/<YYYYMMDD-HHmm>-<slug>.md`.
 | `your request has no be: or fe: …` | Ghi `be:` hay `fe:` ở đầu từng phần của yêu cầu, rồi chạy lại |
 | `PR #… changes …, which steer the kit and the agents` | Không xem trước PR này: đọc thay đổi trong diff, rồi `/ao-review` |
 | `… has no open request to ba, ux or sa` | Không còn gì cho `/ao-request`. Yêu cầu gửi role khác, nếu có, hiện trong `/ao-status` |
-| `… is flagged Needs you by …`, `Sub-task … is flagged Needs you` | Đọc comment mới nhất trên item, trả lời ở đó, gỡ cờ và nhãn `needs-you`, rồi chạy lại. `jira-guard` không cho chuyển trạng thái của item còn nhãn đó |
+| `… is flagged Needs you by …`, `Sub-task … is flagged Needs you` | Đọc comment mới nhất trên item, trả lời ở đó, gỡ cờ và nhãn `needs-you`, rồi chạy lại. `jira-guard` không cho chuyển trạng thái của item còn nhãn đó. Cờ của giới hạn rework (`jira-sync: … went back N times`) bạn đã gỡ thì không quay lại ở cùng số lần đó; chỉ một lần quay lại nữa mới gắn lại (review vòng 4 của `shop` PR #13) |
 | `… hit the usage limit … Run the same command again after it resets` | Chờ giới hạn reset, rồi chạy lại đúng lệnh (mục sau) |
 | `… ran <step> on <KEY> and it still has to run` | Agent xong lượt mà dữ kiện chưa đổi như mong đợi. Đọc câu trả lời của nó trong `last.md` |
 | `no CI run started on PR #… after 5 minutes` | GitHub Actions không chạy workflow nào trên head của PR. Mở tab Actions của repo. Ở `ao-sample`, các workflow vào repo cùng lần push đầu lên repo trống và không chạy theo sự kiện, tới khi một push đụng `.github/workflows/` (Pilot 1, `SMP-2`). Sửa xong thì đóng rồi mở lại PR, và chạy lại lệnh |

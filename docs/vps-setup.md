@@ -603,7 +603,7 @@ node scripts/ao-backup-pull.mjs install --host ao-backup --dest D:\ao-backups
 node scripts/ao-backup-pull.mjs status
 ```
 
-**6. Khôi phục từ bản sao.** Giải mã trên máy bạn, trong PowerShell của bạn, không qua Claude Code. Chép khóa từ trình quản lý mật khẩu vào clipboard, rồi:
+**6. Khôi phục từ bản sao.** Giải mã trong PowerShell, không qua Claude Code, trên một máy chưa từng chạy agent, hoặc trên máy này khi agent đã chạy dưới tài khoản Windows riêng (`ao-agent`). Lúc giải mã, khóa đi qua clipboard và một script của kit. Trên máy mà agent chạy dưới tài khoản của bạn, một chương trình agent để lại hay một file kit bị sửa có thể bắt được khóa, và khóa đó mở mọi bản sao đã kéo về (review vòng 4 của `shop` PR #13). Khi có `ao-agent`, sinh một cặp khóa mới theo bước 1, thay khóa công khai trong `/etc/ao/deployer.yaml` (bước 4), và cất khóa mới; khóa cũ từng nằm trong `%USERPROFILE%\.ao\` lúc sinh. Chép khóa từ trình quản lý mật khẩu vào clipboard, rồi:
 
 ```
 Get-Clipboard | node scripts/ao-backup-pull.mjs decrypt D:\ao-backups\shop\production\<tên>.dump.age --identity - --out D:\ao-restore\<tên>.dump
