@@ -60,13 +60,13 @@
     - `doctor` có một dòng báo khi bản sao mới nhất trên máy cũ hơn 36 giờ;
     - `docs/vps-setup.md` có mục mới cho tài khoản `aobackup` và cách khôi phục từ bản sao.
   - **Kiểm:** test của các hàm thuần (chọn file cần mã hóa, cần kéo, cần xóa trên VPS; trạng thái); không test gọi mạng.
-- [ ] **T7: VPS** (spec 2.3). VPS vẫn mở.
+- [x] **T7: VPS** (spec 2.3). VPS vẫn mở.
   - chép kit mới (mục 12 của `vps-setup.md`), `--dry-run`, Caddyfile của hai dự án kia không đổi;
   - `/etc/ao/secrets/shop/{staging,production}.env` và `.db.env`, sinh trên VPS, không in;
   - `production_auth: true` cho `shop`; host Production của `shop` hỏi basic auth;
   - tài khoản `aobackup` với key riêng, và khóa công khai `age` của bạn trong `deployer.yaml`;
   - đo RAM, build cache.
-- [ ] **T8: [bạn] máy bạn** (spec 2.4).
+- [x] **T8: [bạn] máy bạn** (spec 2.4).
   - mình sinh cặp khóa `age` trên máy bạn; **bạn cất khóa bí mật** ở ngoài laptop;
   - mình sinh key kéo về, đưa khóa công khai lên VPS, chạy `ao-backup-pull.mjs install`;
   - một lần khôi phục thật: giải mã một bản, so mã băm với bản trên VPS, khôi phục vào Postgres trên Docker ở máy bạn, so số bảng và số dòng.
