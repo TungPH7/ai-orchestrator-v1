@@ -200,6 +200,7 @@ Plan chia chi tiết thành năm chặng:
 - Lượt 2: câu 1, 2, 4, 5 theo đề xuất.
 - Lượt 5: câu 3, bản sao kéo về máy bạn, mã hóa bằng `age` ngay từ đầu để sau này chuyển sang B2 dễ (mục 2.4). Lượt 3 và 4 giải thích vì sao cần bản sao, và so cách này với B2.
 - Bạn sẽ gửi ảnh giao diện cho Epic (mục 2.6), trước `/ao-spec`.
+- Lượt 9, phát sinh ở T9: ruleset `ao-protected` của repo public chặn các bước tự động của `release-workflow`. Bạn chọn tách thành ba ruleset; App `ao-dev` được bỏ qua luật PR khi merge trên `develop`, `main`, và luôn luôn trên `release/*` ([docs/quality-gates.md](docs/quality-gates.md#ruleset)).
 
 Các câu như lúc hỏi:
 
