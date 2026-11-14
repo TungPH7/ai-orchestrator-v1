@@ -432,7 +432,7 @@ f=/etc/ao/secrets/shop/development
 install -o root -g aodeploy -m 640 /dev/null $f.db.env
 app_password="$(openssl rand -hex 32)"
 printf 'POSTGRES_DB=shop\nPOSTGRES_USER=postgres\nPOSTGRES_PASSWORD=%s\nAPP_DB_NAME=shop\nAPP_DB_USER=shop_app\nAPP_DB_PASSWORD=%s\n' "$(openssl rand -hex 32)" "$app_password" > $f.db.env
-printf 'DB_HOST=db\nDB_PORT=5432\nPOSTGRES_DB=shop\nPOSTGRES_USER=shop_app\nPOSTGRES_PASSWORD=%s\n' "$app_password" >> $f.env
+printf 'SPRING_PROFILES_ACTIVE=staging\nDB_HOST=db\nDB_PORT=5432\nPOSTGRES_DB=shop\nPOSTGRES_USER=shop_app\nPOSTGRES_PASSWORD=%s\n' "$app_password" >> $f.env
 unset app_password
 awk -F= '{print $1, length($2)}' $f.db.env $f.env
 ```
@@ -478,7 +478,7 @@ Timer `ao-backup` chạy `scripts/ao-backup.mjs run` bằng root, mỗi ngày l�
 - Mỗi container database đang chạy được dump bằng `pg_dump -Fc` vào `/var/backups/ao/<dự án>/<môi trường>/<dự án>-<môi trường>-<giờ UTC>.dump`.
 - Thư mục có quyền 0700 và file có quyền 0600, nên chỉ root đọc được, vì bản dump chứa dữ liệu của người dùng.
 - Dump được ghi vào `<tên>.part`, và chỉ đổi tên khi `pg_dump` xong. Nhờ vậy bản dump dở dang không bao giờ được tính.
-- Mỗi môi trường giữ bản mới nhất của 7 ngày gần nhất và của 4 tuần gần nhất. Các bản khác bị xóa sau mỗi lần chạy.
+- Mỗi môi trường giữ mọi bản của 48 giờ gần nhất, rồi bản mới nhất của 7 ngày gần nhất và của 4 tuần gần nhất. Các bản khác bị xóa sau mỗi lần chạy. Ở T22, luật cũ chỉ giữ bản mới nhất của mỗi ngày, nên một lượt chạy tay lúc 04:55 đã xóa bản lúc 04:49 cùng ngày. Luật 48 giờ có để một lượt chạy tay không bao giờ xóa bản của đêm hôm đó.
 - Lúc 02:30 mà VPS đang tắt thì lượt đó chạy khi VPS khởi động lại (`Persistent=true`).
 - Bản sao ra ngoài VPS chưa có. Chỗ để bản sao sẽ được chọn trước bản release đầu của `shop` (spec mục 9, câu 2).
 
@@ -512,17 +512,20 @@ node /opt/ao/kit/scripts/ao-backup.mjs restore-check shop development
 - Lệch thì lệnh thoát mã 1. Nghĩa là có dòng được ghi sau lúc dump, hoặc bản dump không khôi phục được. Chạy ngay sau bước 2 để hai bên cùng thời điểm.
 - Ở T15, lệnh chạy thật trên Docker của máy: 2 bảng, 32 dòng, khớp. Ở T22, trên Development của `shop`: 17 giây, `restored: 3 tables, 6 rows; shop now: 3 tables, 6 rows`.
 
-**4. Khôi phục vào database đang chạy** (chưa chạy thật). Làm khi dữ liệu của một môi trường bị hỏng, ví dụ sau một migration sai:
+**4. Khôi phục vào database đang chạy.** Làm khi dữ liệu của một môi trường bị hỏng, ví dụ sau một migration sai. Trước hết, chép bản dump muốn khôi phục ra `/root`, để không lượt backup nào xóa nó trong lúc bạn làm:
 
 ```
 systemctl stop ao-deploy.timer
 until [ "$(systemctl is-active ao-deploy.service)" != "activating" ]; do sleep 5; done
 ls -l /var/backups/ao/shop/development/
-docker exec -i ao-shop-development-db sh -c 'exec pg_restore -U postgres --clean --if-exists --single-transaction -d "$POSTGRES_DB"' < /var/backups/ao/shop/development/<file>.dump
+cp -p /var/backups/ao/shop/development/<file>.dump /root/
+docker exec -i ao-shop-development-db sh -c 'exec pg_restore -U postgres --clean --if-exists --single-transaction -d "$POSTGRES_DB"' < /root/<file>.dump
 systemctl start ao-deploy.timer
 ```
 
 - `--clean --if-exists` xóa rồi tạo lại từng đối tượng có trong bản dump, trong một transaction. Lỗi giữa chừng thì database giữ nguyên như trước.
-- Dữ liệu ghi sau lúc dump bị mất. Với Production, chạy `systemctl start ao-backup.service` trước, để còn một bản của trạng thái hiện tại.
+- Dữ liệu ghi sau lúc dump bị mất. Với Production, chạy `systemctl start ao-backup.service` trước, để còn một bản của trạng thái hiện tại; luật 48 giờ giữ cả bản đó lẫn bản của đêm trước.
+- Xong thì xóa bản sao ở `/root` bằng `shred -u`, vì nó chứa dữ liệu của người dùng.
+- Ở T22, trên Development của `shop`: `pg_restore` xong trong 1 giây, thoát mã 0. Số bảng, số dòng lịch sử Flyway và extension trước và sau như nhau. `api` vẫn trả lời trong lúc khôi phục, và `restore-check` sau đó khớp.
 - Bản dump đi qua stdin của `docker exec`, không bị chép vào container.
 - Bản dump có cả bảng lịch sử của Flyway, nên schema quay về đúng lúc dump. Nếu app đang chạy có migration mới hơn bản dump, Flyway chỉ chạy lại các migration đó khi app khởi động lại.

@@ -614,7 +614,7 @@ node <kit>/scripts/ao-kit.mjs check e-commerce/shop
 
 ### Bước 9. API Spring Boot và database
 
-`apps/api` (Spring Boot 4, Java 21, Maven, PostgreSQL 17, Flyway) lấy từ template Java của bạn, nhánh `codebase`. App này không công khai: chỉ Caddy trong container `admin` (`/api/*`) và server của `user` (`API_URL`) gọi nó, trên mạng Docker của môi trường. Mục 1–4 dưới đây đã làm thật trên `shop` ngày 14/11/2026 (project-scaffold phần 3, T20–T21); đầu ra ghi ở đây là đầu ra thật.
+`apps/api` (Spring Boot 4, Java 21, Maven, PostgreSQL 17, Flyway) lấy từ template Java của bạn, nhánh `codebase`. App này không công khai: chỉ Caddy trong container `admin` (`/api/*`) và server của `user` (`API_URL`) gọi nó, trên mạng Docker của môi trường. Mọi mục dưới đây đã làm thật trên `shop` ngày 14/11/2026 (project-scaffold phần 3, T20–T22); đầu ra ghi ở đây là đầu ra thật.
 
 **Máy bạn cần thêm hai thứ:**
 - **JDK đúng bản `<java.version>` của `pom.xml`**, ở đây là 21. `JAVA_HOME` không cần đổi: `mvnw.mjs` tự tìm JDK 21, lần lượt ở `JAVA_HOME` nếu đúng bản, ở `JAVA_HOME_21`, ở JDK nằm cạnh `JAVA_HOME`, rồi ở các thư mục cài thường gặp. Máy bạn có sẵn `C:\opt\jdk-21`, nằm cạnh JDK 17 của `JAVA_HOME`.

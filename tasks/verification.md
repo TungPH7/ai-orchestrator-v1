@@ -218,3 +218,15 @@ Profile của Development là `staging`: `dev` của template dành cho máy cá
   - Khôi phục vào database đang chạy (mục 15, bước 4) chưa thử, vì nó xóa rồi tạo lại các đối tượng của database; việc này chờ bạn đồng ý.
 - `ao-sample` và `ao-pilot` vẫn chạy đủ 9 container; `pilot-dev` 200, `sample-dev` 307, `pilot` 200, `sample` 307, giống trước.
 - Vòng đo RAM đã dừng; hai script tạm trên `/root` đã xóa; `/root/ram-t22.log` (158 dòng) giữ lại làm số liệu.
+
+**T22, khôi phục vào database đang chạy (Lượt 7, bạn đồng ý).**
+- Lần thử đầu dừng trước khi động vào database: bản dump lúc 04:49 không còn. Script đã chạy backup trước như hướng dẫn khuyên, và luật giữ bản chỉ giữ bản mới nhất của mỗi ngày, nên bản 04:55 đã thay bản 04:49. Hai bản cùng nội dung, nên không mất gì. Nhưng script dừng ở `set -e` sau khi đã tắt timer của deployer; mình bật lại ngay (`active`).
+- **Lỗi ở kit và hướng dẫn:** mục 15, bước 4 khuyên "chạy backup trước", mà lượt đó có thể xóa đúng bản tốt cần khôi phục (bản 02:30 của hôm đó). Mình đã sửa:
+  - `backupsToKeep` giữ mọi bản của 48 giờ trước bản mới nhất, rồi bản mới nhất của mỗi ngày và mỗi tuần như cũ;
+  - bước 4 chép bản dump ra `/root` trước, và xóa bản sao bằng `shred -u` khi xong;
+  - spec mục 2.4 ghi thêm luật 48 giờ.
+- Lần hai, với bản 04:55 chép ra `/root`: `pg_restore --clean --if-exists --single-transaction` thoát mã 0 sau 1 giây. Trước và sau đều có 3 bảng trong `app`, 3 dòng lịch sử Flyway, 0 sản phẩm, cùng các extension. `api` vẫn trả lời `/api/v1/health` và `/api/products`. `restore-check` khớp (3 bảng, 6 dòng). Timer của deployer chạy lại; script và bản sao trên `/root` đã xóa.
+
+**Jira (Lượt 7, bạn đồng ý):** `SHOP-2`, `SHOP-3`, `SHOP-4` đã gỡ cờ và nhãn `needs-you`, có comment trỏ tới PR #7, #8, #9, rồi Cancel với Resolution Done, bằng token admin của bạn, như `SHOP-1`.
+
+**T22 xong.** Tiêu chí 4, 5, 6 đạt. VPS để mở theo lời bạn dặn.

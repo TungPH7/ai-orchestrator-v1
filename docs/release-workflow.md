@@ -162,7 +162,7 @@ database:
 - Deployer giữ một container `ao-<dự án>-<môi trường>-db` cho mỗi môi trường, với alias `db` trên mạng của môi trường. Container được tạo ở lần deploy đầu, trước khi app mới chạy. Script trong `init` chạy một lần, khi volume còn trống.
 - Deploy và rollback không bao giờ đổi, dừng hay xóa container database. Đổi bản Postgres là việc tay ([vps-setup.md](vps-setup.md), mục 14).
 - Biến của database nằm ở `/etc/ao/secrets/<dự án>/<môi trường>.db.env`, tách khỏi `<môi trường>.env` của app. Thiếu file đó thì deployer không deploy.
-- Mỗi ngày lúc 02:30, timer `ao-backup` dump mọi database, giữ 7 bản ngày và 4 bản tuần. Lệnh `restore-check` kiểm bản mới nhất khôi phục được ([vps-setup.md](vps-setup.md), mục 15).
+- Mỗi ngày lúc 02:30, timer `ao-backup` dump mọi database, giữ mọi bản của 48 giờ gần nhất, 7 bản ngày và 4 bản tuần. Lệnh `restore-check` kiểm bản mới nhất khôi phục được ([vps-setup.md](vps-setup.md), mục 15).
 
 Migration chạy khi app khởi động: với Spring Boot là Flyway, như template Java đã đặt. Deployer bật container mới cạnh container cũ rồi mới chuyển, nên trong lúc chuyển, bản cũ chạy trên schema mới. Rollback chỉ đổi image, không lùi schema.
 

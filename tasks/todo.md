@@ -141,7 +141,7 @@
   3. CI xanh trên `develop`; `doctor` đạt mọi dòng.
   - **Kiểm:** chỗ hướng dẫn sai hay thiếu thì sửa hướng dẫn trước khi đi tiếp.
 - [x] **T21 [bạn]: sửa code `api`** (tiêu chí 3). Task cho các chỗ `add` báo; phiên chính sửa trên nhánh của Task, mở PR không đụng `.ai-orchestrator/`; `/ao-preview` chạy `user`, `admin`, `api` và Postgres; bạn xem rồi merge; Task được Cancel, kèm comment trỏ tới PR.
-- [ ] **T22 [bạn]: Development có `api` và Postgres** (tiêu chí 4, 5, 6). Bạn mở VPS; mình:
+- [x] **T22 [bạn]: Development có `api` và Postgres** (tiêu chí 4, 5, 6). Bạn mở VPS; mình:
   1. sinh mật khẩu database và ghi `development.env`, `development.db.env`;
   2. gỡ chặn của `audit` bằng `/ao-rollback development <sha>` nếu cần;
   3. deploy: smoke test đạt; `/api/v1/health` qua host của `admin` trả 200; Flyway chạy đủ migration;

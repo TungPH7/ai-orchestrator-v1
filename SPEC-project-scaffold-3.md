@@ -155,7 +155,7 @@ database:
 - **Migration:** Flyway chạy khi `api` khởi động, như template đã đặt. Deployer chạy container mới cạnh container cũ rồi mới đổi, nên trong lúc đổi, bản cũ chạy trên schema mới. Rollback cũng không lùi schema. Vì vậy có thêm một luật: **migration phải chạy được với bản trước đó** (expand/contract). Thêm bảng hay cột trước; xóa hay đổi tên ở một release sau. Luật này vào prompt của `be-dev`, `sa`, `reviewer`, và vào `docs/release-workflow.md`.
 - **Backup:**
   - timer `ao-backup` chạy `pg_dump -Fc` mỗi ngày cho mọi môi trường có database, ra `/var/backups/ao/<dự án>/<môi trường>/`;
-  - file chỉ root đọc được (0600). Mỗi môi trường giữ 7 bản ngày và 4 bản tuần;
+  - file chỉ root đọc được (0600). Mỗi môi trường giữ 7 bản ngày và 4 bản tuần, cộng mọi bản của 48 giờ gần nhất (thêm ở T22, sau khi một lượt chạy tay xóa bản cùng ngày);
   - lệnh khôi phục được thử thật ở phần 3, trên Development: khôi phục vào một container tạm, rồi so số bảng và số dòng.
 
   Bản sao ra ngoài VPS là câu 2, mục 9.
