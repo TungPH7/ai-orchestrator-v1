@@ -120,6 +120,28 @@ Sửa code theo gợi ý của rule. Nếu là báo nhầm, thêm `nosemgrep` k�
 
 Báo cáo nằm ở tab **Conversation** của PR. `merge-gate` chỉ đọc báo cáo trên commit đầu của PR, và lấy báo cáo mới nhất của mỗi vai trò.
 
+### Chấp nhận một High thay vì sửa
+
+Có khi một High không sửa được trong PR đó, ví dụ khi cách sửa là việc lớn của riêng nó. Bạn có thể chấp nhận rủi ro đó, có hạn chót (Pilot 3, spec 2.9 mục 5):
+
+1. `/ao-review` dừng ở dòng `ask for changes (Critical or High: security 1: 1a2b3c4d)`. `1a2b3c4d` là mã của finding, tính từ cột Where và Finding của nó.
+2. Bạn approve PR trên commit đầu, và trong ô nhận xét của lần approve, ghi một dòng cho mỗi finding:
+
+   ```
+   Accept risk: 1a2b3c4d until 2026-12-31: agent chạy dưới tài khoản Windows của bạn, tới khi có ao-agent
+   ```
+
+3. Từ đó, `merge-gate`, `audit` và `/ao-review` không tính finding đó là đang chặn nữa.
+
+Dòng chấp nhận chỉ có tác dụng khi:
+
+- nó nằm trong quyết định mới nhất của bạn trên commit đầu, và quyết định đó là approve. Push thêm thì phải approve lại, kèm dòng chấp nhận;
+- finding là High. Critical không chấp nhận được;
+- ngày hết hạn chưa qua: `merge-gate` và `/ao-review` tính theo hôm nay, `audit` tính theo ngày merge;
+- ngày hết hạn cách ngày approve không quá 90 ngày, và có lý do sau dấu hai chấm.
+
+Một dòng sai cách viết thì không chấp nhận gì, và lý do hiện ngay trong dòng `Waiting` của `merge-gate`. Finding đã chấp nhận vẫn được liệt kê cho lần review sau kiểm lại.
+
 ## `merge-gate`
 
 `merge-gate` chạy sau mỗi lần `jira-sync` xong. `jira-sync` thì chạy sau mỗi lần `CI` xong và sau mỗi review, nên `merge-gate` thấy cả hai. Bạn cũng gọi tay được: tab **Actions** → **merge-gate** → **Run workflow**, chọn nhánh mặc định **(đối chiếu giao diện)**.
@@ -140,7 +162,8 @@ Các điều kiện hay thiếu, và cách xử lý:
 |---|---|
 | `CI green on head <sha>` | Chờ `CI` chạy xong, hoặc sửa check đỏ |
 | `reviewer report on head <sha>`, `security report on head <sha>` | Cho `reviewer` hoặc `security` review commit đầu mới |
-| `… report on head <sha> without Critical or High findings (N open)` | Agent sửa các finding và push, rồi hai vai trò review lại |
+| `… report on head <sha> without Critical or High findings (N open)` | Agent sửa các finding và push, rồi hai vai trò review lại; hoặc bạn chấp nhận một High (mục trên). Phần sau dấu `;`, nếu có, nói vì sao một dòng chấp nhận không có tác dụng |
+| `every file listed: GitHub listed N of the M files …` | GitHub chỉ liệt kê 3.000 file đầu của một PR, nên `merge-gate` không kiểm được đường dẫn. Bạn đọc PR rồi tự merge |
 | `answer to the changes requested on head <sha>` | Quyết định mới nhất trên commit đầu là yêu cầu sửa. Agent push bản sửa, hoặc người đã yêu cầu sửa approve lại trên chính commit đó |
 | `approval on head <sha>` | Bạn approve. Approve trên commit cũ không được tính |
 | `valid branch (…)`, `valid title (…)`, `complete description (…)` | Sửa tiêu đề hoặc mô tả bằng `ao-pr.mjs edit`. Sai tên nhánh thì mở PR mới |
@@ -181,7 +204,7 @@ Bạn tự merge trong hai trường hợp đầu dưới đây. Trường hợp
 2. **PR do bạn mở.** `merge-gate` bỏ qua PR của bạn. `audit` tính bạn là đã approve, nhưng PR vẫn cần `CI` xanh, hai báo cáo trên commit đầu, cùng tiêu đề và mô tả đúng mẫu.
 3. **PR release và PR merge ngược** (`release-workflow`, spec mục 2.7; mục `release_pull_requests` của `quality/gates.yaml`). Cả hai do `ao-dev` mở, và `merge-gate` merge bằng **merge commit**, không squash, để lịch sử của từng bản nằm trên `main`.
    - **PR release** `release/vX.Y.Z` → `main` (gate ⑤): `merge-gate` merge khi `CI` xanh và bạn đã approve commit đầu. Bạn approve, không bấm Merge. Từng thay đổi trong bản đã qua cổng ở PR riêng của nó, nên đường dẫn được bảo vệ không bắt bạn tự merge PR này. Merge xong, `merge-gate` gắn tag `vX.Y.Z` vào merge commit, rồi mở PR merge ngược `main` → `develop`.
-   - **PR merge ngược** (head là `main` của chính repo, vào `develop` hay nhánh `release/*` đang mở): `merge-gate` merge khi `CI` xanh và PR không có xung đột, không cần approve, vì mọi commit của `main` đã qua gate ③ hay gate ⑤.
+   - **PR merge ngược** (head là `main` của chính repo, vào `develop` hay nhánh `release/*` đang mở): `merge-gate` merge khi `CI` xanh, PR không có xung đột, đầu `main` là commit của một tag phát hành, và mọi commit PR mang từ `main` về (trên dòng cha thứ nhất) qua được `audit` như khi deploy. Không cần approve, vì mỗi commit đó đã qua gate ③ hay gate ⑤. Một commit lọt vào `main` mà không qua bạn làm PR chờ mãi, kèm tên commit đó (review vòng 3 của `shop` PR #13).
    - **PR merge ngược có xung đột:** `merge-gate` không merge, và comment "Needs you" lên PR một lần cho mỗi commit đầu. Bạn gỡ ở máy: tách một nhánh từ `main`, merge nhánh đích vào đó, sửa xung đột, push nhánh, rồi mở PR vào nhánh đích và tự merge bằng **Create a merge commit**, để giữ hai nhánh cha. Đóng PR merge ngược cũ. PR mới không phải PR của một item, nên `audit` chặn deploy ở môi trường đó. Bạn đọc diff, rồi gỡ chặn bằng `/ao-rollback <môi trường> <sha>` (plan, quyết định 5). [Chưa kiểm] Cách gỡ này chưa chạy thật lần nào.
 
 Merge tay một PR chưa đủ cổng thì `audit` đỏ ở lần deploy kế tiếp.
@@ -213,7 +236,7 @@ jobs:
 Hai trường hợp của `release-workflow` không cần review hay approve:
 
 - **Commit báo cáo của `/ao-ship`** trên `release/*`: bot `ao-dev` push thẳng, không qua PR, một commit chỉ sửa `docs/releases/**` và `CHANGELOG.md`. Hai file đó nằm ngoài image. Commit của bot sửa file khác thì đỏ: `<sha> on release/v0.1.0 is a commit of tungph7-ao-dev[bot] without a PR, which may only change docs/releases/** and CHANGELOG.md, but it changes <file>`.
-- **PR merge ngược** từ `main` vào `develop` hay vào nhánh `release/*` đang mở: chỉ cần `CI` xanh trên head, và người merge là `merge-gate` hoặc bạn. Mọi commit của `main` đã qua gate ③ hay gate ⑤.
+- **PR merge ngược** từ `main` vào `develop` hay vào nhánh `release/*` đang mở: `CI` xanh trên head, đầu `main` là commit của một tag phát hành, mọi commit nó mang từ `main` về qua được `audit`, và người merge là `merge-gate` hoặc bạn.
 
 Khi `audit` đỏ:
 
@@ -270,7 +293,7 @@ Job của `merge-gate` khai `environment: { name: merge-gate, deployment: false 
 
 ## Hook `gh-guard` của Claude Code
 
-`gh-guard` chạy trước mỗi lần agent dùng `Bash`, `Read`, `Edit`, `Write` hoặc `NotebookEdit`, và chỉ áp cho các vai trò agent của hợp đồng. Phiên chính của bạn không bị chặn. Danh sách đầy đủ ở mục 2.7 của spec. Tóm tắt, hook chặn agent:
+`gh-guard` chạy trước mỗi lần agent dùng `Bash`, `Read`, `Edit`, `Write`, `NotebookEdit`, `Grep` hoặc `Glob`, và chỉ áp cho các vai trò agent của hợp đồng. Phiên chính của bạn không bị chặn. Danh sách đầy đủ ở mục 2.7 của spec. Tóm tắt, hook chặn agent:
 
 - bỏ qua hook git: `git commit --no-verify`, `git -c core.hooksPath=…`;
 - push lên `develop`, `main`, `release/*`;
@@ -280,7 +303,8 @@ Job của `merge-gate` khai `environment: { name: merge-gate, deployment: false 
 - sửa file được bảo vệ bằng `Edit`, `Write`, `NotebookEdit`. Riêng `devops` được sửa `.github/workflows/**`, nhưng PR đó vẫn do bạn merge;
 - từ `dev-workflow`: tự mở agent hay tự lấy token, tức chạy `ao-step.mjs`, `ao-agent.mjs`, `ao-git-credential.mjs`; đặt credential helper cho git (`git -c credential.*`, `git config credential.*`); sửa file trong `.git/`;
 - từ A1 sau Pilot 2: đưa mật khẩu basic auth của Development và Staging (`$E2E_HTTP_PASSWORD`, `$AO_ENV_AUTH`) vào tham số của một lệnh, như `curl -u`, vì process nào trên máy cũng đọc được dòng lệnh. Chỉ `printf`, lệnh có sẵn của shell, được nhắc tới biến này. `qa` đưa mật khẩu cho `curl` qua stdin: `printf 'user = "%s:%s"\n' "$E2E_HTTP_USER" "$E2E_HTTP_PASSWORD" | curl -K - <url>`;
-- từ Pilot 3 (review của `shop` PR #13): đọc hay nhắc tới bản sao backup và khóa mở chúng, tức file `.agekey`, file `.dump.age`, thư mục `ao-backups` và script `ao-backup-pull.mjs`. Lớp giữ thật là khóa `age` không nằm trên máy ([vps-setup.md](vps-setup.md), mục 16).
+- từ Pilot 3 (review của `shop` PR #13): đọc hay nhắc tới bản sao backup và khóa mở chúng, tức file `.agekey`, file `.dump.age`, thư mục `ao-backups`, thư mục `.ao` và script `ao-backup-pull.mjs`. Lớp giữ thật là khóa `age` không nằm trên máy ([vps-setup.md](vps-setup.md), mục 16);
+- từ review vòng 2 và 3 của `shop` PR #13: `Grep` và `Glob` theo luật của `Read`, và chỉ đọc trong dự án và thư mục temp, như `Edit` và `Write`; tìm dấu hiệu của khóa bí mật (`PRIVATE KEY`, `AGE-SECRET-KEY`) bằng `Grep` hay bằng lệnh.
 
 Khi bị chặn, agent nhận lý do bắt đầu bằng `gh-guard:`, kèm cách làm đúng, ví dụ dùng `ao-pr.mjs`.
 
@@ -291,7 +315,7 @@ Hai điều nên biết khi chạy agent:
 
 `gh-guard` đọc lệnh theo mẫu, nên một agent cố tình vẫn có thể lách. Các lớp không phụ thuộc vào máy bạn là Restrict của Jira, environment `merge-gate`, `merge-gate` và `audit`.
 
-**`gh-guard` chặn nhầm lẫn, không phải ranh giới quyền.** Phiên agent chạy dưới user Windows của bạn. Vì vậy nó đọc được file key của hai App, và một script do agent tự viết vẫn mua được token `ao-dev`, kể cả quyền Workflows. Từ T15b (review của ao-pilot PR #14), `gh-guard` từ chối thêm:
+**`gh-guard` chặn nhầm lẫn, không phải ranh giới quyền.** Phiên agent chạy dưới user Windows của bạn. Vì vậy nó đọc được file key của hai App, và một script do agent tự viết vẫn mua được token `ao-dev`, kể cả quyền Workflows, và lấy được cả token `gh` của bạn qua `gh auth token`. Với token đó, agent làm được mọi việc như bạn trên GitHub: approve, merge, tạo nhánh release và tag. Đây là rủi ro bạn chấp nhận tới khi agent chạy dưới tài khoản Windows riêng (Pilot 3, spec 2.9 mục 5). Từ T15b (review của ao-pilot PR #14), `gh-guard` từ chối thêm:
 
 - lệnh đặt, export hay xóa các biến danh tính của phiên (`GIT_CONFIG_*`, `GIT_ASKPASS`, `GH_TOKEN` …), cả `env -i` và các biến đó trong PowerShell;
 - chương trình `git-credential-*`;
@@ -304,7 +328,7 @@ Các việc sau còn để ngỏ, vì cần bạn quyết:
 - **Lớp chặn phía server cho `develop` và `main`:** ruleset cần repo public hoặc GitHub Pro. Khi chưa có, `merge-gate`, `audit` và hook `pre-push` là các lớp chặn còn lại.
 - **App riêng cho quyền Workflows,** chỉ `devops` dùng. Khi đó key của `ao-dev` không còn mở được workflow.
 - **Đưa `--go` ra khỏi luật `allow`** của `.claude/settings.json`. Khi đó Claude Code hỏi bạn trước mỗi lần chạy agent, kể cả khi model của phiên chính bị văn bản trên Jira hay PR dẫn dắt.
-- **Đưa key ra khỏi tầm của user chạy agent:** chạy agent dưới một user Windows riêng, hoặc trong WSL2 có sandbox (spec dev-workflow mục 12).
+- **Đưa key và login của bạn ra khỏi tầm của agent:** chạy agent dưới một tài khoản Windows riêng (`ao-agent`), không có keyring, credential git, khóa SSH hay token Jira của bạn. Bạn chấp nhận rủi ro này tới 2026-12-31 (Pilot 3, Phiên 31 · Lượt 15); `ao-agent` làm ngay sau Pilot 3 (spec 2.9 mục 5).
 - **`GH_TOKEN` của phiên hết hạn sau 1 giờ.** Lượt dài hơn sẽ hỏng ở các lệnh `gh` sau giờ đầu; `git` và `ao-pr.mjs` thì không, vì chúng mua token mỗi lần.
 
 ## Ruleset
@@ -323,7 +347,7 @@ Các việc sau còn để ngỏ, vì cần bạn quyết:
 - **Vì sao App `ao-merge` được bỏ qua trên `develop` và `release/*`:** `merge-gate` merge bằng App này cả những PR không có approve trên GitHub: PR tài liệu của Epic sau gate ② (bạn duyệt trên Jira), PR report của `/ao-ship` vào nhánh release, PR merge ngược `main` về `develop`. Mọi PR vào `main` là bản release hay hotfix đã có approve của bạn, nên `main` không ai được bỏ qua.
 - **Vì sao không phải `ao-dev`:** ở Phiên 30 · Lượt 9, quyền bỏ qua thuộc về `ao-dev`, nhưng mọi agent có quyền ghi git đều cầm token của App này. Review của `shop` PR #13 chỉ ra rằng một agent bị văn bản lạ dẫn dắt có thể lấy token đó, rồi merge một PR chưa ai duyệt. Key của `ao-merge` chỉ nằm trong environment `merge-gate`.
 - **Chỉ bạn cắt nhánh release và gắn tag hotfix.** `/ao-release` tạo `release/vX.Y.0` bằng login `gh` của bạn; `/ao-ship` của hotfix gắn tag bằng login `gh` của bạn; `merge-gate` gắn tag sau release bằng `ao-merge`. Agent không tạo được nhánh release ở một commit chưa ai review, và không tạo được tag mà phép kiểm của PR merge ngược tin vào. Kiểm thật trên repo nháp: `RepositoryRole 5` là vai trò admin.
-- **Bot vẫn bị giữ:** `merge-gate` chỉ merge PR đạt đủ cổng của nó: PR report chỉ được đổi `docs/releases/vX.Y.Z.md` và `CHANGELOG.md`; PR merge ngược chỉ được merge khi đầu nhánh `main` là commit của một tag `vX.Y.Z`. Ngay trước khi merge, nó đọc lại PR, và bỏ qua nếu đích hay đầu đã đổi. `audit` của deployer kiểm lại đúng các điều đó, và không nhận commit nào không qua PR. Không ai push thẳng lên `develop`, `main` hay `release/*` được, kể cả bot.
+- **Bot vẫn bị giữ:** `merge-gate` chỉ merge PR đạt đủ cổng của nó: PR report chỉ được đổi `docs/releases/vX.Y.Z.md` và `CHANGELOG.md`, và phải là đúng một commit trên đầu nhánh release; PR merge ngược chỉ được merge khi đầu nhánh `main` là commit của một tag `vX.Y.Z`, và mọi commit nó mang về qua được `audit`. Nó lấy token trước, đọc lại PR ngay trước lệnh merge, bỏ qua nếu đích hay đầu đã đổi, và đọc lại lần nữa sau khi merge: PR rơi vào một đích khác thì lượt chạy báo đỏ. `audit` của deployer kiểm lại đúng các điều đó, và không nhận commit nào không qua PR. Không ai push thẳng lên `develop`, `main` hay `release/*` được, kể cả bot.
 - Lệnh viết các ruleset mới trước, rồi mới bỏ các luật PR khỏi `ao-protected`, nên một repo đã có ruleset cũ không lúc nào bị bảo vệ lỏng hơn. Ruleset `ao-protected-release` của Pilot 3, T9 bị xóa sau cùng. Chạy lại thì cập nhật các ruleset đang có theo tên, không tạo bản trùng.
 
 Repo private ở gói Free không có ruleset (API trả 403). Khi đó lệnh in `soft mode: merge-gate and audit enforce the gates`, không đổi gì, và thoát với mã 0.
@@ -353,6 +377,6 @@ Kit đã kiểm với `gh` 2.103.3. Nên dùng bản 2.102.0 trở lên, vì:
 
 Ba việc nên làm:
 
-1. **Để token trong keyring.** Từ 2.26.0, `gh auth login` cất token vào keyring của hệ điều hành; trên Windows là Windows Credential Manager. Các lần đăng nhập cũ hơn để token trong `hosts.yml`, không mã hóa, và agent nào chạy dưới tài khoản Windows của bạn cũng đọc được. `gh auth status` cho biết token nằm ở `keyring` hay trong file. Nếu nằm trong file, hãy chạy lại `gh auth login`.
+1. **Để token trong keyring.** Từ 2.26.0, `gh auth login` cất token vào keyring của hệ điều hành; trên Windows là Windows Credential Manager. Các lần đăng nhập cũ hơn để token trong `hosts.yml`, không mã hóa. `gh auth status` cho biết token nằm ở `keyring` hay trong file. Nếu nằm trong file, hãy chạy lại `gh auth login`. Keyring chỉ chặn chương trình của tài khoản Windows khác: một script do agent tự viết, chạy dưới tài khoản của bạn, vẫn gọi được `gh auth token`, như `ao-step` vẫn gọi. Đây là rủi ro bạn đã chấp nhận tới khi agent chạy dưới tài khoản Windows riêng (Pilot 3, spec 2.9 mục 5).
 2. **Tắt telemetry nếu không muốn gửi.** Từ 2.91.0, `gh` mặc định gửi telemetry. Lệnh `gh config set telemetry disabled` tắt nó.
 3. **Xem git đang dùng token nào trước khi thu hồi token của `gh`.** Khi đăng nhập, `gh` hỏi `Authenticate Git with your GitHub credentials?`. Nếu chọn Yes trong khi git dùng Git Credential Manager, `gh` chép token của nó vào Git Credential Manager. Từ đó, thu hồi token của `gh` cũng làm `git push` lỗi. Việc này đã xảy ra ở Checkpoint 4; cách sửa là đăng nhập lại Git Credential Manager bằng `git credential-manager github login`.
