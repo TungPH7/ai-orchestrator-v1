@@ -1,5 +1,5 @@
 // ao-backup.mjs (project-scaffold part 3, spec 2.4; docs/vps-setup.md): the daily dump of each running database of the
-// VPS, kept 7 days and 4 weeks, and the check that the newest dump of one restores. ao-backup.service runs `run` as root;
+// VPS, kept 48 hours, 7 days and 4 weeks, and the check that the newest dump of one restores. ao-backup.service runs `run` as root;
 // the decisions are in lib/release/backup.mjs. A dump is written to <name>.part, readable by root only, and renamed once
 // pg_dump succeeded, so a half dump never counts.
 //   node /opt/ao/kit/scripts/ao-backup.mjs run
