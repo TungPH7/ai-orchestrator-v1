@@ -674,7 +674,7 @@ node <kit>/scripts/ao-kit.mjs check e-commerce/shop
 
    Rồi `/ao-preview SHOP-4`:
    - **Kết quả mong đợi:** bước kiểm in GO với ba URL. `--go` chạy `pnpm install` rồi bật ba app, trong 2 phút 39 giây. `user` `/en`, `admin` `/`, `api` `/actuator/health` đều trả 200. `/api/v1/health` gọi qua `admin` cũng trả 200. `/api/products` trả `[]`, tức Flyway đã tạo bảng. Docker chỉ chạy `learn-postgres`; service `app` của template không được dựng.
-   - Lệnh kết thúc bằng dòng `STOP: the preview of SHOP-4 runs already`: đó là trạng thái sau khi bật, không phải lỗi.
+   - Lệnh kết thúc bằng trạng thái sau khi bật: `The preview of SHOP-4 runs on <nhánh>: …`, kèm `Next: /ao-preview SHOP-4 --stop`. Bản kit trước Pilot 3 in dòng này dưới dạng `STOP: the preview of SHOP-4 runs already`; đó cũng không phải lỗi.
    - **Nếu lỗi:**
      - `lint` đỏ vì Spotless định dạng lại `application.yml` và không giữ comment. Chạy `pnpm --filter ./apps/api run lint` trên máy trước khi push; bước này không cần Docker.
      - `user` gọi API qua `API_URL` của `apps/user/.env.development`. File đó ở máy bạn trỏ tới API NestJS cũ, và `user` được viết theo endpoint của API đó, nên `/api/products/count` của `user` trả 500. Ghép `user` với API Java là việc của Epic đầu.

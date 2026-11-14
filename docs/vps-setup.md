@@ -376,6 +376,8 @@ printf 'API_URL=http://api:3001\nAUTH_SECRET=%s\n' "$(openssl rand -base64 48)" 
 
 **4. Thêm dự án vào `deployer.yaml`.** Claude nối đoạn mà `ao-kit doctor` in ra vào cuối `projects:`, qua stdin. Quyền file giữ nguyên `root:aodeploy 640`. Dự án có từ hai app công khai thì `hosts` theo từng app, như ví dụ `shop` ở mục 11, bước 6.
 
+Dự án chưa mở cho mọi người thêm dòng `production_auth: true` dưới `space:` (Pilot 3, spec 2.2). Khi đó Production hỏi cùng basic auth với Development và Staging. Smoke test của deployer gọi thẳng container, nên không bị ảnh hưởng. Khóa chỉ nằm ở đây, trên VPS, nên không PR nào mở được Production. Khi bạn quyết mở cho mọi người, xóa dòng này; lượt kế của deployer viết lại Caddyfile.
+
 **5. Điểm bắt đầu, rồi bật lại timer.**
 
 ```

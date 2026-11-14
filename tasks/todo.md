@@ -11,8 +11,8 @@
 
 ## Chuẩn bị
 
-- [ ] **T1: tài liệu.** Spec ghi đã duyệt; plan, todo; nhật ký Phiên 30 · Lượt 1–4. PR tài liệu từ nhánh `task/pilot-3`, tự merge khi CI xanh.
-- [ ] **T2: tiền đề** (plan, rủi ro). Không commit code; kết quả ghi vào `verification.md`:
+- [x] **T1: tài liệu.** Spec ghi đã duyệt; plan, todo; nhật ký Phiên 30 · Lượt 1–4. PR tài liệu từ nhánh `task/pilot-3`, tự merge khi CI xanh.
+- [x] **T2: tiền đề** (plan, rủi ro). Không commit code; kết quả ghi vào `verification.md`:
   1. mọi chỗ trong kit đọc host Production (`doctor`, `/ao-status`, `jira-sync`, `qa`, smoke): chỗ nào sẽ gặp basic auth sau `production_auth`;
   2. đường của `SMP-27` (T20 của B1): ai mở PR, `/ao-review` và `/ao-qa` đọc gì, cách item tới Done;
   3. các E2E của `shop` gọi API NestJS cũ, chạy trên Development hiện tại: test nào đỏ;
@@ -22,22 +22,25 @@
   - **Đạt khi:** sáu mục có kết quả. Mục nào sai với spec hay plan thì sửa trước chặng 1.
 
 ### Checkpoint 1: sau T2
-- [ ] Tiền đề đạt; spec và plan sửa nếu cần.
+- [x] Tiền đề đạt (Lượt 5). T4 thêm `playwright.config.ts` của profile; T5 đưa bản sửa vào `shop`.
 
 ## Chặng 1: kit và `SHOP-5`, nhánh `task/pilot3-1`
 
-- [ ] **T3: `production_auth`** (spec 2.2; plan, quyết định 2).
+- [x] **T3: `production_auth`** (spec 2.2; plan, quyết định 2).
   - **Đạt khi:**
     - schema của `deployer.yaml` nhận `production_auth` (boolean) cho từng dự án, mặc định `false`;
     - `caddySites` đặt basic auth cho host Production của dự án có khóa này; dự án khác không đổi;
     - các chỗ T2 mục 1 tìm ra được sửa cùng;
     - `vps/deployer.example.yaml` có khóa này, kèm chú thích.
   - **Kiểm:** test của `caddy.mjs` và của schema; Caddyfile của một cấu hình có `ao-sample`, `ao-pilot` giống hệt bản trước.
-- [ ] **T4: dòng `STOP:` của `/ao-preview --go` và `--stop`** (việc B3 để lại). Khi lệnh làm xong việc, dòng cuối mô tả trạng thái mới mà không mở đầu bằng `STOP:`; `STOP:` chỉ còn cho lúc lệnh không làm được. PR của chặng 1.
-  - **Kiểm:** test của `runner.mjs` hoặc `ao-step` cho hai trường hợp.
+- [x] **T4: dòng `STOP:` của `/ao-preview --go` và `--stop`, và `playwright.config.ts` của profile** (việc B3 để lại; T2 mục 3).
+  - Khi lệnh làm xong việc, dòng cuối mô tả trạng thái mới mà không mở đầu bằng `STOP:`; `STOP:` chỉ còn cho lúc lệnh không làm được.
+  - `playwright.config.ts` của `profiles/base-pnpm` và `profiles/next-nest`: khi test chạy trên một môi trường, chỉ dựng app tại chỗ nếu có test `@local`.
+  - PR của chặng 1.
+  - **Kiểm:** test của `ao-step` hoặc `runner.mjs` cho hai trường hợp; `profiles:check`.
 - [ ] **T5: [bạn] `SHOP-5`** (spec 2.1; plan, quyết định 4).
   - Task tạo bằng token CI, nhãn `ao-devops`; bạn bấm Refine nếu contract đòi.
-  - Phiên chính viết code trên `feature/SHOP-5-…`: `HEALTHCHECK` của `api`; các E2E gọi API cũ chờ Epic bằng `test.skip(` kèm `reason:`.
+  - Phiên chính viết code trên `feature/SHOP-5-…`: `HEALTHCHECK` của `api`; `playwright.config.ts` theo bản sửa của T4; 8 E2E đỏ ở T2 chờ bằng `test.skip(` kèm `reason:` (4 test đăng nhập chờ Epic đăng nhập, 4 test sản phẩm chờ Epic "Danh mục sản phẩm").
   - PR do bot `ao-dev` mở; CI xanh; `/ao-review SHOP-5`; mình merge khi CI xanh (câu 5).
   - Deployer deploy Development; container `api` báo `healthy`.
   - `/ao-qa SHOP-5` trên Development; **bạn Accept**.
@@ -81,7 +84,12 @@
 ## Chặng 3: Epic tới gate ②
 
 - [ ] **T10: chép kit vào `shop`** trong PR riêng, nếu kit đã đổi những file được chép từ lần `SHOP-2`.
-- [ ] **T11: [bạn] ảnh và intake.** Bạn gửi 2–4 ảnh; `/ao-intake` (mình phỏng vấn bạn, tạo Epic); mình chép ảnh vào `.ai/design-inbox/<EPIC>/`, thu nhỏ nếu cần; **bạn** bấm `Start spec`.
+- [ ] **T11: [bạn] ảnh và intake.**
+  - **Giao diện mẫu bạn chọn ở Lượt 5:** trang `https://demo.codeandchill.store/vitrea/#/growth` (hai ảnh dán trong chat: trang Growth Lab và hộp thoại "New experiment"). Trang danh sách, trang chi tiết của `user` và form của `admin` theo style, design token và cách bố trí của trang này.
+  - Ảnh dán trong chat không được lưu thành file, nên mình đọc trang bằng trình duyệt headless (Playwright với Chromium; phiên này chưa có chrome-devtools MCP, cả hai cùng điều khiển Chromium qua CDP): lấy biến CSS, font, màu, bo góc, đổ bóng, hiệu ứng kính và khoảng cách của từng thành phần (thanh điều hướng, thẻ, bảng, nút, nhãn trạng thái, ô nhập, hộp thoại).
+  - Chụp các màn hình vào `.ai/design-inbox/<EPIC>/` (mỗi ảnh tối đa 1 MB, cạnh dài tối đa 2.000 px), kèm file ghi token đo được và nguồn.
+  - Chỉ lấy style. Không chép code, logo, ảnh hay font có giấy phép riêng của trang mẫu; font kiểm giấy phép trước khi dùng.
+  - `/ao-intake` (mình phỏng vấn bạn, tạo Epic); **bạn** bấm `Start spec`.
 - [ ] **T12: [bạn] `/ao-spec <EPIC>`** tới **gate ①**.
 - [ ] **T13: [bạn] `/ao-plan <EPIC>`** tới **gate ②**. Sửa chặng 4 của todo theo plan của `sa`.
 

@@ -8,6 +8,7 @@ import { matchesGlob } from '../../lib/quality/glob.mjs';
 import { readFileSync } from 'node:fs';
 import { readProjectConfig } from '../../lib/scaffold/project-config.mjs';
 import { lockHash, needsInstall, PREVIEW_SAMPLE, previewApps, previewEnv } from '../../lib/workflow/preview.mjs';
+import { formatDecision } from '../../lib/workflow/runner.mjs';
 import { decideStep } from '../../lib/workflow/steps.mjs';
 import { CONTRACT_DIR, ROOT } from '../helpers/kit.mjs';
 import { checkArgument, previewFirst } from '../../scripts/ao-step.mjs';
@@ -74,7 +75,7 @@ test('/ao-preview stops: no open PR, a PR on protected paths, an agent running, 
     [facts({ config: null }), /the project has no \.ai-orchestrator\/project\.yaml, which says the apps to start/],
     [facts({ config: null, configError: 'P6 apps.web.dev: next dev: npm or node and plain words, run with no shell' }), /P6 apps\.web\.dev/],
     [facts({ busy: [3000] }), /port 3000 is in use/],
-    [facts({ active: { key: 'DEMO-21', branch: 'feature/DEMO-21-remove-line', apps: [{ name: 'web', url: 'http://localhost:3000/' }] } }), /the preview of DEMO-21 runs already: web http:\/\/localhost:3000\//],
+    [facts({ active: { key: 'DEMO-30', branch: 'feature/DEMO-30-other', apps: [{ name: 'web', url: 'http://localhost:3000/' }] } }), /the preview of DEMO-30 runs/],
     [facts({}, {}, { type: 'Epic', workType: 'epic' }), /DEMO-21 is an Epic/],
   ];
   for (const [f, reason] of cases) {
@@ -153,6 +154,16 @@ test('/ao-status says when a preview runs, as the first thing that waits for you
 test('/ao-preview --stop stops the preview that runs, whatever the key; with none it says so', () => {
   const active = { key: 'DEMO-21', branch: 'feature/DEMO-21-remove-line', apps: [{ name: 'web', url: 'http://localhost:3000/', pid: 4242 }] };
   assert.deepEqual(decide(facts({ stop: true, active })).runs, [{ action: 'preview-stop', key: 'DEMO-21' }]);
+  // What --stop ends on, and --stop with nothing running: a state, not a STOP line that reads like an error (Pilot 3, T4).
   const none = decide(facts({ stop: true }));
-  assert.deepEqual([none.go, none.reason], [false, 'no preview runs']);
+  assert.deepEqual([none.status, none.go, none.lines, none.next], [true, undefined, ['No preview runs.'], '/ao-status']);
+  assert.equal(formatDecision(none), 'No preview runs.\nNext: /ao-status');
+});
+
+test('/ao-preview of the item whose preview runs, as --go ends: the state and how to stop it, with no STOP line (Pilot 3, T4)', () => {
+  const running = decide(facts({ active: { key: 'DEMO-21', branch: 'feature/DEMO-21-remove-line', apps: [{ name: 'web', url: 'http://localhost:3000/' }] } }));
+  assert.equal(running.status, true);
+  assert.equal(running.lines.at(-1), 'The preview of DEMO-21 runs on feature/DEMO-21-remove-line: web http://localhost:3000/');
+  assert.equal(running.next, '/ao-preview DEMO-21 --stop, when you are done with it');
+  assert.doesNotMatch(formatDecision(running), /STOP/);
 });
