@@ -201,6 +201,14 @@ Sửa plan và todo: T4 thêm `playwright.config.ts` của profile; T5 đưa b�
   - **Tài liệu:** spec 2.9 mục 5; `quality-gates.md` (mục chấp nhận rủi ro, merge ngược, `gh-guard`, keyring, việc còn để ngỏ); `release-workflow.md`; comment của `ruleset.mjs` không còn nói GitHub giữ được agent.
   - Năm lệnh kiểm xanh, 1.465 test (trước là 1.444).
   - **Cách làm từ giờ** (bạn nhắc ở Lượt 16): trước mỗi vòng review trả phí, mình đọc lại từng dòng báo cáo vòng trước; lập danh sách các chỗ bản sửa trao quyền (ai approve, ai merge, ai tạo nhánh và tag, code nào chạy cùng secret) và ai với tới được chúng; nói gốc chung ngay khi có; sửa cả Low.
+- **T10h, áp bản sửa vòng 3** (Phiên 31 · Lượt 16):
+  - Kit PR #287 merge (`05da881`), CI xanh (contract, profiles).
+  - VPS (`scratchpad/t10-vps.sh`, bằng root): kit lên `05da881`, bản trước ở `/opt/ao/kit.prev`; tick thử không có việc; mã băm Caddyfile trước và sau như nhau (`4f0f02a42c51`); timer chạy, các tick sau kết thúc bình thường; RAM trống 1.880 MB. `audit` của deployer nhờ vậy biết các High đã chấp nhận trước khi PR #13 merge.
+  - PR #13: commit thứ tư `3ef07c6` `chore(kit): copy the kit at 05da881b (SHOP-6)`, 13 file, +258/−57 (kit và `.claude/agents/devops.md`).
+    - `ao-kit check` đạt. `doctor` đạt 31 dòng, đỏ hai dòng: Docker (tắt cố ý), và dòng mới "`.github/CODEOWNERS` is on main and on the open release branches", chỉ nêu `main`, chờ bản `v0.1.1`. `release/v0.1.0` đã nằm trong `main`, nên không bị tính là nhánh còn mở.
+    - CI xanh đủ năm check. Mô tả PR có thêm mục cho commit thứ tư (`ao-pr.mjs edit`).
+  - `SHOP-6`: comment ghi quyết định của bạn ở Lượt 15 và 16, rồi gỡ cờ Needs you và nhãn `needs-you` bằng token CI (`scratchpad/item-unflag.mjs`, hàm `clearFlag` của kit). Item ở In Review.
+  - Dòng kiểm của `/ao-review 13`: GO. `reviewer` (`xhigh`) đọc cả PR; `security` (`max`) review đầy đủ, vì phần đổi từ báo cáo đầy đủ gần nhất (`6489d52`) là 530 dòng, quá ngưỡng 300. Ước 10–12 USD, cao hơn mức 6–9 USD đã nói ở Lượt 15. Bắt đầu khoảng 22:35.
 - **Lượt 6 (Phiên 31), bạn: "Đã start spec"; hỏi kiểm khóa `age` làm sau được không:**
   - `ao-step status SHOP-7`: Specifying, chưa có nhánh docs; `Next: /ao-spec SHOP-7`, chạy sau khi `SHOP-6` merge.
   - Kiểm khóa đã cất: bạn làm sau. Đây không phải điều kiện của tiêu chí 2, vì lần khôi phục thật từ bản sao đã đạt ở T8. Việc kiểm chỉ để chắc bản trong trình quản lý mật khẩu, nay là bản duy nhất của khóa, là đúng. Nên làm trước T17; T19 nhắc lại.
