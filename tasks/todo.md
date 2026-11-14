@@ -115,7 +115,7 @@ Mỗi item: `/ao-build`, `/ao-preview` (bạn xem), `/ao-review`, **gate ③**, 
 
 - [ ] **T17: [bạn] `v0.2.0`** (spec 2.7): vài sản phẩm thử trên Production qua `admin`; **gate ④**; `/ao-ship v0.2.0`; **gate ⑤**; Production, Flyway trên database có dữ liệu; **bạn** Release `v0.2.0` và Complete Epic.
 - [ ] **T18: hướng dẫn.** Phần mới của `docs/getting-started.md` với đầu ra thật của Epic; `production_auth` và bản sao trong `docs/vps-setup.md`; PR.
-- [ ] **T19: đóng pilot.** Nhắc bạn cất bản thứ hai của khóa `age` (`%USERPROFILE%\.ao\ao-backup.agekey`) nếu chưa làm (Lượt 6: bạn làm sau). Bảng tám tiêu chí và chi phí trong `verification.md`; plan, todo, verification vào `tasks/archive/pilot-3/`; `SPEC.md`, `concerns.md`; PR tài liệu.
+- [ ] **T19: đóng pilot.** Nhắc bạn kiểm khóa `age` đã cất (giải mã một bản sao bằng `decrypt --identity -`, khóa lấy từ trình quản lý mật khẩu) nếu chưa làm; file khóa trên máy đã xóa ở Phiên 31 · Lượt 2 (Phiên 31 · Lượt 6: bạn làm sau, nên làm trước T17). Bảng tám tiêu chí và chi phí trong `verification.md`; plan, todo, verification vào `tasks/archive/pilot-3/`; `SPEC.md`, `concerns.md`; PR tài liệu.
 
 ### Checkpoint 6: sau T19
 - [ ] Đủ tám tiêu chí của spec.

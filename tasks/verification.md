@@ -178,3 +178,6 @@ Sửa plan và todo: T4 thêm `playwright.config.ts` của profile; T5 đưa b�
     - matcher của `gh-guard` trong `.claude/settings.json` thêm `Grep|Glob`.
   - CI xanh đủ năm check. Mô tả PR có thêm mục cho commit thứ ba, kể cả điểm lệch `require_last_push_approval`.
   - Dòng kiểm của `/ao-review 13`: GO; `reviewer` (`xhigh`) đọc cả PR, `security` (`max`) chỉ đọc phần đổi từ `6489d52` (`review-delta`, 239 dòng).
+- **Lượt 6 (Phiên 31), bạn: "Đã start spec"; hỏi kiểm khóa `age` làm sau được không:**
+  - `ao-step status SHOP-7`: Specifying, chưa có nhánh docs; `Next: /ao-spec SHOP-7`, chạy sau khi `SHOP-6` merge.
+  - Kiểm khóa đã cất: bạn làm sau. Đây không phải điều kiện của tiêu chí 2, vì lần khôi phục thật từ bản sao đã đạt ở T8. Việc kiểm chỉ để chắc bản trong trình quản lý mật khẩu, nay là bản duy nhất của khóa, là đúng. Nên làm trước T17; T19 nhắc lại.
