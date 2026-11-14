@@ -74,3 +74,11 @@ Sửa plan và todo: T4 thêm `playwright.config.ts` của profile; T5 đưa b�
   - **Lượt 9: bạn chọn cách 1, tách ruleset thành ba** (`lib/quality/ruleset.mjs`, `scripts/gh-protect.mjs` nhận `--dev-app-id`, `setup github` truyền `github.apps.dev_id`; `docs/quality-gates.md` mục Ruleset). Lệnh tạo hai ruleset có PR trước, rồi mới thu hẹp `ao-protected`.
   - Kit PR #284 (`ceee70c`). `gh-protect --repo TungPH7/shop --dev-app-id 5514949`: tạo `ao-protected-merge` (id 27256309) và `ao-protected-release` (id 27256310), rồi thu hẹp `ao-protected` (id 27192121) còn cấm xóa và force push. Đọc lại qua API: đúng nhánh, đúng luật, bypass `Integration:5514949` ở chế độ `pull_request` và `always`.
   - Chạy lại `/ao-ship v0.1.0`: chỉ còn bước `release-pr`, không gọi lại agent. Bot `ao-dev` commit `e471c93` (chỉ `CHANGELOG.md` và `docs/releases/v0.1.0.md`) lên `release/v0.1.0` và mở PR #11 vào `main` (100 file, vì `main` mới có commit đầu). CI của PR #11 xanh cả năm check. Staging tự deploy lại `e471c93`, thành công. Chờ gate ⑤ của bạn.
+- **Gate ⑤** (Lượt 10, bạn approve PR #11): `merge-gate` merge `ac7a63c` vào `main`, gắn tag `v0.1.0`, mở PR #12 merge ngược `main` về `develop` và tự merge khi CI xanh. Đây là lần đầu `merge-gate` merge một PR không có approve trên GitHub dưới ruleset mới: chạy đúng.
+- **Production** (deployment `7785170368`, success 08:47:36 UTC): `ao-shop-production-{user,admin,api,db}`, `api` `healthy`, Flyway 3 migration. Không đăng nhập: `shop.ao.t2g.io.vn/en` và `shop-admin.ao.t2g.io.vn` trả 401; có đăng nhập: 200, và `/api/v1/health` qua `admin` 200. Production của `ao-sample` vẫn mở (200).
+- **RAM với ba môi trường của `shop` cùng `ao-pilot`, `ao-sample`** (22 container, cộng 1.422 MiB): còn trống 1.867 MB trên 3.915 MB; B3 ước khoảng 1,7 GB. Đĩa còn 23 GB; build cache 7,07 GB, quá mốc `PRUNE_CACHE` 4 GB. Đề xuất giữ VPS 4 GB.
+- **Backup ba database:** `ao-backup` ghi dump của Production, Staging, Development (15.235–15.246 byte) và ba bản sao mã hóa; máy bạn kéo về 3 bản. Bản sao Production giải mã trên máy bạn trùng SHA-256 với bản trên VPS (`efab6842…`). Tiêu chí 2 đạt cho cả ba môi trường.
+
+### Checkpoint 3: đạt (trừ bấm Release `v0.1.0` trên Jira)
+
+`v0.1.0` chạy trên Production và hỏi basic auth; RAM ba môi trường đo được; bản sao trên máy bạn khôi phục được. Chi phí agent của chặng 1–2: 5,38 USD.

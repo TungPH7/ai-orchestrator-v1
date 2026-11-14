@@ -71,7 +71,7 @@
   - mình sinh key kéo về, đưa khóa công khai lên VPS, chạy `ao-backup-pull.mjs install`;
   - một lần khôi phục thật: giải mã một bản, so mã băm với bản trên VPS, khôi phục vào Postgres trên Docker ở máy bạn, so số bảng và số dòng.
   - **Đạt khi:** tiêu chí 2 của spec đạt cho Development; Staging và Production được phủ sau T9.
-- [ ] **T9: [bạn] `v0.1.0`** (spec 2.5).
+- [x] **T9: [bạn] `v0.1.0`** (spec 2.5).
   - Fix Version `v0.1.0`, `v0.2.0` qua REST bằng token admin;
   - **gate ④:** `/ao-release v0.1.0 <sha>`; Staging deploy, database Staging, Flyway;
   - `/ao-ship v0.1.0`; **gate ⑤:** bạn approve PR release; Production deploy;
@@ -79,7 +79,7 @@
   - **bạn** bấm Release `v0.1.0`, hoặc bảo mình làm qua REST.
 
 ### Checkpoint 3: sau T9
-- [ ] `v0.1.0` chạy trên Production và hỏi basic auth; RAM ba môi trường đo được; bản sao trên máy bạn khôi phục được.
+- [x] `v0.1.0` chạy trên Production và hỏi basic auth; RAM ba môi trường đo được; bản sao trên máy bạn khôi phục được (Lượt 10).
 
 ## Chặng 3: Epic tới gate ②
 
