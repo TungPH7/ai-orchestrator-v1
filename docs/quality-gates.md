@@ -58,6 +58,20 @@ Job chạy `npm ci`, `npm run lint`, `npm run typecheck`, `npm run test:coverage
 
 **Dự án pnpm** (project-scaffold phần 2, mục 2.1): repo có `pnpm-lock.yaml` ở gốc thì bước **npm or pnpm** (`ci-package-manager.mjs`) cài đúng bản pnpm mà `packageManager` của `package.json` ghi. Sau đó job chạy `pnpm install --frozen-lockfile` và `pnpm run <script>` thay cho npm, và job `policy` chạy `pnpm audit`. Thiếu `packageManager` thì bước này đỏ và nói vậy. Package của chính kit trong `.ai-orchestrator/` vẫn cài bằng npm.
 
+**App Java** (project-scaffold phần 3, mục 2.2): app Java là một package của workspace pnpm, qua `apps/<app>/package.json` mà `ao-kit add --stack spring-boot` viết. Năm script của file đó gọi `.ai-orchestrator/scripts/mvnw.mjs`, nên `pnpm -r run <script>` ở gốc chạy luôn app Java:
+
+| Script | Maven |
+|---|---|
+| `lint` | `validate`: Spotless và Checkstyle của app |
+| `typecheck` | `compile`, bỏ qua hai bước lint |
+| `test:coverage` | `verify`: test (Testcontainers cần Docker), báo cáo và check của JaCoCo |
+| `build` | `package -DskipTests` |
+| `dev` | bật Postgres của `docker-compose.yml`, rồi `spring-boot:run` |
+
+- `mvnw.mjs` chạy Maven wrapper của app với JDK mà `pom.xml` đòi (`<java.version>`). Nó tìm JDK theo thứ tự: `JAVA_HOME`; `JAVA_HOME_<bản>`; các JDK nằm cạnh `JAVA_HOME`; các thư mục cài thường gặp. `JAVA_HOME` chỉ được đặt cho Maven, nên biến của bạn giữ nguyên.
+- Trên Windows, `mvnw.cmd` chạy qua `cmd.exe` với tham số cố định, gọi bằng `.\mvnw.cmd` trong thư mục app, vì phiên Claude Code đặt `NoDefaultCurrentDirectoryInExePath=1`.
+- Trong CI, repo có `apps/*/pom.xml` thì bước **Java versions** (`ci-java.mjs`) đọc bản Java của từng `pom.xml`, rồi `actions/setup-java` cài đúng các bản đó (Temurin) và giữ cache Maven. Repo không có app Java thì hai bước này bỏ qua.
+
 Job summary có mục **Coverage of changed lines: N%**, với bảng gồm các cột File, Covered và Lines not run. Bước này đỏ khi:
 
 - các dòng mà PR thêm hoặc sửa có coverage dưới 80% (`coverage.changed_lines_min`). Viết test chạy qua các dòng ở cột Lines not run.

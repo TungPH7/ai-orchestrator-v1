@@ -41,7 +41,7 @@ Mình đã đọc template, không sửa gì:
 | Cấu hình | `SERVER_PORT` (mặc định 8080); `DB_HOST`, `DB_PORT`, `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD`; profile `dev`, `staging`, `prod` | Cổng lấy từ `PORT`, như mọi app của kit (2.1) |
 | Route | `/api/v1/health`, `/api/products`; `/actuator/health` không cần đăng nhập | Caddy trong container `admin` chuyển `/api/*` sang `api:3001` mà không bỏ tiền tố, nên route giữ nguyên |
 | Container | Dockerfile nhiều tầng, build từ thư mục của app; chạy user 1001; `MaxRAMPercentage=75` | Build từ thư mục của app trên VPS (2.5) |
-| Thứ kit thay | `.githooks/`, `.github/` (CI và release riêng), `.claude/` (1.943 file) | `add` bỏ đi |
+| Thứ kit thay | `.githooks/`, `.github/` (CI và release riêng), `.claude/` (1.977 file) | `add` bỏ đi |
 | Thứ không thuộc sản phẩm | `study-guide-impl/`, `prompt.md` (ghi chú riêng của bạn) | `--exclude` |
 | Quy ước | `docs/coding-conventions/` (16 file); không có `CLAUDE.md` | Skill `api-conventions` trỏ tới đó |
 
@@ -89,7 +89,7 @@ node <kit>/scripts/ao-kit.mjs add e-commerce/shop api --stack spring-boot --from
 
 **Script `scripts/mvnw.mjs` của kit** chạy wrapper của app:
 - Linux và macOS: `./mvnw <tham số>`, không qua shell.
-- Windows: `mvnw.cmd` là file batch, mà Node không chạy được file `.cmd` nếu không qua shell. Script gọi `cmd.exe /d /s /c <đường dẫn đầy đủ>\mvnw.cmd <tham số>`, và chỉ nhận tham số cố định của `package.json`, không nhận chữ từ ngoài vào. Đường dẫn phải đầy đủ, vì phiên Claude Code đặt `NoDefaultCurrentDirectoryInExePath=1`, nên `cmd` không tìm lệnh trong thư mục hiện hành (T2).
+- Windows: `mvnw.cmd` là file batch, mà Node không chạy được file `.cmd` nếu không qua shell. Script chạy `cmd.exe /d /s /c ".\mvnw.cmd <tham số>"` trong thư mục app, và chỉ nhận tham số cố định của `package.json`, mỗi tham số chỉ gồm chữ, số và `: . _ = -`. Wrapper phải được gọi bằng đường dẫn tường minh `.\mvnw.cmd`, vì phiên Claude Code đặt `NoDefaultCurrentDirectoryInExePath=1`, nên `cmd` không tìm lệnh trong thư mục hiện hành (T2). Đường dẫn tương đối này không có khoảng trắng, nên không vướng cách `cmd` bỏ dấu nháy.
 - Chọn JDK theo `<java.version>` của `pom.xml`, theo thứ tự:
   1. `JAVA_HOME`, khi bản của nó khớp;
   2. biến `JAVA_HOME_<bản>` nếu có, như `JAVA_HOME_21`, theo cách runner của GitHub đặt tên;
@@ -111,7 +111,7 @@ node <kit>/scripts/ao-kit.mjs add e-commerce/shop api --stack spring-boot --from
 
 **Máy bạn:**
 - `doctor` có hai dòng mới cho dự án có app Java: JDK đúng bản của `pom.xml`, và Docker đang chạy.
-- Test của `api` và `/ao-preview` cần Docker Desktop: Testcontainers cho test, Postgres cho `dev`. `ao-step` dừng trước lượt `be-dev` hay `qa` khi Docker chưa chạy, và nói cách bật.
+- Test của `api` và `/ao-preview` cần Docker Desktop: Testcontainers cho test, Postgres cho `dev`. `ao-step` dừng trước lượt `be-dev` khi Docker chưa chạy, và nói cách bật. `qa` kiểm trên môi trường đã deploy, còn `fe-dev` chạy test của app JS, nên hai vai trò này không cần Docker (sửa ở T6; bản duyệt ghi cả `qa`).
 - Hook `pre-commit` không chạy Maven, để commit vẫn nhanh. Spotless và Checkstyle chạy ở `lint`, trong CI.
 
 ### 2.3 Cổng chất lượng cho Java
@@ -246,7 +246,7 @@ tests/                           test của từng phần trên
 ## 6. Chiến lược test
 
 `node:test`, hàm thuần, effect truyền vào, như hai phần trước.
-- **`mvnw.mjs`:** tham số đúng cho Windows (`cmd.exe /d /s /c` với đường dẫn đầy đủ của `mvnw.cmd`) và Linux; chỉ nhận tên script đã biết; chọn JDK theo `pom.xml`; đọc `.env`.
+- **`mvnw.mjs`:** tham số đúng cho Windows (`cmd.exe /d /s /c` với `.\mvnw.cmd`) và Linux; chỉ nhận tên script đã biết; chọn JDK theo `pom.xml`; đọc `.env`.
 - **`add --stack spring-boot`:** trên thư mục tạm thật, với template Java giả có `.githooks/`, `.github/`, `.claude/`, `prompt.md`, `docs/coding-conventions/`. Kiểm: danh sách file bỏ, `package.json` của app, `project.yaml`, `deploy.yaml`, `roster.local.yaml`, các dòng báo; chạy lại không đổi gì.
 - **Coverage:** báo cáo JaCoCo mẫu; dòng đổi được tính đúng; `coverage_exclude`; luật cũ của lcov không đổi.
 - **`osv-scanner`:** kết quả JSON mẫu; ngưỡng `high`; ngoại lệ còn hạn và hết hạn.
@@ -282,7 +282,7 @@ tests/                           test của từng phần trên
 | `mvnw.cmd` trên Windows cần `cmd.exe` | Tham số cố định, chỉ tên script đã biết; có test |
 | Docker Desktop chưa chạy khi test hay xem trước | `doctor` và `ao-step` báo rõ; mình bật Docker khi một bước cần, rồi tắt sau đó |
 | Backup chứa dữ liệu người dùng | Chỉ root đọc được; không rời VPS cho tới khi bạn chọn chỗ (câu 2) |
-| `.claude/` của template có 1.943 file | `add` bỏ cả thư mục và in số file đã bỏ |
+| `.claude/` của template có 1.977 file | `add` bỏ cả thư mục và in số file đã bỏ |
 
 ## 9. Câu hỏi đã trả lời
 

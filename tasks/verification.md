@@ -28,3 +28,32 @@ Mình chép nhánh `codebase` của template (`0a0ccac`) ra thư mục tạm b�
 5. **`study-guide-impl/build-project/99-troubleshoot/eol.md` làm Spotless đỏ** ngay trên nhánh `codebase`. Thư mục này bị `--exclude`, nên `shop` không gặp.
 
 Image Postgres: `postgres:17-alpine@sha256:d3244e8ce3f165ee3c93d9c4a4b1d0fe48b3a89e2287b717fdcbbde92d405065`.
+
+## Chặng 1: Maven trong workspace pnpm (T3–T7), nhánh `task/scaffold3-1`
+
+**T3.** `lib/quality/maven.mjs` và `scripts/mvnw.mjs`:
+- Năm script ra năm lần chạy Maven cố định; `typecheck` và `build` bỏ Spotless và Checkstyle, vì `lint` đã chạy hai bước đó.
+- Trên Windows: `cmd.exe /d /s /c ".\mvnw.cmd …"` trong thư mục app, với `windowsVerbatimArguments`. Tham số nào có ký tự ngoài chữ, số và `: . _ = -` thì bị từ chối. Nơi khác: `sh ./mvnw`, nên không cần bit thực thi.
+- Chọn JDK bằng file `release` của JDK, không chạy `java`.
+- **Chạy thật** trên bản chép của template, với `JAVA_HOME` vẫn là JDK 17: `lint` xanh sau 9 giây; `typecheck` biên dịch 35 file với `release 21` và xanh sau 8 giây. Script đã tự chọn `C:\opt\jdk-21`, nằm cạnh `JAVA_HOME`.
+
+**T4.** Stack `spring-boot` và `add`:
+- Stack không có khung riêng (`requires_template`); `add` không có `--from` thì dừng. `package.json` của stack chỉ được chép khi template chưa có.
+- `template.mjs`: dòng "Left out" in số file của mỗi thư mục (`.claude/ (1977 files)`). Template không có `CLAUDE.md` mà có `docs/coding-conventions/` thì skill `<app>-conventions` trỏ tới các file đó.
+- `app-report.mjs` thêm sáu luật cho Spring Boot: cổng không lấy từ `PORT`; biến không có giá trị mặc định; `EXPOSE` hay `HEALTHCHECK` khác cổng của app; `SPRING_PROFILES_ACTIVE` đặt cứng trong Dockerfile; JaCoCo không ghi XML; và cho mọi app: comment cuối dòng trong `.dockerignore`. Luật lcov của Vitest không áp cho app Java.
+- `deploy.schema.json` nhận `context`, `memory`, `start_timeout` ngay ở task này, vì `add` ghi ba khóa đó. Phần deployer dùng chúng vẫn ở T13.
+- **Chạy thật** trên template của bạn (`codebase`, `0a0ccac`) trong một dự án tạm: `init --package-manager pnpm` 19 giây, `add api` 6 giây.
+  - Chép 93 file; bỏ `.claude/` (1.977 file), `.githooks/`, `.github/` (4 file); `docs/coding-conventions/` (16 file) thành skill `api-conventions`.
+  - Báo năm chỗ: cổng từ `SERVER_PORT`; `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD` không có giá trị mặc định; Dockerfile mở 8080; `SPRING_PROFILES_ACTIVE` đặt cứng; dòng 61 của `.dockerignore`.
+  - Lần đầu, luật Dockerfile không thấy cổng của `HEALTHCHECK`, vì dòng đó xuống dòng bằng `\`. Luật giờ nối các dòng tiếp nối trước khi đọc, và test giả lập đúng dạng đó.
+  - `pnpm --filter ./apps/api run typecheck` ở gốc dự án tạm xanh sau 12 giây: chuỗi `pnpm` → `package.json` → `mvnw.mjs` → JDK 21 chạy được.
+- `profiles:check` xanh (295 giây); nó vẫn chỉ dựng `nextjs` và `react`.
+
+**T5.** CI: bước **Java versions** (`ci-java.mjs`) đọc bản Java của `apps/*/pom.xml`, rồi `actions/setup-java` v6.1.0 (`b843ebf9…`, ra ngày 14/10) cài đúng các bản đó và giữ cache Maven, chỉ khi repo có `apps/*/pom.xml`. Test của task này viết sau khi sửa `ci.yml`, nên không có lần đỏ trước.
+
+**T6.**
+- `doctor` có dòng JDK cho từng app Java và dòng Docker đang chạy, chỉ khi dự án có app Java.
+- `doctor` có dòng hỏi về `ao-deploy` (nhóm GitHub, dấu `?`). Login `gh` không đọc được bản cài của App: `GET /user/installations` trả 403 với token OAuth của `gh`.
+- `ao-step` dừng trước lượt `be-dev` của dự án có app Java khi Docker chưa chạy (`dockerGate`). **Khác spec đã duyệt:** spec ghi cả `qa`, nhưng `qa` kiểm trên môi trường đã deploy và không chạy Testcontainers; spec mục 2.2 đã sửa theo.
+
+Năm lệnh kiểm xanh: 1.353 test.
