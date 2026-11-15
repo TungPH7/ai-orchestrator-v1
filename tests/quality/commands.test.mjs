@@ -572,20 +572,31 @@ test('Grep and Glob stay in the project and the temp folder, nothing looks for a
     'git log -1 -S "PRIVATE KEY" >/dev/null; grep -rl "${_}" /c/Users/x',
     'git grep -q "PRIVATE KEY"; rg -l "$_" ~',
     'git grep "PRIVATE KEY" && node -e "1"',
+    // Review round 3 of shop PR #21, security: a filter after the mark could take it as its patterns (grep -f -), and
+    // git log can print it or write it to a file. A line with a mark is now its git command alone.
+    'git log -1 --format="tformat:PRIVATE KEY" | grep -rlf - /c/Users/u',
+    'git log -1 --format="tformat:-----BEGIN" | grep -rlf - ~',
+    'git log -1 --format="tformat:PRIVATE KEY" --output=/tmp/m; grep -rlf /tmp/m /c/Users/u',
+    'git log -1 --format="tformat:PRIVATE KEY" --output=/tmp/m',
+    'git log -1 --format="tformat:PRIVATE KEY" > /tmp/m',
+    'git grep -n "PRIVATE KEY" -- apps | head -20',
   ]) {
     denied(bash(command, 'be-dev'), /private key/, command);
   }
   for (const command of [
     'git commit -m "fix(auth): read the private key from the vault (DEMO-1)"',
     'git grep -n "PRIVATE KEY" -- apps',
-    'git grep -n "PRIVATE KEY" -- apps | head -20',
     'git log -S "PRIVATE KEY" --oneline',
     'git grep -n -e "-----BEGIN" -- apps',
-    'git add -A && git commit -m "fix(auth): read the private key from the vault (DEMO-1)"',
-    'git grep -n "PRIVATE KEY" -- apps | sort | uniq',
   ]) {
     allowed(bash(command, 'security'), command);
   }
+  // The working folder of the Bash tool stays from one call to the next: a git grep with a mark from a folder outside the
+  // project searches the repository made there (review round 3 of shop PR #21).
+  const from = (cwd) => checkAgentCall({ agent_type: 'be-dev', tool_name: 'Bash', tool_input: { command: 'git grep -A 40 "PRIVATE KEY"' }, cwd }, { gates, contract, projectDir: PROJECT, tempDir: TEMP });
+  denied(from('C:/Users/x/keys'), /private key/, 'a git grep from a folder outside the project');
+  allowed(from(`${PROJECT}\\apps`), 'a git grep from a folder of the project');
+  allowed(from(undefined), 'a call with no working folder');
   // Review round 2 of shop PR #21, security: the user variables of Windows hold the tokens of the kit, the CI token
   // among them; an agent runs as you, so gh-guard stops the plain ways to read them.
   for (const command of [
@@ -600,10 +611,26 @@ test('Grep and Glob stay in the project and the temp folder, nothing looks for a
     'powershell -c "Get-ItemProperty HKCU:\\Environment"',
     'powershell -c "(Get-Item HKCU:Environment).GetValue(\'X\')"',
     'node -e "require(\'child_process\').execSync(\'reg query HKCU\\\\Environment /v X\')"',
+    // Review round 3 of shop PR #21: five more plain ways.
+    'powershell -c "[Environment]::GetEnvironmentVariables(1)"',
+    'powershell -c "Get-CimInstance Win32_Environment"',
+    'wmic environment get Name,VariableValue',
+    'powershell -c "[Microsoft.Win32.Registry]::CurrentUser.OpenSubKey(\'Environment\').GetValue(\'X\')"',
+    'reg query HKU\\S-1-5-21-1-2-3-1001\\Environment',
+    'reg query "HKEY_USERS\\S-1-5-21-1-2-3-1001\\Environment" /v X',
+    // Review round 3 of shop PR #21, security: the user hive as a whole, whatever follows it.
+    'reg query HKCU /s /f JIRA_CI_TOKEN',
+    'reg export HKCU out.reg',
+    'powershell -c "Get-ItemProperty HKCU:\\Env*"',
+    'powershell -c "cd HKCU:; Get-ItemProperty Environment"',
+    'powershell -c "Get-ItemProperty Registry::HKEY_CURRENT_USER\\Environment"',
+    'powershell -c "[Environment]::GetEnvironmentVariables(2)"',
+    'powershell -c "[Environment]::GetEnvironmentVariables()"',
+    'powershell -c "[Microsoft.Win32.Registry]::GetValue(\'HKEY_CURRENT_USER\\Environment\', \'X\', $null)"',
+    'reg query HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run',
   ]) {
     denied(bash(command, 'be-dev'), /user variables of Windows/, command);
   }
-  allowed(bash('reg query HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run', 'devops'), 'another key of the registry');
   allowed(bash('echo $HOME', 'be-dev'), 'a variable of the session');
   allowed(call('security', 'Grep', { pattern: 'BEGIN RSA PRIVATE KEY', path: PROJECT }), 'a scan of the project for committed keys');
   allowed(call('security', 'Grep', { pattern: '-----BEGIN', path: PROJECT }), 'a scan of the project for any PEM block');

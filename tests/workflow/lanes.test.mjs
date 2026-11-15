@@ -9,7 +9,7 @@ import { laneKeeper, runsSettings } from '../../lib/workflow/lanes.mjs';
 // The lanes of a project on this machine (parallel-runs spec, part 1), on real repositories: an origin and the project
 // folder on develop, with the lanes next to it.
 const isProtected = (branch) => ['develop', 'main'].includes(branch) || branch.startsWith('release/');
-const fs = { existsSync, mkdirSync, copyFileSync, cpSync, readdirSync, statSync, writeFileSync };
+const fs = { existsSync, mkdirSync, copyFileSync, cpSync, readdirSync, rmSync, statSync, writeFileSync };
 const gitIn = (dir) => (...args) => spawnSync('git', ['-c', 'user.name=ao test', '-c', 'user.email=ao@example.com', '-c', 'core.autocrlf=false', ...args], { cwd: dir, encoding: 'utf8' });
 
 function setup(t, { settings = { worktrees: true, copy: ['apps/api/.env'] }, pulls = {}, installed = { ok: true, notes: ['Ran pnpm install.'] }, busy = () => false } = {}) {
@@ -236,4 +236,44 @@ test('prune leaves the lane of an item another command runs on, and keeps a newe
   assert.equal(existsSync(s.lane('SHOP-9')), false);
   assert.equal(readFileSync(later, 'utf8'), '# SHOP-9 after qa\n');
   assert.match(notes.join('\n'), /Removed the lane of SHOP-9: its PR is merged; \.ai\/ledger\/SHOP-9\.md of the project folder is newer and stays/);
+});
+
+// Review round 3 of shop PR #21: two commands that start together each counted the open lanes before either made its
+// own, so both passed runs.lanes_max. Counting and reserving the lane (its empty folder) now happen in one step, under
+// the mutex .reserve of the lane folder; a reserved lane counts as open, and a lane that git could not add gives back
+// its place.
+test('a lane reserved by another command counts against runs.lanes_max, and the reservation is taken under a mutex', async (t) => {
+  const s = setup(t, { settings: { worktrees: true, lanesMax: 2, copy: [] } });
+  assert.equal((await s.keeper.ensure('SHOP-11')).ok, true);
+  // Another command reserved SHOP-12 a moment ago and is still fetching.
+  mkdirSync(s.lane('SHOP-12'));
+  const third = await s.keeper.ensure('SHOP-13');
+  assert.equal(third.ok, false);
+  assert.match(third.reason, /^2 lanes are open \(SHOP-11, SHOP-12\)/);
+  // That command goes on with its reservation.
+  assert.equal((await s.keeper.ensure('SHOP-12')).ok, true);
+  // The mutex of another command is waited for; one left by a command that died long ago is taken over.
+  rmSync(s.lane('SHOP-12'), { recursive: true, force: true });
+  s.git('worktree', 'prune');
+  const mutex = join(s.root, 'shop-wt', '.reserve');
+  writeFileSync(mutex, 'held');
+  const old = new Date(Date.now() - 10 * 60_000);
+  utimesSync(mutex, old, old);
+  assert.equal((await s.keeper.ensure('SHOP-14')).ok, true);
+  assert.equal(existsSync(mutex), false, 'released');
+});
+
+test('a lane git could not add gives back its place', async (t) => {
+  const s = setup(t, { settings: { worktrees: true, lanesMax: 2, copy: [] } });
+  // A file where the lane would go: git refuses to add it there.
+  mkdirSync(s.lane('SHOP-15'), { recursive: true });
+  writeFileSync(join(s.lane('SHOP-15'), 'stray.txt'), 'x');
+  const failed = await s.keeper.ensure('SHOP-15');
+  assert.equal(failed.ok, false);
+  assert.match(failed.reason, /git could not add the lane of SHOP-15/);
+  assert.equal(existsSync(join(s.lane('SHOP-15'), 'stray.txt')), true, 'a folder with files in it is left as it was');
+  const empty = setup(t, { settings: { worktrees: true, lanesMax: 1, copy: [] } });
+  empty.git('remote', 'set-url', 'origin', join(empty.root, 'nowhere.git'));
+  assert.equal((await empty.keeper.ensure('SHOP-16')).ok, false);
+  assert.equal(existsSync(empty.lane('SHOP-16')), false, 'its empty folder is gone, so it no longer counts');
 });
