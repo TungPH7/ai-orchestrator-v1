@@ -37,7 +37,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 29 | `3f959e28-f038-49ee-ae3f-592c7a55eecb` | 2026-11-14 khoảng 09:35 → | Bạn dán đoạn cuối của Phiên 28, bảo làm T16 và mở VPS cho chặng 5, để mở tới khi bạn bảo đóng; T16 (tài liệu chặng 3, kit PR #272) và T17 (ba việc B2 để lại, kit PR #273) xong; Claude đưa hai lệnh mở VPS trong dòng báo giữa chừng nên bạn không thấy, bạn nhắc hai lần, Claude đưa lại ở câu trả lời cuối; lượt 2: lệnh mở đăng nhập root chưa có tác dụng, bạn chạy lại; lượt 3: T18 bản nháp bước 9, T19 kit `3a1c729` lên VPS, T20: `SHOP-2` và `shop` PR #7, `SHOP-3` với `add api` và Spring Boot 4.0.9, kit PR #274 (coverage của interface Java); Claude xóa nhầm toàn bộ container, image và volume Docker Desktop của bạn khi dọn sau test; lượt 4: không có Previous Versions, bạn dặn hỏi trước mọi việc xóa không hoàn tác được, và cho Claude merge PR `shop` khi CI xanh; PR #7, #8 merge (T20 xong), kit PR #275, #276, `SHOP-4` và PR #9 xanh, biến database của Development trên VPS; chờ bạn quyết bật Docker Desktop cho `/ao-preview`; lượt 5: bạn chọn bật Docker; `/ao-preview SHOP-4` chạy `user`, `admin`, `api` và Postgres, ba app trả 200, `/api` qua `admin` tới `api`; `user` còn trỏ API NestJS cũ, việc của B4; chờ bạn xem rồi trả lời merge; lượt 6: PR #9 merge (T21 xong), `/ao-rollback development 05b1a63` gỡ chặn, deploy 18,5 phút, database, Flyway, `/api/v1/health` qua `admin` 200, RAM còn trống 2.508 MB, backup và `restore-check` đạt; chờ bạn đồng ý thử khôi phục vào database đang chạy và đóng `SHOP-2`–`SHOP-4`; lượt 7: khôi phục vào database đang chạy đạt sau khi lộ lỗi luật giữ bản (sửa: giữ 48 giờ, kit PR #277), `SHOP-2`–`SHOP-4` Cancelled, kit trên VPS `97db806`, B3 đóng; chờ bạn chọn module kế tiếp |
 | 30 | `07e0a424-ef4e-437a-b766-0ca9955be037` | 2026-11-14 khoảng 12:15 → | Bạn dán đoạn cuối của Phiên 29 và chọn B4 (Pilot 3); Claude viết bản nháp `SPEC-pilot-3.md`: `v0.1.0` của scaffold lên ba môi trường trước, rồi Epic đầu "Danh mục sản phẩm" lên `v0.2.0`; tìm ra Production đang luôn mở trong khi `/api/**` để `permitAll` (đề xuất `production_auth`), `/ao-release` cần một item Done (`SHOP-5`), ba app lệch hợp đồng API sản phẩm; chờ bạn trả lời 5 câu: Epic, scaffold trước, chỗ để bản sao backup (đề xuất Backblaze B2), basic auth cho Production, quyền tự làm cho B4; lượt 2: bạn duyệt câu 1, 2, 4, 5, hỏi câu 3 có cần chọn trước không và sẽ gửi ảnh; Claude hiểu sai "chưa làm" và bắt đầu viết plan, bạn nhắc, Claude dừng (spec và `tasks/plan.md` chưa commit); bạn hỏi Google Drive cho bản sao: được, với OAuth client riêng đã Publish, nhưng token trên VPS xóa hẳn được bản sao; lượt 3: bạn hỏi bản sao backup là gì và vì sao cần mới đạt; Claude giải thích: backup đang nằm chung máy với database, tiêu chí 2 do spec đặt chứ không phải giới hạn kỹ thuật, chỉ bắt buộc trước khi mở bán; lượt 4: bạn hỏi backup về máy bạn có đạt không, và cơ chế có giống B2 để sau này chuyển: đạt (máy bạn kéo về bằng tài khoản chỉ đọc trên VPS), khác hướng chép (kéo về và VPS đẩy lên), đề xuất mã hóa `age` từ đầu và khối cấu hình B2 tắt sẵn để chuyển dễ; lượt 5: bạn chọn backup về máy bạn và hỏi làm gì tiếp, rồi gửi giao diện mẫu cho Epic (trang vitrea, hai ảnh); Claude bắt đầu B4: kit PR #279–#283 (`production_auth`, dòng trạng thái của `/ao-preview`, Playwright chỉ dựng app tại chỗ cho test `@local`, bản sao backup kéo về máy bạn, đọc mật khẩu từ biến của Windows trước), `SHOP-5` PR #10 merge, review 3,52 USD và QA 0,92 USD (NOT TESTED vì một bước chỉ VPS kiểm được, đã trả lời), VPS kit `dbbf318` với bí mật Staging và Production, Production của `shop` hỏi basic auth, bản sao về `D:\ao-backups` khôi phục khớp; chờ bạn Accept `SHOP-5`, cất bản thứ hai của khóa `age`, và gate ④ của `v0.1.0`; lượt 6: bạn nhờ bấm Accept (`SHOP-5` Done), hỏi cất khóa sau được không (được, nên trước khi mở bán), bảo làm như đề xuất; Claude gửi danh sách gate ④ (`28394b8`, `SHOP-5`, scaffold của `SHOP-1`–`SHOP-4`), tạo Fix Version, chụp 5 màn hình và đo 94 token của trang mẫu; lượt 7: bạn duyệt gate ④; `release/v0.1.0` lên Staging (dùng lại image, Flyway 3 migration, RAM còn 2.290 MB), regression PASS, `/ao-ship` dừng vì ruleset `ao-protected` của repo public chặn bot `ao-dev` commit lên nhánh release (cũng sẽ chặn merge PR tài liệu của Epic và merge ngược); chờ bạn chọn cách sửa ruleset; lượt 8: bạn hỏi sao commit thẳng lên nhánh được, nhất là nhánh release (chưa làm gì); Claude giải thích PR là luật GitHub chỉ có khi bật, cách kit bù ở repo không ruleset, vì sao `/ao-ship` commit hai file tài liệu lên nhánh release, và một cách giữa: PR nhỏ do `merge-gate` tự merge; lượt 9: bạn chọn tách ruleset thành ba; kit PR #284, ba ruleset áp lên `shop`, `/ao-ship` chạy lại mở PR release #11 (CI xanh, Staging deploy lại); chờ bạn approve PR #11 ở gate ⑤; lượt 10: bạn approve; `merge-gate` merge, tag `v0.1.0`, tự merge ngược PR #12; Production lên, hỏi basic auth; RAM còn 1.867 MB khi đủ ba môi trường; backup và bản sao cả ba database; chờ bạn chọn ai bấm Release `v0.1.0` và cách chép kit ở T10 |
 | 31 | `d80cd357-3fde-4be6-a978-12fadc7d8553` | 2026-11-14 khoảng 15:58 → | Bạn dán đoạn cuối của Phiên 30, nhờ mình bấm Release `v0.1.0` và chọn review đầy đủ cho T10; Release qua REST bằng token admin; `SHOP-6` và PR #13 chép kit `ceee70c` vào `shop`, CI xanh, `/ao-review 13` chạy (`reviewer` `xhigh`, `security` `max`); T11 bắt đầu song song: câu hỏi PO đầu tiên về đơn vị giá; review xong (8,13 USD): `security` thấy 2 High do lỗi của Claude (ruleset cho App `ao-dev` của agent đi tắt, khóa `age` nằm trên laptop); Claude đề xuất gỡ bypass ngay, bạn cất khóa rồi xóa file, App `ao-merge` riêng cho merge, review vòng 2; chờ bạn quyết; lượt 2: bạn đồng ý cả năm việc, đã cất khóa, chốt giá VND và giao Claude chọn các trường, cách tìm, sắp xếp theo chuẩn ngành; Claude gỡ bypass trên `shop`, xóa file khóa, thêm loại App `ao-merge` vào kit và mở trang tạo App; chốt các trường và cách tìm theo Shopify, Google Merchant Center, Baymard; hỏi câu 2 về ảnh sản phẩm; lượt 3: bạn tạo App `ao-merge` và chọn ảnh giữ chỗ; khóa của App vào environment `merge-gate`, file khóa trên máy xóa; bản nháp Epic "Danh mục sản phẩm" chờ bạn OK; lượt 4: bạn OK; Epic `SHOP-7` tạo qua Rovo MCP; kit PR #285 sửa hai High (App `ao-merge`, PR report của `/ao-ship`, tag cho merge ngược, khóa `age` ngoài máy, `gh-guard`), ruleset mới trên `shop`, VPS lên `18d79eb`, PR #13 chép lại kit; `/ao-review 13` vòng 2 chạy; chờ bạn bấm `Start spec` và kiểm khóa `age` đã cất; review vòng 2 (11,18 USD, vượt ước): `security` thấy 2 High mới về ruleset (hai App của agent approve cho nhau, nhánh release giả lách PR report) và 2 Medium (tag không được bảo vệ, dọn bản sao theo tên do VPS đặt); Claude đề xuất Code Owners, chặn tạo nhánh release, ruleset cho tag, review vòng 3; chờ bạn quyết; lượt 5: bạn đồng ý; kit PR #286 merge (Code Owners, chặn tạo nhánh release và tag `v*`, `main` không ai đi tắt; `require_last_push_approval` để tắt, lệch đề xuất), năm ruleset trên `shop`, VPS lên `e95ffa5`, PR #13 thêm commit `cd37612` kèm `CODEOWNERS`; `/ao-review 13` vòng 3 chạy; lượt 6: bạn đã bấm `Start spec` (`SHOP-7` Specifying) và hỏi kiểm khóa `age` làm sau được không; Claude: được, không phải điều kiện của pilot, nên làm trước T17; review vòng 3 (8,52 USD): `reviewer` Approve, `security` 2 High (agent lấy được login GitHub của bạn vì chạy dưới user Windows của bạn; `main` chưa có `CODEOWNERS`), `SHOP-6` gắn cờ Needs you, `audit` chặn merge khi còn High; Claude nhận lỗi không nêu sớm gốc chung của ba vòng; đề xuất chấp nhận High 1 có thời hạn (kit thêm cách ghi chấp nhận rủi ro), sửa High 2 (merge ngược, `doctor`, `v0.1.1`), hoặc làm sandbox trước; chờ bạn chọn; lượt 7: bạn dặn chưa làm, hỏi lại cho rõ; Claude: High 2 sửa được ngay, High 1 cần sandbox (1–2 ngày), nên cách 1 tạm chấp nhận High 1, cách 2 dừng để làm sandbox trước; chờ bạn chọn; lượt 8: bạn phản đối 1–2 ngày và WSL (máy chỉ dùng Windows), hỏi kit có vấn đề không; Claude nhận nghĩ quá xa và nhận gốc là kit cho agent chạy dưới user của bạn; đề xuất mới: một user Windows riêng cho agent (khoảng nửa ngày, flow của bạn không đổi), sửa cả hai High ngay; chờ bạn nói bắt đầu; lượt 9: bạn hỏi việc agent chạy dưới user của bạn có từ trước, sao giờ mới thành High; Claude: có từ Pilot 1, các vòng trước bắt lối dễ hơn, sau vòng 2 login của bạn thành chìa khóa duy nhất; nhận lỗi không nhắc ở vòng 2; chờ bạn chọn tạm chấp nhận hay user riêng; lượt 10: bạn hỏi agent có thấy mật khẩu GitHub không, nhắc trả lời ngắn và dễ hiểu; Claude giải thích lại theo 5 bước: không thấy mật khẩu, nhưng mở được chìa khóa (token) mà `gh` cất trong tài khoản Windows của bạn; lượt 11: bạn hỏi tài khoản Windows thứ hai nằm ở đâu, có dùng được chương trình của account 1 không; Claude: nằm ngay trên máy, bạn vẫn đăng nhập account 1, agent chạy ngầm dưới `ao-agent`, dùng được chương trình cài chung nhưng không mở được đồ riêng của account 1; lượt 12: bạn hỏi `ao-agent` làm những gì; Claude: chưa tạo; khi có, các agent làm đúng việc cũ ở đó bằng chìa khóa riêng của agent, còn việc cần quyền của bạn vẫn ở account 1; lượt 13: bạn hỏi có phải kit chưa có agent nào, chỉ phiên chính dùng token `gh` của bạn, và `ao-agent` là sub agent đầu tiên; Claude: kit có sẵn 10 agent chạy bằng App, phiên chính chỉ bật chúng; `ao-agent` là tài khoản Windows, như phòng riêng cho 10 agent; lượt 14: bạn hỏi đặt quy tắc cấm agent đọc chìa khóa `gh` có đủ không; Claude: không, kit đã có quy tắc và `gh-guard` nhưng agent bị lừa thì lách được bằng file chương trình tự viết; tài khoản riêng thì Windows khóa hẳn, đúng cách `security` đề xuất; lượt 15: bạn chấp nhận High 1, hỏi làm `ao-agent` sau thì đi tiếp được không; Claude: được, kit thêm chỗ ghi chấp nhận rủi ro (dòng trong lần approve từ login của bạn, hạn 2026-12-31), High 2 vẫn sửa (chặn merge ngược, `v0.1.1`), review vòng 4, khoảng 4–5 giờ; chờ bạn nói bắt đầu; lượt 16: bạn nói bắt đầu, dặn sửa kỹ và xem lại hiệu quả; kit PR #287 merge (chỗ ghi High được chấp nhận, merge ngược chờ kiểm các commit từ `main`, `doctor` kiểm `CODEOWNERS` trên `main`, các Low), VPS lên `05da881`, PR #13 thêm commit `3ef07c6`, gỡ cờ `SHOP-6`; review vòng 4 chạy, `security` review cả PR nên chi phí có thể 10–12 USD; Claude rút ba điều về cách làm; tiếp lượt 16: review vòng 4 (11,15 USD): `reviewer` Approve, `security` chỉ còn High đã chấp nhận; phiên chính approve kèm `Accept risk` bằng login của bạn, merge PR #13 (`fdc2ee0`), Development deploy thành công; QA (1,20 USD) đạt, ruleset đọc bằng login của bạn; chờ bạn Accept `SHOP-6`; kit PR #288 sửa các Low vòng 4 và lỗi `jira-sync` gắn lại cờ; đổi lời khuyên: không kiểm khóa `age` trên máy này trước khi có `ao-agent`; lượt 17: bạn hỏi đang ở T mấy; Claude: cuối T10, chờ bạn Accept `SHOP-6`; T11 xong; kế tiếp T10h (`v0.1.1`) rồi T12 |
-| 32 | `84d69ed3-b065-40d0-a4e2-3c06a66ac5cb` | 2026-11-15 khoảng 01:52 → | Bạn dán đoạn cuối của Phiên 31, đã Accept `SHOP-6` (T10 xong); T10h: kit chỉ cắt `vX.Y.0` từ `develop`, nên bản đưa `CODEOWNERS` lên `main` là `v0.2.0` và Epic `SHOP-7` lên `v0.3.0`; Fix Version `v0.3.0` tạo qua REST; spec 2.9 phần 7, plan, todo sửa theo; chờ bạn duyệt gate ④ (`fdc2ee0`, `SHOP-6`); lượt 2: bạn duyệt gate ④; `release/v0.2.0` cắt bằng login của bạn, Staging; `/ao-ship v0.2.0` (0,92 USD): regression PASS, PR report #14 do App `ao-merge` merge, PR release #15 CI xanh; chờ bạn approve ở gate ⑤ và chọn ai bấm Release `v0.2.0`; lượt 3: bạn approve gate ⑤; App `ao-merge` merge PR #15, gắn tag `v0.2.0`, merge ngược PR #16; Production và Development deploy thành công; Release `v0.2.0` trên Jira qua REST; dòng `CODEOWNERS` của `doctor` xanh; T10h xong; `/ao-spec SHOP-7` chạy; lượt 4: bạn hỏi ảnh trang mẫu ở đâu; `ba` viết SPEC (2,99 USD) và dừng với 12 câu hỏi, chờ bạn trả lời; lượt 5: bạn đồng ý cả 12 câu và cho mình tự làm theo đề xuất tới hết B4; `ux` hỏi 16 câu có đề xuất, trả lời bằng lời của bạn; ảnh 05 chụp nhầm ở T11; `sa` thêm NFR1–NFR27; PR docs #17, 12,31 USD; chờ bạn duyệt gate ①; lượt 6: bạn bấm Approve spec; `/ao-plan SHOP-7`; lượt 7: bạn hỏi công cụ đo trang mẫu (Playwright); `sa` hỏi 2 câu, `API_URL` kiểm trên VPS; lượt 8: bạn hỏi 4 câu về Playwright, Claude in Chrome, `chrome-devtools`, animation; Playwright bật được light mode; `misc/clone-100pct-ui-ux/cong-cu-inspect-website.md`; lượt 9: giữ bảng màu sáng của `ux`; lượt 10: chốt Playwright + `chrome-devtools`, ghi vai trò tool trong skill; plan, 3 ADR và 30 item `SHOP-8`…`SHOP-37` (13,97 USD); chờ bạn duyệt gate ②; lượt 11: bạn bấm Approve plan; `jira-sync`, PR #17 merge (`41ede25`); chặng 4 của todo sửa theo plan; chặng 4 ước 335–580 USD, vượt mức 125 USD của spec, nên hỏi bạn chọn làm theo đợt, cả Epic hay thu nhỏ |
+| 32 | `84d69ed3-b065-40d0-a4e2-3c06a66ac5cb` | 2026-11-15 khoảng 01:52 → | Bạn dán đoạn cuối của Phiên 31, đã Accept `SHOP-6` (T10 xong); T10h: kit chỉ cắt `vX.Y.0` từ `develop`, nên bản đưa `CODEOWNERS` lên `main` là `v0.2.0` và Epic `SHOP-7` lên `v0.3.0`; Fix Version `v0.3.0` tạo qua REST; spec 2.9 phần 7, plan, todo sửa theo; chờ bạn duyệt gate ④ (`fdc2ee0`, `SHOP-6`); lượt 2: bạn duyệt gate ④; `release/v0.2.0` cắt bằng login của bạn, Staging; `/ao-ship v0.2.0` (0,92 USD): regression PASS, PR report #14 do App `ao-merge` merge, PR release #15 CI xanh; chờ bạn approve ở gate ⑤ và chọn ai bấm Release `v0.2.0`; lượt 3: bạn approve gate ⑤; App `ao-merge` merge PR #15, gắn tag `v0.2.0`, merge ngược PR #16; Production và Development deploy thành công; Release `v0.2.0` trên Jira qua REST; dòng `CODEOWNERS` của `doctor` xanh; T10h xong; `/ao-spec SHOP-7` chạy; lượt 4: bạn hỏi ảnh trang mẫu ở đâu; `ba` viết SPEC (2,99 USD) và dừng với 12 câu hỏi, chờ bạn trả lời; lượt 5: bạn đồng ý cả 12 câu và cho mình tự làm theo đề xuất tới hết B4; `ux` hỏi 16 câu có đề xuất, trả lời bằng lời của bạn; ảnh 05 chụp nhầm ở T11; `sa` thêm NFR1–NFR27; PR docs #17, 12,31 USD; chờ bạn duyệt gate ①; lượt 6: bạn bấm Approve spec; `/ao-plan SHOP-7`; lượt 7: bạn hỏi công cụ đo trang mẫu (Playwright); `sa` hỏi 2 câu, `API_URL` kiểm trên VPS; lượt 8: bạn hỏi 4 câu về Playwright, Claude in Chrome, `chrome-devtools`, animation; Playwright bật được light mode; `misc/clone-100pct-ui-ux/cong-cu-inspect-website.md`; lượt 9: giữ bảng màu sáng của `ux`; lượt 10: chốt Playwright + `chrome-devtools`, ghi vai trò tool trong skill; plan, 3 ADR và 30 item `SHOP-8`…`SHOP-37` (13,97 USD); chờ bạn duyệt gate ②; lượt 11: bạn bấm Approve plan; `jira-sync`, PR #17 merge (`41ede25`); chặng 4 của todo sửa theo plan; chặng 4 ước 335–580 USD, vượt mức 125 USD của spec, nên hỏi bạn chọn làm theo đợt, cả Epic hay thu nhỏ; lượt 12: bạn bỏ giới hạn chi phí (gói Max 5x) và chọn làm cả Epic; `SHOP-8` build, CI đỏ ở coverage rồi sửa, review 0 Critical/High/Medium, 7 Low (12,22 USD); gate ③ hỏi bạn sửa Low trước hay approve; build `SHOP-10` |
 
 ---
 
@@ -24786,4 +24786,106 @@ Như vậy cả Pilot 3 có thể lên khoảng 410–650 USD. Với gói Pro, r
    - cách này phải sửa plan đã duyệt: hủy bớt item, rồi chạy lại `/ao-plan` kèm yêu cầu sửa.
 
 **Bạn chọn 1, 2 hay 3?** Trong lúc chờ bạn, mình không chạy agent nào.
+
+
+# Phiên 32 · Lượt 12 — 2026-11-15 khoảng 12:50 → 14:02
+
+**Bạn:**
+
+```markdown
+* Cứ làm không còn giới hạn chi phí nữa nhé (tôi đang dùng gói Max x5)
+* Làm cả Epic
+```
+
+**Claude:**
+
+T14 đã bắt đầu: `fe-dev` đang build `SHOP-8`, phần token, font và khung trang của design system cho `admin`, ở effort `high`. Cứ khoảng 3 phút mình báo tiến độ một lần. Khi xong mỗi item, mình chỉ dừng hỏi bạn ở gate ③ (approve PR) và lúc Accept.
+
+Mình đã bật theo dõi tiến độ cho lượt build `SHOP-8`.
+
+13:03: `fe-dev` đã chạy 3 phút, 32 bước, và đang đọc code của `admin`.
+
+13:06: `fe-dev` đã chạy 6 phút, 48 bước.
+
+13:09: `fe-dev` đã chạy 9 phút, 64 bước, và đang viết `tokens.css`, file chứa các token màu và khoảng cách.
+
+13:12: `fe-dev` đã chạy 12 phút, 84 bước.
+
+13:15: `fe-dev` đã chạy 15 phút, 91 bước. Nó đang dùng `chrome-devtools` để giả lập môi trường, chắc là đổi giữa giao diện sáng và tối để chụp ảnh kiểm.
+
+13:18: `fe-dev` đã chạy 18 phút. Số bước tăng nhanh vì nó đang kiểm app trên trình duyệt: chụp ảnh ở hai giao diện sáng và tối, chạy script kiểm trên trang chủ và trang Giới thiệu. Mình đã xem các lệnh gần nhất, không có vòng lặp.
+
+13:21: `fe-dev` đã chạy 21 phút, 190 bước.
+
+13:24: `fe-dev` đã chạy 24 phút, 201 bước. Nó đang viết mô tả PR, tức sắp mở PR nháp.
+
+13:27: `fe-dev` đã xong, tốn 6,33 USD. Lệnh đang chờ CI của PR.
+
+`fe-dev` đã build xong `SHOP-8` (6,33 USD) và mở PR nháp #18, nhưng CI đỏ. Mình xem check nào đỏ trước khi chạy `/ao-fix`.
+
+CI đỏ ở bước "Coverage of changed lines". Các dòng mới đều có test (100%), nhưng 4 file đã sửa (`root-layout.tsx`, hai route, `main.tsx`) không có mặt trong báo cáo coverage nào. `fe-dev` đang sửa qua `/ao-fix 18`. Trong lúc chờ, mình xem ảnh chụp `fe-dev` để lại.
+
+Ảnh `S1.1-desktop-light.png` cho thấy khung trang mới của `admin` ở giao diện sáng: ba "viên thuốc" gồm tên app, menu, và nhóm ngôn ngữ, giao diện, đăng nhập; chữ tiếng Việt dùng Be Vietnam Pro hiện đủ dấu. Bốn ảnh nằm ở `D:\Document\1Khoahoc\4LapTrinh\AI-for-coding\e-commerce\shop\.ai\runs\SHOP-8\preview\`, nếu bạn muốn xem bảng màu sáng của `ux`.
+
+Phần theo dõi của lượt build cũ đã hết hạn, đúng như dự kiến. Lượt `/ao-fix 18` có phần theo dõi riêng và vẫn đang chạy.
+
+13:31: `fe-dev` đã sửa được 3 phút, 38 bước. Nó đang viết test cho các route để chúng có mặt trong báo cáo coverage.
+
+13:34: `fe-dev` đã sửa được 6 phút, 58 bước.
+
+CI của PR #18 đã xanh: `fe-dev` thêm test cho 4 file đó, tốn 1,11 USD. Mình bỏ qua bước xem trước vì đã có ảnh chụp, và chạy `/ao-review 18`.
+
+`reviewer` (effort `xhigh`) và `security` (effort `max`, vì PR có thêm gói font) đang review PR #18. Mình ghi log từng bước vào file nháp để không sót. Cứ khoảng 3 phút mình báo tiến độ một lần.
+
+13:41: `reviewer` đã chạy 2 phút, 17 bước. PR #18 đã được đánh dấu sẵn sàng review.
+
+13:44: `reviewer` đã chạy 5 phút, 43 bước.
+
+13:47: `reviewer` đã xong, tốn 2,18 USD. `security` vừa bắt đầu.
+
+13:50: `security` đã chạy 3 phút, 47 bước.
+
+13:53: `security` đã chạy 6 phút, 78 bước. Nó đang giải nén gói font từ npm để kiểm từng file bên trong.
+
+`reviewer` và `security` đã review xong PR #18: không có Critical, High hay Medium; `reviewer` nêu 7 Low. Tới gate ③ cần bạn quyết. Trong lúc chờ, mình build luôn `SHOP-10` (design system của `user`), vì item này không chờ `SHOP-8`.
+
+**PR #18 của `SHOP-8` (design system của `admin`, phần 1/2) đã tới gate ③.** `SHOP-8` tốn 12,22 USD tới giờ.
+
+**Đã làm:**
+1. `fe-dev` build (6,33 USD):
+   - token màu của giao diện sáng và tối, theo `design.md`;
+   - font Be Vietnam Pro, gói mới duy nhất, 144 KB;
+   - các style dùng chung: nút, badge, thẻ kính, ô nhập, bảng;
+   - khung trang S1.1 với ba "viên thuốc", và bộ chọn giao diện Sáng / Tối / Hệ thống;
+   - tài liệu `docs/design-system/admin.md`.
+
+   axe không báo lỗi WCAG A/AA nào; độ tương phản thấp nhất là 6,81:1, ở giao diện sáng.
+2. CI đỏ ở bước coverage. `fe-dev` thêm test cho 4 file còn thiếu, và CI xanh lại (1,11 USD).
+3. `reviewer` (2,18 USD) không thấy Critical, High hay Medium nào; nó nêu 7 Low.
+4. `security` review toàn bộ PR (2,60 USD) và không thấy lỗi nào. Nó tự tải gói font về kiểm: mã băm khớp lockfile, không có script chạy lúc cài, bên trong chỉ có CSS và file font.
+
+**7 Low của `reviewer`:**
+1. Ô nhập bỏ viền focus (`outline: none`). Ở chế độ High Contrast của Windows, gần như không thấy ô nào đang được chọn.
+2. Lần tải đầu có thể nháy giao diện hệ thống trước khi áp giao diện đã lưu. Trong khi đó `admin.md` ghi là không nháy.
+3. Code thừa: phần thanh bên và hàm đổi giao diện cũ không còn chỗ nào gọi.
+4. `ThemeSwitcher` lấy danh sách giao diện thẳng từ store, thay vì qua `useTheme()`.
+5. Trạng thái "trang hiện tại" lặp lại điều `aria-current` đã nói, và chưa có test.
+6. Hai giá trị bóng của giao diện tối bị viết lặp hai lần.
+7. `admin.md` hẹn bổ sung số đo sau, nhưng chưa item nào được giao việc đó.
+
+**Bạn chọn một trong hai:**
+1. **Sửa 7 Low trước, rồi mới approve** (mình đề xuất, như lần trước bạn dặn "fix cho kỹ").
+   - Bạn chỉ cần trả lời "sửa hết Low".
+   - Mình chạy `/ao-fix 18` với câu đó. Việc sửa chỉ đụng tới code, không đổi tiêu chí nào.
+   - Sau đó `reviewer` và `security` xem phần mới, rồi mình nhờ bạn approve.
+   - Tốn thêm khoảng 3–6 USD và 20–30 phút.
+2. **Approve luôn và để lại 7 Low:**
+   1. Mở https://github.com/TungPH7/shop/pull/18 rồi bấm tab **Files changed**.
+   2. Bấm nút xanh **Review changes** (hoặc **Submit review**) ở góc trên bên phải.
+   3. Chọn **Approve**, rồi bấm **Submit review**.
+   4. Đừng bấm Merge: `merge-gate` tự merge.
+
+Ảnh chụp của `fe-dev`, gồm giao diện sáng và tối ở 1440 px và 1024 px, nằm ở `D:\Document\1Khoahoc\4LapTrinh\AI-for-coding\e-commerce\shop\.ai\runs\SHOP-8\preview\`.
+
+Trong lúc chờ bạn, `fe-dev` đang build `SHOP-10` (design system của `user`, phần 1/2), vì item này không chờ `SHOP-8`.
 
