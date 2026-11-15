@@ -26224,3 +26224,14 @@ chạy 1 watcher 3 phút check tiến độ 1 lần đi, để xem task có bị
 Đã bật watcher cho `/ao-fix 20` (SHOP-9). Cứ 3 phút nó in một dòng: lượt agent đang chạy, số bước, tool cuối, log ghi cách đây bao lâu. Nếu log không lớn thêm trong 10 phút, nó in cảnh báo tắc. Watcher tự dừng khi lệnh nền kết thúc.
 
 Một watcher sống tối đa 30 phút; hết hạn thì mình bật lại. Khi chuyển sang `/ao-review 21`, mình bật watcher mới cho SHOP-38. Thấy tắc là mình báo ngay và xử lý.
+
+**Claude (20:45, kết quả `/ao-fix 20`):**
+
+`/ao-fix 20` (SHOP-9) đã xong, không bị tắc lần nào:
+1. `fe-dev` sửa cả 8 finding của lần review trước (3 Medium, 5 Low) trong 28 phút. Bộ test chạy 30 lần liền đều đạt, nên không thấy test chập chờn.
+2. Review lại ở head `ec49330`: `reviewer` còn **1 Low**: đóng một toast bằng bàn phím thì focus sang nút đóng của toast kế tiếp, nhưng bộ đếm của toast đó vẫn dừng. `security` không có finding nào.
+3. Chi phí SHOP-9 đến giờ: 22,75 USD.
+
+**Đang chạy:** `/ao-review 21` (review phần mới của PR #21), có watcher 3 phút một lần.
+
+**Kế tiếp:** theo cách bạn vẫn làm (sửa hết Low rồi mới approve), sau `/ao-review 21` mình chạy `/ao-fix 20` cho 1 Low này và `/ao-fix 19` cho 2 Low câu chữ, rồi nhờ bạn approve PR #19, #20, #21 cùng lúc.
