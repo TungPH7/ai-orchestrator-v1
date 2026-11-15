@@ -26427,3 +26427,19 @@ Claude chuẩn bị chạm giới hạn 5h, thực hiện ghi chú lại để s
 3. **Đã tắt watcher 3 phút**, vì mỗi lần nó báo là mình bị gọi và tốn token.
 4. **Ba lệnh vẫn chạy nền:** `/ao-build SHOP-13` (be-dev đang làm), `/ao-build SHOP-11` và `/ao-qa SHOP-38` (đang chờ RAM). Agent dừng vì hết giới hạn thì lúc 01:01 mình chạy lại đúng lệnh, công việc làm dở không mất vì ao-step lưu ledger và state.
 5. **Còn chờ bạn:** Accept SHOP-9 và SHOP-10; chọn (a) hay (b) cho SHOP-40; cân nhắc hạ `min_free_ram_gb`.
+
+**Bạn (giữa lượt):**
+
+```markdown
+THực hiện compact nữa  nhé, đã đạt 74% context rồi
+```
+
+**Claude:**
+
+`/compact` là lệnh có sẵn của Claude Code, mình không tự gọi được (công cụ của mình chỉ chạy được skill). Bạn gõ lệnh này vào ô chat, ví dụ:
+
+```
+/compact Pilot 3: làm tiếp theo ai-orchestrator/tasks/handoff-2026-11-15.md mục 9; lúc 01:01 script resume-at.sh đánh thức
+```
+
+Compact lúc này an toàn: mọi trạng thái đã nằm trong file bàn giao (đã push), trong bộ nhớ, và trong các script ở `.pilot3-scratch/`. Các lệnh nền vẫn chạy sau khi compact, cả script đánh thức lúc 01:01.
