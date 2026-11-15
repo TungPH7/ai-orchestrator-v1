@@ -2,7 +2,7 @@
 
 Phiên 32 · Lượt 15, 2026-11-15. Dựa trên mã kit ở `main` (`0581588`) và bản kit đã chép vào `shop` (`05da881`). Nhãn:
 **[Inference]** là suy luận chưa chạy thử, **[Ước]** là con số ước. Bối cảnh: concern 2 ở
-[sdlc-song-song-sua-kit-hay-clone.md](sdlc-song-song-sua-kit-hay-clone.md), dòng C2 ở [concerns.md](concerns.md).
+[sdlc-song-song-sua-kit-hay-clone.md](../sdlc-song-song-sua-kit-hay-clone.md), dòng C2 ở [concerns.md](../concerns.md).
 
 ## Câu hỏi
 
