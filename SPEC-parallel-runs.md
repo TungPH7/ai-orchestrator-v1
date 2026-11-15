@@ -104,6 +104,20 @@ chuyển nhánh, nên bạn mở được nó trong VS Code mà không đụng a
 - `homeBranch` không còn đưa thư mục chính đi đâu, vì thư mục chính không rời `develop`.
 - Prompt của lượt build và fix thêm một dòng: đường dẫn worktree, và ledger nằm ở `.ai/ledger/<KEY>.md` của worktree.
 
+### 4.4 Quyết định khi làm (Phiên 32 · Lượt 35)
+
+- **`decideStep` không đổi.** Lượt nào vào làn do `laneOf` của `lib/workflow/places.mjs` quyết: mọi lượt của `/ao-build`
+  và `/ao-fix`, trừ review (vẫn có worktree tạm). Như vậy `ba` hay `sa` sửa AC hoặc plan trên nhánh của PR cũng chạy trong
+  làn, vì nhánh đó đang nằm ở làn. Lượt của Epic (`/ao-spec`, `/ao-plan`, `/ao-request`) ở lại thư mục chính.
+- **`checkout` lên `develop` trong làn** là đứng ở `origin/develop` dạng detached, vì thư mục chính giữ `develop`.
+- **Runner** truyền cả lượt cho `git(checkout, run)` và `wip.restore(wip, run)`, và giữ `story` trên bản ghi của lượt, để
+  việc dở của Sub-task về đúng làn của Story.
+- **`lib/workflow/lanes.mjs`** tạo, đặt, tìm và dọn làn; ao-step chỉ nối vào. Làn có PR đã merge được gỡ dù nhánh đã bị xóa
+  trên origin; làn có PR đóng mà không merge thì chỉ gỡ khi mọi commit đã có trên origin.
+- **`/ao-preview` dừng khi bật worktree**, kèm lời chỉ: nhánh của PR nằm trong làn, nên thư mục chính không chuyển sang
+  được. Bật app ngay trong làn là việc sau.
+- **Ledger:** `files.ledger` tìm ở thư mục chính và ở mọi làn.
+
 ## 5. Phần 2: chạy hai lượt cùng lúc
 
 ### 5.1 Khóa và trần

@@ -138,6 +138,29 @@ Khả năng mới, đổi kết quả mong đợi của một Bug, hay đổi h�
 
 PR sửa đường dẫn được bảo vệ (`.github/workflows/**`, `.claude/**`, `.ai-orchestrator/**` …) thì bạn tự squash merge. Đường dẫn được so không phân biệt hoa thường, vì trên Windows `.Claude/` được ghi vào chính `.claude/`. `merge-gate` so theo cách này từ lần chép kit kế tiếp vào dự án; `audit` chạy trên VPS, nên chỉ so theo cách này khi kit trên VPS được cập nhật. `merge-gate` comment lên PR và gắn cờ item khi PR chỉ còn chờ bạn, và `jira-sync` gỡ cờ đó khi PR đóng.
 
+## Worktree theo item (`runs.worktrees`)
+
+Bật trong `.ai-orchestrator/project.yaml` ([SPEC-parallel-runs.md](../SPEC-parallel-runs.md), phần 1):
+
+```yaml
+runs:
+  worktrees: true
+  copy: [apps/api/.env]   # file git không theo dõi mà worktree cần; đường dẫn tương đối, nằm trong dự án
+```
+
+- **Làn của item:** `/ao-build` và `/ao-fix` chạy trong một worktree riêng của item, đặt ngang hàng với thư mục dự án:
+  `<thư mục cha>/<tên dự án>-wt/<KEY>`, ví dụ `e-commerce/shop-wt/SHOP-13`. Sub-task chạy trong làn của Story.
+- **Thư mục dự án đứng yên ở `develop`.** Bạn mở nó trong VS Code được, trong lúc agent làm việc ở làn.
+- **Lần đầu một item cần làn**, kit:
+  - tạo worktree ở `origin/develop`;
+  - cài package của dự án theo lockfile, và package của bản chép kit trong `.ai-orchestrator/`;
+  - chép các file của `runs.copy`, và ledger của item nếu có.
+- **Review và QA không đổi:** vẫn chạy trong worktree tạm, như trước.
+- **Dọn làn:** ở đầu mỗi lệnh chạy agent, làn có PR đã merge hay đã đóng được gỡ, sau khi chép ledger của nó về `.ai/ledger/` của thư mục dự án. Làn còn thay đổi chưa commit, hay có commit chưa push khi PR đóng mà không merge, thì ở lại, và lệnh nói tên nó để bạn xem.
+- **`/ao-status <KEY>`** in thêm các làn đang có.
+- **`/ao-preview` dừng khi bật worktree:** nhánh của PR đang nằm trong làn, nên thư mục dự án không chuyển sang nhánh đó được. Xem ảnh và mẫu API trong `.ai/runs/<KEY>/preview/`, hay mở làn trong editor.
+- Phần 2 của spec (nhiều làn chạy cùng lúc) chưa có: agent vẫn chạy lần lượt, mỗi lúc một agent.
+
 ## Đọc `.ai/runs/`
 
 `.ai/` không được commit. Mỗi item có một thư mục `.ai/runs/<KEY>/`:

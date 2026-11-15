@@ -82,13 +82,15 @@ function harness(world, effects, { outcomes = [], texts = [], throws = false, st
     return { stopped, lines: runLines({ session: `s-${run.role}-${calls.length}`, outcome, cost: 0.25 * calls.length, text: texts.shift() ?? 'Done.' }) };
   };
   const checkouts = [];
+  const checkoutRuns = [];
   return {
     calls,
     states,
     last,
     checkouts,
+    checkoutRuns,
     run: (more = {}) =>
-      runGo({ command: 'spec', arg: 'DEMO-20', options: { ...options, ...more.options }, gather: more.gather, decide: more.decide, pack: more.pack, worktree: more.worktree, after: more.after, act: more.act, log: more.log, wip: more.wip, agent, git: async (c) => (checkouts.push(c), { ok: true }), dispatch: async () => {}, store, sleep: async (ms) => (clock += ms), now: () => clock, limits: { maxRuns: 8, ciWaitMs: 120000, syncWaitMs: 60000, pollMs: 30000, ...more.limits } }),
+      runGo({ command: 'spec', arg: 'DEMO-20', options: { ...options, ...more.options }, gather: more.gather, decide: more.decide, pack: more.pack, worktree: more.worktree, after: more.after, act: more.act, log: more.log, wip: more.wip, agent, git: async (c, r) => (checkouts.push(c), checkoutRuns.push(r), { ok: true }), dispatch: async () => {}, store, sleep: async (ms) => (clock += ms), now: () => clock, limits: { maxRuns: 8, ciWaitMs: 120000, syncWaitMs: 60000, pollMs: 30000, ...more.limits } }),
   };
 }
 const SPEC_EFFECTS = {
@@ -110,6 +112,8 @@ test('--go makes the runs one after another, deciding again after each, until th
   assert.equal(decision.go, false);
   assert.match(decision.reason, /docs PR #14 of DEMO-20 is open: stage spec is done/);
   assert.deepEqual(h.checkouts, Array(4).fill({ branch: BRANCH, from: 'develop' }));
+  // The run goes along with its checkout, so ao-step knows its lane (parallel-runs spec 4).
+  assert.deepEqual(h.checkoutRuns.map((r) => `${r.role} ${r.key} ${r.purpose}`), ['ba DEMO-20 spec-write', 'ux DEMO-20 design', 'sa DEMO-20 spec-nfr', 'ba DEMO-20 docs-pr']);
 });
 
 test('state.json is written when a run starts and after it ends, before the next one starts', async () => {
@@ -292,7 +296,7 @@ test('the usage limit and a run without a result stop the runner; the next comma
 const STASH = 'f'.repeat(40);
 const wipEffect = (events, { saved = { stash: STASH, branch: BRANCH }, restored = { ok: true, notes: [`The work the stopped run left uncommitted, put aside in stash ffffffff, is back on ${BRANCH}.`] } } = {}) => ({
   save: async (run) => (events.push(['save', run.n, run.role, run.outcome]), saved),
-  restore: async (wip) => (events.push(['restore', wip.stash.slice(0, 8)]), restored),
+  restore: async (wip, run) => (events.push(['restore', wip.stash.slice(0, 8)]), events.push(['restore run', run.role, run.key]), restored),
 });
 
 test('a run the usage limit stops has its uncommitted work put aside; the run that goes on in its session gets it back first', async () => {
@@ -306,7 +310,7 @@ test('a run the usage limit stops has its uncommitted work put aside; the run th
 
   const again = harness(world, SPEC_EFFECTS);
   await again.run({ gather, wip: wipEffect(events) });
-  assert.deepEqual(events.at(-1), ['restore', 'ffffffff']);
+  assert.deepEqual(events.slice(-2), [['restore', 'ffffffff'], ['restore run', 'ux', 'DEMO-20']], 'restore gets the run, so ao-step knows its lane');
   assert.equal(again.calls[0].prompt, [resumePrompt('DEMO-20'), wipNote].join('\n\n'));
   const resumed = world.run.runs.find(({ n }) => n === 3);
   assert.equal(resumed.wip, undefined);
