@@ -584,6 +584,12 @@ test('Grep and Glob stay in the project and the temp folder, nothing looks for a
     'git grep -l {"PRIVATE KEY",--no-index} /c/Users/u',
     "git grep -l $'--no-index' \"PRIVATE KEY\" /c/Users/u",
     'git grep -l "PRIVATE KEY" --no-ind{e,}x /c/Users/u',
+    // Review round 4 of shop PR #21, security: the mark in other usual spellings.
+    'grep -rh -A 27 "BEGIN RSA" ~',
+    'grep -rl "BEGIN OPENSSH" /c/Users/u',
+    "grep -rlE 'BEGIN [A-Z ]*KEY' /c/Users/u",
+    "grep -rlE '\\-{5}BEGIN' ~",
+    "grep -rlE 'PRIVATE[[:space:]]KEY' ~",
   ]) {
     denied(bash(command, 'be-dev'), /private key/, command);
   }
@@ -637,6 +643,12 @@ test('Grep and Glob stay in the project and the temp folder, nothing looks for a
     'cat /proc/registry/HKEY_CURRENT_USER/Environment/JIRA_CI_TOKEN',
     'cd /proc; cat regi*/HK*/Env*/JIRA*',
     'ls /PROC/registry64',
+    // Review round 4 of shop PR #21, security: the environment of other processes, COM, and GetEnvironmentVariable
+    // in any form.
+    'grep -a -h -o "JIRA_CI_TOKEN=[^[:cntrl:]]*" /proc/*/environ',
+    'powershell -c "(New-Object -ComObject WScript.Shell).Environment(\'User\').Item(\'X\')"',
+    'powershell -c "[Environment]::GetEnvironmentVariable.Invoke(\'X\',\'User\')"',
+    'powershell -c "[Environment]::GetEnvironmentVariable((\'X\'),\'User\')"',
   ]) {
     denied(bash(command, 'be-dev'), /user variables of Windows/, command);
   }

@@ -624,8 +624,8 @@ function developHistory(tag) {
 }
 
 // /ao-release <vX.Y.0> <sha>, its one step (release-workflow spec 2.6): the Fix Versions and comments on Jira with the CI
-// token, a user variable of your Windows account: gh-guard refuses the plain ways an agent could read it, not a script it
-// writes and runs (reviews of shop PR #21),
+// token, a user variable of your Windows account, which an agent running as you can read past gh-guard: a risk you accept
+// until the CI token leaves the machine (reviews of shop PR #21),
 // then the release branch with your gh login (Pilot 3, spec 2.9). The branch comes
 // last: once it is there the command stops at "release branch open", so a step cut short before it can be run again.
 async function releaseCut({ version, nextVersion, sha, included, after, cancelled = [] }, { repo, mapping, userToken }) {
