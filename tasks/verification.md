@@ -250,7 +250,7 @@ Sửa plan và todo: T4 thêm `playwright.config.ts` của profile; T5 đưa b�
     - Jira: Release `v0.2.0` (id 10007) qua REST bằng token admin, theo lời bạn (`scratchpad/shop-release.mjs`, bản tổng quát của script `v0.1.0`). Script kiểm trước: `SHOP-6` Done. Sau đó: released, ngày 2026-11-15, mô tả giống hệt `fix-version.md` (1.578 ký tự).
     - `ao-kit doctor` trên `shop`: dòng "`.github/CODEOWNERS` is on main and on the open release branches" đã xanh. Còn đỏ hai dòng: Docker (tắt cố ý), và "the kit files are those of this clone": 7 file khác, là kit PR #288. PR này vào `shop` ở lần chép kit sau, cùng `ao-agent`, như đã chốt.
   - Chi phí agent của `v0.2.0`: 0,92 USD; của Pilot 3 tới giờ: 46,48 USD.
-- **T12, `/ao-spec SHOP-7`** (Phiên 32 · Lượt 3–4):
+- **T12, `/ao-spec SHOP-7`** (Phiên 32 · Lượt 3–5):
   - Bước kiểm: Specifying, chưa có nhánh docs; GO với bốn lượt `ba` (spec-write) → `ux` (design) → `sa` (spec-nfr) → `ba` (docs-pr), cùng `xhigh`. `develop` ở máy kéo lên `5c531e1` trước khi chạy. Lệnh chạy với `AO_ENV_AUTH` đọc từ biến người dùng của Windows và `AO_KIT_DIR` trỏ vào kit.
   - `ba` spec-write (`xhigh`, 34 lượt, 10,8 phút, 2,99 USD): `docs/specs/SHOP-7/spec.md` trên `feature/SHOP-7-spec`, commit `06190f2`, chưa push.
     - 6 story: US1–US4 cho `admin`, US5–US6 cho khách; AC1–AC28.
@@ -258,4 +258,19 @@ Sửa plan và todo: T4 thêm `playwright.config.ts` của profile; T5 đưa b�
     - Tìm thấy trong code: `v0.2.0` đã lên Production nên viết theo `v0.3.0`; tìm không dấu có thể cần extension `unaccent`, database đang chạy không tự có, nên xếp vào "hỏi trước"; hai trong bốn E2E đăng nhập kiểm nút xóa mà Epic gỡ.
   - STOP với 12 câu hỏi, mỗi câu có đề xuất. Chờ bạn trả lời.
   - **Lỗi nhỏ của kit, Low:** `openQuestions` (`lib/workflow/runs.mjs`) chỉ lấy dòng đầu của mỗi mục trong danh sách cấp một. Câu 5 của `ba` để đề xuất ở các ý con, nên phần Questions của `ao-step` và `last.md` chỉ còn "Đề xuất:". Phiên chính lấy đủ từ SPEC. Đề xuất: lấy cả các dòng thụt vào dưới mỗi mục, hoặc dặn agent viết đề xuất trên cùng dòng.
-  - Chi phí agent của `SHOP-7` tới giờ: 2,99 USD; của Pilot 3: 49,47 USD.
+  - Lượt 5, bạn trả lời: "Đồng ý tất cả. Trong các task và chặng tiếp theo của B4 này bạn cứ làm theo đề xuất không cần hỏi tôi. Chỉ hỏi tôi đối với những điều bạn không có quyền". Câu này được chép nguyên văn vào `.ai/runs/SHOP-7/answers.md`, và dùng lại cho mọi lần agent hỏi mà có đề xuất trong B4.
+  - `ba` sửa SPEC theo câu trả lời (phiên tiếp, 1,89 USD; `progress.mjs` in 4,88 USD vì `total_cost_usd` của phiên tiếp cộng cả lượt trước): `93ffae3`.
+  - `ux` design (`xhigh`, 2,23 USD): `design.md` S1–S6, 4 ảnh vào `design/` (`S1-desktop`, `S2-desktop`, `S4-desktop`, `S4-shell-desktop`), `check-design` đạt; `4ea1e24`. STOP với 16 câu hỏi, câu nào cũng có đề xuất.
+    - Câu 1: ảnh `05-app-detail.png` không phải trang chi tiết. Đúng vậy: script chụp của T11 (`07e0a424…/scratchpad/ref-capture.mjs`) gọi `page.goto` tới `#/apps/tally`, mà đổi phần sau `#` không dựng trang chi tiết; ảnh ra trang Overview (cùng chiều cao 1.634 px với ảnh 04). Thử lại (`scratchpad/ref-detail-probe.mjs`): bấm vào thẻ app thì ra trang chi tiết thật ("Tally App"). Không chụp lại, vì theo đề xuất của `ux` S5 vẽ bằng ASCII, và trang đó là bảng số liệu của một app, không phải trang sản phẩm.
+    - Trả lời bằng cùng file `answers.md` (lời của bạn ở Lượt 5). `ux` chốt cả 16 câu (phiên tiếp, 0,73 USD): `38c4ebf`.
+  - `sa` spec-nfr (`xhigh`, 57 lượt, 13,4 phút, 3,75 USD): NFR1–NFR27 và Tech Stack; `b694bdc`. Quyết định:
+    - cache của `user` tối đa 30 giây ở server và 30 giây ở trình duyệt, nên trang khách đổi trong 60 giây (NFR7);
+    - tìm không dấu không cần extension `unaccent`: một hàm của PostgreSQL 17 điền cột tên không dấu;
+    - cột giá `BIGINT`;
+    - NFR16: giá cũ trên 999.999.999 thì Ẩn, slug cũ sai định dạng được giữ. Chưa chép vào Product Rules.
+    - Urbanist 5.3.0 (npm) chỉ có `latin` và `latin-ext`, thiếu U+1EA0–U+1EF1, nên `sa` đề xuất Be Vietnam Pro 5.3.0;
+    - NFR8: `/api/**` vẫn `permitAll` tới Epic đăng nhập, chỉ mạng giữ lệnh ghi; ghi vào Known Issues của `v0.3.0`;
+    - NFR27: deployer không backup trước migration, nên ở gate ⑤ của `v0.3.0` bạn xác nhận bản backup Production mới nhất chưa quá 24 giờ.
+  - `ba` docs-pr (`xhigh`, 20 lượt, 1,9 phút, 0,72 USD): push và mở PR #17 `docs(spec): specify the product catalog for admins and shoppers (SHOP-7)`, 6 file (+1.037), chỉ trong `docs/specs/SHOP-7/`; không phải draft. CI xanh đủ năm check.
+  - STOP: gate ① chờ bạn đọc PR #17 rồi bấm `Approve spec` trên `SHOP-7`.
+  - Chi phí agent của `SHOP-7` tới giờ: 12,31 USD (10:13 tới 11:12, tính cả lúc chờ câu trả lời); của Pilot 3: 58,79 USD.
