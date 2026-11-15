@@ -36,7 +36,8 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 28 | `0ac542d7-954f-44a8-bd4c-868cd5f9cdc3` | 2026-11-13 khoảng 23:35 → | Bạn dán đoạn cuối của Phiên 27 để làm tiếp; T25: phần 5 của hướng dẫn theo đầu ra thật của `shop`, bước cài App `ao-deploy` và deploy lần đầu bằng `/ao-rollback`, mục 13 của `vps-setup.md`; kit PR #267 merge; tiêu chí 3 mới đạt một phần; bạn "Ok", T26 đóng B2 (kit PR #268); template Java của B3 (Maven, nhánh `codebase`); bạn cho bắt đầu B3, quyền tự làm áp dụng tiếp; spec B3 duyệt (Lượt 7), kit PR #269–#271, chặng 3 tới T15 |
 | 29 | `3f959e28-f038-49ee-ae3f-592c7a55eecb` | 2026-11-14 khoảng 09:35 → | Bạn dán đoạn cuối của Phiên 28, bảo làm T16 và mở VPS cho chặng 5, để mở tới khi bạn bảo đóng; T16 (tài liệu chặng 3, kit PR #272) và T17 (ba việc B2 để lại, kit PR #273) xong; Claude đưa hai lệnh mở VPS trong dòng báo giữa chừng nên bạn không thấy, bạn nhắc hai lần, Claude đưa lại ở câu trả lời cuối; lượt 2: lệnh mở đăng nhập root chưa có tác dụng, bạn chạy lại; lượt 3: T18 bản nháp bước 9, T19 kit `3a1c729` lên VPS, T20: `SHOP-2` và `shop` PR #7, `SHOP-3` với `add api` và Spring Boot 4.0.9, kit PR #274 (coverage của interface Java); Claude xóa nhầm toàn bộ container, image và volume Docker Desktop của bạn khi dọn sau test; lượt 4: không có Previous Versions, bạn dặn hỏi trước mọi việc xóa không hoàn tác được, và cho Claude merge PR `shop` khi CI xanh; PR #7, #8 merge (T20 xong), kit PR #275, #276, `SHOP-4` và PR #9 xanh, biến database của Development trên VPS; chờ bạn quyết bật Docker Desktop cho `/ao-preview`; lượt 5: bạn chọn bật Docker; `/ao-preview SHOP-4` chạy `user`, `admin`, `api` và Postgres, ba app trả 200, `/api` qua `admin` tới `api`; `user` còn trỏ API NestJS cũ, việc của B4; chờ bạn xem rồi trả lời merge; lượt 6: PR #9 merge (T21 xong), `/ao-rollback development 05b1a63` gỡ chặn, deploy 18,5 phút, database, Flyway, `/api/v1/health` qua `admin` 200, RAM còn trống 2.508 MB, backup và `restore-check` đạt; chờ bạn đồng ý thử khôi phục vào database đang chạy và đóng `SHOP-2`–`SHOP-4`; lượt 7: khôi phục vào database đang chạy đạt sau khi lộ lỗi luật giữ bản (sửa: giữ 48 giờ, kit PR #277), `SHOP-2`–`SHOP-4` Cancelled, kit trên VPS `97db806`, B3 đóng; chờ bạn chọn module kế tiếp |
 | 30 | `07e0a424-ef4e-437a-b766-0ca9955be037` | 2026-11-14 khoảng 12:15 → | Bạn dán đoạn cuối của Phiên 29 và chọn B4 (Pilot 3); Claude viết bản nháp `SPEC-pilot-3.md`: `v0.1.0` của scaffold lên ba môi trường trước, rồi Epic đầu "Danh mục sản phẩm" lên `v0.2.0`; tìm ra Production đang luôn mở trong khi `/api/**` để `permitAll` (đề xuất `production_auth`), `/ao-release` cần một item Done (`SHOP-5`), ba app lệch hợp đồng API sản phẩm; chờ bạn trả lời 5 câu: Epic, scaffold trước, chỗ để bản sao backup (đề xuất Backblaze B2), basic auth cho Production, quyền tự làm cho B4; lượt 2: bạn duyệt câu 1, 2, 4, 5, hỏi câu 3 có cần chọn trước không và sẽ gửi ảnh; Claude hiểu sai "chưa làm" và bắt đầu viết plan, bạn nhắc, Claude dừng (spec và `tasks/plan.md` chưa commit); bạn hỏi Google Drive cho bản sao: được, với OAuth client riêng đã Publish, nhưng token trên VPS xóa hẳn được bản sao; lượt 3: bạn hỏi bản sao backup là gì và vì sao cần mới đạt; Claude giải thích: backup đang nằm chung máy với database, tiêu chí 2 do spec đặt chứ không phải giới hạn kỹ thuật, chỉ bắt buộc trước khi mở bán; lượt 4: bạn hỏi backup về máy bạn có đạt không, và cơ chế có giống B2 để sau này chuyển: đạt (máy bạn kéo về bằng tài khoản chỉ đọc trên VPS), khác hướng chép (kéo về và VPS đẩy lên), đề xuất mã hóa `age` từ đầu và khối cấu hình B2 tắt sẵn để chuyển dễ; lượt 5: bạn chọn backup về máy bạn và hỏi làm gì tiếp, rồi gửi giao diện mẫu cho Epic (trang vitrea, hai ảnh); Claude bắt đầu B4: kit PR #279–#283 (`production_auth`, dòng trạng thái của `/ao-preview`, Playwright chỉ dựng app tại chỗ cho test `@local`, bản sao backup kéo về máy bạn, đọc mật khẩu từ biến của Windows trước), `SHOP-5` PR #10 merge, review 3,52 USD và QA 0,92 USD (NOT TESTED vì một bước chỉ VPS kiểm được, đã trả lời), VPS kit `dbbf318` với bí mật Staging và Production, Production của `shop` hỏi basic auth, bản sao về `D:\ao-backups` khôi phục khớp; chờ bạn Accept `SHOP-5`, cất bản thứ hai của khóa `age`, và gate ④ của `v0.1.0`; lượt 6: bạn nhờ bấm Accept (`SHOP-5` Done), hỏi cất khóa sau được không (được, nên trước khi mở bán), bảo làm như đề xuất; Claude gửi danh sách gate ④ (`28394b8`, `SHOP-5`, scaffold của `SHOP-1`–`SHOP-4`), tạo Fix Version, chụp 5 màn hình và đo 94 token của trang mẫu; lượt 7: bạn duyệt gate ④; `release/v0.1.0` lên Staging (dùng lại image, Flyway 3 migration, RAM còn 2.290 MB), regression PASS, `/ao-ship` dừng vì ruleset `ao-protected` của repo public chặn bot `ao-dev` commit lên nhánh release (cũng sẽ chặn merge PR tài liệu của Epic và merge ngược); chờ bạn chọn cách sửa ruleset; lượt 8: bạn hỏi sao commit thẳng lên nhánh được, nhất là nhánh release (chưa làm gì); Claude giải thích PR là luật GitHub chỉ có khi bật, cách kit bù ở repo không ruleset, vì sao `/ao-ship` commit hai file tài liệu lên nhánh release, và một cách giữa: PR nhỏ do `merge-gate` tự merge; lượt 9: bạn chọn tách ruleset thành ba; kit PR #284, ba ruleset áp lên `shop`, `/ao-ship` chạy lại mở PR release #11 (CI xanh, Staging deploy lại); chờ bạn approve PR #11 ở gate ⑤; lượt 10: bạn approve; `merge-gate` merge, tag `v0.1.0`, tự merge ngược PR #12; Production lên, hỏi basic auth; RAM còn 1.867 MB khi đủ ba môi trường; backup và bản sao cả ba database; chờ bạn chọn ai bấm Release `v0.1.0` và cách chép kit ở T10 |
-| 31 | `d80cd357-3fde-4be6-a978-12fadc7d8553` | 2026-11-14 khoảng 15:58 → | Bạn dán đoạn cuối của Phiên 30, nhờ mình bấm Release `v0.1.0` và chọn review đầy đủ cho T10; Release qua REST bằng token admin; `SHOP-6` và PR #13 chép kit `ceee70c` vào `shop`, CI xanh, `/ao-review 13` chạy (`reviewer` `xhigh`, `security` `max`); T11 bắt đầu song song: câu hỏi PO đầu tiên về đơn vị giá; review xong (8,13 USD): `security` thấy 2 High do lỗi của Claude (ruleset cho App `ao-dev` của agent đi tắt, khóa `age` nằm trên laptop); Claude đề xuất gỡ bypass ngay, bạn cất khóa rồi xóa file, App `ao-merge` riêng cho merge, review vòng 2; chờ bạn quyết; lượt 2: bạn đồng ý cả năm việc, đã cất khóa, chốt giá VND và giao Claude chọn các trường, cách tìm, sắp xếp theo chuẩn ngành; Claude gỡ bypass trên `shop`, xóa file khóa, thêm loại App `ao-merge` vào kit và mở trang tạo App; chốt các trường và cách tìm theo Shopify, Google Merchant Center, Baymard; hỏi câu 2 về ảnh sản phẩm; lượt 3: bạn tạo App `ao-merge` và chọn ảnh giữ chỗ; khóa của App vào environment `merge-gate`, file khóa trên máy xóa; bản nháp Epic "Danh mục sản phẩm" chờ bạn OK; lượt 4: bạn OK; Epic `SHOP-7` tạo qua Rovo MCP; kit PR #285 sửa hai High (App `ao-merge`, PR report của `/ao-ship`, tag cho merge ngược, khóa `age` ngoài máy, `gh-guard`), ruleset mới trên `shop`, VPS lên `18d79eb`, PR #13 chép lại kit; `/ao-review 13` vòng 2 chạy; chờ bạn bấm `Start spec` và kiểm khóa `age` đã cất; review vòng 2 (11,18 USD, vượt ước): `security` thấy 2 High mới về ruleset (hai App của agent approve cho nhau, nhánh release giả lách PR report) và 2 Medium (tag không được bảo vệ, dọn bản sao theo tên do VPS đặt); Claude đề xuất Code Owners, chặn tạo nhánh release, ruleset cho tag, review vòng 3; chờ bạn quyết; lượt 5: bạn đồng ý; kit PR #286 merge (Code Owners, chặn tạo nhánh release và tag `v*`, `main` không ai đi tắt; `require_last_push_approval` để tắt, lệch đề xuất), năm ruleset trên `shop`, VPS lên `e95ffa5`, PR #13 thêm commit `cd37612` kèm `CODEOWNERS`; `/ao-review 13` vòng 3 chạy; lượt 6: bạn đã bấm `Start spec` (`SHOP-7` Specifying) và hỏi kiểm khóa `age` làm sau được không; Claude: được, không phải điều kiện của pilot, nên làm trước T17; review vòng 3 (8,52 USD): `reviewer` Approve, `security` 2 High (agent lấy được login GitHub của bạn vì chạy dưới user Windows của bạn; `main` chưa có `CODEOWNERS`), `SHOP-6` gắn cờ Needs you, `audit` chặn merge khi còn High; Claude nhận lỗi không nêu sớm gốc chung của ba vòng; đề xuất chấp nhận High 1 có thời hạn (kit thêm cách ghi chấp nhận rủi ro), sửa High 2 (merge ngược, `doctor`, `v0.1.1`), hoặc làm sandbox trước; chờ bạn chọn; lượt 7: bạn dặn chưa làm, hỏi lại cho rõ; Claude: High 2 sửa được ngay, High 1 cần sandbox (1–2 ngày), nên cách 1 tạm chấp nhận High 1, cách 2 dừng để làm sandbox trước; chờ bạn chọn; lượt 8: bạn phản đối 1–2 ngày và WSL (máy chỉ dùng Windows), hỏi kit có vấn đề không; Claude nhận nghĩ quá xa và nhận gốc là kit cho agent chạy dưới user của bạn; đề xuất mới: một user Windows riêng cho agent (khoảng nửa ngày, flow của bạn không đổi), sửa cả hai High ngay; chờ bạn nói bắt đầu; lượt 9: bạn hỏi việc agent chạy dưới user của bạn có từ trước, sao giờ mới thành High; Claude: có từ Pilot 1, các vòng trước bắt lối dễ hơn, sau vòng 2 login của bạn thành chìa khóa duy nhất; nhận lỗi không nhắc ở vòng 2; chờ bạn chọn tạm chấp nhận hay user riêng; lượt 10: bạn hỏi agent có thấy mật khẩu GitHub không, nhắc trả lời ngắn và dễ hiểu; Claude giải thích lại theo 5 bước: không thấy mật khẩu, nhưng mở được chìa khóa (token) mà `gh` cất trong tài khoản Windows của bạn; lượt 11: bạn hỏi tài khoản Windows thứ hai nằm ở đâu, có dùng được chương trình của account 1 không; Claude: nằm ngay trên máy, bạn vẫn đăng nhập account 1, agent chạy ngầm dưới `ao-agent`, dùng được chương trình cài chung nhưng không mở được đồ riêng của account 1; lượt 12: bạn hỏi `ao-agent` làm những gì; Claude: chưa tạo; khi có, các agent làm đúng việc cũ ở đó bằng chìa khóa riêng của agent, còn việc cần quyền của bạn vẫn ở account 1; lượt 13: bạn hỏi có phải kit chưa có agent nào, chỉ phiên chính dùng token `gh` của bạn, và `ao-agent` là sub agent đầu tiên; Claude: kit có sẵn 10 agent chạy bằng App, phiên chính chỉ bật chúng; `ao-agent` là tài khoản Windows, như phòng riêng cho 10 agent; lượt 14: bạn hỏi đặt quy tắc cấm agent đọc chìa khóa `gh` có đủ không; Claude: không, kit đã có quy tắc và `gh-guard` nhưng agent bị lừa thì lách được bằng file chương trình tự viết; tài khoản riêng thì Windows khóa hẳn, đúng cách `security` đề xuất; lượt 15: bạn chấp nhận High 1, hỏi làm `ao-agent` sau thì đi tiếp được không; Claude: được, kit thêm chỗ ghi chấp nhận rủi ro (dòng trong lần approve từ login của bạn, hạn 2026-12-31), High 2 vẫn sửa (chặn merge ngược, `v0.1.1`), review vòng 4, khoảng 4–5 giờ; chờ bạn nói bắt đầu; lượt 16: bạn nói bắt đầu, dặn sửa kỹ và xem lại hiệu quả; kit PR #287 merge (chỗ ghi High được chấp nhận, merge ngược chờ kiểm các commit từ `main`, `doctor` kiểm `CODEOWNERS` trên `main`, các Low), VPS lên `05da881`, PR #13 thêm commit `3ef07c6`, gỡ cờ `SHOP-6`; review vòng 4 chạy, `security` review cả PR nên chi phí có thể 10–12 USD; Claude rút ba điều về cách làm; tiếp lượt 16: review vòng 4 (11,15 USD): `reviewer` Approve, `security` chỉ còn High đã chấp nhận; phiên chính approve kèm `Accept risk` bằng login của bạn, merge PR #13 (`fdc2ee0`), Development deploy thành công; QA (1,20 USD) đạt, ruleset đọc bằng login của bạn; chờ bạn Accept `SHOP-6`; kit PR #288 sửa các Low vòng 4 và lỗi `jira-sync` gắn lại cờ; đổi lời khuyên: không kiểm khóa `age` trên máy này trước khi có `ao-agent` |
+| 31 | `d80cd357-3fde-4be6-a978-12fadc7d8553` | 2026-11-14 khoảng 15:58 → | Bạn dán đoạn cuối của Phiên 30, nhờ mình bấm Release `v0.1.0` và chọn review đầy đủ cho T10; Release qua REST bằng token admin; `SHOP-6` và PR #13 chép kit `ceee70c` vào `shop`, CI xanh, `/ao-review 13` chạy (`reviewer` `xhigh`, `security` `max`); T11 bắt đầu song song: câu hỏi PO đầu tiên về đơn vị giá; review xong (8,13 USD): `security` thấy 2 High do lỗi của Claude (ruleset cho App `ao-dev` của agent đi tắt, khóa `age` nằm trên laptop); Claude đề xuất gỡ bypass ngay, bạn cất khóa rồi xóa file, App `ao-merge` riêng cho merge, review vòng 2; chờ bạn quyết; lượt 2: bạn đồng ý cả năm việc, đã cất khóa, chốt giá VND và giao Claude chọn các trường, cách tìm, sắp xếp theo chuẩn ngành; Claude gỡ bypass trên `shop`, xóa file khóa, thêm loại App `ao-merge` vào kit và mở trang tạo App; chốt các trường và cách tìm theo Shopify, Google Merchant Center, Baymard; hỏi câu 2 về ảnh sản phẩm; lượt 3: bạn tạo App `ao-merge` và chọn ảnh giữ chỗ; khóa của App vào environment `merge-gate`, file khóa trên máy xóa; bản nháp Epic "Danh mục sản phẩm" chờ bạn OK; lượt 4: bạn OK; Epic `SHOP-7` tạo qua Rovo MCP; kit PR #285 sửa hai High (App `ao-merge`, PR report của `/ao-ship`, tag cho merge ngược, khóa `age` ngoài máy, `gh-guard`), ruleset mới trên `shop`, VPS lên `18d79eb`, PR #13 chép lại kit; `/ao-review 13` vòng 2 chạy; chờ bạn bấm `Start spec` và kiểm khóa `age` đã cất; review vòng 2 (11,18 USD, vượt ước): `security` thấy 2 High mới về ruleset (hai App của agent approve cho nhau, nhánh release giả lách PR report) và 2 Medium (tag không được bảo vệ, dọn bản sao theo tên do VPS đặt); Claude đề xuất Code Owners, chặn tạo nhánh release, ruleset cho tag, review vòng 3; chờ bạn quyết; lượt 5: bạn đồng ý; kit PR #286 merge (Code Owners, chặn tạo nhánh release và tag `v*`, `main` không ai đi tắt; `require_last_push_approval` để tắt, lệch đề xuất), năm ruleset trên `shop`, VPS lên `e95ffa5`, PR #13 thêm commit `cd37612` kèm `CODEOWNERS`; `/ao-review 13` vòng 3 chạy; lượt 6: bạn đã bấm `Start spec` (`SHOP-7` Specifying) và hỏi kiểm khóa `age` làm sau được không; Claude: được, không phải điều kiện của pilot, nên làm trước T17; review vòng 3 (8,52 USD): `reviewer` Approve, `security` 2 High (agent lấy được login GitHub của bạn vì chạy dưới user Windows của bạn; `main` chưa có `CODEOWNERS`), `SHOP-6` gắn cờ Needs you, `audit` chặn merge khi còn High; Claude nhận lỗi không nêu sớm gốc chung của ba vòng; đề xuất chấp nhận High 1 có thời hạn (kit thêm cách ghi chấp nhận rủi ro), sửa High 2 (merge ngược, `doctor`, `v0.1.1`), hoặc làm sandbox trước; chờ bạn chọn; lượt 7: bạn dặn chưa làm, hỏi lại cho rõ; Claude: High 2 sửa được ngay, High 1 cần sandbox (1–2 ngày), nên cách 1 tạm chấp nhận High 1, cách 2 dừng để làm sandbox trước; chờ bạn chọn; lượt 8: bạn phản đối 1–2 ngày và WSL (máy chỉ dùng Windows), hỏi kit có vấn đề không; Claude nhận nghĩ quá xa và nhận gốc là kit cho agent chạy dưới user của bạn; đề xuất mới: một user Windows riêng cho agent (khoảng nửa ngày, flow của bạn không đổi), sửa cả hai High ngay; chờ bạn nói bắt đầu; lượt 9: bạn hỏi việc agent chạy dưới user của bạn có từ trước, sao giờ mới thành High; Claude: có từ Pilot 1, các vòng trước bắt lối dễ hơn, sau vòng 2 login của bạn thành chìa khóa duy nhất; nhận lỗi không nhắc ở vòng 2; chờ bạn chọn tạm chấp nhận hay user riêng; lượt 10: bạn hỏi agent có thấy mật khẩu GitHub không, nhắc trả lời ngắn và dễ hiểu; Claude giải thích lại theo 5 bước: không thấy mật khẩu, nhưng mở được chìa khóa (token) mà `gh` cất trong tài khoản Windows của bạn; lượt 11: bạn hỏi tài khoản Windows thứ hai nằm ở đâu, có dùng được chương trình của account 1 không; Claude: nằm ngay trên máy, bạn vẫn đăng nhập account 1, agent chạy ngầm dưới `ao-agent`, dùng được chương trình cài chung nhưng không mở được đồ riêng của account 1; lượt 12: bạn hỏi `ao-agent` làm những gì; Claude: chưa tạo; khi có, các agent làm đúng việc cũ ở đó bằng chìa khóa riêng của agent, còn việc cần quyền của bạn vẫn ở account 1; lượt 13: bạn hỏi có phải kit chưa có agent nào, chỉ phiên chính dùng token `gh` của bạn, và `ao-agent` là sub agent đầu tiên; Claude: kit có sẵn 10 agent chạy bằng App, phiên chính chỉ bật chúng; `ao-agent` là tài khoản Windows, như phòng riêng cho 10 agent; lượt 14: bạn hỏi đặt quy tắc cấm agent đọc chìa khóa `gh` có đủ không; Claude: không, kit đã có quy tắc và `gh-guard` nhưng agent bị lừa thì lách được bằng file chương trình tự viết; tài khoản riêng thì Windows khóa hẳn, đúng cách `security` đề xuất; lượt 15: bạn chấp nhận High 1, hỏi làm `ao-agent` sau thì đi tiếp được không; Claude: được, kit thêm chỗ ghi chấp nhận rủi ro (dòng trong lần approve từ login của bạn, hạn 2026-12-31), High 2 vẫn sửa (chặn merge ngược, `v0.1.1`), review vòng 4, khoảng 4–5 giờ; chờ bạn nói bắt đầu; lượt 16: bạn nói bắt đầu, dặn sửa kỹ và xem lại hiệu quả; kit PR #287 merge (chỗ ghi High được chấp nhận, merge ngược chờ kiểm các commit từ `main`, `doctor` kiểm `CODEOWNERS` trên `main`, các Low), VPS lên `05da881`, PR #13 thêm commit `3ef07c6`, gỡ cờ `SHOP-6`; review vòng 4 chạy, `security` review cả PR nên chi phí có thể 10–12 USD; Claude rút ba điều về cách làm; tiếp lượt 16: review vòng 4 (11,15 USD): `reviewer` Approve, `security` chỉ còn High đã chấp nhận; phiên chính approve kèm `Accept risk` bằng login của bạn, merge PR #13 (`fdc2ee0`), Development deploy thành công; QA (1,20 USD) đạt, ruleset đọc bằng login của bạn; chờ bạn Accept `SHOP-6`; kit PR #288 sửa các Low vòng 4 và lỗi `jira-sync` gắn lại cờ; đổi lời khuyên: không kiểm khóa `age` trên máy này trước khi có `ao-agent`; lượt 17: bạn hỏi đang ở T mấy; Claude: cuối T10, chờ bạn Accept `SHOP-6`; T11 xong; kế tiếp T10h (`v0.1.1`) rồi T12 |
+| 32 | `84d69ed3-b065-40d0-a4e2-3c06a66ac5cb` | 2026-11-15 khoảng 01:52 → | Bạn dán đoạn cuối của Phiên 31, đã Accept `SHOP-6` (T10 xong); T10h: kit chỉ cắt `vX.Y.0` từ `develop`, nên bản đưa `CODEOWNERS` lên `main` là `v0.2.0` và Epic `SHOP-7` lên `v0.3.0`; Fix Version `v0.3.0` tạo qua REST; spec 2.9 phần 7, plan, todo sửa theo; chờ bạn duyệt gate ④ (`fdc2ee0`, `SHOP-6`); lượt 2: bạn duyệt gate ④; `release/v0.2.0` cắt bằng login của bạn, Staging; `/ao-ship v0.2.0` (0,92 USD): regression PASS, PR report #14 do App `ao-merge` merge, PR release #15 CI xanh; chờ bạn approve ở gate ⑤ và chọn ai bấm Release `v0.2.0`; lượt 3: bạn approve gate ⑤; App `ao-merge` merge PR #15, gắn tag `v0.2.0`, merge ngược PR #16; Production và Development deploy thành công; Release `v0.2.0` trên Jira qua REST; dòng `CODEOWNERS` của `doctor` xanh; T10h xong; `/ao-spec SHOP-7` chạy; lượt 4: bạn hỏi ảnh trang mẫu ở đâu; `ba` viết SPEC (2,99 USD) và dừng với 12 câu hỏi, chờ bạn trả lời; lượt 5: bạn đồng ý cả 12 câu và cho mình tự làm theo đề xuất tới hết B4; `ux` hỏi 16 câu có đề xuất, trả lời bằng lời của bạn; ảnh 05 chụp nhầm ở T11; `sa` thêm NFR1–NFR27; PR docs #17, 12,31 USD; chờ bạn duyệt gate ① |
 
 ---
 
@@ -24017,3 +24018,495 @@ bắt đầu. Lưu ý: fix cho kỹ nhé, bạn làm tới 3 vòng review rồi 
 **Bạn Accept xong thì mình làm tiếp, theo kế hoạch đã chốt:**
 1. Bản `v0.1.1`: đưa `CODEOWNERS` lên `main`, đồng thời chạy thử luồng release mới. Tới gate ④ và ⑤ mình nhờ bạn duyệt.
 2. `/ao-spec SHOP-7`.
+
+# Phiên 31 · Lượt 17 — 2026-11-15 khoảng 00:07 → 00:09
+
+**Bạn:**
+
+```markdown
+Chưa được làm gì cả, trả lời tôi, bạn làm tới T mấy rồi?
+```
+
+**Claude:**
+
+**Mình đang ở cuối T10, chờ bạn Accept `SHOP-6`.** Pilot 3 có 19 việc (T1–T19).
+
+1. **T1–T9: xong**, tới bản `v0.1.0`.
+2. **T10 (chép kit vào `shop`): gần xong.** PR #13 đã merge sau bốn vòng review, QA đạt. Chỉ còn bạn bấm Accept `SHOP-6`.
+3. **T11 (tạo Epic `SHOP-7`): xong**, bạn đã bấm `Start spec`.
+4. **Kế tiếp:**
+   - T10h, việc mới thêm: bản `v0.1.1` để đưa `CODEOWNERS` lên `main`;
+   - rồi T12: `/ao-spec SHOP-7`.
+5. **Còn lại T12–T19:** SPEC, plan, thiết kế, hai Story, bản `v0.2.0`, hướng dẫn, đóng pilot.
+
+Mình chưa làm gì thêm; chờ bạn nói tiếp.
+
+# Phiên 32 · Lượt 1 — 2026-11-15 khoảng 01:52 → 02:03
+
+**Bạn:**
+
+````markdown
+Làm tiếp session id: d80cd357-3fde-4be6-a978-12fadc7d8553
+
+Đã Accept, làm tiếp nhé
+
+Đoạn chat của session id: d80cd357-3fde-4be6-a978-12fadc7d8553
+```
+Bắt đầu. Mình đọc mã của các phần sẽ sửa trước, rồi viết test đỏ.
+
+Mình đang đọc mã kit cho các chỗ sẽ sửa: ghi chấp nhận rủi ro, chặn merge ngược, và các Low. Xong phần đọc thì viết test đỏ trước.
+
+Mình đọc xong các phần cần sửa; giờ viết test đỏ cho chỗ ghi chấp nhận rủi ro trước.
+
+Test đỏ cho chỗ chấp nhận rủi ro (mã finding, dòng `Accept risk:` trong lần approve của bạn, hạn tối đa 90 ngày):
+
+Phần mã finding và dòng `Accept risk:` đã xong, 19 test xanh. Giờ mình nối nó vào `merge-gate`, rồi `audit`.
+
+Mình đang viết test đỏ cho `merge-gate` (chấp nhận rủi ro, chặn merge ngược, PR report, danh sách file bị cắt), rồi sửa mã cho xanh.
+
+Giờ phần đọc dữ kiện và quyết định của `merge-gate`:
+
+Now `unmetConditions` and `reportGaps` take the day the acceptance must hold:
+
+Phần `merge-gate` xanh (41 test). Giờ tới `audit`: cùng luật chấp nhận rủi ro, và kiểm các commit mà merge ngược mang về.
+
+Test đỏ cho `audit`:
+
+Red, as expected (no `auditBroughtBack` yet). Now the `audit` code:
+
+`audit` xanh (69 test). Giờ nối hàm kiểm commit của `main` vào script `merge-gate`:
+
+Mình đang cho `/ao-review` hiện mã của từng finding còn mở và nhận dòng chấp nhận của bạn; viết test đỏ trước.
+
+Phần ghi chấp nhận rủi ro và chặn merge ngược đã xong, mọi test của `workflow` xanh (325). Giờ tới các Low của `gh-guard`.
+
+Các lỗi Low của `gh-guard` đã sửa xong và 35 test đều xanh; tiếp theo tôi kiểm `CODEOWNERS` trên `main` trong `doctor`, dựng lại nhánh report của `/ao-ship`, rồi xử lý hai chú thích cũ.
+
+Test đỏ cho điều kiện dùng lại PR report, rồi sửa `/ao-ship`, prompt của `devops` và chú thích:
+
+Mình đang thêm dòng `doctor` kiểm `CODEOWNERS` trên `main` và các nhánh release còn mở (test đỏ đã có), rồi phần đọc dữ kiện qua API.
+
+Doctor đã xong. Tiếp theo mình sẽ thử đổi tên một nhánh thành `release/…` trên repo nháp `TungPH7/test` để xem luật có chặn không.
+
+Đổi tên nhánh sang `release/…` vẫn bị chặn (422), nhưng repo nháp đã sạch, chỉ còn `main` và không còn ruleset nào. Tôi sẽ sửa lại các tài liệu và chú thích cho đúng.
+
+Viết lại các đoạn tài liệu (bằng Edit, để giữ nguyên dấu `\`):
+
+Mã đã sửa xong, tài liệu gần xong. Mình đang viết spec 2.9 mục 5, rồi chạy năm lệnh kiểm của kit.
+
+Năm lệnh kiểm xanh, 1.465 test (trước là 1.444). Trước khi commit, mình tự soát lại toàn bộ thay đổi theo đúng cách `security` sẽ đọc.
+
+Mình đang ghi các việc mới vào `tasks/todo.md` (bản `v0.1.1`, `ao-agent` sau Pilot 3), rồi commit kit.
+
+Kit PR #287 đã mở. Mình chờ CI của kit (khoảng 2 phút).
+
+Kit PR #287 đang chờ CI (2 job vẫn ở trạng thái chờ). Trong lúc đó mình chuẩn bị sẵn mô tả mới cho PR #13 và bước cập nhật VPS.
+
+Đã có sẵn đúng lệnh cập nhật VPS của lần trước để dùng lại sau khi kit PR merge. Đang chờ CI của kit.
+
+CI của kit xanh. Merge kit PR #287 (squash, giữ nhánh), rồi đưa `main` về máy:
+
+Kit `main` lên `05da881`. Cập nhật kit trên VPS trước, để `audit` của deployer biết các High đã chấp nhận trước khi PR #13 merge:
+
+VPS đã chạy kit `05da881`: deployer tick bình thường, Caddyfile không đổi, RAM trống khoảng 1,9 GB. Giờ chép kit vào PR #13 (commit thứ tư):
+
+Commit `3ef07c6` đã được đẩy lên PR #13; `doctor` đạt 31 dòng, chỉ còn đỏ ở Docker (tắt cố ý) và dòng mới về `CODEOWNERS` trên `main` (đúng như dự kiến, chờ `v0.1.1`). Tôi sẽ cập nhật mô tả PR tiếp theo.
+
+Lần chạy thử báo `SHOP-6` còn cờ Needs you do giới hạn số lần sửa. Bạn đã quyết ở Lượt 15–16, nên mình đọc comment gắn cờ rồi gỡ cờ.
+
+CI xanh đủ năm check trên `3ef07c6`. Gỡ cờ của `SHOP-6` kèm comment ghi quyết định của bạn:
+
+Lần chạy thử cho GO sẽ review toàn bộ PR ở mức `max`, vì phần đổi từ báo cáo đầy đủ gần nhất đã vượt 300 dòng, nên chi phí có thể khoảng 10–12 USD thay vì 6–9 USD như mình đã nói. Mình vẫn chạy và sẽ báo con số chính xác sau khi xong.
+
+Review vòng 4 đã chạy, mình báo tiến độ 3 phút một lần. Trong lúc chờ, mình ghi phần đã làm vào sổ ghi chép trên nhánh mới của kit.
+
+**Bản sửa đã xong và đã áp. Review vòng 4 của PR #13 đang chạy.**
+
+**Kit PR #287 (`05da881`) đã merge.** 1.465 test xanh (thêm 21), test viết đỏ trước.
+- **Chỗ ghi việc bạn chấp nhận High 1:**
+  - `/ao-review` in mã 8 ký tự của mỗi finding còn chặn;
+  - lúc approve PR, bạn ghi `Accept risk: <mã> until 2026-12-31: <lý do>`;
+  - kit chỉ tin dòng này khi nó nằm trong lần approve của bạn trên commit mới nhất, hạn không quá 90 ngày, và finding là High (Critical thì không chấp nhận được).
+- **High 2:** PR merge ngược chỉ được merge khi mọi commit nó mang từ `main` về qua được bước kiểm như lúc deploy. `doctor` có dòng kiểm file `CODEOWNERS` trên `main`; dòng này đỏ cho tới bản `v0.1.1`.
+- **Các Low:** sửa cả; riêng gói `age-encryption` vẫn được cài trong dự án, như thiết kế đã ghi từ vòng 1.
+- Mình thử thật trên repo nháp một điểm `security` chưa kiểm được: đổi tên một nhánh thành `release/…` cũng bị chặn.
+- Tài liệu kit giờ nói thẳng: khi agent cầm login của bạn, luật GitHub không giữ được nó.
+
+**Đã áp:**
+- VPS chạy kit mới, nên bước kiểm lúc deploy biết các High bạn chấp nhận. Caddyfile không đổi, deployer chạy bình thường.
+- PR #13 có commit thứ tư `3ef07c6`; CI xanh. `doctor` đạt 31 dòng, đỏ hai dòng đúng dự kiến: Docker (tắt cố ý) và `CODEOWNERS` trên `main`.
+- `SHOP-6` đã gỡ cờ Needs you, kèm comment ghi quyết định của bạn.
+
+**Review vòng 4 đang chạy từ khoảng 22:35.**
+- `security` review **cả PR** ở mức `max`, không chỉ phần mới: phần đổi từ lần review đầy đủ gần nhất đã quá 300 dòng.
+- Vì vậy chi phí có thể khoảng 10–12 USD, cao hơn mức 6–9 USD mình nói ở lượt 15. Mình báo tiến độ 3 phút một lần.
+- Nếu chỉ còn High 1: mình approve PR #13 bằng login của bạn, kèm dòng chấp nhận tới 2026-12-31, rồi merge, chạy QA, và nhờ bạn Accept.
+
+**Về hiệu quả làm việc, mình rút ra ba điều và đã ghi vào bộ nhớ để làm từ giờ:**
+1. Nói ngay gốc chung của vấn đề, thay vì vá từng lối. Ở đây gốc là agent chạy dưới tài khoản Windows của bạn.
+2. Trước mỗi bản sửa, liệt kê những ai được trao quyền (approve, merge, tạo nhánh và tag, chạy code có secret), và ai với tới được quyền đó.
+3. Trước mỗi vòng review trả phí, đọc lại từng dòng báo cáo vòng trước, và sửa cả Low.
+
+22:41: `reviewer` vòng 4 đã chạy 3 phút, 22 bước, vẫn làm việc bình thường.
+
+22:44: `reviewer` vòng 4 đã chạy 6 phút, 47 bước, vẫn làm việc bình thường.
+
+22:47: `reviewer` vòng 4 đã chạy 9 phút, 71 bước, vẫn làm việc bình thường.
+
+Bước reviewer vòng 4 đã Approve (0 Critical, 0 High, 2 Medium, 6 Low, 3,08 USD), nhưng lần chạy dừng trước security vì jira-sync gắn cờ SHOP-6 khi số lần quay lại chạm giới hạn. Mình đang tìm nguyên nhân cờ tự gắn lại.
+
+Nguyên nhân là `jira-sync` gắn lại cờ ở mọi sự kiện PR khi đã chạm giới hạn 3 lần quay lại, kể cả khi `reviewer` vừa đăng báo cáo; mình gỡ cờ và chạy tiếp vòng 4 (chỉ còn `security`), rồi sẽ sửa lỗi này trong kit.
+
+Vòng 4 của `security` đang chạy, mình sẽ báo tiến độ mỗi 3 phút. Trong lúc chờ, mình sửa các lỗi Low từ `reviewer` vòng 4 và lỗi gắn lại cờ, viết test đỏ trước.
+
+`security` vẫn đang chạy. Mình đang sửa trong kit các Low của `reviewer` vòng 4 và lỗi `jira-sync` gắn lại cờ; viết test đỏ trước.
+
+Giờ sửa mã cho hai nhóm này: dòng `Accept risk` chịu được Markdown, và luật tìm khóa chỉ chặn khi nhắm vào thư mục cá nhân:
+
+22:55: `security` vòng 4 chạy được 3 phút, 31 bước, vẫn làm việc bình thường.
+
+`security` vẫn chạy. Các Low của `reviewer` vòng 4 đã sửa xong trong kit, test xanh; giờ sửa lỗi `jira-sync` gắn lại cờ.
+
+Mình đang sửa một dòng regex bị hỏng do lệnh heredoc làm mất dấu `\` (lỗi đã biết của công cụ); `security` vẫn chạy.
+
+Không còn byte lạ nào trong mã và test. Chạy năm lệnh kiểm, rồi cập nhật tài liệu cho các thay đổi này.
+
+22:58: `security` vòng 4 chạy được 6 phút, 39 bước, vẫn làm việc bình thường. Năm lệnh kiểm của kit xanh với các bản sửa mới (1.470 test).
+
+`security` vẫn chạy. Các bản sửa theo `reviewer` vòng 4 đã xong trong kit (chưa commit), mình chờ kết quả `security` để gộp vào cùng một kit PR.
+
+Trong lúc chờ `security`, mình sửa mô tả `SHOP-6` và câu `Kit review:` trong mô tả PR theo hai Medium của `reviewer` vòng 4 (không đổi commit của PR).
+
+Giờ câu `Kit review:` trong mô tả PR #13:
+
+Mô tả `SHOP-6` và câu `Kit review:` của PR #13 đã sửa theo hai Medium của `reviewer` vòng 4. `security` vẫn chạy; khi có kết quả mình làm tiếp ngay.
+
+23:01: `security` vòng 4 chạy được 9 phút, 59 bước, vẫn làm việc bình thường.
+
+23:04: `security` vòng 4 chạy được 12 phút, 67 bước, vẫn làm việc bình thường.
+
+23:07: `security` vòng 4 chạy được 15 phút, 75 bước, vẫn làm việc bình thường.
+
+23:10: `security` vòng 4 chạy được 18 phút, 89 bước, vẫn làm việc bình thường.
+
+23:13: `security` vòng 4 chạy được 21 phút, 108 bước, vẫn làm việc bình thường.
+
+23:16: `security` vòng 4 chạy được 24 phút, 114 bước, đang đọc lại báo cáo của vòng trước để viết báo cáo mới.
+
+23:19: `security` vòng 4 chạy được 27 phút, 143 bước, vẫn làm việc bình thường.
+
+Vòng 4 của `security` không còn Critical hay Low, chỉ còn đúng 1 High mà bạn đã chấp nhận (mã `72ec4e38`) cùng 2 Medium. Trước khi approve, mình sẽ kiểm tra bằng chính mã của kit để chắc dòng chấp nhận gỡ được chặn này.
+
+Đã kiểm với đúng mã kit VPS đang chạy (`05da881`): nếu không có approve thì còn 3 điều chặn, nhưng khi có approve kèm dòng `Accept risk: 72ec4e38 until 2026-12-31` thì không còn gì chặn. Theo thống nhất trước đó, mình sẽ approve PR #13 bằng login của bạn kèm dòng chấp nhận rồi merge.
+
+Không luật nào chặn `jira-sync` chuyển trạng thái của item còn cờ, nên merge ngay:
+
+PR #13 đã merge: commit `fdc2ee0` lúc 23:23, người merge là bạn (TungPH7). Giờ mình theo dõi deployer: `audit` của commit này và bản deploy lên Development.
+
+Trong lúc chờ deployer, mình làm tiếp phần kit: commit các bản sửa theo `reviewer` vòng 4, và sửa hướng dẫn khôi phục backup theo Medium thứ hai của `security`.
+
+Deployer đã bắt đầu deploy `fdc2ee0` lên Development, nên `audit` đã chấp nhận commit merge qua dòng chấp nhận. Mình đang commit các bản sửa vòng 4 của kit trong lúc chờ.
+
+`SHOP-6` đang In Review, còn cờ ở mức 4 lần quay lại (do báo cáo `security` vòng 4, đúng luật). Chờ deploy Development xong thì `jira-sync` chuyển item sang QA.
+
+Deploy Development của `fdc2ee0` thành công lúc 23:27. Giờ kiểm `SHOP-6` đã sang QA chưa, rồi chạy thử bước `/ao-qa`.
+
+`SHOP-6` đã ở Ready for QA, cờ đã gỡ, bước QA cho GO (`qa`, effort `high`). Chạy `/ao-qa SHOP-6`:
+
+Trong lúc `qa` chạy, mình đẩy nhánh kit có các bản sửa vòng 4 và mở kit PR.
+
+Kit PR #288 đã mở. Đang chờ `qa` kiểm `SHOP-6` trên Development.
+
+23:31: `qa` chạy được 3 phút, 37 bước, vẫn làm việc bình thường. (Ghi nhận: `security` vòng 4 tốn 8,07 USD, nên cả vòng 4 là 11,15 USD.)
+
+`qa` đã chạy xong (1,20 USD): mọi mục đều PASS ngoại trừ ruleset, chưa test được vì token của `qa` không đọc được danh sách bypass và cần quyền admin. Nhờ bạn chạy hai lệnh chỉ đọc bằng login của bạn; mình sẽ chạy tiếp ngay sau đó.
+
+Đã kiểm tra bằng login của bạn: cả năm ruleset đều khớp spec. Mình ghi kết quả lên SHOP-6 và gỡ cờ để bạn Accept.
+
+Đang chờ CI của kit PR #288. Trong lúc đó mình viết phần tiếp của Lượt 16 vào log.
+
+CI của kit PR #288 xanh. Mình ghi phần tiếp của Lượt 16 vào log trên cùng nhánh, rồi merge PR.
+
+**PR #13 đã merge, Development đã chạy bản mới, QA đạt. `SHOP-6` chờ bạn bấm Accept.**
+
+**Review vòng 4:**
+- `reviewer`: Approve, không có Critical hay High.
+- `security` (review cả PR): chỉ còn đúng High 1 bạn đã chấp nhận. Có thêm 2 Medium không chặn: `main` chưa có file `CODEOWNERS` (bản `v0.1.1` sẽ đưa lên), và khóa `age` (xem dưới).
+- Lần chạy dừng một lần giữa chừng vì lỗi `jira-sync` tự gắn lại cờ. Mình gỡ cờ, chạy tiếp, và đã sửa lỗi này trong kit.
+- Chi phí: 11,15 USD, trong khoảng 10–12 USD mình đã báo.
+
+**Merge:**
+- Trước khi approve, mình kiểm bằng đúng mã kit đang chạy trên VPS: lần approve có dòng chấp nhận thì không còn gì chặn.
+- Mình approve PR #13 bằng login của bạn, kèm dòng `Accept risk: 72ec4e38 until 2026-12-31: …`, rồi merge (`fdc2ee0`).
+- Deployer kiểm và cho qua. Development chạy bản mới từ 23:27.
+
+**QA (1,20 USD):** mọi mục đạt. Riêng mục ruleset, `qa` không đọc được vì cần quyền admin; mình đọc bằng login của bạn, cả năm ruleset đều đúng. Kết quả đã ghi lên `SHOP-6`.
+
+**Việc của bạn: Accept `SHOP-6`.**
+1. Mở https://phunghuutung12b4.atlassian.net/browse/SHOP-6
+2. Bấm nút trạng thái **In QA** ở góc trên bên phải.
+3. Chọn **Accept**.
+
+**Mình đổi lời khuyên về khóa `age`:** `security` chỉ ra rằng lúc giải mã, khóa đi qua clipboard và một script của kit, trên chính máy mà agent đang chạy dưới tài khoản của bạn. Vì vậy **đừng kiểm khóa trên máy này** cho tới khi có tài khoản `ao-agent`. Khi đó mình sẽ hướng dẫn bạn kiểm, rồi tạo cặp khóa mới. Lời khuyên cũ của mình (làm trước T17) không còn đúng.
+
+**Kit PR #288** đã merge, sửa nốt các Low của vòng 4 và lỗi gắn lại cờ. Các sửa này vào `shop` ở lần chép kit sau, cùng `ao-agent`, và được review lúc đó.
+
+**Chi phí:** `SHOP-6` tổng cộng 40,18 USD; chi phí agent của Pilot 3 tới giờ là 45,56 USD.
+
+**Bạn Accept xong thì mình làm tiếp theo kế hoạch đã chốt:**
+1. Bản `v0.1.1`: đưa `CODEOWNERS` lên `main`, đồng thời chạy thử luồng release mới. Tới gate ④ và ⑤ mình sẽ nhờ bạn duyệt.
+2. `/ao-spec SHOP-7`.
+```
+````
+
+**Claude:**
+
+**`SHOP-6` đã Done, T10 xong. Bản đưa `CODEOWNERS` lên `main` phải tên là `v0.2.0`, không phải `v0.1.1`. Gate ④ chờ bạn duyệt.**
+
+**Vì sao đổi tên:**
+1. Kit chỉ cắt bản có số cuối là 0 (`v0.2.0`, `v0.3.0`…) từ `develop`.
+2. Số cuối khác 0, như `v0.1.1`, là hotfix: đi từ `main`, cần một Bug, một vòng review và QA. Đường đó lại không thử những thứ mình cần thử trước Epic: nhánh release cắt bằng login của bạn, PR report, tag do App `ao-merge` gắn, merge ngược có `audit`.
+3. Vì vậy bản này là `v0.2.0`, còn Epic `SHOP-7` lên Production trong `v0.3.0`. Epic chưa gắn Fix Version nào, nên Jira không phải sửa gì.
+4. Mình đã tạo Fix Version `v0.3.0` qua REST, và sửa spec (mục 2.9 phần 7), plan, todo theo cách đánh số mới.
+
+**Gate ④, danh sách để bạn duyệt** (bước kiểm chỉ đọc, chưa cắt gì):
+- **Điểm cắt:** `fdc2ee0`, commit merge của PR #13 (`SHOP-6`).
+- **Trong `v0.2.0`:** `SHOP-6` (Done): bản chép kit của Pilot 3 và file `.github/CODEOWNERS`. Không có thay đổi code của ba app.
+- **Fix Version:** `v0.2.0` và `v0.3.0` đều có trên Jira, chưa Release.
+- Mình đã thử trước bằng mã kit đang chạy trên VPS: Staging sẽ nhận bản này, vì nhánh release mới bắt đầu từ `fdc2ee0`, commit mà Development đã kiểm qua.
+
+**Khi bạn đồng ý, mình làm tiếp:**
+1. `/ao-release v0.2.0 fdc2ee0`: tạo nhánh `release/v0.2.0` bằng login của bạn (luật mới chỉ cho admin tạo nhánh release), gắn Fix Version cho `SHOP-6`.
+2. Deployer đưa bản này lên Staging.
+3. `/ao-ship v0.2.0`: `qa` chạy regression, `devops` viết release notes, khoảng 1–2 USD. Bot mở PR report vào nhánh release, `merge-gate` merge nó, rồi bot mở PR release vào `main`.
+4. Gate ⑤: bạn approve PR release. `merge-gate` merge, gắn tag `v0.2.0`, merge ngược về `develop` sau khi kiểm các commit mang về. Production lên bản mới, và `doctor` hết đỏ dòng `CODEOWNERS`.
+
+**Bạn đồng ý cắt `v0.2.0` tại `fdc2ee0` không?** Nếu bạn vẫn muốn giữ tên `v0.1.1`, mình đi đường hotfix, tốn thêm một vòng review và QA.
+
+# Phiên 32 · Lượt 2 — 2026-11-15 khoảng 02:01 → 02:20
+
+**Bạn:**
+
+```markdown
+đồng ý
+```
+
+**Claude:**
+
+**`v0.2.0` đã tới gate ⑤: PR release #15 chờ bạn approve.** Luồng release mới chạy trơn tới đây.
+
+**Đã làm (0,92 USD):**
+1. Nhánh `release/v0.2.0` tạo tại `fdc2ee0` bằng login của bạn; `SHOP-6` gắn Fix Version `v0.2.0`. Staging lên bản mới trong khoảng 1,5 phút.
+2. `qa` chạy regression trên Staging (0,39 USD): đạt, 9 test qua, 0 lỗi, 8 test bỏ qua có lý do như ở `v0.1.0`.
+3. `devops` viết release notes (0,53 USD).
+4. **PR report, lần đầu chạy thật:** bot mở PR #14 vào nhánh release, chỉ có 2 file ghi chép. CI xanh, rồi `merge-gate` tự merge bằng App `ao-merge`. Deployer kiểm commit đó và đưa lại lên Staging, thành công.
+5. Bot mở PR release #15 vào `main`: 43 file, gồm kit, `.claude/`, `.github/` (có `CODEOWNERS`), `CHANGELOG.md` và release notes. Không có code của ba app. CI xanh đủ năm check.
+
+**Việc của bạn: gate ⑤, approve PR #15.**
+1. Mở https://github.com/TungPH7/shop/pull/15
+2. Bấm tab **Files changed**.
+3. Bấm nút xanh **Review changes** (hoặc **Submit review**) ở góc trên bên phải.
+4. Chọn **Approve**, rồi bấm **Submit review**.
+5. **Đừng bấm Merge:** `merge-gate` tự merge.
+
+**Sau khi bạn approve, mình theo dõi tiếp:**
+- `merge-gate` merge PR #15, App `ao-merge` gắn tag `v0.2.0`, rồi mở PR merge ngược `main` về `develop` và merge sau khi kiểm các commit mang về;
+- deployer đưa `v0.2.0` lên Production;
+- mình chạy lại `doctor` để chắc dòng `CODEOWNERS` trên `main` đã xanh.
+
+**Bạn muốn tự bấm Release `v0.2.0` trên Jira, hay để mình làm qua REST như `v0.1.0`?** Bạn trả lời cùng lúc approve là được.
+
+# Phiên 32 · Lượt 3 — 2026-11-15 khoảng 10:05 → 10:22
+
+**Bạn:**
+
+```markdown
+Đã approve, bạn bấm release giúp tôi
+```
+
+**Claude:**
+
+Đã thấy PR #15 merge và tag `v0.2.0`; mình đang chuẩn bị script để Release `v0.2.0` trên Jira.
+
+Production đang deploy `v0.2.0` (commit `ce64301`); mình tìm lệnh `doctor` trong lúc chờ.
+
+`doctor` đã xanh dòng `CODEOWNERS` trên `main`; mình đang kiểm một dòng đỏ khác (bản kit của `shop` cũ hơn kit `main`), trong lúc Production deploy.
+
+Dòng đỏ đó là kit PR #288, đã lên kế hoạch vào `shop` ở lần chép kit sau. Giờ mình chờ Production deploy xong rồi mới bấm Release trên Jira.
+
+Production đang deploy `v0.2.0`, bắt đầu lúc 03:07:29Z. PR merge ngược #16 đã xanh đủ CI và đang chờ `merge-gate` merge. Khi Production xong, mình bấm Release trên Jira.
+
+`v0.2.0` đã lên Production và đã Release trên Jira. Mình đang chờ Development nhận commit merge ngược, đồng thời ghi kết quả vào `verification.md`.
+
+Mình đang kiểm log của `merge-gate` để chắc App `ao-merge` là bên gắn tag `v0.2.0`; Development vẫn chưa nhận commit merge ngược.
+
+Development đang deploy commit merge ngược `5c531e1`. Mình đã ghi kết quả vào `verification.md` và tick T10h; chờ Development xong là commit.
+
+`/ao-spec SHOP-7` vừa kiểm xong và cho GO: bốn lượt agent `ba` → `ux` → `sa` → `ba`. Mình chạy nó ngay. Development vẫn đang deploy commit merge ngược.
+
+**`v0.2.0` đã lên Production và đã được Release trên Jira.** T12 `/ao-spec SHOP-7` đang chạy nền với `ba`. Cứ khoảng 3 phút mình báo tiến độ một lần.
+
+10:16: `ba` đã chạy 3 phút, 35 bước, và đang đọc repo để viết SPEC của `SHOP-7`.
+
+10:19: `ba` đã chạy 6 phút, 42 bước, vẫn đang đọc repo.
+
+10:22: `ba` đã chạy 9 phút, 52 bước. Nó vừa tạo thư mục cho SPEC và đang viết.
+
+# Phiên 32 · Lượt 4 — 2026-11-15 khoảng 10:23 → 10:30
+
+**Bạn:**
+
+```markdown
+ảnh chụp màn hình của trang mẫu bạn đang lưu ở đâu?
+```
+
+**Claude:**
+
+Ảnh chụp trang mẫu đang ở thư mục `.ai/design-inbox/` của repo `shop`, chỉ có trên máy này. Thư mục `.ai/` nằm trong `.gitignore`, nên chưa có ảnh nào lên GitHub. Cụ thể:
+
+1. **Bản gốc:** `D:\Document\1Khoahoc\4LapTrinh\AI-for-coding\e-commerce\shop\.ai\design-inbox\_reference\`
+   - 5 ảnh PNG: `01-growth-list-cards-table.png`, `02-form-new-experiment-dialog.png`, `03-apps-list.png`, `04-overview.png`, `05-app-detail.png`;
+   - `reference.json`, và `tokens.md` (màu, font, khoảng cách của trang mẫu).
+2. **Bản cho Epic:** `D:\Document\1Khoahoc\4LapTrinh\AI-for-coding\e-commerce\shop\.ai\design-inbox\SHOP-7\`
+   - mình chép 5 ảnh PNG sang đây ở T11, chiều 14/11;
+   - `tokens.md` không chép sang, vì `ux` trả lại mọi file không phải PNG hay JPG. Nội dung token đã nằm trong mô tả Epic `SHOP-7`.
+3. **Khi tới lượt `ux`:** sau `ba`, `ux` đổi tên từng ảnh theo màn hình, ví dụ `S2-desktop.png`, rồi chuyển chúng sang `docs/specs/SHOP-7/design/` trên nhánh docs. Lúc đó ảnh mới vào Git và hiện trong PR docs ở gate ①. Thư mục `_reference/` vẫn giữ nguyên bản gốc.
+
+`/ao-spec SHOP-7` vẫn đang chạy. `ba` đang viết SPEC.
+
+`ba` đã dừng với 12 câu hỏi về SPEC. Mình đang ghi log và kết quả, rồi gửi bạn danh sách câu hỏi.
+
+**`ba` đã viết xong SPEC của `SHOP-7` (2,99 USD, 11 phút) và để lại 12 câu hỏi cần bạn trả lời.** Câu nào cũng có đề xuất của `ba`. `ux` và `sa` chỉ chạy sau khi bạn trả lời.
+
+**`ba` đã viết gì:** file `docs/specs/SHOP-7/spec.md` trên nhánh `feature/SHOP-7-spec` (commit `06190f2`, chưa push):
+- 6 story:
+  - US1–US4 cho trang quản trị: danh sách, thêm, sửa và ẩn, xóa;
+  - US5–US6 cho khách: danh sách có tìm kiếm và sắp xếp, trang chi tiết sản phẩm.
+- 28 tiêu chí chấp nhận, AC1–AC28, kèm ví dụ cụ thể.
+- Luật của sản phẩm, và phần việc kỹ thuật:
+  - nâng database làm hai bước an toàn;
+  - API mới;
+  - design system;
+  - gỡ mock cũ;
+  - 3 Low của PR #10;
+  - 5 sản phẩm thử trên Production.
+- Một điều `ba` tìm thấy: tìm kiếm không phân biệt dấu có thể cần extension `unaccent` của PostgreSQL. Database đang chạy không tự có extension này, nên `ba` xếp việc thêm nó vào nhóm "phải hỏi trước". `sa` sẽ chọn cách làm ở bước plan.
+
+**12 câu hỏi, kèm đề xuất của `ba`:**
+1. **Bản phát hành:** Epic ghi `v0.2.0`, nhưng `v0.2.0` vừa lên Production. Đề xuất: Epic vào `v0.3.0`. Đề xuất này khớp với điều bạn đã duyệt ở Lượt 2.
+2. **Giao diện sáng:** trang mẫu chỉ có giao diện tối. Đề xuất: `ux` dựng bảng màu sáng từ cùng các vai trò màu (nền, bề mặt, chữ, màu nhấn, trạng thái), giữ độ tương phản WCAG AA. Mặc định vẫn theo cài đặt của hệ thống, như hai app đang làm.
+3. **Thứ tự "Liên quan nhất" khi tìm kiếm:**
+   - tên bắt đầu bằng từ khóa đứng trước, rồi tới tên chứa từ khóa, rồi tới sản phẩm mới nhất;
+   - `ba` thêm hai điều. Một, tìm theo từng từ: tên có đủ các từ, dù không liền nhau, vẫn ra và đứng ở nhóm thứ ba. Hai, mỗi từ chỉ khớp phần đầu của một từ trong tên, nên `ao` ra "Áo thun" mà không ra "Bao tay".
+4. **Sản phẩm thử trên Production:** mình thêm 5 sản phẩm qua API đang chạy, sau khi bạn duyệt plan và trước gate ④ của `v0.3.0`.
+   - Giá là số nguyên đồng.
+   - Có ít nhất một tên có dấu, một mô tả nhiều dòng và một slug tự gõ, để lần nâng database kiểm được các trường hợp đó.
+5. **Dữ liệu cũ khi nâng database.** Cột giá cũ ghi là USD và cho phép giá 0. Đề xuất:
+   - giữ nguyên con số, coi là đồng, không quy đổi, làm tròn tới đồng;
+   - sản phẩm giá 0 thành Ẩn, và khi sửa phải nhập giá lớn hơn 0;
+   - các sản phẩm cũ còn lại là Đang bán, và mọi sản phẩm cũ là Còn hàng;
+   - tên cũ dài hơn 150 ký tự được giữ, chỉ phải sửa khi lưu lại sản phẩm đó.
+6. **Bốn E2E đăng nhập đang bị bỏ qua:**
+   - xóa hai test kiểm nút xóa trên trang của khách, vì Epic này gỡ nút đó;
+   - giữ hai test đăng nhập và đăng xuất, vẫn bỏ qua, chờ Epic đăng nhập sau này;
+   - sau Epic này còn 2 test bị bỏ qua, thay vì 8.
+7. **Mô tả có thẻ HTML:** lưu đúng như người dùng gõ và hiện như chữ thường, không từ chối. Nhờ vậy mô tả như "kích thước < 5 cm" vẫn lưu được.
+8. **Đổi slug:** đường dẫn cũ trả 404 và không chuyển hướng; form cảnh báo trước khi lưu. Việc chuyển hướng từ slug cũ để cho một Epic sau, nếu cần.
+9. **Ảnh trong dữ liệu cấu trúc cho Google:**
+   - ảnh giữ chỗ không phải file ảnh, nên chưa khai `image`;
+   - hệ quả: Google có thể chưa hiện sản phẩm kèm ảnh, cho tới khi có ảnh thật;
+   - trang chi tiết dùng ảnh Open Graph chung của site;
+   - cách khác là sinh cho mỗi sản phẩm một ảnh chữ cái đầu, nhưng như vậy phạm vi lớn hơn.
+10. **Phần demo của template trên trang sản phẩm của khách:** gỡ hết nút đổi mật độ, nút lưới hay danh sách, badge đếm, nút làm mới, nút phóng ảnh và ảnh `picsum.photos`. Dòng "Đã xem 24 trên 30 sản phẩm" thay cho badge đếm.
+11. **Độ trễ từ trang quản trị tới trang khách:** thay đổi hiện trên trang khách trong vòng 60 giây, và `sa` chọn cách làm. Nếu bạn muốn thấy ngay ở lần tải trang kế tiếp, các AC liên quan sẽ đổi theo.
+12. **Các giới hạn `ba` tự đặt:**
+    - giá tối đa 999.999.999 ₫;
+    - slug và từ khóa tìm kiếm tối đa 100 ký tự;
+    - trang quản trị hiện 20 sản phẩm mỗi trang, mới nhất trước;
+    - sản phẩm mới mặc định là Đang bán và Còn hàng.
+
+Mình thấy cả 12 đề xuất đều hợp lý cho bản đầu của danh mục. Câu duy nhất có thể đổi trải nghiệm là câu 11: 60 giây hay thấy ngay.
+
+**Việc của bạn: trả lời theo số câu**, ví dụ "Đồng ý tất cả", hoặc "Đồng ý, trừ câu 11: muốn thấy ngay". Mình sẽ:
+1. chép nguyên văn câu trả lời của bạn vào `.ai/runs/SHOP-7/answers.md`;
+2. chạy tiếp `/ao-spec SHOP-7`: `ba` sửa SPEC theo câu trả lời, rồi tới `ux` (thiết kế màn hình, chuyển ảnh mẫu vào `docs/specs/SHOP-7/design/`) và `sa`;
+3. cuối cùng `ba` mở PR docs, rồi mình nhờ bạn duyệt gate ①.
+
+Một lỗi nhỏ của kit: bản tóm tắt câu hỏi của `ao-step` chỉ lấy dòng đầu của mỗi câu, nên câu 5 mất các ý con. Mình đã lấy đủ từ SPEC, và ghi lỗi này vào `verification.md`.
+
+
+# Phiên 32 · Lượt 5 — 2026-11-15 khoảng 10:30 → 11:16
+
+**Bạn:**
+
+```markdown
+Đồng ý tất cả. Trong các task và chặng tiếp theo của B4 này bạn cứ làm theo đề xuất không cần hỏi tôi. Chỉ hỏi tôi đối với những điều bạn không có quyền
+```
+
+**Claude:**
+
+Mình ghi câu trả lời của bạn rồi chạy tiếp `/ao-spec SHOP-7`. Từ giờ tới hết B4, mình tự làm theo đề xuất; chỉ hỏi bạn ở các gate, Accept và những việc cần quyền của bạn.
+
+`ba` đang sửa SPEC theo câu trả lời; sau đó tới `ux`, `sa`, rồi `ba` mở PR docs. Cứ khoảng 3 phút mình báo tiến độ một lần.
+
+10:34: `ba` đã sửa xong SPEC theo câu trả lời. Log ghi 4,88 USD; con số này có thể đã cộng cả lượt đầu, mình sẽ đối chiếu khi đọc báo cáo. Kế tiếp là `ux`.
+
+10:37: `ux` đã chạy 3 phút, 29 bước, và đang đọc repo cùng ảnh mẫu.
+
+10:40: `ux` đã chạy 6 phút. Số bước vẫn là 29, nhưng log vẫn đang được ghi, nên có lẽ nó đang viết một file dài, chắc là `design.md`.
+
+10:43: `ux` đã chạy 9 phút, 35 bước. Nó đang viết một script nhỏ để tính bảng màu sáng và kiểm độ tương phản (câu 2).
+
+10:46: `ux` đã chạy 12 phút, 46 bước, và đang viết bản vẽ ASCII của form sản phẩm.
+
+10:49: `ux` đã chạy 15 phút, 72 bước, và đang sửa `design.md`.
+
+`ux` dừng với 16 câu hỏi, câu nào cũng có đề xuất. Theo lời bạn, mình cho chạy tiếp theo đề xuất. Riêng câu 1 nói ảnh `05-app-detail.png` có vẻ chụp nhầm lúc trang đang chuyển, nên mình kiểm nguồn của ảnh trước.
+
+Ảnh 05 đúng là chụp nhầm: thanh trên đang ở mục Apps, nhưng nội dung là trang Overview. Lỗi này nằm ở script chụp ảnh mình viết ở T11. Mình thử xem trang mẫu có trang chi tiết thật không.
+
+Trang mẫu có trang chi tiết thật (`#/apps/tally`, tiêu đề "Tally App"). Script của mình chụp hỏng vì chỉ đổi phần sau dấu `#` mà không bấm vào thẻ. Mình vẫn làm theo đề xuất của `ux`: S5 vẽ bằng ASCII, vì trang đó là bảng số liệu của một app chứ không phải trang sản phẩm. Giờ mình chạy tiếp.
+
+`ux` đang sửa `design.md` theo câu trả lời; sau đó tới `sa` rồi `ba` mở PR docs. Cứ khoảng 3 phút mình báo tiến độ một lần.
+
+Lượt `ux` đầu tốn 2,23 USD. `ux` vừa bắt đầu lượt sửa theo câu trả lời.
+
+10:54: `ux` đã chạy 3 phút. Nó đang ghi ledger, tức là sắp xong lượt sửa.
+
+10:57: `ux` đã sửa xong. `sa` đang chạy được 3 phút, 33 bước, và đang đọc repo để viết phần yêu cầu phi chức năng.
+
+11:00: `sa` đã chạy 6 phút, 56 bước. Nó đang kiểm xem font Urbanist có đủ chữ tiếng Việt có dấu không, tức câu 4 của `ux`.
+
+11:03: `sa` đã chạy 9 phút, 72 bước, vẫn đang đọc repo.
+
+11:06: `sa` đã chạy 12 phút, 77 bước.
+
+11:09: `sa` đã xong, tốn 3,75 USD. `ba` đang mở PR docs, chạy được 1 phút, 24 bước.
+
+Stage spec đã xong: `ba` mở PR docs #17, CI xanh. Mình đang ghi lại kết quả và log, rồi gửi bạn các bước duyệt gate ①.
+
+**Stage spec của `SHOP-7` đã xong và đang chờ bạn duyệt ở gate ①, qua PR docs #17.** Chi phí 12,31 USD, chạy từ 10:13 tới 11:12.
+
+**Các agent đã làm:**
+1. `ba` viết SPEC (2,99 USD), rồi sửa theo câu trả lời của bạn (1,89 USD).
+2. `ux` viết `design.md` với 6 màn hình S1–S6 và 4 ảnh mẫu (2,23 USD). Nó hỏi 16 câu, câu nào cũng có đề xuất. Theo lời bạn, mình trả lời bằng chính câu "Đồng ý tất cả…" của bạn, không hỏi lại; `ux` chốt cả 16 câu (0,73 USD).
+3. `sa` thêm 27 yêu cầu phi chức năng, NFR1–NFR27 (3,75 USD).
+4. `ba` mở PR docs #17 (0,72 USD). PR có 6 file, tất cả trong `docs/specs/SHOP-7/`, và CI xanh đủ năm check.
+
+**Những điều nên biết trước khi duyệt:**
+- **Font:** font Urbanist của trang mẫu thiếu chữ tiếng Việt có dấu như ả, ầ, ổ, ữ. Vì vậy `sa` chọn Be Vietnam Pro. Chữ sẽ hơi khác trang mẫu, nhưng một từ không bị lẫn hai font.
+- **Trang khách cập nhật chậm nhất khoảng 60 giây** sau khi sửa ở trang quản trị: cache 30 giây ở server cộng 30 giây ở trình duyệt.
+- **Tìm kiếm không dấu** không cần cài thêm gì vào database. `sa` dùng một cột lưu tên không dấu, do database tự điền.
+- **Thêm một việc cho bạn ở gate ⑤ của `v0.3.0`:** xác nhận bản backup Production mới nhất chưa quá 24 giờ, vì deployer không tự backup trước khi nâng database (NFR27).
+- **Một điểm đã biết, sẽ ghi vào release note `v0.3.0`:** `/api` chưa cần đăng nhập cho tới Epic đăng nhập. Hiện nó an toàn chỉ vì `api` không có địa chỉ công khai, còn `admin` có basic auth (NFR8).
+- **Sản phẩm cũ:** ngoài 4 quy tắc ở câu 5, `sa` thêm 2 quy tắc: giá cũ trên 999.999.999 thì sản phẩm thành Ẩn; slug cũ sai định dạng vẫn được giữ. Hai quy tắc này nằm ở NFR16, chưa chép vào Product Rules; `sa` sẽ dùng chúng khi lập plan.
+- **Ảnh 05 là lỗi của mình:** script chụp ảnh ở T11 không bấm vào thẻ app, nên chụp nhầm trang Overview. Trang mẫu có trang chi tiết thật, nhưng đó là bảng số liệu của một app. Vì vậy S5, trang chi tiết sản phẩm, được vẽ bằng ASCII theo đề xuất của `ux`.
+
+**Việc của bạn: gate ①.**
+1. Mở https://github.com/TungPH7/shop/pull/17 rồi bấm tab **Files changed**.
+2. Đọc `docs/specs/SHOP-7/spec.md` và `docs/specs/SHOP-7/design.md`. Muốn đọc dạng đã trình bày thì bấm nút **⋯** ở đầu file, rồi chọn **View file**.
+3. Đừng Approve và đừng Merge PR này: `merge-gate` tự merge sau gate ②.
+4. Mở https://phunghuutung12b4.atlassian.net/browse/SHOP-7, bấm nút trạng thái **Specifying** ở góc trên bên phải, rồi chọn **Approve spec**.
+
+Nếu muốn sửa gì trong SPEC, bạn nhắn mình trước khi bấm. Mình sẽ chạy `/ao-spec SHOP-7` kèm điều cần sửa. Sau khi bạn bấm Approve spec, mình chạy tiếp T13 `/ao-plan SHOP-7` tới gate ②.
+
