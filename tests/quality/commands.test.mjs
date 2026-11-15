@@ -580,6 +580,10 @@ test('Grep and Glob stay in the project and the temp folder, nothing looks for a
     'git log -1 --format="tformat:PRIVATE KEY" --output=/tmp/m',
     'git log -1 --format="tformat:PRIVATE KEY" > /tmp/m',
     'git grep -n "PRIVATE KEY" -- apps | head -20',
+    // Review round 4 of shop PR #21: bash expands braces and $'…' before git sees the words.
+    'git grep -l {"PRIVATE KEY",--no-index} /c/Users/u',
+    "git grep -l $'--no-index' \"PRIVATE KEY\" /c/Users/u",
+    'git grep -l "PRIVATE KEY" --no-ind{e,}x /c/Users/u',
   ]) {
     denied(bash(command, 'be-dev'), /private key/, command);
   }
