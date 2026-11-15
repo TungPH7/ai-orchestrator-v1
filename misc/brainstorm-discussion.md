@@ -26409,3 +26409,21 @@ Khi trình duyệt hỏi đăng nhập, nhập tên và mật khẩu đó. Stagi
    - **Xử lý ngay:** mình dừng `/ao-build SHOP-11` và `/ao-qa SHOP-38` (chưa bật agent), để SHOP-13 nằm trên đường găng chạy trước.
    - **Sửa trong kit** (PR #300, 1.534 test đạt, CI đang chạy): agent chỉ chờ RAM khi có lệnh khác **đã bật agent**. Việc kiểm RAM và đánh dấu "đang có agent" làm trong cùng một mutex, và đánh dấu được gỡ khi agent xong.
 3. **Điều cần biết về máy này:** khi Docker bật, RAM trống thường dưới 3 GB (ngưỡng `min_free_ram_gb`). Vì vậy dù đã sửa lỗi, agent thứ hai thường vẫn phải chờ agent đầu xong; 3 làn chỉ chạy cùng lúc được khi RAM đủ. Nếu muốn chạy song song nhiều hơn, có thể hạ `min_free_ram_gb` (ví dụ xuống 1,5) trong `project.yaml` qua một PR bạn duyệt, hoặc đóng bớt ứng dụng. Mình chưa đổi gì, để bạn quyết sau khi xem vài lượt chạy thật.
+
+# Phiên 32 · Lượt 47 — 2026-11-16 khoảng 00:25
+
+**Bạn:**
+
+```markdown
+Claude chuẩn bị chạm giới hạn 5h, thực hiện ghi chú lại để sau khi token được reset có thể làm tiếp mà không bị mất data, thông tin hay ngữ cảnh. Đặt watcher dùng script (không dùng agent để không tốn token) để 01:01 phút tiếp tục
+```
+
+**Claude:**
+
+Đã ghi chú và đặt giờ làm tiếp:
+
+1. **Ghi chú:** mục 9 của `ai-orchestrator/tasks/handoff-2026-11-15.md`, đã commit và push. Mục này gồm những việc đã xong, ba lệnh đang chạy kèm mã task và làn, cách chạy lại từng lệnh, thứ tự làm tiếp, và những việc chờ bạn. Bộ nhớ của mình cũng có thêm một dòng trỏ tới file này, nên một phiên mới vẫn tìm được.
+2. **Đánh thức lúc 01:01:** script `.pilot3-scratch/resume-at.sh` chạy nền, chỉ là bash, không có agent nên không tốn token. Đúng 01:01 nó in ảnh chụp trạng thái (khóa, làn, dòng cuối của ba lệnh, RAM, Docker) rồi thoát, và việc thoát đó gọi mình làm tiếp.
+3. **Đã tắt watcher 3 phút**, vì mỗi lần nó báo là mình bị gọi và tốn token.
+4. **Ba lệnh vẫn chạy nền:** `/ao-build SHOP-13` (be-dev đang làm), `/ao-build SHOP-11` và `/ao-qa SHOP-38` (đang chờ RAM). Agent dừng vì hết giới hạn thì lúc 01:01 mình chạy lại đúng lệnh, công việc làm dở không mất vì ao-step lưu ledger và state.
+5. **Còn chờ bạn:** Accept SHOP-9 và SHOP-10; chọn (a) hay (b) cho SHOP-40; cân nhắc hạ `min_free_ram_gb`.
