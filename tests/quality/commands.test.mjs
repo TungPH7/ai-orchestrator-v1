@@ -529,14 +529,51 @@ test('Grep and Glob stay in the project and the temp folder, nothing looks for a
     denied(bash(command, 'be-dev'), /backup copies/, command);
   }
   // Review round 4: a search for the marks of a private key in your user folder is refused, however the mark is
-  // written; inside the project it is a scan for committed keys, which security runs, and a commit message may name one.
-  for (const command of ['grep -r "PRIVATE KEY" ~', 'rg AGE-SECRET-KEY C:/Users/me', 'rg -uu -A 30 "PRIVATE.KEY" ~', 'rg "PRIVATE\\ KEY" $HOME', 'findstr /s /c:"PRIVATE KEY" %USERPROFILE%\\*']) {
+  // written. Review of shop PR #21: Git Bash names that folder in more ways than a list holds, so a command with the mark
+  // passes only as git commit, git grep or git log, which stay in the repository; security scans the project with Grep.
+  for (const command of [
+    'grep -r "PRIVATE KEY" ~',
+    'rg AGE-SECRET-KEY C:/Users/me',
+    'rg -uu -A 30 "PRIVATE.KEY" ~',
+    'rg "PRIVATE\\ KEY" $HOME',
+    'findstr /s /c:"PRIVATE KEY" %USERPROFILE%\\*',
+    'grep -rl "PRIVATE KEY" "$USERPROFILE"',
+    'grep -rl "PRIVATE KEY" ${USERPROFILE}/Downloads',
+    'grep -rl "PRIVATE KEY" "$HOMEDRIVE$HOMEPATH"',
+    'grep -rl "PRIVATE KEY" "$APPDATA/.."',
+    'cd && grep -rl "PRIVATE KEY" .',
+    'cd /c && grep -rl "PRIVATE KEY" Users/x',
+    'rg -- "-----BEGIN" ~',
+    'P="PRIVATE KEY"; grep -r "$P" .',
+    'git grep --no-index "PRIVATE KEY" ~',
+    'git grep --no-ind "PRIVATE KEY" ~',
+    'git grep --untracked "PRIVATE KEY"',
+    'git grep -O"cat x" "PRIVATE KEY"',
+    'git grep -nO "PRIVATE KEY"',
+    'git grep --open-files-in-pager=cat "PRIVATE KEY"',
+    'git -c core.pager=cat log -S "PRIVATE KEY"',
+    'git --work-tree ~ grep "PRIVATE KEY"',
+    'GIT_DIR=x git grep "PRIVATE KEY"',
+    'git commit -m "$(grep -r \'PRIVATE KEY\' ~)"',
+    'git commit -m "`grep -r \'PRIVATE KEY\' ~`"',
+    'git show HEAD:"PRIVATE KEY"',
+    'rg -n "BEGIN RSA PRIVATE KEY" .',
+    'bash -c "git grep \'PRIVATE KEY\'"',
+  ]) {
     denied(bash(command, 'be-dev'), /private key/, command);
   }
-  for (const command of ['git commit -m "fix(auth): read the private key from the vault (DEMO-1)"', 'git grep -n "PRIVATE KEY" -- apps', 'rg -n "BEGIN RSA PRIVATE KEY" .']) {
+  for (const command of [
+    'git commit -m "fix(auth): read the private key from the vault (DEMO-1)"',
+    'git grep -n "PRIVATE KEY" -- apps',
+    'git grep -n "PRIVATE KEY" -- apps | head -20',
+    'git log -S "PRIVATE KEY" --oneline',
+    'cd apps && git grep "PRIVATE KEY"',
+    'git grep -n -e "-----BEGIN" -- apps',
+  ]) {
     allowed(bash(command, 'security'), command);
   }
   allowed(call('security', 'Grep', { pattern: 'BEGIN RSA PRIVATE KEY', path: PROJECT }), 'a scan of the project for committed keys');
+  allowed(call('security', 'Grep', { pattern: '-----BEGIN', path: PROJECT }), 'a scan of the project for any PEM block');
   allowed(call('security', 'Grep', { pattern: 'age-secret-key-1', path: `${PROJECT}\\src` }), 'the same for age identities');
   allowed(bash('npm run build -- --config .aot.json', 'be-dev'), 'a name that only starts with .ao');
 });
