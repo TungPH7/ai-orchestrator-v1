@@ -26260,3 +26260,9 @@ Một watcher sống tối đa 30 phút; hết hạn thì mình bật lại. Khi
 3. **Một lỗi của mình:** ở kit PR #296 (đã merge), chuỗi `` $` `` trong văn bản thay thế của JS `replace()` đã chèn lặp 314 dòng đầu vào `docs/quality-gates.md`. PR #297 khôi phục file đó. Từ nay mình sửa tài liệu bằng tool Edit, không qua `replace()`.
 4. **Còn mở (cần bạn quyết sau):** `JIRA_CI_TOKEN` vẫn nằm trong biến user của Windows trên máy. gh-guard chỉ chặn được các cách đọc trực tiếp; cách bền là đưa token CI ra khỏi máy (ghi Jira khi cắt release và đính kèm bằng chứng QA đi qua workflow có environment). Đây là Medium, không chặn merge.
 5. **Đang chạy:** `/ao-fix 19` (2 Low câu chữ), có watcher.
+
+**Claude (22:45, PR #19 và vòng 4 của PR #21):**
+
+1. **PR #19 (SHOP-10):** `/ao-fix 19` đã sửa xong 2 Low câu chữ; `security` 0 finding. `reviewer` lại tìm 2 Low mới: test E2E font có thể đếm thiếu khi body chưa về kịp (`design-system.spec.ts`), và một câu trong `user.md` nói số đo "áp cho admin ở SHOP-9" mà không item nào nhận. SHOP-10 đến giờ 32,61 USD.
+2. **PR #21 (SHOP-38):** đã merge kit PR #297, chép kit `bcb06f8d` vào PR (`5dbe7e3`), gỡ cờ Needs you cũ của merge-gate kèm comment, và đang chạy review vòng 4, có watcher.
+3. **PR #19 và #20 không hội tụ:** mỗi vòng sửa xong, `reviewer` lại thấy 1–2 Low mới ở chỗ khác. Mình đề xuất dừng vòng lặp này: bạn approve PR #19 và #20, còn 4 Low (2 của mỗi PR) gom vào một Task sau. Nếu bạn muốn sửa tiếp thì mình chạy thêm đúng một vòng cho mỗi PR sau review PR #21, rồi nhờ bạn approve dù còn Low mới.
