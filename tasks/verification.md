@@ -315,3 +315,8 @@ Sửa plan và todo: T4 thêm `playwright.config.ts` của profile; T5 đưa b�
   - `/ao-qa SHOP-8` trên Development (`4605845`) chạy.
   - `/ao-qa SHOP-8` (`qa`, `high`, 6,3 phút, 1,67 USD): **PASS** trên Development (`4605845`). 26 token khớp bảng thiết kế ở hai giao diện, axe 0 vi phạm, regression 11 đạt và 8 bỏ qua; 10 ảnh đính vào Jira. `gh-guard` từ chối một lệnh nhắc tới biến mật khẩu basic auth. `SHOP-8` 27,05 USD; chờ bạn Accept.
   - `/ao-build SHOP-9` chạy. Kit C2: worktree `ai-orchestrator-c2`, nhánh `task/parallel-runs-1`.
+- **C2 phần 1** (Phiên 32 · Lượt 35, làm xen giữa các lượt agent của `SHOP-7`): kit PR #291 merge (`4505964`).
+  - `lib/workflow/places.mjs` (làn của item, `laneOf` theo lệnh, `checkoutBranch` thay `prepareCheckout`), `lib/workflow/lanes.mjs` (tạo, cài package, chép `runs.copy` và ledger, tìm ledger, dọn làn có PR đã merge hay đóng), runner truyền lượt cho `git` và `wip.restore`, `ao-step` nối vào, schema `runs`, mục mới trong `docs/dev-workflow.md`, spec 4.4.
+  - 1.490 test xanh (20 test mới, chạy trên repo git thật). Tự rà trước PR: lượt review không bao giờ vào làn; dọn làn lỗi thì không dừng lệnh.
+  - `/ao-preview` dừng khi bật worktree; bật app trong làn để sau.
+  - Phần 2 bắt đầu trên `task/parallel-runs-2`.
