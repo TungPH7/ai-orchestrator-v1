@@ -600,6 +600,13 @@ test('Grep and Glob stay in the project and the temp folder, nothing looks for a
     'powershell -c "Get-ItemProperty HKCU:\\Environment"',
     'powershell -c "(Get-Item HKCU:Environment).GetValue(\'X\')"',
     'node -e "require(\'child_process\').execSync(\'reg query HKCU\\\\Environment /v X\')"',
+    // Review round 3 of shop PR #21: five more plain ways.
+    'powershell -c "[Environment]::GetEnvironmentVariables(1)"',
+    'powershell -c "Get-CimInstance Win32_Environment"',
+    'wmic environment get Name,VariableValue',
+    'powershell -c "[Microsoft.Win32.Registry]::CurrentUser.OpenSubKey(\'Environment\').GetValue(\'X\')"',
+    'reg query HKU\\S-1-5-21-1-2-3-1001\\Environment',
+    'reg query "HKEY_USERS\\S-1-5-21-1-2-3-1001\\Environment" /v X',
   ]) {
     denied(bash(command, 'be-dev'), /user variables of Windows/, command);
   }

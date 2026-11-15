@@ -230,7 +230,7 @@ async function main() {
     projectDir,
     gitIn,
     install: async (dir) => installLane(dir, { env: installEnv(), exists: existsSync, manager: managerFromLockfile, args: installArgs, run: runManager }),
-    fs: { existsSync, mkdirSync, copyFileSync, cpSync, readdirSync, statSync, writeFileSync },
+    fs: { existsSync, mkdirSync, copyFileSync, cpSync, readdirSync, rmSync, statSync, writeFileSync },
     pullsOf: (branch) => pullsOfBranch(github, repo, branch),
     isProtected: (branch) => isProtected(branch, gates.protected_branches),
     settings: runs,
