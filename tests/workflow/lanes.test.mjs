@@ -277,3 +277,21 @@ test('a lane git could not add gives back its place', async (t) => {
   assert.equal((await empty.keeper.ensure('SHOP-16')).ok, false);
   assert.equal(existsSync(empty.lane('SHOP-16')), false, 'its empty folder is gone, so it no longer counts');
 });
+
+test('a lane mutex released while it is read is taken on the next try (review round 4 of shop PR #21)', async (t) => {
+  const s = setup(t, { settings: { worktrees: true, lanesMax: 3, copy: [] } });
+  // The mutex is there for the first try, and gone by the time its age is read.
+  mkdirSync(join(s.root, 'shop-wt'), { recursive: true });
+  const mutex = join(s.root, 'shop-wt', '.reserve');
+  writeFileSync(mutex, 'held');
+  const realStat = statSync;
+  fs.statSync = (path, ...rest) => {
+    if (path === mutex) {
+      rmSync(mutex, { force: true });
+      throw Object.assign(new Error('ENOENT'), { code: 'ENOENT' });
+    }
+    return realStat(path, ...rest);
+  };
+  t.after(() => (fs.statSync = realStat));
+  assert.equal((await s.keeper.ensure('SHOP-17')).ok, true);
+});
