@@ -628,6 +628,11 @@ test('Grep and Glob stay in the project and the temp folder, nothing looks for a
     'powershell -c "[Environment]::GetEnvironmentVariables()"',
     'powershell -c "[Microsoft.Win32.Registry]::GetValue(\'HKEY_CURRENT_USER\\Environment\', \'X\', $null)"',
     'reg query HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run',
+    // Review round 4 of shop PR #21: Git Bash shows the registry as files under /proc/registry.
+    'grep -r . /proc/registry/*/Environment',
+    'cat /proc/registry/HKEY_CURRENT_USER/Environment/JIRA_CI_TOKEN',
+    'cd /proc; cat regi*/HK*/Env*/JIRA*',
+    'ls /PROC/registry64',
   ]) {
     denied(bash(command, 'be-dev'), /user variables of Windows/, command);
   }

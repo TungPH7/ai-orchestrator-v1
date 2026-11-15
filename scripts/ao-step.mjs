@@ -286,8 +286,15 @@ async function main() {
   console.log(formatDecision(decision));
   // Agents run the hooks of the kit in AO_KIT_DIR: one that differs from the kit copy of the project is named (review round
   // 3 of shop PR #21).
-  const readText = (path) => (existsSync(path) ? readFileSync(path, 'utf8') : null);
-  const drift = process.env.AO_KIT_DIR ? hookKitNote(hookKitDrift({ kitDir, copyDir: join(projectDir, '.ai-orchestrator'), read: readText }), kitDir) : null;
+  const readText = (path) => {
+    try {
+      return readFileSync(path, 'utf8');
+    } catch {
+      return null;
+    }
+  };
+  const listFiles = (dir) => (existsSync(dir) ? readdirSync(dir, { recursive: true, withFileTypes: true }).filter((entry) => entry.isFile()).map((entry) => relative(dir, join(entry.parentPath, entry.name))) : []);
+  const drift = process.env.AO_KIT_DIR ? hookKitNote(hookKitDrift({ kitDir, copyDir: join(projectDir, '.ai-orchestrator'), read: readText, list: listFiles }), kitDir) : null;
   if (drift) console.log(drift);
   if (command === 'status' && runs.worktrees) {
     const lanes = keeper.list();
