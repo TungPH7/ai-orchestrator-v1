@@ -152,10 +152,16 @@ test('a lane stays while its PR is open, has no PR, or holds work not committed 
   assert.match(notes.join('\n'), /The lane of SHOP-16 stays .*: its PR is closed, but it has commits on feature\/SHOP-16-api, which is gone from origin\./);
 });
 
-test('runs of project.yaml: off when absent; runs.copy holds relative paths inside the project only', () => {
-  assert.deepEqual(runsSettings({}), { worktrees: false, copy: [] });
-  assert.deepEqual(runsSettings({ runs: { worktrees: true, copy: ['apps/api/.env', '.env.development'] } }), { worktrees: true, copy: ['apps/api/.env', '.env.development'] });
-  assert.deepEqual(runsSettings({ runs: { worktrees: 'yes' } }), { worktrees: false, copy: [] });
+test('runs of project.yaml: off and one lane when absent; runs.copy holds relative paths inside the project only', () => {
+  const defaults = { worktrees: false, lanesMax: 1, minFreeRamGb: 3, portStep: 100, copy: [] };
+  assert.deepEqual(runsSettings({}), defaults);
+  assert.deepEqual(runsSettings({ runs: { worktrees: true, copy: ['apps/api/.env', '.env.development'] } }), { ...defaults, worktrees: true, copy: ['apps/api/.env', '.env.development'] });
+  assert.deepEqual(runsSettings({ runs: { worktrees: 'yes' } }), defaults);
+  assert.deepEqual(runsSettings({ runs: { worktrees: true, lanes_max: 3, min_free_ram_gb: 2.5, port_step: 200 } }), { ...defaults, worktrees: true, lanesMax: 3, minFreeRamGb: 2.5, portStep: 200 });
+  assert.throws(() => runsSettings({ runs: { lanes_max: 2 } }), /runs\.lanes_max of project\.yaml is 2, which needs runs\.worktrees: true/);
+  for (const bad of [0, 7, 1.5, '3']) assert.throws(() => runsSettings({ runs: { worktrees: true, lanes_max: bad } }), /a whole number from 1 to 6/, String(bad));
+  assert.throws(() => runsSettings({ runs: { min_free_ram_gb: -1 } }), /a number of GB from 0 to 64/);
+  assert.throws(() => runsSettings({ runs: { port_step: 5 } }), /a whole number from 10 to 1000/);
   for (const bad of ['../secrets.env', '/etc/passwd', 'C:/Users/me/.ssh/id_rsa', 'apps/../../x', '', 7]) {
     assert.throws(() => runsSettings({ runs: { copy: [bad] } }), /runs\.copy of project\.yaml has/, String(bad));
   }
