@@ -170,3 +170,38 @@ lượt dừng và chạy lại khi hạn mức mở, như bây giờ.
      chưa đo; mình sẽ đo ở lượt build kế tiếp và ghi số thật vào đây.
 - **Kết luận giữ nguyên:** số agent bằng số làn, cộng chốt RAM 3 GB. Cách bớt RAM nhiều nhất trên máy này: đóng cửa sổ
   VS Code và tab trình duyệt không dùng, và không mở một cửa sổ VS Code cho mỗi làn.
+
+## Câu hỏi ở Lượt 29
+
+> 5. đã có items_at_once rồi còn lanes_max là sao nữa? hay bạn chỉ rename lại?
+> 6. WIP ở cột In Review trên Jira đang đặt max = 2, nếu lanes_max: 3 thì cũng phải sửa lại Jira phải không?
+
+### 5. `items_at_once` và `lanes_max`
+
+Hai con số khác nhau, nhưng giờ bạn chỉ cần đặt một.
+
+| Lượt | Đổi gì |
+|---|---|
+| 17 | Spec nháp có `runs.parallel`: số lượt agent chạy cùng lúc |
+| 20 | Đổi tên thành `items_at_once` (chỉ đổi tên) |
+| 21 | Đổi tên thành `agents_at_once` (chỉ đổi tên) |
+| 22 | Thêm khóa **mới** `lanes_max`: số làn, tức worktree, được mở cùng lúc |
+| 25 | Bạn chốt số agent bằng số làn; `agents_at_once` bỏ trống thì bằng `lanes_max` |
+| 29 | Bỏ hẳn khóa `agents_at_once` khỏi `project.yaml`, vì nó luôn bằng `lanes_max` |
+
+Bây giờ trong `project.yaml` chỉ còn `lanes_max`. Số agent chạy cùng lúc tự bằng nó. Muốn tạm chạy ít agent hơn mà không
+sửa file thì đặt biến `AO_AGENTS_AT_ONCE`. Chốt RAM (`min_free_ram_gb`) vẫn có thể bắt một làn chờ khi máy thiếu RAM.
+
+### 6. Cột In Review có max 2 trên Jira
+
+**Không phải sửa Jira.**
+
+- Con số 2 đó là **mức của cột trên board Jira**. Khi cột có quá 2 item, Jira chỉ tô đỏ cột để nhắc; nó không chặn item
+  nào chuyển vào.
+- Trong code của kit, giới hạn này chỉ dùng để dựng board (`lib/tracker/expected.mjs:48`); không guard nào chặn theo nó.
+  Giới hạn kit thật sự chặn là `wip-available`: mỗi dev agent chỉ 1 item In Progress.
+- Với `lanes_max: 3`, ba làn thường ở các bước khác nhau: một làn đang build, một làn chờ bạn ở gate ③, một làn ở QA.
+  Chỉ khi cả ba cùng chờ bạn approve thì cột In Review mới có 3 item và bị tô đỏ. Màu đỏ đó là lời nhắc có ích: đang có
+  nhiều PR chờ bạn.
+- Nếu muốn hai con số khớp nhau, phải sửa `contract/policies.yaml` của kit. Contract dùng chung cho mọi dự án, còn
+  `lanes_max` là của từng dự án. Mình đề xuất giữ 2.
