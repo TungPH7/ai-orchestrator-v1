@@ -26544,3 +26544,14 @@ PR #26 (SHOP-17, admin gỡ phần sản phẩm cũ, head `04f1e12`): `reviewer`
 - https://github.com/TungPH7/shop/pull/26
 
 Vì sao cần sớm: ba làn đang đầy (SHOP-11, SHOP-14, SHOP-17 đều chờ duyệt), nên chưa mở được build mới (SHOP-18, rồi SHOP-15 sau SHOP-14). Mỗi PR merge sẽ gỡ một làn. `security` của PR #25 (SHOP-14) đang chạy.
+
+**Claude (02:28, PR #25 sẵn sàng; ba PR chờ bạn):**
+
+PR #25 (SHOP-14, domain sản phẩm và tìm không dấu, head `564e0a9`): `reviewer` 1 Medium và 2 Low, `security` 1 Low, không Critical hay High. SHOP-14 đến giờ 13,58 USD. 4 finding vào **SHOP-43** (`ao-be-dev`, bị SHOP-14 chặn). SHOP-43 **chặn SHOP-21**, vì Medium là `Criteria.status == null` mang nghĩa "mọi trạng thái": một service của khách quên đối số sẽ trả cả sản phẩm Ẩn (NFR9).
+
+**Ba PR chờ bạn approve** (Files changed → Review changes → Approve → Submit review; `merge-gate` tự merge), hoặc nhờ mình approve thay:
+- https://github.com/TungPH7/shop/pull/24 (SHOP-11, khung trang `user`)
+- https://github.com/TungPH7/shop/pull/25 (SHOP-14, domain sản phẩm)
+- https://github.com/TungPH7/shop/pull/26 (SHOP-17, admin gỡ phần cũ)
+
+Hiện không còn lệnh nào chạy: ba làn đều chờ duyệt. Merge xong mình mở ngay SHOP-15 (be-dev, sau SHOP-14) và SHOP-18 (fe-dev).
