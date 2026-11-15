@@ -26525,3 +26525,12 @@ Approve giúp tôi nhé
 **Claude:**
 
 Đã approve PR #23 thay bạn, bằng login `gh` của bạn, trên đúng head `0ffa9e2` mà cả hai báo cáo đã review. Phần nội dung approve ghi rõ là bạn nhờ Claude approve. GitHub đã ghi nhận trạng thái APPROVED. `merge-gate` sẽ tự merge ở lượt chạy kế tiếp; mình đang theo dõi, và merge xong thì chạy `/ao-build SHOP-14`.
+
+**Claude (02:10, PR #24 sẵn sàng):**
+
+PR #24 (SHOP-11, khung trang của `user`, head `544ed76`): `reviewer` 2 Medium và 2 Low, `security` không có finding, không Critical hay High. SHOP-11 đến giờ 14,11 USD. Theo quy tắc mới, mình dừng vòng sửa ở đây:
+- 4 finding đã vào **SHOP-41** (dưới SHOP-7, `ao-fe-dev`), bị SHOP-11 chặn. SHOP-41 **chặn SHOP-21**, vì Medium đầu tiên (`usePathname()` trong layout gốc, không có `<Suspense>`) sẽ làm Next 16 báo lỗi khi prerender một route có tham số động, mà trang chi tiết sản phẩm của SHOP-21 chính là route đó.
+
+**Bạn approve PR #24:** mở https://github.com/TungPH7/shop/pull/24, tab **Files changed**, bấm **Review changes**, chọn **Approve**, bấm **Submit review**. `merge-gate` sẽ tự merge. Bạn cũng có thể nhờ mình approve thay như PR #23.
+
+Đang chạy: review PR #25 (SHOP-14), và `/ao-fix 26` (SHOP-17, CI `policy` đỏ).
