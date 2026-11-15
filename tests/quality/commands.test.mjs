@@ -559,6 +559,14 @@ test('Grep and Glob stay in the project and the temp folder, nothing looks for a
     'git show HEAD:"PRIVATE KEY"',
     'rg -n "BEGIN RSA PRIVATE KEY" .',
     'bash -c "git grep \'PRIVATE KEY\'"',
+    // Review round 2 of shop PR #21: a git grep in a repository made or reached on the same line reads any folder.
+    'cd /c/Users/x/keys && git init -q && git add -A && git grep -A 40 "PRIVATE KEY"',
+    'cd apps && git grep "PRIVATE KEY"',
+    'pushd /c/Users/x && git grep "PRIVATE KEY"',
+    'git init -q x && git grep "PRIVATE KEY"',
+    'git clone -q ../other x; git log -S "PRIVATE KEY"',
+    'export GIT_DIR=/c/Users/x/.git; git grep "PRIVATE KEY"',
+    'GIT_WORK_TREE=/c/Users/x; git grep "PRIVATE KEY"',
   ]) {
     denied(bash(command, 'be-dev'), /private key/, command);
   }
@@ -567,7 +575,6 @@ test('Grep and Glob stay in the project and the temp folder, nothing looks for a
     'git grep -n "PRIVATE KEY" -- apps',
     'git grep -n "PRIVATE KEY" -- apps | head -20',
     'git log -S "PRIVATE KEY" --oneline',
-    'cd apps && git grep "PRIVATE KEY"',
     'git grep -n -e "-----BEGIN" -- apps',
   ]) {
     allowed(bash(command, 'security'), command);

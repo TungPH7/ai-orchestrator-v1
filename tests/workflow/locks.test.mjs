@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { admit, claimRole, liveLocks, takeLock } from '../../lib/workflow/locks.mjs';
@@ -46,7 +46,7 @@ test('spec, plan, release and the other commands run alone, and nothing starts n
   assert.match(alone.reason, /ao-step is running ship v0\.3\.0 \(process 100\), which runs alone/);
 });
 
-const fs = { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync };
+const fs = { existsSync, mkdirSync, readdirSync, readFileSync, renameSync, rmSync, writeFileSync };
 
 test('a lock is written with its slot, and the lock of a process that is gone is removed', async (t) => {
   const dir = mkdtempSync(join(tmpdir(), 'locks-'));
@@ -129,4 +129,27 @@ test('two builds that wait for each other\'s dev agent cannot both wait, and a w
   // A lock that is gone ends it too.
   rmSync(c.file);
   assert.match((await claimRole(dir, c.file, 'qa', { fs, alive, sleep: async () => {} })).reason, /the lock .* is gone/);
+});
+
+// Review round 2 of shop PR #21: a read outside the mutex, as /ao-status makes, removed a lock it could not parse, which
+// a write cut short for an instant. Locks are now written whole (a file aside, then a rename), and only a read under
+// the mutex removes one it cannot parse; a lock of a process that is gone goes either way.
+test('a lock is written whole, and a read outside the mutex removes no lock it cannot parse', async (t) => {
+  const dir = mkdtempSync(join(tmpdir(), 'locks-'));
+  t.after(() => rmSync(dir, { recursive: true, force: true }));
+  const alive = (pid) => pid !== 999;
+  const written = [];
+  const watched = { ...fs, renameSync: (from, to) => (written.push([from, to]), renameSync(from, to)) };
+  const taken = await takeLock(dir, { pid: 1, command: 'build', key: 'SHOP-13', role: 'be-dev' }, { fs: watched, alive, cap: 2, sleep: async () => {} });
+  assert.deepEqual(written.map(([, to]) => to), [taken.file]);
+  await claimRole(dir, taken.file, 'fe-dev', { fs: watched, alive, sleep: async () => {} });
+  assert.deepEqual(written.map(([, to]) => to), [taken.file, taken.file]);
+  assert.deepEqual(readdirSync(dir).sort(), ['SHOP-13.json']);
+  writeFileSync(join(dir, 'SHOP-14.json'), '');
+  writeFileSync(join(dir, 'SHOP-1.json'), JSON.stringify({ pid: 999, command: 'build', key: 'SHOP-1', slot: 1 }));
+  assert.deepEqual(liveLocks(dir, { fs, alive }).map(({ name }) => name), ['SHOP-13']);
+  assert.equal(existsSync(join(dir, 'SHOP-14.json')), true, 'kept outside the mutex');
+  assert.equal(existsSync(join(dir, 'SHOP-1.json')), false, 'its process is gone');
+  liveLocks(dir, { fs, alive, clean: true });
+  assert.equal(existsSync(join(dir, 'SHOP-14.json')), false, 'removed under the mutex');
 });

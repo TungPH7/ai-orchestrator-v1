@@ -29,12 +29,15 @@ test('a run in a lane works there, with its ports and its own database moved by 
 
 test('with more than one run at once, a run waits for RAM and takes the ports of its slot, in a lane or not', async () => {
   const waits = [];
-  const place = runPlacer({ keeper: keeperOf(null), command: 'review', cap: 3, slot: 2, runs: RUNS, apps: APPS, waitForRam: async (gb) => waits.push(gb) });
+  const place = runPlacer({ keeper: keeperOf(null), command: 'review', cap: 3, slot: 2, runs: RUNS, apps: APPS, waitForRam: async (gb) => waits.push(gb), othersRunning: () => true });
   const run = await place({ role: 'reviewer', prompt: 'Review PR #21.' });
   assert.equal(run.cwd, undefined);
   assert.equal(run.env.AO_PORT_OFFSET, '300');
   assert.match(run.prompt, /admin on 5473 \(PORT=5473\)/);
   assert.deepEqual(waits, [3]);
+  // Alone on the machine, a run waits for no RAM: no other agent would free it (review round 2 of shop PR #21).
+  const alone = runPlacer({ keeper: keeperOf(null), command: 'review', cap: 3, slot: 0, runs: RUNS, apps: APPS, waitForRam: async () => assert.fail('no wait'), othersRunning: () => false });
+  assert.equal((await alone({ role: 'reviewer', prompt: 'Review PR #21.' })).env.AO_PORT_OFFSET, '100');
 });
 
 test('alone and out of a lane, a run is as before: default ports, no variables, no note', async () => {
