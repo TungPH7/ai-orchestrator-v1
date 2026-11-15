@@ -144,7 +144,13 @@ Dòng viết trong trích dẫn, gạch đầu dòng, chữ đậm hay chữ ngh
 
 ## `merge-gate`
 
-`merge-gate` chạy sau mỗi lần `jira-sync` xong. `jira-sync` thì chạy sau mỗi lần `CI` xong và sau mỗi review, nên `merge-gate` thấy cả hai. Bạn cũng gọi tay được: tab **Actions** → **merge-gate** → **Run workflow**, chọn nhánh mặc định **(đối chiếu giao diện)**.
+`merge-gate` chạy sau mỗi lần `jira-sync` xong. `jira-sync` thì chạy sau mỗi lần `CI` xong và sau mỗi review, nên `merge-gate` thấy cả hai.
+
+Code của một PR không bao giờ cầm `JIRA_CI_TOKEN` (review của `shop` PR #21). GitHub lấy workflow của sự kiện `pull_request` và `pull_request_review` từ chính PR, kèm secret của repo, nên nhánh của agent có thể sửa bản kit hay gói mà `npm ci` cài, rồi chuyển item bất kỳ bằng token đó. Vì vậy:
+
+- `jira-sync` nhận sự kiện PR qua `pull_request_target`: workflow và checkout đều là của nhánh đích, không phải của PR.
+- Review đến `jira-sync` qua lượt chạy của workflow `PR review` (`pr-review.yml`, job `pr-review-relay`). Workflow đó không có secret, không có quyền, chỉ in một dòng; `jira-sync` chạy theo nó bằng `workflow_run`, từ nhánh mặc định, rồi tự đọc review trên GitHub. Check run `pr-review-relay` trên head của PR không tính là `CI`.
+- `JIRA_CI_TOKEN` là secret của environment `jira-sync` (chỉ `develop`, `main`, `release/*` và tag `v*`) và của `merge-gate`, không phải secret của repo. `ao-kit setup github` tạo cả hai và đặt token; secret cũ của repo thì bạn tự xóa ([getting-started.md](getting-started.md)), và `ao-kit doctor` báo đỏ khi nó còn. Bạn cũng gọi tay được: tab **Actions** → **merge-gate** → **Run workflow**, chọn nhánh mặc định **(đối chiếu giao diện)**.
 
 Mỗi lần chạy, `merge-gate` xét mọi PR đang mở, và in vào log một dòng cho mỗi PR:
 
@@ -220,11 +226,11 @@ permissions: { contents: read, pull-requests: read, checks: read, statuses: read
 jobs:
   audit:
     uses: ./.github/workflows/audit.yml
-    secrets:
-      JIRA_CI_TOKEN: ${{ secrets.JIRA_CI_TOKEN }}
   deploy:
     needs: audit
 ```
+
+Job của `audit` lấy `JIRA_CI_TOKEN` từ environment `jira-sync`, nên workflow deploy không cần truyền secret, và chỉ chạy được trên `develop`, `main`, `release/*` hay tag `v*`. Trong workflow được gọi, secret của environment thắng secret mà workflow gọi truyền vào.
 
 `audit` kiểm rằng commit sắp deploy là commit merge của một PR đã qua đủ cổng. Job summary có mục **Audit**:
 

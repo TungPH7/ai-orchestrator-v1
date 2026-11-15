@@ -40,20 +40,41 @@ test('jira-sync stops with a message when the event, the CI token or the project
 
 test('the kit has the workflow that runs jira-sync on the events of spec section 2.7, with read-only GitHub rights', () => {
   const workflow = parse(readFileSync(join(ROOT, 'kit', '.github', 'workflows', 'jira-sync.yml'), 'utf8'));
-  assert.deepEqual(Object.keys(workflow.on), ['pull_request', 'pull_request_review', 'workflow_run', 'deployment_status', 'workflow_dispatch']);
+  // Review of shop PR #21: pull_request_target runs the workflow and code of the base branch, so the code of a PR never
+  // holds the CI token; a review comes through the run of the secretless workflow PR review.
+  assert.deepEqual(Object.keys(workflow.on), ['pull_request_target', 'workflow_run', 'deployment_status', 'workflow_dispatch']);
   // closed only clears the flag merge-gate raised (dev-workflow spec 2.7).
-  assert.deepEqual(workflow.on.pull_request.types, ['opened', 'reopened', 'synchronize', 'ready_for_review', 'closed']);
+  assert.deepEqual(workflow.on.pull_request_target.types, ['opened', 'reopened', 'synchronize', 'ready_for_review', 'closed']);
+  assert.deepEqual(workflow.on.workflow_run.workflows, ['CI', 'PR review']);
   assert.deepEqual(workflow.on.workflow_run.types, ['completed']);
   assert.equal(workflow.on.workflow_dispatch.inputs.item.required, true);
   assert.ok(Object.values(workflow.permissions).every((right) => right === 'read'));
 
   // The job id is the check run name that facts.mjs leaves out of CI.
   assert.deepEqual(Object.keys(workflow.jobs), ['jira-sync']);
+  // The token lives in an environment only the protected branches may use; no deployment, so no deployment_status loop.
+  assert.deepEqual(workflow.jobs['jira-sync'].environment, { name: 'jira-sync', deployment: false });
   const steps = workflow.jobs['jira-sync'].steps;
+  // The checkout is the base branch's: no step picks another ref or repository.
+  for (const { with: given = {} } of steps) assert.ok(!('ref' in given) && !('repository' in given), JSON.stringify(given));
   const sync = steps.find(({ run: command }) => command?.includes('jira-sync.mjs'));
   assert.equal(sync.run, 'node .ai-orchestrator/scripts/jira-sync.mjs');
   assert.equal(sync.env.JIRA_CI_TOKEN, '${{ secrets.JIRA_CI_TOKEN }}');
   assert.equal(sync.env.GITHUB_TOKEN, '${{ github.token }}');
+});
+
+test('the workflow PR review only relays a review to jira-sync: no secret, no right, no code', () => {
+  const text = readFileSync(join(ROOT, 'kit', '.github', 'workflows', 'pr-review.yml'), 'utf8');
+  const workflow = parse(text);
+  assert.equal(workflow.name, 'PR review');
+  assert.deepEqual(workflow.on, { pull_request_review: { types: ['submitted'] } });
+  assert.deepEqual(workflow.permissions, {});
+  assert.doesNotMatch(text, /secrets\.|\$\{\{/);
+  // The job id is the check run name that facts.mjs leaves out of CI.
+  assert.deepEqual(Object.keys(workflow.jobs), ['pr-review-relay']);
+  const { steps } = workflow.jobs['pr-review-relay'];
+  assert.deepEqual(steps.map((step) => Object.keys(step).sort()), [['run']]);
+  assert.match(steps[0].run, /^echo /);
 });
 
 test('the kit settings leave the approvers to fill in, next to the project space', () => {

@@ -67,7 +67,7 @@ Khai ở `quality/gates.yaml`, khối mới `kit_copy`:
 
 | Nhóm | Đường dẫn | Luật |
 |---|---|---|
-| Phải giống hệt | `.ai-orchestrator/{agents,contract,docs,lib,quality,scripts,templates,tracker}/**`, `.ai-orchestrator/package*.json`, `.claude/hooks/**`, `.githooks/**`, `.mcp.json`, `.jira/config.yml`, ba workflow `ci.yml`, `jira-sync.yml`, `merge-gate.yml` | Khớp hai chiều |
+| Phải giống hệt | `.ai-orchestrator/{agents,contract,docs,lib,quality,scripts,templates,tracker}/**`, `.ai-orchestrator/package*.json`, `.claude/hooks/**`, `.githooks/**`, `.mcp.json`, `.jira/config.yml`, bốn workflow `ci.yml`, `jira-sync.yml`, `merge-gate.yml`, `pr-review.yml` | Khớp hai chiều |
 | Giống khi PR đổi | `.claude/skills/**` | File PR đổi phải khớp. Skill theo stack chỉ có ở một dự án thì được giữ |
 | Render lại | `.claude/agents/**`, `.claude/rules/ai-orchestrator.md` | Đúng tập file `render-agents` viết; dựng lại rồi so nội dung |
 | Của dự án | `.claude/settings.json`, `.ai-orchestrator/deploy.yaml`, `.ai-orchestrator/roster.local.yaml` | PR chép kit không được đổi. Đổi thì rơi về review thường |
