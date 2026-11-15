@@ -37,7 +37,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 29 | `3f959e28-f038-49ee-ae3f-592c7a55eecb` | 2026-11-14 khoảng 09:35 → | Bạn dán đoạn cuối của Phiên 28, bảo làm T16 và mở VPS cho chặng 5, để mở tới khi bạn bảo đóng; T16 (tài liệu chặng 3, kit PR #272) và T17 (ba việc B2 để lại, kit PR #273) xong; Claude đưa hai lệnh mở VPS trong dòng báo giữa chừng nên bạn không thấy, bạn nhắc hai lần, Claude đưa lại ở câu trả lời cuối; lượt 2: lệnh mở đăng nhập root chưa có tác dụng, bạn chạy lại; lượt 3: T18 bản nháp bước 9, T19 kit `3a1c729` lên VPS, T20: `SHOP-2` và `shop` PR #7, `SHOP-3` với `add api` và Spring Boot 4.0.9, kit PR #274 (coverage của interface Java); Claude xóa nhầm toàn bộ container, image và volume Docker Desktop của bạn khi dọn sau test; lượt 4: không có Previous Versions, bạn dặn hỏi trước mọi việc xóa không hoàn tác được, và cho Claude merge PR `shop` khi CI xanh; PR #7, #8 merge (T20 xong), kit PR #275, #276, `SHOP-4` và PR #9 xanh, biến database của Development trên VPS; chờ bạn quyết bật Docker Desktop cho `/ao-preview`; lượt 5: bạn chọn bật Docker; `/ao-preview SHOP-4` chạy `user`, `admin`, `api` và Postgres, ba app trả 200, `/api` qua `admin` tới `api`; `user` còn trỏ API NestJS cũ, việc của B4; chờ bạn xem rồi trả lời merge; lượt 6: PR #9 merge (T21 xong), `/ao-rollback development 05b1a63` gỡ chặn, deploy 18,5 phút, database, Flyway, `/api/v1/health` qua `admin` 200, RAM còn trống 2.508 MB, backup và `restore-check` đạt; chờ bạn đồng ý thử khôi phục vào database đang chạy và đóng `SHOP-2`–`SHOP-4`; lượt 7: khôi phục vào database đang chạy đạt sau khi lộ lỗi luật giữ bản (sửa: giữ 48 giờ, kit PR #277), `SHOP-2`–`SHOP-4` Cancelled, kit trên VPS `97db806`, B3 đóng; chờ bạn chọn module kế tiếp |
 | 30 | `07e0a424-ef4e-437a-b766-0ca9955be037` | 2026-11-14 khoảng 12:15 → | Bạn dán đoạn cuối của Phiên 29 và chọn B4 (Pilot 3); Claude viết bản nháp `SPEC-pilot-3.md`: `v0.1.0` của scaffold lên ba môi trường trước, rồi Epic đầu "Danh mục sản phẩm" lên `v0.2.0`; tìm ra Production đang luôn mở trong khi `/api/**` để `permitAll` (đề xuất `production_auth`), `/ao-release` cần một item Done (`SHOP-5`), ba app lệch hợp đồng API sản phẩm; chờ bạn trả lời 5 câu: Epic, scaffold trước, chỗ để bản sao backup (đề xuất Backblaze B2), basic auth cho Production, quyền tự làm cho B4; lượt 2: bạn duyệt câu 1, 2, 4, 5, hỏi câu 3 có cần chọn trước không và sẽ gửi ảnh; Claude hiểu sai "chưa làm" và bắt đầu viết plan, bạn nhắc, Claude dừng (spec và `tasks/plan.md` chưa commit); bạn hỏi Google Drive cho bản sao: được, với OAuth client riêng đã Publish, nhưng token trên VPS xóa hẳn được bản sao; lượt 3: bạn hỏi bản sao backup là gì và vì sao cần mới đạt; Claude giải thích: backup đang nằm chung máy với database, tiêu chí 2 do spec đặt chứ không phải giới hạn kỹ thuật, chỉ bắt buộc trước khi mở bán; lượt 4: bạn hỏi backup về máy bạn có đạt không, và cơ chế có giống B2 để sau này chuyển: đạt (máy bạn kéo về bằng tài khoản chỉ đọc trên VPS), khác hướng chép (kéo về và VPS đẩy lên), đề xuất mã hóa `age` từ đầu và khối cấu hình B2 tắt sẵn để chuyển dễ; lượt 5: bạn chọn backup về máy bạn và hỏi làm gì tiếp, rồi gửi giao diện mẫu cho Epic (trang vitrea, hai ảnh); Claude bắt đầu B4: kit PR #279–#283 (`production_auth`, dòng trạng thái của `/ao-preview`, Playwright chỉ dựng app tại chỗ cho test `@local`, bản sao backup kéo về máy bạn, đọc mật khẩu từ biến của Windows trước), `SHOP-5` PR #10 merge, review 3,52 USD và QA 0,92 USD (NOT TESTED vì một bước chỉ VPS kiểm được, đã trả lời), VPS kit `dbbf318` với bí mật Staging và Production, Production của `shop` hỏi basic auth, bản sao về `D:\ao-backups` khôi phục khớp; chờ bạn Accept `SHOP-5`, cất bản thứ hai của khóa `age`, và gate ④ của `v0.1.0`; lượt 6: bạn nhờ bấm Accept (`SHOP-5` Done), hỏi cất khóa sau được không (được, nên trước khi mở bán), bảo làm như đề xuất; Claude gửi danh sách gate ④ (`28394b8`, `SHOP-5`, scaffold của `SHOP-1`–`SHOP-4`), tạo Fix Version, chụp 5 màn hình và đo 94 token của trang mẫu; lượt 7: bạn duyệt gate ④; `release/v0.1.0` lên Staging (dùng lại image, Flyway 3 migration, RAM còn 2.290 MB), regression PASS, `/ao-ship` dừng vì ruleset `ao-protected` của repo public chặn bot `ao-dev` commit lên nhánh release (cũng sẽ chặn merge PR tài liệu của Epic và merge ngược); chờ bạn chọn cách sửa ruleset; lượt 8: bạn hỏi sao commit thẳng lên nhánh được, nhất là nhánh release (chưa làm gì); Claude giải thích PR là luật GitHub chỉ có khi bật, cách kit bù ở repo không ruleset, vì sao `/ao-ship` commit hai file tài liệu lên nhánh release, và một cách giữa: PR nhỏ do `merge-gate` tự merge; lượt 9: bạn chọn tách ruleset thành ba; kit PR #284, ba ruleset áp lên `shop`, `/ao-ship` chạy lại mở PR release #11 (CI xanh, Staging deploy lại); chờ bạn approve PR #11 ở gate ⑤; lượt 10: bạn approve; `merge-gate` merge, tag `v0.1.0`, tự merge ngược PR #12; Production lên, hỏi basic auth; RAM còn 1.867 MB khi đủ ba môi trường; backup và bản sao cả ba database; chờ bạn chọn ai bấm Release `v0.1.0` và cách chép kit ở T10 |
 | 31 | `d80cd357-3fde-4be6-a978-12fadc7d8553` | 2026-11-14 khoảng 15:58 → | Bạn dán đoạn cuối của Phiên 30, nhờ mình bấm Release `v0.1.0` và chọn review đầy đủ cho T10; Release qua REST bằng token admin; `SHOP-6` và PR #13 chép kit `ceee70c` vào `shop`, CI xanh, `/ao-review 13` chạy (`reviewer` `xhigh`, `security` `max`); T11 bắt đầu song song: câu hỏi PO đầu tiên về đơn vị giá; review xong (8,13 USD): `security` thấy 2 High do lỗi của Claude (ruleset cho App `ao-dev` của agent đi tắt, khóa `age` nằm trên laptop); Claude đề xuất gỡ bypass ngay, bạn cất khóa rồi xóa file, App `ao-merge` riêng cho merge, review vòng 2; chờ bạn quyết; lượt 2: bạn đồng ý cả năm việc, đã cất khóa, chốt giá VND và giao Claude chọn các trường, cách tìm, sắp xếp theo chuẩn ngành; Claude gỡ bypass trên `shop`, xóa file khóa, thêm loại App `ao-merge` vào kit và mở trang tạo App; chốt các trường và cách tìm theo Shopify, Google Merchant Center, Baymard; hỏi câu 2 về ảnh sản phẩm; lượt 3: bạn tạo App `ao-merge` và chọn ảnh giữ chỗ; khóa của App vào environment `merge-gate`, file khóa trên máy xóa; bản nháp Epic "Danh mục sản phẩm" chờ bạn OK; lượt 4: bạn OK; Epic `SHOP-7` tạo qua Rovo MCP; kit PR #285 sửa hai High (App `ao-merge`, PR report của `/ao-ship`, tag cho merge ngược, khóa `age` ngoài máy, `gh-guard`), ruleset mới trên `shop`, VPS lên `18d79eb`, PR #13 chép lại kit; `/ao-review 13` vòng 2 chạy; chờ bạn bấm `Start spec` và kiểm khóa `age` đã cất; review vòng 2 (11,18 USD, vượt ước): `security` thấy 2 High mới về ruleset (hai App của agent approve cho nhau, nhánh release giả lách PR report) và 2 Medium (tag không được bảo vệ, dọn bản sao theo tên do VPS đặt); Claude đề xuất Code Owners, chặn tạo nhánh release, ruleset cho tag, review vòng 3; chờ bạn quyết; lượt 5: bạn đồng ý; kit PR #286 merge (Code Owners, chặn tạo nhánh release và tag `v*`, `main` không ai đi tắt; `require_last_push_approval` để tắt, lệch đề xuất), năm ruleset trên `shop`, VPS lên `e95ffa5`, PR #13 thêm commit `cd37612` kèm `CODEOWNERS`; `/ao-review 13` vòng 3 chạy; lượt 6: bạn đã bấm `Start spec` (`SHOP-7` Specifying) và hỏi kiểm khóa `age` làm sau được không; Claude: được, không phải điều kiện của pilot, nên làm trước T17; review vòng 3 (8,52 USD): `reviewer` Approve, `security` 2 High (agent lấy được login GitHub của bạn vì chạy dưới user Windows của bạn; `main` chưa có `CODEOWNERS`), `SHOP-6` gắn cờ Needs you, `audit` chặn merge khi còn High; Claude nhận lỗi không nêu sớm gốc chung của ba vòng; đề xuất chấp nhận High 1 có thời hạn (kit thêm cách ghi chấp nhận rủi ro), sửa High 2 (merge ngược, `doctor`, `v0.1.1`), hoặc làm sandbox trước; chờ bạn chọn; lượt 7: bạn dặn chưa làm, hỏi lại cho rõ; Claude: High 2 sửa được ngay, High 1 cần sandbox (1–2 ngày), nên cách 1 tạm chấp nhận High 1, cách 2 dừng để làm sandbox trước; chờ bạn chọn; lượt 8: bạn phản đối 1–2 ngày và WSL (máy chỉ dùng Windows), hỏi kit có vấn đề không; Claude nhận nghĩ quá xa và nhận gốc là kit cho agent chạy dưới user của bạn; đề xuất mới: một user Windows riêng cho agent (khoảng nửa ngày, flow của bạn không đổi), sửa cả hai High ngay; chờ bạn nói bắt đầu; lượt 9: bạn hỏi việc agent chạy dưới user của bạn có từ trước, sao giờ mới thành High; Claude: có từ Pilot 1, các vòng trước bắt lối dễ hơn, sau vòng 2 login của bạn thành chìa khóa duy nhất; nhận lỗi không nhắc ở vòng 2; chờ bạn chọn tạm chấp nhận hay user riêng; lượt 10: bạn hỏi agent có thấy mật khẩu GitHub không, nhắc trả lời ngắn và dễ hiểu; Claude giải thích lại theo 5 bước: không thấy mật khẩu, nhưng mở được chìa khóa (token) mà `gh` cất trong tài khoản Windows của bạn; lượt 11: bạn hỏi tài khoản Windows thứ hai nằm ở đâu, có dùng được chương trình của account 1 không; Claude: nằm ngay trên máy, bạn vẫn đăng nhập account 1, agent chạy ngầm dưới `ao-agent`, dùng được chương trình cài chung nhưng không mở được đồ riêng của account 1; lượt 12: bạn hỏi `ao-agent` làm những gì; Claude: chưa tạo; khi có, các agent làm đúng việc cũ ở đó bằng chìa khóa riêng của agent, còn việc cần quyền của bạn vẫn ở account 1; lượt 13: bạn hỏi có phải kit chưa có agent nào, chỉ phiên chính dùng token `gh` của bạn, và `ao-agent` là sub agent đầu tiên; Claude: kit có sẵn 10 agent chạy bằng App, phiên chính chỉ bật chúng; `ao-agent` là tài khoản Windows, như phòng riêng cho 10 agent; lượt 14: bạn hỏi đặt quy tắc cấm agent đọc chìa khóa `gh` có đủ không; Claude: không, kit đã có quy tắc và `gh-guard` nhưng agent bị lừa thì lách được bằng file chương trình tự viết; tài khoản riêng thì Windows khóa hẳn, đúng cách `security` đề xuất; lượt 15: bạn chấp nhận High 1, hỏi làm `ao-agent` sau thì đi tiếp được không; Claude: được, kit thêm chỗ ghi chấp nhận rủi ro (dòng trong lần approve từ login của bạn, hạn 2026-12-31), High 2 vẫn sửa (chặn merge ngược, `v0.1.1`), review vòng 4, khoảng 4–5 giờ; chờ bạn nói bắt đầu; lượt 16: bạn nói bắt đầu, dặn sửa kỹ và xem lại hiệu quả; kit PR #287 merge (chỗ ghi High được chấp nhận, merge ngược chờ kiểm các commit từ `main`, `doctor` kiểm `CODEOWNERS` trên `main`, các Low), VPS lên `05da881`, PR #13 thêm commit `3ef07c6`, gỡ cờ `SHOP-6`; review vòng 4 chạy, `security` review cả PR nên chi phí có thể 10–12 USD; Claude rút ba điều về cách làm; tiếp lượt 16: review vòng 4 (11,15 USD): `reviewer` Approve, `security` chỉ còn High đã chấp nhận; phiên chính approve kèm `Accept risk` bằng login của bạn, merge PR #13 (`fdc2ee0`), Development deploy thành công; QA (1,20 USD) đạt, ruleset đọc bằng login của bạn; chờ bạn Accept `SHOP-6`; kit PR #288 sửa các Low vòng 4 và lỗi `jira-sync` gắn lại cờ; đổi lời khuyên: không kiểm khóa `age` trên máy này trước khi có `ao-agent`; lượt 17: bạn hỏi đang ở T mấy; Claude: cuối T10, chờ bạn Accept `SHOP-6`; T11 xong; kế tiếp T10h (`v0.1.1`) rồi T12 |
-| 32 | `84d69ed3-b065-40d0-a4e2-3c06a66ac5cb` | 2026-11-15 khoảng 01:52 → | Bạn dán đoạn cuối của Phiên 31, đã Accept `SHOP-6` (T10 xong); T10h: kit chỉ cắt `vX.Y.0` từ `develop`, nên bản đưa `CODEOWNERS` lên `main` là `v0.2.0` và Epic `SHOP-7` lên `v0.3.0`; Fix Version `v0.3.0` tạo qua REST; spec 2.9 phần 7, plan, todo sửa theo; chờ bạn duyệt gate ④ (`fdc2ee0`, `SHOP-6`); lượt 2: bạn duyệt gate ④; `release/v0.2.0` cắt bằng login của bạn, Staging; `/ao-ship v0.2.0` (0,92 USD): regression PASS, PR report #14 do App `ao-merge` merge, PR release #15 CI xanh; chờ bạn approve ở gate ⑤ và chọn ai bấm Release `v0.2.0`; lượt 3: bạn approve gate ⑤; App `ao-merge` merge PR #15, gắn tag `v0.2.0`, merge ngược PR #16; Production và Development deploy thành công; Release `v0.2.0` trên Jira qua REST; dòng `CODEOWNERS` của `doctor` xanh; T10h xong; `/ao-spec SHOP-7` chạy; lượt 4: bạn hỏi ảnh trang mẫu ở đâu; `ba` viết SPEC (2,99 USD) và dừng với 12 câu hỏi, chờ bạn trả lời; lượt 5: bạn đồng ý cả 12 câu và cho mình tự làm theo đề xuất tới hết B4; `ux` hỏi 16 câu có đề xuất, trả lời bằng lời của bạn; ảnh 05 chụp nhầm ở T11; `sa` thêm NFR1–NFR27; PR docs #17, 12,31 USD; chờ bạn duyệt gate ① |
+| 32 | `84d69ed3-b065-40d0-a4e2-3c06a66ac5cb` | 2026-11-15 khoảng 01:52 → | Bạn dán đoạn cuối của Phiên 31, đã Accept `SHOP-6` (T10 xong); T10h: kit chỉ cắt `vX.Y.0` từ `develop`, nên bản đưa `CODEOWNERS` lên `main` là `v0.2.0` và Epic `SHOP-7` lên `v0.3.0`; Fix Version `v0.3.0` tạo qua REST; spec 2.9 phần 7, plan, todo sửa theo; chờ bạn duyệt gate ④ (`fdc2ee0`, `SHOP-6`); lượt 2: bạn duyệt gate ④; `release/v0.2.0` cắt bằng login của bạn, Staging; `/ao-ship v0.2.0` (0,92 USD): regression PASS, PR report #14 do App `ao-merge` merge, PR release #15 CI xanh; chờ bạn approve ở gate ⑤ và chọn ai bấm Release `v0.2.0`; lượt 3: bạn approve gate ⑤; App `ao-merge` merge PR #15, gắn tag `v0.2.0`, merge ngược PR #16; Production và Development deploy thành công; Release `v0.2.0` trên Jira qua REST; dòng `CODEOWNERS` của `doctor` xanh; T10h xong; `/ao-spec SHOP-7` chạy; lượt 4: bạn hỏi ảnh trang mẫu ở đâu; `ba` viết SPEC (2,99 USD) và dừng với 12 câu hỏi, chờ bạn trả lời; lượt 5: bạn đồng ý cả 12 câu và cho mình tự làm theo đề xuất tới hết B4; `ux` hỏi 16 câu có đề xuất, trả lời bằng lời của bạn; ảnh 05 chụp nhầm ở T11; `sa` thêm NFR1–NFR27; PR docs #17, 12,31 USD; chờ bạn duyệt gate ①; lượt 6: bạn bấm Approve spec; `/ao-plan SHOP-7`; lượt 7: bạn hỏi công cụ đo trang mẫu (Playwright); `sa` hỏi 2 câu, `API_URL` kiểm trên VPS; lượt 8: bạn hỏi 4 câu về Playwright, Claude in Chrome, `chrome-devtools`, animation; Playwright bật được light mode; `misc/clone-100pct-ui-ux/cong-cu-inspect-website.md`; lượt 9: giữ bảng màu sáng của `ux`; lượt 10: chốt Playwright + `chrome-devtools`, ghi vai trò tool trong skill; plan, 3 ADR và 30 item `SHOP-8`…`SHOP-37` (13,97 USD); chờ bạn duyệt gate ②; lượt 11: bạn bấm Approve plan; `jira-sync`, PR #17 merge (`41ede25`); chặng 4 của todo sửa theo plan; chặng 4 ước 335–580 USD, vượt mức 125 USD của spec, nên hỏi bạn chọn làm theo đợt, cả Epic hay thu nhỏ; lượt 12: bạn bỏ giới hạn chi phí (gói Max 5x) và chọn làm cả Epic; `SHOP-8` build, CI đỏ ở coverage rồi sửa, review 0 Critical/High/Medium, 7 Low (12,22 USD); gate ③ hỏi bạn sửa Low trước hay approve; build `SHOP-10`; lượt 13: bạn chọn sửa 7 Low của PR #18 trước khi approve; lượt 14: bạn hỏi chạy item song song bằng 2 worktree; kit chưa hỗ trợ (checkout `develop`, cổng, khóa, WIP), đúng việc C2 chưa làm; đề xuất giữ lần lượt hay làm C2 tối thiểu trước; lượt 15: bạn hỏi kỹ về C2 tối thiểu; đánh giá ở `misc/thao-luan/c2-toi-thieu-giua-pilot-3.md`: khả thi, không breaking nếu mặc định 1, 7 chỗ phải sửa, phải làm trong worktree riêng của kit; đề xuất (1) cộng viết spec C2; `SHOP-10` PR #19 CI đỏ cùng lỗi coverage; `/ao-fix 18` sửa 7 Low; lượt 16: chuyển bản đánh giá C2 vào `misc/thao-luan/sdlc-song-song/` và `clone-100pct-ui-ux/` vào `misc/thao-luan/`; lượt 17: bạn chọn chạy lần lượt cộng viết spec C2; thử thật MCP, `--resume` và hook chặn trong worktree: cả ba ổn; `SPEC-parallel-runs.md` nháp, 8 điểm chờ duyệt; `fe-dev` sửa 7 Low của PR #18 (3,30 USD); lượt 18: bạn hỏi cấu hình 1, 2, 3 hay n lượt song song; đề xuất `runs.parallel` 1..4 trong `project.yaml`, biến `AO_RUNS_PARALLEL` để hạ tạm, bắt đầu với 2; chưa sửa spec; `SHOP-8` sửa 7 Low, review lại: 1 Medium và 1 Low trong tài liệu, `security` 0 lỗi (21,14 USD); gate ③ hỏi sửa luôn hay approve; `/ao-fix 19`; lượt 19: giải thích chậm: mỗi item một làn, một worktree, trong làn vẫn một agent; `runs.parallel` là số làn có agent chạy cùng lúc; đề xuất đổi tên thành `runs.items_at_once`; lượt 20: đổi tên khóa thành `runs.items_at_once`; giải thích làn đang mở và agent cùng lúc; đề xuất 2 agent cùng lúc (máy 16 GB, còn 2,6 GB trống), số làn để WIP quyết; lượt 21–23: đổi tên thành `agents_at_once`, làn mở do bạn quyết bằng `lanes_max` (đề xuất 3 và 2), hỏi đáp ở `lan-va-agent-cung-luc.md`; PR #18 sửa Medium và Low; PR #19 tới gate ③ (1 Medium, 5 Low); lượt 24: bạn chọn sửa hết Medium và 5 Low của PR #19 trước khi approve; lượt 25: bạn phản biện, chốt số agent bằng số làn; spec thêm chốt RAM `min_free_ram_gb: 3` (đo: còn 2,8 GB trống, VS Code 3,8 GB); lượt 26: bạn hỏi cái gì tốn RAM; đo: agent `security` 0,34 GB, VS Code 3,8 GB; bạn đúng một nửa; kết luận giữ: số agent bằng số làn, chốt RAM 3 GB; PR #18 sửa xong Medium và Low, còn 3 Low nhỏ, đề xuất approve (`SHOP-8` 25,38 USD); `/ao-fix 19`; lượt 27–28: bạn approve PR #18, `merge-gate` merge (`4605845`); xác nhận kit tự tạo worktree, không cần cửa sổ VS Code; lượt 29: chỉ còn một con số `lanes_max` (số agent bằng nó, hạ tạm bằng `AO_AGENTS_AT_ONCE`); In Review 2 chỉ là mức cột trên board, không chặn, không phải sửa Jira; lượt 30: spec C2 vẫn chờ duyệt; tóm lại 8 điểm ở dạng mới nhất, đề xuất đồng ý cả 8; lượt 31: vì sao chỉ build, fix, review, QA song song: chúng chỉ đụng item của mình; đề xuất thêm mỗi lúc một QA trên một môi trường; chưa sửa spec; lượt 32: spec, plan của hai Epic song song: làm được về kỹ thuật nhưng contract chặn (`epic-shaping: 1`), số ADR trùng; đề xuất để phần 3, làm sau; Development deploy `4605845`; lượt 33: bỏ việc chạy nhiều Epic song song, không ghi vào spec; lượt 34: vì sao một QA trên một môi trường: chung database Development, E2E ghi dữ liệu, kết quả sai tốn thật; đề xuất thêm kiểm bản deploy trước và sau QA; chưa sửa spec |
 
 ---
 
@@ -24510,3 +24510,1328 @@ Stage spec đã xong: `ba` mở PR docs #17, CI xanh. Mình đang ghi lại kế
 
 Nếu muốn sửa gì trong SPEC, bạn nhắn mình trước khi bấm. Mình sẽ chạy `/ao-spec SHOP-7` kèm điều cần sửa. Sau khi bạn bấm Approve spec, mình chạy tiếp T13 `/ao-plan SHOP-7` tới gate ②.
 
+
+# Phiên 32 · Lượt 6 — 2026-11-15 khoảng 11:20 → 11:37
+
+**Bạn:**
+
+```markdown
+Đã Approve spec. Bạn làm tiếp nhé
+```
+
+**Claude:**
+
+Mình đã ghi nhận gate ①. T13 `/ao-plan SHOP-7` đang chạy nền: `sa` viết plan, rồi `ba` tạo các item trên Jira. Cứ khoảng 3 phút mình báo tiến độ một lần.
+
+11:25: `sa` đã chạy 3 phút, 23 bước, và đang đọc repo để viết plan.
+
+11:28: `sa` đã chạy 6 phút, 59 bước, vẫn đang đọc repo.
+
+11:31: `sa` đã chạy 9 phút, 63 bước.
+
+11:34: `sa` đã chạy 12 phút, 71 bước.
+
+11:37: `sa` đã chạy 15 phút, 76 bước. Log vẫn được ghi liên tục, nên có lẽ nó đang viết `plan.md`.
+
+# Phiên 32 · Lượt 7 — 2026-11-15 khoảng 11:38 → 11:57
+
+**Bạn:**
+
+```markdown
+Trang mẫu mà tôi đưa cho bạn tham khảo UI/UX (https://demo.codeandchill.store/vitrea), bạn đã dùng tool, mcp gì để inspect, kiểm tra styles, design system của web mẫu này? Trả lời ngắn gọn
+```
+
+**Claude:**
+
+Mình không dùng MCP nào. Mình dùng **Playwright**, chạy bằng một script Node mình tự viết (`ref-capture.mjs`), với Chromium không giao diện lấy từ gói `@playwright/test` có sẵn trong repo `shop`. Cụ thể:
+
+1. **Chụp màn hình:** script mở trang ở khung 1600×1000, giao diện tối, rồi chụp 5 ảnh PNG.
+2. **Lấy design token:** script quét mọi stylesheet của trang, đọc 103 biến CSS `--*` (màu, blur, bóng, bo góc…) theo giá trị trình duyệt đang áp dụng.
+3. **Lấy style của component:** script gọi `getComputedStyle` trên 20 phần tử như nút chính và phụ, badge, card, bảng, hộp thoại, ô nhập, select. Mỗi phần tử lấy màu, nền, viền, bo góc, bóng, font, cỡ chữ, padding.
+4. **Kết quả:** `reference.json` chứa dữ liệu thô. Mình viết `tokens.md` từ file đó để `ux` đọc. Hai file nằm trong `.ai/design-inbox/_reference/` của `shop`.
+
+Hôm nay mình cũng dùng Playwright, qua script `ref-detail-probe.mjs`, để kiểm trang chi tiết.
+
+Repo `shop` có cấu hình MCP `chrome-devtools`, nhưng chỉ cho agent `fe-dev` và `qa` dùng; lần này mình không dùng nó. `sa` cũng không xem trang mẫu, mà tự kiểm font Urbanist bằng thư viện `fontTools` của Python.
+
+Mình cần sửa một chỗ trong câu trả lời vừa rồi. Trong `shop`, chỉ agent `fe-dev` được dùng MCP `chrome-devtools`. Mình đã nói nhầm là cả `qa`; thật ra `qa` kiểm bằng E2E Playwright. Phần còn lại vẫn đúng.
+
+11:40: `sa` đã chạy 18 phút, 76 bước, vẫn đang viết `plan.md`.
+
+11:43: `sa` đã chạy 21 phút, 85 bước.
+
+11:46: `sa` đã chạy 24 phút. Số bước vẫn là 85, nhưng log vẫn được ghi, nên có lẽ nó đang viết một lần cả file `plan.md` dài.
+
+11:49: `sa` đã chạy 27 phút, 94 bước. Nó đang viết ADR, tức ghi lại các quyết định kiến trúc. ADR thứ ba là "tách API sản phẩm của trang quản trị và của cửa hàng".
+
+Mình đã bật lại phần theo dõi tiến độ, vì lần trước hết hạn sau 30 phút. `sa` vẫn đang chạy.
+
+`sa` đã viết xong plan (7,94 USD) và dừng với 2 câu hỏi về những thứ nó không đọc được. Câu 1 hỏi `API_URL` của app `user` trên VPS trỏ đi đâu; mình tự kiểm được việc này trên VPS mà không in secret.
+
+Mình đã vào được VPS. Tên container khác với mình đoán, nên mình đang tìm tên đúng để kiểm `API_URL`.
+
+`API_URL` của app `user` trỏ tới `http://api:3001` trên cả ba môi trường, cùng mạng với `api`, và `api` đang healthy. Vậy đề xuất "không cần làm gì" của câu 1 là đúng. Câu 2 hỏi basic auth của Production cho T5: mật khẩu `AO_ENV_AUTH` mà mình vẫn đưa cho agent cũng mở được Production, vì lúc kiểm `v0.2.0` mình được 200. Cả hai câu đều có đề xuất và không cần quyền của bạn, nên mình cho chạy tiếp.
+
+`sa` đang ghi câu trả lời vào plan; sau đó `ba` tạo khoảng 20 item trên Jira. Cứ khoảng 3 phút mình báo tiến độ một lần.
+
+# Phiên 32 · Lượt 8 — 2026-11-15 khoảng 11:58 → 12:10
+
+**Bạn:**
+
+```markdown
+Câu hỏi:
+1. Playwright có thể click, thao tác các nút trên trang website (như 1 người dùng) để inspect sâu hơn, kiểm tra kỹ hơn và đầy đủ hơn không? Trên trang web có nút toggle dark/light mode nhưng bạn đã không kiểm tra, không toggle chuyển thành light mode nên không chụp màn hình website ở light mode dẫn đến ux agent phải tự suy ra design token của light mode.
+
+
+2. Tôi thấy Clade Chat có tool 'claude in chrome', tool này có thể mở website, thao tác với website như 1 người dùng web. Tool này có dùng được trong Claude Code trong việc "inspect website để học UI/UX, animation, styles, design system và làm theo đúng chính xác style, design system của website mẫu" không?
+
+3. Giữa 3 tool sau: chrome-devtools MCP, Playwright, claude in chrome thì tool nào là tốt nhất trong việc "inspect website để học UI/UX, animation, styles, design system và làm theo đúng chính xác style, design system của website mẫu", hay chúng không thay thế nhau, có thể hỗ trợ nhau. Ngoài 3 tool trên thì còn tool nào hữu ích trong việc "inspect website để học UI/UX, animation, styles, design system và làm theo đúng chính xác style, design system của website mẫu" không?
+
+4. Tool nào có thể làm việc dưới đây:
+    1. Chụp nhiều khung hình:
+    - Với hiệu ứng khi cuộn (parallax, scroll-triggered), tôi cuộn từng bước nhỏ và chụp màn hình mỗi bước.
+    - Với animation chạy theo thời gian, tôi dùng screencast_start/stop của chrome-devtools để quay video, rồi dùng ffmpeg tách thành ảnh để xem lần lượt.
+    2. Đọc cách animation được làm: Tôi dùng evaluate_script để lấy keyframes, duration và easing (dùng document.getAnimations(), transition CSS). Tôi cũng kiểm tra trang dùng thư viện nào, như GSAP/ScrollTrigger, Framer Motion hay Lenis. Cách này thường cho biết nhiều hơn cả xem video, vì tôi lấy được thông số chính xác.
+
+Yêu cầu:
+- Viết vào 1 file D:\Document\1Khoahoc\4LapTrinh\AI-for-coding\ai-orchestrator\misc\clone-100pct-ui-ux
+```
+
+**Claude:**
+
+`sa` đã ghi xong câu trả lời vào plan; `ba` đang tạo item trên Jira. Song song, mình đang trả lời 4 câu hỏi của bạn. Mình kiểm thật bằng Playwright xem có bật được light mode của trang mẫu không.
+
+Light mode bật được: bấm nút "Switch to light theme" thì `data-theme` đổi sang `light`, và các token đổi theo, ví dụ nền từ `#111113` sang `#e4e6ea`. Mình chụp được 3 trang; còn trang chi tiết đang lỗi khi bấm vào thẻ app, nên mình sửa script.
+
+Ảnh chi tiết ở giao diện sáng đúng là trang "Tally App". Trang này có thẻ đầu trang gồm icon, tên, các nhãn và giá, nên cũng có ích cho S5.
+
+Mình đã viết xong file `D:\Document\1Khoahoc\4LapTrinh\AI-for-coding\ai-orchestrator\misc\clone-100pct-ui-ux\cong-cu-inspect-website.md`, và đã đẩy lên nhánh `task/pilot3-13`. Tóm tắt 4 câu:
+
+1. **Playwright thao tác được như người dùng:** click, hover, gõ, cuộn, đổi cỡ màn hình, đổi sáng/tối, quay video. Ở T11 mình bỏ sót nút đổi giao diện, đó là lỗi của mình. Hôm nay mình đã bấm nút "Switch to light theme" và có kết quả:
+   - 75 trên 103 token đổi giá trị;
+   - 4 ảnh giao diện sáng, trong đó có trang chi tiết "Tally App" chụp đúng;
+   - file `light.json`.
+   Tất cả nằm trong `shop/.ai/design-inbox/_reference/light/`.
+2. **Claude in Chrome dùng được trong Claude Code**, bằng `claude --chrome` hoặc lệnh `/chrome`; gói Pro dùng được.
+   - Nó chạy trên profile Chrome thật của bạn, có cửa sổ, không chạy ngầm được.
+   - Tài liệu chính thức chưa nói nó chạy được JavaScript trong trang, mà đó là cách lấy `getComputedStyle` hay `getAnimations()`.
+   - Nó hợp lúc bạn ngồi xem để khám phá trang, không hợp cho agent của kit.
+3. **Ba công cụ bổ trợ nhau:**
+   - khám phá bằng `chrome-devtools` MCP hoặc Claude in Chrome;
+   - đo hàng loạt bằng script Playwright;
+   - so ảnh app của mình với trang mẫu bằng Playwright.
+   Ngoài ra có các panel Animations và CSS Overview của Chrome DevTools, ffmpeg, Project Wallace và CSS Stats. File cũng có một lưu ý về bản quyền, vì đây là template bán thương mại.
+4. **Hai việc bạn nêu:**
+   - cuộn từng bước rồi chụp: Playwright làm tốt nhất;
+   - quay video rồi tách khung hình: `screencast_start`/`stop` của `chrome-devtools`, hoặc `recordVideo` của Playwright, đều được;
+   - đọc keyframe, thời lượng, easing: cả hai đều chạy được JavaScript trong trang;
+   - lưu ý: GSAP không hiện trong `getAnimations()`, phải đọc qua `window.gsap` và `ScrollTrigger.getAll()`. Cách chính xác hơn quay video là dừng animation rồi tua tới từng mốc thời gian.
+
+**Một quyết định của bạn** (mục 5 của file): bảng màu sáng trong `design.md` bạn đã duyệt là bảng `ux` tự suy ra. Giờ đã có bảng thật của trang mẫu. Nếu muốn dùng bảng thật, bạn nhắn một câu như "Dùng bảng màu sáng thật của trang mẫu" trước khi bấm Approve plan. Mình sẽ chạy `/ao-plan SHOP-7` kèm câu đó. Nếu không nhắn, mình giữ bảng của `ux`.
+
+`/ao-plan SHOP-7` vẫn đang chạy: `ba` đang tạo item trên Jira.
+
+12:07: `ba` đã chạy 7 phút, 67 bước, và đang tạo item trên Jira.
+
+12:10: `ba` đã chạy 10 phút, 88 bước, và đang tạo từng item trên Jira.
+
+# Phiên 32 · Lượt 9 — 2026-11-15 khoảng 12:11 → 12:16
+
+**Bạn:**
+
+```markdown
+giữ bảng của ux để tôi xem bộ token light mode của ux agent có đẹp không
+```
+
+**Claude:**
+
+Mình giữ bảng màu sáng của `ux`, và không đổi gì trong plan. Bảng sáng thật của trang mẫu vẫn nằm ở `shop/.ai/design-inbox/_reference/light/`. Khi Task design system xong và app lên Development, bạn so hai bảng bằng mắt được, hoặc mình chụp hai bên ở cùng cỡ màn hình để bạn so.
+
+`ba` vẫn đang tạo item trên Jira.
+
+12:13: `ba` đã chạy 13 phút, 140 bước, và đang đọc lại danh sách item trên Jira để kiểm.
+
+12:16: `ba` đã chạy 16 phút, 181 bước. Nó đang viết comment trên các item.
+
+# Phiên 32 · Lượt 10 — 2026-11-15 khoảng 12:17 → 12:30
+
+**Bạn:**
+
+```markdown
+Vậy Mỗi tool đều làm tốt những việc của nó. Câu hỏi, bạn chưa được làm gì cả nhé chỉ trả lời:
+
+1. Chốt chọn cả ba hay chỉ chọn 2? luôn có Playwright  còn Claude in Chrome và chrome-devtools MCP thì chọn 1 trong 2, bạn đề xuất bộ công cụ giúp tôi
+2. Có nên phân công công việc, ghi rõ vai trò nhiệm vụ của mỗi tool để Claude Code chọn đúng tool không? Hay Claude Code có thể suy ra
+
+
+Viết tiếp vào cong-cu-inspect-website.md nhé
+```
+
+**Claude:**
+
+Stage plan đã xong và PR #17 xanh. Mình đang ghi kết quả và log, rồi gửi bạn câu trả lời cùng các bước duyệt gate ②.
+
+**Trả lời hai câu hỏi.** Mình đã viết tiếp vào mục 6 và 7 của `cong-cu-inspect-website.md`, và không đổi gì khác.
+
+1. **Chọn hai công cụ: Playwright và `chrome-devtools` MCP.** Bỏ Claude in Chrome cho việc này, vì bốn lý do:
+   - nó và `chrome-devtools` làm cùng một việc: agent điều khiển trình duyệt từng bước. Giữ cả hai chỉ làm agent phân vân;
+   - `chrome-devtools` đo sâu hơn: xem được rule CSS gốc, chạy JavaScript trong trang, quay video, ghi performance trace;
+   - `chrome-devtools` của `shop` chạy với profile tạm (`--isolated`). Claude in Chrome thì đi qua profile thật, có các tài khoản của bạn;
+   - `fe-dev` đã dùng được `chrome-devtools` khi chạy ngầm. Claude in Chrome cần một cửa sổ hiện thật, và tài liệu chưa nói subagent có dùng được không.
+
+   Claude in Chrome chỉ đáng dùng khi trang mẫu nằm sau đăng nhập, hoặc khi bạn muốn ngồi xem; lúc đó chỉ phiên chính dùng nó. Máy này chưa có ffmpeg, khi cần mới cài.
+2. **Nên ghi vai trò của từng tool, nhưng ngắn.** Claude Code tự chọn được tool hợp lý, nhưng không tự biết ba điều:
+   - khi hai tool cùng làm được một việc, lựa chọn đổi giữa các lần chạy, ví dụ lần này viết script, lần sau gọi 30 lần chụp ảnh;
+   - ràng buộc của dự án: không dùng profile thật, lưu kết quả ở đâu, giá trị phải đo chứ không đoán;
+   - **danh sách phải đo**, phần quan trọng nhất. Lỗi ở T11 không phải chọn sai tool, mà thiếu danh sách đo: hai giao diện, ba cỡ màn hình, các trạng thái.
+
+   Nên ghi ở ba chỗ:
+   - quyền `tools:` của từng agent, cách chắc nhất;
+   - một skill như `reference-capture`, chứa bảng "việc → tool" và danh sách đo;
+   - một dòng trong rules trỏ tới skill đó.
+
+   Đây là đề xuất cho kit sau Pilot 3; mình chưa làm.
+
+---
+
+**Stage plan của `SHOP-7` đã xong, đang chờ bạn duyệt ở gate ②.** Chi phí 13,97 USD. Cả `SHOP-7` tới giờ tốn 26,28 USD, cả Pilot 3 tốn 72,76 USD.
+
+**Đã làm:**
+1. `sa` viết `plan.md` và 3 ADR (7,94 USD):
+   - ADR-0001: nâng database chỉ thêm cột, nên `v0.2.0` vẫn chạy được trong lúc deploy và khi rollback. Một trigger giữ cột giá cũ và cột giá mới khớp nhau. Cột cũ bỏ sớm nhất ở `v0.4.0`;
+   - ADR-0002: tìm không dấu bằng hàm có sẵn của PostgreSQL, không cần extension;
+   - ADR-0003: API của trang quản trị và API của khách tách riêng. API của khách chỉ trả sản phẩm Đang bán.
+2. `sa` hỏi 2 câu về những thứ nó không đọc được, câu nào cũng có đề xuất:
+   - câu 1, mình tự kiểm trên VPS: `API_URL` của `user` trỏ tới `http://api:3001` ở cả ba môi trường;
+   - mình trả lời cả hai câu bằng lời dặn của bạn, và `sa` ghi vào plan (0,92 USD).
+3. `ba` tạo 30 item trên Jira, từ `SHOP-8` tới `SHOP-37` (5,11 USD):
+   - 11 Task, 9 Story, 10 Sub-task, và 25 liên kết Blocks;
+   - mỗi tiêu chí AC1–AC28 nằm ở đúng một Story;
+   - không item nào cần hủy.
+
+**Những điều nên xem trước khi duyệt:**
+- **3 item có effort `xhigh`, bạn duyệt cùng plan:**
+  - `SHOP-12`: thêm 5 sản phẩm thử lên Staging và Production;
+  - `SHOP-13`: nâng database trên dữ liệu thật;
+  - `SHOP-14`: SQL tìm kiếm và lọc sản phẩm Ẩn.
+- **API quản trị là Task nền** (`SHOP-15`, `SHOP-16`), không nằm trong Story. Lý do: E2E của mọi Story cần các API này để tạo và dọn dữ liệu. Vì vậy US1, US2, US4 và US6b chỉ có phần giao diện.
+- **404 thật cho sản phẩm không tồn tại:** với cache của Next 16.4.6, trang đã trả mã 200 trước khi code của trang chạy. Vì vậy `user` kiểm sản phẩm có tồn tại không ở lớp Proxy, trước khi dựng trang.
+- **Độ trễ dưới 60 giây:** cache 25 giây ở server cộng 30 giây ở trình duyệt.
+- **Sản phẩm thử có cả trên Staging,** để lần deploy `v0.3.0` lên Staging là buổi diễn tập nâng database trên cùng dữ liệu.
+- **Nút thanh bên demo** của `admin` sẽ bị gỡ.
+- **`SHOP-12` cần basic auth của Production.** Khi tới Task này, mình đưa `AO_ENV_AUTH` vào phiên `devops`, như `sa` đề xuất. Mật khẩu đó mở được Production; mình đã kiểm lúc release `v0.2.0`.
+- **`sa` chép lời dặn "Đồng ý tất cả…" của bạn vào plan,** thành hướng dẫn cho mọi agent của `SHOP-7`: làm theo đề xuất, chỉ hỏi khi thiếu quyền. Như vậy agent có thể tự quyết, thay vì để lại câu hỏi cho mình xem trước. Nếu bạn chỉ muốn lời dặn đó áp dụng cho mình, nhắn mình trước khi duyệt.
+
+**Việc của bạn: gate ②.**
+1. Mở https://github.com/TungPH7/shop/pull/17 rồi bấm tab **Files changed**.
+2. Đọc `docs/specs/SHOP-7/plan.md`, và nếu muốn thì đọc thêm 3 ADR trong `docs/adr/`. Bấm nút **⋯** ở đầu file rồi chọn **View file** để đọc dạng đã trình bày.
+3. Đừng Approve và đừng Merge PR: `merge-gate` tự merge sau khi bạn duyệt plan.
+4. Mở https://phunghuutung12b4.atlassian.net/browse/SHOP-7, bấm nút trạng thái **Planning**, rồi chọn **Approve plan**.
+
+Sau khi bạn bấm, mình chạy lại `/ao-plan SHOP-7`:
+- các item được refine;
+- `merge-gate` merge PR docs #17;
+- mình sửa chặng 4 của todo theo plan.
+
+Rồi mình bắt đầu chặng 4 với các Task design system.
+
+
+# Phiên 32 · Lượt 11 — 2026-11-15 khoảng 12:31 → 12:45
+
+**Bạn:**
+
+```markdown
+đã Approve plan
+```
+
+**Claude:**
+
+Mình đã ghi nhận gate ②. Lệnh đang chạy `jira-sync` cho `SHOP-7`, rồi `merge-gate` sẽ merge PR docs #17. Trong lúc chờ, mình đọc chặng 4 của todo để sửa theo plan.
+
+Mình đang chờ `jira-sync` và `merge-gate` merge PR #17. Trong lúc đó mình ước tính chi phí của chặng 4: plan có 20 item chính, nhiều hơn hẳn mức "2 Story" trong spec của Pilot 3.
+
+Chặng 4 của todo đã được sửa theo plan. `jira-sync` vẫn đang chạy; khi nó và lần merge PR #17 xong, mình báo kết quả cùng ước tính chi phí.
+
+**Gate ② đã xong:** PR docs #17 đã merge vào `develop` (`41ede25`), và `jira-sync` đã refine 20 item, tức các item đã sẵn sàng để làm. Chặng 4 của todo cũng đã sửa theo plan:
+- T14 là Phase 1, design system;
+- T15 là Phase 2, phần nền;
+- T16 là các Story.
+
+**Trước khi chạy agent tiếp, mình cần bạn quyết một việc về chi phí.**
+- Spec của Pilot 3 có quy định: phải hỏi bạn trước khi chạy thêm agent khi tổng chi phí vượt 125 USD. Hiện Pilot 3 đã tốn 72,76 USD.
+- Lúc lập spec, mình ước chặng 4 chỉ gồm 1 Task design system và 2 Story, khoảng 55–80 USD.
+- Plan thật có 20 item: 11 Task và 9 Story. Trong 9 Story, 4 Story có Sub-task cho cả `be-dev` và `fe-dev`.
+
+**Ước tính chi phí chặng 4.** Mình dựa trên `SMP-24` của Pilot 2: một Story chạy đủ vòng build, sửa sau khi xem trước, review và QA tốn khoảng 39 USD.
+
+| Loại | Số item | USD mỗi item [Ước tính] | Tổng |
+|---|---|---|---|
+| Task | 11 | 10–20 | 110–220 |
+| Story | 9 | 25–40 | 225–360 |
+| **Cộng** | 20 | | **khoảng 335–580** |
+
+Như vậy cả Pilot 3 có thể lên khoảng 410–650 USD. Với gói Pro, riêng `SMP-23` (55 USD) đã chạm giới hạn 5 giờ ba lần. 20 item có thể chạm giới hạn hơn 20 lần, tức mất nhiều ngày.
+
+**Ba cách:**
+1. **Làm theo đợt** (mình đề xuất):
+   - đợt 1 là Phase 1, gồm 4 Task design system, khoảng 40–80 USD;
+   - nâng mức dừng lên 160 USD;
+   - xong đợt 1, mình báo chi phí thật của từng item, ước lại phần còn lại, rồi bạn quyết đợt sau.
+
+   Đợt 1 có ích kể cả khi dừng sau đó, vì hai app sẽ có design system mới.
+2. **Làm cả Epic:** nâng mức dừng lên khoảng 650 USD, rồi chạy liền tới hết chặng 4.
+3. **Thu nhỏ Epic:**
+   - giữ một lát cắt khoảng 9 item, đủ để thử mỗi loại việc của kit một lần: design system, database, API, một Story có Sub-task cho cả `be-dev` và `fe-dev`, và Task `devops` ghi lên Production. Khoảng 105–200 USD;
+   - phần còn lại chuyển sang một Epic sau;
+   - cách này phải sửa plan đã duyệt: hủy bớt item, rồi chạy lại `/ao-plan` kèm yêu cầu sửa.
+
+**Bạn chọn 1, 2 hay 3?** Trong lúc chờ bạn, mình không chạy agent nào.
+
+
+# Phiên 32 · Lượt 12 — 2026-11-15 khoảng 12:50 → 14:02
+
+**Bạn:**
+
+```markdown
+* Cứ làm không còn giới hạn chi phí nữa nhé (tôi đang dùng gói Max x5)
+* Làm cả Epic
+```
+
+**Claude:**
+
+T14 đã bắt đầu: `fe-dev` đang build `SHOP-8`, phần token, font và khung trang của design system cho `admin`, ở effort `high`. Cứ khoảng 3 phút mình báo tiến độ một lần. Khi xong mỗi item, mình chỉ dừng hỏi bạn ở gate ③ (approve PR) và lúc Accept.
+
+Mình đã bật theo dõi tiến độ cho lượt build `SHOP-8`.
+
+13:03: `fe-dev` đã chạy 3 phút, 32 bước, và đang đọc code của `admin`.
+
+13:06: `fe-dev` đã chạy 6 phút, 48 bước.
+
+13:09: `fe-dev` đã chạy 9 phút, 64 bước, và đang viết `tokens.css`, file chứa các token màu và khoảng cách.
+
+13:12: `fe-dev` đã chạy 12 phút, 84 bước.
+
+13:15: `fe-dev` đã chạy 15 phút, 91 bước. Nó đang dùng `chrome-devtools` để giả lập môi trường, chắc là đổi giữa giao diện sáng và tối để chụp ảnh kiểm.
+
+13:18: `fe-dev` đã chạy 18 phút. Số bước tăng nhanh vì nó đang kiểm app trên trình duyệt: chụp ảnh ở hai giao diện sáng và tối, chạy script kiểm trên trang chủ và trang Giới thiệu. Mình đã xem các lệnh gần nhất, không có vòng lặp.
+
+13:21: `fe-dev` đã chạy 21 phút, 190 bước.
+
+13:24: `fe-dev` đã chạy 24 phút, 201 bước. Nó đang viết mô tả PR, tức sắp mở PR nháp.
+
+13:27: `fe-dev` đã xong, tốn 6,33 USD. Lệnh đang chờ CI của PR.
+
+`fe-dev` đã build xong `SHOP-8` (6,33 USD) và mở PR nháp #18, nhưng CI đỏ. Mình xem check nào đỏ trước khi chạy `/ao-fix`.
+
+CI đỏ ở bước "Coverage of changed lines". Các dòng mới đều có test (100%), nhưng 4 file đã sửa (`root-layout.tsx`, hai route, `main.tsx`) không có mặt trong báo cáo coverage nào. `fe-dev` đang sửa qua `/ao-fix 18`. Trong lúc chờ, mình xem ảnh chụp `fe-dev` để lại.
+
+Ảnh `S1.1-desktop-light.png` cho thấy khung trang mới của `admin` ở giao diện sáng: ba "viên thuốc" gồm tên app, menu, và nhóm ngôn ngữ, giao diện, đăng nhập; chữ tiếng Việt dùng Be Vietnam Pro hiện đủ dấu. Bốn ảnh nằm ở `D:\Document\1Khoahoc\4LapTrinh\AI-for-coding\e-commerce\shop\.ai\runs\SHOP-8\preview\`, nếu bạn muốn xem bảng màu sáng của `ux`.
+
+Phần theo dõi của lượt build cũ đã hết hạn, đúng như dự kiến. Lượt `/ao-fix 18` có phần theo dõi riêng và vẫn đang chạy.
+
+13:31: `fe-dev` đã sửa được 3 phút, 38 bước. Nó đang viết test cho các route để chúng có mặt trong báo cáo coverage.
+
+13:34: `fe-dev` đã sửa được 6 phút, 58 bước.
+
+CI của PR #18 đã xanh: `fe-dev` thêm test cho 4 file đó, tốn 1,11 USD. Mình bỏ qua bước xem trước vì đã có ảnh chụp, và chạy `/ao-review 18`.
+
+`reviewer` (effort `xhigh`) và `security` (effort `max`, vì PR có thêm gói font) đang review PR #18. Mình ghi log từng bước vào file nháp để không sót. Cứ khoảng 3 phút mình báo tiến độ một lần.
+
+13:41: `reviewer` đã chạy 2 phút, 17 bước. PR #18 đã được đánh dấu sẵn sàng review.
+
+13:44: `reviewer` đã chạy 5 phút, 43 bước.
+
+13:47: `reviewer` đã xong, tốn 2,18 USD. `security` vừa bắt đầu.
+
+13:50: `security` đã chạy 3 phút, 47 bước.
+
+13:53: `security` đã chạy 6 phút, 78 bước. Nó đang giải nén gói font từ npm để kiểm từng file bên trong.
+
+`reviewer` và `security` đã review xong PR #18: không có Critical, High hay Medium; `reviewer` nêu 7 Low. Tới gate ③ cần bạn quyết. Trong lúc chờ, mình build luôn `SHOP-10` (design system của `user`), vì item này không chờ `SHOP-8`.
+
+**PR #18 của `SHOP-8` (design system của `admin`, phần 1/2) đã tới gate ③.** `SHOP-8` tốn 12,22 USD tới giờ.
+
+**Đã làm:**
+1. `fe-dev` build (6,33 USD):
+   - token màu của giao diện sáng và tối, theo `design.md`;
+   - font Be Vietnam Pro, gói mới duy nhất, 144 KB;
+   - các style dùng chung: nút, badge, thẻ kính, ô nhập, bảng;
+   - khung trang S1.1 với ba "viên thuốc", và bộ chọn giao diện Sáng / Tối / Hệ thống;
+   - tài liệu `docs/design-system/admin.md`.
+
+   axe không báo lỗi WCAG A/AA nào; độ tương phản thấp nhất là 6,81:1, ở giao diện sáng.
+2. CI đỏ ở bước coverage. `fe-dev` thêm test cho 4 file còn thiếu, và CI xanh lại (1,11 USD).
+3. `reviewer` (2,18 USD) không thấy Critical, High hay Medium nào; nó nêu 7 Low.
+4. `security` review toàn bộ PR (2,60 USD) và không thấy lỗi nào. Nó tự tải gói font về kiểm: mã băm khớp lockfile, không có script chạy lúc cài, bên trong chỉ có CSS và file font.
+
+**7 Low của `reviewer`:**
+1. Ô nhập bỏ viền focus (`outline: none`). Ở chế độ High Contrast của Windows, gần như không thấy ô nào đang được chọn.
+2. Lần tải đầu có thể nháy giao diện hệ thống trước khi áp giao diện đã lưu. Trong khi đó `admin.md` ghi là không nháy.
+3. Code thừa: phần thanh bên và hàm đổi giao diện cũ không còn chỗ nào gọi.
+4. `ThemeSwitcher` lấy danh sách giao diện thẳng từ store, thay vì qua `useTheme()`.
+5. Trạng thái "trang hiện tại" lặp lại điều `aria-current` đã nói, và chưa có test.
+6. Hai giá trị bóng của giao diện tối bị viết lặp hai lần.
+7. `admin.md` hẹn bổ sung số đo sau, nhưng chưa item nào được giao việc đó.
+
+**Bạn chọn một trong hai:**
+1. **Sửa 7 Low trước, rồi mới approve** (mình đề xuất, như lần trước bạn dặn "fix cho kỹ").
+   - Bạn chỉ cần trả lời "sửa hết Low".
+   - Mình chạy `/ao-fix 18` với câu đó. Việc sửa chỉ đụng tới code, không đổi tiêu chí nào.
+   - Sau đó `reviewer` và `security` xem phần mới, rồi mình nhờ bạn approve.
+   - Tốn thêm khoảng 3–6 USD và 20–30 phút.
+2. **Approve luôn và để lại 7 Low:**
+   1. Mở https://github.com/TungPH7/shop/pull/18 rồi bấm tab **Files changed**.
+   2. Bấm nút xanh **Review changes** (hoặc **Submit review**) ở góc trên bên phải.
+   3. Chọn **Approve**, rồi bấm **Submit review**.
+   4. Đừng bấm Merge: `merge-gate` tự merge.
+
+Ảnh chụp của `fe-dev`, gồm giao diện sáng và tối ở 1440 px và 1024 px, nằm ở `D:\Document\1Khoahoc\4LapTrinh\AI-for-coding\e-commerce\shop\.ai\runs\SHOP-8\preview\`.
+
+Trong lúc chờ bạn, `fe-dev` đang build `SHOP-10` (design system của `user`, phần 1/2), vì item này không chờ `SHOP-8`.
+
+
+# Phiên 32 · Lượt 13 — 2026-11-15 khoảng 14:10 → 14:12
+
+**Bạn:**
+
+```markdown
+Sửa 7 Low trước, rồi mới approve
+```
+
+**Claude:**
+
+Mình đã ghi nguyên văn câu của bạn vào `.ai/runs/SHOP-8/note.md`, với loại thay đổi là `none` (chỉ sửa code). Mỗi lúc chỉ một agent chạy, nên `/ao-fix 18` sẽ chạy ngay khi `fe-dev` build xong `SHOP-10`, chừng vài phút nữa. Sau đó `reviewer` và `security` xem phần mới, rồi mình gửi bạn các bước approve.
+
+14:12: `fe-dev` đã build `SHOP-10` được 15 phút, 154 bước.
+
+# Phiên 32 · Lượt 14 — 2026-11-15 khoảng 14:13 → 14:22
+
+**Bạn:**
+
+```markdown
+Tôi thấy epic này có nhiều list item nhưng hiện tại 1 lúc chỉ làm được 1 item, Mỗi lúc chỉ một agent chạy (Như bạn nói). Câu hỏi:
+Có thể tạo các Git Worktrees để làm các item song song (các item này không phụ thuộc nhau). Mỗi item trong một worktree riêng biệt. Tạo 2 worktree, nên đặt 2 worktree này ở chỗ nào? Mở từng worktree trong từng của sổ VS code riêng để có thể làm việc song song.
+
+Chưa làm gì cả nhé, thảo luận trước vấn đề này.
+```
+
+**Claude:**
+
+Mình đã kiểm xong code của kit cho câu hỏi về worktree; câu trả lời ở dưới. Mình chưa làm gì với worktree. Song song đó, `fe-dev` vẫn đang build `SHOP-10` (14:15: được 18 phút, 178 bước).
+
+**Trả lời ngắn:** về Git thì làm được, nhưng kit hiện tại chưa chạy song song an toàn. Nếu chỉ tạo 2 worktree rồi mở 2 cửa sổ chạy `/ao-build`, sẽ hỏng ít nhất ở 4 chỗ. Lộ trình của kit đã có đúng việc này, tên là C2 "Lớp chạy song song", nhưng chưa làm.
+
+**Bốn chỗ sẽ hỏng, với kit như hiện nay:**
+1. **Nhánh `develop` chỉ checkout được ở một chỗ.**
+   - `ao-step` chuyển cả thư mục sang nhánh của item, xong việc thì đưa về `develop`. `/ao-review` cũng checkout `develop` trước khi review.
+   - Git không cho một nhánh nằm ở hai worktree cùng lúc, nên ở worktree thứ hai bước này lỗi.
+2. **Trùng cổng.**
+   - `user`, `admin` và `api` chạy ở cổng cố định 3000, 5173 và 3001.
+   - Hai worktree chạy dev server hay E2E cùng lúc sẽ giành nhau cổng.
+   - Tệ hơn: ở máy, Playwright dùng lại server đang chạy sẵn (`reuseExistingServer`). Nó có thể test nhầm code của worktree kia mà vẫn báo xanh.
+3. **Khóa "mỗi lúc một agent" mất tác dụng.** Khóa nằm ở `.ai/runs/active.json` của từng thư mục, nên hai worktree không thấy khóa của nhau, và kit không còn chặn được hai lượt cùng đụng một item.
+4. **Giới hạn WIP trên Jira:** mỗi dev agent chỉ được giữ 1 item In Progress.
+   - Hai item `fe-dev` song song sẽ bị Jira từ chối.
+   - Chỉ ghép được một item `fe-dev` với một item `be-dev`.
+
+**Hai điều cần biết về Claude Code:**
+- Với Claude Code, mỗi worktree là một thư mục mới: phải tin thư mục và duyệt lại MCP. Phiên mở ở đó **không có memory và lịch sử** của phiên này, vì chúng gắn với thư mục mở phiên. Phiên đó sẽ không biết các quy ước như ghi log, không in secret, đặt `AO_KIT_DIR`.
+- Agent tiếp tục đúng phiên cũ của nó theo thư mục. Vì vậy một item phải nằm yên trong một worktree từ lúc build tới QA.
+
+**Lợi thực tế nếu kit hỗ trợ:**
+- Ở `SHOP-7`, chỉ ghép được cặp `be-dev` + `fe-dev`: chuỗi `be-dev` `SHOP-13` → 14 → 15 → 16 chạy cùng lúc với các Task `fe-dev` (8, 9, 10, 11, 17, 18).
+- [Ước] Chặng 4 nhanh hơn khoảng 30–40%.
+- Chi phí không giảm, và hạn mức Max 5x hết nhanh gấp đôi.
+- Bạn vẫn duyệt ở gate ③ và Accept, nên phần thời gian chờ bạn không đổi.
+
+**Nếu làm, đặt worktree ở đâu:** ngang hàng với `shop`, không đặt bên trong nó.
+- `D:\Document\1Khoahoc\4LapTrinh\AI-for-coding\e-commerce\shop-wt1`
+- `D:\Document\1Khoahoc\4LapTrinh\AI-for-coding\e-commerce\shop-wt2`
+
+Lý do:
+- nếu đặt trong `shop`, VS Code, TypeScript, ESLint và Vitest của thư mục chính sẽ quét luôn hai bản sao;
+- đường dẫn ngắn tránh giới hạn 260 ký tự của Windows khi `node_modules` lồng sâu;
+- mỗi worktree tự cài package (`pnpm install` dùng store chung nên nhanh). Không nối `node_modules` bằng junction: lần trước, xóa một worktree đã làm rỗng `node_modules` chính;
+- đặt tên theo chỗ (wt1, wt2) chứ không theo item: mỗi chỗ làm xong trọn một item rồi mới nhận item khác.
+
+**Đề xuất của mình:**
+1. **Bây giờ, giữ chạy lần lượt cho `SHOP-7`.** Mình đã chồng việc: agent build item kế tiếp trong lúc chờ bạn duyệt, nên agent ít khi phải ngồi không.
+2. **Nếu bạn muốn nhanh hơn, làm phần tối thiểu của C2 trong kit trước.** Đây là một Task của kit, xong thì chép kit vào `shop`. Gồm:
+   - mỗi item build và fix trong worktree riêng;
+   - khóa theo item, tối đa 2 lượt chạy cùng lúc;
+   - mỗi chỗ một dải cổng riêng, ví dụ wt1 cộng 100, wt2 cộng 200;
+   - worktree đứng ở `origin/develop` dạng detached, thay vì checkout `develop`.
+
+   Một phiên chính (phiên này) điều phối cả hai worktree, không cần hai cửa sổ Claude. [Ước] Mất 1–2 phiên làm kit, cộng review khoảng 20–40 USD, đổi lại 15 item còn lại chạy nhanh hơn.
+3. **Không nên tạo 2 worktree bằng tay rồi chạy kit hiện tại trong 2 cửa sổ.** Sẽ hỏng ở 4 chỗ trên, và chỗ trùng cổng còn cho kết quả test sai mà không báo gì.
+
+**Bạn chọn giữ chạy lần lượt (1), hay làm C2 tối thiểu trước (2)?** Mình chưa làm gì với worktree. `/ao-fix 18` vẫn chạy sau khi `SHOP-10` build xong, như bạn đã bảo.
+
+
+14:18: `fe-dev` đã build `SHOP-10` được 21 phút, 204 bước, và đang sửa E2E của design system.
+
+14:21: `fe-dev` đã chạy 24 phút, 267 bước, và đang chụp ảnh màn hình để kiểm.
+
+14:24: `fe-dev` đã chạy 27 phút, 293 bước.
+
+Phần theo dõi đã hết hạn sau 30 phút; mình bật lại cho lượt build `SHOP-10`.
+
+14:30: `fe-dev` đã chạy 33 phút, 311 bước.
+
+# Phiên 32 · Lượt 15 — 2026-11-15 khoảng 14:31 → 14:38
+
+**Bạn:**
+
+```markdown
+Nếu giờ làm C2 tối thiểu trước thì có ảnh hưởng gì tới luồng đang chạy không? Và việc làm C2 là khả thi không? Có làm breaking changes không? Kit hiện tại có hỗ trợ mở rộng theo hướng C2 không? Nghiên cứu và đánh giá kỹ lưỡng giúp tôi trước khi tôi chọn chạy lần lượt (1), hay làm C2 tối thiểu trước (2) nhé
+```
+
+**Claude:**
+
+Mình sẽ nghiên cứu kỹ trong code của kit trước khi trả lời, gồm ba phần: luồng đang chạy dùng file kit nào, agent được khởi động thế nào, và những chỗ phụ thuộc vào một thư mục duy nhất. Lượt build `SHOP-10` vẫn chạy bình thường.
+
+`fe-dev` đã build xong `SHOP-10`, tốn 10,04 USD. Mình chạy ngay `/ao-fix 18` để sửa 7 Low như bạn đã bảo, rồi đọc kết quả `SHOP-10` và làm tiếp phần nghiên cứu về C2.
+
+Mình đã đọc đủ các phần của kit liên quan tới C2. Giờ mình viết bản đánh giá; trong lúc đó `fe-dev` đang sửa 7 Low của PR #18.
+
+Mình đã đọc code của kit và viết bản đánh giá đầy đủ ở `D:\Document\1Khoahoc\4LapTrinh\AI-for-coding\ai-orchestrator\misc\thao-luan\c2-toi-thieu-giua-pilot-3.md`. Tóm tắt bốn câu bạn hỏi:
+
+1. **Ảnh hưởng tới luồng đang chạy:** không có, với điều kiện làm C2 trong một bản sao riêng của kit.
+   - Các lệnh của `shop` đang lấy contract, roster và trình khởi động agent từ thư mục kit `ai-orchestrator`, qua `AO_KIT_DIR`. Nếu sửa C2 ngay trong thư mục đó, lượt agent kế tiếp của `SHOP-7` sẽ chạy code đang viết dở.
+   - Vì vậy phải làm C2 trong một worktree riêng của kit, ví dụ `ai-orchestrator-c2`.
+   - Sau đó cần một kit PR, rồi một PR chép kit vào `shop` qua `/ao-review`. Các item đang làm dở làm nốt theo cách cũ.
+2. **Khả thi:** có. Kit đã có nhiều phần nền:
+   - runner nhận mọi tác động qua tham số;
+   - review và QA đã chạy trong worktree;
+   - mỗi app lấy cổng từ biến môi trường;
+   - code còn ghi sẵn một chỗ chờ C2: "two worktrees can run the same app on two ports later (C2)".
+
+   Nhưng có **7 chỗ phải sửa**: build và fix trong worktree theo item, khóa theo item cộng trần số lượt chạy cùng lúc, dải cổng riêng cho mỗi worktree, quyền MCP theo đường dẫn, phiên agent tiếp tục theo thư mục, các file không nằm trong git, và giới hạn WIP. Hai chỗ trong đó phải chạy thử thật trước: agent trong worktree mới có còn MCP `atlassian` và `chrome-devtools` không, và `--resume` có tìm được phiên không.
+3. **Breaking change:** không, nếu C2 là chế độ bật bằng cấu hình, mặc định 1 lượt. Khi đó `ao-sample`, `ao-pilot` và `shop` chạy y như cũ. Rủi ro nằm ở chỗ khóa và checkout là lõi mà mọi lệnh đi qua, nên bộ test của kit phải giữ xanh.
+4. **Kit có hỗ trợ hướng C2 không:** có. Kiến trúc đã chừa sẵn chỗ, và C2 vốn nằm trong lộ trình.
+
+**Chi phí và lợi** [Ước]:
+- Làm C2 tối thiểu mất khoảng 2–3 ngày và 40–80 USD, phần lớn là các vòng review.
+- Lợi với `SHOP-7` không lớn. Còn khoảng 18 item, tức 20–25 giờ agent. C2 làm nhanh hơn 25–40%, nhưng chỉ dùng được sau 2–3 ngày. Tới lúc đó khoảng nửa số item đã xong, nên chỉ tiết kiệm được khoảng 3–5 giờ.
+- Lợi lớn nằm ở các Epic sau.
+- Bạn vẫn duyệt gate ③ và Accept từng item, và hai agent cùng lúc làm hạn mức 5 giờ hết nhanh gấp đôi.
+
+**Đề xuất:** chọn (1) cho việc chạy `SHOP-7`, cộng bước đầu của C2:
+1. Mình viết spec C2 tối thiểu ngay trong lúc agent chạy. Phiên chính phần lớn thời gian chỉ ngồi chờ, việc này không tốn agent và không đụng luồng đang chạy.
+2. Bạn đọc spec rồi quyết: làm ngay cho nửa sau `SHOP-7`, hay để sau Pilot 3 và thử trên `ao-sample`.
+
+Không nên dừng `SHOP-7` để chờ C2: sẽ mất 2–3 ngày đứng chờ.
+
+**Một điều mình phát hiện thêm:** cả PR #18 (`SHOP-8`) lẫn PR #19 (`SHOP-10`) đều đỏ CI lần đầu vì cùng một lý do. Bước kiểm coverage đòi mọi file đã sửa phải có trong báo cáo, mà cấu hình Vitest của app loại các file layout và route ra. Mỗi lần như vậy tốn thêm một lượt sửa, khoảng 1 USD và 10 phút. Nên sửa ở kit, độc lập với C2.
+
+**Đang chạy:**
+- `SHOP-10` đã build xong (10,04 USD), mở PR nháp #19, CI đỏ vì đúng lỗi coverage ở trên.
+- `fe-dev` đang sửa 7 Low của PR #18; sau đó `reviewer` và `security` xem phần mới.
+- Tiếp theo mình chạy `/ao-fix 19`.
+
+**Bạn chọn (1) cộng viết spec C2, hay muốn khác?**
+
+
+# Phiên 32 · Lượt 16 — 2026-11-15 khoảng 14:40 → 14:43
+
+**Bạn:**
+
+```markdown
+Sắp xếp thư mục lại 1 xíu:
+
+Đưa file vừa tạo vào D:\Document\1Khoahoc\4LapTrinh\AI-for-coding\ai-orchestrator\misc\thao-luan\sdlc-song-song
+- Đưa D:\Document\1Khoahoc\4LapTrinh\AI-for-coding\ai-orchestrator\misc\clone-100pct-ui-ux vào D:\Document\1Khoahoc\4LapTrinh\AI-for-coding\ai-orchestrator\misc\thao-luan
+```
+
+**Claude:**
+
+Đã chuyển xong, cả hai đều bằng `git mv` nên lịch sử file vẫn giữ:
+
+1. `misc/thao-luan/c2-toi-thieu-giua-pilot-3.md` → `misc/thao-luan/sdlc-song-song/c2-toi-thieu-giua-pilot-3.md`. Mình sửa hai link bên trong (tới `sdlc-song-song-sua-kit-hay-clone.md` và `concerns.md`) thêm `../`, để vẫn mở được.
+2. `misc/clone-100pct-ui-ux/` → `misc/thao-luan/clone-100pct-ui-ux/` (có `cong-cu-inspect-website.md`). Đường dẫn trong `tasks/verification.md` đã sửa theo. Log thảo luận giữ nguyên đường dẫn cũ, vì đó là ghi chép của lúc ấy.
+
+Đã commit và push lên nhánh `task/pilot3-13`.
+
+Hai file cũ cùng chủ đề chạy song song vẫn ở chỗ cũ: `misc/thao-luan-sdlc-song-song.md` và `misc/thao-luan/sdlc-song-song-sua-kit-hay-clone.md`. Nếu muốn gom cả vào `misc/thao-luan/sdlc-song-song/`, bạn nhắn mình.
+
+`fe-dev` vẫn đang sửa 7 Low của PR #18.
+
+14:40: `fe-dev` đã sửa 7 Low của PR #18 được 6 phút, 54 bước.
+
+14:43: `fe-dev` đã sửa được 9 phút, 77 bước.
+
+14:46: `fe-dev` đã sửa được 12 phút, 102 bước.
+
+14:49: `fe-dev` đã sửa được 15 phút, 157 bước.
+
+# Phiên 32 · Lượt 17 — 2026-11-15 khoảng 14:50 → 14:58
+
+**Bạn:**
+
+```markdown
+chọn (1) cộng viết spec C2. Trong lúc phiên chính ngồi chờ không làm gì thì làm các việc có thể làm trước cho C2 giúp năng suất làm tốt hơn. Tiếp tục nhé.
+```
+
+**Claude:**
+
+Mình bắt đầu: `SHOP-7` vẫn chạy lần lượt, còn phiên chính dùng thời gian chờ để viết spec C2 và chuẩn bị trước. Mình xem cách các spec cũ của kit được viết, để spec C2 theo cùng khuôn.
+
+Trong lúc chờ tài liệu về Claude Code, mình dựng một phép thử nhỏ cho hai điểm chưa chắc của C2: agent trong một worktree mới có MCP không, và `--resume` có tìm được phiên ở thư mục khác không. Phép thử dùng một MCP server giả viết bằng Node trong thư mục tạm, không đụng `shop` hay kit.
+
+Hai điểm chưa chắc của C2 đã có lời đáp tốt, cả từ phép thử thật lẫn từ tài liệu:
+- ở chế độ `-p`, agent trong một worktree mới vẫn nạp đủ MCP của `.mcp.json`, không cần duyệt lại;
+- `--resume` tìm được phiên cũ khi chạy từ worktree.
+
+Còn một điểm: trong thư mục chưa được tin cậy, `-p` bỏ qua các quy tắc `permissions.allow` của `.claude/settings.json`. Mình kiểm xem agent của kit có dựa vào các quy tắc đó không.
+
+Quy tắc `permissions.allow` duy nhất của `shop` là để phiên chính chạy `ao-step`. Agent được cho phép từng lệnh nhờ hook (`gh-guard` và các guard khác trả lời "allow" hay "deny"). Mình thử thêm một phép: trong worktree chưa được tin cậy, quyết định "allow" của hook có còn hiệu lực ở chế độ `-p` không.
+
+Phép thử chưa phân biệt được: không có hook thì lệnh vẫn chạy, vì cài đặt chung ở cấp người dùng trên máy này đã cho phép sẵn. Điều quan trọng hơn với kit là chiều ngược lại: hook **chặn** (như `gh-guard`) có còn chặn được trong worktree chưa được tin cậy không. Mình thử chiều đó.
+
+Hook chặn vẫn chặn được trong worktree chưa tin cậy: file không được ghi, có 1 lần từ chối. Vậy cả ba điểm chưa chắc của C2 đều ổn:
+- agent có MCP;
+- `--resume` tìm được phiên cũ;
+- các guard vẫn chặn trong worktree.
+
+Giờ mình viết spec C2. `reviewer` đang xem phần sửa 7 Low của PR #18.
+
+**Spec C2 tối thiểu đã có bản nháp:** `D:\Document\1Khoahoc\4LapTrinh\AI-for-coding\ai-orchestrator\SPEC-parallel-runs.md`, đã push lên nhánh `task/pilot3-13`.
+
+**Đã làm trong lúc chờ agent:**
+1. Chạy thử thật ba điểm chưa chắc, trong một repo tạm có worktree (đã xóa sau khi thử):
+   - agent chạy `-p` trong worktree mới vẫn có đủ MCP của `.mcp.json`, không phải duyệt lại;
+   - `--resume` tìm được phiên cũ khi chạy từ worktree;
+   - hook chặn, như `gh-guard`, vẫn chặn được lệnh trong worktree.
+
+   Nhờ vậy C2 bớt được hai rủi ro lớn nhất trong bản đánh giá trước.
+2. Viết spec theo khuôn các spec cũ của kit: mục tiêu, hai phần, thiết kế, cấu hình, test, ranh giới, tiêu chí xong, rủi ro và chi phí.
+
+**Nội dung chính của spec:**
+- **Phần 1:** build và fix của mỗi item chạy trong worktree riêng, ví dụ `e-commerce/shop-wt/SHOP-13`. Thư mục chính luôn đứng ở `develop`. Vẫn chạy lần lượt. Bật bằng `runs.worktrees: true`.
+- **Phần 2:**
+  - khóa theo item, tối đa 2 lượt cùng lúc (`runs.parallel: 2`);
+  - mỗi chỗ chạy một dải cổng riêng;
+  - `/ao-status` liệt kê các lượt đang chạy;
+  - chỉ build, fix, review và QA được chạy song song.
+- **Mặc định tắt:** mọi dự án vẫn chạy như cũ.
+- [Ước] Khoảng 2 ngày và 30–65 USD, phần lớn là các vòng review.
+
+**8 điểm cần bạn duyệt** (mục 12 của spec):
+1. Hai phần, hai PR; phần 1 dùng được một mình.
+2. Worktree đặt ở `<thư mục cha>/<dự án>-wt/<KEY>`.
+3. Cấu hình nằm trong `project.yaml`, mặc định tắt.
+4. Chỉ build, fix, review và QA được chạy song song.
+5. Giữ WIP 1 cho mỗi dev agent.
+6. Kiểm thật trên `shop`, với các item còn lại của `SHOP-7`.
+7. Làm ngay, song song với `SHOP-7`, hay để sau Pilot 3.
+8. Gộp kit PR #288 và bản sửa lỗi coverage vào cùng lần chép kit vào `shop`.
+
+Mình đề xuất đồng ý cả 8 điểm, và ở điểm 7 thì **làm ngay**. Phiên chính sẽ viết code trong một worktree riêng của kit, không đụng tới luồng `SHOP-7`. Bạn trả lời "đồng ý" là mình bắt đầu, hoặc nêu điểm muốn đổi.
+
+**`SHOP-7` đang chạy:**
+- `fe-dev` đã sửa xong 7 Low của PR #18 (3,30 USD).
+- `reviewer` đang xem phần mới, sau đó tới `security`. Xong mình nhờ bạn approve PR #18.
+- Tiếp theo là `/ao-fix 19`, sửa lỗi coverage của `SHOP-10`.
+
+
+15:01: `reviewer` đã xem xong phần sửa của PR #18 (2,27 USD); `security` vừa bắt đầu.
+
+Phần theo dõi đã hết hạn sau 30 phút; mình bật lại cho lượt `security` của PR #18.
+
+# Phiên 32 · Lượt 18 — 2026-11-15 khoảng 15:05 → 15:05
+
+**Bạn:**
+
+```markdown
+Chưa được làm gì, trả lời điểm này:
+
+* Có thể cấu hình như nào để tôi có thể chỉ rõ là chạy 1 hay 2 hay 3 hay n worktrees/sdlc chạy song song được hay không?
+```
+
+**Claude:**
+
+**Có.** Bạn chỉ định được 1, 2, 3 hay n bằng một con số trong `project.yaml`. Spec hiện ghi "1 hoặc 2" chỉ vì đó là bản tối thiểu; khóa theo item và dải cổng vốn không phụ thuộc con số, nên mở ra n tốn thêm rất ít.
+
+**Cách cấu hình mình đề xuất:**
+
+1. **Trần của dự án**, ghi trong `project.yaml`, được commit:
+   ```yaml
+   runs:
+     worktrees: true
+     parallel: 3        # số lượt agent chạy cùng lúc, 1..4
+     port_step: 100     # chỗ chạy thứ k dùng cổng gốc + k × 100
+   ```
+2. **Hạ tạm thời ở máy**, không sửa file: đặt biến `AO_RUNS_PARALLEL=1` (hay 2) trước khi chạy lệnh. Kit lấy số nhỏ hơn giữa biến này và `runs.parallel`. Dùng khi máy đang bận hay khi sắp chạm hạn mức 5 giờ.
+3. **Kit kiểm cấu hình:**
+   - `parallel` phải từ 1 tới 4;
+   - `port_step` phải đủ lớn để các dải cổng không chồng lên nhau. Ví dụ với 3 chỗ: `user` 3000 / 3100 / 3200, `api` 3001 / 3101 / 3201, `admin` 5173 / 5273 / 5373.
+
+**Lưu ý: số worktree khác với số lượt chạy.**
+- `parallel` là số agent chạy **cùng lúc**.
+- Worktree thì theo item: mỗi item đang làm hay đang chờ review, QA có một worktree, kể cả khi lúc đó không agent nào chạy trong nó. Số worktree vì vậy theo số item đang dở, thường 3–5.
+
+**Vì sao mình đề xuất trần 4, và bắt đầu với 2:**
+
+1. **Giới hạn WIP của contract:**
+   - mỗi dev agent chỉ build hay fix 1 item một lúc;
+   - `shop` có ba vai trò build là `be-dev`, `fe-dev` và `devops`, nên tối đa 3 lượt build cùng lúc;
+   - review và QA không tính vào WIP, nên thêm được 1–2 lượt nữa;
+   - quá 4 thì thường không còn item nào đủ điều kiện để chạy.
+2. **Cột In Review chỉ cho 2 PR chờ bạn.** Chạy nhiều mà bạn chưa duyệt kịp thì item vẫn dồn lại.
+3. **Hạn mức gói Max 5x:** n agent làm hạn mức 5 giờ hết nhanh gấp n lần.
+4. **Máy của bạn:** mỗi lượt chạy có thể bật dev server, một Chrome riêng của `chrome-devtools`, và Docker cho test Java. Với 3–4 lượt trên Windows 10, nên xem RAM trước.
+5. **Đồ thị phụ thuộc của Epic:** số item sẵn sàng cùng lúc thường ít. Với `SHOP-7`, phần lớn thời gian chỉ có 2–3 item chạy được song song.
+
+Nếu bạn đồng ý, mình sửa điểm 3 của spec thành `runs.parallel: 1..4` cộng biến `AO_RUNS_PARALLEL`, và thêm kiểm thật với 3 lượt. Mình chưa sửa gì.
+
+15:07: `security` đã review lại PR #18 được 7 phút, 71 bước.
+
+15:10: `security` đã chạy 10 phút, 85 bước.
+
+Lượt review lại PR #18 đã xong. `security` sạch; `reviewer` nêu 1 Medium và 1 Low mới, đều nằm trong tài liệu. Mình chạy ngay `/ao-fix 19` cho lỗi coverage của `SHOP-10`, rồi báo bạn về gate ③ của PR #18.
+
+**PR #18 (`SHOP-8`) đã sửa xong 7 Low, và đang ở gate ③.** `SHOP-8` tốn 21,14 USD tới giờ.
+
+**Lượt sửa và review lại:**
+1. `fe-dev` sửa cả 7 Low, mỗi Low một commit (3,30 USD). Điểm đáng kể nhất: thêm `theme-init.js`, chạy trong `<head>` để áp giao diện đã lưu trước khung hình đầu, nên không còn nháy. CI xanh, 128 unit test, các dòng đổi được phủ 100%.
+2. `security` review lại (3,35 USD): không có lỗi nào, và khuyên Approve.
+3. `reviewer` review lại (2,27 USD): 7 Low cũ đã xử lý xong, nhưng có 2 điểm mới, đều nằm trong tài liệu:
+   - **Medium:** mục 15.3 trong quy ước code của `admin` vẫn ghi sẽ dùng Tailwind v4 + `cva`, và cấm thêm CSS toàn cục. PR làm đúng theo plan (quyết định 14: token và class dùng chung, không Tailwind), nên tài liệu nay ngược với code. Các item sau như `SHOP-9` và US1–US4 sẽ đọc tài liệu này, và có thể làm sai theo nó.
+   - **Low:** `README.md` và `getting-started.md` của `admin` vẫn nhắc nút thanh bên đã gỡ, và ghi là chưa có giao diện sáng/tối.
+
+**Bạn chọn một trong hai:**
+1. **Sửa luôn hai điểm này rồi mới approve** (mình đề xuất). Lý do: mục 15.3 là chỗ agent đọc khi làm các item sau. Chỉ sửa tài liệu, nên khoảng 5–8 USD và 20–30 phút. Bạn chỉ cần trả lời "sửa luôn Medium và Low".
+2. **Approve luôn:**
+   1. Mở https://github.com/TungPH7/shop/pull/18 rồi bấm tab **Files changed**.
+   2. Bấm nút xanh **Review changes** (hoặc **Submit review**) ở góc trên bên phải.
+   3. Chọn **Approve**, rồi bấm **Submit review**.
+   4. Đừng bấm Merge: `merge-gate` tự merge.
+
+**Hai việc đang chạy hay đang chờ:**
+- `fe-dev` đang sửa CI đỏ của PR #19 (`SHOP-10`), cùng lỗi coverage như PR #18 lúc đầu.
+- Spec C2 (`SPEC-parallel-runs.md`) vẫn chờ bạn duyệt 8 điểm, cùng ý về số lượt chạy song song `runs.parallel: 1..4`.
+
+Phần theo dõi của lượt review PR #18 đã đóng, vì lệnh đã xong. `fe-dev` vẫn đang sửa PR #19.
+
+15:15: `fe-dev` đã sửa PR #19 được 3 phút, 32 bước.
+
+# Phiên 32 · Lượt 19 — 2026-11-15 khoảng 15:16 → 15:16
+
+**Bạn:**
+
+````markdown
+```
+Lưu ý: số worktree khác với số lượt chạy.
+
+parallel là số agent chạy cùng lúc.
+Worktree thì theo item: mỗi item đang làm hay đang chờ review, QA có một worktree, kể cả khi lúc đó không agent nào chạy trong nó. Số worktree vì vậy theo số item đang dở, thường 3–5.
+```
+
+Tôi chưa hiểu đoạn này, hãy giải thích chậm để đảm bảo tôi và bạn đang hiểu cùng 1 vấn đề:
+- Hiện tại kit 1 lúc chỉ đang làm 1 item => 1 SDLC => 1 worktree có phải không?
+- Nếu đùng thì Tôi mong đợi là nhân bản cách làm này lên ví dụ đang làm cho 1 item => 1 SDLC => 1 worktree, thì làm thêm 1 item nữa => 1 SDLC => 1 worktree, nghĩa là đang có 2 item đang được làm, số agent ở mỗi item vẫn chỉ là Mỗi lúc chỉ một agent chạy.
+
+- Bạn có đang làm theo hướng cho nhiều agent chạy parallel không?
+
+Giải thích chậm, dễ hiểu
+````
+
+**Claude:**
+
+**Trả lời ngắn:** cách bạn mong đợi chính là hướng của spec C2. Mỗi item có một làn riêng, gồm một worktree riêng. Trong một làn, agent vẫn chạy lần lượt, mỗi lúc một agent. Hai làn chạy cùng lúc thì có tối đa 2 agent, mỗi làn một agent. Mình **không** cho nhiều agent cùng làm một item.
+
+Mình giải thích chậm từng câu.
+
+**1. "Hiện tại kit một lúc chỉ làm 1 item, tức 1 SDLC, 1 worktree, đúng không?"**
+
+Gần đúng, nhưng có hai chỗ khác:
+
+- **Kit giới hạn số agent, không giới hạn số item.** Mỗi lúc chỉ một agent chạy trong cả dự án. Còn số item đang dở thì có thể nhiều hơn một. Ví dụ ngay lúc này:
+  - `SHOP-8` đã review xong và đang chờ bạn ở gate ③. Không agent nào chạy trên nó.
+  - `SHOP-10` đang được `fe-dev` sửa. Đây là agent duy nhất đang chạy.
+
+  Vậy là 2 item đang dở, nhưng chỉ 1 agent chạy.
+- **Hiện nay chưa có worktree riêng cho item.** `fe-dev` viết code ngay trong thư mục chính `shop`. Mỗi lần làm item nào, kit chuyển thư mục chính sang nhánh của item đó, xong việc thì chuyển về `develop`. Các item thay phiên nhau dùng chung một thư mục. (Review và QA có dùng worktree, nhưng chỉ là worktree tạm, mất ngay khi lượt đó xong.)
+
+**2. "Nhân bản lên: item A một làn, một worktree; item B một làn, một worktree; trong mỗi làn vẫn mỗi lúc một agent."**
+
+Đúng như vậy. Đây là điều spec C2 làm. Ví dụ với 2 làn:
+
+| Giờ | Làn 1: `SHOP-10` (worktree `shop-wt/SHOP-10`) | Làn 2: `SHOP-13` (worktree `shop-wt/SHOP-13`) |
+|---|---|---|
+| 10:00 | `fe-dev` sửa code | `be-dev` build |
+| 10:30 | `reviewer` review | `be-dev` vẫn build |
+| 10:50 | `security` review | `reviewer` review |
+| 11:10 | chờ bạn approve (không agent nào chạy) | `security` review |
+| 11:30 | `qa` kiểm trên Development | chờ bạn approve |
+
+- Trong mỗi cột, agent chạy lần lượt, như bây giờ.
+- Hai cột chạy cùng lúc, nên có tối đa 2 agent cùng lúc.
+- Thư mục chính `shop` đứng yên ở `develop`, không bị chuyển nhánh nữa.
+
+**3. Câu mình viết làm bạn khó hiểu: "số worktree khác số lượt chạy".**
+
+Ý mình như sau. Khi làn 1 chờ bạn approve lúc 11:10, nó không có agent nào chạy, nhưng worktree của nó vẫn giữ lại. Lý do: nếu bạn yêu cầu sửa, hay QA báo lỗi, `fe-dev` sửa tiếp ngay trong worktree đó, đúng phiên làm việc cũ. Trong lúc làn 1 chờ bạn, chỗ chạy của nó rảnh, nên kit có thể mở thêm làn 3 cho một item khác. Khi đó:
+
+- có **3 worktree** (3 item đang dở);
+- nhưng vẫn **tối đa 2 agent** chạy cùng lúc.
+
+Con số bạn đặt (`runs.parallel: 2`) là **số làn có agent chạy cùng lúc**, không phải số worktree. Worktree chỉ là "bàn làm việc" của mỗi item. Item xong và merge thì bàn đó được dọn đi.
+
+**4. "Bạn có đang làm theo hướng cho nhiều agent chạy song song không?"**
+
+- **Có**, nhưng theo nghĩa nhiều **item** chạy song song, mỗi item một agent tại một thời điểm, đúng như bạn mô tả.
+- **Không** cho nhiều agent cùng làm một item, ví dụ `reviewer` và `security` chạy cùng lúc trên một PR. Việc đó nằm ngoài spec C2 tối thiểu.
+
+**Một đề xuất nhỏ cho dễ hiểu:** đổi tên khóa cấu hình từ `runs.parallel` sang `runs.items_at_once`, nghĩa là "số item làm cùng lúc", để tên khớp đúng cách bạn hình dung. Mình chưa sửa gì trong spec.
+
+
+15:18: `fe-dev` đã sửa PR #19 được 6 phút, 47 bước.
+
+15:21: `fe-dev` đã sửa PR #19 được 9 phút, 58 bước.
+
+15:24: `fe-dev` đã sửa PR #19 được 12 phút, 72 bước.
+
+CI của PR #19 đã xanh (1,44 USD). Mình chạy `/ao-review 19` luôn, bỏ qua bước xem trước vì đã có 10 ảnh chụp.
+
+`reviewer` (`xhigh`) và `security` (`high`) đang review PR #19 của `SHOP-10`. Hai việc vẫn đang chờ bạn: gate ③ của PR #18, và 8 điểm của spec C2.
+
+15:27: `reviewer` đã bắt đầu review PR #19.
+
+# Phiên 32 · Lượt 20 — 2026-11-15 khoảng 15:28 → 15:28
+
+**Bạn:**
+
+```markdown
+Một đề xuất nhỏ cho dễ hiểu: đổi tên khóa cấu hình từ runs.parallel sang runs.items_at_once => đồng ý đề xuất. Tôi hỏi thêm:
+1. số agent chạy cùng lúc trên tất cả các làn phải lớn hơn hoặc bằng items_at_once thì mới hợp lý chứ nhỉ. Ví dụ tôi mở 3 item (3 làn/worktree) thì phải có 3 agent thì mới chạy 3 làn cùng lúc được, chứ nếu chỉ có 2 agent thì sẽ có 1 làn phải chờ. Bạn đề xuất số làn và số agent trong all làn là bao nhiêu?
+```
+
+**Claude:**
+
+Mình đã đổi tên khóa thành `runs.items_at_once` trong spec, và đang viết câu trả lời về số làn và số agent.
+
+Mình đã đổi tên khóa thành `runs.items_at_once` trong spec, như bạn đồng ý.
+
+**Trả lời ngắn:** bạn nói đúng, nếu làn nào cũng cần agent cùng lúc. Nhưng phần lớn thời gian, một số làn đang chờ bạn duyệt và không cần agent nào. Vì vậy số agent chạy cùng lúc có thể nhỏ hơn số làn đang mở. Mình đề xuất **2 agent cùng lúc** (`items_at_once: 2`), và **số làn đang mở thì để giới hạn WIP của kit tự quyết**, thường 3–4 làn.
+
+Mình giải thích chậm.
+
+**1. Agent không phải "nhân công" ngồi sẵn ở mỗi làn.**
+- Mỗi bước của một làn mở một agent mới đúng vai trò: build thì `fe-dev`, review thì `reviewer`, QA thì `qa`. Xong bước đó, agent tắt.
+- Khi làn chờ bạn approve hay Accept, nó không có agent nào chạy, nên không chiếm chỗ.
+- `items_at_once` nghĩa là: **tối đa bao nhiêu làn được có agent chạy cùng một lúc.** Đó cũng chính là số agent chạy cùng lúc, vì mỗi làn tối đa một agent.
+
+**2. Ví dụ với 3 làn mở và `items_at_once: 2`:**
+
+| Lúc | Làn A | Làn B | Làn C | Agent đang chạy |
+|---|---|---|---|---|
+| 10:00 | `fe-dev` build | `be-dev` build | chờ bạn approve | 2 |
+| 10:30 | `reviewer` review | `be-dev` vẫn build | bạn vừa approve, cần `qa`, **phải chờ** | 2 |
+| 10:40 | `security` review | `reviewer` review | vẫn chờ chỗ | 2 |
+| 10:55 | chờ bạn approve | `security` review | `qa` kiểm, vì làn A vừa nhả chỗ | 2 |
+
+- Phần lớn thời gian, 2 chỗ đã đủ cho 3 làn, vì luôn có làn đang chờ bạn.
+- Chỉ khi cả 3 làn cùng cần agent một lúc (10:30), làn C mới chờ thêm vài phút.
+- Muốn 3 làn không bao giờ phải chờ thì đặt `items_at_once: 3`. Nhưng trên máy này, mình không khuyên làm vậy ngay (xem mục 4).
+
+**3. Số làn đang mở: không cần cấu hình riêng.** Kit đã có giới hạn WIP trong contract:
+- mỗi dev agent (`fe-dev`, `be-dev`) chỉ làm 1 item In Progress;
+- cột In Review tối đa 2 PR chờ bạn.
+
+Vì vậy số làn mở tự dừng ở khoảng 3–4. Mở thêm làn mà bạn chưa duyệt kịp thì item chỉ dồn lại chờ.
+
+**4. Vì sao mình đề xuất 2 agent cùng lúc, chưa phải 3.** Mình vừa xem máy của bạn:
+- RAM 16 GB, nhưng chỉ còn khoảng 2,6 GB trống ngay lúc này, khi mới có 1 agent đang chạy (cùng VS Code, Chrome và các thứ khác);
+- CPU 4 nhân, 8 luồng.
+
+Mỗi lượt build có thể bật dev server, một Chrome riêng của `chrome-devtools`, hay JVM cùng database của test Java, mỗi thứ vài GB [Ước]. 3 agent cùng lúc dễ làm máy hết RAM và chậm hẳn. Ngoài ra, hạn mức 5 giờ của gói Max 5x cũng hết nhanh gấp 3.
+
+**Đề xuất chốt:**
+1. `items_at_once: 2`, tức tối đa 2 agent chạy cùng lúc.
+2. Số làn đang mở để WIP của kit tự quyết, thường 3–4.
+3. Khi kiểm thật, mình theo dõi RAM và hạn mức. Nếu còn dư, nâng lên 3 bằng cách sửa một con số.
+4. Thêm biến `AO_ITEMS_AT_ONCE` để hạ tạm về 1 khi máy bận, không phải sửa file.
+
+Mình đã ghi bảng "ba con số, đừng lẫn" (làn đang mở, `items_at_once`, agent của một làn) cùng đề xuất này vào mục 6 của spec. Đã push.
+
+15:31: `reviewer` đã review PR #19 được 5 phút, 44 bước.
+
+15:34: `reviewer` đã chạy 8 phút, 69 bước.
+
+15:37: `reviewer` đã review xong PR #19 (2,87 USD); `security` vừa bắt đầu.
+
+# Phiên 32 · Lượt 21–23 — 2026-11-15 khoảng 15:38 → 15:42
+
+**Bạn (Lượt 21):**
+
+```markdown
+1. nên đổi items_at_once thành agents_at_once thì đọc sẽ dễ hiểu hơn chứ nhỉ?
+2. Nếu cấu hình là  cùng lúc 3 items nhưng chỉ còn 1 item chưa làm, thì kit chỉ khởi tạo 1 worktree, 1 SDLC thôi phải không?
+3. Nếu tạo 3 làn/worktree và 3 agent nhưng nếu làn thứ 3 rảnh (ví dụ chờ approve) thì agent thứ 3 ở làn thư 3 làm gì? có gây tốn token không? Hay tốn RAM của máy tính?
+
+Ghi các câu hỏi này vào 1 file tại D:\Document\1Khoahoc\4LapTrinh\AI-for-coding\ai-orchestrator\misc\thao-luan\sdlc-song-song hoặc D:\Document\1Khoahoc\4LapTrinh\AI-for-coding\ai-orchestrator\misc\thao-luan\sdlc-song-song\c2-toi-thieu-giua-pilot-3.md nhé
+```
+
+**Claude:**
+
+Review PR #19 đã xong: `security` sạch; `reviewer` nêu 1 Medium và 5 Low. Mình commit file hỏi đáp và spec, rồi kiểm xem có chạy được `SHOP-13` (`be-dev`) ngay không. Item này cần Docker cho test Java.
+
+**Bạn (Lượt 22, gửi trong lúc mình đang làm):**
+
+```markdown
+4. Tại sao không phải tôi quyết định, chọn số làn mà là "Số làn đang mở để WIP của kit tự quyết, thường 3–4" ??? Chọn trả lời thì cần có số chính xác không có kiểu "thường 3–4"
+```
+
+**Bạn (Lượt 23, gửi trong lúc mình đang làm):**
+
+```markdown
+Về việc: PR #18 (SHOP-8) đã sửa xong 7 Low, và đang ở gate ③. SHOP-8 tốn 21,14 USD tới giờ.
+tôi chọn 1. Sửa luôn hai điểm này rồi mới approve (như bạn đề xuất)
+```
+
+**Claude:**
+
+Mình nhận cả hai tin nhắn. Mình chạy ngay `/ao-fix 18` để sửa Medium và Low của PR #18 như bạn chọn, rồi trả lời câu 4 về số làn bằng con số chính xác.
+
+Lượt sửa PR #18 đang chạy. Giờ mình trả lời câu 4: bạn nói đúng, số làn nên do bạn quyết, bằng một con số chính xác. Mình thêm khóa đó vào spec và ghi vào file hỏi đáp.
+
+Đã xong phần câu 4. Mình viết câu trả lời chung cho cả ba tin nhắn, kèm gate ③ của PR #19.
+
+**PR #18:** mình đã chạy `/ao-fix 18` với nguyên văn câu bạn chọn, loại thay đổi `none`. `fe-dev` đang sửa mục 15.3 của quy ước code và hai file README / getting-started. Sau đó `reviewer` và `security` xem phần mới, rồi mình nhờ bạn approve.
+
+**Bốn câu hỏi về làn và agent.** Mình ghi cả bốn vào `D:\Document\1Khoahoc\4LapTrinh\AI-for-coding\ai-orchestrator\misc\thao-luan\sdlc-song-song\lan-va-agent-cung-luc.md`, và sửa spec theo.
+
+1. **Đổi tên thành `agents_at_once`:** đồng ý, tên này đúng hơn. Con số giới hạn **số agent chạy cùng lúc**, không phải số item. Spec đã đổi, kể cả biến tạm thời `AO_AGENTS_AT_ONCE`.
+2. **Cấu hình 3 mà chỉ còn 1 item:** đúng, kit chỉ tạo 1 worktree, 1 làn.
+   - Con số là trần, không phải mục tiêu. Kit không tạo sẵn làn trống.
+   - Làn chỉ mở khi một item bắt đầu build, và item đó phải sẵn sàng: các item nó phụ thuộc đã xong.
+3. **Làn 3 đang chờ bạn thì "agent thứ 3" làm gì:** không có agent nào ngồi chờ, nên không tốn token và không tốn RAM cho agent.
+   - Agent là một tiến trình mở cho một bước, xong bước thì tắt; dev server agent để lại cũng bị kit tắt theo.
+   - Làn đang chờ chỉ còn thư mục worktree trên đĩa, và chỗ chạy của nó được nhả cho làn khác.
+   - Thứ duy nhất tốn RAM là cửa sổ VS Code, nếu bạn mở mỗi worktree một cửa sổ: khoảng 0,5–1,5 GB mỗi cửa sổ [Ước].
+4. **Số làn do bạn quyết, bằng con số chính xác:** bạn đúng, câu "thường 3–4" của mình là sai cách. Giới hạn WIP của contract chỉ chặn hai chỗ:
+   - mỗi dev agent (`fe-dev`, `be-dev`, `devops`) giữ 1 item In Progress;
+   - cột In Review tối đa 2 PR.
+
+   Các cột chờ QA và chờ Accept thì không có giới hạn, nên số làn không có trần cố định. Spec thêm khóa **`runs.lanes_max`**: đủ số làn đó thì build của item mới dừng, còn các bước trên làn đã mở vẫn đi tiếp.
+
+   **Đề xuất cho `shop` trên máy này:**
+   - `lanes_max: 3`: hai làn có agent chạy, cộng một làn chờ bạn duyệt. Đây cũng là số item tối đa dồn lại chờ bạn.
+   - `agents_at_once: 2`: vì RAM 16 GB, chỉ còn khoảng 2,6 GB trống khi 1 agent đang chạy.
+   - Sau khi kiểm thật, nếu máy còn dư thì nâng lên 3 và 4.
+
+**PR #19 (`SHOP-10`, design system của `user`) đã tới gate ③.** `SHOP-10` tốn 14,79 USD.
+- `security` (0,44 USD) không thấy lỗi nào.
+- `reviewer` (2,87 USD) nêu 1 Medium và 5 Low:
+  - **Medium:** quy ước code của `user` còn cấm thêm file CSS toàn cục và còn ghi font Inter, ngược với plan. Cùng loại với Medium của PR #18.
+  - **Low 1:** test của `PlaceholderTile` không bắt được khi đổi luật "8 chữ số cuối" của mã.
+  - **Low 2:** hậu tố `-foreground` mang hai nghĩa; dùng theo nghĩa cũ thì độ tương phản chỉ 1,5:1.
+  - **Low 3:** `user.md` thiếu số đo của viên thuốc điều hướng và thẻ sản phẩm.
+  - **Low 4:** tài liệu trỏ tới file của `admin` chỉ có trong PR #18. Merge PR #18 trước thì hết.
+  - **Low 5:** hộp phóng ảnh cũ thành trong suốt, vì nền `--surface` giờ là kính.
+
+**Bạn chọn một trong hai cho PR #19:**
+1. **Sửa hết Medium và 5 Low rồi mới approve** (mình đề xuất, như PR #18). Bạn trả lời "sửa hết Medium và Low của PR #19". Khoảng 5–8 USD và 30 phút. Lượt này chạy sau khi PR #18 xong.
+2. **Approve luôn**, theo các bước như PR #18 (Files changed → Review changes → Approve → Submit review). Nên approve PR #18 trước PR #19.
+
+**Kế tiếp:** `SHOP-13` (`be-dev`, nâng database) cần Docker cho test Java. Tới lượt nó, mình tự bật Docker Desktop, và tắt ngay khi xong.
+
+
+15:43: `fe-dev` đã sửa tài liệu của PR #18 được 3 phút, 38 bước.
+
+15:46: `fe-dev` đã sửa được 6 phút, 68 bước.
+
+# Phiên 32 · Lượt 24 — 2026-11-15 khoảng 15:47 → 15:48
+
+**Bạn:**
+
+```markdown
+Sửa hết Medium và 5 Low rồi mới approve
+```
+
+**Claude:**
+
+Mình đã ghi nguyên văn câu của bạn vào `.ai/runs/SHOP-10/note.md`, với loại thay đổi là `none`. Mỗi lúc chỉ một agent chạy, nên `/ao-fix 19` chạy ngay khi lượt sửa và review lại của PR #18 xong. Sau đó `reviewer` và `security` xem phần mới của PR #19, rồi mình gửi bạn các bước approve cho cả hai PR, PR #18 trước.
+
+15:49: `fe-dev` đã sửa xong tài liệu của PR #18 (1,69 USD); `reviewer` đang xem phần mới.
+
+15:52: `reviewer` đã xem phần sửa của PR #18 được 3 phút, 42 bước.
+
+# Phiên 32 · Lượt 25 — 2026-11-15 khoảng 15:53 → 15:55
+
+**Bạn:**
+
+````markdown
+Câu trả lời cho câu hỏi số 3 của bạn:
+```
+Làn 3 đang chờ bạn thì “agent thứ 3” làm gì: không có agent nào ngồi chờ, nên không tốn token và không tốn RAM cho agent.
+Agent là một tiến trình mở cho một bước, xong bước thì tắt; dev server agent để lại cũng bị kit tắt theo.
+Làn đang chờ chỉ còn thư mục worktree trên đĩa, và chỗ chạy của nó được nhả cho làn khác.
+Thứ duy nhất tốn RAM là cửa sổ VS Code, nếu bạn mở mỗi worktree một cửa sổ: khoảng 0,5–1,5 GB mỗi cửa sổ [Ước].
+```
+
+Tôi phản biện:
+Với trường hợp tạo 3 làn và 2 agent chạy cùng lúc cho all làn
+
+1. Nếu làn 3 đang chờ tôi approve nghĩa là không có agent nào ngồi chờ, nên không tốn token và không tốn RAM cho agent -> OK tôi hiểu và đồng ý cái này. Nhưng đã tạo 3 làn nghĩa là đã có 3 VS code từ ban đầu rồi, nghĩa là RAM cho VS code đã tốn từ lúc chốt chạy 3 làn, còn việc có 3 agent chạy cùng cho all làn nó không tốn RAM nữa vì agent chạy xong sẽ bị tắt đi. Vậy thì cứ cấu hình số agent bằng số làn luôn đi.
+````
+
+**Claude:**
+
+Mình đã sửa spec theo ý bạn: số agent mặc định bằng số làn, kèm một chốt RAM. Giờ mình ghi phần phản biện vào file hỏi đáp và trả lời bạn.
+
+**Đồng ý với kết luận của bạn: số agent bằng số làn.** Mình đã sửa spec theo hướng đó. Mình chỉ sửa hai tiền đề và thêm một chốt an toàn, vì mình vừa đo RAM thật của máy.
+
+**1. Làn không kéo theo cửa sổ VS Code.**
+- Kit không mở VS Code, agent cũng không dùng nó. RAM của VS Code tính theo số cửa sổ bạn mở, không theo số làn.
+- Đo lúc 15:53: VS Code đang dùng 3,8 GB, nhiều nhất máy. Mở thêm một cửa sổ cho mỗi làn thì tốn thêm; không mở thì không tốn.
+
+**2. Agent không tốn RAM khi làn chờ, nhưng có tốn khi đang chạy.**
+- "Chạy xong thì tắt" làm giảm RAM trung bình, nhưng không làm giảm **đỉnh**. Đỉnh là lúc cả ba làn cùng có agent chạy.
+- Đo lúc 15:53, khi chỉ một agent `reviewer` đang chạy (loại nhẹ, không bật app): máy còn 2,8 GB trống trên 15,8 GB.
+- Một lượt build nặng hơn nhiều: dev server, một Chrome riêng, test runner; với `be-dev` còn có Java và database trong Docker. [Ước] Mỗi lượt build cộng thêm 1,5–4 GB.
+- Ba lượt build cùng lúc dễ vượt RAM. Khi đó Windows dùng file swap trên ổ đĩa, và mọi thứ chậm hẳn, kể cả chính các agent.
+
+**3. Cách giải quyết: số agent bằng số làn, cộng một chốt RAM.**
+- Trước khi mở một agent, kit đọc RAM trống. Dưới 3 GB thì làn đó chờ, cứ 30 giây kiểm lại một lần, cho tới khi một agent khác xong và nhả RAM.
+- Khi máy đủ RAM, ba làn chạy ba agent cùng lúc. Khi máy thiếu, làn thứ ba tự chờ thay vì làm máy treo.
+
+**Cấu hình mới trong spec:**
+```yaml
+runs:
+  worktrees: true
+  lanes_max: 3          # số làn, cũng là số item tối đa dồn lại chờ bạn
+  # agents_at_once:     # bỏ trống thì bằng lanes_max, tức 3
+  min_free_ram_gb: 3    # RAM trống tối thiểu để mở thêm một agent
+```
+
+Còn một giới hạn không đổi: ba agent cùng lúc làm hạn mức 5 giờ của gói Max 5x hết nhanh gấp ba. Nếu chạm hạn mức, các lượt dừng, rồi chạy lại khi hạn mức mở ra, như bây giờ.
+
+Mình đã ghi phần phản biện này vào `lan-va-agent-cung-luc.md` và sửa spec; cả hai đã push.
+
+**`SHOP-7` đang chạy:** `reviewer` đã xem xong phần sửa tài liệu của PR #18 (2,09 USD). Giờ tới `security`, rồi `/ao-fix 19`.
+
+
+# Phiên 32 · Lượt 26 — 2026-11-15 khoảng 15:57 → 15:57
+
+**Bạn:**
+
+```markdown
+Cái gây tốn RAM là số làn (vì nó mở cửa sổ VS code), còn bạn nói chạy nhiều agent gây tốn RAM "agents_at_once: 2: vì RAM 16 GB, chỉ còn khoảng 2,6 GB trống khi 1 agent đang chạy." là không đúng mà. Tôi nói vậy có đúng không?
+```
+
+**Claude:**
+
+**Bạn đúng một nửa.** Mình vừa đo lại lúc 15:58, khi agent `security` đang chạy:
+
+| Thứ | RAM |
+|---|---|
+| Agent `security`, gồm tiến trình `claude` của nó và `ao-agent` | khoảng 0,34 GB |
+| Các tiến trình `claude` khác (phiên chính và các thứ khác) | 1,08 GB |
+| VS Code (đo lúc 15:53) | 3,8 GB |
+| Edge (đo lúc 15:53) | 1,8 GB |
+| RAM còn trống | 2,6 GB |
+
+**Bạn đúng ở chỗ:**
+1. Bản thân một agent nhẹ, khoảng 0,3 GB.
+2. RAM trống thấp chủ yếu do VS Code và trình duyệt, không phải do agent.
+3. Lấy câu "chỉ còn 2,6 GB trống khi 1 agent đang chạy" làm lý do chọn 2 agent là lập luận yếu của mình. Mình xin sửa.
+
+**Chưa đúng ở hai chỗ:**
+1. **Làn không tự mở VS Code.** Kit không mở VS Code. Một làn chỉ tốn RAM của VS Code nếu bạn tự mở một cửa sổ cho nó; không mở thì làn chỉ tốn đĩa.
+2. **Agent build nặng hơn agent review.** `security` và `reviewer` nhẹ vì chỉ đọc code. Agent build thì bật thêm công cụ trong lúc chạy:
+   - dev server của app;
+   - một Chrome riêng của `chrome-devtools`;
+   - test runner;
+   - với `be-dev`, thêm Java và Postgres trong Docker.
+
+   Phần này mình chưa đo được, vì lúc này không có lượt build nào chạy. Ở lượt build kế tiếp, mình sẽ đo và ghi số thật.
+
+**Kết luận giữ nguyên:** số agent bằng số làn, cộng chốt RAM 3 GB. Còn muốn bớt RAM nhiều nhất trên máy này thì:
+- đóng các cửa sổ VS Code và tab trình duyệt không dùng;
+- không mở một cửa sổ VS Code cho mỗi làn. Chỉ mở khi bạn muốn xem code của làn đó.
+
+Mình đã ghi bảng đo và phần sửa này vào `lan-va-agent-cung-luc.md`, và đã push.
+
+PR #18 đã sửa xong Medium và Low (thêm 4,23 USD): giờ còn 0 Critical, High, Medium, chỉ còn 3 Low mới, đều trong ghi chú và tài liệu. Mình chạy ngay `/ao-fix 19` rồi báo bạn về PR #18.
+
+**PR #18 (`SHOP-8`) đã sửa xong Medium và Low, và đang ở gate ③.** `SHOP-8` tốn 25,38 USD tới giờ.
+
+**Lượt sửa thứ hai:**
+- `fe-dev` (1,69 USD) viết lại mục 15.3 của quy ước code thành bốn luật UI-011 tới UI-014, khớp với code và plan, rồi sửa README và getting-started.
+- `reviewer` (2,09 USD) xác nhận hai điểm cũ đã xong. Giờ còn 0 Critical, High, Medium.
+- `security` chỉ xem phần mới (0,45 USD): không có lỗi nào.
+
+**Còn 3 Low mới, đều là ghi chú và tài liệu, không đổi hành vi app:**
+1. Vài ghi chú trong code và `docs/conventions.md` còn hứa "Phase 1.2" sẽ có thư viện UI và alias `@ui`, mà luật UI-013 mới đã cấm. Hai trong số đó nằm ở `text-field.tsx` và `notifications.tsx`; `SHOP-9` sẽ viết lại hai file này.
+2. Luật UI-011 ghi mọi màu, khoảng cách và thời lượng đều phải lấy từ token, nhưng `components.css` vẫn còn vài giá trị viết thẳng, như `#ffffff` hay `6px`.
+3. `coding-conventions/README.md` còn ghi phiên bản 1.0.0, trong khi quy ước đã lên 1.1.0.
+
+**Lần này mình đề xuất approve luôn.**
+- Ba vòng review đã đi từ 7 Low, xuống 1 Medium và 1 Low, rồi còn 3 Low nhỏ.
+- Mỗi vòng tốn khoảng 4–7 USD và 20–30 phút, mà vòng nào cũng có thể tìm thêm vài chỗ chữ nghĩa nhỏ.
+- `SHOP-9` (phần 2/2 của design system `admin`) sẽ đụng lại đúng các file này.
+
+**Các bước approve:**
+1. Mở https://github.com/TungPH7/shop/pull/18 rồi bấm tab **Files changed**.
+2. Bấm nút xanh **Review changes** (hoặc **Submit review**) ở góc trên bên phải.
+3. Chọn **Approve**, rồi bấm **Submit review**.
+4. Đừng bấm Merge: `merge-gate` tự merge.
+
+Nếu bạn vẫn muốn sửa nốt 3 Low này trước, trả lời "sửa nốt 3 Low của PR #18". Tốn thêm khoảng 4–5 USD và 20 phút; lượt đó chạy sau PR #19.
+
+**Đang chạy:** `fe-dev` sửa Medium và 5 Low của PR #19.
+
+16:01: `fe-dev` đã sửa PR #19 được 3 phút, 41 bước.
+
+# Phiên 32 · Lượt 27–28 — 2026-11-15 khoảng 16:03 → 16:04
+
+**Bạn (Lượt 27):**
+
+```markdown
+đã approve
+```
+
+**Bạn (Lượt 28, gửi trong lúc mình đang làm):**
+
+```markdown
+Xác nhận để đảm bảo tôi và bạn hiểu rõ cùng 1 vấn đề:
+
+Làm theo C2 nghĩa là nhiều làn, nhiều worktree, nhiều item, ví dụ 3 làn. Thì kit sẽ tạo 3 worktree, chứ không cần mở 3 worktree kèm 3 cửa sổ VS Code phải không?
+```
+
+**Claude:**
+
+**PR #18 đã merge.** `merge-gate` merge lúc 16:04 (commit `4605845`), chưa tới nửa phút sau khi bạn approve. Mình đang chờ Development deploy bản này, rồi chạy `/ao-qa SHOP-8` ngay khi lượt sửa PR #19 xong, vì mỗi lúc chỉ một agent chạy.
+
+**Xác nhận câu bạn hỏi: đúng vậy.** Với 3 làn, kit tự tạo 3 worktree. Bạn không cần mở worktree nào, cũng không cần mở cửa sổ VS Code nào.
+
+1. **Worktree là một thư mục**, ví dụ `e-commerce/shop-wt/SHOP-13`. Kit tạo nó bằng lệnh git, cài package vào đó, rồi cho agent làm việc trong đó.
+2. **Agent không dùng VS Code.** Agent chạy ngầm như bây giờ: tự đọc file, sửa code, chạy test, commit và push. Bạn chỉ thấy kết quả qua báo cáo của mình, PR trên GitHub và item trên Jira.
+3. **VS Code chỉ để bạn xem, và không bắt buộc.** Muốn xem code của một làn thì bạn mở thư mục worktree đó trong VS Code; xem xong thì đóng. Không mở thì cũng không ảnh hưởng gì tới việc agent làm.
+4. **Kit tự dọn worktree** khi PR của item đã merge. Bạn không phải xóa tay.
+
+Tóm lại: 3 làn thì có 3 thư mục worktree trên đĩa, do kit tạo và dọn. Cửa sổ VS Code là 0, trừ khi bạn tự mở để xem.
+
+16:07: `fe-dev` đã sửa PR #19 được 9 phút, 112 bước.
+
+# Phiên 32 · Lượt 29 — 2026-11-15 khoảng 16:08 → 16:09
+
+**Bạn:**
+
+```markdown
+5. đã có items_at_once rồi còn lanes_max là sao nữa? hay bạn chỉ rename lại?
+6. WIP ở cột In Review trên Jira đang đặt max = 2, nếu lanes_max: 3 thì cũng phải sửa lại Jira phải không?
+```
+
+**Claude:**
+
+Mình đang gọn spec lại còn một con số `lanes_max`, và kiểm xem giới hạn In Review = 2 trên Jira có thật sự chặn gì không.
+
+**5. `items_at_once` và `lanes_max` là hai con số khác nhau, nhưng giờ bạn chỉ cần đặt một: `lanes_max`.**
+
+Mình kể lại theo thứ tự, vì tên đã đổi nhiều lần:
+
+| Lượt | Đổi gì |
+|---|---|
+| 17 | Spec nháp có `runs.parallel`: số agent chạy cùng lúc |
+| 20 | Đổi tên thành `items_at_once`, chỉ đổi tên |
+| 21 | Đổi tên thành `agents_at_once`, chỉ đổi tên |
+| 22 | Thêm khóa **mới** `lanes_max`: số làn, tức số worktree, được mở cùng lúc |
+| 25 | Bạn chốt số agent bằng số làn |
+| 29 (bây giờ) | Bỏ hẳn `agents_at_once` khỏi cấu hình, vì nó luôn bằng `lanes_max` |
+
+Cấu hình bây giờ:
+```yaml
+runs:
+  worktrees: true
+  lanes_max: 3          # số làn mở cùng lúc, cũng là số agent chạy cùng lúc
+  min_free_ram_gb: 3    # chốt RAM: thiếu RAM thì làn cần agent sau cùng chờ
+```
+- Muốn tạm chạy ít agent hơn mà không sửa file, thì đặt biến `AO_AGENTS_AT_ONCE`.
+- Spec đã sửa theo, đã push.
+
+**6. Cột In Review max 2 trên Jira: không phải sửa Jira.**
+1. **Con số 2 chỉ là mức của cột trên board.** Khi cột có quá 2 item, Jira chỉ tô đỏ cột để nhắc; nó không chặn item nào chuyển vào.
+2. **Kit cũng không chặn theo con số này.** Mình đã kiểm code: giới hạn In Review chỉ dùng để dựng board. Giới hạn kit thật sự chặn là mỗi dev agent chỉ 1 item In Progress.
+3. **Với `lanes_max: 3`, ba làn thường ở ba bước khác nhau:** một làn đang build, một làn chờ bạn ở gate ③, một làn ở QA. Chỉ khi cả ba cùng chờ bạn approve thì cột In Review mới có 3 item và bị tô đỏ. Màu đỏ đó là lời nhắc có ích: đang có nhiều PR chờ bạn.
+4. **Muốn hai con số khớp nhau** thì phải sửa contract của kit. Nhưng contract dùng chung cho mọi dự án, còn `lanes_max` là của từng dự án. Mình đề xuất giữ 2.
+
+Hai câu này mình đã ghi vào `lan-va-agent-cung-luc.md`.
+
+**`SHOP-7` đang chạy:**
+- `fe-dev` đang sửa Medium và 5 Low của PR #19.
+- PR #18 đã merge; mình đang chờ Development deploy để chạy QA cho `SHOP-8`.
+
+16:10: `fe-dev` đã sửa PR #19 được 12 phút, 140 bước.
+
+# Phiên 32 · Lượt 30 — 2026-11-15 khoảng 16:11 → 16:12
+
+**Bạn:**
+
+```markdown
+Spec C2 (SPEC-parallel-runs.md) vẫn chờ tôi duyệt phải không?
+```
+
+**Claude:**
+
+**Đúng, spec C2 (`SPEC-parallel-runs.md`) vẫn chờ bạn duyệt.** Từ lúc viết, spec đã sửa theo các câu bạn hỏi ở Lượt 18–29. Đây là 8 điểm cần duyệt, ở dạng mới nhất:
+
+1. **Hai phần, hai PR:**
+   - phần 1: build và fix của mỗi item chạy trong worktree riêng, vẫn chạy lần lượt;
+   - phần 2: nhiều làn chạy cùng lúc.
+
+   Phần 1 dùng được một mình.
+2. **Vị trí worktree:** `<thư mục cha>/<dự án>-wt/<KEY>`, ví dụ `e-commerce/shop-wt/SHOP-13`. Kit tự tạo và tự dọn; không cần cửa sổ VS Code.
+3. **Cấu hình trong `project.yaml`**, mặc định tắt:
+   ```yaml
+   runs:
+     worktrees: true
+     lanes_max: 3          # số làn mở cùng lúc, cũng là số agent chạy cùng lúc
+     min_free_ram_gb: 3    # chốt RAM
+     port_step: 100        # mỗi làn một dải cổng riêng
+     copy: []              # file không có trong git mà worktree cần, ví dụ apps/api/.env
+   ```
+   Biến `AO_AGENTS_AT_ONCE` hạ số agent tạm thời mà không sửa file. Với `shop`, mình đề xuất `lanes_max: 3`.
+4. **Chỉ build, fix, review và QA được chạy song song.** Các lệnh còn lại chạy một mình: spec, plan, release, ship…
+5. **Giữ giới hạn WIP của contract:** mỗi dev agent 1 item In Progress. Cột In Review max 2 giữ nguyên.
+6. **Kiểm thật trên `shop`,** với các item còn lại của `SHOP-7` sau khi chép kit. Pilot 3 sẽ đo hai bản kit; mình ghi rõ item nào chạy bằng bản nào.
+7. **Làm ngay,** song song với `SHOP-7`. Phiên chính viết code trong một worktree riêng của kit, không đụng thư mục kit mà các lệnh `SHOP-7` đang dùng.
+8. **Gộp vào cùng một lần chép kit vào `shop`:** kit PR #288 đang chờ, và bản sửa lỗi coverage (lỗi làm PR #18 và #19 đỏ CI lần đầu). Như vậy `shop` chỉ có một PR chép kit.
+
+**Chi phí** [Ước]: khoảng 2 ngày và 30–65 USD, phần lớn là các vòng review của kit PR và PR chép kit.
+
+Mình đề xuất **đồng ý cả 8 điểm**. Bạn trả lời "đồng ý", hoặc nêu số của điểm muốn đổi. Bản đầy đủ ở `D:\Document\1Khoahoc\4LapTrinh\AI-for-coding\ai-orchestrator\SPEC-parallel-runs.md`, mục 12.
+
+16:13: `fe-dev` đã sửa PR #19 được 15 phút, 167 bước. Nó đang kiểm console trên trình duyệt.
+
+16:16: `fe-dev` đã sửa PR #19 được 18 phút, 198 bước.
+
+# Phiên 32 · Lượt 31 — 2026-11-15 khoảng 16:17 → 16:17
+
+**Bạn:**
+
+```markdown
+Tôi hỏi mục 4, bạn chưa được làm gì cả nhé:
+Vì sao Chỉ build, fix, review và QA được chạy song song ??
+```
+
+**Claude:**
+
+**Trả lời ngắn:** vì bốn lệnh build, fix, review và QA chỉ đụng tới **item của chính nó**: nhánh riêng, PR riêng, worktree riêng. Các lệnh còn lại đụng tới **thứ dùng chung của cả dự án**: thư mục chính, tài liệu của Epic, nhánh release, Staging và Production. Hai lệnh cùng đụng một thứ dùng chung thì dễ giẫm chân nhau.
+
+**Từng lệnh, chậm:**
+
+1. **build, fix: được song song.** Mỗi item viết code trong worktree riêng của nó, trên nhánh riêng, mở PR riêng. Hai item không đụng file của nhau.
+2. **review: được song song.** `reviewer` và `security` chỉ đọc code của PR, trong một worktree tạm. Chúng không sửa gì.
+3. **QA: được song song, nhưng có một chỗ mình mới thấy khi bạn hỏi.**
+   - QA của mỗi item chạy E2E trong worktree tạm của nó, nên không đụng nhau về file.
+   - Nhưng mọi QA đều kiểm trên **cùng một môi trường Development**, và E2E có tạo, sửa, xóa dữ liệu ở đó. Ví dụ QA của "thêm sản phẩm" thêm một sản phẩm, đúng lúc QA của "danh sách sản phẩm" đang đếm số sản phẩm, và test đếm bị sai.
+   - Vì vậy mình đề xuất sửa spec: **mỗi lúc chỉ một lượt QA trên một môi trường.** Một QA vẫn chạy song song được với build, fix hay review của item khác.
+4. **spec, plan, request: chạy một mình.**
+   - Chúng làm việc trên nhánh tài liệu của Epic, trong thư mục chính, nên phải chuyển thư mục chính khỏi `develop`. Trong khi đó, lượt review của item khác lại đang dựa vào thư mục chính ở `develop` để lấy bản `.claude/` và hook đã duyệt.
+   - Chúng sửa SPEC và plan, đúng những tài liệu mà agent của các item khác đang đọc.
+   - Mỗi Epic chỉ chạy chúng vài lần, nên cho chạy song song cũng không lợi bao nhiêu.
+5. **preview: chạy một mình.** Nó chuyển thư mục chính sang nhánh của PR, và bật app ở các cổng mặc định. Vừa làm thư mục chính rời `develop`, vừa có thể giành cổng với các làn.
+6. **release, ship, rollback: chạy một mình.**
+   - Chúng cắt nhánh release, chạy regression trên Staging, merge vào `main`, deploy Staging và Production. Đó là những thứ cả dự án dùng chung.
+   - Nếu một item merge vào `develop` đúng lúc đang cắt release, hay một QA đang chạy trong lúc deploy, kết quả có thể lệch: regression kiểm nhầm bản, hay bản release lẫn một item chưa định đưa vào.
+   - Các lệnh này hiếm khi chạy, vài lần mỗi bản release, nên chạy một mình không làm chậm bao nhiêu.
+7. **intake:** do phiên chính hỏi bạn từng câu, không có agent nào chạy. Nó không chiếm chỗ của làn nào.
+
+**Vì sao chọn đúng bốn lệnh này:** build, fix, review và QA chiếm gần hết thời gian chạy của một Epic. Riêng `SHOP-8`, bốn lệnh đó đã chạy khoảng 1,5 giờ. Cho chúng chạy song song là lấy được gần hết cái lợi, mà không phải gánh rủi ro ở những thứ dùng chung.
+
+**Đề xuất sửa điểm 4 của spec:** "build, fix, review chạy song song; QA cũng vậy, nhưng mỗi lúc chỉ một QA trên một môi trường; các lệnh còn lại chạy một mình." Mình chưa sửa gì; bạn đồng ý thì mình sửa.
+
+Development đã deploy xong bản merge của PR #18 (`4605845`, lúc 16:18). Mình sẽ chạy `/ao-qa SHOP-8` ngay khi lượt sửa và review lại PR #19 xong.
+
+16:19: `fe-dev` đã sửa xong PR #19 (4,66 USD); `reviewer` đang xem phần mới.
+
+# Phiên 32 · Lượt 32 — 2026-11-15 khoảng 16:20 → 16:21
+
+**Bạn:**
+
+```markdown
+Nếu spec, plan trên 2 Epic riêng biệt thì vẫn chạy song song được mà nhỉ?
+```
+
+**Claude:**
+
+**Về kỹ thuật thì làm được, nhưng hiện kit cố ý chặn việc này ở ba chỗ.** Vì vậy mình để nó ngoài bản C2 tối thiểu.
+
+**Làm được ở chỗ nào:** spec và plan của hai Epic khác nhau ghi vào hai thư mục khác nhau (`docs/specs/SHOP-7/` và `docs/specs/SHOP-X/`), trên hai nhánh tài liệu khác nhau. Nếu mỗi Epic có worktree riêng như các item, file của hai bên không đụng nhau.
+
+**Ba chỗ đang chặn:**
+
+1. **Contract chỉ cho 1 Epic đang được định hình.** Giới hạn `epic-shaping: 1` trong contract, cùng guard `epic-wip-available` gắn vào cú bấm `Start spec`, làm Jira từ chối khi đã có một Epic ở Specifying hay Planning. Lý do lúc đặt luật:
+   - bạn đọc và duyệt gate ①, ② của từng Epic một cho kỹ;
+   - Epic sau dựng trên quyết định của Epic trước.
+2. **spec và plan đang chạy trong thư mục chính**, giống như build trước C2. Muốn song song thì chúng cũng phải chuyển sang worktree riêng theo Epic.
+3. **Hai Epic đụng nhau ở tài liệu dùng chung:**
+   - **Số ADR:** `sa` đánh số ADR nối tiếp. `shop` đang có `0001`–`0003`, nên hai plan chạy cùng lúc đều sẽ tạo `0004`, rồi đụng nhau khi merge.
+   - **Quyết định kiến trúc:** hai Epic có thể cùng đổi một phần, ví dụ cùng một API hay cùng một bảng, mà mỗi `sa` không biết plan của bên kia.
+
+**Muốn làm thì cần:**
+1. spec và plan chạy trong worktree theo Epic;
+2. nâng `epic-shaping` trong contract lên 2, kèm board Jira;
+3. một cách cấp số ADR không trùng, ví dụ khóa số khi tạo;
+4. cho `sa` của Epic sau đọc plan đang làm dở của Epic trước.
+
+**Đề xuất:** để ngoài bản C2 tối thiểu, và ghi vào spec như một bước sau ("phần 3"). Lý do: một người làm thì ít khi có hai Epic cùng sẵn sàng để định hình, nên lợi nhỏ, mà cái giá là phải đổi contract và giữ cho hai plan không mâu thuẫn. Còn chạy spec hay plan của một Epic song song với build và review của các item **đã có plan** thì hợp lý hơn; việc đó chỉ cần điều 1.
+
+Mình chưa sửa gì. Bạn muốn mình ghi phần này vào spec như "phần 3, làm sau" không?
+
+16:22: `reviewer` đã xem phần sửa của PR #19 được 5 phút, 54 bước.
+
+# Phiên 32 · Lượt 33 — 2026-11-15 khoảng 16:23 → 16:23
+
+**Bạn:**
+
+```markdown
+Không cần ghi vào phần 3, bỏ qua việc chạy nhiều Epic song song
+```
+
+**Claude:**
+
+Đã rõ: bỏ việc chạy spec và plan của nhiều Epic song song, và mình không ghi gì thêm vào spec. Spec C2 giữ nguyên 8 điểm đang chờ bạn duyệt, cùng đề xuất sửa điểm 4 ở Lượt 31 (mỗi lúc chỉ một QA trên một môi trường).
+
+Đã ghi vào log. Lượt review lại PR #19 vẫn đang chạy; xong thì mình chạy `/ao-qa SHOP-8` trên Development.
+
+# Phiên 32 · Lượt 34 — 2026-11-15 khoảng 16:24 → 16:25
+
+**Bạn:**
+
+```markdown
+Vì sao "chỉ một QA trên một môi trường" ?
+```
+
+**Claude:**
+
+**Trả lời ngắn:** vì mọi lượt QA của item đều kiểm trên **cùng một** môi trường Development, với **cùng một** database. Hai lượt QA chạy cùng lúc sẽ làm bẩn dữ liệu của nhau, và kết quả "PASS" hay "FAIL" không còn đáng tin.
+
+**Giải thích chậm:**
+
+1. **Hai làn có hai worktree riêng, nhưng chỉ có một Development.**
+   - Build, fix và review chạy trên code trong worktree, nên mỗi làn một bản riêng.
+   - QA thì khác: `qa` mở trình duyệt vào `shop-dev.ao.t2g.io.vn`, tức app thật đang chạy trên VPS. App đó chỉ có một database.
+2. **E2E có ghi dữ liệu.** Lấy ngay các Story của `SHOP-7`:
+   - QA của US2 (thêm sản phẩm) tạo sản phẩm mới;
+   - QA của US4 (xóa) xóa sản phẩm;
+   - QA của US3 (ẩn) đổi sản phẩm sang Ẩn;
+   - QA của US5 (danh sách khách) đếm sản phẩm Đang bán, kiểm dòng "Đã xem 24 trên 30", kiểm thứ tự sắp xếp.
+
+   Nếu QA của US5 chạy đúng lúc QA của US2 vừa thêm một sản phẩm, con số đếm lệch đi 1 và test fail, dù code của US5 đúng.
+3. **Kết quả sai thì tốn thật.**
+   - Báo FAIL nhầm: item quay lại build, tốn thêm một vòng sửa, review, QA, khoảng 10–20 USD.
+   - Báo PASS nhầm: lỗi thật lọt qua, tới Staging hay Production mới lộ.
+   - Khi một test fail, cũng không biết do code của item, hay do dữ liệu của lượt QA kia.
+4. **Cái giá của luật này nhỏ.** Một lượt QA mất khoảng 15–30 phút. Trong lúc đó, các làn khác vẫn build, fix và review song song. Chỉ lượt QA thứ hai phải chờ lượt đầu xong.
+
+**Có cách khác không phải chờ, nhưng đắt hơn:**
+- **Mỗi lượt QA dùng dữ liệu riêng**, ví dụ gắn mã item vào tên sản phẩm thử. Nhưng các test đếm, sắp xếp hay sitemap thì nhìn toàn bộ dữ liệu, nên vẫn đụng nhau; phải viết lại nhiều test.
+- **Mỗi làn một môi trường riêng trên VPS:** tốn RAM của VPS, và trước đây ta đã chốt không làm môi trường xem trước cho từng PR.
+
+Vì vậy, với C2 tối thiểu, "mỗi lúc một QA trên một môi trường" là cách rẻ và chắc nhất.
+
+**Một rủi ro liên quan, có từ trước C2:** khi một PR khác merge, Development deploy lại, có thể đúng lúc một lượt QA đang chạy. Chạy song song làm việc merge xảy ra dày hơn. Mình sẽ thêm vào spec một việc: trước khi chạy và khi chạy xong, QA kiểm bản đang chạy trên Development có đổi không; đổi thì chạy lại lượt QA đó thay vì báo kết quả. Mình chưa sửa spec; bạn đồng ý thì mình thêm cùng với điểm 4.
