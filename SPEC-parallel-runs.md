@@ -19,14 +19,14 @@ Tên module: hai lệnh `ao-step` chạy cùng lúc trên hai item khác nhau, m
 - Trong lúc một item chờ review, chờ QA hay chờ bạn duyệt, không agent nào làm item khác.
 
 **Sau module này:**
-- Bật `runs.items_at_once: 2` trong `project.yaml` thì phiên chính chạy được hai lệnh `ao-step` cùng lúc, trên hai item khác
+- Bật `runs.agents_at_once: 2` trong `project.yaml` thì phiên chính chạy được hai lệnh `ao-step` cùng lúc, trên hai item khác
   nhau. Ví dụ `/ao-build SHOP-13` (`be-dev`) cùng lúc với `/ao-review 19`, hay với `/ao-build SHOP-11` (`fe-dev`).
 - Build và fix của mỗi item chạy trong worktree riêng của item, đặt ngang hàng với thư mục dự án. Thư mục chính luôn đứng
   ở `develop`.
 - Mỗi chỗ chạy có một dải cổng riêng cho dev server và E2E, nên hai item không giành cổng và không test nhầm server của
   nhau.
 - `/ao-status` cho thấy các lượt đang chạy và các worktree đang có.
-- Mặc định `runs.items_at_once: 1`: kit chạy y như hiện nay, kể cả build trong thư mục chính. Không dự án nào bị đổi nếu không
+- Mặc định `runs.agents_at_once: 1`: kit chạy y như hiện nay, kể cả build trong thư mục chính. Không dự án nào bị đổi nếu không
   bật.
 
 **Ngoài phạm vi:**
@@ -57,10 +57,10 @@ module.
 | Phần | Việc | PR của kit | Cần xong trước |
 |---|---|---|---|
 | 1 | Worktree theo item cho build và fix, bật bằng `runs.worktrees: true`, vẫn chạy lần lượt | Một PR | |
-| 2 | Khóa theo item, trần `runs.items_at_once`, dải cổng theo chỗ chạy, `/ao-status` | Một PR | Phần 1 |
+| 2 | Khóa theo item, trần `runs.agents_at_once`, dải cổng theo chỗ chạy, `/ao-status` | Một PR | Phần 1 |
 
 Mỗi phần merge riêng, có test, và để kit dùng được. Phần 1 có ích ngay cả khi chưa có phần 2: thư mục chính không còn bị
-chuyển nhánh, nên bạn mở được nó trong VS Code mà không đụng agent. `runs.items_at_once: 2` đòi `runs.worktrees: true`.
+chuyển nhánh, nên bạn mở được nó trong VS Code mà không đụng agent. `runs.agents_at_once: 2` đòi `runs.worktrees: true`.
 
 ## 4. Phần 1: worktree theo item
 
@@ -109,7 +109,10 @@ chuyển nhánh, nên bạn mở được nó trong VS Code mà không đụng a
 
 - Khóa theo item: `.ai/runs/active/<KEY>.json` gồm `pid`, lệnh, item, chỗ chạy và giờ bắt đầu.
 - Mỗi lệnh lấy khóa của item mình, rồi đếm các khóa còn sống (`alive(pid)`).
-  - Quá `runs.items_at_once`, hay item đã có khóa: `STOP: ao-step is already running …`, như bây giờ.
+  - Quá `runs.agents_at_once`, hay item đã có khóa: `STOP: ao-step is already running …`, như bây giờ.
+- **Số làn mở:** build đầu tiên của một item mở một làn mới, tức tạo worktree. Khi số worktree đang có đã bằng
+  `runs.lanes_max`, lệnh đó dừng: `STOP: <n> lanes are open, the most runs.lanes_max allows; finish or close one first`.
+  Các lệnh trên làn đã mở (fix, review, QA, build lại) không bị con số này chặn.
 - **Chỉ `build`, `fix`, `review` và `qa` được chạy song song.** Các lệnh còn lại cần thư mục chính hay đụng cả dự án, nên
   chỉ chạy khi không có khóa nào khác: `spec`, `plan`, `request`, `intake`, `preview`, `release`, `ship`, `rollback`.
 - **Cùng một dev agent:** lệnh build hay fix của role R dừng khi đang có một lượt build hay fix khác của R. Jira cũng
@@ -131,7 +134,7 @@ chuyển nhánh, nên bạn mở được nó trong VS Code mà không đụng a
 ### 5.3 `/ao-status` và skill
 
 - `/ao-status` in các lượt đang chạy (item, lệnh, chỗ, phút đã chạy) và các worktree đang có (item, nhánh, PR).
-- Câu "agents run one at a time" trong skill và tài liệu sửa thành: "tối đa `runs.items_at_once` lượt, mỗi item một lượt".
+- Câu "agents run one at a time" trong skill và tài liệu sửa thành: "tối đa `runs.agents_at_once` lượt, mỗi item một lượt".
 - Skill không đổi cách gọi: phiên chính chạy mỗi lệnh ở nền như bây giờ, và có thể chạy lệnh thứ hai khi lệnh đầu đang
   chạy.
 
@@ -141,29 +144,34 @@ chuyển nhánh, nên bạn mở được nó trong VS Code mà không đụng a
 # project.yaml
 runs:
   worktrees: false     # phần 1: build và fix trong worktree theo item
-  items_at_once: 1     # phần 2: số item có agent chạy cùng lúc (= số agent cùng lúc), 1..4; từ 2 đòi worktrees: true
+  lanes_max: 1         # phần 2: số làn (worktree) được mở cùng lúc, 1..6, không nhỏ hơn agents_at_once
+  agents_at_once: 1    # phần 2: số agent chạy cùng lúc, mỗi làn tối đa một agent, 1..4; từ 2 đòi worktrees: true
   port_step: 100       # độ lệch cổng giữa hai chỗ chạy
   copy: []             # file không có trong git mà worktree cần, ví dụ apps/api/.env
 ```
 
 `lib/scaffold/project.schema.json` kiểm khóa mới. Khóa nằm trong `project.yaml` vì đây là quyết định của dự án; máy yếu hay gói thấp
-thì để 1. Biến `AO_ITEMS_AT_ONCE` hạ con số này tạm thời ở một máy: kit lấy số nhỏ hơn.
+thì để 1. Biến `AO_AGENTS_AT_ONCE` hạ con số này tạm thời ở một máy: kit lấy số nhỏ hơn.
 
-**Ba con số, đừng lẫn** (Phiên 32 · Lượt 19–20):
+**Ba con số, đừng lẫn** (Phiên 32 · Lượt 19–23; chi tiết ở [lan-va-agent-cung-luc.md](misc/thao-luan/sdlc-song-song/lan-va-agent-cung-luc.md)):
 
 | Con số | Là gì | Ai quyết |
 |---|---|---|
-| Làn đang mở | Số item đang dở, mỗi item một worktree. Gồm cả item đang chờ bạn duyệt, không có agent nào chạy | Giới hạn WIP của contract: mỗi dev agent 1 item In Progress, In Review tối đa 2. Không cần cấu hình |
-| `items_at_once` | Số agent chạy cùng lúc, cũng là số làn có agent chạy cùng lúc. Mỗi làn tối đa một agent | `project.yaml`, mặc định 1 |
+| `lanes_max` | Số làn được mở cùng lúc: số item đang dở, mỗi item một worktree, kể cả item đang chờ bạn duyệt | Bạn, trong `project.yaml`. Giới hạn WIP của contract vẫn áp dụng thêm: mỗi dev agent 1 item In Progress, In Review tối đa 2 |
+| `agents_at_once` | Số agent chạy cùng lúc, cũng là số làn có agent chạy cùng lúc. Mỗi làn tối đa một agent | Bạn, trong `project.yaml` |
 | Agent của một làn | Luôn 1 tại một thời điểm: build, rồi review, rồi QA, lần lượt | Cố định |
 
 - Agent không phải một nhóm "nhân công" cố định. Mỗi bước của một làn mở một agent mới theo vai trò (`fe-dev`, `reviewer`…),
   xong thì tắt. Vì vậy làn đang chờ bạn không giữ agent nào.
-- Khi số làn cần agent nhiều hơn `items_at_once`, làn sau chờ tới khi có chỗ. Đó là chủ ý: con số này giữ hạn mức gói và
+- Khi số làn cần agent nhiều hơn `agents_at_once`, làn sau chờ tới khi có chỗ. Đó là chủ ý: con số này giữ hạn mức gói và
   máy không quá tải.
 - **Đề xuất cho `shop` trên máy này** (16 GB RAM, còn khoảng 2,6 GB trống khi một agent đang chạy; 4 nhân, 8 luồng):
-  `items_at_once: 2`. Mỗi lượt build có thể bật dev server, một Chrome của `chrome-devtools`, hay JVM cùng Postgres của
-  Testcontainers, mỗi thứ vài GB [Ước]. Chỉ nâng lên 3 khi kiểm thật cho thấy RAM còn đủ và hạn mức 5 giờ không bị chạm.
+  `lanes_max: 3`, `agents_at_once: 2`.
+  - `agents_at_once: 2`: mỗi lượt build có thể bật dev server, một Chrome của `chrome-devtools`, hay JVM cùng Postgres
+    của Testcontainers, mỗi thứ vài GB [Ước]. Chỉ nâng lên 3 khi kiểm thật cho thấy RAM còn đủ và hạn mức 5 giờ không
+    bị chạm.
+  - `lanes_max: 3`: hai làn có agent chạy, cộng một làn đang chờ bạn duyệt. Mỗi làn mở là một item rồi sẽ chờ bạn ở
+    gate ③ và Accept, nên con số này cũng là số item tối đa dồn lại chờ bạn.
 
 ## 7. Cấu trúc
 
@@ -225,7 +233,7 @@ Phần tạo và gỡ worktree thật, cài package, hai agent chạy cùng lúc
 **Hỏi bạn trước:**
 - xóa worktree còn thay đổi chưa commit hay chưa push;
 - đổi contract, WIP hay board Jira;
-- bật `runs.items_at_once: 2` trên một dự án.
+- bật `runs.agents_at_once: 2` trên một dự án.
 
 **Không làm:**
 - junction hay symlink tới `node_modules`;
@@ -241,7 +249,7 @@ Phần tạo và gỡ worktree thật, cài package, hai agent chạy cùng lúc
    - fix trên chính worktree đó;
    - worktree được gỡ sau khi PR merge;
    - thư mục chính đứng yên ở `develop` suốt thời gian đó.
-3. Kiểm thật phần 2 với `runs.items_at_once: 2`:
+3. Kiểm thật phần 2 với `runs.agents_at_once: 2`:
    - một item `be-dev` và một item `fe-dev` build cùng lúc; hoặc một build cùng lúc với một review;
    - cả hai tới PR, CI xanh;
    - log của E2E cho thấy hai dải cổng khác nhau;
@@ -265,7 +273,7 @@ Phần tạo và gỡ worktree thật, cài package, hai agent chạy cùng lúc
 
 1. **Hai phần, hai PR** như mục 3: phần 1 (worktree theo item) dùng được một mình.
 2. **Vị trí worktree:** `<cha>/<dự án>-wt/<KEY>`, ví dụ `e-commerce/shop-wt/SHOP-13`.
-3. **Cấu hình trong `project.yaml`** (`runs.worktrees`, `runs.items_at_once`, `runs.port_step`, `runs.copy`), mặc định tắt và
+3. **Cấu hình trong `project.yaml`** (`runs.worktrees`, `runs.lanes_max`, `runs.agents_at_once`, `runs.port_step`, `runs.copy`), mặc định tắt và
    1.
 4. **Chỉ `build`, `fix`, `review`, `qa` được song song;** các lệnh còn lại chạy một mình.
 5. **Giữ WIP 1 cho mỗi dev agent;** nâng WIP để sau.
