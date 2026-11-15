@@ -11,7 +11,7 @@
 # A called workflow cannot raise the permissions of the caller's token, so the caller grants the five above; actions:
 # read dates the CI run of a docs PR (dev-workflow spec 2.4). When the audit fails, the deploy job does not run, the job
 # summary says why, and the work item gets the Needs you flag. JIRA_CI_TOKEN is a secret of the environment jira-sync,
-# which only the protected branches and v* tags may use, so no workflow of a PR reaches it (review of shop PR #21); in a
+# which only the protected branches and v* tags may use, so no workflow of a PR reaches it on GitHub (review of shop PR #21); in a
 # called workflow the environment's secret wins over one the caller passes.
 name: audit
 

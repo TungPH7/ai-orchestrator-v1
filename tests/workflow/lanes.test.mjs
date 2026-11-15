@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { copyFileSync, cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { copyFileSync, cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync, utimesSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { laneKeeper, runsSettings } from '../../lib/workflow/lanes.mjs';
@@ -9,10 +9,10 @@ import { laneKeeper, runsSettings } from '../../lib/workflow/lanes.mjs';
 // The lanes of a project on this machine (parallel-runs spec, part 1), on real repositories: an origin and the project
 // folder on develop, with the lanes next to it.
 const isProtected = (branch) => ['develop', 'main'].includes(branch) || branch.startsWith('release/');
-const fs = { existsSync, mkdirSync, copyFileSync, cpSync, readdirSync, writeFileSync };
+const fs = { existsSync, mkdirSync, copyFileSync, cpSync, readdirSync, statSync, writeFileSync };
 const gitIn = (dir) => (...args) => spawnSync('git', ['-c', 'user.name=ao test', '-c', 'user.email=ao@example.com', '-c', 'core.autocrlf=false', ...args], { cwd: dir, encoding: 'utf8' });
 
-function setup(t, { settings = { worktrees: true, copy: ['apps/api/.env'] }, pulls = {}, installed = { ok: true, notes: ['Ran pnpm install.'] } } = {}) {
+function setup(t, { settings = { worktrees: true, copy: ['apps/api/.env'] }, pulls = {}, installed = { ok: true, notes: ['Ran pnpm install.'] }, busy = () => false } = {}) {
   const root = mkdtempSync(join(tmpdir(), 'lanes-'));
   t.after(() => rmSync(root, { recursive: true, force: true }));
   const origin = join(root, 'origin.git');
@@ -39,6 +39,7 @@ function setup(t, { settings = { worktrees: true, copy: ['apps/api/.env'] }, pul
     pullsOf: async (branch) => pulls[branch] ?? [],
     isProtected,
     settings,
+    busy,
   });
   return { root, project, git, keeper, installs, lane: (key) => join(root, 'shop-wt', key) };
 }
@@ -199,4 +200,40 @@ test('runs of project.yaml: off and one lane when absent; runs.copy holds relati
     assert.throws(() => runsSettings({ runs: { lane_env: { names } } }), /runs\.lane_env\.names of project\.yaml has/, JSON.stringify(names));
   }
   assert.throws(() => runsSettings({ runs: { lane_env: { ports: { DB_PORT: 5432 }, names: { DB_PORT: 'x' } } } }), /DB_PORT is both a port and a name/);
+});
+
+// Review round 2 of shop PR #21: runs.lanes_max is also how many lanes are open at once, items that wait for you
+// included (spec 5.1): a build that needs one more stops, and names the lanes.
+test('no lane is made past runs.lanes_max; a lane that is there is used as before', async (t) => {
+  const s = setup(t, { settings: { worktrees: true, lanesMax: 2, copy: [] } });
+  assert.equal((await s.keeper.ensure('SHOP-11')).ok, true);
+  assert.equal((await s.keeper.ensure('SHOP-12')).ok, true);
+  const third = await s.keeper.ensure('SHOP-13');
+  assert.equal(third.ok, false);
+  assert.match(third.reason, /^2 lanes are open \(SHOP-11, SHOP-12\), the most runs\.lanes_max allows: SHOP-13 waits until the PR of one is merged or closed/);
+  assert.equal(existsSync(s.lane('SHOP-13')), false);
+  assert.equal((await s.keeper.ensure('SHOP-12')).ok, true);
+});
+
+// Review round 2 of shop PR #21: prune left alone neither a lane another command works in, nor a ledger the project
+// folder had newer.
+test('prune leaves the lane of an item another command runs on, and keeps a newer ledger of the project folder', async (t) => {
+  const busyKeys = new Set(['SHOP-8']);
+  const s = setup(t, { pulls: { 'feature/SHOP-8-tokens': [{ number: 18, state: 'merged' }], 'feature/SHOP-9-ui': [{ number: 20, state: 'merged' }] }, busy: (key) => busyKeys.has(key) });
+  for (const [key, branch] of [['SHOP-8', 'feature/SHOP-8-tokens'], ['SHOP-9', 'feature/SHOP-9-ui']]) {
+    const made = await s.keeper.ensure(key);
+    gitIn(made.dir)('switch', '--quiet', '-c', branch);
+    mkdirSync(join(made.dir, '.ai', 'ledger'), { recursive: true });
+    writeFileSync(join(made.dir, '.ai', 'ledger', `${key}.md`), `# ${key} in the lane\n`);
+  }
+  // qa wrote the ledger of SHOP-9 in the project folder after the lane did.
+  const later = join(s.project, '.ai', 'ledger', 'SHOP-9.md');
+  writeFileSync(later, '# SHOP-9 after qa\n');
+  utimesSync(later, new Date(Date.now() + 60_000), new Date(Date.now() + 60_000));
+  const notes = await s.keeper.prune();
+  assert.match(notes.join('\n'), /The lane of SHOP-8 stays: another command runs on SHOP-8\./);
+  assert.equal(existsSync(s.lane('SHOP-8')), true);
+  assert.equal(existsSync(s.lane('SHOP-9')), false);
+  assert.equal(readFileSync(later, 'utf8'), '# SHOP-9 after qa\n');
+  assert.match(notes.join('\n'), /Removed the lane of SHOP-9: its PR is merged; \.ai\/ledger\/SHOP-9\.md of the project folder is newer and stays/);
 });

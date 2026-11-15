@@ -46,7 +46,7 @@ test('jira-sync clears the flag only when merge-gate raised it for this PR and n
 const closed = (merged = true) => ({
   action: 'closed',
   number: 16,
-  pull_request: { number: 16, state: 'closed', merged, title: 'ci(deploy): set timeout-minutes on the deploy job (DEMO-16)', head: { ref: 'feature/DEMO-16-deploy-timeout', sha: '5f9327b0'.padEnd(40, '0') }, base: { ref: 'develop' } },
+  pull_request: { number: 16, state: 'closed', merged, title: 'ci(deploy): set timeout-minutes on the deploy job (DEMO-16)', head: { ref: 'feature/DEMO-16-deploy-timeout', sha: '5f9327b0'.padEnd(40, '0'), repo: { full_name: 'TungPH7/ao-pilot' } }, base: { ref: 'develop' } },
   repository: { full_name: 'TungPH7/ao-pilot' },
 });
 function jiraWith(comments, histories = [flagSet(9)], labels = ['needs-you']) {

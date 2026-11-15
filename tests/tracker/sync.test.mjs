@@ -57,6 +57,30 @@ test('pull_request_target reads as pull_request', async () => {
   assert.deepEqual(chosen(await sync('pull_request_target', jira, { body: payload('pull_request') })), { keys: ['DEMO-12'], actions: ['DEMO-12 submit'] });
 });
 
+// Review round 2 of shop PR #21: the repo is public, and pull_request_target runs jira-sync with the CI token for a PR
+// from a fork too. An event of a PR whose head is in another repository concerns no item, nor does a run of CI or PR
+// review for one, and its PRs count for no guard.
+test('a PR from a fork, and a run for one, concern no item', async () => {
+  const jira = fakeJira({ issues: [story('DEMO-12', IN_PROGRESS)] });
+  const fork = payload('pull_request');
+  fork.pull_request.head.repo = { full_name: 'someone/ao-pilot' };
+  assert.deepEqual(chosen(await sync('pull_request_target', jira, { body: fork })), { keys: [], actions: [] });
+  const gone = payload('pull_request');
+  gone.pull_request.head.repo = null;
+  assert.deepEqual(chosen(await sync('pull_request_target', jira, { body: gone })), { keys: [], actions: [] }, 'a fork that was deleted');
+  const run = payload('workflow_run');
+  run.workflow_run.head_repository = { full_name: 'someone/ao-pilot' };
+  assert.deepEqual(chosen(await sync('workflow_run', jira, { body: run })), { keys: [], actions: [] });
+  // A PR of a fork on the branch name of the item is not the item's PR.
+  const forkPr = (a) => {
+    for (const pr of a['/pulls?direction=desc&sort=created&state=all']) {
+      pr.head.repo = { full_name: pr.number === 5 ? 'someone/ao-pilot' : 'TungPH7/ao-pilot' };
+      pr.base.repo = { full_name: 'TungPH7/ao-pilot' };
+    }
+  };
+  assert.deepEqual(chosen(await sync('pull_request', jira, { gh: github(forkPr) })), { keys: ['DEMO-12'], actions: [] });
+});
+
 // A review reaches jira-sync through the run of the workflow PR review, which holds no secret: the item of its branch.
 test('workflow_run of PR review: changes asked on the newest commit send the item back', async () => {
   const jira = fakeJira({ issues: [story('DEMO-12', IN_REVIEW)] });

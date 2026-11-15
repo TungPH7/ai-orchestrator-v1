@@ -559,6 +559,19 @@ test('Grep and Glob stay in the project and the temp folder, nothing looks for a
     'git show HEAD:"PRIVATE KEY"',
     'rg -n "BEGIN RSA PRIVATE KEY" .',
     'bash -c "git grep \'PRIVATE KEY\'"',
+    // Review round 2 of shop PR #21: a git grep in a repository made or reached on the same line reads any folder.
+    'cd /c/Users/x/keys && git init -q && git add -A && git grep -A 40 "PRIVATE KEY"',
+    'cd apps && git grep "PRIVATE KEY"',
+    'pushd /c/Users/x && git grep "PRIVATE KEY"',
+    'git init -q x && git grep "PRIVATE KEY"',
+    'git clone -q ../other x; git log -S "PRIVATE KEY"',
+    'export GIT_DIR=/c/Users/x/.git; git grep "PRIVATE KEY"',
+    'GIT_WORK_TREE=/c/Users/x; git grep "PRIVATE KEY"',
+    // Review round 2 of shop PR #21, security: bash hands the last word of a command to the next one as $_.
+    'git log -1 -S "PRIVATE KEY" >/dev/null; grep -rl "$_" /c/Users/x',
+    'git log -1 -S "PRIVATE KEY" >/dev/null; grep -rl "${_}" /c/Users/x',
+    'git grep -q "PRIVATE KEY"; rg -l "$_" ~',
+    'git grep "PRIVATE KEY" && node -e "1"',
   ]) {
     denied(bash(command, 'be-dev'), /private key/, command);
   }
@@ -567,11 +580,31 @@ test('Grep and Glob stay in the project and the temp folder, nothing looks for a
     'git grep -n "PRIVATE KEY" -- apps',
     'git grep -n "PRIVATE KEY" -- apps | head -20',
     'git log -S "PRIVATE KEY" --oneline',
-    'cd apps && git grep "PRIVATE KEY"',
     'git grep -n -e "-----BEGIN" -- apps',
+    'git add -A && git commit -m "fix(auth): read the private key from the vault (DEMO-1)"',
+    'git grep -n "PRIVATE KEY" -- apps | sort | uniq',
   ]) {
     allowed(bash(command, 'security'), command);
   }
+  // Review round 2 of shop PR #21, security: the user variables of Windows hold the tokens of the kit, the CI token
+  // among them; an agent runs as you, so gh-guard stops the plain ways to read them.
+  for (const command of [
+    'reg query HKCU\\Environment /v JIRA_CI_TOKEN',
+    "reg query 'HKCU\\Environment'",
+    'reg.exe query "HKEY_CURRENT_USER\\Environment" /v X',
+    'reg export HKCU\\Environment out.reg',
+    'reg query HKCU/Environment',
+    'powershell -c "[Environment]::GetEnvironmentVariable(\'JIRA_CI_TOKEN\', \'User\')"',
+    'pwsh -c "[System.Environment]::GetEnvironmentVariable(\'X\', [EnvironmentVariableTarget]::User)"',
+    'powershell -c "[Environment]::GetEnvironmentVariables(\'User\')"',
+    'powershell -c "Get-ItemProperty HKCU:\\Environment"',
+    'powershell -c "(Get-Item HKCU:Environment).GetValue(\'X\')"',
+    'node -e "require(\'child_process\').execSync(\'reg query HKCU\\\\Environment /v X\')"',
+  ]) {
+    denied(bash(command, 'be-dev'), /user variables of Windows/, command);
+  }
+  allowed(bash('reg query HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run', 'devops'), 'another key of the registry');
+  allowed(bash('echo $HOME', 'be-dev'), 'a variable of the session');
   allowed(call('security', 'Grep', { pattern: 'BEGIN RSA PRIVATE KEY', path: PROJECT }), 'a scan of the project for committed keys');
   allowed(call('security', 'Grep', { pattern: '-----BEGIN', path: PROJECT }), 'a scan of the project for any PEM block');
   allowed(call('security', 'Grep', { pattern: 'age-secret-key-1', path: `${PROJECT}\\src` }), 'the same for age identities');

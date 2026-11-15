@@ -7,6 +7,7 @@
     "conclusion": "failure",
     "head_branch": "feature/DEMO-12-login-r2",
     "head_sha": "c5",
+    "head_repository": { "full_name": "TungPH7/ao-pilot" },
     "pull_requests": [{ "number": 5, "head": { "ref": "feature/DEMO-12-login-r2", "sha": "c5" }, "base": { "ref": "develop" } }]
   },
   "repository": { "full_name": "TungPH7/ao-pilot" }
