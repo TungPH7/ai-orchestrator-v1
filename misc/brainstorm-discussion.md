@@ -26266,3 +26266,15 @@ Một watcher sống tối đa 30 phút; hết hạn thì mình bật lại. Khi
 1. **PR #19 (SHOP-10):** `/ao-fix 19` đã sửa xong 2 Low câu chữ; `security` 0 finding. `reviewer` lại tìm 2 Low mới: test E2E font có thể đếm thiếu khi body chưa về kịp (`design-system.spec.ts`), và một câu trong `user.md` nói số đo "áp cho admin ở SHOP-9" mà không item nào nhận. SHOP-10 đến giờ 32,61 USD.
 2. **PR #21 (SHOP-38):** đã merge kit PR #297, chép kit `bcb06f8d` vào PR (`5dbe7e3`), gỡ cờ Needs you cũ của merge-gate kèm comment, và đang chạy review vòng 4, có watcher.
 3. **PR #19 và #20 không hội tụ:** mỗi vòng sửa xong, `reviewer` lại thấy 1–2 Low mới ở chỗ khác. Mình đề xuất dừng vòng lặp này: bạn approve PR #19 và #20, còn 4 Low (2 của mỗi PR) gom vào một Task sau. Nếu bạn muốn sửa tiếp thì mình chạy thêm đúng một vòng cho mỗi PR sau review PR #21, rồi nhờ bạn approve dù còn Low mới.
+
+**Claude (23:20, review vòng 4 của PR #21 và một việc cần bạn quyết):**
+
+1. **Vòng 4** (head `5dbe7e3`): `reviewer` 1 Medium, 2 Low; `security` 1 Medium, 2 Low; không Critical hay High. SHOP-38 đến giờ 37,66 USD.
+2. **Medium vẫn là một lỗ, chỉ đổi cách viết:** agent đọc được `JIRA_CI_TOKEN` (biến user của Windows) bằng một cách mà danh sách của gh-guard chưa có. Vòng này là `/proc/registry` và `/proc/*/environ` của Git Bash, và COM `WScript.Shell`. Chính `security` khuyên **đừng thêm vòng chặn nữa**: gh-guard xét chữ của lệnh, còn agent chạy dưới tài khoản Windows của bạn, nên bốn vòng thì vòng nào cũng có cách mới.
+3. **Mình đã sửa** (kit PR #298, 1.534 test đạt, CI đang chạy): chặn thêm các dạng thường gặp mà review nêu (`/proc`, COM, `BEGIN RSA`…, brace expansion), sửa 2 lỗi mutex, mở rộng cảnh báo kit của hook, và **ghi thật trong code và tài liệu**: gh-guard bắt nhầm lẫn, không phải ranh giới; token CI trên máy là rủi ro bạn chấp nhận cho tới khi có cách bền.
+4. **Đề xuất kết thúc PR #21:** merge #298, chép kit lần cuối, chạy **một vòng review cuối** (bắt buộc, vì merge-gate và audit cần báo cáo trên head cuối). Sau đó mình nhờ bạn approve và Squash and merge, kể cả khi Medium này còn được ghi là "mở".
+5. **Cách bền (cần bạn chọn, làm thành một Task riêng):**
+   - (a) đưa `JIRA_CI_TOKEN` ra khỏi máy: ghi Jira khi cắt release và đính kèm bằng chứng QA đi qua workflow có environment. Vừa phải, đóng được Medium này.
+   - (b) cho agent chạy dưới một tài khoản Windows riêng. Mạnh nhất, giữ được cả khóa App, nhưng phải dựng lại máy cho tài khoản đó.
+   Mình đề xuất (a) trước.
+6. **PR #19, #20:** như đã báo, vòng nào cũng thêm 1–2 Low mới. Mình vẫn đề xuất bạn approve hai PR này và gom các Low vào một Task sau.
