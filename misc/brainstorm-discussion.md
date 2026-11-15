@@ -26443,3 +26443,40 @@ THực hiện compact nữa  nhé, đã đạt 74% context rồi
 ```
 
 Compact lúc này an toàn: mọi trạng thái đã nằm trong file bàn giao (đã push), trong bộ nhớ, và trong các script ở `.pilot3-scratch/`. Các lệnh nền vẫn chạy sau khi compact, cả script đánh thức lúc 01:01.
+
+# Phiên 32 · Lượt 48 — 2026-11-16 khoảng 01:15
+
+**Bạn:**
+
+```markdown
+1. Accept SHOP-9 và SHOP-10. => đã accept
+2. Chọn hướng (a) hay (b) cho SHOP-40. => bạn chưa đưa tôi hướng, gửi lại cho tôi chọn nhé
+3. Cân nhắc có hạ min_free_ram_gb hay không. => tôi hạ xuống 1.5GB bạn thấy ổn không?
+4. Vì sao làm SHOP-13 trước SHOP-11 và SHOP-12 ?
+```
+
+**Claude:**
+
+**1. Accept:** mình đã kiểm, SHOP-9 và SHOP-10 đều ở Done.
+
+**2. Hai hướng cho SHOP-40** (agent đọc được `JIRA_CI_TOKEN` trên máy):
+
+| | (a) Đưa token CI ra khỏi máy | (b) Agent chạy dưới tài khoản Windows riêng |
+|---|---|---|
+| Làm gì | Hai việc đang dùng token CI trên máy chuyển sang GitHub Actions, chạy với environment `jira-sync`: ghi Jira khi `/ao-release` cắt release, và đính kèm bằng chứng QA. `ao-step` chỉ gọi workflow. Xong thì xóa biến `JIRA_CI_TOKEN` khỏi máy. | Tạo một user Windows riêng cho agent. `claude -p` của agent chạy dưới user đó, và user đó chỉ có những token agent cần. |
+| Che được gì | Token CI. Khóa App `ao-dev`, `ao-review` và token agent vẫn ở máy, nhưng agent vốn được dùng chúng. | Mọi thứ của bạn: biến user, khóa App, backup. Đây là ranh giới thật. |
+| Công sức | Vừa: một workflow mới, sửa `ao-step`, test, một lần chép kit. Khoảng nửa ngày. | Lớn: đăng nhập Claude Code riêng cho user đó, cài Node, pnpm, JDK, Docker, chia quyền thư mục dự án và làn, MCP, hook. Windows Home khó làm tự động. Vài ngày, nhiều rủi ro. |
+| Nhược | `/ao-release` và QA chậm hơn một chút vì chờ workflow chạy. | Phức tạp, dễ hỏng luồng đang chạy. |
+
+Mình đề xuất **(a)**: đóng đúng Medium đang mở mà không làm xáo trộn máy. (b) để dành khi dự án cần ranh giới chặt hơn.
+
+**3. Hạ `min_free_ram_gb` xuống 1,5 GB: ổn, có một lưu ý.**
+- Số đo trên máy: khi Docker bật và có một agent chạy, RAM trống dao động 1,4–2,6 GB. Ngưỡng 3 GB thì gần như không bao giờ có agent thứ hai. Ngưỡng 1,5 GB thì agent thứ hai thường chạy được khi agent đầu nhẹ (`reviewer`, `qa`, `fe-dev`).
+- Lưu ý: hai agent nặng cùng lúc (`be-dev` với JVM và Postgres, cộng `fe-dev` với Chrome) có thể làm Windows dùng pagefile. Máy sẽ chậm hơn chứ không sập, nhưng test có thể chạy quá giờ. Kit chỉ cho một `be-dev` mỗi lúc, nên trường hợp này hiếm.
+- Cách làm: `project.yaml` là đường dẫn được bảo vệ, nên cần một PR bạn merge. Mình gộp vào lần chép kit kế tiếp (đưa kit PR #299, #300, #301 vào `shop`), để chỉ một PR và một lần review. Nếu thấy test hay chạy quá giờ, mình nâng lên 2 GB.
+
+**4. Vì sao SHOP-13 chạy trước SHOP-11 và SHOP-12:**
+- Thật ra lúc 00:09 mình mở **cùng lúc** SHOP-11, SHOP-13 và QA SHOP-38. Rồi phát hiện lỗi chốt RAM khiến cả ba chờ nhau mãi, nên mình phải dừng hai lệnh và giữ một.
+- Mình giữ SHOP-13 vì nó đứng đầu chuỗi phụ thuộc dài nhất của Epic: SHOP-13 → 14 → 15 → 16 → các Story 19, 20, 21 → 24, 25, 31 → 28, 34, 37. Gần như mọi Story đều chờ nó. SHOP-11 chỉ chặn một Story (SHOP-21). Chậm SHOP-13 một giờ là cả Epic chậm một giờ.
+- SHOP-12 (năm sản phẩm thử trên Staging và Production, `devops`, xhigh) không chặn item nào, và đụng tới Production. Theo mình hiểu, nó cũng nên chạy sau khi schema V4 (SHOP-13) đã vào, để sản phẩm thử dùng cột mới. Nên mình xếp nó sau.
+- Hiện SHOP-11 đã chạy lại và đang chờ RAM. `reviewer` của PR #23 (SHOP-13) không có finding nào, `security` đang review.
