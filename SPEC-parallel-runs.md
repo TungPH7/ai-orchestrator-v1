@@ -5,8 +5,9 @@
 > [c2-toi-thieu-giua-pilot-3.md](misc/thao-luan/sdlc-song-song/c2-toi-thieu-giua-pilot-3.md) (Phiên 32 · Lượt 15),
 > [sdlc-song-song-sua-kit-hay-clone.md](misc/thao-luan/sdlc-song-song-sua-kit-hay-clone.md) (concern 2).
 >
-> **Trạng thái:** bản nháp, chờ bạn duyệt các điểm ở mục 12. Viết ở Phiên 32 · Lượt 17 (2026-11-15), trong lúc `SHOP-7`
-> của Pilot 3 chạy lần lượt. Bạn chọn: chạy lần lượt cho `SHOP-7`, cộng viết spec này.
+> **Trạng thái:** đã duyệt 2026-11-15 (Phiên 32 · Lượt 35), cả 8 điểm ở mục 12, cộng "mỗi lúc một QA trên một môi
+> trường" và việc QA kiểm bản đang chạy (mục 5.1). Viết ở Lượt 17, sửa ở Lượt 18–34, trong lúc `SHOP-7` của Pilot 3 chạy
+> lần lượt. Làm ngay, song song với `SHOP-7` (điểm 7).
 
 Tên module: hai lệnh `ao-step` chạy cùng lúc trên hai item khác nhau, mỗi item một worktree.
 
@@ -118,6 +119,12 @@ chuyển nhánh, nên bạn mở được nó trong VS Code mà không đụng a
   thể bằng số làn mà máy vẫn không bị quá tải khi cả ba làn cùng cần agent.
 - **Chỉ `build`, `fix`, `review` và `qa` được chạy song song.** Các lệnh còn lại cần thư mục chính hay đụng cả dự án, nên
   chỉ chạy khi không có khóa nào khác: `spec`, `plan`, `request`, `intake`, `preview`, `release`, `ship`, `rollback`.
+- **Mỗi lúc một QA trên một môi trường** (Lượt 31–35). Mọi lượt QA của item kiểm trên cùng một Development, cùng một
+  database, và E2E có ghi dữ liệu. Hai lượt QA cùng lúc làm bẩn dữ liệu của nhau, nên kết quả không còn đáng tin. Lượt QA
+  thứ hai chờ lượt đầu xong; build, fix và review của làn khác vẫn chạy.
+- **QA kiểm bản đang chạy** (Lượt 34–35). Ngay trước khi chạy và ngay khi chạy xong, QA đọc commit đang chạy trên môi
+  trường (`running(environment)` của `lib/workflow/qa.mjs`). Hai commit khác nhau, tức một PR khác đã merge và deploy
+  giữa chừng, thì lượt QA đó không báo PASS hay FAIL mà chạy lại, tối đa 2 lần, rồi dừng kèm lý do.
 - **Cùng một dev agent:** lệnh build hay fix của role R dừng khi đang có một lượt build hay fix khác của R. Jira cũng
   chặn ở bước chuyển trạng thái (WIP 1), nhưng dừng sớm thì không tốn lượt agent.
 - `--resume` của hai lượt không bao giờ trùng phiên: mỗi phiên thuộc một item. Tài liệu Claude Code cảnh báo hai tiến
@@ -214,6 +221,9 @@ Test viết trước, bằng `node:test`, theo mẫu test sẵn có.
   - lệnh không được song song;
   - khóa của tiến trình đã chết;
   - hai lượt cùng role.
+  - hai lượt QA trên cùng một môi trường;
+  - số làn đã bằng `lanes_max`;
+  - RAM dưới `min_free_ram_gb`.
 - **`ports.mjs`:**
   - độ lệch 0 và 100;
   - đổi URL `localhost` trong `env`, không đụng URL khác.
@@ -222,6 +232,7 @@ Test viết trước, bằng `node:test`, theo mẫu test sẵn có.
   - fix dùng lại worktree;
   - build lại `-r2` trong cùng worktree.
 - **Runner:** git và agent nhận `cwd` của place; `saveWip` chạy trong worktree.
+- **QA kiểm bản đang chạy:** commit trước và sau như nhau thì báo kết quả; khác nhau thì chạy lại, tối đa 2 lần, rồi dừng.
 - **Hồi quy:** cả bộ test hiện có xanh với cấu hình mặc định. Thêm một test khẳng định khi tắt thì không tạo worktree
   nào.
 
@@ -280,7 +291,8 @@ Phần tạo và gỡ worktree thật, cài package, hai agent chạy cùng lúc
 2. **Vị trí worktree:** `<cha>/<dự án>-wt/<KEY>`, ví dụ `e-commerce/shop-wt/SHOP-13`.
 3. **Cấu hình trong `project.yaml`** (`runs.worktrees`, `runs.lanes_max`, `runs.min_free_ram_gb`, `runs.port_step`, `runs.copy`), mặc định tắt và
    1.
-4. **Chỉ `build`, `fix`, `review`, `qa` được song song;** các lệnh còn lại chạy một mình.
+4. **Chỉ `build`, `fix`, `review`, `qa` được song song,** mỗi lúc một QA trên một môi trường; các lệnh còn lại chạy một
+   mình. QA kiểm bản đang chạy trước và sau lượt chạy.
 5. **Giữ WIP 1 cho mỗi dev agent;** nâng WIP để sau.
 6. **Kiểm thật trên `shop`,** với các item còn lại của `SHOP-7` sau khi chép kit, thay vì trên `ao-sample`. Như vậy
    Pilot 3 đo thêm một bản kit, và cần ghi rõ item nào chạy bằng bản nào.
