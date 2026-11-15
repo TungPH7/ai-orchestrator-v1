@@ -142,3 +142,31 @@ Muốn nhanh hơn sau khi kiểm thật cho thấy máy còn dư: tăng `agents_
 
 Còn một giới hạn không đổi: ba agent cùng lúc làm hạn mức 5 giờ của gói Max 5x hết nhanh gấp ba. Nếu chạm hạn mức, các
 lượt dừng và chạy lại khi hạn mức mở, như bây giờ.
+
+## Lượt 26: cái gì thật sự tốn RAM
+
+> Cái gây tốn RAM là số làn (vì nó mở cửa sổ VS code), còn bạn nói chạy nhiều agent gây tốn RAM "agents_at_once: 2: vì RAM
+> 16 GB, chỉ còn khoảng 2,6 GB trống khi 1 agent đang chạy." là không đúng mà. Tôi nói vậy có đúng không?
+
+**Đúng một nửa.** Đo lúc 15:58, khi agent `security` đang chạy:
+
+| Thứ | RAM |
+|---|---|
+| Agent `security` (tiến trình `claude` của nó và `ao-agent`) | khoảng 0,34 GB |
+| Các tiến trình `claude` khác (phiên chính và các thứ khác) | 1,08 GB |
+| VS Code (đo lúc 15:53) | 3,8 GB |
+| Edge (đo lúc 15:53) | 1,8 GB |
+| RAM còn trống | 2,6 GB |
+
+- **Bạn đúng ở chỗ:**
+  - bản thân một agent nhẹ, khoảng 0,3 GB;
+  - RAM trống thấp chủ yếu do VS Code và trình duyệt, không do agent;
+  - lấy con số "2,6 GB trống khi 1 agent đang chạy" làm lý do chọn 2 agent là lập luận yếu của mình.
+- **Chưa đúng ở hai chỗ:**
+  1. Làn không tự mở VS Code. Kit không mở VS Code; chỉ khi bạn mở một cửa sổ cho mỗi làn thì làn mới "tốn" RAM của VS
+     Code. Không mở thì một làn chỉ tốn đĩa.
+  2. Agent `security` và `reviewer` nhẹ vì chúng chỉ đọc code. Agent build thì bật thêm công cụ trong lúc chạy: dev server,
+     một Chrome riêng của `chrome-devtools`, test runner; `be-dev` còn có Java và Postgres trong Docker. Phần này mình
+     chưa đo; mình sẽ đo ở lượt build kế tiếp và ghi số thật vào đây.
+- **Kết luận giữ nguyên:** số agent bằng số làn, cộng chốt RAM 3 GB. Cách bớt RAM nhiều nhất trên máy này: đóng cửa sổ
+  VS Code và tab trình duyệt không dùng, và không mở một cửa sổ VS Code cho mỗi làn.
