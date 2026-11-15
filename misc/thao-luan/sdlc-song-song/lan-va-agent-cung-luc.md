@@ -112,3 +112,33 @@ một con số của bạn.
 | `agents_at_once` | **2** | RAM 16 GB, chỉ còn khoảng 2,6 GB trống khi 1 agent đang chạy; hạn mức 5 giờ của gói Max 5x |
 
 Muốn nhanh hơn sau khi kiểm thật cho thấy máy còn dư: tăng `agents_at_once` lên 3 và `lanes_max` lên 4.
+
+## Phản biện ở Lượt 25
+
+> Với trường hợp tạo 3 làn và 2 agent chạy cùng lúc cho all làn: … đã tạo 3 làn nghĩa là đã có 3 VS code từ ban đầu
+> rồi, nghĩa là RAM cho VS code đã tốn từ lúc chốt chạy 3 làn, còn việc có 3 agent chạy cùng cho all làn nó không tốn RAM
+> nữa vì agent chạy xong sẽ bị tắt đi. Vậy thì cứ cấu hình số agent bằng số làn luôn đi.
+
+**Đồng ý với kết luận: số agent bằng số làn.** Mình chỉ sửa hai tiền đề, và thêm một chốt an toàn.
+
+1. **Làn không kéo theo cửa sổ VS Code.** Kit không mở VS Code; agent cũng không dùng nó. RAM của VS Code tính theo số cửa
+   sổ bạn mở. Đo lúc 15:53: VS Code đang dùng 3,8 GB (37 tiến trình), nhiều nhất máy. Nếu bạn mở thêm một cửa sổ cho mỗi
+   làn thì tốn thêm, còn không mở thì không tốn.
+2. **Agent không tốn RAM khi làn chờ, nhưng tốn khi đang chạy.**
+   - "Xong thì tắt" làm giảm RAM trung bình, không làm giảm **đỉnh**. Đỉnh là lúc cả ba làn cùng có agent chạy.
+   - Đo lúc 15:53, với một agent `reviewer` đang chạy (loại nhẹ, không bật app): còn 2,8 GB trống trên 15,8 GB. Các tiến
+     trình `claude` (phiên chính cộng agent) dùng 1,4 GB.
+   - Một lượt build nặng hơn: dev server, một Chrome của `chrome-devtools`, test runner; `be-dev` còn có JVM và Postgres
+     trong Docker. [Ước] Mỗi lượt build cộng thêm 1,5–4 GB. Ba lượt build cùng lúc dễ vượt RAM, và Windows sẽ dùng file
+     swap, làm mọi thứ chậm hẳn, kể cả chính các agent.
+3. **Chốt RAM:** khóa `runs.min_free_ram_gb`, mặc định 3.
+   - Trước khi mở một agent, kit đọc RAM trống. Dưới 3 GB thì làn đó chờ, kiểm lại mỗi 30 giây, cho tới khi một agent
+     khác xong.
+   - Nhờ vậy, khi máy đủ RAM thì ba làn chạy ba agent; khi máy thiếu thì làn thứ ba tự chờ, máy không bị quá tải.
+4. **Cấu hình mới trong spec:**
+   - `lanes_max: 3`;
+   - `agents_at_once` bỏ trống, tức bằng `lanes_max`; vẫn đặt được số nhỏ hơn nếu muốn;
+   - `min_free_ram_gb: 3`.
+
+Còn một giới hạn không đổi: ba agent cùng lúc làm hạn mức 5 giờ của gói Max 5x hết nhanh gấp ba. Nếu chạm hạn mức, các
+lượt dừng và chạy lại khi hạn mức mở, như bây giờ.

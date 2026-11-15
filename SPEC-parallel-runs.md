@@ -113,6 +113,9 @@ chuyển nhánh, nên bạn mở được nó trong VS Code mà không đụng a
 - **Số làn mở:** build đầu tiên của một item mở một làn mới, tức tạo worktree. Khi số worktree đang có đã bằng
   `runs.lanes_max`, lệnh đó dừng: `STOP: <n> lanes are open, the most runs.lanes_max allows; finish or close one first`.
   Các lệnh trên làn đã mở (fix, review, QA, build lại) không bị con số này chặn.
+- **Chốt RAM:** trước khi mở một agent, kit đọc RAM trống của máy. Dưới `runs.min_free_ram_gb` thì làn đó chờ, và kiểm lại
+  mỗi 30 giây cho tới khi một agent khác xong và nhả RAM. Chờ quá 30 phút thì dừng, kèm lý do. Nhờ chốt này, số agent có
+  thể bằng số làn mà máy vẫn không bị quá tải khi cả ba làn cùng cần agent.
 - **Chỉ `build`, `fix`, `review` và `qa` được chạy song song.** Các lệnh còn lại cần thư mục chính hay đụng cả dự án, nên
   chỉ chạy khi không có khóa nào khác: `spec`, `plan`, `request`, `intake`, `preview`, `release`, `ship`, `rollback`.
 - **Cùng một dev agent:** lệnh build hay fix của role R dừng khi đang có một lượt build hay fix khác của R. Jira cũng
@@ -122,7 +125,7 @@ chuyển nhánh, nên bạn mở được nó trong VS Code mà không đụng a
 
 ### 5.2 Dải cổng
 
-- Chỗ chạy là số thứ tự của khóa: 0 hoặc 1. Độ lệch cổng là `chỗ × runs.port_step`, mặc định 100.
+- Chỗ chạy là số thứ tự của khóa: từ 0 tới `agents_at_once` − 1. Độ lệch cổng là `chỗ × runs.port_step`, mặc định 100.
 - `ao-step` đưa `AO_PORT_OFFSET` vào môi trường của agent, và thêm vào prompt bảng cổng của chỗ đó, ví dụ `user` 3100,
   `admin` 5273, `api` 3101.
 - `playwright.config.ts` của profile cộng `AO_PORT_OFFSET` vào `port.default`, và đổi các URL `localhost:<cổng>` trong
@@ -144,8 +147,9 @@ chuyển nhánh, nên bạn mở được nó trong VS Code mà không đụng a
 # project.yaml
 runs:
   worktrees: false     # phần 1: build và fix trong worktree theo item
-  lanes_max: 1         # phần 2: số làn (worktree) được mở cùng lúc, 1..6, không nhỏ hơn agents_at_once
-  agents_at_once: 1    # phần 2: số agent chạy cùng lúc, mỗi làn tối đa một agent, 1..4; từ 2 đòi worktrees: true
+  lanes_max: 1         # phần 2: số làn (worktree) được mở cùng lúc, 1..6; từ 2 đòi worktrees: true
+  # agents_at_once:    # phần 2: số agent chạy cùng lúc, không lớn hơn lanes_max; bỏ trống thì bằng lanes_max
+  min_free_ram_gb: 3   # phần 2: RAM trống tối thiểu để mở thêm một agent; 0 thì tắt chốt này
   port_step: 100       # độ lệch cổng giữa hai chỗ chạy
   copy: []             # file không có trong git mà worktree cần, ví dụ apps/api/.env
 ```
@@ -158,20 +162,22 @@ thì để 1. Biến `AO_AGENTS_AT_ONCE` hạ con số này tạm thời ở m�
 | Con số | Là gì | Ai quyết |
 |---|---|---|
 | `lanes_max` | Số làn được mở cùng lúc: số item đang dở, mỗi item một worktree, kể cả item đang chờ bạn duyệt | Bạn, trong `project.yaml`. Giới hạn WIP của contract vẫn áp dụng thêm: mỗi dev agent 1 item In Progress, In Review tối đa 2 |
-| `agents_at_once` | Số agent chạy cùng lúc, cũng là số làn có agent chạy cùng lúc. Mỗi làn tối đa một agent | Bạn, trong `project.yaml` |
+| `agents_at_once` | Số agent chạy cùng lúc, cũng là số làn có agent chạy cùng lúc. Mỗi làn tối đa một agent | Bạn, trong `project.yaml`; bỏ trống thì bằng `lanes_max` (Lượt 25). Chốt RAM có thể bắt một làn chờ |
 | Agent của một làn | Luôn 1 tại một thời điểm: build, rồi review, rồi QA, lần lượt | Cố định |
 
 - Agent không phải một nhóm "nhân công" cố định. Mỗi bước của một làn mở một agent mới theo vai trò (`fe-dev`, `reviewer`…),
   xong thì tắt. Vì vậy làn đang chờ bạn không giữ agent nào.
 - Khi số làn cần agent nhiều hơn `agents_at_once`, làn sau chờ tới khi có chỗ. Đó là chủ ý: con số này giữ hạn mức gói và
   máy không quá tải.
-- **Đề xuất cho `shop` trên máy này** (16 GB RAM, còn khoảng 2,6 GB trống khi một agent đang chạy; 4 nhân, 8 luồng):
-  `lanes_max: 3`, `agents_at_once: 2`.
-  - `agents_at_once: 2`: mỗi lượt build có thể bật dev server, một Chrome của `chrome-devtools`, hay JVM cùng Postgres
-    của Testcontainers, mỗi thứ vài GB [Ước]. Chỉ nâng lên 3 khi kiểm thật cho thấy RAM còn đủ và hạn mức 5 giờ không
-    bị chạm.
-  - `lanes_max: 3`: hai làn có agent chạy, cộng một làn đang chờ bạn duyệt. Mỗi làn mở là một item rồi sẽ chờ bạn ở
-    gate ③ và Accept, nên con số này cũng là số item tối đa dồn lại chờ bạn.
+- **Đề xuất cho `shop` trên máy này** (16 GB RAM, 4 nhân, 8 luồng; đo lúc 15:53 khi một agent `reviewer` chạy: còn 2,8 GB
+  trống, VS Code dùng 3,8 GB, Edge 1,8 GB, các tiến trình `claude` 1,4 GB):
+  `lanes_max: 3`, `agents_at_once` bỏ trống (tức 3, theo ý bạn ở Lượt 25), `min_free_ram_gb: 3`.
+  - Số agent bằng số làn: làn nào cần agent thì có ngay, trừ khi chốt RAM bắt chờ.
+  - Agent không tốn RAM khi làn chờ bạn, nhưng **lúc chạy** thì có: một lượt build có thể bật dev server, một Chrome
+    của `chrome-devtools`, hay JVM cùng Postgres của Testcontainers, cộng 1,5–4 GB [Ước]. Chốt RAM giữ cho ba lượt chạy
+    cùng lúc không đẩy Windows vào cảnh dùng file swap.
+  - `lanes_max: 3` cũng là số item tối đa dồn lại chờ bạn ở gate ③ và Accept.
+  - Kit không mở VS Code. RAM của VS Code tính theo số cửa sổ bạn mở, không theo số làn.
 
 ## 7. Cấu trúc
 
@@ -273,7 +279,7 @@ Phần tạo và gỡ worktree thật, cài package, hai agent chạy cùng lúc
 
 1. **Hai phần, hai PR** như mục 3: phần 1 (worktree theo item) dùng được một mình.
 2. **Vị trí worktree:** `<cha>/<dự án>-wt/<KEY>`, ví dụ `e-commerce/shop-wt/SHOP-13`.
-3. **Cấu hình trong `project.yaml`** (`runs.worktrees`, `runs.lanes_max`, `runs.agents_at_once`, `runs.port_step`, `runs.copy`), mặc định tắt và
+3. **Cấu hình trong `project.yaml`** (`runs.worktrees`, `runs.lanes_max`, `runs.agents_at_once`, `runs.min_free_ram_gb`, `runs.port_step`, `runs.copy`), mặc định tắt và
    1.
 4. **Chỉ `build`, `fix`, `review`, `qa` được song song;** các lệnh còn lại chạy một mình.
 5. **Giữ WIP 1 cho mỗi dev agent;** nâng WIP để sau.
