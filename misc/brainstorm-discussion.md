@@ -26534,3 +26534,13 @@ PR #24 (SHOP-11, khung trang của `user`, head `544ed76`): `reviewer` 2 Medium 
 **Bạn approve PR #24:** mở https://github.com/TungPH7/shop/pull/24, tab **Files changed**, bấm **Review changes**, chọn **Approve**, bấm **Submit review**. `merge-gate` sẽ tự merge. Bạn cũng có thể nhờ mình approve thay như PR #23.
 
 Đang chạy: review PR #25 (SHOP-14), và `/ao-fix 26` (SHOP-17, CI `policy` đỏ).
+
+**Claude (02:22, PR #26 sẵn sàng):**
+
+PR #26 (SHOP-17, admin gỡ phần sản phẩm cũ, head `04f1e12`): `reviewer` 1 Medium (README còn tả route đã gỡ) và 3 Low, `security` không có finding, không Critical hay High. SHOP-17 đến giờ 5,35 USD. 4 finding đã vào **SHOP-42** (dưới SHOP-7, `ao-fe-dev`, bị SHOP-17 chặn).
+
+**Đang chờ bạn approve hai PR:** #24 (SHOP-11) và #26 (SHOP-17). Cách làm như nhau: mở PR, tab **Files changed**, **Review changes**, **Approve**, **Submit review**; `merge-gate` tự merge. Hoặc nhờ mình approve thay.
+- https://github.com/TungPH7/shop/pull/24
+- https://github.com/TungPH7/shop/pull/26
+
+Vì sao cần sớm: ba làn đang đầy (SHOP-11, SHOP-14, SHOP-17 đều chờ duyệt), nên chưa mở được build mới (SHOP-18, rồi SHOP-15 sau SHOP-14). Mỗi PR merge sẽ gỡ một làn. `security` của PR #25 (SHOP-14) đang chạy.
