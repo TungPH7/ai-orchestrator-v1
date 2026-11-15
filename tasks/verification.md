@@ -300,3 +300,7 @@ Sửa plan và todo: T4 thêm `playwright.config.ts` của profile; T5 đưa b�
     - `--resume` một phiên tạo ở thư mục chính chạy được từ worktree, và ngược lại;
     - hook `PreToolUse` trả `deny` vẫn chặn lệnh trong worktree chưa tin cậy (1 permission denial, file không được ghi);
     - chưa phân biệt được `permissions.allow` ở worktree chưa tin cậy: cài đặt cấp người dùng đã cho phép sẵn; agent của kit không dựa vào nó.
+- **Chặng 4, tiếp** (Phiên 32 · Lượt 13–18):
+  - `SHOP-10` build (`fe-dev`, `high`, 10,04 USD): PR nháp #19, token OKLCH, Be Vietnam Pro (9 file, khoảng 77 KB), `components.css`, `PlaceholderTile`, `docs/design-system/user.md` có số đo thật trên trang mẫu (tiêu đề 38 px / 600, badge 25,4 px). 301 unit test; 7 E2E của `user` fail ở máy cả trên `develop` (mock API NestJS cũ). CI đỏ cùng lỗi coverage (`layout.tsx` không có trong báo cáo); `/ao-fix 19` chạy.
+  - `SHOP-8`, bạn chọn sửa 7 Low trước (Lượt 13). `/ao-fix 18 --change none --note` (`fe-dev` 3,30 USD): 7 commit, `theme-init.js` trong `<head>`, 128 unit test. Review lại: `reviewer` (2,27 USD) 1 Medium (quy ước 15.3 của `admin` còn ghi Tailwind + `cva`, ngược quyết định 14 của plan) và 1 Low (README, getting-started còn nhắc nút thanh bên); `security` (`max`, 3,35 USD) 0 lỗi. Kit dừng "nothing to fix" vì Medium không chặn. `SHOP-8` 21,14 USD.
+  - `fe-dev` nhờ `ba` trên `SHOP-10` (comment 10271) giao việc ghi số đo vào `admin.md`; chưa có trả lời. `reviewer` gợi ý giao cho `SHOP-9`.
