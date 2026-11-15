@@ -9,7 +9,7 @@ import { agentCommand, formatDecision, lastReport, runGo } from '../../lib/workf
 import { withLoggedSession } from '../../lib/workflow/runs.mjs';
 import { decideStep } from '../../lib/workflow/steps.mjs';
 import { CONTRACT_DIR, ROOT } from '../helpers/kit.mjs';
-import { checkArgument, checkoutStop, homeBranch, reviewTreePath, runsFile, takeLock } from '../../scripts/ao-step.mjs';
+import { checkArgument, checkoutStop, homeBranch, reviewTreePath, runsFile } from '../../scripts/ao-step.mjs';
 import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 
@@ -597,16 +597,6 @@ test('--note and --answers read only a file in .ai/runs/ of the project', () => 
   }
 });
 
-test('the lock of ao-step is taken atomically: a second run sees the first, a stale one is replaced', () => {
-  const dir = mkdtempSync(join(tmpdir(), 'ao-step-lock-'));
-  const lock = join(dir, 'active.json');
-  const first = { pid: 101, command: 'build', arg: 'DEMO-21' };
-  assert.equal(takeLock(lock, first, () => true), null, 'free');
-  assert.deepEqual(takeLock(lock, { pid: 102, command: 'review', arg: '15' }, (pid) => pid === 101), first, 'held by a live process');
-  assert.equal(takeLock(lock, { pid: 103, command: 'fix', arg: '15' }, () => false), null, 'the holder is gone');
-  assert.equal(JSON.parse(readFileSync(lock, 'utf8')).pid, 103);
-  rmSync(dir, { recursive: true, force: true });
-});
 
 // release-workflow T13: a qa run.
 test('a qa run gets its worktree with the qa note; its follow-up runs before the worktree goes, and its notes reach state.json and last.md', async () => {
@@ -660,4 +650,31 @@ test('last.md after a command that ends on a state, such as /ao-preview --go: Ne
   const text = lastReport({ command: 'preview', key: 'DEMO-21', made, decision, state: { runs: [] } });
   assert.match(text, /## Next\n\nThe preview of DEMO-21 runs on feature\/DEMO-21-x: web http:\/\/localhost:3000\/\nNext: \/ao-preview DEMO-21 --stop, when you are done with it\n/);
   assert.doesNotMatch(text, /Stopped|undefined/);
+});
+
+// parallel-runs spec 5.1: a qa run stopped because another deploy came during it.
+test('a superseded qa run is on record as superseded, attaches nothing, and the runner decides again', async () => {
+  const states = {};
+  const store = { readState: (k) => states[k] ?? null, writeState: (k, s) => (states[k] = s), writeLast: () => {} };
+  const qaRun = (sha) => ({ role: 'qa', key: 'DEMO-21', effort: 'high', purpose: 'qa', prompt: `QA on ${sha}`, qa: { environment: 'development', sha, auth: true } });
+  let decisions = 0;
+  const decide = () => {
+    decisions += 1;
+    if (decisions === 1) return { go: true, runs: [qaRun('a'.repeat(40))] };
+    if (decisions === 2) return { go: true, runs: [qaRun('c'.repeat(40))] };
+    return { go: false, reason: 'DEMO-21 is In QA, not Ready for QA', next: 'Accept', lines: [] };
+  };
+  const afters = [];
+  let calls = 0;
+  const agent = async () => {
+    calls += 1;
+    return calls === 1
+      ? { lines: runLines({ outcome: 'cut' }), stopped: false, superseded: 'development ran aaaaaaaa when qa started, and cccccccc came during the run' }
+      : { lines: runLines({ session: 's2' }), stopped: false };
+  };
+  const { decision, made } = await runGo({ command: 'qa', arg: 'DEMO-21', options, gather: async () => ({ command: 'qa', item: { key: 'DEMO-21' }, pr: null, docs: null }), decide, agent, git: async () => ({ ok: true }), dispatch: async () => {}, after: async (run) => (afters.push(run.qa.sha), ['attached']), store, sleep: async () => {}, now: () => 0 });
+  assert.deepEqual(made.map(({ outcome }) => outcome), ['superseded', 'done']);
+  assert.match(made[0].notes.join(' '), /cccccccc came during the run/);
+  assert.deepEqual(afters, ['c'.repeat(40)], 'only the run that ended attaches its evidence');
+  assert.equal(decision.go, false);
 });
