@@ -26398,3 +26398,14 @@ Khi trình duyệt hỏi đăng nhập, nhập tên và mật khẩu đó. Stagi
    - `/ao-qa SHOP-38` (QA của bản chép kit).
    Hai lệnh đầu tiên đã được khóa nhận cùng lúc, còn thư mục `shop` vẫn ở `develop`. Watcher chung báo 3 phút một lần: tiến độ từng lệnh, các làn trong `shop-wt/`, các khóa đang giữ.
 4. **Còn chờ bạn:** Accept SHOP-9 và SHOP-10; chọn hướng (a) hay (b) cho SHOP-40.
+
+**Claude (00:20, kiểm thật C2: bắt được một lỗi):**
+
+1. **Kết quả kiểm thật đến giờ:**
+   - Khóa nhận ba lệnh cùng lúc. Làn `shop-wt/SHOP-11` và `shop-wt/SHOP-13` được tạo, kèm cài gói. Thư mục `shop` vẫn đứng yên ở `develop`.
+   - Lần đầu, SHOP-13 dừng vì Docker Desktop vừa bật chưa trả lời kịp; chạy lại thì được.
+   - `be-dev` của SHOP-13 đang chạy trong làn của nó.
+2. **Lỗi tìm được:** máy chỉ còn 0,4–2 GB RAM trống (Docker Desktop bật, tổng 15,8 GB). Cả ba lệnh đều chờ RAM vì cách đếm sai: mỗi lệnh coi lệnh kia là "đang chạy" chỉ vì nó giữ khóa, dù chưa lệnh nào bật agent. Kết quả là không lệnh nào bắt đầu, và sau 30 phút cả ba cùng dừng.
+   - **Xử lý ngay:** mình dừng `/ao-build SHOP-11` và `/ao-qa SHOP-38` (chưa bật agent), để SHOP-13 nằm trên đường găng chạy trước.
+   - **Sửa trong kit** (PR #300, 1.534 test đạt, CI đang chạy): agent chỉ chờ RAM khi có lệnh khác **đã bật agent**. Việc kiểm RAM và đánh dấu "đang có agent" làm trong cùng một mutex, và đánh dấu được gỡ khi agent xong.
+3. **Điều cần biết về máy này:** khi Docker bật, RAM trống thường dưới 3 GB (ngưỡng `min_free_ram_gb`). Vì vậy dù đã sửa lỗi, agent thứ hai thường vẫn phải chờ agent đầu xong; 3 làn chỉ chạy cùng lúc được khi RAM đủ. Nếu muốn chạy song song nhiều hơn, có thể hạ `min_free_ram_gb` (ví dụ xuống 1,5) trong `project.yaml` qua một PR bạn duyệt, hoặc đóng bớt ứng dụng. Mình chưa đổi gì, để bạn quyết sau khi xem vài lượt chạy thật.
