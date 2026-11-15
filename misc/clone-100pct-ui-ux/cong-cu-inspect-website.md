@@ -172,3 +172,68 @@ khung vẫn cần, để so với app của mình ở bước 3 của quy trình
 2. **Cho kit, sau Pilot 3:** biến script đo trang mẫu thành một bước của kit. Bước đó chụp cả hai giao diện, ba cỡ màn
    hình, các trạng thái và animation, rồi ghi JSON. Khi `fe-dev` làm xong, một bước so ảnh tự động báo app giống trang
    mẫu tới đâu. Việc này nên vào `misc/thao-luan/concerns.md`.
+
+## 6. Chốt bộ công cụ: Playwright và `chrome-devtools` MCP
+
+Bạn hỏi tiếp ở Lượt 10: luôn có Playwright, vậy chọn Claude in Chrome hay `chrome-devtools` MCP?
+
+**Đề xuất: Playwright + `chrome-devtools` MCP.** Không dùng Claude in Chrome cho việc này.
+
+Lý do chọn `chrome-devtools` thay vì Claude in Chrome:
+
+1. **Cùng một việc.** Cả hai đều cho agent điều khiển trình duyệt từng bước để khám phá trang. Giữ cả hai chỉ làm agent
+   phân vân, không thêm khả năng nào.
+2. **`chrome-devtools` đo sâu hơn:**
+   - `get_css_styles` cho thấy rule CSS gốc, không chỉ giá trị cuối;
+   - `evaluate_script` chạy JavaScript trong trang;
+   - `screencast_start` / `screencast_stop` quay video;
+   - performance trace và Lighthouse.
+
+   Với Claude in Chrome, việc chạy JavaScript trong trang còn chưa có trong tài liệu chính thức.
+3. **An toàn hơn.** `shop` chạy `chrome-devtools-mcp@1.12.0` với `--isolated`, tức mỗi lần một profile tạm, không có
+   tài khoản nào của bạn. Claude in Chrome đi qua profile Chrome thật, có mọi tài khoản đang đăng nhập.
+4. **Agent dùng được.** `fe-dev` đã có các tool này trong `tools:` và chạy được qua `ao-step`. Tài liệu Claude in
+   Chrome không nói subagent có dùng được không. Nó cũng cần một cửa sổ Chrome hiện thật, mà agent của kit chạy ngầm.
+5. **Đã có sẵn.** Không phải cài extension hay đổi cách đăng nhập.
+
+**Khi nào mới cần Claude in Chrome:** khi trang mẫu nằm sau đăng nhập, ví dụ một app SaaS bạn có tài khoản, hoặc khi
+bạn muốn ngồi xem và chỉ trực tiếp. Lúc đó chỉ phiên chính dùng nó, có bạn bên cạnh; agent thì không.
+
+**Bộ công cụ chốt:**
+
+| Công cụ | Ai dùng | Việc |
+|---|---|---|
+| Playwright (script) | Phiên chính; `fe-dev` và `qa` qua Bash | Đo hàng loạt và chụp ảnh chạy lại được; so ảnh app với trang mẫu |
+| `chrome-devtools` MCP | `fe-dev`; phiên chính khi cần | Khám phá trang, đo kỹ một phần tử, đọc animation, performance |
+| ffmpeg | Phiên chính | Tách video thành khung hình. **Máy này chưa có ffmpeg**, cần cài khi dùng tới |
+| Chrome DevTools (bạn tự mở) | Bạn | Panel Animations và CSS Overview, khi muốn tự xem |
+
+## 7. Có nên ghi rõ vai trò của mỗi tool không?
+
+**Nên ghi**, nhưng ngắn. Claude Code tự suy ra được phần nào: nó chọn tool theo mô tả của tool và ngữ cảnh. Có ba chỗ nó
+không tự biết được.
+
+1. **Khi hai tool làm được cùng một việc, lựa chọn sẽ không ổn định.** Ví dụ, cả Playwright và `chrome-devtools` đều
+   chụp được 30 ảnh. Lần này agent viết script, lần sau lại gọi 30 lần `take_screenshot`, vừa chậm vừa tốn token. Một dòng
+   "đo hàng loạt dùng script Playwright" là đủ để chốt.
+2. **Ràng buộc của dự án**, như "không dùng profile thật", "lưu kết quả vào `.ai/design-inbox/_reference/`", "giá trị
+   phải đo, không đoán", thì không mô tả tool nào nói ra cả.
+3. **Danh sách phải đo mới là chỗ quan trọng nhất.** Lỗi ở T11 không phải chọn sai tool: Playwright làm được việc đó.
+   Lỗi là thiếu danh sách đo: hai giao diện, ba cỡ màn hình, các trạng thái hover, focus và disabled, hộp thoại,
+   animation. Nếu ghi vai trò tool mà không ghi danh sách này, lỗi vẫn lặp lại.
+
+**Ghi ở đâu**, theo thứ tự từ mạnh tới yếu:
+
+1. **Quyền trong `tools:` của từng agent.** Đây là phân công chắc nhất, vì agent không có tool thì không dùng được.
+   Hiện nay `ux` không có tool trình duyệt nào và chỉ đọc ảnh; `fe-dev` có `chrome-devtools`.
+2. **Một skill**, ví dụ `reference-capture`, chỉ nạp khi cần, gồm:
+   - bảng "việc → tool → vì sao", như bảng ở mục 6;
+   - danh sách những gì phải đo;
+   - nơi lưu kết quả và dạng JSON;
+   - bước so ảnh khi `fe-dev` làm xong.
+3. **Một dòng trong rules hay CLAUDE.md** trỏ tới skill đó, để mọi phiên biết nó có.
+
+Không nên viết dài trong CLAUDE.md: phần đó nạp vào mọi phiên dù không dùng tới.
+
+**Chưa làm gì ở bước này.** Đây là đề xuất cho kit, nên đi cùng việc "biến script đo trang mẫu thành một bước của kit"
+ở mục 5. Hai việc đó nên được ghi vào `misc/thao-luan/concerns.md` sau Pilot 3.

@@ -96,7 +96,7 @@
 - [x] **T10g: sửa theo review vòng 3 của `shop` PR #13** (spec 2.9 mục 5; Phiên 31 · Lượt 16): kit có cách ghi một High bạn chấp nhận; merge ngược chờ `audit` của các commit mang từ `main` về; `doctor` kiểm `CODEOWNERS` trên `main`; các Low. Chép kit vào PR #13, review vòng 4; còn High 1 thì approve kèm dòng `Accept risk:` tới 2026-12-31; merge, QA, bạn Accept `SHOP-6`.
 - [x] **T10h: [bạn] bản `v0.2.0`** ngay sau `SHOP-6`: đưa `.github/CODEOWNERS` lên `main`, và chạy thử luồng release mới (nhánh release cắt bằng login của bạn, PR report, tag của `ao-merge`, merge ngược có `audit`) trước Epic. Lúc đầu viết là `v0.1.1`, nhưng kit chỉ cắt `vX.Y.0` từ `develop` (spec 2.9 phần 7), nên Epic lên `v0.3.0`. Fix Version `v0.3.0` tạo qua REST; gate ④ và ⑤ của bạn. Xong ở Phiên 32 · Lượt 3: tag `v0.2.0` của `ao-merge`, Production, Release trên Jira, dòng `CODEOWNERS` của `doctor` xanh.
 - [x] **T12: [bạn] `/ao-spec <EPIC>`** tới **gate ①**. `SHOP-7`: PR docs #17, 12,31 USD (Phiên 32 · Lượt 3–5); chờ bạn bấm `Approve spec`.
-- [ ] **T13: [bạn] `/ao-plan <EPIC>`** tới **gate ②**. Sửa chặng 4 của todo theo plan của `sa`.
+- [ ] **T13: [bạn] `/ao-plan <EPIC>`** tới **gate ②**. Sửa chặng 4 của todo theo plan của `sa`. `SHOP-7`: plan và 30 item `SHOP-8`…`SHOP-37`, 13,97 USD (Phiên 32 · Lượt 6–10); chờ bạn bấm `Approve plan`, rồi sửa chặng 4.
   - Plan của Epic phải xử lý ba Low của review `shop` PR #10: viết lại hoặc xóa 8 E2E đang bỏ qua trên môi trường cùng mock của API NestJS cũ (4 test đăng nhập chờ Epic đăng nhập); gom `isLocal` vào một helper cho mỗi app; test probe kiểm thêm `/actuator/health/db` trả 401.
 
 ### Checkpoint 4: sau T13
