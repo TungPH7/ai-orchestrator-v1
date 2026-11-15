@@ -37,7 +37,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 29 | `3f959e28-f038-49ee-ae3f-592c7a55eecb` | 2026-11-14 khoảng 09:35 → | Bạn dán đoạn cuối của Phiên 28, bảo làm T16 và mở VPS cho chặng 5, để mở tới khi bạn bảo đóng; T16 (tài liệu chặng 3, kit PR #272) và T17 (ba việc B2 để lại, kit PR #273) xong; Claude đưa hai lệnh mở VPS trong dòng báo giữa chừng nên bạn không thấy, bạn nhắc hai lần, Claude đưa lại ở câu trả lời cuối; lượt 2: lệnh mở đăng nhập root chưa có tác dụng, bạn chạy lại; lượt 3: T18 bản nháp bước 9, T19 kit `3a1c729` lên VPS, T20: `SHOP-2` và `shop` PR #7, `SHOP-3` với `add api` và Spring Boot 4.0.9, kit PR #274 (coverage của interface Java); Claude xóa nhầm toàn bộ container, image và volume Docker Desktop của bạn khi dọn sau test; lượt 4: không có Previous Versions, bạn dặn hỏi trước mọi việc xóa không hoàn tác được, và cho Claude merge PR `shop` khi CI xanh; PR #7, #8 merge (T20 xong), kit PR #275, #276, `SHOP-4` và PR #9 xanh, biến database của Development trên VPS; chờ bạn quyết bật Docker Desktop cho `/ao-preview`; lượt 5: bạn chọn bật Docker; `/ao-preview SHOP-4` chạy `user`, `admin`, `api` và Postgres, ba app trả 200, `/api` qua `admin` tới `api`; `user` còn trỏ API NestJS cũ, việc của B4; chờ bạn xem rồi trả lời merge; lượt 6: PR #9 merge (T21 xong), `/ao-rollback development 05b1a63` gỡ chặn, deploy 18,5 phút, database, Flyway, `/api/v1/health` qua `admin` 200, RAM còn trống 2.508 MB, backup và `restore-check` đạt; chờ bạn đồng ý thử khôi phục vào database đang chạy và đóng `SHOP-2`–`SHOP-4`; lượt 7: khôi phục vào database đang chạy đạt sau khi lộ lỗi luật giữ bản (sửa: giữ 48 giờ, kit PR #277), `SHOP-2`–`SHOP-4` Cancelled, kit trên VPS `97db806`, B3 đóng; chờ bạn chọn module kế tiếp |
 | 30 | `07e0a424-ef4e-437a-b766-0ca9955be037` | 2026-11-14 khoảng 12:15 → | Bạn dán đoạn cuối của Phiên 29 và chọn B4 (Pilot 3); Claude viết bản nháp `SPEC-pilot-3.md`: `v0.1.0` của scaffold lên ba môi trường trước, rồi Epic đầu "Danh mục sản phẩm" lên `v0.2.0`; tìm ra Production đang luôn mở trong khi `/api/**` để `permitAll` (đề xuất `production_auth`), `/ao-release` cần một item Done (`SHOP-5`), ba app lệch hợp đồng API sản phẩm; chờ bạn trả lời 5 câu: Epic, scaffold trước, chỗ để bản sao backup (đề xuất Backblaze B2), basic auth cho Production, quyền tự làm cho B4; lượt 2: bạn duyệt câu 1, 2, 4, 5, hỏi câu 3 có cần chọn trước không và sẽ gửi ảnh; Claude hiểu sai "chưa làm" và bắt đầu viết plan, bạn nhắc, Claude dừng (spec và `tasks/plan.md` chưa commit); bạn hỏi Google Drive cho bản sao: được, với OAuth client riêng đã Publish, nhưng token trên VPS xóa hẳn được bản sao; lượt 3: bạn hỏi bản sao backup là gì và vì sao cần mới đạt; Claude giải thích: backup đang nằm chung máy với database, tiêu chí 2 do spec đặt chứ không phải giới hạn kỹ thuật, chỉ bắt buộc trước khi mở bán; lượt 4: bạn hỏi backup về máy bạn có đạt không, và cơ chế có giống B2 để sau này chuyển: đạt (máy bạn kéo về bằng tài khoản chỉ đọc trên VPS), khác hướng chép (kéo về và VPS đẩy lên), đề xuất mã hóa `age` từ đầu và khối cấu hình B2 tắt sẵn để chuyển dễ; lượt 5: bạn chọn backup về máy bạn và hỏi làm gì tiếp, rồi gửi giao diện mẫu cho Epic (trang vitrea, hai ảnh); Claude bắt đầu B4: kit PR #279–#283 (`production_auth`, dòng trạng thái của `/ao-preview`, Playwright chỉ dựng app tại chỗ cho test `@local`, bản sao backup kéo về máy bạn, đọc mật khẩu từ biến của Windows trước), `SHOP-5` PR #10 merge, review 3,52 USD và QA 0,92 USD (NOT TESTED vì một bước chỉ VPS kiểm được, đã trả lời), VPS kit `dbbf318` với bí mật Staging và Production, Production của `shop` hỏi basic auth, bản sao về `D:\ao-backups` khôi phục khớp; chờ bạn Accept `SHOP-5`, cất bản thứ hai của khóa `age`, và gate ④ của `v0.1.0`; lượt 6: bạn nhờ bấm Accept (`SHOP-5` Done), hỏi cất khóa sau được không (được, nên trước khi mở bán), bảo làm như đề xuất; Claude gửi danh sách gate ④ (`28394b8`, `SHOP-5`, scaffold của `SHOP-1`–`SHOP-4`), tạo Fix Version, chụp 5 màn hình và đo 94 token của trang mẫu; lượt 7: bạn duyệt gate ④; `release/v0.1.0` lên Staging (dùng lại image, Flyway 3 migration, RAM còn 2.290 MB), regression PASS, `/ao-ship` dừng vì ruleset `ao-protected` của repo public chặn bot `ao-dev` commit lên nhánh release (cũng sẽ chặn merge PR tài liệu của Epic và merge ngược); chờ bạn chọn cách sửa ruleset; lượt 8: bạn hỏi sao commit thẳng lên nhánh được, nhất là nhánh release (chưa làm gì); Claude giải thích PR là luật GitHub chỉ có khi bật, cách kit bù ở repo không ruleset, vì sao `/ao-ship` commit hai file tài liệu lên nhánh release, và một cách giữa: PR nhỏ do `merge-gate` tự merge; lượt 9: bạn chọn tách ruleset thành ba; kit PR #284, ba ruleset áp lên `shop`, `/ao-ship` chạy lại mở PR release #11 (CI xanh, Staging deploy lại); chờ bạn approve PR #11 ở gate ⑤; lượt 10: bạn approve; `merge-gate` merge, tag `v0.1.0`, tự merge ngược PR #12; Production lên, hỏi basic auth; RAM còn 1.867 MB khi đủ ba môi trường; backup và bản sao cả ba database; chờ bạn chọn ai bấm Release `v0.1.0` và cách chép kit ở T10 |
 | 31 | `d80cd357-3fde-4be6-a978-12fadc7d8553` | 2026-11-14 khoảng 15:58 → | Bạn dán đoạn cuối của Phiên 30, nhờ mình bấm Release `v0.1.0` và chọn review đầy đủ cho T10; Release qua REST bằng token admin; `SHOP-6` và PR #13 chép kit `ceee70c` vào `shop`, CI xanh, `/ao-review 13` chạy (`reviewer` `xhigh`, `security` `max`); T11 bắt đầu song song: câu hỏi PO đầu tiên về đơn vị giá; review xong (8,13 USD): `security` thấy 2 High do lỗi của Claude (ruleset cho App `ao-dev` của agent đi tắt, khóa `age` nằm trên laptop); Claude đề xuất gỡ bypass ngay, bạn cất khóa rồi xóa file, App `ao-merge` riêng cho merge, review vòng 2; chờ bạn quyết; lượt 2: bạn đồng ý cả năm việc, đã cất khóa, chốt giá VND và giao Claude chọn các trường, cách tìm, sắp xếp theo chuẩn ngành; Claude gỡ bypass trên `shop`, xóa file khóa, thêm loại App `ao-merge` vào kit và mở trang tạo App; chốt các trường và cách tìm theo Shopify, Google Merchant Center, Baymard; hỏi câu 2 về ảnh sản phẩm; lượt 3: bạn tạo App `ao-merge` và chọn ảnh giữ chỗ; khóa của App vào environment `merge-gate`, file khóa trên máy xóa; bản nháp Epic "Danh mục sản phẩm" chờ bạn OK; lượt 4: bạn OK; Epic `SHOP-7` tạo qua Rovo MCP; kit PR #285 sửa hai High (App `ao-merge`, PR report của `/ao-ship`, tag cho merge ngược, khóa `age` ngoài máy, `gh-guard`), ruleset mới trên `shop`, VPS lên `18d79eb`, PR #13 chép lại kit; `/ao-review 13` vòng 2 chạy; chờ bạn bấm `Start spec` và kiểm khóa `age` đã cất; review vòng 2 (11,18 USD, vượt ước): `security` thấy 2 High mới về ruleset (hai App của agent approve cho nhau, nhánh release giả lách PR report) và 2 Medium (tag không được bảo vệ, dọn bản sao theo tên do VPS đặt); Claude đề xuất Code Owners, chặn tạo nhánh release, ruleset cho tag, review vòng 3; chờ bạn quyết; lượt 5: bạn đồng ý; kit PR #286 merge (Code Owners, chặn tạo nhánh release và tag `v*`, `main` không ai đi tắt; `require_last_push_approval` để tắt, lệch đề xuất), năm ruleset trên `shop`, VPS lên `e95ffa5`, PR #13 thêm commit `cd37612` kèm `CODEOWNERS`; `/ao-review 13` vòng 3 chạy; lượt 6: bạn đã bấm `Start spec` (`SHOP-7` Specifying) và hỏi kiểm khóa `age` làm sau được không; Claude: được, không phải điều kiện của pilot, nên làm trước T17; review vòng 3 (8,52 USD): `reviewer` Approve, `security` 2 High (agent lấy được login GitHub của bạn vì chạy dưới user Windows của bạn; `main` chưa có `CODEOWNERS`), `SHOP-6` gắn cờ Needs you, `audit` chặn merge khi còn High; Claude nhận lỗi không nêu sớm gốc chung của ba vòng; đề xuất chấp nhận High 1 có thời hạn (kit thêm cách ghi chấp nhận rủi ro), sửa High 2 (merge ngược, `doctor`, `v0.1.1`), hoặc làm sandbox trước; chờ bạn chọn; lượt 7: bạn dặn chưa làm, hỏi lại cho rõ; Claude: High 2 sửa được ngay, High 1 cần sandbox (1–2 ngày), nên cách 1 tạm chấp nhận High 1, cách 2 dừng để làm sandbox trước; chờ bạn chọn; lượt 8: bạn phản đối 1–2 ngày và WSL (máy chỉ dùng Windows), hỏi kit có vấn đề không; Claude nhận nghĩ quá xa và nhận gốc là kit cho agent chạy dưới user của bạn; đề xuất mới: một user Windows riêng cho agent (khoảng nửa ngày, flow của bạn không đổi), sửa cả hai High ngay; chờ bạn nói bắt đầu; lượt 9: bạn hỏi việc agent chạy dưới user của bạn có từ trước, sao giờ mới thành High; Claude: có từ Pilot 1, các vòng trước bắt lối dễ hơn, sau vòng 2 login của bạn thành chìa khóa duy nhất; nhận lỗi không nhắc ở vòng 2; chờ bạn chọn tạm chấp nhận hay user riêng; lượt 10: bạn hỏi agent có thấy mật khẩu GitHub không, nhắc trả lời ngắn và dễ hiểu; Claude giải thích lại theo 5 bước: không thấy mật khẩu, nhưng mở được chìa khóa (token) mà `gh` cất trong tài khoản Windows của bạn; lượt 11: bạn hỏi tài khoản Windows thứ hai nằm ở đâu, có dùng được chương trình của account 1 không; Claude: nằm ngay trên máy, bạn vẫn đăng nhập account 1, agent chạy ngầm dưới `ao-agent`, dùng được chương trình cài chung nhưng không mở được đồ riêng của account 1; lượt 12: bạn hỏi `ao-agent` làm những gì; Claude: chưa tạo; khi có, các agent làm đúng việc cũ ở đó bằng chìa khóa riêng của agent, còn việc cần quyền của bạn vẫn ở account 1; lượt 13: bạn hỏi có phải kit chưa có agent nào, chỉ phiên chính dùng token `gh` của bạn, và `ao-agent` là sub agent đầu tiên; Claude: kit có sẵn 10 agent chạy bằng App, phiên chính chỉ bật chúng; `ao-agent` là tài khoản Windows, như phòng riêng cho 10 agent; lượt 14: bạn hỏi đặt quy tắc cấm agent đọc chìa khóa `gh` có đủ không; Claude: không, kit đã có quy tắc và `gh-guard` nhưng agent bị lừa thì lách được bằng file chương trình tự viết; tài khoản riêng thì Windows khóa hẳn, đúng cách `security` đề xuất; lượt 15: bạn chấp nhận High 1, hỏi làm `ao-agent` sau thì đi tiếp được không; Claude: được, kit thêm chỗ ghi chấp nhận rủi ro (dòng trong lần approve từ login của bạn, hạn 2026-12-31), High 2 vẫn sửa (chặn merge ngược, `v0.1.1`), review vòng 4, khoảng 4–5 giờ; chờ bạn nói bắt đầu; lượt 16: bạn nói bắt đầu, dặn sửa kỹ và xem lại hiệu quả; kit PR #287 merge (chỗ ghi High được chấp nhận, merge ngược chờ kiểm các commit từ `main`, `doctor` kiểm `CODEOWNERS` trên `main`, các Low), VPS lên `05da881`, PR #13 thêm commit `3ef07c6`, gỡ cờ `SHOP-6`; review vòng 4 chạy, `security` review cả PR nên chi phí có thể 10–12 USD; Claude rút ba điều về cách làm; tiếp lượt 16: review vòng 4 (11,15 USD): `reviewer` Approve, `security` chỉ còn High đã chấp nhận; phiên chính approve kèm `Accept risk` bằng login của bạn, merge PR #13 (`fdc2ee0`), Development deploy thành công; QA (1,20 USD) đạt, ruleset đọc bằng login của bạn; chờ bạn Accept `SHOP-6`; kit PR #288 sửa các Low vòng 4 và lỗi `jira-sync` gắn lại cờ; đổi lời khuyên: không kiểm khóa `age` trên máy này trước khi có `ao-agent`; lượt 17: bạn hỏi đang ở T mấy; Claude: cuối T10, chờ bạn Accept `SHOP-6`; T11 xong; kế tiếp T10h (`v0.1.1`) rồi T12 |
-| 32 | `84d69ed3-b065-40d0-a4e2-3c06a66ac5cb` | 2026-11-15 khoảng 01:52 → | Bạn dán đoạn cuối của Phiên 31, đã Accept `SHOP-6` (T10 xong); T10h: kit chỉ cắt `vX.Y.0` từ `develop`, nên bản đưa `CODEOWNERS` lên `main` là `v0.2.0` và Epic `SHOP-7` lên `v0.3.0`; Fix Version `v0.3.0` tạo qua REST; spec 2.9 phần 7, plan, todo sửa theo; chờ bạn duyệt gate ④ (`fdc2ee0`, `SHOP-6`); lượt 2: bạn duyệt gate ④; `release/v0.2.0` cắt bằng login của bạn, Staging; `/ao-ship v0.2.0` (0,92 USD): regression PASS, PR report #14 do App `ao-merge` merge, PR release #15 CI xanh; chờ bạn approve ở gate ⑤ và chọn ai bấm Release `v0.2.0` |
+| 32 | `84d69ed3-b065-40d0-a4e2-3c06a66ac5cb` | 2026-11-15 khoảng 01:52 → | Bạn dán đoạn cuối của Phiên 31, đã Accept `SHOP-6` (T10 xong); T10h: kit chỉ cắt `vX.Y.0` từ `develop`, nên bản đưa `CODEOWNERS` lên `main` là `v0.2.0` và Epic `SHOP-7` lên `v0.3.0`; Fix Version `v0.3.0` tạo qua REST; spec 2.9 phần 7, plan, todo sửa theo; chờ bạn duyệt gate ④ (`fdc2ee0`, `SHOP-6`); lượt 2: bạn duyệt gate ④; `release/v0.2.0` cắt bằng login của bạn, Staging; `/ao-ship v0.2.0` (0,92 USD): regression PASS, PR report #14 do App `ao-merge` merge, PR release #15 CI xanh; chờ bạn approve ở gate ⑤ và chọn ai bấm Release `v0.2.0`; lượt 3: bạn approve gate ⑤; App `ao-merge` merge PR #15, gắn tag `v0.2.0`, merge ngược PR #16; Production và Development deploy thành công; Release `v0.2.0` trên Jira qua REST; dòng `CODEOWNERS` của `doctor` xanh; T10h xong; `/ao-spec SHOP-7` chạy; lượt 4: bạn hỏi ảnh trang mẫu ở đâu; `ba` viết SPEC (2,99 USD) và dừng với 12 câu hỏi, chờ bạn trả lời |
 
 ---
 
@@ -24315,3 +24315,122 @@ CI của kit PR #288 xanh. Mình ghi phần tiếp của Lượt 16 vào log tr�
 - mình chạy lại `doctor` để chắc dòng `CODEOWNERS` trên `main` đã xanh.
 
 **Bạn muốn tự bấm Release `v0.2.0` trên Jira, hay để mình làm qua REST như `v0.1.0`?** Bạn trả lời cùng lúc approve là được.
+
+# Phiên 32 · Lượt 3 — 2026-11-15 khoảng 10:05 → 10:22
+
+**Bạn:**
+
+```markdown
+Đã approve, bạn bấm release giúp tôi
+```
+
+**Claude:**
+
+Đã thấy PR #15 merge và tag `v0.2.0`; mình đang chuẩn bị script để Release `v0.2.0` trên Jira.
+
+Production đang deploy `v0.2.0` (commit `ce64301`); mình tìm lệnh `doctor` trong lúc chờ.
+
+`doctor` đã xanh dòng `CODEOWNERS` trên `main`; mình đang kiểm một dòng đỏ khác (bản kit của `shop` cũ hơn kit `main`), trong lúc Production deploy.
+
+Dòng đỏ đó là kit PR #288, đã lên kế hoạch vào `shop` ở lần chép kit sau. Giờ mình chờ Production deploy xong rồi mới bấm Release trên Jira.
+
+Production đang deploy `v0.2.0`, bắt đầu lúc 03:07:29Z. PR merge ngược #16 đã xanh đủ CI và đang chờ `merge-gate` merge. Khi Production xong, mình bấm Release trên Jira.
+
+`v0.2.0` đã lên Production và đã Release trên Jira. Mình đang chờ Development nhận commit merge ngược, đồng thời ghi kết quả vào `verification.md`.
+
+Mình đang kiểm log của `merge-gate` để chắc App `ao-merge` là bên gắn tag `v0.2.0`; Development vẫn chưa nhận commit merge ngược.
+
+Development đang deploy commit merge ngược `5c531e1`. Mình đã ghi kết quả vào `verification.md` và tick T10h; chờ Development xong là commit.
+
+`/ao-spec SHOP-7` vừa kiểm xong và cho GO: bốn lượt agent `ba` → `ux` → `sa` → `ba`. Mình chạy nó ngay. Development vẫn đang deploy commit merge ngược.
+
+**`v0.2.0` đã lên Production và đã được Release trên Jira.** T12 `/ao-spec SHOP-7` đang chạy nền với `ba`. Cứ khoảng 3 phút mình báo tiến độ một lần.
+
+10:16: `ba` đã chạy 3 phút, 35 bước, và đang đọc repo để viết SPEC của `SHOP-7`.
+
+10:19: `ba` đã chạy 6 phút, 42 bước, vẫn đang đọc repo.
+
+10:22: `ba` đã chạy 9 phút, 52 bước. Nó vừa tạo thư mục cho SPEC và đang viết.
+
+# Phiên 32 · Lượt 4 — 2026-11-15 khoảng 10:23 → 10:30
+
+**Bạn:**
+
+```markdown
+ảnh chụp màn hình của trang mẫu bạn đang lưu ở đâu?
+```
+
+**Claude:**
+
+Ảnh chụp trang mẫu đang ở thư mục `.ai/design-inbox/` của repo `shop`, chỉ có trên máy này. Thư mục `.ai/` nằm trong `.gitignore`, nên chưa có ảnh nào lên GitHub. Cụ thể:
+
+1. **Bản gốc:** `D:\Document\1Khoahoc\4LapTrinh\AI-for-coding\e-commerce\shop\.ai\design-inbox\_reference\`
+   - 5 ảnh PNG: `01-growth-list-cards-table.png`, `02-form-new-experiment-dialog.png`, `03-apps-list.png`, `04-overview.png`, `05-app-detail.png`;
+   - `reference.json`, và `tokens.md` (màu, font, khoảng cách của trang mẫu).
+2. **Bản cho Epic:** `D:\Document\1Khoahoc\4LapTrinh\AI-for-coding\e-commerce\shop\.ai\design-inbox\SHOP-7\`
+   - mình chép 5 ảnh PNG sang đây ở T11, chiều 14/11;
+   - `tokens.md` không chép sang, vì `ux` trả lại mọi file không phải PNG hay JPG. Nội dung token đã nằm trong mô tả Epic `SHOP-7`.
+3. **Khi tới lượt `ux`:** sau `ba`, `ux` đổi tên từng ảnh theo màn hình, ví dụ `S2-desktop.png`, rồi chuyển chúng sang `docs/specs/SHOP-7/design/` trên nhánh docs. Lúc đó ảnh mới vào Git và hiện trong PR docs ở gate ①. Thư mục `_reference/` vẫn giữ nguyên bản gốc.
+
+`/ao-spec SHOP-7` vẫn đang chạy. `ba` đang viết SPEC.
+
+`ba` đã dừng với 12 câu hỏi về SPEC. Mình đang ghi log và kết quả, rồi gửi bạn danh sách câu hỏi.
+
+**`ba` đã viết xong SPEC của `SHOP-7` (2,99 USD, 11 phút) và để lại 12 câu hỏi cần bạn trả lời.** Câu nào cũng có đề xuất của `ba`. `ux` và `sa` chỉ chạy sau khi bạn trả lời.
+
+**`ba` đã viết gì:** file `docs/specs/SHOP-7/spec.md` trên nhánh `feature/SHOP-7-spec` (commit `06190f2`, chưa push):
+- 6 story:
+  - US1–US4 cho trang quản trị: danh sách, thêm, sửa và ẩn, xóa;
+  - US5–US6 cho khách: danh sách có tìm kiếm và sắp xếp, trang chi tiết sản phẩm.
+- 28 tiêu chí chấp nhận, AC1–AC28, kèm ví dụ cụ thể.
+- Luật của sản phẩm, và phần việc kỹ thuật:
+  - nâng database làm hai bước an toàn;
+  - API mới;
+  - design system;
+  - gỡ mock cũ;
+  - 3 Low của PR #10;
+  - 5 sản phẩm thử trên Production.
+- Một điều `ba` tìm thấy: tìm kiếm không phân biệt dấu có thể cần extension `unaccent` của PostgreSQL. Database đang chạy không tự có extension này, nên `ba` xếp việc thêm nó vào nhóm "phải hỏi trước". `sa` sẽ chọn cách làm ở bước plan.
+
+**12 câu hỏi, kèm đề xuất của `ba`:**
+1. **Bản phát hành:** Epic ghi `v0.2.0`, nhưng `v0.2.0` vừa lên Production. Đề xuất: Epic vào `v0.3.0`. Đề xuất này khớp với điều bạn đã duyệt ở Lượt 2.
+2. **Giao diện sáng:** trang mẫu chỉ có giao diện tối. Đề xuất: `ux` dựng bảng màu sáng từ cùng các vai trò màu (nền, bề mặt, chữ, màu nhấn, trạng thái), giữ độ tương phản WCAG AA. Mặc định vẫn theo cài đặt của hệ thống, như hai app đang làm.
+3. **Thứ tự "Liên quan nhất" khi tìm kiếm:**
+   - tên bắt đầu bằng từ khóa đứng trước, rồi tới tên chứa từ khóa, rồi tới sản phẩm mới nhất;
+   - `ba` thêm hai điều. Một, tìm theo từng từ: tên có đủ các từ, dù không liền nhau, vẫn ra và đứng ở nhóm thứ ba. Hai, mỗi từ chỉ khớp phần đầu của một từ trong tên, nên `ao` ra "Áo thun" mà không ra "Bao tay".
+4. **Sản phẩm thử trên Production:** mình thêm 5 sản phẩm qua API đang chạy, sau khi bạn duyệt plan và trước gate ④ của `v0.3.0`.
+   - Giá là số nguyên đồng.
+   - Có ít nhất một tên có dấu, một mô tả nhiều dòng và một slug tự gõ, để lần nâng database kiểm được các trường hợp đó.
+5. **Dữ liệu cũ khi nâng database.** Cột giá cũ ghi là USD và cho phép giá 0. Đề xuất:
+   - giữ nguyên con số, coi là đồng, không quy đổi, làm tròn tới đồng;
+   - sản phẩm giá 0 thành Ẩn, và khi sửa phải nhập giá lớn hơn 0;
+   - các sản phẩm cũ còn lại là Đang bán, và mọi sản phẩm cũ là Còn hàng;
+   - tên cũ dài hơn 150 ký tự được giữ, chỉ phải sửa khi lưu lại sản phẩm đó.
+6. **Bốn E2E đăng nhập đang bị bỏ qua:**
+   - xóa hai test kiểm nút xóa trên trang của khách, vì Epic này gỡ nút đó;
+   - giữ hai test đăng nhập và đăng xuất, vẫn bỏ qua, chờ Epic đăng nhập sau này;
+   - sau Epic này còn 2 test bị bỏ qua, thay vì 8.
+7. **Mô tả có thẻ HTML:** lưu đúng như người dùng gõ và hiện như chữ thường, không từ chối. Nhờ vậy mô tả như "kích thước < 5 cm" vẫn lưu được.
+8. **Đổi slug:** đường dẫn cũ trả 404 và không chuyển hướng; form cảnh báo trước khi lưu. Việc chuyển hướng từ slug cũ để cho một Epic sau, nếu cần.
+9. **Ảnh trong dữ liệu cấu trúc cho Google:**
+   - ảnh giữ chỗ không phải file ảnh, nên chưa khai `image`;
+   - hệ quả: Google có thể chưa hiện sản phẩm kèm ảnh, cho tới khi có ảnh thật;
+   - trang chi tiết dùng ảnh Open Graph chung của site;
+   - cách khác là sinh cho mỗi sản phẩm một ảnh chữ cái đầu, nhưng như vậy phạm vi lớn hơn.
+10. **Phần demo của template trên trang sản phẩm của khách:** gỡ hết nút đổi mật độ, nút lưới hay danh sách, badge đếm, nút làm mới, nút phóng ảnh và ảnh `picsum.photos`. Dòng "Đã xem 24 trên 30 sản phẩm" thay cho badge đếm.
+11. **Độ trễ từ trang quản trị tới trang khách:** thay đổi hiện trên trang khách trong vòng 60 giây, và `sa` chọn cách làm. Nếu bạn muốn thấy ngay ở lần tải trang kế tiếp, các AC liên quan sẽ đổi theo.
+12. **Các giới hạn `ba` tự đặt:**
+    - giá tối đa 999.999.999 ₫;
+    - slug và từ khóa tìm kiếm tối đa 100 ký tự;
+    - trang quản trị hiện 20 sản phẩm mỗi trang, mới nhất trước;
+    - sản phẩm mới mặc định là Đang bán và Còn hàng.
+
+Mình thấy cả 12 đề xuất đều hợp lý cho bản đầu của danh mục. Câu duy nhất có thể đổi trải nghiệm là câu 11: 60 giây hay thấy ngay.
+
+**Việc của bạn: trả lời theo số câu**, ví dụ "Đồng ý tất cả", hoặc "Đồng ý, trừ câu 11: muốn thấy ngay". Mình sẽ:
+1. chép nguyên văn câu trả lời của bạn vào `.ai/runs/SHOP-7/answers.md`;
+2. chạy tiếp `/ao-spec SHOP-7`: `ba` sửa SPEC theo câu trả lời, rồi tới `ux` (thiết kế màn hình, chuyển ảnh mẫu vào `docs/specs/SHOP-7/design/`) và `sa`;
+3. cuối cùng `ba` mở PR docs, rồi mình nhờ bạn duyệt gate ①.
+
+Một lỗi nhỏ của kit: bản tóm tắt câu hỏi của `ao-step` chỉ lấy dòng đầu của mỗi câu, nên câu 5 mất các ý con. Mình đã lấy đủ từ SPEC, và ghi lỗi này vào `verification.md`.
+

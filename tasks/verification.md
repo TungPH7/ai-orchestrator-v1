@@ -250,3 +250,12 @@ Sửa plan và todo: T4 thêm `playwright.config.ts` của profile; T5 đưa b�
     - Jira: Release `v0.2.0` (id 10007) qua REST bằng token admin, theo lời bạn (`scratchpad/shop-release.mjs`, bản tổng quát của script `v0.1.0`). Script kiểm trước: `SHOP-6` Done. Sau đó: released, ngày 2026-11-15, mô tả giống hệt `fix-version.md` (1.578 ký tự).
     - `ao-kit doctor` trên `shop`: dòng "`.github/CODEOWNERS` is on main and on the open release branches" đã xanh. Còn đỏ hai dòng: Docker (tắt cố ý), và "the kit files are those of this clone": 7 file khác, là kit PR #288. PR này vào `shop` ở lần chép kit sau, cùng `ao-agent`, như đã chốt.
   - Chi phí agent của `v0.2.0`: 0,92 USD; của Pilot 3 tới giờ: 46,48 USD.
+- **T12, `/ao-spec SHOP-7`** (Phiên 32 · Lượt 3–4):
+  - Bước kiểm: Specifying, chưa có nhánh docs; GO với bốn lượt `ba` (spec-write) → `ux` (design) → `sa` (spec-nfr) → `ba` (docs-pr), cùng `xhigh`. `develop` ở máy kéo lên `5c531e1` trước khi chạy. Lệnh chạy với `AO_ENV_AUTH` đọc từ biến người dùng của Windows và `AO_KIT_DIR` trỏ vào kit.
+  - `ba` spec-write (`xhigh`, 34 lượt, 10,8 phút, 2,99 USD): `docs/specs/SHOP-7/spec.md` trên `feature/SHOP-7-spec`, commit `06190f2`, chưa push.
+    - 6 story: US1–US4 cho `admin`, US5–US6 cho khách; AC1–AC28.
+    - Phần việc kỹ thuật: nâng database theo kiểu thêm trước, bỏ cột cũ ở bản sau; API mới; design system; gỡ mock NestJS cũ; 3 Low của PR #10; 5 sản phẩm thử trên Production.
+    - Tìm thấy trong code: `v0.2.0` đã lên Production nên viết theo `v0.3.0`; tìm không dấu có thể cần extension `unaccent`, database đang chạy không tự có, nên xếp vào "hỏi trước"; hai trong bốn E2E đăng nhập kiểm nút xóa mà Epic gỡ.
+  - STOP với 12 câu hỏi, mỗi câu có đề xuất. Chờ bạn trả lời.
+  - **Lỗi nhỏ của kit, Low:** `openQuestions` (`lib/workflow/runs.mjs`) chỉ lấy dòng đầu của mỗi mục trong danh sách cấp một. Câu 5 của `ba` để đề xuất ở các ý con, nên phần Questions của `ao-step` và `last.md` chỉ còn "Đề xuất:". Phiên chính lấy đủ từ SPEC. Đề xuất: lấy cả các dòng thụt vào dưới mỗi mục, hoặc dặn agent viết đề xuất trên cùng dòng.
+  - Chi phí agent của `SHOP-7` tới giờ: 2,99 USD; của Pilot 3: 49,47 USD.
