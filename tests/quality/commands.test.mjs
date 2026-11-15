@@ -580,6 +580,16 @@ test('Grep and Glob stay in the project and the temp folder, nothing looks for a
     'git log -1 --format="tformat:PRIVATE KEY" --output=/tmp/m',
     'git log -1 --format="tformat:PRIVATE KEY" > /tmp/m',
     'git grep -n "PRIVATE KEY" -- apps | head -20',
+    // Review round 4 of shop PR #21: bash expands braces and $'…' before git sees the words.
+    'git grep -l {"PRIVATE KEY",--no-index} /c/Users/u',
+    "git grep -l $'--no-index' \"PRIVATE KEY\" /c/Users/u",
+    'git grep -l "PRIVATE KEY" --no-ind{e,}x /c/Users/u',
+    // Review round 4 of shop PR #21, security: the mark in other usual spellings.
+    'grep -rh -A 27 "BEGIN RSA" ~',
+    'grep -rl "BEGIN OPENSSH" /c/Users/u',
+    "grep -rlE 'BEGIN [A-Z ]*KEY' /c/Users/u",
+    "grep -rlE '\\-{5}BEGIN' ~",
+    "grep -rlE 'PRIVATE[[:space:]]KEY' ~",
   ]) {
     denied(bash(command, 'be-dev'), /private key/, command);
   }
@@ -628,6 +638,17 @@ test('Grep and Glob stay in the project and the temp folder, nothing looks for a
     'powershell -c "[Environment]::GetEnvironmentVariables()"',
     'powershell -c "[Microsoft.Win32.Registry]::GetValue(\'HKEY_CURRENT_USER\\Environment\', \'X\', $null)"',
     'reg query HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run',
+    // Review round 4 of shop PR #21: Git Bash shows the registry as files under /proc/registry.
+    'grep -r . /proc/registry/*/Environment',
+    'cat /proc/registry/HKEY_CURRENT_USER/Environment/JIRA_CI_TOKEN',
+    'cd /proc; cat regi*/HK*/Env*/JIRA*',
+    'ls /PROC/registry64',
+    // Review round 4 of shop PR #21, security: the environment of other processes, COM, and GetEnvironmentVariable
+    // in any form.
+    'grep -a -h -o "JIRA_CI_TOKEN=[^[:cntrl:]]*" /proc/*/environ',
+    'powershell -c "(New-Object -ComObject WScript.Shell).Environment(\'User\').Item(\'X\')"',
+    'powershell -c "[Environment]::GetEnvironmentVariable.Invoke(\'X\',\'User\')"',
+    'powershell -c "[Environment]::GetEnvironmentVariable((\'X\'),\'User\')"',
   ]) {
     denied(bash(command, 'be-dev'), /user variables of Windows/, command);
   }

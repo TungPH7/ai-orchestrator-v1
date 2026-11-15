@@ -153,3 +153,23 @@ test('a lock is written whole, and a read outside the mutex removes no lock it c
   liveLocks(dir, { fs, alive, clean: true });
   assert.equal(existsSync(join(dir, 'SHOP-14.json')), false, 'removed under the mutex');
 });
+
+// Review round 4 of shop PR #21: the mutex can go between the write that met it and the read of its owner; the take is
+// tried again instead of failing with ENOENT.
+test('a mutex released while it is read is taken on the next try', async (t) => {
+  const dir = mkdtempSync(join(tmpdir(), 'locks-'));
+  t.after(() => rmSync(dir, { recursive: true, force: true }));
+  let met = false;
+  const racing = {
+    ...fs,
+    writeFileSync: (path, text, options) => {
+      if (options?.flag === 'wx' && !met) {
+        met = true;
+        throw Object.assign(new Error('EEXIST'), { code: 'EEXIST' });
+      }
+      return writeFileSync(path, text, options);
+    },
+  };
+  const taken = await takeLock(dir, { pid: 1, command: 'build', key: 'SHOP-13', role: 'be-dev' }, { fs: racing, alive: () => true, cap: 2, sleep: async () => {} });
+  assert.equal(taken.ok, true);
+});
