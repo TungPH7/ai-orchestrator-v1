@@ -132,3 +132,18 @@ test('a merged PR without a FAIL report is not a rebuild', () => {
     assert.match(decision.reason, /has no ledger/);
   }
 });
+
+// Live check of shop, 2026-11-16: fe-dev of SHOP-11 started the Task (In Progress), then hit the usage limit before it
+// wrote its ledger. The check "In Progress with no ledger" came before the run that stopped could go on, so /ao-build
+// stopped for good. A build run that stopped with a session goes on first, whatever the ledger.
+test('a build cut by the usage limit before its agent wrote a ledger goes on in its session', () => {
+  const task = { key: 'DEMO-31', type: 'Task', workType: 'task', subtasks: [], labels: ['ao-fe-dev'], role: 'fe-dev', roles: ['fe-dev'], rework: 0, agent: 'fe-dev' };
+  const facts = { ...failed({ item: task, pr: null, report: null, runs: [{ role: 'fe-dev', purpose: 'build', outcome: 'usage-limit', key: 'DEMO-31' }] }), arg: 'DEMO-31', pr: null, ledger: false };
+  const decision = decide(facts);
+  assert.equal(decision.go, true, decision.reason);
+  assert.deepEqual(decision.runs.map(({ role, purpose, resume }) => `${role} ${purpose} ${resume}`), ['fe-dev build s0']);
+  // With no run on record that can go on, the stop stays.
+  const none = decide({ ...facts, run: null });
+  assert.equal(none.go, false);
+  assert.match(none.reason, /is In Progress but has no ledger/);
+});
