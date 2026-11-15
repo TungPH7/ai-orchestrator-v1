@@ -154,6 +154,13 @@ chuyển nhánh, nên bạn mở được nó trong VS Code mà không đụng a
   `playwright.config.ts:60–66`).
 - Lượt review và QA không bật app ở máy, nên không cần dải cổng.
 - `shop` cần một PR sửa `playwright.config.ts` theo template mới, đi cùng lần chép kit.
+- Sửa sau review của `shop` PR #21:
+  - Độ lệch là `(chỗ + 1) × port_step`, và áp cho mọi lượt trong làn, kể cả khi chỉ một lượt chạy. Cổng mặc định để dành
+    cho app bạn chạy ở thư mục dự án; trước đây chỗ 0 dùng cổng mặc định, nên E2E của làn có thể kiểm nhầm server của bạn.
+  - Lượt có `AO_PORT_OFFSET` không dùng lại server đang chạy sẵn (`reuseExistingServer` tắt).
+  - `runs.lane_env` cho mỗi chỗ biến riêng: `ports` dời theo độ lệch, `names` thêm `-s<chỗ + 1>`. Với `shop`, mỗi chỗ có
+    Postgres riêng (project, container, volume, cổng của Docker Compose), vì trước đây mọi làn dùng chung một database.
+  - Dự án ghi URL `localhost` giữa các app vào `apps.<app>.env`, vì kit không dời URL trong file `.env`.
 
 ### 5.3 `/ao-status` và skill
 
