@@ -26308,3 +26308,9 @@ Các PR 19, 20, 21 nếu không có Critical hay High thì nên dừng lại kh�
 4. Làm lại như vậy với https://github.com/TungPH7/shop/pull/20.
 
 Từ nay mình áp dụng quy tắc này cho mọi PR: không còn Critical hay High thì dừng, nhờ bạn approve, còn Medium và Low vào Task theo dõi.
+
+**Claude (23:35, Task theo dõi):**
+
+Đã tạo **SHOP-39** dưới Epic SHOP-7, nhãn `ao-fe-dev`, ở trạng thái New: "Sửa các Low còn lại sau review của PR #19 và PR #20". Task ghi 4 Low (test font E2E, câu trong `user.md`, focus của `dialog`, tên test của `dialog`), mỗi Low kèm file, dòng và báo cáo gốc. SHOP-39 bị SHOP-9 và SHOP-10 chặn, nên nó chỉ bắt đầu khi PR #19 và #20 đã merge.
+
+Một sơ suất đã sửa ngay: lần tạo link đầu, mình đặt ngược chiều (SHOP-39 chặn SHOP-9 và SHOP-10). Mình đã xóa hai link đó và tạo lại đúng chiều sau khoảng một phút; SHOP-9 và SHOP-10 không bị chặn nữa.
