@@ -293,3 +293,10 @@ Sửa plan và todo: T4 thêm `playwright.config.ts` của profile; T5 đưa b�
   - Bỏ `/ao-preview`; ảnh của `fe-dev` ở `shop/.ai/runs/SHOP-8/preview/` (1440 và 1024 px, sáng và tối).
   - `/ao-review 18`: `pr-ready` (bot `ao-dev`), `reviewer` (`xhigh`, 2,18 USD) 0 Critical, 0 High, 0 Medium, 7 Low; `security` (`max` vì PR đổi `package.json` và lockfile, 2,60 USD) không có lỗi, tự tải gói font kiểm mã băm, chữ ký npm, không có script cài đặt. `SHOP-8` In Review; tổng 12,22 USD.
   - Gate ③: hỏi bạn sửa 7 Low trước (đề xuất) hay approve luôn. Trong lúc chờ: build `SHOP-10`.
+- **C2 tối thiểu, chuẩn bị** (Phiên 32 · Lượt 15–17): bạn chọn chạy lần lượt cho `SHOP-7`, cộng viết spec C2, và dặn tận dụng lúc phiên chính ngồi chờ.
+  - Đánh giá: `misc/thao-luan/sdlc-song-song/c2-toi-thieu-giua-pilot-3.md`. Spec nháp: `SPEC-parallel-runs.md` (hai phần, 8 điểm chờ duyệt).
+  - Phép thử với `claude` 2.1.325, repo tạm có một git worktree (`scratchpad/c2probe-*.mjs`, đã xóa repo tạm sau khi thử):
+    - `-p` trong worktree chưa từng duyệt vẫn nạp MCP của `.mcp.json` (`connected`), không cần `enabledMcpjsonServers`;
+    - `--resume` một phiên tạo ở thư mục chính chạy được từ worktree, và ngược lại;
+    - hook `PreToolUse` trả `deny` vẫn chặn lệnh trong worktree chưa tin cậy (1 permission denial, file không được ghi);
+    - chưa phân biệt được `permissions.allow` ở worktree chưa tin cậy: cài đặt cấp người dùng đã cho phép sẵn; agent của kit không dựa vào nó.
