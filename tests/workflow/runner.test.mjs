@@ -651,3 +651,30 @@ test('last.md after a command that ends on a state, such as /ao-preview --go: Ne
   assert.match(text, /## Next\n\nThe preview of DEMO-21 runs on feature\/DEMO-21-x: web http:\/\/localhost:3000\/\nNext: \/ao-preview DEMO-21 --stop, when you are done with it\n/);
   assert.doesNotMatch(text, /Stopped|undefined/);
 });
+
+// parallel-runs spec 5.1: a qa run stopped because another deploy came during it.
+test('a superseded qa run is on record as superseded, attaches nothing, and the runner decides again', async () => {
+  const states = {};
+  const store = { readState: (k) => states[k] ?? null, writeState: (k, s) => (states[k] = s), writeLast: () => {} };
+  const qaRun = (sha) => ({ role: 'qa', key: 'DEMO-21', effort: 'high', purpose: 'qa', prompt: `QA on ${sha}`, qa: { environment: 'development', sha, auth: true } });
+  let decisions = 0;
+  const decide = () => {
+    decisions += 1;
+    if (decisions === 1) return { go: true, runs: [qaRun('a'.repeat(40))] };
+    if (decisions === 2) return { go: true, runs: [qaRun('c'.repeat(40))] };
+    return { go: false, reason: 'DEMO-21 is In QA, not Ready for QA', next: 'Accept', lines: [] };
+  };
+  const afters = [];
+  let calls = 0;
+  const agent = async () => {
+    calls += 1;
+    return calls === 1
+      ? { lines: runLines({ outcome: 'cut' }), stopped: false, superseded: 'development ran aaaaaaaa when qa started, and cccccccc came during the run' }
+      : { lines: runLines({ session: 's2' }), stopped: false };
+  };
+  const { decision, made } = await runGo({ command: 'qa', arg: 'DEMO-21', options, gather: async () => ({ command: 'qa', item: { key: 'DEMO-21' }, pr: null, docs: null }), decide, agent, git: async () => ({ ok: true }), dispatch: async () => {}, after: async (run) => (afters.push(run.qa.sha), ['attached']), store, sleep: async () => {}, now: () => 0 });
+  assert.deepEqual(made.map(({ outcome }) => outcome), ['superseded', 'done']);
+  assert.match(made[0].notes.join(' '), /cccccccc came during the run/);
+  assert.deepEqual(afters, ['c'.repeat(40)], 'only the run that ended attaches its evidence');
+  assert.equal(decision.go, false);
+});

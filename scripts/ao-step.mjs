@@ -319,13 +319,38 @@ async function main() {
       const place = await keeper.placeOf(run, command);
       return place ? gitIn(place.dir) : git;
     };
+    // A qa run stops at once when another deploy reaches its environment during the run (parallel-runs spec 5.1): its
+    // report would be about a version that no longer runs. The runner decides again, and qa tests the new one, twice at
+    // most; after that the run ends as before, with the note of afterQa.
+    let superseded = 0;
+    const watchQa = async (run, start) => {
+      if (!run.qa?.sha || !deploys || superseded >= 2) return start(run);
+      let pid = null;
+      let changed = null;
+      const timer = setInterval(async () => {
+        if (pid === null || changed) return;
+        const now = (await readRunning(deploys, mapping).catch(() => ({})))[run.qa.environment]?.sha;
+        if (now && now !== run.qa.sha) {
+          changed = now;
+          killTree(pid, { spawnSync, kill: (target, signal) => process.kill(target, signal) });
+        }
+      }, 30000);
+      try {
+        const result = await start(run, (started) => (pid = started));
+        if (!changed) return result;
+        superseded += 1;
+        return { ...result, superseded: `${run.qa.environment} ran ${run.qa.sha.slice(0, 8)} when qa started, and ${changed.slice(0, 8)} came during the run: qa was stopped before its report, and runs again on the new version` };
+      } finally {
+        clearInterval(timer);
+      }
+    };
     const { decision: final, facts: last } = await runGo({
       command,
       arg,
       options,
       gather,
       // qa on Development or Staging gets the basic auth from AO_ENV_AUTH, as variables, never as arguments.
-      agent: async (run, { log }) => startAgent(await placed(run.qa?.auth ? { ...run, env: { ...run.env, ...basicAuthEnv(secret('AO_ENV_AUTH')) } } : run), join(runsDir, key, log)),
+      agent: async (run, { log }) => watchQa(await placed(run.qa?.auth ? { ...run, env: { ...run.env, ...basicAuthEnv(secret('AO_ENV_AUTH')) } } : run), (ready, onStart) => startAgent(ready, join(runsDir, key, log), onStart)),
       // A defect you reported is checked like a QA run: its evidence goes to the item too (human-loop spec 5.1).
       after: (run, { tree }) => (['qa', 'qa-defect'].includes(run.purpose) ? afterQa(run, tree, { deploys, mapping }) : []),
       act: (step) => {
@@ -401,10 +426,15 @@ function alive(pid) {
 }
 
 // One run: ao-agent.mjs with its stream-json output appended to the log as it comes; resolves with the lines.
-function startAgent(run, logFile) {
+function startAgent(run, logFile, onStart) {
   const { command, args, env } = agentCommand(run, kitDir);
   return startAgentProcess({
-    spawn,
+    // onStart gets the pid, for a watch that may stop the run (watchQa).
+    spawn: (...args) => {
+      const child = spawn(...args);
+      onStart?.(child.pid);
+      return child;
+    },
     command,
     args,
     env: { ...process.env, ...env },

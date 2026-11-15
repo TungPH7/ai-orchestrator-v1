@@ -85,6 +85,19 @@ test('a qa run stopped by the usage limit goes on in its session with its worktr
   assert.equal(decide(qaFacts({ item: { state: 'in-qa', status: 'In QA' }, run: finished })).reason, 'DEMO-21 is In QA, not Ready for QA');
 });
 
+test('a qa run stopped because another deploy came during it is made afresh on the version that runs now, from In QA too', () => {
+  // parallel-runs spec 5.1: it reported nothing, so the item stays In QA with no report.
+  const superseded = { key: 'DEMO-21', runs: [{ n: 1, command: 'qa', role: 'qa', purpose: 'qa', effort: 'high', session: 's-qa-1', outcome: 'superseded', qa: { environment: 'development', sha: 'a'.repeat(40) } }] };
+  for (const item of [{}, { state: 'in-qa', status: 'In QA' }]) {
+    const decision = decide(qaFacts({ item, run: superseded }));
+    assert.equal(decision.go, true, item.state ?? 'ready-for-qa');
+    const [run] = decision.runs;
+    assert.equal(run.resume, undefined, 'a fresh run, not the session of the old version');
+    assert.match(run.prompt, /^QA /);
+    assert.deepEqual(run.qa, { environment: 'development', sha: RUNNING, auth: true });
+  }
+});
+
 test('/ao-qa stops while the QA environment does not run a release that holds the merge of the item', () => {
   const none = decide(qaFacts({ qa: { running: null, contains: false } }));
   assert.deepEqual([none.go, none.reason], [false, 'Development runs no release yet']);
