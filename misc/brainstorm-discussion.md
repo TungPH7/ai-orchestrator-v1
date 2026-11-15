@@ -26235,3 +26235,13 @@ Một watcher sống tối đa 30 phút; hết hạn thì mình bật lại. Khi
 **Đang chạy:** `/ao-review 21` (review phần mới của PR #21), có watcher 3 phút một lần.
 
 **Kế tiếp:** theo cách bạn vẫn làm (sửa hết Low rồi mới approve), sau `/ao-review 21` mình chạy `/ao-fix 20` cho 1 Low này và `/ao-fix 19` cho 2 Low câu chữ, rồi nhờ bạn approve PR #19, #20, #21 cùng lúc.
+
+**Claude (21:55, PR #20 và PR #21):**
+
+1. **PR #20 (SHOP-9):** `/ao-fix 20` lần 2 đã sửa xong Low về focus của toast, `security` 0 finding. Nhưng `reviewer` lại tìm thêm 2 Low mới ở chỗ code chưa sửa:
+   - `dialog.tsx:117`: khi Chrome tự đóng hộp thoại lúc đang xóa, focus rơi vào nút Đóng đang bị khóa, không về nút Hủy;
+   - `dialog.test.tsx:181`: tên test hứa "chạy action" nhưng chỉ kiểm action được vẽ.
+   Chi phí SHOP-9 đến giờ: 26,59 USD.
+2. **PR #21 (SHOP-38):** đang review vòng 3 trên head `2c6fbaf` (kit `e3b44fa4`), có watcher 3 phút một lần.
+
+**Về PR #20:** mỗi vòng review `reviewer` lại thấy vài Low mới (vòng 1: 8, vòng 2: 1, vòng 3: 2), mỗi vòng sửa tốn khoảng 4 USD và 20 phút. Mình đề xuất bạn approve PR #20 luôn, còn 2 Low này đưa vào một Task sau. Nếu bạn không nói gì, mình làm như các lần trước: sau review PR #21 và `/ao-fix 19`, mình chạy `/ao-fix 20` cho 2 Low này.
