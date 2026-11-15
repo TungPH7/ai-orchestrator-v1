@@ -320,3 +320,6 @@ Sửa plan và todo: T4 thêm `playwright.config.ts` của profile; T5 đưa b�
   - 1.490 test xanh (20 test mới, chạy trên repo git thật). Tự rà trước PR: lượt review không bao giờ vào làn; dọn làn lỗi thì không dừng lệnh.
   - `/ao-preview` dừng khi bật worktree; bật app trong làn để sau.
   - Phần 2 bắt đầu trên `task/parallel-runs-2`.
+- **C2 phần 2 và bản sửa coverage** (Phiên 32 · Lượt 35): kit PR #292 (`d361bc2`: `locks.mjs`, `ports.mjs`, chốt RAM, dải cổng, template Playwright `base-pnpm`, QA bị dừng và chạy lại khi bản deploy đổi; 1.502 test) và kit PR #293 (`352b3df`: `fe-dev`, `be-dev` chạy `coverage-diff.mjs` trước khi push PR).
+  - `SHOP-9` build (`fe-dev`, `high`, 45,5 phút, 11,28 USD): PR nháp #20, form field, segmented control, phân trang, hộp thoại xác nhận, toast, `PlaceholderTile`; 206 unit test. CI đỏ ở coverage vì `apps/admin/src/testing/setup.ts`. `/ao-fix 20` chạy.
+  - Kế tiếp: Task chép kit vào `shop` (C2, #288, #293), kèm `runs` của `shop`, `playwright.config.ts` dời cổng, và đề xuất `apps/*/src/testing/**` vào `coverage_exclude`.
