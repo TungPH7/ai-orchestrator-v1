@@ -162,6 +162,22 @@ chuyển nhánh, nên bạn mở được nó trong VS Code mà không đụng a
 - Skill không đổi cách gọi: phiên chính chạy mỗi lệnh ở nền như bây giờ, và có thể chạy lệnh thứ hai khi lệnh đầu đang
   chạy.
 
+### 5.4 Quyết định khi làm phần 2 (Phiên 32 · Lượt 35)
+
+- **Khóa tính theo lệnh, không theo agent:** một lệnh giữ chỗ của nó cả lúc chờ CI, khi không có agent nào chạy. Cách này
+  đơn giản và chắc; cái giá là đôi khi một chỗ nằm không trong lúc chờ CI.
+- **`lib/workflow/locks.mjs`:** `admit` quyết từ các khóa còn sống; `takeLock` ghi khóa dưới một mutex ngắn
+  (`.ai/runs/active/.admit`), nên hai lệnh khởi động cùng lúc không cùng vượt trần. Khóa cũ `.ai/runs/active.json` được
+  bỏ; `/ao-preview` đọc khóa mới.
+- **`lib/workflow/ports.mjs`:** bảng cổng của một chỗ, dời URL `localhost`, và `runsAtOnce` (trần `lanes_max`, hạ bằng
+  `AO_AGENTS_AT_ONCE`). Template `playwright.config.ts` của `base-pnpm` dời cổng theo `AO_PORT_OFFSET`; profile
+  `next-nest` cũ không có cổng trong `project.yaml`, nên không đổi.
+- **QA kiểm bản đang chạy:** `ao-step` đọc bản deploy mỗi 30 giây trong lúc `qa` chạy, bằng login `gh` của bạn như các lệnh
+  release, vì token của agent không đọc được deployment. Có bản mới thì dừng `qa` ngay (`killTree`). Runner ghi lượt đó là
+  `superseded`, không gọi `afterQa` để đính kèm, và quyết định lại; `decideQa` cho chạy mới từ In QA khi lượt trước là
+  `superseded`. Tối đa 2 lần trong một lệnh; sau đó lượt QA chạy hết như trước, kèm ghi chú của `afterQa`.
+- **Chốt RAM** dùng `os.freemem()`, chỉ khi trần lớn hơn 1, nên mặc định không đổi.
+
 ## 6. Cấu hình
 
 ```yaml

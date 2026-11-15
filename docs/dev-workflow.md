@@ -159,7 +159,28 @@ runs:
 - **Dọn làn:** ở đầu mỗi lệnh chạy agent, làn có PR đã merge hay đã đóng được gỡ, sau khi chép ledger của nó về `.ai/ledger/` của thư mục dự án. Làn còn thay đổi chưa commit, hay có commit chưa push khi PR đóng mà không merge, thì ở lại, và lệnh nói tên nó để bạn xem.
 - **`/ao-status <KEY>`** in thêm các làn đang có.
 - **`/ao-preview` dừng khi bật worktree:** nhánh của PR đang nằm trong làn, nên thư mục dự án không chuyển sang nhánh đó được. Xem ảnh và mẫu API trong `.ai/runs/<KEY>/preview/`, hay mở làn trong editor.
-- Phần 2 của spec (nhiều làn chạy cùng lúc) chưa có: agent vẫn chạy lần lượt, mỗi lúc một agent.
+### Nhiều làn chạy cùng lúc (`runs.lanes_max`)
+
+Phần 2 của spec. Ví dụ cho một máy 16 GB:
+
+```yaml
+runs:
+  worktrees: true
+  lanes_max: 3          # số làn mở cùng lúc, cũng là số agent chạy cùng lúc; từ 2 cần worktrees: true
+  min_free_ram_gb: 3    # RAM trống tối thiểu để mở thêm một agent; 0 thì tắt
+  port_step: 100        # cổng của làn thứ k dời k × 100
+```
+
+- **Chạy song song được:** `/ao-build`, `/ao-fix`, `/ao-review`, `/ao-qa`, mỗi item một lượt. Phiên chính chạy từng lệnh ở nền như trước, và mở lệnh thứ hai khi lệnh đầu còn chạy.
+- **Chạy một mình:** `/ao-spec`, `/ao-plan`, `/ao-request`, `/ao-intake`, `/ao-preview`, `/ao-release`, `/ao-ship`, `/ao-rollback`. Chúng đợi khi còn lượt khác chạy, và không lượt nào bắt đầu khi chúng đang chạy.
+- **Mỗi dev agent một item:** hai lượt build hay fix của cùng `fe-dev` không chạy cùng lúc, như giới hạn WIP của contract.
+- **Mỗi lúc một QA trên một môi trường:** E2E của mọi item ghi vào cùng một database của Development.
+- **QA kiểm bản đang chạy:** trong lúc `qa` chạy, `ao-step` xem bản deploy trên môi trường đó mỗi 30 giây. Có bản mới thì `qa` dừng ngay, trước khi báo; lượt đó ghi là `superseded`, không đính kèm gì, và lệnh chạy lại QA trên bản mới, tối đa 2 lần.
+- **Khóa:** mỗi lệnh giữ một file trong `.ai/runs/active/`, mở dưới một khóa ngắn, nên hai lệnh khởi động cùng lúc không cùng vượt trần. File của tiến trình đã chết được dọn.
+- **Chốt RAM:** trước khi mở một agent, kit đọc RAM trống; dưới `min_free_ram_gb` thì chờ, xem lại mỗi 30 giây; sau 30 phút thì dừng kèm lý do.
+- **Cổng:** lượt thứ k nhận `AO_PORT_OFFSET = k × port_step`, và prompt ghi rõ cổng của từng app. `playwright.config.ts` của profile `base-pnpm` dời cổng và các URL `localhost` theo biến này. Dự án cài kit trước bản này cần chép lại file đó.
+- **Hạ tạm số agent:** đặt `AO_AGENTS_AT_ONCE=1` (hay 2) ở máy, không sửa `project.yaml`; kit lấy số nhỏ hơn.
+- **`/ao-status <KEY>`** in thêm các lượt đang chạy: lệnh, item, chỗ, số phút.
 
 ## Đọc `.ai/runs/`
 
