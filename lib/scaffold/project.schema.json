@@ -80,6 +80,18 @@
       "properties": {
         "allow": { "type": "array", "items": { "type": "string", "minLength": 1 } }
       }
+    },
+    "runs": {
+      "description": "Where agent runs work (parallel-runs spec). worktrees: the build and fix of each item run in a worktree of their own, next to the project folder. copy: files git does not track that a new worktree needs, relative to the project and inside it.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "worktrees": { "type": "boolean" },
+        "copy": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1, "pattern": "^(?![\\\\/])(?![A-Za-z]:)(?!(.*[\\\\/])?\\.\\.([\\\\/]|$)).+$" }
+        }
+      }
     }
   },
   "$defs": {
