@@ -26314,3 +26314,19 @@ Từ nay mình áp dụng quy tắc này cho mọi PR: không còn Critical hay 
 Đã tạo **SHOP-39** dưới Epic SHOP-7, nhãn `ao-fe-dev`, ở trạng thái New: "Sửa các Low còn lại sau review của PR #19 và PR #20". Task ghi 4 Low (test font E2E, câu trong `user.md`, focus của `dialog`, tên test của `dialog`), mỗi Low kèm file, dòng và báo cáo gốc. SHOP-39 bị SHOP-9 và SHOP-10 chặn, nên nó chỉ bắt đầu khi PR #19 và #20 đã merge.
 
 Một sơ suất đã sửa ngay: lần tạo link đầu, mình đặt ngược chiều (SHOP-39 chặn SHOP-9 và SHOP-10). Mình đã xóa hai link đó và tạo lại đúng chiều sau khoảng một phút; SHOP-9 và SHOP-10 không bị chặn nữa.
+
+**Claude (23:55, PR #21 sẵn sàng cho bạn):**
+
+1. **Review cuối của PR #21** (head `bc92396`): **0 Critical, 0 High**. `security` còn 1 Medium, chính là rủi ro token CI đã ghi chấp nhận trong Risks. `reviewer` còn 3 Low. SHOP-38 tổng cộng 44,08 USD. Theo quy tắc mới, mình dừng sửa ở đây.
+2. **Các finding còn lại đi đâu:**
+   - Medium token CI và Low "Task cách bền chưa có": đã tạo **SHOP-40** "Đưa JIRA_CI_TOKEN ra khỏi máy chạy agent" (ngoài Epic, New). Bạn chọn hướng (a) hay (b) khi Refine.
+   - Low "luật `KEY_MARK` chặn nhầm lệnh hằng ngày" (ví dụ `psql -c "BEGIN; … PRIMARY KEY"`): Low này có thể làm agent bị từ chối hai lần rồi gắn cờ Needs you, tức là làm tắc build của SHOP-7, nên mình sửa ngay ở kit PR #299. Hook của agent nạp kit từ bản clone ở `AO_KIT_DIR`, nên bản sửa có hiệu lực ngay khi #299 merge, không cần đổi PR #21.
+   - Low còn lại (một dạng đọc registry mới) đã ghi trong SHOP-40.
+3. **QA:** SHOP-10 đang ở Ready for QA và `/ao-qa SHOP-10` đang chạy, có watcher. SHOP-9 sẽ chạy tiếp theo.
+
+**Bạn approve và merge PR #21:**
+1. Mở https://github.com/TungPH7/shop/pull/21.
+2. Bấm tab **Files changed**, rồi **Review changes** ở góc phải trên, chọn **Approve**, bấm **Submit review**.
+3. Quay lại tab **Conversation**, kéo xuống cuối, bấm **Squash and merge**, rồi **Confirm squash and merge**.
+
+Sau khi merge: mình kéo `develop`, rồi xin bạn đồng ý xóa secret `JIRA_CI_TOKEN` cấp repo (hai environment đã có token). Mình cũng theo dõi lần deploy đầu, rồi bắt đầu chạy nhiều làn.
