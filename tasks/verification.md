@@ -310,3 +310,6 @@ Sửa plan và todo: T4 thêm `playwright.config.ts` của profile; T5 đưa b�
   - PR #18 lượt sửa thứ hai: `fe-dev` (1,69 USD) viết lại quy ước 15.3 thành UI-011 tới UI-014 (v1.1.0), sửa README và getting-started; `reviewer` (2,09 USD) 0 Critical/High/Medium, 3 Low mới (ghi chú "Phase 1.2", phạm vi UI-011, số phiên bản); `security` review-delta (`high`, 0,45 USD) 0 lỗi. `SHOP-8` 25,38 USD. Đề xuất approve, vì các vòng chỉ còn tìm chữ nghĩa nhỏ.
   - `/ao-fix 19 --change none --note` (bạn chọn sửa Medium và 5 Low ở Lượt 24) chạy.
   - Lượt 27: bạn approve PR #18; `merge-gate` merge lúc 09:04:27Z (`4605845`). Chờ Development deploy rồi `/ao-qa SHOP-8`.
+- **C2 duyệt** (Phiên 32 · Lượt 35): bạn duyệt 8 điểm của `SPEC-parallel-runs.md`, cộng mỗi lúc một QA trên một môi trường và việc QA kiểm bản đang chạy. Kit PR #290 merge (`6a2db77`). Log tiếp trên `task/pilot3-14`.
+  - PR #19 lượt sửa thứ hai: `fe-dev` (4,66 USD) sửa 6 điểm; `reviewer` (3,94 USD) Approve kèm 1 Medium (`global-error.tsx` thiếu token và font, mất viền focus, WCAG 2.4.7) và 3 Low; `security` review-delta (0,50 USD) 0 lỗi. `SHOP-10` 23,89 USD. Gate ③ hỏi bạn.
+  - `/ao-qa SHOP-8` trên Development (`4605845`) chạy.
