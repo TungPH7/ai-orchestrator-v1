@@ -5,14 +5,14 @@
 #   jobs:
 #     audit:
 #       uses: ./.github/workflows/audit.yml
-#       secrets:
-#         JIRA_CI_TOKEN: ${{ secrets.JIRA_CI_TOKEN }}
 #     deploy:
 #       needs: audit
 #
 # A called workflow cannot raise the permissions of the caller's token, so the caller grants the five above; actions:
 # read dates the CI run of a docs PR (dev-workflow spec 2.4). When the audit fails, the deploy job does not run, the job
-# summary says why, and the work item gets the Needs you flag.
+# summary says why, and the work item gets the Needs you flag. JIRA_CI_TOKEN is a secret of the environment jira-sync,
+# which only the protected branches and v* tags may use, so no workflow of a PR reaches it (review of shop PR #21); in a
+# called workflow the environment's secret wins over one the caller passes.
 name: audit
 
 on:
@@ -33,6 +33,10 @@ on:
 jobs:
   audit:
     runs-on: ubuntu-latest
+    # No deployment: its deployment_status event would start jira-sync.
+    environment:
+      name: jira-sync
+      deployment: false
     permissions:
       contents: read
       pull-requests: read

@@ -154,7 +154,7 @@ Các lệnh `ao-kit` (`init`, `sync`, `setup github`, `setup jira`, `doctor`, `c
 `ao-kit init` và `ao-kit sync` chép vào dự án:
 - `.ai-orchestrator/`: `contract/`, `lib/`, `tracker/`, `quality/`, `agents/`, `templates/`, các script, `package.json` của kit, và `docs/sdlc.md` thành `.ai-orchestrator/docs/sdlc.md`, vì template trỏ tới DoD trong đó;
 - `kit/.claude/`, `kit/.githooks/`, `kit/.mcp.json` (hai server `atlassian` và `chrome-devtools`), `kit/.jira/config.yml`;
-- ba workflow `ci.yml`, `jira-sync.yml`, `merge-gate.yml`. Dự án tự deploy bằng GitHub Actions thì chép thêm `audit.yml`, cho job deploy `needs: audit`;
+- bốn workflow `ci.yml`, `jira-sync.yml`, `merge-gate.yml`, `pr-review.yml`. `pr-review.yml` không giữ secret nào, chỉ báo cho `jira-sync` mỗi lần có review. Dự án tự deploy bằng GitHub Actions thì chép thêm `audit.yml`, cho job deploy `needs: audit`;
 - bốn dòng `.gitignore`: `.ai-orchestrator/node_modules/`, `.claude/settings.local.json`, `.ai/` (ledger, báo cáo, ảnh của agent), `.playwright-cli/`.
 
 Về sau, cập nhật bản chép kit phải đi qua PR, và bạn tự merge PR đó, vì nó sửa file được bảo vệ. Push thẳng lên `develop` làm `audit` chặn deploy và gắn cờ item.
@@ -164,7 +164,7 @@ Về sau, cập nhật bản chép kit phải đi qua PR, và bạn tự merge P
 | Biến | Đặt ở đâu | Ai dùng |
 |---|---|---|
 | `ATLASSIAN_AGENT_TOKEN` | Biến môi trường user trên máy chạy Claude Code | `.mcp.json` gửi token này cho Rovo MCP; hook `jira-guard` và `jira-rework` đọc dữ kiện Jira bằng nó |
-| `JIRA_CI_TOKEN` | Secret của repo dự án trên GitHub | `jira-sync`; `audit` dùng nó để gắn cờ item; `merge-gate` đọc Epic của PR tài liệu và gắn cờ item của PR bạn tự merge |
+| `JIRA_CI_TOKEN` | Secret của hai environment `jira-sync` và `merge-gate` của repo dự án trên GitHub, không phải secret của repo: mọi workflow của một PR từ nhánh trong repo đều đọc được secret của repo (review của `shop` PR #21) | `jira-sync`; `audit` dùng nó để gắn cờ item; `merge-gate` đọc Epic của PR tài liệu và gắn cờ item của PR bạn tự merge |
 | `AO_JIRA_SPACE`, `AO_APPROVERS` | Mục `env` trong `.claude/settings.json` của dự án, sinh từ `project.yaml` (`jira.space`, `github.approvers`); biến môi trường cùng tên được ưu tiên | Các hook, `jira-sync`, `merge-gate` và `audit`. `AO_APPROVERS` nhận nhiều login, cách nhau bằng dấu phẩy |
 | `AO_KIT_PEERS` | Mục `env` trong `.claude/settings.json` của dự án, sinh từ `github.kit_peers` của `project.yaml`; biến môi trường cùng tên được ưu tiên. Các repo đã review kit, cách nhau bằng dấu phẩy, dùng cho [PR chép một bản kit đã được review](docs/quality-gates.md#pr-chép-một-bản-kit-đã-được-review) |
 | `GITHUB_TOKEN` | Có sẵn trong GitHub Actions; ở máy, không đặt thì lấy từ GitHub CLI | `jira-sync`, `merge-gate` và `audit` đọc PR, review, check bằng nó; `jira-guard` đọc dữ kiện PR, CI |

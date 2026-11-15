@@ -27,7 +27,16 @@ function facts(change = {}) {
     hooksPath: '.githooks',
     gitignoreMissing: [],
     codeowners: codeownersText(config.github.approvers),
-    github: { defaultBranch: 'develop', environments: ['development', 'staging', 'production', 'merge-gate'], secrets: ['JIRA_CI_TOKEN'], envSecrets: ['AO_MERGE_APP_KEY'], workflows: 3, ciRuns: 3, codeownersOn: { main: codeownersText(config.github.approvers) } },
+    // The CI token is a secret of the environments jira-sync and merge-gate, never of the repository (review of shop PR #21).
+    github: {
+      defaultBranch: 'develop',
+      environments: ['development', 'staging', 'production', 'merge-gate', 'jira-sync'],
+      secrets: [],
+      envSecrets: { 'merge-gate': ['AO_MERGE_APP_KEY', 'JIRA_CI_TOKEN'], 'jira-sync': ['JIRA_CI_TOKEN'] },
+      workflows: 3,
+      ciRuns: 3,
+      codeownersOn: { main: codeownersText(config.github.approvers) },
+    },
     apps: { dev: { ok: true }, review: { ok: true } },
     jiraCheck: { status: 0, text: 'AOG matches tracker/jira.yaml' },
     claude: { trusted: true, mcp: ['atlassian', 'chrome-devtools'] },
@@ -64,7 +73,11 @@ test('each part that is missing fails its own row, with what to do', () => {
     [{ github: { ...facts().github, codeownersOn: { main: null, 'release/v0.2.0': codeownersText(config.github.approvers) } } }, '.github/CODEOWNERS is on main and on the open release branches'],
     [{ github: { ...facts().github, codeownersOn: { main: codeownersText(config.github.approvers), 'release/v0.2.0': '* @someone-else\n' } } }, '.github/CODEOWNERS is on main and on the open release branches'],
     [{ github: { ...facts().github, environments: ['development'] } }, 'environments'],
-    [{ github: { ...facts().github, envSecrets: [] } }, 'secrets'],
+    [{ github: { ...facts().github, environments: ['development', 'staging', 'production', 'merge-gate'] } }, 'environments'],
+    [{ github: { ...facts().github, envSecrets: { ...facts().github.envSecrets, 'merge-gate': ['JIRA_CI_TOKEN'] } } }, 'secret AO_MERGE_APP_KEY of merge-gate'],
+    [{ github: { ...facts().github, envSecrets: { ...facts().github.envSecrets, 'jira-sync': [] } } }, 'secret JIRA_CI_TOKEN of the environments jira-sync and merge-gate'],
+    [{ github: { ...facts().github, envSecrets: { ...facts().github.envSecrets, 'merge-gate': ['AO_MERGE_APP_KEY'] } } }, 'secret JIRA_CI_TOKEN of the environments jira-sync and merge-gate'],
+    [{ github: { ...facts().github, secrets: ['JIRA_CI_TOKEN'] } }, 'no secret JIRA_CI_TOKEN of the repository'],
     [{ apps: { dev: { ok: true }, review: { ok: false, reason: 'the App is not installed on TungPH7/ao-sample' } } }, 'ao-review installed'],
     [{ github: { ...facts().github, workflows: 0 } }, 'GitHub knows the workflows'],
     [{ github: { ...facts().github, ciRuns: 0 } }, 'CI has run on develop'],
@@ -87,6 +100,14 @@ test('the rows of Actions say where to switch it on, and how to run CI on develo
   const fix = (name) => rows.find((row) => row.name.startsWith(name)).fix;
   assert.match(fix('GitHub knows the workflows'), /Actions tab .* Enable Actions on this repository/);
   assert.match(fix('CI has run on develop'), /gh workflow run CI --repo TungPH7\/ao-sample --ref develop/);
+});
+
+// Review of shop PR #21: every workflow of a PR from a branch of the repo can read a repository secret.
+test('a repository secret JIRA_CI_TOKEN says how to delete it, once the environments hold it', () => {
+  const rows = doctor(facts({ github: { ...facts().github, secrets: ['JIRA_CI_TOKEN'] } }));
+  const fix = rows.find((row) => row.name.startsWith('no secret JIRA_CI_TOKEN of the repository')).fix;
+  assert.match(fix, /gh secret delete JIRA_CI_TOKEN --repo TungPH7\/ao-sample/);
+  assert.match(fix, /Settings → Secrets and variables → Actions/);
 });
 
 test('the printout names no secret, only whether it is there and has the right shape', () => {
@@ -150,10 +171,10 @@ test('a project with a Java app: the JDK its pom asks for, and Docker running fo
 // Pilot 3, review of shop PR #13 (spec 2.9): only ao-merge may merge without your approval, so its key lives only in
 // the merge-gate environment; and the age identity that opens the backup copies lives off the machine agents run on.
 test('a project with ao-merge needs its key in merge-gate; a project without it fails a row that says how to make the App', () => {
-  const secrets = doctor(facts()).find(({ name }) => name.includes('of merge-gate'));
-  assert.equal(secrets.name, 'secrets JIRA_CI_TOKEN, and AO_MERGE_APP_KEY of merge-gate');
+  const secrets = doctor(facts()).find(({ name }) => name.includes('AO_MERGE_APP_KEY of merge-gate'));
+  assert.equal(secrets.name, 'secret AO_MERGE_APP_KEY of merge-gate');
   assert.equal(secrets.ok, true);
-  const missing = doctor(facts({ github: { ...facts().github, envSecrets: ['AO_DEV_APP_KEY'] } })).find(({ name }) => name.includes('of merge-gate'));
+  const missing = doctor(facts({ github: { ...facts().github, envSecrets: { ...facts().github.envSecrets, 'merge-gate': ['AO_DEV_APP_KEY', 'JIRA_CI_TOKEN'] } } })).find(({ name }) => name.includes('AO_MERGE_APP_KEY of merge-gate'));
   assert.equal(missing.ok, false);
   assert.match(missing.fix, /--merge-app-key-file <the key of ao-merge>/);
   const old = doctor(facts({ config: sample }));

@@ -203,12 +203,14 @@ Xong thì xóa file key. `doctor` báo đỏ khi thấy key của `ao-merge` tro
 
 - **Ý nghĩa:**
   - Đặt `develop` làm nhánh mặc định, bật tự xóa nhánh sau merge và bật Dependabot.
-  - Tạo bốn environment, trong đó `merge-gate` chỉ dành cho `develop`.
-  - Đưa `JIRA_CI_TOKEN` và key của `ao-merge` lên làm secret, qua stdin, không qua dòng lệnh.
+  - Tạo năm environment, trong đó `merge-gate` chỉ dành cho `develop`, và `jira-sync` chỉ dành cho `develop`, `main`, `release/*` và tag `v*`.
+  - Đưa `JIRA_CI_TOKEN` lên làm secret của hai environment `jira-sync` và `merge-gate`, và key của `ao-merge` vào `merge-gate`, qua stdin, không qua dòng lệnh. Token không nằm ở secret của repo, vì mọi workflow của một PR từ nhánh trong repo đều đọc được secret của repo (review của `shop` PR #21).
+  - Lệnh không xóa gì. Repo cài trước bản kit này còn secret `JIRA_CI_TOKEN` của repo, nên lệnh in dòng `Delete the repository secret JIRA_CI_TOKEN …` và báo chưa xong.
   - Chạy `gh:protect`. Repo private trên gói Free không có ruleset, nên lệnh báo `soft mode: merge-gate and audit enforce the gates`.
 - **Kết quả mong đợi:** các dòng `Set …`, rồi `Delete <file> now`. Chạy lại lệnh thì nó không đổi gì, chỉ in `Already set: …`.
 - **Bạn làm:**
   - Xóa file key: chọn file trong File Explorer, bấm **Shift+Delete**, chọn **Yes**. GitHub đã giữ key, không nên còn bản nào khác.
+  - Nếu lệnh in `Delete the repository secret JIRA_CI_TOKEN`: mở repo trên GitHub → **Settings** → **Secrets and variables** → **Actions** → tab **Secrets** → ở mục **Repository secrets**, bấm biểu tượng thùng rác cạnh `JIRA_CI_TOKEN` → **Yes, remove this secret** **(đối chiếu giao diện)**. Hoặc gõ `gh secret delete JIRA_CI_TOKEN --repo <owner>/<repo>`. Chạy lại `ao-kit setup github`, nó không còn in dòng đó.
   - Nối GitHub for Atlassian với repo. Nếu app đã cài cho dự án khác: GitHub → **Settings** → **Applications** → **Installed GitHub Apps** → **Configure** cạnh app **Jira** → **Select repositories** → chọn repo → **Save**. Nếu chưa cài, làm theo [docs/jira-setup.md](jira-setup.md) mục 11.
 
 ### Bước 7. Bật Actions và chạy CI lần đầu

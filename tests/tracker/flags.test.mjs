@@ -87,6 +87,11 @@ test('a PR closed without merging clears it too; a flag of audit or the rework l
   assert.deepEqual(audited.writes, []);
 });
 
+test('a PR that closes clears the flag on pull_request_target too, where jira-sync runs (review of shop PR #21)', async () => {
+  const { actions } = await syncEvent({ event: 'pull_request_target', payload: closed(), jira: jiraWith([comment(9, MERGE_GATE_16)]), github, contract, mapping, space: 'DEMO' });
+  assert.deepEqual(actions, [{ key: 'DEMO-16', effect: 'clear-needs-you', pr: 16, merged: true }]);
+});
+
 test('an item that is not flagged is left alone without a word', async () => {
   const lines = [];
   await runSync({ event: 'pull_request', payload: closed(), jira: jiraWith([], [], []), github, contract, mapping, space: 'DEMO', log: (line) => lines.push(line) });

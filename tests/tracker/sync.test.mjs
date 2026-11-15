@@ -50,6 +50,23 @@ test('workflow_run of CI: a red run sends the item in review back', async () => 
   assert.deepEqual(chosen(await sync('workflow_run', jira, { gh: github(red) })), { keys: ['DEMO-12'], actions: ['DEMO-12 request-changes'] });
 });
 
+// Review of shop PR #21: jira-sync runs on pull_request_target, the workflow and code of the base branch, so the code of
+// a PR never holds the CI token; the event reads as pull_request.
+test('pull_request_target reads as pull_request', async () => {
+  const jira = fakeJira({ issues: [story('DEMO-12', IN_PROGRESS)] });
+  assert.deepEqual(chosen(await sync('pull_request_target', jira, { body: payload('pull_request') })), { keys: ['DEMO-12'], actions: ['DEMO-12 submit'] });
+});
+
+// A review reaches jira-sync through the run of the workflow PR review, which holds no secret: the item of its branch.
+test('workflow_run of PR review: changes asked on the newest commit send the item back', async () => {
+  const jira = fakeJira({ issues: [story('DEMO-12', IN_REVIEW)] });
+  const { review } = payload('pull_request_review');
+  const asked = (a) => a['/pulls/5/reviews'].push({ ...review, state: review.state.toUpperCase() });
+  const body = payload('workflow_run');
+  Object.assign(body.workflow_run, { name: 'PR review', event: 'pull_request_review', conclusion: 'success' });
+  assert.deepEqual(chosen(await sync('workflow_run', jira, { gh: github(asked), body })), { keys: ['DEMO-12'], actions: ['DEMO-12 request-changes'] });
+});
+
 test('pull_request_review: changes asked on the newest commit send the item back', async () => {
   const jira = fakeJira({ issues: [story('DEMO-12', IN_REVIEW)] });
   // The review of the event, as the REST API lists it (upper-case state).
