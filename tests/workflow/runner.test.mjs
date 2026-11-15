@@ -9,7 +9,7 @@ import { agentCommand, formatDecision, lastReport, runGo } from '../../lib/workf
 import { withLoggedSession } from '../../lib/workflow/runs.mjs';
 import { decideStep } from '../../lib/workflow/steps.mjs';
 import { CONTRACT_DIR, ROOT } from '../helpers/kit.mjs';
-import { checkArgument, checkoutStop, homeBranch, reviewTreePath, runsFile, takeLock } from '../../scripts/ao-step.mjs';
+import { checkArgument, checkoutStop, homeBranch, reviewTreePath, runsFile } from '../../scripts/ao-step.mjs';
 import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 
@@ -597,16 +597,6 @@ test('--note and --answers read only a file in .ai/runs/ of the project', () => 
   }
 });
 
-test('the lock of ao-step is taken atomically: a second run sees the first, a stale one is replaced', () => {
-  const dir = mkdtempSync(join(tmpdir(), 'ao-step-lock-'));
-  const lock = join(dir, 'active.json');
-  const first = { pid: 101, command: 'build', arg: 'DEMO-21' };
-  assert.equal(takeLock(lock, first, () => true), null, 'free');
-  assert.deepEqual(takeLock(lock, { pid: 102, command: 'review', arg: '15' }, (pid) => pid === 101), first, 'held by a live process');
-  assert.equal(takeLock(lock, { pid: 103, command: 'fix', arg: '15' }, () => false), null, 'the holder is gone');
-  assert.equal(JSON.parse(readFileSync(lock, 'utf8')).pid, 103);
-  rmSync(dir, { recursive: true, force: true });
-});
 
 // release-workflow T13: a qa run.
 test('a qa run gets its worktree with the qa note; its follow-up runs before the worktree goes, and its notes reach state.json and last.md', async () => {

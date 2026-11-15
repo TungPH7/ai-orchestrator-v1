@@ -9,7 +9,7 @@
 // root; the kit is in AO_KIT_DIR when set.
 import { spawn, spawnSync } from 'node:child_process';
 import { appendFileSync, copyFileSync, existsSync, mkdirSync, openSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
-import { tmpdir } from 'node:os';
+import { freemem, tmpdir } from 'node:os';
 import { basename, dirname, isAbsolute, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
@@ -46,6 +46,8 @@ import { CHANGES, decideStep, dockerGate } from '../lib/workflow/steps.mjs';
 import { restoreWip, saveWip } from '../lib/workflow/wip.mjs';
 import { laneKeeper, runsSettings } from '../lib/workflow/lanes.mjs';
 import { checkoutBranch } from '../lib/workflow/places.mjs';
+import { liveLocks, takeLock as takeRunLock } from '../lib/workflow/locks.mjs';
+import { lanePorts, portsNote, runsAtOnce } from '../lib/workflow/ports.mjs';
 
 const COMMANDS = ['status', 'intake', 'preview', 'spec', 'plan', 'request', 'build', 'review', 'fix', 'qa', 'release', 'ship', 'rollback'];
 const USAGE = 'usage: node .ai-orchestrator/scripts/ao-step.mjs <status|intake|preview|spec|plan|request|build|review|fix|qa|release|ship|rollback> [<KEY>|<PR>|<vX.Y.0> <sha>|<vX.Y.Z>|<environment> [<sha>]] [--go] [--answers <file>] [--note <file>] [--change <word>] [--stop]';
@@ -55,6 +57,9 @@ const RELEASE_COMMANDS = ['qa', 'release', 'ship', 'rollback', 'status'];
 const kitDir = resolve(process.env.AO_KIT_DIR ?? fileURLToPath(new URL('..', import.meta.url)));
 const projectDir = process.cwd();
 const runsDir = join(projectDir, '.ai', 'runs');
+// The locks of the commands that run agents, one file each (parallel-runs spec 5.1).
+const activeDir = join(runsDir, 'active');
+const lockFs = { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync };
 // The commands that stop a preview before they run: every one that may run an agent or switch the folder. /ao-ship runs
 // devops in the project folder with no checkout of its own (review of ao-sample PR #21), so the release commands too.
 const PREVIEW_STOPS = ['spec', 'plan', 'request', 'build', 'review', 'fix', 'qa', 'release', 'ship', 'rollback'];
@@ -79,10 +84,7 @@ const preview = previewRunner({
   cliOf: (tool) => (tool === 'pnpm' ? pnpmCli() : npmCli()),
   cleared: CLEARED_ENV,
   // The lock of this very process, taken for --go, is not another run.
-  agentRunning: () => {
-    const holder = readJson(join(runsDir, 'active.json'));
-    return holder && holder.pid !== process.pid && alive(holder.pid) ? holder : null;
-  },
+  agentRunning: () => liveLocks(activeDir, { fs: lockFs, alive }).find(({ pid }) => pid !== process.pid) ?? null,
 });
 const previewActive = preview.paths.active;
 
@@ -158,23 +160,6 @@ export function runsFile(projectDir, file) {
   return path;
 }
 
-// Takes the lock of the runs (one agent at a time) for `holder`, or returns the live holder that has it. The file is
-// created only if it is not there, so two runs started at once cannot both take it; a holder whose process is gone is
-// replaced.
-export function takeLock(lock, holder, alive) {
-  for (let attempt = 0; attempt < 2; attempt++) {
-    try {
-      writeFileSync(lock, JSON.stringify(holder), { flag: 'wx' });
-      return null;
-    } catch (error) {
-      if (error.code !== 'EEXIST') throw error;
-      const current = readJson(lock);
-      if (current && alive(current.pid)) return current;
-      rmSync(lock, { force: true });
-    }
-  }
-  throw new Error(`cannot take the lock ${lock}`);
-}
 
 async function main() {
   const { values, positionals } = parseArgs({ allowPositionals: true, options: { go: { type: 'boolean', default: false }, answers: { type: 'string' }, note: { type: 'string' }, change: { type: 'string' }, stop: { type: 'boolean', default: false } } });
@@ -288,17 +273,27 @@ async function main() {
     const lanes = keeper.list();
     console.log(lanes.length > 0 ? `Lanes: ${lanes.map(({ key: k, branch }) => `${k} on ${branch || 'no branch yet'}`).join('; ')}` : 'Lanes: none');
   }
+  if (command === 'status') {
+    const live = liveLocks(activeDir, { fs: lockFs, alive });
+    if (live.length > 0) console.log(`Running: ${live.map(({ command: c, key: k, slot, startedAt }) => `${c} ${k} in slot ${slot}, ${Math.round((Date.now() - Date.parse(startedAt)) / 60000)} min`).join('; ')}`);
+  }
   if (!values.go || !decision.go) return;
 
   // A release command has no work item: its runs and report go under the release (.ai/runs/v0.1.0/).
   const key = facts.item?.key ?? facts.runKey;
-  const lock = join(runsDir, 'active.json');
   mkdirSync(join(runsDir, key), { recursive: true });
-  const holder = takeLock(lock, { pid: process.pid, command, arg, startedAt: new Date().toISOString() }, alive);
-  if (holder) {
-    console.log(`STOP: ao-step is already running ${holder.command} ${holder.arg} (process ${holder.pid}); agents run one at a time`);
+  // How many commands may run at once, and this one's place among them (parallel-runs spec 5.1).
+  const cap = runsAtOnce(runs.lanesMax, process.env);
+  const firstRun = decision.runs?.[0] ?? {};
+  const taken = await takeRunLock(activeDir, { pid: process.pid, command, arg, key, role: firstRun.role, environment: firstRun.qa?.environment, startedAt: new Date().toISOString() }, { fs: lockFs, alive, cap, sleep: (ms) => new Promise((done) => setTimeout(done, ms)) });
+  if (!taken.ok) {
+    console.log(`STOP: ${taken.reason}`);
     return;
   }
+  const lock = taken.file;
+  // With more than one run at once, this one's apps take the ports of its slot (spec 5.2).
+  const offset = cap > 1 ? taken.slot * runs.portStep : 0;
+  const projectApps = existsSync(projectYaml) ? (parse(readFileSync(projectYaml, 'utf8'))?.apps ?? {}) : {};
   try {
     console.log('');
     if (runs.worktrees) {
@@ -309,7 +304,16 @@ async function main() {
     // A run in a lane starts there, told so; git and the work put aside go there too (parallel-runs spec 4).
     const placed = async (run) => {
       const place = await keeper.placeOf(run, command);
-      return place ? { ...run, cwd: place.dir, prompt: [keeper.note(place.dir, place.key), run.prompt].join('\n\n') } : run;
+      // Another agent starts only with enough free RAM (spec 5.1).
+      if (cap > 1) await waitForRam(runs.minFreeRamGb);
+      const ports = cap > 1 ? portsNote(lanePorts(projectApps, offset), offset) : null;
+      const notes = [place && keeper.note(place.dir, place.key), ports].filter(Boolean);
+      return {
+        ...run,
+        ...(place && { cwd: place.dir }),
+        ...(cap > 1 && { env: { ...run.env, AO_PORT_OFFSET: String(offset) } }),
+        ...(notes.length > 0 && { prompt: [...notes, run.prompt].join('\n\n') }),
+      };
     };
     const gitOf = async (run) => {
       const place = await keeper.placeOf(run, command);
@@ -805,6 +809,18 @@ function installLane(dir) {
     notes.push('Installed the packages of the kit copy.');
   }
   return { ok: true, notes };
+}
+
+// Waits until the machine has the free RAM of runs.min_free_ram_gb before another agent starts (parallel-runs spec 5.1),
+// looking again every 30 seconds; after 30 minutes the command stops with the reason.
+async function waitForRam(minGb) {
+  if (!minGb) return;
+  const need = minGb * 1024 ** 3;
+  for (let waited = 0; freemem() < need; waited += 30) {
+    if (waited === 0) console.log(`Waiting for RAM: ${(freemem() / 1024 ** 3).toFixed(1)} GB free, ${minGb} GB needed before another agent starts`);
+    if (waited >= 1800) throw new Error(`the machine stayed under ${minGb} GB of free RAM for 30 minutes: close what you can, or lower runs.lanes_max`);
+    await new Promise((done) => setTimeout(done, 30000));
+  }
 }
 
 // The PRs whose head is a branch of this repository: [{ number, state }], state open, closed or merged.
