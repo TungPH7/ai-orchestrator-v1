@@ -313,3 +313,5 @@ Sửa plan và todo: T4 thêm `playwright.config.ts` của profile; T5 đưa b�
 - **C2 duyệt** (Phiên 32 · Lượt 35): bạn duyệt 8 điểm của `SPEC-parallel-runs.md`, cộng mỗi lúc một QA trên một môi trường và việc QA kiểm bản đang chạy. Kit PR #290 merge (`6a2db77`). Log tiếp trên `task/pilot3-14`.
   - PR #19 lượt sửa thứ hai: `fe-dev` (4,66 USD) sửa 6 điểm; `reviewer` (3,94 USD) Approve kèm 1 Medium (`global-error.tsx` thiếu token và font, mất viền focus, WCAG 2.4.7) và 3 Low; `security` review-delta (0,50 USD) 0 lỗi. `SHOP-10` 23,89 USD. Gate ③ hỏi bạn.
   - `/ao-qa SHOP-8` trên Development (`4605845`) chạy.
+  - `/ao-qa SHOP-8` (`qa`, `high`, 6,3 phút, 1,67 USD): **PASS** trên Development (`4605845`). 26 token khớp bảng thiết kế ở hai giao diện, axe 0 vi phạm, regression 11 đạt và 8 bỏ qua; 10 ảnh đính vào Jira. `gh-guard` từ chối một lệnh nhắc tới biến mật khẩu basic auth. `SHOP-8` 27,05 USD; chờ bạn Accept.
+  - `/ao-build SHOP-9` chạy. Kit C2: worktree `ai-orchestrator-c2`, nhánh `task/parallel-runs-1`.
