@@ -323,3 +323,8 @@ Sửa plan và todo: T4 thêm `playwright.config.ts` của profile; T5 đưa b�
 - **C2 phần 2 và bản sửa coverage** (Phiên 32 · Lượt 35): kit PR #292 (`d361bc2`: `locks.mjs`, `ports.mjs`, chốt RAM, dải cổng, template Playwright `base-pnpm`, QA bị dừng và chạy lại khi bản deploy đổi; 1.502 test) và kit PR #293 (`352b3df`: `fe-dev`, `be-dev` chạy `coverage-diff.mjs` trước khi push PR).
   - `SHOP-9` build (`fe-dev`, `high`, 45,5 phút, 11,28 USD): PR nháp #20, form field, segmented control, phân trang, hộp thoại xác nhận, toast, `PlaceholderTile`; 206 unit test. CI đỏ ở coverage vì `apps/admin/src/testing/setup.ts`. `/ao-fix 20` chạy.
   - Kế tiếp: Task chép kit vào `shop` (C2, #288, #293), kèm `runs` của `shop`, `playwright.config.ts` dời cổng, và đề xuất `apps/*/src/testing/**` vào `coverage_exclude`.
+- **`SHOP-38`, chép kit có C2 vào `shop`** (Phiên 32 · Lượt 35):
+  - Task tạo bằng token CI, `Refine` bằng token admin kèm comment nguồn duyệt (spec C2, Lượt 35), Agent DevOps Engineer, `Start` qua Rovo MCP (`scratchpad/task-open.mjs`, `task-kit-copy-c2.json`).
+  - `SHOP-9` fix PR #20 (0,87 USD): CI xanh; `SHOP-9` 12,15 USD.
+  - `ao-kit sync … --key SHOP-38` từ worktree kit ở `352b3df`, 19 giây: `5cfd0bf`, 18 file. Commit thứ hai `3d153e9`: `runs` (`worktrees: true`, `lanes_max: 3`, `min_free_ram_gb: 3`, `copy`: `apps/api/.env`, `apps/user/.env.development`), `coverage_exclude: [src/testing/**]` cho `user` và `admin`, `playwright.config.ts` dời cổng theo `AO_PORT_OFFSET`.
+  - `ao-kit check` đạt; `doctor` chỉ đỏ dòng Docker. PR nháp #21 (bot `ao-dev`), CI xanh đủ năm check. `/ao-review 21` chạy.
