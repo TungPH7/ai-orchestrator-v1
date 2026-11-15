@@ -26350,3 +26350,32 @@ PR #21 đã merge vào `develop` ở commit `524abe9`. Mình đã kiểm và đa
 2. **Còn phải xem:** jira-sync sau khi CI của `develop` chạy xong, và jira-sync sau lần deploy Development. Lượt sau là lượt chưa kiểm được trước, vì deployment của shop ghi ref bằng SHA. Mình đang theo dõi nền.
 3. **Kéo `develop` về thư mục `shop`:** để sau khi `/ao-qa SHOP-9` xong, vì lệnh đó đang chạy từ code kit trong thư mục này. Từ lệnh kế tiếp, `ao-step` dùng code mới: làn theo item, tối đa 3 lượt cùng lúc, mỗi làn một Postgres riêng.
 4. **Cần bạn đồng ý sau đó:** khi cả hai lượt jira-sync ở bước 2 đều chạy tốt bằng token của environment, mình sẽ xin bạn cho xóa secret `JIRA_CI_TOKEN` cấp repo, vì nó vẫn để workflow của mọi PR đọc được token.
+
+# Phiên 32 · Lượt 45 — 2026-11-16 khoảng 00:08
+
+**Bạn:**
+
+```markdown
+đưa tôi URL và mật khẩu của môi trường developement nhé
+```
+
+**Claude:**
+
+URL của Development:
+- Trang bán hàng (`user`): https://shop-dev.ao.t2g.io.vn/en
+- Trang quản trị (`admin`): https://shop-admin-dev.ao.t2g.io.vn
+
+Cả hai trang hỏi tên đăng nhập và mật khẩu (basic auth). Mình không ghi mật khẩu vào đây, vì mọi câu trả lời đều được chép vào log thảo luận, mà repo kit giờ là public. Bạn xem mật khẩu trên máy theo một trong hai cách:
+
+**Cách 1, bằng giao diện:**
+1. Bấm nút Start, gõ `environment variables`, chọn **Edit environment variables for your account**.
+2. Trong khung **User variables**, bấm vào dòng **AO_ENV_AUTH**, rồi bấm **Edit…**.
+3. Ô **Variable value** có dạng `tên:mật khẩu`: phần trước dấu `:` là tên đăng nhập, phần sau là mật khẩu.
+
+**Cách 2, bằng PowerShell:** mở PowerShell (không cần quyền admin) và chạy:
+```powershell
+[Environment]::GetEnvironmentVariable('AO_ENV_AUTH', 'User')
+```
+Kết quả cũng có dạng `tên:mật khẩu`.
+
+Khi trình duyệt hỏi đăng nhập, nhập tên và mật khẩu đó. Staging dùng cùng một cặp tên và mật khẩu.
