@@ -307,3 +307,5 @@ Sửa plan và todo: T4 thêm `playwright.config.ts` của profile; T5 đưa b�
   - PR #19 review (Lượt 21): `reviewer` (`xhigh`, 2,87 USD) 1 Medium (quy ước `user` cấm CSS toàn cục, còn ghi Inter) và 5 Low; `security` (`high`, 0,44 USD) 0 lỗi. `SHOP-10` 14,79 USD. Gate ③ hỏi bạn.
   - PR #18 lượt sửa thứ hai (Lượt 23): bạn chọn sửa luôn Medium và Low; `/ao-fix 18 --change none --note` chạy.
   - `SHOP-13` dừng ở bước kiểm: Docker chưa chạy (test Java cần Testcontainers).
+  - PR #18 lượt sửa thứ hai: `fe-dev` (1,69 USD) viết lại quy ước 15.3 thành UI-011 tới UI-014 (v1.1.0), sửa README và getting-started; `reviewer` (2,09 USD) 0 Critical/High/Medium, 3 Low mới (ghi chú "Phase 1.2", phạm vi UI-011, số phiên bản); `security` review-delta (`high`, 0,45 USD) 0 lỗi. `SHOP-8` 25,38 USD. Đề xuất approve, vì các vòng chỉ còn tìm chữ nghĩa nhỏ.
+  - `/ao-fix 19 --change none --note` (bạn chọn sửa Medium và 5 Low ở Lượt 24) chạy.
