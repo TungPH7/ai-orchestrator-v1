@@ -26278,3 +26278,33 @@ Một watcher sống tối đa 30 phút; hết hạn thì mình bật lại. Khi
    - (b) cho agent chạy dưới một tài khoản Windows riêng. Mạnh nhất, giữ được cả khóa App, nhưng phải dựng lại máy cho tài khoản đó.
    Mình đề xuất (a) trước.
 6. **PR #19, #20:** như đã báo, vòng nào cũng thêm 1–2 Low mới. Mình vẫn đề xuất bạn approve hai PR này và gom các Low vào một Task sau.
+
+# Phiên 32 · Lượt 43 — 2026-11-15 khoảng 23:25
+
+**Bạn:**
+
+```markdown
+Các PR 19, 20, 21 nếu không có Critical hay High thì nên dừng lại không fix và review nữa chứ nhỉ? Cứ fix, review có lỗi rồi lại fix, thành 1 vòng lặp mất rồi. Nêu các Medium và Low này để fix sau, không fix ngay bây giờ thì có ảnh hưởng luồng, tắc luồng gì không? Trả lời tôi nhé
+```
+
+**Claude:**
+
+Đúng, nên dừng. Medium và Low để sửa sau không làm tắc luồng. Lẽ ra mình phải đề xuất dừng sớm hơn.
+
+**Vì sao không tắc luồng** (mình đã đối chiếu code của kit):
+1. `reviewer` và `security` chỉ đăng "Request changes" khi còn Critical hay High. Medium và Low được đăng dạng COMMENT, nên item không bị trả về In Progress và số lần rework không tăng.
+2. `merge-gate` chỉ chặn khi còn Critical hay High mở. Với Medium và Low, nó chỉ cần CI xanh, đủ hai báo cáo trên head, và approve của bạn.
+3. `audit` lúc deploy cũng xét báo cáo và approve trên head, không xét Medium hay Low.
+4. QA kiểm từng AC trên Development. Các Low còn lại (câu chữ trong tài liệu, tên test, focus khi Chrome tự đóng hộp thoại, test font có thể đếm thiếu) không đụng tới AC nào.
+
+**Cần làm để không mất các finding này:** mình gom chúng vào một Task theo dõi trên Jira, mỗi finding một dòng kèm link báo cáo, để làm sau.
+
+**Riêng PR #21:** vòng review đang chạy là vòng cuối và vẫn phải chạy, vì head mới `bc92396` chưa có báo cáo; thiếu báo cáo thì `audit` chặn deploy. Trừ khi nó ra Critical hay High, mình không sửa thêm nữa mà nhờ bạn approve. Medium "token CI đọc được trên máy" là rủi ro bạn chấp nhận, đã ghi trong Risks của PR, và cách bền là một Task riêng.
+
+**Bạn làm ngay được:** approve PR #19 và #20, vì hai báo cáo đã nằm trên head của chúng; `merge-gate` tự merge.
+1. Mở https://github.com/TungPH7/shop/pull/19.
+2. Bấm tab **Files changed**.
+3. Bấm nút **Review changes** ở góc phải trên, chọn **Approve**, rồi bấm **Submit review**.
+4. Làm lại như vậy với https://github.com/TungPH7/shop/pull/20.
+
+Từ nay mình áp dụng quy tắc này cho mọi PR: không còn Critical hay High thì dừng, nhờ bạn approve, còn Medium và Low vào Task theo dõi.
