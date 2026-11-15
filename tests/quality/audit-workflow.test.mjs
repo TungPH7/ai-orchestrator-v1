@@ -24,6 +24,10 @@ test('audit is a reusable workflow: the commit and branch default to those of th
     JIRA_CI_TOKEN: '${{ secrets.JIRA_CI_TOKEN }}',
     GITHUB_TOKEN: '${{ github.token }}',
   });
+  // Review of shop PR #21: the CI token is a secret of the environment jira-sync, which only protected branches may use;
+  // in a called workflow, the environment's secret wins over one the caller passes.
+  assert.deepEqual(job.environment, { name: 'jira-sync', deployment: false });
+  assert.doesNotMatch(text, /^#\s+JIRA_CI_TOKEN: \$\{\{ secrets\.JIRA_CI_TOKEN \}\}$/m);
 });
 
 test('no expression reaches a shell line, the token only reads, and every action is pinned to a commit', () => {

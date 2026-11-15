@@ -138,6 +138,59 @@ Khả năng mới, đổi kết quả mong đợi của một Bug, hay đổi h�
 
 PR sửa đường dẫn được bảo vệ (`.github/workflows/**`, `.claude/**`, `.ai-orchestrator/**` …) thì bạn tự squash merge. Đường dẫn được so không phân biệt hoa thường, vì trên Windows `.Claude/` được ghi vào chính `.claude/`. `merge-gate` so theo cách này từ lần chép kit kế tiếp vào dự án; `audit` chạy trên VPS, nên chỉ so theo cách này khi kit trên VPS được cập nhật. `merge-gate` comment lên PR và gắn cờ item khi PR chỉ còn chờ bạn, và `jira-sync` gỡ cờ đó khi PR đóng.
 
+## Worktree theo item (`runs.worktrees`)
+
+Bật trong `.ai-orchestrator/project.yaml` ([SPEC-parallel-runs.md](../SPEC-parallel-runs.md), phần 1):
+
+```yaml
+runs:
+  worktrees: true
+  copy: [apps/api/.env]   # file git không theo dõi mà worktree cần; đường dẫn tương đối, nằm trong dự án
+```
+
+- **Làn của item:** `/ao-build` và `/ao-fix` chạy trong một worktree riêng của item, đặt ngang hàng với thư mục dự án:
+  `<thư mục cha>/<tên dự án>-wt/<KEY>`, ví dụ `e-commerce/shop-wt/SHOP-13`. Sub-task chạy trong làn của Story.
+- **Thư mục dự án đứng yên ở `develop`.** Bạn mở nó trong VS Code được, trong lúc agent làm việc ở làn.
+- **Lần đầu một item cần làn**, kit:
+  - tạo worktree ở `origin/develop`;
+  - cài package của dự án theo lockfile, và package của bản chép kit trong `.ai-orchestrator/`;
+  - chép các file của `runs.copy`, và ledger của item nếu có;
+  - ghi dấu `.ai/lane-ready` khi mọi bước trên xong. Làn thiếu dấu này, ví dụ vì lần cài gói trước bị lỗi mạng, được cài và chép lại ở lượt kế tiếp.
+- **Review và QA không đổi:** vẫn chạy trong worktree tạm, như trước.
+- **Dọn làn:** ở đầu mỗi lệnh chạy agent, làn có PR đã merge hay đã đóng được gỡ, sau khi chép ledger của nó về `.ai/ledger/` và ảnh xem trước về `.ai/runs/<KEY>/preview/` của thư mục dự án. Làn còn thay đổi chưa commit, hay có commit chưa push khi PR đóng mà không merge, thì ở lại, và lệnh nói tên nó để bạn xem.
+- **Trần số làn:** đủ `lanes_max` làn đang mở thì lệnh cần làn mới dừng, kèm tên các làn; làn được gỡ khi PR của nó merge hay đóng.
+- **Dọn làn không đụng lệnh đang chạy:** làn của item mà một lệnh khác đang chạy thì ở lại. Ledger ở thư mục dự án mới hơn bản trong làn (ví dụ `qa` vừa ghi) thì giữ nguyên.
+- **Lần đầu bật làn:** thư mục dự án phải ở `develop`. Git không cho một nhánh nằm ở hai worktree, nên nếu thư mục dự án còn ở nhánh của một item thì lệnh đầu tiên trong làn của item đó báo `already used by worktree`; chạy `git switch develop` ở thư mục dự án rồi chạy lại.
+- **`/ao-status <KEY>`** in thêm các làn đang có.
+- **`/ao-preview` dừng khi bật worktree:** nhánh của PR đang nằm trong làn, nên thư mục dự án không chuyển sang nhánh đó được. Xem ảnh và mẫu API trong `<tên dự án>-wt/<KEY>/.ai/runs/<KEY>/preview/` (lệnh in đường dẫn đầy đủ), hay mở làn trong editor.
+### Nhiều làn chạy cùng lúc (`runs.lanes_max`)
+
+Phần 2 của spec. Ví dụ cho một máy 16 GB:
+
+```yaml
+runs:
+  worktrees: true
+  lanes_max: 3          # số làn mở cùng lúc (kể cả làn của item đang chờ bạn), cũng là số agent chạy cùng lúc; từ 2 cần worktrees: true
+  min_free_ram_gb: 3    # RAM trống tối thiểu để mở thêm một agent; 0 thì tắt
+  port_step: 100        # cổng của lượt ở chỗ k (từ 0) dời (k + 1) × 100
+  lane_env:             # biến mỗi lượt có giá trị riêng, ví dụ Postgres của Docker Compose
+    ports: { DB_PORT: 5432, POSTGRES_HOST_PORT: 5432 }            # dời như cổng của app
+    names: { COMPOSE_PROJECT_NAME: learn-postgresql-api, POSTGRES_CONTAINER_NAME: learn-postgres }   # thêm -s<k + 1>
+```
+
+- **Chạy song song được:** `/ao-build`, `/ao-fix`, `/ao-review`, `/ao-qa`, mỗi item một lượt. Phiên chính chạy từng lệnh ở nền như trước, và mở lệnh thứ hai khi lệnh đầu còn chạy.
+- **Chạy một mình:** `/ao-spec`, `/ao-plan`, `/ao-request`, `/ao-intake`, `/ao-preview`, `/ao-release`, `/ao-ship`, `/ao-rollback`. Chúng đợi khi còn lượt khác chạy, và không lượt nào bắt đầu khi chúng đang chạy.
+- **Mỗi dev agent một item:** hai lượt build hay fix của cùng `fe-dev` không chạy cùng lúc, như giới hạn WIP của contract. `/ao-build` của một Story chạy `be-dev` rồi `fe-dev`: trước mỗi lượt, lệnh ghi role của lượt đó vào khóa. Role đang bận ở lệnh khác thì lệnh chờ, xem lại mỗi 30 giây, tối đa 2 giờ; trong lúc chờ, khóa không giữ role nào, nên hai lệnh không chờ nhau mãi.
+- **Mỗi lúc một QA trên một môi trường:** E2E của mọi item ghi vào cùng một database của Development.
+- **QA kiểm bản đang chạy:** trong lúc `qa` chạy, `ao-step` xem bản deploy trên môi trường đó mỗi 30 giây. Có bản mới thì `qa` dừng ngay, trước khi báo; lượt đó ghi là `superseded`, không đính kèm gì, và lệnh chạy lại QA trên bản mới, tối đa 2 lần.
+- **Khóa:** mỗi lệnh giữ một file trong `.ai/runs/active/`, mở dưới một khóa ngắn, nên hai lệnh khởi động cùng lúc không cùng vượt trần. File được ghi trọn một lần (ghi file tạm rồi đổi tên). File của tiến trình đã chết được dọn.
+- **Chốt RAM:** trước khi mở một agent khi đã có lượt khác chạy, kit đọc RAM trống; dưới `min_free_ram_gb` thì chờ, xem lại mỗi 30 giây; sau 30 phút thì dừng kèm lý do. Lượt chạy một mình không chờ.
+- **Cổng:** lượt ở chỗ k (từ 0) nhận `AO_PORT_OFFSET = (k + 1) × port_step`, kể cả khi chỉ một lượt chạy mà lượt đó ở trong làn. Không lượt nào dùng cổng mặc định: cổng đó để dành cho bạn, khi bạn chạy `pnpm dev` ở thư mục dự án. Prompt ghi rõ cổng của từng app. `playwright.config.ts` của profile `base-pnpm` dời cổng và các URL `localhost` ghi trong `apps.<app>.env` theo biến này, và không dùng lại server đang chạy sẵn trên các cổng đó. Dự án cài kit trước bản này cần chép lại file đó.
+- **Dịch vụ riêng của lượt (`runs.lane_env`):** biến trong `ports` dời như cổng của app; biến trong `names` thêm đuôi `-s<k + 1>`. Biến môi trường thắng file `.env` và thắng `name:` của Docker Compose, nên mỗi chỗ có Postgres riêng: project, container, volume và cổng riêng. Database của bạn ở thư mục dự án không bị đụng tới. Một volume được dùng lại cho mọi item chạy ở cùng chỗ.
+- **URL giữa các app:** ghi URL `localhost` mà app này dùng để gọi app kia vào `apps.<app>.env` của `project.yaml`, ví dụ `API_URL: http://localhost:3001`. Kit chỉ dời được URL ghi ở đó, không dời URL trong file `.env`.
+- **Hạ tạm số agent:** đặt `AO_AGENTS_AT_ONCE=1` (hay 2) ở máy, không sửa `project.yaml`; kit lấy số nhỏ hơn.
+- **`/ao-status <KEY>`** in thêm các lượt đang chạy: lệnh, item, chỗ, số phút.
+
 ## Đọc `.ai/runs/`
 
 `.ai/` không được commit. Mỗi item có một thư mục `.ai/runs/<KEY>/`:
@@ -164,7 +217,7 @@ Bản nháp của `/ao-intake` nằm ở `.ai/intake/<YYYYMMDD-HHmm>-<slug>.md`.
 | `your request has no be: or fe: …` | Ghi `be:` hay `fe:` ở đầu từng phần của yêu cầu, rồi chạy lại |
 | `PR #… changes …, which steer the kit and the agents` | Không xem trước PR này: đọc thay đổi trong diff, rồi `/ao-review` |
 | `… has no open request to ba, ux or sa` | Không còn gì cho `/ao-request`. Yêu cầu gửi role khác, nếu có, hiện trong `/ao-status` |
-| `… is flagged Needs you by …`, `Sub-task … is flagged Needs you` | Đọc comment mới nhất trên item, trả lời ở đó, gỡ cờ và nhãn `needs-you`, rồi chạy lại. `jira-guard` không cho chuyển trạng thái của item còn nhãn đó. Cờ của giới hạn rework (`jira-sync: … went back N times`) bạn đã gỡ thì không quay lại ở cùng số lần đó; chỉ một lần quay lại nữa mới gắn lại (review vòng 4 của `shop` PR #13) |
+| `… is flagged Needs you by …`, `Sub-task … is flagged Needs you` | Đọc comment mới nhất trên item, trả lời ở đó, gỡ cờ và nhãn `needs-you`, rồi chạy lại. `jira-guard` không cho chuyển trạng thái của item còn nhãn đó. Cờ của giới hạn rework (`jira-sync: … went back N times`) bạn đã gỡ thì không quay lại ở cùng số lần đó; chỉ một lần quay lại nữa mới gắn lại (review vòng 4 của `shop` PR #13). Điều này chỉ đúng khi chính bạn gỡ nhãn: nếu tài khoản của agent hay của CI gỡ, `jira-sync` gắn lại cờ ở lần chạy kế (review của `shop` PR #21) |
 | `… hit the usage limit … Run the same command again after it resets` | Chờ giới hạn reset, rồi chạy lại đúng lệnh (mục sau) |
 | `… ran <step> on <KEY> and it still has to run` | Agent xong lượt mà dữ kiện chưa đổi như mong đợi. Đọc câu trả lời của nó trong `last.md` |
 | `no CI run started on PR #… after 5 minutes` | GitHub Actions không chạy workflow nào trên head của PR. Mở tab Actions của repo. Ở `ao-sample`, các workflow vào repo cùng lần push đầu lên repo trống và không chạy theo sự kiện, tới khi một push đụng `.github/workflows/` (Pilot 1, `SMP-2`). Sửa xong thì đóng rồi mở lại PR, và chạy lại lệnh |

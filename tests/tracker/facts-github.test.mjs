@@ -71,15 +71,18 @@ test('ci-green: every check run of the newest commit succeeded or was skipped, a
   );
 });
 
-test('the check run of jira-sync itself is not CI: running or failed, it changes neither ci-green nor changes-requested', async () => {
-  // jira-sync runs on pull_request too, so its own job is a check run on the PR head (found in T18).
-  for (const own of [{ status: 'in_progress', conclusion: null }, { status: 'completed', conclusion: 'failure' }]) {
-    const withOwn = (a) => a['/commits/c5/check-runs'].check_runs.push({ name: 'jira-sync', ...own });
-    assert.deepEqual(await holds(item('DEMO-12'), ['ci-green', 'changes-requested'], { change: withOwn }), ['ci-green']);
+test('the check runs of jira-sync and of the relay of reviews are not CI: running or failed, they change neither ci-green nor changes-requested', async () => {
+  // jira-sync ran on pull_request in the copies made before, so its own job is a check run on the PR head (found in
+  // T18); the job of PR review, which relays a review to jira-sync, is one since the review of shop PR #21.
+  for (const name of ['jira-sync', 'pr-review-relay']) {
+    for (const own of [{ status: 'in_progress', conclusion: null }, { status: 'completed', conclusion: 'failure' }]) {
+      const withOwn = (a) => a['/commits/c5/check-runs'].check_runs.push({ name, ...own });
+      assert.deepEqual(await holds(item('DEMO-12'), ['ci-green', 'changes-requested'], { change: withOwn }), ['ci-green'], name);
+    }
+    // With only its own check, the commit has no CI yet.
+    const onlyOwn = (a) => (a['/commits/c5/check-runs'] = { total_count: 1, check_runs: [{ name, status: 'completed', conclusion: 'success' }] });
+    assert.deepEqual(await holds(item('DEMO-12'), ['ci-green'], { change: onlyOwn }), [], name);
   }
-  // With only its own check, the commit has no CI yet.
-  const onlyOwn = (a) => (a['/commits/c5/check-runs'] = { total_count: 1, check_runs: [{ name: 'jira-sync', status: 'completed', conclusion: 'success' }] });
-  assert.deepEqual(await holds(item('DEMO-12'), ['ci-green'], { change: onlyOwn }), []);
 });
 
 test('changes-requested: the latest review that decides asks for changes, or a check failed', async () => {

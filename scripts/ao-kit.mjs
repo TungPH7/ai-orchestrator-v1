@@ -191,7 +191,7 @@ async function doctorFacts(dir, config) {
       interactionLimit: ghJson(['api', `repos/${repo}/interaction-limits`]),
       environments: (ghJson(['api', `repos/${repo}/environments`])?.environments ?? []).map(({ name }) => name),
       secrets: (ghJson(['secret', 'list', '--repo', repo, '--json', 'name']) ?? []).map(({ name }) => name),
-      envSecrets: (ghJson(['secret', 'list', '--env', 'merge-gate', '--repo', repo, '--json', 'name']) ?? []).map(({ name }) => name),
+      envSecrets: Object.fromEntries(['merge-gate', 'jira-sync'].map((env) => [env, (ghJson(['secret', 'list', '--env', env, '--repo', repo, '--json', 'name']) ?? []).map(({ name }) => name)])),
       workflows: ghJson(['api', `repos/${repo}/actions/workflows`])?.total_count ?? 0,
       // .github/CODEOWNERS on main and on each release branch with commits main lacks (review round 3 of shop PR #13).
       codeownersOn: codeownersOnBranches(repo, ghJson),

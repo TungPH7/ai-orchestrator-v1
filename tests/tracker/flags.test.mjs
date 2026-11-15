@@ -46,7 +46,7 @@ test('jira-sync clears the flag only when merge-gate raised it for this PR and n
 const closed = (merged = true) => ({
   action: 'closed',
   number: 16,
-  pull_request: { number: 16, state: 'closed', merged, title: 'ci(deploy): set timeout-minutes on the deploy job (DEMO-16)', head: { ref: 'feature/DEMO-16-deploy-timeout', sha: '5f9327b0'.padEnd(40, '0') }, base: { ref: 'develop' } },
+  pull_request: { number: 16, state: 'closed', merged, title: 'ci(deploy): set timeout-minutes on the deploy job (DEMO-16)', head: { ref: 'feature/DEMO-16-deploy-timeout', sha: '5f9327b0'.padEnd(40, '0'), repo: { full_name: 'TungPH7/ao-pilot' } }, base: { ref: 'develop' } },
   repository: { full_name: 'TungPH7/ao-pilot' },
 });
 function jiraWith(comments, histories = [flagSet(9)], labels = ['needs-you']) {
@@ -85,6 +85,11 @@ test('a PR closed without merging clears it too; a flag of audit or the rework l
   await runSync({ event: 'pull_request', payload: closed(), jira: audited, github, contract, mapping, space: 'DEMO', log: (line) => lines.push(line) });
   assert.deepEqual(lines, ['pull_request: DEMO-16', 'Kept DEMO-16 flagged: its newest flag comment is from audit, not from merge-gate for PR #16', 'No change']);
   assert.deepEqual(audited.writes, []);
+});
+
+test('a PR that closes clears the flag on pull_request_target too, where jira-sync runs (review of shop PR #21)', async () => {
+  const { actions } = await syncEvent({ event: 'pull_request_target', payload: closed(), jira: jiraWith([comment(9, MERGE_GATE_16)]), github, contract, mapping, space: 'DEMO' });
+  assert.deepEqual(actions, [{ key: 'DEMO-16', effect: 'clear-needs-you', pr: 16, merged: true }]);
 });
 
 test('an item that is not flagged is left alone without a word', async () => {

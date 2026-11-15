@@ -104,6 +104,20 @@ chuyển nhánh, nên bạn mở được nó trong VS Code mà không đụng a
 - `homeBranch` không còn đưa thư mục chính đi đâu, vì thư mục chính không rời `develop`.
 - Prompt của lượt build và fix thêm một dòng: đường dẫn worktree, và ledger nằm ở `.ai/ledger/<KEY>.md` của worktree.
 
+### 4.4 Quyết định khi làm (Phiên 32 · Lượt 35)
+
+- **`decideStep` không đổi.** Lượt nào vào làn do `laneOf` của `lib/workflow/places.mjs` quyết: mọi lượt của `/ao-build`
+  và `/ao-fix`, trừ review (vẫn có worktree tạm). Như vậy `ba` hay `sa` sửa AC hoặc plan trên nhánh của PR cũng chạy trong
+  làn, vì nhánh đó đang nằm ở làn. Lượt của Epic (`/ao-spec`, `/ao-plan`, `/ao-request`) ở lại thư mục chính.
+- **`checkout` lên `develop` trong làn** là đứng ở `origin/develop` dạng detached, vì thư mục chính giữ `develop`.
+- **Runner** truyền cả lượt cho `git(checkout, run)` và `wip.restore(wip, run)`, và giữ `story` trên bản ghi của lượt, để
+  việc dở của Sub-task về đúng làn của Story.
+- **`lib/workflow/lanes.mjs`** tạo, đặt, tìm và dọn làn; ao-step chỉ nối vào. Làn có PR đã merge được gỡ dù nhánh đã bị xóa
+  trên origin; làn có PR đóng mà không merge thì chỉ gỡ khi mọi commit đã có trên origin.
+- **`/ao-preview` dừng khi bật worktree**, kèm lời chỉ: nhánh của PR nằm trong làn, nên thư mục chính không chuyển sang
+  được. Bật app ngay trong làn là việc sau.
+- **Ledger:** `files.ledger` tìm ở thư mục chính và ở mọi làn.
+
 ## 5. Phần 2: chạy hai lượt cùng lúc
 
 ### 5.1 Khóa và trần
@@ -140,6 +154,13 @@ chuyển nhánh, nên bạn mở được nó trong VS Code mà không đụng a
   `playwright.config.ts:60–66`).
 - Lượt review và QA không bật app ở máy, nên không cần dải cổng.
 - `shop` cần một PR sửa `playwright.config.ts` theo template mới, đi cùng lần chép kit.
+- Sửa sau review của `shop` PR #21:
+  - Độ lệch là `(chỗ + 1) × port_step`, và áp cho mọi lượt trong làn, kể cả khi chỉ một lượt chạy. Cổng mặc định để dành
+    cho app bạn chạy ở thư mục dự án; trước đây chỗ 0 dùng cổng mặc định, nên E2E của làn có thể kiểm nhầm server của bạn.
+  - Lượt có `AO_PORT_OFFSET` không dùng lại server đang chạy sẵn (`reuseExistingServer` tắt).
+  - `runs.lane_env` cho mỗi chỗ biến riêng: `ports` dời theo độ lệch, `names` thêm `-s<chỗ + 1>`. Với `shop`, mỗi chỗ có
+    Postgres riêng (project, container, volume, cổng của Docker Compose), vì trước đây mọi làn dùng chung một database.
+  - Dự án ghi URL `localhost` giữa các app vào `apps.<app>.env`, vì kit không dời URL trong file `.env`.
 
 ### 5.3 `/ao-status` và skill
 
@@ -147,6 +168,22 @@ chuyển nhánh, nên bạn mở được nó trong VS Code mà không đụng a
 - Câu "agents run one at a time" trong skill và tài liệu sửa thành: "tối đa `runs.lanes_max` lượt, mỗi item một lượt".
 - Skill không đổi cách gọi: phiên chính chạy mỗi lệnh ở nền như bây giờ, và có thể chạy lệnh thứ hai khi lệnh đầu đang
   chạy.
+
+### 5.4 Quyết định khi làm phần 2 (Phiên 32 · Lượt 35)
+
+- **Khóa tính theo lệnh, không theo agent:** một lệnh giữ chỗ của nó cả lúc chờ CI, khi không có agent nào chạy. Cách này
+  đơn giản và chắc; cái giá là đôi khi một chỗ nằm không trong lúc chờ CI.
+- **`lib/workflow/locks.mjs`:** `admit` quyết từ các khóa còn sống; `takeLock` ghi khóa dưới một mutex ngắn
+  (`.ai/runs/active/.admit`), nên hai lệnh khởi động cùng lúc không cùng vượt trần. Khóa cũ `.ai/runs/active.json` được
+  bỏ; `/ao-preview` đọc khóa mới.
+- **`lib/workflow/ports.mjs`:** bảng cổng của một chỗ, dời URL `localhost`, và `runsAtOnce` (trần `lanes_max`, hạ bằng
+  `AO_AGENTS_AT_ONCE`). Template `playwright.config.ts` của `base-pnpm` dời cổng theo `AO_PORT_OFFSET`; profile
+  `next-nest` cũ không có cổng trong `project.yaml`, nên không đổi.
+- **QA kiểm bản đang chạy:** `ao-step` đọc bản deploy mỗi 30 giây trong lúc `qa` chạy, bằng login `gh` của bạn như các lệnh
+  release, vì token của agent không đọc được deployment. Có bản mới thì dừng `qa` ngay (`killTree`). Runner ghi lượt đó là
+  `superseded`, không gọi `afterQa` để đính kèm, và quyết định lại; `decideQa` cho chạy mới từ In QA khi lượt trước là
+  `superseded`. Tối đa 2 lần trong một lệnh; sau đó lượt QA chạy hết như trước, kèm ghi chú của `afterQa`.
+- **Chốt RAM** dùng `os.freemem()`, chỉ khi trần lớn hơn 1, nên mặc định không đổi.
 
 ## 6. Cấu hình
 
