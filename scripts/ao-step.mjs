@@ -301,7 +301,11 @@ async function main() {
   }
   try {
     console.log('');
-    if (runs.worktrees) for (const note of await keeper.prune()) console.log(note);
+    if (runs.worktrees) {
+      // A lane that cannot be checked now is checked at the next command; the runs go on.
+      const pruned = await keeper.prune().catch((error) => [`The lanes were not checked for closed PRs: ${error.message}`]);
+      for (const note of pruned) console.log(note);
+    }
     // A run in a lane starts there, told so; git and the work put aside go there too (parallel-runs spec 4).
     const placed = async (run) => {
       const place = await keeper.placeOf(run, command);

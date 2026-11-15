@@ -35,6 +35,8 @@ test('every run of /ao-build and /ao-fix works in the lane of its item, a Sub-ta
 
 test('reviews keep their temporary worktree, and the runs of the Epic, QA and releases stay in the project folder', () => {
   assert.equal(laneOf({ role: 'reviewer', key: 'SHOP-8', purpose: 'review', checkout: { branch: 'develop', pull: true }, worktree: { name: 'pr-18' } }, { worktrees: true, command: 'fix' }), null);
+  // The record of a review run keeps no worktree: its purpose tells it apart, so its work put aside is not looked for in a lane.
+  assert.equal(laneOf({ role: 'security', key: 'SHOP-8', purpose: 'review-delta', checkout: { branch: 'develop', pull: true } }, { worktrees: true, command: 'fix' }), null);
   assert.equal(laneOf({ role: 'qa', key: 'SHOP-8', purpose: 'qa', worktree: { name: 'qa-SHOP-8', kind: 'qa' } }, { worktrees: true, command: 'qa' }), null);
   assert.equal(laneOf({ role: 'ba', key: 'SHOP-8', purpose: 'ac-add', checkout: { branch: 'develop', pull: true } }, { worktrees: true, command: 'qa' }), null);
   assert.equal(laneOf({ role: 'ba', key: 'SHOP-7', purpose: 'spec-write', checkout: { branch: 'feature/SHOP-7-spec' } }, { worktrees: true, command: 'spec' }), null);
