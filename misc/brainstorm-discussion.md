@@ -26210,3 +26210,17 @@ làm tiếp
 3. **Kế tiếp:** khi `/ao-fix 20` xong, mình chạy `/ao-review 21` để review phần mới của PR #21 (code cũ chỉ chạy từng lệnh một), rồi `/ao-fix 19` cho 2 Low câu chữ.
 
 Mình sẽ báo khi có kết quả review của PR #20 hoặc PR #21.
+
+# Phiên 32 · Lượt 42 — 2026-11-15
+
+**Bạn:**
+
+```markdown
+chạy 1 watcher 3 phút check tiến độ 1 lần đi, để xem task có bị tắc gì không còn xử lý sớm
+```
+
+**Claude:**
+
+Đã bật watcher cho `/ao-fix 20` (SHOP-9). Cứ 3 phút nó in một dòng: lượt agent đang chạy, số bước, tool cuối, log ghi cách đây bao lâu. Nếu log không lớn thêm trong 10 phút, nó in cảnh báo tắc. Watcher tự dừng khi lệnh nền kết thúc.
+
+Một watcher sống tối đa 30 phút; hết hạn thì mình bật lại. Khi chuyển sang `/ao-review 21`, mình bật watcher mới cho SHOP-38. Thấy tắc là mình báo ngay và xử lý.
