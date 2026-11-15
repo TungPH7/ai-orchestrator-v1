@@ -26480,3 +26480,28 @@ Mình đề xuất **(a)**: đóng đúng Medium đang mở mà không làm xáo
 - Mình giữ SHOP-13 vì nó đứng đầu chuỗi phụ thuộc dài nhất của Epic: SHOP-13 → 14 → 15 → 16 → các Story 19, 20, 21 → 24, 25, 31 → 28, 34, 37. Gần như mọi Story đều chờ nó. SHOP-11 chỉ chặn một Story (SHOP-21). Chậm SHOP-13 một giờ là cả Epic chậm một giờ.
 - SHOP-12 (năm sản phẩm thử trên Staging và Production, `devops`, xhigh) không chặn item nào, và đụng tới Production. Theo mình hiểu, nó cũng nên chạy sau khi schema V4 (SHOP-13) đã vào, để sản phẩm thử dùng cột mới. Nên mình xếp nó sau.
 - Hiện SHOP-11 đã chạy lại và đang chờ RAM. `reviewer` của PR #23 (SHOP-13) không có finding nào, `security` đang review.
+
+# Phiên 32 · Lượt 49 — 2026-11-16 khoảng 01:20
+
+**Bạn:**
+
+```markdown
+SHOP-40 làm sau, sau khi xong epic hiện tại có được không? Hay phải làm ngay
+```
+
+**Claude:**
+
+Được, SHOP-40 để sau khi xong SHOP-7 là ổn, không cần làm ngay.
+
+**Vì sao chờ được:**
+1. Đây là Medium, không chặn luồng nào: merge-gate, audit và QA đều chạy bình thường.
+2. Muốn lợi dụng lỗ này, agent phải bị đoạn chữ của người khác dẫn dắt. Nhưng repo `shop` đang giới hạn tương tác ở mức collaborators only (tới 2027-05-15): người ngoài không mở được PR, issue hay comment. Chữ trên Jira cũng do bạn và các agent viết. Nguồn chữ lạ gần như không có.
+3. Kể cả khi bị lợi dụng, token CI chỉ đụng được Jira: chuyển trạng thái item, gỡ cờ, viết comment. Nó không merge được code, vì merge cần approve của bạn, và không deploy Production được. Lịch sử Jira ghi lại mọi thay đổi nên khôi phục được.
+4. gh-guard vẫn chặn các cách đọc token thông thường.
+
+**Trong lúc chờ, giữ ba điều:**
+- Đừng dán chữ lấy từ nguồn lạ (trang web, email của người ngoài) vào item Jira hay PR rồi giao cho agent làm.
+- Gia hạn interaction limit trước 2027-05-15. `ao-kit doctor` sẽ báo khi còn dưới 30 ngày.
+- Bản clone kit ở `AO_KIT_DIR` phải luôn mới. `ao-step` in dòng `Note:` nếu nó lệch.
+
+Mình xếp SHOP-40 là việc đầu tiên sau khi SHOP-7 xong, trước lần release v0.3.0 tiếp theo.
