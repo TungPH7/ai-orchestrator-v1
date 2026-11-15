@@ -26245,3 +26245,18 @@ Một watcher sống tối đa 30 phút; hết hạn thì mình bật lại. Khi
 2. **PR #21 (SHOP-38):** đang review vòng 3 trên head `2c6fbaf` (kit `e3b44fa4`), có watcher 3 phút một lần.
 
 **Về PR #20:** mỗi vòng review `reviewer` lại thấy vài Low mới (vòng 1: 8, vòng 2: 1, vòng 3: 2), mỗi vòng sửa tốn khoảng 4 USD và 20 phút. Mình đề xuất bạn approve PR #20 luôn, còn 2 Low này đưa vào một Task sau. Nếu bạn không nói gì, mình làm như các lần trước: sau review PR #21 và `/ao-fix 19`, mình chạy `/ao-fix 20` cho 2 Low này.
+
+**Claude (22:35, review vòng 3 của PR #21):**
+
+1. **Kết quả vòng 3** (head `2c6fbaf`): `reviewer` 2 Low, `security` 1 Medium và 1 Low, không Critical hay High. SHOP-38 đến giờ 28,66 USD.
+   - Medium: các luật mới của gh-guard vẫn có lỗ (ví dụ `reg query HKCU /s`, `cd HKCU:`). Quan trọng hơn: hook của agent nạp kit từ `AO_KIT_DIR`, mà bản clone đó thiếu 6 commit, nên agent vẫn chạy gh-guard cũ. **Mình đã cập nhật bản clone lên `main` của kit ngay**.
+   - Low: lỗ `grep -rlf -` sau `git log`, và trần làn đếm ngoài khóa.
+2. **Cách sửa:** mỗi vòng review lại tìm cách lách luật hẹp của vòng trước, nên vòng này mình làm luật rộng hẳn:
+   - dòng lệnh có dấu khóa riêng chỉ được là đúng một lệnh `git commit`/`git log`/`git grep`, không pipe, không `>`, chạy từ thư mục dự án;
+   - chặn mọi cách đọc hive registry của user (`HKCU`, `HKU`…), `GetEnvironmentVariables`, WMI, API registry của .NET;
+   - làn được đếm và giữ chỗ trong một khóa;
+   - `ao-step` in cảnh báo khi kit mà hook nạp khác bản chép của dự án.
+   Kit PR #297, 1.532 test đạt, CI đang chạy.
+3. **Một lỗi của mình:** ở kit PR #296 (đã merge), chuỗi `` $` `` trong văn bản thay thế của JS `replace()` đã chèn lặp 314 dòng đầu vào `docs/quality-gates.md`. PR #297 khôi phục file đó. Từ nay mình sửa tài liệu bằng tool Edit, không qua `replace()`.
+4. **Còn mở (cần bạn quyết sau):** `JIRA_CI_TOKEN` vẫn nằm trong biến user của Windows trên máy. gh-guard chỉ chặn được các cách đọc trực tiếp; cách bền là đưa token CI ra khỏi máy (ghi Jira khi cắt release và đính kèm bằng chứng QA đi qua workflow có environment). Đây là Medium, không chặn merge.
+5. **Đang chạy:** `/ao-fix 19` (2 Low câu chữ), có watcher.
