@@ -601,6 +601,17 @@ test('Grep and Glob stay in the project and the temp folder, nothing looks for a
   ]) {
     allowed(bash(command, 'security'), command);
   }
+  // Review round 5 of shop PR #21: the PEM headers of round 4 matched the daily words of dev agents in any case and
+  // anywhere, so a SQL transaction or a test title was refused as a key search; an agent refused twice flags its item.
+  for (const command of [
+    'pnpm exec playwright test -g "AC2 begins recording"',
+    'node scripts/run.mjs --begin execution',
+    'psql -c "BEGIN; ALTER TABLE t ADD PRIMARY KEY (id); COMMIT;"',
+    'grep -n "begin\\|key" V3__x.sql',
+    'pnpm --filter ./apps/api run test -- --tests "*BeginKeyTest*"',
+  ]) {
+    allowed(bash(command, 'be-dev'), command);
+  }
   // The working folder of the Bash tool stays from one call to the next: a git grep with a mark from a folder outside the
   // project searches the repository made there (review round 3 of shop PR #21).
   const from = (cwd) => checkAgentCall({ agent_type: 'be-dev', tool_name: 'Bash', tool_input: { command: 'git grep -A 40 "PRIVATE KEY"' }, cwd }, { gates, contract, projectDir: PROJECT, tempDir: TEMP });
