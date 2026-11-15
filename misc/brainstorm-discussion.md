@@ -26505,3 +26505,11 @@ SHOP-40 làm sau, sau khi xong epic hiện tại có được không? Hay phải
 - Bản clone kit ở `AO_KIT_DIR` phải luôn mới. `ao-step` in dòng `Note:` nếu nó lệch.
 
 Mình xếp SHOP-40 là việc đầu tiên sau khi SHOP-7 xong, trước lần release v0.3.0 tiếp theo.
+
+**Claude (01:22, PR #23 sẵn sàng):**
+
+PR #23 (SHOP-13, schema V4 của `app.products`) đã review xong: **`reviewer` và `security` đều không có finding nào**, cả hai đều Approve. Chi phí SHOP-13: 12,51 USD. PR này không đổi đường dẫn được bảo vệ, nên bạn chỉ cần approve, `merge-gate` sẽ tự merge:
+1. Mở https://github.com/TungPH7/shop/pull/23.
+2. Bấm tab **Files changed**, rồi **Review changes** ở góc phải trên, chọn **Approve**, bấm **Submit review**.
+
+Merge xong là SHOP-14 (domain sản phẩm, be-dev) chạy được. SHOP-11 vẫn đang build trong làn của nó.
