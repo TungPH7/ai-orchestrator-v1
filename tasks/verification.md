@@ -328,3 +328,4 @@ Sửa plan và todo: T4 thêm `playwright.config.ts` của profile; T5 đưa b�
   - `SHOP-9` fix PR #20 (0,87 USD): CI xanh; `SHOP-9` 12,15 USD.
   - `ao-kit sync … --key SHOP-38` từ worktree kit ở `352b3df`, 19 giây: `5cfd0bf`, 18 file. Commit thứ hai `3d153e9`: `runs` (`worktrees: true`, `lanes_max: 3`, `min_free_ram_gb: 3`, `copy`: `apps/api/.env`, `apps/user/.env.development`), `coverage_exclude: [src/testing/**]` cho `user` và `admin`, `playwright.config.ts` dời cổng theo `AO_PORT_OFFSET`.
   - `ao-kit check` đạt; `doctor` chỉ đỏ dòng Docker. PR nháp #21 (bot `ao-dev`), CI xanh đủ năm check. `/ao-review 21` chạy.
+  - Lượt 36: bạn nhờ Accept `SHOP-8`. Claude bấm bằng token admin (`scratchpad/item-accept.mjs`, kiểm In QA trước, comment nêu lời bạn): `SHOP-8` Done. Bạn chọn sửa Medium và 3 Low của PR #19: `note.md` ghi nguyên văn, `/ao-fix 19` xếp sau review PR #21.
