@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { copyFileSync, cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { laneKeeper, runsSettings } from '../../lib/workflow/lanes.mjs';
@@ -9,7 +9,7 @@ import { laneKeeper, runsSettings } from '../../lib/workflow/lanes.mjs';
 // The lanes of a project on this machine (parallel-runs spec, part 1), on real repositories: an origin and the project
 // folder on develop, with the lanes next to it.
 const isProtected = (branch) => ['develop', 'main'].includes(branch) || branch.startsWith('release/');
-const fs = { existsSync, mkdirSync, copyFileSync, readdirSync };
+const fs = { existsSync, mkdirSync, copyFileSync, cpSync, readdirSync, writeFileSync };
 const gitIn = (dir) => (...args) => spawnSync('git', ['-c', 'user.name=ao test', '-c', 'user.email=ao@example.com', '-c', 'core.autocrlf=false', ...args], { cwd: dir, encoding: 'utf8' });
 
 function setup(t, { settings = { worktrees: true, copy: ['apps/api/.env'] }, pulls = {}, installed = { ok: true, notes: ['Ran pnpm install.'] } } = {}) {
@@ -34,7 +34,7 @@ function setup(t, { settings = { worktrees: true, copy: ['apps/api/.env'] }, pul
   const keeper = laneKeeper({
     projectDir: project,
     gitIn,
-    install: async (dir) => (installs.push(dir), installed),
+    install: async (dir) => (installs.push(dir), typeof installed === 'function' ? installed(installs.length) : installed),
     fs,
     pullsOf: async (branch) => pulls[branch] ?? [],
     isProtected,
@@ -70,6 +70,24 @@ test('a lane whose packages do not install is named, with the reason', async (t)
   const made = await s.keeper.ensure('SHOP-13');
   assert.equal(made.ok, false);
   assert.match(made.reason, /the lane of SHOP-13 is at .*, but its packages are not installed: pnpm install failed/);
+});
+
+// Review of shop PR #21: the lane was there after a failed install, so the next run took it as ready, with no packages,
+// no .env and no ledger. A lane is ready only once its install and copies went through.
+test('the next run finishes a lane whose packages did not install, and a ready lane is not installed again', async (t) => {
+  const s = setup(t, { installed: (n) => (n === 1 ? { ok: false, reason: 'pnpm install failed: network down' } : { ok: true, notes: ['Ran pnpm install.'] }) });
+  assert.equal((await s.keeper.ensure('SHOP-13')).ok, false);
+  assert.equal(existsSync(join(s.lane('SHOP-13'), 'apps', 'api', '.env')), false);
+  const finished = await s.keeper.ensure('SHOP-13');
+  assert.deepEqual([finished.ok, finished.made], [true, false]);
+  assert.match(finished.notes.join(' '), /^Finished the lane of SHOP-13 at .*: its packages were not installed before\. Ran pnpm install\. Copied into it: apps.api.\.env\.$/);
+  assert.equal(readFileSync(join(finished.dir, 'apps', 'api', '.env'), 'utf8'), 'DB_URL=postgres://localhost/shop\n');
+  assert.equal(s.installs.length, 2);
+  const again = await s.keeper.ensure('SHOP-13');
+  assert.deepEqual([again.ok, again.made, again.notes], [true, false, []]);
+  assert.equal(s.installs.length, 2);
+  // The mark is in .ai/, which git ignores: the lane holds no change.
+  assert.equal(gitIn(again.dir)('status', '--porcelain').stdout.trim(), '');
 });
 
 test('the build of an item puts its lane on its branch, and the project folder does not move', async (t) => {
@@ -118,8 +136,12 @@ test('a lane whose PR merged goes, with its ledgers back in the project folder, 
   lane('commit', '--quiet', '-m', 'feat: tokens');
   mkdirSync(join(made.dir, '.ai', 'ledger'), { recursive: true });
   writeFileSync(join(made.dir, '.ai', 'ledger', 'SHOP-8.md'), '# Ledger of SHOP-8, done\n');
+  // The screenshots and API samples of its dev agents come back too (review of shop PR #21).
+  mkdirSync(join(made.dir, '.ai', 'runs', 'SHOP-8', 'preview', 'fe-dev'), { recursive: true });
+  writeFileSync(join(made.dir, '.ai', 'runs', 'SHOP-8', 'preview', 'fe-dev', 'home.png'), 'png');
   const notes = await s.keeper.prune();
-  assert.match(notes.join(' '), /Removed the lane of SHOP-8: its PR is merged; its ledgers are back in \.ai\/ledger\//);
+  assert.match(notes.join(' '), /Removed the lane of SHOP-8: its PR is merged; its ledgers are back in \.ai\/ledger\/, its preview in \.ai\/runs\/SHOP-8\/preview\//);
+  assert.equal(readFileSync(join(s.project, '.ai', 'runs', 'SHOP-8', 'preview', 'fe-dev', 'home.png'), 'utf8'), 'png');
   assert.equal(existsSync(made.dir), false);
   assert.equal(readFileSync(join(s.project, '.ai', 'ledger', 'SHOP-8.md'), 'utf8'), '# Ledger of SHOP-8, done\n');
   assert.deepEqual(s.keeper.list(), []);
@@ -153,7 +175,7 @@ test('a lane stays while its PR is open, has no PR, or holds work not committed 
 });
 
 test('runs of project.yaml: off and one lane when absent; runs.copy holds relative paths inside the project only', () => {
-  const defaults = { worktrees: false, lanesMax: 1, minFreeRamGb: 3, portStep: 100, copy: [] };
+  const defaults = { worktrees: false, lanesMax: 1, minFreeRamGb: 3, portStep: 100, copy: [], laneEnv: { ports: {}, names: {} } };
   assert.deepEqual(runsSettings({}), defaults);
   assert.deepEqual(runsSettings({ runs: { worktrees: true, copy: ['apps/api/.env', '.env.development'] } }), { ...defaults, worktrees: true, copy: ['apps/api/.env', '.env.development'] });
   assert.deepEqual(runsSettings({ runs: { worktrees: 'yes' } }), defaults);
@@ -166,4 +188,15 @@ test('runs of project.yaml: off and one lane when absent; runs.copy holds relati
     assert.throws(() => runsSettings({ runs: { copy: [bad] } }), /runs\.copy of project\.yaml has/, String(bad));
   }
   assert.throws(() => runsSettings({ runs: { copy: 'apps/api/.env' } }), /not a list of paths/);
+  // runs.lane_env (review of shop PR #21): the variables each lane gets its own value of.
+  const laneEnv = { ports: { DB_PORT: 5432 }, names: { COMPOSE_PROJECT_NAME: 'learn-postgresql-api' } };
+  assert.deepEqual(runsSettings({ runs: { worktrees: true, lane_env: laneEnv } }).laneEnv, laneEnv);
+  assert.deepEqual(runsSettings({ runs: { lane_env: { ports: { DB_PORT: 5432 } } } }).laneEnv, { ports: { DB_PORT: 5432 }, names: {} });
+  for (const ports of [{ db_port: 5432 }, { DB_PORT: 0 }, { DB_PORT: 65000 }, { DB_PORT: '5432' }]) {
+    assert.throws(() => runsSettings({ runs: { lane_env: { ports } } }), /runs\.lane_env\.ports of project\.yaml has/, JSON.stringify(ports));
+  }
+  for (const names of [{ 'COMPOSE-NAME': 'x' }, { COMPOSE_PROJECT_NAME: 'Has Space' }, { COMPOSE_PROJECT_NAME: '' }, { COMPOSE_PROJECT_NAME: 7 }]) {
+    assert.throws(() => runsSettings({ runs: { lane_env: { names } } }), /runs\.lane_env\.names of project\.yaml has/, JSON.stringify(names));
+  }
+  assert.throws(() => runsSettings({ runs: { lane_env: { ports: { DB_PORT: 5432 }, names: { DB_PORT: 'x' } } } }), /DB_PORT is both a port and a name/);
 });

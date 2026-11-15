@@ -46,6 +46,9 @@ test('/ao-build stops at the draft PR for your preview, with the preview files a
   assert.equal(decision.next, '/ao-preview DEMO-21, or /ao-review 15 to skip the preview');
   const pending = decideStep('build', buildFacts({ ci: { green: false, failed: false, pending: true } }), options);
   assert.match(pending.reason, /waits for your preview \(CI still running\)/);
+  // With lanes on, the dev agents wrote it in the lane of the item, which ao-step names (review of shop PR #21).
+  const inLane = decideStep('build', { ...buildFacts(), previewDir: 'D:/work/shop-wt/DEMO-21/.ai/runs/DEMO-21/preview/' }, options);
+  assert.match(inLane.reason, /dev agents are in D:\/work\/shop-wt\/DEMO-21\/\.ai\/runs\/DEMO-21\/preview\/$/);
 });
 
 test('red CI on a draft PR goes to /ao-fix first', () => {

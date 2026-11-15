@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { admit, liveLocks, takeLock } from '../../lib/workflow/locks.mjs';
+import { admit, claimRole, liveLocks, takeLock } from '../../lib/workflow/locks.mjs';
 
 // Who may run now (parallel-runs spec, part 2).
 const lock = (more) => ({ name: more.key ?? '_project', pid: 100, slot: 0, ...more });
@@ -83,4 +83,50 @@ test('a mutex left by a process that died is taken over', async (t) => {
   writeFileSync(join(dir, '.admit'), '999');
   const taken = await takeLock(dir, { pid: 1, command: 'fix', key: 'SHOP-10', role: 'fe-dev' }, { fs, alive: (pid) => pid !== 999, cap: 2, sleep: async () => {} });
   assert.equal(taken.ok, true);
+});
+
+// Review of shop PR #21: the lock named only the role of a command's first run, so the fe-dev run of a Story's build
+// went next to another command's fe-dev. Each run of build or fix now puts its role on the lock first.
+test('a build that moves on to another dev agent takes that role on its lock, and waits while another command holds it', async (t) => {
+  const dir = mkdtempSync(join(tmpdir(), 'locks-'));
+  t.after(() => rmSync(dir, { recursive: true, force: true }));
+  const alive = () => true;
+  const story = await takeLock(dir, { pid: 1, command: 'build', key: 'SHOP-13', role: 'be-dev' }, { fs, alive, cap: 3, sleep: async () => {} });
+  const other = await takeLock(dir, { pid: 2, command: 'build', key: 'SHOP-11', role: 'fe-dev' }, { fs, alive, cap: 3, sleep: async () => {} });
+  const waits = [];
+  let polls = 0;
+  // SHOP-11's fe-dev run ends after two polls of SHOP-13.
+  const sleep = async () => {
+    polls += 1;
+    if (polls === 2) rmSync(other.file);
+  };
+  const claimed = await claimRole(dir, story.file, 'fe-dev', { fs, alive, sleep, onWait: (busy) => waits.push(busy.key) });
+  assert.deepEqual(claimed, { ok: true, waited: true });
+  assert.deepEqual(waits, ['SHOP-11']);
+  assert.equal(JSON.parse(readFileSync(story.file, 'utf8')).role, 'fe-dev');
+  // Meanwhile be-dev was free: a third build could start with it.
+  assert.equal((await takeLock(dir, { pid: 3, command: 'build', key: 'SHOP-12', role: 'be-dev' }, { fs, alive, cap: 3, sleep: async () => {} })).ok, true);
+  // The role it holds already, or a free one, is taken at once.
+  assert.deepEqual(await claimRole(dir, story.file, 'fe-dev', { fs, alive, sleep }), { ok: true, waited: false });
+  assert.equal(existsSync(join(dir, '.admit')), false, 'the mutex is released');
+});
+
+test('two builds that wait for each other\'s dev agent cannot both wait, and a wait ends', async (t) => {
+  const dir = mkdtempSync(join(tmpdir(), 'locks-'));
+  t.after(() => rmSync(dir, { recursive: true, force: true }));
+  const alive = () => true;
+  const a = await takeLock(dir, { pid: 1, command: 'build', key: 'SHOP-13', role: 'be-dev' }, { fs, alive, cap: 3, sleep: async () => {} });
+  const b = await takeLock(dir, { pid: 2, command: 'build', key: 'SHOP-14', role: 'fe-dev' }, { fs, alive, cap: 3, sleep: async () => {} });
+  // A waits for fe-dev and holds no role meanwhile, so B gets be-dev at once.
+  const waiting = claimRole(dir, a.file, 'fe-dev', { fs, alive, sleep: (ms) => new Promise((done) => setTimeout(done, ms)), poll: 5, most: 4 });
+  assert.deepEqual(await claimRole(dir, b.file, 'be-dev', { fs, alive, sleep: async () => {} }), { ok: true, waited: false });
+  assert.deepEqual(await waiting, { ok: true, waited: true });
+  // A role held the whole time ends the wait with the reason.
+  const c = await takeLock(dir, { pid: 3, command: 'fix', key: 'SHOP-15', role: 'devops' }, { fs, alive, cap: 4, sleep: async () => {} });
+  const stuck = await claimRole(dir, c.file, 'be-dev', { fs, alive, sleep: async () => {}, most: 3 });
+  assert.equal(stuck.ok, false);
+  assert.match(stuck.reason, /be-dev stayed at work on SHOP-14 \(process 2\)/);
+  // A lock that is gone ends it too.
+  rmSync(c.file);
+  assert.match((await claimRole(dir, c.file, 'qa', { fs, alive, sleep: async () => {} })).reason, /the lock .* is gone/);
 });
