@@ -26330,3 +26330,7 @@ Một sơ suất đã sửa ngay: lần tạo link đầu, mình đặt ngược
 3. Quay lại tab **Conversation**, kéo xuống cuối, bấm **Squash and merge**, rồi **Confirm squash and merge**.
 
 Sau khi merge: mình kéo `develop`, rồi xin bạn đồng ý xóa secret `JIRA_CI_TOKEN` cấp repo (hai environment đã có token). Mình cũng theo dõi lần deploy đầu, rồi bắt đầu chạy nhiều làn.
+
+**Claude (00:00, QA của SHOP-10):**
+
+SHOP-10 **QA PASS** trên Development (`69f0c64`, gồm PR #19). `qa` kiểm 9 mục của Technical Checklist và mục Verification: token màu ở cả hai theme, font Be Vietnam Pro do chính app phục vụ, font dự phòng, CSP `font-src 'self'`, các class dùng chung, ô placeholder, `user.md`, số đo thực tế, file code, CI. Mục nào cũng đạt. Báo cáo nằm trong comment 10281 trên item. SHOP-10 đang ở **In QA, chờ bạn Accept**: bấm **Accept** trên SHOP-10 trong Jira, hoặc nhờ mình bấm thay. Kit PR #299 (sửa luật `KEY_MARK` chặn nhầm) đã merge và có hiệu lực cho agent. `/ao-qa SHOP-9` đang chạy, có watcher.
