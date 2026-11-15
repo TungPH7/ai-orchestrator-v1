@@ -26334,3 +26334,19 @@ Sau khi merge: mình kéo `develop`, rồi xin bạn đồng ý xóa secret `JIR
 **Claude (00:00, QA của SHOP-10):**
 
 SHOP-10 **QA PASS** trên Development (`69f0c64`, gồm PR #19). `qa` kiểm 9 mục của Technical Checklist và mục Verification: token màu ở cả hai theme, font Be Vietnam Pro do chính app phục vụ, font dự phòng, CSP `font-src 'self'`, các class dùng chung, ô placeholder, `user.md`, số đo thực tế, file code, CI. Mục nào cũng đạt. Báo cáo nằm trong comment 10281 trên item. SHOP-10 đang ở **In QA, chờ bạn Accept**: bấm **Accept** trên SHOP-10 trong Jira, hoặc nhờ mình bấm thay. Kit PR #299 (sửa luật `KEY_MARK` chặn nhầm) đã merge và có hiệu lực cho agent. `/ao-qa SHOP-9` đang chạy, có watcher.
+
+# Phiên 32 · Lượt 44 — 2026-11-16 khoảng 00:05
+
+**Bạn:**
+
+```markdown
+đã merge PR #21
+```
+
+**Claude:**
+
+PR #21 đã merge vào `develop` ở commit `524abe9`. Mình đã kiểm và đang theo dõi những việc sau:
+1. **Workflow mới chạy được:** lượt jira-sync đầu tiên theo bản mới (`pull_request_target`, token lấy từ environment `jira-sync`) đã thành công, merge-gate cũng thành công.
+2. **Còn phải xem:** jira-sync sau khi CI của `develop` chạy xong, và jira-sync sau lần deploy Development. Lượt sau là lượt chưa kiểm được trước, vì deployment của shop ghi ref bằng SHA. Mình đang theo dõi nền.
+3. **Kéo `develop` về thư mục `shop`:** để sau khi `/ao-qa SHOP-9` xong, vì lệnh đó đang chạy từ code kit trong thư mục này. Từ lệnh kế tiếp, `ao-step` dùng code mới: làn theo item, tối đa 3 lượt cùng lúc, mỗi làn một Postgres riêng.
+4. **Cần bạn đồng ý sau đó:** khi cả hai lượt jira-sync ở bước 2 đều chạy tốt bằng token của environment, mình sẽ xin bạn cho xóa secret `JIRA_CI_TOKEN` cấp repo, vì nó vẫn để workflow của mọi PR đọc được token.
