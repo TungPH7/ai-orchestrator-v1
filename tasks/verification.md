@@ -309,3 +309,4 @@ Sửa plan và todo: T4 thêm `playwright.config.ts` của profile; T5 đưa b�
   - `SHOP-13` dừng ở bước kiểm: Docker chưa chạy (test Java cần Testcontainers).
   - PR #18 lượt sửa thứ hai: `fe-dev` (1,69 USD) viết lại quy ước 15.3 thành UI-011 tới UI-014 (v1.1.0), sửa README và getting-started; `reviewer` (2,09 USD) 0 Critical/High/Medium, 3 Low mới (ghi chú "Phase 1.2", phạm vi UI-011, số phiên bản); `security` review-delta (`high`, 0,45 USD) 0 lỗi. `SHOP-8` 25,38 USD. Đề xuất approve, vì các vòng chỉ còn tìm chữ nghĩa nhỏ.
   - `/ao-fix 19 --change none --note` (bạn chọn sửa Medium và 5 Low ở Lượt 24) chạy.
+  - Lượt 27: bạn approve PR #18; `merge-gate` merge lúc 09:04:27Z (`4605845`). Chờ Development deploy rồi `/ao-qa SHOP-8`.
