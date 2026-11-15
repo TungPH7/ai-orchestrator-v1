@@ -148,9 +148,49 @@ test('flags an item whose rework reached the limit, once', async () => {
   const comment = (accountId, count) => ({ created: '2026-11-04T10:00:00.000+0700', author: { accountId }, body: `jira-sync: DEMO-12 went back ${count} times, the limit in policies.yaml. It is flagged with the label needs-you and waits for you.` });
   const lists = (comments) => ({ '/rest/api/3/issue/DEMO-12/comment': comments });
   const ci = ciAccount(mapping);
-  assert.deepEqual(await run('DEMO-12', fakeJira({ issues: [story([])], changelogs, lists: lists([comment(ci, 3)]) })), []);
-  assert.deepEqual(await run('DEMO-12', fakeJira({ issues: [story([])], changelogs, lists: lists([comment('someone-else', 3)]) })), [{ key: 'DEMO-12', effect: 'flag-needs-you', reworkCount: 3 }]);
-  assert.deepEqual(await run('DEMO-12', fakeJira({ issues: [story([])], changelogs, lists: lists([comment(ci, 2)]) })), [{ key: 'DEMO-12', effect: 'flag-needs-you', reworkCount: 3 }]);
+  const cleared = { 'DEMO-12': [...reworkHistory, thirdRework, labels('you', '2026-11-04T11:00:00.000+0700', 'needs-you', '')] };
+  assert.deepEqual(await run('DEMO-12', fakeJira({ issues: [story([])], changelogs: cleared, lists: lists([comment(ci, 3)]) })), []);
+  assert.deepEqual(await run('DEMO-12', fakeJira({ issues: [story([])], changelogs: cleared, lists: lists([comment('someone-else', 3)]) })), [{ key: 'DEMO-12', effect: 'flag-needs-you', reworkCount: 3 }]);
+  assert.deepEqual(await run('DEMO-12', fakeJira({ issues: [story([])], changelogs: cleared, lists: lists([comment(ci, 2)]) })), [{ key: 'DEMO-12', effect: 'flag-needs-you', reworkCount: 3 }]);
+});
+
+// A change of the labels in the shape of GET /issue/{key}/changelog: fromString and toString list them, space apart.
+const labels = (accountId, created, fromString, toString) => ({ created, author: { accountId }, items: [{ field: 'labels', fieldtype: 'jira', from: null, fromString, to: null, toString }] });
+
+// Review of shop PR #21: an agent can remove the label through editJiraIssue, which also lifts jira-guard's block on
+// its transitions, so the flag of a count stays cleared only when the changelog shows you removed it.
+test('the flag of the rework limit stays cleared only when you removed the label', async () => {
+  const thirdRework = { created: '2026-11-04T09:00:00.000+0700', items: [{ field: 'status', fromString: 'In Review', toString: 'In Progress' }] };
+  const story = issue({ key: 'DEMO-12', st: status('In Progress', 'indeterminate'), subtasks: [['DEMO-13', status('To Do', 'new')]], labels: [] });
+  const ci = ciAccount(mapping);
+  const agents = mapping.identities.find(({ id }) => id === 'agents').account_id;
+  const flagComment = { created: '2026-11-04T10:00:00.000+0700', author: { accountId: ci }, body: 'jira-sync: DEMO-12 went back 3 times, the limit in policies.yaml. It is flagged with the label needs-you and waits for you.' };
+  const at = (hour) => `2026-11-04T${hour}:00:00.000+0700`;
+  const sync = (removals, map = mapping) =>
+    reconcile('DEMO-12', {
+      jira: fakeJira({ issues: [story], changelogs: { 'DEMO-12': [...reworkHistory, thirdRework, ...removals] }, lists: { '/rest/api/3/issue/DEMO-12/comment': [flagComment] } }),
+      github: github(),
+      contract,
+      mapping: map,
+      approvers: ['TungPH7'],
+    }).then(({ actions }) => actions);
+  const FLAG = [{ key: 'DEMO-12', effect: 'flag-needs-you', reworkCount: 3 }];
+
+  assert.deepEqual(await sync([labels('you', at(11), 'needs-you', '')]), [], 'you removed it');
+  assert.deepEqual(await sync([labels('you', at(11), 'frontend needs-you', 'frontend')]), [], 'you removed it beside another label');
+  assert.deepEqual(await sync([labels(agents, at(11), 'needs-you', '')]), FLAG, 'the agents account removed it');
+  assert.deepEqual(await sync([labels(ci, at(11), 'needs-you', '')]), FLAG, 'the automation account removed it');
+  assert.deepEqual(await sync([]), FLAG, 'no removal on record');
+  assert.deepEqual(await sync([labels('you', '2026-11-04T09:30:00.000+0700', 'needs-you', '')]), FLAG, 'a removal before the flag comment');
+  assert.deepEqual(await sync([labels('you', at(11), 'frontend', 'frontend backend')]), FLAG, 'a change of other labels');
+  assert.deepEqual(
+    await sync([labels('you', at(11), 'needs-you', ''), labels('you', at(12), '', 'needs-you'), labels(agents, at(13), 'needs-you', '')]),
+    FLAG,
+    'you removed it, it came back, and an agent removed it: the newest removal decides',
+  );
+  // Without the account id of every identity of the kit, no removal can be told to be yours.
+  const unknownAgents = { ...mapping, identities: mapping.identities.map((identity) => (identity.id === 'agents' ? { ...identity, account_id: undefined } : identity)) };
+  assert.deepEqual(await sync([labels('you', at(11), 'needs-you', '')], unknownAgents), FLAG, 'the agents account id is unknown');
 });
 
 test('an Epic in progress refines its children that meet DoR, and nothing before its plan is approved', async () => {
