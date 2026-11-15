@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { installLane, pullsOfBranch, qaWatcher, runPlacer, waitForRam } from '../../lib/workflow/lane-runs.mjs';
+import { installLane, pullsOfBranch, qaWatcher, runPlacer } from '../../lib/workflow/lane-runs.mjs';
 
 // How ao-step starts a run with lanes and parallel runs on (parallel-runs spec 4 and 5), out of ao-step.mjs since the
 // review of shop PR #21, with the apps of shop.
@@ -18,30 +18,27 @@ const keeperOf = (place) => ({
 test('a run in a lane works there, with its ports and its own database moved by its slot, even alone', async () => {
   const waits = [];
   const logged = [];
-  const place = runPlacer({ keeper: keeperOf({ key: 'SHOP-13', dir: 'D:/wt/SHOP-13', notes: ['Made the lane of SHOP-13.'] }), command: 'build', cap: 1, slot: 0, runs: RUNS, apps: APPS, waitForRam: async (gb) => waits.push(gb), log: (line) => logged.push(line) });
+  const place = runPlacer({ keeper: keeperOf({ key: 'SHOP-13', dir: 'D:/wt/SHOP-13', notes: ['Made the lane of SHOP-13.'] }), command: 'build', cap: 1, slot: 0, runs: RUNS, apps: APPS, admitAgent: async () => waits.push('admit'), log: (line) => logged.push(line) });
   const run = await place({ role: 'be-dev', prompt: 'Build SHOP-13.', env: { A: '1' } });
   assert.equal(run.cwd, 'D:/wt/SHOP-13');
   assert.deepEqual(run.env, { A: '1', AO_PORT_OFFSET: '100', DB_PORT: '5532', COMPOSE_PROJECT_NAME: 'learn-postgresql-api-s1' });
   assert.match(run.prompt, /^You work in the lane of SHOP-13 at D:\/wt\/SHOP-13\.\n\n.*user on 3100 \(PORT=3100\).*DB_PORT=5532, COMPOSE_PROJECT_NAME=learn-postgresql-api-s1.*\n\nBuild SHOP-13\.$/s);
-  assert.deepEqual(waits, [], 'one run at a time waits for no RAM');
+  assert.deepEqual(waits, [], 'one run at a time checks no RAM');
   assert.deepEqual(logged, ['Made the lane of SHOP-13.']);
 });
 
 test('with more than one run at once, a run waits for RAM and takes the ports of its slot, in a lane or not', async () => {
   const waits = [];
-  const place = runPlacer({ keeper: keeperOf(null), command: 'review', cap: 3, slot: 2, runs: RUNS, apps: APPS, waitForRam: async (gb) => waits.push(gb), othersRunning: () => true });
+  const place = runPlacer({ keeper: keeperOf(null), command: 'review', cap: 3, slot: 2, runs: RUNS, apps: APPS, admitAgent: async () => waits.push('admit') });
   const run = await place({ role: 'reviewer', prompt: 'Review PR #21.' });
   assert.equal(run.cwd, undefined);
   assert.equal(run.env.AO_PORT_OFFSET, '300');
   assert.match(run.prompt, /admin on 5473 \(PORT=5473\)/);
-  assert.deepEqual(waits, [3]);
-  // Alone on the machine, a run waits for no RAM: no other agent would free it (review round 2 of shop PR #21).
-  const alone = runPlacer({ keeper: keeperOf(null), command: 'review', cap: 3, slot: 0, runs: RUNS, apps: APPS, waitForRam: async () => assert.fail('no wait'), othersRunning: () => false });
-  assert.equal((await alone({ role: 'reviewer', prompt: 'Review PR #21.' })).env.AO_PORT_OFFSET, '100');
+  assert.deepEqual(waits, ['admit']);
 });
 
 test('alone and out of a lane, a run is as before: default ports, no variables, no note', async () => {
-  const place = runPlacer({ keeper: keeperOf(null), command: 'review', cap: 1, slot: 0, runs: { ...RUNS, worktrees: false }, apps: APPS, waitForRam: async () => assert.fail('no wait') });
+  const place = runPlacer({ keeper: keeperOf(null), command: 'review', cap: 1, slot: 0, runs: { ...RUNS, worktrees: false }, apps: APPS, admitAgent: async () => assert.fail('no check') });
   const run = { role: 'reviewer', prompt: 'Review PR #21.' };
   assert.deepEqual(await place(run), run);
 });
@@ -72,18 +69,6 @@ test('a qa run whose environment gets another deploy is stopped and marked super
   assert.equal((await silent(run, start)).superseded, undefined);
   // A run with no commit to watch is not watched.
   assert.deepEqual(await calm({ role: 'qa' }, async () => ({ lines: ['plain'] })), { lines: ['plain'] });
-});
-
-test('another agent waits for the free RAM of runs.min_free_ram_gb, and stops after the limit', async () => {
-  const GB = 1024 ** 3;
-  const free = [1 * GB, 2 * GB, 4 * GB];
-  const logged = [];
-  const slept = [];
-  await waitForRam(3, { freeBytes: () => free[Math.min(slept.length, free.length - 1)], sleep: async (ms) => slept.push(ms), log: (line) => logged.push(line), step: 10 });
-  assert.equal(slept.length, 2);
-  assert.match(logged.join(' '), /^Waiting for RAM: 1\.0 GB free, 3 GB needed/);
-  await assert.rejects(waitForRam(3, { freeBytes: () => GB, sleep: async () => {}, step: 10, limit: 30 }), /stayed under 3 GB of free RAM/);
-  await waitForRam(0, { freeBytes: () => 0, sleep: async () => assert.fail('no wait') });
 });
 
 test('the PRs of a lane\'s branch, with merged told apart from closed', async () => {

@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { admit, claimRole, liveLocks, takeLock } from '../../lib/workflow/locks.mjs';
+import { admit, admitAgent, claimRole, liveLocks, releaseAgent, takeLock } from '../../lib/workflow/locks.mjs';
 
 // Who may run now (parallel-runs spec, part 2).
 const lock = (more) => ({ name: more.key ?? '_project', pid: 100, slot: 0, ...more });
@@ -172,4 +172,35 @@ test('a mutex released while it is read is taken on the next try', async (t) => 
   };
   const taken = await takeLock(dir, { pid: 1, command: 'build', key: 'SHOP-13', role: 'be-dev' }, { fs: racing, alive: () => true, cap: 2, sleep: async () => {} });
   assert.equal(taken.ok, true);
+});
+
+// Live check of shop, 2026-11-16: three commands each waited for RAM because the others held locks, though none had an
+// agent running yet, so none would ever start. An agent now waits for RAM only while another command has one running,
+// and the check and the mark are one step under the mutex.
+test('an agent starts at once when no other command has one running, and waits for RAM while one does', async (t) => {
+  const dir = mkdtempSync(join(tmpdir(), 'locks-'));
+  t.after(() => rmSync(dir, { recursive: true, force: true }));
+  const alive = () => true;
+  const GB = 1024 ** 3;
+  const a = await takeLock(dir, { pid: 1, command: 'build', key: 'SHOP-13', role: 'be-dev' }, { fs, alive, cap: 3, sleep: async () => {} });
+  const b = await takeLock(dir, { pid: 2, command: 'build', key: 'SHOP-11', role: 'fe-dev' }, { fs, alive, cap: 3, sleep: async () => {} });
+  // Low RAM, but the other command only holds its lock: this agent starts.
+  assert.deepEqual(await admitAgent(dir, a.file, { fs, alive, sleep: async () => assert.fail('no wait'), freeBytes: () => 0.4 * GB, minGb: 3 }), { ok: true, waited: false });
+  assert.equal(JSON.parse(readFileSync(a.file, 'utf8')).agent, true);
+  // Now SHOP-13 has an agent running: SHOP-11 waits until 3 GB are free.
+  let free = 1 * GB;
+  const waits = [];
+  const started = await admitAgent(dir, b.file, { fs, alive, sleep: async () => (free = 4 * GB), freeBytes: () => free, minGb: 3, onWait: (gb) => waits.push(gb) });
+  assert.deepEqual(started, { ok: true, waited: true });
+  assert.deepEqual(waits, ['1.0']);
+  // Once SHOP-13's agent ends, its lock holds no agent.
+  await releaseAgent(dir, a.file, { fs, alive, sleep: async () => {} });
+  assert.equal(JSON.parse(readFileSync(a.file, 'utf8')).agent, false);
+  // A wait that lasts past the limit ends with the reason.
+  const c = await takeLock(dir, { pid: 3, command: 'qa', key: 'SHOP-38', environment: 'development' }, { fs, alive, cap: 3, sleep: async () => {} });
+  const stuck = await admitAgent(dir, c.file, { fs, alive, sleep: async () => {}, freeBytes: () => GB, minGb: 3, poll: 10, limit: 30 });
+  assert.equal(stuck.ok, false);
+  assert.match(stuck.reason, /the machine stayed under 3 GB of free RAM while another agent ran/);
+  // 0 turns the check off.
+  assert.deepEqual(await admitAgent(dir, c.file, { fs, alive, sleep: async () => assert.fail('no wait'), freeBytes: () => 0, minGb: 0 }), { ok: true, waited: false });
 });
