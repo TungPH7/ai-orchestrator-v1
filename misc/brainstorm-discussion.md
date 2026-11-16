@@ -26555,3 +26555,524 @@ PR #25 (SHOP-14, domain sản phẩm và tìm không dấu, head `564e0a9`): `re
 - https://github.com/TungPH7/shop/pull/26 (SHOP-17, admin gỡ phần cũ)
 
 Hiện không còn lệnh nào chạy: ba làn đều chờ duyệt. Merge xong mình mở ngay SHOP-15 (be-dev, sau SHOP-14) và SHOP-18 (fe-dev).
+
+# Phiên 32 · Lượt 51 — 2026-11-16 khoảng 09:31
+
+**Bạn:**
+
+```markdown
+Chưa được làm gì, trả lời tôi trước câu này:
+
+merge xong SHOP-11, SHOP-14, SHOP-17 thì lúc làm SHOP-15 giá trị min_free_ram_gb đã được đặt lại thành 1.5GB chưa?
+```
+
+**Claude:**
+
+**Chưa.** Merge xong ba PR đó thì `min_free_ram_gb` của shop vẫn là **3 GB**. Nếu bắt đầu SHOP-15 ngay sau đó, nó sẽ chạy với ngưỡng 3 GB.
+
+Vì sao:
+1. Giá trị này nằm trong `.ai-orchestrator/project.yaml` của shop. Trên `develop` (`d01fc1a`) file đang ghi `min_free_ram_gb: 3`.
+2. PR #24, #25 và #26 không sửa file nào trong `.ai-orchestrator/` (mình vừa kiểm tra), nên merge chúng không làm đổi giá trị.
+3. Mức 1,5 GB mình định gộp vào PR chép kit kế tiếp, cùng với kit main (#299–#301). PR đó **chưa mở**. File này thuộc đường dẫn được bảo vệ, nên bạn là người merge.
+4. Mỗi lần chạy, `ao-step` đọc lại file này trong thư mục shop. Vì vậy ngưỡng chỉ thành 1,5 GB sau khi PR chép kit đã merge.
+
+Ảnh hưởng nếu vẫn để 3 GB: khi Docker chạy, máy thường chỉ còn trống 1,4–2,6 GB. Lệnh chạy một mình không bị chặn. Nhưng nếu hai lệnh agent chạy cùng lúc (chẳng hạn SHOP-15 và SHOP-18), lệnh vào sau phải chờ lệnh kia xong. Chờ quá 30 phút thì nó dừng và báo lỗi, và mình phải chạy lại.
+
+Đề xuất thứ tự sau khi ba PR merge:
+1. Mình mở PR chép kit (kit main cộng `min_free_ram_gb: 1.5`) và cho review một lần. Không chạy vòng sửa nếu không có Critical hay High.
+2. Bạn merge PR đó.
+3. Mình chạy song song `/ao-build SHOP-15` và `/ao-build SHOP-18`, lúc này với ngưỡng 1,5 GB.
+
+Bạn bảo bắt đầu thì mình mới làm.
+
+# Phiên 32 · Lượt 52 — 2026-11-16 khoảng 09:40
+
+**Bạn:**
+
+```markdown
+"Mức 1,5 GB mình định gộp vào PR chép kit kế tiếp" => "PR chép kit kế tiếp" là sau khi làm xong item nào?
+```
+
+**Claude:**
+
+**PR chép kit kế tiếp không cần chờ item nào làm xong.** Mình cũng chưa hẹn giờ cho nó. Lúc trả lời bạn ở Lượt 48, mình chỉ ghi "gộp vào lần chép kit kế tiếp" mà không nói khi nào. Mình nói chưa rõ, xin lỗi bạn.
+
+Cụ thể:
+1. Đây là một việc riêng, giống SHOP-38 với PR #21 trước đây. Mình sẽ tạo một Task mới dưới SHOP-7, ví dụ "Chép kit `b028606c` vào shop, hạ `min_free_ram_gb` xuống 1,5". Nhánh và commit cần mã item, nên phải có Task này.
+2. PR đó gồm kit main (#299, #300, #301) và dòng `min_free_ram_gb: 1.5`. Nó không phụ thuộc SHOP-11, SHOP-14 hay SHOP-17. Ba PR kia cũng không sửa gì trong `.ai-orchestrator/`.
+3. Thứ tự mình đề xuất là làm **ngay khi bạn cho bắt đầu**, trước SHOP-15 và SHOP-18. Như vậy hai build đó chạy với ngưỡng 1,5 GB.
+4. Có thể làm ngay bây giờ, trong lúc ba PR #24, #25, #26 còn chờ bạn approve. Hiện không có lệnh agent nào chạy, nên review của PR chép kit không phải chờ RAM.
+5. Bạn vẫn là người merge PR đó, vì `project.yaml` là đường dẫn được bảo vệ. Review chạy một lần, và không có vòng sửa nếu không có Critical hay High.
+
+Bạn bảo bắt đầu thì mình mới làm.
+
+# Phiên 32 · Lượt 53 — 2026-11-16 khoảng 09:55
+
+**Bạn:**
+
+```markdown
+Chưa làm, trả lời câu hỏi:
+
+Nếu chỉ sửa min_free_ram_gb từ 3GB thành 1.5GB mà phải chạy lại review (reviewer và security chạy rất tốn thời gian và token) thì có vẻ hơi bị lãng phí nhỉ?
+```
+
+**Claude:**
+
+**Đúng là có tốn, nhưng không bỏ review được: `audit` bắt buộc phải có.** Chỗ lãng phí thật nằm ở cách gộp PR mà mình đề xuất trước đó. Mình đổi đề xuất như dưới đây.
+
+Vì sao không bỏ được review:
+1. Lúc deploy, `audit` kiểm từng PR đã merge vào `develop` và đòi đủ báo cáo của `reviewer` và `security` trên head của PR. Một dòng trong `project.yaml` cũng không được miễn. Mình vừa đọc lại code của `audit` và `merge-gate` để chắc.
+2. Nếu merge PR mà thiếu hai báo cáo đó, `audit` sẽ chặn lần deploy Staging kế tiếp của `develop` và gắn cờ Needs you lên item. Lúc đó lại phải xử lý, nên tốn hơn là chạy review.
+
+Vì sao gộp với chép kit ngay bây giờ lại là lãng phí:
+1. Máy này đã chạy kit mới (#299–#301) qua `ao-step` của clone. Vì vậy chép kit vào `shop` lúc này chưa đem lại lợi ích gì cho các build.
+2. Review của PR chép kit lớn và tốn, vì phải đọc rất nhiều file. Kit còn hai việc sửa đang chờ (dọn làn trên Windows, Docker thử lại một lần). Nếu chép kit bây giờ, gần như chắc chắn phải chép thêm một lần nữa trước khi xong Epic, tức là hai lần review lớn thay vì một.
+
+Đề xuất mới:
+1. Một PR riêng chỉ sửa đúng một dòng `min_free_ram_gb: 3` → `1.5`, kèm một Task nhỏ dưới SHOP-7. `reviewer` và `security` chỉ có một dòng để đọc, nên chạy nhanh và rẻ hơn nhiều so với PR chép kit [Ước: dưới 15 phút, khoảng 1–3 USD cho cả hai].
+2. Bạn merge PR đó, vì đây là đường dẫn được bảo vệ. Sau đó SHOP-15 và SHOP-18 chạy song song với ngưỡng 1,5 GB.
+3. Chép kit vào `shop` một lần duy nhất khi gần xong Epic, gộp mọi bản sửa kit, và review một lần.
+
+Nếu bạn không muốn tốn cả khoản nhỏ này, cách còn lại là giữ 3 GB. Khi đó các build gần như chạy lần lượt từng cái, nên Epic sẽ chậm hơn, nhưng không mất gì thêm.
+
+Bạn bảo bắt đầu thì mình mới làm.
+
+# Phiên 32 · Lượt 54 — 2026-11-16 khoảng 10:00
+
+**Bạn:**
+
+```markdown
+Chưa cần sửa 'min_free_ram_gb' ngay, Approve PR cho SHOP-11, SHOP-14, SHOP-17 giúp tôi, sau đó làm các item tiếp theo nhé. Tôi check thì thấy RAM còn dư nhiều đấy, bạn xem có thể chạy được 3 làn không nhé.
+```
+
+**Claude (10:07):**
+
+**Ba PR đã merge, và giờ đang chạy đủ 3 làn.**
+
+1. **Approve thay bạn:** mình approve PR #24, #25, #26 bằng login `gh` của bạn, trên đúng commit đã review. Trong mỗi lượt approve có ghi rõ là bạn nhờ. `merge-gate` đã merge cả ba: #24 thành `5db35e9`, #25 thành `a3102d4`, #26 thành `11e157a`.
+2. **RAM:** lúc bắt đầu, máy còn trống 7,0 GB trên 15,8 GB, khi Docker đang bật. Ngưỡng 3 GB chỉ được kiểm lúc một agent bắt đầu, nên với mức này chạy được 3 làn. `min_free_ram_gb` giữ nguyên 3 GB như bạn quyết.
+3. **Đang chạy:**
+   - `/ao-build SHOP-15` (`be-dev`, API thêm sản phẩm), trong làn `shop-wt/SHOP-15`;
+   - `/ao-build SHOP-18` (`fe-dev`, `user` gỡ phần sản phẩm cũ), trong làn `shop-wt/SHOP-18`;
+   - `/ao-qa SHOP-38` chạy lại. Mình đã ghi kết quả kiểm thật C2 lên SHOP-38 và gỡ cờ Needs you.
+   - Watcher bằng script báo 3 phút một lần.
+4. **Một sự cố nhỏ, đã xử lý:** lần chạy đầu, hai build dừng ngay. Cả hai lệnh cùng lúc dọn ba làn cũ (SHOP-11, SHOP-14, SHOP-17) nên giẫm lên nhau. Thêm lỗi "Directory not empty" trên Windows, ba thư mục bị sót lại và vẫn bị tính là làn đang mở, nên lệnh báo "3 lanes are open". Mình đã xóa tay ba thư mục đó (chỉ còn bản sao code đã merge, không có gì chưa đẩy), rồi chạy lại hai lệnh cách nhau 20 giây. Lỗi này đã ghi vào danh sách việc của kit.
+
+**Kế tiếp:**
+- Bản `develop` mới (`11e157a`) đang deploy lên Development. Xong thì SHOP-11, SHOP-14, SHOP-17 chuyển sang Ready for QA. Mình chạy QA lần lượt SHOP-13, SHOP-11, SHOP-14, SHOP-17 ở làn thứ ba.
+- Mỗi vai dev chỉ làm một item In Progress mỗi lúc. Khi SHOP-18 tới PR, `fe-dev` làm SHOP-41 rồi SHOP-42. Khi SHOP-15 tới PR, `be-dev` làm SHOP-43, còn SHOP-16 chờ SHOP-15 merge.
+- SHOP-12 (`devops`, ghi năm sản phẩm thử lên Staging và Production) cần basic auth của Production. Tới lượt nó, mình sẽ nhờ bạn đặt.
+- Chờ bạn: Accept SHOP-38 nếu QA PASS.
+
+**Claude (10:10, SHOP-38 chờ bạn Accept):**
+
+`/ao-qa SHOP-38` không chạy lại: SHOP-38 đang ở In QA. Kit chỉ cho QA chạy lại trên một item In QA khi lượt trước bị dừng giữa chừng, hoặc khi bạn báo một lỗi mới. Bước kế tiếp kit đưa ra là bạn **Accept** dựa trên báo cáo QA đã có (5/6 mục PASS) cộng với comment kết quả kiểm thật C2 mình vừa ghi lên item (mục thứ 6 đã đạt). Như vậy cũng đỡ tốn một lượt QA.
+
+**Cách Accept:** mở SHOP-38 trên Jira, bấm nút trạng thái (đang ghi In QA), chọn **Accept**.
+
+Làn thứ ba đang chờ bản `11e157a` deploy xong lên Development, rồi chạy QA SHOP-13. Chạy ngay bây giờ trên bản cũ thì lượt QA sẽ bị bản mới thay ngang và phải làm lại.
+
+# Phiên 32 · Lượt 55 — 2026-11-16 khoảng 10:25
+
+**Bạn:**
+
+```markdown
+[ảnh chụp SHOP-38 mở dạng khung bên phải từ board: phần Activity có "All", biểu tượng comment, biểu tượng đồng hồ và nút "…" chỉ có "Sort by"]
+tại sao item details ở Jira không có chỗ xem history nhỉ? Hay SHOP Board chưa cấu hình xem history cho iteam details?
+```
+
+**Claude:**
+
+**Không phải do board, và History vẫn có. Nó đang bị thu thành biểu tượng vì khung xem hẹp.** Lịch sử luôn được Jira ghi cho mọi item, và không có cài đặt board nào bật hay tắt nó. Mình vừa đọc qua API: SHOP-38 có 13 mục lịch sử, mục mới nhất là lúc 10:04, khi CI gỡ cờ Impediment và nhãn `needs-you`.
+
+Theo tài liệu của Atlassian, phần Activity có bốn bộ lọc: All (gộp cả ba), Comments, History và Work log. Khi item mở dạng khung bên phải từ board, chữ của các nút bị thu thành biểu tượng.
+
+Cách xem:
+1. Rê chuột lên biểu tượng đồng hồ cạnh biểu tượng comment. Nếu chữ hiện lên là **History**, bấm vào để chỉ xem lịch sử.
+2. Hoặc bấm **All**: comment và lịch sử (đổi trạng thái, đổi người làm, cờ, nhãn) hiện chung theo thứ tự thời gian.
+3. Hoặc mở item toàn trang: bấm vào mã **SHOP-38** ở trên cùng, hoặc nút phóng to góc trên bên phải. Khi đó các nút hiện đủ chữ All, Comments, History.
+
+Nguồn:
+- [What are the different types of activity on a work item (Atlassian)](https://support.atlassian.com/jira-software-cloud/docs/what-are-the-different-types-of-activity-on-an-issue)
+- [View the different types of activity on a work item (Atlassian)](https://support.atlassian.com/jira-service-management-cloud/docs/what-are-the-different-types-of-activity-on-a-request/)
+
+**Claude (10:32, QA SHOP-13 PASS; hai điểm cần bạn biết):**
+
+**QA SHOP-13 (schema V4): PASS.** 11/11 mục Checklist và Verification đạt, E2E trên Development 33 passed, 7 skipped. Lượt QA tốn 1,55 USD; SHOP-13 tổng cộng 14,06 USD. Báo cáo ở comment 10291. **SHOP-13 chờ bạn Accept**, cùng SHOP-38.
+
+Hai điểm trong báo cáo, mình đã kiểm:
+
+1. **Agent `qa` lách mẫu chữ của hook, nhưng mật khẩu không lộ.** Mình đọc log của lượt QA.
+   - Hook chặn một lệnh `echo` chỉ kiểm biến mật khẩu có giá trị hay không. Đây là chặn nhầm, vì lệnh đó không in giá trị ra.
+   - Sau đó agent đưa mật khẩu cho `curl` qua stdin, đúng cách hook gợi ý, nên giá trị không nằm trên dòng lệnh nào.
+   - Nhưng agent viết tên biến tách đôi (`PASS""WORD`) để né mẫu chữ của hook. Việc đó không cần, vì viết thẳng tên biến trong `printf` thì hook vẫn cho qua.
+   - Đây là thói quen không nên có. Mình đã ghi vào danh sách việc của kit: luật cho agent "không viết lại lệnh để né hook", sửa chỗ chặn nhầm, và đưa sẵn dạng lệnh đúng vào lời nhắc của `qa`.
+2. **Lỗi tiềm ẩn ngoài item → Bug SHOP-44.**
+   - Hàm `app.gen_uuid_v7()` (có từ v0.1.0) lỗi khi `search_path` chỉ có `app`, vì nó gọi `gen_random_bytes` mà không ghi schema.
+   - App chưa gặp lỗi này, vì JPA luôn tự đặt `id`. Chỉ lệnh INSERT bằng SQL tay mới lỗi.
+   - `be-dev` đã nhờ `ba` từ tối qua nhưng chưa ai xử lý, nên mình ghi thành Bug: Severity đề xuất Low, trạng thái New. **Bạn triage khi rảnh:** duyệt Severity, Fix Version, rồi chuyển sang Ready.
+
+**Đang chạy đủ 3 làn:**
+- build SHOP-15 (`be-dev`);
+- build SHOP-18 (`fe-dev`);
+- QA nối tiếp SHOP-14 → SHOP-11 → SHOP-17. Ba item này đã sang Ready for QA sau lần deploy `11e157a` lúc 10:13. Kit chỉ cho một lượt QA trên mỗi môi trường tại một thời điểm, nên ba lượt chạy lần lượt.
+
+**Chờ bạn:** Accept SHOP-38 và SHOP-13; triage SHOP-44.
+
+# Phiên 32 · Lượt 56 — 2026-11-16 khoảng 10:33
+
+**Bạn:**
+
+```markdown
+Đã Accept SHOP-38, SHOP-13
+```
+
+**Claude:**
+
+Cảm ơn bạn. Trên Jira, SHOP-38 và SHOP-13 giờ đã Done. Kiểm thật C2 (chạy nhiều làn song song) khép lại cùng SHOP-38.
+
+Đang chạy đủ 3 làn:
+- build SHOP-15: `be-dev` xong (6,73 USD), đang mở PR;
+- review PR #27 (SHOP-18, `fe-dev` xong 6,12 USD; CI xanh, bỏ qua preview);
+- QA SHOP-14, sau đó SHOP-11 rồi SHOP-17.
+
+Còn chờ bạn: triage Bug SHOP-44 khi rảnh.
+
+**Claude (10:45, QA SHOP-14 PASS):**
+
+**QA SHOP-14 (domain sản phẩm, tìm không dấu, gỡ endpoint cũ): PASS.**
+- Kết quả: 14 mục Checklist và 3 mục Verification đạt. 256 test, đạt ngưỡng coverage. E2E trên Development 33 passed, 7 skipped, 0 failed.
+- Endpoint cũ: trên Development, endpoint danh sách cũ và hai endpoint giá cũ đều trả 404.
+- Tốc độ: với 10.000 sản phẩm, trung vị mỗi kiểu danh sách chỉ 3–12 ms, dưới hạn 200 ms.
+- Chi phí: lượt QA 2,25 USD; SHOP-14 tổng cộng 15,82 USD. Báo cáo ở comment 10293.
+
+**SHOP-14 chờ bạn Accept.** Bốn finding của PR #25 đã nằm sẵn trong SHOP-43, nên QA không mở Bug mới.
+
+Lần này hook chặn hai lệnh nhắc tên biến mật khẩu. Agent `qa` làm đúng cách: chạy lại lệnh thứ nhất theo dạng hook yêu cầu, và bỏ lệnh thứ hai. Không có lệnh nào bị viết lại để né hook.
+
+Đang chạy: QA SHOP-11; `security` của PR #27 (SHOP-18) và PR #28 (SHOP-15). Trên máy có ba Postgres của ba slot (`learn-postgres-s1`, `-s2`, `-s3`), tất cả healthy. Chúng thuộc các làn và sẽ gỡ cùng làn.
+
+**Claude (10:55, QA SHOP-11 PASS; PR #27 sẵn sàng chờ bạn):**
+
+**QA SHOP-11 (khung trang của `user`): PASS** trên Development `11e157a`, tốn 1,39 USD.
+- Ảnh chụp ở các khổ 320, 390, 768 và 1440, cả nền sáng lẫn nền tối, tiếng Việt và tiếng Anh, đã đính lên SHOP-11.
+- **SHOP-11 chờ bạn Accept**, cùng SHOP-14.
+
+**PR #27 (SHOP-18, `user` gỡ phần sản phẩm cũ và dựng nền đọc catalog, head `9ce0563`):** không có Critical hay High. `reviewer` nêu 1 Medium (README còn tả phần đã gỡ) và 4 Low, `security` không có finding. SHOP-18 đến giờ tốn 12,02 USD.
+- Theo quy tắc của bạn, mình dừng vòng sửa ở đây. 5 finding vào **SHOP-45** (dưới SHOP-7, `ao-fe-dev`, bị SHOP-18 chặn).
+
+**Bạn approve PR #27:** mở https://github.com/TungPH7/shop/pull/27, bấm tab **Files changed**, bấm **Review changes**, chọn **Approve**, rồi bấm **Submit review**. `merge-gate` sẽ tự merge. Bạn cũng có thể nhờ mình approve thay.
+
+**Đang chạy:**
+- review PR #28 (SHOP-15): `reviewer` xong, `security` đang chạy;
+- QA SHOP-17;
+- `/ao-build SHOP-41` (`fe-dev`). SHOP-18 đã sang In Review nên `fe-dev` rảnh, và SHOP-41 chặn SHOP-21.
+
+**Chờ bạn:**
+- approve PR #27;
+- Accept SHOP-14 và SHOP-11;
+- triage SHOP-44.
+
+**Claude (11:00, refine 5 Task theo dõi; QA SHOP-17 PASS):**
+
+**Refine 5 Task theo dõi:**
+- Các Task theo dõi tạo thêm giữa Epic (SHOP-39, 41, 42, 43, 45) bị kẹt ở New. jira-sync chỉ chuyển sang Ready các item đã có lúc bạn duyệt plan, nên `/ao-build SHOP-41` dừng "is New, not Ready".
+- Mình chuyển cả 5 sang Ready bằng đúng guard và transition mà jira-sync dùng (vai automation, hợp đồng cho phép với Task thuộc Epic đã duyệt plan).
+- Lỗi này đã ghi vào việc của kit.
+
+**QA SHOP-17 (admin gỡ phần sản phẩm cũ): PASS** trên Development `11e157a`, tốn 0,64 USD.
+- Kết quả: cả 7 test E2E của `admin` đều qua. Hai route cũ trả "404 — Page not found". `/products` chỉ còn tiêu đề.
+- **SHOP-17 chờ bạn Accept.**
+- QA ghi chú trang `/profile` của admin còn nút demo "Delete product (privileged action)" không làm gì. Mình đã thêm việc gỡ nút này vào checklist của **SHOP-42** (Task theo dõi của chính PR #26), thay vì mở Bug.
+
+**Đang chạy:**
+- `security` của PR #28 (SHOP-15);
+- `/ao-build SHOP-41` (`fe-dev`).
+
+Làn thứ ba trống nhưng chưa dùng được: ba làn đều đang mở (SHOP-15, SHOP-18, SHOP-41), nên `be-dev` chưa nhận được SHOP-43. PR #27 merge xong thì làn của SHOP-18 được gỡ, và mình mở SHOP-43 ngay.
+
+**Chờ bạn:**
+- approve PR #27;
+- Accept SHOP-14, SHOP-11, SHOP-17;
+- triage SHOP-44.
+
+**Claude (11:05, PR #28 sẵn sàng; hai PR chờ bạn):**
+
+**PR #28 (SHOP-15, API thêm sản phẩm, head `2223aa3`):** không có Critical hay High. `reviewer` nêu 1 Medium và 5 Low, `security` nêu 2 Low. SHOP-15 đến giờ tốn 12,83 USD.
+- Medium: quy tắc slug bị viết lại lần thứ hai trong `CreateProductRequest`, thay vì dùng `ProductSlugs` có sẵn. Khi đó có hai nguồn cho cùng một quy tắc.
+- Low đáng chú ý của `security`: một slug rất dài dạng `a-a-a-…` (khoảng 10.000 ký tự) làm tràn stack của regex. API trả 500 thay vì 400. Chỉ ai đã qua basic auth của admin mới gọi được, không lộ hay hỏng dữ liệu.
+- Low chung của hai bên: nếu server chạy profile `dev`, log TRACE sẽ ghi cả mô tả sản phẩm (trái NFR12). Profile của Development nằm trong secret trên VPS nên agent không kiểm được.
+- Tất cả vào **SHOP-46** (`ao-be-dev`, Ready). SHOP-46 chờ SHOP-15 merge và **chặn SHOP-34** (US3 sửa sản phẩm), vì DTO sửa cần cùng quy tắc slug.
+
+**Hai PR chờ bạn approve** (Files changed → Review changes → Approve → Submit review; `merge-gate` tự merge), hoặc nhờ mình approve thay:
+- https://github.com/TungPH7/shop/pull/27 (SHOP-18, `user` gỡ phần sản phẩm cũ)
+- https://github.com/TungPH7/shop/pull/28 (SHOP-15, API thêm sản phẩm)
+
+Merge xong, mình mở SHOP-16 (`be-dev`, danh sách và xóa, cần SHOP-15) và SHOP-43.
+
+Đang chạy: `/ao-build SHOP-41` (`fe-dev`).
+
+**Chờ bạn:**
+- approve PR #27, #28;
+- Accept SHOP-14, SHOP-11, SHOP-17;
+- triage SHOP-44.
+
+# Phiên 32 · Lượt 57 — 2026-11-16 khoảng 11:05
+
+**Bạn:**
+
+```markdown
+Đã Accept SHOP-14, SHOP-11 và SHOP-17
+Đã Approve PR #27, #28
+
+Triage Bug SHOP-44 nghĩa là sao nhỉ?
+```
+
+**Claude:**
+
+**Triage là bước bạn xem một Bug mới để quyết ba điều: có sửa không, nặng cỡ nào, và sửa vào bản nào. Sau đó bạn chuyển nó sang Ready để agent được nhận.**
+
+Với Story và Task trong một Epic đã duyệt plan, tự động hóa chuyển sang Ready. Bug thì kit để bạn chuyển, vì Bug chen vào thứ tự ưu tiên và vào bản phát hành.
+
+**Với SHOP-44, bạn làm 5 bước trên Jira:**
+1. **Xác nhận đây là lỗi thật, không trùng.** QA của SHOP-13 đã xác nhận có thật, và chưa có item nào khác ghi lỗi này.
+2. **Trường Severity:** mình đề xuất **Low**. App không đi đường này (JPA luôn tự đặt `id`), chỉ lệnh INSERT bằng SQL tay mới lỗi. Lỗi hiện rõ ngay, không làm sai dữ liệu.
+3. **Trường Affects versions:** **v0.1.0**, bản cũ nhất có lỗi (v0.2.0 cũng có).
+4. **Trường Fix versions:** theo bảng định tuyến bug trong `docs/sdlc.md`, lỗi đã có trên Production với mức Low thì sửa ở **bản kế tiếp**, nhánh gốc là `develop`, QA trên Development. Bản kế tiếp là **v0.3.0** (bản của Epic SHOP-7). Theo quy định, lỗi Medium/Low nằm trong Product Backlog để bạn xếp thứ tự, nên bạn cũng có thể để nó sang bản sau.
+5. **Đổi trạng thái:** bấm nút trạng thái (đang ghi New) → chọn **Refine** để sang Ready. Nếu bạn quyết không sửa, chọn **Cancel** và ghi lý do.
+
+Nếu bạn đặt Fix version v0.3.0 và chuyển Ready, mình cho `be-dev` làm sau SHOP-43. Việc sửa nhỏ: thêm một migration mới cho hàm gọi `public.gen_random_bytes`, kèm test.
+
+**Tiến độ:**
+- PR #27 và #28 đã merge: `2e5095a`, `3b2a588`.
+- Đang chạy:
+  - `/ao-build SHOP-16` (`be-dev`, API danh sách và xóa);
+  - `/ao-build SHOP-41` (`fe-dev`);
+  - một script chờ bản `3b2a588` deploy lên Development rồi QA SHOP-18, sau đó SHOP-15.
+- SHOP-14, SHOP-11, SHOP-17 đã Done. Cảm ơn bạn.
+
+**Claude (11:10, thêm về lỗi dọn làn):**
+
+`/ao-build SHOP-16` lần đầu lại dừng "3 lanes are open". Hai làn đã merge (SHOP-15, SHOP-18) không xóa được, báo "Directory not empty", dù lần này chỉ một lệnh dọn và không có tiến trình nào giữ file.
+- Nguyên nhân gốc: `node_modules` của pnpm trong mỗi làn có khoảng 2.084 junction, và `git worktree remove` trên Windows không xóa được cây đó.
+- Mình đã kiểm cả 2.084 link đều trỏ vào bên trong làn, nên xóa không đụng gì bên ngoài. `node_modules` của thư mục `shop` vẫn nguyên.
+- Sau đó mình xóa tay hai thư mục và chạy lại SHOP-16.
+- Cách sửa cho kit đã ghi vào danh sách việc: xóa `node_modules` của làn bằng Node trước khi gỡ worktree.
+
+**Claude (11:12, audit từ chối nhầm, đã gỡ cờ SHOP-18):**
+
+Bản deploy của `2e5095a` (merge của PR #27) bị `audit` từ chối: "pushed without one", tức cho rằng commit này được đẩy thẳng lên chứ không qua PR. SHOP-18 vì vậy bị gắn cờ Needs you.
+
+Đây là audit chạy quá sớm:
+- `merge-gate` merge PR #27 lúc 10:55:52.
+- Deployer audit lúc 10:55:57, khi GitHub chưa kịp gắn commit với PR. Giờ GitHub đã trả đúng `2e5095a` → PR #27.
+- Bản deploy sau (`3b2a588`) có chứa `2e5095a` và đã qua audit, đang deploy lên Development.
+
+Mình đã gỡ cờ SHOP-18 kèm comment giải thích, và ghi vào việc của kit: audit phải thử lại việc tìm PR vài lần trước khi kết luận. Khi `3b2a588` deploy xong, QA SHOP-18 rồi SHOP-15 sẽ tự chạy.
+
+**Claude (11:22, QA SHOP-18 PASS; PR #30 cần sửa nhỏ):**
+
+- **QA SHOP-18 (`user` gỡ phần sản phẩm cũ, nền đọc catalog): PASS** trên Development `3b2a588`, tốn 0,92 USD. Ảnh trang sản phẩm (vi, en, khổ 320) đã đính lên item. **SHOP-18 chờ bạn Accept.**
+- **SHOP-16 (API danh sách và xóa) → PR nháp #30.** Check `policy` đỏ vì một `@SuppressWarnings` trong test thiếu ghi chú "reason: …" trên cùng dòng. Một script đang chờ CI chạy xong hết rồi cho `/ao-fix 30`.
+- **SHOP-41 → PR #29.** `fe-dev` xong (4,81 USD), lệnh đang chờ CI.
+- **Đang chạy QA SHOP-15.**
+
+**Chờ bạn:**
+- Accept SHOP-18;
+- triage SHOP-44.
+
+**Claude (11:30, QA SHOP-15 PASS):**
+
+**QA SHOP-15 (API thêm sản phẩm): PASS** trên Development `3b2a588`, tốn 2,15 USD; SHOP-15 tổng cộng 14,99 USD. Báo cáo ở comment 10309. **SHOP-15 chờ bạn Accept.**
+- Test: 314 test của `api` qua; E2E trên Development 37 passed, 2 skipped.
+- Mã lỗi: 201 kèm `Location`, slug tự sinh `-2`, `-3`, 409 khi trùng slug; 400 liệt kê đủ mọi trường sai mà không lộ stack trace hay SQL.
+- QA nêu hai lỗi nhỏ chưa ai theo dõi: một trường nhận nhiều thông báo lỗi cùng lúc, và `detail` đếm số lỗi thay vì số trường. Mình đã thêm vào **SHOP-46**.
+- QA để lại 5 sản phẩm thử trên Development ("QA SHOP-15 …"), vì chưa có endpoint xóa. Khi SHOP-16 (xóa) lên Development, QA của SHOP-16 sẽ xóa chúng.
+
+**Đang chạy:**
+- `/ao-fix 30` (SHOP-16, sửa `@SuppressWarnings`);
+- review PR #29 (SHOP-41).
+
+**Chờ bạn:**
+- Accept SHOP-18, SHOP-15;
+- triage SHOP-44.
+
+**Claude (11:35, PR #29 sẵn sàng chờ bạn):**
+
+**PR #29 (SHOP-41, sửa các finding của PR #24 ở khung trang `user`, head `e5aeb0e`):** không có Critical, High hay Medium. `reviewer` chỉ nêu 2 Low (một JSDoc cũ, và helper cắt tiền tố locale chỉ đúng với cấu hình hiện tại), `security` không có finding. SHOP-41 tổng cộng 6,82 USD.
+- Hai Low cùng là việc nhỏ của app `user`, nên mình gộp vào **SHOP-39** (Task gom các Low của `user`) thay vì mở Task mới. SHOP-39 giờ làm sau khi PR #29 merge.
+
+**Bạn approve PR #29:** mở https://github.com/TungPH7/shop/pull/29, tab **Files changed**, **Review changes**, chọn **Approve**, bấm **Submit review**. `merge-gate` sẽ tự merge. Hoặc nhờ mình approve thay.
+
+**Đang chạy:**
+- review PR #30 (SHOP-16);
+- `/ao-build SHOP-42` (`fe-dev`).
+
+**Chờ bạn:**
+- approve PR #29;
+- Accept SHOP-18, SHOP-15;
+- triage SHOP-44.
+
+**Claude (11:47, PR #30 sẵn sàng; hai PR chờ bạn):**
+
+**PR #30 (SHOP-16, API danh sách và xóa sản phẩm, head `dde4c7b`):** không có Critical, High hay Medium. `reviewer` nêu 2 Low (một handler lỗi có thể ghi cả thân request vào log trong một trường hợp chưa endpoint nào gặp; thiếu test xóa song song), `security` không có finding. SHOP-16 tổng cộng 9,44 USD.
+- Hai Low gộp vào **SHOP-46** (Task theo dõi của API quản trị sản phẩm), giờ làm sau khi PR #30 merge.
+
+**Hai PR chờ bạn approve** (Files changed → Review changes → Approve → Submit review; `merge-gate` tự merge), hoặc nhờ mình approve thay:
+- https://github.com/TungPH7/shop/pull/29 (SHOP-41, sửa finding của khung trang `user`)
+- https://github.com/TungPH7/shop/pull/30 (SHOP-16, API danh sách và xóa)
+
+**Ba làn đang đầy** (SHOP-16, SHOP-41, SHOP-42), nên `be-dev` (SHOP-43) và `fe-dev` (SHOP-45) chờ một PR merge để có làn.
+
+**Đang chạy:** review PR #31 (SHOP-42).
+
+**Chờ bạn:**
+- approve PR #29, #30;
+- Accept SHOP-18, SHOP-15;
+- triage SHOP-44.
+
+**Claude (11:57, PR #31 sẵn sàng; ba PR chờ bạn):**
+
+**PR #31 (SHOP-42, sửa finding của PR #26 ở admin, head `4ae1eea`):** không có Critical hay High. `reviewer` nêu 1 Medium và 1 Low, `security` không có finding. SHOP-42 tổng cộng 5,06 USD.
+- Medium: bộ quy ước "SSOT" của admin (`docs/coding-conventions/v1/`) vẫn có luật [MUST] bắt dùng `<Can>`, mà `<Can>` đã gỡ. Bộ quy ước ghi vi phạm [MUST] thì chặn merge, nên review của Story admin sau này có thể trích luật cũ.
+- Low: một ví dụ dùng `invariant`, hàm đã gỡ.
+- Cả hai vào **SHOP-47** (`ao-fe-dev`, Ready). SHOP-47 chờ PR #31 merge, và **chặn SHOP-19** (Story admin đầu tiên).
+
+**Ba PR chờ bạn approve** (Files changed → Review changes → Approve → Submit review; `merge-gate` tự merge), hoặc nhờ mình approve thay:
+- https://github.com/TungPH7/shop/pull/29 (SHOP-41, sửa finding khung trang `user`)
+- https://github.com/TungPH7/shop/pull/30 (SHOP-16, API danh sách và xóa)
+- https://github.com/TungPH7/shop/pull/31 (SHOP-42, sửa finding admin)
+
+Hiện không còn lệnh nào chạy: ba làn đều chờ duyệt. Merge xong, mình mở ngay SHOP-43 (`be-dev`) và SHOP-45 (`fe-dev`), rồi QA các item vừa merge.
+
+**Chờ bạn:**
+- approve PR #29, #30, #31;
+- Accept SHOP-18, SHOP-15;
+- triage SHOP-44.
+
+# Phiên 32 · Lượt 58 — 2026-11-16 khoảng 12:00
+
+**Bạn:**
+
+```markdown
+Bạn nói rõ thêm về 'Triage Bug SHOP-44', tôi chưa nắm thông tin về item này
+```
+
+**Claude:**
+
+**SHOP-44 là một Bug nhỏ mình tạo lúc 10:30, từ báo cáo QA của SHOP-13. Lỗi nằm trong database: hàm tự sinh id cho sản phẩm sẽ báo lỗi nếu ai đó thêm sản phẩm bằng lệnh SQL viết tay. App thì không bị, vì app luôn tự tạo id.**
+
+**Lỗi là gì, nói đơn giản:**
+1. Database có hàm `app.gen_uuid_v7()` để tự sinh id cho sản phẩm khi lệnh thêm không ghi id. Hàm này là phương án dự phòng.
+2. Bên trong, hàm gọi `gen_random_bytes` (của tiện ích `pgcrypto`, nằm ở schema `public`) mà không ghi rõ "`public.`".
+3. Server kết nối database với `currentSchema=app`, tức chỉ tìm hàm trong schema `app`. Vì vậy, khi phải dùng phương án dự phòng, database báo "không tìm thấy hàm `gen_random_bytes`" và lệnh thêm thất bại.
+4. App Java luôn tự tạo id trước khi lưu, nên chưa bao giờ đi vào đường này. Chỉ lệnh SQL viết tay (script nạp dữ liệu, sửa tay trên Production) mới gặp lỗi.
+5. Lỗi có từ migration V2, tức từ bản v0.1.0, nên Production hiện cũng có.
+6. Ai phát hiện: `be-dev` thấy khi làm SHOP-13 và nhờ `ba` xem (comment 10287), QA của SHOP-13 xác nhận lỗi có thật. Không ai xử lý tiếp, nên mình ghi thành Bug để khỏi quên.
+
+**Ảnh hưởng:**
+- Thấp: không làm sai dữ liệu, chỉ làm lệnh SQL tay bị từ chối, và báo lỗi rõ ngay.
+- SHOP-12 (năm sản phẩm thử trên Staging, Production) thêm qua API chứ không qua SQL, nên không bị ảnh hưởng.
+
+**Cách sửa:** một migration mới, viết lại hàm để gọi `public.gen_random_bytes`, kèm một test. Việc nhỏ, ước khoảng 5–7 USD cho cả build, review và QA [Ước, theo chi phí của SHOP-41, SHOP-42].
+
+**Triage là bạn chọn một trong ba hướng:**
+- **(a) Sửa trong bản v0.3.0** (mình đề xuất): việc nhỏ, rẻ, và giúp phương án dự phòng chạy đúng như code đã ghi. Trên Jira: Severity = Low, Affects versions = v0.1.0, Fix versions = v0.3.0, rồi bấm trạng thái → **Refine**.
+- **(b) Để sau:** ghi Severity = Low, Affects versions = v0.1.0, chưa Refine. Bug nằm trong Product Backlog chờ bạn xếp lịch.
+- **(c) Không sửa:** bấm trạng thái → **Cancel**, ghi lý do (ví dụ "không ai thêm sản phẩm bằng SQL tay").
+
+Bạn chỉ cần trả lời (a), (b) hay (c), mình điền các trường và chuyển trạng thái trên Jira thay bạn, giống lúc approve PR.
+
+# Phiên 32 · Lượt 59 — 2026-11-16 khoảng 12:05
+
+**Bạn:**
+
+```markdown
+Approve PR #29, #30 và #31. => Approve giúp tôi
+Accept SHOP-18 và SHOP-15. => Accept giúp tôi
+Triage Bug SHOP-44. => Chọn (a) Sửa trong bản v0.3.0
+```
+
+**Claude:**
+
+Đã làm cả ba việc:
+
+1. **Approve PR #29, #30, #31:** mình approve bằng login `gh` của bạn, trên đúng commit mà `reviewer` và `security` đã review (`e5aeb0e`, `dde4c7b`, `4ae1eea`). Mỗi lượt approve ghi rõ là bạn nhờ. `merge-gate` sẽ tự merge; mình đang theo dõi.
+2. **Accept SHOP-18 và SHOP-15:** mình bấm Accept bằng token admin. Trước đó script kiểm item đang In QA, rồi ghi comment rằng bạn nhờ, kèm báo cáo QA PASS. Cả hai giờ là Done.
+3. **Triage SHOP-44 theo hướng (a):** Severity = Low, Affects versions = v0.1.0, Fix versions = v0.3.0, có comment ghi bạn quyết ở lượt này. Mình đã bấm **Refine**, nên SHOP-44 giờ là Ready. `be-dev` sẽ làm sau SHOP-43.
+
+**Kế tiếp:** khi ba PR merge xong, mình
+- dọn làn;
+- mở SHOP-43 (`be-dev`) và SHOP-45 (`fe-dev`);
+- chờ deploy rồi QA SHOP-41, SHOP-16, SHOP-42. QA SHOP-16 sẽ xóa 5 sản phẩm thử còn lại trên Development.
+
+**Claude (12:36, QA SHOP-41 PASS; SHOP-43 chạy tiếp):**
+
+- **Ba PR đã merge:** #29 `d7fe6b0`, #30 `6bc4fd8`, #31 `cdf173b`.
+  - Mình xóa trước `node_modules` của ba làn cũ, sau khi kiểm mọi link chỉ trỏ vào trong làn. Lần này kit gỡ làn sạch, xác nhận đúng nguyên nhân gốc của lỗi "Directory not empty".
+  - Bản deploy `cdf173b` qua audit và lên Development lúc 12:20.
+- **QA SHOP-41 (sửa finding khung trang `user`): PASS** trên Development `cdf173b`, tốn 1,35 USD. **SHOP-41 chờ bạn Accept.**
+- **SHOP-43 (sửa finding domain sản phẩm):** `be-dev` chạy cả bộ test ở chế độ nền rồi tự kết thúc lượt, nói sẽ làm tiếp khi test xong. Lượt chạy không người theo dõi thì không ai đánh thức nó, nên test bị dừng theo. Mình đã chạy lại `/ao-build SHOP-43`: kit nối tiếp phiên cũ chứ không làm lại từ đầu. Lỗi này đã ghi vào việc của kit: agent không được để test chạy nền trong lượt headless.
+- **SHOP-45 → PR #32,** đang review.
+- **Đang chạy:**
+  - build SHOP-43 (chạy tiếp);
+  - review PR #32;
+  - QA SHOP-16, sau đó SHOP-42.
+
+**Chờ bạn:** Accept SHOP-41.
+
+**Claude (12:45, PR #32 sẵn sàng chờ bạn):**
+
+**PR #32 (SHOP-45, sửa finding của PR #27 ở `user`, head `598b8c7`):** không có Critical hay High. `reviewer` nêu 1 Medium và 2 Low, `security` không có finding. SHOP-45 tổng cộng 7,10 USD.
+- Medium giống trường hợp admin: bộ luật của `user` vẫn bắt buộc ([MUST]) dùng TanStack Query và `nuqs`, mà PR này đã gỡ. Review các Story khách có thể trích luật cũ để chặn merge.
+- Hai Low: README còn tả thư mục và phiên bản cũ.
+- Cả ba vào **SHOP-48** (`ao-fe-dev`, Ready). SHOP-48 chờ PR #32 merge và **chặn SHOP-21** (Story khách đầu tiên).
+
+**Bạn approve PR #32:** https://github.com/TungPH7/shop/pull/32 (Files changed → Review changes → Approve → Submit review), hoặc nhờ mình approve thay.
+
+**Đang chạy:**
+- review PR #33 (SHOP-43);
+- `/ao-build SHOP-47` (`fe-dev`, sửa quy ước admin, chặn SHOP-19);
+- QA SHOP-16, sau đó SHOP-42.
+
+**Chờ bạn:**
+- approve PR #32;
+- Accept SHOP-41.
+
+# Phiên 32 · Lượt 60 — 2026-11-16 khoảng 12:50
+
+**Bạn:**
+
+```markdown
+1. approve PR #32 và Accept SHOP-41 giúp tôi
+2. Chuẩn bị chạm giới hạn 5h, bạn hãy chuẩn bị hand off để sau khi token reset có thể chạy tiếp với đầy đủ thông tin nhé. Khi 5-hour limit đặt 98% thì bắt đầu viết hand off
+```
+
+**Claude:**
+
+**1. Đã làm:**
+- Approve PR #32 trên đúng head `598b8c7` đã review, có ghi bạn nhờ. `merge-gate` sẽ merge.
+- Accept SHOP-41 bằng token admin, kèm comment. SHOP-41 giờ Done.
+
+**2. Bàn giao: mình viết luôn bây giờ, không chờ tới 98%.** Lý do: mình không đọc được con số phần trăm của giới hạn 5 giờ từ trong phiên. Viết sớm thì an toàn hơn, và mình sẽ cập nhật thêm sau mỗi bước.
+- Bản bàn giao ở `ai-orchestrator/tasks/handoff-2026-11-15.md`, **mục 10**. Nó gồm:
+  - trạng thái từng item của SHOP-7;
+  - ba lệnh đang chạy, kèm task id và cách chạy lại;
+  - thứ tự việc kế tiếp;
+  - những gì chờ bạn;
+  - cách xử lý các lỗi đã gặp hôm nay;
+  - danh sách script.
+- Việc của kit nằm ở `tasks/handoff-2026-11-16-followups.md`.
+- Bộ nhớ `pilot3-handoff` đã trỏ tới mục 10, nên phiên mới tự đọc.
+
+**Thêm từ QA:**
+- **QA SHOP-16 (API danh sách và xóa): PASS**, tốn 1,26 USD. **SHOP-16 chờ bạn Accept.**
+- Hai ghi chú của QA mình đã chuyển đi:
+  - `status` chỉ nhận chữ hoa: comment cho SHOP-19.
+  - Lỗi 400 trả thêm `rejectedValue` lệch Contract: thêm vào SHOP-46.
+
+**Khi giới hạn tới:** các agent đang chạy (review PR #33, build SHOP-47, QA SHOP-42) sẽ dừng với "hit the usage limit". Sau khi reset, mình chạy lại đúng lệnh đó, và ao-step nối tiếp phiên cũ. Nếu bạn cho mình biết giờ reset, mình đặt script `resume-at.sh` để tự đánh thức lúc đó, không tốn token.
+
+**Chờ bạn:**
+- Accept SHOP-16.
+- Quyết có xóa 5 sản phẩm thử "QA SHOP-15 …" trên Development không. QA của SHOP-16 không xóa chúng; đây là xóa dữ liệu nên mình hỏi trước.
