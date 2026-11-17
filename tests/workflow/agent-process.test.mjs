@@ -77,6 +77,24 @@ test('a result split between two chunks counts once it is complete; a second res
   await run;
 });
 
+// The first result of `claude -p --resume` after the usage limit cut a session that had a command in the background
+// (Pilot 3, QA SHOP-63 of shop, 2026-11-17): it answers the task notification, has no turn, and comes before the prompt.
+const NOTICE = JSON.stringify({ type: 'result', subtype: 'success', is_error: false, num_turns: 0, duration_api_ms: 0, origin: { kind: 'task-notification' } });
+
+test('the result of a task notification is not the result of the run: the agent works on, and its own result starts the wait', async () => {
+  assert.equal(isResult(NOTICE), false);
+  const w = world();
+  const run = startAgentProcess(w.options);
+  w.child.stdout.emit('data', Buffer.from(`${INIT}\n${NOTICE}\n`));
+  assert.equal(w.timers.length, 0, 'no wait: the agent has not read its prompt yet');
+  w.child.stdout.emit('data', Buffer.from(`${RESULT}\n`));
+  assert.equal(w.timers.length, 1);
+  w.child.emit('close', 0);
+  const { lines, stopped } = await run;
+  assert.deepEqual(lines, [INIT, NOTICE, RESULT]);
+  assert.equal(stopped, false);
+});
+
 test('the stream and the errors go to the log; a command that cannot start ends the run', async () => {
   const w = world();
   const run = startAgentProcess(w.options);
