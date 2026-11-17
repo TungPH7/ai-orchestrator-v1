@@ -70,6 +70,14 @@ test('the usage limit, the turn limit, an error and a run cut off are told apart
   assert.equal(cut.session, '5d3434b0-44a4-45fa-a4e3-815d6eb35ddd', 'the session is known from the init event, so the run can be resumed');
   assert.deepEqual([cut.turns, cut.costUsd], [0, 0]);
   assert.equal(readRun([]).outcome, 'unfinished');
+
+  // `--resume` of a session the usage limit cut first answers the notice of a command it left in the background, with
+  // a result of no turn (Pilot 3, QA SHOP-63 of shop): a run killed after it is unfinished, not done.
+  const notice = JSON.stringify({ type: 'result', subtype: 'success', is_error: false, num_turns: 0, duration_ms: 267, total_cost_usd: 0, result: '', session_id: '5d3434b0-44a4-45fa-a4e3-815d6eb35ddd', origin: { kind: 'task-notification' } });
+  const resumedCut = readRun(['{"type":"system","subtype":"init","session_id":"s1"}', notice]);
+  assert.deepEqual([resumedCut.outcome, resumedCut.session], ['unfinished', 's1']);
+  const resumedDone = readRun([...log('reviewer-done').slice(0, 1), notice, ...log('reviewer-done').slice(1)]);
+  assert.deepEqual([resumedDone.outcome, resumedDone.turns, resumedDone.costUsd], ['done', 26, 1.07985]);
   assert.equal(readRun(['not json', '{"type":"system","subtype":"init","session_id":"s1"}']).session, 's1');
 });
 
