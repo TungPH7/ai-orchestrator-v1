@@ -288,7 +288,9 @@ async function main() {
   const dockerRunning = () => dockerAnswered(spawnSync('docker', DOCKER_INFO, { encoding: 'utf8', timeout: 20000 }));
   // The qa runs of other commands: the stop at gate ③ says to wait while one tests where the merge deploys.
   const qaRunning = liveLocks(activeDir, { fs: lockFs, alive }).filter((lock) => lock.command === 'qa' && lock.pid !== process.pid).map(({ key: k, environment, pid }) => ({ key: k, environment, pid }));
-  const decision = dockerGate(decideStep(command, { ...facts, qaRunning }, options), { java, dockerRunning });
+  // Three seconds before Docker is asked again: the command waits on nothing else meanwhile.
+  const pause = () => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 3000);
+  const decision = dockerGate(decideStep(command, { ...facts, qaRunning }, options), { java, dockerRunning, pause });
   console.log(formatDecision(decision));
   // Agents run the hooks of the kit in AO_KIT_DIR: one that differs from the kit copy of the project is named (review round
   // 3 of shop PR #21).
