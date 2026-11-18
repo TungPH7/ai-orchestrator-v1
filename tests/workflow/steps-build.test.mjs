@@ -160,3 +160,20 @@ test('a New Story or Task that meets DoR gets jira-sync first, then the build go
   const waiting = decide(fresh(false));
   assert.deepEqual([waiting.go, waiting.reason], [false, 'DEMO-21 is New, not Ready']);
 });
+
+// Phiên 33 of shop, SHOP-34: be-dev finished the Sub-task SHOP-35 but wrote its ledger as .ai/ledger/SHOP-34.md, by the
+// key of the Story, and /ao-build SHOP-34 stopped with "is In Progress but has no ledger". The prompt of a Sub-task now
+// names its ledger, and a Story with a ledger of its own and a Sub-task done goes on with the next Sub-task.
+test('a Story with its own ledger and a Sub-task done goes on with the next Sub-task; a Sub-task prompt names its ledger', () => {
+  const story = {
+    state: 'in-progress', status: 'In Progress', agent: 'be-dev',
+    subtasks: [sub('DEMO-22', 'be-dev'), { ...sub('DEMO-23', 'fe-dev'), state: 'to-do', status: 'To Do' }],
+  };
+  const facts = { ...failed({ item: story }), pr: null, qaReport: null, ledger: true, subtaskLedgers: [] };
+  const decision = decide(facts);
+  assert.equal(decision.go, true, decision.reason);
+  assert.deepEqual(plan(decision), ['fe-dev build']);
+  assert.match(decision.runs[0].prompt, /^Build Sub-task DEMO-23, .* Keep your ledger in \.ai\/ledger\/DEMO-23\.md, by the key of the Sub-task\./);
+  const none = decide({ ...facts, ledger: false });
+  assert.match(none.reason, /is In Progress but has no ledger/);
+});
