@@ -8,6 +8,7 @@ Vòng trong (`/ao-spec` tới `/ao-fix`, [docs/dev-workflow.md](dev-workflow.md)
 |---|---|---|---|
 | `/ao-qa <KEY>` | Kiểm item trên môi trường QA của nó, chạy E2E, gắn bằng chứng lên Jira | `qa` | Bạn đọc báo cáo rồi `Accept` |
 | `/ao-qa <KEY> fail: <lỗi>` | Lỗi bạn thấy khi item ở Ready for QA hay In QA: `qa` tái hiện rồi bấm `QA fail`. Mong đợi mới thì `ba` thêm AC trước | `ba` khi cần, `qa` | Item về In Progress, hoặc mang cờ Needs you khi không tái hiện được |
+| `/ao-qa <KEY> retest` | Item ở In QA sau báo cáo NOT TESTED (lý do ngoài code, như một Bug của môi trường). Bạn đã sửa nguyên nhân và gỡ cờ Needs you; `qa` kiểm lại toàn bộ (Pilot 3, SHOP-20) | `qa` | Như `/ao-qa <KEY>` |
 | `/ao-release` | In điểm cắt, danh sách item và số bản | Không | Gate ④ |
 | `/ao-release <vX.Y.0> <sha>` | Gate ④: tạo `release/vX.Y.0` tại điểm cắt, gắn Fix Version | Không | Deployer đưa bản lên Staging |
 | `/ao-ship <vX.Y.0>` | Full regression trên Staging, release note, PR release vào `main` | `qa`, `devops` | Gate ⑤: bạn approve PR |
