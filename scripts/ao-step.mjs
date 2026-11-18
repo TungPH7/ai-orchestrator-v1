@@ -8,7 +8,7 @@
 // Jira is read with ATLASSIAN_AGENT_TOKEN, GitHub with a read-only token of the ao-review App. Run it from the project
 // root; the kit is in AO_KIT_DIR when set.
 import { spawn, spawnSync } from 'node:child_process';
-import { appendFileSync, copyFileSync, cpSync, existsSync, mkdirSync, openSync, readdirSync, readFileSync, renameSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import { appendFileSync, copyFileSync, cpSync, existsSync, mkdirSync, openSync, readdirSync, readFileSync, realpathSync, renameSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { freemem, tmpdir } from 'node:os';
 import { basename, dirname, isAbsolute, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -44,7 +44,7 @@ import { removeInstructions } from '../lib/workflow/review-tree.mjs';
 import { agentCommand, formatDecision, runGo } from '../lib/workflow/runner.mjs';
 import { CHANGES, decideStep, dockerGate } from '../lib/workflow/steps.mjs';
 import { restoreWip, saveWip } from '../lib/workflow/wip.mjs';
-import { laneKeeper, runsSettings } from '../lib/workflow/lanes.mjs';
+import { copyRunFiles, laneKeeper, runsSettings } from '../lib/workflow/lanes.mjs';
 import { installLane, pullsOfBranch, qaWatcher, runPlacer } from '../lib/workflow/lane-runs.mjs';
 import { checkoutBranch, laneDir, laneRoot } from '../lib/workflow/places.mjs';
 import { admitAgent, claimRole, claimsRole, liveLocks, releaseAgent, takeLock as takeRunLock } from '../lib/workflow/locks.mjs';
@@ -550,7 +550,16 @@ function prepareCheckout(spec) {
 // them write in the temp folder. --add-dir is not given: with it, the skills of the folder's .claude/skills load. The
 // instruction files are still removed from it, in case a later Claude Code loads more. A stale worktree from a run that
 // was stopped is replaced. Node finds no node_modules there, so tests that need packages do not run in it.
-export const reviewTreePath = (project, name, tmp = tmpdir()) => join(tmp, 'ao-reviews', `${basename(resolve(project))}-${name}`);
+// The temp folder by its long path: on Windows os.tmpdir() can give a short 8.3 path such as C:/Users/HUUTUN~1/…, where
+// pnpm --filter found no app in the qa worktree (QA SHOP-68 of shop, Pilot 3). The path as it is when it cannot be read.
+export function longTmpDir(realpath = realpathSync.native, tmp = tmpdir()) {
+  try {
+    return realpath(tmp);
+  } catch {
+    return tmp;
+  }
+}
+export const reviewTreePath = (project, name, tmp = longTmpDir()) => join(tmp, 'ao-reviews', `${basename(resolve(project))}-${name}`);
 function addWorktree({ name, sha, install = false, keepInstructions = false }) {
   const path = reviewTreePath(projectDir, name);
   if (existsSync(path)) removeWorktree({ name });
@@ -575,6 +584,10 @@ function addWorktree({ name, sha, install = false, keepInstructions = false }) {
       removeWorktree({ name });
       return { ok: false, reason: `${manager === 'npm' ? 'npm ci' : 'pnpm install'} failed in the worktree of ${name} at ${sha.slice(0, 7)}: ${(installed.stderr || installed.error?.message || '').trim().slice(-500)}` };
     }
+    // The .env of each app (runs.copy of project.yaml), as a lane gets them: the @local tests start the apps there.
+    const projectYaml = join(projectDir, '.ai-orchestrator', 'project.yaml');
+    const { copy } = runsSettings(existsSync(projectYaml) ? parse(readFileSync(projectYaml, 'utf8')) : {});
+    copyRunFiles({ existsSync, mkdirSync, copyFileSync }, projectDir, path, copy);
   }
   return { ok: true, path: path.replaceAll('\\', '/') };
 }
