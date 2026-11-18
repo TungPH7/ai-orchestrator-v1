@@ -29070,3 +29070,56 @@ Theo đề xuất, một Task như vậy còn khoảng 2–3 USD.
 3. **Task chỉ đổi tài liệu không cần lượt `qa`:** bạn hay Claude đọc đối chiếu rồi Accept.
 
 **Bạn duyệt thứ tự này, và ba điểm trên, không?**
+
+# Phiên 33 · Lượt 46 — 2026-11-18 khoảng 15:30
+
+**Bạn:** (hỏi thêm, chưa được làm gì) "Vì sao không chép kit vào shop sau đợt 4? Chia 2 lần chép kit vậy lại tốn token review à? Nãy thì bạn nói "Xong cả bốn đợt thì chép kit vào shop một lần". Sao bạn trả lời không nhất quán gì hết vậy? repo 'shop' đã đóng pilot rồi chép vào làm gì nữa? Nào cần làm tiếp thì hẳn chép chứ?" Về 3 điểm: "1. … Tại sao ban đầu chọn DoD của Task: "Bộ regression pass" mà giờ đổi thành "E2E của phần đổi pass"? có phải chỉ để tiết kiệm token? Có giảm chất lượng của quy trình phát triển không? 2. OK 3. OK"
+
+**Claude:**
+- **Mình đã trả lời không nhất quán.** Chia hai lần chép kit thì tốn thêm khoảng 9 USD review, ngược với mục tiêu tiết kiệm; đó là lỗi của mình. Bạn đúng: pilot đã đóng, nên chỉ chép một lần, ngay trước việc kế tiếp của `shop`.
+- **DoD "Bộ regression pass" có vì chất lượng, không vì token.** Task không có AC và có thể làm hỏng chỗ khác; cả bộ E2E là lưới an toàn duy nhất trước khi item Done. Đổi thì chất lượng giảm một phần.
+- **Mình cũng đánh giá sai mức tiết kiệm:** bộ E2E tốn ít token, ví dụ QA của SHOP-73 chạy cả bộ chỉ tốn 1,23 USD. Đề xuất: bỏ điểm 1, giữ DoD.
+
+# Phiên 33 · Lượt 47 — 2026-11-18 khoảng 15:35
+
+**Bạn:** "cập nhật followups-truoc-c1.md trước, chờ tôi duyệt, chưa được làm gì nhé"
+
+**Claude:** Đã cập nhật `tasks/followups-truoc-c1.md`:
+- chép kit vào `shop` một lần, trước việc kế tiếp của `shop`;
+- bỏ điểm đổi DoD;
+- ghi hai luật bạn OK (review nhẹ cho PR tài liệu; Task tài liệu không cần QA);
+- Đợt 1 còn 6 mục.
+
+Chờ bạn duyệt.
+
+# Phiên 33 · Lượt 48 — 2026-11-18 khoảng 15:40
+
+**Bạn:** "chi phí của SHOP-7 hết bao nhiêu USD?"
+
+**Claude:** Khoảng **604 USD** (603,86) theo giá API:
+- spec và plan: 26,28 USD;
+- 47 item: 575,42 USD;
+- release: 2,16 USD.
+
+Cùng bản `v0.3.0` còn 3 item ngoài Epic (54,67 USD). Cả Pilot 3 tốn khoảng 719 USD.
+
+# Phiên 33 · Lượt 49 — 2026-11-18 khoảng 15:45 → 16:05
+
+**Bạn:** (nguyên văn trong file) "- Hiện tại tôi thấy luồng làm epic SHOP-7 theo SDLC hiện tại qua tốn token, mất nhiều thời gian và tiền bạc … Nghiên cứu, đánh giá xem chất lượng, số lượng task của SHOP-7 và Pilot 3 đã release có xứng đáng với lượng token, thời gian và tiền bạc đã bỏ ra không? Viết vào 1 file tại 1 folder con (đặt tên về tối ưu token) trong …\misc\thao-luan. Viết nguyên văn câu hỏi của tôi"
+
+**Claude:** Đã viết `misc/thao-luan/toi-uu-token/danh-gia-chi-phi-shop-7.md`.
+
+- **Xét như làm sản phẩm thì không xứng.** Chỉ khoảng 40–50% tiền vào việc làm tính năng. Phần còn lại là:
+  - review `xhigh`/`max` ở mọi PR: 205 USD, mà chỉ tìm ra 1 High, nằm ở một test;
+  - 28 Task sửa Low: 216 USD;
+  - các lượt chạy lại và chạy hỏng.
+
+  Trung bình 21,6 USD cho mỗi AC.
+- **Khoảng 71% tiền là nạp và đọc lại bối cảnh,** nên chi phí tăng theo số lượt và số bước, không theo lượng code.
+- **Bạn đúng là cách đơn giản rẻ hơn,** khoảng 4–7 lần [ước tính]. Cái giá là mất test tự động và kiểm độc lập.
+- **UI đơn giản phần lớn do phạm vi đã chọn,** không do quy trình.
+- **Xét như một pilot kiểm kit thì xứng một phần.**
+- **Đề xuất:** ba mức quy trình theo rủi ro (Nhẹ, Chuẩn, Nặng). Ở mức Chuẩn, SHOP-7 ước khoảng 200–280 USD, tức 7–10 USD cho mỗi AC.
+- **Cần bạn quyết:**
+  - có đưa ba mức vào C1 không;
+  - Epic kế tiếp chạy ở mức nào.
