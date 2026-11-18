@@ -131,6 +131,14 @@ test('the rules say a headless run never ends its turn while a command it starte
   assert.match(text, /in the foreground, with a timeout long enough/);
 });
 
+test('the rules name the one command that runs the tests of an app, so no agent writes its own wrapper (SHOP-44, SHOP-21)', () => {
+  const text = renderRules(sources);
+  assert.match(text, /^## Tests, lint and builds$/m);
+  assert.match(text, /`node \.ai-orchestrator\/scripts\/run\.mjs <app> <script> \[-- <arguments>\]`/);
+  assert.match(text, /`run\.mjs api test -- -Dtest=ProductServiceTest`/);
+  assert.match(text, /Never write a wrapper of your own around Maven, pnpm or npm\./);
+});
+
 test('renderAll gives the ten agents and the rules file, by path under .claude/', () => {
   assert.deepEqual([...renderAll(sources).keys()].sort(), [
     ...Object.keys(sources.roster.roles).map((r) => `agents/${r}.md`),

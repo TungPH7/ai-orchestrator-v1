@@ -59,6 +59,15 @@ When a hook refuses a call, quote its reason in your answer, and do not look for
 
 On Windows the shell is Git Bash, which rewrites an argument such as `origin/<branch>:<path>` into a Windows path list. Put `MSYS_NO_PATHCONV=1` in front of such a command, as in `MSYS_NO_PATHCONV=1 git show origin/<branch>:<path>`.
 
+## Tests, lint and builds
+
+Run a script of an app with `node .ai-orchestrator/scripts/run.mjs <app> <script> [-- <arguments>]`:
+- `<app>` is a folder under `apps/`, or `.` for a project of one app.
+- `<script>` is `lint`, `typecheck`, `test`, `test:coverage`, `build`, or another script of its `package.json`.
+- Examples: `run.mjs api test -- -Dtest=ProductServiceTest` for a Java app, `run.mjs user test -- product-card` for a JS one.
+
+It runs Maven with the JDK of the app, or the package manager of the project. It runs in the foreground, prints the counts of tests and the first failure, and keeps the whole output in `.ai/tmp/run-<app>-<script>.log`. Read that file only for what the summary leaves out. Never write a wrapper of your own around Maven, pnpm or npm.
+
 ## Commands that take long
 
 Your run ends with your answer, and nothing wakes it after that. A command still running then is stopped with the run, and the work is lost.
