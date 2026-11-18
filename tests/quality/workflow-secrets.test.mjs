@@ -19,7 +19,7 @@ const PR_RUN = ['pull_request', 'pull_request_review', 'pull_request_review_comm
 const SECRET = /\bsecrets\.\w+/;
 
 test('the kit has the workflows this test reads', () => {
-  assert.deepEqual(workflows.map(({ name }) => name).sort(), ['audit.yml', 'ci.yml', 'jira-sync.yml', 'merge-gate.yml', 'pr-review.yml']);
+  assert.deepEqual(workflows.map(({ name }) => name).sort(), ['audit.yml', 'ci.yml', 'jira-sync.yml', 'merge-gate.yml', 'pr-events.yml', 'pr-review.yml']);
 });
 
 test('a workflow that names a secret never runs on an event whose workflow comes from the PR', () => {

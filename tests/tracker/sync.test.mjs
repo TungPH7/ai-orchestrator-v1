@@ -91,6 +91,45 @@ test('workflow_run of PR review: changes asked on the newest commit send the ite
   assert.deepEqual(chosen(await sync('workflow_run', jira, { gh: github(asked), body })), { keys: ['DEMO-12'], actions: ['DEMO-12 request-changes'] });
 });
 
+// Pilot 3: GitHub blocks pull_request_target on public repositories from 2026-12-02, so the events of a PR reach
+// jira-sync through the run of the secretless workflow PR events: the item of the PR's branch and title, read from the
+// PRs GitHub lists, as on pull_request.
+const relayRun = (change = () => {}) => {
+  const body = payload('workflow_run');
+  Object.assign(body.workflow_run, { name: 'PR events', event: 'pull_request', conclusion: 'success' });
+  change(body.workflow_run);
+  return body;
+};
+// The REST list of PRs has the repositories and the title, which the recording leaves out.
+const listed = (a) => {
+  for (const pr of a['/pulls?direction=desc&sort=created&state=all']) {
+    pr.title = `PR #${pr.number}`;
+    pr.head.repo = { full_name: 'TungPH7/ao-pilot' };
+    pr.base.repo = { full_name: 'TungPH7/ao-pilot' };
+  }
+};
+
+test('workflow_run of PR events: the PR of the run, open and green with sub-tasks done, is submitted', async () => {
+  const jira = fakeJira({ issues: [story('DEMO-12', IN_PROGRESS)] });
+  assert.deepEqual(chosen(await sync('workflow_run', jira, { gh: github(listed), body: relayRun() })), { keys: ['DEMO-12'], actions: ['DEMO-12 submit'] });
+  // A run that names no PR stands for the newest PR of its branch at its commit.
+  const unnamed = relayRun((run) => (run.pull_requests = []));
+  assert.deepEqual(chosen(await sync('workflow_run', jira, { gh: github(listed), body: unnamed })), { keys: ['DEMO-12'], actions: ['DEMO-12 submit'] });
+});
+
+test('workflow_run of PR events: a run for a fork, for a PR of a fork, or for no PR concerns no item', async () => {
+  const jira = fakeJira({ issues: [story('DEMO-12', IN_PROGRESS)] });
+  const forkRun = relayRun((run) => (run.head_repository = { full_name: 'someone/ao-pilot' }));
+  assert.deepEqual(chosen(await sync('workflow_run', jira, { gh: github(listed), body: forkRun })), { keys: [], actions: [] });
+  const forkPr = (a) => {
+    listed(a);
+    a['/pulls?direction=desc&sort=created&state=all'][0].head.repo = { full_name: 'someone/ao-pilot' };
+  };
+  assert.deepEqual(chosen(await sync('workflow_run', jira, { gh: github(forkPr), body: relayRun() })), { keys: [], actions: [] });
+  const none = relayRun((run) => Object.assign(run, { pull_requests: [], head_branch: 'feature/DEMO-99-gone', head_sha: 'c9' }));
+  assert.deepEqual(chosen(await sync('workflow_run', jira, { gh: github(listed), body: none })), { keys: [], actions: [] });
+});
+
 test('pull_request_review: changes asked on the newest commit send the item back', async () => {
   const jira = fakeJira({ issues: [story('DEMO-12', IN_REVIEW)] });
   // The review of the event, as the REST API lists it (upper-case state).
