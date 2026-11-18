@@ -17,10 +17,20 @@ test('be-dev on a project with a Java app waits for Docker', () => {
   assert.deepEqual(asked, [false, true]);
 });
 
-test('no Java app, no be-dev run, or a stop already: Docker is not asked about', () => {
+test('qa on a project with a Java app waits for Docker too: its E2E start the api and Postgres for the @local tests (SHOP-76)', () => {
+  // Pilot 3: qa found Docker off and started Docker Desktop itself, twice on SHOP-76, and left the lane database up.
+  const stopped = dockerGate(decision('qa'), { java: true, dockerRunning: () => false });
+  assert.equal(stopped.go, false);
+  assert.match(stopped.reason, /Docker is not running/);
+  assert.match(stopped.next, /Start Docker Desktop/);
+  assert.deepEqual(dockerGate(decision('qa'), { java: true, dockerRunning: () => true }), decision('qa'));
+});
+
+test('no Java app, no be-dev or qa run, or a stop already: Docker is not asked about', () => {
   const never = () => assert.fail('dockerRunning was asked');
   assert.deepEqual(dockerGate(decision('be-dev'), { java: false, dockerRunning: never }), decision('be-dev'));
-  assert.deepEqual(dockerGate(decision('fe-dev', 'qa', 'reviewer'), { java: true, dockerRunning: never }), decision('fe-dev', 'qa', 'reviewer'));
+  assert.deepEqual(dockerGate(decision('qa'), { java: false, dockerRunning: never }), decision('qa'));
+  assert.deepEqual(dockerGate(decision('fe-dev', 'reviewer', 'security'), { java: true, dockerRunning: never }), decision('fe-dev', 'reviewer', 'security'));
   const stop = { go: false, reason: 'x', next: 'y', lines: [] };
   assert.equal(dockerGate(stop, { java: true, dockerRunning: never }), stop);
 });
