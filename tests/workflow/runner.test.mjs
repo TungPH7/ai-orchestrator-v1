@@ -137,7 +137,7 @@ test('a run killed with its shell is on record as unfinished, and the next comma
   const killed = harness(world, SPEC_EFFECTS, { throws: true });
   await assert.rejects(killed.run({ gather }), /claude could not start/);
   const [open] = world.run.runs;
-  assert.deepEqual({ n: open.n, role: open.role, purpose: open.purpose, session: open.session, outcome: open.outcome, costUsd: open.costUsd, log: open.log }, { n: 1, role: 'ba', purpose: 'spec-write', session: null, outcome: 'unfinished', costUsd: 0, log: '1-ba.jsonl' });
+  assert.deepEqual({ n: open.n, role: open.role, purpose: open.purpose, session: open.session, outcome: open.outcome, costUsd: open.costUsd, log: open.log }, { n: 1, role: 'ba', purpose: 'spec-write', session: null, outcome: 'unfinished', costUsd: null, log: '1-ba.jsonl' });
   assert.ok(open.startedAt);
 
   world.run = withLoggedSession(world.run, () => runLines({ session: 's-killed', outcome: 'cut' }));
