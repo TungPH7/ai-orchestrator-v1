@@ -147,3 +147,16 @@ test('a build cut by the usage limit before its agent wrote a ledger goes on in 
   assert.equal(none.go, false);
   assert.match(none.reason, /is In Progress but has no ledger/);
 });
+
+// Phiên 33 of shop: Tasks added to an Epic after its plan was approved (SHOP-39, 41, 42, 43, 45, the follow-ups of a
+// review) stayed New, since jira-sync refined the children of the Epic only at Approve plan, and /ao-build stopped
+// with "is New, not Ready". Now a New item that meets DoR gets jira-sync first, and the build goes on after it.
+test('a New Story or Task that meets DoR gets jira-sync first, then the build goes on; one that does not stops as before', () => {
+  const item = { state: 'new', status: 'New', type: 'Task', workType: 'task', subtasks: [], role: 'be-dev', roles: ['be-dev'], agent: null };
+  const fresh = (refinable) => ({ ...failed({ item }), pr: null, qaReport: null, refinable });
+  const synced = decide(fresh(true));
+  assert.equal(synced.go, true);
+  assert.deepEqual(synced.runs, [{ action: 'jira-sync', key: 'DEMO-21', continue: true }]);
+  const waiting = decide(fresh(false));
+  assert.deepEqual([waiting.go, waiting.reason], [false, 'DEMO-21 is New, not Ready']);
+});

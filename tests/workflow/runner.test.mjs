@@ -518,6 +518,23 @@ test('the second /ao-plan asks for jira-sync and waits for the docs PR to be mer
   assert.equal(facts.docs.pr.state, 'closed', 'the facts the last decision was made on, for ao-step to put the checkout back');
 });
 
+// Phiên 33 of shop: a Task added to an Epic after its plan was approved stayed New. /ao-build asks jira-sync to refine
+// it first, and goes on to the build once it is Ready, in the same command.
+test('jira-sync with continue is a first step: the command goes on with what is decided after it', async () => {
+  const world = { run: null };
+  const h = harness(world, {});
+  let gathers = 0;
+  const gather = async () => ({ n: ++gathers });
+  const decide = (command, facts) => {
+    if (facts.n === 1) return { go: true, lines: [], runs: [{ action: 'jira-sync', key: 'DEMO-31', continue: true }] };
+    if (h.calls.length === 0) return { go: true, lines: [], runs: [{ role: 'be-dev', key: 'DEMO-31', effort: 'high', purpose: 'build', prompt: 'Build DEMO-31.' }] };
+    return { go: false, reason: 'DEMO-31 is built', next: '/ao-status DEMO-31', lines: [] };
+  };
+  const { decision, made } = await h.run({ command: 'build', gather, decide });
+  assert.deepEqual(made.map((m) => m.action ?? `${m.role} ${m.purpose}`), ['jira-sync', 'be-dev build']);
+  assert.equal(decision.reason, 'DEMO-31 is built');
+});
+
 test('last.md: a row per run with its measurements, the cost so far, why it stopped and what comes next', () => {
   const made = [{ n: 1, role: 'ba', key: 'DEMO-20', purpose: 'spec-write', effort: 'xhigh', outcome: 'done', turns: 19, durationMs: 443742, costUsd: 1.824105, text: 'I wrote the SPEC.' }];
   const text = lastReport({ command: 'spec', key: 'DEMO-20', made, decision: { go: false, reason: 'ba left 1 open question in docs/specs/DEMO-20/spec.md', next: 'Answer them in the chat', questions: ['Q1: ?'] }, state: { runs: [...made, { costUsd: 0.5 }] } });

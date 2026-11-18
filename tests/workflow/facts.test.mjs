@@ -101,8 +101,13 @@ test('a PR command reads the PR first, then the item of its branch', async () =>
 });
 
 test('an item with no PR and no Epic, and an empty .ai/runs/', async () => {
-  const facts = await gather('build', 'DEMO-15');
-  assert.deepEqual([facts.item.workType, facts.item.state, facts.pr, facts.epic, facts.docs, facts.run], ['task', 'new', null, null, null, null]);
+  // A New item to build is read for DoR too (SHOP-39 of shop): a Task in no Epic does not meet it.
+  const forDor = (a) => {
+    const [, read] = Object.entries(a.jira).find(([path]) => path.startsWith('/rest/api/3/issue/DEMO-15?fields=summary'));
+    a.jira['/rest/api/3/issue/DEMO-15?fields=issuetype,status,labels,description,parent,subtasks,issuelinks'] = { key: 'DEMO-15', fields: { ...read.fields, description: null, issuelinks: [] } };
+  };
+  const facts = await gather('build', 'DEMO-15', { change: forDor });
+  assert.deepEqual([facts.item.workType, facts.item.state, facts.pr, facts.epic, facts.docs, facts.run, facts.refinable], ['task', 'new', null, null, null, null, false]);
   const status = await gather('status');
   assert.deepEqual(status.runs, []);
 });
