@@ -29123,3 +29123,25 @@ Cùng bản `v0.3.0` còn 3 item ngoài Epic (54,67 USD). Cả Pilot 3 tốn kho
 - **Cần bạn quyết:**
   - có đưa ba mức vào C1 không;
   - Epic kế tiếp chạy ở mức nào.
+
+# Phiên 33 · Lượt 50 — 2026-11-18 khoảng 16:10
+
+**Bạn:** "Tôi hỏi thêm? khi làm task thì 'mức quy trình theo rủi ro' được chọn khi nào ? Và có đổi lại trong lúc làm được không?"
+
+**Claude:** Đây là đề xuất; kit chưa có mức quy trình. Cách làm dựa trên nhãn effort mà kit đang dùng.
+
+1. **Chọn khi nào:**
+   - item trong Epic: `sa` ghi mức trong `plan.md`, bạn duyệt ở gate ②, `ba` gắn nhãn (`ao-level-light`, `ao-level-standard`, `ao-level-heavy`);
+   - Task hay Bug ngoài Epic: chọn lúc `/ao-intake`, bạn "OK" bản nháp là duyệt;
+   - không ghi gì thì mặc định là Chuẩn.
+2. **Đổi trong lúc làm:**
+   - **Tăng thì tự động:** khi PR chạm đường dẫn rủi ro (migration, auth, `pom.xml`, controller, workflow), khi review hay QA tìm ra Critical hoặc High, hoặc khi bạn đổi nhãn. Nếu đã review ở mức thấp thì review lại ở mức mới.
+   - **Giảm thì chỉ bạn,** đổi nhãn kèm lý do. Kit không tự giảm, và không cho giảm dưới mức mà các đường dẫn của PR đòi hỏi.
+   - Bước đã chạy xong thì không chạy lại.
+3. **Ví dụ với SHOP-7:**
+   - SHOP-13 (migration): Nặng;
+   - SHOP-25: Chuẩn;
+   - SHOP-76: Nhẹ;
+   - một Story Chuẩn mà PR sửa `SecurityConfig.java`: tự lên Nặng ở bước review.
+
+Nếu bạn đồng ý đưa ba mức vào C1, phần này thành một mục của spec C1 để bạn duyệt.
