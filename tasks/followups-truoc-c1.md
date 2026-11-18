@@ -92,6 +92,19 @@ Các mục này đổi luật của contract, roster, `gates.yaml` hay hook. Ch�
 
 ## Đợt 2: dev agent và review tốn ít token hơn
 
+**Xong 2026-11-19: kit PR #307, merge `b0ce9c3`, 1561/1561 test, CI xanh cả job `windows`.** Cả 6 mục:
+- `run.mjs` chạy test, lint và build;
+- nguyên nhân gốc là `MSYS_NO_PATHCONV` mà phiên agent thừa hưởng, nay bị xóa khi mở agent;
+- luật "Commands that take long" cho lượt headless;
+- hook `pre-commit` kiểm Suppressions;
+- `/ao-fix` chọn dev agent theo app của finding, và dừng hỏi khi CI đỏ trên Story có cả hai phía;
+- review sau khi merge `develop` chỉ tính file của chính PR;
+- mỗi lượt build kiểm WIP của vai trên Jira.
+
+Hai chỗ khác kế hoạch:
+- không thêm dòng `ao-kit doctor` cho `run.mjs`: dòng kiểm file của kit và job CI `windows` đã đủ;
+- lệnh cho từng app trong lời nhắc là một luật chung, không sinh từ `project.yaml`.
+
 1. **Một lệnh chạy test chung** (Lượt 58–59, mục 5), gộp hai mục `be-dev` khó chạy Maven và `fe-dev` không gọi được `pnpm`. Ở mỗi lượt, agent tốn hàng chục bước mò lệnh.
    - Tìm nguyên nhân gốc: vì sao `pnpm` và `mvnw` hỏng trong phiên agent, có thể do môi trường mà kit truyền khi mở agent. Sửa ở đó.
    - `node .ai-orchestrator/scripts/run.mjs <app> <script> [-- tham số]`: tự chọn Maven hay `pnpm`, chạy ở tiền cảnh, chỉ in tóm tắt (số test đạt, số lỗi, lỗi đầu tiên).

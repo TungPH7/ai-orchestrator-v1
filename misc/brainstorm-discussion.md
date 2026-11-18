@@ -29303,3 +29303,21 @@ Bạn dặn "chưa làm gì" ở phần lớn các lượt này, nên mình ghi 
 
   Commit đã được đưa vào clone kit chính. Danh sách followup đã tick.
 - **Đợt 2 bắt đầu** trên nhánh `task/followups-2`. Mục 2 (luật "Commands that take long" cho mọi agent) đã viết, test xanh.
+
+# Phiên 33 · Lượt 69 — 2026-11-19
+
+**Bạn:** (không có tin mới; mình làm tiếp theo quyền ở Lượt 68)
+
+**Claude:**
+- **Đợt 2 xong:** kit PR #307, merge `b0ce9c3`, 1561/1561 test, CI xanh cả job `windows` mới. Cả 6 mục:
+  1. **`run.mjs`** chạy test, lint và build của một app, chỉ in số test và lỗi đầu tiên. Nguyên nhân gốc của việc `./mvnw` và `pnpm` hỏng trong phiên agent là biến `MSYS_NO_PATHCONV` mà agent thừa hưởng từ `ao-step`; nay biến này bị xóa khi mở agent.
+  2. **Luật "Commands that take long":** lượt headless không được trả lời khi test, build hay server nó mở còn chạy.
+  3. **Hook `pre-commit` kiểm Suppressions** trên các dòng đã stage, nên không còn đỏ sau khi push.
+  4. **`/ao-fix` trên Story có cả BE và FE:** finding đi tới dev agent của app chứa file đó. CI đỏ thì lệnh dừng, skill đọc job lỗi rồi tự ghi `be:` hoặc `fe:`, và chỉ hỏi bạn khi log không cho biết phía nào hỏng.
+  5. **Review sau khi merge `develop` vào nhánh PR** chỉ tính file của chính PR (PR #41 từng tính 3.749 dòng).
+  6. **Mỗi lượt build đọc WIP của vai trên Jira** sau khi giữ khóa. Vai còn item In Progress thì lệnh dừng, nói item nào, và bảo chạy lại lúc nào (SHOP-31 sau SHOP-58).
+
+  Hai chỗ khác kế hoạch: không thêm dòng `ao-kit doctor` cho `run.mjs` (dòng kiểm file kit và job CI `windows` đã đủ); lệnh cho từng app trong lời nhắc là luật chung, không sinh từ `project.yaml`.
+
+  Commit đã đưa vào clone kit chính (`task/after-pilot3`). `followups-truoc-c1.md`, `todo.md` và bảy mục của handoff followup đã tick.
+- **Đợt 3 bắt đầu:** mục 1 là `PEM_HEADER` của gh-guard.
