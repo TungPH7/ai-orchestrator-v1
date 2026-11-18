@@ -81,6 +81,19 @@ test('the usage limit, the turn limit, an error and a run cut off are told apart
   assert.equal(readRun(['not json', '{"type":"system","subtype":"init","session_id":"s1"}']).session, 's1');
 });
 
+test('a run whose result says success with an empty answer is unfinished, and still counts what it ran (QA SHOP-64)', () => {
+  // `qa` started Playwright in the background and ended its turn with nothing to say: RESULT success: "" (Pilot 3,
+  // shop .ai/runs/SHOP-64/5-qa.jsonl). Done would leave the item with no QA report; unfinished goes on in its session.
+  for (const blank of ['', '   \n ']) {
+    const lines = log('reviewer-done').map((line) => (line.includes('"type":"result"') ? JSON.stringify({ ...JSON.parse(line), result: blank }) : line));
+    const run = readRun(lines);
+    assert.equal(run.outcome, 'unfinished', JSON.stringify(blank));
+    assert.equal(run.session, '5d3434b0-44a4-45fa-a4e3-815d6eb35ddd');
+    assert.deepEqual([run.turns, run.costUsd], [26, 1.07985], 'the turns and the cost of the run still count');
+  }
+  assert.equal(readRun(log('reviewer-done')).outcome, 'done', 'an answer with text stays done');
+});
+
 // Open Questions sections as agents wrote them on DEMO-11 (ao-pilot, agent-roster T18).
 const doc = (section) => `# SPEC\n\n## Scope\n\n- Áp mã\n\n## Open Questions\n\n${section}\n\n## Example\n\n- Có cần "Ghi nhớ đăng nhập" không?\n`;
 

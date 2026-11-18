@@ -622,7 +622,7 @@ node <kit>/scripts/ao-kit.mjs check e-commerce/shop
 
 **Máy bạn cần thêm hai thứ:**
 - **JDK đúng bản `<java.version>` của `pom.xml`**, ở đây là 21. `JAVA_HOME` không cần đổi: `mvnw.mjs` tự tìm JDK 21, lần lượt ở `JAVA_HOME` nếu đúng bản, ở `JAVA_HOME_21`, ở JDK nằm cạnh `JAVA_HOME`, rồi ở các thư mục cài thường gặp. Máy bạn có sẵn `C:\opt\jdk-21`, nằm cạnh JDK 17 của `JAVA_HOME`.
-- **Docker đang chạy** khi chạy test (Testcontainers) và khi `/ao-preview` bật Postgres. `ao-step` dừng trước lượt `be-dev` khi Docker chưa chạy. `doctor` có dòng `JDK 21 for api` và dòng `Docker is running` khi dự án có app Java.
+- **Docker đang chạy** khi chạy test (Testcontainers) và khi `/ao-preview` bật Postgres. `ao-step` dừng trước lượt `be-dev` và lượt `qa` khi Docker chưa chạy: E2E mà `qa` chạy có test `@local` bật `api` cùng Postgres. `doctor` có dòng `JDK 21 for api` và dòng `Docker is running` khi dự án có app Java.
 
 **Bốn PR, theo thứ tự.** Hai PR đầu sửa đường dẫn được bảo vệ, nên bạn approve và merge tay. PR sửa code không được đụng `.ai-orchestrator/`, để `/ao-preview` chạy được nó.
 
@@ -1009,7 +1009,7 @@ Tiền đi vào đâu: build 44%, review 34%, QA 11%, sửa 6%. Riêng 28 item t
 
 ### Bước 5. Code Java: `be-dev`
 
-- **Docker phải chạy** khi `be-dev` làm việc, vì test Java dùng Testcontainers. Docker chưa chạy thì `ao-step` dừng trước lượt `be-dev`. Bật Docker Desktop ngay trước lượt đó, và tắt ngay sau.
+- **Docker phải chạy** khi `be-dev` làm việc, vì test Java dùng Testcontainers. Docker chưa chạy thì `ao-step` dừng trước lượt `be-dev`, và cả trước lượt `qa` (test `@local` của E2E cần Postgres). `qa` không tự bật Docker Desktop. Bật Docker Desktop ngay trước lượt đó, và tắt ngay sau.
 - **Ví dụ `SHOP-13` "Schema V4 của `app.products` (expand)",** nhãn `xhigh`:
   - `be-dev`: 99 lượt, 25 phút, 7,56 USD. Lượt này viết migration Flyway V4: thêm cột mới, trigger giữ cột cũ khớp, và test chạy trên Postgres thật bằng Testcontainers.
   - `reviewer` 2,26 USD; `security` ở `max` 2,69 USD, vì item có nhãn effort và PR chạm `migrations/`; `qa` 1,55 USD.

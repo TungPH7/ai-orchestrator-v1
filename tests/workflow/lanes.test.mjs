@@ -4,7 +4,7 @@ import { spawnSync } from 'node:child_process';
 import { copyFileSync, cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync, utimesSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { laneKeeper, runsSettings } from '../../lib/workflow/lanes.mjs';
+import { copyRunFiles, laneKeeper, runsSettings } from '../../lib/workflow/lanes.mjs';
 
 // The lanes of a project on this machine (parallel-runs spec, part 1), on real repositories: an origin and the project
 // folder on develop, with the lanes next to it.
@@ -294,4 +294,21 @@ test('a lane mutex released while it is read is taken on the next try (review ro
   };
   t.after(() => (fs.statSync = realStat));
   assert.equal((await s.keeper.ensure('SHOP-17')).ok, true);
+});
+
+test('the files of runs.copy go into a folder such as the worktree of qa: those that exist, in their folders (QA SHOP-65)', (t) => {
+  // Pilot 3: the qa worktree had no apps/api/.env nor apps/user/.env.development, so every qa run wrote its own runner
+  // to load them from the project (QA SHOP-65, SHOP-67, SHOP-68 of shop).
+  const root = mkdtempSync(join(tmpdir(), 'ao-copy-'));
+  t.after(() => rmSync(root, { recursive: true, force: true }));
+  const project = join(root, 'shop');
+  const tree = join(root, 'tree');
+  mkdirSync(join(project, 'apps', 'api'), { recursive: true });
+  writeFileSync(join(project, 'apps', 'api', '.env'), 'PORT=3001\n');
+  mkdirSync(tree);
+  const copied = copyRunFiles({ existsSync, mkdirSync, copyFileSync }, project, tree, ['apps/api/.env', 'apps/user/.env.development']);
+  assert.deepEqual(copied, ['apps/api/.env'], 'a file the project does not have is left out');
+  assert.equal(readFileSync(join(tree, 'apps', 'api', '.env'), 'utf8'), 'PORT=3001\n');
+  assert.equal(existsSync(join(tree, 'apps', 'user', '.env.development')), false);
+  assert.deepEqual(copyRunFiles({ existsSync, mkdirSync, copyFileSync }, project, tree, []), []);
 });
