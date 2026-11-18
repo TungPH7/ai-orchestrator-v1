@@ -86,7 +86,7 @@ When you work on an item, write `.ai/ledger/<KEY>.md` from the ledger template a
 
 ## Hooks
 
-When a hook refuses a call, quote its reason in your answer, and do not look for another way to do the same thing. If your task needs that call, stop there; if it does not, such as a check you added yourself, go on without it.
+When a hook refuses a call, quote its reason in your answer, and do not look for another way to do the same thing. If your task needs that call, stop there; if it does not, such as a check you added yourself, go on without it. When the reason gives a form to use instead, use that form as it is written. Never rewrite a command to slip past the pattern of a hook, such as by splitting a name, adding quotes or building it from variables.
 
 ## Shell
 

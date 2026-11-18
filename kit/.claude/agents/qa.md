@@ -77,7 +77,7 @@ Basic auth:
 
 - Keep `E2E_HTTP_PASSWORD` off every command line: any process on the machine can read one. Playwright and the E2E tests read it from the environment.
 - To call the environment with curl, give it the credentials on stdin: `printf 'user = "%s:%s"\n' "$E2E_HTTP_USER" "$E2E_HTTP_PASSWORD" | curl -K - "$E2E_BASE_URL/<path>"`. `printf` is a shell builtin, so the password reaches no command line. Never use `curl -u`, `--user`, or a URL with `user:password@`.
-- gh-guard refuses any other command whose arguments name `E2E_HTTP_PASSWORD`.
+- gh-guard refuses any other command whose arguments name `E2E_HTTP_PASSWORD`, except a check of whether it is set, which gives no value: `[ -n "$E2E_HTTP_PASSWORD" ]` or `${E2E_HTTP_PASSWORD:+set}`.
 
 A criterion without an E2E test is FAIL, not NOT TESTED, because the Story's Definition of Done asks for one.
 

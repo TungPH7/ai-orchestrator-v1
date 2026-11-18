@@ -493,6 +493,11 @@ test('the basic auth password stays off command lines: only printf, a builtin of
     'if true; then echo "$E2E_HTTP_PASSWORD"; fi',
     '{ node e2e/login.mjs "$E2E_HTTP_PASSWORD"; }',
     'while true; do /usr/bin/printf %s "$E2E_HTTP_PASSWORD"; done',
+    // A check of whether it is set passes only when it cannot give the value (QA SHOP-13 below).
+    'echo "${E2E_HTTP_PASSWORD:+$E2E_HTTP_PASSWORD}"',
+    'echo "${E2E_HTTP_PASSWORD:-none}"',
+    '/usr/bin/test -n "$E2E_HTTP_PASSWORD"',
+    '[ -n "$E2E_HTTP_PASSWORD" ] && curl -u "ao:$E2E_HTTP_PASSWORD" "$E2E_BASE_URL"',
   ]) {
     denied(bash(command, 'qa'), /password on a command line/, command);
   }
@@ -503,6 +508,14 @@ test('the basic auth password stays off command lines: only printf, a builtin of
     'for l in vi en; do printf \'user = "%s:%s"\n\' "$E2E_HTTP_USER" "$E2E_HTTP_PASSWORD" | curl -sS -K - -o og-$l.png "$E2E_BASE_URL/$l/opengraph-image" >> checks.txt; done',
     'get(){ printf \'user = "%s:%s"\n\' "$E2E_HTTP_USER" "$E2E_HTTP_PASSWORD" | curl -sS -K - "$@"; }; get -o page.html "$E2E_BASE_URL/vi"',
     'if [ -n "$E2E_BASE_URL" ]; then printf \'user = "%s:%s"\n\' "$E2E_HTTP_USER" "$E2E_HTTP_PASSWORD" | curl -K - "$E2E_BASE_URL"; fi',
+    // QA SHOP-13 of shop: echo "HP=${E2E_HTTP_PASSWORD:+set}" was refused, though it prints set or nothing, and qa then
+    // split the name to get past the pattern. A check of whether the password is set gives no value: ${…:+word}, and
+    // the builtins [, [[ and test, which start no process.
+    'echo "HP=${E2E_HTTP_PASSWORD:+set}"',
+    'echo "${E2E_HTTP_PASSWORD+set}${AO_ENV_AUTH:+ auth}"',
+    '[ -n "$E2E_HTTP_PASSWORD" ] && echo set',
+    'test -n "${E2E_HTTP_PASSWORD:-}" || echo "E2E_HTTP_PASSWORD is not set"',
+    '[[ -n $E2E_HTTP_PASSWORD ]]',
     'E2E_BASE_URL=https://sample-dev.example npx playwright test e2e/notes',
     'node -e "console.log(Boolean(process.env.E2E_HTTP_PASSWORD))"',
     'curl -s "$E2E_BASE_URL/notes" -o /dev/null -w "%{http_code}"',
