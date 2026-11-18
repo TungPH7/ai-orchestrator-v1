@@ -42,7 +42,7 @@ import { adfText, buildReviewPack, filesToQuote } from '../lib/workflow/review-p
 import { postKitCopyReports, readKitCopy, renderedReason } from '../lib/workflow/kit-copy.mjs';
 import { removeInstructions } from '../lib/workflow/review-tree.mjs';
 import { agentCommand, formatDecision, runGo } from '../lib/workflow/runner.mjs';
-import { CHANGES, decideStep, dockerGate } from '../lib/workflow/steps.mjs';
+import { CHANGES, appRolesOf, decideStep, dockerGate } from '../lib/workflow/steps.mjs';
 import { restoreWip, saveWip } from '../lib/workflow/wip.mjs';
 import { copyRunFiles, laneKeeper, runsSettings } from '../lib/workflow/lanes.mjs';
 import { installLane, pullsOfBranch, qaWatcher, runPlacer } from '../lib/workflow/lane-runs.mjs';
@@ -275,7 +275,10 @@ async function main() {
     return command === 'preview' ? { ...facts, preview: await preview.facts(values.stop, facts.pr) } : facts;
   };
   const read = (file) => readFileSync(runsFile(projectDir, file), 'utf8');
-  const options = { roster, contract, gates, mapping, ...(values.answers && { answers: read(values.answers) }), ...(values.note && { note: read(values.note) }), ...(values.change && { change: values.change }), ...(values.retest && { retest: true }) };
+  // The dev agent of each app by its profile: /ao-fix gives a blocking finding to the side of its app (kit followups,
+  // batch 2; PR #62 of shop, Pilot 3).
+  const appRoles = appRolesOf(existsSync(projectYaml) ? parse(readFileSync(projectYaml, 'utf8'))?.apps : {});
+  const options = { roster, contract, gates, mapping, appRoles, ...(values.answers && { answers: read(values.answers) }), ...(values.note && { note: read(values.note) }), ...(values.change && { change: values.change }), ...(values.retest && { retest: true }) };
 
   const facts = await gather();
   // A Java app needs Docker for the tests be-dev and qa run (project-scaffold part 3, spec 2.2).
