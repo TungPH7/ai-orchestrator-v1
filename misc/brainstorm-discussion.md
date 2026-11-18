@@ -29330,3 +29330,42 @@ Bạn dặn "chưa làm gì" ở phần lớn các lượt này, nên mình ghi 
 
   Commit đã đưa vào clone kit chính; `followups-truoc-c1.md`, `todo.md` và năm mục của handoff followup đã tick.
 - **Đợt 4 bắt đầu:** mục 1 và 2 là phần gỡ làn. Mình đã kiểm: `fs.rmSync` của Node gỡ junction mà không đi theo nó, nên xóa trước `node_modules` của làn là an toàn.
+- **Tổng kết của Claude cuối Lượt 69:**
+
+  Đã xong Đợt 2, Đợt 3 và 13 trên 14 mục của Đợt 4. Mục còn lại và các việc sau đó đều cần bạn quyết.
+
+  **Đã làm.** Mỗi mục có test viết đỏ trước, CI xanh, đã merge và đã đưa vào clone kit chính. Bộ test của kit: 1579/1579.
+  1. **Đợt 2, kit PR #307:**
+     - `run.mjs` chạy test, lint và build;
+     - luật cấm trả lời khi lệnh còn chạy;
+     - hook `pre-commit` kiểm Suppressions;
+     - `/ao-fix` chọn đúng dev agent;
+     - review sau khi merge `develop` chỉ tính file của PR;
+     - kiểm WIP trước mỗi Sub-task.
+  2. **Đợt 3, kit PR #308:**
+     - gh-guard bắt lệnh tìm khóa ở mọi kiểu chữ;
+     - dạng stdin của `curl` trong vòng lặp được qua;
+     - phép kiểm mật khẩu có hay không được qua;
+     - chặn chép hay xóa cây có `node_modules`;
+     - relay `PR events` bỏ PR của fork.
+  3. **Đợt 4, kit PR #309:**
+     - gỡ làn sạch trên Windows, và hai lệnh không còn cùng gỡ một làn;
+     - dừng tiến trình còn chạy trước khi gỡ worktree QA;
+     - `merge-gate` chạy cả sau CI;
+     - `audit` và client GitHub thử lại khi GitHub chậm hay lỗi;
+     - PR xung đột thì dừng ngay, kèm cách gỡ;
+     - Task thêm vào Epic sau khi duyệt plan được Refine tự động;
+     - `policy` chỉ quét app Java mà PR đổi;
+     - chi phí của lượt bị dừng không còn âm.
+
+  **Cần bạn quyết:**
+  1. **Mục 14 của Đợt 4, Task vận hành không có PR.** Mục này đổi hợp đồng SDLC và workflow trên Jira. Đề xuất nằm ngay dưới mục 14 trong `tasks/followups-truoc-c1.md`:
+     - nhãn `ao-ops` đánh dấu Task vận hành;
+     - transition mới `hand-over`, đi từ In Progress sang Ready for QA khi có bằng chứng của `devops`;
+     - nhãn `ao-env-auth` là công tắc để bạn bật basic auth cho `devops` theo từng Task.
+
+     Bạn duyệt thì mình làm.
+  2. **Chép kit vào `shop`.** Lượt review của lần chép tốn khoảng 9 USD. Lần chép nên làm ngay trước việc tiếp theo của `shop`, và cần bạn nói "làm".
+  3. **Bắt đầu C1.** Spec viết từ `quyet-dinh-da-duyet.md`, và câu hỏi ở mục F của file đó vẫn còn mở.
+  4. **Hạn gần nhất của backlog.** `pr-events.yml` phải lên `main` của `shop` trước 2026-12-02, bằng release v0.4.0 hoặc một hotfix. Việc này cần bạn ở gate ④ và ⑤.
+  5. **Dọn worktree và nhánh.** Gồm ba worktree `ao-jira-sync`, `ao-pilot3-guide`, `ao-followups-1` và ba nhánh `task/followups-2`, `-3`, `-4` trên GitHub. Việc xóa không hoàn tác được, nên mình chờ bạn đồng ý.

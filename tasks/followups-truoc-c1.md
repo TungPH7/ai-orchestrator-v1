@@ -137,6 +137,21 @@ Lần trước bạn duyệt "sửa gh-guard trước tiên"; theo ưu tiên m�
 
 ## Đợt 4: làn, worktree và luồng Jira, GitHub
 
+**Xong 13 trên 14 mục, 2026-11-19: kit PR #309, merge `d5bbb0e`, 1579/1579 test, CI xanh.** Mục 14 chờ bạn quyết (đề xuất ngay dưới mục 14). Đã xong:
+- gỡ làn sạch trên Windows: xóa `node_modules` trước (không đi theo link), rồi phần git để sót, và thư mục làn mà git không còn biết;
+- hai lệnh cùng dọn thì mỗi làn chỉ một lệnh gỡ (dấu `.remove-<KEY>`);
+- dừng mọi tiến trình còn chạy từ worktree QA hay review trước khi gỡ;
+- lời nhắc làn nêu biến `env` của từng app, đã dời cổng;
+- `merge-gate` chạy cả sau `CI`;
+- `audit` tìm lại PR của commit vừa merge ba lần;
+- client GitHub thử lại GET khi gặp 502, 503, 504 hay lỗi mạng;
+- PR xung đột với `develop` thì dừng ngay, kèm cách gỡ;
+- kiểm Docker thêm một lần sau 3 giây;
+- `/ao-build` một Story hay Task ở New đạt DoR thì gọi `jira-sync` rồi build luôn;
+- lời nhắc Sub-task nêu tên file ledger, và Story có ledger riêng vẫn đi tiếp;
+- `policy` chỉ quét `pom.xml` của app mà PR đổi, và thử lại khi quét lỗi;
+- lượt dừng trước `result` có chi phí chưa biết, không còn âm.
+
 Các mục này không tốn token agent, nhưng làm item bị kẹt, và phiên chính phải gỡ tay.
 
 1. **Gỡ làn để sót thư mục:** gộp bốn mục `prune`, "Directory not empty", làn còn sót file gốc, làn còn sót `apps/user`.
@@ -153,6 +168,22 @@ Các mục này không tốn token agent, nhưng làm item bị kẹt, và phiê
 12. **Check `policy` đỏ vì `osv-scanner` không tra được Maven Central.**
 13. **Chi phí âm ở lượt bị dừng khi đang chạy tiếp một phiên.**
 14. **Task vận hành không có PR**, gộp với **Task dữ liệu của `devops`**. Phần cho `devops` nhận basic auth cần bạn bật.
+
+    **Chờ bạn quyết (2026-11-19):** mục này đổi hợp đồng SDLC và workflow trên Jira, nên chưa nằm trong kit PR #309. Đề xuất:
+    - **Nhận diện:** một Task có nhãn `ao-ops` là Task vận hành. `ba` gắn nhãn này khi việc không có commit, như thêm dữ liệu qua API.
+    - **Đường đi:**
+      1. `devops` làm việc, rồi ghi bằng chứng vào comment trên item.
+      2. Transition mới `hand-over` (In Progress → Ready for QA) có guard `ops-evidence`: comment bằng chứng của `devops` có mặt.
+      3. `qa` kiểm như mọi Task.
+      4. Bạn Accept.
+
+      Task này không cần PR, không có `submit` và không có `deploy-to-qa`.
+    - **Epic:** guard `children-released` bỏ qua item có nhãn `ao-ops`, nên Epic không kẹt vì một Task không có Fix Version. Không cần thêm Resolution mới.
+    - **Basic auth cho `devops`:** `launch.mjs` chỉ đưa `E2E_HTTP_USER`/`E2E_HTTP_PASSWORD` cho `devops` khi Task có thêm nhãn `ao-env-auth`, và chỉ bạn gắn nhãn này. Đây là công tắc mà bạn bật cho từng Task.
+    - **Việc của bạn:**
+      1. Duyệt hợp đồng mới.
+      2. Bấm thêm transition `hand-over` vào workflow trên Jira. Mình cập nhật checklist (`npm run jira:checklist`) và đưa bạn từng bước bấm.
+      3. Mình kiểm lại bằng `npm run jira:check`.
 
 ## Đợt 5: cần thiết kế, đưa vào spec của C1 hay C2
 
