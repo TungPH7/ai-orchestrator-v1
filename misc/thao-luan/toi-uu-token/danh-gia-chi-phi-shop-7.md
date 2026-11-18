@@ -146,21 +146,29 @@ Epic SHOP-7 cố ý dùng ảnh giữ chỗ và một phạm vi nhỏ để ki�
 | Mức | Dùng cho | Build | Review | QA | Low |
 |---|---|---|---|---|---|
 | **Nhẹ** | Tài liệu, chữ, UI không chạm dữ liệu, tính năng nhỏ | Một lượt dev, hoặc phiên chính | CI và unit test. `reviewer` ở `high` một lần; tài liệu thì bỏ review | Không có lượt `qa`: bạn hay Claude xem trên Development | Không sửa riêng; gom vào một Task chung mỗi Epic |
-| **Chuẩn** | Tính năng có API và database, không đăng nhập hay thanh toán (như SHOP-7) | Dev agent, Story to hơn: khoảng 6–8 Story cho cả Epic thay vì 19 item cộng Sub-task | `reviewer` `high` một lần. `security` chỉ khi PR chạm đường dẫn nhạy cảm | `qa` một lần mỗi Story, theo AC | Gom vào một Task chung mỗi Epic |
+| **Chuẩn** | Tính năng có API và database, không đăng nhập hay thanh toán (như SHOP-7) | Dev agent, chia item như hiện nay* | `reviewer` `high` một lần. `security` chỉ khi PR chạm đường dẫn nhạy cảm | `qa` một lần mỗi Story, theo AC | Gom vào một Task chung mỗi Epic |
 | **Nặng** | Đăng nhập, thanh toán, migration trên dữ liệu thật, hạ tầng, kit | Như hiện nay | `reviewer` `xhigh`, `security` `max`, sửa tới khi không còn Critical hay High | QA đầy đủ | Như hiện nay |
 
+\* Bản đầu của file (Lượt 49) đề xuất "Story to hơn: khoảng 6–8 Story cho cả Epic thay vì 19 item cộng Sub-task". Bạn quyết **giữ nguyên cách chia item** (Lượt 61), vì ba lý do (Lượt 60):
+- con số 6–8 không dựa trên số đo;
+- Sub-task không thêm review hay QA;
+- PR to thì review dễ sót lỗi.
+
 **Đi kèm:**
-- **Bớt số lượt:** mỗi lượt làm trọn một Story, không tách nhiều lượt nhỏ. Lý do: khoảng 71% chi phí là nạp và đọc lại bối cảnh.
 - **Bối cảnh gọn hơn:** gói bối cảnh của review chỉ phần cần, skill chỉ nạp khi dùng.
 - **Hết lãng phí do lỗi kit:** Đợt 1 và 2 của [followups-truoc-c1.md](../../../tasks/followups-truoc-c1.md).
 - **Đo lại:** Epic kế tiếp chạy theo mức Chuẩn, rồi so **USD cho mỗi AC** với con số 21,6 USD của SHOP-7.
 
 **Ước tính:** nếu SHOP-7 chạy ở mức Chuẩn, nó tốn khoảng 200–280 USD, tức khoảng 7–10 USD cho mỗi AC, mà vẫn giữ E2E cho từng AC và một lượt review [ước tính]. Phần chênh với cách đơn giản (80–150 USD) là giá của test tự động và kiểm độc lập.
 
-## 6. Cần bạn quyết
+## 6. Đã quyết (cập nhật ở Lượt 67)
 
-1. Có đưa ba mức quy trình vào C1 không? C1 vốn là việc chuyển thứ tự chạy vào contract, nên đây là chỗ hợp để thêm mức theo rủi ro.
-2. Epic kế tiếp của `shop` chạy ở mức nào? Mình đề xuất mức Chuẩn, trừ phần đăng nhập ở mức Nặng.
+1. **Ba mức quy trình vào C1:** bạn duyệt ở Lượt 60, mục 1. Chi tiết (chọn mức ở gate ②, tự nâng, chỉ bạn được hạ) ở [quyet-dinh-da-duyet.md](quyet-dinh-da-duyet.md), mục A1.
+2. **"Epic kế tiếp chạy ở mức nào": mình rút lại câu hỏi này** (Lượt 51). Mức được chọn cho từng item lúc lập plan và duyệt ở gate ②, không chọn cho cả Epic từ trước.
+3. **Giữ nguyên cách chia item** (Lượt 61), xem chú thích dưới bảng ở mục 5.
+4. **Đo lại USD cho mỗi AC ở Epic kế tiếp:** bạn duyệt ở Lượt 60, mục 6.
+
+Mọi quyết định của Phiên 33: [quyet-dinh-da-duyet.md](quyet-dinh-da-duyet.md).
 
 ## Nguồn
 

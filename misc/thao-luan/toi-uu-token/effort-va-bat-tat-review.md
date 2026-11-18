@@ -196,7 +196,9 @@ Phần tham khảo của skill lấy từ OWASP Cheat Sheet Series.
 2. **Medium phải nêu cách tái hiện:** input hay trạng thái nào, dẫn tới kết quả sai nào. Không nêu được thì hạ xuống Low.
 3. **Low không thành Task riêng và không mở vòng sửa.** Low chỉ ghi trong báo cáo, rồi gom vào một Task chung mỗi Epic. Medium thì gom theo Epic, trừ khi bạn chọn sửa ngay.
 
-## Nếu bạn đồng ý
+## Đã duyệt
+
+Bạn duyệt mục 1–3 ở Lượt 58 ("Về 3 câu tại effort-va-bat-tat-review.md, tôi đồng ý như bạn đề xuất"), và mục 4.5 ở Lượt 59 ("đồng ý theo đề xuất"). Chi tiết gom ở [quyet-dinh-da-duyet.md](quyet-dinh-da-duyet.md), mục A2 và A3.
 
 Ba điểm ở mục 1–3 thành một mục của spec C1:
 - `reviewer` và `security` mặc định ở `high`, tự nâng ở tầng Nguy cấp và mức Nặng;

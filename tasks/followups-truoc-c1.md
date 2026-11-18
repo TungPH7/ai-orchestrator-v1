@@ -1,6 +1,6 @@
 # Followup của kit, xếp lại trước C1
 
-> Mục 6 của [todo.md](todo.md). Nguồn: 44 mục còn mở trong [handoff-2026-11-16-followups.md](handoff-2026-11-16-followups.md), đếm ngày 2026-11-18. Mỗi mục dưới đây trỏ về mục gốc bằng tên in đậm của nó. **Trạng thái:** bạn duyệt ở Phiên 33 · Lượt 58–61 (2026-11-18). Bản này là bản xếp lần 4.
+> Mục 6 của [todo.md](todo.md). Mọi quyết định đã duyệt, kể cả phần chuyển sang C1: [quyet-dinh-da-duyet.md](../misc/thao-luan/toi-uu-token/quyet-dinh-da-duyet.md). Nguồn: 44 mục còn mở trong [handoff-2026-11-16-followups.md](handoff-2026-11-16-followups.md), đếm ngày 2026-11-18. Mỗi mục dưới đây trỏ về mục gốc bằng tên in đậm của nó. **Trạng thái:** bạn duyệt ở Phiên 33 · Lượt 58–61 (2026-11-18). Bản này là bản xếp lần 4.
 >
 > - **Lượt 45:** ưu tiên việc tiết kiệm token, theo lời bạn.
 > - **Lượt 46–47:**
