@@ -173,7 +173,7 @@ Các điều kiện hay thiếu, và cách xử lý:
 | `answer to the changes requested on head <sha>` | Quyết định mới nhất trên commit đầu là yêu cầu sửa. Agent push bản sửa, hoặc người đã yêu cầu sửa approve lại trên chính commit đó |
 | `approval on head <sha>` | Bạn approve. Approve trên commit cũ không được tính |
 | `valid branch (…)`, `valid title (…)`, `complete description (…)` | Sửa tiêu đề hoặc mô tả bằng `ao-pr.mjs edit`. Sai tên nhánh thì mở PR mới |
-| `conflicts with develop resolved` | Rebase nhánh lên `develop`, rồi force push |
+| `conflicts with develop resolved` | Merge `develop` vào nhánh, gỡ xung đột, rồi push. Rebase rồi force push cũng được, nhưng nó viết lại các commit đã push. Sau một lần merge như vậy, vòng review kế tiếp chỉ tính những file mà chính PR đổi so với `develop`, không tính code của các PR khác mà merge mang vào (Pilot 3, PR #41 của `shop`) |
 
 Muốn xem trước ở máy, chạy `node .ai-orchestrator/scripts/merge-gate.mjs --dry-run`. Lệnh in đúng các dòng trên và không merge gì.
 
