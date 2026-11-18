@@ -278,11 +278,13 @@ async function main() {
   const options = { roster, contract, gates, mapping, ...(values.answers && { answers: read(values.answers) }), ...(values.note && { note: read(values.note) }), ...(values.change && { change: values.change }), ...(values.retest && { retest: true }) };
 
   const facts = await gather();
-  // A Java app needs Docker for the tests be-dev runs (project-scaffold part 3, spec 2.2).
+  // A Java app needs Docker for the tests be-dev and qa run (project-scaffold part 3, spec 2.2).
   const projectFile = join(projectDir, '.ai-orchestrator', 'project.yaml');
   const java = existsSync(projectFile) && Object.values(parse(readFileSync(projectFile, 'utf8'))?.apps ?? {}).some((app) => app?.profile === 'spring-boot');
   const dockerRunning = () => dockerAnswered(spawnSync('docker', DOCKER_INFO, { encoding: 'utf8', timeout: 20000 }));
-  const decision = dockerGate(decideStep(command, facts, options), { java, dockerRunning });
+  // The qa runs of other commands: the stop at gate ③ says to wait while one tests where the merge deploys.
+  const qaRunning = liveLocks(activeDir, { fs: lockFs, alive }).filter((lock) => lock.command === 'qa' && lock.pid !== process.pid).map(({ key: k, environment, pid }) => ({ key: k, environment, pid }));
+  const decision = dockerGate(decideStep(command, { ...facts, qaRunning }, options), { java, dockerRunning });
   console.log(formatDecision(decision));
   // Agents run the hooks of the kit in AO_KIT_DIR: one that differs from the kit copy of the project is named (review round
   // 3 of shop PR #21).
@@ -303,6 +305,10 @@ async function main() {
   if (command === 'status') {
     const live = liveLocks(activeDir, { fs: lockFs, alive });
     if (live.length > 0) console.log(`Running: ${live.map(({ command: c, key: k, slot, startedAt }) => `${c} ${k} in slot ${slot}, ${Math.round((Date.now() - Date.parse(startedAt)) / 60000)} min`).join('; ')}`);
+    // Approving a PR now would make its merge deploy and stop the QA (Pilot 3, SHOP-28 and SHOP-69 of shop).
+    for (const { key: k, environment } of live.filter((lock) => lock.command === 'qa' && lock.environment)) {
+      console.log(`QA in progress: qa is testing ${k} on ${environment}. Approve no PR whose merge deploys ${environment} until it ends: the new deploy would stop it, and it would start again`);
+    }
   }
   if (!values.go || !decision.go) return;
 

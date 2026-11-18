@@ -32,6 +32,9 @@ Deployer chạy mỗi phút trên VPS và kiểm mọi commit mới trên lịch
 ## Một vòng release
 
 1. PR vào `develop`. Deployer đưa commit lên Development, và `jira-sync` chuyển item sang Ready for QA.
+   - **Đừng approve PR khi có QA đang chạy trên môi trường mà PR sẽ deploy tới.** Merge kéo theo một lần deploy mới, và `ao-step` dừng lượt QA đang chạy (superseded), rồi QA phải chạy lại từ đầu (Pilot 3: SHOP-28, SHOP-69).
+   - Dòng STOP ở gate ③ của `/ao-review` và dòng `QA in progress` của `/ao-status` báo khi nào phải chờ.
+   - Có nhiều PR đã review xong thì approve chúng cùng lúc, rồi QA từng item trên bản deploy có merge cuối cùng.
 2. `/ao-qa <KEY>`: `qa` kiểm trên Development và ghi báo cáo lên item. PASS thì item ở In QA; FAIL thì item về In Progress.
 3. Bạn đọc báo cáo, rồi `Accept` để item sang Done. Bạn thấy lỗi trước khi bấm `Accept` thì dùng `/ao-qa <KEY> fail: …` (mục "Lỗi bạn thấy khi QA" ở dưới).
 4. Bạn tạo trên Jira Fix Version của bản này và bản kế tiếp, nếu chưa có. Từng bước ở mục dưới.
