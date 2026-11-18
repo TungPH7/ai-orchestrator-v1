@@ -6,7 +6,7 @@ import { readContract } from '../../lib/contract.mjs';
 import { readGates } from '../../lib/quality/gates.mjs';
 import { readMapping } from '../../lib/tracker/mapping.mjs';
 import { PURPOSES, resumePrompt } from '../../lib/workflow/prompts.mjs';
-import { decideStep, noteKey } from '../../lib/workflow/steps.mjs';
+import { appRolesOf, decideStep, noteKey } from '../../lib/workflow/steps.mjs';
 import { CONTRACT_DIR, ROOT } from '../helpers/kit.mjs';
 
 const contract = readContract(CONTRACT_DIR);
@@ -277,10 +277,36 @@ test('/ao-fix: the dev agent of the item fixes what was asked on its branch, the
 test('/ao-fix with your note, at Rework 2 at least xhigh; red CI is a reason too', () => {
   const noted = decide('fix', prFacts('fix', {}), { note: 'fe: Sửa hai finding Low của reviewer.' });
   assert.match(noted.runs[0].prompt, /: what the human asks below\. The branch .*\n\nThe human asks:\n\nSửa hai finding Low của reviewer\.$/);
-  const second = decide('fix', prFacts('fix', { ci: { green: false, failed: true, pending: false } }, { item: { rework: 2 } }));
+  // A Task with one dev agent: a red CI goes to it. A Story with a BE and an FE side stops instead (test below).
+  const second = decide('fix', prFacts('fix', { ci: { green: false, failed: true, pending: false } }, { item: { rework: 2, subtasks: [], role: 'fe-dev', agent: null } }));
   assert.deepEqual([second.runs[0].effort, second.runs[0].prompt.includes('the red CI on d1d2d3d')], ['xhigh', true]);
   const maxed = decide('fix', prFacts('fix', { changesRequested: true }, { item: { rework: 3, effort: 'max' } }));
   assert.equal(maxed.runs[0].effort, 'max', 'a higher label stays');
+});
+
+// Pilot 3, PR #62 of shop: CI was red only in apps/user/e2e/products.spec.ts, and ao-step ran be-dev, the Agent of the
+// Story, by DEV_ORDER. A blocking finding now goes to the dev agent of the app its Where is in (appRoles, from the
+// profiles of project.yaml); a red CI of a Story with both sides stops, since ao-step cannot tell which side broke it.
+const appRoles = { api: 'be-dev', web: 'fe-dev', admin: 'fe-dev' };
+const finding = (where) => report({ blocking: 1, state: 'CHANGES_REQUESTED', open: [{ severity: 'High', where, finding: 'x' }] });
+test('/ao-fix on a Story with a BE and an FE side: a finding goes to the side of its app, a red CI stops to ask', () => {
+  const asBe = { item: { agent: 'be-dev' } };
+  const fe = decide('fix', prFacts('fix', { reports: { reviewer: finding('apps/web/e2e/cart.spec.ts:639'), security: report() }, changesRequested: true }, asBe), { appRoles });
+  assert.deepEqual(fe.runs.filter(({ purpose }) => purpose === 'fix').map(({ role }) => role), ['fe-dev'], 'the app of the finding, not the Agent of the Story');
+  const be = decide('fix', prFacts('fix', { reports: { reviewer: finding('apps/api/src/cart.ts:12'), security: report() }, changesRequested: true }, asBe), { appRoles });
+  assert.deepEqual(be.runs.filter(({ purpose }) => purpose === 'fix').map(({ role }) => role), ['be-dev']);
+  const both = decide('fix', prFacts('fix', { reports: { reviewer: finding('apps/web/a.tsx:1'), security: finding('apps/api/a.ts:2') }, changesRequested: true }, asBe), { appRoles });
+  assert.deepEqual(both.runs.filter(({ purpose }) => purpose === 'fix').map(({ role }) => role), ['be-dev', 'fe-dev']);
+  const unknown = decide('fix', prFacts('fix', { reports: { reviewer: finding('packages/x/a.ts:1'), security: report() }, changesRequested: true }, asBe), { appRoles });
+  assert.deepEqual(unknown.runs.filter(({ purpose }) => purpose === 'fix').map(({ role }) => role), ['be-dev'], 'a path outside the apps: the Agent of the Story');
+
+  const red = decide('fix', prFacts('fix', { ci: { green: false, failed: true, pending: false } }, asBe), { appRoles });
+  assert.equal(red.go, false);
+  assert.match(red.reason, /CI is red on PR #15, and DEMO-21 has a BE and an FE Sub-task: \/ao-fix does not guess which side broke it/);
+  assert.match(red.next, /^Read the failed job \(gh run view --log-failed\), then \/ao-fix 15 be: … or fe: …/);
+  // With your request, it goes where you say.
+  const asked = decide('fix', prFacts('fix', { ci: { green: false, failed: true, pending: false } }, asBe), { appRoles, note: 'fe: sửa dòng Suppressions của apps/web/e2e/cart.spec.ts' });
+  assert.deepEqual(asked.runs.filter(({ purpose }) => purpose === 'fix').map(({ role }) => role), ['fe-dev']);
 });
 
 test('/ao-fix after its fix is pushed reviews the new head; with nothing to fix it says so', () => {
@@ -395,4 +421,11 @@ test('/ao-review that stops on Critical or High findings gives their ids, and ho
   assert.equal(decision.go, false);
   assert.equal(decision.reason, 'the reports on the head of PR #15 ask for changes (Critical or High: security 2: 1a2b3c4d 5e6f7a8b). To accept a High instead of fixing it, approve PR #15 on its head with one line per finding: Accept risk: <id> until <YYYY-MM-DD>: <why> (docs/quality-gates.md)');
   assert.equal(decision.next, '/ao-fix 15');
+});
+
+test('appRolesOf gives each app of project.yaml the dev agent of its profile, and leaves out any other', () => {
+  assert.deepEqual(appRolesOf({ user: { profile: 'nextjs' }, admin: { profile: 'react' }, api: { profile: 'spring-boot' }, web: { profile: 'nestjs' }, x: { profile: 'other' }, y: null }), {
+    user: 'fe-dev', admin: 'fe-dev', api: 'be-dev', web: 'be-dev',
+  });
+  assert.deepEqual(appRolesOf(undefined), {});
 });

@@ -109,7 +109,16 @@ test('a part pushed already is not sent again; once all are pushed, the draft wa
 });
 
 test('red CI on a draft PR goes to the dev agent of the item, with no review; a ready PR is reviewed again after the fix', () => {
-  assert.deepEqual(fixPlan(decideStep('fix', fixFacts({ ci: { green: false, failed: true, pending: false } }), options)), ['fe-dev fix']);
+  // Kit followups, batch 2: a Story with a BE and an FE side stops on red CI, since ao-step cannot tell which side broke
+  // it; the main session reads the failed job and asks again with be: or fe:. An item with one dev agent gets the fix.
+  const red = { ci: { green: false, failed: true, pending: false } };
+  const twoSided = decideStep('fix', fixFacts(red), options);
+  assert.equal(twoSided.go, false);
+  assert.match(twoSided.next, /gh run view --log-failed/);
+  assert.deepEqual(fixPlan(decideStep('fix', fixFacts(red), { ...options, note: 'fe: sửa lint của apps/web' })), ['fe-dev fix']);
+  const oneSided = fixFacts(red);
+  oneSided.item = { ...oneSided.item, subtasks: [], role: 'fe-dev' };
+  assert.deepEqual(fixPlan(decideStep('fix', oneSided, options)), ['fe-dev fix']);
   const ready = decideStep('fix', fixFacts({ draft: false }), { ...options, note: 'fe: chữ to hơn' });
   assert.deepEqual(fixPlan(ready), ['fe-dev fix', 'reviewer review', 'security review']);
   assert.doesNotMatch(ready.runs[0].prompt, /draft/);

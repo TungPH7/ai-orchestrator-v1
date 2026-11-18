@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { join } from 'node:path';
 import { loadContract } from '../../lib/contract.mjs';
 import { readMapping } from '../../lib/tracker/mapping.mjs';
-import { adfText, jiraGuards, qaReportResult, readItem } from '../../lib/tracker/facts.mjs';
+import { adfText, jiraGuards, qaReportResult, readItem, wipHolders } from '../../lib/tracker/facts.mjs';
 import { CONTRACT_DIR, ROOT } from '../helpers/kit.mjs';
 
 const contract = loadContract(CONTRACT_DIR);
@@ -188,4 +188,11 @@ test('only the guards asked for are read, and guards from other sources are left
   const client = fakeJira({ issues: [issue({ key: 'DEMO-5' })] });
   assert.deepEqual(await guards(client, 'DEMO-5', 'fe-dev', ['branch-created', 'pr-open']), []);
   assert.deepEqual(client.calls.map(([kind]) => kind), ['get']);
+});
+
+test('wipHolders names the items that hold the WIP of a role, and its limit', async () => {
+  const client = fakeJira({ issues: [], search: () => [{ key: 'SHOP-31', fields: { subtasks: [{ key: 'SHOP-33' }] } }, { key: 'SHOP-58', fields: { subtasks: [] } }] });
+  assert.deepEqual(await wipHolders(client, { space: 'SHOP', actor: 'fe-dev', contract, mapping }), { keys: ['SHOP-58'], limit: 1 });
+  const [, jql] = client.calls.find(([kind]) => kind === 'search');
+  assert.match(jql, /^project = "SHOP" AND "Agent" = "Frontend Developer"/);
 });

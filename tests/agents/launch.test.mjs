@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { join } from 'node:path';
-import { CLEARED_ENV, READ_PERMISSIONS, credentialHelper, launchPlan } from '../../lib/agents/launch.mjs';
+import { CLEARED_ENV, READ_PERMISSIONS, SHELL_CLEARED_ENV, credentialHelper, launchPlan } from '../../lib/agents/launch.mjs';
 import { readRoster } from '../../lib/agents/roster.mjs';
 import { ROOT } from '../helpers/kit.mjs';
 
@@ -91,8 +91,13 @@ test('every agent session reads GitHub with the read-only token and runs git wit
     ['user.name', 'tungph7-ao-dev[bot]'],
     ['user.email', '349476619+tungph7-ao-dev[bot]@users.noreply.github.com'],
   ]);
-  assert.deepEqual(clear, CLEARED_ENV);
+  assert.deepEqual(clear, [...CLEARED_ENV, ...SHELL_CLEARED_ENV]);
   for (const name of ['GIT_CONFIG_PARAMETERS', 'GIT_ASKPASS', 'SSH_ASKPASS', 'GITHUB_TOKEN']) assert.ok(clear.includes(name), name);
+  // Pilot 3: ao-step ran with MSYS_NO_PATHCONV=1, and each agent got it for every command of its session, so Git Bash
+  // gave /c/... paths to Windows programs as they were: ./mvnw failed with "Could not find or load main class
+  // org.codehaus.plexus.classworlds.launcher.Launcher", and the pnpm shim with "Cannot find module
+  // 'D:\c\Program Files\nodejs\…'" (SHOP-44, SHOP-21 of shop). An agent sets it in front of one command, as the rules say.
+  for (const name of ['MSYS_NO_PATHCONV', 'MSYS2_ARG_CONV_EXCL']) assert.ok(clear.includes(name), name);
   // release-workflow spec 2.5: the CI token and your other secrets stay in your session, out of every agent's, though
   // Windows gives every process your user variables (T13).
   for (const name of ['JIRA_CI_TOKEN', 'JIRA_ADMIN_TOKEN', 'AO_JIRA_READ_TOKEN', 'AO_ENV_AUTH']) assert.ok(clear.includes(name), name);

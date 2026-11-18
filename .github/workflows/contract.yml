@@ -28,3 +28,16 @@ jobs:
       - run: npm run render:check
       - run: npm run jira:checklist:check
       - run: npm run agents:check
+
+  # run.mjs and the shell settings of agent sessions on Windows, where agents run (kit followups before C1, batch 2):
+  # the tests start npm through run.mjs as an agent would, with MSYS_NO_PATHCONV=1 in its environment.
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: node --test tests/scripts/run.test.mjs tests/quality/run-command.test.mjs tests/quality/maven.test.mjs tests/agents/launch.test.mjs
