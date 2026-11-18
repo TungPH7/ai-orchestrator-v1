@@ -16,13 +16,15 @@ import {
 } from '../../lib/quality/maven.mjs';
 
 test('each script of a Java app maps to one fixed Maven run, in batch mode and without download logs', () => {
-  assert.deepEqual(Object.keys(MAVEN_SCRIPTS), ['lint', 'typecheck', 'test:coverage', 'build', 'dev']);
+  assert.deepEqual(Object.keys(MAVEN_SCRIPTS), ['lint', 'typecheck', 'test', 'test:coverage', 'build', 'dev']);
   assert.deepEqual(mavenArgs('lint'), ['-B', '-ntp', 'validate']);
   assert.deepEqual(mavenArgs('typecheck'), ['-B', '-ntp', 'compile', '-Dspotless.check.skip=true', '-Dcheckstyle.skip=true']);
+  // The tests alone, for scripts/run.mjs with -Dtest=<class> (kit followups, batch 2).
+  assert.deepEqual(mavenArgs('test'), ['-B', '-ntp', 'test', '-Dspotless.check.skip=true', '-Dcheckstyle.skip=true']);
   assert.deepEqual(mavenArgs('test:coverage'), ['-B', '-ntp', 'verify']);
   assert.deepEqual(mavenArgs('build'), ['-B', '-ntp', 'package', '-DskipTests', '-Dspotless.check.skip=true', '-Dcheckstyle.skip=true']);
   assert.deepEqual(mavenArgs('dev'), ['-B', '-ntp', 'spring-boot:run']);
-  assert.throws(() => mavenArgs('deploy'), /deploy.*lint, typecheck, test:coverage, build, dev/);
+  assert.throws(() => mavenArgs('deploy'), /deploy.*lint, typecheck, test, test:coverage, build, dev/);
 });
 
 test('on Windows the wrapper runs through cmd.exe with the explicit .\\mvnw.cmd, since cmd does not search the folder', () => {

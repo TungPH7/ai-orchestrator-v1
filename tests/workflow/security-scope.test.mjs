@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { join } from 'node:path';
 import { readGates } from '../../lib/quality/gates.mjs';
-import { MAX_DELTA_LINES, securityScope } from '../../lib/workflow/security-scope.mjs';
+import { MAX_DELTA_LINES, ownChanges, securityScope } from '../../lib/workflow/security-scope.mjs';
 import { ROOT } from '../helpers/kit.mjs';
 
 const gates = readGates(join(ROOT, 'quality'));
@@ -78,4 +78,21 @@ test('a full review keeps the roster effort on a protected path, a path of secur
   assert.deepEqual(effort(['.ai-orchestrator/lib/x.mjs'], { protectedPaths: ['.ai-orchestrator/lib/x.mjs'] }), { effort: 'max', reason: 'the PR touches the protected path .ai-orchestrator/lib/x.mjs' });
   const labelled = { key: 'SMP-7', effort: null, subtasks: [{ key: 'SMP-8', effort: 'xhigh' }] };
   assert.deepEqual(effort(['apps/web/src/app/notes/note-list.tsx'], { item: labelled }), { effort: 'max', reason: 'SMP-8 has the effort label xhigh' });
+});
+
+test('the new part since a report keeps only the files the PR changes: a merge of develop into its branch adds none (PR #41 of shop)', () => {
+  // Pilot 3: PR #41 had develop merged in to clear a conflict, and the new part counted 3,749 lines, most of them SHOP-20
+  // and SHOP-21 that PR #40 and #42 had brought to develop, so security ran at max on code reviewed already.
+  const sinceReport = [
+    { filename: 'apps/api/src/product/ProductRepository.java', additions: 6, deletions: 2 },
+    { filename: 'apps/admin/src/features/product/product-form.tsx', additions: 2100, deletions: 40 },
+    { filename: 'apps/user/src/app/[locale]/products/[slug]/page.tsx', additions: 1500, deletions: 101 },
+    { filename: 'apps/api/src/product/NewName.java', previous_filename: 'apps/api/src/product/OldName.java', additions: 1, deletions: 1 },
+  ];
+  const prFiles = ['apps/api/src/product/ProductRepository.java', 'apps/api/src/product/NewName.java', 'apps/api/src/migrations/V5.sql'];
+  assert.deepEqual(ownChanges(sinceReport, prFiles).map(({ filename }) => filename), ['apps/api/src/product/ProductRepository.java', 'apps/api/src/product/NewName.java']);
+  const scope = securityScope({ report: report(), full: report(), compare: { status: 'ahead', files: ownChanges(sinceReport, prFiles) }, gates });
+  assert.equal(scope.mode, 'delta');
+  assert.match(scope.reason, /^10 lines changed since a1b2c3d/);
+  assert.deepEqual(ownChanges(sinceReport, []), [], 'a PR with no own file left has no new part');
 });

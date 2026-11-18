@@ -24,10 +24,13 @@ test('CI runs on every PR and on every push to main', () => {
 
 test('CI installs from the lockfile on Node 24, then runs the same checks as locally', () => {
   const { jobs } = parse(readFileSync(WORKFLOW, 'utf8'));
-  const steps = Object.values(jobs).flatMap((job) => job.steps);
+  const runs = (job) => job.steps.filter((step) => step.run).map((step) => step.run);
 
-  assert.equal(steps.find((step) => step.uses?.startsWith('actions/setup-node@'))?.with['node-version'], 24);
-  assert.deepEqual(steps.filter((step) => step.run).map((step) => step.run), ['npm ci', ...COMMANDS]);
+  for (const job of Object.values(jobs)) assert.equal(job.steps.find((step) => step.uses?.startsWith('actions/setup-node@'))?.with['node-version'], 24);
+  assert.deepEqual(runs(jobs.check), ['npm ci', ...COMMANDS]);
+  // On Windows, where agents run: run.mjs and the shell settings of agent sessions (kit followups before C1, batch 2).
+  assert.equal(jobs.windows['runs-on'], 'windows-latest');
+  assert.deepEqual(runs(jobs.windows), ['npm ci', 'node --test tests/scripts/run.test.mjs tests/quality/run-command.test.mjs tests/quality/maven.test.mjs tests/agents/launch.test.mjs']);
 });
 
 test('README lists the commands and points to the specs and the generated docs', () => {

@@ -61,6 +61,29 @@ test('the pre-commit script scans the staged text, not the file on disk', (t) =>
   assert.equal(preCommit(dir).status, 0);
 });
 
+test('the pre-commit script refuses a staged line that switches a check off without its reason, as the policy job of CI does', (t) => {
+  // Pilot 3: the Suppressions check of policy went red after a push three times (PR #30, #38, #62 of shop), each time a
+  // CI round and a /ao-fix run. The hook now runs the same check on the staged lines, with quality/gates.yaml.
+  const bare = gitRepo(t);
+  stage(bare, 'src/a.ts', '// eslint-disable-next-line no-console\nconsole.log(1);\n');
+  const refused = preCommit(bare);
+  assert.notEqual(refused.status, 0);
+  assert.match(refused.stderr, /src\/a\.ts:1 eslint-disable needs "reason: <why>" on the same line/);
+  assert.match(refused.stderr, /pre-commit: .*switches a check off/);
+
+  const reasoned = gitRepo(t);
+  stage(reasoned, 'src/a.ts', '// eslint-disable-next-line no-console -- reason: the CLI prints its result\nconsole.log(1);\n');
+  assert.equal(preCommit(reasoned).status, 0);
+
+  const docs = gitRepo(t);
+  stage(docs, 'docs/a.md', 'Add `// eslint-disable-next-line` to switch the rule off.\n');
+  assert.equal(preCommit(docs).status, 0, 'documentation may name a suppression');
+
+  const never = gitRepo(t);
+  stage(never, 'src/a.test.ts', 'it.only("x", () => {});\n');
+  assert.match(preCommit(never).stderr, /src\/a\.test\.ts:1 \.only\( is never allowed/);
+});
+
 test('the pre-commit script passes with nothing staged, and runs the project precommit script', (t) => {
   assert.equal(preCommit(gitRepo(t)).status, 0);
 

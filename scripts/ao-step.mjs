@@ -42,12 +42,13 @@ import { adfText, buildReviewPack, filesToQuote } from '../lib/workflow/review-p
 import { postKitCopyReports, readKitCopy, renderedReason } from '../lib/workflow/kit-copy.mjs';
 import { removeInstructions } from '../lib/workflow/review-tree.mjs';
 import { agentCommand, formatDecision, runGo } from '../lib/workflow/runner.mjs';
-import { CHANGES, decideStep, dockerGate } from '../lib/workflow/steps.mjs';
+import { CHANGES, appRolesOf, decideStep, dockerGate } from '../lib/workflow/steps.mjs';
 import { restoreWip, saveWip } from '../lib/workflow/wip.mjs';
 import { copyRunFiles, laneKeeper, runsSettings } from '../lib/workflow/lanes.mjs';
 import { installLane, pullsOfBranch, qaWatcher, runPlacer } from '../lib/workflow/lane-runs.mjs';
 import { checkoutBranch, laneDir, laneRoot } from '../lib/workflow/places.mjs';
-import { admitAgent, claimRole, claimsRole, liveLocks, releaseAgent, takeLock as takeRunLock } from '../lib/workflow/locks.mjs';
+import { admitAgent, claimRole, claimsRole, jiraWipStop, liveLocks, releaseAgent, takeLock as takeRunLock } from '../lib/workflow/locks.mjs';
+import { wipHolders } from '../lib/tracker/facts.mjs';
 import { runsAtOnce } from '../lib/workflow/ports.mjs';
 import { hookKitDrift, hookKitNote } from '../lib/workflow/hook-kit.mjs';
 
@@ -275,7 +276,10 @@ async function main() {
     return command === 'preview' ? { ...facts, preview: await preview.facts(values.stop, facts.pr) } : facts;
   };
   const read = (file) => readFileSync(runsFile(projectDir, file), 'utf8');
-  const options = { roster, contract, gates, mapping, ...(values.answers && { answers: read(values.answers) }), ...(values.note && { note: read(values.note) }), ...(values.change && { change: values.change }), ...(values.retest && { retest: true }) };
+  // The dev agent of each app by its profile: /ao-fix gives a blocking finding to the side of its app (kit followups,
+  // batch 2; PR #62 of shop, Pilot 3).
+  const appRoles = appRolesOf(existsSync(projectYaml) ? parse(readFileSync(projectYaml, 'utf8'))?.apps : {});
+  const options = { roster, contract, gates, mapping, appRoles, ...(values.answers && { answers: read(values.answers) }), ...(values.note && { note: read(values.note) }), ...(values.change && { change: values.change }), ...(values.retest && { retest: true }) };
 
   const facts = await gather();
   // A Java app needs Docker for the tests be-dev and qa run (project-scaffold part 3, spec 2.2).
@@ -363,6 +367,13 @@ async function main() {
       if (!claimsRole(command) || !run.role) return;
       const claimed = await claimRole(activeDir, lock, run.role, { fs: lockFs, alive, sleep, onWait: (busy) => console.log(`Waiting for ${run.role}: it is at work on ${busy.key} (process ${busy.pid}), and builds one item at a time`) });
       if (!claimed.ok) throw new Error(claimed.reason);
+      // Then its WIP on Jira, read now: a build of the role that ended may have left its item In Progress, and jira-guard
+      // would refuse the Start of this one (kit followups, batch 2; SHOP-31 after SHOP-58 in Pilot 3).
+      if (command === 'build' && run.purpose === 'build') {
+        const { keys, limit } = await wipHolders(jira, { space, actor: run.role, contract, mapping });
+        const wip = jiraWipStop({ role: run.role, key: run.key, story: run.story, keys, limit });
+        if (wip) throw new Error(wip);
+      }
     };
     const { decision: final, facts: last } = await runGo({
       command,
