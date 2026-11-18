@@ -137,7 +137,7 @@ test('a run killed with its shell is on record as unfinished, and the next comma
   const killed = harness(world, SPEC_EFFECTS, { throws: true });
   await assert.rejects(killed.run({ gather }), /claude could not start/);
   const [open] = world.run.runs;
-  assert.deepEqual({ n: open.n, role: open.role, purpose: open.purpose, session: open.session, outcome: open.outcome, costUsd: open.costUsd, log: open.log }, { n: 1, role: 'ba', purpose: 'spec-write', session: null, outcome: 'unfinished', costUsd: 0, log: '1-ba.jsonl' });
+  assert.deepEqual({ n: open.n, role: open.role, purpose: open.purpose, session: open.session, outcome: open.outcome, costUsd: open.costUsd, log: open.log }, { n: 1, role: 'ba', purpose: 'spec-write', session: null, outcome: 'unfinished', costUsd: null, log: '1-ba.jsonl' });
   assert.ok(open.startedAt);
 
   world.run = withLoggedSession(world.run, () => runLines({ session: 's-killed', outcome: 'cut' }));
@@ -450,6 +450,16 @@ test('a PR whose CI has not started stops the runner after the start limit, not 
   assert.ok(world.ciPendingFor <= 999 - 10, 'it waited the 5 minutes, 10 polls of 30 s, before it stopped');
 });
 
+// Phiên 33 of shop, PR #57 of SHOP-31: the PR conflicted with develop, so GitHub ran no workflow of pull_request on it,
+// and ao-step waited 5 minutes, then said GitHub Actions did not start and to open the Actions tab.
+test('a PR that conflicts with its base stops the runner at once, and says to merge the base into the branch', async () => {
+  const { world, gather } = specWorld({ spec: NFR, design: DESIGN });
+  const h = harness(world, { 'docs-pr': (w) => ((w.pr = { number: 14, state: 'open', merged: false, base: 'develop', conflicts: true }), (w.ciPendingFor = 999), (w.ciStarted = false)) });
+  const stopped = await h.run({ gather, limits: { ciWaitMs: 30 * 60000, ciStartMs: 5 * 60000 } });
+  assert.match(stopped.decision.reason, /^PR #14 conflicts with develop, and GitHub runs no CI on a PR it cannot merge: merge origin\/develop into its branch, resolve the conflict, push, then run the command again/);
+  assert.ok(world.ciPendingFor >= 999 - 2, 'it did not wait the 5 minutes');
+});
+
 // The limits a command gives are merged with LIMITS one by one, so a limit it leaves out keeps its default (T7b).
 test('a limit the command leaves out keeps its default: CI that never starts stops the runner after the 5 minutes of LIMITS', async () => {
   const { world, gather } = specWorld({ spec: NFR, design: DESIGN });
@@ -506,6 +516,23 @@ test('the second /ao-plan asks for jira-sync and waits for the docs PR to be mer
   assert.deepEqual(made, [{ action: 'jira-sync', key: 'DEMO-20' }]);
   assert.deepEqual([decision.go, decision.next], [false, '/ao-build DEMO-21']);
   assert.equal(facts.docs.pr.state, 'closed', 'the facts the last decision was made on, for ao-step to put the checkout back');
+});
+
+// Phiên 33 of shop: a Task added to an Epic after its plan was approved stayed New. /ao-build asks jira-sync to refine
+// it first, and goes on to the build once it is Ready, in the same command.
+test('jira-sync with continue is a first step: the command goes on with what is decided after it', async () => {
+  const world = { run: null };
+  const h = harness(world, {});
+  let gathers = 0;
+  const gather = async () => ({ n: ++gathers });
+  const decide = (command, facts) => {
+    if (facts.n === 1) return { go: true, lines: [], runs: [{ action: 'jira-sync', key: 'DEMO-31', continue: true }] };
+    if (h.calls.length === 0) return { go: true, lines: [], runs: [{ role: 'be-dev', key: 'DEMO-31', effort: 'high', purpose: 'build', prompt: 'Build DEMO-31.' }] };
+    return { go: false, reason: 'DEMO-31 is built', next: '/ao-status DEMO-31', lines: [] };
+  };
+  const { decision, made } = await h.run({ command: 'build', gather, decide });
+  assert.deepEqual(made.map((m) => m.action ?? `${m.role} ${m.purpose}`), ['jira-sync', 'be-dev build']);
+  assert.equal(decision.reason, 'DEMO-31 is built');
 });
 
 test('last.md: a row per run with its measurements, the cost so far, why it stopped and what comes next', () => {

@@ -30,7 +30,7 @@ import { attachEvidence } from '../lib/tracker/attachments.mjs';
 import { createGitHubClient, readGitHubToken } from '../lib/tracker/github-client.mjs';
 import { bearerAuth, createJiraClient } from '../lib/tracker/jira-client.mjs';
 import { readMapping } from '../lib/tracker/mapping.mjs';
-import { startAgentProcess, killTree } from '../lib/workflow/agent-process.mjs';
+import { startAgentProcess, killTree, stopProcessesUnder } from '../lib/workflow/agent-process.mjs';
 import { answers, portBusy, previewRunner } from '../lib/workflow/preview-run.mjs';
 import { withLoggedSession } from '../lib/workflow/runs.mjs';
 import { gatherFacts, readRunning } from '../lib/workflow/facts.mjs';
@@ -44,7 +44,7 @@ import { removeInstructions } from '../lib/workflow/review-tree.mjs';
 import { agentCommand, formatDecision, runGo } from '../lib/workflow/runner.mjs';
 import { CHANGES, appRolesOf, decideStep, dockerGate } from '../lib/workflow/steps.mjs';
 import { restoreWip, saveWip } from '../lib/workflow/wip.mjs';
-import { copyRunFiles, laneKeeper, runsSettings } from '../lib/workflow/lanes.mjs';
+import { copyRunFiles, laneKeeper, removeNodeModules, runsSettings } from '../lib/workflow/lanes.mjs';
 import { installLane, pullsOfBranch, qaWatcher, runPlacer } from '../lib/workflow/lane-runs.mjs';
 import { checkoutBranch, laneDir, laneRoot } from '../lib/workflow/places.mjs';
 import { admitAgent, claimRole, claimsRole, jiraWipStop, liveLocks, releaseAgent, takeLock as takeRunLock } from '../lib/workflow/locks.mjs';
@@ -288,7 +288,9 @@ async function main() {
   const dockerRunning = () => dockerAnswered(spawnSync('docker', DOCKER_INFO, { encoding: 'utf8', timeout: 20000 }));
   // The qa runs of other commands: the stop at gate ③ says to wait while one tests where the merge deploys.
   const qaRunning = liveLocks(activeDir, { fs: lockFs, alive }).filter((lock) => lock.command === 'qa' && lock.pid !== process.pid).map(({ key: k, environment, pid }) => ({ key: k, environment, pid }));
-  const decision = dockerGate(decideStep(command, { ...facts, qaRunning }, options), { java, dockerRunning });
+  // Three seconds before Docker is asked again: the command waits on nothing else meanwhile.
+  const pause = () => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 3000);
+  const decision = dockerGate(decideStep(command, { ...facts, qaRunning }, options), { java, dockerRunning, pause });
   console.log(formatDecision(decision));
   // Agents run the hooks of the kit in AO_KIT_DIR: one that differs from the kit copy of the project is named (review round
   // 3 of shop PR #21).
@@ -579,7 +581,10 @@ export function longTmpDir(realpath = realpathSync.native, tmp = tmpdir()) {
 export const reviewTreePath = (project, name, tmp = longTmpDir()) => join(tmp, 'ao-reviews', `${basename(resolve(project))}-${name}`);
 function addWorktree({ name, sha, install = false, keepInstructions = false }) {
   const path = reviewTreePath(projectDir, name);
-  if (existsSync(path)) removeWorktree({ name });
+  if (existsSync(path)) {
+    const removed = removeWorktree({ name });
+    if (!removed.ok) return { ok: false, reason: `the worktree of ${name} from an earlier run is still at ${path}: ${removed.reason}` };
+  }
   mkdirSync(join(path, '..'), { recursive: true });
   const added = git('worktree', 'add', '--detach', '--quiet', path, sha);
   if (added.status !== 0) return { ok: false, reason: `git could not add the worktree of ${name} at ${sha.slice(0, 7)}: ${(added.stderr || added.stdout).trim()}` };
@@ -851,21 +856,27 @@ function afterQa(run, tree, { deploys, mapping }) {
   });
 }
 
-// Takes the worktree away with what the agent left in it. A process that still holds a file of it (Windows) leaves the
-// folder behind; the next run of the same PR replaces it.
+// Takes the worktree away with what the agent left in it. What still runs from it stops first: in QA SHOP-28 of shop,
+// next dev, vite, Maven and Playwright held its files after a deploy stopped qa, and the next QA could not make it
+// again. Then its node_modules go, without following a link, and git removes the rest.
 function removeWorktree({ name }) {
   const path = reviewTreePath(projectDir, name);
-  const removed = git('worktree', 'remove', '--force', path);
-  if (removed.status !== 0 && existsSync(path)) {
-    try {
-      rmSync(path, { recursive: true, force: true });
-    } catch (error) {
-      git('worktree', 'prune');
-      return { ok: false, reason: error.message };
-    }
+  if (!existsSync(path)) {
+    git('worktree', 'prune');
+    return { ok: true };
+  }
+  const stopped = stopProcessesUnder(path, { spawnSync, kill: (target, signal) => process.kill(target, signal) });
+  const still = (reason) => ({ ok: false, reason: `${reason}${stopped.length > 0 ? ` (stopped ${stopped.length} processes that ran from it first)` : ''}` });
+  try {
+    removeNodeModules({ readdirSync, rmSync }, path);
+    git('worktree', 'remove', '--force', path);
+    if (existsSync(path)) rmSync(path, { recursive: true, force: true, maxRetries: 5, retryDelay: 500 });
+  } catch (error) {
+    git('worktree', 'prune');
+    return still(error.message);
   }
   git('worktree', 'prune');
-  return existsSync(path) ? { ok: false, reason: `${path} is still there` } : { ok: true };
+  return existsSync(path) ? still(`${path} is still there`) : { ok: true };
 }
 
 // The second /ao-plan: jira-sync for the Epic, with your gh login, since this is your session, not an agent's.

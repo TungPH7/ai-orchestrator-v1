@@ -49,7 +49,7 @@ Job summary có mục **Policy**. Mỗi dòng là một phần kiểm: ✅ là �
 | Suppressions | Dòng thêm vào có mẫu tắt kiểm tra (`eslint-disable`, `oxlint-disable`, `@ts-ignore`, `.skip(`, `nosemgrep`, `gitleaks:allow`…; với Java: `@SuppressWarnings`, `NOSONAR`, `@Disabled`, `CHECKSTYLE:OFF`, `spotless:off`, `@SuppressFBWarnings`, `NOPMD`, `@Generated`) mà không ghi `reason: <lý do>` trên cùng dòng; hoặc có `.only(` | Sửa lỗi thay vì tắt kiểm tra. Nếu thật sự phải tắt, ghi `reason:` trên cùng dòng để reviewer đọc. `.only(` luôn đỏ, nên phải xóa |
 | Thresholds | PR hạ một ngưỡng trong `quality/gates.yaml`, ví dụ `changed_lines_min` | Trả ngưỡng về như cũ. Hạ ngưỡng là quyết định của bạn, và file này được bảo vệ, nên PR đó do bạn merge |
 | Dependencies | `npm audit`, hay `pnpm audit` với dự án pnpm, thấy lỗ hổng high hoặc critical không nằm trong danh sách ngoại lệ còn hạn | Cập nhật dependency. Nếu chưa có bản vá, thêm một ngoại lệ có hạn vào `dependencies.exceptions`, gồm mã advisory, lý do và ngày hết hạn. Đây cũng là file được bảo vệ, nên bạn quyết định và tự merge |
-| Java dependencies | Với mỗi `apps/*/pom.xml`: `osv-scanner` (v2.7.0, ghim và kiểm SHA-256, đọc Maven Central như Maven, gồm dependency bắc cầu) thấy nhóm advisory từ 7,0 điểm CVSS trở lên, ngoài danh sách ngoại lệ còn hạn. Advisory chưa có điểm được tính là high | Như dòng trên. Ngoại lệ ghi mã GHSA hay CVE của nhóm. Với Spring Boot, thường chỉ cần nâng bản của parent `spring-boot-starter-parent` |
+| Java dependencies | Với mỗi `apps/*/pom.xml`: `osv-scanner` (v2.7.0, ghim và kiểm SHA-256, đọc Maven Central như Maven, gồm dependency bắc cầu) thấy nhóm advisory từ 7,0 điểm CVSS trở lên, ngoài danh sách ngoại lệ còn hạn. Advisory chưa có điểm được tính là high. Trên PR, chỉ quét `pom.xml` của app mà PR có đổi file; lần push lên nhánh gốc quét tất cả. Lần quét lỗi (không tới được Maven Central) được thử lại hai lần, cách 10 giây | Như dòng trên. Ngoại lệ ghi mã GHSA hay CVE của nhóm. Với Spring Boot, thường chỉ cần nâng bản của parent `spring-boot-starter-parent` |
 
 Dòng ℹ️ chỉ để báo, không làm job đỏ. Ví dụ `test file deleted: <file>` nhắc reviewer xem vì sao file test bị xóa. Khi push mà không có PR, `policy` chỉ chạy audit của npm hay pnpm.
 
@@ -144,7 +144,7 @@ Dòng viết trong trích dẫn, gạch đầu dòng, chữ đậm hay chữ ngh
 
 ## `merge-gate`
 
-`merge-gate` chạy sau mỗi lần `jira-sync` xong. `jira-sync` thì chạy sau mỗi lần `CI` xong và sau mỗi review, nên `merge-gate` thấy cả hai.
+`merge-gate` chạy sau mỗi lần `jira-sync` xong. `jira-sync` thì chạy sau mỗi lần `CI` xong và sau mỗi review, nên `merge-gate` thấy cả hai. `merge-gate` cũng chạy ngay sau mỗi lần `CI` xong: ở bản v0.3.0 của `shop`, PR merge ngược #73 chờ CI, mà lần CI xanh không kéo theo `jira-sync` nào, nên `merge-gate` không chạy lại tới khi bạn chạy tay. Một lần chạy thừa không hại gì: các lần chạy xếp hàng, và nó chỉ merge PR đủ mọi điều kiện.
 
 Code của một PR không bao giờ cầm `JIRA_CI_TOKEN` (review của `shop` PR #21). GitHub lấy workflow của sự kiện `pull_request` và `pull_request_review` từ chính PR, kèm secret của repo, nên nhánh của agent có thể sửa bản kit hay gói mà `npm ci` cài, rồi chuyển item bất kỳ bằng token đó. Vì vậy:
 
@@ -375,7 +375,7 @@ Với repo private, GitHub tính phút theo từng job, làm tròn lên một ph
 
 Một vòng chuẩn gồm: mở PR, sửa một lần, `reviewer` và `security` báo cáo ở cả hai vòng, bạn approve một lần, rồi merge và deploy. Vòng đó tốn 2 × 8 + 5 × 2 + 11 = 37 phút, nên 2.000 phút đủ cho khoảng 54 vòng mỗi tháng. Vòng của PR #4 có bốn lần push và sáu lần review hoặc approve, nên tốn 55 phút.
 
-`jira-sync` và `merge-gate` chiếm 33 trên 55 phút đó. Mỗi lần chạy chỉ mất 10 đến 20 giây nhưng vẫn bị tính tròn một phút, và `merge-gate` chạy sau mọi lần `jira-sync`. Muốn tiết kiệm, hãy gom các bản sửa vào ít lần push hơn. Nếu vẫn vượt ngân sách, có thể gộp job hoặc bớt trigger (spec mục 12).
+`jira-sync` và `merge-gate` chiếm 33 trên 55 phút đó. Mỗi lần chạy chỉ mất 10 đến 20 giây nhưng vẫn bị tính tròn một phút, và `merge-gate` chạy sau mọi lần `jira-sync` và mọi lần `CI`. Repo public thì GitHub không tính phút cho Actions. Muốn tiết kiệm, hãy gom các bản sửa vào ít lần push hơn. Nếu vẫn vượt ngân sách, có thể gộp job hoặc bớt trigger (spec mục 12).
 
 ## GitHub CLI trên máy bạn
 

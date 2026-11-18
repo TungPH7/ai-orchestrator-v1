@@ -169,6 +169,29 @@ test('a run that passes says so and writes nothing to Jira', async () => {
   assert.deepEqual(jira.writes, []);
 });
 
+// Phiên 33 of shop: merge-gate merged PR #27 at 03:55:52 UTC, and the deployer audited the merge commit five seconds
+// later, before GitHub listed it as the merge of the PR; audit said it was pushed without one and flagged SHOP-18.
+test('the PR of a commit just merged is looked for again a few times before audit says it was pushed without one', async () => {
+  const copy = recording();
+  const path = `/commits/${SQUASH}/pulls`;
+  let reads = 0;
+  const client = recordedClient(copy);
+  const late = { ...client, getAll: async (asked, ...rest) => (asked === path && ++reads < 3 ? [] : client.getAll(asked, ...rest)) };
+  const waits = [];
+  const sleep = async (ms) => waits.push(ms);
+  const lines = [];
+  const options = { jira: commentingJira(), mapping, space: 'DEMO', sha: SQUASH, branch: 'develop', gates, apps: { dev: 'tungph7-ao-dev', review: 'tungph7-ao-review' }, approvers: ['approver'], log: (line) => lines.push(line) };
+  const passed = await runAudit({ ...options, github: late, retry: { times: 3, ms: 5000, sleep } });
+  assert.equal(passed.ok, true, lines.join('\n'));
+  assert.deepEqual(waits, [5000, 5000]);
+  // A commit with no PR at all fails after the tries, as before.
+  copy[path] = [];
+  waits.length = 0;
+  const pushed = await runAudit({ ...options, github: recordedClient(copy), retry: { times: 3, ms: 5000, sleep } });
+  assert.equal(pushed.ok, false);
+  assert.deepEqual(waits, [5000, 5000, 5000]);
+});
+
 // audit.mjs --sha 22a0213 said the merge of PR #14 was pushed without a PR (Pilot 2, T10): the PR's merge commit is
 // matched by the full hash GitHub gives back.
 test('a short hash is audited as its full one, and --sha takes only a commit hash', async () => {

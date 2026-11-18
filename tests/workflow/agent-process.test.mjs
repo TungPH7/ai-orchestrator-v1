@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { EventEmitter } from 'node:events';
-import { isResult, killTree, startAgentProcess } from '../../lib/workflow/agent-process.mjs';
+import { isResult, killTree, processesUnder, startAgentProcess, stopProcessesUnder } from '../../lib/workflow/agent-process.mjs';
 
 // Pilot 1, T9: after the agent had its result, `claude -p` stayed alive for as long as a command the agent had left in
 // the background (npm run dev), and the run was held 1 to 12 minutes (SMP-6, SMP-7, SMP-10, SMP-11 of ao-sample).
@@ -117,4 +117,38 @@ test('killTree: taskkill /T on Windows, which takes the whole tree; the process 
   assert.deepEqual(signals, [[4242, 'SIGKILL']]);
   // A process that is gone already is not an error.
   assert.doesNotThrow(() => killTree(4242, { platform: 'linux', spawnSync: () => {}, kill: () => { throw Object.assign(new Error('no such process'), { code: 'ESRCH' }); } }));
+});
+
+// Phiên 33 of shop, QA SHOP-28: a deploy stopped qa, but the apps it had started in its worktree (next dev, vite,
+// mvnw spring-boot:run, Playwright) went on and held the files, so the worktree could not go and the next QA stopped
+// with "already exists". Before a worktree goes, what still runs from it stops.
+const TREE = String.raw`C:\Users\u\AppData\Local\Temp\ao-reviews\shop-SHOP-28-qa`;
+const windowsList = [
+  { ProcessId: 101, CommandLine: String.raw`"C:\Program Files\nodejs\node.exe" ${TREE}\node_modules\.pnpm\next@16\node_modules\next\dist\bin\next dev -p 3100` },
+  { ProcessId: 102, CommandLine: 'java -classpath c:/users/u/appdata/local/temp/ao-reviews/shop-SHOP-28-qa/apps/api/target/classes com.shop.Api' },
+  { ProcessId: 103, CommandLine: String.raw`C:\Windows\explorer.exe` },
+  { ProcessId: 104, CommandLine: null },
+  { ProcessId: 105, CommandLine: String.raw`node ${TREE}-other\x.js` },
+  { ProcessId: 7, CommandLine: `node ao-step.mjs ${TREE}` },
+];
+test('processesUnder lists what runs from a folder, in any case and with either slash, and not this process', () => {
+  const calls = [];
+  const spawnSync = (command, args) => (calls.push([command, ...args].join(' ')), { status: 0, stdout: JSON.stringify(windowsList) });
+  assert.deepEqual(processesUnder(TREE, { platform: 'win32', spawnSync, self: 7 }).map(({ pid }) => pid), [101, 102]);
+  assert.match(calls[0], /^powershell -NoProfile -NonInteractive -Command Get-CimInstance Win32_Process/);
+  const one = (row) => () => ({ status: 0, stdout: JSON.stringify(row) });
+  assert.deepEqual(processesUnder(TREE, { platform: 'win32', spawnSync: one(windowsList[0]), self: 7 }).map(({ pid }) => pid), [101], 'PowerShell prints one process as an object');
+  assert.deepEqual(processesUnder(TREE, { platform: 'win32', spawnSync: () => ({ status: 1, stdout: '' }), self: 7 }), [], 'no list, nothing to stop');
+  const ps = () => ({ status: 0, stdout: '  201 node /tmp/ao-reviews/shop-SHOP-28-qa/node_modules/vite/bin/vite.js\n  202 bash\n' });
+  assert.deepEqual(processesUnder('/tmp/ao-reviews/shop-SHOP-28-qa', { platform: 'linux', spawnSync: ps, self: 7 }).map(({ pid }) => pid), [201]);
+});
+
+test('stopProcessesUnder stops the tree of each process that runs from the folder', () => {
+  const stopped = [];
+  const spawnSync = (command, args) => {
+    if (command === 'taskkill') return (stopped.push(args[1]), { status: 0 });
+    return { status: 0, stdout: JSON.stringify(windowsList) };
+  };
+  assert.deepEqual(stopProcessesUnder(TREE, { platform: 'win32', spawnSync, kill: () => {}, self: 7 }), [101, 102]);
+  assert.deepEqual(stopped, ['101', '102']);
 });

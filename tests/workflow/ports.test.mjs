@@ -11,7 +11,7 @@ const APPS = {
 
 test('an offset of 0 keeps the default ports; an offset moves each port and each localhost URL by it', () => {
   assert.deepEqual(lanePorts(APPS, 0), [
-    { name: 'user', port: 3000, variable: 'PORT' },
+    { name: 'user', port: 3000, variable: 'PORT', env: { API_URL: 'http://localhost:3001' } },
     { name: 'admin', port: 5173, variable: 'PORT' },
     { name: 'api', port: 3001, variable: 'PORT' },
   ]);
@@ -31,6 +31,15 @@ test('the note names each port and its variable, and says to keep away from the 
   // The variables of runs.lane_env are in the run's environment already: the note names them so the agent keeps them.
   const withEnv = portsNote(lanePorts(APPS, 100), 100, { AO_PORT_OFFSET: '100', DB_PORT: '5532', COMPOSE_PROJECT_NAME: 'shop-api-s1' });
   assert.match(withEnv, /Your environment holds this lane's own services too: DB_PORT=5532, COMPOSE_PROJECT_NAME=shop-api-s1\. Keep them/);
+});
+
+// Review of shop PR #43 (Low 2): the env of an app in project.yaml reached it only when Playwright or the preview
+// started it; an app the agent started in a lane read the .env.development copied in, and user called the old api.
+test('the note gives the env of each app of project.yaml, its localhost URLs moved, to start the app with', () => {
+  const note = portsNote(lanePorts(APPS, 100), 100);
+  assert.match(note, /Start each app with its variables of project\.yaml too, as its \.env files do not have them for this lane: user with API_URL=http:\/\/localhost:3101\./);
+  const none = portsNote(lanePorts({ api: { port: { env: 'PORT', default: 3001 } } }, 100), 100);
+  assert.doesNotMatch(none, /variables of project\.yaml/);
 });
 
 // Review of shop PR #21: slot 0 took the default ports, where your own `pnpm dev` in the project folder answers, and the
