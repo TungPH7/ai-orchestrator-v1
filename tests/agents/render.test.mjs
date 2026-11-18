@@ -121,6 +121,16 @@ test('the rules file keeps agents/rules.md and fills each render marker from the
   assert.match(renderRules({ ...sources, space: 'DEMO' }), /space `DEMO`/);
 });
 
+test('the rules say a headless run never ends its turn while a command it started still runs (Pilot 3: SHOP-43, SHOP-39, QA SHOP-64)', () => {
+  // be-dev, fe-dev and qa each started tests in the background and answered "still running": nothing wakes a run after
+  // its answer, the tests died with it, and the item needed another run.
+  const text = renderRules(sources);
+  assert.match(text, /^## Commands that take long$/m);
+  assert.match(text, /Your run ends with your answer, and nothing wakes it after that\./);
+  assert.match(text, /Never give your answer while a test, a build or a server you started still runs/);
+  assert.match(text, /in the foreground, with a timeout long enough/);
+});
+
 test('renderAll gives the ten agents and the rules file, by path under .claude/', () => {
   assert.deepEqual([...renderAll(sources).keys()].sort(), [
     ...Object.keys(sources.roster.roles).map((r) => `agents/${r}.md`),
