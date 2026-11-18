@@ -1,6 +1,6 @@
 # Bắt đầu với AO Kit
 
-> Spec: [SPEC-project-scaffold.md](../SPEC-project-scaffold.md) mục 2.7. Mọi lệnh, đầu ra, thời gian và chi phí trong tài liệu này lấy từ lần chạy thật: `ao-green` (phần 3), `ao-brown` (phần 4), `shop` (phần 5), Epic `SMP-23` của `ao-sample` (phần 6).
+> Spec: [SPEC-project-scaffold.md](../SPEC-project-scaffold.md) mục 2.7. Mọi lệnh, đầu ra, thời gian và chi phí trong tài liệu này lấy từ lần chạy thật: `ao-green` (phần 3), `ao-brown` (phần 4), `shop` (phần 5), Epic `SMP-23` của `ao-sample` (phần 6), Epic `SHOP-7` của `shop` (phần 7).
 
 Tài liệu này dành cho dev chưa dùng kit. Bạn đọc từ trên xuống: chuẩn bị một lần, dựng dự án, rồi làm một tính năng từ ý tưởng tới Production. Mỗi lệnh có bốn ý: làm gì, gõ khi nào, kết quả mong đợi, lỗi thì làm gì.
 
@@ -86,7 +86,7 @@ git clone https://github.com/TungPH7/ai-orchestrator-v1 <kit>
 cd <kit> && npm ci
 ```
 
-- **Ý nghĩa:** `ao-kit` chạy từ bản clone này. Khi kit có bản mới, `git pull` rồi `npm ci` ở đây, sau đó `ao-kit sync` cho từng dự án (phần 8).
+- **Ý nghĩa:** `ao-kit` chạy từ bản clone này. Khi kit có bản mới, `git pull` rồi `npm ci` ở đây, sau đó `ao-kit sync` cho từng dự án (phần 9).
 - **Kết quả mong đợi:** `npm ci` kết thúc không lỗi.
 
 ## 3. Dự án mới, từ thư mục trống
@@ -720,7 +720,7 @@ Ví dụ thật: Epic `SMP-23` "Ghim ghi chú lên đầu danh sách" của `ao-
 | 10 | Production | | Bấm `Release`, `Complete` | 0 | 28 giây | 0 |
 | | **Tổng** | | | **35** | **khoảng 3,5 giờ** | **khoảng 55,1** |
 
-Ba lượt chạm giới hạn usage 5 giờ của tài khoản. Lần nào cũng vậy: chạy lại đúng lệnh khi hạn mức mở lại, và agent chạy tiếp đúng phiên của nó (phần 8).
+Ba lượt chạm giới hạn usage 5 giờ của tài khoản. Lần nào cũng vậy: chạy lại đúng lệnh khi hạn mức mở lại, và agent chạy tiếp đúng phiên của nó (phần 9).
 
 ### Bước 1. Ý tưởng thành Epic: `/ao-intake`
 
@@ -752,7 +752,7 @@ Ba lượt chạm giới hạn usage 5 giờ của tài khoản. Lần nào cũn
   ```
 
   `ba` gộp Story và giữ nguyên AC1–AC11, rồi comment `Cần ux:`. Lệnh tự gọi `ux` sửa cột User story của `design.md`.
-- **Có ảnh chụp màn hình thay cho Figma** (project-scaffold phần 2, mục 2.5; chưa chạy thật, lần đầu là Epic đầu của B4):
+- **Có ảnh chụp màn hình thay cho Figma** (project-scaffold phần 2, mục 2.5; chạy thật ở Epic `SHOP-7`, phần 7, bước 1–4):
   - Trước khi gõ `/ao-spec`, chép ảnh vào `.ai/design-inbox/<EPIC>/`. Mỗi ảnh tối đa 1 MB, cạnh dài tối đa 2.000 px; [docs/agents.md](agents.md) chỉ cách thu nhỏ bằng Paint.
   - `ux` biến các ảnh này thành màn hình kiểu Ảnh, ghi `screenshot:`, và rút màu, font, khoảng cách và component vào mục Design System của `design.md`.
   - Ở `/ao-plan`, nếu app chưa có `docs/design-system/<app>.md`, hoặc có mục "mới", thì `sa` đặt Task "Design system của <app>" lên đầu plan. `fe-dev` làm Task đó trước mọi Story có giao diện.
@@ -907,7 +907,227 @@ Bạn tự thử trên Development và thấy lỗi: `id` có mã `%` hỏng, nh
 
   Ở lần chạy này, hai việc trên do Claude làm qua API theo lời bạn nhờ. Kit chưa có lệnh riêng cho chúng.
 
-## 7. Bảng tra lệnh
+## 7. Epic Spring Boot trọn vòng: `SHOP-7` của `shop`
+
+Ví dụ thật: Epic `SHOP-7` "Danh mục sản phẩm" của `shop`, dự án dựng ở phần 5. Dự án có `user` (Next.js), `admin` (React và Vite), `api` (Spring Boot 4, Java 21, PostgreSQL 17, Flyway).
+- Người quản trị xem, tìm, thêm, sửa, ẩn và xóa sản phẩm trong `admin`.
+- Khách xem danh sách, tìm không dấu, sắp xếp theo giá và xem chi tiết sản phẩm trong `user`.
+- Trang sản phẩm có thẻ meta, JSON-LD và sitemap.
+
+Epic đi từ `/ao-intake` ngày 14/11/2026 tới Production đêm 17/11, trong bản `v0.3.0`. Database Production lúc đó đã có dữ liệu. Mọi lệnh, đầu ra, thời gian và chi phí dưới đây là của lần chạy đó (Pilot 3).
+
+Thứ tự lệnh và các gate giống hệt phần 6. Phần này chỉ ghi những gì khác khi dự án có nhiều app, có Java và có database.
+
+**Kết quả:**
+- **50 item Done vào Fix Version `v0.3.0`:**
+  - 9 Story, trong đó 5 Story có Sub-task cho cả `be-dev` lẫn `fe-dev`;
+  - 10 Task của plan;
+  - 28 Task và Bug thêm trong lúc làm, phần lớn để sửa finding của review;
+  - 3 item ngoài Epic.
+
+  Một Task của plan bị Cancel (bước 9).
+- **Code:** 371 file của ba app, +32.085 và −4.847 dòng.
+- **Kiểm:** regression trên Staging chạy 138 E2E: 132 đạt, 0 lỗi, 6 bỏ qua.
+- **Database:** migration V4 nâng database Production đang có 5 sản phẩm mà không mất giá nào.
+
+**Chi phí** quy ra USD theo giá API, như phần 6. **Thời gian** là tổng thời gian các lượt agent chạy. Từ lúc bắt đầu SPEC (sáng 15/11) tới Production mất khoảng 2,5 ngày, tính cả đêm, lúc chờ bạn, và các lượt chạy song song (bước 8).
+
+| Bước | Lệnh | Dừng ở | Bạn làm | Lượt agent | Thời gian | USD |
+|---|---|---|---|---|---|---|
+| 1 | `/ao-intake` | Bản nháp Epic | Trả lời 2 câu, "OK", bấm `Start spec` | Phiên chính | | 0 |
+| 2 | `/ao-spec SHOP-7` | Gate ① | Trả lời 28 câu bằng một câu "Đồng ý tất cả", bấm `Approve spec` | 6 | 48 phút | 12,31 |
+| 3 | `/ao-plan SHOP-7` | Gate ② | Bấm `Approve plan` | 3 | 47 phút | 13,97 |
+| 4–6 | `/ao-build` cho 47 item | PR nháp | | 65 | 17,6 giờ | 266,30 |
+| 4–7 | `/ao-fix`, `/ao-request` | PR đã sửa | Chọn finding nào phải sửa | 25 | 3,5 giờ | 35,55 |
+| 7 | `/ao-review` | Gate ③ | Approve PR | 118 | 11,3 giờ | 204,99 |
+| 8 | `/ao-qa` | Báo cáo QA | Bấm `Accept` | 64 | 6,5 giờ | 68,58 |
+| 9 | `/ao-release` | Gate ④ | Tạo Fix Version kế tiếp, duyệt điểm cắt | 0 | | 0 |
+| 9 | `/ao-ship v0.3.0` | Gate ⑤ | Approve PR release | 2 | 11 phút | 2,16 |
+| 10 | Production | | Bấm `Release`, `Complete` | 0 | | 0 |
+| | **Tổng** | | | **283** | **khoảng 41 giờ** | **khoảng 604** |
+
+Cùng bản `v0.3.0` còn 3 item ngoài Epic, tổng 54,67 USD: Task chép kit có chạy song song (`SHOP-38`, 45,18 USD vì 5 vòng review), một Bug và một Task cấu hình. Tính cả việc trước Epic (phần 5, chép kit, `v0.1.0`, `v0.2.0`), cả Pilot 3 tốn khoảng 720 USD theo giá API. Bạn dùng gói Max 5x nên không trả thêm tiền, nhưng cuối Pilot 3 hạn mức 7 ngày của tài khoản đã dùng tới 89%.
+
+**Chi phí theo loại item** (build, sửa, review, QA của chính item đó):
+
+| Loại item | Số item | USD trung bình | Đắt nhất |
+|---|---|---|---|
+| Story | 9 | 19,85 | `SHOP-28` tìm và sắp xếp: 30,65 (QA fail một lần vì test E2E sai, build lại) |
+| Task của plan | 10 | 18,05 | `SHOP-10` design system của `user`: 34,99 (ba vòng sửa sau review) |
+| Task, Bug thêm trong lúc làm | 28 | 7,72 | `SHOP-46` sửa 1 Medium và 6 Low của API thêm sản phẩm: 16,97 |
+
+Tiền đi vào đâu: build 44%, review 34%, QA 11%, sửa 6%. Riêng 28 item thêm trong lúc làm đã tốn 216 USD, tức 36% của Epic. Cách bớt khoản này ở cuối phần.
+
+### Bước 1. Ảnh thay cho Figma, rồi `/ao-intake`
+
+- **Ảnh:** chưa có Figma, nên bạn chép 5 ảnh chụp một trang mẫu vào `.ai/design-inbox/SHOP-7/`, kèm `tokens.md` ghi màu và font đo trên trang đó. Cách chép ảnh ở bước 2 của phần 6.
+- **Câu hỏi đầu tiên là điều ba app đang hiểu khác nhau.** Ở `shop`, ba app hiểu giá theo ba cách:
+  - `api` lưu `NUMERIC(12,2)`, chú thích là USD;
+  - `admin` dùng `priceCents`;
+  - `user` dùng `priceVnd`.
+
+  Bạn chọn: đồng Việt Nam, số nguyên, hiển thị `1.250.000 ₫` ở cả hai ngôn ngữ. Câu thứ hai là ảnh sản phẩm: chưa có, nên dùng ảnh giữ chỗ theo design system.
+- Bạn giao Claude chọn các trường, cách tìm và cách sắp xếp theo chuẩn ngành (Baymard, Shopify, Google Merchant Center). Bản nháp dài 17.772 ký tự; bạn "OK" thì Epic được tạo.
+
+### Bước 2. `/ao-spec SHOP-7` tới gate ①
+
+- **Chuyện xảy ra:**
+  - `ba` viết 6 story (US1–US4 cho `admin`, US5–US6 cho khách) với AC1–AC28, rồi hỏi 12 câu.
+  - `ux` vẽ S1–S6 trong `design.md`, gồm màn hình kiểu Ảnh và mục Design System, rồi hỏi 16 câu.
+  - Câu nào cũng có đề xuất. Bạn trả lời một lần: "Đồng ý tất cả… cứ làm theo đề xuất không cần hỏi tôi". Claude chép nguyên văn câu này vào `.ai/runs/SHOP-7/answers.md`, và dùng lại cho mọi câu hỏi có đề xuất về sau.
+- **`sa` viết NFR1–NFR27, và vài quyết định này đáng biết khi dùng Spring Boot:**
+  - Tìm không dấu không cần extension `unaccent`: một hàm có sẵn của PostgreSQL 17 điền cột tên không dấu.
+  - Giá là `BIGINT`.
+  - Font Urbanist của trang mẫu thiếu chữ tiếng Việt, nên dùng Be Vietnam Pro.
+  - NFR27: deployer không backup trước migration, nên ở gate ⑤ bạn phải xác nhận bản backup Production mới nhất chưa quá 24 giờ.
+- **PR tài liệu #17:** 6 file, +1.037 dòng, chỉ trong `docs/specs/SHOP-7/`.
+- **Nếu lỗi:** `ao-step` chỉ in dòng đầu của mỗi câu hỏi. Đề xuất mà agent viết ở ý con thì không hiện trong chat; đọc đủ trong `spec.md`.
+
+### Bước 3. `/ao-plan SHOP-7` tới gate ②
+
+- **`sa`** (29,7 phút, 7,94 USD) viết `plan.md` và 3 ADR:
+  - nâng bảng sản phẩm theo kiểu expand/contract, có trigger giữ cột giá cũ khớp với cột mới;
+  - tìm không dấu bằng cột sinh;
+  - tách API quản trị khỏi API của khách.
+
+  Plan gồm 11 Task và 9 Story. Ba Task nặng (schema V4, domain, dữ liệu thử) có nhãn `ao-effort-xhigh`.
+- **Thứ tự trong plan:** Task design system của mỗi app (2 Task cho mỗi app) đứng đầu; rồi Task nền của `api`; rồi tới Story.
+- **`ba`** (16 phút, 5,11 USD) tạo 30 item (11 Task, 9 Story, 10 Sub-task) và 25 liên kết Blocks.
+- **Story chạm cả API lẫn giao diện** có hai Sub-task, một của `be-dev` và một của `fe-dev`. `/ao-build` chạy `be-dev` trước, rồi `fe-dev`, trên cùng một nhánh và một PR.
+
+### Bước 4. Design system trước mọi Story
+
+- **Bốn Task `SHOP-8`…`SHOP-11`** (`fe-dev`) làm cho mỗi app:
+  - token sáng và tối;
+  - font Be Vietnam Pro tự host;
+  - khung trang và component dùng chung;
+  - `docs/design-system/admin.md`, `user.md`.
+
+  QA của `SHOP-8` đo bằng axe: 0 vi phạm ở cả giao diện sáng lẫn tối. Các Story sau dùng hai file design system này.
+- **Chi phí:** 106 USD cho 4 Task. Đắt vì bạn chọn sửa cả Low trước khi approve: PR #18 và PR #19 mỗi PR đi 2–3 vòng sửa và review. Mỗi vòng review lại tìm thêm vài Low nhỏ về chữ nghĩa. Từ giữa Epic, Low chuyển sang Task theo dõi (bước 7).
+- **Nếu lỗi:** CI đỏ ở "Coverage of changed lines" dù dòng mới phủ 100%. Nguyên nhân là file đã sửa không nằm trong báo cáo coverage của app. `/ao-fix` thêm file vào coverage và viết test cho nó. Từ kit PR #293, `fe-dev` và `be-dev` chạy `coverage-diff.mjs` trước khi push.
+
+### Bước 5. Code Java: `be-dev`
+
+- **Docker phải chạy** khi `be-dev` làm việc, vì test Java dùng Testcontainers. Docker chưa chạy thì `ao-step` dừng trước lượt `be-dev`. Bật Docker Desktop ngay trước lượt đó, và tắt ngay sau.
+- **Ví dụ `SHOP-13` "Schema V4 của `app.products` (expand)",** nhãn `xhigh`:
+  - `be-dev`: 99 lượt, 25 phút, 7,56 USD. Lượt này viết migration Flyway V4: thêm cột mới, trigger giữ cột cũ khớp, và test chạy trên Postgres thật bằng Testcontainers.
+  - `reviewer` 2,26 USD; `security` ở `max` 2,69 USD, vì item có nhãn effort và PR chạm `migrations/`; `qa` 1,55 USD.
+  - Tổng 14,06 USD. Bốn Task `api` của plan tốn 10,69–15,82 USD mỗi Task.
+- **CI của PR Java:**
+  - Testcontainers chạy test trên Postgres thật;
+  - JaCoCo đo coverage, và dòng đổi phải phủ ít nhất 80%;
+  - `osv-scanner` kiểm lỗ hổng của các gói Maven.
+- **Migration chạy thật:** V4, V5, V6 chạy trên Staging, rồi trên Production đang có 5 sản phẩm. Giá vẫn là số đồng, không bị đổi sang USD. Sản phẩm có giá 0 chuyển sang Ẩn, đúng luật của V4.
+
+### Bước 6. Một Story có Sub-task: `SHOP-21` "Khách xem chi tiết sản phẩm"
+
+PR #40, tổng 20,49 USD:
+
+| Lượt | Agent | Effort | Thời gian | USD |
+|---|---|---|---|---|
+| 1 | `be-dev`: Sub-task API của khách | `high` | 18,8 phút | 5,48 |
+| 2 | `fe-dev`: Sub-task trang S5 | `high` | 25,8 phút | 7,93 |
+| 3–4 | `reviewer` (lượt 3 dừng vì giới hạn usage, lượt 4 chạy tiếp) | `xhigh` | 7,7 phút | 3,12 |
+| 5 | `security` | `max` | 10,5 phút | 3,23 |
+| 6–7 | `qa` (lượt 6 bị thay, bước 8) | `high` | 5,0 phút | 0,72 |
+
+- **Review:** không có Critical hay High. 1 Medium và 1 Low phía `api` thành Task `SHOP-53`.
+- **`/ao-preview`:** không chạy trong Epic này. Lúc đầu `fe-dev` tự chụp ảnh trang ở 1440 và 1024 px, sáng và tối, vào `.ai/runs/<KEY>/preview/`. Từ khi bật làn chạy song song (bước 8), `/ao-preview` dừng ngay ở bước kiểm. Bật app trong làn là việc kit còn phải làm. `/ao-preview` đã chạy đủ ba app và Postgres ở `SHOP-4` (phần 5, bước 9), trước Epic.
+
+### Bước 7. Review, gate ③, và finding Medium, Low
+
+- **`reviewer` ở `xhigh` review mọi PR,** trung bình 1,61 USD một lượt.
+- **`security` có hai mức:**
+  - `max` khi PR chạm đường dẫn nhạy cảm, như `pom.xml`, `*Controller.java`, `dto/`, `migrations/`, `package.json` (danh sách ở `security_review` của `gates.yaml`): trung bình 2,65 USD một lượt, 34 lượt;
+  - `high` với PR khác: trung bình 0,47 USD.
+- **Luật dùng từ giữa Epic:**
+  - PR không còn Critical hay High thì approve ngay;
+  - Medium và Low thành một Task theo dõi, không chạy thêm vòng sửa và review trên PR;
+  - Low nhỏ gom vào một Task chung cho mỗi vai trò: `SHOP-39` cho `fe-dev`, `SHOP-68` cho `be-dev`.
+
+  Luật này ra đời vì mỗi vòng sửa cộng review lại tốn 4–9 USD, và vòng sau thường chỉ tìm thêm Low.
+- **Gate ③ ở `shop`:** từ giữa Epic, bạn giao Claude approve PR không còn Critical hay High, và Accept item sau khi QA đạt. Gate ④ và ⑤, Release và Complete trên Jira vẫn là của bạn.
+
+### Bước 8. QA trên Development, và chạy song song
+
+- **`qa` chạy E2E trên host thật** qua `E2E_USER_URL` và `E2E_ADMIN_URL`, với basic auth lấy từ `AO_ENV_AUTH`.
+  - Ảnh chụp được đính vào item trên Jira.
+  - File khác (log E2E, script kiểm) nằm trong `.ai/qa/<KEY>/`.
+- **QA tìm ra lỗi mà unit test không thấy:**
+  - `SHOP-56`: mọi POST từ `admin` trên Development trả 403 "Invalid CORS request". Caddy trong container `admin` không tin Caddy của VPS nên ghi đè `X-Forwarded-Proto` thành `http`, và Spring so origin `https` với `http`. Sửa bằng cách giữ header đó; `SHOP-57` thêm job `caddy-proxy` vào CI.
+  - `SHOP-51`: log WARN của Hibernate ghi cả câu INSERT, kèm tên và mô tả sản phẩm. Sửa bằng cách tắt log câu lệnh lỗi ở mọi profile.
+
+  Cùng bản còn Bug `SHOP-44`: hàm `app.gen_uuid_v7` chỉ chạy đúng với một `search_path`. Migration V5 sửa bằng cách ghi rõ schema của `pgcrypto`.
+- **Chạy song song:** từ giữa Epic, Task `SHOP-38` chép kit có làn chạy song song vào `shop`. `project.yaml` có thêm khối:
+
+  ```yaml
+  runs:
+    worktrees: true
+    lanes_max: 3
+    min_free_ram_gb: 1.5
+    copy:
+      - apps/api/.env
+      - apps/user/.env.development
+  ```
+
+  - Mỗi item được một worktree `e-commerce/shop-wt/<KEY>`, với cổng riêng và Postgres riêng trên Docker. Nhờ vậy ba item build cùng lúc mà không tranh cổng.
+  - Mỗi môi trường chỉ có một lượt QA tại một thời điểm.
+- **Không approve PR khi có QA đang chạy hay đang chờ.** PR merge thì Development deploy bản mới, và lượt QA đang chạy bị thay (`superseded`) rồi phải chạy lại. Chuyện này xảy ra 3 lần trong Pilot 3. Hãy approve các PR cùng lúc, rồi chỉ QA sau lần merge cuối.
+
+### Bước 9. Release `v0.3.0`: gate ④ và ⑤
+
+- **Dữ liệu thử trên Production trước gate ④:** 5 sản phẩm, thêm qua API quản trị trên Staging và Production.
+  - Kit chưa đưa basic auth của Production vào phiên `devops`, nên Claude chạy việc này bằng script.
+  - Task `SHOP-12` của việc đó không có PR, nên không chuyển sang Done được. Nó bị Cancel với resolution "Won't do", kèm comment ghi đã làm bằng script.
+- **`/ao-release`** (không tham số):
+  - lệnh in 53 commit từ `v0.2.0`, điểm cắt `187898c` và 50 item;
+  - rồi dừng cho tới khi Jira có Fix Version kế tiếp (`v0.4.0`). Bạn tạo version đó, duyệt gate ④, rồi gõ:
+
+  ```
+  /ao-release v0.3.0 187898c
+  ```
+
+  Nhánh `release/v0.3.0` được cắt, và deployer đưa nó lên Staging, kể cả migration.
+- **`/ao-ship v0.3.0`:**
+  - `qa` chạy regression trên Staging: 6,7 phút, 0,89 USD;
+  - `devops` viết release note: 1,27 USD;
+  - `merge-gate` merge PR #71 (release note và `CHANGELOG.md` vào `release/v0.3.0`);
+  - lệnh mở PR #72 (`release/v0.3.0` vào `main`).
+- **Trước gate ⑤:**
+  - Đọc lại mô tả PR release và `.ai/runs/v0.3.0/fix-version.md`. Ở lần chạy này, `devops` viết sai một câu về `SHOP-12`, và Claude sửa trước khi bạn duyệt.
+  - Chạy backup tay trên VPS (`systemctl start ao-backup.service`), theo NFR27.
+- **Gate ⑤:** bạn approve PR #72. `merge-gate` merge (`900aac9`) và gắn tag `v0.3.0`. Deployer đưa bản lên Production và báo success.
+- **Nếu lỗi:** PR merge `main` về `develop` (#73) nằm ở "Waiting … CI green", dù CI đã xanh. Gõ:
+
+  ```
+  gh workflow run merge-gate.yml
+  ```
+
+  `merge-gate` chạy lại và merge.
+
+### Bước 10. Jira: `Release` và `Complete`
+
+- **Release `v0.3.0`:** dán nội dung `fix-version.md` vào mô tả.
+- **Complete Epic:** mọi item con phải Done hoặc Cancelled. Item Cancelled phải có resolution: "Won't do", "Duplicate", "Not a bug" hoặc "Cannot reproduce". Item Done phải nằm trong một Fix Version đã Release.
+
+### Bớt chi phí: bài học từ `SHOP-7`
+
+1. **Không chạy thêm vòng sửa và review khi PR không còn Critical hay High.** Medium và Low thành Task theo dõi; Low nhỏ gom vào một Task chung cho mỗi vai trò. Nếu áp luật này từ đầu, phần lớn trong 216 USD của các item thêm trong lúc làm đã không tốn.
+2. **Gom các bản sửa kit vào một lần chép.** Ba lần chép kit trong Pilot 3 tốn 95 USD. Hai lần đầu đi 4 và 5 vòng review (40,19 và 45,18 USD); lần thứ ba đi 1 vòng (9,61 USD).
+3. **Approve các PR cùng lúc, rồi QA sau lần merge cuối,** để không lượt QA nào bị thay giữa chừng (bước 8).
+4. **Chạy agent khi hạn mức còn nhiều.** Cả Pilot 3 có 21 lượt dừng vì giới hạn usage. Chạy lại đúng lệnh thì agent chạy tiếp đúng phiên của nó; hai lỗi khi chạy tiếp đã được sửa ở kit PR #301 và #302.
+
+### Khi gặp lỗi
+
+- **Agent kết thúc lượt trong lúc E2E còn chạy nền:** dừng các tiến trình nó để lại, rồi chạy lại lệnh với ghi chú "chờ E2E chạy xong ở tiền cảnh".
+- **Dev server mồ côi sau khi QA bị dừng:** tìm tiến trình cha, rồi `taskkill /T /F` nó. Lúc đó mới xóa được worktree QA.
+- **QA trong worktree thiếu `.env`:** thêm file đó vào `runs.copy` của `project.yaml`.
+- **`pnpm` dưới Git Bash báo lỗi đường dẫn:** agent dùng `pnpm.cmd`.
+- **`policy` đỏ ở mọi PR vì một lỗ hổng chưa có bản vá** (ở `shop`: GHSA-fc5q-39xc-vjpf của `picomatch`): thêm ngoại lệ có `reason` và `expires` vào `dependencies.exceptions` của `.ai-orchestrator/quality/gates.yaml`, sau khi bạn đồng ý. Gỡ ngoại lệ khi gói có bản vá.
+- **`gh-guard` từ chối lệnh `curl` có basic auth, kể cả khi mật khẩu đi qua stdin:** `qa` dùng script Playwright đọc mật khẩu từ biến môi trường.
+
+## 8. Bảng tra lệnh
 
 **Lệnh `/ao-*`**, gõ trong Claude Code ở thư mục dự án:
 
@@ -940,7 +1160,7 @@ Bạn tự thử trên Development và thấy lỗi: `id` có mã `%` hỏng, nh
 | `render` | Sinh lại `settings.json` và agent | Sau khi sửa `project.yaml` |
 | `sync --key <KEY>` | Chép bản kit mới vào dự án, trên nhánh riêng, một commit, không push | Khi kit có bản mới |
 
-## 8. Việc thường ngày và khi gặp sự cố
+## 9. Việc thường ngày và khi gặp sự cố
 
 ### Cập nhật kit trong dự án
 
@@ -953,13 +1173,16 @@ Bạn tự thử trên Development và thấy lỗi: `id` có mã `%` hỏng, nh
    ```
 
    Lệnh tạo nhánh `feature/<KEY>-kit-copy` từ `develop`, chép kit, sinh lại `settings.json` và agent, rồi commit một lần. Lệnh không push. Dự án có từ trước `project-scaffold` thì được viết thêm `project.yaml` từ các file cũ.
-4. Push nhánh, mở PR, rồi `/ao-review <PR>`. PR chép kit sửa đường dẫn được bảo vệ (`.ai-orchestrator/`, `.claude/`, workflow), nên `merge-gate` không merge. Bạn đọc báo cáo, approve, rồi tự merge. Ở `ao-sample`, PR chép kit `c6fdfa8` (`SMP-22`) cần hai vòng review, hết 22,99 USD cả QA.
+4. Push nhánh, mở PR, rồi `/ao-review <PR>`. PR chép kit sửa đường dẫn được bảo vệ (`.ai-orchestrator/`, `.claude/`, workflow), nên `merge-gate` không merge. Bạn đọc báo cáo, approve, rồi tự merge. Ở `ao-sample`, PR chép kit `c6fdfa8` (`SMP-22`) cần hai vòng review, hết 22,99 USD cả QA. Ở `shop`, ba lần chép kit trong Pilot 3 tốn 40,19 USD (4 vòng review), 45,18 USD (5 vòng) và 9,61 USD (1 vòng). Gom nhiều bản sửa kit vào một lần chép, để mỗi đợt chỉ trả một lượt review.
 
 ### Hết usage giữa chừng
 
 - Lượt agent dừng với lý do giới hạn usage. `/ao-status` báo item đang dở.
 - Chờ tới giờ hạn mức mở lại, rồi gõ **đúng lệnh cũ**. `ao-step` chạy tiếp đúng phiên của agent đó. Phần code dev agent chưa commit được cất vào stash có nhãn, rồi được áp lại trước khi chạy tiếp.
 - Ở `SMP-23`, chuyện này xảy ra ba lần. Không lần nào phải làm lại từ đầu.
+- Ở Pilot 3 (`shop`), 21 lượt dừng vì giới hạn usage, và lượt nào cũng chạy tiếp được. Hai lỗi khi chạy tiếp đã được sửa trong kit:
+  - lượt `build` bị cắt giữa chừng giờ chạy tiếp trong phiên cũ trước bước kiểm ledger (kit PR #301);
+  - agent không còn bị dừng khoảng một phút sau `--resume` (kit PR #302).
 
 ### CI đỏ
 
