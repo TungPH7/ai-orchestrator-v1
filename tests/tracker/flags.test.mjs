@@ -92,6 +92,21 @@ test('a PR that closes clears the flag on pull_request_target too, where jira-sy
   assert.deepEqual(actions, [{ key: 'DEMO-16', effect: 'clear-needs-you', pr: 16, merged: true }]);
 });
 
+// Pilot 3: the event of a PR that closed reaches jira-sync as a run of the relay PR events; the PR, as GitHub lists it
+// now, is closed. GitHub may name no PR in such a run: the newest PR of its branch at its commit is the one.
+test('a run of PR events for a PR that closed clears the flag too, and moves no item', async () => {
+  const pr = closed().pull_request;
+  const listed = {
+    // The REST list of PRs has merged_at, not merged.
+    getAll: async (path, query) => (assert.deepEqual([path, query], ['/pulls', { state: 'all', sort: 'created', direction: 'desc' }]), [{ ...pr, merged: undefined, merged_at: '2026-11-18T00:00:00Z' }]),
+    get: async () => assert.fail('a closed PR is not reconciled'),
+  };
+  const run = { name: 'PR events', event: 'pull_request', head_branch: pr.head.ref, head_sha: pr.head.sha, head_repository: { full_name: 'TungPH7/ao-pilot' }, pull_requests: [] };
+  const body = { action: 'completed', workflow_run: run, repository: { full_name: 'TungPH7/ao-pilot' } };
+  const { actions } = await syncEvent({ event: 'workflow_run', payload: body, jira: jiraWith([comment(9, MERGE_GATE_16)]), github: listed, contract, mapping, space: 'DEMO' });
+  assert.deepEqual(actions, [{ key: 'DEMO-16', effect: 'clear-needs-you', pr: 16, merged: true }]);
+});
+
 test('an item that is not flagged is left alone without a word', async () => {
   const lines = [];
   await runSync({ event: 'pull_request', payload: closed(), jira: jiraWith([], [], []), github, contract, mapping, space: 'DEMO', log: (line) => lines.push(line) });

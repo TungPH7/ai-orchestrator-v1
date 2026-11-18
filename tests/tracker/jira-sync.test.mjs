@@ -6,6 +6,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { parse } from 'yaml';
 import { readMapping } from '../../lib/tracker/mapping.mjs';
+import { PR_RELAY } from '../../lib/tracker/sync.mjs';
 import { ROOT } from '../helpers/kit.mjs';
 
 const SCRIPT = join(ROOT, 'scripts', 'jira-sync.mjs');
@@ -40,12 +41,11 @@ test('jira-sync stops with a message when the event, the CI token or the project
 
 test('the kit has the workflow that runs jira-sync on the events of spec section 2.7, with read-only GitHub rights', () => {
   const workflow = parse(readFileSync(join(ROOT, 'kit', '.github', 'workflows', 'jira-sync.yml'), 'utf8'));
-  // Review of shop PR #21: pull_request_target runs the workflow and code of the base branch, so the code of a PR never
-  // holds the CI token; a review comes through the run of the secretless workflow PR review.
-  assert.deepEqual(Object.keys(workflow.on), ['pull_request_target', 'workflow_run', 'deployment_status', 'workflow_dispatch']);
-  // closed only clears the flag merge-gate raised (dev-workflow spec 2.7).
-  assert.deepEqual(workflow.on.pull_request_target.types, ['opened', 'reopened', 'synchronize', 'ready_for_review', 'closed']);
-  assert.deepEqual(workflow.on.workflow_run.workflows, ['CI', 'PR review']);
+  // Review of shop PR #21: the code of a PR never holds the CI token; the events of a PR and its reviews come through the
+  // runs of the secretless workflows PR events and PR review. No pull_request_target, which GitHub blocks on public
+  // repositories from 2026-12-02 (Pilot 3).
+  assert.deepEqual(Object.keys(workflow.on), ['workflow_run', 'deployment_status', 'workflow_dispatch']);
+  assert.deepEqual(workflow.on.workflow_run.workflows, ['CI', 'PR review', 'PR events']);
   assert.deepEqual(workflow.on.workflow_run.types, ['completed']);
   assert.equal(workflow.on.workflow_dispatch.inputs.item.required, true);
   assert.ok(Object.values(workflow.permissions).every((right) => right === 'read'));
@@ -73,6 +73,22 @@ test('the workflow PR review only relays a review to jira-sync: no secret, no ri
   // The job id is the check run name that facts.mjs leaves out of CI.
   assert.deepEqual(Object.keys(workflow.jobs), ['pr-review-relay']);
   const { steps } = workflow.jobs['pr-review-relay'];
+  assert.deepEqual(steps.map((step) => Object.keys(step).sort()), [['run']]);
+  assert.match(steps[0].run, /^echo /);
+});
+
+test('the workflow PR events only relays the events of a PR to jira-sync: no secret, no right, no code (Pilot 3)', () => {
+  const text = readFileSync(join(ROOT, 'kit', '.github', 'workflows', 'pr-events.yml'), 'utf8');
+  const workflow = parse(text);
+  // The name jira-sync follows, and lib/tracker/sync.mjs tells a run of it by.
+  assert.equal(workflow.name, PR_RELAY);
+  // closed only clears the flag merge-gate raised (dev-workflow spec 2.7).
+  assert.deepEqual(workflow.on, { pull_request: { types: ['opened', 'reopened', 'synchronize', 'ready_for_review', 'closed'] } });
+  assert.deepEqual(workflow.permissions, {});
+  assert.doesNotMatch(text, /secrets\.|\$\{\{/);
+  // The job id is the check run name that facts.mjs leaves out of CI.
+  assert.deepEqual(Object.keys(workflow.jobs), ['pr-events-relay']);
+  const { steps } = workflow.jobs['pr-events-relay'];
   assert.deepEqual(steps.map((step) => Object.keys(step).sort()), [['run']]);
   assert.match(steps[0].run, /^echo /);
 });

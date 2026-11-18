@@ -154,7 +154,7 @@ Các lệnh `ao-kit` (`init`, `sync`, `setup github`, `setup jira`, `doctor`, `c
 `ao-kit init` và `ao-kit sync` chép vào dự án:
 - `.ai-orchestrator/`: `contract/`, `lib/`, `tracker/`, `quality/`, `agents/`, `templates/`, các script, `package.json` của kit, và `docs/sdlc.md` thành `.ai-orchestrator/docs/sdlc.md`, vì template trỏ tới DoD trong đó;
 - `kit/.claude/`, `kit/.githooks/`, `kit/.mcp.json` (hai server `atlassian` và `chrome-devtools`), `kit/.jira/config.yml`;
-- bốn workflow `ci.yml`, `jira-sync.yml`, `merge-gate.yml`, `pr-review.yml`. `pr-review.yml` không giữ secret nào, chỉ báo cho `jira-sync` mỗi lần có review. Dự án tự deploy bằng GitHub Actions thì chép thêm `audit.yml`, cho job deploy `needs: audit`;
+- năm workflow `ci.yml`, `jira-sync.yml`, `merge-gate.yml`, `pr-events.yml`, `pr-review.yml`. `pr-events.yml` và `pr-review.yml` không giữ secret nào, chỉ báo cho `jira-sync` mỗi lần PR mở, đổi, đóng, hay có review. Dự án tự deploy bằng GitHub Actions thì chép thêm `audit.yml`, cho job deploy `needs: audit`;
 - bốn dòng `.gitignore`: `.ai-orchestrator/node_modules/`, `.claude/settings.local.json`, `.ai/` (ledger, báo cáo, ảnh của agent), `.playwright-cli/`.
 
 Về sau, cập nhật bản chép kit phải đi qua PR, và bạn tự merge PR đó, vì nó sửa file được bảo vệ. Push thẳng lên `develop` làm `audit` chặn deploy và gắn cờ item.
