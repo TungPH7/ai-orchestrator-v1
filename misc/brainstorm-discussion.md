@@ -29145,3 +29145,49 @@ Cùng bản `v0.3.0` còn 3 item ngoài Epic (54,67 USD). Cả Pilot 3 tốn kho
    - một Story Chuẩn mà PR sửa `SecurityConfig.java`: tự lên Nặng ở bước review.
 
 Nếu bạn đồng ý đưa ba mức vào C1, phần này thành một mục của spec C1 để bạn duyệt.
+
+# Phiên 33 · Lượt 51 — 2026-11-18 khoảng 16:20
+
+**Bạn:** (hỏi thêm, chưa được làm gì) Bốn câu:
+1. "Epic kế tiếp chưa làm sao tôi biết Epic to hay nhỏ để chọn mức nào được???"
+2. Effort `xhigh` của SHOP-13, SHOP-14 là cho agent nào?
+3. Đề xuất cách chuẩn để agent không phải tự mò lệnh Maven, `pnpm` trên Windows.
+4. Đề xuất cách chuẩn để review không chạy `xhigh`/`max` mỗi khi sửa đường dẫn bảo vệ.
+
+**Claude:**
+1. **Câu hỏi của mình đặt sai.** Mức được chọn cho từng item lúc lập plan, ở gate ②. Bây giờ chỉ cần quyết có đưa ba mức vào C1 không.
+2. **Nhãn `ao-effort-xhigh` áp cho hai agent:**
+   - dev agent của item chạy build và fix ở `xhigh`;
+   - `security` chạy ở `max`.
+
+   `reviewer` luôn ở `xhigh`, `qa` luôn ở `high`.
+3. **Lệnh Maven, `pnpm`:**
+   - tìm nguyên nhân gốc trong môi trường mà kit truyền khi mở agent;
+   - một lệnh chung `run.mjs <app> <script>`: chọn đúng trình chạy, nhận bộ lọc test, chạy ở tiền cảnh, chỉ in tóm tắt;
+   - lời nhắc của agent ghi đúng lệnh đó;
+   - job CI trên Windows và một dòng `doctor` kiểm lệnh.
+4. **Review theo rủi ro, ba tầng đường dẫn:**
+   - Nguy cấp: `max`/`xhigh`;
+   - Nhạy cảm: `security` `high`;
+   - Thường: không có `security`.
+
+   Kèm theo: đổi thư viện thì để CI lo trước; vòng review sau chỉ xem phần mới, ở `high`; PR chép kit thì so byte. Số đo: 34 lượt `max` tốn 90 USD mà chỉ ra 3 Medium và 10 Low.
+
+# Phiên 33 · Lượt 52 — 2026-11-18 khoảng 16:30
+
+**Bạn:** ""mục 4 thành phần review của ba mức trong C1" là phân tầng đường dẫn ở trên à? Bạn nói cụ thể ra nhé??"
+
+**Claude:**
+- **Đúng.** Mức review = mức cao hơn trong hai mức: mức của item (sàn, chọn ở gate ②) và tầng đường dẫn của PR (`ao-step` tự tính).
+  - Nhẹ, Chuẩn: `reviewer` `high`, không có `security`.
+  - Nặng: `xhigh` và `max`.
+  - PR chạm tầng Nhạy cảm: thêm `security` `high`.
+  - PR chạm tầng Nguy cấp: `xhigh` và `max`.
+  - Vòng sau chỉ xem phần mới, ở `high`.
+- **Sửa một chỗ không nhất quán:** PR chỉ đổi tài liệu vẫn có `reviewer` ở `high`, theo điểm 2 bạn đã OK.
+- **Ví dụ với SHOP-7:**
+  - SHOP-76: `high`;
+  - SHOP-8, SHOP-21: `high` và `security` `high`;
+  - SHOP-13: `xhigh` và `max`, như hiện nay.
+- **Trong kit:** `gates.yaml` tách thành `critical_paths` và `sensitive_paths`; `reviewer` không còn luôn `xhigh`; item có nhãn `ao-level-*`.
+- **Ước tính** review của SHOP-7 còn khoảng 100–120 USD, thay vì 205 USD.
