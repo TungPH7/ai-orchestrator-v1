@@ -120,6 +120,13 @@ Hai mục cũ "review nhẹ cho PR chỉ đổi tài liệu" và "luật dừng 
 
 ## Đợt 3: bảo mật của hook
 
+**Xong 2026-11-19: kit PR #308, merge `4283be9`, 1563/1563 test, CI xanh.** Cả 5 mục:
+- gh-guard bắt lệnh tìm khóa ở mọi kiểu chữ và dạng regex (`begin rsa`, `BEGIN.*KEY`, `BEGIN\s+RSA`), mà câu SQL và tên test vẫn qua;
+- gh-guard đọc lệnh sau `do`, `then`, `{`, nên dạng stdin của `curl` trong vòng lặp hay hàm không còn bị chặn nhầm;
+- phép kiểm mật khẩu có hay không (`${VAR:+set}`, `[ -n … ]`) được qua, và luật cấm viết lại lệnh để né mẫu của hook;
+- gh-guard chặn chép hay xóa đệ quy cây có `node_modules` hay cả `apps`;
+- relay `PR events` bỏ PR của fork, và đọc danh sách PR một lần mỗi sự kiện.
+
 Lần trước bạn duyệt "sửa gh-guard trước tiên"; theo ưu tiên mới, nó lùi xuống đây. Trong lúc chờ, rủi ro là agent tìm được khóa riêng của các App trên máy bằng `grep` chữ thường. Nếu bạn muốn giữ nó lên đầu thì nói; mục 1 chỉ mất khoảng 1–2 giờ.
 
 1. **gh-guard để lọt lệnh tìm khóa riêng** (Medium, PR #74).

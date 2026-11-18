@@ -29321,3 +29321,12 @@ Bạn dặn "chưa làm gì" ở phần lớn các lượt này, nên mình ghi 
 
   Commit đã đưa vào clone kit chính (`task/after-pilot3`). `followups-truoc-c1.md`, `todo.md` và bảy mục của handoff followup đã tick.
 - **Đợt 3 bắt đầu:** mục 1 là `PEM_HEADER` của gh-guard.
+- **Đợt 3 xong:** kit PR #308, merge `4283be9`, 1563/1563 test, CI xanh. Cả 5 mục:
+  1. **gh-guard bắt lệnh tìm khóa riêng ở mọi kiểu chữ và dạng regex** (Medium của PR #74): `grep -ri "begin rsa"`, `BEGIN.*KEY`, `BEGIN[[:space:]]OPENSSH` nay bị chặn. Câu SQL `BEGIN; … PRIMARY KEY` và tên test vẫn qua.
+  2. **gh-guard đọc lệnh đứng sau `do`, `then`, `{`:** dạng `printf … | curl -K -` trong vòng lặp hay trong hàm không còn bị chặn nhầm (QA SHOP-73).
+  3. **Phép kiểm mật khẩu có hay không được qua** (`${E2E_HTTP_PASSWORD:+set}`, `[ -n "$E2E_HTTP_PASSWORD" ]`). Luật chung thêm: dùng đúng dạng mà lời từ chối đưa ra, không viết lại lệnh để né mẫu của hook (QA SHOP-13).
+  4. **gh-guard chặn chép hay xóa đệ quy một cây có `node_modules` hoặc cả thư mục `apps`** (request SHOP-54). Lời từ chối chỉ cách `git archive`. Phiên chính của bạn không bị chặn.
+  5. **Relay `PR events` bỏ PR mở từ fork có cùng nhánh và commit** (Low của PR #74), và đọc danh sách PR một lần mỗi sự kiện.
+
+  Commit đã đưa vào clone kit chính; `followups-truoc-c1.md`, `todo.md` và năm mục của handoff followup đã tick.
+- **Đợt 4 bắt đầu:** mục 1 và 2 là phần gỡ làn. Mình đã kiểm: `fs.rmSync` của Node gỡ junction mà không đi theo nó, nên xóa trước `node_modules` của làn là an toàn.
