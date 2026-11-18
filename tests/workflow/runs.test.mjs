@@ -48,6 +48,17 @@ test('a run resumed in the same session counts only what it added: the log of --
   assert.equal(readRun(log('ba-resume'), readRun(log('reviewer-done'))).costUsd, 2.350389);
 });
 
+// T18 of Pilot 3: a run stopped before its result while it went on in a session read 0 minus the session's cost so far,
+// so SHOP-39 run 2 was −5.77 USD, and the cost of shop came out 7.83 USD short. With no result, its cost is unknown.
+test('a resumed run stopped before its result has an unknown cost, and keeps the cumulative of the run before', () => {
+  const first = readRun(log('ba-first'));
+  const cut = log('ba-resume').filter((line) => !/"type":"result"/.test(line));
+  const stopped = readRun(cut, first);
+  assert.deepEqual([stopped.outcome, stopped.session, stopped.costUsd, stopped.tokens], ['unfinished', first.session, null, null]);
+  assert.deepEqual(stopped.cumulative, first.cumulative, 'the run that goes on after it counts from the same point');
+  assert.equal(readRun(log('ba-resume'), stopped).costUsd, 0.526284);
+});
+
 test('a run that waited for a background command has two result events: turns and time add up, cost is the last', () => {
   const run = readRun(log('background-two-results'));
   assert.deepEqual([run.outcome, run.turns, run.durationMs, run.costUsd], ['done', 4, 14232, 0.004253]);
@@ -68,7 +79,8 @@ test('the usage limit, the turn limit, an error and a run cut off are told apart
   const cut = readRun(log('reviewer-done').filter((line) => !line.includes('"type":"result"')));
   assert.equal(cut.outcome, 'unfinished');
   assert.equal(cut.session, '5d3434b0-44a4-45fa-a4e3-815d6eb35ddd', 'the session is known from the init event, so the run can be resumed');
-  assert.deepEqual([cut.turns, cut.costUsd], [0, 0]);
+  // Its cost is not known: the session's comes with a result only (T18 of Pilot 3).
+  assert.deepEqual([cut.turns, cut.costUsd], [0, null]);
   assert.equal(readRun([]).outcome, 'unfinished');
 
   // `--resume` of a session the usage limit cut first answers the notice of a command it left in the background, with

@@ -14,7 +14,8 @@ test('be-dev on a project with a Java app waits for Docker', () => {
   assert.match(stopped.reason, /Java app.*Docker is not running/);
   assert.match(stopped.next, /Start Docker Desktop/);
   assert.deepEqual(dockerGate(decision('be-dev'), { java: true, dockerRunning: running(true) }), decision('be-dev'));
-  assert.deepEqual(asked, [false, true]);
+  // Not running is asked twice (the test at the end); running, once.
+  assert.deepEqual(asked, [false, false, true]);
 });
 
 test('qa on a project with a Java app waits for Docker too: its E2E start the api and Postgres for the @local tests (SHOP-76)', () => {
@@ -33,4 +34,19 @@ test('no Java app, no be-dev or qa run, or a stop already: Docker is not asked a
   assert.deepEqual(dockerGate(decision('fe-dev', 'reviewer', 'security'), { java: true, dockerRunning: never }), decision('fe-dev', 'reviewer', 'security'));
   const stop = { go: false, reason: 'x', next: 'y', lines: [] };
   assert.equal(dockerGate(stop, { java: true, dockerRunning: never }), stop);
+});
+
+// Phiên 33 of shop: the first /ao-build SHOP-13 stopped with "Docker is not running", though docker info had just
+// answered. Docker is asked once more, after a pause, before the command stops.
+test('Docker is asked again once, after a pause, before the command stops', () => {
+  const answers = [false, true];
+  const pauses = [];
+  const calls = [];
+  const ask = () => (calls.push('ask'), answers.shift());
+  assert.deepEqual(dockerGate(decision('be-dev'), { java: true, dockerRunning: ask, pause: () => pauses.push('pause') }), decision('be-dev'));
+  assert.deepEqual([calls.length, pauses.length], [2, 1]);
+  calls.length = 0;
+  const down = dockerGate(decision('be-dev'), { java: true, dockerRunning: () => (calls.push('ask'), false), pause: () => {} });
+  assert.equal(down.go, false);
+  assert.equal(calls.length, 2);
 });

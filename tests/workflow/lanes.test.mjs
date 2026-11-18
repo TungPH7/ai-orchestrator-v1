@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { copyFileSync, cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync, utimesSync, writeFileSync } from 'node:fs';
+import { copyFileSync, cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync, symlinkSync, utimesSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { copyRunFiles, laneKeeper, runsSettings } from '../../lib/workflow/lanes.mjs';
@@ -21,7 +21,7 @@ function setup(t, { settings = { worktrees: true, copy: ['apps/api/.env'] }, pul
   spawnSync('git', ['clone', '--quiet', origin, project]);
   const git = gitIn(project);
   git('switch', '--quiet', '-c', 'develop');
-  writeFileSync(join(project, '.gitignore'), '.ai/\n.env\nnode_modules/\n');
+  writeFileSync(join(project, '.gitignore'), '.ai/\n.env\nnode_modules/\n.next/\ntest-results/\n');
   writeFileSync(join(project, 'README.md'), '# shop\n');
   git('add', '.');
   git('commit', '--quiet', '-m', 'chore: start');
@@ -311,4 +311,83 @@ test('the files of runs.copy go into a folder such as the worktree of qa: those 
   assert.equal(readFileSync(join(tree, 'apps', 'api', '.env'), 'utf8'), 'PORT=3001\n');
   assert.equal(existsSync(join(tree, 'apps', 'user', '.env.development')), false);
   assert.deepEqual(copyRunFiles({ existsSync, mkdirSync, copyFileSync }, project, tree, []), []);
+});
+
+// Phiên 33 of shop (SHOP-13 to SHOP-49): git worktree remove --force on Windows left the node_modules of pnpm, about
+// 2,000 junctions, and the root files, and the folder still counted as an open lane, so the next build stopped with
+// "3 lanes are open". The kit now removes every node_modules of a lane first, which takes a link away and not what it
+// points to, then the folder git leaves.
+const junction = (target, path) => {
+  mkdirSync(join(path, '..'), { recursive: true });
+  symlinkSync(target, path, 'junction');
+};
+test('prune removes the node_modules of a lane first, without following a link, then the folder git leaves', async (t) => {
+  const s = setup(t, { pulls: { 'feature/SHOP-8-tokens': [{ number: 18, state: 'merged' }] } });
+  const made = await s.keeper.ensure('SHOP-8');
+  gitIn(made.dir)('switch', '--quiet', '-c', 'feature/SHOP-8-tokens');
+  const pkg = join(made.dir, 'node_modules', '.pnpm', 'msw@2', 'node_modules', 'msw');
+  mkdirSync(pkg, { recursive: true });
+  writeFileSync(join(pkg, 'index.js'), 'export {};\n');
+  junction(pkg, join(made.dir, 'node_modules', 'msw'));
+  // Next.js dev links its packages under .next as well (SHOP-20, SHOP-21).
+  junction(pkg, join(made.dir, 'apps', 'user', '.next', 'dev', 'node_modules', 'msw'));
+  // A link out of the lane: its target stays.
+  const outside = join(s.root, 'shared-store', 'pino');
+  mkdirSync(outside, { recursive: true });
+  writeFileSync(join(outside, 'index.js'), 'export {};\n');
+  junction(outside, join(made.dir, 'node_modules', 'pino'));
+  mkdirSync(join(made.dir, 'test-results'), { recursive: true });
+  writeFileSync(join(made.dir, 'test-results', 'last-run.json'), '{}\n');
+
+  const notes = await s.keeper.prune();
+  assert.match(notes.join(' '), /Removed the lane of SHOP-8: its PR is merged/);
+  assert.equal(existsSync(made.dir), false);
+  assert.equal(readFileSync(join(outside, 'index.js'), 'utf8'), 'export {};\n', 'what a link points to outside the lane stays');
+});
+
+test('a lane folder git no longer knows goes at the next prune, unless a command runs on its item', async (t) => {
+  let running = 'SHOP-12';
+  const s = setup(t, { settings: { worktrees: true, copy: [], lanesMax: 2 }, busy: (key) => key === running });
+  // What git left of two lanes: the root files, no .git (SHOP-19 and SHOP-49 of shop).
+  for (const key of ['SHOP-11', 'SHOP-12']) {
+    mkdirSync(join(s.lane(key), 'apps', 'user'), { recursive: true });
+    writeFileSync(join(s.lane(key), 'package.json'), '{}\n');
+    writeFileSync(join(s.lane(key), 'apps', 'user', 'page.tsx'), 'export {};\n');
+  }
+  const notes = await s.keeper.prune();
+  assert.match(notes.join(' '), /Removed what was left of the lane of SHOP-11: git no longer knows it as a worktree\./);
+  assert.equal(existsSync(s.lane('SHOP-11')), false);
+  assert.equal(existsSync(s.lane('SHOP-12')), true, 'another command may be making that lane');
+  running = null;
+  await s.keeper.prune();
+  assert.equal(existsSync(s.lane('SHOP-12')), false);
+  // The cap counts lanes again, not what was left of them.
+  assert.equal((await s.keeper.ensure('SHOP-13')).ok, true);
+});
+
+// Phiên 33 of shop (10:01): /ao-build SHOP-15 and SHOP-18 ran together and both removed the same three merged lanes; one
+// took away the .git of a lane under the other, and both left folders that still counted as open lanes.
+test('two prunes at once remove a lane once, and neither fails on it', async (t) => {
+  const s = setup(t, { pulls: { 'feature/SHOP-8-tokens': [{ number: 18, state: 'merged' }] } });
+  const made = await s.keeper.ensure('SHOP-8');
+  gitIn(made.dir)('switch', '--quiet', '-c', 'feature/SHOP-8-tokens');
+  const notes = (await Promise.all([s.keeper.prune(), s.keeper.prune()])).flat();
+  assert.equal(notes.filter((note) => /^Removed the lane of SHOP-8/.test(note)).length, 1, notes.join('\n'));
+  assert.deepEqual(notes.filter((note) => /could not be removed/.test(note)), []);
+  assert.equal(existsSync(made.dir), false);
+});
+
+test('a lane another command removes stays for it; a mark of removal left by a command that died holds it ten minutes', async (t) => {
+  const s = setup(t, { pulls: { 'feature/SHOP-9-old': [{ number: 19, state: 'merged' }] } });
+  const made = await s.keeper.ensure('SHOP-9');
+  gitIn(made.dir)('switch', '--quiet', '-c', 'feature/SHOP-9-old');
+  const mark = join(s.root, 'shop-wt', '.remove-SHOP-9');
+  writeFileSync(mark, '4242\n');
+  assert.match((await s.keeper.prune()).join(' '), /The lane of SHOP-9 stays: another command is removing it\./);
+  assert.equal(existsSync(made.dir), true);
+  const old = new Date(Date.now() - 11 * 60_000);
+  utimesSync(mark, old, old);
+  assert.match((await s.keeper.prune()).join(' '), /Removed the lane of SHOP-9/);
+  assert.equal(existsSync(made.dir), false);
+  assert.equal(existsSync(mark), false);
 });
