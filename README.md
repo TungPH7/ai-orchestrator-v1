@@ -146,8 +146,10 @@ Làm theo [docs/getting-started.md](docs/getting-started.md). Tài liệu này �
 - chuẩn bị máy và tài khoản (phần 2);
 - dự án mới từ thư mục trống (phần 3);
 - repo đang phát triển (phần 4);
-- một tính năng lớn từ ý tưởng tới Production (phần 5);
-- cập nhật kit, hết usage, hotfix, rollback (phần 7).
+- dự án nhiều app dựng từ template của bạn, có API Spring Boot và database (phần 5);
+- một tính năng lớn từ ý tưởng tới Production (phần 6);
+- một Epic trọn vòng trên dự án có Spring Boot, với chi phí thật (phần 7);
+- cập nhật kit, hết usage, hotfix, rollback (phần 9).
 
 Các lệnh `ao-kit` (`init`, `sync`, `setup github`, `setup jira`, `doctor`, `check`, `render`) làm phần việc mà máy làm được. Hướng dẫn chỉ rõ từng bước bạn phải bấm trên GitHub và Jira.
 
