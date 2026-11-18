@@ -1,6 +1,6 @@
 # Plan triển khai: Pilot 3 (B4)
 
-> **Spec:** [SPEC-pilot-3.md](../SPEC-pilot-3.md), duyệt ngày 2026-11-14: câu 1, 2, 4, 5 theo đề xuất ở Phiên 30 · Lượt 2; câu 3 ở Lượt 5 (bản sao kéo về máy bạn). **Trạng thái:** viết ở Lượt 2, sửa ở Lượt 5 theo câu 3. Quyền tự làm theo đề xuất áp dụng cho B4 (câu 5), nên plan không chờ duyệt riêng; bạn muốn đổi gì thì nói lúc nào cũng được. **Danh sách task:** [todo.md](todo.md).
+> **Spec:** [SPEC-pilot-3.md](../../../SPEC-pilot-3.md), duyệt ngày 2026-11-14: câu 1, 2, 4, 5 theo đề xuất ở Phiên 30 · Lượt 2; câu 3 ở Lượt 5 (bản sao kéo về máy bạn). **Trạng thái:** hoàn thành 2026-11-18, xem [verification.md](verification.md). Viết ở Lượt 2, sửa ở Lượt 5 theo câu 3. Quyền tự làm theo đề xuất áp dụng cho B4 (câu 5), nên plan không chờ duyệt riêng; bạn muốn đổi gì thì nói lúc nào cũng được. **Danh sách task:** [todo.md](todo.md).
 
 ## Tổng quan
 

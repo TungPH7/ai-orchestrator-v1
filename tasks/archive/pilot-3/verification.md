@@ -329,3 +329,85 @@ Sửa plan và todo: T4 thêm `playwright.config.ts` của profile; T5 đưa b�
   - `ao-kit sync … --key SHOP-38` từ worktree kit ở `352b3df`, 19 giây: `5cfd0bf`, 18 file. Commit thứ hai `3d153e9`: `runs` (`worktrees: true`, `lanes_max: 3`, `min_free_ram_gb: 3`, `copy`: `apps/api/.env`, `apps/user/.env.development`), `coverage_exclude: [src/testing/**]` cho `user` và `admin`, `playwright.config.ts` dời cổng theo `AO_PORT_OFFSET`.
   - `ao-kit check` đạt; `doctor` chỉ đỏ dòng Docker. PR nháp #21 (bot `ao-dev`), CI xanh đủ năm check. `/ao-review 21` chạy.
   - Lượt 36: bạn nhờ Accept `SHOP-8`. Claude bấm bằng token admin (`scratchpad/item-accept.mjs`, kiểm In QA trước, comment nêu lời bạn): `SHOP-8` Done. Bạn chọn sửa Medium và 3 Low của PR #19: `note.md` ghi nguyên văn, `/ao-fix 19` xếp sau review PR #21.
+
+## Chặng 5 và đóng pilot (T17–T19)
+
+- **T17, `v0.3.0`** (Phiên 33, 17–18/11):
+  - Gate ④ cắt `release/v0.3.0` tại `187898c`, với 50 item.
+  - Regression trên Staging PASS: 138 E2E, 132 đạt, 0 lỗi, 6 bỏ qua.
+  - Gate ⑤: PR #72 merge `900aac9`, tag `v0.3.0`. Production deploy success; V4 chạy đúng trên 5 sản phẩm.
+  - Merge ngược PR #73 (`5e4f6c2`). Bạn Release `v0.3.0`; SHOP-7 Done.
+
+  Chi tiết từng giờ ở `handoff-2026-11-15.md` (cùng thư mục archive).
+- **Chặng 6, mục 2–4** (18/11):
+  - kit PR #302 (`bd5a81b`) và #303 (`476185f`);
+  - SHOP-74 chép kit `476185f` vào `shop`: PR #74 `e4b8e5b`, 9,61 USD;
+  - SHOP-73: PR #75 `a3796f9`, QA PASS, 4,40 USD. Lượt 40 báo nhầm "khoảng 6,5 USD": con số đó cộng cả `total_cost_usd` của phiên được chạy tiếp, mà số này đã gồm lượt trước.
+- **T18, hướng dẫn** (Phiên 33 · Lượt 41): kit PR #304 merge `07fca38`.
+  - `docs/getting-started.md` có phần 7 mới, "Epic Spring Boot trọn vòng: `SHOP-7` của `shop`": bảng 10 bước với lượt, thời gian và USD thật; chi phí theo loại item; một Story có Sub-task đi từng lượt; bài học bớt chi phí; khi gặp lỗi.
+  - Phần 7 và 8 cũ thành 8 và 9.
+  - `docs/vps-setup.md` có kết quả thật của `production_auth`, RAM ba môi trường và lần khôi phục từ bản sao.
+  - README và `tests/repo.test.mjs` có chín phần.
+  - Năm lệnh kiểm:
+    - `npm test` 1540/1540, `render:check`, `agents:check`, `jira:checklist:check` xanh;
+    - `profiles:check` đỏ ở bước `build` của app Next.js trong `base-pnpm` và `next-nest`, với gói cài từ mạng ngày 18/11. Ghi followup; PR không đụng `profiles/`.
+- **Số liệu chi phí lấy từ** `shop/.ai/runs/*/state.json`: 326 lượt, đếm bằng `scratchpad/cost-sum.mjs` và `cost-groups.mjs` của phiên 0624de51.
+  - 4 lượt có chi phí âm được tính là 0. Lượt bị dừng mà đang chạy tiếp một phiên thì ghi 0 trừ tổng của phiên; lỗi kit này đã ghi followup.
+  - 4 lượt bị dừng giữa chừng không ghi được chi phí, nên tổng thật cao hơn một chút.
+
+### T19: tám tiêu chí của spec (kiểm ngày 2026-11-18)
+
+| # | Tiêu chí | Kết quả | Bằng chứng |
+|---|---|---|---|
+| 1 | Hai host Production chạy `v0.3.0`, hỏi basic auth; Staging, Development cũng vậy; smoke test xanh | Đạt | Không có mật khẩu thì cả 6 host của `shop` trả 401. `/ao-status`: Production `v0.3.0` (`900aac9`); Staging là đầu `release/v0.3.0` (`5ff9947`); Development là `develop` (`a3796f9`: `v0.3.0` cộng SHOP-73, SHOP-74). Deploy nào cũng success, mà deployer chỉ báo success sau smoke test |
+| 2 | Ba database có backup mỗi đêm và bản sao ngoài VPS; một lần khôi phục thật từ bản sao | Đạt | `ao-backup-pull status`: bản sao mới nhất của cả ba môi trường cũ 9 giờ. Khôi phục thật ngày 14/11: SHA-256 trùng, 674 ms, 3 bảng, 6 dòng (Checkpoint 3) |
+| 3 | `SHOP-5` và item của Epic Done; `v0.1.0`, `v0.2.0`, `v0.3.0` Released; Epic Complete | Đạt | Jira: `v0.1.0` released 14/11, `v0.2.0` 15/11, `v0.3.0` 18/11. SHOP-5 Done; SHOP-7 Done, resolution Done. 0 item con chưa Done hay Cancelled. 50/50 item của `v0.3.0` Done |
+| 4 | Java do `be-dev` viết qua CI (Testcontainers, JaCoCo, `osv-scanner`); React và Next.js do `fe-dev` viết | Đạt | `be-dev`: 26 lượt, 85,19 USD (V4–V6, domain, API quản trị, Sub-task của Story). `fe-dev`: 58 lượt ở `admin` và `user` |
+| 5 | `design.md` có màn hình kiểu Ảnh và mục Design System; `docs/design-system/<app>.md` có trong `shop`; Story dùng nó | Đạt | `docs/specs/SHOP-7/design.md` có 3 màn hình `screenshot:` và mục Design System. `docs/design-system/admin.md`, `user.md` do SHOP-8…SHOP-11 viết |
+| 6 | `/ao-preview` chạy ba app và Postgres cho một PR của Epic; `qa` chạy E2E qua `E2E_USER_URL` và `E2E_ADMIN_URL` | **Một nửa** | `qa`: đạt. 64 lượt QA trên Development và regression trên Staging, cả hai chạy trên host thật. `/ao-preview`: không chạy cho PR nào của Epic. Ở SHOP-8 nó bị bỏ qua, `fe-dev` tự chụp ảnh thay. Từ SHOP-38, bước kiểm dừng vì làn đang bật. Ba app và Postgres chỉ chạy ở `SHOP-4`, trước Epic. Đã ghi followup |
+| 7 | Số đo RAM khi đủ ba môi trường của `shop` cùng hai dự án kia, kèm quyết định về VPS; `ao-pilot`, `ao-sample` chạy bình thường | Đạt | 14/11: 22 container, 1.422 MiB; còn trống 1.867 MB trên 3.915 MB. Quyết định giữ VPS 4 GB. Ngày 18/11: Production của `ao-pilot` trả 200, của `ao-sample` trả 307; Staging và Development của hai dự án trả 401 |
+| 8 | Năm lệnh kiểm xanh sau mỗi lần sửa kit; hướng dẫn có ví dụ Spring Boot trọn vòng, với chi phí thật | **Gần đạt** | Hướng dẫn: kit PR #304. CI của mọi kit PR từ #280 tới #304 xanh, và `npm test` xanh. Riêng `profiles:check` ngày 18/11 đỏ ở bước build Next.js của hai profile (followup) |
+
+**Hai việc của T19 chưa làm được:**
+- **Kiểm khóa `age` đã cất, rồi sinh cặp khóa mới.** Việc này cần một máy chưa từng chạy agent, hoặc tài khoản `ao-agent`, mà hiện chưa có. Nó chuyển sang mục 7 của "Chặng 6", làm cùng `ao-agent` trước 2026-12-31. Nếu bạn có máy khác chưa chạy agent, thì làm được sớm hơn.
+- **`/ao-preview` trong làn và `profiles:check`:** đã ghi followup cho mục 6.
+
+### Chi phí agent của Pilot 3 (giá API)
+
+| Phần | Ước ở spec mục 3 | Thật (USD) |
+|---|---|---|
+| Chặng 1–2: `SHOP-5`, `/ao-ship v0.1.0` | 6–12 | 5,38 |
+| Chép kit T10 (`SHOP-6`, 4 vòng review) | không ước | 40,19 |
+| `/ao-ship v0.2.0` | nằm trong 3–5 | 0,92 |
+| Epic: intake, spec, plan | 15–20 | 26,28 |
+| Epic: 47 item (spec ước Task design system và 2 Story) | 55–80 | 575,42 |
+| Cùng `v0.3.0`, ngoài Epic: `SHOP-38` chép kit có làn (5 vòng review), `SHOP-44`, `SHOP-55` | không ước | 54,67 |
+| `/ao-ship v0.3.0` | nằm trong 3–5 | 2,16 |
+| Sau `v0.3.0`: `SHOP-74`, `SHOP-73` | không ước | 14,02 |
+| Dự phòng | 10 | |
+| **Tổng** | **90–127** | **719,04** |
+
+- **Vì sao vượt:**
+  - plan của `sa` có 20 item, trong khi spec chỉ ước cho 3;
+  - review sinh thêm 28 Task và Bug sửa finding (216 USD);
+  - ba lần chép kit tốn 95 USD, phần lớn ở các vòng review lại.
+
+  Bạn bỏ trần chi phí ở Phiên 32 · Lượt 12 ("Cứ làm không còn giới hạn chi phí nữa nhé (tôi đang dùng gói Max x5)").
+- **Theo vai trò:**
+
+  | Vai trò | USD |
+  |---|---|
+  | `fe-dev` | 207,75 |
+  | `security` | 172,36 |
+  | `reviewer` | 133,65 |
+  | `be-dev` | 85,19 |
+  | `qa` | 76,21 |
+  | `ba` | 12,99 |
+  | `sa` | 12,61 |
+  | `devops` | 6,96 |
+  | `ux` | 3,48 |
+- **Hạn mức:** 21 lượt dừng vì giới hạn usage, và lượt nào cũng chạy tiếp được. Cuối Pilot 3, hạn mức 7 ngày của tài khoản đã dùng 89%.
+
+### Checkpoint 6: đạt, trừ hai điểm
+
+6 trên 8 tiêu chí đạt. Tiêu chí 6 đạt một nửa (`/ao-preview`); tiêu chí 8 gần đạt (`profiles:check`). Cả hai thành followup của kit ở mục 6 của "Chặng 6". Khóa `age` chuyển sang mục 7.
