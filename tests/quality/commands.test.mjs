@@ -710,3 +710,31 @@ test('Grep and Glob stay in the project and the temp folder, nothing looks for a
   allowed(call('security', 'Grep', { pattern: 'age-secret-key-1', path: `${PROJECT}\\src` }), 'the same for age identities');
   allowed(bash('npm run build -- --config .aot.json', 'be-dev'), 'a name that only starts with .ao');
 });
+
+// Phiên 33, request SHOP-54 of shop: ux copied the whole apps folder, with the node_modules of pnpm, into a temp folder
+// to try a check, then deleted it. A copy of that tree can fill the disk, and a delete through a link of pnpm once
+// emptied the node_modules of the project.
+test('no agent copies or deletes a tree that holds node_modules, or the whole apps folder', () => {
+  for (const command of [
+    'tmp=$(mktemp -d) && cp -r docs/specs/SHOP-7 "$tmp" && cp -r apps "$tmp"',
+    'cp -a apps/ /tmp/x',
+    'cp -R ./apps/* /tmp/x',
+    'cp --recursive apps/user/node_modules /tmp/nm',
+    'rm -rf apps/user/node_modules',
+    'rm -fr node_modules',
+    'rm --recursive --force "$PWD/apps"',
+    'cd apps/user && rm -rf node_modules/.pnpm',
+  ]) {
+    denied(bash(command, 'ux'), /node_modules/, command);
+  }
+  for (const command of [
+    'cp -r docs/specs/SHOP-7 /tmp/specs',
+    'cp apps/user/package.json /tmp/x.json',
+    'rm -rf .ai/tmp/run-user-test.log apps/user/.next',
+    'rm -rf "$tmp"',
+    'ls apps/user/node_modules/.bin',
+    'git archive HEAD docs apps/user/src | tar -x -C /tmp/check',
+  ]) {
+    allowed(bash(command, 'ux'), command);
+  }
+});
