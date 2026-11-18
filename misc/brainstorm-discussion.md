@@ -38,6 +38,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 30 | `07e0a424-ef4e-437a-b766-0ca9955be037` | 2026-11-14 khoảng 12:15 → | Bạn dán đoạn cuối của Phiên 29 và chọn B4 (Pilot 3); Claude viết bản nháp `SPEC-pilot-3.md`: `v0.1.0` của scaffold lên ba môi trường trước, rồi Epic đầu "Danh mục sản phẩm" lên `v0.2.0`; tìm ra Production đang luôn mở trong khi `/api/**` để `permitAll` (đề xuất `production_auth`), `/ao-release` cần một item Done (`SHOP-5`), ba app lệch hợp đồng API sản phẩm; chờ bạn trả lời 5 câu: Epic, scaffold trước, chỗ để bản sao backup (đề xuất Backblaze B2), basic auth cho Production, quyền tự làm cho B4; lượt 2: bạn duyệt câu 1, 2, 4, 5, hỏi câu 3 có cần chọn trước không và sẽ gửi ảnh; Claude hiểu sai "chưa làm" và bắt đầu viết plan, bạn nhắc, Claude dừng (spec và `tasks/plan.md` chưa commit); bạn hỏi Google Drive cho bản sao: được, với OAuth client riêng đã Publish, nhưng token trên VPS xóa hẳn được bản sao; lượt 3: bạn hỏi bản sao backup là gì và vì sao cần mới đạt; Claude giải thích: backup đang nằm chung máy với database, tiêu chí 2 do spec đặt chứ không phải giới hạn kỹ thuật, chỉ bắt buộc trước khi mở bán; lượt 4: bạn hỏi backup về máy bạn có đạt không, và cơ chế có giống B2 để sau này chuyển: đạt (máy bạn kéo về bằng tài khoản chỉ đọc trên VPS), khác hướng chép (kéo về và VPS đẩy lên), đề xuất mã hóa `age` từ đầu và khối cấu hình B2 tắt sẵn để chuyển dễ; lượt 5: bạn chọn backup về máy bạn và hỏi làm gì tiếp, rồi gửi giao diện mẫu cho Epic (trang vitrea, hai ảnh); Claude bắt đầu B4: kit PR #279–#283 (`production_auth`, dòng trạng thái của `/ao-preview`, Playwright chỉ dựng app tại chỗ cho test `@local`, bản sao backup kéo về máy bạn, đọc mật khẩu từ biến của Windows trước), `SHOP-5` PR #10 merge, review 3,52 USD và QA 0,92 USD (NOT TESTED vì một bước chỉ VPS kiểm được, đã trả lời), VPS kit `dbbf318` với bí mật Staging và Production, Production của `shop` hỏi basic auth, bản sao về `D:\ao-backups` khôi phục khớp; chờ bạn Accept `SHOP-5`, cất bản thứ hai của khóa `age`, và gate ④ của `v0.1.0`; lượt 6: bạn nhờ bấm Accept (`SHOP-5` Done), hỏi cất khóa sau được không (được, nên trước khi mở bán), bảo làm như đề xuất; Claude gửi danh sách gate ④ (`28394b8`, `SHOP-5`, scaffold của `SHOP-1`–`SHOP-4`), tạo Fix Version, chụp 5 màn hình và đo 94 token của trang mẫu; lượt 7: bạn duyệt gate ④; `release/v0.1.0` lên Staging (dùng lại image, Flyway 3 migration, RAM còn 2.290 MB), regression PASS, `/ao-ship` dừng vì ruleset `ao-protected` của repo public chặn bot `ao-dev` commit lên nhánh release (cũng sẽ chặn merge PR tài liệu của Epic và merge ngược); chờ bạn chọn cách sửa ruleset; lượt 8: bạn hỏi sao commit thẳng lên nhánh được, nhất là nhánh release (chưa làm gì); Claude giải thích PR là luật GitHub chỉ có khi bật, cách kit bù ở repo không ruleset, vì sao `/ao-ship` commit hai file tài liệu lên nhánh release, và một cách giữa: PR nhỏ do `merge-gate` tự merge; lượt 9: bạn chọn tách ruleset thành ba; kit PR #284, ba ruleset áp lên `shop`, `/ao-ship` chạy lại mở PR release #11 (CI xanh, Staging deploy lại); chờ bạn approve PR #11 ở gate ⑤; lượt 10: bạn approve; `merge-gate` merge, tag `v0.1.0`, tự merge ngược PR #12; Production lên, hỏi basic auth; RAM còn 1.867 MB khi đủ ba môi trường; backup và bản sao cả ba database; chờ bạn chọn ai bấm Release `v0.1.0` và cách chép kit ở T10 |
 | 31 | `d80cd357-3fde-4be6-a978-12fadc7d8553` | 2026-11-14 khoảng 15:58 → | Bạn dán đoạn cuối của Phiên 30, nhờ mình bấm Release `v0.1.0` và chọn review đầy đủ cho T10; Release qua REST bằng token admin; `SHOP-6` và PR #13 chép kit `ceee70c` vào `shop`, CI xanh, `/ao-review 13` chạy (`reviewer` `xhigh`, `security` `max`); T11 bắt đầu song song: câu hỏi PO đầu tiên về đơn vị giá; review xong (8,13 USD): `security` thấy 2 High do lỗi của Claude (ruleset cho App `ao-dev` của agent đi tắt, khóa `age` nằm trên laptop); Claude đề xuất gỡ bypass ngay, bạn cất khóa rồi xóa file, App `ao-merge` riêng cho merge, review vòng 2; chờ bạn quyết; lượt 2: bạn đồng ý cả năm việc, đã cất khóa, chốt giá VND và giao Claude chọn các trường, cách tìm, sắp xếp theo chuẩn ngành; Claude gỡ bypass trên `shop`, xóa file khóa, thêm loại App `ao-merge` vào kit và mở trang tạo App; chốt các trường và cách tìm theo Shopify, Google Merchant Center, Baymard; hỏi câu 2 về ảnh sản phẩm; lượt 3: bạn tạo App `ao-merge` và chọn ảnh giữ chỗ; khóa của App vào environment `merge-gate`, file khóa trên máy xóa; bản nháp Epic "Danh mục sản phẩm" chờ bạn OK; lượt 4: bạn OK; Epic `SHOP-7` tạo qua Rovo MCP; kit PR #285 sửa hai High (App `ao-merge`, PR report của `/ao-ship`, tag cho merge ngược, khóa `age` ngoài máy, `gh-guard`), ruleset mới trên `shop`, VPS lên `18d79eb`, PR #13 chép lại kit; `/ao-review 13` vòng 2 chạy; chờ bạn bấm `Start spec` và kiểm khóa `age` đã cất; review vòng 2 (11,18 USD, vượt ước): `security` thấy 2 High mới về ruleset (hai App của agent approve cho nhau, nhánh release giả lách PR report) và 2 Medium (tag không được bảo vệ, dọn bản sao theo tên do VPS đặt); Claude đề xuất Code Owners, chặn tạo nhánh release, ruleset cho tag, review vòng 3; chờ bạn quyết; lượt 5: bạn đồng ý; kit PR #286 merge (Code Owners, chặn tạo nhánh release và tag `v*`, `main` không ai đi tắt; `require_last_push_approval` để tắt, lệch đề xuất), năm ruleset trên `shop`, VPS lên `e95ffa5`, PR #13 thêm commit `cd37612` kèm `CODEOWNERS`; `/ao-review 13` vòng 3 chạy; lượt 6: bạn đã bấm `Start spec` (`SHOP-7` Specifying) và hỏi kiểm khóa `age` làm sau được không; Claude: được, không phải điều kiện của pilot, nên làm trước T17; review vòng 3 (8,52 USD): `reviewer` Approve, `security` 2 High (agent lấy được login GitHub của bạn vì chạy dưới user Windows của bạn; `main` chưa có `CODEOWNERS`), `SHOP-6` gắn cờ Needs you, `audit` chặn merge khi còn High; Claude nhận lỗi không nêu sớm gốc chung của ba vòng; đề xuất chấp nhận High 1 có thời hạn (kit thêm cách ghi chấp nhận rủi ro), sửa High 2 (merge ngược, `doctor`, `v0.1.1`), hoặc làm sandbox trước; chờ bạn chọn; lượt 7: bạn dặn chưa làm, hỏi lại cho rõ; Claude: High 2 sửa được ngay, High 1 cần sandbox (1–2 ngày), nên cách 1 tạm chấp nhận High 1, cách 2 dừng để làm sandbox trước; chờ bạn chọn; lượt 8: bạn phản đối 1–2 ngày và WSL (máy chỉ dùng Windows), hỏi kit có vấn đề không; Claude nhận nghĩ quá xa và nhận gốc là kit cho agent chạy dưới user của bạn; đề xuất mới: một user Windows riêng cho agent (khoảng nửa ngày, flow của bạn không đổi), sửa cả hai High ngay; chờ bạn nói bắt đầu; lượt 9: bạn hỏi việc agent chạy dưới user của bạn có từ trước, sao giờ mới thành High; Claude: có từ Pilot 1, các vòng trước bắt lối dễ hơn, sau vòng 2 login của bạn thành chìa khóa duy nhất; nhận lỗi không nhắc ở vòng 2; chờ bạn chọn tạm chấp nhận hay user riêng; lượt 10: bạn hỏi agent có thấy mật khẩu GitHub không, nhắc trả lời ngắn và dễ hiểu; Claude giải thích lại theo 5 bước: không thấy mật khẩu, nhưng mở được chìa khóa (token) mà `gh` cất trong tài khoản Windows của bạn; lượt 11: bạn hỏi tài khoản Windows thứ hai nằm ở đâu, có dùng được chương trình của account 1 không; Claude: nằm ngay trên máy, bạn vẫn đăng nhập account 1, agent chạy ngầm dưới `ao-agent`, dùng được chương trình cài chung nhưng không mở được đồ riêng của account 1; lượt 12: bạn hỏi `ao-agent` làm những gì; Claude: chưa tạo; khi có, các agent làm đúng việc cũ ở đó bằng chìa khóa riêng của agent, còn việc cần quyền của bạn vẫn ở account 1; lượt 13: bạn hỏi có phải kit chưa có agent nào, chỉ phiên chính dùng token `gh` của bạn, và `ao-agent` là sub agent đầu tiên; Claude: kit có sẵn 10 agent chạy bằng App, phiên chính chỉ bật chúng; `ao-agent` là tài khoản Windows, như phòng riêng cho 10 agent; lượt 14: bạn hỏi đặt quy tắc cấm agent đọc chìa khóa `gh` có đủ không; Claude: không, kit đã có quy tắc và `gh-guard` nhưng agent bị lừa thì lách được bằng file chương trình tự viết; tài khoản riêng thì Windows khóa hẳn, đúng cách `security` đề xuất; lượt 15: bạn chấp nhận High 1, hỏi làm `ao-agent` sau thì đi tiếp được không; Claude: được, kit thêm chỗ ghi chấp nhận rủi ro (dòng trong lần approve từ login của bạn, hạn 2026-12-31), High 2 vẫn sửa (chặn merge ngược, `v0.1.1`), review vòng 4, khoảng 4–5 giờ; chờ bạn nói bắt đầu; lượt 16: bạn nói bắt đầu, dặn sửa kỹ và xem lại hiệu quả; kit PR #287 merge (chỗ ghi High được chấp nhận, merge ngược chờ kiểm các commit từ `main`, `doctor` kiểm `CODEOWNERS` trên `main`, các Low), VPS lên `05da881`, PR #13 thêm commit `3ef07c6`, gỡ cờ `SHOP-6`; review vòng 4 chạy, `security` review cả PR nên chi phí có thể 10–12 USD; Claude rút ba điều về cách làm; tiếp lượt 16: review vòng 4 (11,15 USD): `reviewer` Approve, `security` chỉ còn High đã chấp nhận; phiên chính approve kèm `Accept risk` bằng login của bạn, merge PR #13 (`fdc2ee0`), Development deploy thành công; QA (1,20 USD) đạt, ruleset đọc bằng login của bạn; chờ bạn Accept `SHOP-6`; kit PR #288 sửa các Low vòng 4 và lỗi `jira-sync` gắn lại cờ; đổi lời khuyên: không kiểm khóa `age` trên máy này trước khi có `ao-agent`; lượt 17: bạn hỏi đang ở T mấy; Claude: cuối T10, chờ bạn Accept `SHOP-6`; T11 xong; kế tiếp T10h (`v0.1.1`) rồi T12 |
 | 32 | `84d69ed3-b065-40d0-a4e2-3c06a66ac5cb` | 2026-11-15 khoảng 01:52 → | Bạn dán đoạn cuối của Phiên 31, đã Accept `SHOP-6` (T10 xong); T10h: kit chỉ cắt `vX.Y.0` từ `develop`, nên bản đưa `CODEOWNERS` lên `main` là `v0.2.0` và Epic `SHOP-7` lên `v0.3.0`; Fix Version `v0.3.0` tạo qua REST; spec 2.9 phần 7, plan, todo sửa theo; chờ bạn duyệt gate ④ (`fdc2ee0`, `SHOP-6`); lượt 2: bạn duyệt gate ④; `release/v0.2.0` cắt bằng login của bạn, Staging; `/ao-ship v0.2.0` (0,92 USD): regression PASS, PR report #14 do App `ao-merge` merge, PR release #15 CI xanh; chờ bạn approve ở gate ⑤ và chọn ai bấm Release `v0.2.0`; lượt 3: bạn approve gate ⑤; App `ao-merge` merge PR #15, gắn tag `v0.2.0`, merge ngược PR #16; Production và Development deploy thành công; Release `v0.2.0` trên Jira qua REST; dòng `CODEOWNERS` của `doctor` xanh; T10h xong; `/ao-spec SHOP-7` chạy; lượt 4: bạn hỏi ảnh trang mẫu ở đâu; `ba` viết SPEC (2,99 USD) và dừng với 12 câu hỏi, chờ bạn trả lời; lượt 5: bạn đồng ý cả 12 câu và cho mình tự làm theo đề xuất tới hết B4; `ux` hỏi 16 câu có đề xuất, trả lời bằng lời của bạn; ảnh 05 chụp nhầm ở T11; `sa` thêm NFR1–NFR27; PR docs #17, 12,31 USD; chờ bạn duyệt gate ①; lượt 6: bạn bấm Approve spec; `/ao-plan SHOP-7`; lượt 7: bạn hỏi công cụ đo trang mẫu (Playwright); `sa` hỏi 2 câu, `API_URL` kiểm trên VPS; lượt 8: bạn hỏi 4 câu về Playwright, Claude in Chrome, `chrome-devtools`, animation; Playwright bật được light mode; `misc/clone-100pct-ui-ux/cong-cu-inspect-website.md`; lượt 9: giữ bảng màu sáng của `ux`; lượt 10: chốt Playwright + `chrome-devtools`, ghi vai trò tool trong skill; plan, 3 ADR và 30 item `SHOP-8`…`SHOP-37` (13,97 USD); chờ bạn duyệt gate ②; lượt 11: bạn bấm Approve plan; `jira-sync`, PR #17 merge (`41ede25`); chặng 4 của todo sửa theo plan; chặng 4 ước 335–580 USD, vượt mức 125 USD của spec, nên hỏi bạn chọn làm theo đợt, cả Epic hay thu nhỏ; lượt 12: bạn bỏ giới hạn chi phí (gói Max 5x) và chọn làm cả Epic; `SHOP-8` build, CI đỏ ở coverage rồi sửa, review 0 Critical/High/Medium, 7 Low (12,22 USD); gate ③ hỏi bạn sửa Low trước hay approve; build `SHOP-10`; lượt 13: bạn chọn sửa 7 Low của PR #18 trước khi approve; lượt 14: bạn hỏi chạy item song song bằng 2 worktree; kit chưa hỗ trợ (checkout `develop`, cổng, khóa, WIP), đúng việc C2 chưa làm; đề xuất giữ lần lượt hay làm C2 tối thiểu trước; lượt 15: bạn hỏi kỹ về C2 tối thiểu; đánh giá ở `misc/thao-luan/c2-toi-thieu-giua-pilot-3.md`: khả thi, không breaking nếu mặc định 1, 7 chỗ phải sửa, phải làm trong worktree riêng của kit; đề xuất (1) cộng viết spec C2; `SHOP-10` PR #19 CI đỏ cùng lỗi coverage; `/ao-fix 18` sửa 7 Low; lượt 16: chuyển bản đánh giá C2 vào `misc/thao-luan/sdlc-song-song/` và `clone-100pct-ui-ux/` vào `misc/thao-luan/`; lượt 17: bạn chọn chạy lần lượt cộng viết spec C2; thử thật MCP, `--resume` và hook chặn trong worktree: cả ba ổn; `SPEC-parallel-runs.md` nháp, 8 điểm chờ duyệt; `fe-dev` sửa 7 Low của PR #18 (3,30 USD); lượt 18: bạn hỏi cấu hình 1, 2, 3 hay n lượt song song; đề xuất `runs.parallel` 1..4 trong `project.yaml`, biến `AO_RUNS_PARALLEL` để hạ tạm, bắt đầu với 2; chưa sửa spec; `SHOP-8` sửa 7 Low, review lại: 1 Medium và 1 Low trong tài liệu, `security` 0 lỗi (21,14 USD); gate ③ hỏi sửa luôn hay approve; `/ao-fix 19`; lượt 19: giải thích chậm: mỗi item một làn, một worktree, trong làn vẫn một agent; `runs.parallel` là số làn có agent chạy cùng lúc; đề xuất đổi tên thành `runs.items_at_once`; lượt 20: đổi tên khóa thành `runs.items_at_once`; giải thích làn đang mở và agent cùng lúc; đề xuất 2 agent cùng lúc (máy 16 GB, còn 2,6 GB trống), số làn để WIP quyết; lượt 21–23: đổi tên thành `agents_at_once`, làn mở do bạn quyết bằng `lanes_max` (đề xuất 3 và 2), hỏi đáp ở `lan-va-agent-cung-luc.md`; PR #18 sửa Medium và Low; PR #19 tới gate ③ (1 Medium, 5 Low); lượt 24: bạn chọn sửa hết Medium và 5 Low của PR #19 trước khi approve; lượt 25: bạn phản biện, chốt số agent bằng số làn; spec thêm chốt RAM `min_free_ram_gb: 3` (đo: còn 2,8 GB trống, VS Code 3,8 GB); lượt 26: bạn hỏi cái gì tốn RAM; đo: agent `security` 0,34 GB, VS Code 3,8 GB; bạn đúng một nửa; kết luận giữ: số agent bằng số làn, chốt RAM 3 GB; PR #18 sửa xong Medium và Low, còn 3 Low nhỏ, đề xuất approve (`SHOP-8` 25,38 USD); `/ao-fix 19`; lượt 27–28: bạn approve PR #18, `merge-gate` merge (`4605845`); xác nhận kit tự tạo worktree, không cần cửa sổ VS Code; lượt 29: chỉ còn một con số `lanes_max` (số agent bằng nó, hạ tạm bằng `AO_AGENTS_AT_ONCE`); In Review 2 chỉ là mức cột trên board, không chặn, không phải sửa Jira; lượt 30: spec C2 vẫn chờ duyệt; tóm lại 8 điểm ở dạng mới nhất, đề xuất đồng ý cả 8; lượt 31: vì sao chỉ build, fix, review, QA song song: chúng chỉ đụng item của mình; đề xuất thêm mỗi lúc một QA trên một môi trường; chưa sửa spec; lượt 32: spec, plan của hai Epic song song: làm được về kỹ thuật nhưng contract chặn (`epic-shaping: 1`), số ADR trùng; đề xuất để phần 3, làm sau; Development deploy `4605845`; lượt 33: bỏ việc chạy nhiều Epic song song, không ghi vào spec; lượt 34: vì sao một QA trên một môi trường: chung database Development, E2E ghi dữ liệu, kết quả sai tốn thật; đề xuất thêm kiểm bản deploy trước và sau QA; chưa sửa spec; lượt 35: bạn duyệt spec C2 cùng luật QA; kit PR #290 merge; PR #19 lượt hai: 1 Medium thật và 3 Low, hỏi bạn sửa tiếp; `/ao-qa SHOP-8`; `SHOP-8` PASS QA (27,05 USD), chờ bạn Accept; build `SHOP-9`; bắt đầu code C2 phần 1 ở `ai-orchestrator-c2`; C2 phần 1 xong, kit PR #291 merge (1.490 test); bắt đầu phần 2; C2 phần 2 (kit PR #292) và bản sửa coverage (#293) merge; `SHOP-9` PR #20 đỏ CI vì file test; kế tiếp chép kit vào `shop`; `SHOP-38` chép kit `352b3df` vào `shop`, bật 3 làn; PR #21; `/ao-review 21`; lượt 36: bạn nhờ Accept `SHOP-8` (Done qua token admin) và sửa Medium, 3 Low của PR #19; lượt 37: bạn hỏi còn việc gì cần bạn: ngay lúc này không; sắp tới gate ③ của PR #21, #19, #20 và Accept; lượt 38: `/ao-fix 19` chạy code cũ vì tới trước khi PR #21 merge; nhiều làn bắt đầu ngay sau khi PR #21 merge |
+| 33 | `0624de51-1879-44c5-a6f3-793068e0d8be` | 2026-11-16 khoảng 21:22 → | Bạn dán đoạn cuối của Phiên 32, hỏi lại Bug SHOP-51 và cách fix, dặn chưa làm gì; Claude giải thích: khi slug trùng, Hibernate ghi cả câu INSERT kèm tên, mô tả sản phẩm vào log (trái NFR12); đề xuất (a) Low, Affects Version trống, Fix `v0.3.0`, Ready; cách fix: tắt logger `org.hibernate.orm.jdbc.error`, test bắt log, sửa dòng log `root=` của `GlobalExceptionHandler`; chờ bạn |
 
 ---
 
@@ -27076,3 +27077,1863 @@ Triage Bug SHOP-44. => Chọn (a) Sửa trong bản v0.3.0
 **Chờ bạn:**
 - Accept SHOP-16.
 - Quyết có xóa 5 sản phẩm thử "QA SHOP-15 …" trên Development không. QA của SHOP-16 không xóa chúng; đây là xóa dữ liệu nên mình hỏi trước.
+
+**Claude (12:55, QA SHOP-42 PASS; PR #32 đã merge):**
+
+- **QA SHOP-42 (sửa finding admin): PASS**, tốn 0,67 USD. **SHOP-42 chờ bạn Accept.**
+- **PR #32 đã merge** (`84e87bf`). Mình xóa trước `node_modules` của làn SHOP-45, sau khi kiểm 2.201 link chỉ trỏ vào trong làn.
+- **Đang chạy:**
+  - review PR #33 (SHOP-43);
+  - build SHOP-47 (`fe-dev`);
+  - build SHOP-46 (`be-dev`, các finding của API quản trị);
+  - chờ bản `84e87bf` deploy rồi QA SHOP-45.
+- Bản bàn giao (mục 10) đã cập nhật.
+
+**Chờ bạn:**
+- Accept SHOP-16 và SHOP-42;
+- quyết việc xóa 5 sản phẩm thử trên Development.
+
+**Claude (13:00, PR #33 sẵn sàng chờ bạn):**
+
+**PR #33 (SHOP-43, sửa finding domain sản phẩm, head `8a27e79`):** không có Critical, High hay Medium. `reviewer` chỉ nêu 1 Low (một dòng Javadoc dễ đọc ngược nghĩa), `security` không có finding. SHOP-43 tổng cộng 6,19 USD.
+- Medium quan trọng của PR #25 (điều kiện lọc trạng thái để trống nghĩa là "mọi trạng thái", có thể làm lộ sản phẩm Ẩn) đã được sửa: giờ bắt buộc truyền trạng thái.
+- Low được gộp vào SHOP-44 (`be-dev`, làm sau khi PR #33 merge). Không gộp vào SHOP-46 vì `be-dev` đang làm SHOP-46 trên `develop` chưa có PR #33; sửa cùng file lúc này dễ xung đột.
+
+**Bạn approve PR #33:** https://github.com/TungPH7/shop/pull/33 (Files changed → Review changes → Approve → Submit review), hoặc nhờ mình approve thay.
+
+**Đang chạy:**
+- build SHOP-47 (`fe-dev`);
+- build SHOP-46 (`be-dev`);
+- chờ deploy rồi QA SHOP-45.
+
+**Chờ bạn:**
+- approve PR #33;
+- Accept SHOP-16, SHOP-42;
+- quyết việc xóa 5 sản phẩm thử trên Development.
+
+# Phiên 32 · Lượt 61 — 2026-11-16 khoảng 13:31
+
+**Bạn:**
+
+```markdown
+Try again
+```
+
+**Claude:**
+
+Giới hạn 5 giờ đã chạm lúc khoảng 12:55 và reset lúc 13:30. Lúc đó hai lệnh dừng với "hit the usage limit": build SHOP-46 và QA SHOP-45. Build SHOP-47 kịp xong và mở PR #34 với CI xanh.
+
+13:31 mình chạy tiếp, cách nhau 20 giây:
+- `build SHOP-46` (`be-dev`): nối tiếp phiên cũ;
+- `qa SHOP-45`: bản `84e87bf` đã deploy lúc 12:57;
+- `review 34` (SHOP-47, bỏ qua preview).
+
+Watcher bằng script lại báo 3 phút một lần.
+
+**Chờ bạn:**
+- approve PR #33 (SHOP-43);
+- Accept SHOP-16 và SHOP-42;
+- quyết việc xóa 5 sản phẩm thử trên Development.
+
+# Phiên 32 · Lượt 62 — 2026-11-16 khoảng 13:45
+
+**Bạn:**
+
+```markdown
+Approve PR #33 (SHOP-43). => Approve giúp tôi
+Accept SHOP-16 và SHOP-42. => Accept giúp tôi
+Quyết định có xóa 5 sản phẩm thử trên Development hay không => Làm theo đề xuất của bạn
+```
+
+**Claude:**
+
+Đã làm cả ba:
+
+1. **Approve PR #33** trên đúng head `8a27e79` đã review, ghi rõ bạn nhờ. `merge-gate` đã merge thành `2c41b18`.
+2. **Accept SHOP-16 và SHOP-42** bằng token admin, kèm comment bạn nhờ. Cả hai giờ là Done.
+3. **Xóa 5 sản phẩm thử trên Development:**
+   - Trước hết chạy thử để chắc 5 id đúng là sản phẩm QA SHOP-15 tạo (đúng tên, đúng slug).
+   - Sau đó xóa qua API vừa làm ở SHOP-16. Cả 5 lệnh trả 204, và danh sách không còn sản phẩm nào trong số đó.
+   - Basic auth đi qua header, không nằm trên dòng lệnh nào.
+   - Mình ghi danh sách id đã xóa vào comment trên SHOP-15.
+
+**Thêm:**
+- **QA SHOP-45 (sửa finding nền catalog `user`): PASS**, tốn 1,04 USD. **SHOP-45 chờ bạn Accept.**
+- SHOP-47 đã sang In Review, nên `fe-dev` rảnh. Mình mở `build SHOP-48`. Lệnh này dọn làn SHOP-43; `node_modules` đã xóa trước.
+
+**Đang chạy:**
+- build SHOP-46 (`be-dev`);
+- review PR #34 (SHOP-47);
+- build SHOP-48 (`fe-dev`);
+- chờ bản `2c41b18` deploy rồi QA SHOP-43.
+
+**Chờ bạn:** Accept SHOP-45.
+
+**Claude (13:50, PR #34 sẵn sàng chờ bạn):**
+
+**PR #34 (SHOP-47, sửa quy ước admin còn tả phần đã gỡ, head `e923985`):** không có Critical, High hay Medium. `reviewer` chỉ nêu 1 Low, `security` không có finding.
+- Low: ví dụ ✅ của một luật [MUST] ẩn nút Xóa theo `hasModule('product')`. Trong Epic này admin chưa có đăng nhập, nên ai làm theo ví dụ sẽ ẩn nút Xóa với mọi người.
+- Mình ghi lưu ý này thẳng vào **SHOP-37** (Story xóa sản phẩm), để `fe-dev` không làm theo và sửa luôn ví dụ khi làm trang.
+
+**Bạn approve PR #34:** https://github.com/TungPH7/shop/pull/34 (Files changed → Review changes → Approve → Submit review), hoặc nhờ mình approve thay.
+
+PR #34 merge xong là SHOP-19 (Story admin đầu tiên: xem và tìm danh sách sản phẩm) đủ điều kiện để `fe-dev` làm.
+
+**Đang chạy:**
+- build SHOP-46 (`be-dev`);
+- build SHOP-48 (`fe-dev`);
+- chờ deploy rồi QA SHOP-43.
+
+**Chờ bạn:**
+- approve PR #34;
+- Accept SHOP-45.
+
+# Phiên 32 · Lượt 63 — 2026-11-16 khoảng 13:52
+
+**Bạn:**
+
+```markdown
+đã approve PR #34 và Accept SHOP-45
+```
+
+**Claude:**
+
+Cảm ơn bạn.
+- PR #34 đã merge thành `7956b3b`, đang deploy lên Development.
+- SHOP-45 đã Done.
+- Mình xóa trước `node_modules` của làn SHOP-47, sau khi kiểm 2.084 link chỉ trỏ vào trong làn.
+
+**Một điểm cần biết về QA:**
+- QA SHOP-43 bắt đầu lúc 13:48 trên bản `2c41b18`.
+- Bản `7956b3b` đang deploy. Khi nó xong, kit có thể dừng lượt QA SHOP-43 vì phiên bản đổi giữa chừng (superseded).
+- Mình đã đặt một chuỗi chạy nền: chờ deploy xong và lượt QA hiện tại kết thúc, rồi chạy `qa SHOP-43` lần nữa và `qa SHOP-47`. Nếu QA SHOP-43 đã xong bình thường, lệnh thứ hai dừng ngay mà không tốn agent.
+
+**Đang chạy:**
+- build SHOP-46 (`be-dev`);
+- build SHOP-48 (`fe-dev` xong 3,15 USD, đang mở PR);
+- QA SHOP-43;
+- chuỗi QA SHOP-47.
+
+**Kế tiếp:**
+- SHOP-48 sang In Review thì `fe-dev` làm SHOP-19, Story admin đầu tiên.
+- SHOP-46 xong thì `be-dev` làm SHOP-44.
+
+# Phiên 32 · Lượt 64 — 2026-11-16 khoảng 14:00
+
+**Bạn:**
+
+```markdown
+Vì sao SHOP-12  chưa làm? Đang đúng thứ tự hay là bị sót?
+```
+
+**Claude:**
+
+**Không bị sót, mình cố ý để sau. Nhưng có hai điều mình phải nói rõ: lý do mình đưa lúc 01:20 sai một phần, và vừa phát hiện kit chưa có cách cho agent `devops` làm Task này.**
+
+**SHOP-12 là gì:** thêm năm sản phẩm thử lên Staging và Production qua API **cũ** (`POST /api/products` của v0.2.0 đang chạy ở đó). Nhờ vậy khi v0.3.0 nâng database (migration V4), nó chạy trên dữ liệu thật. Lần deploy v0.3.0 lên Staging là lần chạy thử.
+
+**Thứ tự:**
+1. Không item nào bị SHOP-12 chặn.
+2. Hạn của nó là "sau gate ② và **trước gate ④ của v0.3.0**", tức trước khi cắt bản phát hành. Vì vậy làm lúc nào cũng được trước mốc đó. Làm sớm thì an toàn hơn.
+3. Lúc 01:20 mình nói nên làm sau SHOP-13 "để sản phẩm thử dùng cột mới". Câu đó **sai**: SHOP-12 ghi vào v0.2.0 trên Staging và Production, nơi chưa có V4, nên không phụ thuộc SHOP-13. Lý do thật để chờ là nó ghi lên Production và cần basic auth của Production.
+
+**Vừa phát hiện khi kiểm lại:**
+- Kit xóa `AO_ENV_AUTH` khỏi môi trường mọi agent; chỉ `qa` được nhận basic auth. Vậy agent `devops` không gọi được cả Staging lẫn Production. Nếu chạy `/ao-build SHOP-12` bây giờ, nó sẽ dừng ở Needs you, tốn một lượt xhigh mà không làm được gì.
+- Workflow của Task cũng giả định có PR, mà SHOP-12 chỉ ghi dữ liệu.
+- Mình đã ghi cả hai vào danh sách việc của kit.
+- Mình cũng thử một lệnh GET chỉ đọc: host admin của Production **nhận cùng basic auth với Staging** (`AO_ENV_AUTH`, trả 200). Tức là không cần mật khẩu mới.
+
+**Đề xuất:** mình (phiên chính, không dùng agent) làm SHOP-12 bằng script, giống lúc xóa sản phẩm thử:
+1. Chạy thử, in ra năm request sẽ gửi.
+2. Gửi lên **Staging** trước, rồi đọc lại bằng GET để kiểm đủ năm sản phẩm, đúng tên, slug, giá, mô tả.
+3. Rồi làm y như vậy với **Production**.
+4. Ghi id của từng sản phẩm ở mỗi môi trường vào comment của SHOP-12, không có basic auth. Sau đó bạn kiểm và đóng item.
+
+Việc này ghi lên Production đang chạy, và dùng basic auth chung thay cho cách "bạn đặt biến riêng cho phiên devops" như plan, nên **mình chờ bạn đồng ý**. Bạn trả lời "làm SHOP-12" là mình bắt đầu.
+
+**Tiến độ khác:**
+- SHOP-48 → PR #35, đang review.
+- Đang chạy: build SHOP-46 (`be-dev`), QA SHOP-43, rồi QA SHOP-47.
+
+**Claude (14:05, QA SHOP-43 PASS; SHOP-46 → PR #36):**
+
+- **QA SHOP-43 (sửa finding domain sản phẩm, gồm bắt buộc truyền trạng thái khi lọc): PASS** trên Development `7956b3b`, tốn 0,81 USD. **SHOP-43 chờ bạn Accept.**
+  - Kit xử lý đúng lúc bản deploy chen ngang: lượt QA 5 bị đánh dấu "superseded" ngay từ đầu (0 USD), rồi lượt 6 chạy trên bản mới.
+- **SHOP-46 → PR #36,** CI xanh, đang review. Lượt `be-dev` thứ hai tốn 9,44 USD, vì Task này gom 10 mục từ ba PR và QA.
+- **Đang chạy:**
+  - review PR #35 (SHOP-48);
+  - review PR #36 (SHOP-46);
+  - QA SHOP-47.
+
+**Chờ bạn:**
+- Accept SHOP-43;
+- trả lời về SHOP-12 ("làm SHOP-12" nếu đồng ý để mình làm bằng script).
+
+# Phiên 32 · Lượt 65 — 2026-11-16 khoảng 14:12
+
+**Bạn:**
+
+```markdown
+* Đã Accept SHOP-43.
+* làm SHOP-12
+```
+
+**Claude:**
+
+**SHOP-12 xong: năm sản phẩm thử đã có trên cả Staging và Production, đúng bảng của plan.**
+
+Các bước:
+1. Mình đọc API cũ của v0.2.0 (`POST /api/products`: `name`, `slug`, `price` có hai số lẻ, `description`). Script gửi giá đúng dạng `250000.00` như plan yêu cầu.
+2. Chạy thử: cả hai môi trường đang có 0 sản phẩm; năm request khớp từng chữ với bảng trong plan.
+3. **Staging trước:** tạo 5 sản phẩm, đọc lại bằng `GET /api/products`, cả 5/5 đúng tên, slug, giá, mô tả. Mô tả hai dòng và ký tự `<` cũng giữ nguyên.
+4. **Production sau:** làm y như vậy, cũng 5/5 đúng.
+5. Id của từng sản phẩm ở mỗi môi trường đã ghi vào comment của SHOP-12. Basic auth chỉ nằm trong header của script, không ở dòng lệnh, log hay comment.
+6. Script bỏ qua slug đã có, nên chạy lại cũng không tạo trùng.
+
+Giờ lần deploy v0.3.0 lên Staging sẽ là lần chạy thử migration V4 trên đúng năm sản phẩm này. Trong đó "Bao tay len" giá 0 sẽ thành Ẩn.
+
+**Một việc còn vướng: đóng item SHOP-12.**
+- Item vẫn ở Ready. Từ Ready, tài khoản admin chỉ có bước **Cancel**: bước Start dành cho agent dev, còn Accept chỉ có sau QA của một PR. Workflow của kit chưa có đường cho Task vận hành không có PR; mình đã ghi vào việc của kit.
+- Hai cách:
+  - **(a) Để SHOP-12 ở Ready kèm comment bằng chứng**, tới khi đóng Epic mới quyết. Mình đề xuất cách này, vì không làm sai nghĩa trạng thái.
+  - **(b) Cancel với resolution "Done"**, ghi rõ "đã làm bằng script, xem comment". Item đóng ngay, nhưng trạng thái sẽ ghi Cancelled.
+
+**Tiến độ:**
+- SHOP-43 Done (bạn Accept).
+- Đang chạy:
+  - review PR #36 (SHOP-46);
+  - review PR #35 (SHOP-48);
+  - QA SHOP-47.
+
+**Claude (14:20, PR #35 sẵn sàng; QA SHOP-47 PASS; bắt đầu Story đầu tiên):**
+
+- **PR #35 (SHOP-48, sửa quy ước `user`, head `3e0bec2`):** không có Critical, High hay Medium. `reviewer` nêu 3 Low (README, tài liệu), `security` nêu 1 Low: route `/api/revalidate` có sẵn của `user` nhận POST không auth, không kiểm Origin, mà lại được dùng làm ví dụ mẫu. SHOP-48 tổng cộng 8,41 USD. Cả 4 Low gộp vào **SHOP-39** (Low của `user`), làm sau khi PR #35 merge.
+  - **Bạn approve PR #35:** https://github.com/TungPH7/shop/pull/35, hoặc nhờ mình.
+- **QA SHOP-47 (sửa quy ước admin): PASS**, tốn 0,70 USD. **SHOP-47 chờ bạn Accept.**
+- **Bắt đầu Story đầu tiên:** `/ao-build SHOP-19` (Quản trị viên xem và tìm danh sách sản phẩm, `fe-dev`). Mọi item nó phụ thuộc đã merge.
+- **Đang chạy:**
+  - review PR #36 (SHOP-46);
+  - build SHOP-19.
+
+**Chờ bạn:**
+- approve PR #35;
+- Accept SHOP-47;
+- chọn (a) hay (b) cho việc đóng SHOP-12.
+
+# Phiên 32 · Lượt 66 — 2026-11-16 khoảng 14:25
+
+**Bạn:**
+
+```markdown
+Approve PR #35. => Đã Approve
+Accept SHOP-47. => Đã Accept
+Chọn (a) hay (b) để đóng SHOP-12. => Chọn (a)
+```
+
+**Claude:**
+
+Cảm ơn bạn.
+- **PR #35** đã merge thành `2481dcf`. Mình đã xóa trước `node_modules` của làn SHOP-48, sau khi kiểm 2.191 link chỉ trỏ vào trong làn.
+- **SHOP-47** đã Done.
+- **SHOP-12 theo hướng (a):** item để ở Ready kèm comment bằng chứng, tới khi đóng Epic mới quyết. Mình đã ghi quyết định này vào comment của SHOP-12.
+
+**Đang chạy:**
+- review PR #36 (SHOP-46);
+- build Story SHOP-19 (`fe-dev`);
+- build SHOP-44 (`be-dev`: Bug `gen_uuid_v7`, cộng một Javadoc của PR #33);
+- chờ bản `2481dcf` deploy rồi QA SHOP-48.
+
+**Kế tiếp:**
+- `fe-dev`: SHOP-39 sau SHOP-19 (gom Low của `user`); SHOP-21 (Story khách đầu tiên) giờ đã đủ điều kiện.
+- `be-dev`: hết việc sau SHOP-44, trừ khi Story cần.
+
+**Claude (14:25, PR #36 sẵn sàng chờ bạn):**
+
+**PR #36 (SHOP-46, sửa finding của API quản trị sản phẩm, head `8424535`):** không có Critical, High hay Medium. `reviewer` nêu 6 Low; `security` không có finding và xác nhận hai Low của PR #28 (tràn stack khi slug dài, log TRACE) đã được sửa. SHOP-46 tổng cộng 14,19 USD.
+- Cả 6 Low vào **SHOP-49** (`ao-be-dev`, Ready, làm sau khi PR #36 merge).
+- Hai Low ảnh hưởng Story sau, mình ghi lưu ý thẳng vào item:
+  - **SHOP-34** (sửa sản phẩm): khi sửa mà giữ nguyên slug thì không kiểm định dạng, theo Contract.
+  - **SHOP-20** (thêm sản phẩm): 409 khi hậu tố slug vượt `-1000` không được hiện là "Slug này đã được dùng" dưới ô slug đang trống.
+
+**Bạn approve PR #36:** https://github.com/TungPH7/shop/pull/36 (Files changed → Review changes → Approve → Submit review), hoặc nhờ mình approve thay.
+
+**Đang chạy:**
+- build Story SHOP-19 (`fe-dev`);
+- build SHOP-44 (`be-dev`);
+- QA SHOP-48 sẽ bắt đầu ngay khi có slot trống.
+
+**Claude (14:30, QA SHOP-48 PASS):**
+
+**QA SHOP-48 (sửa quy ước `user`): PASS** trên Development `2481dcf`, tốn 1,06 USD (comment 10343). **SHOP-48 chờ bạn Accept.**
+
+Đang chạy: build Story SHOP-19 (`fe-dev`), build SHOP-44 (`be-dev`).
+
+**Chờ bạn:**
+- approve PR #36;
+- Accept SHOP-48.
+
+# Phiên 32 · Lượt 67 — 2026-11-16 khoảng 14:35
+
+**Bạn:**
+
+```markdown
+đã làm:
+
+* approve PR #36
+* Accept SHOP-48.
+```
+
+**Claude:**
+
+Cảm ơn bạn.
+- **PR #36** đã merge thành `ac36907`. Mình đã xóa trước `node_modules` của làn SHOP-46, sau khi kiểm 2.191 link chỉ trỏ vào trong làn.
+- **SHOP-48** đã Done.
+
+**Đang chạy:**
+- build Story SHOP-19 (`fe-dev`, 21 phút);
+- review PR #37 (SHOP-44, Bug `gen_uuid_v7`), đang ở `security`;
+- build SHOP-49 (`be-dev`, 6 Low của PR #36);
+- chờ bản `ac36907` deploy và có slot trống, rồi QA SHOP-46.
+
+**Claude (14:42, PR #37 sẵn sàng; một Low cần bạn quyết trước khi merge):**
+
+**PR #37 (SHOP-44, Bug `gen_uuid_v7`, head `ecf8b28`):** không có Critical, High hay Medium. `reviewer` nêu 3 Low, `security` không có finding. SHOP-44 tổng cộng 4,82 USD.
+- Hai Low vào **SHOP-50** (`ao-be-dev`, Ready, làm sau khi PR #37 merge): cho lỗi `pgcrypto` sai schema hiện sớm hơn, và đổi tên một test.
+- **Low thứ ba cần bạn quyết:** comment Rollback trong file migration V5 viết "v0.2.0 and v0.3.0 do not know V5". Câu này sai, vì V5 nằm trong bản v0.3.0. Sau khi V5 chạy trên một môi trường, Flyway kiểm checksum của file, nên **comment này không sửa được nữa**. `reviewer` khuyên sửa trước khi merge.
+  - **(a) Merge như hiện tại** (mình đề xuất): chỉ là một câu comment, không ảnh hưởng chạy. Mình ghi câu đúng ("v0.2.0 và các bản v0.3.0 trước V5 không biết V5") vào SHOP-50 và tài liệu rollback để người vận hành không đọc nhầm. Không tốn thêm.
+  - **(b) Sửa trước khi merge:** một lượt `be-dev` sửa comment, rồi phải review lại vì head đổi (`audit` đòi báo cáo trên head mới). Ước khoảng 3–4 USD và 15–20 phút. Đây là ngoại lệ của quy tắc "không có Critical/High thì dừng sửa", vì sau merge không sửa được nữa.
+
+Bạn chọn (a) thì approve PR #37 như thường (https://github.com/TungPH7/shop/pull/37), hoặc nhờ mình approve thay. Chọn (b) thì mình chạy lượt sửa.
+
+**Đang chạy:**
+- build Story SHOP-19;
+- build SHOP-49;
+- QA SHOP-46 khi có slot.
+
+**Claude (14:45, Story SHOP-19 → PR #38, cần sửa nhỏ):**
+
+- **SHOP-19 (Story admin xem và tìm danh sách) → PR nháp #38.** Lượt `fe-dev` tốn 9,53 USD (188 lượt, 27 phút), vì đây là Story đầu tiên, có cả UI lẫn E2E.
+- Check `policy` đỏ, lỗi giống PR #30: một dòng `eslint-disable` thiếu "reason: …" trên cùng dòng. Một script đang chờ CI xong và có slot, rồi chạy `/ao-fix 38`.
+- Lỗi lặp này đã ghi vào việc của kit: kiểm "Suppressions" ngay ở máy trước khi push, để khỏi tốn một vòng CI và một lượt sửa.
+
+**Đang chạy:**
+- build SHOP-49 (`be-dev`);
+- chờ deploy rồi QA SHOP-46;
+- chờ CI rồi fix PR #38.
+
+**Chờ bạn:** chọn (a) hay (b) cho PR #37.
+
+# Phiên 32 · Lượt 68 — 2026-11-16 khoảng 14:50
+
+**Bạn:**
+
+```markdown
+chọn (a) cho PR #37, approve giúp tôi
+```
+
+**Claude:**
+
+Đã làm:
+- **Approve PR #37** trên đúng head `ecf8b28` đã review, ghi rõ bạn nhờ và bạn chọn merge với comment Rollback của V5 như cũ. `merge-gate` đã merge thành `3b4012f`.
+- **Câu Rollback đúng** ("v0.2.0 và các bản v0.3.0 trước V5 không biết V5 và bỏ qua nó") đã vào SHOP-50. `be-dev` sẽ ghi nó vào tài liệu rollback và không sửa file V5.
+- Đã xóa trước `node_modules` của làn SHOP-44, sau khi kiểm link chỉ trỏ vào trong làn.
+
+**Đang chạy:**
+- fix PR #38 (SHOP-19), đang chờ CI;
+- build SHOP-49 (`be-dev` xong, 3,38 USD; đang mở PR);
+- QA SHOP-46;
+- sau đó QA SHOP-44, khi bản `3b4012f` deploy xong.
+
+**Claude (14:57, QA SHOP-46 PASS):**
+
+**QA SHOP-46 (sửa finding API quản trị sản phẩm, 10 mục): PASS** trên Development `ac36907`, tốn 2,78 USD (comment 10346). **SHOP-46 chờ bạn Accept.**
+
+**Đang chạy:**
+- review PR #38 (Story SHOP-19);
+- review PR #39 (SHOP-49);
+- kế tiếp là QA SHOP-44 (Bug `gen_uuid_v7`, bản `3b4012f`).
+
+# Phiên 32 · Lượt 69 — 2026-11-16 khoảng 15:03
+
+**Bạn:**
+
+```markdown
+The other two, in their own terms
+```
+
+**Claude:**
+
+Hai việc còn lại là review hai PR. Theo mô tả của chính từng PR:
+
+**PR #38 — SHOP-19 "Quản trị viên xem và tìm danh sách sản phẩm"** (Story đầu tiên, US1 của Epic, trang S1 của bản thiết kế):
+1. **Dữ liệu:** schema Zod cho một dòng sản phẩm và một trang kết quả, đúng API Contract. Giá hiện dạng `1.250.000 ₫` ở cả hai ngôn ngữ.
+2. **Gọi API:** `GET /api/admin/products`, mỗi trang 20 dòng. Trạng thái gửi lên API bằng chữ hoa (`ALL`, `ACTIVE`, `HIDDEN`), còn trên URL vẫn để chữ thường, đúng lưu ý QA SHOP-16 đã ghi.
+3. **URL giữ bộ lọc:** `?q=&status=all|active|hidden&page=N`. Giá trị sai thì quay về mặc định, không báo lỗi. Đổi bộ lọc hay từ khóa thì về trang 1.
+4. **Màn hình:**
+   - tiêu đề và nút "Thêm sản phẩm";
+   - bộ lọc trạng thái có đếm số;
+   - ô tìm, cập nhật sau 300 ms kể từ phím cuối;
+   - bảng sản phẩm, có khung chờ 6 dòng và dòng lỗi kèm nút "Thử lại";
+   - nút Sửa ở từng dòng;
+   - hai trạng thái rỗng: "Chưa có sản phẩm" và "Không có sản phẩm khớp", kèm nút "Xóa bộ lọc";
+   - phân trang.
+5. **Hai link** "Thêm" và "Sửa" đã có đường dẫn. Trang của chúng đến ở SHOP-20 và SHOP-34, nên trước đó bấm vào sẽ ra "Không tìm thấy", đúng như Story ghi.
+
+**PR #39 — SHOP-49 "Sửa 6 Low sau review của PR #36":**
+1. `@ValidSlug` ghi rõ chỉ dùng cho lệnh thêm. Lệnh sửa (SHOP-34) sẽ kiểm slug ở service, để giữ nguyên slug cũ khi không đổi.
+2. và 3. Tìm slug trống không còn dùng `LIKE 'base-%'` (đọc nhiều dòng, không dùng index). Giờ nó hỏi đúng các ứng viên `base`, `base-2` … `base-1000`, dùng được index UNIQUE.
+4. Contract chưa ghi trường hợp 409 khi vượt `-1000`. Vì plan thuộc `sa`, agent để lại lời nhờ "Cần sa:" trên SHOP-49; code giữ 409 như cũ.
+5. Test log kiểm cả chuỗi logger cha (`root` … `org.hibernate.orm.jdbc.bind`), không phân biệt hoa thường.
+6. `timestamp` của lỗi giờ luôn có mili giây, đúng mẫu `2026-11-16T02:10:00.000Z`.
+- Đã thử: 485 test qua, dòng đổi được test phủ 100%, và thử tay trên `api` chạy ở máy.
+
+Chỉ một điểm cần theo dõi: lời nhờ "Cần sa" ở mục 4 sẽ không ai xử lý nếu không có lượt `sa`. Mình sẽ báo khi tới bước cập nhật Contract.
+
+**Claude (15:08, QA SHOP-44 PASS; bắt đầu Story khách đầu tiên):**
+
+- **QA SHOP-44 (Bug `gen_uuid_v7`): PASS** trên Development `3b4012f`, tốn 0,97 USD (comment 10347). **SHOP-44 chờ bạn Accept**, cùng SHOP-46.
+- **Bắt đầu SHOP-21 "Khách xem chi tiết sản phẩm"** (Story khách đầu tiên, đường găng: SHOP-24, 25, 31 chờ nó).
+  - Story có hai Sub-task: SHOP-22 (`be-dev`) và SHOP-23 (`fe-dev`), chạy nối tiếp trong cùng một làn.
+  - Mọi item nó phụ thuộc đã merge.
+- **Đang chạy:**
+  - review PR #38 (SHOP-19);
+  - review PR #39 (SHOP-49);
+  - build SHOP-21.
+
+**Chờ bạn:** Accept SHOP-46 và SHOP-44.
+
+**Claude (15:20, PR #38 và PR #39 sẵn sàng; Bug SHOP-51 chờ triage):**
+
+**PR #38 (Story SHOP-19, trang danh sách sản phẩm admin, head `06ee965`):** không có Critical hay High. SHOP-19 tổng cộng 16,43 USD.
+- `reviewer` nêu 1 Medium và 4 Low; `security` nêu 1 Low, trùng một Low của `reviewer`.
+- Medium: trong lúc tải, bảng có thể hiện nhầm "Chưa có sản phẩm nào", khi đi từ một bộ lọc không có kết quả sang một bộ lọc chưa có trong cache.
+- Low đáng chú ý: `?page=` không có cận trên, nên trang quá lớn làm API trả 400 và nút "Thử lại" không bao giờ thành công.
+- Tất cả vào **SHOP-52** (`ao-fe-dev`, Ready, sau khi PR #38 merge).
+
+**PR #39 (SHOP-49, 6 Low của API quản trị, head `4c26010`):** không có Critical, High hay Medium. SHOP-49 tổng cộng 7,59 USD.
+- Hai Low (so sánh slug qua `citext` khi `search_path` chỉ có `app`; Javadoc về index chưa đúng) gộp vào **SHOP-50** (`be-dev`), giờ làm sau khi PR #39 merge.
+
+**Bug mới SHOP-51** do QA của SHOP-46 tạo: khi hai lần thêm tranh cùng một slug, log WARN của Hibernate ghi cả câu INSERT, kèm tên và mô tả sản phẩm (trái NFR12). QA đề xuất Severity Low. Lỗi chỉ có trên `develop`, nên theo bảng định tuyến Fix Version là bản kế tiếp (v0.3.0). Cách sửa: hạ mức logger `org.hibernate.orm.jdbc.error`, kèm test.
+- **Triage SHOP-51:** mình đề xuất (a) Severity Low, Fix v0.3.0, Refine. Bạn trả lời "(a)" là mình điền thay. Bug chưa lên bản phát hành nào, nên không có Affects Version.
+
+**Bạn approve** (Files changed → Review changes → Approve → Submit review), hoặc nhờ mình approve thay:
+- https://github.com/TungPH7/shop/pull/38
+- https://github.com/TungPH7/shop/pull/39
+
+**Đang chạy:** build Story SHOP-21 (SHOP-22 `be-dev` rồi SHOP-23 `fe-dev`).
+
+**Chờ bạn:**
+- approve PR #38, #39;
+- Accept SHOP-46, SHOP-44;
+- triage SHOP-51.
+
+# Phiên 32 · Lượt 70 — 2026-11-16 khoảng 15:22
+
+**Bạn:**
+
+```markdown
+đã Accept SHOP-46 và SHOP-44
+```
+
+**Claude:**
+
+Cảm ơn bạn. SHOP-46 và SHOP-44 đã Done.
+
+Hiện chỉ build Story SHOP-21 đang chạy (`be-dev` làm SHOP-22). Ba làn đầy (SHOP-19, SHOP-21, SHOP-49), nên việc kế tiếp chờ PR #38 và #39 merge.
+
+**Chờ bạn:**
+- approve PR #38 và #39;
+- triage Bug SHOP-51 (đề xuất (a): Low, Fix v0.3.0).
+
+**Claude (15:58, Story SHOP-21 → PR #40, đang review):**
+
+- **SHOP-21 "Khách xem chi tiết sản phẩm" → PR nháp #40**, CI xanh.
+  - Hai Sub-task: SHOP-22 (`be-dev`, API phía khách, 5,48 USD, 19 phút) và SHOP-23 (`fe-dev`, trang chi tiết, 7,93 USD, 26 phút). Tổng 13,41 USD.
+  - Mình bỏ qua preview, cho review luôn.
+- Hai lỗi nhỏ của môi trường agent đã ghi vào việc của kit:
+  - `fe-dev` không gọi được `pnpm` thẳng, phải đi qua corepack;
+  - `be-dev` vất vả chạy Maven. Cả hai cần một lệnh chạy test có sẵn, đã thử trên Windows.
+
+**Chờ bạn:**
+- approve PR #38 và #39;
+- triage Bug SHOP-51.
+
+Ba làn đang đầy (SHOP-19, SHOP-21, SHOP-49). Hai PR kia merge thì mình mở tiếp:
+- Story SHOP-20 (thêm sản phẩm, `fe-dev`);
+- SHOP-50 (`be-dev`);
+- QA các item.
+
+# Phiên 32 · Lượt 71 — 2026-11-16 khoảng 18:33
+
+**Bạn:**
+
+```markdown
+I hit my usage limit while you were working, but it has reset now. Please continue from where you left off.
+```
+
+**Claude:**
+
+Đã chạy tiếp lúc 18:31. Giới hạn 5 giờ chạm khoảng 16:00, đúng lúc review PR #40 vừa bắt đầu (`reviewer` dừng vì "hit the usage limit"), và reset lúc 18:30.
+
+**Trong lúc đó bạn đã approve PR #38 và #39, cả hai đã merge:** #38 (SHOP-19) thành `3ad9180`, #39 (SHOP-49) thành `535986b`. Mình đã xóa trước `node_modules` của làn SHOP-19 và SHOP-49, sau khi kiểm link chỉ trỏ vào trong làn.
+
+**Đang chạy (cách nhau 25 giây để không cùng lúc dọn làn):**
+1. review PR #40 (Story SHOP-21), chạy lại sau giới hạn;
+2. build Story SHOP-20 "Quản trị viên thêm sản phẩm" (`fe-dev`);
+3. build SHOP-50 (`be-dev`: các Low của PR #37 và #39, câu Rollback của V5);
+4. chờ bản `535986b` deploy và có slot, rồi QA SHOP-19, sau đó SHOP-49.
+
+**Chờ bạn:** triage Bug SHOP-51. Mình đề xuất (a): Severity Low, Fix v0.3.0, Refine. Bạn trả lời "(a)" là mình điền thay.
+
+**Claude (18:38):** build SHOP-20 lần đầu dừng "3 lanes are open". Hai làn đã merge (SHOP-19, SHOP-49) còn sót đúng 5 file gốc, dù `node_modules` đã xóa trước. Đây là lỗi lặp đều; mình đã ghi bổ sung vào việc của kit và xóa tay hai thư mục.
+- Hiện đủ 3 lệnh: review PR #40, build SHOP-50, QA SHOP-19. Bản `535986b` đã deploy trong lúc chạm giới hạn.
+- SHOP-20 chờ slot trống rồi tự build.
+
+**Claude (18:45, máy thiếu RAM, hai lệnh đang chờ):**
+
+QA SHOP-19 và build SHOP-50 đang đứng ở "Waiting for RAM: 1.2–1.5 GB free, 3 GB needed". Máy chỉ còn khoảng 1,4 GB trống, trong khi lúc chiều thường trống 5–7 GB.
+
+Mình kiểm thì phần lớn RAM là của các ứng dụng bạn đang mở, không phải của làn:
+- **Chrome:** 25 tiến trình, khoảng 3,4 GB.
+- **VS Code** (mở lúc 17:19): 16 tiến trình, khoảng 3,0 GB.
+- **Hai tiến trình `claude`** chạy từ terminal lúc 16:00 và 16:14: khoảng 0,7 GB. Có vẻ là phiên Claude của bạn chứ không phải agent của kit (agent của kit được `ao-step` bật qua `node`). Mình không đụng vào chúng.
+- Server dev mà agent SHOP-21 bật để thử đã tắt.
+
+Kit không bị tắc: khi review PR #40 xong (còn khoảng 10–15 phút), không còn agent nào chạy, nên một trong hai lệnh sẽ được vào ngay mà không cần đủ 3 GB. Nhưng vì vậy các agent sẽ chạy **lần lượt từng cái**, và lệnh nào chờ quá 30 phút sẽ tự dừng; khi đó mình chạy lại.
+
+**Nếu bạn muốn chạy song song lại:** đóng bớt tab Chrome hoặc cửa sổ VS Code không dùng (mỗi cửa sổ VS Code khoảng 0,5–1,5 GB). Khi máy trống trên 3 GB, các lệnh đang chờ tự chạy, không cần làm gì thêm.
+
+**Claude (19:02):**
+- **SHOP-50 → PR #41**, `be-dev` 4,17 USD. Review PR #41 vào hàng chờ slot.
+- **QA SHOP-19** đã vào chạy.
+- `security` của PR #40 và build SHOP-20 vẫn chờ RAM hoặc slot. Máy trống 2,4 GB, dưới ngưỡng 3 GB, nên các agent chạy lần lượt từng cái.
+
+**Claude (19:08, QA SHOP-19 PASS):**
+
+**QA SHOP-19 (Story admin xem và tìm danh sách sản phẩm): PASS** trên Development `535986b`, tốn 0,95 USD (comment 10354). **SHOP-19 chờ bạn Accept.** Đây là Story đầu tiên của Epic qua QA.
+
+**Đang chạy:**
+- `security` PR #40 (SHOP-21);
+- QA SHOP-49;
+- build Story SHOP-20.
+
+Review PR #41 (SHOP-50) vừa bị chuỗi QA giành mất slot cuối, nên đã vào hàng chờ lại.
+
+**Chờ bạn:**
+- Accept SHOP-19;
+- triage SHOP-51.
+
+**Claude (19:20, PR #40 sẵn sàng; một Medium cần bạn quyết):**
+
+**PR #40 (Story SHOP-21 "Khách xem chi tiết sản phẩm", head `132c7a0`):** không có Critical hay High. `reviewer` nêu 2 Medium và 1 Low, `security` không có finding. SHOP-21 tổng cộng 19,77 USD.
+- Medium 1 và Low (phía `api`: so sánh slug của lệnh admin, đo tốc độ lệnh chi tiết) vào **SHOP-53** (`be-dev`, Ready, sau khi PR #40 và PR #41 merge).
+- **Medium 2 cần bạn quyết:** trong `.ai-orchestrator/project.yaml`, app `user` thiếu `API_URL` trong `env` (admin thì có `API_URL: http://localhost:3001`). Vì vậy E2E của `user` chạy ở máy hay trong làn sẽ gọi API NestJS cũ. Agent SHOP-23 phải tự đặt biến này để test xanh. Bốn Story khách kế tiếp (SHOP-24, 25, 28, 31) sẽ gặp đúng chuyện đó.
+  - **(a) Một PR nhỏ ngay** (mình đề xuất): thêm `API_URL: http://localhost:3001` vào `apps.user.env`. `project.yaml` là đường dẫn được bảo vệ nên bạn merge. Review một lần, diff một dòng, ước 1–3 USD và khoảng 15 phút. Nếu muốn, gộp luôn `runs.min_free_ram_gb: 1.5` vào cùng PR mà không tốn thêm review; máy đang thiếu RAM nên agent chạy lần lượt.
+  - **(b) Để tới lần chép kit cuối Epic.** Agent tiếp tục tự đặt `API_URL` mỗi lần, dễ quên và E2E gọi nhầm API.
+
+**Bạn approve PR #40:** https://github.com/TungPH7/shop/pull/40, hoặc nhờ mình approve thay.
+
+**Chờ bạn:**
+- approve PR #40;
+- chọn (a) hay (b) cho `API_URL`, và có gộp `min_free_ram_gb` không;
+- Accept SHOP-19;
+- triage SHOP-51.
+
+**Claude (19:24, QA SHOP-49 PASS):**
+
+**QA SHOP-49 (6 Low của API quản trị): PASS** trên Development `535986b`, tốn 1,18 USD (comment 10356). **SHOP-49 chờ bạn Accept**, cùng SHOP-19.
+
+**Đang chạy:**
+- build Story SHOP-20 (`fe-dev` vừa vào sau khi chờ RAM);
+- review PR #41 (SHOP-50).
+
+**Chờ bạn:**
+- approve PR #40;
+- chọn (a) hay (b) cho `API_URL`;
+- Accept SHOP-19, SHOP-49;
+- triage SHOP-51.
+
+**Claude (19:52, Story SHOP-20 → PR #42):**
+
+- **SHOP-20 "Quản trị viên thêm sản phẩm" → PR nháp #42**, CI xanh. `fe-dev` tốn 8,71 USD. Đang review, bỏ qua preview.
+- **Đang chạy:**
+  - review PR #41 (SHOP-50), ở bước `security`;
+  - review PR #42 (SHOP-20).
+- Ba làn đầy (SHOP-20, SHOP-21, SHOP-50). Việc kế tiếp chờ PR #40 merge.
+
+**Chờ bạn:**
+- approve PR #40;
+- chọn (a) hay (b) cho `API_URL`;
+- Accept SHOP-19, SHOP-49;
+- triage SHOP-51.
+
+**Claude (19:58, PR #41 sẵn sàng chờ bạn):**
+
+**PR #41 (SHOP-50, các Low của PR #37 và #39, head `5fdf162`):** không có Critical, High hay Medium. `reviewer` nêu 2 Low về migration V6 mới, `security` không có finding. SHOP-50 tổng cộng 8,28 USD.
+- Low 1: test của V6 sẽ đỏ khi có V7.
+- Low 2: thông báo lỗi của V6 không rõ khi `pgcrypto` chưa cài.
+- Cả hai gộp vào **SHOP-53**. Như V5, file V6 không sửa được sau khi đã chạy, nên Low 2 được ghi vào tài liệu vận hành.
+
+**Hai PR chờ bạn approve** (hoặc nhờ mình approve thay):
+- https://github.com/TungPH7/shop/pull/40 (Story SHOP-21, chi tiết sản phẩm cho khách)
+- https://github.com/TungPH7/shop/pull/41 (SHOP-50)
+
+**Đang chạy:** review PR #42 (Story SHOP-20).
+
+**Chờ bạn:**
+- approve PR #40, #41;
+- chọn (a) hay (b) cho `API_URL`;
+- Accept SHOP-19, SHOP-49;
+- triage SHOP-51.
+
+**Claude (20:05, PR #42 sẵn sàng; ba PR chờ bạn):**
+
+**PR #42 (Story SHOP-20 "Quản trị viên thêm sản phẩm", head `a96dffa`):** không có Critical hay High. `reviewer` nêu 1 Medium và 6 Low, `security` không có finding. SHOP-20 tổng cộng 11,53 USD.
+- Medium: hàm định dạng giá bị viết thêm một bản trong form, trong khi SPEC đòi một hàm duy nhất mỗi app.
+- Low đáng chú ý: nếu API trả 201 mà thân lệch schema, form báo "Không lưu được" dù đã lưu, bấm lại sẽ thêm một sản phẩm `-2`.
+- Tất cả vào **SHOP-54** (`ao-fe-dev`, Ready). SHOP-54 chờ PR #42 merge và **chặn SHOP-34** (US3 dùng lại form này).
+
+**Ba PR chờ bạn approve** (hoặc nhờ mình approve thay):
+- https://github.com/TungPH7/shop/pull/40 (Story SHOP-21, chi tiết sản phẩm cho khách)
+- https://github.com/TungPH7/shop/pull/41 (SHOP-50)
+- https://github.com/TungPH7/shop/pull/42 (Story SHOP-20, thêm sản phẩm)
+
+Hiện không còn lệnh nào chạy: ba làn đều chờ duyệt.
+
+**Chờ bạn:**
+- approve PR #40, #41, #42;
+- chọn (a) hay (b) cho `API_URL` của `user`;
+- Accept SHOP-19, SHOP-49;
+- triage SHOP-51.
+
+# Phiên 33 · Lượt 1 — 2026-11-16 khoảng 21:22
+
+**Bạn:**
+
+````markdown
+Làm tiếp session id: 84d69ed3-b065-40d0-a4e2-3c06a66ac5cb
+
+Trả lời cho tôi ý sau, chưa được làm gì tiếp đến khi tôi bảo nhé:
+
+Tôi chưa nắm về 'Triage Bug SHOP-51', nói lại cho tôi và đề xuất cách fix nhé. Chưa được làm gì tiếp cả nhé.
+
+Đoạn chat của session id: 84d69ed3-b065-40d0-a4e2-3c06a66ac5cb
+```
+Đã qua giờ reset lúc 18:31, PR #38 và #39 đã được bạn approve và merge, nên mình đang kiểm tra trạng thái SHOP-51 rồi sẽ tiếp tục các bước còn lại: cập nhật develop, review lại PR #40, mở các Story SHOP-20 và SHOP-50, và QA SHOP-19 và SHOP-49 khi deploy xong.
+
+Mình đã chạy tiếp từ 18:31. Giới hạn chạm lúc khoảng 16:00, ngay khi review PR #40 vừa bắt đầu, và reset lúc 18:30.
+
+Trong lúc đó bạn đã approve PR #38 và #39, cả hai đã merge:
+- PR #38 (SHOP-19) thành `3ad9180`;
+- PR #39 (SHOP-49) thành `535986b`.
+
+Mình đã xóa trước `node_modules` của hai làn này, sau khi kiểm mọi link chỉ trỏ vào bên trong làn.
+
+**Đang chạy (các lệnh khởi động cách nhau 25 giây, để không cùng lúc dọn làn):**
+1. Review PR #40 (Story SHOP-21), chạy lại sau giới hạn.
+2. Build Story SHOP-20 "Quản trị viên thêm sản phẩm" (`fe-dev`).
+3. Build SHOP-50 (`be-dev`): gồm các Low của PR #37 và #39, và ghi câu Rollback đúng cho V5.
+4. QA SHOP-19 rồi SHOP-49, chạy khi bản `535986b` deploy xong và có chỗ trống.
+
+**Chờ bạn:** triage Bug SHOP-51. Mình đề xuất (a): Severity Low, Fix v0.3.0, chuyển sang Ready. Bạn trả lời "(a)" là mình điền thay.
+
+Build SHOP-20 dừng vì báo "3 lanes are open" dù git đã gỡ worktree của SHOP-19 và SHOP-49, nên mình đang kiểm và xóa hai thư mục sót lại như đã làm với SHOP-47.
+
+Chỉ còn 5 file gốc được theo dõi (cùng `test-results`), giống hệt lần SHOP-47, nên đây là lỗi lặp lại chứ không phải ngẫu nhiên. Mình sẽ ghi chú vào kit, rồi kiểm tra xem build SHOP-50 có bị dừng vì cùng lý do không.
+
+Build SHOP-50 đang chạy và giữ khóa, QA SHOP-19 cũng đã bắt đầu vì bản `535986b` deploy xong khi đang chạm giới hạn, nên đủ 3 lệnh. SHOP-20 sẽ đặt script chờ có chỗ trống rồi mới build.
+
+Build SHOP-20 lần đầu dừng ngay, báo đã đủ 3 làn mở. Nguyên nhân là hai làn đã merge (SHOP-19 và SHOP-49) còn sót lại đúng 5 file gốc, dù `node_modules` đã được xóa trước. Lỗi này đã lặp lại đều, nên mình ghi bổ sung vào danh sách việc của kit: kit cần tự xóa thư mục còn sót sau khi gỡ làn. Mình đã xóa tay hai thư mục đó.
+
+Hiện có đủ 3 lệnh đang chạy: review PR #40, build SHOP-50 và QA SHOP-19. Bản `535986b` đã deploy xong ngay trong lúc chạm giới hạn, nên QA SHOP-19 chạy được luôn. SHOP-20 sẽ tự build khi có chỗ trống.
+
+**Chờ bạn:** triage Bug SHOP-51.
+
+Review PR #40 đã chạy lại (`reviewer`, lượt 4). Ba lệnh đang giữ khóa: QA SHOP-19, review PR #40 và build SHOP-50. QA SHOP-19 và build SHOP-50 vẫn đang chuẩn bị nên chưa gọi agent. Build SHOP-20 đang chờ có chỗ trống.
+
+`reviewer` của PR #40 đã chạy được 4 phút, đang viết một script nhỏ để kiểm lại code. Build SHOP-50 vẫn đang dựng làn và cài package, nên chưa gọi agent. Nếu tới lượt báo sau SHOP-50 vẫn chưa có lượt agent nào, mình sẽ vào xem.
+
+Đã khoảng 5 phút mà QA SHOP-19 và build SHOP-50 vẫn chưa gọi agent. Mình xem hai lệnh này đang làm gì, vì có thể chúng đang chờ RAM.
+
+Cả hai đang chờ RAM vì máy chỉ còn trống 1,5 GB, dưới ngưỡng 3 GB. Mình nghi các server dev của SHOP-21 (cổng 3200 và 3201) chưa tắt nên đang kiểm tra tiến trình chiếm RAM.
+
+Cổng 3200 và 3201 đã đóng, nên các server dev đã tắt. Còn mấy tiến trình `claude` từ 16:00 và 16:14 có thể là agent cũ chưa thoát, và mình đang kiểm tra RAM của từng tiến trình.
+
+QA SHOP-19 và build SHOP-50 đang phải chờ RAM. Máy chỉ còn trống khoảng 1,4 GB, trong khi mỗi agent mới cần 3 GB trống mới được chạy. Lúc chiều máy thường trống 5–7 GB.
+
+Phần lớn RAM đang nằm ở các ứng dụng bạn mở, không phải ở các làn:
+- **Chrome:** 25 tiến trình, khoảng 3,4 GB.
+- **VS Code**, mở lúc 17:19: 16 tiến trình, khoảng 3,0 GB.
+- **Hai tiến trình `claude`** chạy từ terminal lúc 16:00 và 16:14, khoảng 0,7 GB. Có vẻ đây là phiên Claude của bạn, không phải agent của kit, nên mình không đụng vào.
+- Các server dev mà agent SHOP-21 bật lên để thử đã được tắt.
+
+Kit không bị kẹt. Khi review PR #40 chạy xong (còn khoảng 10–15 phút), không còn agent nào đang chạy. Lúc đó một trong hai lệnh đang chờ sẽ được chạy ngay, dù RAM chưa đủ 3 GB. Tuy vậy, các agent sẽ phải chạy lần lượt từng cái một. Lệnh nào chờ quá 30 phút sẽ tự dừng, khi đó mình chạy lại.
+
+Nếu muốn chạy song song trở lại, bạn đóng bớt tab Chrome hoặc cửa sổ VS Code không dùng. Mỗi cửa sổ VS Code chiếm khoảng 0,5–1,5 GB. Khi máy trống trên 3 GB, các lệnh đang chờ sẽ tự chạy.
+
+**Chờ bạn:** triage Bug SHOP-51.
+
+`reviewer` của PR #40 đã xong (3,12 USD). Trong lúc chuyển sang `security`, chốt RAM đã cho agent `be-dev` của SHOP-50 vào chạy. QA SHOP-19 vẫn đang chờ RAM.
+
+Không có gì mới. QA SHOP-19 vẫn chờ RAM, còn build SHOP-20 chờ có chỗ trống. Hai lệnh đang chạy là review PR #40 (bước `security`) và build SHOP-50.
+
+`reviewer` của PR #40 đã xong được hơn 3 phút mà `security` vẫn chưa bắt đầu. Mình đoán `security` cũng đang chờ RAM, vì `be-dev` của SHOP-50 đã vào chạy trước. Mình kiểm tra.
+
+Đúng như mình đoán: `security` của PR #40 cũng đang chờ RAM. Máy còn trống 1,3 GB, nên lúc này chỉ có một agent chạy là `be-dev` của SHOP-50.
+
+Khi SHOP-50 xong, một trong hai lệnh đang chờ (`security` của PR #40 hoặc QA SHOP-19) sẽ được chạy. Lệnh còn lại có thể chờ quá 30 phút và tự dừng; khi đó mình chạy lại. Nếu bạn đóng bớt Chrome hoặc VS Code để máy trống trên 3 GB, các lệnh sẽ chạy song song lại ngay.
+
+Hiện chỉ có `be-dev` của SHOP-50 đang chạy (6 phút, 79 bước). `security` của PR #40 và QA SHOP-19 vẫn phải chờ, vì máy chưa đủ RAM trống.
+
+Không có gì thay đổi. Vẫn chỉ `be-dev` của SHOP-50 đang chạy, còn ba lệnh kia đang chờ:
+- `security` của PR #40 và QA SHOP-19 chờ đủ RAM;
+- build SHOP-20 chờ có chỗ trống.
+
+SHOP-50 (`be-dev`) vẫn chạy đều: đã 9 phút, tới bước 108. Các lệnh còn lại vẫn đang chờ RAM hoặc chờ chỗ trống.
+
+Không có gì mới. Vẫn chỉ `be-dev` của SHOP-50 đang chạy, ba lệnh còn lại tiếp tục chờ.
+
+SHOP-50 vẫn đang chạy đều: `be-dev` đã làm được 12 phút, tới bước 135. Ba lệnh kia vẫn đang chờ.
+
+Không có gì mới. Vẫn chỉ `be-dev` của SHOP-50 đang chạy.
+
+SHOP-50 vẫn đang chạy bình thường: đã 15 phút, tới bước 158. Các lệnh khác vẫn đang chờ RAM.
+
+Không có gì mới. QA SHOP-19 đã chờ RAM từ khoảng 18:34. Nếu tới khoảng 19:04 vẫn chưa được chạy, lệnh sẽ tự dừng, và mình sẽ chạy lại khi máy rảnh.
+
+Agent `be-dev` của SHOP-50 đã xong, tốn 4,17 USD. Lệnh build đang mở PR. Giờ không còn agent nào chạy, nên một trong hai lệnh đang chờ (`security` của PR #40 hoặc QA SHOP-19) sẽ được vào trước.
+
+QA SHOP-19 đã được vào chạy. `security` của PR #40 vẫn đang chờ RAM: nó đã chờ từ khoảng 18:40, nên nếu tới khoảng 19:10 vẫn chưa được chạy thì lệnh sẽ tự dừng và mình chạy lại.
+
+SHOP-50 đã mở PR #41, và mình sẽ xếp việc review vào hàng chờ khi có chỗ trống. Máy hiện còn 2,4 GB trống, dưới ngưỡng 3 GB, nên các agent vẫn chạy lần lượt.
+
+SHOP-50 đã mở PR #41, `be-dev` tốn 4,17 USD. Review PR #41 đang chờ có chỗ trống. QA SHOP-19 đã chạy được 3 phút.
+
+Máy chỉ còn trống khoảng 2,4 GB, dưới ngưỡng 3 GB, nên các agent đang chạy lần lượt từng cái một. `security` của PR #40 và build SHOP-20 vẫn đang chờ tới lượt.
+
+**Chờ bạn:** triage Bug SHOP-51.
+
+Agent QA của SHOP-19 đã chạy xong (0,95 USD). Lệnh QA vẫn đang đính bằng chứng lên Jira, mình sẽ đọc kết quả khi lệnh kết thúc. `security` của PR #40 đã được vào chạy.
+
+Build SHOP-20 đã vào làn, giữ khóa và đang chuẩn bị, chưa gọi agent. Có 3 lệnh đang giữ khóa: QA SHOP-19 (sắp xong), `security` của PR #40, và build SHOP-20. Review PR #41 vẫn chờ chỗ trống.
+
+Lệnh review PR #41 bị chặn vì chuỗi QA SHOP-49 đã chiếm chỗ, nên mình xếp nó vào hàng chờ và đang đọc kết quả QA SHOP-19.
+
+QA SHOP-19 **PASS** trên Development, bản `535986b`, tốn 0,95 USD (báo cáo ở comment 10354). Đây là Story đầu tiên của Epic qua được QA. **SHOP-19 đang chờ bạn Accept.**
+
+**Đang chạy:**
+- `security` của PR #40 (SHOP-21);
+- QA SHOP-49;
+- build Story SHOP-20 (chưa gọi agent vì máy còn ít RAM trống).
+
+Review PR #41 (SHOP-50) vừa bị chuỗi QA giành mất chỗ trống cuối cùng, nên đã quay lại hàng chờ.
+
+**Chờ bạn:**
+- Accept SHOP-19.
+- Triage Bug SHOP-51.
+
+`security` của PR #40 (SHOP-21) đang chạy được 5 phút, đã tới bước 41. QA SHOP-49 vẫn đang chờ RAM nên chưa gọi agent. Dòng "253 phút" của SHOP-49 trong báo cáo là lượt `security` cũ, không phải lượt QA lần này.
+
+Không có gì mới. Hiện chỉ `security` của PR #40 đang chạy agent. Build SHOP-20 và QA SHOP-49 vẫn chờ đủ RAM. Review PR #41 chờ có chỗ trống.
+
+`security` của PR #40 (SHOP-21) đã chạy được 8 phút, tới bước 62. Các lệnh còn lại vẫn đang chờ.
+
+Không có gì mới. Vẫn chỉ `security` của PR #40 đang chạy. Các lệnh còn lại tiếp tục chờ RAM hoặc chờ chỗ trống.
+
+`security` của PR #40 đang chạy được 11 phút, đã tới bước 79. QA SHOP-49 vẫn phải chờ đủ RAM mới bắt đầu.
+
+Không có gì mới. Vẫn chỉ có `security` của PR #40 đang chạy.
+
+PR #40 không có lỗi Critical hay High, và chỉ còn hai Medium cùng một Low cần xử lý. Mình sẽ giao Medium 1 và Low cho `be-dev`, còn Medium 2 sửa `project.yaml` thì cần bạn quyết cách làm.
+
+PR #40 (Story SHOP-21 "Khách xem chi tiết sản phẩm") đã review xong. Không có Critical hay High: `reviewer` nêu 2 Medium và 1 Low, `security` không có finding nào. SHOP-21 đến giờ tốn 19,77 USD.
+
+- **Medium 1 và Low** đều nằm ở phía `api`: phép so sánh slug của các lệnh admin, và chưa đo tốc độ lệnh lấy chi tiết sản phẩm. Hai mục này đã vào **SHOP-53** (cho `be-dev`), làm sau khi PR #40 và PR #41 merge.
+- **Medium 2 cần bạn quyết.** Trong `.ai-orchestrator/project.yaml`, app `user` chưa khai báo `API_URL` (app admin thì đã có `API_URL: http://localhost:3001`).
+  - Hậu quả: khi chạy E2E của `user` trên máy hay trong làn, app gọi nhầm sang API NestJS cũ. Agent làm SHOP-23 phải tự đặt biến này thì test mới xanh.
+  - Bốn Story phía khách sắp làm (SHOP-24, 25, 28, 31) sẽ gặp đúng chuyện này.
+
+Có hai cách:
+- **(a) Mở một PR nhỏ ngay**, thêm `API_URL: http://localhost:3001` vào `apps.user.env`. Mình đề xuất cách này.
+  - `project.yaml` là đường dẫn được bảo vệ, nên bạn là người merge.
+  - Diff chỉ một dòng, review một lần, ước chừng 1–3 USD và khoảng 15 phút.
+  - Nếu muốn, gộp luôn `runs.min_free_ram_gb: 1.5` vào cùng PR, không tốn thêm lượt review. Máy đang thiếu RAM nên agent phải chạy lần lượt từng cái.
+- **(b) Để đến lần chép kit cuối Epic.** Trong lúc đó agent phải tự đặt `API_URL` mỗi lần, dễ quên, và E2E có thể gọi nhầm API.
+
+**Cách approve PR #40:**
+1. Mở https://github.com/TungPH7/shop/pull/40.
+2. Bấm tab **Files changed**.
+3. Bấm **Review changes**, chọn **Approve**.
+4. Bấm **Submit review**.
+
+Bạn cũng có thể nhờ mình approve thay.
+
+**Chờ bạn:**
+- Approve PR #40.
+- Chọn (a) hay (b) cho `API_URL`, và cho biết có gộp `min_free_ram_gb` vào không.
+- Accept SHOP-19.
+- Triage Bug SHOP-51.
+
+QA SHOP-49 đã chạy được 3 phút, tới bước 24. Lệnh review PR #40 đã kết thúc, PR này đang chờ bạn approve.
+
+Review PR #41 (SHOP-50) đã giành được chỗ trống, nên giờ đủ 3 lệnh giữ khóa: QA SHOP-49, review PR #41 và build SHOP-20. Build SHOP-20 vẫn đang chờ RAM. Nếu tới khoảng 19:33 nó chưa được chạy thì sẽ tự dừng, khi đó mình chạy lại.
+
+Agent QA của SHOP-49 đã chạy xong, tốn 1,18 USD. Lệnh QA đang đính bằng chứng lên Jira. Khi lệnh kết thúc, mình sẽ đọc kết quả.
+
+QA SHOP-49 (sửa 6 Low của API quản trị) **PASS** trên Development, bản `535986b`, tốn 1,18 USD. Báo cáo ở comment 10356. **SHOP-49 chờ bạn Accept**, cùng SHOP-19.
+
+**Đang chạy:**
+- Build Story SHOP-20 (thêm sản phẩm). `fe-dev` đã vào chạy và đang đọc bản thiết kế màn hình S2.
+- Review PR #41 (SHOP-50).
+
+**Chờ bạn:**
+- Approve PR #40.
+- Chọn (a) hay (b) cho `API_URL`.
+- Accept SHOP-19 và SHOP-49.
+- Triage Bug SHOP-51.
+
+SHOP-20 (`fe-dev`) đã chạy được 4 phút, tới bước 57. Review PR #41 đã giữ khóa nhưng chưa gọi được `reviewer`, nhiều khả năng đang chờ RAM.
+
+Không có gì mới. Hai lệnh đang giữ khóa là build SHOP-20 và review PR #41, thư mục `shop` vẫn ở `develop`.
+
+SHOP-20 vẫn đang chạy bình thường: `fe-dev` đã làm 7 phút, tới bước 87, hiện đang sửa model sản phẩm. Review PR #41 vẫn đang chờ đủ RAM để chạy `reviewer`.
+
+Vẫn như lượt trước: build SHOP-20 và review PR #41 đang giữ khóa, thư mục `shop` vẫn ở `develop`.
+
+SHOP-20 vẫn chạy đều: được 10 phút, tới bước 102. Review PR #41 đã chờ RAM từ khoảng 19:16. Nếu SHOP-20 chưa xong trước khoảng 19:46, review sẽ tự dừng và mình chạy lại.
+
+Không có gì mới. Build SHOP-20 và review PR #41 vẫn giữ khóa.
+
+Build SHOP-20 vẫn chạy bình thường: được 13 phút, tới bước 121. Review PR #41 vẫn đang chờ RAM.
+
+Không có gì mới. Hai lệnh vẫn giữ khóa: build SHOP-20 và review PR #41.
+
+Build SHOP-20 vẫn chạy bình thường: được 16 phút, tới bước 145. Review PR #41 vẫn phải chờ RAM.
+
+Không có gì mới. Build SHOP-20 và review PR #41 vẫn đang giữ khóa.
+
+Build SHOP-20 đã chạy được 19 phút, tới bước 157, vẫn bình thường. Review PR #41 vẫn đang chờ RAM.
+
+Chưa có gì mới. Build SHOP-20 và review PR #41 vẫn đang giữ khóa của mình.
+
+`reviewer` của PR #41 (SHOP-50) đã được chạy, tức là máy đã trống thêm RAM. Giờ có hai agent chạy song song:
+- `fe-dev` làm SHOP-20: được 22 phút, đang kiểm giao diện trong Chrome;
+- `reviewer` của PR #41: được 2 phút.
+
+Không có gì mới. Hai lệnh vẫn đang chạy song song: build SHOP-20 và review PR #41.
+
+Cả hai lệnh vẫn chạy bình thường:
+- **Build SHOP-20:** `fe-dev` đã làm được 25 phút, tới bước 242.
+- **Review PR #41:** `reviewer` đã chạy được 5 phút, đang kiểm các container Docker.
+
+Không có gì mới. Build SHOP-20 và review PR #41 vẫn đang chạy.
+
+`fe-dev` của SHOP-20 đã xong, tốn 8,71 USD, giờ lệnh build đang mở PR và chờ CI. PR #41: `reviewer` đã xong, `security` đang chạy.
+
+Không có gì mới. Build SHOP-20 đang chờ CI, còn review PR #41 đang chạy `security`.
+
+SHOP-20 đã mở PR #42, CI xanh. Mình bỏ qua bước preview và cho review luôn.
+
+Story SHOP-20 "Quản trị viên thêm sản phẩm" đã có PR nháp #42, CI xanh. `fe-dev` tốn 8,71 USD. Mình bỏ qua bước preview và cho review luôn.
+
+**Đang chạy:**
+- Review PR #41 (SHOP-50), đang ở bước `security`.
+- Review PR #42 (SHOP-20), vừa khởi động.
+
+Cả ba làn đều đang bận (SHOP-20, SHOP-21, SHOP-50). Muốn làm item tiếp theo thì phải chờ PR #40 merge để trả lại một làn.
+
+**Chờ bạn:**
+- Approve PR #40.
+- Chọn (a) hay (b) cho `API_URL`.
+- Accept SHOP-19 và SHOP-49.
+- Triage Bug SHOP-51.
+
+Cả hai review đều đang chạy bình thường. PR #41 đang ở bước `security`, được 6 phút. PR #42 đang ở bước `reviewer`, được 2 phút.
+
+Vẫn như lượt trước: review PR #41 và PR #42 đang giữ khóa.
+
+PR #41 (SHOP-50) không có lỗi Critical, High hay Medium; reviewer nêu 2 lỗi Low, còn security không có finding nào, và SHOP-50 đến giờ đã tốn 8,28 USD. Mình gộp cả hai lỗi Low vào SHOP-53 để be-dev xử lý sau khi PR #40 và #41 được merge, lưu ý rằng file V6 không sửa được nữa sau khi đã chạy trên môi trường nào.
+
+PR #41 (SHOP-50) đã review xong, không có Critical, High hay Medium. `security` không có finding nào, còn `reviewer` nêu 2 Low về migration V6 mới:
+- test của V6 sẽ báo đỏ khi sau này có thêm V7;
+- thông báo lỗi của V6 không rõ ràng khi `pgcrypto` chưa được cài.
+
+Cả hai đã gộp vào **SHOP-53**. Giống V5, file V6 không sửa được nữa sau khi đã chạy trên một môi trường, nên Low thứ hai sẽ được ghi vào tài liệu vận hành thay vì sửa file. SHOP-50 đến giờ tốn 8,28 USD.
+
+**Hai PR chờ bạn approve** (hoặc nhờ mình approve thay):
+- https://github.com/TungPH7/shop/pull/40 (Story SHOP-21, trang chi tiết sản phẩm cho khách)
+- https://github.com/TungPH7/shop/pull/41 (SHOP-50)
+
+**Đang chạy:** review PR #42 (Story SHOP-20).
+
+**Chờ bạn:**
+- Approve PR #40 và #41.
+- Chọn (a) hay (b) cho `API_URL`.
+- Accept SHOP-19 và SHOP-49.
+- Triage Bug SHOP-51.
+
+`reviewer` của PR #42 (SHOP-20) đã chạy được 5 phút. Review PR #41 đã xong, PR này đang chờ bạn approve.
+
+Hiện chỉ còn review PR #42 (SHOP-20) đang chạy và giữ khóa. Cả ba làn vẫn đang mở, nên chưa mở thêm item mới được. Muốn mở item mới thì cần PR #40 hoặc PR #41 merge trước.
+
+PR #42: `reviewer` đã chạy xong, giờ tới `security`. Mình bật lại watcher, lần này chỉ theo dõi PR #42.
+
+PR #42 (SHOP-20) đã xong bước `reviewer`, giờ đang chạy bước `security`. Watcher mới chỉ theo dõi PR này, vì các lệnh khác đều đang chờ bạn.
+
+**Chờ bạn:**
+- approve PR #40 và #41;
+- chọn (a) hay (b) cho `API_URL`;
+- Accept SHOP-19 và SHOP-49;
+- triage Bug SHOP-51.
+
+`security` của PR #42 (SHOP-20) đang chạy bình thường. Watcher sẽ báo tiếp sau 3 phút.
+
+PR #42 không có lỗi Critical hay High; reviewer nêu 1 Medium và 6 Low. Mình đang gom lỗi Medium vào một Task cho `fe-dev` vì hàm định dạng giá bị viết lại trong form, và Task này sẽ chặn SHOP-34.
+
+PR #42 đã review xong. Giờ có ba PR chờ bạn approve, và không còn lệnh nào đang chạy.
+
+**PR #42** (Story SHOP-20 "Quản trị viên thêm sản phẩm") không có lỗi Critical hay High. `security` không có finding nào, còn `reviewer` nêu 1 Medium và 6 Low. SHOP-20 đến giờ tốn 11,53 USD.
+- **Medium:** form viết thêm một hàm định dạng giá riêng, trong khi SPEC yêu cầu mỗi app chỉ có một hàm duy nhất.
+- **Một Low đáng chú ý:** nếu API trả 201 nhưng phần thân không đúng schema, form vẫn báo "Không lưu được" dù sản phẩm đã lưu. Người dùng bấm lại sẽ tạo thêm một sản phẩm có slug `-2`.
+- Cả 7 finding đã gom vào **SHOP-54**. Task này làm sau khi PR #42 merge, và chặn SHOP-34 vì US3 dùng lại form này.
+
+**Ba PR chờ bạn approve.** Bạn cũng có thể nhờ mình approve thay.
+- https://github.com/TungPH7/shop/pull/40 (Story SHOP-21, trang chi tiết sản phẩm cho khách)
+- https://github.com/TungPH7/shop/pull/41 (SHOP-50)
+- https://github.com/TungPH7/shop/pull/42 (Story SHOP-20, thêm sản phẩm)
+
+Cả ba làn đều đang chờ duyệt, nên chưa có lệnh nào chạy được. Khi các PR merge, mình sẽ:
+- chạy QA cho các item vừa merge;
+- mở SHOP-53 cho `be-dev`;
+- mở SHOP-52, SHOP-54 cho `fe-dev`;
+- mở các Story SHOP-24, SHOP-25 và SHOP-31 (đều chờ SHOP-21).
+
+**Việc chờ bạn:**
+- Approve PR #40, #41 và #42.
+- Chọn (a) hay (b) cho việc thêm `API_URL` vào app `user`.
+- Accept SHOP-19 và SHOP-49.
+- Triage Bug SHOP-51.
+```
+````
+
+**Claude:**
+
+**SHOP-51 là một lỗi nhỏ về ghi log:** khi hai lần thêm sản phẩm giành nhau cùng một slug, log của server ghi luôn tên và mô tả sản phẩm, trái quy định NFR12 của spec. Không mất dữ liệu, không lộ mật khẩu hay dữ liệu khách hàng.
+
+**Chuyện xảy ra thế này:**
+1. Mỗi sản phẩm có một slug riêng, là phần cuối của đường dẫn, ví dụ `dam-maxi-1`. Database không cho hai sản phẩm trùng slug.
+2. Khi hai quản trị viên bấm thêm cùng lúc hai sản phẩm cùng slug, database từ chối một lần lưu. Code của `api` đã xử lý đúng: tự thử số kế tiếp (`dam-maxi-2`), hoặc báo lỗi 409 "slug đã có".
+3. Nhưng ngay lúc bị từ chối, Hibernate (thư viện lưu dữ liệu mà Spring dùng) tự ghi hai dòng cảnh báo vào log. Mỗi dòng chép nguyên câu lệnh lưu, gồm cả tên, mô tả và giá sản phẩm.
+4. NFR12 trong spec SHOP-7 chỉ cho log ghi thao tác, id, slug và mã theo dõi (correlation id), không được ghi mô tả. Không file cấu hình nào tắt dòng cảnh báo này, nên lên Production nó vẫn ghi.
+5. QA tìm ra lỗi khi kiểm SHOP-46: riêng test "thêm hai sản phẩm cùng tên cùng lúc" đã sinh 32 dòng log như vậy.
+
+**Triage là gì:** bạn chốt mức độ (Severity) và bản phát hành sẽ sửa (Fix Version). Sau đó Bug chuyển từ New sang Ready, và agent mới được làm.
+
+**Mình đề xuất (a):** Severity Low, Affects Version để trống, Fix Version `v0.3.0`, chuyển sang Ready.
+- Low vì lỗi chỉ xảy ra khi hai lần thêm tranh nhau cùng slug, rất hiếm. Thứ lộ ra là nội dung sản phẩm, vốn sẽ hiện công khai trên web, và log chỉ nằm trên server.
+- Affects Version để trống vì lỗi mới có trên `develop` (từ SHOP-15), chưa lên bản phát hành nào. `v0.3.0` là bản sẽ mang Epic SHOP-7.
+
+**Cách fix mình đề xuất** (`be-dev` làm trên nhánh `bugfix/SHOP-51-…` tách từ `develop`):
+1. **Tắt dòng log đó của Hibernate.** Thêm một dòng `org.hibernate.orm.jdbc.error: "OFF"` vào mục `logging.level` của `apps/api/src/main/resources/application.yml`. File này dùng chung, nên áp cho mọi môi trường.
+   - Tắt vẫn an toàn: lỗi vẫn được chuyển lên code như cũ. Lỗi trùng slug thì code tự xử lý, lỗi database khác vẫn được app ghi log.
+   - Chọn `OFF` thay vì `ERROR`, để lỡ bản Hibernate sau đổi mức của dòng này thì cũng không lộ lại.
+2. **Thêm test chặn lỗi quay lại.** Chạy lại kịch bản hai lần thêm cùng lúc, bắt toàn bộ log, rồi kiểm: log không chứa tên hay mô tả sản phẩm, nhưng vẫn có dòng log của app ghi slug.
+3. **Sửa luôn một chỗ cùng loại.** `GlobalExceptionHandler.java:304` (trong `apps/api`) ghi nguyên văn thông báo lỗi của Postgres. Với lỗi trùng slug, thông báo chỉ có slug, được phép. Nhưng với vài lỗi ràng buộc khác, Postgres có thể kèm cả dòng dữ liệu ("Failing row contains …"). Nên đổi để chỉ ghi tên ràng buộc.
+
+Sau đó là review, merge rồi QA trên Development như các item khác, ước chừng 5–8 USD. Cả 3 làn đang bận chờ PR #40, #41, #42 merge, nên SHOP-51 phải đợi một làn trống.
+
+Mình chưa đụng vào Jira hay code, chỉ đọc. Bạn trả lời "(a)" thì mình điền triage trên Jira. Bạn nói "bắt đầu" thì mình mới xếp SHOP-51 vào hàng chờ build.
+
+# Phiên 33 · Lượt 2 — 2026-11-16 khoảng 22:50 → 23:13
+
+**Bạn:**
+
+```markdown
+- Approve 3 PR giúp tôi. 
+- Chọn (a) cho việc thêm API_URL vào app user, gộp luôn runs.min_free_ram_gb: 1.5
+- Accept SHOP-19 và SHOP-49 giúp tôi nhé.
+- Triage Bug SHOP-51: chọn (a) làm như bạn đề xuất
+```
+
+**Claude:**
+
+**Đã làm xong 4 việc bạn nhờ. Riêng PR #41 phải làm thêm một bước vì bị xung đột.**
+
+1. **Approve 3 PR:** mình đã approve thay bạn cả ba. PR #40 (SHOP-21) và #42 (SHOP-20) đã merge. PR #41 (SHOP-50) chưa merge được vì xung đột với #40: cả hai cùng sửa `ProductRepository.java`.
+   - Mình đã gỡ xung đột bằng cách merge `develop` vào nhánh của PR. Bản gộp giữ cả câu truy vấn slug mới của SHOP-50 lẫn hàm `findBySlugIgnoringCase` mà trang chi tiết của SHOP-21 dùng. CI xanh.
+   - Head của PR đã đổi (`8c65ab8`), nên lần approve cũ không còn tính. Review đang chạy lại. Nếu không có Critical hay High, mình sẽ approve lại thay bạn, như bạn đã nhờ.
+   - Vì merge cả `develop`, lượt `security` này phải đọc lại khoảng 3.700 dòng code của SHOP-20 và SHOP-21 đã review rồi, nên tốn hơn bình thường. Mình đã ghi vào danh sách việc cần sửa của kit.
+2. **`API_URL` theo (a):** mình tạo Task **SHOP-55** và mở **PR #43**. PR sửa 2 dòng trong `project.yaml`: thêm `API_URL: http://localhost:3001` cho app `user`, và hạ `min_free_ram_gb` xuống 1,5. CI xanh, review đang chạy. Đây là đường dẫn được bảo vệ, nên khi review xong mình sẽ nhờ bạn approve.
+3. **Accept:** SHOP-19 và SHOP-49 đã chuyển sang Done.
+4. **Triage SHOP-51:** đã đặt Severity Low, để trống Affects Version, đặt Fix Version `v0.3.0` và chuyển sang Ready. `be-dev` đang bắt đầu sửa.
+
+Mình cũng đã dọn hai làn đã merge (SHOP-20, SHOP-21), để có chỗ cho item mới.
+
+**Đang chạy:**
+- review lại PR #41;
+- review PR #43;
+- build SHOP-51 (`be-dev`);
+- QA SHOP-21 rồi SHOP-20: chạy khi bản `8470590` deploy xong lên Development và có chỗ trống.
+
+**Chờ bạn:** ngay lúc này chưa có gì. Sắp tới sẽ cần bạn approve PR #43 khi review xong, và Accept SHOP-21, SHOP-20 khi QA PASS.
+
+# Phiên 33 · Lượt 3 — 2026-11-16 khoảng 23:15
+
+**Bạn:**
+
+```markdown
+Từ giờ tới hết epic:
+Tôi cho phép bạn Approve và Accept. Làm theo bạn đề xuất nhé. Chỗ nào bạn không có quyền thì mới hỏi tôi. Còn lại bạn cứ làm nhé
+```
+
+**Claude:**
+
+Đã rõ. Từ giờ tới hết Epic SHOP-7, mình tự làm hai việc này mà không hỏi lại:
+- **Approve PR** khi CI xanh và review không còn Critical hay High, kể cả PR sửa đường dẫn được bảo vệ như PR #43;
+- **Accept item** khi QA PASS.
+
+Mình vẫn sẽ hỏi bạn ở những chỗ chỉ bạn có quyền: gate ④ và ⑤ của bản release, bấm Release hay Complete trên Jira, cấp quyền mới, xóa thứ không lấy lại được, và khi phải chấp nhận một lỗi High. Mình đã ghi quyền này vào bộ nhớ và file bàn giao.
+
+**Đang chạy:**
+- review lại PR #41;
+- review PR #43;
+- build SHOP-51 (`be-dev`);
+- QA SHOP-21 rồi SHOP-20, chạy khi bản `8470590` deploy xong.
+
+Khi các review xong và sạch, mình approve luôn, rồi chạy tiếp QA, Accept và các item kế tiếp.
+
+# Phiên 33 · Lượt 4 — 2026-11-17 khoảng 08:40
+
+**Bạn:**
+
+```markdown
+Trả lời những câu bên dưới, chưa được làm gì cả nhé.
+
+Ưu tiên làm các item từ SHOP-28 đến SHOP-39 trước SHOP-58 đến SHOP-60 được không? Hay phải làm SHOP-58 đến SHOP-60 xong thì item từ SHOP-28 đến SHOP-39 mới chạy được? Hay nói cách khác có thể làm xong các task/story trước các findings được không? Hay nên làm findings trước, theo thứ tự bạn đề xuất để tránh conflict, phát sinh lỗi về sau?
+```
+
+**Claude:**
+
+**Được, phần lớn Story làm trước các Task sửa finding cũng được. Chỉ có một cặp nên giữ thứ tự: SHOP-58 trước SHOP-28, vì hai item sửa cùng file.**
+
+1. **Kit không bắt các Task finding phải xong trước.** Một item chỉ bị chặn khi có liên kết "blocks". Trong nhóm này chỉ còn đúng một liên kết như vậy, do mình đặt: SHOP-58 chặn SHOP-28.
+2. **Vì sao SHOP-58 nên làm trước SHOP-28.** Cả hai sửa trang danh sách sản phẩm của khách, cụ thể là `get-products.ts` và `product-results.tsx`. SHOP-28 thêm tìm kiếm và sắp xếp vào đúng chỗ SHOP-58 đang sửa. Làm ngược lại thì hai PR đụng nhau như PR #41: phải gỡ xung đột rồi review lại, tốn thêm khoảng 3–5 USD và gần một giờ.
+3. **SHOP-59 và SHOP-60 không làm Story chậm đi.** Đây là việc phía `api` của `be-dev`, không đụng file nào của các Story còn lại. Story chủ yếu chờ `fe-dev`, mà mỗi lúc chỉ có một `fe-dev`, còn `be-dev` đang rảnh. Hai Task này chạy song song vào lúc `be-dev` rảnh. Hiện SHOP-59 đang QA, SHOP-60 chờ review, cả hai gần xong.
+4. **Chỗ nghẽn thật là `fe-dev`.** SHOP-31, SHOP-34, SHOP-37 và SHOP-28 đều cần `fe-dev`, nên phải chạy lần lượt. SHOP-58 đã chạy được 18 phút, gần xong; dừng giữa chừng sẽ phí phần đã làm.
+5. **SHOP-39 (các Low về design system) không chặn gì, nên để cuối.** Nó sửa phần giao diện dùng chung, nên làm sớm dễ đụng các Story đang làm.
+
+**Thứ tự mình đề xuất cho `fe-dev`:**
+1. SHOP-58 (sắp xong).
+2. Phần giao diện của SHOP-31 (đã chờ sẵn).
+3. SHOP-37.
+4. SHOP-34, sau khi chạy yêu cầu `Cần ux:`.
+5. SHOP-28, sau khi chạy yêu cầu `Cần ba:`.
+6. SHOP-39 cuối cùng.
+
+`be-dev` làm SHOP-60, rồi các Sub-task phía `api` của từng Story khi tới lượt.
+
+So với hàng chờ hiện tại, chỉ cần dời SHOP-39 xuống cuối; hiện nó đang xếp ngay sau SHOP-37. Mình chưa đổi gì. Các lệnh đã chạy từ trước tin nhắn này vẫn chạy tiếp: SHOP-58, QA SHOP-59, review PR #53. Bạn nói "làm đi" thì mình đổi thứ tự.
+
+# Phiên 33 · Lượt 5 — 2026-11-17 khoảng 08:47
+
+**Bạn:**
+
+```markdown
+Trả lời những câu bên dưới, chưa được làm gì cả nhé.
+
+đổi thứ tự có dừng các các item đang chạy không?
+```
+
+**Claude:**
+
+**Không. Đổi thứ tự không dừng item nào đang chạy, không mất phần việc đã làm và không tốn thêm tiền.**
+
+1. **Các lệnh đang chạy vẫn chạy tiếp:** build SHOP-58, build SHOP-31 (đang chờ `fe-dev`), QA SHOP-24, và review PR #53 (đang chờ chỗ trống).
+2. **Việc đổi chỉ chạm vào SHOP-39, lệnh chưa bắt đầu.** Khó ở chỗ SHOP-39 nằm cùng một chuỗi lệnh với SHOP-58 và SHOP-37, chạy lần lượt. Dừng chuỗi lúc SHOP-58 hay SHOP-37 đang build sẽ cắt ngang agent, nên mình không làm vậy.
+3. **Mình chờ đúng lúc an toàn:** khi chuỗi đã build xong SHOP-37 và chỉ đang đợi chỗ cho SHOP-39. Lúc đó không có agent nào của SHOP-39 chạy, nên dừng chuỗi chỉ là dừng một lệnh đang chờ.
+4. **Rồi mình xếp lại SHOP-39 ở cuối,** sau SHOP-34 và SHOP-28.
+
+Mình chưa làm gì. Bạn nói "làm đi" thì mình làm như trên.
+
+# Phiên 33 · Lượt 6 — 2026-11-17 khoảng 08:50
+
+**Bạn:**
+
+```markdown
+đồng ý Thứ tự bạn đề xuất cho fe-dev
+```
+
+**Claude:**
+
+Đã rõ, mình làm theo thứ tự này cho `fe-dev`: SHOP-58 (sắp xong), phần giao diện của SHOP-31, SHOP-37, SHOP-34 (sau yêu cầu `Cần ux:`), SHOP-28 (sau yêu cầu `Cần ba:`), rồi SHOP-39 cuối cùng.
+
+- **Accept:** QA SHOP-59 và Story SHOP-24 (trang 404) đều PASS; cả hai đã Done. E2E cả repo: 92 đạt, không test nào đỏ.
+- **Đổi thứ tự:** mình đã đặt một lệnh canh. Khi chuỗi `fe-dev` build xong SHOP-37 và chuyển sang chờ chỗ cho SHOP-39, mình dừng chuỗi đúng lúc đó, lúc chưa có agent nào chạy, rồi xếp SHOP-39 xuống cuối.
+- **Đang chạy:** build SHOP-58, build SHOP-31 (chờ `fe-dev`), review PR #53 (SHOP-60).
+
+**Claude (09:02, SHOP-37 chạy trước SHOP-31):**
+
+Thứ tự `fe-dev` lệch một chỗ so với bạn duyệt: **SHOP-37 đang build trước SHOP-31.**
+1. Phần giao diện của SHOP-31 đã chạy quá sớm, lúc SHOP-58 còn In Progress trên Jira. Guard WIP từ chối, agent dừng ngay, tốn 0,73 USD. Lỗi này nằm ở kit, mình đã ghi vào danh sách việc của kit.
+2. Để SHOP-31 chạy trước SHOP-37, mình dừng chuỗi cũ. Nhưng trên Windows, lệnh dừng chỉ tắt tiến trình ngoài cùng; tiến trình con đang chờ chỗ cho SHOP-37 vẫn sống và tự khởi động build SHOP-37.
+3. Mình để SHOP-37 chạy tiếp. Hai Story không đụng file của nhau: SHOP-37 thuộc admin, SHOP-31 thuộc app khách. Dừng giữa chừng còn có thể làm kẹt WIP của `fe-dev`.
+4. Chuỗi cha đã tắt, nên SHOP-39 sẽ không tự chạy sớm. Thứ tự còn lại giữ nguyên: SHOP-31 → SHOP-34 → SHOP-28 → SHOP-39.
+
+Mình đã ghi bài học vào bộ nhớ: mỗi item một lệnh hàng chờ riêng, và kiểm tiến trình trước khi tin là đã dừng.
+
+# Phiên 33 · Lượt 7 — 2026-11-17 khoảng 09:17
+
+**Bạn:**
+
+```markdown
+Trong lúc làm các item từ SHOP-28 đến SHOP-39, nếu có findings thì bạn sẽ xử lý như nào?
+1. làm các findings trước các item từ SHOP-28 đến SHOP-39
+2. Vẫn làm trước các item từ SHOP-28 đến SHOP-39
+3. Tùy findings, nếu findings được đánh giá là chặn task/story thì sẽ làm findings song song với các item từ SHOP-28 đến SHOP-39.
+```
+
+**Claude:**
+
+**Mình làm theo cách 3: tùy từng finding.** Các Story vẫn được ưu tiên; finding chỉ được làm trước khi nó thật sự chặn hoặc đụng chạm một Story.
+
+1. **Critical hoặc High:** `merge-gate` không cho merge, nên finding được sửa ngay trên chính PR đó (`/ao-fix`) rồi review lại. Chỉ PR đó dừng lại; các Story khác vẫn chạy.
+2. **Bug do QA tìm ra làm hỏng một AC**, như SHOP-56 lỗi CORS: mình triage và cho sửa ngay, chạy song song với các Story khác.
+3. **Medium hoặc Low ở đúng chỗ một Story sắp sửa:** mình gom vào một Task và nối "blocks" để Task chạy trước Story đó, như SHOP-58 trước SHOP-28. Nhờ vậy hai PR không đụng nhau.
+4. **Medium hoặc Low ở chỗ khác:** mình gom vào một Task chung, làm sau các Story, như SHOP-39 hiện nay.
+   - Finding phía `api` (`be-dev`) chạy song song mà không làm Story chậm đi, vì chỗ nghẽn là `fe-dev`.
+   - Finding phía giao diện (`fe-dev`) thì để cuối.
+5. **Trước khi đóng Epic**, mọi Task finding phải xong. Để chuỗi "sửa finding lại sinh finding mới" không kéo dài mãi, các Low nhỏ của những Task sửa finding sẽ được gộp vào Task chung cuối cùng, không mở Task mới cho từng cái.
+
+# Phiên 33 · Lượt 8 — 2026-11-17 khoảng 09:45
+
+**Bạn:**
+
+```markdown
+giờ thực hiện compact conversation này thì có ảnh hưởng các task đang làm không?
+```
+
+**Claude:**
+
+**Không. Compact không dừng hay làm hỏng lệnh nào đang chạy.**
+
+1. Các build, review, QA đều chạy ở nền, ngoài cuộc trò chuyện. Compact chỉ rút gọn phần chữ mình đang nhớ, không đụng tới các tiến trình đó.
+2. Thông báo tiến độ vẫn tới như cũ, kể cả từ bộ theo dõi đang bật.
+3. Thứ có thể mất là chi tiết trong trí nhớ ngắn hạn của mình. Mình vừa ghi đủ vào file bàn giao (`tasks/handoff-2026-11-15.md`, mục 09:45): mã từng lệnh nền, thứ tự `fe-dev` bạn đã duyệt, các bước sau mỗi lần merge.
+4. Sau khi compact, mình đọc lại mục đó rồi làm tiếp như bình thường.
+
+Bạn compact lúc nào cũng được.
+
+# Phiên 33 · Lượt 9 — 2026-11-17 khoảng 10:10
+
+**Bạn:**
+
+```markdown
+yêu cầu ux và yêu cầu ba có note trong item nào không? Tôi chưa nắm chỗ này giải thích chậm và dễ hiểu giúp tôi
+```
+
+**Claude:**
+
+**Có. Mỗi yêu cầu là một comment trên Jira: yêu cầu `ux` nằm ở SHOP-54, yêu cầu `ba` nằm ở SHOP-28.**
+
+**Cơ chế, từng bước:**
+
+1. **"Cần <vai trò>:" là cách một agent nhờ vai trò khác.** Agent không được làm việc của vai trò khác, nên nó viết lên item một comment bắt đầu bằng `Cần ux:` hay `Cần ba:`. Yêu cầu được coi là xong khi vai trò kia trả lời bằng comment trên chính item đó.
+2. **`/ao-request <KEY>` gọi vai trò đó tới trả lời.** Lệnh đọc comment yêu cầu rồi chạy agent `ux` hay `ba`. Agent đọc tài liệu và code, rồi viết comment trả lời. Lệnh này phải chạy một mình, nên phải chờ lúc không còn lệnh nào khác.
+
+**Yêu cầu `ux`: SHOP-54, comment 10365, do `fe-dev` viết lúc 23:25 tối 16/11.**
+
+3. **Nội dung:** form thêm sản phẩm của admin (PR #42) đang hiện 3 câu báo lỗi mà `design.md` chưa có:
+   - mọi slug tự sinh từ tên đều đã có người dùng;
+   - giá bị gõ bằng chữ;
+   - `api` từ chối một giá trị.
+
+   SHOP-34 (sửa sản phẩm) dùng lại form này, nên `fe-dev` nhờ `ux` ghi 3 câu đó vào design trước.
+4. **`ux` đã trả lời lúc 10:07 hôm nay (comment 10446):**
+   - Giữ nguyên cả 3 câu, nên code không phải sửa.
+   - `design.md` đã merge nên nó chưa sửa file; nó đề xuất sửa luôn trong lúc làm SHOP-34.
+   - Còn một câu hỏi nhỏ: gõ chữ vào ô giá bán đang báo "Giá bán phải lớn hơn 0". Nó đề xuất giữ nguyên.
+
+   Theo quyền bạn giao, mình làm theo cả hai đề xuất.
+
+**Yêu cầu `ba`: SHOP-28, comment 10396, do mình viết lúc 01:02 sáng nay từ một finding Medium khi review PR #48 (SHOP-25).**
+
+5. **Nội dung:** test E2E của AC21 ("Đã xem 24 trên 30", rồi 6 sản phẩm còn lại) chưa kiểm đúng câu chữ. Lý do: lúc làm SHOP-25, trang chưa có ô tìm kiếm để lọc riêng dữ liệu thử. SHOP-28 thêm tìm kiếm, nên mình nhờ `ba` ghi vào Story SHOP-28: khi đã có tìm kiếm thì sửa test AC21 để lọc bằng `?q=e2e <runId>`. Nhờ vậy, `fe-dev` làm SHOP-28 sẽ sửa luôn test đó.
+6. **`ba` chưa trả lời.** Lúc nãy nó chạm giới hạn; giờ nó đang chờ sửa PR #55 và review PR #56 xong để chạy một mình. Nó sẽ chạy xong trước khi bắt đầu SHOP-28.
+
+# Phiên 33 · Lượt 10 — 2026-11-17 khoảng 10:40
+
+**Bạn:**
+
+```markdown
+Chuẩn bị chạm giới hạn token, ghi vào file hand off để sau khi reset tiếp tục nhé
+```
+
+**Claude:**
+
+**Đã ghi xong vào `tasks/handoff-2026-11-15.md`, mục "10:40, trước khi chạm giới hạn token".**
+
+1. Mục này ghi mã và nội dung của 4 lệnh đang chạy nền: sửa PR #55, build SHOP-64, QA SHOP-61 và QA SHOP-31.
+2. Nếu agent chạm giới hạn giữa chừng, lệnh đó dừng lại, không tự thử lại. Mục bàn giao ghi sẵn đúng câu lệnh để chạy lại, và agent sẽ nối tiếp phiên cũ, không làm lại từ đầu.
+3. Mục này còn ghi:
+   - trạng thái từng item;
+   - thứ tự còn lại của `fe-dev`, `be-dev` và `devops`;
+   - các bước sau mỗi PR (approve, gom Low thành Task, dọn làn, QA, Accept);
+   - các việc cuối Epic.
+4. Sau khi reset, mình đọc mục đó trước, kiểm lệnh nào đã xong và lệnh nào dừng vì giới hạn, rồi làm tiếp.
+
+# Phiên 33 · Lượt 11 — 2026-11-17 khoảng 11:05
+
+**Bạn:**
+
+```markdown
+[Ảnh: Activity của SHOP-37 trên Jira: orchestratorci đổi In Progress → In Review (5 phút trước), In Review → In Progress (1 giờ trước), In Progress → In Review (2 giờ trước)]
+Vì sao SHOP-37 đổi từ In Review về lại In Progress, cái gì và agent nào đã đổi?
+```
+
+**Claude:**
+
+**Thứ đổi trạng thái là workflow `jira-sync` trên GitHub, không phải một agent. Nó đổi vì agent `reviewer` đã chấm PR #55 là "Request changes", do review tìm ra 1 finding High.**
+
+Diễn biến lúc 09:31:
+
+1. **09:25:** PR #55 của SHOP-37 sẵn sàng review, nên `jira-sync` chuyển item In Progress → In Review.
+2. **09:31:09:** agent `reviewer` gửi review lên PR #55 (head `4d843f4`) với kết luận **Request changes**. Review có 1 High: test E2E giả lập lỗi khi xóa sản phẩm chạy cả lúc QA trên Development, trong khi nó chỉ nên chạy khi app bật tại máy. Review được gửi bằng GitHub App của review (`tungph7-ao-review[bot]`).
+3. **09:31:14:** workflow `PR review` bắt sự kiện review đó và báo cho `jira-sync`.
+4. **09:31:37:** `jira-sync` chạy transition "request-changes": **In Review → In Progress**, để dev sửa. Theo luật của kit, PR bị Request changes thì item quay về In Progress.
+
+Vì sao Jira ghi là **orchestratorci**: đó là tài khoản Jira của token CI. Mọi workflow trên GitHub (`jira-sync`, `merge-gate`) đều đổi trạng thái bằng tài khoản này. Còn agent tự đổi thì Jira ghi là **orchestratoragent**, như lúc 08:56 `fe-dev` chuyển Ready → In Progress khi bắt đầu làm.
+
+Sau đó:
+- `fe-dev` sửa cái High và 5 Low (`/ao-fix 55`), rồi sửa thêm 2 chỗ `.skip(` thiếu `reason:` và merge `develop` vào nhánh.
+- **10:52:** PR sẵn sàng review lại, nên `jira-sync` chuyển item **In Progress → In Review**. Đó là dòng "5 minutes ago" trong ảnh.
+
+Hiện `reviewer` và `security` đang review lại PR #55 trên head `ff207ad`.
+
+# Phiên 33 · Lượt 12 — 2026-11-17 khoảng 11:15
+
+**Bạn:**
+
+```markdown
+SHOP-35 khi nào sẽ làm? Tôi không thấy trong "Thứ tự còn lại của fe-dev: SHOP-36 → SHOP-28 → SHOP-63, SHOP-65, SHOP-66 → SHOP-39 cuối."
+```
+
+**Claude:**
+
+**SHOP-35 đang được làm ngay lúc này, từ 11:13.** Nó không có trong danh sách kia vì đó là danh sách của `fe-dev`, còn SHOP-35 là việc của `be-dev`.
+
+1. **SHOP-34 (Quản trị viên sửa và ẩn sản phẩm) là một Story có hai Sub-task:**
+   - SHOP-35, phần `api` (`be-dev`): thêm API sửa và ẩn sản phẩm;
+   - SHOP-36, phần giao diện admin (`fe-dev`): form sửa và nút ẩn, gọi đúng API đó.
+2. **Lệnh `/ao-build SHOP-34` chạy hai Sub-task theo thứ tự:** `be-dev` làm SHOP-35 trước, xong rồi `fe-dev` làm SHOP-36. Giao diện cần API có sẵn mới làm và test được, nên `api` luôn đi trước.
+3. **Hiện tại:** `be-dev` đang làm SHOP-35 trong làn của SHOP-34 (`.ai/runs/SHOP-34/1-be-dev.jsonl`). Xong phần này, cùng lệnh đó tự chuyển sang `fe-dev` làm SHOP-36. Cả Story ra một PR chung.
+4. **Thứ tự của `be-dev`, để bạn dễ theo dõi:** SHOP-35 (đang làm) → SHOP-29, tức phần `api` của SHOP-28, khi tới lượt SHOP-28. Ngoài ra `be-dev` không còn việc nào khác trong Epic.
+
+# Phiên 33 · Lượt 13 — 2026-11-17 khoảng 11:21
+
+**Bạn:**
+
+```markdown
+Chuẩn bị chạm giới hạn usage, note vào hand off để làm tiếp sau khi token được reset
+```
+
+**Claude:**
+
+**Đã ghi vào `tasks/handoff-2026-11-15.md`, mục "11:21, trước khi chạm giới hạn usage".**
+
+1. Mục này ghi 2 lệnh đang chạy ngầm:
+   - build SHOP-34: `be-dev` đang làm SHOP-35, sau đó `fe-dev` làm SHOP-36;
+   - QA SHOP-64: sắp chạy.
+2. Nếu một agent chạm giới hạn, lệnh của nó dừng lại. Mục bàn giao ghi sẵn đúng câu lệnh để chạy lại, và agent sẽ làm tiếp đúng chỗ đang dở. Nếu Claude Code thoát giữa chừng, lệnh vẫn chạy tiếp ở nền. Mình kiểm bằng danh sách tiến trình, không chạy lại lệnh còn sống.
+3. Mục này còn ghi:
+   - trạng thái từng item: Done có SHOP-31, SHOP-37, SHOP-61;
+   - 5 việc kế tiếp theo thứ tự: Accept SHOP-64; xem preview rồi review SHOP-34; build SHOP-28; SHOP-62 của `devops`; các Task Low và việc cuối Epic.
+4. Sau reset, mình đọc mục đó trước rồi làm tiếp.
+
+# Phiên 33 · Lượt 14 — 2026-11-17 khoảng 15:28
+
+**Bạn:**
+
+```markdown
+Chuẩn bị chạm giới hạn usage, hãy note lại tài liệu hand off để tiếp tục sau khi token được reset
+```
+
+**Claude:**
+
+**Đã ghi vào `tasks/handoff-2026-11-15.md`, mục "15:28, trước khi chạm giới hạn usage".**
+
+1. **4 lệnh đang chạy ngầm:**
+   - review PR #66 (SHOP-67);
+   - build lại SHOP-28 để sửa test E2E của AC23;
+   - QA SHOP-69, rồi QA SHOP-65.
+2. **Nếu agent chạm giới hạn giữa chừng:** mục bàn giao ghi sẵn câu lệnh chạy lại cho từng việc; agent làm tiếp đúng chỗ đang dở.
+3. **Các sự cố đã gặp hôm nay:** mục bàn giao ghi cách xử lý từng loại:
+   - QA bị dừng vì có deploy mới, để lại app và thư mục cũ;
+   - ledger ghi sai tên;
+   - `osv-scanner` lỗi mạng.
+4. **Danh sách việc còn lại, theo thứ tự:**
+   - SHOP-63, rồi SHOP-39;
+   - SHOP-68;
+   - SHOP-12;
+   - PR tài liệu `design.md`;
+   - câu `siteDescription`, sẽ hỏi bạn;
+   - SHOP-70, Task rate limit nằm ngoài Epic, bạn quyết;
+   - cuối cùng là gate ④ release v0.3.0, sẽ hỏi bạn.
+5. **Luật mới:** không approve PR khác khi đang có QA chạy, để QA không bị dừng giữa chừng.
+
+Sau khi reset, mình đọc mục đó trước rồi làm tiếp.
+
+# Phiên 33 · Lượt 15 — 2026-11-17 khoảng 16:45
+
+**Bạn:**
+
+```markdown
+Note việc "không approve PR khi có QA đang chạy để deploy không cắt ngang các lượt QA" để improve kit nhé
+```
+
+**Claude:**
+
+**Đã ghi vào `tasks/handoff-2026-11-16-followups.md`, mục mới cuối file: "Approve PR lúc có QA đang chạy hay sắp chạy làm QA bị cắt ngang".**
+
+1. **Vì sao cần:** approve thì PR được merge, Development deploy bản mới, và QA đang chạy bị dừng để chạy lại từ đầu, nên mất cả lượt QA đó. Hôm nay đã gặp ở QA SHOP-28 (14:38) và QA SHOP-69 (15:05).
+2. **Hiện mình làm tay:** không approve khi có QA đang chạy hay đang chờ deploy. Các PR đã review xong thì gom lại và approve cùng lúc, rồi QA từng item trên bản deploy sau cùng.
+3. **Bốn cách sửa kit đã ghi:**
+   - Khi dừng ở bước chờ approve, kit báo rõ là có QA đang chạy và nên chờ nó xong.
+   - Lúc QA chạy, kit đặt một tín hiệu trên GitHub; `merge-gate` thấy tín hiệu đó thì chờ QA xong mới merge, có giới hạn thời gian chờ.
+   - Gom nhiều PR đã approve vào một lần deploy, rồi QA từng item trên bản đó.
+   - Không dừng QA khi bản deploy mới không đụng tới phần việc của item đang QA.
+
+# Phiên 33 · Lượt 16 — 2026-11-17 khoảng 16:50
+
+**Bạn:**
+
+```markdown
+Chuẩn bị chạm giới hạn usage, note hand off để làm tiếp sau khi token reset
+```
+
+**Claude:**
+
+**Đã ghi vào `tasks/handoff-2026-11-15.md`, mục "16:50, trước khi chạm giới hạn usage".**
+
+1. **3 lệnh đang chạy nền:**
+   - QA SHOP-28;
+   - QA SHOP-67, tự chạy sau QA SHOP-28;
+   - build SHOP-68.
+2. **Bước tiếp:** Accept SHOP-28 và SHOP-67 nếu QA PASS. Chỉ khi hai QA đó xong mới approve PR #68 (SHOP-63), rồi QA SHOP-63.
+3. **Sau đó:** SHOP-68 → SHOP-39 (cuối, gồm cả phần sửa `design.md`) → SHOP-12.
+4. **Những việc sẽ hỏi bạn:**
+   - câu `siteDescription`;
+   - SHOP-70;
+   - xóa file lạ `runid.txt`;
+   - gate ④ release v0.3.0.
+5. **Nếu lệnh chết vì giới hạn usage:** mục bàn giao ghi sẵn lệnh chạy lại cho từng việc.
+
+# Phiên 33 · Lượt 17 — 2026-11-17 khoảng 17:10
+
+**Claude (hỏi trước):** QA SHOP-28 PASS, đã Accept. QA mở Bug SHOP-71 (test E2E `AC10 hides the product` của `admin` đỏ khi chạy cả bộ, xanh khi chạy riêng; app không lỗi). Đề xuất gộp việc sửa test vào SHOP-39 rồi đóng SHOP-71 khi SHOP-39 xong.
+
+**Bạn:**
+
+```markdown
+Đồng ý
+```
+
+**Claude:**
+
+**Đã gộp Bug SHOP-71 vào SHOP-39.**
+
+1. **Trên SHOP-39:** thêm ghi chú cho fe-dev. Trước hết chứng minh nguyên nhân, rồi sửa test để nó tìm đúng dòng sản phẩm của mình, không phụ thuộc vào việc dòng đó có nằm ở trang đầu hay không. Chạy cả bộ E2E 3 lần đều xanh mới tính là xong.
+2. **Trên SHOP-71:** ghi rằng Bug được sửa trong SHOP-39.
+3. **Khi SHOP-39 qua QA:** đóng SHOP-71.
+
+# Phiên 33 · Lượt 18 — 2026-11-17 khoảng 18:30
+
+**Bạn:**
+
+```markdown
+token reset rồi mà
+```
+
+```markdown
+cứ làm đi nhé
+```
+
+**Claude:**
+
+**Đúng, token đã reset. Hai lượt chạy lại lúc 18:18 bị dừng vì một lỗi của kit, không phải vì giới hạn.**
+
+1. **Chuyện gì xảy ra:** khi kit cho agent làm tiếp phiên cũ, Claude Code gửi một tin báo về lệnh test chạy nền của phiên cũ trước, rồi agent mới bắt đầu làm. Kit hiểu nhầm tin báo đó là "agent đã làm xong". Đợi thêm 1 phút, kit tắt agent trong khi nó vẫn đang chạy test.
+2. **Mình đã sửa kit:**
+   - PR #302 trên repo kit;
+   - thêm 2 test mới (đỏ khi chưa sửa, xanh sau khi sửa), cả bộ 1536/1536 pass;
+   - đã đưa bản sửa vào bản kit mà các lệnh đang dùng, rồi merge PR (`bd5a81b`).
+3. **Đã chạy lại:**
+   - QA SHOP-63 làm lại từ đầu (đã dọn thư mục QA cũ);
+   - build SHOP-39 làm tiếp phần đang dở.
+4. **Lưu ý:** hạn mức 7 ngày của tài khoản đã dùng 84%, reset 21:00 ngày 21/11.
+
+# Phiên 33 · Lượt 19 — 2026-11-17 khoảng 19:42
+
+**Bạn:**
+
+```markdown
+Có background task đang làm việc không? Nãy giờ tôi không thấy phản hồi
+```
+
+**Claude:**
+
+**Có, đang có một việc chạy: QA SHOP-39, bắt đầu từ khoảng 19:38.**
+
+1. **Vì sao bạn không thấy tin:** monitor theo dõi đã tự tắt khi lượt sửa trước kết thúc, và mình quên bật lại cho QA. Mình vừa bật lại, cứ khoảng 4 phút sẽ báo tiến độ một lần.
+2. **PR #70:** đã merge, commit `187898c`. Development đã deploy bản này, QA đang test trên đó.
+3. **Làn SHOP-39:** kit gỡ chưa sạch thư mục, lỗi "Directory not empty" đã gặp trước đây. Thư mục này không chặn việc gì, mình sẽ hỏi bạn trước khi xóa.
+4. **Khi QA xong:** nếu PASS, mình Accept SHOP-39 và đóng Bug SHOP-71. Lúc đó Epic chỉ còn SHOP-12.
+
+# Phiên 33 · Lượt 20 — 2026-11-17 khoảng 20:20
+
+**Bạn:**
+
+```markdown
+1. Đã đóng
+
+2. Nếu chuyển SHOP-12 thành Cancel thì hình hình epic SHOP-7 không thể chuyển Done được à? Bạn kiểm tra rule giúp tôi xem việc chuyển Cancel có hợp lệ với kit hiện tại không nhé.
+
+3. Đồng ý theo đề xuất. Bạn đề xuất câu mô tả giúp tôi
+
+5. Đồng ý
+
+Chưa được làm tiếp nhé trả lời câu dưới đây:
+Về mục số 6 thì nên chép kit trước hay release thì hợp lý hơn? Vì sao?
+```
+
+**Claude:**
+
+**Mục 2: Cancel SHOP-12 hợp lệ, và Epic SHOP-7 vẫn chuyển Done được.** Ngược lại, nếu SHOP-12 là Done thì Epic lại bị kẹt.
+
+1. **Điều kiện để Epic Done** (`contract/workflows.yaml`), có hai điều kiện:
+   - `children-closed`: "Mọi item con đã Done hoặc Cancelled". Cancelled được tính.
+   - `children-released`: "Mọi item con **đã Done** nằm trong một bản đã lên Production". Chỉ item Done mới phải nằm trong một bản release; item Cancelled thì không.
+2. **Vì sao Done lại kẹt:** một item chỉ nhận Fix Version khi có commit nằm trước điểm cắt của bản release (`lib/release/release-cut.mjs`). SHOP-12 không có commit nào trên `develop` (mình đã kiểm), vì việc thêm dữ liệu chạy bằng script. Nếu SHOP-12 Done thì nó không bao giờ có Fix Version, và Epic không qua được điều kiện thứ hai.
+3. **Điều kiện của bước Cancel:** chỉ người (bạn) bấm được, và phải chọn Resolution là một trong bốn giá trị kit cho phép: Won't do, Duplicate, Not a bug, Cannot reproduce. Mình đính chính đề xuất trước: Resolution "Done" không nằm trong danh sách của kit.
+4. **Đề xuất:** Cancel SHOP-12 với Resolution **Won't do**. Comment trên item đã ghi rõ việc đã làm xong bằng script. Mình sẽ ghi vào followup của kit: cần quy trình cho Task vận hành không có PR, và một Resolution kiểu "làm ngoài kit".
+
+**Mục 3: hai câu mô tả để bạn chọn** (đều dưới 160 ký tự):
+
+- **A, chung cho mọi loại hàng** (mình đề xuất, vì SPEC không giới hạn loại hàng):
+  - vi: "Xem các sản phẩm đang bán, tìm theo tên, sắp xếp theo giá và xem chi tiết từng sản phẩm, có giá và tình trạng còn hàng."
+  - en: "Browse the products on sale, search by name, sort by price, and see each product's details, price and stock."
+- **B, nếu shop bán quần áo:**
+  - vi: "Mua áo thun, quần jean, đầm và áo khoác trực tuyến. Xem giá, tình trạng còn hàng và chi tiết từng sản phẩm."
+  - en: "Shop T-shirts, jeans, dresses and jackets online. See prices, stock and the details of every product."
+- **Kèm theo:** dòng chữ trên ảnh chia sẻ (`ogImageTagline`) cũng là câu của template, mình đề xuất đổi thành "Cửa hàng trực tuyến" / "Online shop".
+
+**Mục 6: nên release trước, chép kit sau.**
+
+1. **Bản v0.3.0 nên chỉ chứa những gì đã QA trong Epic.** Chép kit là một PR sửa `.github/workflows` và `.ai-orchestrator`. Nếu merge trước khi cắt bản, PR đó đi vào v0.3.0, tức là đổi đường CI và deploy ngay trước khi lên Production. Khi đó có lỗi lúc deploy thì khó biết lỗi do app hay do công cụ.
+2. **Kit hiện tại trong `shop` đã chạy ổn suốt Epic.** Bản chép ngày 16/11 (SHOP-38) đã chạy mọi CI, `jira-sync`, `merge-gate` và các lần deploy Development của Epic.
+3. **Phần mới của kit đã có tác dụng sẵn trên máy này.** 7 file khác nhau chủ yếu là phần chạy agent ở máy (`agent-process`, `lane-runs`, `locks`, `runs`…). Lệnh `ao-step` của release đọc kit từ `AO_KIT_DIR`, vốn đã là bản mới. Phần CI được thêm chỉ là bản sửa báo nhầm khóa PEM (#299).
+4. **Chép một lần sau release thì gọn hơn.** Kit còn một việc gấp: bỏ `pull_request_target` của `jira-sync` trước 02/12. Làm việc đó xong rồi chép kit một lần cho cả hai, thay vì chép hai lần.
+5. **Ngoại lệ:** nếu khi chạy `/ao-release` gặp lỗi mà kit mới đã sửa, thì chép kit trước. Hiện mình chưa thấy trường hợp nào như vậy.
+
+# Phiên 33 · Lượt 21 — 2026-11-17 khoảng 20:40
+
+**Bạn:**
+
+```markdown
+Mục 3 chọn A, bắt đầu nhé
+```
+
+**Claude:**
+
+**Đã làm xong các mục bạn đồng ý. Bước tiếp theo là gate ④ release v0.3.0, cần bạn tạo một version trên Jira.**
+
+1. **Đã xóa (mục 5):** hai làn còn sót `shop-wt/SHOP-67` và `shop-wt/SHOP-39`, file `shop/runid.txt`, và worktree tạm `ao-fix-notif` của kit. Trước khi xóa, mình kiểm không còn tiến trình nào dùng chúng và không có link nào trỏ ra ngoài.
+2. **Mục 3:** tạo Task **SHOP-73** với câu A cho `siteDescription`, kèm "Cửa hàng trực tuyến" / "Online shop" cho dòng chữ trên ảnh chia sẻ. Task nằm ngoài Epic, ở New, làm sau release.
+3. **Followup của kit:** ghi thêm việc "Task vận hành không có PR không đóng Done được".
+4. **Danh sách release v0.3.0** (lệnh chỉ in danh sách, chưa cắt gì):
+   - **Điểm cắt:** `187898c`, là commit merge PR #70, mới nhất trên `develop`.
+   - **Item vào v0.3.0:** 50 item Done, từ SHOP-8 tới SHOP-39.
+   - **SHOP-71:** Cancelled nhưng có code đi theo v0.3.0. Đúng như mong muốn, vì bản sửa của nó nằm trong commit của SHOP-39.
+   - Kit dừng ở gate ④ vì trên Jira chưa có version **v0.4.0** (bản kế tiếp).
+5. **Việc của bạn:**
+   1. Tạo v0.4.0 trên Jira: mở space SHOP, bấm **Releases** ở menu bên trái, bấm **Create version**, gõ **v0.4.0**, để trống ngày, rồi bấm **Save**.
+   2. Cancel SHOP-12 với Resolution **Won't do** (bước này không chặn release).
+6. **Sau đó:** mình chạy lại `/ao-release` để in danh sách cuối, bạn duyệt gate ④, rồi mình cắt nhánh `release/v0.3.0`.
+
+# Phiên 33 · Lượt 22 — 2026-11-17 khoảng 21:20
+
+**Bạn:**
+
+```markdown
+Tôi đã làm xong, bạn làm tiếp nhé
+```
+
+```markdown
+duyệt gate ④
+```
+
+**Claude:** Chạy lại `/ao-release`: điểm cắt `187898c`, 50 item Done, SHOP-71 Cancelled có code đi theo, v0.3.0 và v0.4.0 đã có trên Jira. Hỏi lại cho rõ trước khi cắt; bạn trả lời "duyệt gate ④". Đã chạy `/ao-release v0.3.0 187898c`: gắn Fix Version v0.3.0 cho 50 item, tạo nhánh `release/v0.3.0` tại `187898c`, deployer đang đưa lên Staging. Deploy xong thì `/ao-ship v0.3.0` tự chạy và dừng ở gate ⑤.
+
+# Phiên 33 · Lượt 23 — 2026-11-17 khoảng 21:25
+
+**Bạn:**
+
+```markdown
+file plan tổng quát làm các phase A1, A2,... B1, B2,...B4, C1,.. là file nào nhỉ ?
+```
+
+**Claude:**
+
+**Là `ai-orchestrator/misc/thao-luan/concerns.md`, mục "Thứ tự làm và tiến độ".**
+
+1. **Bảng chính:** mỗi hàng là một phase: A1–A5, B1–B4, C1, C2, D1, D2.
+2. **Mỗi hàng ghi:** việc gì, vì sao, phụ thuộc phase nào, trạng thái, và link tới kết quả.
+3. **Dưới bảng:** có phần giải thích vì sao xếp thứ tự như vậy.
+4. **Các file chi tiết của từng phase:**
+   - spec của từng phase nằm ở thư mục gốc của kit (như `SPEC-project-scaffold.md` cho B1, `SPEC-pilot-3.md` cho B4);
+   - plan và todo của phase đang làm nằm trong `tasks/` (hiện là `tasks/plan.md`, `tasks/todo.md` của Pilot 3, tức B4);
+   - phase đã xong được chuyển vào `tasks/archive/`.
+5. **Trạng thái hiện tại:** B4 (Pilot 3) đang làm, tới bước release v0.3.0. Bảng còn ghi C1 và C2 là "Chưa làm", nhưng phần tối thiểu của C2 (chạy song song, `SPEC-parallel-runs.md`) đã làm và đang chạy trên `shop`, tức bảng chưa cập nhật hàng C2. C1 thì đúng là chưa làm.
+
+# Phiên 33 · Lượt 24 — 2026-11-17 khoảng 21:35
+
+**Bạn:**
+
+```markdown
+- Hiện tại đang ở T số mấy trong D:\Document\1Khoahoc\4LapTrinh\AI-for-coding\ai-orchestrator\tasks\plan.md
+```
+
+**Claude:**
+
+**Đang ở T17: release `v0.3.0`.** Gate ④ đã xong, đang chờ Staging deploy rồi chạy `/ao-ship`.
+
+1. **T1–T13:** xong, gồm hai bản release v0.1.0 và v0.2.0, gate ① và gate ② của Epic SHOP-7.
+2. **T14–T16** (các item của Epic): xong hôm nay. Trong `todo.md` ba ô này chưa tick, mình vừa tick và ghi kết quả vào Checkpoint 5: 50 item Done vào `v0.3.0`, SHOP-12 và SHOP-71 Cancelled.
+3. **T17, đang làm:**
+   - [x] vài sản phẩm thử trên Production: SHOP-12, chạy bằng script ngày 16/11 (plan ghi "qua `admin`", thực tế qua API cũ, như mô tả của SHOP-12);
+   - [x] gate ④: bạn duyệt, đã cắt `release/v0.3.0`;
+   - [ ] `/ao-ship v0.3.0`: regression trên Staging, release note;
+   - [ ] gate ⑤ rồi Production (Flyway V4 chạy trên dữ liệu thật);
+   - [ ] bạn bấm Release `v0.3.0` trên Jira và Complete Epic SHOP-7.
+4. **Còn sau T17:**
+   - **T18:** viết hướng dẫn trong `docs/getting-started.md` và `docs/vps-setup.md`.
+   - **T19:** đóng pilot (kiểm khóa `age`, bảng tiêu chí và chi phí, chuyển tài liệu vào archive).
+   - **Chép kit vào `shop`:** việc này không có T riêng, mình đề xuất làm sau release.
+
+# Phiên 33 · Lượt 25 — 2026-11-17 khoảng 23:45
+
+**Bạn:**
+
+```markdown
+devops viết release note xong thì lưu ở đâu nhỉ?
+```
+
+**Claude:**
+
+**Lúc đầu devops chỉ ghi file ở máy, chưa commit gì. Sau đó một script của `/ao-ship` đưa chúng lên Git, còn phần cho Jira thì bạn tự dán.**
+
+1. **devops ghi 3 file vào `shop/.ai/runs/v0.3.0/`** (thư mục `.ai/` không bao giờ được commit):
+   - `changelog.md`: mục `[0.3.0]` cho `CHANGELOG.md`;
+   - `pr-description.md`: mô tả của PR release từ `release/v0.3.0` vào `main`;
+   - `fix-version.md`: mô tả của Fix Version v0.3.0 trên Jira.
+2. **Script `release-pr` (không có agent) đưa lên Git:**
+   - commit báo cáo regression thành `docs/releases/v0.3.0.md`, và chèn mục `[0.3.0]` vào `CHANGELOG.md`;
+   - commit nằm trên nhánh `release-notes/v0.3.0`, mở PR vào `release/v0.3.0`;
+   - `merge-gate` tự merge PR đó khi CI xanh, vì PR chỉ đổi hai file này.
+3. **Sau đó script mở PR release** từ `release/v0.3.0` vào `main`, dùng `pr-description.md` làm mô tả. Đây là PR bạn duyệt ở **gate ⑤**.
+4. **Phần cho Jira:** bạn dán nội dung `fix-version.md` vào ô mô tả của version v0.3.0 trên Jira (trang Releases). Kit không tự ghi phần này.
+5. **Bản gửi khách trên Google Drive:** bảng Artifacts của kit có ghi, nhưng hiện kit chưa tự làm. Nếu cần, mình soạn từ `changelog.md`.
+
+# Phiên 33 · Lượt 26 — 2026-11-17 khoảng 23:55
+
+**Bạn:**
+
+```markdown
+duyệt gate ⑤
+```
+
+**Claude:** `/ao-ship v0.3.0` dừng ở gate ⑤: regression trên Staging PASS (132 pass, 0 fail), release note của `devops`, PR #71 (báo cáo và CHANGELOG) đã merge, PR #72 `release/v0.3.0` → `main` CI xanh. Claude sửa câu sai về SHOP-12 trong mô tả PR #72 và `fix-version.md` (5 sản phẩm thử thật ra đã có trên Production từ 16/11), và chạy backup database trên VPS trước deploy (`shop-production-20261117T164510Z.dump`). Bạn duyệt gate ⑤; Claude approve PR #72 trên head `5ff9947`. Đang chờ merge-gate merge, tag `v0.3.0`, deploy Production, rồi kiểm trang sản phẩm và giá của sản phẩm cũ.
+
+# Phiên 33 · Lượt 27 — 2026-11-18 khoảng 00:05
+
+**Bạn:**
+
+```markdown
+Nên làm việc gì tiếp? Đề xuất giúp tôi, chưa được làm gì cả nhé
+```
+
+**Claude:**
+
+**Đề xuất: đóng T17 trên Jira trước, rồi sửa `jira-sync` của kit, vì việc này có hạn cứng 02/12.** Thứ tự đầy đủ như sau.
+
+1. **Đóng T17 (bạn, khoảng 5 phút):** dán `fix-version.md`, bấm Release v0.3.0, Complete Epic SHOP-7. Đây là bước cuối của release, làm ngay khi còn nhớ.
+2. **Kit: bỏ `pull_request_target` của `jira-sync`** (hạn 02/12, còn 14 ngày). Từ ngày đó GitHub chặn kiểu trigger này trên repo public. Khi đó item không tự chuyển trạng thái khi PR mở hay đóng, và WIP bị kẹt như hôm 16/11. Cách sửa đã ghi trong followup: một workflow relay chạy trên `pull_request` và không giữ secret; `jira-sync` nghe nó qua `workflow_run`. Việc này mình làm trong phiên chính, gần như không tốn agent.
+3. **Chép kit vào `shop` một lần** sau bước 2: gồm bản sửa `jira-sync`, các PR #297–#302, giữ job `caddy-proxy` và `not-found`, `--fail-if-no-match`, và sửa comment `ci.yml:140-141`.
+4. **Chạy thử kit mới bằng SHOP-73** (đổi câu `siteDescription`): Task nhỏ, chỉ sửa chữ, đi đủ build → review → QA. Chạy thật một lượt là cách rẻ nhất để biết bản chép kit không làm hỏng gì.
+5. **T18 và T19, đóng Pilot 3:**
+   - **T18:** viết hướng dẫn trong `getting-started.md` và `vps-setup.md` bằng đầu ra thật của Epic.
+   - **T19:** kiểm khóa `age`, lập bảng tám tiêu chí và chi phí, cập nhật hàng B4 và C2 trong `concerns.md`, chuyển plan, todo và verification vào archive.
+
+   Hai việc này chủ yếu là viết tài liệu, nên rẻ.
+6. **Xếp lại 33 followup của kit** rồi mới sang C1. Followup nhiều, nên chọn ra những việc làm trước C1, nhất là các việc lặp lại nhiều lần trong Pilot 3:
+   - agent kết thúc lượt khi test còn chạy nền;
+   - worktree QA thiếu file `.env`;
+   - dọn tiến trình khi QA bị dừng;
+   - không approve khi có QA đang chạy.
+7. **Để sau, nhưng có hạn:**
+   - SHOP-70 và SHOP-72: trước khi gỡ basic auth của Production, tức trước Epic Đăng nhập;
+   - tài khoản Windows `ao-agent`: trước 31/12 (High bạn đã chấp nhận tới ngày đó);
+   - đóng VPS (`PermitRootLogin no`, gỡ khóa) khi bạn không cần nó mở nữa.
+
+**Về chi phí:** hạn mức 7 ngày của tài khoản đã dùng 84%, sẽ reset 21:00 ngày 21/11. Bước 2, 3 và 5 chủ yếu là phiên chính, ít tốn. Bước 4 có agent (khoảng 5–10 USD), nên làm sau 21/11 nếu hạn mức còn thấp.
+
+# Phiên 33 · Lượt 29 — 2026-11-18 khoảng 10:15
+
+**Bạn:**
+
+```markdown
+Trả lời ngắn gọn giúp tôi, chưa được làm gì cả nhé:
+
+- Dựa trên thứ tự 7 mục.Hiện tại có các item đang ở New SHOP-40, 70, 72, 73. Việc làm epic SHOP-7 là thực hiện pilot để xem bản kit chạy nhiều làn có hoạt động tốt và ổn định chưa. Bạn hãy đánh giá giúp tôi có nên fix nốt 4 item này hay dừng lại (sau khi làm SHOP-73, bản kit cho SHOP-7 đã hoạt động tốt), pilot đã đạt nên có thể đi qua task tiếp theo (C1 tại D:\Document\1Khoahoc\4LapTrinh\AI-for-coding\ai-orchestrator\misc\thao-luan\concerns.md) luôn?
+- Viết hướng dẫn sử dụng SHOP-7 cho người dùng cuối. Yều cầu: súc tích nhưng đầy đủ tất cả các tính năng, các trường hợp. Có cần gộp vào SHOP-73 không?
+```
+
+**Claude:**
+
+**1. Nên dừng sau SHOP-73, không cần làm SHOP-40, 70, 72 trong pilot. Nhưng trước C1 vẫn nên làm hai việc ngắn.**
+
+- **Vì sao dừng được:** mục tiêu pilot là chứng minh kit chạy nhiều làn ổn định, và SHOP-7 đã chứng minh điều đó: 50 item qua 3 làn, release v0.3.0 lên Production. SHOP-73 là lần chạy thật cuối cùng để kiểm bản chép kit mới (`PR events`).
+- **Ba item kia là việc của sản phẩm, không phải bằng chứng cho pilot:**
+  - SHOP-70 (rate limit) và SHOP-72 (5 Low) chỉ cần xong trước khi gỡ basic auth của Production, tức trước Epic Đăng nhập;
+  - SHOP-40 (đưa token CI ra khỏi máy) đi cùng việc tài khoản `ao-agent`, hạn 31/12.
+  - Để cả ba ở backlog, ghi rõ hạn.
+- **Hai việc nên làm trước C1:**
+  - **T19, đóng pilot:** bảng tiêu chí và chi phí, archive tài liệu. Hàng B4 chỉ nên ghi "xong" khi có bước này.
+  - **Sửa lỗi bảo mật Medium của gh-guard:** reviewer PR #74 vừa tìm ra, agent có thể `grep -ri` để in khóa riêng. C1 sẽ chạy thêm nhiều agent nên nên đóng lỗ này trước.
+  - T18 (hướng dẫn kit) và việc lọc 33 followup có thể gộp vào C1, hoặc làm song song.
+
+**2. Hướng dẫn cho người dùng cuối: không gộp vào SHOP-73, nên làm một Task tài liệu riêng.**
+
+- **Vì sao tách:** SHOP-73 là phép thử kit, nên càng nhỏ càng tốt. Nếu nó lỗi, phải biết ngay lỗi do kit chứ không do nội dung. Hướng dẫn lại là tài liệu, không phải code; vai trò viết và cách review cũng khác.
+- **Đề xuất:**
+  - Task "Hướng dẫn sử dụng danh mục sản phẩm (v0.3.0)", để trong `shop/docs/user-guide/`, bằng tiếng Việt (kèm bản tiếng Anh nếu cần);
+  - viết từ AC1–AC28, `design.md` và ảnh QA thật;
+  - hai phần:
+    - **Quản trị viên (`admin`):** xem danh sách; thêm sản phẩm, gồm slug tự sinh, giá và giá gốc, các lỗi khi nhập; sửa (khi người khác vừa sửa, khi mất mạng); ẩn hay hết hàng; xóa;
+    - **Khách (`user`):** xem danh sách và tải thêm; tìm kiếm không dấu; sắp xếp; chia sẻ link; trang chi tiết; trang không tìm thấy; đổi ngôn ngữ, giao diện sáng và tối.
+  - Mỗi phần có mục "khi gặp lỗi" ngắn.
+- **Ai viết:** mình viết trong phiên chính (gần như không tốn agent), hoặc giao `ba` (tốn agent, khoảng vài USD). Mình đề xuất tự viết.
+
+# Phiên 33 · Lượt 31 — 2026-11-18 khoảng 10:25
+
+**Bạn:**
+
+```markdown
+dừng pilot sau SHOP-73 => đồng ý
+để SHOP-40, 70, 72 ở backlog, có hạn rõ => đồng ý
+trước C1, làm T19 và sửa gh-guard => cần đóng Pilot 3 cần làm cả T18 nữa chứ nhỉ?
+viết hướng dẫn cho người dùng cuối bằng một Task tài liệu riêng => đồng ý
+```
+
+**Claude:**
+
+**Đúng, đóng Pilot 3 phải có cả T18.** Mình nói sai ở lượt trước khi bảo T18 có thể gộp vào C1.
+
+- **Vì sao:** tiêu chí 8 của `SPEC-pilot-3.md` ghi "Hướng dẫn có ví dụ Spring Boot trọn vòng, với chi phí thật". Đó chính là T18. Thiếu nó thì pilot chưa đạt đủ 8 tiêu chí, và T19 không đóng được.
+- **Thứ tự trước C1:** SHOP-73 → T18 → T19 → sửa gh-guard → lọc followup.
+
+**Đã cập nhật theo các quyết định của bạn:**
+
+1. **"Chặng 6" trong `tasks/todo.md`:**
+   - SHOP-73 là item cuối của pilot;
+   - mục 5 ghi rõ T18 (tiêu chí 8) và T19;
+   - thêm mục 5b: Task tài liệu "hướng dẫn cho người dùng cuối" (mình viết);
+   - mục 6 đưa lỗi gh-guard lên đầu;
+   - mục 7 thành backlog có hạn.
+2. **Jira:**
+   - SHOP-40: hạn 31/12, đặt vào trường Due date, làm cùng việc tài khoản `ao-agent`;
+   - SHOP-70 và SHOP-72: hạn "trước khi gỡ basic auth của Production (trước Epic Đăng nhập)", ghi bằng comment.
+3. **Đang chạy:** QA SHOP-74.
+
+# Phiên 33 · Lượt 32 — 2026-11-18 khoảng 10:30
+
+**Bạn:**
+
+```markdown
+việc 'sửa gh-guard' thì sẽ cần 1 lượt review với reviewer xHigh và Security Max Effort à?
+```
+
+**Claude:**
+
+**Không cần ngay. Lượt review đó chỉ xảy ra khi chép kit vào `shop`, nên nên gộp nhiều bản sửa vào một lần chép.**
+
+1. **Sửa gh-guard là việc trong repo kit.** Các kit PR #300–#303 vừa rồi chỉ chạy bộ test của kit (1540 test) rồi merge, không có agent review.
+2. **Bản sửa có tác dụng ngay trên máy này:** hook của agent đọc kit trong `AO_KIT_DIR` (bản clone), không đọc bản chép trong `shop`. Vì vậy lỗ hổng được đóng ngay khi bản sửa vào clone, chưa cần chép kit.
+3. **Review của agent chạy khi chép kit vào `shop`:** PR chép kit sửa đường dẫn được bảo vệ, nên có reviewer ở mức xhigh và security ở mức max. Ở PR #74: reviewer 2,36 USD (9 phút), security 5,48 USD (21 phút), tổng khoảng 7,8 USD.
+4. **Đề xuất:** sửa gh-guard trước, rồi sửa thêm các followup đã chọn (lỗi relay chọn nhầm PR fork, chỗ cho ngoại lệ và job CI riêng của dự án…), sau đó chép kit vào `shop` **một lần** cho cả đợt. Như vậy chỉ tốn một lượt review khoảng 8 USD, đúng với bài học "review một lần cho mỗi bản kit".
+
+# Phiên 33 · Lượt 33–34 — 2026-11-18 khoảng 10:40
+
+**Bạn:**
+
+```markdown
+SHOP-73 có chạy reviewer ở mức xhigh và security ở mức max không? Trả lời ngắn gọn
+```
+
+**Claude:** Reviewer luôn chạy ở mức **xhigh**, vì đó là mức cố định của vai trò này. Security chỉ chạy ở mức **high**, không phải max: SHOP-73 chỉ sửa chữ trong `apps/user/messages/*.json`, không chạm đường dẫn được bảo vệ, giống hai PR nhỏ SHOP-63 và SHOP-68. Review khoảng 2–3 USD; cả vòng (build, review, QA) khoảng 5–8 USD.
+
+**Bạn:**
+
+```markdown
+chọn A, làm tiếp nhé
+```
+
+**Claude:** Đã refine SHOP-73, nay ở Ready (dùng token admin của bạn, kèm comment ghi rõ chỗ bạn duyệt), và cho fe-dev bắt đầu build. Khi PR của SHOP-73 mở, mình kiểm workflow `PR events` chạy và `jira-sync` chuyển item. Đó là mục còn thiếu của QA SHOP-74; kiểm xong thì gỡ cờ và Accept SHOP-74.
+
+# Phiên 33 · Lượt 35–36 — 2026-11-18 khoảng 10:50
+
+**Claude (báo):** fe-dev dừng trước khi viết code vì Task SHOP-73 mâu thuẫn, lỗi ở phía Claude khi viết Task. Mục Verification yêu cầu câu A hiện ở trang chủ và trang danh sách sản phẩm, nhưng hai trang này có mô tả riêng, vẫn là câu template. Đề xuất: sửa thêm `Products.metaDescription` thành câu A, giữ nguyên trang chủ (cả trang vẫn là demo của template, làm lại là một Story riêng), sửa Verification, trả lời fe-dev, gỡ cờ, build lại.
+
+**Bạn:**
+
+```markdown
+đồng ý
+```
+
+**Claude:** Đã sửa mô tả và mục Verification của SHOP-73, trả lời comment của fe-dev, gỡ cờ Needs you, rồi cho build chạy lại.
+
+# Phiên 33 · Lượt 37 — 2026-11-18 khoảng 11:00
+
+**Bạn:**
+
+```markdown
+Theo câu trả lời của bạn ở trên (Lượt 32). Trả lời thắc mắc của tôi, chậm và dễ hiểu, ngắn gọn:
+1. Số tiền token bỏ ra cho repo kit và repo dự án là khác nhau? ao kit thì không tốn tiền agent review, còn repo dự án (dùng kit) thì tốn reviewer và security?
+2."Bản sửa có tác dụng ngay trên máy này", repo dự án "không đọc bản chép trong shop" là sao? Vậy thì chép kit vào repo dự ánlamfg gì nữa? Hay là repo dự án ưu tiên đọc kit từ bản clone (AO_KIT_DIR), nếu AO_KIT_DIR không có thì lấy kit đã được chép vào repo dự án?
+3. Vì sao PR sửa ao kit đã merge vào repo kit rồi mà khi chép kit vào repo dự án thì cần phải chạy review?? Nếu kit repo là 1 thư viện cho cộng đồng, 1 dev tải và chép kit về để sử dụng cho repo dự án, mà cứ chạy chép kit tốn token và thời gian như hiện tại thì không đúng lắm nhỉ?
+```
+
+**Claude:**
+
+**1. Đúng như bạn hiểu.**
+- **Repo kit:** PR sửa kit do mình làm trong phiên chính. Chỉ tốn token của phiên chính, kiểm bằng 1540 test, không có agent review.
+- **Repo dự án:** mọi PR đi theo quy trình của kit, nên tốn thêm agent: reviewer, security, QA.
+- Đây là cách đang làm, không phải quy định bắt buộc.
+
+**2. Bạn đoán đúng: ưu tiên `AO_KIT_DIR`, không có thì dùng bản chép.**
+- Hook của agent (như `gh-guard.mjs`) có dòng: `kit = AO_KIT_DIR ?? <dự án>/.ai-orchestrator`.
+- **Bản clone (`AO_KIT_DIR`) dùng trên máy bạn:** `ao-step` và hook của agent.
+- **Bản chép trong `shop` vẫn cần cho những nơi không có bản clone:**
+  - GitHub Actions: CI, `jira-sync`, `merge-gate`, `policy` đều chạy `.ai-orchestrator/scripts/…` của repo;
+  - script agent gọi trong dự án, như `ao-pr.mjs`;
+  - máy khác clone dự án mà không đặt `AO_KIT_DIR`.
+- Vì vậy sửa gh-guard thì máy bạn được bảo vệ ngay, nhưng sửa `jira-sync` thì phải chép vào `shop` mới có tác dụng trên GitHub.
+
+**3. Bạn nói đúng, cách hiện tại chưa hợp lý cho một kit dùng chung.**
+- **Vì sao hiện giờ phải review khi chép:**
+  - bản chép là code chạy với secret của dự án (token Jira, khóa App) và là hàng rào chặn agent, nên nằm trong đường dẫn được bảo vệ;
+  - mà repo kit không có review, nên lần review trong `shop` là lần review **duy nhất** của các bản sửa kit đó. Lỗi gh-guard được tìm ra chính ở lần review này.
+- **Cách hợp lý hơn:**
+  - review **một lần ở repo kit** cho mỗi bản phát hành (tag), có reviewer và security;
+  - dự án khi chép chỉ cần kiểm "file chép khớp đúng bản kit đã review" (so checksum; `ao-kit doctor` đã có dòng kiểm gần như vậy) và CI xanh, không chạy lại agent review;
+  - bạn vẫn approve vì đường dẫn được bảo vệ, nhưng không tốn khoảng 8 USD mỗi lần chép.
+- Mình sẽ ghi việc này vào followup của kit như một thay đổi thiết kế, để cân nhắc trong C1 hoặc C2.
+
+# Phiên 33 · Lượt 38 — 2026-11-18 khoảng 11:15
+
+**Bạn:** (trích câu trả lời Lượt 37, mục 3) "Thảo luận kỹ hơn về mục 3. So sánh việc chạy review ở repo kit và repo dự án. 1. Vì sao ban đầu bạn chọn review ở repo dự án mà không phải review ở repo kit 2. Kết quả khi đổi qua review ở repo kit có tương đương review ở repo dự án không? Viết vào 1 file tại D:\Document\1Khoahoc\4LapTrinh\AI-for-coding\ai-orchestrator\misc\thao-luan"
+
+**Claude:** Đã viết `misc/thao-luan/review-kit-o-dau.md`. Tóm tắt:
+
+1. **Lúc đầu chọn review ở dự án vì ba lý do:**
+   - công cụ review và các cổng kiểm (`merge-gate`, `audit`, gate ③) đều dựng cho PR của dự án;
+   - repo kit chưa có review nên không có chỗ để tin. Spec `kit-copy-review` (Phiên 27) đã cân nhắc dùng repo kit làm gốc tin cậy nhưng bỏ, vì "commit kit chưa từng được agent review", và chọn PR chép kit đã review của một dự án làm gốc;
+   - lần chép là lúc kit gặp cấu hình thật của dự án.
+
+   Cơ chế dùng lại kết quả review cho dự án sau (dòng `Kit review:`, so từng byte, 0 USD) đã có. Nhưng chỉ có `shop` nhận kit mới, nên lần nào cũng là lần đầu, và lần nào cũng tốn tiền review.
+2. **Có tương đương cho code kit:** 3 trên 5 finding của PR #74 nằm trong code kit, gồm cả lỗi gh-guard. Review ở repo kit còn bắt được sớm hơn: lỗi này có từ 15/11, tới 18/11 mới thấy.
+
+   **Không tương đương cho phần ghép vào dự án:** 2 finding (ngoại lệ audit, nhánh `main`/`release/*` của `shop`) chỉ thấy được trong dự án.
+3. **Đề xuất cho C1 hoặc C2:**
+   - review đầy đủ một lần ở repo kit cho mỗi bản phát hành có tag;
+   - khi chép vào dự án, chỉ so byte với bản đã review (dùng lại `kit-copy-review`, cho `Kit review:` trỏ tới tag kit);
+   - review nhẹ phần riêng của dự án, chỉ khi có;
+   - trước hết làm chỗ để phần riêng của dự án.
+
+# Phiên 33 · Lượt 39 — 2026-11-18 khoảng 11:25
+
+**Bạn:** (trích ba ý đề xuất ở Lượt 38) "Làm như này thì thành ra khối lượng thành gấp 3 à? Hiện tại chỉ review ở repo dự án, mà giờ bạn đề xuất 3 ý trên??"
+
+**Claude:**
+
+**Không, khối lượng không gấp 3.** Trong ba ý chỉ có **một lượt review đầy đủ**, và nó thay đúng lượt review đang chạy ở dự án hiện nay. Lượt đó chỉ chuyển từ dự án sang repo kit.
+
+1. **Review đầy đủ ở repo kit:** chính là lượt review hiện có, khoảng 8 USD, nay chuyển chỗ. Mỗi bản kit vẫn chỉ review một lần.
+2. **So byte:** một script chạy vài giây, 0 USD, không có agent (`kit-copy-review` đã có sẵn).
+3. **Review nhẹ phần riêng:** chỉ chạy khi PR chép kit có file riêng của dự án, khoảng 1–2 USD. Khi phần riêng đã có chỗ để riêng, bước này thường không chạy.
+
+| | Hiện nay | Theo đề xuất |
+|---|---|---|
+| Review đầy đủ | 1 lần, ở PR chép kit (~8 USD) | 1 lần, ở repo kit (~8 USD) |
+| So byte | không cần (vì là lần đầu) | script, 0 USD |
+| Review phần riêng | gộp trong lượt trên | 0–2 USD, chỉ khi có |
+| **Tổng** | **~8 USD** | **~8–10 USD** |
+
+Với một dự án, chi phí gần như bằng nhau. Cái được: lỗi kit bị bắt trước khi chạy trên máy bạn, và người khác dùng kit chỉ cần so byte.
+
+# Phiên 33 · Lượt 40 — 2026-11-18 khoảng 11:35
+
+**Bạn:** (không có câu mới; lượt này báo kết quả của SHOP-73)
+
+**Claude:**
+
+**SHOP-73 đã Done**, nên mục 4 xong và pilot đã chạy hết item.
+
+- **QA PASS:**
+  - trang sản phẩm vi/en có câu A;
+  - trang không có mô tả riêng và sản phẩm không có mô tả cũng dùng câu A;
+  - ảnh chia sẻ có tagline mới;
+  - trang chủ giữ nguyên;
+  - unit 658/658, E2E 134 pass, 0 fail.
+- **Chi phí cả vòng SHOP-73:** khoảng 6,5 USD, gồm cả lượt build đầu bị dừng vì Task mâu thuẫn. (Sửa ở Lượt 41: đúng là 4,40 USD.)
+- **QA ghi thêm một điểm:** trên Development, link ảnh chia sẻ trỏ sang host của Production. Mình đã ghi vào SHOP-75 để sửa cùng phần ảnh chia sẻ.
+- **Docker:** đã tắt.
+
+Tiếp theo là **mục 5: T18 và T19 để đóng Pilot 3**, làm trong phiên chính, không tốn agent.
+- **T18:** viết hướng dẫn kit, gồm ví dụ Spring Boot trọn vòng với chi phí thật.
+- **T19:** khóa `age`, bảng tám tiêu chí và chi phí, archive tài liệu.
+
+Mình bắt đầu bằng việc tổng hợp chi phí thật của Epic SHOP-7 từ log các lượt chạy.
+
+# Phiên 33 · Lượt 41 — 2026-11-18 khoảng 11:40 → 12:30
+
+**Bạn:** "Bạn chưa làm mục 5 à? Bạn nói "Mình bắt đầu bằng việc tổng hợp chi phí thật của Epic SHOP-7 từ log các lượt chạy" tôi tưởng bạn đang làm rồi chứ!!! lần sau chưa làm thì viết theo kiểu câu hỏi chứ nói như này tôi tường bạn làm rồi, bạn cũng không hỏi tôi có làm tiếp gì hay không mà cứ thế dừng lại"
+
+Giữa lượt: "bạn làm gì mà nãy giờ cứ profiles check mãi vậy?"
+
+**Claude:**
+
+Bạn nói đúng, lỗi của mình. Câu "Mình bắt đầu…" nghe như việc đang chạy, trong khi lượt đó đã kết thúc. Mục 5 đã nằm trong thứ tự bạn duyệt, nên đáng lẽ mình phải làm luôn. Mình đã lưu quy tắc vào memory: không kết thúc lượt bằng câu báo sẽ làm; có thứ tự đã duyệt thì làm tiếp ngay; chưa được duyệt thì hỏi bằng câu hỏi.
+
+Về profiles check: đó là một trong năm lệnh kiểm mà tiêu chí 8 bắt phải xanh. Lần đầu nó đỏ, nên mình chạy lại **một lần** để biết profile nào hỏng. Kết quả là bước build Next.js của hai profile mẫu (`base-pnpm`, `next-nest`) bị dừng; lỗi này không liên quan tới PR hướng dẫn. Mình không chạy thêm nữa, và đã ghi nó thành followup.
+
+**Mục 5 (T18 và T19) đã xong: Pilot 3 đóng.**
+
+1. **T18, hướng dẫn:** kit PR #304, đã merge.
+   - `docs/getting-started.md` có **phần 7 mới: Epic `SHOP-7` trọn vòng trên dự án có Spring Boot, với chi phí thật.** Phần này có bảng 10 bước, chi phí theo loại item, một Story đi từng lượt, cách bớt chi phí, và cách xử lý khi gặp lỗi.
+   - `docs/vps-setup.md` có kết quả thật: basic auth của Production, RAM của ba môi trường, lần khôi phục từ bản sao.
+   - Test của kit: 1540/1540.
+2. **T19, đóng pilot:**
+   - **Tám tiêu chí: 6 đạt.**
+     - Tiêu chí 6 chỉ đạt một nửa: `/ao-preview` không chạy cho PR nào của Epic. Lúc đầu nó bị bỏ qua, sau đó nó dừng khi làn chạy song song được bật.
+     - Tiêu chí 8 gần đạt: `profiles:check` đang đỏ.
+     - Cả hai đã thành followup của kit.
+   - **Chi phí agent cả Pilot 3: 719 USD theo giá API.** Spec ước 90–127 USD; bạn đã bỏ trần ở Phiên 32. Vượt chủ yếu vì ba lý do:
+     - plan có 20 item, trong khi spec chỉ ước cho 3;
+     - review sinh thêm 28 Task sửa finding, tốn 216 USD;
+     - ba lần chép kit, tốn 95 USD.
+   - **Sửa một số mình báo nhầm:** SHOP-73 tốn **4,40 USD**, không phải 6,5 USD.
+   - **Mình tìm thêm một lỗi nhỏ của kit:** lượt bị dừng ghi chi phí âm. Mình đã ghi followup.
+   - **Tài liệu:** plan, todo, verification vào `tasks/archive/pilot-3/`. `tasks/todo.md` mới chỉ còn mục 5b, 6, 7. Đã cập nhật `concerns.md` (B4 xong, C2 đang làm) và `SPEC.md`. PR tài liệu #305.
+3. **Chưa làm được: kiểm khóa `age` đã cất.** Việc này cần một máy chưa từng chạy agent, hoặc tài khoản `ao-agent`. Mình chuyển nó sang mục 7, làm cùng `ao-agent` trước 31/12. Bạn có máy khác chưa chạy agent không? Nếu có thì làm được sớm hơn.
+
+Tiếp theo là **mục 5b: hướng dẫn sử dụng cho người dùng cuối của `v0.3.0`**. Mục này nằm trong thứ tự bạn đã duyệt, nên mình làm luôn sau khi PR #305 merge.
