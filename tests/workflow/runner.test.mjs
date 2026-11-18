@@ -450,6 +450,16 @@ test('a PR whose CI has not started stops the runner after the start limit, not 
   assert.ok(world.ciPendingFor <= 999 - 10, 'it waited the 5 minutes, 10 polls of 30 s, before it stopped');
 });
 
+// Phiên 33 of shop, PR #57 of SHOP-31: the PR conflicted with develop, so GitHub ran no workflow of pull_request on it,
+// and ao-step waited 5 minutes, then said GitHub Actions did not start and to open the Actions tab.
+test('a PR that conflicts with its base stops the runner at once, and says to merge the base into the branch', async () => {
+  const { world, gather } = specWorld({ spec: NFR, design: DESIGN });
+  const h = harness(world, { 'docs-pr': (w) => ((w.pr = { number: 14, state: 'open', merged: false, base: 'develop', conflicts: true }), (w.ciPendingFor = 999), (w.ciStarted = false)) });
+  const stopped = await h.run({ gather, limits: { ciWaitMs: 30 * 60000, ciStartMs: 5 * 60000 } });
+  assert.match(stopped.decision.reason, /^PR #14 conflicts with develop, and GitHub runs no CI on a PR it cannot merge: merge origin\/develop into its branch, resolve the conflict, push, then run the command again/);
+  assert.ok(world.ciPendingFor >= 999 - 2, 'it did not wait the 5 minutes');
+});
+
 // The limits a command gives are merged with LIMITS one by one, so a limit it leaves out keeps its default (T7b).
 test('a limit the command leaves out keeps its default: CI that never starts stops the runner after the 5 minutes of LIMITS', async () => {
   const { world, gather } = specWorld({ spec: NFR, design: DESIGN });
