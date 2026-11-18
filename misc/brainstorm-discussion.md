@@ -29277,3 +29277,29 @@ Bạn dặn "chưa làm gì" ở phần lớn các lượt này, nên mình ghi 
     4. **Ghi nhật ký** các lượt 62–67.
 
     Tiếp theo: làm tiếp Đợt 1 theo thứ tự đã duyệt.
+
+# Phiên 33 · Lượt 68 — 2026-11-18 khoảng 18:30 → 19:30
+
+**Bạn** (giữa lượt): "Bạn cứ làm như đề xuất nhé, chỉ hỏi tôi những gì bạn không có quyền, còn lại cứ tiếp tục làm như đề xuất nhé"
+
+**Claude:**
+- **Quyền mới đã ghi vào memory `project-scaffold-standing-approval`.** Mình làm theo đề xuất cho các đợt followup và các mục tiếp theo của `todo.md`, mà không hỏi lại. Vẫn hỏi ở các việc sau:
+  - gate ④ và ⑤;
+  - Release và Complete trên Jira;
+  - quyền mới;
+  - việc xóa không hoàn tác được;
+  - chấp nhận một High;
+  - approve hay merge PR của `shop`;
+  - lượt agent tốn tiền mà danh sách đã duyệt chưa nêu;
+  - các điểm ở mục F của `quyet-dinh-da-duyet.md`;
+  - spec của C1.
+- **Đợt 1 xong:** kit PR #306, merge `03a26c1`, 1546/1546 test. Cả 6 mục:
+  1. Verification hẹp trong template Task;
+  2. `qa` chờ Docker như `be-dev`, và không tự bật Docker Desktop;
+  3. worktree QA có `.env` (`runs.copy`) và nằm ở đường dẫn dài;
+  4. gate ③ và `/ao-status` cảnh báo khi có QA đang chạy;
+  5. `/ao-qa <KEY> retest`;
+  6. lượt trả "success" mà câu trả lời rỗng thì là `unfinished`.
+
+  Commit đã được đưa vào clone kit chính. Danh sách followup đã tick.
+- **Đợt 2 bắt đầu** trên nhánh `task/followups-2`. Mục 2 (luật "Commands that take long" cho mọi agent) đã viết, test xanh.

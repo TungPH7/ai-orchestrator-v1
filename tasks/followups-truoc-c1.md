@@ -70,6 +70,15 @@ Các mục này đổi luật của contract, roster, `gates.yaml` hay hook. Ch�
 
 ## Đợt 1: QA tốn ít token hơn
 
+**Xong 2026-11-18: kit PR #306, merge `03a26c1`, 1546/1546 test.** Cả 6 mục:
+- Verification hẹp trong template;
+- `qa` chờ Docker như `be-dev` và không tự bật Docker Desktop;
+- worktree QA có `.env` và đường dẫn dài;
+- gate ③ và `/ao-status` cảnh báo khi QA đang chạy;
+- `/ao-qa <KEY> retest`;
+- câu trả lời rỗng thì là `unfinished`.
+
+
 1. **QA của Task chỉ đổi tài liệu quá nặng** (SHOP-76):
    - template Task có mẫu Verification hẹp, kiểm được, cho Task tài liệu và Task nhỏ;
    - phiên chính viết Verification của Task theo mẫu đó.
