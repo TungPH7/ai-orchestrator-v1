@@ -29035,3 +29035,38 @@ Giữa lượt: "Việc deploy sẽ làm những gì? Tốn thời gian và toke
 - **Việc của `shop`:** test chập chờn, hai Low về chữ, ngôn ngữ của trang quản trị. Mỗi việc thành một Task khi bạn muốn.
 
 **Bạn duyệt danh sách này không? Duyệt thì mình bắt đầu đợt 1, sửa gh-guard trước.**
+
+# Phiên 33 · Lượt 45 — 2026-11-18 khoảng 15:20
+
+**Bạn:** "Sắp xếp lại thứ tự làm giúp tôi, ưu tiên các việc giúp tiết kiệm token như issue 'QA của Task tài liệu' vừa làm ở SHOP-76, task SHOP-76 rất đơn giản mà tốn chi phí tận 11,49 USD !!! Thật lãng phí. Xong thì chờ tôi duyệt"
+
+**Claude:**
+
+Đã xếp lại xong, chờ bạn duyệt, ở `ai-orchestrator/tasks/followups-truoc-c1.md`.
+
+**SHOP-76 tốn 11,49 USD vì:**
+- **QA 6,68 USD:**
+  - Verification đòi kiểm từng câu;
+  - `qa` chạy lại cả bộ E2E và tự dựng môi trường;
+  - có thêm một lần QA fail.
+- **Review 4,80 USD:** 6 lượt cho 2 PR, mà `reviewer` vẫn chạy `xhigh` dù PR chỉ đổi tài liệu.
+
+Theo đề xuất, một Task như vậy còn khoảng 2–3 USD.
+
+**Thứ tự mới:**
+
+| Đợt | Nội dung | Số mục |
+|---|---|---|
+| 1 | **QA tốn ít token hơn:** QA nhẹ cho Task tài liệu; chỉ chạy E2E của phần đổi; `qa` không tự bật Docker; worktree QA có sẵn `.env`; không approve khi QA đang chạy; cờ `--retest`; kết quả rỗng thì chạy tiếp | 7 |
+| 2 | **Dev agent và review tốn ít token hơn:** lệnh test cho Maven và `pnpm` đã thử trên Windows; không chạy test nền; kiểm Suppressions trước khi commit; `/ao-fix` chọn đúng agent; review không tính lại code của `develop`; kiểm WIP trước Sub-task; review nhẹ cho PR tài liệu; luật dừng vòng sửa nằm trong kit | 8 |
+| | **Chép kit vào `shop` lần 1**, để `shop` hưởng phần tiết kiệm sớm | |
+| 3 | **Bảo mật của hook**, gồm gh-guard. Lần trước bạn duyệt sửa nó trước tiên; nay lùi xuống đây theo ưu tiên mới. Bạn muốn giữ nó lên đầu thì nói: chỉ mất 1–2 giờ | 5 |
+| 4 | **Làn, worktree, Jira, GitHub:** không tốn token agent, nhưng phải gỡ tay | 14 |
+| 5 | **Cần thiết kế, đưa vào C1/C2:** review kit một lần ở repo kit (ba lần chép kit tốn 95 USD), phần riêng của dự án, `/ao-preview` trong làn | 4 |
+
+**Cần bạn quyết 3 điểm đổi luật** trước Đợt 1. Mình đề xuất "Có" cho cả ba:
+1. **QA mỗi item chỉ chạy E2E của phần đổi;** cả bộ E2E chạy ở `/ao-ship`. Phải đổi DoD của Task: "Bộ regression pass" thành "E2E của phần đổi pass".
+2. **PR chỉ đổi `docs/**`:** `reviewer` chạy `high`; `security` chỉ chạy khi có file ngoài `docs/`. Job `secrets` của CI vẫn quét.
+3. **Task chỉ đổi tài liệu không cần lượt `qa`:** bạn hay Claude đọc đối chiếu rồi Accept.
+
+**Bạn duyệt thứ tự này, và ba điểm trên, không?**
