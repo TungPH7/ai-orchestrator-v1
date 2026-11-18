@@ -1,12 +1,12 @@
 # Followup của kit, xếp lại trước C1
 
-> Mục 6 của [todo.md](todo.md). Nguồn: 44 mục còn mở trong [handoff-2026-11-16-followups.md](handoff-2026-11-16-followups.md), đếm ngày 2026-11-18. Mỗi mục dưới đây trỏ về mục gốc bằng tên in đậm của nó. **Trạng thái:** bản xếp lần 3 (Phiên 33 · Lượt 47), chờ bạn duyệt.
+> Mục 6 của [todo.md](todo.md). Nguồn: 44 mục còn mở trong [handoff-2026-11-16-followups.md](handoff-2026-11-16-followups.md), đếm ngày 2026-11-18. Mỗi mục dưới đây trỏ về mục gốc bằng tên in đậm của nó. **Trạng thái:** bạn duyệt ở Phiên 33 · Lượt 58–61 (2026-11-18). Bản này là bản xếp lần 4.
 >
 > - **Lượt 45:** ưu tiên việc tiết kiệm token, theo lời bạn.
 > - **Lượt 46–47:**
->   - chép kit vào `shop` một lần, ngay trước việc kế tiếp của `shop`, không chia hai lần;
->   - bỏ điểm đổi DoD của Task, giữ "Bộ regression pass";
->   - bạn OK điểm 2 và 3.
+>   - chép kit vào `shop` một lần, ngay trước việc kế tiếp của `shop`;
+>   - giữ DoD "Bộ regression pass".
+> - **Lượt 58–61:** bạn đồng ý 8 mục ở Lượt 58, trừ mục 2 (giữ nguyên cách chia item). Các luật đổi về review, QA và thư viện chuyển sang C1 (mục "Chuyển sang C1" dưới đây); lệnh chạy test chung vào Đợt 2.
 
 ## Vì sao xếp lại
 
@@ -32,23 +32,49 @@ Cả Pilot 3 tốn 719 USD: build 44%, review 34%, QA 11%. Phần lãng phí l�
   - Mỗi bản sửa được kiểm bằng test của kit. Lần chạy thật đầu tiên là item kế tiếp của `shop`.
 - **Đợt 5** cần thiết kế, nên đưa vào spec của C1 hay C2.
 
-## Luật đổi kèm theo (bạn OK ở Lượt 46)
+## Chuyển sang C1 (bạn duyệt ở Lượt 46, 57, 58, 61)
 
-1. **PR chỉ đổi `docs/**`:**
-   - `reviewer` chạy ở `high`, không phải `xhigh`;
-   - `security` chỉ chạy khi PR có file ngoài `docs/`. Job `secrets` của CI vẫn quét mọi PR.
-2. **Task chỉ đổi tài liệu (`docs/**`) không cần lượt `qa`.** Thay vào đó, bạn hay Claude đọc đối chiếu rồi Accept. Contract cho Task tài liệu đi từ In Review tới In QA với một báo cáo QA ngắn do phiên chính viết.
+Các mục này đổi luật của contract, roster, `gates.yaml` hay hook. Chúng cần spec, nên làm một lần trong C1, không làm trong các đợt dưới đây:
 
-**Không đổi:** DoD của Task giữ "Bộ regression pass".
+1. **Ba mức quy trình theo rủi ro** (Nhẹ, Chuẩn, Nặng), chọn cho từng item ở gate ②, như mục 5 của [danh-gia-chi-phi-shop-7.md](../misc/thao-luan/toi-uu-token/danh-gia-chi-phi-shop-7.md):
+   - QA theo mức: Nhẹ không có lượt `qa`, Chuẩn có `qa` một lần mỗi Story, Nặng giữ như hiện nay;
+   - Low gom vào một Task chung mỗi Epic.
+
+   Cách chia item giữ nguyên như hiện nay (Lượt 60).
+2. **Review theo rủi ro** ([effort-va-bat-tat-review.md](../misc/thao-luan/toi-uu-token/effort-va-bat-tat-review.md), mục 1–3; Lượt 51–52):
+   - `reviewer` và `security` mặc định ở `high`;
+   - ba tầng đường dẫn: Nguy cấp, Nhạy cảm, Thường. Mức review là mức cao hơn giữa mức của item và tầng đường dẫn;
+   - luật miễn review theo đường dẫn và mức của item, có dấu vết để `merge-gate` và `audit` tự kiểm lại;
+   - hai luật cho tài liệu (Lượt 46): PR chỉ đổi `docs/**` thì `reviewer` ở `high` và không có `security`; Task chỉ đổi tài liệu thì không cần lượt `qa`.
+3. **Tiêu chí xếp hạng finding** (cùng file, mục 4.5):
+   - bảng tiêu chí có ví dụ cho `reviewer`;
+   - Medium phải nêu được cách tái hiện;
+   - Low không mở vòng sửa.
+
+   Gồm cả luật dừng vòng sửa trong `ao-step` (trước đây là mục 8 của Đợt 2).
+4. **Duyệt thư viện trước khi cài** (Lượt 61), thay cho mục 4 cũ "chỉ nâng phiên bản thì để CI lo":
+   - `sa` liệt kê thư viện mới trong plan; kit kiểm tự động; bạn duyệt ở gate ②;
+   - giữa lúc build, dev chạy `dep-check.mjs` trước khi cài, và hook chặn việc cài thư viện chưa duyệt;
+   - `security` chỉ xem riêng thư viện có dấu hiệu nghi ngờ;
+   - job `policy` chặn PR có gói chưa duyệt trong lockfile;
+   - `security` ở review PR chỉ xem cách code dùng thư viện. Nâng phiên bản của gói đã có thì để `osv-scanner` và `audit` lo.
+5. **Đo lại ở Epic kế tiếp** (Lượt 58, mục 6):
+   - so USD cho mỗi AC với 21,6 USD của SHOP-7;
+   - chạy thêm `xhigh` mù trên 3–5 PR để so với `high`.
+
+**Không đổi:**
+- DoD của Task giữ "Bộ regression pass".
+- Cách chia item thành Story, Task, Sub-task giữ như hiện nay.
 - Lý do ban đầu là chất lượng, không phải token. Task là việc kỹ thuật không có AC, và có thể làm hỏng chỗ khác, như SHOP-13 đổi schema hay SHOP-17 gỡ phần sản phẩm cũ. Cả bộ E2E là thứ duy nhất bắt được lỗi đó trước khi item Done.
 - Bản thân bộ E2E tốn ít token, vì agent chủ yếu chờ: QA SHOP-73 chạy cả bộ mà chỉ tốn 1,23 USD. Tiền của QA SHOP-76 nằm ở Verification quá rộng và ở việc agent tự dựng môi trường. Đợt 1 sửa hai chỗ đó.
 
 ## Đợt 1: QA tốn ít token hơn
 
 1. **QA của Task chỉ đổi tài liệu quá nặng** (SHOP-76):
-   - áp luật 2 ở trên: Task chỉ đổi tài liệu không cần lượt `qa`;
    - template Task có mẫu Verification hẹp, kiểm được, cho Task tài liệu và Task nhỏ;
    - phiên chính viết Verification của Task theo mẫu đó.
+
+   Luật "Task tài liệu không cần lượt `qa`" làm trong C1.
 2. **`qa` không tự bật Docker Desktop.** Thiếu Docker thì `ao-step` dừng trước lượt, như với `be-dev`. Lần nào QA cũng để lại container `learn-postgres-s1` chạy.
 3. **Worktree QA không có file `.env` của app:** chép `.env` như với làn, và dùng đường dẫn dài. Lượt `qa` nào cũng tự viết runner nạp `.env`, tốn bước.
 4. **Approve PR lúc có QA đang chạy hay sắp chạy làm QA bị cắt ngang:** dòng STOP ở gate ③ và `/ao-status` báo QA nào đang chạy. Lượt QA bị thay thì mất trắng.
@@ -57,14 +83,18 @@ Cả Pilot 3 tốn 719 USD: build 44%, review 34%, QA 11%. Phần lãng phí l�
 
 ## Đợt 2: dev agent và review tốn ít token hơn
 
-1. **Lệnh chạy test đã thử trên Windows:** gộp hai mục `be-dev` khó chạy Maven và `fe-dev` không gọi được `pnpm`. Ở mỗi lượt, agent tốn hàng chục bước mò lệnh.
+1. **Một lệnh chạy test chung** (Lượt 58–59, mục 5), gộp hai mục `be-dev` khó chạy Maven và `fe-dev` không gọi được `pnpm`. Ở mỗi lượt, agent tốn hàng chục bước mò lệnh.
+   - Tìm nguyên nhân gốc: vì sao `pnpm` và `mvnw` hỏng trong phiên agent, có thể do môi trường mà kit truyền khi mở agent. Sửa ở đó.
+   - `node .ai-orchestrator/scripts/run.mjs <app> <script> [-- tham số]`: tự chọn Maven hay `pnpm`, chạy ở tiền cảnh, chỉ in tóm tắt (số test đạt, số lỗi, lỗi đầu tiên).
+   - Lời nhắc của agent ghi đúng lệnh này cho từng app, sinh từ `project.yaml`, và cấm tự viết script thay thế.
+   - Job CI `windows-latest` của kit chạy thử lệnh, và `ao-kit doctor` có một dòng kiểm nó.
 2. **Agent chạy headless kết thúc khi test còn chạy nền:** luật không dùng `run_in_background` trong lượt headless. Mỗi lần gặp lỗi này, cả lượt phải chạy lại.
 3. **Check `policy` "Suppressions" đỏ lặp lại** (ba lần): hook `pre-commit` kiểm ở máy. Mỗi lần đỏ tốn một vòng CI và một lượt `/ao-fix`.
 4. **`/ao-fix` trên Story có Sub-task giao nhầm dev agent:** chọn agent theo đường dẫn file của check đỏ.
 5. **Review lại sau khi merge `develop` vào nhánh PR tính cả code của `develop`:** phần mới chỉ là phần của PR. Ở PR #41, `security` chạy `max` trên 3.700 dòng đã review rồi.
 6. **Sub-task FE chạy trước khi WIP của `fe-dev` trên Jira trống:** kiểm WIP trước mỗi Sub-task. Lượt hỏng tốn 0,73 USD.
-7. Áp luật 1 ở trên: review nhẹ cho PR chỉ đổi tài liệu.
-8. **Luật dừng vòng sửa trong kit:** review không còn Critical hay High thì `ao-step` không gợi ý `/ao-fix`. Nó gợi ý approve, và Medium, Low thành Task theo dõi. Hiện nay luật này chỉ có trong memory của phiên chính.
+
+Hai mục cũ "review nhẹ cho PR chỉ đổi tài liệu" và "luật dừng vòng sửa trong kit" chuyển sang C1.
 
 ## Đợt 3: bảo mật của hook
 
@@ -116,7 +146,7 @@ Các mục này không tốn token agent, nhưng làm item bị kẹt, và phiê
 | Đợt | Số mục | Công của phiên chính | USD agent |
 |---|---|---|---|
 | 1 | 6 | khoảng một ngày | 0 |
-| 2 | 8 | khoảng một ngày | 0 |
+| 2 | 6 | khoảng một ngày | 0 |
 | 3 | 5 | khoảng nửa ngày | 0 |
 | 4 | 14 | khoảng 1,5 ngày | 0 |
 | Chép kit vào `shop` một lần, trước việc kế tiếp của `shop` (review, QA) | | khoảng 2 giờ | khoảng 9 |

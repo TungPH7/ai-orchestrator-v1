@@ -29191,3 +29191,46 @@ Nếu bạn đồng ý đưa ba mức vào C1, phần này thành một mục c�
   - SHOP-13: `xhigh` và `max`, như hiện nay.
 - **Trong kit:** `gates.yaml` tách thành `critical_paths` và `sensitive_paths`; `reviewer` không còn luôn `xhigh`; item có nhãn `ao-level-*`.
 - **Ước tính** review của SHOP-7 còn khoảng 100–120 USD, thay vì 205 USD.
+
+# Phiên 33 · Lượt 53–61 — 2026-11-18 khoảng 16:40 → 17:40 (ghi bù)
+
+Bạn dặn "chưa làm gì" ở phần lớn các lượt này, nên mình ghi bù một lần ở đây. Các câu trả lời dài nằm trong hai file thảo luận: `misc/thao-luan/toi-uu-token/effort-va-bat-tat-review.md` và `danh-gia-chi-phi-shop-7.md`.
+
+- **Lượt 53, bạn:** "1. Mong đợi Update effort của reviewer và security mặc định về high … 2. Hiện tại thời điểm đặt effort cho các agent là khi nào? ở bước spec à? 3. Mong đợi có tính năng bật/tắt bước review trong SDLC trong kit …"
+  - **Claude:**
+    - `security` ở `high` cho code app thì ảnh hưởng nhỏ; cho code nguy cấp thì có ảnh hưởng thật (bài thử 2026-11-07). Đề xuất mặc định `high`, tự nâng ở tầng Nguy cấp.
+    - Effort được đặt ở roster, ở nhãn của bước plan, do kit tự đổi khi chạy, hay do bạn đổi tay; không ở bước spec.
+    - Đề xuất miễn review theo luật đường dẫn và mức của item, có dấu vết, mở rộng từ tiền lệ `docs_pull_requests`.
+- **Lượt 54, bạn:** "Trước tiên Viết 3 câu hỏi này vào 1 file … xong thì dừng lại". **Claude:** viết `effort-va-bat-tat-review.md`.
+- **Lượt 55, bạn:** "Đưa tôi đường dẫn file .md của agent reviewer và security". **Claude:** ba bản của mỗi agent:
+  - nguồn `agents/prompts/<role>.md`, cùng `agents/roster.yaml`;
+  - bản sinh `kit/.claude/agents/`;
+  - bản của dự án `shop/.claude/agents/`.
+- **Lượt 56, bạn:** "2 skills này từ đâu mà ra? sentry-security-review and gha-security-review". **Claude:** cả hai lấy từ `getsentry/skills` (Apache-2.0), ghim commit trong roster từ module `agent-roster` (30/10). Tên `security-review` đổi thành `sentry-security-review` vì trùng skill có sẵn.
+- **Lượt 57, bạn:** "Tiêu chí reviewer và security xếp hạng hạng findings là Critical, High, Medium, Low như thế nào? … append vào file". **Claude:** thêm mục 4 vào file:
+  - định nghĩa chung của template;
+  - nhãn của `code-review-and-quality` cộng hai luật cứng;
+  - lọc theo độ tin cậy và bảng mức của `sentry-security-review`;
+  - đề xuất 4.5.
+- **Lượt 58, bạn:** "Về 3 câu … tôi đồng ý như bạn đề xuất. ba điểm đó sẽ thành một mục của spec C1 à? …"
+  - **Claude:** đúng; trình tự là ghi vào hàng C1, viết spec, bạn duyệt, lập plan, rồi làm.
+  - Có phần trùng với Đợt 1–2. Mục 4.5 khi đó chưa duyệt.
+- **Lượt 59, bạn:** "Mục 4 … đồng ý theo đề xuất. Các thảo luận ở các lượt này bạn chưa hỏi tôi xác nhận lại". **Claude:** liệt kê 8 mục cần xác nhận.
+- **Lượt 60, bạn:** "Đồng ý cả 8 trừ 2. … Vì sao ban đầu lại chia ra Task, Sub-task mà bây giờ lại bớt đi …"
+  - **Claude:** chia item là vì PR nhỏ thì review tốt hơn, vì vai trò, phụ thuộc và WIP. Sub-task không thêm review hay QA.
+  - Bớt item thì có ảnh hưởng chất lượng, và tiết kiệm nhỏ hơn mình nói.
+- **Lượt 61, bạn:** "mục 2 giữ như hiện tại không đổi gì cả. Mục 4,5 tôi chưa hiểu lắm"; rồi "Ok mục 5, còn mục 4 cần thảo luận thêm: Khi fe, be dev thêm 1 thư viện … phải check security trước lúc chuẩn bị cài …"; rồi "đồng ý thay mục 4 bằng cách này, và đưa nó vào C1".
+  - **Claude:** giải thích mục 4 và 5. Rồi đề xuất duyệt thư viện trước khi cài:
+    - danh sách thư viện mới ở plan, bạn duyệt ở gate ②;
+    - `dep-check` trước khi cài;
+    - hook chặn việc cài thư viện chưa duyệt;
+    - job `policy` chặn gói chưa duyệt trong lockfile;
+    - `security` chỉ xem thư viện nghi ngờ.
+
+**Kết quả (Lượt 61):**
+- `tasks/followups-truoc-c1.md` được duyệt và sửa:
+  - các luật về review, QA, tài liệu và thư viện chuyển sang mục "Chuyển sang C1";
+  - lệnh chạy test chung `run.mjs` vào Đợt 2;
+  - cách chia item giữ nguyên.
+- Hàng C1 của `concerns.md` ghi thêm phạm vi đã duyệt.
+- Mục 6 của `tasks/todo.md`: tiếp theo làm Đợt 1.
