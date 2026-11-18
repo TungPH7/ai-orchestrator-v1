@@ -28937,3 +28937,35 @@ Về profiles check: đó là một trong năm lệnh kiểm mà tiêu chí 8 b�
 3. **Chưa làm được: kiểm khóa `age` đã cất.** Việc này cần một máy chưa từng chạy agent, hoặc tài khoản `ao-agent`. Mình chuyển nó sang mục 7, làm cùng `ao-agent` trước 31/12. Bạn có máy khác chưa chạy agent không? Nếu có thì làm được sớm hơn.
 
 Tiếp theo là **mục 5b: hướng dẫn sử dụng cho người dùng cuối của `v0.3.0`**. Mục này nằm trong thứ tự bạn đã duyệt, nên mình làm luôn sau khi PR #305 merge.
+
+# Phiên 33 · Lượt 41 (tiếp) — 2026-11-18 khoảng 12:30 → 13:00
+
+**Claude:**
+
+**Mục 5 xong, Pilot 3 đã đóng. Mục 5b đã viết xong và đang chờ bạn quyết.**
+
+**Mục 5 (T18, T19):**
+- **Đã merge hai PR:**
+  - kit PR #304: hướng dẫn kit có phần 7 mới, ví dụ Spring Boot với chi phí thật;
+  - PR tài liệu #305: đóng pilot.
+- **Tám tiêu chí: 6 đạt.**
+  - Tiêu chí 6 chỉ đạt một nửa: `/ao-preview` không chạy cho PR nào của Epic.
+  - Tiêu chí 8 gần đạt: `profiles:check` đang đỏ.
+  - Cả hai đã thành followup của kit.
+- **Chi phí agent cả Pilot 3: 719 USD theo giá API.** Spec ước 90–127 USD; bạn đã bỏ trần. SHOP-73 thật ra tốn 4,40 USD, không phải 6,5 USD như mình báo trước.
+- **Khóa `age` chưa kiểm được.** Việc này cần một máy chưa từng chạy agent, hoặc tài khoản `ao-agent`. Mình chuyển nó sang mục 7, hạn 31/12.
+
+**Mục 5b, hướng dẫn cho người dùng cuối của `v0.3.0`:**
+- **Jira và GitHub:** Task SHOP-76 đang In Progress. PR nháp `shop` #76 có CI xanh.
+- **Nội dung, trong `docs/user-guide/`:**
+  - `README.md`: mở trang nào, hộp mật khẩu mà trình duyệt hỏi, ngôn ngữ, giao diện, những gì bản này chưa có;
+  - `quan-tri-vien.md`: xem, tìm, lọc, thêm, sửa, đổi slug, ẩn, hết hàng, xóa, và độ trễ 60 giây ở trang của khách;
+  - `khach.md`: danh sách và Xem thêm, tìm không dấu, sắp xếp, chia sẻ đường dẫn, trang chi tiết, trang không tìm thấy, ngôn ngữ và giao diện.
+
+  Mỗi phần có mục "Khi gặp lỗi", và chữ trên nút hay thông báo được chép đúng từ giao diện. Có 11 ảnh từ các lượt QA thật.
+- **CI lần đầu đỏ** vì một unit test chậm của `admin`: 5,05 giây, quá mốc 5 giây. Chạy lại thì xanh. Mình đã ghi followup.
+
+**Cần bạn quyết:**
+1. Chạy review (`reviewer`, `security`) và QA cho PR #76 ngay bây giờ, tốn khoảng 3–4 USD agent? Hay chờ hạn mức 7 ngày reset lúc 21:00 ngày 21/11? Lần đo gần nhất, hạn mức đã dùng 89%.
+2. Quyền tự approve PR và Accept của mình đã hết khi SHOP-7 đóng. Với SHOP-76, bạn tự approve và Accept, hay giao mình làm như trước?
+3. Bạn có máy nào chưa từng chạy agent không? Nếu có, kiểm khóa `age` được sớm hơn 31/12.
