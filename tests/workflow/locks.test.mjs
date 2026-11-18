@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { admit, admitAgent, claimRole, liveLocks, releaseAgent, takeLock } from '../../lib/workflow/locks.mjs';
+import { admit, admitAgent, claimRole, jiraWipStop, liveLocks, releaseAgent, takeLock } from '../../lib/workflow/locks.mjs';
 
 // Who may run now (parallel-runs spec, part 2).
 const lock = (more) => ({ name: more.key ?? '_project', pid: 100, slot: 0, ...more });
@@ -203,4 +203,14 @@ test('an agent starts at once when no other command has one running, and waits f
   assert.match(stuck.reason, /the machine stayed under 3 GB of free RAM while another agent ran/);
   // 0 turns the check off.
   assert.deepEqual(await admitAgent(dir, c.file, { fs, alive, sleep: async () => assert.fail('no wait'), freeBytes: () => 0, minGb: 0 }), { ok: true, waited: false });
+});
+
+// Pilot 3, SHOP-31: the build waited for fe-dev to end its run on SHOP-58, then ran fe-dev on the Sub-task SHOP-33 while
+// SHOP-58 was still In Progress on Jira; jira-guard refused the Start, and the run was lost (0.73 USD).
+test('jiraWipStop stops a build run while another item of its role is In Progress on Jira, and not for the item itself', () => {
+  const reason = jiraWipStop({ role: 'fe-dev', key: 'SHOP-33', story: 'SHOP-31', keys: ['SHOP-58'], limit: 1 });
+  assert.equal(reason, 'fe-dev is at its WIP limit on Jira: SHOP-58 is In Progress, and SHOP-33 would be one more. Once SHOP-58 is In Review, /ao-build SHOP-31 again');
+  assert.equal(jiraWipStop({ role: 'fe-dev', key: 'SHOP-33', story: 'SHOP-31', keys: ['SHOP-33'], limit: 1 }), null, 'a Sub-task that goes on holds its own WIP');
+  assert.equal(jiraWipStop({ role: 'be-dev', key: 'SHOP-9', keys: [], limit: 1 }), null);
+  assert.match(jiraWipStop({ role: 'be-dev', key: 'SHOP-9', keys: ['SHOP-4', 'SHOP-5'], limit: 2 }), /SHOP-4, SHOP-5 are In Progress, and SHOP-9 would be one more\. Once one of them is In Review, \/ao-build SHOP-9 again$/);
 });
