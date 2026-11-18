@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { join } from 'node:path';
 import { readGates } from '../../lib/quality/gates.mjs';
-import { auditProblems, checkConventions, designFilesToCheck, osvProblems } from '../../lib/quality/policy.mjs';
+import { auditProblems, checkConventions, designFilesToCheck, osvProblems, pomsToScan, scanTries } from '../../lib/quality/policy.mjs';
 import { addedLines, deletedTests, findSuppressions, loweredThresholds } from '../../lib/quality/suppressions.mjs';
 import { matchesGlob } from '../../lib/quality/glob.mjs';
 import { ROOT } from '../helpers/kit.mjs';
@@ -361,4 +361,23 @@ test('Java paths that decide who calls the API, what it reads and how it is buil
     'apps/api/src/main/resources/db/migration/V4__orders.sql',
   ]) assert.ok(raises(file), file);
   assert.ok(!raises('apps/api/src/main/java/com/acme/order/service/OrderService.java'));
+});
+
+// Phiên 33 of shop, PR #66 of SHOP-67: the policy job went red on "API query failed: Maven registry … query status: 404"
+// while the PR changed only apps/admin. A scan that fails is tried again; on a PR, only the Java apps it changes are
+// scanned, and a push to the base scans them all.
+test('osv-scanner scans the pom.xml of the Java apps a PR changes, every one on a push, and a failed scan is tried again', () => {
+  const poms = ['apps/api/pom.xml', 'apps/billing/pom.xml'];
+  assert.deepEqual(pomsToScan(poms, ['apps/admin/src/a.tsx', 'apps/api/src/main/java/A.java']), ['apps/api/pom.xml']);
+  assert.deepEqual(pomsToScan(poms, ['apps/admin/src/a.tsx']), []);
+  assert.deepEqual(pomsToScan(poms, null), poms, 'a push scans them all');
+  assert.deepEqual(pomsToScan(poms, ['apps/apiary/x.ts']), [], 'a folder whose name only starts the same');
+
+  const answers = [{ status: 127 }, { status: 1, stdout: '{}' }];
+  const pauses = [];
+  assert.deepEqual(scanTries(() => answers.shift(), { pause: () => pauses.push(1) }), { status: 1, stdout: '{}' }, 'advisories found end the tries');
+  assert.equal(pauses.length, 1);
+  let scans = 0;
+  assert.equal(scanTries(() => (scans++, { status: 128 }), { pause: () => {} }).status, 128);
+  assert.equal(scans, 3);
 });
