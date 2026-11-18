@@ -144,7 +144,7 @@ Dòng viết trong trích dẫn, gạch đầu dòng, chữ đậm hay chữ ngh
 
 ## `merge-gate`
 
-`merge-gate` chạy sau mỗi lần `jira-sync` xong. `jira-sync` thì chạy sau mỗi lần `CI` xong và sau mỗi review, nên `merge-gate` thấy cả hai.
+`merge-gate` chạy sau mỗi lần `jira-sync` xong. `jira-sync` thì chạy sau mỗi lần `CI` xong và sau mỗi review, nên `merge-gate` thấy cả hai. `merge-gate` cũng chạy ngay sau mỗi lần `CI` xong: ở bản v0.3.0 của `shop`, PR merge ngược #73 chờ CI, mà lần CI xanh không kéo theo `jira-sync` nào, nên `merge-gate` không chạy lại tới khi bạn chạy tay. Một lần chạy thừa không hại gì: các lần chạy xếp hàng, và nó chỉ merge PR đủ mọi điều kiện.
 
 Code của một PR không bao giờ cầm `JIRA_CI_TOKEN` (review của `shop` PR #21). GitHub lấy workflow của sự kiện `pull_request` và `pull_request_review` từ chính PR, kèm secret của repo, nên nhánh của agent có thể sửa bản kit hay gói mà `npm ci` cài, rồi chuyển item bất kỳ bằng token đó. Vì vậy:
 
@@ -375,7 +375,7 @@ Với repo private, GitHub tính phút theo từng job, làm tròn lên một ph
 
 Một vòng chuẩn gồm: mở PR, sửa một lần, `reviewer` và `security` báo cáo ở cả hai vòng, bạn approve một lần, rồi merge và deploy. Vòng đó tốn 2 × 8 + 5 × 2 + 11 = 37 phút, nên 2.000 phút đủ cho khoảng 54 vòng mỗi tháng. Vòng của PR #4 có bốn lần push và sáu lần review hoặc approve, nên tốn 55 phút.
 
-`jira-sync` và `merge-gate` chiếm 33 trên 55 phút đó. Mỗi lần chạy chỉ mất 10 đến 20 giây nhưng vẫn bị tính tròn một phút, và `merge-gate` chạy sau mọi lần `jira-sync`. Muốn tiết kiệm, hãy gom các bản sửa vào ít lần push hơn. Nếu vẫn vượt ngân sách, có thể gộp job hoặc bớt trigger (spec mục 12).
+`jira-sync` và `merge-gate` chiếm 33 trên 55 phút đó. Mỗi lần chạy chỉ mất 10 đến 20 giây nhưng vẫn bị tính tròn một phút, và `merge-gate` chạy sau mọi lần `jira-sync` và mọi lần `CI`. Repo public thì GitHub không tính phút cho Actions. Muốn tiết kiệm, hãy gom các bản sửa vào ít lần push hơn. Nếu vẫn vượt ngân sách, có thể gộp job hoặc bớt trigger (spec mục 12).
 
 ## GitHub CLI trên máy bạn
 

@@ -11,10 +11,12 @@ const text = readFileSync(join(ROOT, 'kit', '.github', 'workflows', 'merge-gate.
 const workflow = parse(text);
 const job = workflow.jobs['merge-gate'];
 
-test('merge-gate runs after jira-sync and by hand, never on a PR or review event, whose workflow a PR could change', () => {
+test('merge-gate runs after jira-sync, after CI and by hand, never on a PR or review event, whose workflow a PR could change', () => {
   assert.equal(workflow.name, 'merge-gate');
   assert.deepEqual(Object.keys(workflow.on), ['workflow_run', 'workflow_dispatch']);
-  assert.deepEqual(workflow.on.workflow_run, { workflows: ['jira-sync'], types: ['completed'] });
+  // And after CI (Phiên 33, v0.3.0 of shop): the merge-back PR #73 waited for CI, and the CI run that went green started
+  // no jira-sync, so merge-gate did not run again until it was started by hand.
+  assert.deepEqual(workflow.on.workflow_run, { workflows: ['jira-sync', 'CI'], types: ['completed'] });
   assert.doesNotMatch(text, /^\s*pull_request/m);
 });
 
