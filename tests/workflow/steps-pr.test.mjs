@@ -242,6 +242,26 @@ test('/ao-review stops: CI running or red, both reports on the head, a docs PR, 
   }
 });
 
+test('at gate ③ the stop says to wait while qa tests on the environment the merge deploys to (Pilot 3, SHOP-28, SHOP-69)', () => {
+  // An approval merges, the deploy follows, and ao-step stops the QA that runs as superseded: it starts again.
+  const reports = { reviewer: report(), security: report() };
+  const testing = [{ key: 'DEMO-30', environment: 'development', pid: 4242 }];
+  const waiting = decide('review', prFacts('review', { reports }, { qaRunning: testing }));
+  assert.equal(waiting.go, false);
+  assert.match(waiting.reason, /gate ③ merge-approval\. Wait: qa is testing DEMO-30 on development now \(process 4242\)/);
+  assert.match(waiting.reason, /the merge deploys development, and the new deploy stops that QA/);
+  assert.match(waiting.next, /^Once qa ends on development, read the reports/);
+
+  // A QA on another environment is not in the way: a merge into develop deploys only Development.
+  const elsewhere = decide('review', prFacts('review', { reports }, { qaRunning: [{ key: 'DEMO-31', environment: 'staging', pid: 7 }] }));
+  assert.doesNotMatch(elsewhere.reason, /Wait: qa/);
+  assert.match(elsewhere.next, /^Read the reports/);
+  assert.doesNotMatch(decide('review', prFacts('review', { reports })).reason, /Wait: qa/);
+  // A release branch deploys Staging.
+  const release = decide('review', prFacts('review', { reports, base: 'release/v0.4.0', headRef: 'bugfix/DEMO-21-remove-line' }, { qaRunning: [{ key: 'DEMO-31', environment: 'staging', pid: 7 }] }));
+  assert.match(release.reason, /Wait: qa is testing DEMO-31 on staging/);
+});
+
 test('/ao-fix: the dev agent of the item fixes what was asked on its branch, then the reviews run again', () => {
   const asked = prFacts('fix', { changesRequested: true, reports: { reviewer: report({ blocking: 1, state: 'CHANGES_REQUESTED' }), security: report() } });
   const decision = decide('fix', asked);

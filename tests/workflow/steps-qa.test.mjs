@@ -98,6 +98,31 @@ test('a qa run stopped because another deploy came during it is made afresh on t
   }
 });
 
+test('--retest runs the whole QA again from In QA after a NOT TESTED report, as a fresh qa run, not a defect (SHOP-20)', () => {
+  // Pilot 3, SHOP-20: a Bug of the environment (SHOP-56) made the report NOT TESTED; once it was fixed and the flag
+  // cleared, /ao-qa stopped "is In QA, not Ready for QA", and the only way on was --note, the road of a defect you found.
+  const inQa = { state: 'in-qa', status: 'In QA' };
+  const decision = decide(qaFacts({ item: inQa, qaReport: { result: 'NOT TESTED', at: '2026-11-16T10:00:00.000Z' } }), { retest: true });
+  assert.equal(decision.go, true);
+  const [run] = decision.runs;
+  assert.equal(run.purpose, 'qa', 'the whole QA, not the reproduction of a defect');
+  assert.equal(run.resume, undefined);
+  assert.equal(run.note, undefined);
+  assert.match(run.prompt, /^QA /);
+  assert.deepEqual(run.qa, { environment: 'development', sha: RUNNING, auth: true });
+
+  // Without --retest the item In QA still stops, and only a NOT TESTED report opens the way.
+  assert.equal(decide(qaFacts({ item: inQa, qaReport: { result: 'NOT TESTED', at: '2026-11-16T10:00:00.000Z' } })).go, false);
+  for (const qaReport of [{ result: 'FAIL', at: '2026-11-16T10:00:00.000Z' }, { result: 'PASS', at: '2026-11-16T10:00:00.000Z' }, null]) {
+    const stopped = decide(qaFacts({ item: inQa, qaReport }), { retest: true });
+    assert.equal(stopped.go, false, JSON.stringify(qaReport));
+    assert.match(stopped.reason, /--retest .*NOT TESTED/);
+  }
+  // A flag still on the item stops first: you clear it once the cause is fixed.
+  const flagged = decide(qaFacts({ item: { ...inQa, flagged: true, flag: 'needs-you' }, qaReport: { result: 'NOT TESTED', at: '2026-11-16T10:00:00.000Z' } }), { retest: true });
+  assert.equal(flagged.go, false);
+});
+
 test('/ao-qa stops while the QA environment does not run a release that holds the merge of the item', () => {
   const none = decide(qaFacts({ qa: { running: null, contains: false } }));
   assert.deepEqual([none.go, none.reason], [false, 'Development runs no release yet']);

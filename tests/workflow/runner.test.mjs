@@ -9,7 +9,7 @@ import { agentCommand, formatDecision, lastReport, runGo } from '../../lib/workf
 import { withLoggedSession } from '../../lib/workflow/runs.mjs';
 import { decideStep } from '../../lib/workflow/steps.mjs';
 import { CONTRACT_DIR, ROOT } from '../helpers/kit.mjs';
-import { checkArgument, checkoutStop, homeBranch, reviewTreePath, runsFile } from '../../scripts/ao-step.mjs';
+import { checkArgument, checkoutStop, homeBranch, longTmpDir, reviewTreePath, runsFile } from '../../scripts/ao-step.mjs';
 import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 
@@ -613,7 +613,7 @@ test('a qa run gets its worktree with the qa note; its follow-up runs before the
   assert.match(startedAt, /^\d{4}-\d\d-\d\dT/);
   assert.deepEqual(events, [['add', 'DEMO-20-qa', true], ['after', 'qa', 'C:/Temp/ao-reviews/shop-DEMO-20-qa', startedAt], ['remove', 'DEMO-20-qa']]);
   assert.equal(h.calls[0].prompt, ['QA Story DEMO-20.', qaWorktreeNote('C:/Temp/ao-reviews/shop-DEMO-20-qa', 'abc1234def5678')].join('\n\n'));
-  assert.match(qaWorktreeNote('C:/Temp/x', 'abc1234def5678'), /^The code of abc1234, the release the environment runs, is in the folder C:\/Temp\/x, a worktree outside the project, with its packages installed\. /);
+  assert.match(qaWorktreeNote('C:/Temp/x', 'abc1234def5678'), /^The code of abc1234, the release the environment runs, is in the folder C:\/Temp\/x, a worktree outside the project, with its packages installed and the \.env files of runs\.copy in project\.yaml in place, so the @local tests start their apps as in a lane: do not write a runner to load them\. /);
   assert.deepEqual(h.states.at(-1).runs.at(-1).notes, ['Attached to DEMO-20: cart.png.']);
   // /ao-ship reads which commit a regression ran on from state.json (release-workflow T15).
   assert.deepEqual(h.states.at(-1).runs.at(-1).qa, { environment: 'development', sha: 'abc1234def5678' });
@@ -677,4 +677,11 @@ test('a superseded qa run is on record as superseded, attaches nothing, and the 
   assert.match(made[0].notes.join(' '), /cccccccc came during the run/);
   assert.deepEqual(afters, ['c'.repeat(40)], 'only the run that ended attaches its evidence');
   assert.equal(decision.go, false);
+});
+
+test('the temp folder of the worktrees is its long path: pnpm --filter finds no app under a short 8.3 path (QA SHOP-68)', () => {
+  // Pilot 3: os.tmpdir() gave C:/Users/HUUTUN~1/AppData/Local/Temp, and pnpm --filter in the qa worktree found no app.
+  const long = 'C:/Users/Huu Tung/AppData/Local/Temp';
+  assert.equal(longTmpDir((path) => (path === 'C:/Users/HUUTUN~1/AppData/Local/Temp' ? long : path), 'C:/Users/HUUTUN~1/AppData/Local/Temp'), long);
+  assert.equal(longTmpDir(() => { throw new Error('ENOENT'); }, 'C:/Temp'), 'C:/Temp', 'the path as it is when it cannot be read');
 });
