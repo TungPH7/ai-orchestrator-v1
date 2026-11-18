@@ -488,11 +488,34 @@ test('the basic auth password stays off command lines: only printf, a builtin of
     'powershell -Command "curl.exe -u ao:$env:E2E_HTTP_PASSWORD https://sample-dev.example"',
     'cmd /c curl -u ao:%E2E_HTTP_PASSWORD% https://sample-dev.example',
     'curl -u "$AO_ENV_AUTH" https://sample-dev.example',
+    // After a keyword of the shell, the command is still the word that follows it.
+    'for l in vi en; do curl -u "ao:$E2E_HTTP_PASSWORD" "$E2E_BASE_URL/$l"; done',
+    'if true; then echo "$E2E_HTTP_PASSWORD"; fi',
+    '{ node e2e/login.mjs "$E2E_HTTP_PASSWORD"; }',
+    'while true; do /usr/bin/printf %s "$E2E_HTTP_PASSWORD"; done',
+    // A check of whether it is set passes only when it cannot give the value (QA SHOP-13 below).
+    'echo "${E2E_HTTP_PASSWORD:+$E2E_HTTP_PASSWORD}"',
+    'echo "${E2E_HTTP_PASSWORD:-none}"',
+    '/usr/bin/test -n "$E2E_HTTP_PASSWORD"',
+    '[ -n "$E2E_HTTP_PASSWORD" ] && curl -u "ao:$E2E_HTTP_PASSWORD" "$E2E_BASE_URL"',
   ]) {
     denied(bash(command, 'qa'), /password on a command line/, command);
   }
   for (const command of [
     'printf \'user = "%s:%s"\n\' "$E2E_HTTP_USER" "$E2E_HTTP_PASSWORD" | curl -K - "$E2E_BASE_URL/api/notes"',
+    // QA SHOP-73 of shop: the stdin form of the refusal, in a loop and in a function, was refused twice, since the
+    // first word of the printf was do or {.
+    'for l in vi en; do printf \'user = "%s:%s"\n\' "$E2E_HTTP_USER" "$E2E_HTTP_PASSWORD" | curl -sS -K - -o og-$l.png "$E2E_BASE_URL/$l/opengraph-image" >> checks.txt; done',
+    'get(){ printf \'user = "%s:%s"\n\' "$E2E_HTTP_USER" "$E2E_HTTP_PASSWORD" | curl -sS -K - "$@"; }; get -o page.html "$E2E_BASE_URL/vi"',
+    'if [ -n "$E2E_BASE_URL" ]; then printf \'user = "%s:%s"\n\' "$E2E_HTTP_USER" "$E2E_HTTP_PASSWORD" | curl -K - "$E2E_BASE_URL"; fi',
+    // QA SHOP-13 of shop: echo "HP=${E2E_HTTP_PASSWORD:+set}" was refused, though it prints set or nothing, and qa then
+    // split the name to get past the pattern. A check of whether the password is set gives no value: ${…:+word}, and
+    // the builtins [, [[ and test, which start no process.
+    'echo "HP=${E2E_HTTP_PASSWORD:+set}"',
+    'echo "${E2E_HTTP_PASSWORD+set}${AO_ENV_AUTH:+ auth}"',
+    '[ -n "$E2E_HTTP_PASSWORD" ] && echo set',
+    'test -n "${E2E_HTTP_PASSWORD:-}" || echo "E2E_HTTP_PASSWORD is not set"',
+    '[[ -n $E2E_HTTP_PASSWORD ]]',
     'E2E_BASE_URL=https://sample-dev.example npx playwright test e2e/notes',
     'node -e "console.log(Boolean(process.env.E2E_HTTP_PASSWORD))"',
     'curl -s "$E2E_BASE_URL/notes" -o /dev/null -w "%{http_code}"',
@@ -590,6 +613,19 @@ test('Grep and Glob stay in the project and the temp folder, nothing looks for a
     "grep -rlE 'BEGIN [A-Z ]*KEY' /c/Users/u",
     "grep -rlE '\\-{5}BEGIN' ~",
     "grep -rlE 'PRIVATE[[:space:]]KEY' ~",
+    // Review of shop PR #74 (reviewer and security, Medium): round 5 matched the PEM headers in upper case with one
+    // space only, so these printed the keys of the Apps again.
+    'grep -ri "begin rsa" ~',
+    'grep -rli "begin openssh" /c/Users/u',
+    'grep -rE "BEGIN.*KEY" ~',
+    'grep -rE "BEGIN.+PRIVATE" ~',
+    "grep -rP 'BEGIN\\s+RSA' ~",
+    "grep -rE 'BEGIN\\sOPENSSH' ~",
+    "grep -rE 'BEGIN[[:space:]]+EC' ~",
+    "grep -rE 'BEGIN.{0,20}PRIVATE' ~",
+    "rg -i 'begin (rsa|openssh)' ~",
+    "grep -rE 'Begin [A-Za-z ]*Key' ~",
+    'grep -rl "BEGIN  RSA" ~',
   ]) {
     denied(bash(command, 'be-dev'), /private key/, command);
   }
@@ -609,6 +645,11 @@ test('Grep and Glob stay in the project and the temp folder, nothing looks for a
     'psql -c "BEGIN; ALTER TABLE t ADD PRIMARY KEY (id); COMMIT;"',
     'grep -n "begin\\|key" V3__x.sql',
     'pnpm --filter ./apps/api run test -- --tests "*BeginKeyTest*"',
+    // Review of shop PR #74: the header is matched in any case now, with the regex forms, and these stay daily words.
+    'pnpm exec vitest -t "begin the key step"',
+    'sed -n "/BEGIN;/,/COMMIT;/p" apps/api/src/main/resources/db/migration/V3__x.sql',
+    'grep -rn "beginKey\\|endKey" apps/user/src',
+    'node .ai-orchestrator/scripts/run.mjs api test -- -Dtest=BeginTransactionTest',
   ]) {
     allowed(bash(command, 'be-dev'), command);
   }
@@ -668,4 +709,32 @@ test('Grep and Glob stay in the project and the temp folder, nothing looks for a
   allowed(call('security', 'Grep', { pattern: '-----BEGIN', path: PROJECT }), 'a scan of the project for any PEM block');
   allowed(call('security', 'Grep', { pattern: 'age-secret-key-1', path: `${PROJECT}\\src` }), 'the same for age identities');
   allowed(bash('npm run build -- --config .aot.json', 'be-dev'), 'a name that only starts with .ao');
+});
+
+// Phiên 33, request SHOP-54 of shop: ux copied the whole apps folder, with the node_modules of pnpm, into a temp folder
+// to try a check, then deleted it. A copy of that tree can fill the disk, and a delete through a link of pnpm once
+// emptied the node_modules of the project.
+test('no agent copies or deletes a tree that holds node_modules, or the whole apps folder', () => {
+  for (const command of [
+    'tmp=$(mktemp -d) && cp -r docs/specs/SHOP-7 "$tmp" && cp -r apps "$tmp"',
+    'cp -a apps/ /tmp/x',
+    'cp -R ./apps/* /tmp/x',
+    'cp --recursive apps/user/node_modules /tmp/nm',
+    'rm -rf apps/user/node_modules',
+    'rm -fr node_modules',
+    'rm --recursive --force "$PWD/apps"',
+    'cd apps/user && rm -rf node_modules/.pnpm',
+  ]) {
+    denied(bash(command, 'ux'), /node_modules/, command);
+  }
+  for (const command of [
+    'cp -r docs/specs/SHOP-7 /tmp/specs',
+    'cp apps/user/package.json /tmp/x.json',
+    'rm -rf .ai/tmp/run-user-test.log apps/user/.next',
+    'rm -rf "$tmp"',
+    'ls apps/user/node_modules/.bin',
+    'git archive HEAD docs apps/user/src | tar -x -C /tmp/check',
+  ]) {
+    allowed(bash(command, 'ux'), command);
+  }
 });

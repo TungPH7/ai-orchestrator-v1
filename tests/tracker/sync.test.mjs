@@ -130,6 +130,26 @@ test('workflow_run of PR events: a run for a fork, for a PR of a fork, or for no
   assert.deepEqual(chosen(await sync('workflow_run', jira, { gh: github(listed), body: none })), { keys: [], actions: [] });
 });
 
+// Review of shop PR #74 (Low): a run that names no PR took the newest PR of its branch at its commit, a PR of a fork
+// too, which anyone can open on a public repository with the same branch and commit; the event of our PR was lost. And
+// the relay and the guards listed the PRs twice.
+test('workflow_run of PR events: a PR of a fork at the same branch and commit is not ours, and the PRs are listed once', async () => {
+  const jira = fakeJira({ issues: [story('DEMO-12', IN_PROGRESS)] });
+  const unnamed = relayRun((run) => (run.pull_requests = []));
+  const { head_branch: branch, head_sha: sha } = unnamed.workflow_run;
+  const forkFirst = (a) => {
+    listed(a);
+    const list = a['/pulls?direction=desc&sort=created&state=all'];
+    const ours = list.find((pr) => pr.head.ref === branch && pr.head.sha === sha);
+    list.unshift({ ...structuredClone(ours), number: 99, title: 'PR #99', head: { ...structuredClone(ours.head), repo: { full_name: 'someone/ao-pilot' } } });
+  };
+  const gh = github(forkFirst);
+  let lists = 0;
+  const counted = { ...gh, getAll: (path, ...rest) => ((lists += path === '/pulls' ? 1 : 0), gh.getAll(path, ...rest)) };
+  assert.deepEqual(chosen(await sync('workflow_run', jira, { gh: counted, body: unnamed })), { keys: ['DEMO-12'], actions: ['DEMO-12 submit'] });
+  assert.equal(lists, 1);
+});
+
 test('pull_request_review: changes asked on the newest commit send the item back', async () => {
   const jira = fakeJira({ issues: [story('DEMO-12', IN_REVIEW)] });
   // The review of the event, as the REST API lists it (upper-case state).
