@@ -91,3 +91,35 @@ test('with gh before 2.17 the token comes from auth status, which prints on stde
       : { stdout: '', stderr: 'github.com\n  ✓ Logged in to github.com as someone (keyring)\n  ✓ Token: gho_old456\n' };
   assert.equal(readGitHubToken({ env: {}, gh }), 'gho_old456');
 });
+
+// Phiên 33 of shop: `ao-step fix 55` ended at once on "GitHub GET /commits/<sha>/status returned 502: Server Error".
+// A read is tried again on 502, 503 and 504 and on a network error, three times, 1, 2 and 4 s apart; a write is not,
+// since it may have been done.
+test('a read is tried again on 502, 503, 504 and a network error; a write and other errors are not', async () => {
+  const waits = [];
+  const sleep = async (ms) => waits.push(ms);
+  const flaky = fakeFetch([{ status: 502, body: {} }, { status: 503, body: {} }, { body: { number: 55 } }]);
+  assert.deepEqual(await createGitHubClient({ repo: 'TungPH7/ao-pilot', token: 't', fetch: flaky.fetch, sleep }).get('/pulls/55'), { number: 55 });
+  assert.deepEqual(waits, [1000, 2000]);
+
+  waits.length = 0;
+  let thrown = 0;
+  const offline = async (url, init) => {
+    if (thrown++ === 0) throw new TypeError('fetch failed');
+    return new Response(JSON.stringify([{ number: 1 }]), { status: 200 });
+  };
+  assert.deepEqual(await createGitHubClient({ repo: 'TungPH7/ao-pilot', token: 't', fetch: offline, sleep }).getAll('/pulls'), [{ number: 1 }]);
+  assert.deepEqual(waits, [1000]);
+
+  waits.length = 0;
+  const down = fakeFetch([504, 504, 504, 504].map((status) => ({ status, body: {} })));
+  await assert.rejects(createGitHubClient({ repo: 'TungPH7/ao-pilot', token: 't', fetch: down.fetch, sleep }).get('/pulls/55'), /returned 504/);
+  assert.deepEqual([down.calls.length, waits], [4, [1000, 2000, 4000]]);
+
+  waits.length = 0;
+  const write = fakeFetch([{ status: 502, body: {} }]);
+  await assert.rejects(createGitHubClient({ repo: 'TungPH7/ao-pilot', token: 't', fetch: write.fetch, sleep, write: true }).request('PUT', '/pulls/55/merge', {}, {}), /returned 502/);
+  const missing = fakeFetch([{ status: 404, body: {} }]);
+  await assert.rejects(createGitHubClient({ repo: 'TungPH7/ao-pilot', token: 't', fetch: missing.fetch, sleep }).get('/pulls/99'), /returned 404/);
+  assert.deepEqual([write.calls.length, missing.calls.length, waits], [1, 1, []]);
+});
