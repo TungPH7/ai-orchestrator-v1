@@ -2,7 +2,7 @@
 
 > **Loại:** pilot, không phải module. Hàng B4 của [misc/thao-luan/concerns.md](misc/thao-luan/concerns.md). **Dùng:** mọi module Cấp 1, `human-loop`, `live-run-fixes` và `project-scaffold` phần 1–3. **Là đầu vào cho:** C1 (thứ tự chạy trong contract, role `seo`) và C2.
 >
-> **Trạng thái:** viết ngày 2026-11-14 (Phiên 30 · Lượt 1). Đã duyệt: câu 1, 2, 4, 5 theo đề xuất ở Lượt 2; câu 3 ở Lượt 5, bản sao backup kéo về máy bạn (mục 2.4, 8). Plan và danh sách task: [tasks/plan.md](tasks/plan.md), [tasks/todo.md](tasks/todo.md).
+> **Trạng thái:** viết ngày 2026-11-14 (Phiên 30 · Lượt 1). Đã duyệt: câu 1, 2, 4, 5 theo đề xuất ở Lượt 2; câu 3 ở Lượt 5, bản sao backup kéo về máy bạn (mục 2.4, 8). **Hoàn thành ngày 2026-11-18** (Phiên 33): 6/8 tiêu chí đạt, tiêu chí 6 và 8 thiếu một phần (followup kit); chi phí agent 719,04 USD. Plan, danh sách task và kết quả: [tasks/archive/pilot-3/](tasks/archive/pilot-3/verification.md).
 
 ## 1. Mục tiêu
 
