@@ -129,13 +129,21 @@ test('docs/agents.md lists every role with the model, effort and maxTurns of the
 
 // project-scaffold spec 2.7: one guide, read top down, in seven parts, and the README section only points to it. Part 2
 // of the module (SPEC-project-scaffold-2.md 2.6) adds part 5, a project of several apps from templates: eight parts.
-test('README sends the install of the kit to docs/getting-started.md, which has the eight parts of the specs', () => {
+// Pilot 3 (SPEC-pilot-3.md criterion 8) adds part 7, the Epic SHOP-7 of shop with Spring Boot from idea to Production,
+// with its real cost: nine parts.
+test('README sends the install of the kit to docs/getting-started.md, which has the nine parts of the specs', () => {
   const section = readme().split('## Cài kit vào repo dự án')[1].split('\n## ')[0];
   assert.match(section, /\[docs\/getting-started\.md\]\(docs\/getting-started\.md\)/);
   assert.doesNotMatch(section, /^\d+\. /m, 'no list of install steps left in README');
   const guide = readFileSync(join(ROOT, 'docs', 'getting-started.md'), 'utf8');
   const parts = [...guide.matchAll(/^## (\d)\. /gm)].map(([, n]) => Number(n));
-  assert.deepEqual(parts, [1, 2, 3, 4, 5, 6, 7, 8]);
+  assert.deepEqual(parts, [1, 2, 3, 4, 5, 6, 7, 8, 9]);
   assert.doesNotMatch(guide, /^> \*\*Bản nháp\*\*|Viết ở bản cuối/m, 'no draft note left');
   for (const text of ['SMP-23', '/ao-intake', '/ao-release v0.2.0 61f4cec', '/ao-ship v0.2.0', 'Complete']) assert.ok(guide.includes(text), text);
+  for (const text of ['SHOP-7', '/ao-spec SHOP-7', '/ao-release v0.3.0 187898c', '/ao-ship v0.3.0', 'khoảng 604']) assert.ok(guide.includes(text), text);
+  // The README names each part by its number in the guide.
+  for (const [part, title] of [[5, 'Dự án nhiều app'], [6, 'Một tính năng lớn'], [7, 'Epic Spring Boot'], [9, 'Việc thường ngày']]) {
+    assert.match(guide, new RegExp(`^## ${part}\\. ${title}`, 'm'), `part ${part} of the guide`);
+    assert.match(section, new RegExp(`\\(phần ${part}\\)`), `README points to part ${part}`);
+  }
 });

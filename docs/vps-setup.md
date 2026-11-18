@@ -378,6 +378,8 @@ printf 'API_URL=http://api:3001\nAUTH_SECRET=%s\n' "$(openssl rand -base64 48)" 
 
 Dự án chưa mở cho mọi người thêm dòng `production_auth: true` dưới `space:` (Pilot 3, spec 2.2). Khi đó Production hỏi cùng basic auth với Development và Staging. Smoke test của deployer gọi thẳng container, nên không bị ảnh hưởng. Khóa chỉ nằm ở đây, trên VPS, nên không PR nào mở được Production. Khi bạn quyết mở cho mọi người, xóa dòng này; lượt kế của deployer viết lại Caddyfile.
 
+Ở `shop`, dòng này có từ bản `v0.1.0`. Ngày 18/11/2026, sau `v0.3.0`, cả sáu host của `shop` trả 401 khi không có mật khẩu: hai host Production, hai host Staging, hai host Development. Deploy Production của `v0.1.0`, `v0.2.0` và `v0.3.0` đều qua smoke test.
+
 **5. Điểm bắt đầu, rồi bật lại timer.**
 
 ```
@@ -396,6 +398,13 @@ systemctl start ao-deploy.timer
 **6. Deploy lần đầu (bạn gõ).** Sau `baseline`, deployer coi head hiện tại của `develop` là đã kiểm, nên không tự deploy nó. Trong Claude Code ở thư mục dự án, gõ `/ao-rollback development <sha của develop>`. Ở `shop`, deployer nhận yêu cầu sau khoảng 15 giây, build hai image trên VPS, rồi deploy xong sau 8 phút 50 giây. Từ lần merge kế tiếp vào `develop`, deployer tự deploy.
 
 **7. Đóng lại.** Đo RAM bằng `free -m` và `docker stats --no-stream`, xóa bản sao Caddyfile bằng `shred -u`, rồi tắt đăng nhập root (mục 9). Bản sao `deployer.yaml` ở `/root` được giữ lại để quay lại khi cần, vì file này không có thông tin đăng nhập.
+
+**Số đo RAM thật, VPS 4 GB** (Pilot 3, 14/11/2026). Lúc đó VPS chạy ba môi trường của `shop` (ba app và Postgres mỗi môi trường), cùng `ao-pilot` và `ao-sample`:
+- 22 container dùng tổng cộng 1.422 MiB;
+- còn trống 1.867 MB trên 3.915 MB;
+- mỗi môi trường của `shop`: `api` 279–296 MiB, `user` 53–72 MiB, `admin` 11–12 MiB, Postgres 42–44 MiB.
+
+Image chỉ build một lần cho mỗi commit, nên đỉnh RAM lúc build không nhân theo số môi trường. VPS 4 GB vẫn đủ. Lúc đo, build cache là 7,07 GB, trên mốc 4 GB mà lệnh dọn của deployer (`PRUNE_CACHE`) giữ lại; đĩa còn trống 23 GB.
 
 ## 14. Database của dự án
 
@@ -614,5 +623,10 @@ Get-Clipboard | node scripts/ao-backup-pull.mjs decrypt D:\ao-backups\shop\produ
 Bản giải mã chứa toàn bộ dữ liệu của môi trường đó. Agent chạy bằng user Windows của bạn và đọc được file này, nên: khôi phục lúc không có agent nào chạy, và xóa bản giải mã ngay khi xong. Muốn bản giải mã không nằm trong file nào, dùng `--out -`: lệnh ghi bản dump ra stdout để đổ thẳng vào `pg_restore`. Khi đó khóa phải là một file (`--identity <file trên USB>`), vì stdin đã dành cho dữ liệu khác. PowerShell 5 làm hỏng dữ liệu nhị phân khi nối ống giữa hai chương trình, nên chạy lệnh có `--out -` trong Git Bash hay `cmd`.
 
 Bản giải mã là đúng bản dump của mục 15: khôi phục như bước 4 của mục 15, hoặc vào một Postgres chạy trên Docker ở máy bạn để kiểm. Xong thì xóa bản giải mã, vì nó chứa dữ liệu người dùng.
+
+**Đã chạy thật** (Pilot 3, 14/11/2026):
+- Giải mã bản sao `shop-development-20261114T071020Z.dump.age`. SHA-256 của bản giải mã trùng bản dump trên VPS.
+- Khôi phục vào một Postgres tạm trên Docker ở máy bạn: không mạng, đúng digest của `deploy.yaml`. Xong trong 674 ms, được 3 bảng, 6 dòng, Flyway 1–3. `restore-check` trên VPS cũng ra 3 bảng, 6 dòng.
+- Container tạm và bản giải mã đã xóa ngay sau đó.
 
 **7. Chuyển sang B2 sau này.** Thư mục bản sao và khóa giữ nguyên. Kit sẽ thêm bước đẩy thư mục đó lên B2 bằng `rclone`; cách khôi phục không đổi.
