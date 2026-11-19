@@ -42,7 +42,7 @@ function storyFacts(change = {}) {
 // PR #15 of DEMO-21, open, CI green on HEAD.
 const report = (more = {}) => ({ sha: HEAD, at: '2026-11-04T09:00:00Z', ok: true, blocking: 0, state: 'COMMENTED', onHead: true, ...more });
 const pr = (more = {}) => ({
-  number: 15, title: 'feat(cart): remove a line from the cart (DEMO-21)', state: 'open', merged: false, draft: false, headRef: 'feature/DEMO-21-remove-line', headSha: HEAD, base: 'develop', files: ['apps/api/src/cart.ts'], protectedPaths: [], docsEpic: null,
+  number: 15, title: 'feat(cart): remove a line from the cart (DEMO-21)', state: 'open', merged: false, draft: false, headRef: 'feature/DEMO-21-remove-line', headSha: HEAD, base: 'develop', files: ['apps/api/src/cart/cart.service.ts'], protectedPaths: [], docsEpic: null,
   ci: { green: true, failed: false, pending: false }, reports: { reviewer: null, security: null }, changesRequested: false, approved: false, securityCompare: null, ...more,
 });
 const prFacts = (command, prMore = {}, change = {}) => storyFacts({ command, arg: '15', pr: pr(prMore), ...change, item: { state: 'in-review', status: 'In Review', agent: 'fe-dev', subtasks: [sub('DEMO-22', 'be-dev', { state: 'done' }), sub('DEMO-23', 'fe-dev', { state: 'done' })], ...change.item } });
@@ -137,7 +137,7 @@ test('/ao-review: each run starts on the base branch of the PR, with a worktree 
     assert.deepEqual(run.checkout, { branch: 'develop', pull: true });
     assert.deepEqual(run.worktree, { name: 'pr-15', sha: HEAD });
   }
-  const onRelease = decide('review', prFacts('review', { base: 'release/v1.2.0', headRef: 'bugfix/DEMO-21-remove-line', files: ['apps/api/src/cart.ts'] }));
+  const onRelease = decide('review', prFacts('review', { base: 'release/v1.2.0', headRef: 'bugfix/DEMO-21-remove-line', files: ['apps/api/src/cart/cart.service.ts'] }));
   assert.deepEqual(onRelease.runs.map((run) => run.checkout), Array(onRelease.runs.length).fill({ branch: 'release/v1.2.0', pull: true }));
   // The review of the new part reads the same code, at the new head.
   const delta = decide('review', prFacts('review', { reports: { reviewer: report(), security: report({ sha: OLD, onHead: false, at: '2026-11-04T08:00:00Z' }) }, securityCompare: { base: OLD, status: 'ahead', files: [{ filename: 'apps/api/test/cart.spec.ts', additions: 40, deletions: 2 }] } }));
@@ -181,26 +181,39 @@ test('/ao-review stops when the base of the PR is not a protected branch, or not
   assert.equal(decide('fix', prFacts('fix', { base: 'feature/DEMO-9-mine' })).go, false, '/ao-fix reviews again, so it stops too');
 });
 
-test('/ao-review: reviewer on the whole PR, then security on the whole PR at the roster effort when the PR touches a path of security_review', () => {
-  const decision = decide('review', prFacts('review', { files: ['apps/api/src/cart/cart.controller.ts'] }));
-  assert.deepEqual(plan(decision), [`reviewer DEMO-21 ${roster.roles.reviewer.effort} review`, `security DEMO-21 ${roster.roles.security.effort} review`]);
-  assert.deepEqual(decision.runs.map(({ prompt }) => prompt), ['Review PR #15.', 'Review PR #15.']);
-  assert.equal(decision.runs[1].scope, 'no security report on this PR yet');
-  assert.equal(decision.runs[1].effortWhy, 'the PR touches apps/api/src/cart/cart.controller.ts');
-  assert.deepEqual(plan(decide('review', prFacts('review', { files: ['apps/api/src/cart/cart.controller.ts'], reports: { reviewer: report(), security: null } }))), [`security DEMO-21 ${roster.roles.security.effort} review`]);
+test('/ao-review by tier (C1 spec 3.1, 3.2): reviewer and security at high on a sensitive PR, xhigh and max on a critical one', () => {
+  const sensitive = decide('review', prFacts('review', { files: ['apps/api/src/cart/cart.controller.ts'] }));
+  assert.deepEqual(plan(sensitive), ['reviewer DEMO-21 high review', 'security DEMO-21 high review']);
+  assert.deepEqual(sensitive.runs.map(({ prompt }) => prompt), ['Review PR #15.', 'Review PR #15.']);
+  assert.equal(sensitive.runs[1].scope, 'no security report on this PR yet');
+  assert.equal(sensitive.runs[1].effortWhy, 'the PR touches the sensitive path apps/api/src/cart/cart.controller.ts');
+  const critical = decide('review', prFacts('review', { files: ['apps/api/src/auth/jwt.strategy.ts', 'apps/api/src/cart/cart.controller.ts'] }));
+  assert.deepEqual(plan(critical), ['reviewer DEMO-21 xhigh review', `security DEMO-21 ${roster.roles.security.effort} review`]);
+  assert.equal(critical.runs[0].effortWhy, 'the PR touches the critical path apps/api/src/auth/jwt.strategy.ts');
+  assert.deepEqual(plan(decide('review', prFacts('review', { files: ['apps/api/src/auth/jwt.strategy.ts'], reports: { reviewer: report(), security: null } }))), [`security DEMO-21 ${roster.roles.security.effort} review`]);
 });
 
-test('/ao-review of a low-risk PR: security reviews the whole PR at high, and the printout says why', () => {
+test('/ao-review of a normal PR: reviewer only, and gate ③ says why security did not run', () => {
   const item = { subtasks: [sub('DEMO-22', 'be-dev', { state: 'done' }), sub('DEMO-23', 'fe-dev', { state: 'done' })] };
-  const decision = decide('review', prFacts('review', { files: ['apps/web/src/app/cart/cart-line.tsx'] }, { item }));
-  const security = decision.runs[1];
-  assert.deepEqual([security.effort, security.purpose, security.effortWhy], ['high', 'review', 'no protected path, no path of security_review, no effort label']);
+  const files = ['apps/web/src/app/cart/cart-line.tsx'];
+  const decision = decide('review', prFacts('review', { files, requiredRoles: ['reviewer'], tier: 'normal' }, { item }));
+  assert.deepEqual(plan(decision), ['reviewer DEMO-21 high review']);
+  assert.equal(decision.runs[0].effortWhy, 'the PR touches no sensitive or critical path');
+  const gate = decide('review', prFacts('review', { files, requiredRoles: ['reviewer'], tier: 'normal', reports: { reviewer: report(), security: null } }, { item }));
+  assert.match(gate.reason, /^the reviewer report is on the head d1d2d3d of PR #15, which needs no other \(tier normal: no sensitive or critical path\): it waits for you at gate ③/);
+  // security reported on this PR before, so the merge needs its report even on a normal PR.
+  const before = decide('review', prFacts('review', { files, requiredRoles: ['reviewer', 'security'], tier: 'normal', reports: { reviewer: report(), security: report({ sha: OLD, onHead: false }) } }, { item }));
+  assert.deepEqual(plan(before), ['security DEMO-21 high review']);
+  assert.match(before.runs[0].effortWhy, /but security reported on this PR before, so the merge needs its report/);
+  // An item sa marked hard is reviewed as a critical PR until the levels of C1 step 4.
+  const hard = decide('review', prFacts('review', { files }, { item: { ...item, effort: 'xhigh' } }));
+  assert.deepEqual(plan(hard), ['reviewer DEMO-21 xhigh review', `security DEMO-21 ${roster.roles.security.effort} review`]);
 });
 
 test('/ao-review after a small fix: security reviews only the changes since its last report, at high', () => {
   const facts = prFacts('review', { reports: { reviewer: report({ sha: OLD, onHead: false }), security: report({ sha: OLD, onHead: false, at: '2026-11-04T08:00:00Z' }) }, securityCompare: { base: OLD, status: 'ahead', files: [{ filename: 'apps/api/test/cart.spec.ts', additions: 40, deletions: 2 }] } });
   const [reviewer, security] = decide('review', facts).runs;
-  assert.deepEqual([reviewer.role, reviewer.purpose], ['reviewer', 'review'], 'reviewer always reviews the whole PR');
+  assert.deepEqual([reviewer.role, reviewer.purpose], ['reviewer', 'review'], 'with no compare since its own full report, the reviewer reviews the whole PR');
   assert.deepEqual([security.role, security.effort, security.purpose, security.scope], ['security', 'high', 'review-delta', '42 lines changed since a1b2c3d']);
   assert.equal(security.prompt, 'Review PR #15, only the changes since a1b2c3d; your full report on a1b2c3d is the review of 2026-11-04. Write the line Scope: changes since a1b2c3d in your report.');
 });
@@ -450,4 +463,21 @@ test('findings that do not block: ao-step names them at gate ③, after /ao-fix 
   assert.ok(!clean.lines.some((l) => l.startsWith('Findings that do not block')), 'no line without such findings');
   const old = decide('review', prFacts('review', { reports: { reviewer: report({ sha: OLD, onHead: false, counts: counts({ Low: 4 }) }), security: report() } }));
   assert.ok(!(old.lines ?? []).some((l) => l.startsWith('Findings that do not block')), 'only the reports on the head count');
+});
+
+// C1 spec 3.2: the reviewer, like security, reviews only the new part after its full report, at high; a new part on a
+// critical path raises both to the efforts of a critical PR.
+test('/ao-review after a fix: the reviewer reviews only the new part too, at high, or at xhigh when the new part is critical', () => {
+  const compare = (filename) => ({ base: OLD, status: 'ahead', files: [{ filename, additions: 12, deletions: 3 }] });
+  const reports = { reviewer: report({ sha: OLD, onHead: false, at: '2026-11-04T08:00:00Z' }), security: report({ sha: OLD, onHead: false, at: '2026-11-04T08:00:00Z' }) };
+  const facts = prFacts('review', { reports, reviewerCompare: compare('apps/api/src/cart/cart.service.ts'), securityCompare: compare('apps/api/src/cart/cart.service.ts') });
+  const [reviewer, security] = decide('review', facts).runs;
+  assert.deepEqual([reviewer.role, reviewer.effort, reviewer.purpose, reviewer.scope], ['reviewer', 'high', 'review-delta', '15 lines changed since a1b2c3d']);
+  assert.equal(reviewer.prompt, 'Review PR #15, only the changes since a1b2c3d; your full report on a1b2c3d is the review of 2026-11-04. Write the line Scope: changes since a1b2c3d in your report.');
+  assert.deepEqual([security.effort, security.purpose], ['high', 'review-delta']);
+  const critical = prFacts('review', { files: ['apps/api/src/auth/jwt.strategy.ts'], reports, reviewerCompare: compare('apps/api/src/auth/jwt.strategy.ts'), securityCompare: compare('apps/api/src/auth/jwt.strategy.ts') });
+  assert.deepEqual(decide('review', critical).runs.map(({ role, effort, purpose }) => `${role} ${effort} ${purpose}`), ['reviewer xhigh review-delta', `security ${roster.roles.security.effort} review-delta`]);
+  const open = { severity: 'High', where: 'apps/api/src/cart/cart.service.ts:4', finding: 'x' };
+  const asked = prFacts('review', { reports: { ...reports, reviewer: report({ sha: OLD, onHead: false, at: '2026-11-04T08:00:00Z', blocking: 1, open: [open] }) }, reviewerCompare: compare('apps/api/src/cart/cart.service.ts'), securityCompare: compare('apps/api/src/cart/cart.service.ts') });
+  assert.match(decide('review', asked).runs[0].prompt, /The reviewer reports before this one left 1 Critical or High finding open/);
 });

@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { readGates } from '../../lib/quality/gates.mjs';
-import { decideMerge, runMergeGate } from '../../lib/quality/merge-gate.mjs';
+import { decideMerge, reviewRolesNeeded, runMergeGate } from '../../lib/quality/merge-gate.mjs';
 import { findingId, readReviewReport } from '../../lib/quality/pull-request.mjs';
 import { recordedClient } from '../helpers/jira.mjs';
 import { ROOT } from '../helpers/kit.mjs';
@@ -662,4 +662,28 @@ test('when the read after merging a release PR fails, the run still tags it and 
   assert.deepEqual(sent, ['PUT /pulls/12/merge', 'POST /git/refs', 'POST /pulls']);
   assert.deepEqual(failures.map(({ number }) => number), [12]);
   assert.match(lines.join('\n'), /Failed #12: could not read PR #12 again after the merge \(GitHub GET \/pulls\/12 returned 502: Bad Gateway\): check by hand that it went into main/);
+});
+
+// C1 spec 3.1: merge-gate asks for the security report by the tier of the PR's own files, as ao-step runs security.
+test('a PR of normal files merges with the reviewer report only; a sensitive one, or one security reported on, needs the security report too', () => {
+  const normal = (f) => {
+    f.files = [{ filename: 'apps/web/app/cart/cart-line.tsx', status: 'modified' }];
+    f.reviews = f.reviews.filter((r) => !r.body?.includes('Role: security'));
+  };
+  assert.equal(decide(normal).action, 'merge', 'no security report needed');
+  // A renamed file counts by its old name too: moved out of auth/, it is still critical.
+  assert.deepEqual(decide((f) => { normal(f); f.files = [{ filename: 'apps/web/app/cart/login.tsx', previous_filename: 'apps/web/app/auth/login.tsx', status: 'renamed' }]; }), { action: 'wait', missing: ['security report on head a1b2c3d'] });
+  assert.deepEqual(decide((f) => { normal(f); f.files = [{ filename: 'apps/api/src/cart/cart.service.ts', status: 'modified' }]; }), { action: 'wait', missing: ['security report on head a1b2c3d'] });
+  // GitHub listed only part of the files: merge-gate asks you first, and the PR counts as critical.
+  const cut = facts((f) => { normal(f); f.pr.changed_files = 4000; });
+  assert.deepEqual(reviewRolesNeeded(cut), ['reviewer', 'security']);
+  assert.deepEqual(reviewRolesNeeded(facts(normal)), ['reviewer']);
+  assert.deepEqual(reviewRolesNeeded({ ...facts(normal), files: undefined }), ['reviewer', 'security'], 'no list of files: critical');
+  // security reported on an older commit: its report on the head is needed, even on a normal PR now.
+  const reportedBefore = (f) => {
+    const security = reportOf(f, 'security');
+    f.files = [{ filename: 'apps/web/app/cart/cart-line.tsx', status: 'modified' }];
+    security.commit_id = FIRST;
+  };
+  assert.deepEqual(decide(reportedBefore), { action: 'wait', missing: ['security report on head a1b2c3d'] });
 });

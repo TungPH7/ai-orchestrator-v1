@@ -120,6 +120,22 @@ Sửa code theo gợi ý của rule. Nếu là báo nhầm, thêm `nosemgrep` k�
 
 Báo cáo nằm ở tab **Conversation** của PR. `merge-gate` chỉ đọc báo cáo trên commit đầu của PR, và lấy báo cáo mới nhất của mỗi vai trò.
 
+### Review theo tầng đường dẫn
+
+Từ C1 ([SPEC-c1.md](../SPEC-c1.md) mục 3), tầng của PR là tầng cao nhất mà các file của nó chạm. File đổi tên được tính theo cả hai tên. Danh sách đường dẫn nằm ở khóa `review` của `quality/gates.yaml`; hàm tính là `pathTier` trong `lib/quality/review-tiers.mjs`.
+
+| Tầng | Gồm | `reviewer` | `security` |
+|---|---|---|---|
+| Nguy cấp | đường dẫn được bảo vệ, và `review.critical_paths`: auth, session, crypto, `.env*`, cấu hình bảo mật, migration, Dockerfile, compose, Maven wrapper, `deploy.yaml` | `xhigh` | `max` |
+| Nhạy cảm | `review.sensitive_paths`: file khai báo thư viện, cấu hình app, controller, DTO, service, repository, entity, middleware | `high` | `high` |
+| Thường | mọi file khác: UI, CSS, i18n, test | `high` | không chạy |
+| Tài liệu | mọi file nằm trong `review.docs_paths` (`docs/**`, `**/*.md`), và không file nào Nguy cấp | `high` | không chạy |
+
+- **Vòng sau:** cả hai role chỉ xem phần mới kể từ báo cáo đầy đủ gần nhất của mình, ở `high`. Phần mới chạm đường dẫn Nguy cấp thì chạy ở mức của tầng Nguy cấp.
+- **Báo cáo `merge-gate` và `audit` đòi:** luôn có `reviewer`. `security` chỉ cần khi PR ở tầng Nhạy cảm hay Nguy cấp, hoặc khi `security` đã từng đăng báo cáo trên PR, để bỏ file đã gọi nó vào cũng không bỏ được High nó tìm ở chỗ khác. GitHub chỉ liệt kê tối đa 3.000 file; PR dài hơn được tính là Nguy cấp.
+- **Item có nhãn effort** (`ao-effort-*`) được review như PR Nguy cấp, cho tới khi có mức quy trình ở bước 4 của C1.
+- CI vẫn chạy SAST, quét secret và `osv-scanner` trên mọi PR, kể cả PR không có `security`.
+
 ### Chấp nhận một High thay vì sửa
 
 Có khi một High không sửa được trong PR đó, ví dụ khi cách sửa là việc lớn của riêng nó. Bạn có thể chấp nhận rủi ro đó, có hạn chót (Pilot 3, spec 2.9 mục 5):
@@ -193,7 +209,7 @@ Từ `dev-workflow` (spec mục 2.4), tài liệu của một Epic (SPEC, design
 |---|---|
 | `Merged #14: …, the docs PR of DEMO-20` | Đã merge PR tài liệu |
 | `Waiting #14: the docs PR of DEMO-20: DEMO-20 past gate plan-approval (it is Planning)` | Chờ bạn bấm `Approve plan` |
-| `Waiting #14: … (head … came after Approve plan of DEMO-20 at …, so it is reviewed like any PR)` | Có commit push sau lúc bạn duyệt: PR thành PR thường, cần hai báo cáo và approve của bạn |
+| `Waiting #14: … (head … came after Approve plan of DEMO-20 at …, so it is reviewed like any PR)` | Có commit push sau lúc bạn duyệt: PR thành PR thường, cần báo cáo và approve của bạn. PR chỉ đổi tài liệu ở tầng Tài liệu, nên chỉ cần báo cáo `reviewer` |
 | `Waiting #14: the docs PR of DEMO-20: JIRA_CI_TOKEN, for merge-gate to read DEMO-20` | `merge-gate.yml` chưa có `JIRA_CI_TOKEN` |
 
 `merge-gate` đọc Epic bằng `JIRA_CI_TOKEN`, chỉ để đọc, và đọc lượt `CI` bằng quyền `actions: read` của token workflow. `audit` dùng đúng các điều kiện này cho commit merge của PR tài liệu.

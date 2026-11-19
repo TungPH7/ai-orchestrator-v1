@@ -11,7 +11,8 @@ Keep headings in English and write the content in Vietnamese. Delete the guidanc
 
 Role: <reviewer | security>
 
-<!-- A security review of only the changes since its last full report (dev-workflow spec 2.6) adds, under Role, the line
+<!-- A review of only the changes since the last full report of its role (dev-workflow spec 2.6; the reviewer too since
+C1) adds, under Role, the line
 Scope: changes since <short SHA of the commit of that report>
 Every other review covers the whole PR and has no Scope line. When the prompt lists Critical or High findings still
 open, such a review also adds, after Findings, a section "## Earlier findings": a table with the columns
