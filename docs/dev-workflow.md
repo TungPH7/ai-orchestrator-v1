@@ -25,6 +25,14 @@ Claude của phiên chính không tự mở agent, cũng không tự sửa Jira 
 
 **`/ao-fix` khi không có gì chặn.** Bạn ghi việc cần sửa ngay sau số PR, ví dụ `/ao-fix 16 sửa hai finding Low đầu của reviewer`. Claude ghi đoạn chữ đó vào `.ai/runs/<KEY>/note.md` và truyền bằng `--note`, không bao giờ đưa nó vào dòng lệnh.
 
+**Finding không chặn merge** (C1, [SPEC-c1.md](../SPEC-c1.md) mục 4):
+- Chỉ Critical và High chặn merge. Khi báo cáo trên head không còn hai mức này, `ao-step` gợi ý approve, không gợi ý `/ao-fix`. `/ao-review`, `/ao-fix` và `/ao-status <KEY>` in thêm một dòng "Findings that do not block", đếm Medium và Low của từng báo cáo.
+- Medium và Low không mở vòng sửa. Muốn sửa một cái ngay thì bạn gõ `/ao-fix <PR> <việc cần sửa>`.
+- Một Medium phải ghi cách tái hiện: trong ô Finding có `Tái hiện:`, rồi input hay trạng thái nào dẫn tới kết quả sai nào. Thiếu dòng này thì kit tính nó là Low, và dòng trên ghi lý do. Bảng tiêu chí của từng mức nằm trong template `review-report.md` và prompt của `reviewer`.
+- `/ao-fix <PR>` không kèm việc cần sửa, khi không còn gì chặn, dừng với lý do "nothing blocks the merge".
+
+**Chi phí trên mỗi AC:** `/ao-status <EPIC>` in tổng chi phí của Epic và các item của nó, chia cho số AC còn hiệu lực trong SPEC (AC ghi "(bỏ)" không tính). Lượt chưa biết chi phí được đếm riêng, không tính là 0. Mốc so: SHOP-7 tốn 21,6 USD trên mỗi AC.
+
 **Câu hỏi của `ba`, `ux` và `sa`.** Khi có câu hỏi, lệnh dừng và Claude chuyển câu hỏi cho bạn trong chat. Claude ghi câu trả lời của bạn vào `.ai/runs/<KEY>/answers.md`, rồi chạy lại với `--answers`. Agent đã hỏi sẽ làm tiếp trong chính session của nó.
 
 **`/ao-intake`.** Ví dụ: `/ao-intake cho khách hoàn tác khi lỡ xóa sản phẩm khỏi giỏ`. Phiên chính hỏi bạn từng câu (skill `interview-me`; `idea-refine` khi ý còn mơ hồ), rồi phân loại việc theo contract:

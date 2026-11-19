@@ -19,3 +19,6 @@ disable-model-invocation: true
 - Then read `.ai/runs/<KEY>/last.md`, where KEY is the item the check printed, and report in Vietnamese: whether the
   PR was marked ready, what each agent did and cost, the findings by severity, whether security reviewed the whole PR
   or only the new part, what the human must do at gate ③ (numbered clicks), and the next command.
+- Only Critical and High findings block the merge. With none open, the next step is the approval the command printed:
+  do not propose `/ao-fix` for a Medium or a Low. Say that they wait, and that the human can still ask for a fix now
+  with `/ao-fix <PR> <what to fix>` (C1 spec section 4).

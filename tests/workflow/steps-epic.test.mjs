@@ -259,3 +259,21 @@ test('a prompt says only what the agent cannot know: no sentence of it is in the
     }
   }
 });
+
+// C1 spec section 7: the cost per acceptance criterion of an Epic, from the runs of the Epic and of its items.
+test('/ao-status of an Epic: the cost per AC, with runs of unknown cost counted apart', () => {
+  const spec = '# Spec\n\n## User Stories\n\n- AC1: Given a, When b, Then c\n- AC2 (bỏ): Given d\n  - AC3: Given e\n- **AC4**: Given f\n\nAC1 nhắc lại trong một câu.\n';
+  const item = (key, ...costs) => ({ key, runs: costs.map((costUsd, i) => ({ n: i + 1, command: 'build', role: 'fe-dev', purpose: 'build', outcome: 'done', costUsd })) });
+  const facts = epicFacts('in-progress', {
+    command: 'status',
+    docs: { spec },
+    run: runState({ role: 'ba', purpose: 'spec-write', outcome: 'done', costUsd: 1.5 }),
+    itemRuns: [item('DEMO-21', 4, null), item('DEMO-22', 3.5), item('DEMO-23')],
+  });
+  const { lines } = decide('status', facts);
+  assert.ok(lines.includes('Cost of DEMO-20: 9.00 USD in 3 runs of the Epic and its items, 3.00 USD per AC over 3 ACs; 1 run has no known cost, not counted'), lines.join('\n'));
+  const early = decide('status', epicFacts('specifying', { command: 'status', itemRuns: [] }));
+  assert.ok(early.lines.includes('Cost of DEMO-20: 0.00 USD in 0 runs of the Epic and its items, no AC in the SPEC yet'));
+  const space = decide('status', epicFacts('planning', { command: 'status' }));
+  assert.ok(!space.lines.some((line) => line.startsWith('Cost of')), 'only with the runs of the items, which /ao-status <Epic> reads');
+});

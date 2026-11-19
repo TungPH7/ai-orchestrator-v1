@@ -315,7 +315,7 @@ test('/ao-fix after its fix is pushed reviews the new head; with nothing to fix 
   });
   assert.deepEqual(decide('fix', pushed, { note: 'fe: the note was for the fix already made' }).runs.map(({ role, purpose }) => `${role} ${purpose}`), ['reviewer review', 'security review-delta']);
   const nothing = decide('fix', prFacts('fix', { reports: { reviewer: report(), security: report() } }));
-  assert.deepEqual([nothing.go, nothing.reason], [false, 'PR #15 has nothing to fix: no request for changes, no red CI, no blocking finding']);
+  assert.deepEqual([nothing.go, nothing.reason], [false, 'nothing blocks the merge of PR #15: no request for changes, no red CI, no Critical or High finding']);
   assert.match(nothing.next, /approve it/);
 });
 
@@ -428,4 +428,26 @@ test('appRolesOf gives each app of project.yaml the dev agent of its profile, an
     user: 'fe-dev', admin: 'fe-dev', api: 'be-dev', web: 'be-dev',
   });
   assert.deepEqual(appRolesOf(undefined), {});
+});
+
+// C1 spec section 4: with no Critical or High open, Medium and Low open no round of fixes. /ao-review, /ao-fix and
+// /ao-status say what they are, and that a Medium with no repro counts as Low.
+test('findings that do not block: ao-step names them at gate ③, after /ao-fix with nothing to fix, and in /ao-status, and never suggests /ao-fix', () => {
+  const counts = (more) => ({ Critical: 0, High: 0, Medium: 0, Low: 0, downgraded: 0, ...more });
+  const reports = { reviewer: report({ counts: counts({ Medium: 1, Low: 2, downgraded: 1 }) }), security: report({ counts: counts({ Low: 1 }) }) };
+  const line = 'Findings that do not block: reviewer 1 Medium, 2 Low (1 Medium counted as Low: no "Tái hiện:" line); security 1 Low. They open no round of fixes; to fix one now: /ao-fix 15 <what to fix>';
+  const gate = decide('review', prFacts('review', { reports }));
+  assert.match(gate.reason, /gate ③/);
+  assert.match(gate.next, /approve it/);
+  assert.ok(gate.lines.includes(line), 'gate ③ names them');
+  const fix = decide('fix', prFacts('fix', { reports }));
+  assert.equal(fix.reason, 'nothing blocks the merge of PR #15: no request for changes, no red CI, no Critical or High finding');
+  assert.match(fix.next, /approve it/);
+  assert.ok(fix.lines.includes(line), '/ao-fix with nothing to fix names them');
+  const status = decide('status', prFacts('status', { reports }));
+  assert.ok(status.lines.includes(line), '/ao-status names them');
+  const clean = decide('review', prFacts('review', { reports: { reviewer: report({ counts: counts() }), security: report({ counts: counts() }) } }));
+  assert.ok(!clean.lines.some((l) => l.startsWith('Findings that do not block')), 'no line without such findings');
+  const old = decide('review', prFacts('review', { reports: { reviewer: report({ sha: OLD, onHead: false, counts: counts({ Low: 4 }) }), security: report() } }));
+  assert.ok(!(old.lines ?? []).some((l) => l.startsWith('Findings that do not block')), 'only the reports on the head count');
 });

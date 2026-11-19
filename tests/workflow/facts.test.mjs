@@ -90,7 +90,8 @@ test('a Story with Sub-tasks: its state, Agent, parent Epic, each Sub-task, its 
 
   assert.deepEqual([pr.number, pr.state, pr.merged, pr.headRef, pr.base, pr.docsEpic], [11, 'closed', true, 'feature/DEMO-12-coupon-code', 'develop', null]);
   assert.deepEqual(pr.ci, { green: true, failed: false, pending: false, started: true });
-  assert.deepEqual(pr.reports.reviewer, { sha: pr.headSha, at: '2026-10-30T19:46:40Z', ok: true, blocking: 0, open: [], ids: [], state: 'COMMENTED', onHead: true });
+  assert.deepEqual(pr.reports.reviewer, { sha: pr.headSha, at: '2026-10-30T19:46:40Z', ok: true, blocking: 0, open: [], ids: [], state: 'COMMENTED', onHead: true, counts: { Critical: 0, High: 0, Medium: 0, Low: 3, downgraded: 1 } });
+  // The recorded reviewer report has one Medium with no repro line, written before C1 spec 4.2: it counts as Low.
   assert.equal(pr.reports.security.onHead, true);
   assert.deepEqual([pr.changesRequested, pr.approved, pr.protectedPaths], [false, true, []]);
   assert.deepEqual([facts.dependenciesMerged, facts.ledger, facts.run], [true, false, null]);
@@ -166,7 +167,7 @@ test('the newest report of each role, and the newest full security report the ne
   ];
   const { reports, securityFull } = reviewReports(reviews, { roles: ['reviewer', 'security'], bot, head: Z });
   assert.deepEqual([reports.reviewer.sha, reports.security.sha, reports.security.onHead], [Y, Y, false], 'a report of another login does not count');
-  assert.deepEqual(securityFull, { sha: X, at: '2026-11-04T08:00:00Z', ok: true, blocking: 0, open: [], ids: [], state: 'COMMENTED', onHead: false });
+  assert.deepEqual(securityFull, { sha: X, at: '2026-11-04T08:00:00Z', ok: true, blocking: 0, open: [], ids: [], state: 'COMMENTED', onHead: false, counts: { Critical: 0, High: 0, Medium: 0, Low: 0, downgraded: 0 } });
   assert.equal(reviewReports(reviews.slice(2, 3), { roles: ['reviewer', 'security'], bot, head: Z }).securityFull, null, 'only a report of the new part');
 });
 
