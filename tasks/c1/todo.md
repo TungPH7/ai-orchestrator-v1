@@ -24,15 +24,15 @@
 
 ## Bước 1: thứ tự chạy trong contract, nhánh `task/c1-1`
 
-- [ ] **T3: snapshot, `conditions.mjs`, khóa `runs`** (spec mục 6, phần đầu).
+- [x] **T3: bản ghi quyết định, `conditions.mjs`, khóa `runs`** (spec mục 6, phần đầu). Xong 2026-11-19, commit `4ef0b27`.
   - **Đạt khi:**
-    - snapshot quyết định của `decideStep` trên mọi fixture của `tests/workflow/` được chụp trước khi sửa code;
-    - `conditions.mjs` có `spec-has-screens`, `spec-lacks-nfr`, `tier-sensitive-or-critical`, đều là hàm thuần trên facts;
+    - quyết định của `decideStep` trên mọi lần gọi của bộ test được ghi lại trước khi sửa code (448 lần gọi; plan, quyết định 4);
+    - mỗi run có `when` (run áp dụng) và `done` (đầu ra đã có). `conditions.mjs` có `spec-written`, `spec-has-screens`, `design-written`, `spec-has-nfr`, `plan-written`, `plan-items-created`, đều là hàm thuần trên facts. `tier-sensitive-or-critical` thêm ở bước 3, khi luật đó có;
     - `stages.yaml` có `runs` cho `spec`, `plan`, `build`, `review`, chưa có `seo`;
-    - `validate` báo lỗi khi gặp điều kiện lạ, role không có trong `roles.yaml`, hay role không có trong `roles` của stage.
-  - **File:** `contract/stages.yaml`, `contract/schema/stages.schema.json`, `lib/workflow/conditions.mjs`, `lib/contract.mjs`, test.
-- [ ] **T4: các hàm quyết định đọc `runs`.**
-  - **Đạt khi:** `decideSpec`, `decidePlan`, `decideBuild`, `decideReview` đọc danh sách thay cho mảng viết cứng; `DEV_ORDER` bị bỏ; bộ so với snapshot không có khác biệt.
+    - `validate` báo lỗi khi gặp điều kiện lạ, hay role không phải agent role (như spec mục 6 ghi). Không đòi role của `runs` nằm trong `roles` của stage: stage build chưa ghi `devops`, và ghi thêm sẽ đổi prompt của `devops`.
+  - **File:** `contract/stages.yaml`, `contract/schema/stages.schema.json`, `lib/workflow/conditions.mjs`, `lib/rules/references.mjs`, test.
+- [x] **T4: các hàm quyết định đọc `runs`.** Xong 2026-11-19, commit `dbf313e`.
+  - **Đạt khi:** `decideSpec`, `decidePlan`, `decideBuild`, `decideReview` đọc danh sách thay cho mảng viết cứng; `DEV_ORDER` bị bỏ; so với kết quả mốc không có khác biệt. **Kết quả:** 0 khác biệt trên 448 quyết định; 1.605 test xanh.
   - **File:** `lib/workflow/steps.mjs`, test.
 
 ### Checkpoint 2: sau T4

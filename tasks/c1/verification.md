@@ -21,3 +21,13 @@
 - Comment 10603 trên DEMO-25 còn lại. Token CI không có quyền xóa comment của tài khoản agent ("You do not have permission to delete comment with id: 10603"). DEMO-25 là Bug thử đã Cancelled, và comment ghi "Bỏ qua comment này". Bạn có thể xóa nó trên Jira nếu muốn.
 
 **Kết luận:** spec không phải sửa. Checkpoint 1 đạt.
+
+## T3–T4: dời thứ tự chạy vào contract (2026-11-19, Lượt 88)
+
+**Cách so** (plan, quyết định 4):
+1. Trước khi sửa code, một bộ ghi tạm trong `decideStep` ghi mọi lần gọi của `npm test`: 448 lần, cho 13 lệnh (spec 147, build 51, fix 44, review 38, preview 36, qa 32, plan 29, ship 26, release 14, status 13, request 10, rollback 6, intake 2).
+2. Code cũ chạy lại 448 lần gọi đó, hai lần: hai kết quả giống hệt nhau, nên quyết định không phụ thuộc giờ chạy.
+3. Bộ test chỉ dùng một contract, đúng contract của repo. Contract mới khác contract cũ đúng ở khóa `runs`, nên lần chạy lại sau khi sửa dùng contract mới.
+4. Code mới chạy lại 448 lần gọi, so từng quyết định với mốc.
+
+**Kết quả:** 0 khác biệt. Cả bộ test xanh (1.605 test), cùng `validate`, `render:check`, `jira:checklist:check`, `agents:check`. Bộ ghi tạm đã gỡ khỏi `steps.mjs` trước khi commit.
