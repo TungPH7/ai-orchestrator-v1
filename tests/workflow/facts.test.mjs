@@ -303,3 +303,16 @@ test('the ids /ao-review gives are those of the Highs, since a Critical cannot b
   const security = reviewReports([report], { roles: ['security'], bot, head: Y, approvers: ['you'], on: '2026-11-14' }).reports.security;
   assert.deepEqual([security.blocking, security.ids], [2, [findingId({ severity: 'High', where: 'b.ts:2', finding: 'login reachable' })]]);
 });
+
+test('an item says whether it is an ops Task, and whether you gave devops the basic auth for it', async () => {
+  const labelled = (labels) => (a) => {
+    const [, read] = Object.entries(a.jira).find(([path]) => path.startsWith('/rest/api/3/issue/DEMO-15?fields=summary'));
+    read.fields.labels = labels;
+    a.jira['/rest/api/3/issue/DEMO-15?fields=issuetype,status,labels,description,parent,subtasks,issuelinks'] = { key: 'DEMO-15', fields: { ...read.fields, description: null, issuelinks: [] } };
+    a.jira['/rest/api/3/search/jql?fields=subtasks&jql=project = "DEMO" AND "Agent" = "DevOps Engineer" AND status in ("In Progress")'] = { issues: [] };
+  };
+  const ops = await gather('build', 'DEMO-15', { change: labelled(['ao-ops', 'ao-devops', 'ao-env-auth']) });
+  assert.deepEqual([ops.item.ops, ops.item.envAuth, ops.item.role], [true, true, 'devops']);
+  const plain = await gather('build', 'DEMO-15', { change: labelled([]) });
+  assert.deepEqual([plain.item.ops, plain.item.envAuth], [false, false]);
+});

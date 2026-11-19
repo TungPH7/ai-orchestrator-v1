@@ -106,3 +106,19 @@ test('only the files written since the qa run started go to Jira: the evidence o
   const none = await follow({ list: (dir) => (dir === folder ? [at(`${folder}/round-1/ac1.png`, OLD)] : []) });
   assert.deepEqual([none.notes, none.attached], [[], []]);
 });
+
+// Kit followups, batch 4 item 14: the qa run of an ops Task has no worktree, no environment of its own and no release to
+// compare: its evidence goes to the item as after any qa run behind the basic auth, and no deploy is read.
+test('after the qa run of an ops Task: its images go to the item, the rest stays, and no release is compared', async () => {
+  const listed = { ...listing, 'D:/work/pilot/.ai/qa/DEMO-21': [at('D:/work/pilot/.ai/qa/DEMO-21/products.png'), at('D:/work/pilot/.ai/qa/DEMO-21/api-products.json')] };
+  let reads = 0;
+  const { notes, attached } = await follow({
+    run: { ...run, purpose: 'qa-ops', qa: { environment: null, sha: null, auth: true } },
+    tree: undefined,
+    list: (dir) => listed[dir] ?? [],
+    running: async () => (reads++, SHA),
+  });
+  assert.deepEqual(attached, [['DEMO-21', ['D:/work/pilot/.ai/qa/DEMO-21/products.png']]]);
+  assert.deepEqual(notes, ['Attached to DEMO-21: products.png.', 'Behind the basic auth of Development and Staging only images and videos go to Jira, so these stay in .ai/qa/DEMO-21/: api-products.json.']);
+  assert.equal(reads, 0);
+});
