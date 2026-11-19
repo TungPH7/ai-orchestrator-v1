@@ -29733,3 +29733,51 @@ Không phải vậy. "Chỉ dùng prompt" nghĩa là agent `seo` chạy chỉ v�
    5. `ba` mở PR tài liệu.
 5. **Phần của bạn:** duyệt SPEC ở cổng ①, như hiện nay. Mục SEO nằm ngay trong SPEC, nên bạn đọc nó cùng các phần khác. Muốn đổi gì thì comment như với mọi phần của SPEC.
 6. **Sau đó:** `fe-dev` làm theo mục SEO khi build, `reviewer` đối chiếu code với mục đó, và `qa` kiểm thẻ meta trên Development.
+
+# Phiên 33 · Lượt 80 — 2026-11-19
+
+**Bạn:** "hiểu rồi, đồng ý thêm skill nextjs-seo cho seo."
+
+Rồi, trong lúc Claude đang ghi: "Thảo luận thêm:
+Khi làm 1 trang public, thông thường các text, nội dung trên trang cũng cần code, trình bày, viết theo phong cách để tối ưu cho SEO, nên tôi nghĩ cần có skill cho seo agent ở stage ao-spec chứ nhỉ? Không chỉ cho các mục metadata, sitemap, canonical, JSON-LD và ảnh chia sẻ."
+
+**Claude:**
+
+Mình đã ghi vào spec rằng bạn duyệt skill `nextjs-seo` (mục 6 và điểm 6 của mục 13).
+
+Về câu hỏi mới, bạn nói đúng: chữ trên trang công khai cũng phải viết cho SEO. `nextjs-seo` chỉ nói rất ít về phần này, gói trong vài câu:
+- nội dung phải riêng và có ích;
+- tiêu đề, heading và mô tả mỗi cái làm một việc;
+- chữ quan trọng phải có sẵn trong HTML mà server trả về.
+
+**Skill hợp nhất cho phần nội dung: `seo-content-brief` của claude-seo** (giấy phép MIT).
+- **Nó làm gì:** viết một "content brief" cho từng trang, gồm:
+  - ý định tìm kiếm của người dùng: tìm hiểu, so sánh hay mua;
+  - từ khóa chính;
+  - H1 và dàn ý H2/H3, kèm số chữ cho từng phần;
+  - chỗ đặt từ khóa và quy tắc cho thẻ meta;
+  - E-E-A-T (kinh nghiệm, chuyên môn, uy tín, độ tin cậy);
+  - liên kết nội bộ.
+- **Mẫu theo loại trang:** có trang chủ, trang danh mục, landing page, trang giới thiệu, hợp với `shop`. Riêng trang sản phẩm, phần dữ liệu có cấu trúc đã có ý lấy từ `seo-ecommerce`.
+- **Kích thước:** `SKILL.md` khoảng 1.660 chữ, chừng 2.300 token. Ba file tham khảo chỉ được đọc khi cần.
+- **Chỗ vướng:** bước 2 và 3 của skill đòi tải trang chủ, sitemap và 5 trang đứng đầu Google cho từ khóa, để phân tích đối thủ. Agent của kit không có WebFetch hay WebSearch. Prompt `seo` sẽ ghi đè: bỏ hai bước đó, làm từ bước 4 (ý định tìm kiếm) và bước 5 (viết brief). Kit đã làm cách này với skill của `qa`, ở mục "Where the contract beats your skills" trong prompt.
+
+**Không chọn:**
+- **`seo-content`:** chấm nội dung đã viết xong (E-E-A-T, độ dễ đọc, nội dung mỏng). Nó hợp với review hơn là với spec, và một phần cần Python.
+- **`blog-brief` và `blog-write` của Claude Blog:** dành cho bài blog, không dành cho trang danh mục hay trang sản phẩm.
+
+**Hai chỗ cần bạn quyết, vì chúng quan trọng hơn chuyện chọn skill:**
+
+1. **Từ khóa lấy từ đâu.** Muốn viết chữ cho SEO thì phải biết người ta tìm gì và tìm nhiều hay ít. Không có số liệu, agent chỉ đoán từ khóa theo hiểu biết của model.
+   - **(a) Agent tự đề xuất,** bạn xem ở cổng ①. Rẻ, nhưng không ai kiểm số liệu.
+   - **(b) Mình đề xuất cách này:** trước `/ao-spec`, bạn hoặc phiên chính (có WebSearch) tìm từ khóa cho từng trang công khai, rồi ghi vào Epic. `seo` dùng danh sách đó. Bạn có thể dùng Google Keyword Planner (miễn phí, cần tài khoản Google Ads), hoặc Search Console khi site đã chạy thật.
+   - **(c) Cho `seo` dùng WebSearch:** phá luật "không agent nào có WebSearch". Trang của đối thủ là nội dung lạ, có thể chứa lệnh chèn vào agent (prompt injection). Mình không đề xuất.
+   - **(d) DataForSEO:** trả phí theo lượt gọi. Không đề xuất lúc này.
+2. **Ai viết chữ thật trên trang.** Hiện nay `ba` viết AC, `ux` vẽ màn hình kèm chữ, còn `fe-dev` viết chữ vào `messages/*.json`. Đề xuất:
+   - `seo` viết chữ thật cho phần tĩnh của trang công khai: H1, các heading, đoạn mở đầu, nút kêu gọi, title, meta description, alt của ảnh. Viết cả `vi` và `en`, trong mục `## SEO` của SPEC.
+   - `fe-dev` đưa nguyên văn vào `messages/*.json`. `reviewer` và `qa` đối chiếu nguyên văn.
+   - Phần động, như mô tả sản phẩm, là dữ liệu admin nhập chứ không nằm trong code. `seo` chỉ viết vài dòng hướng dẫn cho người nhập (độ dài, cách trình bày), đưa vào hướng dẫn sử dụng.
+
+**Chi phí:** hai skill cộng lại khoảng 3.000 token cho mỗi lượt `seo`, mà `seo` chỉ chạy một lần cho mỗi Epic có trang công khai.
+
+Bạn chọn xong ba điểm (thêm `seo-content-brief` hay không, nguồn từ khóa, ai viết chữ), mình mới sửa spec.

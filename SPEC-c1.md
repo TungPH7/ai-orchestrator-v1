@@ -256,7 +256,7 @@ stages:
      - từ `seo-schema` của claude-seo: chỉ dùng loại dữ liệu có cấu trúc mà Google còn hỗ trợ (ví dụ FAQ đã bị bỏ rich result);
      - từ `seo-ecommerce`: Product kèm Offer, có giá và tình trạng còn hàng;
      - từ `seo-hreflang`: các bản ngôn ngữ trỏ qua lại nhau, có `x-default`.
-6. **Skill `nextjs-seo`, chỉ cho `seo`.**
+6. **Skill `nextjs-seo`, chỉ cho `seo`** (bạn duyệt ở Lượt 80).
    - **Nguồn:** repo `laguagu/claude-code-nextjs-skills`, giấy phép MIT.
    - **Cách đưa vào kit:** thêm vào `vendored_skills` của roster, ghim theo commit như các skill khác (`npm run skills:vendor`).
    - **Vì sao chọn skill này:**
@@ -358,7 +358,7 @@ Bước 1 đi trước, vì các bước sau đọc stages từ contract. Bướ
 5. **Danh sách đã duyệt nằm trong `project.yaml` của dự án** (mục 5), cùng ngoại lệ audit. Đồng ý chỗ đặt này không?
 6. **Role `seo`:** viết mục SEO ở stage spec, `reviewer` và `qa` đối chiếu; Sonnet `high`. Hai câu hỏi:
    - Có cần `seo` review PR riêng không? Đề xuất là không.
-   - Prompt và skill: đề xuất viết mới prompt `seo` và thêm skill `nextjs-seo`, chỉ cho `seo` (mục 6). Bản nháp đầu đề xuất "chưa thêm skill"; đề xuất đổi ở Lượt 77.
+   - Prompt và skill: viết mới prompt `seo` và thêm skill `nextjs-seo`, chỉ cho `seo` (mục 6). **Bạn duyệt skill `nextjs-seo` ở Lượt 80.** Bản nháp đầu đề xuất "chưa thêm skill"; đề xuất đổi ở Lượt 77. Phần nội dung trang công khai (chữ, tiêu đề, bố cục bài) đang thảo luận ở Lượt 80.
 7. **A6** theo bảng ở mục 10: hai việc vào C1, hai việc để sau.
 8. **Thứ tự làm** theo mục 9: phần 5 trước, chép kit một lần ở cuối.
 9. **QA lại** (mục 2): ở mức Chuẩn chỉ kiểm lại các tiêu chí đã FAIL, cộng cả bộ E2E; ở mức Nặng kiểm đủ như hiện nay. Đồng ý không?
