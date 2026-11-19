@@ -138,6 +138,18 @@ Khả năng mới, đổi kết quả mong đợi của một Bug, hay đổi h�
 
 PR sửa đường dẫn được bảo vệ (`.github/workflows/**`, `.claude/**`, `.ai-orchestrator/**` …) thì bạn tự squash merge. Đường dẫn được so không phân biệt hoa thường, vì trên Windows `.Claude/` được ghi vào chính `.claude/`. `merge-gate` so theo cách này từ lần chép kit kế tiếp vào dự án; `audit` chạy trên VPS, nên chỉ so theo cách này khi kit trên VPS được cập nhật. `merge-gate` comment lên PR và gắn cờ item khi PR chỉ còn chờ bạn, và `jira-sync` gỡ cờ đó khi PR đóng.
 
+## Task vận hành (nhãn `ao-ops`)
+
+Có Task không có commit nào, như thêm dữ liệu qua API lên Staging (SHOP-12 của `shop`). Task đó đi một đường riêng, không qua PR:
+
+1. `ba` gắn nhãn `ao-ops` cùng `ao-devops`, và ghi trong Verification các môi trường và những gì cần kiểm ở đó.
+2. `/ao-build <KEY>` chạy `devops`. Agent này Start Task mà không tạo nhánh, làm việc trên môi trường, rồi comment bằng chứng có mục `## Ops evidence`.
+3. `devops` làm transition Hand over (In Progress → Ready for QA). `jira-guard` chỉ cho qua khi item có nhãn `ao-ops` và có comment bằng chứng của `devops`.
+4. `/ao-qa <KEY>` chạy `qa`, không cần PR hay deploy. Agent này kiểm từng dòng Verification trên các môi trường đó, không đổi dữ liệu, rồi viết báo cáo QA như mọi item.
+5. Bạn Accept. Guard `children-released` của Epic bỏ qua Task vận hành, vì Task này không có Fix Version.
+
+**Basic auth của Development và Staging:** `devops` chỉ nhận basic auth khi bạn gắn nhãn `ao-env-auth` lên Task. Hook `block-atlassian` từ chối mọi agent gắn nhãn này, nên chỉ bạn bật được, trên Jira hoặc nhờ phiên chính. Không có nhãn này mà việc lại cần basic auth thì `devops` dừng và nói rõ.
+
 ## Worktree theo item (`runs.worktrees`)
 
 Bật trong `.ai-orchestrator/project.yaml` ([SPEC-parallel-runs.md](../SPEC-parallel-runs.md), phần 1):

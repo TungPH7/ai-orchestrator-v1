@@ -131,6 +131,7 @@ Lưu ý:
 - [ ] Transition `Refine`: From `New`, To `Ready`. Restrict → Groups: `ao-humans`, `ao-automation`
 - [ ] Transition `Start`: From `Ready`, To `In Progress`. Restrict → Groups: `ao-agents`
 - [ ] Transition `Submit`: From `In Progress`, To `In Review`. Restrict → Groups: `ao-automation`
+- [ ] Transition `Hand over`: From `In Progress`, To `Ready for QA`. Restrict → Groups: `ao-agents`
 - [ ] Transition `Request changes`: From `In Review`, To `In Progress`. Restrict → Groups: `ao-humans`, `ao-agents`, `ao-automation`
 - [ ] Transition `Deploy to QA`: From `In Review`, To `Ready for QA`. Restrict → Groups: `ao-automation`
 - [ ] Transition `Pick up`: From `Ready for QA`, To `In QA`. Restrict → Groups: `ao-agents`

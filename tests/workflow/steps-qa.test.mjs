@@ -175,3 +175,17 @@ test('/ao-qa stops when the deployment answers on a host project.yaml does not n
   assert.equal(decision.go, false);
   assert.match(decision.reason, /^development answers at https:\/\/elsewhere\.ao\.t2g\.io\.vn, which is the host of no public app in \.ai-orchestrator\/project\.yaml: the hosts there and in \/etc\/ao\/deployer\.yaml differ/);
 });
+
+// Kit followups, batch 4 item 14: an ops Task (label ao-ops) has no PR and no deploy. qa checks its Verification on the
+// environments it names, from the evidence of devops, with the basic auth of Development and Staging, and no worktree.
+test('/ao-qa of an ops Task: no PR and no deploy, qa checks its Verification with the basic auth, in no worktree', () => {
+  const ops = qaFacts({ item: { type: 'Task', workType: 'task', labels: ['ao-ops', 'ao-devops'], ops: true }, pr: null, qa: null });
+  const decision = decide(ops);
+  assert.equal(decision.go, true, decision.reason);
+  const [run] = decision.runs;
+  assert.deepEqual([run.role, run.purpose, run.worktree, run.qa], ['qa', 'qa-ops', undefined, { environment: null, sha: null, auth: true }]);
+  assert.match(run.prompt, /^QA ops Task DEMO-21\. It has no PR and no deploy: devops did its work on the environments its Verification names, and left its evidence in a comment with the heading Ops evidence\./);
+  assert.match(run.prompt, /Pick it up, then check each line of its Verification on those environments yourself, without changing their data/);
+  const early = decide(qaFacts({ item: { type: 'Task', workType: 'task', labels: ['ao-ops'], ops: true, state: 'in-progress', status: 'In Progress' }, pr: null, qa: null }));
+  assert.match(early.reason, /^DEMO-21 is In Progress, not Ready for QA/);
+});

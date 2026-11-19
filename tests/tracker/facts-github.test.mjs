@@ -183,3 +183,9 @@ test('readChecks says whether CI started on a commit: no check run and no status
   const github = { getAll: async () => [], get: async () => ({ total_count: 0, state: 'pending', statuses: [] }) };
   assert.deepEqual(await readChecks(github, 'c9'), { green: false, failed: false, started: false });
 });
+
+// Kit followups, batch 4 item 14: an ops Task (label ao-ops) has no branch, so devops could not Start it.
+test('branch-created holds for an ops Task, which has no branch', async () => {
+  const ops = { ...item('DEMO-12', { type: 'Task' }), labels: ['ao-ops'] };
+  assert.deepEqual(await holds(ops, ['branch-created'], { change: (a) => (a['/git/matching-refs/heads/feature/DEMO-12-'] = []) }), ['branch-created']);
+});

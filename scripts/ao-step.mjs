@@ -382,18 +382,19 @@ async function main() {
       arg,
       options,
       gather,
-      // qa on Development or Staging gets the basic auth from AO_ENV_AUTH, as variables, never as arguments.
+      // qa on Development or Staging gets the basic auth from AO_ENV_AUTH, as variables, never as arguments; so does
+      // devops on an ops Task you put the label ao-env-auth on (envAuth; kit followups, batch 4 item 14).
       agent: async (run, { log }) => {
         await claim(run);
         try {
-          return await watchQa(await placed(run.qa?.auth ? { ...run, env: { ...run.env, ...basicAuthEnv(secret('AO_ENV_AUTH')) } } : run), (ready, onStart) => startAgent(ready, join(runsDir, key, log), onStart));
+          return await watchQa(await placed(run.qa?.auth || run.envAuth ? { ...run, env: { ...run.env, ...basicAuthEnv(secret('AO_ENV_AUTH')) } } : run), (ready, onStart) => startAgent(ready, join(runsDir, key, log), onStart));
         } finally {
           // Its agent no longer holds RAM for the others that wait (admitAgent).
           if (cap > 1) await releaseAgent(activeDir, lock, { fs: lockFs, alive, sleep });
         }
       },
       // A defect you reported is checked like a QA run: its evidence goes to the item too (human-loop spec 5.1).
-      after: (run, { tree }) => (['qa', 'qa-defect'].includes(run.purpose) ? afterQa(run, tree, { deploys, mapping }) : []),
+      after: (run, { tree }) => (['qa', 'qa-defect', 'qa-ops'].includes(run.purpose) ? afterQa(run, tree, { deploys, mapping }) : []),
       act: (step) => {
         if (step.action === 'release-pr') return releasePr(step, { repo, settings });
         if (step.action === 'hotfix-ship') return hotfixShip(step, { repo, settings, userToken });

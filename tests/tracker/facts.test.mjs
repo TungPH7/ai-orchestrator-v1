@@ -196,3 +196,29 @@ test('wipHolders names the items that hold the WIP of a role, and its limit', as
   const [, jql] = client.calls.find(([kind]) => kind === 'search');
   assert.match(jql, /^project = "SHOP" AND "Agent" = "Frontend Developer"/);
 });
+
+// Kit followups, batch 4 item 14: an ops Task (label ao-ops) goes to QA by hand-over of devops once its evidence is on
+// the item: a comment of devops with the heading Ops evidence, as Rovo MCP stores markdown.
+const evidence = (agent, heading = 'Ops evidence') => ({
+  created: '2026-11-19T08:00:00.000+0700',
+  body: { type: 'doc', version: 1, content: [
+    { type: 'paragraph', content: [{ type: 'text', text: `${agent}: thêm năm sản phẩm lên Staging` }] },
+    { type: 'heading', attrs: { level: 2 }, content: [{ type: 'text', text: heading }] },
+    { type: 'paragraph', content: [{ type: 'text', text: 'GET /api/products trả 5 sản phẩm mới, ảnh ở .ai/ops/DEMO-5/' }] },
+  ] },
+});
+test('ops-task holds for a Task with the label ao-ops; ops-evidence for a comment of devops with the heading Ops evidence', async () => {
+  const ops = (labels, list = []) => fakeJira({ issues: [issue({ key: 'DEMO-5', type: 'Task', st: IN_PROGRESS, labels })], comments: { 'DEMO-5': list } });
+  assert.deepEqual(await guards(ops(['ao-ops']), 'DEMO-5', 'devops', ['ops-task']), ['ops-task']);
+  assert.deepEqual(await guards(ops([]), 'DEMO-5', 'devops', ['ops-task']), []);
+  assert.deepEqual(await guards(ops(['ao-ops'], [evidence('DevOps Engineer')]), 'DEMO-5', 'devops', ['ops-evidence']), ['ops-evidence']);
+  assert.deepEqual(await guards(ops(['ao-ops'], [evidence('Tester/QA Engineer')]), 'DEMO-5', 'devops', ['ops-evidence']), [], 'the evidence is devops\'s');
+  assert.deepEqual(await guards(ops(['ao-ops'], [evidence('DevOps Engineer', 'Notes')]), 'DEMO-5', 'devops', ['ops-evidence']), [], 'with its heading');
+  assert.deepEqual(await guards(ops(['ao-ops'], [note('DevOps Engineer: ## Ops evidence xong')]), 'DEMO-5', 'devops', ['ops-evidence']), [], 'a heading of its own, not words in a line');
+});
+
+test('ops-evidence reads the markdown of a comment too', async () => {
+  const ops = (body) => fakeJira({ issues: [issue({ key: 'DEMO-5', type: 'Task', st: IN_PROGRESS, labels: ['ao-ops'] })], comments: { 'DEMO-5': [{ created: '2026-11-19T08:00:00.000+0700', body }] } });
+  assert.deepEqual(await guards(ops('DevOps Engineer: xong\n\n## Ops evidence\n\nGET trả 200'), 'DEMO-5', 'devops', ['ops-evidence']), ['ops-evidence']);
+  assert.deepEqual(await guards(ops('DevOps Engineer: xong, Ops evidence ở dưới'), 'DEMO-5', 'devops', ['ops-evidence']), []);
+});
