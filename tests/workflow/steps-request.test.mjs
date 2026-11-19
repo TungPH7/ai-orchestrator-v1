@@ -77,9 +77,9 @@ test('your own request, a comment with no Agent name, counts like an agent\'s', 
 test('requests to other roles are not run: the command stops and names them', () => {
   const decision = decide('request', storyFacts([request('be-dev', T1, 'fe-dev')]));
   assert.equal(decision.go, false);
-  assert.equal(decision.reason, 'DEMO-21 has no open request to ba, ux or sa; 1 open request goes to another role (be-dev)');
+  assert.equal(decision.reason, 'DEMO-21 has no open request to ba, ux, sa or security; 1 open request goes to another role (be-dev)');
   assert.equal(decision.next, '/ao-status DEMO-21');
-  assert.equal(decide('request', storyFacts([])).reason, 'DEMO-21 has no open request to ba, ux or sa');
+  assert.equal(decide('request', storyFacts([])).reason, 'DEMO-21 has no open request to ba, ux, sa or security');
 });
 
 test('a flagged item waits for you before any request runs', () => {
@@ -126,4 +126,11 @@ test('a request run that stopped goes on in its session with its request, so it 
   facts.run = { key: 'DEMO-21', runs: [{ n: 1, command: 'request', role: 'ba', purpose: 'request', outcome: 'usage-limit', session: 's1', effort: 'high', request: T1, checkout: { branch: 'develop', pull: true } }] };
   const [run] = decide('request', facts).runs;
   assert.deepEqual([run.resume, run.request], ['s1', T1]);
+});
+
+// C1 spec section 5: security looks at a library dep-check found suspicious, at high, not at the max of its reviews.
+test('/ao-request runs a request to security, about a library, at high', () => {
+  const [run] = decide('request', storyFacts([request('security', T1, 'fe-dev', 'left-pad@1.3.0: license WTFPL')])).runs;
+  assert.deepEqual([run.role, run.purpose, run.effort], ['security', 'request', 'high']);
+  assert.match(run.prompt, /"Cần security:"/);
 });

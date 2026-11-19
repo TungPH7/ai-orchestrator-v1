@@ -94,9 +94,11 @@ async function mavenLibrary(name, version) {
 }
 
 async function main() {
-  const [ecosystem, spec] = process.argv.slice(2);
+  // --dry-run: the verdict only, nothing written, for the libraries a plan names before gate ②.
+  const dryRun = process.argv.includes('--dry-run');
+  const [ecosystem, spec] = process.argv.slice(2).filter((arg) => arg !== '--dry-run');
   if (!ECOSYSTEMS.includes(ecosystem) || !spec) {
-    console.log('usage: node .ai-orchestrator/scripts/dep-check.mjs <npm|maven> <name>@<version>');
+    console.log('usage: node .ai-orchestrator/scripts/dep-check.mjs <npm|maven> <name>@<version> [--dry-run]');
     process.exit(1);
   }
   const { name, version } = parseSpec(ecosystem, spec);
@@ -117,6 +119,10 @@ async function main() {
     for (const problem of verdict.problems) console.log(`  - ${problem}`);
     console.log('Nothing written. Ask security on the item: a comment "Cần security:" that names the library, its version and these lines.');
     process.exit(2);
+  }
+  if (dryRun) {
+    console.log(`PASS: ${label}. Nothing written (--dry-run): the dev agent runs dep-check again when it installs it.`);
+    return;
   }
   const file = join(process.cwd(), '.ai-orchestrator', 'project.yaml');
   if (!existsSync(file)) {

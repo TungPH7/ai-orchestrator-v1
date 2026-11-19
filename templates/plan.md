@@ -45,6 +45,15 @@ the rest. A PR on a critical path makes its item heavy whatever its label. -->
 ### Checkpoint: <name>
 - [ ] <What must work before the next phase>
 
+## New Libraries
+
+<!-- Each library the plan needs that dependencies.approved of .ai-orchestrator/project.yaml does not list yet, one line
+each: the ecosystem, the name, the exact version to check, and why no library already there will do (C1 spec section 5).
+/ao-plan runs dep-check on each line before gate ②, and the main session adds those that pass to the approved list on
+the docs branch, so that you approve them with the plan. Write "Không có." when there is none. -->
+
+- <npm | maven> <name>@<version>: <why it is needed>
+
 ## Risks and Mitigations
 
 | Risk | Impact | Mitigation |
@@ -87,6 +96,9 @@ Làm module auth dùng chung trước, rồi đăng nhập bằng email và mậ
 - [ ] DEMO-15: Khóa tài khoản 15 phút sau 5 lần nhập sai · be-dev · level standard
 ### Checkpoint: Đăng nhập
 - [ ] E2E test của DEMO-12 và DEMO-15 pass trên Development
+
+## New Libraries
+- npm argon2@0.44.0: băm mật khẩu bằng Argon2id; Node không có sẵn hàm này
 
 ## Risks and Mitigations
 | Risk | Impact | Mitigation |

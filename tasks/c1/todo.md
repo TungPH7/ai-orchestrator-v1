@@ -138,11 +138,23 @@
 
 ## Bước 6: duyệt thư viện, nhánh `task/c1-6`
 
-- [ ] **T13: khối `dependencies`; `dep-check`** (spec mục 5; A6 mục 10, dòng 1).
+- [x] **T13: khối `dependencies`; `dep-check`** (spec mục 5; A6 mục 10, dòng 1).
   - **Đạt khi:** `approved` và `exceptions` có schema; `ao-kit sync` không ghi đè; `dep-check.mjs` kiểm OSV, giấy phép, tuổi gói, lượt tải, người duy trì, script lúc cài, provenance; lỗi mạng cho kết quả "nghi ngờ".
-- [ ] **T14: chặn gói chưa duyệt; plan.**
+  - **Kết quả** (xong 2026-11-20, commit `9ab8303`):
+    - `lib/quality/dependencies.mjs`, `lib/quality/dep-check.mjs`, `scripts/dep-check.mjs`;
+    - `project.yaml` có khối `dependencies`; `gates.yaml` có `dependencies.licenses`;
+    - job `policy` gộp ngoại lệ của dự án và có phần New dependencies; dự án không có `project.yaml` (như repo kit) thì bỏ qua phần này;
+    - đã chạy thật: `zod@4.1.12` bị báo đáng ngờ vì GHSA-mrhx-c7xc-m3w5 (sửa ở 4.6.6); `left-pad` vì giấy phép WTFPL; `org.mapstruct:mapstruct@1.6.3` đạt;
+    - ngày phát hành của Maven lấy từ `Last-Modified` của POM trên repo1.maven.org, vì search.maven.org không trả lời.
+- [x] **T14: chặn gói chưa duyệt; plan.** Xong 2026-11-20.
   - **Đạt khi:** gh-guard từ chối `pnpm add`, `npm install <gói>`, `mvn dependency:…`; hook Edit/Write từ chối sửa `<dependencies>` của `pom.xml`; job `policy` đỏ khi có gói trực tiếp mới chưa duyệt; `plan.md` có mục "Thư viện mới"; `/ao-plan` chạy `dep-check`; `/ao-request` nhận `Cần security:`.
   - **Kiểm:** tiêu chí 5 của spec bằng test.
+  - **Kết quả:**
+    - gh-guard đọc `approved` qua `lib/quality/approved-file.mjs`; nó cũng từ chối cài từ đường dẫn, URL hay git, và Edit hay Write thêm dependency vào `package.json`;
+    - `security` được comment trên Jira, và lượt `Cần security:` của nó chạy ở `high`;
+    - mục plan mang tên "New Libraries";
+    - quyết định khi làm (đã ghi vào spec mục 5): ở plan, `dep-check --dry-run` chỉ báo bạn; lúc build, dev agent mới ghi vào `approved`, để PR tài liệu không chạm đường dẫn được bảo vệ;
+    - 1.656 test xanh.
 
 ## Bước 7: role `seo`, nhánh `task/c1-7`
 

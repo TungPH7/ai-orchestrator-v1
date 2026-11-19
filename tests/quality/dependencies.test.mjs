@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { join } from 'node:path';
 import { addApproved, newestStable, npmFacts, osvIds, parseSpec, pomLicenses, pomParent } from '../../lib/quality/dep-check.mjs';
-import { addedDependencies, auditRule, depVerdict, isApproved, licenseAllowed, packageJsonDependencies, pomDependencies, projectDependencies, unapprovedDependencies } from '../../lib/quality/dependencies.mjs';
+import { addedDependencies, auditRule, depVerdict, isApproved, licenseAllowed, packageJsonDependencies, planLibraries, pomDependencies, projectDependencies, unapprovedDependencies } from '../../lib/quality/dependencies.mjs';
 import { readGates } from '../../lib/quality/gates.mjs';
 import { ROOT } from '../helpers/kit.mjs';
 
@@ -83,4 +83,11 @@ test('dep-check adds its line to project.yaml and keeps the rest, comments inclu
   const twice = addApproved(once, { ecosystem: 'npm', name: 'zod', range: '^4.7.0', by: 'dep-check', on: '2026-11-21' });
   assert.equal((twice.match(/name: zod/g) ?? []).length, 1);
   assert.match(twice, /range: \^4\.7\.0/);
+});
+
+test('the new libraries of a plan: one line each of its New Libraries section, in or out of code marks', () => {
+  const plan = '## Task List\n\n- x\n\n## New Libraries\n\n<!-- guidance -->\n- npm argon2@0.44.0: băm mật khẩu\n- `maven org.mapstruct:mapstruct@1.6.3`: map DTO\n- một dòng khác\n\n## Risks and Mitigations\n\n- npm left-pad@1.3.0: not in the section\n';
+  assert.deepEqual(planLibraries(plan), [{ ecosystem: 'npm', spec: 'argon2@0.44.0', why: 'băm mật khẩu' }, { ecosystem: 'maven', spec: 'org.mapstruct:mapstruct@1.6.3', why: 'map DTO' }]);
+  assert.deepEqual(planLibraries('## New Libraries\n\nKhông có.\n'), []);
+  assert.deepEqual(planLibraries(null), []);
 });

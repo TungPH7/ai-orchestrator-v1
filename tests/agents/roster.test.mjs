@@ -75,7 +75,8 @@ test('tools, files, git, Jira and skills of each role (spec 2.3)', () => {
   assert.equal(row('fe-dev'), 'Bash Edit Write | ** | write | read edit comment transition | test-driven-development incremental-implementation frontend-ui-engineering browser-testing-with-devtools');
   assert.equal(row('be-dev'), 'Bash Edit Write | ** | write | read edit comment transition | test-driven-development incremental-implementation api-and-interface-design');
   assert.equal(row('reviewer'), 'Bash Write | .ai/** | read | read | code-review-and-quality');
-  assert.equal(row('security'), 'Bash Write | .ai/** | read | read | security-and-hardening sentry-security-review');
+  // comment: security answers a "Cần security:" request about a library (C1 spec section 5).
+  assert.equal(row('security'), 'Bash Write | .ai/** | read | read comment | security-and-hardening sentry-security-review');
   assert.equal(row('qa'), 'Bash Write | .ai/** | read | read create edit comment transition | playwright-cli');
   assert.equal(row('devops'), 'Bash Edit Write | ** | write | read edit comment transition | ci-cd-and-automation shipping-and-launch');
 });

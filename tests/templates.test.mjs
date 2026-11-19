@@ -25,7 +25,7 @@ const SECTIONS = {
   ],
   // The screens of an Epic, agent-roster spec 2.8.
   'design.md': ['Screens', 'Flow', 'Screen Details', 'Design System', 'Open Questions', 'Example'],
-  'plan.md': ['Overview', 'Architecture Decisions', 'API Contract', 'Task List', 'Risks and Mitigations', 'Open Questions', 'Example'],
+  'plan.md': ['Overview', 'Architecture Decisions', 'API Contract', 'Task List', 'New Libraries', 'Risks and Mitigations', 'Open Questions', 'Example'],
   'adr.md': ['Status', 'Date', 'Context', 'Decision', 'Alternatives Considered', 'Consequences', 'Example'],
   // The description of an Epic from /ao-intake, human-loop spec 3.1.
   'epic.md': ['Objective', 'Users', 'Scope', 'Rough Stories', 'Constraints', 'Open Points', 'Original Request', 'Example'],
