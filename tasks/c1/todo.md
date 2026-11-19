@@ -63,15 +63,27 @@
 
 ## Bước 3: effort và ba tầng đường dẫn, nhánh `task/c1-3`
 
-- [ ] **T7: hai danh sách đường dẫn, `pathTier`** (spec mục 3.2).
+- [x] **T7: hai danh sách đường dẫn, `pathTier`** (spec mục 3.2). Xong 2026-11-19, commit `ed9806e`.
   - **Đạt khi:** `pathTier(files, gates)` trả tầng cao nhất, tính file đổi tên theo cả hai tên; `roster_effort_paths` bị bỏ khỏi `gates.yaml` và schema.
-- [ ] **T8: effort theo tầng; luật tài liệu** (spec mục 3.1, 3.3).
+  - **Kết quả:**
+    - khóa `review` của `gates.yaml` có `critical_paths`, `sensitive_paths`, `docs_paths`; đường dẫn được bảo vệ tự là Nguy cấp;
+    - tầng thứ tư `docs`: mọi file là tài liệu và không file nào Nguy cấp, kể cả README trong thư mục `dto/`;
+    - PR không có file, hay bị GitHub cắt danh sách, tính là Nguy cấp;
+    - service nay là Nhạy cảm (`security` ở `high`, như mọi PR trước C1).
+- [x] **T8: effort theo tầng; luật tài liệu** (spec mục 3.1, 3.3). Xong 2026-11-19, commit `9191792`.
   - **Đạt khi:**
     - roster `reviewer` là `high`;
     - tầng Nguy cấp: `reviewer` `xhigh`, `security` `max`; tầng Nhạy cảm: `security` `high`; tầng Thường: không có `security`;
     - vòng sau của `reviewer` chỉ xem phần mới;
     - PR chỉ đổi tài liệu của item Chuẩn hay Nặng: `reviewer` `high`, không có `security`.
   - **Kiểm:** tiêu chí 3 của spec (PR chạm controller; PR chạm `SecurityConfig.java`) bằng test.
+  - **Kết quả:**
+    - `merge-gate` và `audit` đòi báo cáo `security` theo cùng tầng (`reviewRolesNeeded`), và luôn đòi khi `security` đã từng báo cáo trên PR. Nhờ vậy bỏ file đã gọi `security` vào cũng không bỏ được High nó tìm ở chỗ khác;
+    - `reviewer` có báo cáo đầy đủ và phần mới riêng, như `security`; prompt `review-delta` ghi tên role;
+    - gate ③ của PR chỉ cần `reviewer` ghi lý do `security` không chạy;
+    - item có nhãn effort được review như PR Nguy cấp, cho tới khi bước 4 có mức quy trình;
+    - PR tài liệu đến muộn (head sau Approve plan) nay chỉ cần báo cáo `reviewer`;
+    - 1.618 test xanh. Phần "mức tự lên Nặng" của tiêu chí 3 thuộc bước 4.
 
 ## Bước 4: ba mức, nhánh `task/c1-4`
 
