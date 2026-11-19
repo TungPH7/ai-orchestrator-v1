@@ -158,13 +158,27 @@
 
 ## Bước 7: role `seo`, nhánh `task/c1-7`
 
-- [ ] **T15: role, quyền, prompt** (spec mục 6.3, 6.4, 6.8).
+- [x] **T15: role, quyền, prompt** (spec mục 6.3, 6.4, 6.8). Xong 2026-11-20, commit `1b35852`.
   - **Đạt khi:** roster có `seo` (`tools: [Edit, Write, WebFetch, WebSearch]`, `jira: [read, comment]`, `writes: ["docs/specs/**", ".ai/**"]`, Sonnet `high`); `validate` báo lỗi khi role khác có WebFetch hay WebSearch; gh-guard giới hạn Read, Grep, Glob của `seo`; `contract/roles.yaml` và `work-items.yaml` có `seo`; prompt `seo.md` lấy SEO Specialist làm gốc.
   - **Kiểm:** tiêu chí 9 của spec bằng test.
   - **[bạn] Khi PR này merge:** thêm option "SEO Specialist" vào cuối Agent Field (tiền đề 3, dời từ T2); mình ghi từng bước bấm, rồi chạy `jira:check`.
-- [ ] **T16: khi nào `seo` chạy** (spec mục 6.1, 6.2, 6.6 "commit thay").
+  - **Kết quả:**
+    - roster có `seo` đúng như trên, `max_turns` 60; luật A1 mới (`checkWeb`): WebSearch, WebFetch chỉ cho role trong `WEB_ROLES` (`lib/rules/references.mjs`), và role đó không có Bash; hai fixture mới;
+    - gh-guard (`webRoleRead`): Read, Grep, Glob của `seo` chỉ trong thư mục dự án, kể cả không vào thư mục temp; từ chối `.env*` trừ `.env.example`; Grep phải có một file, một glob theo đuôi file, hay một type, vì Grep đọc mọi file dưới đường dẫn của nó;
+    - prompt `agents/prompts/seo.md` lấy luật, phần từ khóa, chống trùng và phần on-page của SEO Specialist; bỏ phần audit trang đã chạy, backlink, Search Console (sau khi ra mắt, dòng D4);
+    - fixture Jira ghi thêm option "SEO Specialist" của Agent Field; tài liệu ghi mười một agent;
+    - lượt headless chạy theo chế độ quyền của bạn (`auto`), nên WebFetch chạy được; mình xác nhận ở lượt `seo` thật đầu tiên.
+- [x] **T16: khi nào `seo` chạy** (spec mục 6.1, 6.2, 6.6 "commit thay"). Xong 2026-11-20.
   - **Đạt khi:** `spec-has-seo-screens` theo đúng năm bước của spec mục 6.1; khóa `seo` của app và luật `seo: true` cần `public: true`; `project-scaffold` hỏi khóa; cột "App" của `design.md`; hai từ `seo`, `no-seo`; `ba` ghi dòng "SEO: không"; `seo-commit` chỉ nhận `docs/specs/`.
   - **Kiểm:** tiêu chí 6 và 11 của spec bằng test.
+  - **Kết quả:**
+    - stage spec chạy `ba`, `ux`, `seo`, `sa`, `ba`; điều kiện `spec-has-seo-screens` và `spec-has-seo` ở `lib/workflow/conditions.mjs`;
+    - luật P10 của `project.yaml`; `ao-kit add --public` phải kèm `--seo` hay `--no-seo` (lệnh không hỏi tương tác, nên bắt chọn thay cho hỏi);
+    - cột App: không bắt buộc bằng `check-design`, vì 30 fixture và các `design.md` cũ của `shop` không có; thiếu cột thì màn hình được tính là có thể cần SEO, để không lỡ;
+    - `no-seo` trên SPEC đã viết thì `ba` sửa SPEC một lần (`spec-revise`); `seo` trên PR tài liệu đang mở thì `seo` chạy ngay;
+    - `ao-step` commit thay `seo` (`lib/workflow/seo-commit.mjs`) bằng git của bạn, push khi nhánh đã có trên GitHub; runner nhận `{ notes, stop }` từ bước sau lượt để dừng lệnh;
+    - 1.672 test xanh.
+  - **Còn ở T20:** `project.yaml` của `shop` thêm `seo: true` cho `user` và `seo: false` cho `admin`, trong PR chép kit.
 
 ## Bước 8: skill của `seo`, nhánh `task/c1-8`
 

@@ -179,6 +179,10 @@
           "items": { "type": "string", "pattern": "^(?![/\\\\])(?!.*(^|/)\\.\\.(/|$))\\S+$" }
         },
         "public": { "type": "boolean" },
+        "seo": {
+          "description": "A search engine indexes the pages of this app, so seo writes the SEO of its screens at stage spec (C1 spec 6.1). Only a public app; an admin app has false.",
+          "type": "boolean"
+        },
         "hosts": {
           "description": "The host of a public app in each environment, the same as under projects of /etc/ao/deployer.yaml on the VPS: qa reaches the app there, and ao-kit doctor prints those lines (project-scaffold part 2, spec 2.4).",
           "type": "object",

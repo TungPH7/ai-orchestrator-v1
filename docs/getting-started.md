@@ -429,8 +429,8 @@ node <kit>/scripts/ao-kit.mjs init e-commerce/shop --package-manager pnpm --name
 ### Bước 3. Thêm hai app từ template
 
 ```
-node <kit>/scripts/ao-kit.mjs add e-commerce/shop user --stack nextjs --from <thư mục template Next.js> --ref write-cv --exclude study-guide-impl/ --exclude frontend-technical/ --exclude docs/readme/ --public
-node <kit>/scripts/ao-kit.mjs add e-commerce/shop admin --stack react --from <thư mục template React> --ref write-cv --exclude study-guide-impl/ --exclude docs/readme/ --public
+node <kit>/scripts/ao-kit.mjs add e-commerce/shop user --stack nextjs --from <thư mục template Next.js> --ref write-cv --exclude study-guide-impl/ --exclude frontend-technical/ --exclude docs/readme/ --public --seo
+node <kit>/scripts/ao-kit.mjs add e-commerce/shop admin --stack react --from <thư mục template React> --ref write-cv --exclude study-guide-impl/ --exclude docs/readme/ --public --no-seo
 ```
 
 - **Template** phải là repo git. `add` chép những gì đã commit ở `--ref` (một nhánh hay tag của template), không có `--ref` thì ở `HEAD`. Thay đổi chưa commit không được chép, và lệnh in số thay đổi đó. Ở `shop`, cả hai template lấy nhánh `write-cv`.
@@ -468,6 +468,7 @@ Hai app công khai thì mỗi app khai host của ba môi trường trong `.ai-o
   user:
     health: /en
     public: true
+    seo: true
     hosts:
       development: shop-dev.ao.t2g.io.vn
       staging: shop-staging.ao.t2g.io.vn
@@ -475,6 +476,7 @@ Hai app công khai thì mỗi app khai host của ba môi trường trong `.ai-o
   admin:
     health: /
     public: true
+    seo: false
     hosts:
       development: shop-admin-dev.ao.t2g.io.vn
       staging: shop-admin-staging.ao.t2g.io.vn
@@ -1152,7 +1154,7 @@ PR #40, tổng 20,49 USD:
 | Lệnh | Làm gì | Gõ khi nào |
 |---|---|---|
 | `init` | Dựng khung (thư mục trống) hoặc chỉ cài kit (repo có code); thêm `origin` nếu thiếu. Có `--package-manager pnpm` thì chỉ dựng phần gốc của dự án pnpm | Lần đầu của mỗi dự án |
-| `add <app> --stack nextjs\|react [--from <template> [--ref <nhánh hay tag>]] [--exclude <đường dẫn>] [--public]` | Thêm một app vào dự án pnpm, từ khung của stack hoặc từ template của bạn; báo chỗ code app còn phải sửa | Sau `init --package-manager pnpm`, mỗi app một lần |
+| `add <app> --stack nextjs\|react [--from <template> [--ref <nhánh hay tag>]] [--exclude <đường dẫn>] [--public --seo\|--no-seo]` | Thêm một app vào dự án pnpm, từ khung của stack hoặc từ template của bạn; báo chỗ code app còn phải sửa | Sau `init --package-manager pnpm`, mỗi app một lần |
 | `setup jira` | Space, board, bộ lọc, rồi `jira:check`; in từng chỗ còn lệch | Sau `init` |
 | `setup github` | Nhánh mặc định, Dependabot, environment, secret, ruleset | Ngay sau khi `develop` lên GitHub |
 | `doctor` | Kiểm máy, repo, GitHub, Jira, Claude Code; mỗi dòng kèm việc cần làm | Sau mỗi bước, và khi có gì lạ |

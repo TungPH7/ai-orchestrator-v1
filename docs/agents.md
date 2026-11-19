@@ -118,6 +118,8 @@ Khi có màn hình Figma hay Ảnh, `design.md` có thêm mục **Design System*
 - Có mục "mới", hoặc app chưa có file design system, thì `sa` đặt một Task `fe-dev` "Design system của <app>" lên đầu plan. Task đó đưa token vào code, dựng component dùng chung và viết `docs/design-system/<app>.md`.
 - `check-design` báo lỗi D9 khi thiếu mục này.
 
+Bảng Screens có cột App từ C1: app của màn hình, một khóa của `apps:` trong `project.yaml`. `seo` chỉ viết SEO cho màn hình của app `seo: true`; `design.md` viết trước C1, không có cột này, thì mọi màn hình được tính là có thể cần SEO.
+
 Năm quy tắc:
 
 1. Màn hình đánh mã `S1`, `S2`. Khối đánh `[1]`, `[2]` theo thứ tự đọc, và được trỏ tới bằng mã đầy đủ, ví dụ `S1.4`. Sau khi SPEC được duyệt, số không đổi.

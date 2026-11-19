@@ -54,6 +54,7 @@ import { admitAgent, claimRole, claimsRole, jiraWipStop, liveLocks, releaseAgent
 import { wipHolders } from '../lib/tracker/facts.mjs';
 import { runsAtOnce } from '../lib/workflow/ports.mjs';
 import { hookKitDrift, hookKitNote } from '../lib/workflow/hook-kit.mjs';
+import { seoChange } from '../lib/workflow/seo-commit.mjs';
 
 const COMMANDS = ['status', 'intake', 'preview', 'spec', 'plan', 'request', 'build', 'review', 'fix', 'qa', 'release', 'ship', 'rollback'];
 const USAGE = 'usage: node .ai-orchestrator/scripts/ao-step.mjs <status|intake|preview|spec|plan|request|build|review|fix|qa|release|ship|rollback> [<KEY>|<PR>|<vX.Y.0> <sha>|<vX.Y.Z>|<environment> [<sha>]] [--go] [--answers <file>] [--note <file>] [--change <word>] [--stop] [--retest]';
@@ -281,8 +282,11 @@ async function main() {
   const read = (file) => readFileSync(runsFile(projectDir, file), 'utf8');
   // The dev agent of each app by its profile: /ao-fix gives a blocking finding to the side of its app (kit followups,
   // batch 2; PR #62 of shop, Pilot 3).
-  const appRoles = appRolesOf(existsSync(projectYaml) ? parse(readFileSync(projectYaml, 'utf8'))?.apps : {});
-  const options = { roster, contract, gates, mapping, appRoles, ...(values.answers && { answers: read(values.answers) }), ...(values.note && { note: read(values.note) }), ...(values.change && { change: values.change }), ...(values.retest && { retest: true }), ...(values['light-report'] && { lightReport: read(values['light-report']) }), ...(values.full && { full: true }) };
+  const projectApps = existsSync(projectYaml) ? (parse(readFileSync(projectYaml, 'utf8'))?.apps ?? {}) : {};
+  const appRoles = appRolesOf(projectApps);
+  // The apps whose screens seo writes the SEO of (C1 spec 6.1).
+  const seoApps = Object.entries(projectApps).filter(([, app]) => app?.seo === true).map(([name]) => name);
+  const options = { roster, contract, gates, mapping, appRoles, seoApps, ...(values.answers && { answers: read(values.answers) }), ...(values.note && { note: read(values.note) }), ...(values.change && { change: values.change }), ...(values.retest && { retest: true }), ...(values['light-report'] && { lightReport: read(values['light-report']) }), ...(values.full && { full: true }) };
 
   const facts = await gather();
   // A Java app needs Docker for the tests be-dev and qa run (project-scaffold part 3, spec 2.2).
@@ -333,7 +337,6 @@ async function main() {
     return;
   }
   const lock = taken.file;
-  const projectApps = existsSync(projectYaml) ? (parse(readFileSync(projectYaml, 'utf8'))?.apps ?? {}) : {};
   const sleep = (ms) => new Promise((done) => setTimeout(done, ms));
   try {
     console.log('');
@@ -396,8 +399,12 @@ async function main() {
           if (cap > 1) await releaseAgent(activeDir, lock, { fs: lockFs, alive, sleep });
         }
       },
-      // A defect you reported is checked like a QA run: its evidence goes to the item too (human-loop spec 5.1).
-      after: (run, { tree }) => (['qa', 'qa-defect', 'qa-ops'].includes(run.purpose) ? afterQa(run, tree, { deploys, mapping }) : []),
+      // A defect you reported is checked like a QA run: its evidence goes to the item too (human-loop spec 5.1). seo has
+      // no git: its change is committed here (C1 spec 6.6).
+      after: (run, { tree }) => {
+        if (run.role === 'seo') return afterSeo(run);
+        return ['qa', 'qa-defect', 'qa-ops'].includes(run.purpose) ? afterQa(run, tree, { deploys, mapping }) : [];
+      },
       act: (step) => {
         if (step.action === 'release-pr') return releasePr(step, { repo, settings });
         if (step.action === 'hotfix-ship') return hotfixShip(step, { repo, settings, userToken });
@@ -901,6 +908,26 @@ async function findingsTaskAction({ key, epic, task, pr, findings }, { mapping, 
 
 // After a qa run, before its worktree goes: the evidence to the item with the CI token, which only this session holds,
 // and whether the environment still runs the release qa tested (release-workflow spec 2.5).
+// C1 spec 6.6: seo has no git, so ao-step commits what it changed under docs/specs/, in the project folder where the
+// runs of an Epic and of /ao-request work, with your git; and pushes it when its branch is on GitHub already, as for an
+// open docs PR. A new docs branch goes up with the docs PR ba opens. Resolves the notes of the run, or { notes, stop }.
+function afterSeo(run) {
+  const branch = git('branch', '--show-current').stdout.trim();
+  const change = seoChange({ status: git('status', '--porcelain=v1', '-z', '--untracked-files=all').stdout, branch, key: run.key });
+  if (!change) return [];
+  if (change.stop) return { notes: [], stop: change.stop };
+  const last = (result) => `${result.stderr || result.stdout}`.trim().split('\n').at(-1);
+  const added = git('add', '--', ...change.paths);
+  if (added.status !== 0) return { notes: [], stop: `ao-step could not stage the change of seo on ${branch}: ${last(added)}` };
+  const committed = git('commit', '--quiet', '-m', change.message);
+  if (committed.status !== 0) return { notes: [], stop: `ao-step could not commit the change of seo on ${branch}: ${last(committed)}` };
+  const notes = [`ao-step committed the change of seo on ${branch}: ${change.paths.join(', ')}`];
+  if (git('rev-parse', '--verify', '--quiet', `refs/remotes/origin/${branch}`).status !== 0) return notes;
+  const pushed = git('push', '--quiet', 'origin', branch);
+  if (pushed.status !== 0) return { notes, stop: `ao-step committed the change of seo on ${branch} but could not push it: ${last(pushed)}. Push it yourself, then run the command again` };
+  return [...notes, `ao-step pushed it to origin/${branch}`];
+}
+
 function afterQa(run, tree, { deploys, mapping }) {
   const ciToken = secret('JIRA_CI_TOKEN');
   const jira = ciToken ? createJiraClient({ cloudId: mapping.cloud_id, authorization: bearerAuth(ciToken), write: true }) : null;

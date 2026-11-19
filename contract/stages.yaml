@@ -32,9 +32,9 @@ gates:
 stages:
   - id: spec
     name: "Viết SPEC cho Epic"
-    roles: [ba, ux, sa]
+    roles: [ba, ux, seo, sa]
     lead: ba
-    note: "ux viết design khi Epic đụng tới giao diện"
+    note: "ux viết design khi Epic đụng tới giao diện; seo viết mục SEO của SPEC khi design có màn hình của app seo: true"
     input: "Epic ở new"
     outputs:
       artifacts: [spec, design]
@@ -43,6 +43,7 @@ stages:
     runs:
       - { role: ba, purpose: spec-write, done: spec-written }
       - { role: ux, purpose: design, when: spec-has-screens, done: design-written }
+      - { role: seo, purpose: seo-write, when: spec-has-seo-screens, done: spec-has-seo }
       - { role: sa, purpose: spec-nfr, done: spec-has-nfr }
       - { role: ba, purpose: docs-pr }
   - id: plan

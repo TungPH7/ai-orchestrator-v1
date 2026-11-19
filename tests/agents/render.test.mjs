@@ -74,7 +74,7 @@ test('the contract section: stages, artifacts, GitHub App, files and git (spec 2
   assert.match(reviewer, /^- Files you may write: `\.ai\/\*\*`\. Git: read only \(status, log, show, diff, fetch and the other reading commands\)\.$/m);
   assert.match(body(renderAgent('ux', sources)), /^- GitHub: you have no App, so you do not open or comment on PRs\.$/m);
   assert.match(body(renderAgent('devops', sources)), /^- Files you may write: `\*\*`, but not the protected paths except `\.github\/workflows\/\*\*`\. Git: write\.$/m);
-  assert.match(body(renderAgent('ba', sources)), /^- Stage `spec` \(Viết SPEC cho Epic\), which you lead, with `ux` and `sa`\. Input: Epic ở new\. Output: SPEC của Epic, Thiết kế màn hình\. Passes: gate ① `spec-approval`: Bạn duyệt SPEC của Epic\. Note: ux viết design khi Epic đụng tới giao diện\.$/m);
+  assert.match(body(renderAgent('ba', sources)), /^- Stage `spec` \(Viết SPEC cho Epic\), which you lead, with `ux`, `seo` and `sa`\. Input: Epic ở new\. Output: SPEC của Epic, Thiết kế màn hình\. Passes: gate ① `spec-approval`: Bạn duyệt SPEC của Epic\. Note: ux viết design khi Epic đụng tới giao diện; seo viết mục SEO của SPEC khi design có màn hình của app seo: true\.$/m);
   assert.match(body(renderAgent('fe-dev', sources)), /^- Jira: read, edit, comment, transition\.$/m);
 });
 

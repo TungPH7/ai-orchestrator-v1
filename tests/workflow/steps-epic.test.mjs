@@ -287,3 +287,53 @@ test('/ao-plan at gate ② names the new libraries of the plan', () => {
   assert.ok(decision.lines.includes('New libraries of the plan: npm argon2@0.44.0, maven org.mapstruct:mapstruct@1.6.3. Check each before you approve: node .ai-orchestrator/scripts/dep-check.mjs <npm|maven> <name>@<version> --dry-run'));
   assert.ok(!decide('plan', epicFacts('planning', { docs: { pr: openPr(), plan: PLAN }, item: { children } })).lines.some((line) => line.startsWith('New libraries')));
 });
+
+// C1 spec 6.1, 6.2: seo writes the SEO of the screens of an app with seo: true, between ux and sa.
+const SEO_DESIGN = '# Design: Trang chủ\n\n## Screens\n\n| Code | Name | Route | User story | Kind | App |\n|---|---|---|---|---|---|\n| S1 | Trang chủ | / | x | ASCII | user |\n| S2 | Sản phẩm | /admin | y | ASCII | admin |\n\n## Open Questions\n\nKhông còn câu hỏi mở.\n';
+const ADMIN_DESIGN = SEO_DESIGN.replace('| S1 | Trang chủ | / | x | ASCII | user |\n', '');
+const seoOptions = (note) => ({ seoApps: ['user'], ...(note && { note }) });
+
+test('/ao-spec runs seo after ux for a screen of an app with seo: true; no app with seo: true, no seo', () => {
+  const decision = decide('spec', epicFacts('specifying', { docs: { spec: SPEC, design: SEO_DESIGN } }), seoOptions());
+  assert.deepEqual(plan(decision), ['seo seo-write', 'sa spec-nfr', 'ba docs-pr']);
+  assert.equal(decision.runs[0].prompt, PURPOSES['seo-write']({ key: 'DEMO-20', branch: BRANCH }));
+  assert.match(decision.runs[0].prompt, /You have no git: ao-step commits your change after your run\./);
+  assert.deepEqual(decision.runs[0].checkout, CHECKOUT);
+  assert.deepEqual(plan(decide('spec', epicFacts('specifying', { docs: { spec: null } }), seoOptions())), ['ba spec-write', 'ux design (when the SPEC has screens)', 'seo seo-write (when design.md has screens of an app with seo: true)', 'sa spec-nfr', 'ba docs-pr']);
+  assert.deepEqual(plan(decide('spec', epicFacts('specifying', { docs: { spec: SPEC, design: SEO_DESIGN } }))), ['sa spec-nfr', 'ba docs-pr']);
+  assert.deepEqual(plan(decide('spec', epicFacts('specifying', { docs: { spec: SPEC, design: ADMIN_DESIGN } }), seoOptions())), ['sa spec-nfr', 'ba docs-pr']);
+});
+
+test('/ao-spec <EPIC> seo says why seo does not run when design.md has no screen of an app with seo: true', () => {
+  const decision = decide('spec', epicFacts('specifying', { docs: { spec: SPEC, design: ADMIN_DESIGN } }), seoOptions('seo'));
+  assert.deepEqual(plan(decision), ['sa spec-nfr', 'ba docs-pr']);
+  assert.ok(decision.lines.includes('seo does not run: design.md has no screen of user, the apps with seo: true'));
+  assert.ok(decide('spec', epicFacts('specifying', { docs: { spec: SPEC, design: SEO_DESIGN } }), { note: 'seo' }).lines.includes('seo does not run: no app of .ai-orchestrator/project.yaml has seo: true'));
+});
+
+test('/ao-spec <EPIC> no-seo: ba writes "SEO: không" with the SPEC, or once in a SPEC already written, and seo does not run', () => {
+  const first = decide('spec', epicFacts('specifying', { docs: { spec: null } }), seoOptions('no-seo trang nội bộ'));
+  assert.equal(first.runs[0].purpose, 'spec-write');
+  assert.match(first.runs[0].prompt, /write in the SPEC, just before its Open Questions, the one line "SEO: không, vì trang nội bộ"/);
+  assert.ok(!plan(first).some((run) => run.startsWith('seo')));
+  assert.match(decide('spec', epicFacts('specifying', { docs: { spec: null } }), seoOptions('no-seo')).runs[0].prompt, /"SEO: không, vì bạn chọn `no-seo`"/);
+
+  const written = decide('spec', epicFacts('specifying', { docs: { spec: SPEC, design: SEO_DESIGN } }), seoOptions('no-seo'));
+  assert.deepEqual(plan(written), ['ba spec-revise', 'sa spec-nfr', 'ba docs-pr']);
+  assert.match(written.runs[0].prompt, /đúng một dòng "SEO: không, vì bạn chọn `no-seo`", và bỏ mục ## SEO nếu SPEC có/);
+  assert.ok(written.lines.includes('seo is off for this Epic, as you asked: ba writes "SEO: không, vì bạn chọn `no-seo`" in the SPEC'));
+  // Once the line is there, no word keeps seo off.
+  const off = SPEC.replace('## Open Questions', 'SEO: không, vì bạn chọn `no-seo`\n\n## Open Questions');
+  assert.deepEqual(plan(decide('spec', epicFacts('specifying', { docs: { spec: off, design: SEO_DESIGN } }), seoOptions())), ['sa spec-nfr', 'ba docs-pr']);
+});
+
+test('/ao-spec <EPIC> seo turns it back on over "SEO: không", and on an open docs PR seo writes its section now', () => {
+  const off = WITH_NFR.replace('## Open Questions', 'SEO: không, vì bạn chọn `no-seo`\n\n## Open Questions');
+  const again = decide('spec', epicFacts('specifying', { docs: { spec: off, design: SEO_DESIGN } }), seoOptions('seo'));
+  assert.deepEqual(plan(again), ['seo seo-write', 'ba docs-pr']);
+  assert.match(again.runs[0].prompt, /The SPEC has a line "SEO: không" from an earlier run: the human now asks for SEO, so remove that line\./);
+  const open = decide('spec', epicFacts('specifying', { docs: { spec: WITH_NFR, design: SEO_DESIGN, pr: openPr() } }), seoOptions('seo'));
+  assert.deepEqual(plan(open), ['seo seo-write']);
+  // Without the word, an open docs PR waits for you at gate ①.
+  assert.equal(decide('spec', epicFacts('specifying', { docs: { spec: WITH_NFR, design: SEO_DESIGN, pr: openPr() } }), seoOptions()).go, false);
+});

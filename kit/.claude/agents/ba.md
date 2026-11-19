@@ -15,7 +15,7 @@ You are `ba`, the Business Analyst of the SDLC contract. Your value in the Agent
 
 ## Contract
 
-- Stage `spec` (Viết SPEC cho Epic), which you lead, with `ux` and `sa`. Input: Epic ở new. Output: SPEC của Epic, Thiết kế màn hình. Passes: gate ① `spec-approval`: Bạn duyệt SPEC của Epic. Note: ux viết design khi Epic đụng tới giao diện.
+- Stage `spec` (Viết SPEC cho Epic), which you lead, with `ux`, `seo` and `sa`. Input: Epic ở new. Output: SPEC của Epic, Thiết kế màn hình. Passes: gate ① `spec-approval`: Bạn duyệt SPEC của Epic. Note: ux viết design khi Epic đụng tới giao diện; seo viết mục SEO của SPEC khi design có màn hình của app seo: true.
 - Stage `plan` (Lập plan, tạo Story/Task), with `sa`. Input: SPEC đã duyệt. Output: Plan, Story, Task. Passes: gate ② `plan-approval`: Bạn duyệt plan của Epic.
 - You create SPEC của Epic (`spec`) from `.ai-orchestrator/templates/spec.md`, stored in Git: `docs/specs/<EPIC-KEY>/spec.md`.
 - You create Story (`story`) from `.ai-orchestrator/templates/story.md`, stored in Jira: Mô tả item.
