@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { ACCEPT_MAX_DAYS, PLACEHOLDERS, PR_SECTIONS, acceptedRisks, checkPullRequest, checkReviewHeader, findingId, openCounts, openFindings, readReviewReport, SEVERITIES, stillBlocking } from '../../lib/quality/pull-request.mjs';
+import { ACCEPT_MAX_DAYS, PLACEHOLDERS, PR_SECTIONS, acceptedRisks, checkPullRequest, checkReviewHeader, findingCounts, findingId, openCounts, openFindings, readReviewReport, SEVERITIES, stillBlocking } from '../../lib/quality/pull-request.mjs';
 import { ROOT } from '../helpers/kit.mjs';
 
 const template = readFileSync(join(ROOT, 'templates', 'pull-request.md'), 'utf8');
@@ -229,4 +229,27 @@ test('a High you accept no longer blocks; a Critical always does, and an accepta
   const accepted = new Map([[findingId(HIGH), {}], [findingId(critical), {}]]);
   assert.deepEqual(stillBlocking([HIGH, critical, other], accepted), [critical, other]);
   assert.deepEqual(stillBlocking([HIGH], new Map()), [HIGH]);
+});
+
+// C1 spec 4.2: a Medium says how to reproduce it, or it counts as Low.
+test('a Medium with a Tái hiện or Repro line stays Medium; without one it counts as Low, and the report says which', () => {
+  const rows = [
+    '| Medium | Correctness | cart.ts:12 | Giỏ rỗng làm hỏng tổng. Tái hiện: giỏ có 0 sản phẩm, bấm Thanh toán → API trả 500 | Trả 400 |',
+    '| Medium | Data | order.ts:4 | Không giới hạn số lượng | Repro: quantity 10^9 → tràn số |',
+    '| Medium | Tests | cart.test.ts:1 | Thiếu test cho giỏ rỗng | Thêm test |',
+    '| Low | Readability | a.ts:2 | Tên biến | Đổi tên |',
+  ];
+  const read = readReviewReport(report(`${TABLE}${rows.join('\n')}\n`), ROLES);
+  assert.equal(read.ok, true);
+  assert.deepEqual(read.findings.map(({ severity, where }) => `${severity} ${where}`), ['Medium cart.ts:12', 'Medium order.ts:4', 'Low cart.test.ts:1', 'Low a.ts:2']);
+  assert.deepEqual(read.downgraded.map(({ where, asked }) => `${where} ${asked}`), ['cart.test.ts:1 Medium']);
+  assert.deepEqual(read.blocking, [], 'neither blocks the merge');
+  assert.deepEqual(findingCounts(read), { Critical: 0, High: 0, Medium: 2, Low: 2, downgraded: 1 });
+  assert.deepEqual(findingCounts(null), { Critical: 0, High: 0, Medium: 0, Low: 0, downgraded: 0 });
+});
+
+test('the review template says how a Medium reproduces, and has the criteria table', () => {
+  const text = readFileSync(join(ROOT, 'templates', 'review-report.md'), 'utf8');
+  assert.match(text, /Tái hiện:/);
+  assert.match(text, /\| Axis \| High \| Medium \| Low \|/);
 });
