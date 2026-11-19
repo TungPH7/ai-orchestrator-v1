@@ -29781,3 +29781,63 @@ Về câu hỏi mới, bạn nói đúng: chữ trên trang công khai cũng ph�
 **Chi phí:** hai skill cộng lại khoảng 3.000 token cho mỗi lượt `seo`, mà `seo` chỉ chạy một lần cho mỗi Epic có trang công khai.
 
 Bạn chọn xong ba điểm (thêm `seo-content-brief` hay không, nguồn từ khóa, ai viết chữ), mình mới sửa spec.
+
+# Phiên 33 · Lượt 81 — 2026-11-19
+
+**Bạn:** "đồng ý thêm seo-content-brief, seo viết chữ.
+
+từ khóa cần thảo luận thêm:
+SEO Specialist của agency-agents, hay các skill của repo agent-skills, superpowers có dùng WebFetch, WebSearch không?"
+
+Rồi, trong lúc Claude đang tra: "Chỗ vướng: bước 2 và 3 => Clone lại skill đó rồi viết lại cho phù hợp với ao kit là được mà nhỉ? Mắc gì dùng skill đó rồi phải ghi đè lại? Tôi thấy clone lại rồi bỏ các bước không phù hợp là ok mà? Mà thảo luận thêm nhé nói rõ"
+
+**Claude:**
+
+Mình ghi nhận hai điểm bạn duyệt: thêm `seo-content-brief`, và `seo` viết chữ thật. Mình chưa sửa spec; bàn xong phần từ khóa thì sửa một lần.
+
+## 1. Chép rồi viết lại `seo-content-brief`: bạn đúng
+
+Với skill này, chép về rồi viết lại tốt hơn là để nguyên rồi ghi đè.
+
+- **Vì sao mình đề xuất ghi đè:** kit đang làm vậy với mọi skill của bên khác. Skill được chép nguyên văn, ghim theo commit, và `npm run skills:vendor` cập nhật lại khi cần. Prompt của `qa` chỉ ghi đè vài dòng của `playwright-cli`, như chỗ lưu ảnh chụp.
+- **Vì sao cách đó không hợp ở đây:** phần không hợp không phải vài dòng mà là nhiều mục:
+  - bước 2 và 3 (tải trang, tải sitemap, phân tích 5 trang đứng đầu Google);
+  - chế độ Improve (tải trang đang có);
+  - bảng chấm điểm đối thủ và mục khoảng trống so với đối thủ;
+  - hai mục nối DataForSEO và Ahrefs.
+
+  Để nguyên rồi ghi đè thì lượt nào agent cũng đọc hết các mục đó, vừa tốn token vừa dễ làm theo nhầm.
+- **Cách làm:** chép vào kit thành skill của chính kit, như các skill `ao-*`, không nằm trong danh sách chép nguyên văn.
+  - **Giữ:** ý định tìm kiếm, dàn ý H1/H2/H3, chỗ đặt từ khóa, quy tắc thẻ meta, E-E-A-T, liên kết nội bộ, mẫu theo loại trang.
+  - **Bỏ:** các mục kể trên.
+  - **Thêm:** ghi kết quả vào mục `## SEO` của SPEC, viết chữ thật bằng `vi` và `en`, lấy từ khóa từ nguồn mà bạn chọn ở mục 3.
+- **Cái giá:** kit tự giữ bản này. Khi claude-seo sửa skill gốc, `npm run skills:vendor` không tự cập nhật. Đầu file sẽ ghi repo, commit gốc và giấy phép MIT, kèm bản quyền của tác giả skill (puneetindersingh), để sau này so với bản mới bằng tay.
+- **`nextjs-seo` vẫn chép nguyên văn,** vì cả skill đều dùng được.
+
+## 2. Ai dùng WebFetch, WebSearch
+
+1. **SEO Specialist của agency-agents: có.** Đầu file khai `tools: WebFetch, WebSearch, Read, Write, Edit`. Nhưng phần chính của nó dựa vào số liệu mà hai công cụ này không đưa được:
+   - Search Console được nhắc 13 lần;
+   - bảng từ khóa có cột lượt tìm (Volume) và độ khó (KD);
+   - luật "No Guesswork": chọn từ khóa theo lượt tìm thật.
+
+   Trong agency-agents có 16 agent khai WebFetch hay WebSearch.
+2. **agent-skills: chỉ một skill dùng web,** là `source-driven-development` (bước 2 "Fetch Official Documentation", kèm hook lưu đệm cho WebFetch). Kit không dùng skill này. 17 skill mà kit đang chép về đều không cần web.
+3. **superpowers (bản v7.0.1 ở máy): không skill nào dùng WebFetch hay WebSearch.** Chữ "web search" chỉ có trong bảng đổi tên công cụ khi chạy superpowers trên Gemini, OpenCode và các công cụ khác.
+
+## 3. Từ khóa: điều đó có nghĩa gì
+
+- **WebSearch cho được gì:** trang nào đang đứng đầu một từ khóa, đó là loại trang gì (danh mục, bài viết, so sánh), và tiêu đề của đối thủ. Như vậy đủ để biết ý định tìm kiếm và dựng dàn ý; đó chính là bước 3 của skill gốc.
+- **WebSearch không cho được gì:** lượt tìm mỗi tháng. SEO Specialist cũng phải lấy số này từ Search Console.
+- **Vì sao kit cấm web cho agent:** nội dung trên web có thể chứa lệnh chèn vào agent (prompt injection), mà agent của kit có Bash, push được git và ghi được Jira.
+
+**Đề xuất mới,** thay cho cách (b) ở lượt trước: cho riêng `seo` dùng WebSearch và WebFetch, đổi lại `seo` bị bớt quyền:
+- không có Bash, không có git;
+- chỉ ghi được `docs/specs/**`;
+- Jira chỉ đọc.
+
+Nếu một trang web có lệnh chèn, tệ nhất là `seo` viết sai chữ trong SPEC, và bạn đọc SPEC ở cổng ①. Bước sau, `sa`, sẽ commit file của `seo`.
+
+**Lượt tìm:** `seo` ghi "chưa có số liệu" cho từng từ khóa. Muốn có số thì bạn lấy từ Google Keyword Planner rồi ghi vào Epic trước `/ao-spec`; khi có số, `seo` dùng số đó.
+
+Bạn có đồng ý mở WebSearch và WebFetch cho riêng `seo` theo cách này không?
