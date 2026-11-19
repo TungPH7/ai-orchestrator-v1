@@ -169,7 +169,9 @@ Các mục này không tốn token agent, nhưng làm item bị kẹt, và phiê
 13. **Chi phí âm ở lượt bị dừng khi đang chạy tiếp một phiên.**
 14. **Task vận hành không có PR**, gộp với **Task dữ liệu của `devops`**. Phần cho `devops` nhận basic auth cần bạn bật.
 
-    **Chờ bạn quyết (2026-11-19):** mục này đổi hợp đồng SDLC và workflow trên Jira, nên chưa nằm trong kit PR #309. Đề xuất:
+    **Xong 2026-11-19: kit PR #311, merge `7254716`** (bạn duyệt ở Lượt 71). Còn việc của bạn: bấm thêm transition Hand over trên Jira, rồi chạy `jira:check`.
+
+    **Đề xuất đã duyệt (Lượt 71):** mục này đổi hợp đồng SDLC và workflow trên Jira, nên chưa nằm trong kit PR #309. Đề xuất:
     - **Nhận diện:** một Task có nhãn `ao-ops` là Task vận hành. `ba` gắn nhãn này khi việc không có commit, như thêm dữ liệu qua API.
     - **Đường đi:**
       1. `devops` làm việc, rồi ghi bằng chứng vào comment trên item.
@@ -190,7 +192,7 @@ Các mục này không tốn token agent, nhưng làm item bị kẹt, và phiê
 - **Review kit một lần ở repo kit** ([review-kit-o-dau.md](../misc/thao-luan/review-kit-o-dau.md)). Đây là khoản tiết kiệm lớn: ba lần chép kit trong Pilot 3 tốn 95 USD. Trong lúc chờ, cứ gom nhiều bản sửa kit vào một lần chép.
 - **Kit ghi đè job CI riêng của dự án** và **Dự án không có chỗ cho ngoại lệ audit riêng.**
 - **`/ao-preview` không chạy được khi bật làn.**
-- **`profiles:check` đỏ ở bước `build` của app Next.js.** Cần kiểm sớm xem có phải lỗ hổng của bản `next` không. Nếu phải, mục này lên Đợt 3.
+- **(Xong 2026-11-19, kit PR #310)** **`profiles:check` đỏ ở bước `build` của app Next.js.** Nguyên nhân là hai advisory Medium của `next` 16.4.3; đã nâng lên 16.4.6. Cần kiểm sớm xem có phải lỗ hổng của bản `next` không. Nếu phải, mục này lên Đợt 3.
 
 ## Không phải việc của kit
 
