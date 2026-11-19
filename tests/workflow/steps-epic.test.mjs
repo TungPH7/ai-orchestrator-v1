@@ -277,3 +277,13 @@ test('/ao-status of an Epic: the cost per AC, with runs of unknown cost counted 
   const space = decide('status', epicFacts('planning', { command: 'status' }));
   assert.ok(!space.lines.some((line) => line.startsWith('Cost of')), 'only with the runs of the items, which /ao-status <Epic> reads');
 });
+
+// C1 spec section 5: at gate ②, the new libraries of the plan, to check with dep-check before you approve them.
+test('/ao-plan at gate ② names the new libraries of the plan', () => {
+  const withLibraries = PLAN.replace('## Open Questions', '## New Libraries\n\n- npm argon2@0.44.0: băm mật khẩu\n- maven org.mapstruct:mapstruct@1.6.3: map DTO\n\n## Open Questions');
+  const children = [{ key: 'DEMO-21', state: 'new', effort: null }];
+  const decision = decide('plan', epicFacts('planning', { docs: { pr: openPr(), plan: withLibraries }, item: { children } }));
+  assert.match(decision.reason, /gate ② plan-approval/);
+  assert.ok(decision.lines.includes('New libraries of the plan: npm argon2@0.44.0, maven org.mapstruct:mapstruct@1.6.3. Check each before you approve: node .ai-orchestrator/scripts/dep-check.mjs <npm|maven> <name>@<version> --dry-run'));
+  assert.ok(!decide('plan', epicFacts('planning', { docs: { pr: openPr(), plan: PLAN }, item: { children } })).lines.some((line) => line.startsWith('New libraries')));
+});

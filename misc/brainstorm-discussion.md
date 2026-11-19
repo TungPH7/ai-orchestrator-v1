@@ -30234,3 +30234,55 @@ Tiền đề 1 và 2 cần một lượt agent thử ở `ao-pilot`, tốn dư�
 ## Chờ bạn
 
 Bạn đọc `tasks/c1/plan.md` và duyệt plan. Khi bạn duyệt, mình mở PR tài liệu (T1) rồi làm ba tiền đề (T2).
+
+# Phiên 33 · Lượt 88–89 — 2026-11-19 đến 2026-11-20
+
+**Bạn (Lượt 88):** "duyệt, làm đi nhé"
+
+**Bạn (Lượt 89, sau khi hết rồi có lại usage):** "phiên chính đang làm tới T nào trong D:\Document\1Khoahoc\4LapTrinh\AI-for-coding\ai-orchestrator\tasks\c1\plan.md rồi?"
+
+**Claude:**
+
+Lúc bạn hỏi, phiên chính đang làm T10 (QA theo mức) của bước 4. Từ đó tới giờ mình làm tiếp, và đã tới **Checkpoint 3** của plan: bước 1–5, tức toàn bộ phần tiết kiệm token, đã merge vào `main` của kit. Cả bộ test xanh, 1.643 test.
+
+## Đã xong
+
+| Task | Nội dung | Kit PR |
+|---|---|---|
+| T1 | Spec và plan đã duyệt vào `main` | #313 |
+| T2 | Ba tiền đề: WebSearch, WebFetch và Jira chạy được trong lượt agent không có Bash (0,17 USD) | không có code |
+| T3–T4 | Thứ tự chạy của agent nằm trong `contract/stages.yaml`; so 448 quyết định trước và sau: 0 khác biệt | #314 |
+| T5–T6 | Bảng tiêu chí mức finding; Medium thiếu dòng "Tái hiện:" bị tính là Low; luật dừng vòng sửa; `/ao-status <Epic>` in USD trên mỗi AC | #315 |
+| T7–T8 | Ba tầng đường dẫn; `reviewer` mặc định `high`; `security` không chạy trên PR tầng Thường; `merge-gate` và `audit` đòi báo cáo theo tầng | #316 |
+| T9–T11 | Mức Nhẹ, Chuẩn, Nặng; QA theo mức; Task finding của Epic | #317 |
+| T12 | Miễn review theo luật cho tài liệu của item Nhẹ, có dấu vết; `merge-gate` và `audit` tự tính lại | #318 |
+
+## Ba chỗ mình tự quyết khi làm, bạn xem lại giúp
+
+1. **QA FAIL không tự nâng mức** (đã ghi vào spec mục 2). Spec ghi "review hay QA tìm ra Critical hoặc High thì mức tăng một bậc". Nhưng:
+   - báo cáo QA không ghi mức cho lỗi;
+   - nếu mỗi lần QA FAIL đẩy item Chuẩn lên Nặng, thì luật "QA lại ở mức Chuẩn chỉ kiểm tiêu chí đã FAIL" không bao giờ dùng tới.
+
+   Nên chỉ finding Critical hay High của review mới nâng mức.
+2. **Role mới `light-qa`** (đã ghi vào spec mục 2). Item Nhẹ không có lượt `qa`: phiên chính kiểm, rồi chuyển item và đăng báo cáo bằng token CI. Ban đầu mình cho `automation` làm Pick up và QA fail. Test bắt ra rằng khi đó `jira-sync` sẽ tự kéo mọi item Ready for QA sang In QA, vì nó tự chạy mọi transition của `automation`. Nên mình tách thành role `light-qa`: cùng token CI, cùng group `ao-automation`, nhưng `jira-sync` không tự chạy.
+3. **Hoãn khóa `review: off`** cho repo nháp (một phần của T12). Muốn làm, `merge-gate` và `audit` phải đọc `project.yaml` của nhánh base. Hiện chưa có repo nháp nào cần, và khóa này làm yếu review. Mình ghi nó lại để làm khi có repo nháp đầu tiên.
+
+## Việc của bạn trên Jira (chưa gấp)
+
+Phần QA cho item Nhẹ cần token CI được làm hai transition. Bạn làm khi rảnh; trước lần chép kit vào `shop` (T20) là được:
+1. Trên Jira, bấm bánh răng ⚙ ở góc trên bên phải. Trong **Jira admin settings**, ô **Switch settings** chọn **Work items**.
+2. Menu bên trái: **Workflows** → tìm **AO standard** → **•••** → **Edit**.
+3. Bấm vào nhãn transition **Pick up** trên sơ đồ. Khung **Transition** hiện ở bên phải.
+4. Trong nhóm **Restrict transition**, mở rule **Restrict who can move a work item** đang có (đang chỉ có group **ao-agents**), thêm group **ao-automation**, rồi lưu rule (đối chiếu giao diện: nút có thể là **Update** hay **Save**).
+5. Làm y như bước 3–4 với transition **QA fail**.
+6. Lưu workflow (đối chiếu giao diện: nút **Update workflow** hay **Publish**).
+
+Sau đó mình chạy `jira:check` để kiểm.
+
+## Còn lại
+
+- Bước 6: duyệt thư viện trước khi cài (T13–T14).
+- Bước 7–9: role `seo`, skill của `seo`, nhãn `ao-seo` (T15–T18).
+- Bước 10: chỗ nối `ci.project.yml` (T19). Rồi tới Checkpoint 4: mình hỏi bạn trước khi chép kit vào `shop`, vì từ đó bắt đầu tốn tiền.
+
+Bạn gõ "làm tiếp" thì mình làm bước 6.

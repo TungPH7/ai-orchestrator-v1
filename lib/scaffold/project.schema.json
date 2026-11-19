@@ -67,6 +67,40 @@
       "propertyNames": { "pattern": "^[a-z][a-z0-9-]*$" },
       "additionalProperties": { "$ref": "#/$defs/app" }
     },
+    "dependencies": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "approved": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["ecosystem", "name", "range", "by", "on"],
+            "additionalProperties": false,
+            "properties": {
+              "ecosystem": { "enum": ["npm", "maven"] },
+              "name": { "type": "string", "minLength": 1 },
+              "range": { "type": "string", "minLength": 1 },
+              "by": { "type": "string", "minLength": 1 },
+              "on": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" }
+            }
+          }
+        },
+        "exceptions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["advisory", "reason", "expires"],
+            "additionalProperties": false,
+            "properties": {
+              "advisory": { "type": "string", "pattern": "^GHSA(-[23456789cfghjmpqrvwx]{4}){3}$" },
+              "reason": { "type": "string", "minLength": 1 },
+              "expires": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" }
+            }
+          }
+        }
+      }
+    },
     "roles": {
       "type": "object",
       "additionalProperties": false,

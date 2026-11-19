@@ -48,10 +48,40 @@ Job summary có mục **Policy**. Mỗi dòng là một phần kiểm: ✅ là �
 | Conventions | Tên nhánh, header của một commit trong PR, hoặc tiêu đề PR sai quy ước. Nhánh `feature/` chỉ vào `develop`; `bugfix/` vào `develop` hoặc `release/*`; `hotfix/` vào `main` | Sai tên nhánh thì mở PR mới từ nhánh đúng tên. Sai header thì viết lại commit rồi force push lên nhánh của PR. Sai tiêu đề thì sửa bằng `ao-pr.mjs edit` |
 | Suppressions | Dòng thêm vào có mẫu tắt kiểm tra (`eslint-disable`, `oxlint-disable`, `@ts-ignore`, `.skip(`, `nosemgrep`, `gitleaks:allow`…; với Java: `@SuppressWarnings`, `NOSONAR`, `@Disabled`, `CHECKSTYLE:OFF`, `spotless:off`, `@SuppressFBWarnings`, `NOPMD`, `@Generated`) mà không ghi `reason: <lý do>` trên cùng dòng; hoặc có `.only(` | Sửa lỗi thay vì tắt kiểm tra. Nếu thật sự phải tắt, ghi `reason:` trên cùng dòng để reviewer đọc. `.only(` luôn đỏ, nên phải xóa |
 | Thresholds | PR hạ một ngưỡng trong `quality/gates.yaml`, ví dụ `changed_lines_min` | Trả ngưỡng về như cũ. Hạ ngưỡng là quyết định của bạn, và file này được bảo vệ, nên PR đó do bạn merge |
-| Dependencies | `npm audit`, hay `pnpm audit` với dự án pnpm, thấy lỗ hổng high hoặc critical không nằm trong danh sách ngoại lệ còn hạn | Cập nhật dependency. Nếu chưa có bản vá, thêm một ngoại lệ có hạn vào `dependencies.exceptions`, gồm mã advisory, lý do và ngày hết hạn. Đây cũng là file được bảo vệ, nên bạn quyết định và tự merge |
+| Dependencies | `npm audit`, hay `pnpm audit` với dự án pnpm, thấy lỗ hổng high hoặc critical không nằm trong danh sách ngoại lệ còn hạn | Cập nhật dependency. Nếu chưa có bản vá, thêm một ngoại lệ có hạn vào `dependencies.exceptions` của `.ai-orchestrator/project.yaml`, gồm mã advisory, lý do và ngày hết hạn. Từ C1, ngoại lệ của dự án nằm ở đó: lần chép kit không xóa nó, như từng xóa ngoại lệ picomatch của `shop` ở SHOP-74. File này được bảo vệ, nên bạn quyết định và tự merge |
+| New dependencies | PR thêm một dependency trực tiếp vào `package.json` hay `pom.xml` mà `dependencies.approved` của `project.yaml` chưa có. Đổi phiên bản của dependency đã có thì không tính | Chạy `dep-check` cho thư viện đó (mục Duyệt thư viện trước khi cài, ngay dưới) |
 | Java dependencies | Với mỗi `apps/*/pom.xml`: `osv-scanner` (v2.7.0, ghim và kiểm SHA-256, đọc Maven Central như Maven, gồm dependency bắc cầu) thấy nhóm advisory từ 7,0 điểm CVSS trở lên, ngoài danh sách ngoại lệ còn hạn. Advisory chưa có điểm được tính là high. Trên PR, chỉ quét `pom.xml` của app mà PR có đổi file; lần push lên nhánh gốc quét tất cả. Lần quét lỗi (không tới được Maven Central) được thử lại hai lần, cách 10 giây | Như dòng trên. Ngoại lệ ghi mã GHSA hay CVE của nhóm. Với Spring Boot, thường chỉ cần nâng bản của parent `spring-boot-starter-parent` |
 
 Dòng ℹ️ chỉ để báo, không làm job đỏ. Ví dụ `test file deleted: <file>` nhắc reviewer xem vì sao file test bị xóa. Khi push mà không có PR, `policy` chỉ chạy audit của npm hay pnpm.
+
+### Duyệt thư viện trước khi cài
+
+Từ C1 ([SPEC-c1.md](../SPEC-c1.md) mục 5), một thư viện mới phải được duyệt trước khi cài. Danh sách đã duyệt nằm ở `dependencies.approved` của `.ai-orchestrator/project.yaml`:
+
+```yaml
+dependencies:
+  approved:
+    - { ecosystem: npm, name: zod, range: ^4.6.6, by: dep-check, on: 2026-11-20 }
+  exceptions: []
+```
+
+- **Kiểm một thư viện:** `node .ai-orchestrator/scripts/dep-check.mjs <npm|maven> <tên>@<phiên bản>`. Lệnh kiểm:
+  - lỗ hổng đã biết trên OSV;
+  - giấy phép, so với `dependencies.licenses` của `quality/gates.yaml`;
+  - tuổi, ít nhất 14 ngày;
+  - lượt tải tuần trước và người duy trì (npm);
+  - script chạy lúc cài (npm);
+  - provenance của npm.
+
+  Không đọc được một phần kiểm nào thì kết quả là đáng ngờ, không bao giờ là đạt.
+- **Đạt:** lệnh ghi thư viện vào `approved`, kèm `by: dep-check`. Dev agent cài thư viện và commit dòng đó cùng code. PR đó chạm đường dẫn được bảo vệ, nên bạn là người merge.
+- **Đáng ngờ:** lệnh không ghi gì. Dev agent comment `Cần security:` trên item, gắn cờ Needs you và dừng. `/ao-request <KEY>` chạy `security` ở `high` chỉ cho thư viện đó; nó comment đề xuất duyệt hay không. Muốn duyệt, bạn tự thêm dòng vào `approved`.
+- **Ở plan:** `plan.md` có mục "New Libraries". Ở gate ②, `/ao-plan` in danh sách đó, và phiên chính chạy `dep-check --dry-run` cho từng thư viện để báo bạn, không ghi gì. Lúc build, dev agent chạy `dep-check` thật.
+- **Chặn:**
+  - gh-guard từ chối `pnpm add`, `npm install <gói>`, `yarn add`, `mvn dependency:get -Dartifact=…` khi gói chưa có trong `approved`, và từ chối cài từ đường dẫn, URL hay git;
+  - gh-guard cũng từ chối Edit và Write thêm dependency chưa duyệt vào `pom.xml` hay `package.json`;
+  - job `policy` đỏ ở phần New dependencies.
+  - `pnpm install` và `npm ci` theo lockfile thì luôn được.
 
 ### `build-test`
 

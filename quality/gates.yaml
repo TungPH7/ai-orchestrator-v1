@@ -21,9 +21,12 @@ coverage:
   exclude: ["**/*.{test,spec}.*", "**/*.e2e-spec.*", "**/*.d.ts", "**/*.config.*", "**/migrations/**", "{,apps/*/}e2e/**", "{,apps/*/}scripts/**", ".ai-orchestrator/**", ".claude/**"]
 
 # npm audit fails on this level and above. An exception names a GitHub advisory, why it is accepted, and when it ends.
+# A project keeps its own exceptions in dependencies.exceptions of its project.yaml, which a kit copy leaves alone; the
+# policy job reads both (C1 spec section 5). licenses: the SPDX ids dep-check accepts for a new library.
 dependencies:
   audit_level: high
   exceptions: []
+  licenses: [MIT, MIT-0, ISC, Apache-2.0, BSD-2-Clause, BSD-3-Clause, 0BSD, Unlicense, CC0-1.0, BlueOak-1.0.0, MPL-2.0, EPL-2.0, Python-2.0]
 
 # Lines that switch a check off. A line that also carries the reason marker passes, so the reviewer can read why;
 # a `never` pattern fails even with a reason.

@@ -1,6 +1,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { readContract } from '../../lib/contract.mjs';
 import { checkAgentCall } from '../../lib/quality/commands.mjs';
@@ -745,4 +747,44 @@ test('no agent copies or deletes a tree that holds node_modules, or the whole ap
   ]) {
     allowed(bash(command, 'ux'), command);
   }
+});
+
+// C1 spec section 5: an agent installs a library, or writes it into a pom.xml or a package.json, only once it is on
+// dependencies.approved of project.yaml.
+test('an install of a library not approved is refused; an approved one, or the lockfile, is not', () => {
+  const approved = () => [{ ecosystem: 'npm', name: 'zod', range: '^4.6.6', by: 'dep-check', on: '2026-11-20' }, { ecosystem: 'maven', name: 'org.mapstruct:mapstruct', range: '1.6.3', by: 'plan', on: '2026-11-20' }];
+  const run = (command) => checkAgentCall({ agent_type: 'fe-dev', tool_name: 'Bash', tool_input: { command } }, { gates, contract, projectDir: PROJECT, tempDir: TEMP, approved });
+  for (const command of ['pnpm add left-pad', 'pnpm -F web add zod left-pad@1', 'cd apps/web && npm i -D left-pad', 'npm.cmd install left-pad', 'mvn dependency:get -Dartifact=com.acme:evil:1.0']) {
+    denied(run(command), /left-pad|com\.acme:evil/, command);
+  }
+  denied(run('pnpm add ../vendor/lib'), /no package of the registry/, 'a path');
+  denied(run('npm install git+https://github.com/x/y'), /no package of the registry/, 'git');
+  for (const command of ['pnpm add zod@4.6.6', 'pnpm --filter web add zod', 'pnpm install', 'npm ci', 'pnpm install --frozen-lockfile', 'mvn dependency:get -Dartifact=org.mapstruct:mapstruct:1.6.3', 'node .ai-orchestrator/scripts/dep-check.mjs npm left-pad@1.3.0']) {
+    allowed(run(command), command);
+  }
+  allowed(bash('pnpm add left-pad'), 'without a project.yaml, as in the kit repo, nothing is checked');
+});
+
+test('a dependency written into a pom.xml or a package.json must be approved too', () => {
+  const approved = () => [{ ecosystem: 'maven', name: 'org.mapstruct:mapstruct', range: '1.6.3', by: 'plan', on: '2026-11-20' }];
+  const dep = (g, a) => `<dependency><groupId>${g}</groupId><artifactId>${a}</artifactId></dependency>`;
+  const edit = (tool_name, tool_input, readFile = () => '') => checkAgentCall({ agent_type: 'be-dev', tool_name, tool_input }, { gates, contract, projectDir: PROJECT, tempDir: TEMP, approved, readFile });
+  const pom = `${PROJECT}\\apps\\api\\pom.xml`;
+  denied(edit('Edit', { file_path: pom, old_string: '</dependencies>', new_string: `${dep('com.acme', 'evil')}</dependencies>` }), /com\.acme:evil is not on dependencies\.approved/, 'Edit');
+  allowed(edit('Edit', { file_path: pom, old_string: '</dependencies>', new_string: `${dep('org.mapstruct', 'mapstruct')}</dependencies>` }), 'an approved one');
+  allowed(edit('Edit', { file_path: pom, old_string: `${dep('com.acme', 'old')}<version>1</version>`, new_string: `${dep('com.acme', 'old')}<version>2</version>` }), 'a new version of one already there');
+  const existing = `<project><dependencies>${dep('com.acme', 'old')}</dependencies></project>`;
+  denied(edit('Write', { file_path: pom, content: `<project><dependencies>${dep('com.acme', 'old')}${dep('com.acme', 'evil')}</dependencies></project>` }, () => existing), /com\.acme:evil/, 'Write');
+  denied(edit('Write', { file_path: `${PROJECT}\\apps\\web\\package.json`, content: '{"dependencies":{"left-pad":"^1"}}' }, () => '{"dependencies":{}}'), /left-pad/, 'package.json');
+  allowed(edit('Write', { file_path: `${PROJECT}\\apps\\web\\src\\a.ts`, content: '<dependency><groupId>x</groupId><artifactId>y</artifactId></dependency>' }), 'not a manifest');
+});
+
+test('the hook reads the approved libraries of the project.yaml of the project it runs in', (t) => {
+  const project = mkdtempSync(join(tmpdir(), 'ao-dep-'));
+  t.after(() => rmSync(project, { recursive: true, force: true }));
+  mkdirSync(join(project, '.ai-orchestrator'));
+  writeFileSync(join(project, '.ai-orchestrator', 'project.yaml'), 'dependencies:\n  approved:\n    - { ecosystem: npm, name: zod, range: ^4.6.6, by: dep-check, on: 2026-11-20 }\n');
+  const agent = (command) => runHook({ hook_event_name: 'PreToolUse', agent_type: 'fe-dev', tool_name: 'Bash', tool_input: { command } }, { CLAUDE_PROJECT_DIR: project });
+  assert.match(JSON.parse(agent('pnpm add left-pad').stdout).hookSpecificOutput.permissionDecisionReason, /left-pad is not on dependencies\.approved/);
+  assert.equal(agent('pnpm add zod').stdout, '');
 });

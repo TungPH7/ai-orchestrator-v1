@@ -211,6 +211,12 @@ dependencies:
 4. Bạn duyệt cùng plan.
 5. Phiên chính thêm các thư viện vào `approved` trên nhánh tài liệu của Epic.
 
+**Quyết định khi làm T14 (Lượt 90):** bước 5 đổi. `project.yaml` là đường dẫn được bảo vệ, nên nếu phiên chính ghi nó trên nhánh tài liệu, `merge-gate` không còn tự merge PR tài liệu sau gate ②. Thay vào đó:
+- ở plan, phiên chính chạy `dep-check --dry-run` (bước 2), chỉ để báo bạn, không ghi gì;
+- lúc build, dev agent chạy `dep-check` thật. Thư viện đạt thì lệnh ghi vào `approved`, và dev agent commit dòng đó cùng code, trong PR mà bạn merge.
+
+Mục trong `plan.md` mang tên tiếng Anh, "New Libraries", như các mục khác của template.
+
 **Giữa lúc build:** `node .ai-orchestrator/scripts/dep-check.mjs <npm|maven> <tên>@<phiên bản>` kiểm:
 - lỗ hổng (OSV);
 - giấy phép, so với danh sách `dependencies.licenses` của `gates.yaml`;
