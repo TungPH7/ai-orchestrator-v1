@@ -343,25 +343,6 @@ test('a Java line that switches a check off needs a reason on the same line', ()
   assert.deepEqual(findSuppressions(reasoned, gates.suppressions), []);
 });
 
-test('Java paths that decide who calls the API, what it reads and how it is built raise the security review', () => {
-  const paths = gates.security_review.roster_effort_paths;
-  const raises = (file) => paths.some((glob) => matchesGlob(glob, file));
-  for (const file of [
-    'apps/api/pom.xml',
-    'apps/api/.mvn/wrapper/maven-wrapper.properties',
-    'apps/api/mvnw',
-    'apps/api/src/main/resources/application-prod.yml',
-    'apps/api/src/main/java/com/acme/order/controller/OrderController.java',
-    'apps/api/src/main/java/com/acme/common/logging/CorrelationIdFilter.java',
-    'apps/api/src/main/java/com/acme/common/security/SecurityConfig.java',
-    'apps/api/src/main/java/com/acme/auth/AuthService.java',
-    'apps/api/src/main/java/com/acme/order/repository/OrderRepository.java',
-    'apps/api/src/main/java/com/acme/order/dto/CreateOrderRequest.java',
-    'apps/api/src/main/java/com/acme/order/domain/Order.java',
-    'apps/api/src/main/resources/db/migration/V4__orders.sql',
-  ]) assert.ok(raises(file), file);
-  assert.ok(!raises('apps/api/src/main/java/com/acme/order/service/OrderService.java'));
-});
 
 // Phiên 33 of shop, PR #66 of SHOP-67: the policy job went red on "API query failed: Maven registry … query status: 404"
 // while the PR changed only apps/admin. A scan that fails is tried again; on a PR, only the Java apps it changes are

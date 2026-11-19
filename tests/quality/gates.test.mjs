@@ -38,9 +38,11 @@ test('coverage leaves out the scripts at the root of a project, and still counts
   for (const file of ['apps/api/src/main.ts', 'apps/web/src/app/page.tsx', 'apps/api/src/scripts/seed.ts']) assert.equal(counted(file), true, file);
 });
 
-test('a full security review is at high unless the PR touches a path of security_review (Pilot 1, review cost)', () => {
-  assert.equal(gates.security_review.lower_effort, 'high');
-  for (const glob of ['**/package.json', '**/*.controller.*', '**/next.config.*', '**/auth/**']) assert.ok(gates.security_review.roster_effort_paths.includes(glob), glob);
+test('review by risk has three lists of paths (C1 spec 3.2): auth is critical, a controller and the dependencies sensitive, docs by their folder and extension', () => {
+  for (const glob of ['**/auth/**', '**/*Security*.java', '**/migrations/**', '**/Dockerfile*']) assert.ok(gates.review.critical_paths.includes(glob), glob);
+  for (const glob of ['**/package.json', '**/pom.xml', '**/*.controller.*', '**/*.service.*', '**/dto/**']) assert.ok(gates.review.sensitive_paths.includes(glob), glob);
+  assert.deepEqual(gates.review.docs_paths, ['docs/**', '**/*.md']);
+  assert.equal(gates.security_review, undefined, 'the old list is gone');
 });
 
 test('dev roles open PRs with ao-dev and review roles post reports with ao-review (spec 2.2)', () => {
