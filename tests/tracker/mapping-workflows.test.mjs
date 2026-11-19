@@ -27,7 +27,7 @@ test('status categories follow spec 2.3: early states are To Do, final states ar
 
 test('transition names are the transition ids in sentence case (spec 2.3)', () => {
   assert.deepEqual(transitionNames('standard'), [
-    'Refine', 'Start', 'Submit', 'Request changes', 'Deploy to QA', 'Pick up', 'QA fail', 'Accept', 'Cancel',
+    'Refine', 'Start', 'Submit', 'Hand over', 'Request changes', 'Deploy to QA', 'Pick up', 'QA fail', 'Accept', 'Cancel',
   ]);
   assert.deepEqual(transitionNames('epic'), ['Start spec', 'Approve spec', 'Approve plan', 'Complete', 'Cancel']);
   assert.deepEqual(transitionNames('sub-task'), ['Start', 'Complete']);
