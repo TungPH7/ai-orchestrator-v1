@@ -29841,3 +29841,112 @@ Nếu một trang web có lệnh chèn, tệ nhất là `seo` viết sai chữ t
 **Lượt tìm:** `seo` ghi "chưa có số liệu" cho từng từ khóa. Muốn có số thì bạn lấy từ Google Keyword Planner rồi ghi vào Epic trước `/ao-spec`; khi có số, `seo` dùng số đó.
 
 Bạn có đồng ý mở WebSearch và WebFetch cho riêng `seo` theo cách này không?
+
+# Phiên 33 · Lượt 82 — 2026-11-19
+
+**Bạn:** "SEO Specialist của agency-agents là chuyên gia SEO marketing: nghiên cứu từ khóa, cụm chủ đề, xây backlink, đọc số liệu Search Console. Đúng như mong đợi của tôi, chỉ có 1 điểm cần cải thiện là nó dài khoảng 3000 chữ (cần viết lại, chọn lọc, học những thứ hay).
+
+Tôi mong đợi lúc chạy /ao-spec thì có thể truyền thêm option để cho phép có bật seo agent không? (điều kiện tắt seo agent cho trang private vẫn giữ). Bạn thấy sao? Thảo luận kỹ nhé."
+
+Rồi, trong lúc Claude đang tra: ""4. Claude Blog: không lấy. Plugin này để viết và tối ưu bài blog, mà shop chưa có blog. Khi có Epic làm blog thì mình xét lại." => Các trang web tôi sẽ xây dựng sẽ có trang blog nên giờ cần xem xét luôn, không chỉ xét mỗi repo 'shop', shop chỉ là pilot để kiểm ao kit flow, phải làm cho kit sẵn sàng để áp vào dự án thật, dự án có website public thì luôn cần SEO để có thể lên top Google Search mà."
+
+Rồi: "Viết các thảo luận về SEO nãy giờ vào 1 file trong 1 folder (đề xuất tên giúp tôi) trong D:\Document\1Khoahoc\4LapTrinh\AI-for-coding\ai-orchestrator\misc\thao-luan"
+
+**Claude:**
+
+Mình đã ghi toàn bộ thảo luận SEO từ Lượt 76 tới giờ vào `misc/thao-luan/seo/role-seo-va-blog.md`. Thư mục tên `seo/`, cùng kiểu với `toi-uu-token/`, để sau này thêm các file SEO khác, như file quyết định đã duyệt. File gồm: điểm đã duyệt, điểm còn mở, các nguồn đã xem kèm số liệu, các câu hỏi đã làm rõ, và diễn biến theo lượt.
+
+Về ba ý của bạn: mình đồng ý cả ba. Lấy SEO Specialist làm gốc rồi viết gọn lại, cho bật hay tắt `seo` khi chạy `/ao-spec`, và chuẩn bị cho blog ngay từ giờ. Khi xem kỹ, mình thấy ba chỗ cần quyết thêm, ghi ở cuối.
+
+## 1. Role `seo` lấy SEO Specialist làm gốc
+
+Bạn đúng: đó là chuyên gia mình cần. Mình viết lại thành prompt gọn, và chia năm giai đoạn của nó theo thời điểm làm.
+
+**Phần chạy trong `/ao-spec`, cho mỗi Epic:**
+- **Từ khóa và ý định tìm kiếm** cho các trang mới (giai đoạn 2), cùng chỗ của từng trang trong cụm chủ đề (trang trụ cột, trang vệ tinh).
+- **Chống "ăn thịt từ khóa"** (giai đoạn 2.5): mỗi từ khóa chính chỉ thuộc một trang, và tiêu đề hay H1 không trùng giữa các trang.
+  - Trước khi site chạy thật: đọc tiêu đề và H1 của các trang đang có trong repo.
+  - Sau khi chạy thật: dùng số liệu Search Console.
+- **Phần spec của giai đoạn 3:**
+  - dàn ý và chữ thật cho từng trang;
+  - dữ liệu có cấu trúc;
+  - hreflang: các bản ngôn ngữ trỏ qua lại nhau, và mỗi trang có `lang` riêng;
+  - ngưỡng Core Web Vitals, đưa vào yêu cầu phi chức năng.
+- **Các luật giữ lại:**
+  - chỉ dùng cách "mũ trắng";
+  - ý định người tìm đi trước;
+  - E-E-A-T;
+  - LCP dưới 2,5 giây, INP dưới 200 ms, CLS dưới 0,1;
+  - tối ưu cho AI search.
+
+**Phần không thuộc một Epic nào, vì chỉ làm được sau khi site chạy thật:**
+- **Giai đoạn 1:** audit site thật và đọc Search Console.
+- **Giai đoạn 4:** backlink, PR, liên hệ báo chí và blogger. Việc này là gửi thư cho người thật, nên mỗi lần đều cần bạn duyệt.
+- **Giai đoạn 5:** theo dõi thứ hạng, lưu lượng, ROI.
+
+Ba phần này cần quyền vào Search Console và GA4, và chạy định kỳ chứ không theo Epic. Đề xuất: sau này làm một lệnh riêng, như `/ao-seo report` hằng tháng, trong một module sau C1. Trong lúc chờ, phiên chính dùng được plugin claude-seo (`seo-google`, `seo-backlinks`, `seo-drift`) mà bạn đã cài.
+
+## 2. Bật hay tắt `seo` khi chạy `/ao-spec`
+
+**Một điều mình mới phát hiện:** `public: true` trong `project.yaml` chỉ có nghĩa là app có host riêng trên internet. Trong `shop`, cả `user` lẫn `admin` đều là `public: true`. Vậy kit chưa phân biệt được trang cần SEO với trang quản trị, và điều kiện "trang private thì tắt `seo`" chưa có dữ liệu để chạy.
+
+**Đề xuất:**
+1. **Mỗi app có thêm khóa `seo: true` hay `false`** trong `project.yaml`. Với `shop`: `user` là `true`, `admin` là `false`. `project-scaffold` hỏi khóa này khi thêm một app có host công khai.
+2. **Hai từ cho `/ao-spec`:**
+   - `/ao-spec <EPIC> seo` bật `seo`;
+   - `/ao-spec <EPIC> no-seo` tắt `seo`.
+3. **Lựa chọn được lưu thành nhãn trên Epic** (`ao-seo` hay `ao-no-seo`), không chỉ nằm trong lệnh. Có hai lý do:
+   - `/ao-spec` thường chạy nhiều lần cho một Epic: sửa SPEC, chạy tiếp sau giới hạn usage;
+   - `reviewer` và `qa` cần biết Epic có mục SEO hay không.
+
+   Bạn cũng tự gắn hay gỡ được nhãn này trên Jira.
+4. **Không truyền từ nào thì kit tự quyết:** SPEC có màn hình thuộc app `seo: true` thì chạy `seo`. Mình đề xuất mặc định bật vì hai lý do:
+   - bạn nói website công khai luôn cần SEO;
+   - quên bật thì trang lên production mà không có SEO, tới lúc thấy đã muộn. Còn tắt thì phải là một lựa chọn có chủ ý, như Epic chỉ sửa logic giỏ hàng.
+
+   Nếu bạn muốn mặc định tắt, chỉ bật khi có từ `seo`, kit cũng làm được.
+5. **Trang private vẫn tắt:** Epic chỉ chạm app `seo: false` thì `seo` không chạy, kể cả khi có từ `seo`. `ao-step` in một dòng giải thích lý do.
+6. **SPEC phải ghi mỗi màn hình thuộc app nào,** thì kit mới tự quyết đúng. Template SPEC hay `design.md` thêm một cột "App" cho từng màn hình.
+
+## 3. Blog: kit phải sẵn sàng
+
+Bạn đúng: `shop` chỉ là pilot, và dự án thật sẽ có blog. Lúc trước mình chỉ xét theo `shop`, như vậy là sai hướng.
+
+Blog có hai lớp việc khác nhau. Cách tách này đã có từ Phiên 27 (concern 3, dòng D2 trong `concerns.md`).
+
+**(a) Xây tính năng blog: là SDLC, một Epic bình thường.**
+- **Gồm:** trang danh sách bài, trang bài, chuyên mục và tag, trang tác giả, RSS, sitemap, phân trang.
+- **`seo` lo phần SEO ngay ở `/ao-spec`:**
+  - dữ liệu có cấu trúc BlogPosting, kèm tác giả (Person), Organization, BreadcrumbList;
+  - quy tắc slug;
+  - cấu trúc chuyên mục và tag, để tránh trang tag mỏng;
+  - trang tác giả, phục vụ E-E-A-T;
+  - ngày đăng và ngày sửa;
+  - hreflang cho bài `vi` và `en`;
+  - canonical của trang phân trang.
+- **Lấy từ Claude Blog:** `blog-schema` (JSON-LD cho bài blog, có kiểm theo mức Google còn hỗ trợ) và phần gợi ý, audit của `blog-taxonomy` (không lấy phần đồng bộ với WordPress hay Shopify). Hai phần này chép rồi viết lại như `seo-content-brief`. **Phần (a) làm trong C1.**
+
+**(b) Viết bài: không thuộc SDLC, là workflow nội dung riêng** (dòng D2, hiện ghi "Chờ nhu cầu"). Nay đã có nhu cầu.
+- **Claude Blog hợp ở đây:**
+  - kế hoạch: `blog-strategy` (trụ cột nội dung, lộ trình 90 ngày), `blog-cluster`, `blog-calendar`;
+  - viết: `blog-brief`, `blog-outline`, `blog-write`;
+  - kiểm: `blog-seo-check`, `blog-factcheck`, `blog-geo`;
+  - ngôn ngữ: `blog-translate`, `blog-localize`.
+- **Nhiều skill trong số đó cần web**, như `blog-factcheck` phải tra nguồn, và `blog-brief` đọc trang đứng đầu Google. Một số skill khác cần Python hay API riêng: `blog-image` cần Gemini, `blog-decay` cần Search Console.
+- **Câu hỏi lớn nhất của D2 là bài nằm ở đâu:**
+  - **trong database, đăng qua Admin** (đề xuất ở Phiên 27): agent viết bản nháp, bạn duyệt, rồi đăng qua API của Admin. Không có PR, không cần review code;
+  - **file MDX trong repo:** mỗi bài là một PR. PR chỉ đổi tài liệu của item Nhẹ được miễn review (mục 3.4 của spec), nhưng mỗi bài vẫn phải chờ deploy.
+- **Đề xuất:** làm D2 thành một module riêng ngay sau C1, không nhét vào C1. D2 cần `stages.yaml` và role `seo` của C1 trước, và C1 đã có 8 bước.
+
+## Ba chỗ cần bạn quyết
+
+1. **`seo` theo SEO Specialist,** chia như mục 1: phần spec trong `/ao-spec`, phần sau khi chạy thật để cho một lệnh riêng sau này. Đồng ý không?
+2. **Bật hay tắt `seo`:**
+   - khóa `seo: true` cho từng app;
+   - từ `seo` và `no-seo`, lưu thành nhãn trên Epic;
+   - không truyền gì thì tự quyết theo SPEC, mặc định bật.
+
+   Hay bạn muốn mặc định tắt?
+3. **Blog:** phần (a) vào C1, và D2 làm ngay sau C1, trước C2. Hay bạn muốn C2 trước?
+
+Câu hỏi của lượt trước vẫn còn mở: có cho riêng `seo` dùng WebSearch và WebFetch, đổi lại không có Bash, không có git, chỉ ghi `docs/specs/**`, Jira chỉ đọc?

@@ -130,6 +130,8 @@ Hai ví dụ: một agent SEO Content Writer viết bài cho tính năng Blogs, 
 
 **Thảo luận:** [role-moi-trong-sdlc.md](role-moi-trong-sdlc.md) (Phiên 27 · Lượt 98).
 
+Role `seo`, skill SEO và blog: [seo/role-seo-va-blog.md](seo/role-seo-va-blog.md) (Phiên 33 · Lượt 76–82).
+
 ## Concern 4: cập nhật skill và agent của kit
 
 Concern này xét việc chọn lọc những gì một skill hay một agent bên ngoài làm tốt hơn để đưa vào kit, không thay hết.
