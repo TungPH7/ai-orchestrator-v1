@@ -159,3 +159,17 @@ roles:
     git: write
     writes: ["**"]
     skills: [ci-cd-and-automation, shipping-and-launch]
+  seo:
+    description: "SEO Specialist: writes the SEO section of the SPEC of an Epic whose screens a search engine indexes: keywords, the copy in vi and en, structured data, hreflang. Give it the Epic key."
+    model: sonnet
+    effort: high
+    max_turns: 60
+    # WebSearch and WebFetch: seo is the one role with them (C1 spec 6.4), to see which pages rank on a keyword. In
+    # return it has no Bash, so it runs nothing and no git, and gh-guard keeps its reads in the project, away from the
+    # .env files. ao-step commits its change in docs/specs/ after its run.
+    tools: [Edit, Write, WebFetch, WebSearch]
+    # comment: seo answers a "Cần seo:" request with a comment, which closes it (C1 spec 6.6).
+    jira: [read, comment]
+    git: read
+    writes: ["docs/specs/**", ".ai/**"]
+    skills: []

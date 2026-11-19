@@ -80,7 +80,7 @@ Hai GitHub App giúp bạn approve được PR của agent, vì GitHub không ch
 
 ## Agent
 
-Mười agent nằm ở `kit/.claude/agents/<role>.md`: `pm`, `ba`, `ux`, `sa`, `fe-dev`, `be-dev`, `reviewer`, `security`, `qa`, `devops`. Chúng không được viết tay. `npm run agents` ghép `agents/roster.yaml` (model, effort, `max_turns`, tool, quyền, skill), prompt `agents/prompts/<role>.md` và hợp đồng thành file agent, cùng file quy ước chung `kit/.claude/rules/ai-orchestrator.md`.
+Mười một agent nằm ở `kit/.claude/agents/<role>.md`: `pm`, `ba`, `ux`, `sa`, `fe-dev`, `be-dev`, `reviewer`, `security`, `qa`, `devops`, và `seo` từ C1. Chúng không được viết tay. `npm run agents` ghép `agents/roster.yaml` (model, effort, `max_turns`, tool, quyền, skill), prompt `agents/prompts/<role>.md` và hợp đồng thành file agent, cùng file quy ước chung `kit/.claude/rules/ai-orchestrator.md`.
 
 | Ai dùng | Dùng thế nào |
 |---|---|
@@ -199,7 +199,7 @@ npm run agents:check    # báo lỗi nếu agent hay file quy ước sinh ra cũ
 npm run skills:vendor -- <name>  # tải lại một skill chép vào kit, đúng commit ghim trong agents/roster.yaml
 node scripts/ao-kit.mjs init <thư mục dự án> --name <tên> --space <KEY> --repo <owner/name> --approvers <login>  # dựng dự án mới hay cài kit vào repo đang có
 node scripts/ao-kit.mjs init <thư mục trống> --package-manager pnpm ...  # phần gốc của dự án pnpm, chưa có app
-node scripts/ao-kit.mjs add <thư mục dự án> <app> --stack nextjs|react|spring-boot [--from <template> [--ref <nhánh hay tag>]] [--exclude <đường dẫn>]... [--public]  # thêm một app vào dự án pnpm; spring-boot cần --from
+node scripts/ao-kit.mjs add <thư mục dự án> <app> --stack nextjs|react|spring-boot [--from <template> [--ref <nhánh hay tag>]] [--exclude <đường dẫn>]... [--public --seo|--no-seo]  # thêm một app vào dự án pnpm; spring-boot cần --from; app công khai chọn --seo (trang người dùng tìm trên Google) hoặc --no-seo (như app admin)
 node scripts/ao-kit.mjs sync <thư mục dự án> --key <KEY>  # chép bản kit này vào dự án, trên nhánh feature/<KEY>-kit-copy, một commit, không push
 node scripts/ao-kit.mjs render <thư mục dự án>  # sinh lại .claude/settings.json và agent từ project.yaml
 node scripts/ao-kit.mjs check <thư mục dự án>  # kiểm project.yaml của dự án với schema, deploy.yaml, package.json và thư mục app
@@ -257,7 +257,7 @@ docs/quality-gates.md      các lớp chốt, từng check, cách xử lý khi c
 docs/github-apps-setup.md  tạo ba GitHub App, từng bước bấm
 docs/release-workflow.md   bốn lệnh của vòng ngoài, Fix Version, hotfix, rollback, yêu cầu với dự án
 docs/vps-setup.md   dựng VPS và deployer, cập nhật bản kit trên VPS
-docs/agents.md      mười agent, cách chạy, nâng effort, skill, design.md, ảnh Figma, dung lượng repo và LFS
+docs/agents.md      mười một agent, cách chạy, nâng effort, skill, design.md, ảnh Figma, dung lượng repo và LFS
 vps/                file của deployer trên VPS: service, timer, cấu hình mẫu, script đặt secret
 tests/              test; tests/fixtures/invalid/ chứa các hợp đồng cố tình sai, mỗi file sai một quy tắc;
                     tests/fixtures/tracker/ chứa ánh xạ sai, dữ liệu API Jira ghi sẵn và sự kiện GitHub mẫu

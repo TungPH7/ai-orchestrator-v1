@@ -1,0 +1,8 @@
+description: WebFetch for a role other than seo (C1 spec 6.4)
+rule: A1
+expect:
+  - "roles.fe-dev.tools"
+patch:
+  - op: set
+    path: "roles.fe-dev.tools"
+    value: [Bash, Edit, Write, WebFetch]

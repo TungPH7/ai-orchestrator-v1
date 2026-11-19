@@ -30286,3 +30286,69 @@ Sau đó mình chạy `jira:check` để kiểm.
 - Bước 10: chỗ nối `ci.project.yml` (T19). Rồi tới Checkpoint 4: mình hỏi bạn trước khi chép kit vào `shop`, vì từ đó bắt đầu tốn tiền.
 
 Bạn gõ "làm tiếp" thì mình làm bước 6.
+
+# Phiên 33 · Lượt 90 — 2026-11-20
+
+**Bạn:** "làm tiếp"
+
+**Claude:**
+
+Đã xong bước 6 và bước 7 của plan C1, cả hai đã merge vào `main` của kit. Giờ cần bạn bấm một chỗ trên Jira (mục "Việc của bạn" bên dưới), rồi mình làm tiếp bước 8.
+
+## Đã xong
+
+**Bước 6: duyệt thư viện trước khi cài** (T13–T14, kit PR #319).
+- `project.yaml` của dự án có danh sách thư viện đã duyệt, và ngoại lệ audit riêng của dự án. Lần chép kit sau không xóa ngoại lệ đó nữa, như từng xóa ngoại lệ picomatch ở SHOP-74.
+- Lệnh `dep-check` kiểm một thư viện:
+  - lỗ hổng đã biết;
+  - giấy phép;
+  - tuổi, ít nhất 14 ngày;
+  - lượt tải và người duy trì;
+  - script chạy lúc cài.
+
+  Đạt thì lệnh ghi thư viện vào danh sách. Đáng ngờ thì không ghi gì, và dev agent nhờ `security` bằng `Cần security:`.
+- Chạy thật: `zod@4.1.12` bị báo đáng ngờ vì một lỗ hổng thật (bản vá ở 4.6.6); `left-pad` bị báo vì giấy phép WTFPL; `mapstruct 1.6.3` đạt.
+- **Chặn:**
+  - gh-guard từ chối lệnh cài, và việc sửa `package.json` hay `pom.xml`, khi thư viện chưa được duyệt;
+  - job `policy` của CI đỏ khi PR thêm thư viện chưa duyệt.
+
+**Bước 7: role `seo`** (T15–T16, kit PR #320).
+- `seo` là agent thứ 11: Sonnet ở `high`. Nó là role duy nhất có WebSearch và WebFetch. Đổi lại, nó không có Bash, và chỉ đọc file trong thư mục dự án, không đọc được file `.env`.
+- Ở `/ao-spec`, `seo` chạy sau `ux` và trước `sa`. Nó chỉ viết SEO cho màn hình của app có `seo: true` trong `project.yaml`, nên màn hình admin tự được bỏ qua.
+- Hai từ cho `/ao-spec`:
+  - `/ao-spec <EPIC> no-seo [lý do]` tắt `seo`, và `ba` ghi dòng "SEO: không" vào SPEC;
+  - `/ao-spec <EPIC> seo` bật lại.
+- `seo` không có git, nên sau mỗi lượt của nó, `ao-step` commit phần nó viết. Nó chỉ commit khi mọi file đổi nằm trong `docs/specs/`.
+- Cả bộ test xanh: 1.672 test.
+
+## Năm chỗ mình tự quyết khi làm, bạn xem lại giúp
+
+1. **`security` được comment trên Jira.** Đây là quyền mới, để nó trả lời `Cần security:` về một thư viện đáng ngờ. Lượt đó chạy ở `high`, không phải `max` như khi review.
+2. **Ở gate ②, thư viện mới chỉ được kiểm để báo bạn.**
+   - Spec định cho phiên chính ghi danh sách duyệt ngay trên nhánh tài liệu. Nhưng `project.yaml` là file được bảo vệ, nên khi đó `merge-gate` không tự merge PR tài liệu nữa.
+   - Vì vậy dev agent mới ghi danh sách lúc cài, trong PR code mà bạn merge. Mình đã ghi quyết định này vào spec.
+3. **Grep của `seo` phải chỉ rõ loại file**, ví dụ `**/*.json`, vì Grep đọc mọi file dưới thư mục nó tìm, kể cả `.env`.
+4. **Cột App của `design.md` không bắt buộc.** `design.md` cũ của `shop` không có cột này. Thiếu cột thì `seo` vẫn chạy, để không lỡ SEO của trang nào.
+5. **`ao-kit add --public` phải kèm `--seo` hay `--no-seo`.** Lệnh không hỏi lại được, nên mình bắt chọn ngay trong lệnh.
+
+## Việc của bạn trên Jira
+
+**1. Thêm option "SEO Specialist" vào field Agent.** Việc này cần trước khi `seo` chạy thật:
+1. Trên Jira, bấm bánh răng ⚙ ở góc trên bên phải, chọn **Work items**.
+2. Menu bên trái: bấm **Fields**.
+3. Tìm field **Agent**, bấm **•••** ở cuối dòng, chọn **Contexts and default value** (đối chiếu giao diện).
+4. Ở context đang có, bấm **Edit options**.
+5. Ô **Add new option**: gõ `SEO Specialist`, bấm **Add**. Option mới nằm cuối danh sách, sau **DevOps Engineer**.
+
+**2. Việc cũ, chưa gấp:** thêm group **ao-automation** vào rule giới hạn của hai transition **Pick up** và **QA fail**. Các bước bấm nằm ở câu trả lời Lượt 89.
+
+Bạn làm xong thì báo mình. Mình chạy `jira:check` để kiểm cả hai.
+
+## Còn lại
+
+- **Bước 8 (T17):** bốn skill của `seo`. Mình đọc hết `nextjs-seo` và sáu file tham khảo của nó trước khi chép. Nếu nội dung sai hay lỗi thời, mình bỏ skill đó và báo bạn.
+- **Bước 9 (T18):** nhãn `ao-seo` trên item, và `Cần seo:`.
+- **Bước 10 (T19):** chỗ nối `ci.project.yml`.
+- **Checkpoint 4:** mình hỏi bạn trước khi chép kit vào `shop`. Từ bước đó bắt đầu tốn tiền.
+
+Bạn báo đã bấm xong (hoặc gõ "làm tiếp" nếu để bấm sau) thì mình làm bước 8.

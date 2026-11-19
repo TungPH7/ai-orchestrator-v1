@@ -146,3 +146,11 @@ test('coverage_exclude of an app holds globs inside the app folder', () => {
     assert.ok(withExclude([bad]).errors.some(({ path }) => /coverage_exclude/.test(path)), bad);
   }
 });
+
+// C1 spec 6.1: seo writes the SEO of the screens of an app a search engine reaches.
+test('seo: true only for a public app', () => {
+  assert.deepEqual(rules(edited((d) => (d.apps.web.seo = true))), []);
+  assert.deepEqual(rules(edited((d) => (d.apps.api.seo = false))), []);
+  assert.deepEqual(rules(edited((d) => (d.apps.api.seo = true))), ['P10 apps.api.seo']);
+  assert.deepEqual(rules(edited((d) => (d.apps.web.seo = 'yes'))), ['P1 apps.web.seo']);
+});

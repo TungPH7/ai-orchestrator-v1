@@ -45,7 +45,7 @@ test('ux writes the design in the spec stage when the Epic touches the UI (agent
   const spec = contract.stages.find(({ id }) => id === 'spec');
 
   assert.ok(spec.roles.includes('ux'));
-  assert.equal(spec.note, 'ux viết design khi Epic đụng tới giao diện');
+  assert.equal(spec.note, 'ux viết design khi Epic đụng tới giao diện; seo viết mục SEO của SPEC khi design có màn hình của app seo: true');
 });
 
 test('release-cut needs a valid cut point and no open release branch (spec 2.7)', () => {

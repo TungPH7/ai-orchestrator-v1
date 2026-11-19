@@ -16,7 +16,7 @@ const sources = {
   contract: readContract(CONTRACT_DIR),
   gates: readGates(join(ROOT, 'quality')),
   mapping: readMapping(join(ROOT, 'tracker')),
-  prompts: Object.fromEntries(['pm', 'ba', 'ux', 'sa', 'fe-dev', 'be-dev', 'reviewer', 'security', 'qa', 'devops'].map((r) => [r, readFileSync(join(ROOT, 'agents', 'prompts', `${r}.md`), 'utf8')])),
+  prompts: Object.fromEntries(['pm', 'ba', 'ux', 'sa', 'fe-dev', 'be-dev', 'reviewer', 'security', 'qa', 'devops', 'seo'].map((r) => [r, readFileSync(join(ROOT, 'agents', 'prompts', `${r}.md`), 'utf8')])),
   rules: readFileSync(join(ROOT, 'agents', 'rules.md'), 'utf8'),
 };
 
@@ -74,7 +74,7 @@ test('the contract section: stages, artifacts, GitHub App, files and git (spec 2
   assert.match(reviewer, /^- Files you may write: `\.ai\/\*\*`\. Git: read only \(status, log, show, diff, fetch and the other reading commands\)\.$/m);
   assert.match(body(renderAgent('ux', sources)), /^- GitHub: you have no App, so you do not open or comment on PRs\.$/m);
   assert.match(body(renderAgent('devops', sources)), /^- Files you may write: `\*\*`, but not the protected paths except `\.github\/workflows\/\*\*`\. Git: write\.$/m);
-  assert.match(body(renderAgent('ba', sources)), /^- Stage `spec` \(Viết SPEC cho Epic\), which you lead, with `ux` and `sa`\. Input: Epic ở new\. Output: SPEC của Epic, Thiết kế màn hình\. Passes: gate ① `spec-approval`: Bạn duyệt SPEC của Epic\. Note: ux viết design khi Epic đụng tới giao diện\.$/m);
+  assert.match(body(renderAgent('ba', sources)), /^- Stage `spec` \(Viết SPEC cho Epic\), which you lead, with `ux`, `seo` and `sa`\. Input: Epic ở new\. Output: SPEC của Epic, Thiết kế màn hình\. Passes: gate ① `spec-approval`: Bạn duyệt SPEC của Epic\. Note: ux viết design khi Epic đụng tới giao diện; seo viết mục SEO của SPEC khi design có màn hình của app seo: true\.$/m);
   assert.match(body(renderAgent('fe-dev', sources)), /^- Jira: read, edit, comment, transition\.$/m);
 });
 
@@ -111,7 +111,7 @@ test('the rules file keeps agents/rules.md and fills each render marker from the
   assert.doesNotMatch(text, /render:/);
   assert.match(text, /Site `https:\/\/phunghuutung12b4\.atlassian\.net`, cloud id `58b36210-6e4d-421a-adf4-e74a4e23b069`, space `<KEY>`\./);
   assert.match(text, /^\| `fe-dev` \| Frontend Developer \|$/m);
-  assert.equal(text.match(/^\| `[a-z-]+` \| .+ \|$/gm).filter((row) => !row.includes('templates/')).length, 10);
+  assert.equal(text.match(/^\| `[a-z-]+` \| .+ \|$/gm).filter((row) => !row.includes('templates/')).length, 11);
   assert.match(text, /When the same step fails 2 times in a row, flag the item "Needs you" and stop\./);
   assert.match(text, /^- Story and Task: `feature\/<KEY>-<slug>` from `develop`; QA on development\.$/m);
   assert.match(text, /^\| Production \| critical, high \| `main` \| staging, production \|$/m);
@@ -139,7 +139,7 @@ test('the rules name the one command that runs the tests of an app, so no agent 
   assert.match(text, /Never write a wrapper of your own around Maven, pnpm or npm\./);
 });
 
-test('renderAll gives the ten agents and the rules file, by path under .claude/', () => {
+test('renderAll gives the eleven agents and the rules file, by path under .claude/', () => {
   assert.deepEqual([...renderAll(sources).keys()].sort(), [
     ...Object.keys(sources.roster.roles).map((r) => `agents/${r}.md`),
     'rules/ai-orchestrator.md',
@@ -149,6 +149,6 @@ test('renderAll gives the ten agents and the rules file, by path under .claude/'
 test('the generated files of the kit are up to date (npm run agents:check)', () => {
   const result = spawnSync(process.execPath, [join(ROOT, 'scripts', 'render-agents.mjs'), '--check'], { cwd: ROOT, encoding: 'utf8' });
   assert.equal(result.status, 0, result.stdout + result.stderr);
-  // Ten agents, the rules file, and settings.json (project-scaffold spec 2.1).
-  assert.match(result.stdout, /12 files up to date/);
+  // Eleven agents (seo from C1), the rules file, and settings.json (project-scaffold spec 2.1).
+  assert.match(result.stdout, /13 files up to date/);
 });

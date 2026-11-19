@@ -7,7 +7,7 @@
 //                 --space --repo <owner/name> --approvers <a,b> --dev-app --dev-app-id --review-app --review-app-id
 //                 --kit-peers <owner/name,...>; the App values default to AO_DEV_APP… of your environment
 //   add <dir> <app>   one app more in a pnpm project: --stack nextjs|react|spring-boot, its skeleton (not spring-boot), or --from <template>
-//                 (--ref <branch or tag>, its HEAD otherwise) with what the kit replaces left out (--exclude <path>, again for each path); --public; then pnpm install,
+//                 (--ref <branch or tag>, its HEAD otherwise) with what the kit replaces left out (--exclude <path>, again for each path); --public with --seo or --no-seo; then pnpm install,
 //                 the render, and what the code of the app still has to change
 //   sync <dir>    the kit of this clone into the project, on a new branch feature/<KEY>-kit-copy from develop, in one
 //                 commit; nothing is pushed. --key <KEY> of the Task; --name <project on the VPS> for a project from
@@ -218,7 +218,7 @@ function codeownersOnBranches(repo, ghJson) {
 const OPTIONS = {
   profile: { type: 'string' }, 'package-manager': { type: 'string' }, name: { type: 'string' }, title: { type: 'string' }, space: { type: 'string' }, repo: { type: 'string' }, approvers: { type: 'string' },
   'merge-app-key-file': { type: 'string' }, template: { type: 'string' }, 'space-name': { type: 'string' }, 'dev-app': { type: 'string' }, 'dev-app-id': { type: 'string' }, 'review-app': { type: 'string' }, 'review-app-id': { type: 'string' }, 'kit-peers': { type: 'string' }, key: { type: 'string' },
-  stack: { type: 'string' }, from: { type: 'string' }, ref: { type: 'string' }, exclude: { type: 'string', multiple: true }, public: { type: 'boolean' },
+  stack: { type: 'string' }, from: { type: 'string' }, ref: { type: 'string' }, exclude: { type: 'string', multiple: true }, public: { type: 'boolean' }, seo: { type: 'boolean' }, 'no-seo': { type: 'boolean' },
 };
 let parsed;
 try {
@@ -237,7 +237,7 @@ const COMMANDS = {
   check,
   render,
   init: (dir) => print(initProject({ kitDir, projectDir: dir, options, git, run })),
-  add: (dir) => print(addApp({ kitDir, projectDir: dir, app: rest[1], options: { stack: v.stack, from: v.from, ref: v.ref, exclude: v.exclude ?? [], public: v.public === true, title: v.title }, git, run })),
+  add: (dir) => print(addApp({ kitDir, projectDir: dir, app: rest[1], options: { stack: v.stack, from: v.from, ref: v.ref, exclude: v.exclude ?? [], public: v.public === true, ...(v.seo || v['no-seo'] ? { seo: v.seo === true && !v['no-seo'] } : {}), title: v.title }, git, run })),
   sync: (dir) => print(syncKit({ kitDir, projectDir: dir, options, git, run })),
   'setup github': (dir) => {
     const config = projectConfig(dir);

@@ -219,10 +219,10 @@ test('the Design of a Story names the screens of design.md it covers, or says th
   assert.match(design, /Không đổi giao diện/);
 });
 
-test('design.md lists its screens with code, name, route, user story and kind, and names the approved Figma version', () => {
+test('design.md lists its screens with code, name, route, user story, kind and app (C1 spec 6.1), and names the approved Figma version', () => {
   const screens = section('design.md', 'Screens');
 
-  assert.match(screens, /^\| Code \| Name \| Route \| User story \| Kind \|$/m);
+  assert.match(screens, /^\| Code \| Name \| Route \| User story \| Kind \| App \|$/m);
   assert.match(screens, /\bASCII\b/);
   assert.match(screens, /\bFigma\b/);
   assert.match(read('design.md'), /^> \*\*Figma version:\*\* /m);

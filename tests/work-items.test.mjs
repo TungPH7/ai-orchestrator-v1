@@ -31,10 +31,10 @@ test('the 7 fields of spec 2.3 and the Agent field of the tracker-integration sp
   );
 });
 
-test('Agent lists the 10 agent roles, with their names from roles.yaml', () => {
+test('Agent lists the 11 agent roles, seo of C1 among them, with their names from roles.yaml', () => {
   const agentRoles = contract.roles.filter(({ id }) => !NON_AGENT_ROLES.includes(id)).map(({ id, name }) => ({ id, name }));
 
-  assert.equal(agentRoles.length, 10);
+  assert.equal(agentRoles.length, 11);
   assert.deepEqual(contract.work_item_fields.find(({ id }) => id === 'agent').values, agentRoles);
 });
 

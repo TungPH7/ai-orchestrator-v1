@@ -1,8 +1,8 @@
 # Agent
 
-> **Spec:** [SPEC-agent-roster.md](../SPEC-agent-roster.md). Tài liệu này dành cho bạn. Nó trả lời: mười agent làm gì, chạy chúng thế nào, nâng effort ra sao, thêm skill theo stack thế nào. Nó cũng hướng dẫn viết `design.md`, đưa ảnh Figma vào repo và theo dõi dung lượng repo. Số đo nêu ở đây lấy từ lần chạy thật trên `ao-pilot`, ghi trong [tasks/archive/agent-roster/verification.md](../tasks/archive/agent-roster/verification.md).
+> **Spec:** [SPEC-agent-roster.md](../SPEC-agent-roster.md). Tài liệu này dành cho bạn. Nó trả lời: mười một agent làm gì, chạy chúng thế nào, nâng effort ra sao, thêm skill theo stack thế nào. Nó cũng hướng dẫn viết `design.md`, đưa ảnh Figma vào repo và theo dõi dung lượng repo. Số đo nêu ở đây lấy từ lần chạy thật trên `ao-pilot`, ghi trong [tasks/archive/agent-roster/verification.md](../tasks/archive/agent-roster/verification.md).
 
-## Mười vai trò
+## Mười một vai trò
 
 | Vai trò | Việc chính | Model | Effort | `maxTurns` | Ghi được | Git | App |
 |---|---|---|---|---|---|---|---|
@@ -16,9 +16,11 @@
 | `security` | Review bảo mật của PR, đăng báo cáo | Opus | `max` | 120 | `.ai/**` | Đọc | `ao-review` |
 | `qa` | Kiểm từng AC trên môi trường QA, báo cáo lên item | Opus | `high` | 80 | `.ai/**` | Đọc | Không |
 | `devops` | Sửa CI/CD qua PR do bạn merge; sau này cắt release, ship | Opus | `high` | 50 | Như `fe-dev`, thêm `.github/workflows/**` | Ghi | `ao-dev` |
+| `seo` | Mục SEO của SPEC cho trang mà công cụ tìm kiếm thấy (từ C1) | Sonnet | `high` | 60 | `docs/specs/**`, `.ai/**` | Không: `ao-step` commit thay | Không |
 
 - **`maxTurns`** bằng gấp đôi số lượt model cao nhất đo được của vai trò, làm tròn lên hàng chục. Giới hạn này chặn agent chạy vòng tròn và đốt usage. Lượt cao nhất của `fe-dev` (130) là lượt chạy ở `max` của phép so, nên giới hạn vẫn đủ khi bạn nâng effort cho một item khó. Agent chạm giới hạn thì `claude -p` dừng với `error_max_turns`. Nếu điều đó lặp lại ở một vai trò, nâng giới hạn của vai trò đó trong `agents/roster.yaml` qua một PR.
-- **Quyền Jira:** `pm` và `reviewer` chỉ đọc. `ux`, `sa` và `security` đọc và comment; `security` có quyền comment từ C1, để trả lời yêu cầu `Cần security:` về một thư viện mà dep-check thấy đáng ngờ; `ux` có quyền comment từ `human-loop` (Lượt 122), để trả lời yêu cầu `Cần ux:`. `ba` tạo và sửa item, và tạo link Blocks giữa các item theo phụ thuộc trong plan (qua `executeWrite`; hook chỉ cho đúng thao tác `createJiraIssueLink` loại Blocks trong space dự án). Dev agent, `qa` và `devops` chuyển trạng thái theo hợp đồng. Không agent nào chuyển item sang Done hay Cancelled, approve PR, hay sửa đường dẫn được bảo vệ (riêng `devops` được sửa workflow).
+- **Quyền Jira:** `pm` và `reviewer` chỉ đọc. `ux`, `sa`, `security` và `seo` đọc và comment; `seo` comment để trả lời yêu cầu `Cần seo:`; `security` có quyền comment từ C1, để trả lời yêu cầu `Cần security:` về một thư viện mà dep-check thấy đáng ngờ; `ux` có quyền comment từ `human-loop` (Lượt 122), để trả lời yêu cầu `Cần ux:`. `ba` tạo và sửa item, và tạo link Blocks giữa các item theo phụ thuộc trong plan (qua `executeWrite`; hook chỉ cho đúng thao tác `createJiraIssueLink` loại Blocks trong space dự án). Dev agent, `qa` và `devops` chuyển trạng thái theo hợp đồng. Không agent nào chuyển item sang Done hay Cancelled, approve PR, hay sửa đường dẫn được bảo vệ (riêng `devops` được sửa workflow).
+- **`seo` và web** ([SPEC-c1.md](../SPEC-c1.md) mục 6.4): `seo` là vai trò duy nhất có WebSearch và WebFetch, để xem trang nào đứng đầu một từ khóa. Một trang web có thể chứa lệnh chèn, nên `seo` không có Bash, và gh-guard giữ Read, Grep, Glob của nó trong dự án, không cho đọc file `.env` (trừ `.env.example`). Grep của `seo` phải có một file, một glob theo đuôi file như `**/*.json`, hay một type như `ts`. `npm run validate` báo lỗi khi vai trò khác có WebSearch hay WebFetch.
 - **Skill nạp sẵn** của từng vai trò nằm ở mục 2.3 của spec.
 
 Agent được sinh, không viết tay. `agents/roster.yaml`, prompt `agents/prompts/<role>.md`, `agents/rules.md` và hợp đồng được ghép thành `kit/.claude/agents/<role>.md` và `kit/.claude/rules/ai-orchestrator.md` bằng `npm run agents`. Muốn đổi agent thì sửa nguồn, chạy lại lệnh, rồi commit cả hai. `npm run agents:check` trong CI đỏ khi file sinh ra cũ hơn nguồn.
@@ -115,6 +117,8 @@ Khi có màn hình Figma hay Ảnh, `design.md` có thêm mục **Design System*
 - Mỗi mục ghi "có" nếu `docs/design-system/<app>.md` đã có nó, hoặc "mới".
 - Có mục "mới", hoặc app chưa có file design system, thì `sa` đặt một Task `fe-dev` "Design system của <app>" lên đầu plan. Task đó đưa token vào code, dựng component dùng chung và viết `docs/design-system/<app>.md`.
 - `check-design` báo lỗi D9 khi thiếu mục này.
+
+Bảng Screens có cột App từ C1: app của màn hình, một khóa của `apps:` trong `project.yaml`. `seo` chỉ viết SEO cho màn hình của app `seo: true`; `design.md` viết trước C1, không có cột này, thì mọi màn hình được tính là có thể cần SEO.
 
 Năm quy tắc:
 

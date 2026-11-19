@@ -712,3 +712,15 @@ test('the temp folder of the worktrees is its long path: pnpm --filter finds no 
   assert.equal(longTmpDir((path) => (path === 'C:/Users/HUUTUN~1/AppData/Local/Temp' ? long : path), 'C:/Users/HUUTUN~1/AppData/Local/Temp'), long);
   assert.equal(longTmpDir(() => { throw new Error('ENOENT'); }, 'C:/Temp'), 'C:/Temp', 'the path as it is when it cannot be read');
 });
+
+// C1 spec 6.6: after a run of seo, ao-step commits its change; a change outside docs/specs/ stops the command there.
+test('after may stop the command with a reason, once the run is on record with its notes', async () => {
+  const { world, gather } = specWorld();
+  const h = harness(world, SPEC_EFFECTS);
+  const after = async (run) => (run.purpose === 'design' ? { notes: ['ux changed a file'], stop: 'seo changed apps/user/x.ts, outside docs/specs/: ao-step committed nothing' } : []);
+  const { decision, made } = await h.run({ gather, after });
+  assert.deepEqual(h.calls.map(({ role, purpose }) => `${role} ${purpose}`), ['ba spec-write', 'ux design']);
+  assert.equal(decision.go, false);
+  assert.equal(decision.reason, 'seo changed apps/user/x.ts, outside docs/specs/: ao-step committed nothing');
+  assert.deepEqual(made.at(-1).notes, ['ux changed a file']);
+});

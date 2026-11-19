@@ -788,3 +788,34 @@ test('the hook reads the approved libraries of the project.yaml of the project i
   assert.match(JSON.parse(agent('pnpm add left-pad').stdout).hookSpecificOutput.permissionDecisionReason, /left-pad is not on dependencies\.approved/);
   assert.equal(agent('pnpm add zod').stdout, '');
 });
+
+// C1 spec 6.4: seo reads web pages, which can carry orders, and can send what it read out with WebFetch.
+test('seo reads only in the project, and no .env file but .env.example', () => {
+  const seo = (tool, input) => call('seo', tool, input);
+  allowed(seo('Read', { file_path: 'D:/work/shop/apps/web/messages/vi.json' }), 'a file of the project');
+  allowed(seo('Read', { file_path: 'D:/work/shop/apps/web/.env.example' }), '.env.example');
+  denied(seo('Read', { file_path: 'D:/work/shop/apps/web/.env.local' }), /\.env files are not read/, '.env.local');
+  denied(seo('Read', { file_path: 'D:/work/shop/.env' }), /\.env files are not read/, '.env');
+  denied(seo('Read', { file_path: 'C:/Users/me/.ssh/config' }), /outside the project/, 'outside');
+  denied(seo('Read', { file_path: 'C:/Users/me/AppData/Local/Temp/notes.txt' }), /outside the project/, 'the temp folder too');
+  allowed(call('fe-dev', 'Read', { file_path: 'D:/work/shop/apps/web/.env.local' }), 'other roles keep their reads');
+
+  allowed(seo('Grep', { pattern: 'title', glob: '**/*.json' }), 'a glob of one extension');
+  allowed(seo('Grep', { pattern: 'title', glob: 'apps/web/**/*.{ts,tsx}', output_mode: 'content' }), 'a set of extensions');
+  allowed(seo('Grep', { pattern: 'title', type: 'ts' }), 'a type');
+  allowed(seo('Grep', { pattern: 'title', path: 'apps/web/messages/vi.json', output_mode: 'content' }), 'one file');
+  denied(seo('Grep', { pattern: 'SECRET', output_mode: 'content' }), /give Grep a file/, 'the whole project');
+  denied(seo('Grep', { pattern: 'SECRET', path: 'apps/web' }), /give Grep a file/, 'a folder');
+  denied(seo('Grep', { pattern: 'SECRET', glob: '*' }), /give Grep a file/, 'any file');
+  denied(seo('Grep', { pattern: 'SECRET', glob: '.env*' }), /\.env files are not read/, '.env glob');
+  denied(seo('Grep', { pattern: 'SECRET', glob: '*.env' }), /\.env files are not read/, '*.env');
+  denied(seo('Grep', { pattern: 'SECRET', glob: '*.{json,env}' }), /\.env files are not read/, 'env in a set');
+  denied(seo('Grep', { pattern: 'SECRET', path: 'apps/web/.env.production' }), /\.env files are not read/, 'a .env path');
+  denied(seo('Grep', { pattern: 'x', glob: '*.json', path: 'C:/Users/me' }), /outside the project/, 'outside');
+  allowed(call('fe-dev', 'Grep', { pattern: 'x', output_mode: 'content' }), 'other roles keep their Grep');
+
+  allowed(seo('Glob', { pattern: 'apps/web/app/**/page.tsx' }), 'Glob in the project');
+  allowed(seo('Glob', { pattern: '**/.env.example' }), 'Glob of .env.example');
+  denied(seo('Glob', { pattern: '**/.env*' }), /\.env files are not read/, 'Glob of .env files');
+  denied(seo('Glob', { pattern: '*', path: 'C:/Users/me' }), /outside the project/, 'Glob outside');
+});

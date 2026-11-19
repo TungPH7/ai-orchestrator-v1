@@ -38,12 +38,12 @@ const read = (dir, path) => readFileSync(join(dir, path), 'utf8');
 
 test('add from the skeleton of a stack: the app, its place in project.yaml, deploy.yaml and roster.local.yaml, then pnpm install and the render', (t) => {
   const p = pnpmProject(t);
-  const result = addApp({ kitDir: ROOT, projectDir: p.dir, app: 'user', options: { stack: 'nextjs', public: true }, git: realGit, run: p.run });
+  const result = addApp({ kitDir: ROOT, projectDir: p.dir, app: 'user', options: { stack: 'nextjs', public: true, seo: true }, git: realGit, run: p.run });
   assert.equal(result.ok, true, result.notes.join('\n'));
   for (const path of ['apps/user/package.json', 'apps/user/Dockerfile', 'apps/user/src/app/page.tsx', '.claude/skills/vercel-react-best-practices/SKILL.md']) assert.ok(existsSync(join(p.dir, path)), path);
   const { config, errors } = readProjectConfig(read(p.dir, '.ai-orchestrator/project.yaml'));
   assert.deepEqual(errors, []);
-  assert.deepEqual(config.apps.user, { repo: 'shop', path: 'apps/user', profile: 'nextjs', dev: 'pnpm --filter ./apps/user run dev', port: { env: 'PORT', default: 3000 }, health: '/', public: true });
+  assert.deepEqual(config.apps.user, { repo: 'shop', path: 'apps/user', profile: 'nextjs', dev: 'pnpm --filter ./apps/user run dev', port: { env: 'PORT', default: 3000 }, health: '/', public: true, seo: true });
   // Block style, one key a line, as people write it.
   assert.match(read(p.dir, '.ai-orchestrator/project.yaml'), /^apps:\n {2}user:\n {4}repo: shop\n/m);
   const deploy = readDeployConfig(read(p.dir, '.ai-orchestrator/deploy.yaml'));
@@ -78,7 +78,7 @@ test('add from a template: its code without what the kit replaces, the files of 
   realGit(['add', '-A'], from);
   realGit(['commit', '--quiet', '-m', 'template'], from);
 
-  const result = addApp({ kitDir: ROOT, projectDir: p.dir, app: 'admin', options: { stack: 'react', from, public: true }, git: realGit, run: p.run });
+  const result = addApp({ kitDir: ROOT, projectDir: p.dir, app: 'admin', options: { stack: 'react', from, public: true, seo: false }, git: realGit, run: p.run });
   assert.equal(result.ok, true, result.notes.join('\n'));
   const text = result.notes.join('\n');
   assert.match(text, /Copied Dockerfile and Caddyfile of the stack react, which the template has not/);
@@ -105,7 +105,7 @@ test('add a Next.js template with next-intl: / redirects to the default locale, 
   realGit(['add', '-A'], from);
   realGit(['commit', '--quiet', '-m', 'template'], from);
 
-  const result = addApp({ kitDir: ROOT, projectDir: p.dir, app: 'user', options: { stack: 'nextjs', from, public: true }, git: realGit, run: p.run });
+  const result = addApp({ kitDir: ROOT, projectDir: p.dir, app: 'user', options: { stack: 'nextjs', from, public: true, seo: true }, git: realGit, run: p.run });
   assert.equal(result.ok, true, result.notes.join('\n'));
   assert.equal(readProjectConfig(read(p.dir, '.ai-orchestrator/project.yaml')).config.apps.user.health, '/en');
   const { config } = readDeployConfig(read(p.dir, '.ai-orchestrator/deploy.yaml'));
@@ -121,6 +121,9 @@ test('add refuses an npm project, a bad name, an app that is there, and a stack 
   assert.match(add('admin', {}).notes[0], /ao-kit add needs --stack, one of nextjs, react, spring-boot/);
   assert.match(add('api', { stack: 'spring-boot' }).notes[0], /the stack spring-boot has no skeleton of its own: ao-kit add needs --from <your template>/);
   assert.match(add('admin', { stack: 'angular' }).notes[0], /no stack angular in profiles\/stacks\//);
+  // C1 spec 6.1: a public app says whether a search engine indexes it; --seo goes with --public.
+  assert.match(add('web', { stack: 'nextjs', public: true }).notes[0], /web is public: say whether a search engine indexes its pages, with --seo .* or --no-seo/);
+  assert.match(add('web', { stack: 'nextjs', seo: true }).notes[0], /--seo goes with --public/);
   assert.equal(add('admin', { stack: 'react' }).ok, true);
   const before = read(p.dir, '.ai-orchestrator/project.yaml');
   assert.match(add('admin', { stack: 'react' }).notes[0], /admin is an app of \.ai-orchestrator\/project\.yaml already/);
@@ -163,7 +166,7 @@ test('add a Java app from a template: a package.json that runs its Maven wrapper
   const p = pnpmProject(t);
   const from = javaTemplate(t);
   // A public app first, as in shop: deploy.yaml needs one (D2), and the api is not public.
-  assert.equal(addApp({ kitDir: ROOT, projectDir: p.dir, app: 'user', options: { stack: 'nextjs', public: true }, git: realGit, run: p.run }).ok, true);
+  assert.equal(addApp({ kitDir: ROOT, projectDir: p.dir, app: 'user', options: { stack: 'nextjs', public: true, seo: true }, git: realGit, run: p.run }).ok, true);
   const result = addApp({ kitDir: ROOT, projectDir: p.dir, app: 'api', options: { stack: 'spring-boot', from, exclude: ['study-guide-impl/', 'prompt.md'] }, git: realGit, run: p.run });
   assert.equal(result.ok, true, result.notes.join('\n'));
   const text = result.notes.join('\n');

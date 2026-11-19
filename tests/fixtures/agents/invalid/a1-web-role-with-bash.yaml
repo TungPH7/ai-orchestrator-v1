@@ -1,0 +1,8 @@
+description: seo with Bash next to its web tools (C1 spec 6.4)
+rule: A1
+expect:
+  - "roles.seo.tools"
+patch:
+  - op: set
+    path: "roles.seo.tools"
+    value: [Bash, Edit, Write, WebFetch, WebSearch]

@@ -31,7 +31,7 @@ Mỗi mục có phần **Cách làm** (bấm vào đâu) và danh sách `- [ ]` 
 2. Bấm **•••** ở góc trên bên phải → **Add to group**.
 3. Chọn group, xác nhận.
 
-- [ ] Group `ao-agents`: thêm service account `orchestratoragent`, vai trò `pm`, `ba`, `ux`, `sa`, `fe-dev`, `be-dev`, `reviewer`, `security`, `qa`, `devops`
+- [ ] Group `ao-agents`: thêm service account `orchestratoragent`, vai trò `pm`, `ba`, `ux`, `sa`, `fe-dev`, `be-dev`, `reviewer`, `security`, `qa`, `devops`, `seo`
 - [ ] Group `ao-automation`: thêm service account `orchestratorci`, vai trò `automation`, `light-qa`
 
 **Kiểm lại:** mở từng group, tài khoản phải hiện ở tab **Members** hoặc **Agents**.
@@ -214,7 +214,7 @@ Workflow scheme chỉ gắn được work type đã có trên site, nên tạo �
 - [ ] `Affects versions`: trường có sẵn, không tạo; dùng cho `Bug`
 - [ ] Field `Severity`, type Select List (single choice), dùng cho `Bug`. Option: `Critical`, `High`, `Medium`, `Low`
 - [ ] `Fix versions`: trường có sẵn, không tạo; dùng cho `Story`, `Task`, `Bug`
-- [ ] Field `Agent`, type Select List (single choice), dùng cho `Story`, `Sub-task`, `Task`, `Bug`. Option: `Project Manager`, `Business Analyst`, `UI/UX designer`, `Solution Architect`, `Frontend Developer`, `Backend Developer`, `Code Reviewer`, `Security Engineer`, `Tester/QA Engineer`, `DevOps Engineer`
+- [ ] Field `Agent`, type Select List (single choice), dùng cho `Story`, `Sub-task`, `Task`, `Bug`. Option: `Project Manager`, `Business Analyst`, `UI/UX designer`, `Solution Architect`, `Frontend Developer`, `Backend Developer`, `Code Reviewer`, `Security Engineer`, `Tester/QA Engineer`, `DevOps Engineer`, `SEO Specialist`
 - [ ] Rework count: không tạo trường, số này được đếm từ lịch sử chuyển trạng thái
 - [ ] `Flagged`: trường có sẵn, không tạo; dùng cho `Epic`, `Story`, `Sub-task`, `Task`, `Bug`
 

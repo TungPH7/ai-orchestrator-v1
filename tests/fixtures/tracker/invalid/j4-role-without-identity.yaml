@@ -5,4 +5,4 @@ expect:
 patch:
   - op: set
     path: "identities[id=agents].roles"
-    value: [pm, ba, ux, sa, fe-dev, be-dev, reviewer, security, devops]
+    value: [pm, ba, ux, sa, fe-dev, be-dev, reviewer, security, devops, seo]
