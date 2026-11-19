@@ -29712,3 +29712,24 @@ Mình đã sửa xong tài liệu và dừng ở đây; chưa đụng tới code
 - **Mục 13:** điểm 6 ghi đề xuất mới về skill; thêm **điểm 9** về lần QA lại. Giờ có 9 điểm chờ bạn trả lời.
 
 **`quyet-dinh-da-duyet.md`:** thêm một ghi chú dưới bảng A1, nói câu "`qa` một lần mỗi Story" là câu viết tắt và trỏ tới mục 2 của spec. Quyết định đã duyệt không đổi.
+
+# Phiên 33 · Lượt 79 — 2026-11-19
+
+**Bạn:** "Tôi hỏi thêm:
+"cách chỉ dùng prompt" mà bạn nói nghĩa là như nào? Nghĩa là lúc lên plan, agent chính sẽ dừng lại hỏi nên làm SEO như nào, tôi trả lời rồi agent chính assign agent trong SDLC update spec của item à? Tôi chưa nắm được ý của bạn"
+
+**Claude:**
+
+Không phải vậy. "Chỉ dùng prompt" nghĩa là agent `seo` chạy chỉ với file hướng dẫn riêng của nó, không nạp thêm skill. Không ai dừng lại hỏi bạn về SEO, và luồng chạy giống hệt nhau dù có skill hay không.
+
+1. **Prompt** là file hướng dẫn riêng của một agent, ở đây là `agents/prompts/seo.md`. Kit dựng nó thành `.claude/agents/seo.md`. Mỗi lần chạy, agent đọc file này để biết phải làm gì, ghi vào đâu, khi nào dừng, và có một danh sách điểm cần kiểm.
+2. **Skill** là một file kiến thức nạp thêm khi agent chạy. Với `nextjs-seo`, đó là cách Next.js làm metadata, sitemap, canonical, JSON-LD, ảnh chia sẻ.
+3. **"Chỉ dùng prompt":** agent `seo` chạy với file hướng dẫn mà không có skill. Nó viết mục SEO dựa trên danh sách kiểm trong prompt và hiểu biết sẵn có của model. Có skill thì nó viết chắc tay hơn ở phần Next.js.
+4. **Luồng chạy, ở bước `/ao-spec`** (không phải lúc lên plan), `ao-step` tự gọi từng agent theo thứ tự:
+   1. `ba` viết SPEC;
+   2. `ux` viết `design.md`, nếu SPEC có màn hình;
+   3. `seo` viết mục `## SEO` vào SPEC, nếu Epic có trang công khai;
+   4. `sa` thêm yêu cầu phi chức năng;
+   5. `ba` mở PR tài liệu.
+5. **Phần của bạn:** duyệt SPEC ở cổng ①, như hiện nay. Mục SEO nằm ngay trong SPEC, nên bạn đọc nó cùng các phần khác. Muốn đổi gì thì comment như với mọi phần của SPEC.
+6. **Sau đó:** `fe-dev` làm theo mục SEO khi build, `reviewer` đối chiếu code với mục đó, và `qa` kiểm thẻ meta trên Development.
