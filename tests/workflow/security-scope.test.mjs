@@ -63,7 +63,7 @@ test('after a report of the new part, the next one still counts from the last fu
 
 // Pilot 1, review cost (option 3): security at max thought for 8–10 minutes on every PR, a 16-line kit copy included.
 // C1 spec 3.1, 3.2: the effort follows the tier of the PR; security does not run on a normal one.
-test('a full review by tier: security at max on a critical PR or an item with an effort label, high on a sensitive one, not at all on a normal one', async () => {
+test('a full review by tier and level: security at max on a critical PR or a heavy item, high on a sensitive one, not at all on a normal one', async () => {
   const { fullReviewEffort } = await import('../../lib/workflow/security-scope.mjs');
   const effort = (files, more = {}) => fullReviewEffort({ files, item: { key: 'SMP-5', effort: null, subtasks: [] }, gates, rosterEffort: 'max', ...more });
   assert.deepEqual(effort(['apps/api/src/notes/notes.shared.ts', 'apps/api/src/notes/notes.shared.spec.ts']), { effort: null, reason: 'the PR touches no sensitive or critical path', tier: 'normal' });
@@ -79,8 +79,10 @@ test('a full review by tier: security at max on a critical PR or an item with an
     assert.equal(effort([file], { role: 'reviewer', rosterEffort: 'high' }).effort, 'xhigh', `reviewer on ${file}`);
   }
   assert.deepEqual(effort(['.ai-orchestrator/lib/x.mjs']), { effort: 'max', reason: 'the PR touches the critical path .ai-orchestrator/lib/x.mjs', tier: 'critical' });
-  const labelled = { key: 'SMP-7', effort: null, subtasks: [{ key: 'SMP-8', effort: 'xhigh' }] };
-  assert.deepEqual(effort(['apps/web/src/app/notes/note-list.tsx'], { item: labelled }), { effort: 'max', reason: 'SMP-8 has the effort label xhigh', tier: 'critical' });
+  // A heavy item is reviewed at the efforts of a critical PR, whatever its paths (C1 spec section 2).
+  assert.deepEqual(effort(['apps/web/src/app/notes/note-list.tsx'], { level: 'heavy' }), { effort: 'max', reason: 'the item is at level heavy', tier: 'normal' });
+  assert.deepEqual(effort(['apps/web/src/app/notes/note-list.tsx'], { level: 'light' }).effort, null);
+  assert.equal(effort(['apps/api/src/notes/notes.controller.ts'], { level: 'light' }).effort, 'high', 'the tier raises a light item, never lowers it');
   assert.equal(effort(['apps/web/a.tsx'], { truncated: true }).effort, 'max', 'GitHub listed only part of the files');
 });
 

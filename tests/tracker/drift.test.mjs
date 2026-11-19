@@ -144,7 +144,7 @@ test('a transition without its Restrict rule, or restricted to other groups', ()
       transition(s, 'AO sub-task', 'Start').restrict = ['ao-humans'];
     }),
     [
-      { kind: 'restrict-missing', message: 'AO standard: transition "QA fail" from "In QA" to "In Progress" has no Restrict rule, expected groups "ao-agents"' },
+      { kind: 'restrict-missing', message: 'AO standard: transition "QA fail" from "In QA" to "In Progress" has no Restrict rule, expected groups "ao-agents", "ao-automation"' },
       { kind: 'restrict-groups', message: 'AO sub-task: transition "Start" from "To Do" to "In Progress" is restricted to "ao-humans", expected "ao-agents"' },
     ],
   );

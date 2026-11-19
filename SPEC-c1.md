@@ -99,6 +99,10 @@ Bảng A1 của file quyết định ghi "`qa` một lần mỗi Story, theo AC"
   - review hay QA tìm ra Critical hoặc High thì mức tăng một bậc.
 
   Khi mức tăng sau một lượt review ở mức thấp, `ao-step` review lại head hiện tại ở mức mới.
+
+  **Quyết định khi làm T10 (Lượt 88):** chỉ finding Critical hay High của review nâng mức. QA FAIL không tự nâng, vì hai lẽ:
+  - báo cáo QA không ghi mức cho lỗi;
+  - nếu mỗi QA FAIL nâng item Chuẩn lên Nặng, thì lần QA lại ở mức Chuẩn (chỉ kiểm tiêu chí đã FAIL, mục trên) không bao giờ dùng tới.
 - **Chỉ bạn giảm mức:** đổi nhãn, kèm một comment ghi lý do. Không giảm được xuống dưới mức mà tầng đường dẫn đòi.
 - **Bước đã chạy xong thì không chạy lại.** Mức mới áp từ bước kế tiếp, trừ việc review lại khi mức tăng.
 
@@ -109,6 +113,8 @@ Bảng A1 của file quyết định ghi "`qa` một lần mỗi Story, theo AC"
 4. Phiên chính viết báo cáo QA ngắn từ template `qa-report.md` bằng token CI, rồi bạn Accept.
 
 Như vậy mọi item vẫn có báo cáo QA.
+
+**Quyết định khi làm T10 (Lượt 88):** Pick up và QA fail của item Nhẹ đứng tên một role mới, `light-qa`, thuộc identity `automation` (token CI, group `ao-automation`), chứ không phải `automation`. Lý do: `jira-sync` tự chạy mọi transition của `automation` khi guard đạt. Pick up không có guard, nên nếu thuộc `automation` thì `jira-sync` sẽ tự kéo mọi item Ready for QA sang In QA. Bạn cần thêm group `ao-automation` vào rule Restrict của hai transition này trên Jira ([docs/jira-setup.md](docs/jira-setup.md)).
 
 **Task finding của Epic:** khi một review có Medium hay Low không sửa ngay, `ao-step` thêm chúng vào một Task finding chung của Epic.
 - `ao-step` tạo Task này bằng token CI khi Epic có finding đầu tiên, nhãn `ao-findings`, nối Blocks tới Epic.

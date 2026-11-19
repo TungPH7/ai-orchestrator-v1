@@ -121,7 +121,15 @@ ${report('FAIL')}` },
     { created: '2026-11-11T09:00:00.000+0700', body: report('PASS') },
     { created: '2026-11-12T11:00:00.000+0700', body: 'Business Analyst: AC cũ và mới' },
   ] };
-  assert.deepEqual(await readLatestQaReport(client, 'DEMO-21'), { result: 'FAIL', at: AT });
+  assert.deepEqual(await readLatestQaReport(client, 'DEMO-21'), { result: 'FAIL', at: AT, id: null, failed: [] });
+  // Its id and its failed criteria, for a QA again of only those (C1 spec section 2).
+  const failing = { getAll: async () => [{ id: '10592', created: '2026-11-12T10:15:00.000+0700', body: `${report('FAIL')}
+| Acceptance criterion | Result | Evidence |
+|---|---|---|
+| AC1: a | PASS | x |
+| AC2: b | FAIL | y |
+` }] };
+  assert.deepEqual(await readLatestQaReport(failing, 'DEMO-21'), { result: 'FAIL', at: AT, id: '10592', failed: ['AC2: b'] });
   assert.equal(await readLatestQaReport({ getAll: async () => [] }, 'DEMO-21'), null);
 });
 

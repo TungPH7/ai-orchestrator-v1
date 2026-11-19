@@ -189,3 +189,57 @@ test('/ao-qa of an ops Task: no PR and no deploy, qa checks its Verification wit
   const early = decide(qaFacts({ item: { type: 'Task', workType: 'task', labels: ['ao-ops'], ops: true, state: 'in-progress', status: 'In Progress' }, pr: null, qa: null }));
   assert.match(early.reason, /^DEMO-21 is In Progress, not Ready for QA/);
 });
+
+// C1 spec section 2: an item of level light has no qa run. ao-step picks it up with the CI token, prints what to check,
+// and posts the report the main session writes; the guards stay, so the human still Accepts on a PASS.
+const LIGHT_TASK = { key: 'DEMO-30', type: 'Task', workType: 'task', summary: 'Hướng dẫn xóa sản phẩm', level: 'light' };
+const DESCRIPTION = 'Goal\nViết hướng dẫn.\nVerification\nChữ trên nút khớp file i18n.\nMở S1 trên Development: ảnh khớp màn hình.\nDefinition of Ready\nCó plan.\n';
+const REPORT = '# QA report: DEMO-30 Hướng dẫn xóa sản phẩm\n\n## Result\n\nPASS\n\n## Acceptance Criteria\n\n| Acceptance criterion | Result | Evidence |\n|---|---|---|\n| Chữ trên nút khớp file i18n | PASS | so với vi.json |\n';
+
+test('/ao-qa of a light item: picked up by a script, then the lines to check, then the report of the main session', () => {
+  const start = decide(qaFacts({ item: LIGHT_TASK }));
+  assert.deepEqual(start.runs, [{ action: 'qa-light-start', key: 'DEMO-30', continue: true }]);
+  const picked = decide(qaFacts({ item: { ...LIGHT_TASK, state: 'in-qa', status: 'In QA' }, description: DESCRIPTION }));
+  assert.equal(picked.go, false);
+  assert.match(picked.reason, /^DEMO-30 is at level light: no qa run\. Check each line below on Development/);
+  assert.match(picked.next, /--light-report \.ai\/runs\/DEMO-30\/light-report\.md$/);
+  assert.deepEqual(picked.lines.slice(-3), ['To check:', '  Verification: Chữ trên nút khớp file i18n.', '  Verification: Mở S1 trên Development: ảnh khớp màn hình.']);
+  const posted = decide(qaFacts({ item: { ...LIGHT_TASK, state: 'in-qa', status: 'In QA' } }), { lightReport: REPORT });
+  assert.deepEqual(posted.runs, [{ action: 'qa-light-report', key: 'DEMO-30', result: 'PASS', body: REPORT }]);
+  const passed = decide(qaFacts({ item: { ...LIGHT_TASK, state: 'in-qa', status: 'In QA' }, qaReport: { result: 'PASS', at: '2026-11-20T08:00:00.000Z', id: '10700', failed: [] } }));
+  assert.match(passed.next, /click Accept on DEMO-30/);
+});
+
+test('a light report that is not about the item, or has no result, is refused', () => {
+  const inQa = qaFacts({ item: { ...LIGHT_TASK, state: 'in-qa', status: 'In QA' } });
+  assert.match(decide(inQa, { lightReport: REPORT.replace('DEMO-30', 'DEMO-31') }).reason, /not about DEMO-30/);
+  assert.match(decide(inQa, { lightReport: REPORT.replace('PASS\n\n## Acceptance', 'OK\n\n## Acceptance') }).reason, /no PASS, FAIL or NOT TESTED/);
+});
+
+test('a light item whose PR touches a critical path is QA-ed by qa as before; one that failed QA stays light', () => {
+  assert.equal(decide(qaFacts({ item: LIGHT_TASK, pr: { tier: 'critical' } })).runs[0].role, 'qa');
+  assert.deepEqual(decide(qaFacts({ item: { ...LIGHT_TASK, rework: 1 } })).runs, [{ action: 'qa-light-start', key: 'DEMO-30', continue: true }], 'a QA fail keeps it light: the main session checks it again');
+  assert.equal(decide(qaFacts({ item: { ...LIGHT_TASK, ops: true } })).runs[0].purpose, 'qa-ops', 'an ops Task keeps its road');
+});
+
+test('QA again at level standard checks only the criteria that failed, with the whole E2E suite; at heavy, every one', () => {
+  const failed = { result: 'FAIL', at: '2026-11-20T08:00:00.000Z', id: '10592', failed: ['AC2: Given giỏ có 2 dòng, When xóa một dòng, Then còn một dòng', 'AC4: Given …'] };
+  const again = decide(qaFacts({ item: { rework: 1 }, qaReport: failed }));
+  const { prompt } = again.runs[0];
+  assert.match(prompt, /This is QA again: your report 10592 of 2026-11-20 failed 2 criteria/);
+  assert.match(prompt, /- AC2: Given giỏ có 2 dòng/);
+  assert.match(prompt, /PASS ở báo cáo 10592/);
+  assert.match(prompt, /Run the whole E2E suite as always/);
+  assert.doesNotMatch(decide(qaFacts({ item: { rework: 1, level: 'heavy' }, qaReport: failed })).runs[0].prompt, /QA again/, 'heavy: every criterion');
+  assert.doesNotMatch(decide(qaFacts({ qaReport: { ...failed, result: 'NOT TESTED' } })).runs[0].prompt, /QA again/, 'not after a NOT TESTED');
+  assert.doesNotMatch(decide(qaFacts()).runs[0].prompt, /QA again/, 'not on a first QA');
+});
+
+// C1 spec section 2: before qa runs, the Medium and Low of the merged PR go to the findings Task of the Epic.
+test('/ao-qa records the Medium and Low of the PR in the findings Task of the Epic first, then runs qa', () => {
+  const minorFindings = [{ role: 'reviewer', severity: 'Low', where: 'a.ts:1', finding: 'x', id: '01234567' }];
+  const epic = { key: 'DEMO-20' };
+  const first = decide(qaFacts({ epic, pr: { minorFindings }, findings: { key: null, recorded: false } }));
+  assert.deepEqual(first.runs, [{ action: 'findings-task', key: 'DEMO-21', epic: 'DEMO-20', task: null, pr: 15, findings: minorFindings, continue: true }]);
+  assert.equal(decide(qaFacts({ epic, pr: { minorFindings }, findings: { key: 'DEMO-40', recorded: true } })).runs[0].role, 'qa');
+});

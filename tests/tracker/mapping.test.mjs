@@ -50,7 +50,7 @@ test('validate script also checks the mapping next to the contract folder', () =
 });
 
 test('validate script prints mapping errors and exits non-zero', (t) => {
-  const text = readFileSync(join(ROOT, 'tracker', 'jira.yaml'), 'utf8').replace('roles: [automation]', 'roles: [automation, qa]');
+  const text = readFileSync(join(ROOT, 'tracker', 'jira.yaml'), 'utf8').replace('roles: [automation, light-qa]', 'roles: [automation, light-qa, qa]');
   const root = makeKit(t, { 'tracker/jira.yaml': text });
 
   const result = spawnSync(process.execPath, [VALIDATE_SCRIPT, join(root, 'contract')], { encoding: 'utf8' });

@@ -31,6 +31,24 @@ Claude của phiên chính không tự mở agent, cũng không tự sửa Jira 
 - Một Medium phải ghi cách tái hiện: trong ô Finding có `Tái hiện:`, rồi input hay trạng thái nào dẫn tới kết quả sai nào. Thiếu dòng này thì kit tính nó là Low, và dòng trên ghi lý do. Bảng tiêu chí của từng mức nằm trong template `review-report.md` và prompt của `reviewer`.
 - `/ao-fix <PR>` không kèm việc cần sửa, khi không còn gì chặn, dừng với lý do "nothing blocks the merge".
 
+**Mức quy trình** (C1, [SPEC-c1.md](../SPEC-c1.md) mục 2). Mỗi Story, Task, Bug có một mức, ghi bằng nhãn `ao-level-light`, `ao-level-standard` hay `ao-level-heavy`.
+- **Ai ghi mức:**
+  - với item trong Epic, `sa` đề xuất ở dòng Task List của `plan.md`, bạn duyệt ở gate ②, rồi `ba` gắn nhãn;
+  - với Task hay Bug ngoài Epic, `/ao-intake` đề xuất, và bạn OK bản nháp là duyệt luôn.
+  - Không có nhãn thì là Chuẩn.
+- **Mức tự tăng:**
+  - PR chạm tầng Nguy cấp thì item thành Nặng;
+  - review tìm ra Critical hay High thì mức tăng một bậc, và role đã review head ở effort thấp hơn sẽ review lại head đó ở effort mới.
+  - QA FAIL không tự nâng mức: báo cáo QA không ghi mức cho lỗi, và nếu nâng thì item Chuẩn không còn được QA lại theo cách chỉ kiểm tiêu chí đã FAIL.
+  - Chỉ bạn hạ mức, bằng cách đổi nhãn.
+- **Review theo mức:** item Nặng được review như PR Nguy cấp (`reviewer` `xhigh`, `security` `max`). Item Nhẹ và Chuẩn review theo tầng đường dẫn.
+- **QA theo mức:**
+  - **Nhẹ:** không có lượt `qa`. `/ao-qa` chuyển item sang In QA bằng token CI và in các dòng cần kiểm. Phiên chính kiểm từng dòng, viết báo cáo ngắn vào `.ai/runs/<KEY>/light-report.md`, rồi chạy `/ao-qa <KEY> --light-report …`. `ao-step` đăng báo cáo bằng token CI, và chuyển item qua QA fail khi kết quả là FAIL. Bạn vẫn bấm Accept sau PASS.
+  - **Chuẩn:** lần QA lại sau FAIL chỉ kiểm bằng tay các tiêu chí đã FAIL, cộng cả bộ E2E; tiêu chí khác ghi "PASS ở báo cáo <comment>".
+  - **Nặng:** lần QA lại kiểm đủ mọi tiêu chí, như trước.
+- **Task finding của Epic:** trước lượt QA, `/ao-qa` đưa các finding Medium và Low còn trên head của PR vào Task finding của Epic (nhãn `ao-findings`). Lần đầu, `ao-step` tạo Task đó bằng token CI, làm con của Epic và chặn Epic; sau đó mỗi PR là một comment. Bạn Refine Task này khi muốn sửa. Item ngoài Epic thì không có Task finding.
+- **Việc của bạn trên Jira:** role `light-qa` (phiên chính, dùng token CI) cần quyền Pick up và QA fail. Thêm group `ao-automation` vào rule Restrict của hai transition này trong workflow `AO standard` ([jira-setup.md](jira-setup.md)).
+
 **Chi phí trên mỗi AC:** `/ao-status <EPIC>` in tổng chi phí của Epic và các item của nó, chia cho số AC còn hiệu lực trong SPEC (AC ghi "(bỏ)" không tính). Lượt chưa biết chi phí được đếm riêng, không tính là 0. Mốc so: SHOP-7 tốn 21,6 USD trên mỗi AC.
 
 **Câu hỏi của `ba`, `ux` và `sa`.** Khi có câu hỏi, lệnh dừng và Claude chuyển câu hỏi cho bạn trong chat. Claude ghi câu trả lời của bạn vào `.ai/runs/<KEY>/answers.md`, rồi chạy lại với `--answers`. Agent đã hỏi sẽ làm tiếp trong chính session của nó.

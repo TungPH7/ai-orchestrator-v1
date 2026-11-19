@@ -31,11 +31,16 @@ design system of an app, when design.md has a Design System item marked "mới" 
 docs/design-system/<app>.md: a Task fe-dev "Design system của <app>" before every Story with a screen of that app.
 The details of each item live in Jira, written from templates/story.md or templates/task.md.
 After each title: the dev roles that build the item (be-dev, fe-dev, devops), with "(Sub-task)" when each role gets a
-Sub-task of a Story; and, only for a hard item, its effort xhigh or max with the reason. You approve the efforts at gate
-② plan-approval, and ba turns roles and efforts into labels. -->
+Sub-task of a Story; the level of the item, light, standard or heavy (C1 spec section 2), with the reason when it is not
+standard; and, only for a hard item, its effort xhigh or max with the reason. You approve the levels and the efforts at
+gate ② plan-approval, and ba turns roles, levels and efforts into labels.
+Levels: light for an item whose mistake costs little, such as a docs Task or a change of copy, with no logic: one
+review at high, no security, and the main session checks it in place of a qa run. heavy where a mistake costs much:
+money, security, data that exists: reviewer at xhigh, security at max, fixes until no Critical or High. standard for
+the rest. A PR on a critical path makes its item heavy whatever its label. -->
 
 ### Phase 1: <name>
-- [ ] <KEY>: <Story or Task title> · <roles> · effort <xhigh | max>: <reason, only for a hard item>
+- [ ] <KEY>: <Story or Task title> · <roles> · level <light | standard | heavy>: <reason, unless standard> · effort <xhigh | max>: <reason, only for a hard item>
 
 ### Checkpoint: <name>
 - [ ] <What must work before the next phase>
@@ -74,12 +79,12 @@ Làm module auth dùng chung trước, rồi đăng nhập bằng email và mậ
 
 ## Task List
 ### Phase 1: Nền
-- [ ] DEMO-11: Module auth dùng chung: băm mật khẩu, phát JWT · be-dev
+- [ ] DEMO-11: Module auth dùng chung: băm mật khẩu, phát JWT · be-dev · level heavy: băm mật khẩu và ký JWT
 ### Checkpoint: Nền
 - [ ] Unit test của module auth xanh
 ### Phase 2: Đăng nhập
-- [ ] DEMO-12: Đăng nhập bằng email và mật khẩu (Sub-task BE DEMO-13, FE DEMO-14) · be-dev, fe-dev (Sub-task) · effort xhigh: kiểm mật khẩu và đặt cookie
-- [ ] DEMO-15: Khóa tài khoản 15 phút sau 5 lần nhập sai · be-dev
+- [ ] DEMO-12: Đăng nhập bằng email và mật khẩu (Sub-task BE DEMO-13, FE DEMO-14) · be-dev, fe-dev (Sub-task) · level heavy: kiểm mật khẩu và đặt cookie · effort xhigh: kiểm mật khẩu và đặt cookie
+- [ ] DEMO-15: Khóa tài khoản 15 phút sau 5 lần nhập sai · be-dev · level standard
 ### Checkpoint: Đăng nhập
 - [ ] E2E test của DEMO-12 và DEMO-15 pass trên Development
 

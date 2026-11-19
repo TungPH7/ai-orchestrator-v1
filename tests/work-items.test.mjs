@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readContract } from '../lib/contract.mjs';
+import { NON_AGENT_ROLES } from '../lib/rules/references.mjs';
 import { CONTRACT_DIR } from './helpers/kit.mjs';
 
 const contract = readContract(CONTRACT_DIR);
@@ -31,7 +32,7 @@ test('the 7 fields of spec 2.3 and the Agent field of the tracker-integration sp
 });
 
 test('Agent lists the 10 agent roles, with their names from roles.yaml', () => {
-  const agentRoles = contract.roles.filter(({ id }) => !['human', 'automation'].includes(id)).map(({ id, name }) => ({ id, name }));
+  const agentRoles = contract.roles.filter(({ id }) => !NON_AGENT_ROLES.includes(id)).map(({ id, name }) => ({ id, name }));
 
   assert.equal(agentRoles.length, 10);
   assert.deepEqual(contract.work_item_fields.find(({ id }) => id === 'agent').values, agentRoles);

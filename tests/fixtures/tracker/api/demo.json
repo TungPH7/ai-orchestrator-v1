@@ -1217,7 +1217,7 @@
                   "parameters": {
                     "accountIds": "",
                     "roleIds": "",
-                    "groupIds": "6366693c-304b-4564-a8d1-97e10e0a7278",
+                    "groupIds": "6366693c-304b-4564-a8d1-97e10e0a7278,4b5aeeb0-e374-49d6-a429-879ca97f6ec0",
                     "permissionKeys": "",
                     "groupCustomFields": "",
                     "allowUserCustomFields": "",
@@ -1286,7 +1286,7 @@
                   "parameters": {
                     "accountIds": "",
                     "roleIds": "",
-                    "groupIds": "6366693c-304b-4564-a8d1-97e10e0a7278",
+                    "groupIds": "6366693c-304b-4564-a8d1-97e10e0a7278,4b5aeeb0-e374-49d6-a429-879ca97f6ec0",
                     "permissionKeys": "",
                     "groupCustomFields": "",
                     "allowUserCustomFields": "",
