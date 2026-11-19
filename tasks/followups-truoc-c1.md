@@ -169,7 +169,7 @@ Các mục này không tốn token agent, nhưng làm item bị kẹt, và phiê
 13. **Chi phí âm ở lượt bị dừng khi đang chạy tiếp một phiên.**
 14. **Task vận hành không có PR**, gộp với **Task dữ liệu của `devops`**. Phần cho `devops` nhận basic auth cần bạn bật.
 
-    **Xong 2026-11-19: kit PR #311, merge `7254716`** (bạn duyệt ở Lượt 71). Còn việc của bạn: bấm thêm transition Hand over trên Jira, rồi chạy `jira:check`.
+    **Xong 2026-11-19: kit PR #311, merge `7254716`** (bạn duyệt ở Lượt 71). Bạn đã thêm transition Hand over trên Jira; `npm run jira:check -- --space SHOP` khớp mapping, kể cả giới hạn nhóm `ao-agents` (Lượt 72).
 
     **Đề xuất đã duyệt (Lượt 71):** mục này đổi hợp đồng SDLC và workflow trên Jira, nên chưa nằm trong kit PR #309. Đề xuất:
     - **Nhận diện:** một Task có nhãn `ao-ops` là Task vận hành. `ba` gắn nhãn này khi việc không có commit, như thêm dữ liệu qua API.

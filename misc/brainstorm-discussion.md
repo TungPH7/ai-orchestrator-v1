@@ -29476,3 +29476,34 @@ Các bản sửa này vào `shop` ở lần chép kit sau. Hai Low về kiến t
 2. **Jira:** thêm transition Hand over theo các bước ở tin trước, rồi nhắn "xong Jira".
 3. **Spec C1:** trả lời 8 điểm ở mục 13 của `SPEC-c1.md`.
 4. **Hai worktree khác:** `ai-orchestrator/.claude/worktrees/agent-abb253dc…` và `ai-orchestrator-c2`. Bạn muốn xóa không?
+
+# Phiên 33 · Lượt 72 — 2026-11-19
+
+**Bạn:** "1. Đã merge
+2. Tôi nhớ là đã thêm transition Hand over rồi, bạn check lại giúp tôi
+3. Tôi đang đọc, sẽ trả lời sau khi đọc xong
+4. 2 worktree này xóa thì có bị ảnh hưởng gì không? Còn dùng chúng không?"
+
+**Claude:**
+
+**1. PR #78 đã merge thành `2a68e0c`, và `jira-sync` đã gỡ cờ Needs you.**
+- **SHOP-77 vẫn ở In Review.** Để sang Ready for QA, nó còn cần CI của `develop` chạy xong và deploy lên Development thành công. CI đó đang chạy.
+- **Bước kế là QA SHOP-77,** một lượt agent `qa` trả phí. QA của lần chép kit trước (SHOP-74) tốn 1,77 USD, khoảng 9 phút.
+- **Bạn nhắn "chạy QA" thì mình xếp lệnh:** chờ deploy xong, chạy QA, báo kết quả, rồi hỏi bạn Accept.
+
+**2. Bạn đã thêm transition Hand over đúng rồi.**
+- `npm run jira:check -- --space SHOP` báo "Jira space SHOP matches tracker\jira.yaml".
+- Lệnh này kiểm từng transition: trạng thái nguồn, trạng thái đích và giới hạn nhóm `ao-agents`.
+- Bốn dòng "Check by hand" in ra lần nào cũng có, vì đó là các mục chỉ kiểm được bằng tay. Chúng không phải lỗi.
+- Mình đã đánh dấu việc này xong trong `followups-truoc-c1.md`.
+
+**3. Spec C1:** mình chờ bạn đọc xong.
+
+**4. Hai worktree: xóa không ảnh hưởng gì, và không còn dùng.**
+- **`agent-abb253dc…`, nhánh `fix/pr21-security`:** là kit PR #294, đã merge ngày 15/11.
+- **`ai-orchestrator-c2`, nhánh `fix/build-resume-before-ledger`:** là kit PR #301, cũng đã merge ngày 15/11.
+- **Không mất việc gì.** Cả hai không có thay đổi chưa commit, không có commit chưa push, và nội dung đã nằm trong `main` của kit.
+- **`node_modules` an toàn.** Thư mục `node_modules` của mỗi worktree là thư mục thật, bên trong không có liên kết nào. Xóa chúng không đụng tới `node_modules` của clone chính, tức không lặp lại sự cố lần trước.
+- **Nhánh:** mình sẽ xóa luôn hai nhánh này, ở máy và trên GitHub. Phần mất đi chỉ là các commit lẻ trước khi gộp; bản gộp vẫn ở `main`.
+
+Bạn nhắn "xóa" thì mình làm.
