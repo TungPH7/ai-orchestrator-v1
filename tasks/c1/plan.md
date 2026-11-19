@@ -35,8 +35,9 @@ Làm theo mười bước của spec mục 9. Mỗi bước là một kit PR, v�
    - Danh sách `roles` của stage vẫn giữ, và `npm run validate` kiểm mỗi role trong `runs` có trong `roles` của stage.
    - Mình sửa câu "file mới" trong spec ở T1.
 4. **Bộ so quyết định trước và sau khi dời thứ tự** (bước 1):
-   - một test chạy `decideStep` trên mọi fixture hiện có của `tests/workflow/` với bản cũ và bản mới, rồi so từng quyết định;
-   - bản cũ được giữ trong test dưới dạng ảnh chụp kết quả (snapshot JSON trong `tests/fixtures/`), chụp trước khi sửa code.
+   - trước khi sửa code, một bộ ghi tạm ghi lại mọi lần gọi `decideStep` của cả bộ test, cùng facts và options; code cũ chạy lại các lần gọi đó để có kết quả mốc;
+   - sau khi sửa, code mới chạy lại đúng các lần gọi đó, rồi so từng quyết định với mốc;
+   - bản ghi nằm ở thư mục tạm, không commit, vì nặng và chỉ dùng một lần; bộ test hiện có vẫn là lớp giữ lâu dài. Đổi khi làm T3 (Lượt 88): bản đầu của plan định commit snapshot vào `tests/fixtures/`.
 5. **Effort và mức cùng một chỗ.** `reviewRuns` gọi `effectiveLevel` và `pathTier`, rồi lấy mức cao hơn. `fullReviewEffort` của `security-scope.mjs` được thay bằng hàm này, và `security_review.roster_effort_paths` bị bỏ (bước 3, 4).
 6. **Mức của item là nhãn Jira `ao-level-*`,** đọc qua `facts`, như nhãn `ao-effort-*` hiện có.
    - Không có nhãn thì mức là Chuẩn, nên mọi item cũ giữ hành vi cũ. Điều này đúng với luật "với cùng facts, hành vi cũ giữ y như trước" của spec mục 11.
@@ -121,7 +122,7 @@ Số đo thật của C1 (tiêu chí 7: USD trên mỗi AC; so `xhigh` với `hi
 2. **Một lượt `seo` không có Bash vẫn đọc được Jira qua MCP và comment được,** và gh-guard không chặn nhầm các lệnh gọi đó.
 3. **Giá trị "SEO Specialist" của Agent Field** đã có trên Jira (bạn bấm thêm), và `npm run jira:check` khớp.
 
-Tiền đề 1 và 2 cần một lượt agent thử ở `ao-pilot`, dưới 0,5 USD. Bạn duyệt plan là duyệt luôn lượt thử này.
+Tiền đề 1 và 2 cần một lượt agent thử ở `ao-pilot`, dưới 0,5 USD. Bạn duyệt plan là duyệt luôn lượt thử này. Kết quả (Lượt 88): tiền đề 1 và 2 đạt, 0,17 USD; tiền đề 3 dời sang T15 ([verification.md](verification.md)).
 
 ## Câu hỏi mở
 

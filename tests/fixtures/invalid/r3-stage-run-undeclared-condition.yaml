@@ -1,0 +1,12 @@
+description: a run of a stage whose when or done names a condition that lib/workflow/conditions.mjs does not have
+rule: R3
+expect:
+  - "stages[id=spec].runs[1].when"
+  - "stages[id=spec].runs[1].done"
+patch:
+  - op: set
+    path: "stages[id=spec].runs"
+    value:
+      - { role: ba, purpose: spec-write, done: spec-written }
+      - { role: ux, purpose: design, when: spec-has-pictures, done: pictures-drawn }
+      - { role: ba, purpose: docs-pr }

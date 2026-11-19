@@ -245,6 +245,7 @@ stages:
 
 **Đọc file này:**
 - `when` chỉ được nêu tên một điều kiện trong danh sách cố định `lib/workflow/conditions.mjs`. Đó là các hàm thuần trên facts, như `spec-has-screens` (`SCREENS.test(docs.spec)` hiện nay).
+- **Thêm khi làm T3 (Lượt 88):** mỗi run còn có `done`, cũng là tên một điều kiện: đầu ra của run đã có, như `design-written`, nên run không chạy lại. Một điều kiện trả `null` khi đầu vào của nó chưa có, như màn hình của một SPEC mà `ba` chưa viết; run đó vẫn vào danh sách dự báo, kèm chữ của điều kiện. Khối trên viết gọn nên không ghi `done`; bản đủ nằm trong `contract/stages.yaml`.
 - `npm run validate` báo lỗi khi gặp tên điều kiện lạ, hay role không có trong `roles.yaml`.
 - `decideSpec`, `decidePlan`, `decideBuild`, `decideReview` đọc danh sách thay cho mảng viết cứng.
 - Cùng facts thì quyết định phải giống hệt như trước: một bộ test so quyết định trên mọi fixture hiện có của `tests/workflow/` trước và sau khi đổi.
