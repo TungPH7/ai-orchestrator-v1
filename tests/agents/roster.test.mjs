@@ -53,7 +53,7 @@ test('model and effort of each role (spec 2.2)', () => {
     sa: 'opus xhigh',
     'fe-dev': 'opus high',
     'be-dev': 'opus high',
-    reviewer: 'opus xhigh',
+    reviewer: 'opus high',
     security: 'opus max',
     qa: 'opus high',
     devops: 'opus high',

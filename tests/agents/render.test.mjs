@@ -32,7 +32,7 @@ test('the frontmatter of an agent: name, description, tools, model, effort and s
     description: sources.roster.roles.reviewer.description,
     tools: 'Read, Glob, Grep, Bash, Write, mcp__atlassian__getJiraIssue, mcp__atlassian__searchJiraIssuesUsingJql, mcp__atlassian__executeRead',
     model: 'opus',
-    effort: 'xhigh',
+    effort: 'high',
     skills: ['code-review-and-quality'],
     maxTurns: sources.roster.roles.reviewer.max_turns,
   });

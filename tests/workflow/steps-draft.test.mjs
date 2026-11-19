@@ -18,7 +18,7 @@ const HEAD = 'd1d2d3d4d5d6d7d8d9dadbdcdddedfe0e1e2e3e4';
 
 const sub = (key, role, state = 'done') => ({ key, workType: 'sub-task', state, status: state === 'done' ? 'Done' : 'To Do', labels: [`ao-${role}`], role, roles: [role], effort: null });
 const draft = (more = {}) => ({
-  number: 15, title: 'feat(cart): remove a line from the cart (DEMO-21)', state: 'open', merged: false, draft: true, headRef: 'feature/DEMO-21-remove-line', headSha: HEAD, base: 'develop', files: ['apps/api/src/cart.ts'], protectedPaths: [], docsEpic: null,
+  number: 15, title: 'feat(cart): remove a line from the cart (DEMO-21)', state: 'open', merged: false, draft: true, headRef: 'feature/DEMO-21-remove-line', headSha: HEAD, base: 'develop', files: ['apps/api/src/cart/cart.service.ts'], protectedPaths: [], docsEpic: null,
   ci: { green: true, failed: false, pending: false }, reports: { reviewer: null, security: null }, changesRequested: false, approved: false, securityCompare: null, ...more,
 });
 const buildFacts = (prMore = {}) => ({

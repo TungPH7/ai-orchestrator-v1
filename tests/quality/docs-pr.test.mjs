@@ -107,7 +107,7 @@ test('before gate ② a docs PR waits for it, and asks for no report or approval
 test('a docs PR whose head came after you approved the plan is reviewed like any PR: reports and your approval', () => {
   const decision = decide(late);
   assert.equal(decision.action, 'wait');
-  assert.deepEqual(decision.missing, ['reviewer report on head d0c5d0c', 'security report on head d0c5d0c', 'approval on head d0c5d0c']);
+  assert.deepEqual(decision.missing, ['reviewer report on head d0c5d0c', 'approval on head d0c5d0c']);
   assert.match(decision.note, /^head d0c5d0c came after Approve plan of DEMO-20 at 2026-11-04T03:00:00\.000Z, so it is reviewed like any PR$/);
 });
 
@@ -182,7 +182,7 @@ test('a run says what a docs PR waits for, and why a late one is reviewed like a
   assert.deepEqual((await runOnce({ change: planning })).lines, ['Waiting #14: the docs PR of DEMO-20: DEMO-20 past gate plan-approval (it is Planning)']);
   const lateRun = await runOnce({ change: late });
   assert.deepEqual(lateRun.lines, [
-    'Waiting #14: reviewer report on head d0c5d0c; security report on head d0c5d0c; approval on head d0c5d0c (head d0c5d0c came after Approve plan of DEMO-20 at 2026-11-04T03:00:00.000Z, so it is reviewed like any PR)',
+    'Waiting #14: reviewer report on head d0c5d0c; approval on head d0c5d0c (head d0c5d0c came after Approve plan of DEMO-20 at 2026-11-04T03:00:00.000Z, so it is reviewed like any PR)',
   ]);
   assert.deepEqual((await runOnce({ jira: false })).lines, ['Waiting #14: the docs PR of DEMO-20: JIRA_CI_TOKEN, for merge-gate to read DEMO-20']);
 });
@@ -206,7 +206,7 @@ test('audit passes the merge of a docs PR that met its conditions, and fails one
   assert.deepEqual(decideAudit(auditFacts()), { ok: true, pr: 14, problems: [], keys: ['DEMO-20'] });
   const failed = decideAudit(auditFacts(late));
   assert.equal(failed.ok, false);
-  assert.deepEqual(failed.problems, ['PR #14 was merged without: reviewer report on head d0c5d0c; security report on head d0c5d0c; approval on head d0c5d0c (head d0c5d0c came after Approve plan of DEMO-20 at 2026-11-04T03:00:00.000Z, so it is reviewed like any PR)']);
+  assert.deepEqual(failed.problems, ['PR #14 was merged without: reviewer report on head d0c5d0c; approval on head d0c5d0c (head d0c5d0c came after Approve plan of DEMO-20 at 2026-11-04T03:00:00.000Z, so it is reviewed like any PR)']);
   assert.equal(decideAudit(auditFacts(planning)).ok, false, 'merged before gate ②');
 });
 
@@ -221,15 +221,16 @@ test('a run of audit reads the docs facts of a docs PR with the Jira client', as
   assert.deepEqual(lines, ['audit passed: e9e9e9e on develop is the merge of PR #14, the docs PR of DEMO-20, which met every gate']);
 });
 
+// Reviewed like any PR, a PR of docs only needs the reviewer report, not the security one (C1 spec 3.3).
 test('the docs branch of an Epic outside the space is not a docs PR: merge-gate and audit review it like any PR (T15a)', async () => {
   const { pr, files } = facts();
   assert.equal(docsPullRequest({ pr, files, gates, apps, space: 'DEMO' }), 'DEMO-20');
   assert.equal(docsPullRequest({ pr, files, gates, apps, space: 'SHOP' }), null);
-  assert.deepEqual(decide(undefined, { space: 'SHOP' }), { action: 'wait', missing: ['reviewer report on head d0c5d0c', 'security report on head d0c5d0c', 'approval on head d0c5d0c'] });
+  assert.deepEqual(decide(undefined, { space: 'SHOP' }), { action: 'wait', missing: ['reviewer report on head d0c5d0c', 'approval on head d0c5d0c'] });
   assert.equal(decideAudit({ ...auditFacts(), space: 'SHOP' }).ok, false);
   const { jira: jiraAnswers, ...github } = structuredClone(answers);
   const lines = [];
   await runMergeGate({ github: recordedClient(github), mergeClient: async () => assert.fail('no merge'), docs: { jira: recordedClient({}), passage, space: 'SHOP' }, gates, apps, approvers: ['approver'], log: (line) => lines.push(line) });
-  assert.deepEqual(lines, ['Waiting #14: reviewer report on head d0c5d0c; security report on head d0c5d0c; approval on head d0c5d0c'], 'and Jira is not read');
+  assert.deepEqual(lines, ['Waiting #14: reviewer report on head d0c5d0c; approval on head d0c5d0c'], 'and Jira is not read');
   assert.ok(jiraAnswers);
 });

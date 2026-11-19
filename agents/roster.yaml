@@ -120,7 +120,8 @@ roles:
   reviewer:
     description: "Code Reviewer: reviews a PR on five axes and posts the report. Give it the PR number."
     model: opus
-    effort: xhigh
+    # high by default; ao-step raises it to xhigh on a PR of a critical path (C1 spec 3.1, quality/gates.yaml review).
+    effort: high
     max_turns: 70
     tools: [Bash, Write]
     jira: [read]

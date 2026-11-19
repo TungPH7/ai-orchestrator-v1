@@ -12,7 +12,7 @@
 | `sa` | Phần kiến trúc của SPEC, plan, ADR | Opus | `xhigh` | 80 | `docs/specs/**`, `docs/adr/**`, `.ai/**` | Ghi | `ao-dev` |
 | `fe-dev` | Code giao diện theo TDD, mở PR | Opus | `high` | 260 | Mọi file, trừ đường dẫn được bảo vệ | Ghi | `ao-dev` |
 | `be-dev` | Code backend theo TDD, mở PR | Opus | `high` | 170 | Như `fe-dev` | Ghi | `ao-dev` |
-| `reviewer` | Review PR theo năm trục, đăng báo cáo | Opus | `xhigh` | 70 | `.ai/**` | Đọc | `ao-review` |
+| `reviewer` | Review PR theo năm trục, đăng báo cáo | Opus | `high` | 70 | `.ai/**` | Đọc | `ao-review` |
 | `security` | Review bảo mật của PR, đăng báo cáo | Opus | `max` | 120 | `.ai/**` | Đọc | `ao-review` |
 | `qa` | Kiểm từng AC trên môi trường QA, báo cáo lên item | Opus | `high` | 80 | `.ai/**` | Đọc | Không |
 | `devops` | Sửa CI/CD qua PR do bạn merge; sau này cắt release, ship | Opus | `high` | 50 | Như `fe-dev`, thêm `.github/workflows/**` | Ghi | `ao-dev` |

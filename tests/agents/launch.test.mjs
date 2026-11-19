@@ -36,7 +36,7 @@ test('an unattended run with -p keeps the caller\'s arguments, and adds --max-tu
   const { args, skillsFile } = plan('reviewer', caller);
 
   const limit = String(roster.roles.reviewer.max_turns);
-  assert.deepEqual(args, ['--agent', 'reviewer', '--effort', 'xhigh', '--append-system-prompt-file', skillsFile.path, '--max-turns', limit, ...caller]);
+  assert.deepEqual(args, ['--agent', 'reviewer', '--effort', 'high', '--append-system-prompt-file', skillsFile.path, '--max-turns', limit, ...caller]);
   assert.match(skillsFile.text, /^## Session\n\nYou run unattended/);
   assert.ok(!plan('reviewer', []).args.includes('--max-turns'), 'not for an interactive run');
   assert.deepEqual(plan('reviewer', ['--print', 'x']).args.slice(6, 8), ['--max-turns', limit], '--print is -p');
