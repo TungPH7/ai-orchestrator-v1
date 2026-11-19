@@ -2,18 +2,27 @@
 
 > **Module:** C1 trong [misc/thao-luan/concerns.md](misc/thao-luan/concerns.md).
 >
-> **Nguồn quyết định:** [misc/thao-luan/toi-uu-token/quyet-dinh-da-duyet.md](misc/thao-luan/toi-uu-token/quyet-dinh-da-duyet.md), mục A1–A6. Mọi điểm ở đó bạn đã duyệt trong Phiên 33 (Lượt 46–61).
+> **Nguồn quyết định:**
+> - [misc/thao-luan/toi-uu-token/quyet-dinh-da-duyet.md](misc/thao-luan/toi-uu-token/quyet-dinh-da-duyet.md), mục A1–A6. Mọi điểm ở đó bạn đã duyệt trong Phiên 33 (Lượt 46–61).
+> - [misc/thao-luan/seo/role-seo-va-blog.md](misc/thao-luan/seo/role-seo-va-blog.md), mục 1: các quyết định về role `seo` và blog, bạn duyệt ở Lượt 80–85.
 >
 > **Thảo luận:**
 > - [danh-gia-chi-phi-shop-7.md](misc/thao-luan/toi-uu-token/danh-gia-chi-phi-shop-7.md)
 > - [effort-va-bat-tat-review.md](misc/thao-luan/toi-uu-token/effort-va-bat-tat-review.md)
+> - [seo/role-seo-va-blog.md](misc/thao-luan/seo/role-seo-va-blog.md)
 >
 > **Trạng thái:** bản nháp, chờ bạn duyệt. Viết ở Phiên 33 · Lượt 71 (2026-11-19), khi bạn nói "Bắt đầu C1". Mục 13 là các điểm cần bạn trả lời. Có duyệt rồi mới lập plan.
 >
 > **Sửa ở Lượt 78** (theo câu hỏi của bạn ở Lượt 76–77):
 > - mục 2: QA theo từng loại item, và lần QA lại khác nhau giữa mức Chuẩn và Nặng;
-> - mục 6: prompt `seo` viết mới, thêm skill `nextjs-seo`;
+> - mục 6: prompt `seo` viết mới, thêm skill `nextjs-seo` (Lượt 86 đổi thành: lấy SEO Specialist làm gốc rồi viết gọn);
 > - mục 13: điểm 6 và điểm 9 mới.
+>
+> **Sửa ở Lượt 86** (bạn gõ "làm" sau thảo luận SEO ở Lượt 79–85):
+> - mục 1: mục tiêu SEO, D2 và D4 ngoài phạm vi;
+> - mục 6: viết lại phần role `seo`, thành các mục 6.1–6.8;
+> - mục 8, 9, 12: cấu hình, thứ tự làm và tiêu chí cho phần SEO;
+> - mục 13: điểm 6 rút gọn, thêm điểm 10–12.
 
 ## 1. Mục tiêu
 
@@ -26,6 +35,7 @@
 - Ở Epic SHOP-7, review tốn 205 USD trên tổng 604 USD. SHOP-76 là một Task tài liệu đơn giản mà tốn 11,49 USD.
 - Thư viện mới chỉ được kiểm sau khi dev đã cài và viết xong tính năng dựa trên nó.
 - Thứ tự chạy của `/ao-spec`, `/ao-plan`, `/ao-build` viết cứng trong `lib/workflow/steps.mjs`, như `DEV_ORDER` và chuỗi `ba` → `ux` → `sa` → `ba`. Thêm một role, như `seo`, phải sửa code.
+- Kit chưa lo SEO: không role nào viết từ khóa, title, meta, dữ liệu có cấu trúc hay chữ của trang công khai. Dự án có website công khai thì luôn cần SEO để lên top Google, và các website sắp làm sẽ có blog (Lượt 82).
 
 **Sau module này:**
 1. **Mức quy trình:** mỗi item có một mức, Nhẹ, Chuẩn hay Nặng (A1). Review, QA và cách xử lý finding đi theo mức.
@@ -38,9 +48,12 @@
 5. **Thư viện mới:** được duyệt ở plan, hoặc qua `dep-check` trước khi cài. Hook và job `policy` chặn gói chưa duyệt (A4).
 6. **Thứ tự chạy:** đọc từ `contract/stages.yaml`, kèm điều kiện `when`. Role `seo` được thêm bằng dữ liệu, không sửa code.
 7. **Đo lại:** Epic kế tiếp đo USD trên mỗi AC (A5).
+8. **SEO:** role `seo` viết phần SEO của trang công khai ở stage spec, kể cả trang blog. Item phải làm và kiểm SEO mang nhãn `ao-seo` (mục 6).
 
 **Ngoài phạm vi:**
 - Chạy song song do bộ điều phối tự quyết. Phần này thuộc C2.
+- Workflow viết bài blog: dòng D2 của `concerns.md`, một module riêng ngay sau C1 (mục 6.7).
+- Phần SEO chỉ làm được sau khi site chạy thật (audit, Search Console, backlink, thứ hạng): dòng D4, lệnh SEO định kỳ.
 - Đổi cách chia Story, Task, Sub-task. Bạn giữ như hiện nay (Lượt 61).
 - Đổi DoD "Bộ regression pass" của Task (Lượt 46).
 - Các việc A6 mà mục 10 đề xuất đưa sang C2.
@@ -217,7 +230,7 @@ stages:
   spec:
     - { role: ba, purpose: spec-write }
     - { role: ux, purpose: design, when: spec-has-screens }
-    - { role: seo, purpose: seo-brief, when: epic-has-public-pages }
+    - { role: seo, purpose: seo-brief, when: spec-has-seo-screens }
     - { role: sa, purpose: spec-nfr, when: spec-lacks-nfr }
     - { role: ba, purpose: docs-pr }
   plan:
@@ -236,41 +249,163 @@ stages:
 - `decideSpec`, `decidePlan`, `decideBuild`, `decideReview` đọc danh sách thay cho mảng viết cứng.
 - Cùng facts thì quyết định phải giống hệt như trước: một bộ test so quyết định trên mọi fixture hiện có của `tests/workflow/` trước và sau khi đổi.
 
-**Role `seo`:** dùng cho Epic có trang công khai, tức `public: true` trong `project.yaml`.
-1. Ở stage spec, `seo` viết mục `## SEO` của SPEC cho từng màn hình công khai:
-   - tiêu đề và mô tả;
-   - dữ liệu có cấu trúc;
-   - đường dẫn canonical;
-   - sitemap;
-   - ảnh chia sẻ.
-2. `reviewer` đối chiếu mục `## SEO` khi review PR.
-3. `qa` kiểm meta trên Development như một AC.
-4. `seo` chạy Sonnet ở `high` (`agents/roster.yaml`).
-5. **Prompt `agents/prompts/seo.md` viết mới cho kit.**
-   - **Không chép agent SEO Specialist** của agency-agents (`marketing/marketing-seo-specialist.md`, MIT), vì ba lý do:
-     - agent đó làm SEO marketing: từ khóa, cụm chủ đề, backlink, số liệu Search Console;
-     - nó cần WebFetch và WebSearch, mà kit không cấp cho agent nào (spec 2.3 của roster);
-     - nó dài khoảng 3.000 chữ, và lượt nào cũng phải nạp hết.
-   - **Prompt chỉ lấy ý,** như `qa` đã làm với hai agent của agency-agents:
-     - từ SEO Specialist: mỗi truy vấn chỉ có một trang chính; tiêu đề và H1 không trùng giữa các trang; canonical và ngôn ngữ nhất quán;
-     - từ `seo-schema` của claude-seo: chỉ dùng loại dữ liệu có cấu trúc mà Google còn hỗ trợ (ví dụ FAQ đã bị bỏ rich result);
-     - từ `seo-ecommerce`: Product kèm Offer, có giá và tình trạng còn hàng;
-     - từ `seo-hreflang`: các bản ngôn ngữ trỏ qua lại nhau, có `x-default`.
-6. **Skill `nextjs-seo`, chỉ cho `seo`** (bạn duyệt ở Lượt 80).
+**Role `seo`:** viết phần SEO của các trang cần lên Google, kể cả trang blog. Thảo luận và mọi quyết định nằm trong [misc/thao-luan/seo/role-seo-va-blog.md](misc/thao-luan/seo/role-seo-va-blog.md) (Lượt 76–85). Mục tiêu bạn đặt ra ở Lượt 82: kit sẵn sàng cho dự án thật có website công khai, không chỉ cho `shop`.
+
+### 6.1 Khi nào `seo` chạy (Lượt 82–84)
+
+1. **Mỗi app có khóa `seo: true` hay `false`** trong `project.yaml`.
+   - Hiện nay `public: true` chỉ có nghĩa là app có host riêng trên internet (`lib/release/hosts.mjs`). Trong `shop`, cả `user` lẫn `admin` đều là `public: true`, nên kit cần một khóa riêng.
+   - Với `shop`: `user` là `true`, `admin` là `false`.
+   - `npm run validate` báo lỗi khi một app có `seo: true` mà không có `public: true`.
+   - `project-scaffold` hỏi khóa này khi thêm một app có host công khai.
+2. **Bảng Screens của `design.md` thêm cột "App"**, để kit biết mỗi màn hình thuộc app nào. `ux` điền cột này.
+3. **Hai từ cho `/ao-spec`:** `/ao-spec <EPIC> seo` bật `seo`; `/ao-spec <EPIC> no-seo [lý do]` tắt `seo`.
+4. **Điều kiện `spec-has-seo-screens`**, một hàm thuần trong `lib/workflow/conditions.mjs`, xét theo thứ tự:
+   1. `design.md` không có màn hình nào của app `seo: true`: không chạy, kể cả khi có từ `seo`. `ao-step` in một dòng giải thích.
+   2. Có từ `no-seo`: không chạy. `ba` ghi vào SPEC một dòng "SEO: không, vì <lý do>"; không có lý do thì ghi "bạn chọn `no-seo`".
+   3. Có từ `seo`: chạy, kể cả khi SPEC đang có dòng "SEO: không".
+   4. Không có từ nào: chạy, trừ khi SPEC có dòng "SEO: không" từ lần chạy trước. Mặc định là bật, vì website công khai luôn cần SEO, và quên bật thì trang lên production không có SEO, tới lúc thấy đã muộn.
+   5. SPEC đã có mục `## SEO`: bước này đã xong, như bước của các role khác.
+5. **Epic không có nhãn SEO.** Quyết định nằm ngay trong SPEC: mục `## SEO`, hoặc dòng "SEO: không". Bạn thấy nó khi duyệt SPEC ở cổng ①. Nhãn chỉ gắn trên item (mục 6.6).
+
+### 6.2 `seo` viết gì (Lượt 80–82)
+
+Ở stage spec, sau `ux` và trước `sa`, `seo` viết mục `## SEO` của SPEC, chỉ cho màn hình của app `seo: true`. Màn hình admin tự được bỏ qua.
+- **Từ khóa:**
+  - từ khóa chính và phụ của từng trang, ý định tìm kiếm;
+  - chỗ của trang trong cụm chủ đề: trang trụ cột hay trang vệ tinh;
+  - lượt tìm mỗi tháng: lấy số bạn ghi trong Epic (từ Google Keyword Planner); không có thì ghi "chưa có số liệu".
+- **Chống trùng:** mỗi từ khóa chính chỉ thuộc một trang. Title và H1 không trùng với các trang đang có trong repo.
+- **Chữ thật, cả `vi` và `en`:**
+  - H1, các heading, đoạn mở đầu, nút kêu gọi, title, meta description, alt của ảnh;
+  - `fe-dev` đưa nguyên văn vào `messages/*.json`, còn `reviewer` và `qa` đối chiếu nguyên văn.
+- **Kỹ thuật:**
+  - dữ liệu có cấu trúc, chỉ dùng loại Google còn hỗ trợ;
+  - canonical;
+  - hreflang: các bản ngôn ngữ trỏ qua lại nhau, có `x-default`;
+  - `lang` của từng trang;
+  - sitemap, robots, ảnh chia sẻ.
+- **Ngưỡng Core Web Vitals:** LCP dưới 2,5 giây, INP dưới 200 ms, CLS dưới 0,1. `seo` ghi các ngưỡng này trong mục `## SEO`, như yêu cầu phi chức năng của các trang đó. Ở lần chạy đầu của một Epic, `sa` chạy sau `seo` (thứ tự trong `contract/stages.yaml`), nên yêu cầu phi chức năng dẫn tới các ngưỡng này, không chép lại.
+- **Dữ liệu động,** như mô tả sản phẩm, do admin nhập. `seo` chỉ viết vài dòng hướng dẫn cho người nhập (độ dài, cách trình bày), để đưa vào hướng dẫn sử dụng.
+- **Trang blog** (phần (a) của blog, mục 6.7):
+  - dữ liệu có cấu trúc BlogPosting, kèm Person (tác giả), Organization, BreadcrumbList;
+  - quy tắc slug;
+  - cấu trúc chuyên mục và tag, tránh trang tag mỏng;
+  - trang tác giả, phục vụ E-E-A-T;
+  - ngày đăng và ngày sửa;
+  - hreflang cho bài `vi` và `en`;
+  - canonical của trang phân trang.
+
+`seo` không có git, nên `ao-step` commit phần của `seo` sau mỗi lượt (mục 6.6). Không giao việc này cho `sa`: ở lần chạy lại `/ao-spec`, `sa` chỉ chạy khi SPEC chưa có yêu cầu phi chức năng, nên có thể không có lượt `sa` nào sau `seo`.
+
+### 6.3 Prompt `agents/prompts/seo.md` (Lượt 82)
+
+- **Lấy SEO Specialist làm gốc.** Agent này của agency-agents (`marketing/marketing-seo-specialist.md`, MIT) đúng là chuyên gia bạn mong đợi. Bản gốc dài khoảng 3.000 chữ, nên viết lại cho gọn, chỉ giữ phần chạy được trong `/ao-spec`:
+  - giai đoạn 2: từ khóa và ý định tìm kiếm, cụm chủ đề;
+  - giai đoạn 2.5: chống "ăn thịt từ khóa";
+  - phần spec của giai đoạn 3: dàn ý, chữ, dữ liệu có cấu trúc, hreflang, ngưỡng Core Web Vitals;
+  - các luật: chỉ dùng cách "mũ trắng", ý định người tìm đi trước, E-E-A-T, tối ưu cho AI search.
+- **Lấy thêm ý từ claude-seo:**
+  - `seo-schema`: chỉ dùng loại Google còn hỗ trợ (FAQ đã bị bỏ rich result);
+  - `seo-ecommerce`: Product kèm Offer, có giá và tình trạng còn hàng;
+  - `seo-hreflang`: trỏ qua lại, có `x-default`.
+- **Không đưa vào prompt** giai đoạn 1 (audit site thật, Search Console), giai đoạn 4 (backlink, PR) và giai đoạn 5 (thứ hạng, lưu lượng, ROI). Các phần này chỉ làm được sau khi site chạy thật, nên thuộc dòng D4 của `concerns.md`: lệnh SEO định kỳ, làm sau C1.
+- **Yêu cầu `Cần seo:`:** trả lời như `ux` và `sa` (mục 6.6).
+- `seo` chạy Sonnet ở `high`.
+
+### 6.4 Quyền của `seo` (Lượt 81–85)
+
+- **Có WebSearch và WebFetch,** để xem trang nào đứng đầu một từ khóa, loại trang và tiêu đề của đối thủ. `seo` là role duy nhất có hai công cụ này. Luật "không agent nào có WebFetch, WebSearch" (spec 2.3 của roster) đổi thành "chỉ `seo`", và `npm run validate` báo lỗi khi một role khác có chúng.
+- **Đổi lại, `seo` bị bớt quyền:**
+  - `tools: [Edit, Write, WebFetch, WebSearch]`: không có Bash, nên không chạy được lệnh nào, kể cả git;
+  - `writes: ["docs/specs/**", ".ai/**"]`: thư mục `.ai/` chỉ chứa ledger mà role nào cũng ghi, và không bao giờ được commit;
+  - `jira: [read, comment]`: comment để trả lời `Cần seo:`, giống `ux` (Lượt 122). `seo` không tạo, không sửa item, không chuyển trạng thái.
+- **Rủi ro 1, viết sai:** một trang web chứa lệnh chèn có thể làm `seo` viết sai trong SPEC hay trong comment. Có ba lớp chặn:
+  - bạn đọc SPEC ở cổng ①, hay đọc comment trước khi Refine;
+  - `reviewer` xem code;
+  - `qa` kiểm trên Development.
+- **Rủi ro 2, rò dữ liệu** (phát hiện khi viết spec này, Lượt 86): `seo` vừa đọc được file vừa gửi được request ra internet. Một trang có lệnh chèn có thể bảo nó đọc một bí mật rồi gắn vào URL của WebFetch.
+  - Hiện nay gh-guard (`lib/quality/commands.mjs`) chỉ chặn agent đọc file khóa, file backup và `hosts.yml` của `gh`. File `.env` và file ngoài dự án vẫn đọc được bằng Read.
+  - **Đề xuất:** gh-guard giới hạn Read, Grep và Glob của `seo` trong thư mục dự án, và từ chối các file `.env*`, trừ `.env.example`. Các role khác giữ như cũ.
+
+### 6.5 Skill của `seo` (Lượt 80–84)
+
+1. **`nextjs-seo`, chép nguyên văn** (bạn duyệt ở Lượt 80).
    - **Nguồn:** repo `laguagu/claude-code-nextjs-skills`, giấy phép MIT.
    - **Cách đưa vào kit:** thêm vào `vendored_skills` của roster, ghim theo commit như các skill khác (`npm run skills:vendor`).
    - **Vì sao chọn skill này:**
-     - đúng Next.js App Router: Metadata API, `sitemap.ts` và `robots.ts`, canonical, đa ngôn ngữ, JSON-LD an toàn, ảnh chia sẻ, tức đúng năm thứ của mục `## SEO`;
+     - đúng Next.js App Router: Metadata API, `sitemap.ts` và `robots.ts`, canonical, đa ngôn ngữ, JSON-LD an toàn, ảnh chia sẻ;
      - nhỏ: khoảng 500 chữ, sáu file tham khảo chỉ đọc khi cần;
      - không cần Python, URL thật hay API trả phí.
-   - **Kiểm trước khi đưa vào:** repo nhỏ (74 sao), nên phiên chính đọc hết `SKILL.md` và sáu file tham khảo trước. Nội dung sai hay lỗi thời thì bỏ skill, `seo` chỉ dùng prompt, và báo bạn.
-   - **Chưa cho `fe-dev`:** `fe-dev` làm theo mục `## SEO` của SPEC. Thêm skill cho `fe-dev` khi review ở Epic đầu thấy lỗi SEO trong code.
-   - Bản nháp đầu của spec đề xuất "chưa thêm skill". Lúc đó mình chưa xem skill SEO nào; đề xuất đổi sau khi xem các nguồn bạn cài (Lượt 76–77).
-7. **Không lấy skill nào khác:**
-   - **claude-seo:** phần lớn skill audit một URL thật bằng script Python, như `parse_html.py`, `page_checks.py` và `render_page.py`. Kit chỉ có Node, agent của kit không có WebFetch, và Development nằm sau basic auth. Nhiều skill khác cần API trả phí hay tài khoản riêng (DataForSEO, Google).
-   - **Claude Blog:** dành cho bài blog, mà `shop` chưa có blog. Xét lại khi có Epic làm blog.
+   - **Kiểm trước khi đưa vào:** repo nhỏ (74 sao), nên phiên chính đọc hết `SKILL.md` và sáu file tham khảo trước. Nội dung sai hay lỗi thời thì bỏ skill và báo bạn.
+2. **`seo-content-brief`, chép rồi viết lại** (Lượt 81). Skill này nằm trong claude-seo, bản quyền puneetindersingh, MIT.
+   - **Giữ:** ý định tìm kiếm, dàn ý H1/H2/H3, chỗ đặt từ khóa, quy tắc meta, E-E-A-T, liên kết nội bộ, mẫu theo loại trang.
+   - **Bỏ:** chế độ Improve, bảng chấm đối thủ, khoảng trống so với đối thủ, DataForSEO, Ahrefs.
+   - **Viết lại:** bước 2–3 (đọc trang, sitemap và các trang đứng đầu Google) làm bằng WebSearch và WebFetch, không dùng script.
+   - **Thêm:** ghi vào mục `## SEO` của SPEC, chữ `vi` và `en`, nguồn từ khóa của mục 6.2.
+3. **`blog-schema` và `blog-taxonomy`, chép rồi viết lại** (phần (a) của blog). Hai skill này nằm trong Claude Blog 2.3.2, MIT.
+   - `blog-schema`: JSON-LD cho bài blog, có kiểm theo mức Google còn hỗ trợ.
+   - `blog-taxonomy`: chỉ lấy phần gợi ý và audit cấu trúc chuyên mục, tag; bỏ phần đồng bộ với WordPress hay Shopify.
+4. **Chỗ đặt skill viết lại:** `kit/.claude/skills/<tên>/`, cạnh các skill `ao-*`.
+   - Đầu file ghi repo, commit gốc, giấy phép và bản quyền của tác giả.
+   - `npm run skills:vendor` không cập nhật các skill này; khi bản gốc có bản mới thì so bằng tay.
+   - Đây là trường hợp đầu của dòng D3 trong `concerns.md` (điểm 10 của mục 13).
+5. **Chưa cho `fe-dev` skill nào:** `fe-dev` làm theo phần SEO của item. Khi review ở Epic đầu thấy lỗi SEO trong code thì mới thêm skill cho `fe-dev`.
+6. **Không lấy skill nào khác:**
+   - **claude-seo:** phần lớn skill audit một URL thật bằng script Python, như `parse_html.py`, `page_checks.py` và `render_page.py`. Kit chỉ có Node, và Development nằm sau basic auth. Nhiều skill khác cần API trả phí hay tài khoản riêng (DataForSEO, Google).
+   - **Claude Blog:** phần còn lại (kế hoạch, viết, kiểm, dịch bài) dành cho D2.
    - Hai plugin vẫn dùng được trong phiên chính, ở user scope, ví dụ để audit Production sau mỗi release.
-8. Agent Field của Jira thêm giá trị "SEO Specialist", và `docs/jira-setup.md` ghi bước bấm.
+
+### 6.6 Nhãn `ao-seo` và yêu cầu `Cần seo:` (Lượt 83–85)
+
+**Item trong Epic:**
+1. `sa` ghi cột "SEO" (có hay không) trong bảng item của `plan.md`, cạnh cột "Mức". "Có" khi item chạm một màn hình nằm trong mục `## SEO`.
+2. Bạn duyệt ở cổng ②.
+3. `ba` gắn nhãn `ao-seo` khi tạo item. Task cho trang admin không có nhãn này.
+
+**Item ngoài Epic** (`/ao-intake`): chỉ có thể là Task hay Bug. Việc mà người dùng thấy kết quả thì thành một Epic nhỏ, đi qua `/ao-spec`. Ví dụ: Task "thêm dữ liệu có cấu trúc Product cho trang sản phẩm".
+1. Bản nháp đề xuất nhãn `ao-seo` khi việc chạm trang của app `seo: true`. Khi phần SEO chưa ai viết, bản nháp có thêm một đoạn `Cần seo:` ghi điều cần hỏi.
+2. Bạn OK thì phiên chính tạo item có nhãn, rồi ghi comment `Cần seo:` đúng chữ trong bản nháp. Từ đó intake ghi lên Jira hai lần: tạo item, và comment này.
+3. `/ao-request <KEY>` chạy `seo`. `seo` comment phần SEO lên item, kèm danh sách "Kiểm" cho `qa`. Comment này đóng yêu cầu.
+4. Bạn đọc comment, rồi bấm Refine.
+
+Bug sai so với mục `## SEO` của một SPEC cũ thì không cần `Cần seo:`: bản nháp trỏ tới mục đó.
+
+**Không có nhãn `ao-no-seo`:** item không có `ao-seo` là không làm SEO.
+
+**Tác dụng của nhãn:** với item có `ao-seo`, prompt của `/ao-build`, `/ao-review` và `/ao-qa` chỉ tới phần SEO của item:
+
+| Item | Phần SEO nằm ở |
+|---|---|
+| Story hay Task trong Epic | mục `## SEO` của SPEC |
+| Task hay Bug ngoài Epic | comment của `seo` trên item |
+| Bug ngoài Epic, sai so với SPEC cũ | mục `## SEO` của SPEC mà item trỏ tới |
+
+- Phần SEO không được chép vào description của Story: SPEC là nguồn duy nhất, nên không có hai bản lệch nhau.
+- `fe-dev` làm theo nguyên văn. `reviewer` đối chiếu code. `qa` kiểm thẻ meta, dữ liệu có cấu trúc, canonical và chữ trên Development. Item không có nhãn thì ba role này bỏ qua phần SEO.
+
+**`Cần seo:` trong Epic:**
+- Khi bạn sửa SPEC ở phần chạm SEO, `ba` nhờ `seo` bằng `Cần seo:`, như với `ux` và `sa`.
+- Sau khi SPEC đã merge, `/ao-request` làm theo luật hiện có: item có nhánh thì `seo` sửa `spec.md` trên nhánh đó; không có nhánh thì `seo` chỉ comment điều cần đổi, và bạn quyết định.
+
+**`ao-step` commit thay `seo`:** sau mỗi lượt của `seo` trên một nhánh, ở `/ao-spec` hay `/ao-request`, `ao-step` commit phần đổi, chỉ khi nó nằm trong `docs/specs/`. Có file khác bị đổi thì `ao-step` dừng và báo bạn. Nhánh đã có PR thì `ao-step` push luôn, như role khác làm sau khi commit.
+
+`/ao-request` nhận `seo` là role được nhờ, và `/ao-status` liệt kê yêu cầu `Cần seo:` như các yêu cầu khác.
+
+### 6.7 Blog (Lượt 82–84)
+
+- **(a) Tính năng blog** của một dự án là một Epic bình thường. C1 chuẩn bị cho Epic đó: phần trang blog của mục 6.2, cùng hai skill `blog-schema` và `blog-taxonomy` của mục 6.5.
+- **(b) Viết bài** là dòng D2: một module riêng, làm ngay sau C1 và trước C2, không thuộc C1. D2 cần Epic blog có sẵn ba thứ:
+  - trạng thái nháp;
+  - link xem trước mà người ngoài không thấy;
+  - công cụ đăng bài gọi API của Admin, ví dụ `scripts/post-publish.mjs <file bài>`, được review một lần.
+
+  Đề xuất: `/ao-intake` của một Epic blog đưa ba yêu cầu này vào bản nháp, để D2 không phải sửa lại tính năng blog (điểm 11 của mục 13).
+
+### 6.8 Jira
+
+- Agent Field có thêm giá trị "SEO Specialist", và `docs/jira-setup.md` ghi các bước bấm.
+- `tracker/jira.yaml` có thêm nhãn `ao-seo`.
 
 Phần này phải xong trước Epic đầu tiên cần SEO (concerns.md, điểm 8).
 
@@ -284,16 +419,31 @@ Phần này phải xong trước Epic đầu tiên cần SEO (concerns.md, đi�
 
 | File | Thêm hay đổi |
 |---|---|
-| `agents/roster.yaml` | `reviewer`: `high`; thêm role `seo`; thêm `nextjs-seo` vào `vendored_skills` |
-| `agents/prompts/seo.md` | mới (mục 6) |
-| `agents/prompts/qa.md` | lần QA lại ở mức Chuẩn (mục 2) |
+| `agents/roster.yaml` | `reviewer`: `high`; thêm role `seo` với quyền của mục 6.4; luật 2.3 thành "chỉ `seo` có WebFetch, WebSearch"; thêm `nextjs-seo` vào `vendored_skills` |
+| `lib/agents/roster.mjs`, `tests/agents/` | `npm run validate` báo lỗi khi role khác `seo` có WebFetch hay WebSearch |
+| `lib/quality/commands.mjs` (gh-guard) | Read, Grep, Glob của `seo` chỉ trong dự án, từ chối `.env*` trừ `.env.example` (mục 6.4) |
+| `agents/prompts/seo.md` | mới, lấy SEO Specialist làm gốc (mục 6.3) |
+| `agents/prompts/qa.md` | lần QA lại ở mức Chuẩn (mục 2); kiểm phần SEO của item có `ao-seo` (mục 6.6) |
+| `agents/prompts/fe-dev.md`, `agents/prompts/reviewer.md` | làm theo và đối chiếu phần SEO của item có `ao-seo` |
+| `agents/prompts/ba.md` | dòng "SEO: không" khi có `no-seo`; nhãn `ao-seo` theo cột "SEO" của plan; nhờ `seo` bằng `Cần seo:` |
+| `agents/prompts/sa.md` | cột "SEO" của bảng item; yêu cầu phi chức năng dẫn tới ngưỡng Core Web Vitals của mục `## SEO` |
+| `agents/prompts/ux.md` | cột "App" của bảng Screens |
+| `kit/.claude/skills/seo-content-brief/`, `blog-schema/`, `blog-taxonomy/` | mới: chép rồi viết lại, đầu file ghi nguồn (mục 6.5) |
+| `kit/.claude/skills/ao-spec/SKILL.md` | hai từ `seo` và `no-seo` |
+| `kit/.claude/skills/ao-intake/SKILL.md` | nhãn `ao-seo`, comment `Cần seo:` sau khi bạn OK, ba yêu cầu của Epic blog |
+| `kit/.claude/skills/ao-request/SKILL.md`, `lib/workflow/` | `seo` là role được nhờ; `ao-step` commit thay `seo`; prompt của build, review, QA chỉ tới phần SEO (mục 6.6) |
+| `lib/workflow/conditions.mjs` | điều kiện `spec-has-seo-screens` (mục 6.1) |
 | `contract/roles.yaml`, `contract/work-items.yaml` | role `seo`; giá trị Agent "SEO Specialist" |
 | `contract/stages.yaml` | mới (mục 6) |
 | `quality/gates.yaml` | `review.critical_paths`, `review.sensitive_paths`, `review.waivers`, `dependencies.licenses`; bỏ `security_review.roster_effort_paths` |
-| `tracker/jira.yaml` | `work_labels.level_prefix: ao-level-`; nhãn `ao-findings` |
-| `project.yaml` của dự án | khối `dependencies` (`approved`, `exceptions`) |
-| `templates/plan.md` | cột "Mức" của bảng item; mục "Thư viện mới" |
+| `tracker/jira.yaml` | `work_labels.level_prefix: ao-level-`; nhãn `ao-findings`, `ao-seo` |
+| `project.yaml` của dự án | khối `dependencies` (`approved`, `exceptions`); khóa `seo` của từng app (mục 6.1) |
+| `lib/scaffold/` (`project-scaffold`) | hỏi khóa `seo` khi thêm app có host công khai |
+| `templates/plan.md` | cột "Mức" và cột "SEO" của bảng item; mục "Thư viện mới" |
+| `templates/design.md` | cột "App" của bảng Screens |
+| `templates/spec.md` | mục `## SEO` |
 | `templates/review-report.md` | bảng tiêu chí; dòng tái hiện của Medium |
+| `docs/jira-setup.md`, `docs/dev-workflow.md`, `docs/agents.md` | giá trị Agent "SEO Specialist"; role `seo`, nhãn `ao-seo`, hai từ của `/ao-spec` |
 
 ## 9. Thứ tự làm
 
@@ -307,8 +457,10 @@ Mỗi phần là một kit PR, với test viết đỏ trước. Phiên chính l
 | 4 | Phần 1: ba mức, nhãn, QA của mức Nhẹ, QA lại theo mức, Task finding của Epic | 1–2 PR |
 | 5 | Phần 2: miễn review có dấu vết (`merge-gate`, `audit`) | 1 PR |
 | 6 | Phần 4: `dep-check`, danh sách đã duyệt, hook, `policy` | 1–2 PR |
-| 7 | Role `seo`, prompt mới, skill `nextjs-seo` | 1 PR |
-| 8 | Chép kit vào `shop` một lần, có review (khoảng 10 USD) | PR của `shop` |
+| 7 | Role `seo`: roster và luật web, gh-guard cho `seo`, `stages.yaml`, khóa `seo` của app, cột "App" của `design.md`, hai từ của `/ao-spec`, `ao-step` commit thay `seo`, prompt mới | 1 PR |
+| 8 | Skill của `seo`: chép `nextjs-seo`; viết lại `seo-content-brief`, `blog-schema`, `blog-taxonomy`; chỗ đặt skill viết lại (D3) | 1 PR |
+| 9 | Nhãn `ao-seo`: cột "SEO" của `plan.md`, `/ao-intake`, `/ao-request`, prompt của build, review, QA | 1 PR |
+| 10 | Chép kit vào `shop` một lần, có review (khoảng 10 USD); đặt khóa `seo` cho hai app của `shop` | PR của `shop` |
 
 Bước 1 đi trước, vì các bước sau đọc stages từ contract. Bước 3 và 4 đổi chi phí nhiều nhất.
 
@@ -345,9 +497,14 @@ Bước 1 đi trước, vì các bước sau đọc stages từ contract. Bướ
 3. Một PR Chuẩn chạm controller chạy `reviewer` `high` và `security` `high`. Một PR chạm `SecurityConfig.java` chạy `xhigh` và `max`, và mức của item tự lên Nặng.
 4. Một Medium không có cách tái hiện bị tính là Low. Review không còn Critical hay High thì `ao-step` gợi ý approve.
 5. `pnpm add` một gói chưa duyệt bị gh-guard từ chối, còn `dep-check` một gói đạt thì cho cài. `policy` đỏ khi lockfile có gói trực tiếp mới chưa duyệt.
-6. `/ao-spec` của một Epic có trang công khai chạy `seo` sau `ux`, với skill `nextjs-seo` đã nạp. Epic không có trang công khai thì không chạy `seo`.
+6. `/ao-spec` của một Epic có màn hình thuộc app `seo: true` chạy `seo` sau `ux`, với các skill của `seo` đã nạp, và SPEC có mục `## SEO`. Epic chỉ có màn hình của app `seo: false` thì không chạy `seo`, kể cả khi có từ `seo`. Có từ `no-seo` thì không chạy, và SPEC có dòng "SEO: không, vì …".
 7. Epic kế tiếp của `shop` có số USD trên mỗi AC, so được với 21,6 USD của SHOP-7.
 8. Lần QA lại của một Story Chuẩn sau QA fail chỉ kiểm các tiêu chí đã FAIL, cộng cả bộ E2E. Với Story Nặng, lần QA lại kiểm đủ mọi tiêu chí.
+9. `npm run validate` báo lỗi khi một role khác `seo` có WebFetch hay WebSearch. gh-guard từ chối `seo` đọc một file `.env` hay một file ngoài dự án.
+10. Một Task ngoài Epic có nhãn `ao-seo`: `/ao-intake` ghi comment `Cần seo:`; `/ao-request` chạy `seo`, và comment của `seo` đóng yêu cầu; prompt của `/ao-build` chỉ tới comment đó. Với một Story có `ao-seo` trong Epic, prompt chỉ tới mục `## SEO` của SPEC.
+11. Một lượt của `seo` trên nhánh, ở `/ao-spec` hay `/ao-request`, chỉ đổi `docs/specs/` thì `ao-step` commit; lượt đổi file khác thì `ao-step` dừng.
+
+Tiêu chí 6, 9, 10 và 11 kiểm bằng test của kit. Lần chạy thật đầu tiên là Epic đầu tiên cần SEO của một dự án.
 
 ## 13. Điểm cần bạn duyệt
 
@@ -356,12 +513,13 @@ Bước 1 đi trước, vì các bước sau đọc stages từ contract. Bướ
 3. **Task finding của Epic:** `ao-step` tự tạo Task này bằng token CI, rồi thêm Medium và Low bằng comment. Đồng ý không, hay bạn muốn `ba` tạo?
 4. **Tầng Nguy cấp** có cả `.ai-orchestrator/**` và `.claude/**`. Mọi PR chép kit sẽ là Nặng, giống như hiện nay. Giữ vậy không?
 5. **Danh sách đã duyệt nằm trong `project.yaml` của dự án** (mục 5), cùng ngoại lệ audit. Đồng ý chỗ đặt này không?
-6. **Role `seo`:** viết mục SEO ở stage spec, `reviewer` và `qa` đối chiếu; Sonnet `high`. Hai câu hỏi:
-   - Có cần `seo` review PR riêng không? Đề xuất là không.
-   - Prompt và skill: viết mới prompt `seo` và thêm skill `nextjs-seo`, chỉ cho `seo` (mục 6). **Bạn duyệt skill `nextjs-seo` ở Lượt 80.** Bản nháp đầu đề xuất "chưa thêm skill"; đề xuất đổi ở Lượt 77. Phần nội dung trang công khai (chữ, tiêu đề, bố cục bài) đang thảo luận ở Lượt 80.
+6. **Role `seo`:** các quyết định bạn duyệt ở Lượt 80–85 nằm ở mục 6.1–6.8. Còn một câu: có cần `seo` review PR riêng không? Đề xuất là không: `reviewer` đối chiếu code với phần SEO, và `qa` kiểm trên Development.
 7. **A6** theo bảng ở mục 10: hai việc vào C1, hai việc để sau.
 8. **Thứ tự làm** theo mục 9: phần 5 trước, chép kit một lần ở cuối.
 9. **QA lại** (mục 2): ở mức Chuẩn chỉ kiểm lại các tiêu chí đã FAIL, cộng cả bộ E2E; ở mức Nặng kiểm đủ như hiện nay. Đồng ý không?
+10. **Skill viết lại của kit (D3):** ba skill `seo-content-brief`, `blog-schema` và `blog-taxonomy` là trường hợp đầu của dòng D3 trong `concerns.md`. Đề xuất: C1 làm luôn D3, gồm chỗ đặt `kit/.claude/skills/<tên>/`, đầu file ghi nguồn, và một trang `docs/` ghi cách so với bản gốc khi bản gốc có bản mới. Đồng ý không?
+11. **Epic blog** (mục 6.7): `/ao-intake` của một Epic blog đưa vào bản nháp ba yêu cầu mà D2 cần: trạng thái nháp, link xem trước, công cụ đăng bài. Đồng ý không?
+12. **Chặn rò dữ liệu qua `seo`** (mục 6.4, rủi ro 2): gh-guard giới hạn Read, Grep, Glob của `seo` trong thư mục dự án, và từ chối `.env*` trừ `.env.example`. Đồng ý không?
 
 ## Nguồn
 
@@ -370,7 +528,9 @@ Bước 1 đi trước, vì các bước sau đọc stages từ contract. Bướ
 - [effort-va-bat-tat-review.md](misc/thao-luan/toi-uu-token/effort-va-bat-tat-review.md): effort, miễn review, tiêu chí finding.
 - [SPEC-kit-copy-review.md](SPEC-kit-copy-review.md): bài thử review mù 2026-11-07.
 - [misc/thao-luan/concerns.md](misc/thao-luan/concerns.md): hàng C1, điểm 8.
-- Nguồn cho role `seo` (Lượt 76), đều giấy phép MIT:
+- [misc/thao-luan/seo/role-seo-va-blog.md](misc/thao-luan/seo/role-seo-va-blog.md): thảo luận SEO và blog, Lượt 76–85.
+- Nguồn cho role `seo` (Lượt 76–82), đều giấy phép MIT:
   - agent SEO Specialist: `agency-agents/marketing/marketing-seo-specialist.md`;
-  - plugin claude-seo 2.6.0: các skill `seo-schema`, `seo-ecommerce`, `seo-hreflang`;
+  - plugin claude-seo 2.6.0: skill `seo-content-brief` (bản quyền puneetindersingh), và ý từ `seo-schema`, `seo-ecommerce`, `seo-hreflang`;
+  - plugin Claude Blog 2.3.2: skill `blog-schema`, `blog-taxonomy`;
   - skill `nextjs-seo`: repo `laguagu/claude-code-nextjs-skills`.

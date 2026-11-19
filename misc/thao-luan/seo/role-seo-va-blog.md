@@ -7,7 +7,7 @@
 > - dòng D2 (workflow nội dung) của [concerns.md](../concerns.md);
 > - concern 3, ở [role-moi-trong-sdlc.md](../role-moi-trong-sdlc.md).
 >
-> **Trạng thái:** đã duyệt hết các điểm đã bàn (mục 1), tới Lượt 85. Spec C1 mới ghi các điểm duyệt tới Lượt 80; các điểm sau đó vào spec một lần, khi bạn gõ "làm".
+> **Trạng thái:** đã duyệt hết các điểm đã bàn (mục 1), tới Lượt 85. Lượt 86 đưa mọi điểm vào spec C1, mục 6.1–6.8; điểm 6 và 10–12 của mục 13 trong spec còn chờ bạn.
 
 **Mục tiêu (Lượt 82):** kit phải sẵn sàng cho dự án thật, không chỉ cho `shop`. `shop` là pilot để kiểm luồng của kit. Dự án có website công khai thì luôn cần SEO để lên top Google, và các website sắp làm sẽ có blog.
 
@@ -23,7 +23,7 @@
 | `seo` comment trên Jira | 85 | Giống `ux` (Lượt 122): `seo` comment để trả lời và đóng yêu cầu `Cần seo:`. Không tạo, không sửa item, không chuyển trạng thái (mục 2.5). |
 | `/ao-intake` ghi `Cần seo:` | 85 | Sau khi bạn OK bản nháp, phiên chính tạo item có nhãn `ao-seo`, rồi ghi comment `Cần seo:` đúng chữ trong bản nháp (mục 2.5). |
 | Phần SEO nằm ở đâu | 85 | Item trong Epic: mục `## SEO` của SPEC, không chép vào description. Item ngoài Epic: comment của `seo`. Bug sai so với SPEC cũ: mục `## SEO` của SPEC đó. Prompt của build, review, QA chỉ tới đúng chỗ đó (mục 2.6). |
-| `ao-step` commit thay `seo` | 85 | `seo` không có git. Sau một lượt `/ao-request` của `seo` trên nhánh, `ao-step` commit rồi push, chỉ khi phần đổi nằm trong `docs/specs/`; có file khác đổi thì dừng (mục 2.6). Đề xuất của Claude, ghi vào spec C1. |
+| `ao-step` commit thay `seo` | 85 | `seo` không có git. Sau một lượt `/ao-request` của `seo` trên nhánh, `ao-step` commit rồi push, chỉ khi phần đổi nằm trong `docs/specs/`; có file khác đổi thì dừng (mục 2.6). Đề xuất của Claude, ghi vào spec C1. Lượt 86 mở rộng cho cả lượt của `seo` trong `/ao-spec` (đính chính ở mục 2.1). |
 | Chia việc theo thời điểm | 83 | Phần spec chạy trong `/ao-spec` (mục 2.2). Phần chỉ làm được sau khi site chạy thật lưu thành dòng **D4** của [concerns.md](../concerns.md): lệnh SEO định kỳ, như `/ao-seo report` hằng tháng, sau C1. |
 | Bật hay tắt `seo` | 83 | Khóa `seo: true` cho từng app; hai từ `seo` và `no-seo` cho `/ao-spec`; không truyền gì thì tự quyết theo SPEC, mặc định bật; app `seo: false` thì không chạy `seo`; SPEC ghi app của từng màn hình (mục 2.3). |
 | Không có nhãn ở Epic, nhãn `ao-seo` ở item | 84 | Quyết định của Epic nằm trong SPEC: mục `## SEO`, hoặc dòng "SEO: không, vì …". Nhãn `ao-seo` gắn trên Story hay Task chạm màn hình có SEO: `sa` ghi cột "SEO" trong `plan.md`, bạn duyệt ở cổng ②, `ba` gắn nhãn. Không có nhãn `ao-no-seo` (mục 2.3). |
@@ -50,6 +50,10 @@
 - Jira chỉ đọc.
 
 Nếu một trang web có lệnh chèn vào agent (prompt injection), tệ nhất là `seo` viết sai chữ trong SPEC, và bạn đọc SPEC ở cổng ①. Bước sau, `sa`, commit file của `seo`.
+
+**Đính chính ở Lượt 86,** khi viết spec C1:
+- **"Tệ nhất là viết sai chữ" chưa đúng.** `seo` vừa đọc được file vừa gửi được request ra internet, nên một trang có lệnh chèn có thể bảo nó đọc bí mật rồi gắn vào URL của WebFetch. gh-guard hiện chỉ chặn file khóa, file backup và `hosts.yml`; file `.env` và file ngoài dự án vẫn đọc được. Đề xuất: gh-guard giới hạn Read, Grep, Glob của `seo` trong dự án và từ chối `.env*` (spec C1 mục 6.4, điểm 12 của mục 13).
+- **`sa` không chắc chạy sau `seo`.** Ở lần chạy lại `/ao-spec`, `sa` chỉ chạy khi SPEC chưa có yêu cầu phi chức năng (`lib/workflow/steps.mjs`). Nên `ao-step` commit phần của `seo` sau mỗi lượt, chỉ khi phần đổi nằm trong `docs/specs/` (spec C1 mục 6.6).
 
 **WebSearch cho được và không cho được gì:**
 - **Cho được:** trang nào đang đứng đầu một từ khóa, loại trang (danh mục, bài viết, so sánh), tiêu đề của đối thủ. Như vậy đủ để biết ý định tìm kiếm và dựng dàn ý.
@@ -294,3 +298,4 @@ Lúc viết bản nháp spec (Lượt 71), mình chưa xem skill SEO nào, nên 
 | 83 | Duyệt web cho `seo`, mục 2.2 và mục 2.3 (trừ chỗ lưu lựa chọn); hỏi nhãn ở Epic hay item; hỏi về đăng bài qua Admin và QA; lưu `/ao-seo report` cho sau này | Dòng D4 của `concerns.md`; trả lời ở mục 2.3 và 2.4 |
 | 84 | Duyệt nhãn ở item, cách đăng bài, thứ tự blog; hỏi item ngoài Epic đi qua những agent nào | Mục 2.5; sửa ví dụ "đổi chữ trang chủ"; nêu mâu thuẫn "Jira chỉ đọc" với `Cần seo:`; dòng D2 của `concerns.md` thành "ngay sau C1, trước C2" |
 | 85 | Duyệt quyền comment của `seo` và comment `Cần seo:` của intake; hỏi Story trong Epic có comment của `seo` không | Mục 2.6; đề xuất `ao-step` commit thay `seo` |
+| 86 | "làm" | Spec C1 sửa mục 1, 6 (6.1–6.8), 8, 9, 12, 13; hai đính chính ở mục 2.1 |

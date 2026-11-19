@@ -30124,3 +30124,50 @@ Prompt của `/ao-request`, khi có nhánh, bảo role được nhờ "commit tr
 ## Bước tiếp
 
 Mình chưa sửa `SPEC-c1.md`, vì bạn còn đang hỏi. Nếu không còn câu nào về SEO, bạn gõ "làm" thì mình sửa spec một lần, với mọi quyết định SEO từ Lượt 80 tới giờ, rồi dừng lại để bạn đọc.
+
+# Phiên 33 · Lượt 86 — 2026-11-19
+
+**Bạn:** "làm"
+
+**Claude:**
+
+Mình đã sửa xong `SPEC-c1.md` với mọi quyết định SEO từ Lượt 80 tới 85, rồi dừng lại để bạn đọc. Phần SEO nay là mục 6.1–6.8.
+
+## Spec đã sửa những gì
+
+- **Mục 1:** thêm mục tiêu SEO. D2 (viết bài blog) và D4 (lệnh SEO định kỳ) ghi là ngoài phạm vi.
+- **Mục 6, viết lại phần role `seo`:**
+  - **6.1 Khi nào chạy:** khóa `seo` của từng app, cột "App" trong bảng Screens của `design.md`, hai từ `seo` và `no-seo`, mặc định bật, trang private luôn tắt, Epic không có nhãn.
+  - **6.2 Viết gì:** từ khóa, chống trùng, chữ thật `vi` và `en`, phần kỹ thuật, ngưỡng Core Web Vitals, hướng dẫn nhập dữ liệu động, trang blog.
+  - **6.3 Prompt:** lấy SEO Specialist làm gốc rồi viết gọn; giai đoạn 1, 4, 5 để cho D4.
+  - **6.4 Quyền:** WebSearch và WebFetch; không có Bash; ghi `docs/specs/**`; Jira đọc và comment.
+  - **6.5 Skill:** chép `nextjs-seo`; viết lại `seo-content-brief`, `blog-schema` và `blog-taxonomy`.
+  - **6.6 Nhãn `ao-seo` và `Cần seo:`:** bảng "phần SEO nằm ở đâu" của lượt trước.
+  - **6.7 Blog;** **6.8 Jira.**
+- **Mục 8, 9, 12:**
+  - cấu hình: các file phải đổi;
+  - thứ tự làm: phần SEO thành ba PR (bước 7–9), chép kit vào `shop` là bước 10;
+  - tiêu chí: thêm 9–11.
+
+## Hai chỗ mình phát hiện khi viết, và đã sửa trong spec
+
+**1. Rủi ro rò dữ liệu qua `seo`** (mục 6.4). Ở Lượt 81, mình nói "tệ nhất là `seo` viết sai chữ". Câu đó chưa đúng.
+- `seo` vừa đọc được file, vừa gửi được request ra internet bằng WebFetch. Một trang web có lệnh chèn có thể bảo nó đọc một bí mật, rồi gắn bí mật đó vào URL của WebFetch.
+- Mình đã tra gh-guard (`lib/quality/commands.mjs`). Hiện nó chỉ chặn agent đọc file khóa, file backup và `hosts.yml` của `gh`. File `.env` và file ngoài dự án vẫn đọc được bằng Read.
+- **Đề xuất:** gh-guard chỉ cho `seo` dùng Read, Grep và Glob trong thư mục dự án, và từ chối các file `.env*`, trừ `.env.example`. Các role khác giữ như cũ.
+
+**2. Không thể trông vào `sa` để commit phần của `seo`.**
+- Ở lần chạy lại `/ao-spec`, `sa` chỉ chạy khi SPEC chưa có yêu cầu phi chức năng (`lib/workflow/steps.mjs`), nên có thể không có lượt `sa` nào sau `seo`.
+- Vì vậy, sau mỗi lượt của `seo`, dù ở `/ao-spec` hay `/ao-request`, `ao-step` commit thay `seo`. Nó chỉ commit khi phần đổi nằm trong `docs/specs/`.
+
+Mình cũng đã ghi hai đính chính này vào mục 2.1 của `misc/thao-luan/seo/role-seo-va-blog.md`.
+
+## Còn chờ bạn trong mục 13 của spec
+
+Điểm 1–5, 7–9 như trước. Phần SEO còn bốn điểm:
+- **6.** Có cần `seo` review PR riêng không? Đề xuất: không.
+- **10.** Cho C1 làm luôn D3, tức chỗ đặt skill viết lại của kit, kèm một trang `docs/` ghi cách so với bản gốc mới?
+- **11.** Khi `/ao-intake` một Epic blog, bản nháp có thêm ba yêu cầu mà D2 cần (trạng thái nháp, link xem trước, công cụ đăng bài)?
+- **12.** Chặn rò dữ liệu qua `seo` như đề xuất ở trên?
+
+Bạn đọc spec rồi trả lời các điểm của mục 13. Có duyệt rồi mình mới lập plan C1.
