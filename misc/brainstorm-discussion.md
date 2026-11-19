@@ -29507,3 +29507,51 @@ Các bản sửa này vào `shop` ở lần chép kit sau. Hai Low về kiến t
 - **Nhánh:** mình sẽ xóa luôn hai nhánh này, ở máy và trên GitHub. Phần mất đi chỉ là các commit lẻ trước khi gộp; bản gộp vẫn ở `main`.
 
 Bạn nhắn "xóa" thì mình làm.
+
+# Phiên 33 · Lượt 73 — 2026-11-19
+
+**Bạn:** "1. chạy QA
+
+4. xóa nhé"
+
+**Claude:**
+
+Mình đã xóa xong hai worktree và hai nhánh của chúng. QA SHOP-77 đang chạy nền: Development đã chạy bản `2a68e0c`, nên agent `qa` khởi động sau khoảng 1 phút.
+
+**Đã xóa:**
+- `ai-orchestrator/.claude/worktrees/agent-abb253dc…` và nhánh `fix/pr21-security`, ở máy và trên GitHub.
+- `ai-orchestrator-c2` và nhánh `fix/build-resume-before-ledger`, ở máy và trên GitHub.
+- `node_modules` của clone chính và của `ao-followups-1` vẫn đủ, không bị đụng tới.
+- Hiện chỉ còn hai worktree: clone chính và `ao-followups-1`.
+
+**QA SHOP-77:**
+- Mình đã bật Docker Desktop, vì `shop` có app Java nên `ao-step` cần Docker để chạy QA.
+- QA xong, mình sẽ báo kết quả và chi phí, rồi hỏi bạn Accept.
+- Sau đó mình dừng container mà QA bật lên và tắt Docker.
+
+**Claude (tiếp Lượt 73):**
+
+Bản `develop` của `shop` trên máy đã được kéo lên `2a68e0c`. Từ giờ bản kit trong `shop` khớp với clone kit, nên lượt `ao-step` sau sẽ không còn dòng Note báo 35 file khác.
+
+QA SHOP-77 vẫn đang chạy nền, trong worktree riêng ở đúng commit `2a68e0c` đã deploy, nên dòng Note không ảnh hưởng tới kết quả.
+
+Mình còn thấy một worktree cũ của Pilot 3 là `e-commerce/shop-pr21`, nhánh `feature/SHOP-38-kit-copy`. PR #21 của nó đã merge, và worktree không còn thay đổi nào chưa commit. Bạn muốn xóa luôn worktree này thì nhắn mình.
+
+# Phiên 33 · Lượt 74 — 2026-11-19
+
+**Bạn:** "1. xóa worktree cũ của pilot 3. 1. Không phải QA trên môi trường development đã deploy lên internet à? Tại sao lại chạy Docker ở local?"
+
+**Claude:**
+
+**1. Đã xóa worktree `e-commerce/shop-pr21`.**
+- `node_modules` của `shop` chính vẫn đủ, không bị đụng tới.
+- Nhánh `feature/SHOP-38-kit-copy` không còn trên GitHub, chỉ còn ở máy. Mình để nguyên nhánh đó, vì bạn chỉ bảo xóa worktree. Bạn muốn xóa thì nhắn.
+
+**2. Đúng, QA kiểm trên Development, bản đã deploy lên internet.** Gần hết các test E2E chạy thẳng vào URL của Development, có basic auth. Docker ở máy chỉ phục vụ một test, vì:
+1. Có một trạng thái Development không thể hiện được: test AC23, khi không có sản phẩm nào đang bán thì trang phải ghi "Chưa có sản phẩm nào.". Development đang có 5 sản phẩm thật.
+2. Vì vậy test này mang nhãn `@local`. Playwright tự bật app `user` và API Spring Boot ngay trên máy, với database trống.
+3. API Spring Boot cần Postgres, mà Postgres chạy trong Docker.
+4. QA chạy cả bộ E2E để chắc bản chép kit không làm hỏng gì, nên test AC23 cũng chạy ở lượt này.
+5. Vì thế `ao-step` kiểm Docker đã chạy trước mọi lượt QA của dự án có app Java. Luật này có từ Pilot 3: ở SHOP-76, `qa` hai lần tự bật Docker Desktop và để quên database của làn.
+
+QA xong, mình dừng container mà QA bật lên và tắt Docker.
