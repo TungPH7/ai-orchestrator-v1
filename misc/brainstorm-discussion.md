@@ -30078,3 +30078,49 @@ Ví dụ: Task "thêm dữ liệu có cấu trúc Product cho trang sản phẩm
 2. `/ao-intake` ghi thêm comment `Cần seo:` sau khi bạn OK, hay bạn tự viết?
 
 Bạn trả lời hai câu này xong thì mình sửa `SPEC-c1.md` một lần, với mọi quyết định SEO từ Lượt 80.
+
+# Phiên 33 · Lượt 85 — 2026-11-19
+
+**Bạn:** "1. đồng ý cho quyền
+2. /ao-intake ghi thêm comment Cần seo: sau khi tôi OK.
+
+Tôi hỏi thêm:
+"khi item có nhãn ao-seo, prompt của /ao-build, /ao-review và /ao-qa chỉ tới comment của seo." Trường hợp nếu item là Story thuộc 1 epic, thì có comment của seo lúc spec chưa nhỉ? Hay là Story hay task ngoài epic thì đều có comment của seo, tôi tưởng Story thì seo viết trong phần description nên sẽ chưa có comment chứ?"
+
+**Claude:**
+
+Story trong Epic không có comment của `seo`, đúng như bạn nghĩ. Nhưng `seo` cũng không viết vào description của Story: nó viết trong file SPEC. Câu "prompt chỉ tới comment của `seo`" của mình chỉ đúng cho item ngoài Epic; mình viết gộp nên gây hiểu sai.
+
+Mình đã ghi hai điểm bạn duyệt vào `misc/thao-luan/seo/role-seo-va-blog.md`:
+- `seo` được comment trên Jira, giống `ux`;
+- `/ao-intake` ghi comment `Cần seo:` sau khi bạn OK bản nháp.
+
+## Phần SEO nằm ở đâu, theo từng loại item
+
+| Item | `seo` viết lúc nào | Phần SEO nằm ở | Prompt của build, review, QA chỉ tới |
+|---|---|---|---|
+| Story hay Task trong Epic | `/ao-spec`, trước cổng ① | mục `## SEO` của `docs/specs/<EPIC>/spec.md` | mục `## SEO` của SPEC |
+| Task hay Bug ngoài Epic | `/ao-request`, sau comment `Cần seo:` của intake | comment của `seo` trên item | comment đó |
+| Bug ngoài Epic, sai so với SPEC cũ | không chạy | mục `## SEO` của SPEC cũ | mục mà bản nháp trỏ tới |
+
+**Vì sao không viết vào description của Story:**
+1. `seo` không sửa được item trên Jira, chỉ comment.
+2. Description của Story do `ba` viết ở `/ao-plan`: AC chép từ SPEC, kèm link tới plan.
+3. `fe-dev` vốn đã đọc SPEC của Epic ở bước 1 của prompt.
+4. Chép phần SEO vào description thì có hai bản. Khi SPEC sửa, hai bản lệch nhau, và không ai biết bản nào đúng. Nên SPEC là nguồn duy nhất.
+
+**Khi nào Story trong Epic có comment của `seo`:** chỉ khi có người nhờ `seo` bằng `Cần seo:` sau khi SPEC đã merge. Ví dụ, bạn muốn đổi title của trang trong lúc Story đang sửa ở `/ao-fix`. Luật hiện có của `/ao-request` xử lý hai trường hợp:
+- **Item đang có nhánh** (`/ao-fix` hay build lại): `seo` sửa `spec.md` trên nhánh của item. Phần SEO vẫn nằm trong SPEC; comment chỉ ghi đã đổi gì.
+- **Không có nhánh:** `seo` chỉ comment điều SPEC đã merge cần đổi, và bạn quyết định cách làm.
+
+Vậy với item trong Epic, prompt chỉ tới mục `## SEO` của SPEC, không tới comment.
+
+## Một chỗ mình phát hiện khi tra luật này
+
+Prompt của `/ao-request`, khi có nhánh, bảo role được nhờ "commit trên nhánh". Nhưng `seo` không có git (đã duyệt ở Lượt 83). Trong `/ao-spec` thì thiết kế đã tính: `sa` chạy sau `seo` và commit luôn file của `seo` (mục 2.1 của file thảo luận). Còn ở `/ao-request` (khi sửa SPEC trước cổng ①, hay trên nhánh của item) thì không có ai chạy sau `seo`.
+
+**Đề xuất:** sau lượt của `seo`, `ao-step` commit rồi push thay cho `seo`. Nó chỉ làm vậy khi phần đổi nằm trong `docs/specs/`; có file khác đổi thì dừng và báo bạn. Mình sẽ ghi điểm này vào spec C1, cùng các quyết định SEO khác.
+
+## Bước tiếp
+
+Mình chưa sửa `SPEC-c1.md`, vì bạn còn đang hỏi. Nếu không còn câu nào về SEO, bạn gõ "làm" thì mình sửa spec một lần, với mọi quyết định SEO từ Lượt 80 tới giờ, rồi dừng lại để bạn đọc.

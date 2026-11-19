@@ -1,13 +1,13 @@
 # SEO trong kit: role `seo`, skill và blog
 
-> **Thảo luận:** Phiên 33 · Lượt 76–84 (2026-11-19).
+> **Thảo luận:** Phiên 33 · Lượt 76–85 (2026-11-19).
 >
 > **Gắn với:**
 > - C1: [SPEC-c1.md](../../../SPEC-c1.md), mục 6 và điểm 6 của mục 13;
 > - dòng D2 (workflow nội dung) của [concerns.md](../concerns.md);
 > - concern 3, ở [role-moi-trong-sdlc.md](../role-moi-trong-sdlc.md).
 >
-> **Trạng thái:** phần lớn đã duyệt (mục 1). Còn mở: quyền comment của `seo` và comment `Cần seo:` của `/ao-intake` (mục 2.5). Spec C1 mới ghi các điểm duyệt tới Lượt 80; các điểm sau đó vào spec một lần, khi chốt xong mục 2.5.
+> **Trạng thái:** đã duyệt hết các điểm đã bàn (mục 1), tới Lượt 85. Spec C1 mới ghi các điểm duyệt tới Lượt 80; các điểm sau đó vào spec một lần, khi bạn gõ "làm".
 
 **Mục tiêu (Lượt 82):** kit phải sẵn sàng cho dự án thật, không chỉ cho `shop`. `shop` là pilot để kiểm luồng của kit. Dự án có website công khai thì luôn cần SEO để lên top Google, và các website sắp làm sẽ có blog.
 
@@ -19,7 +19,11 @@
 | Skill `seo-content-brief` | 81 | Lấy từ claude-seo. Chép về rồi viết lại thành skill của kit, không để nguyên rồi ghi đè (ý của bạn, xem mục 4.2). |
 | `seo` viết chữ thật | 81 | Phần tĩnh của trang công khai: H1, các heading, đoạn mở đầu, nút kêu gọi, title, meta description, alt của ảnh. Viết cả `vi` và `en`, trong mục `## SEO` của SPEC. `fe-dev` đưa nguyên văn vào `messages/*.json`; `reviewer` và `qa` đối chiếu nguyên văn. |
 | SEO Specialist làm gốc | 82 | Prompt `seo` lấy agent SEO Specialist của agency-agents làm gốc: đúng chuyên gia bạn mong đợi (từ khóa, cụm chủ đề, backlink, Search Console). Chỉ cần viết lại cho gọn, chọn lọc cái hay, vì bản gốc dài khoảng 3.000 chữ. |
-| Web cho `seo` | 83 | `seo` dùng WebSearch và WebFetch. Đổi lại: không có Bash, không có git, chỉ ghi `docs/specs/**`, Jira chỉ đọc. Lượt tìm mỗi tháng lấy từ Keyword Planner nếu bạn ghi vào Epic; không có thì ghi "chưa có số liệu" (mục 2.1). Ở Lượt 84, "Jira chỉ đọc" được đề xuất đổi thành "chỉ comment" (mục 2.5). |
+| Web cho `seo` | 83 | `seo` dùng WebSearch và WebFetch. Đổi lại: không có Bash, không có git, chỉ ghi `docs/specs/**`, Jira chỉ đọc. Lượt tìm mỗi tháng lấy từ Keyword Planner nếu bạn ghi vào Epic; không có thì ghi "chưa có số liệu" (mục 2.1). Ở Lượt 85, "Jira chỉ đọc" đổi thành "chỉ comment" (dòng dưới). |
+| `seo` comment trên Jira | 85 | Giống `ux` (Lượt 122): `seo` comment để trả lời và đóng yêu cầu `Cần seo:`. Không tạo, không sửa item, không chuyển trạng thái (mục 2.5). |
+| `/ao-intake` ghi `Cần seo:` | 85 | Sau khi bạn OK bản nháp, phiên chính tạo item có nhãn `ao-seo`, rồi ghi comment `Cần seo:` đúng chữ trong bản nháp (mục 2.5). |
+| Phần SEO nằm ở đâu | 85 | Item trong Epic: mục `## SEO` của SPEC, không chép vào description. Item ngoài Epic: comment của `seo`. Bug sai so với SPEC cũ: mục `## SEO` của SPEC đó. Prompt của build, review, QA chỉ tới đúng chỗ đó (mục 2.6). |
+| `ao-step` commit thay `seo` | 85 | `seo` không có git. Sau một lượt `/ao-request` của `seo` trên nhánh, `ao-step` commit rồi push, chỉ khi phần đổi nằm trong `docs/specs/`; có file khác đổi thì dừng (mục 2.6). Đề xuất của Claude, ghi vào spec C1. |
 | Chia việc theo thời điểm | 83 | Phần spec chạy trong `/ao-spec` (mục 2.2). Phần chỉ làm được sau khi site chạy thật lưu thành dòng **D4** của [concerns.md](../concerns.md): lệnh SEO định kỳ, như `/ao-seo report` hằng tháng, sau C1. |
 | Bật hay tắt `seo` | 83 | Khóa `seo: true` cho từng app; hai từ `seo` và `no-seo` cho `/ao-spec`; không truyền gì thì tự quyết theo SPEC, mặc định bật; app `seo: false` thì không chạy `seo`; SPEC ghi app của từng màn hình (mục 2.3). |
 | Không có nhãn ở Epic, nhãn `ao-seo` ở item | 84 | Quyết định của Epic nằm trong SPEC: mục `## SEO`, hoặc dòng "SEO: không, vì …". Nhãn `ao-seo` gắn trên Story hay Task chạm màn hình có SEO: `sa` ghi cột "SEO" trong `plan.md`, bạn duyệt ở cổng ②, `ba` gắn nhãn. Không có nhãn `ao-no-seo` (mục 2.3). |
@@ -207,9 +211,35 @@ Blog có hai lớp việc khác nhau. Cách tách này có từ Phiên 27 · Lư
    **Đề xuất:** `seo` được comment, giống `ux`; không tạo, không sửa item, không chuyển trạng thái. Rủi ro thêm: trang web có lệnh chèn làm `seo` viết comment sai, rồi `fe-dev` làm theo. Ba lớp chặn: bạn đọc comment trước Refine, `reviewer` xem code, `qa` kiểm trên Development.
 2. **`/ao-intake` ghi thêm một comment.** Hiện intake chỉ ghi lên Jira một lần: tạo item. Đề xuất: sau khi bạn OK, phiên chính ghi thêm comment `Cần seo:`, đúng chữ trong bản nháp. Cách khác: bạn tự viết comment đó (comment của bạn cũng được tính), thêm một việc bằng tay. Nhãn `ao-seo` gắn lúc tạo item, cùng cách với nhãn mức của spec C1.
 
-**Phần kit phải làm thêm trong C1:** `/ao-request` nhận `seo` là role được nhờ; prompt của `/ao-build`, `/ao-review`, `/ao-qa` chỉ tới comment của `seo` khi item có nhãn `ao-seo`.
+**Phần kit phải làm thêm trong C1:** `/ao-request` nhận `seo` là role được nhờ; prompt của `/ao-build`, `/ao-review`, `/ao-qa` chỉ tới comment của `seo` khi item ngoài Epic có nhãn `ao-seo` (item trong Epic thì chỉ tới SPEC, mục 2.6).
 
-**Chờ bạn:** cho `seo` quyền comment? `/ao-intake` ghi comment `Cần seo:`, hay bạn tự viết?
+**Kết quả (Lượt 85):** bạn đồng ý cả hai: `seo` được comment, và `/ao-intake` ghi comment `Cần seo:` sau khi bạn OK.
+
+### 2.6 Story trong Epic có comment của `seo` không (Lượt 85)
+
+**Câu hỏi của bạn:** câu "prompt chỉ tới comment của `seo`" có đúng cho Story của một Epic không? Bạn tưởng với Story, `seo` viết trong description, nên chưa có comment.
+
+**Trả lời:** Story trong Epic không có comment của `seo`. Nhưng `seo` cũng không viết vào description: nó viết mục `## SEO` trong `docs/specs/<EPIC>/spec.md`. Câu ở Lượt 84 chỉ đúng cho item ngoài Epic.
+
+| Item | `seo` viết lúc nào | Phần SEO nằm ở | Prompt của build, review, QA chỉ tới |
+|---|---|---|---|
+| Story hay Task trong Epic | `/ao-spec`, trước cổng ① | mục `## SEO` của `docs/specs/<EPIC>/spec.md` | mục `## SEO` của SPEC |
+| Task hay Bug ngoài Epic | `/ao-request`, sau comment `Cần seo:` của intake | comment của `seo` trên item | comment đó |
+| Bug ngoài Epic, sai so với SPEC cũ | không chạy | mục `## SEO` của SPEC cũ | mục mà bản nháp trỏ tới |
+
+**Không chép phần SEO vào description của Story:**
+1. `seo` không sửa được item, chỉ comment.
+2. Description của Story do `ba` viết ở `/ao-plan`: AC chép từ SPEC, kèm link tới plan.
+3. `fe-dev` đã đọc SPEC của Epic ở bước 1 của prompt.
+4. Hai bản thì lệch nhau khi SPEC sửa. SPEC là nguồn duy nhất.
+
+**Story trong Epic chỉ có comment của `seo`** khi có người nhờ `seo` sau khi SPEC đã merge. Luật hiện có của `/ao-request` (`lib/workflow/prompts.mjs`):
+- **Item có nhánh** (`/ao-fix`, build lại): `seo` sửa `spec.md` trên nhánh của item; comment chỉ ghi đã đổi gì.
+- **Không có nhánh:** `seo` chỉ comment điều SPEC đã merge cần đổi, và bạn quyết định cách làm.
+
+Vậy với item trong Epic, prompt chỉ tới SPEC, không tới comment.
+
+**Chỗ phát hiện thêm:** khi có nhánh, prompt của `/ao-request` bảo role được nhờ commit trên nhánh, mà `seo` không có git. Ở `/ao-spec`, `sa` chạy sau và commit file của `seo` (mục 2.1); ở `/ao-request` thì không ai chạy sau `seo`. **Đề xuất:** sau lượt của `seo`, `ao-step` commit rồi push thay `seo`, chỉ khi phần đổi nằm trong `docs/specs/`; có file khác đổi thì dừng và báo bạn.
 
 ## 3. Các nguồn đã xem
 
@@ -263,3 +293,4 @@ Lúc viết bản nháp spec (Lượt 71), mình chưa xem skill SEO nào, nên 
 | 82 | SEO Specialist đúng ý, viết gọn lại; muốn tùy chọn bật `seo` ở `/ao-spec`; kit phải sẵn sàng cho blog; ghi thảo luận ra file này | Mục 2.2, 2.3, 2.4 |
 | 83 | Duyệt web cho `seo`, mục 2.2 và mục 2.3 (trừ chỗ lưu lựa chọn); hỏi nhãn ở Epic hay item; hỏi về đăng bài qua Admin và QA; lưu `/ao-seo report` cho sau này | Dòng D4 của `concerns.md`; trả lời ở mục 2.3 và 2.4 |
 | 84 | Duyệt nhãn ở item, cách đăng bài, thứ tự blog; hỏi item ngoài Epic đi qua những agent nào | Mục 2.5; sửa ví dụ "đổi chữ trang chủ"; nêu mâu thuẫn "Jira chỉ đọc" với `Cần seo:`; dòng D2 của `concerns.md` thành "ngay sau C1, trước C2" |
+| 85 | Duyệt quyền comment của `seo` và comment `Cần seo:` của intake; hỏi Story trong Epic có comment của `seo` không | Mục 2.6; đề xuất `ao-step` commit thay `seo` |
