@@ -36,11 +36,15 @@ them. Write no code, and change nothing in the repository but the draft below.
    you ask it. Copy the human's first description word for word under Original Request. Delete the template's guidance
    comments and its Example section.
 4. **Summary.** Show the human, in Vietnamese: the type and why, the title, the scope, the open points, and the path of
-   the draft. For a Bug, also Found in, and the Severity and Affects Version you propose, which the human approves. Ask
+   the draft. For a Task or a Bug, also the level you propose, light, standard or heavy, with the reason (C1 spec
+   section 2): light where a mistake costs little and there is no logic, such as a docs Task or a change of copy; heavy
+   where a mistake costs much: money, security, data that exists; standard for the rest. Their OK approves it. For a
+   Bug, also Found in, and the Severity and Affects Version you propose, which the human approves. Ask
    them to answer OK or say what to change. Change the draft and show the summary again until they say OK.
 5. **Create.** Only after the human's OK, create the item once with the createJiraIssue tool of the atlassian server:
    the cloud id of `.claude/rules/ai-orchestrator.md`, the space the check printed, the type, the summary from the
-   draft's first line, and the rest of the draft as the description, in markdown. For a Bug, also set Found in,
+   draft's first line, and the rest of the draft as the description, in markdown. For a Task or a Bug, also set the
+   label `ao-level-<level>` of the level they approved, in the field `labels`. For a Bug, also set Found in,
    Severity and Affects Version, with the field ids the check printed; leave Fix Version empty. This is the one Jira
    write you make: no transition, no comment, no edit of another item. If the call fails, show the error and stop: do
    not try another way.

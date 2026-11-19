@@ -112,6 +112,11 @@ needs_you_label: needs-you
 work_labels:
   role_prefix: ao-
   effort_prefix: ao-effort-
+  # The process level of an item, light, standard or heavy (C1 spec section 2): sa proposes it in the plan, you approve it
+  # at gate ②, ba labels the item. No label is standard.
+  level_prefix: ao-level-
+  # The one Task of an Epic that gathers the Medium and Low findings not fixed on their PR (C1 spec section 2).
+  findings: ao-findings
   # A Task vận hành: no commit and no PR, handed to QA with the evidence of devops (Pilot 3, SHOP-12 of shop).
   ops: ao-ops
   # Only you put it on an ops Task: devops gets the basic auth of Development and Staging for it.

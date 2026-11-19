@@ -205,9 +205,10 @@ test('/ao-review of a normal PR: reviewer only, and gate ③ says why security d
   const before = decide('review', prFacts('review', { files, requiredRoles: ['reviewer', 'security'], tier: 'normal', reports: { reviewer: report(), security: report({ sha: OLD, onHead: false }) } }, { item }));
   assert.deepEqual(plan(before), ['security DEMO-21 high review']);
   assert.match(before.runs[0].effortWhy, /but security reported on this PR before, so the merge needs its report/);
-  // An item sa marked hard is reviewed as a critical PR until the levels of C1 step 4.
-  const hard = decide('review', prFacts('review', { files }, { item: { ...item, effort: 'xhigh' } }));
+  // A heavy item is reviewed as a critical PR (C1 spec section 2), and the decision says its level.
+  const hard = decide('review', prFacts('review', { files }, { item: { ...item, level: 'heavy' } }));
   assert.deepEqual(plan(hard), ['reviewer DEMO-21 xhigh review', `security DEMO-21 ${roster.roles.security.effort} review`]);
+  assert.ok(hard.lines.includes('Level of DEMO-21: heavy (label heavy)'));
 });
 
 test('/ao-review after a small fix: security reviews only the changes since its last report, at high', () => {
@@ -480,4 +481,22 @@ test('/ao-review after a fix: the reviewer reviews only the new part too, at hig
   const open = { severity: 'High', where: 'apps/api/src/cart/cart.service.ts:4', finding: 'x' };
   const asked = prFacts('review', { reports: { ...reports, reviewer: report({ sha: OLD, onHead: false, at: '2026-11-04T08:00:00Z', blocking: 1, open: [open] }) }, reviewerCompare: compare('apps/api/src/cart/cart.service.ts'), securityCompare: compare('apps/api/src/cart/cart.service.ts') });
   assert.match(decide('review', asked).runs[0].prompt, /The reviewer reports before this one left 1 Critical or High finding open/);
+});
+
+// C1 spec section 2: a Critical or High raises the level a step; the roles that reviewed the head at a lower effort
+// review it again at the new one, before the item goes back to its dev agent. A step that ran at the right effort does
+// not run again.
+test('when a High makes a standard item heavy, the head is reviewed again at xhigh and max, once', () => {
+  const high = { severity: 'High', where: 'apps/api/src/cart/cart.service.ts:9', finding: 'x' };
+  const reports = { reviewer: report({ blocking: 1, open: [high], state: 'CHANGES_REQUESTED' }), security: report() };
+  const ran = (role, effort) => ({ n: 1, command: 'review', role, purpose: 'review', outcome: 'done', head: HEAD, effort, session: 's' });
+  const facts = (efforts) => prFacts('review', { reports, blockingEver: true, changesRequested: true }, { run: { key: 'DEMO-21', runs: [ran('reviewer', efforts[0]), ran('security', efforts[1])] } });
+  const again = decide('review', facts(['high', 'high']));
+  assert.deepEqual(plan(again), ['reviewer DEMO-21 xhigh review', `security DEMO-21 ${roster.roles.security.effort} review`]);
+  assert.equal(again.runs[0].scope, 'the level of DEMO-21 rose to heavy after the reviewer review at high on this head');
+  assert.ok(again.lines.includes('Level of DEMO-21: heavy (a review found a Critical or High)'));
+  const done = decide('review', facts(['xhigh', roster.roles.security.effort]));
+  assert.equal(done.go, false, 'reviewed at the new level already: no review again');
+  assert.match(done.reason, /ask for changes/);
+  assert.equal(decide('review', prFacts('review', { reports, blockingEver: true, changesRequested: true })).go, false, 'no record of the runs: nothing to compare, no review again');
 });

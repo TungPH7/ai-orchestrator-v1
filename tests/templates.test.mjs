@@ -238,13 +238,14 @@ test('design.md draws the flow in Mermaid, and its example has one ASCII screen 
 });
 
 // dev-workflow spec 2.4, 2.5, 2.6.
-test('the plan names the roles of each item and the effort of a hard one, in the template and its example', () => {
+test('the plan names the roles and the level of each item, and the effort of a hard one, in the template and its example', () => {
   const list = section('plan.md', 'Task List');
-  assert.match(list, /^- \[ \] <KEY>: <Story or Task title> · <roles> · effort <xhigh \| max>: <reason, only for a hard item>$/m);
+  assert.match(list, /^- \[ \] <KEY>: <Story or Task title> · <roles> · level <light \| standard \| heavy>: <reason, unless standard> · effort <xhigh \| max>: <reason, only for a hard item>$/m);
   // The example is the part of the file after its Example heading; section() stops at the example's own headings.
   const example = read('plan.md').split('## Example')[1];
-  assert.match(example, /^- \[ \] DEMO-12: .+ · be-dev, fe-dev \(Sub-task\) · effort xhigh: .+$/m);
-  assert.match(example, /^- \[ \] DEMO-11: .+ · be-dev$/m);
+  assert.match(example, /^- \[ \] DEMO-12: .+ · be-dev, fe-dev \(Sub-task\) · level heavy: .+ · effort xhigh: .+$/m);
+  assert.match(example, /^- \[ \] DEMO-11: .+ · be-dev · level heavy: .+$/m);
+  assert.match(example, /^- \[ \] DEMO-15: .+ · be-dev · level standard$/m);
 });
 
 test('an ADR of an Epic is Proposed with its plan and takes effect at gate ②; a security review of the new part has a Scope line', () => {
