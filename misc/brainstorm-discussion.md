@@ -29445,3 +29445,34 @@ Kiểm "profiles:check đỏ ở bước build của app Next.js" nhé"
 - Spec gồm các mục A1–A5 đã duyệt, phần gốc của C1 (thứ tự chạy trong `contract/stages.yaml`, role `seo`) và chỗ đặt cho A6.
 - Mục 13 có 8 điểm cần bạn trả lời, trong đó có câu còn mở ở mục F (PR tài liệu của item Nhẹ: miễn review, theo đề xuất).
 - Bạn duyệt xong, mình mới lập plan.
+
+**Claude (tiếp Lượt 71, sau khi review PR #78 xong):**
+
+Review của PR chép kit #78 xong, không có Critical hay High. PR đang chờ bạn approve và merge.
+
+**Kết quả review:**
+- **Hai báo cáo:**
+  - `reviewer` (`xhigh`): 0 Critical, 0 High, 3 Medium, 6 Low.
+  - `security` (`max`): 0 Critical, 0 High, 0 Medium, 4 Low.
+- **Chi phí:** 8,42 USD.
+- **Bản chép khớp kit:** mọi file kit trong PR giống hệt kit `7254716`, và `ci.yml` giữ đủ các job riêng của `shop`.
+
+**Các finding đã sửa trong kit (kit PR #312, đã merge, không tốn lượt agent nào).** Phần lớn nằm ở code mục 14 mà mình vừa viết:
+1. Guard `ops-task` chỉ xét nhãn, mà agent nào cũng gắn được nhãn đó. Nay guard đòi item là Task, chưa có nhánh hay PR.
+2. Task vận hành không có nhánh, nên làn của nó không bao giờ được dọn. Nay build của nó không mở làn.
+3. Agent vẫn gắn được `ao-env-auth` qua một lần chuyển trạng thái. Nay hook chặn cả đường đó.
+4. Mật khẩu lọt lên dòng lệnh qua `$(curl …)` đặt sau `[` hay `test`. Đây là lỗ do bản sửa Đợt 3 của mình mở ra; nay đã chặn.
+5. Các Low nhỏ:
+   - `cp -r apps/<app>`;
+   - dấu `lane-ready`;
+   - `JSON.parse` của danh sách tiến trình;
+   - `mvnw` gặp `#`;
+   - lượt chạy tiếp mất basic auth.
+
+Các bản sửa này vào `shop` ở lần chép kit sau. Hai Low về kiến trúc đã nằm trong spec C1.
+
+**Việc của bạn:**
+1. **PR #78 trên `shop`:** đọc hai báo cáo, approve rồi tự merge, vì PR sửa đường dẫn được bảo vệ. Sau khi merge, SHOP-77 cần QA rồi bạn Accept; tới bước đó mình sẽ hỏi bạn.
+2. **Jira:** thêm transition Hand over theo các bước ở tin trước, rồi nhắn "xong Jira".
+3. **Spec C1:** trả lời 8 điểm ở mục 13 của `SPEC-c1.md`.
+4. **Hai worktree khác:** `ai-orchestrator/.claude/worktrees/agent-abb253dc…` và `ai-orchestrator-c2`. Bạn muốn xóa không?

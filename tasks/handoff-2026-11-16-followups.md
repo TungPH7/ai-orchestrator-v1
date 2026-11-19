@@ -58,3 +58,16 @@
   - `docs/user-guide/README.md:29`: khi trang quản trị đang là tiếng Anh, hai ô hiện "English" và "System" (chữ "Language" bị ẩn). Viết lại: "Trình duyệt chỉ đặt `vi-VN` có thể mở trang bằng tiếng Anh; khi đó mở ô **English**, chọn **Tiếng Việt**".
   - `docs/user-guide/khach.md:96`: câu "đường dẫn giữ từ khóa, kiểu sắp xếp và các sản phẩm đã xem" chỉ đúng với **Xem thêm**. Bấm một liên kết khác lúc mất mạng thì tải lại mở trang của liên kết đó.
 - [ ] **`shop` admin: trình duyệt chỉ đặt `vi-VN` mở trang quản trị bằng tiếng Anh** (Low ngoài PR, review `shop` PR #77; QA SHOP-76 thấy, ảnh `admin-lan-dau-vi-VN.png`): `apps/admin/src/lib/i18n/i18n.ts:47` dò `navigator` rồi `htmlTag` (`lang="en"`, `apps/admin/index.html:2`), với `supportedLngs: ['en','vi']`. i18next tìm mã khớp đúng trong mọi mã trước khi thử phần ngôn ngữ của `vi-VN`, nên `['vi-VN','en']` ra `en` và lưu vào `localStorage`. SPEC chưa có quy tắc chọn ngôn ngữ của admin: bạn quyết có mở Task không (như `nonExplicitSupportedLngs` hay `load: 'languageOnly'`, hoặc mặc định `vi`).
+- [x] (Xong: kit PR #312, phần sửa trong kit) **Finding của review `shop` PR #78 (chép kit SHOP-77, 2026-11-19):**
+  - `reviewer`: 0 Critical, 0 High, 3 Medium, 6 Low; `security`: 4 Low; cả hai lượt tốn 8,42 USD.
+  - Sửa trong kit, không lượt agent nào:
+    - guard `ops-task` đòi Task không có nhánh hay PR;
+    - build Task vận hành không mở làn;
+    - chặn `ao-env-auth` qua `transitionJiraIssue`;
+    - mật khẩu trong `$(…)` sau `[`/`test`;
+    - `cp -r apps/<app>` và `cp -r .`;
+    - `lane-ready`;
+    - `JSON.parse` của danh sách tiến trình;
+    - `mvnw` gặp `#`.
+  - Các bản sửa vào `shop` ở lần chép kit sau.
+  - Hai Low về kiến trúc nằm trong `SPEC-c1.md`: `steps.mjs` quá 1000 dòng, và ngoại lệ audit của dự án nằm trong file kit.
