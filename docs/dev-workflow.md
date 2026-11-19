@@ -144,7 +144,7 @@ Có Task không có commit nào, như thêm dữ liệu qua API lên Staging (SH
 
 1. `ba` gắn nhãn `ao-ops` cùng `ao-devops`, và ghi trong Verification các môi trường và những gì cần kiểm ở đó.
 2. `/ao-build <KEY>` chạy `devops`. Agent này Start Task mà không tạo nhánh, làm việc trên môi trường, rồi comment bằng chứng có mục `## Ops evidence`.
-3. `devops` làm transition Hand over (In Progress → Ready for QA). `jira-guard` chỉ cho qua khi item có nhãn `ao-ops` và có comment bằng chứng của `devops`.
+3. `devops` làm transition Hand over (In Progress → Ready for QA). `jira-guard` chỉ cho qua khi item là Task có nhãn `ao-ops`, chưa có nhánh hay PR nào, và có comment bằng chứng của `devops`. Build của Task vận hành chạy trong thư mục dự án, không mở làn.
 4. `/ao-qa <KEY>` chạy `qa`, không cần PR hay deploy. Agent này kiểm từng dòng Verification trên các môi trường đó, không đổi dữ liệu, rồi viết báo cáo QA như mọi item.
 5. Bạn Accept. Guard `children-released` của Epic bỏ qua Task vận hành, vì Task này không có Fix Version.
 

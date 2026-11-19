@@ -186,6 +186,27 @@ test('readChecks says whether CI started on a commit: no check run and no status
 
 // Kit followups, batch 4 item 14: an ops Task (label ao-ops) has no branch, so devops could not Start it.
 test('branch-created holds for an ops Task, which has no branch', async () => {
-  const ops = { ...item('DEMO-12', { type: 'Task' }), labels: ['ao-ops'] };
-  assert.deepEqual(await holds(ops, ['branch-created'], { change: (a) => (a['/git/matching-refs/heads/feature/DEMO-12-'] = []) }), ['branch-created']);
+  const ops = { ...item('DEMO-30', { type: 'Task' }), labels: ['ao-ops'] };
+  const noRefs = (a) => {
+    for (const kind of ['feature', 'bugfix', 'hotfix']) a[`/git/matching-refs/heads/${kind}/DEMO-30-`] = [];
+  };
+  assert.deepEqual(await holds(ops, ['branch-created'], { change: noRefs }), ['branch-created']);
+});
+
+// Review of shop PR #78 (Medium): ops-task held for any item with the label ao-ops, which any agent can put, so devops
+// could hand a Story or an item with a branch and a PR to QA past submit and review. It now needs a Task with the label,
+// no branch and no PR, as the contract says.
+test('ops-task holds for a Task with the label ao-ops, no branch and no PR; branch-created skips only such a Task', async () => {
+  const noRefs = (a) => {
+    for (const kind of ['feature', 'bugfix', 'hotfix', 'release']) a[`/git/matching-refs/heads/${kind}/DEMO-30-`] = [];
+  };
+  const ops = (more = {}) => ({ ...item('DEMO-30', { type: 'Task' }), labels: ['ao-ops'], ...more });
+  assert.deepEqual(await holds(ops(), ['ops-task'], { change: noRefs }), ['ops-task']);
+  assert.deepEqual(await holds(ops({ type: 'Story' }), ['ops-task'], { change: noRefs }), [], 'a Story is never an ops Task');
+  assert.deepEqual(await holds(ops({ labels: [] }), ['ops-task'], { change: noRefs }), []);
+  const branched = (a) => (noRefs(a), (a['/git/matching-refs/heads/feature/DEMO-30-'] = [{ ref: 'refs/heads/feature/DEMO-30-seed' }]));
+  assert.deepEqual(await holds(ops(), ['ops-task'], { change: branched }), [], 'an item with a branch has code');
+  const withPr = (a) => (noRefs(a), pulls(a).push({ ...structuredClone(pulls(a)[0]), number: 90, head: { ...structuredClone(pulls(a)[0].head), ref: 'feature/DEMO-30-seed' } }));
+  assert.deepEqual(await holds(ops(), ['ops-task'], { change: withPr }), [], 'an item with a PR has code');
+  assert.deepEqual(await holds(ops({ type: 'Story' }), ['branch-created'], { change: noRefs }), [], 'branch-created skips only an ops Task');
 });
