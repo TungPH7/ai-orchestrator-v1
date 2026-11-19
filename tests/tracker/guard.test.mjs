@@ -141,3 +141,17 @@ test('when the facts cannot be read, the call is refused', async () => {
     reason: 'jira-guard: could not check DEMO-12: Jira GET /rest/api/3/issue/DEMO-12 returned 401: Unauthorized',
   });
 });
+
+// Kit followups, batch 4 item 14: an ops Task (label ao-ops) has no branch and no PR. devops starts it, then hands it to
+// QA once its evidence is on the item; no other role, no other item.
+test('devops starts an ops Task with no branch, and hands it over to QA only with its evidence', async () => {
+  const noBranch = { ...github, get: async (path) => (path.startsWith('/git/matching-refs/') ? [] : github.get(path)) };
+  const ops = (more = {}) => fakeJira({ type: 'Task', labels: ['ao-ops'], ...more });
+  assert.deepEqual(await run(call('devops', { transitionName: 'Start' }), ops(), noBranch), { allow: true });
+  const evidence = { created: '2026-11-19T08:00:00.000+0700', body: 'DevOps Engineer: xong\n\n## Ops evidence\n\nGET /api/products trả 200' };
+  const inProgress = { st: status('In Progress') };
+  assert.deepEqual(await run(call('devops', { transitionName: 'Hand over' }), ops({ ...inProgress, comments: [evidence] }), noBranch), { allow: true });
+  assert.deepEqual(await run(call('devops', { transitionName: 'Hand over' }), ops(inProgress), noBranch), { allow: false, reason: 'jira-guard: "Hand over" on DEMO-12 needs ops-evidence' });
+  assert.deepEqual(await run(call('devops', { transitionName: 'Hand over' }), fakeJira({ type: 'Task', ...inProgress, comments: [evidence] }), noBranch), { allow: false, reason: 'jira-guard: "Hand over" on DEMO-12 needs ops-task' });
+  assert.deepEqual(await run(call('be-dev', { transitionName: 'Hand over' }), ops(inProgress), noBranch), { allow: false, reason: 'jira-guard: be-dev may not make "Hand over" on DEMO-12; it is for devops' });
+});

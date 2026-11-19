@@ -1029,6 +1029,37 @@
             }
           },
           {
+            "id": "16",
+            "type": "DIRECTED",
+            "toStatusReference": "10010",
+            "links": [
+              {
+                "fromStatusReference": "3"
+              }
+            ],
+            "name": "Hand over",
+            "actions": [],
+            "conditions": {
+              "operation": "ALL",
+              "conditionGroups": [],
+              "conditions": [
+                {
+                  "ruleKey": "system:restrict-issue-transition",
+                  "parameters": {
+                    "accountIds": "",
+                    "roleIds": "",
+                    "groupIds": "6366693c-304b-4564-a8d1-97e10e0a7278",
+                    "permissionKeys": "",
+                    "groupCustomFields": "",
+                    "allowUserCustomFields": "",
+                    "denyUserCustomFields": ""
+                  },
+                  "id": "0b7d8c2e-6a1f-4c3e-9f2a-1d5e7b9c4a10"
+                }
+              ]
+            }
+          },
+          {
             "id": "12",
             "type": "DIRECTED",
             "toStatusReference": "10013",

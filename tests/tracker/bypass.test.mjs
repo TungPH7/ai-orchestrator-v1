@@ -203,3 +203,18 @@ test('rework: the order of the history does not matter', () => {
   const three = [ROUND, ROUND, ROUND].flat().toReversed();
   assert.equal(reworkDecision({ histories: three, item: item(), contract, mapping }).block, true);
 });
+
+// Kit followups, batch 4 item 14: the label ao-env-auth gives devops the basic auth of Development and Staging on an
+// ops Task, so only you put it on an item: an agent may not, in any field of labels; your main session may.
+test('no agent puts the label ao-env-auth on an item; words in a description or a comment are not a label', () => {
+  const byAgent = (tool, input, agent = 'devops') => checkToolCall({ hook_event_name: 'PreToolUse', tool_name: `mcp__atlassian__${tool}`, tool_input: { cloudId: mapping.cloud_id, ...input }, agent_type: agent }, { mapping, space: 'DEMO' });
+  const refused = { allow: false, reason: 'jira: only you put the label ao-env-auth on an item: it gives devops the basic auth of Development and Staging' };
+  assert.deepEqual(byAgent('editJiraIssue', { issueIdOrKey: 'DEMO-12', fields: { labels: ['ao-ops', 'ao-env-auth'] } }), refused);
+  assert.deepEqual(byAgent('editJiraIssue', { issueIdOrKey: 'DEMO-12', update: { labels: [{ add: 'ao-env-auth' }] } }), refused);
+  assert.deepEqual(byAgent('createJiraIssue', { projectKey: 'DEMO', issueTypeName: 'Task', summary: 'x', additional_fields: { labels: ['ao-env-auth'] } }, 'ba'), refused);
+  assert.deepEqual(byAgent('editJiraIssue', { issueIdOrKey: 'DEMO-12', fields: { labels: ['ao-ops', 'ao-devops'] } }), ALLOW);
+  assert.deepEqual(byAgent('editJiraIssue', { issueIdOrKey: 'DEMO-12', fields: { description: 'Bạn gắn nhãn ao-env-auth nếu cần' } }), ALLOW);
+  assert.deepEqual(byAgent('addOrEditJiraIssueComment', { issueIdOrKey: 'DEMO-12', commentBody: 'Cần nhãn ao-env-auth' }), ALLOW);
+  // Your main session, with no agent_type.
+  assert.deepEqual(check('mcp__atlassian__editJiraIssue', { cloudId: mapping.cloud_id, issueIdOrKey: 'DEMO-12', fields: { labels: ['ao-env-auth'] } }), ALLOW);
+});

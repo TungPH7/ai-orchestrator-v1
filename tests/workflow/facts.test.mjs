@@ -61,7 +61,9 @@ test('the Agent field value of every role, in the names Jira uses', () => {
 });
 
 test('labels name the dev role and the effort (tracker/jira.yaml work_labels); others are left out', () => {
-  assert.deepEqual(mapping.work_labels, { role_prefix: 'ao-', effort_prefix: 'ao-effort-' });
+  assert.deepEqual(mapping.work_labels, { role_prefix: 'ao-', effort_prefix: 'ao-effort-', ops: 'ao-ops', env_auth: 'ao-env-auth' });
+  // The labels of an ops Task are not roles (kit followups, batch 4 item 14).
+  assert.deepEqual(workLabels(['ao-ops', 'ao-env-auth', 'ao-devops'], mapping, roster).roles, ['devops']);
   assert.deepEqual(workLabels(['ao-fe-dev', 'ao-effort-xhigh', 'needs-you'], mapping, roster), { role: 'fe-dev', roles: ['fe-dev'], effort: 'xhigh' });
   assert.deepEqual(workLabels(['ao-qa-lead', 'ao-effort-huge', 'frontend'], mapping, roster), { role: null, roles: [], effort: null });
   assert.equal(workLabels(['ao-effort-xhigh', 'ao-effort-max'], mapping, roster).effort, 'max', 'the higher effort wins');
@@ -300,4 +302,17 @@ test('the ids /ao-review gives are those of the Highs, since a Critical cannot b
   const report = { user: { login: bot }, commit_id: Y, submitted_at: '2026-11-14T09:00:00Z', state: 'CHANGES_REQUESTED', body: `# Review: chore(kit): copy (SHOP-6)\n\nRole: security\n\n## Findings\n${ROWS}\n## Verdict\n- [x] **Request changes**\n` };
   const security = reviewReports([report], { roles: ['security'], bot, head: Y, approvers: ['you'], on: '2026-11-14' }).reports.security;
   assert.deepEqual([security.blocking, security.ids], [2, [findingId({ severity: 'High', where: 'b.ts:2', finding: 'login reachable' })]]);
+});
+
+test('an item says whether it is an ops Task, and whether you gave devops the basic auth for it', async () => {
+  const labelled = (labels) => (a) => {
+    const [, read] = Object.entries(a.jira).find(([path]) => path.startsWith('/rest/api/3/issue/DEMO-15?fields=summary'));
+    read.fields.labels = labels;
+    a.jira['/rest/api/3/issue/DEMO-15?fields=issuetype,status,labels,description,parent,subtasks,issuelinks'] = { key: 'DEMO-15', fields: { ...read.fields, description: null, issuelinks: [] } };
+    a.jira['/rest/api/3/search/jql?fields=subtasks&jql=project = "DEMO" AND "Agent" = "DevOps Engineer" AND status in ("In Progress")'] = { issues: [] };
+  };
+  const ops = await gather('build', 'DEMO-15', { change: labelled(['ao-ops', 'ao-devops', 'ao-env-auth']) });
+  assert.deepEqual([ops.item.ops, ops.item.envAuth, ops.item.role], [true, true, 'devops']);
+  const plain = await gather('build', 'DEMO-15', { change: labelled([]) });
+  assert.deepEqual([plain.item.ops, plain.item.envAuth], [false, false]);
 });

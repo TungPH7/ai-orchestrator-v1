@@ -23,11 +23,13 @@ test('standard workflow: 8 states, applies to Story, Task and Bug (spec 2.4)', (
   assert.deepEqual(Object.keys(standard.states), ['new', 'ready', 'in-progress', 'in-review', 'ready-for-qa', 'in-qa', 'done', 'cancelled']);
 });
 
-test('standard workflow: 9 transitions with the actors of spec 2.4', () => {
+// hand-over: an ops Task with no PR goes to QA with the evidence of devops (kit followups, batch 4 item 14).
+test('standard workflow: 10 transitions with the actors of spec 2.4', () => {
   assert.deepEqual(describeTransitions(workflows.standard), [
     'refine: new -> ready by automation, human',
     'start: ready -> in-progress by fe-dev, be-dev, devops',
     'submit: in-progress -> in-review by automation',
+    'hand-over: in-progress -> ready-for-qa by devops',
     'request-changes: in-review -> in-progress by reviewer, security, human, automation',
     'deploy-to-qa: in-review -> ready-for-qa by automation',
     'pick-up: ready-for-qa -> in-qa by qa',

@@ -177,3 +177,23 @@ test('a Story with its own ledger and a Sub-task done goes on with the next Sub-
   const none = decide({ ...facts, ledger: false });
   assert.match(none.reason, /is In Progress but has no ledger/);
 });
+
+// Kit followups, batch 4 item 14: an ops Task (label ao-ops) is devops's: no branch, no commit, no PR. Its prompt says to
+// leave the evidence and hand it over; the basic auth comes only with the label ao-env-auth, which only you put.
+test('/ao-build of an ops Task runs devops with the ops prompt, with the basic auth only under ao-env-auth', () => {
+  const item = { state: 'ready', status: 'Ready', type: 'Task', workType: 'task', subtasks: [], role: 'devops', roles: ['devops'], agent: null, labels: ['ao-ops', 'ao-devops'], ops: true, envAuth: false };
+  const ready = (more = {}) => ({ ...failed({ item: { ...item, ...more } }), pr: null, qaReport: null, wip: { epicShaping: { used: 0, limit: 1 }, devAgent: { devops: true } } });
+  const plain = decide(ready());
+  assert.equal(plain.go, true, plain.reason);
+  assert.deepEqual([plain.runs[0].role, plain.runs[0].purpose, plain.runs[0].envAuth], ['devops', 'build', undefined]);
+  assert.match(plain.runs[0].prompt, /^Do ops Task DEMO-21\. It is Ready, and has no branch, no commit and no PR\./);
+  assert.match(plain.runs[0].prompt, /## Ops evidence/);
+  assert.match(plain.runs[0].prompt, /make the transition Hand over/);
+  assert.doesNotMatch(plain.runs[0].prompt, /E2E_HTTP_PASSWORD/);
+  const authed = decide(ready({ envAuth: true, labels: ['ao-ops', 'ao-devops', 'ao-env-auth'] }));
+  assert.equal(authed.runs[0].envAuth, true);
+  assert.match(authed.runs[0].prompt, /E2E_HTTP_USER and E2E_HTTP_PASSWORD hold the basic auth of Development and Staging: give them to curl on stdin/);
+  const notDevops = decide(ready({ role: 'be-dev', roles: ['be-dev'], labels: ['ao-ops', 'ao-be-dev'] }));
+  assert.equal(notDevops.go, false);
+  assert.match(notDevops.reason, /^DEMO-21 is an ops Task, which only devops does, and its role label is ao-be-dev/);
+});
