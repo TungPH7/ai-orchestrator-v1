@@ -10,8 +10,8 @@
 
 ## Chuẩn bị
 
-- [ ] **T1: tài liệu.** Spec ghi đã duyệt; sửa câu "file mới `contract/stages.yaml`" thành "khóa `runs` trong `contract/stages.yaml`" (plan, quyết định 3); plan, todo, nhật ký. Phần chữ đã xong ở Lượt 87. Còn lại: PR tài liệu từ `task/after-pilot3` vào `main`, tự merge khi CI xanh, sau khi bạn duyệt plan.
-- [ ] **T2 [bạn]: ba tiền đề** (plan, mục "Ba tiền đề"). Không viết code.
+- [x] **T1: tài liệu.** Spec ghi đã duyệt; sửa câu "file mới `contract/stages.yaml`" thành "khóa `runs` trong `contract/stages.yaml`" (plan, quyết định 3); plan, todo, nhật ký. Xong 2026-11-19: kit PR #313 (`287700d`).
+- [x] **T2 [bạn]: ba tiền đề** (plan, mục "Ba tiền đề"). Không viết code. Xong 2026-11-19: tiền đề 1 và 2 đạt (0,17 USD); tiền đề 3 dời sang T15, vì `jira:check` báo lệch nếu option có trước role `seo` ([verification.md](verification.md)).
   1. Ở `ao-pilot` (đặt `AO_KIT_DIR`), một file agent tạm có đúng công cụ của `seo` chạy bằng `claude -p --agent`, như `ao-agent.mjs` mở: gọi được WebSearch và WebFetch, đọc được một item Jira và comment lên item thử.
   2. gh-guard không chặn các lệnh gọi đó.
   3. **Bạn:** thêm giá trị "SEO Specialist" vào Agent Field (mình ghi từng bước bấm); `npm run jira:check` khớp.
@@ -20,7 +20,7 @@
   - **Kiểm:** đủ ba kết quả. Tiền đề nào sai thì sửa spec, và bạn duyệt trước T3.
 
 ### Checkpoint 1: sau T2
-- [ ] Ba tiền đề có kết quả; spec đã sửa nếu cần.
+- [x] Ba tiền đề có kết quả; spec không phải sửa.
 
 ## Bước 1: thứ tự chạy trong contract, nhánh `task/c1-1`
 
@@ -101,6 +101,7 @@
 - [ ] **T15: role, quyền, prompt** (spec mục 6.3, 6.4, 6.8).
   - **Đạt khi:** roster có `seo` (`tools: [Edit, Write, WebFetch, WebSearch]`, `jira: [read, comment]`, `writes: ["docs/specs/**", ".ai/**"]`, Sonnet `high`); `validate` báo lỗi khi role khác có WebFetch hay WebSearch; gh-guard giới hạn Read, Grep, Glob của `seo`; `contract/roles.yaml` và `work-items.yaml` có `seo`; prompt `seo.md` lấy SEO Specialist làm gốc.
   - **Kiểm:** tiêu chí 9 của spec bằng test.
+  - **[bạn] Khi PR này merge:** thêm option "SEO Specialist" vào cuối Agent Field (tiền đề 3, dời từ T2); mình ghi từng bước bấm, rồi chạy `jira:check`.
 - [ ] **T16: khi nào `seo` chạy** (spec mục 6.1, 6.2, 6.6 "commit thay").
   - **Đạt khi:** `spec-has-seo-screens` theo đúng năm bước của spec mục 6.1; khóa `seo` của app và luật `seo: true` cần `public: true`; `project-scaffold` hỏi khóa; cột "App" của `design.md`; hai từ `seo`, `no-seo`; `ba` ghi dòng "SEO: không"; `seo-commit` chỉ nhận `docs/specs/`.
   - **Kiểm:** tiêu chí 6 và 11 của spec bằng test.

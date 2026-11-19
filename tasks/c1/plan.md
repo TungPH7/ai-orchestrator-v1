@@ -121,7 +121,7 @@ Số đo thật của C1 (tiêu chí 7: USD trên mỗi AC; so `xhigh` với `hi
 2. **Một lượt `seo` không có Bash vẫn đọc được Jira qua MCP và comment được,** và gh-guard không chặn nhầm các lệnh gọi đó.
 3. **Giá trị "SEO Specialist" của Agent Field** đã có trên Jira (bạn bấm thêm), và `npm run jira:check` khớp.
 
-Tiền đề 1 và 2 cần một lượt agent thử ở `ao-pilot`, dưới 0,5 USD. Bạn duyệt plan là duyệt luôn lượt thử này.
+Tiền đề 1 và 2 cần một lượt agent thử ở `ao-pilot`, dưới 0,5 USD. Bạn duyệt plan là duyệt luôn lượt thử này. Kết quả (Lượt 88): tiền đề 1 và 2 đạt, 0,17 USD; tiền đề 3 dời sang T15 ([verification.md](verification.md)).
 
 ## Câu hỏi mở
 
