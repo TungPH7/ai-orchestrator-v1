@@ -1,6 +1,6 @@
 # Plan triển khai: C1
 
-> **Spec:** [SPEC-c1.md](../../SPEC-c1.md), đã duyệt 2026-11-19 (Phiên 33 · Lượt 87). **Trạng thái:** bản nháp, chờ bạn duyệt. **Danh sách task:** [todo.md](todo.md).
+> **Spec:** [SPEC-c1.md](../../SPEC-c1.md), đã duyệt 2026-11-19 (Phiên 33 · Lượt 87). **Trạng thái:** đã duyệt 2026-11-19 (Phiên 33 · Lượt 88). **Danh sách task:** [todo.md](todo.md).
 
 ## Tổng quan
 
