@@ -29555,3 +29555,22 @@ Mình còn thấy một worktree cũ của Pilot 3 là `e-commerce/shop-pr21`, n
 5. Vì thế `ao-step` kiểm Docker đã chạy trước mọi lượt QA của dự án có app Java. Luật này có từ Pilot 3: ở SHOP-76, `qa` hai lần tự bật Docker Desktop và để quên database của làn.
 
 QA xong, mình dừng container mà QA bật lên và tắt Docker.
+
+**Claude (tiếp Lượt 74, sau khi QA xong):**
+
+QA SHOP-77 đạt (PASS), và SHOP-77 đang ở In QA chờ bạn Accept.
+
+**Kết quả QA** (comment 10601 trên SHOP-77):
+- **CI của PR, kể cả `policy`:** PASS. `policy` vẫn xanh sau khi bỏ ngoại lệ picomatch.
+- **Review:** PASS. Không còn Critical hay High.
+- **File kit:** PASS. 310 file trùng từng byte với kit `7254716`. 5 file khác đều là phần riêng của `shop`, và `ci.yml` vẫn giữ các job riêng.
+- **CI của `develop` sau merge:** PASS, và bản `2a68e0c` đã deploy lên Development.
+- **E2E trên Development:** PASS. 140 test: 134 đạt, 6 bỏ qua, 0 lỗi, giống lượt trước khi chép kit.
+
+**Chi phí:** QA tốn 0,95 USD (khoảng 8 phút). Tổng cho SHOP-77 là 9,36 USD.
+
+**Docker:** mình đã dừng `learn-postgres-s1` (không xóa gì) và tắt Docker Desktop.
+
+QA có nhắc ba Medium của `reviewer`. Cả ba nằm trong code kit và đã sửa ở kit PR #312, nên sẽ vào `shop` ở lần chép kit sau.
+
+**Việc của bạn:** Accept SHOP-77. Bạn có thể tự bấm trên Jira, hoặc nhắn "Accept" để mình làm.
