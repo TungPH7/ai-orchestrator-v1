@@ -152,3 +152,7 @@ test('stopProcessesUnder stops the tree of each process that runs from the folde
   assert.deepEqual(stopProcessesUnder(TREE, { platform: 'win32', spawnSync, kill: () => {}, self: 7 }), [101, 102]);
   assert.deepEqual(stopped, ['101', '102']);
 });
+
+test('processesUnder gives nothing when PowerShell prints something that is not JSON (review of shop PR #78)', () => {
+  assert.deepEqual(processesUnder(TREE, { platform: 'win32', spawnSync: () => ({ status: 0, stdout: 'WARNING: something\n' }), self: 7 }), []);
+});

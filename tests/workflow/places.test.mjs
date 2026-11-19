@@ -136,3 +136,10 @@ test('a lane with changes not committed is not moved', (t) => {
   assert.equal(done.ok, false);
   assert.match(done.reason, /changes not committed \(1 files\)/);
 });
+
+// Review of shop PR #78 (Medium): an ops Task has no branch, so its lane was never pruned, and three of them would hold
+// every lane of runs.lanes_max. Its run takes no lane.
+test('a run with lane: false, as the build of an ops Task, works in the project folder', () => {
+  const build = { worktrees: true, command: 'build' };
+  assert.equal(laneOf({ role: 'devops', key: 'SHOP-80', purpose: 'build', lane: false }, build), null);
+});

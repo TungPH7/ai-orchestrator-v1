@@ -155,3 +155,10 @@ test('devops starts an ops Task with no branch, and hands it over to QA only wit
   assert.deepEqual(await run(call('devops', { transitionName: 'Hand over' }), fakeJira({ type: 'Task', ...inProgress, comments: [evidence] }), noBranch), { allow: false, reason: 'jira-guard: "Hand over" on DEMO-12 needs ops-task' });
   assert.deepEqual(await run(call('be-dev', { transitionName: 'Hand over' }), ops(inProgress), noBranch), { allow: false, reason: 'jira-guard: be-dev may not make "Hand over" on DEMO-12; it is for devops' });
 });
+
+test('a Story with the label ao-ops is no ops Task: devops may not hand it over (review of shop PR #78)', async () => {
+  const noBranch = { ...github, get: async (path) => (path.startsWith('/git/matching-refs/') ? [] : github.get(path)) };
+  const evidence = { created: '2026-11-19T08:00:00.000+0700', body: 'DevOps Engineer: xong\n\n## Ops evidence\n\nGET trả 200' };
+  const story = fakeJira({ type: 'Story', labels: ['ao-ops'], st: status('In Progress'), comments: [evidence] });
+  assert.deepEqual(await run(call('devops', { transitionName: 'Hand over' }), story, noBranch), { allow: false, reason: 'jira-guard: "Hand over" on DEMO-12 needs ops-task' });
+});

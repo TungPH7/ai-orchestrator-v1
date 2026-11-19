@@ -391,3 +391,16 @@ test('a lane another command removes stays for it; a mark of removal left by a c
   assert.equal(existsSync(made.dir), false);
   assert.equal(existsSync(mark), false);
 });
+
+// Review of shop PR #78 (Low): when git cannot remove a lane whose node_modules went first, the lane stayed marked
+// ready, and the next run in it had no packages. The mark goes before the packages, so the lane is installed again.
+test('a lane git could not remove is no longer marked ready, so the next run installs its packages again', async (t) => {
+  const s = setup(t, { pulls: { 'feature/SHOP-8-tokens': [{ number: 18, state: 'merged' }] } });
+  const made = await s.keeper.ensure('SHOP-8');
+  gitIn(made.dir)('switch', '--quiet', '-c', 'feature/SHOP-8-tokens');
+  mkdirSync(join(made.dir, 'node_modules', 'msw'), { recursive: true });
+  const stuck = (dir) => (...args) => (args[0] === 'worktree' && args[1] === 'remove' ? { status: 1, stdout: '', stderr: 'error: Directory not empty' } : gitIn(dir)(...args));
+  const keeper = laneKeeper({ projectDir: s.project, gitIn: stuck, install: async () => ({ ok: true, notes: [] }), fs, pullsOf: async (branch) => (branch === 'feature/SHOP-8-tokens' ? [{ number: 18, state: 'merged' }] : []), isProtected, settings: { worktrees: true, copy: [] } });
+  assert.match((await keeper.prune()).join(' '), /The lane of SHOP-8 could not be removed: error: Directory not empty/);
+  assert.equal(existsSync(join(made.dir, '.ai', 'lane-ready')), false);
+});

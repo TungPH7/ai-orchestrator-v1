@@ -197,3 +197,14 @@ test('/ao-build of an ops Task runs devops with the ops prompt, with the basic a
   assert.equal(notDevops.go, false);
   assert.match(notDevops.reason, /^DEMO-21 is an ops Task, which only devops does, and its role label is ao-be-dev/);
 });
+
+// Review of shop PR #78 (Medium, and a Low of security): the build of an ops Task takes no lane, and a stopped devops run
+// that goes on in its session keeps the basic auth its label gives.
+test('the build of an ops Task takes no lane, and a stopped run of it goes on with its basic auth', () => {
+  const item = { state: 'ready', status: 'Ready', type: 'Task', workType: 'task', subtasks: [], role: 'devops', roles: ['devops'], agent: null, labels: ['ao-ops', 'ao-devops', 'ao-env-auth'], ops: true, envAuth: true };
+  const facts = (more = {}, rest = {}) => ({ ...failed({ item: { ...item, ...more } }), pr: null, qaReport: null, wip: { epicShaping: { used: 0, limit: 1 }, devAgent: { devops: true } }, ...rest });
+  assert.equal(decide(facts()).runs[0].lane, false);
+  const stopped = { key: 'DEMO-21', runs: [{ n: 1, command: 'build', role: 'devops', purpose: 'build', effort: 'high', outcome: 'unfinished', session: 's1', envAuth: true }] };
+  const resumed = decide(facts({ state: 'in-progress', status: 'In Progress' }, { run: stopped }));
+  assert.deepEqual([resumed.runs[0].resume, resumed.runs[0].envAuth, resumed.runs[0].lane], ['s1', true, false]);
+});
