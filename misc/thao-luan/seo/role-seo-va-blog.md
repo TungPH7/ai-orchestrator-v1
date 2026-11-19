@@ -1,13 +1,13 @@
 # SEO trong kit: role `seo`, skill và blog
 
-> **Thảo luận:** Phiên 33 · Lượt 76–83 (2026-11-19).
+> **Thảo luận:** Phiên 33 · Lượt 76–84 (2026-11-19).
 >
 > **Gắn với:**
 > - C1: [SPEC-c1.md](../../../SPEC-c1.md), mục 6 và điểm 6 của mục 13;
 > - dòng D2 (workflow nội dung) của [concerns.md](../concerns.md);
 > - concern 3, ở [role-moi-trong-sdlc.md](../role-moi-trong-sdlc.md).
 >
-> **Trạng thái:** phần lớn đã duyệt (mục 1). Còn mở: nhãn `ao-seo` gắn ở đâu (mục 2.3) và blog (mục 2.4). Spec C1 mới ghi các điểm duyệt tới Lượt 80; các điểm sau đó vào spec một lần, khi chốt xong mục 2.3.
+> **Trạng thái:** phần lớn đã duyệt (mục 1). Còn mở: quyền comment của `seo` và comment `Cần seo:` của `/ao-intake` (mục 2.5). Spec C1 mới ghi các điểm duyệt tới Lượt 80; các điểm sau đó vào spec một lần, khi chốt xong mục 2.5.
 
 **Mục tiêu (Lượt 82):** kit phải sẵn sàng cho dự án thật, không chỉ cho `shop`. `shop` là pilot để kiểm luồng của kit. Dự án có website công khai thì luôn cần SEO để lên top Google, và các website sắp làm sẽ có blog.
 
@@ -19,9 +19,12 @@
 | Skill `seo-content-brief` | 81 | Lấy từ claude-seo. Chép về rồi viết lại thành skill của kit, không để nguyên rồi ghi đè (ý của bạn, xem mục 4.2). |
 | `seo` viết chữ thật | 81 | Phần tĩnh của trang công khai: H1, các heading, đoạn mở đầu, nút kêu gọi, title, meta description, alt của ảnh. Viết cả `vi` và `en`, trong mục `## SEO` của SPEC. `fe-dev` đưa nguyên văn vào `messages/*.json`; `reviewer` và `qa` đối chiếu nguyên văn. |
 | SEO Specialist làm gốc | 82 | Prompt `seo` lấy agent SEO Specialist của agency-agents làm gốc: đúng chuyên gia bạn mong đợi (từ khóa, cụm chủ đề, backlink, Search Console). Chỉ cần viết lại cho gọn, chọn lọc cái hay, vì bản gốc dài khoảng 3.000 chữ. |
-| Web cho `seo` | 83 | `seo` dùng WebSearch và WebFetch. Đổi lại: không có Bash, không có git, chỉ ghi `docs/specs/**`, Jira chỉ đọc. Lượt tìm mỗi tháng lấy từ Keyword Planner nếu bạn ghi vào Epic; không có thì ghi "chưa có số liệu" (mục 2.1). |
+| Web cho `seo` | 83 | `seo` dùng WebSearch và WebFetch. Đổi lại: không có Bash, không có git, chỉ ghi `docs/specs/**`, Jira chỉ đọc. Lượt tìm mỗi tháng lấy từ Keyword Planner nếu bạn ghi vào Epic; không có thì ghi "chưa có số liệu" (mục 2.1). Ở Lượt 84, "Jira chỉ đọc" được đề xuất đổi thành "chỉ comment" (mục 2.5). |
 | Chia việc theo thời điểm | 83 | Phần spec chạy trong `/ao-spec` (mục 2.2). Phần chỉ làm được sau khi site chạy thật lưu thành dòng **D4** của [concerns.md](../concerns.md): lệnh SEO định kỳ, như `/ao-seo report` hằng tháng, sau C1. |
-| Bật hay tắt `seo` | 83 | Khóa `seo: true` cho từng app; hai từ `seo` và `no-seo` cho `/ao-spec`; không truyền gì thì tự quyết theo SPEC, mặc định bật; app `seo: false` thì không chạy `seo`; SPEC ghi app của từng màn hình (mục 2.3). Chỗ lưu lựa chọn còn bàn. |
+| Bật hay tắt `seo` | 83 | Khóa `seo: true` cho từng app; hai từ `seo` và `no-seo` cho `/ao-spec`; không truyền gì thì tự quyết theo SPEC, mặc định bật; app `seo: false` thì không chạy `seo`; SPEC ghi app của từng màn hình (mục 2.3). |
+| Không có nhãn ở Epic, nhãn `ao-seo` ở item | 84 | Quyết định của Epic nằm trong SPEC: mục `## SEO`, hoặc dòng "SEO: không, vì …". Nhãn `ao-seo` gắn trên Story hay Task chạm màn hình có SEO: `sa` ghi cột "SEO" trong `plan.md`, bạn duyệt ở cổng ②, `ba` gắn nhãn. Không có nhãn `ao-no-seo` (mục 2.3). |
+| Blog: thứ tự | 84 | Phần (a), tính năng blog, làm trong C1. D2, workflow viết bài, làm ngay sau C1 và trước C2 (mục 2.4). |
+| Blog: đăng bài | 84 | Công cụ đăng bài làm trong Epic tính năng blog, được review một lần; không viết script mới cho mỗi bài. Mỗi bài là một Task trên Jira. Bài lên ở trạng thái nháp kèm link xem trước, phiên chính kiểm theo mức Nhẹ, bạn duyệt nội dung, rồi mới đăng công khai (mục 2.4). |
 
 **Phần dữ liệu động,** như mô tả sản phẩm, là dữ liệu admin nhập. `seo` chỉ viết vài dòng hướng dẫn cho người nhập (độ dài, cách trình bày), đưa vào hướng dẫn sử dụng.
 
@@ -80,7 +83,7 @@ Ba phần này cần quyền vào Search Console và GA4, và chạy định k�
 
 **Kết quả (Lượt 83):** bạn đồng ý. Đề xuất lệnh SEO định kỳ được lưu thành dòng D4 của `concerns.md`, để làm sau C1, khi có một site đã chạy thật.
 
-### 2.3 Bật hay tắt `seo` khi chạy `/ao-spec` (Lượt 82–83)
+### 2.3 Bật hay tắt `seo` khi chạy `/ao-spec` (Lượt 82–84)
 
 **Bạn muốn:** truyền thêm một tùy chọn cho `/ao-spec` để bật `seo`; điều kiện "trang private thì tắt `seo`" vẫn giữ.
 
@@ -118,12 +121,12 @@ Ba phần này cần quyền vào Search Console và GA4, và chạy định k�
 
   Task cho trang admin không có nhãn.
 - **Tác dụng của nhãn:** `fe-dev` đọc mục `## SEO` khi build, `reviewer` đối chiếu code với mục đó, `qa` kiểm thẻ meta và chữ. Item không có nhãn thì ba role này bỏ qua phần SEO.
-- **Item ngoài Epic** (`/ao-intake`): bản nháp đề xuất nhãn `ao-seo` khi việc chạm trang có SEO, như đổi chữ trang chủ. Khi đó `seo` được gọi bằng `Cần seo:` để viết phần SEO cho item trước khi build.
+- **Item ngoài Epic** (`/ao-intake`): bản nháp đề xuất nhãn `ao-seo` khi việc chạm trang có SEO, như đổi chữ trang chủ. Khi đó `seo` được gọi bằng `Cần seo:` để viết phần SEO cho item trước khi build. (Ví dụ "đổi chữ trang chủ" sai, sửa ở Lượt 84: xem mục 2.5.)
 - **Không cần nhãn `ao-no-seo`:** item không có `ao-seo` là không làm SEO.
 
-**Chờ bạn:** đồng ý cách sửa này không?
+**Kết quả (Lượt 84):** bạn đồng ý cách sửa này, rồi hỏi item ngoài Epic đi qua những agent nào (mục 2.5).
 
-### 2.4 Blog (Lượt 82–83)
+### 2.4 Blog (Lượt 82–84)
 
 Blog có hai lớp việc khác nhau. Cách tách này có từ Phiên 27 · Lượt 98 (concern 3).
 
@@ -152,7 +155,7 @@ Blog có hai lớp việc khác nhau. Cách tách này có từ Phiên 27 · Lư
   - **file MDX trong repo:** mỗi bài là một PR. PR chỉ đổi tài liệu của item Nhẹ được miễn review (mục 3.4 của spec C1), nhưng mỗi bài vẫn phải chờ deploy.
 - **Đề xuất:** D2 là một module riêng ngay sau C1, không nhét vào C1. D2 cần `stages.yaml` và role `seo` của C1 trước, và C1 đã có 8 bước.
 
-**Chờ bạn:** phần (a) vào C1, D2 ngay sau C1 và trước C2? Hay C2 trước?
+**Kết quả (Lượt 84):** bạn đồng ý: phần (a) vào C1, D2 ngay sau C1 và trước C2. Ba câu trả lời về cách đăng bài ở dưới cũng được duyệt.
 
 **Câu hỏi của bạn ở Lượt 83 về cách đăng bài qua Admin, và trả lời:**
 
@@ -171,6 +174,42 @@ Blog có hai lớp việc khác nhau. Cách tách này có từ Phiên 27 · Lư
    4. Rồi mới đăng công khai.
 
    Như vậy bài lỗi không lên công khai, và mỗi bài không tốn thêm một lượt `qa`. Muốn vậy, tính năng blog phải có trạng thái nháp và link xem trước; điều này ghi vào SPEC của Epic blog.
+
+### 2.5 Item ngoài Epic có SEO đi qua những agent nào (Lượt 84)
+
+**Câu hỏi của bạn:** item ngoài Epic có nhãn `ao-seo`, được `seo` viết phần SEO qua `Cần seo:`, sẽ đi qua những agent nào?
+
+**Trả lời ngắn:** `seo` (một lượt, chỉ khi cần), `fe-dev` hoặc `be-dev`, `reviewer` (kèm `security` khi PR chạm phần nhạy cảm), và `qa`. Không có `ba`, `ux`, `sa`, vì item không có SPEC hay plan.
+
+**Sửa ví dụ của Lượt 83:** "đổi chữ trang chủ" không thể là item ngoài Epic. `/ao-intake` không tạo Story, và việc mà người dùng thấy kết quả thì thành một Epic nhỏ (`kit/.claude/skills/ao-intake/SKILL.md`, bước 2). Epic nhỏ đi qua `/ao-spec`, nên `seo` tự chạy. Item ngoài Epic có SEO là Task hay Bug mà người dùng không thấy nhưng Google thấy:
+- Task "thêm dữ liệu có cấu trúc Product cho trang sản phẩm";
+- Task "nâng Next.js lên bản mới", chạm mọi trang;
+- Bug "trang danh mục từ trang 2 trở đi có canonical trỏ về trang 1".
+
+**Luồng đề xuất của một Task có nhãn `ao-seo`:**
+1. **`/ao-intake`: phiên chính, không có agent.** Bản nháp có mức, nhãn `ao-seo`, và một đoạn `Cần seo:` ghi điều cần hỏi. Bạn OK thì phiên chính tạo item có nhãn, rồi viết đoạn đó thành comment.
+2. **`/ao-request <KEY>`: `seo`, một lượt.** Đọc item, mục `## SEO` của các SPEC cũ, code liên quan, tra web khi cần. Comment trên item phần SEO (chữ, title, meta, JSON-LD) kèm danh sách "Kiểm" cho `qa`. Comment này đóng yêu cầu. Item ngoài Epic không có `docs/specs/`, nên phần SEO nằm trong comment.
+3. **Bạn đọc comment,** rồi bấm Refine.
+4. **`/ao-build`: `fe-dev` hoặc `be-dev`.** Prompt chỉ tới comment của `seo`, như comment bàn giao của Sub-task.
+5. **`/ao-review`: `reviewer`, cộng `security` theo tầng của PR.** `reviewer` đối chiếu code với comment của `seo`. `seo` không review PR.
+6. **Bạn duyệt ở cổng ③,** merge, deploy lên Development.
+7. **`/ao-qa`: `qa` ở mức Chuẩn và Nặng, phiên chính ở mức Nhẹ.** Kiểm Verification, danh sách "Kiểm" của `seo` trên Development, và cả bộ E2E.
+8. **Bạn Accept.**
+
+**Bỏ bước 2** khi Bug sai so với mục `## SEO` đã có trong SPEC cũ: bản nháp trỏ tới mục đó, và `fe-dev`, `reviewer`, `qa` đọc mục đó.
+
+**Hai chỗ khác với điều đã duyệt:**
+1. **`seo` cần quyền comment trên Jira.** Lượt 83 duyệt "Jira chỉ đọc", nhưng cùng lượt đó đề xuất `Cần seo:`; hai điều mâu thuẫn, và Claude đã không thấy lúc đề xuất.
+   - Yêu cầu `Cần <role>:` chỉ đóng khi role được nhờ comment trên item (`lib/workflow/requests.mjs`). Với item ngoài Epic, comment cũng là chỗ duy nhất `seo` ghi được.
+   - `ux` từng gặp đúng chuyện này và được thêm quyền comment ở Lượt 122 (`agents/roster.yaml`).
+   - Trong Epic cũng cần: khi bạn sửa SPEC ở phần chạm SEO, `ba` nhờ `seo` bằng `Cần seo:`.
+
+   **Đề xuất:** `seo` được comment, giống `ux`; không tạo, không sửa item, không chuyển trạng thái. Rủi ro thêm: trang web có lệnh chèn làm `seo` viết comment sai, rồi `fe-dev` làm theo. Ba lớp chặn: bạn đọc comment trước Refine, `reviewer` xem code, `qa` kiểm trên Development.
+2. **`/ao-intake` ghi thêm một comment.** Hiện intake chỉ ghi lên Jira một lần: tạo item. Đề xuất: sau khi bạn OK, phiên chính ghi thêm comment `Cần seo:`, đúng chữ trong bản nháp. Cách khác: bạn tự viết comment đó (comment của bạn cũng được tính), thêm một việc bằng tay. Nhãn `ao-seo` gắn lúc tạo item, cùng cách với nhãn mức của spec C1.
+
+**Phần kit phải làm thêm trong C1:** `/ao-request` nhận `seo` là role được nhờ; prompt của `/ao-build`, `/ao-review`, `/ao-qa` chỉ tới comment của `seo` khi item có nhãn `ao-seo`.
+
+**Chờ bạn:** cho `seo` quyền comment? `/ao-intake` ghi comment `Cần seo:`, hay bạn tự viết?
 
 ## 3. Các nguồn đã xem
 
@@ -223,3 +262,4 @@ Lúc viết bản nháp spec (Lượt 71), mình chưa xem skill SEO nào, nên 
 | 81 | Duyệt `seo-content-brief` và `seo` viết chữ; hỏi ai dùng WebFetch, WebSearch; đề xuất chép rồi viết lại | Mục 3 và 4.2; đề xuất mở web cho riêng `seo` |
 | 82 | SEO Specialist đúng ý, viết gọn lại; muốn tùy chọn bật `seo` ở `/ao-spec`; kit phải sẵn sàng cho blog; ghi thảo luận ra file này | Mục 2.2, 2.3, 2.4 |
 | 83 | Duyệt web cho `seo`, mục 2.2 và mục 2.3 (trừ chỗ lưu lựa chọn); hỏi nhãn ở Epic hay item; hỏi về đăng bài qua Admin và QA; lưu `/ao-seo report` cho sau này | Dòng D4 của `concerns.md`; trả lời ở mục 2.3 và 2.4 |
+| 84 | Duyệt nhãn ở item, cách đăng bài, thứ tự blog; hỏi item ngoài Epic đi qua những agent nào | Mục 2.5; sửa ví dụ "đổi chữ trang chủ"; nêu mâu thuẫn "Jira chỉ đọc" với `Cần seo:`; dòng D2 của `concerns.md` thành "ngay sau C1, trước C2" |

@@ -30024,3 +30024,57 @@ Như vậy bài lỗi không lên công khai, và mỗi bài không tốn thêm 
 
 1. **Nhãn:** bỏ nhãn ở Epic, để quyết định nằm trong SPEC; gắn nhãn `ao-seo` ở Story và Task. Bạn đồng ý không?
 2. **Blog (câu của lượt trước):** phần (a) vào C1, còn D2 làm ngay sau C1 và trước C2? Hay C2 trước?
+
+# Phiên 33 · Lượt 84 — 2026-11-19
+
+**Bạn:** "Đồng ý với các đề xuất. Chỉ còn thắc mắc 1 điều:
+
+"Item ngoài Epic (/ao-intake): khi việc chạm trang có SEO, như đổi chữ trang chủ, bản nháp đề xuất gắn ao-seo. Khi đó seo được gọi bằng Cần seo: để viết phần SEO cho item trước khi build." Item này sẽ đi qua những agent nào?"
+
+**Claude:**
+
+Item ngoài Epic có nhãn `ao-seo` đi qua các agent: `seo` (một lượt, chỉ khi cần), `fe-dev` hoặc `be-dev`, `reviewer` (kèm `security` khi PR chạm phần nhạy cảm), và `qa`. Không có `ba`, `ux`, `sa`, vì item này không có SPEC hay plan.
+
+Trước khi đi vào luồng, mình phải sửa ví dụ của lượt trước. "Đổi chữ trang chủ" không thể là item ngoài Epic: `/ao-intake` không bao giờ tạo Story, và việc mà người dùng thấy kết quả thì thành một Epic nhỏ (`kit/.claude/skills/ao-intake/SKILL.md`, bước 2). Epic nhỏ đó đi qua `/ao-spec`, nên `seo` tự chạy như mọi Epic. Item ngoài Epic có SEO thật ra là Task hay Bug mà người dùng không thấy nhưng Google thấy, ví dụ:
+- Task "thêm dữ liệu có cấu trúc Product cho trang sản phẩm";
+- Task "nâng Next.js lên bản mới", chạm mọi trang;
+- Bug "trang danh mục từ trang 2 trở đi có canonical trỏ về trang 1".
+
+Mình đã ghi các điểm bạn duyệt vào `misc/thao-luan/seo/role-seo-va-blog.md`: nhãn `ao-seo` trên Story và Task, ba câu trả lời về đăng bài qua Admin, và thứ tự: phần (a) của blog vào C1, D2 làm ngay sau C1 và trước C2. Dòng D2 trong `concerns.md` đã đổi theo.
+
+## Luồng của một Task có nhãn `ao-seo`
+
+Ví dụ: Task "thêm dữ liệu có cấu trúc Product cho trang sản phẩm".
+
+1. **`/ao-intake`: phiên chính, không có agent.** Phiên chính hỏi bạn, rồi viết bản nháp có mức, nhãn `ao-seo`, và một đoạn `Cần seo:` ghi điều cần hỏi chuyên gia, như "dùng trường nào của Product, lấy giá trị từ đâu". Bạn OK thì phiên chính tạo item có nhãn, rồi viết đoạn `Cần seo:` thành comment trên item.
+2. **`/ao-request <KEY>`: agent `seo`, một lượt.** `seo` đọc item, mục `## SEO` của các SPEC cũ và code liên quan, tra web khi cần. Rồi `seo` comment trên item phần SEO: chữ, title, meta, JSON-LD, kèm danh sách "Kiểm" cho `qa`. Comment này đóng yêu cầu. Item ngoài Epic không có thư mục `docs/specs/`, nên phần SEO nằm trong comment.
+3. **Bạn đọc comment của `seo`,** rồi bấm Refine như mọi Task.
+4. **`/ao-build`: `fe-dev`, hoặc `be-dev` theo nhãn vai trò.** Prompt chỉ tới comment của `seo`, giống cách Sub-task đọc comment bàn giao, và dev làm theo đúng nội dung đó.
+5. **`/ao-review`: `reviewer`, cộng `security` khi PR chạm phần nhạy cảm.** `reviewer` đối chiếu code với comment của `seo`. `seo` không review PR (điểm 6 của spec C1, đề xuất không).
+6. **Bạn duyệt ở cổng ③,** PR merge và deploy lên Development.
+7. **`/ao-qa`: `qa` ở mức Chuẩn và Nặng; ở mức Nhẹ thì phiên chính kiểm.** Ngoài Verification và cả bộ E2E, bên kiểm đi qua danh sách "Kiểm" của `seo` trên Development: thẻ meta, JSON-LD, canonical.
+8. **Bạn Accept.**
+
+**Khi nào bỏ bước 2:** khi Bug sai so với mục `## SEO` đã có trong SPEC cũ, như ví dụ canonical ở trên. Yêu cầu SEO đã có sẵn, nên không cần hỏi `seo`. Bản nháp trỏ tới mục đó, và `fe-dev`, `reviewer`, `qa` đọc mục đó.
+
+## Hai chỗ khác với điều đã duyệt
+
+**1. `seo` cần quyền comment trên Jira.** Ở Lượt 83, mình đề xuất "Jira chỉ đọc" và bạn đã duyệt. Nhưng cũng trong lượt đó mình đề xuất `Cần seo:`, và hai điều này mâu thuẫn; mình đã không thấy chỗ này.
+- Yêu cầu `Cần <role>:` chỉ đóng khi role được nhờ comment trên item (`lib/workflow/requests.mjs`). Với item ngoài Epic, comment cũng là chỗ duy nhất `seo` ghi được phần SEO.
+- `ux` từng gặp đúng chuyện này: không trả lời được `Cần ux:`, nên được thêm quyền comment ở Lượt 122.
+- Trong Epic cũng cần: khi bạn sửa SPEC ở phần chạm SEO, `ba` nhờ `seo` bằng `Cần seo:`.
+
+**Đề xuất:** `seo` được comment, giống `ux`, nhưng vẫn không tạo, không sửa item, không chuyển trạng thái. Rủi ro thêm: một trang web có lệnh chèn làm `seo` viết comment sai, rồi `fe-dev` làm theo. Có ba lớp chặn: bạn đọc comment trước khi Refine (bước 3), `reviewer` xem code, và `qa` kiểm trên Development.
+
+**2. `/ao-intake` ghi thêm một comment.** Hiện intake chỉ được ghi lên Jira đúng một lần: tạo item. Đề xuất: sau khi bạn OK bản nháp, phiên chính ghi thêm comment `Cần seo:`, đúng chữ trong bản nháp. Cách khác là bạn tự viết comment đó trên Jira (comment của bạn cũng được tính), nhưng như vậy bạn phải làm thêm một việc bằng tay. Nhãn `ao-seo` thì gắn lúc tạo item, cùng cách với nhãn mức mà spec C1 đã có.
+
+**Phần kit phải làm thêm trong C1:**
+- `/ao-request` nhận `seo` là role được nhờ;
+- prompt của `/ao-build`, `/ao-review` và `/ao-qa` chỉ tới comment của `seo` khi item có nhãn `ao-seo`.
+
+## Còn chờ bạn
+
+1. Cho `seo` quyền comment trên Jira, giống `ux`?
+2. `/ao-intake` ghi thêm comment `Cần seo:` sau khi bạn OK, hay bạn tự viết?
+
+Bạn trả lời hai câu này xong thì mình sửa `SPEC-c1.md` một lần, với mọi quyết định SEO từ Lượt 80.
