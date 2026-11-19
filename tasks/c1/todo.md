@@ -134,7 +134,7 @@
   - **Hoãn:** khóa `review: off` của `project.yaml` và dòng đỏ của `doctor`. Nó cần `merge-gate` và `audit` đọc `project.yaml` của nhánh base, và hiện chưa có repo nháp nào dùng tới. Ghi ở `docs/quality-gates.md`; làm khi có repo nháp đầu tiên.
 
 ### Checkpoint 3: sau T12
-- [ ] Bước 1–5 đã merge; báo bạn kết quả test.
+- [x] Bước 1–5 đã merge (kit PR #314–#318); 1.643 test xanh. Đã báo bạn ở Lượt 89.
 
 ## Bước 6: duyệt thư viện, nhánh `task/c1-6`
 
