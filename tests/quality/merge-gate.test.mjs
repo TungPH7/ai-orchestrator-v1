@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { readGates } from '../../lib/quality/gates.mjs';
-import { decideMerge, reviewRolesNeeded, runMergeGate } from '../../lib/quality/merge-gate.mjs';
+import { decideMerge, reviewRolesNeeded, runMergeGate, waiverLabel } from '../../lib/quality/merge-gate.mjs';
 import { findingId, readReviewReport } from '../../lib/quality/pull-request.mjs';
 import { recordedClient } from '../helpers/jira.mjs';
 import { ROOT } from '../helpers/kit.mjs';
@@ -686,4 +686,37 @@ test('a PR of normal files merges with the reviewer report only; a sensitive one
     security.commit_id = FIRST;
   };
   assert.deepEqual(decide(reportedBefore), { action: 'wait', missing: ['security report on head a1b2c3d'] });
+});
+
+// C1 spec 3.4: a PR of docs only, of an item at level light, merges with the trace of the waiver in place of the reports.
+// merge-gate works the rule out again: the trace alone opens nothing.
+test('a review waived by rule: the trace stands in for the reports, but only where the rule holds again', () => {
+  const docsOnly = (label) => (f) => {
+    f.files = [{ filename: 'docs/user-guide/cart.md', status: 'modified' }, { filename: 'apps/web/messages/vi.json', status: 'modified' }];
+    f.reviews = f.reviews.filter((r) => !/Role: (reviewer|security)/.test(r.body ?? ''));
+    f.label = label;
+  };
+  const trace = (f) => f.reviews.push({ user: { login: BOT }, commit_id: HEAD, state: 'COMMENTED', body: '# Review waiver: DEMO-12\n\nWaiver: light-docs\nLevel: light\n' });
+  assert.equal(decide((f) => { docsOnly('light')(f); trace(f); }).action, 'merge');
+  assert.deepEqual(decide(docsOnly('light')).missing, ['review waiver light-docs on head a1b2c3d, which ao-step review posts']);
+  // The label is standard, or could not be read: the trace counts for nothing, and the reports are needed.
+  for (const label of ['standard', null]) {
+    assert.deepEqual(decide((f) => { docsOnly(label)(f); trace(f); }).missing, ['reviewer report on head a1b2c3d'], String(label));
+  }
+  // One file of code: no waiver.
+  assert.deepEqual(decide((f) => { docsOnly('light')(f); trace(f); f.files.push({ filename: 'apps/web/src/cart.tsx', status: 'modified' }); }).missing, ['reviewer report on head a1b2c3d']);
+  // Your approval is still needed.
+  assert.deepEqual(decide((f) => { docsOnly('light')(f); trace(f); f.reviews = f.reviews.filter(({ state }) => state !== 'APPROVED'); }).missing, ['approval on head a1b2c3d']);
+});
+
+test('the label of the item is read only when a waiver could take in every file, and a failed read gives no waiver', async () => {
+  const pr = { head: { ref: 'feature/DEMO-30-guide' } };
+  const docsFiles = [{ filename: 'docs/guide.md' }];
+  const asked = [];
+  const docs = { levelOf: async (key) => (asked.push(key), 'light') };
+  assert.equal(await waiverLabel({ pr, files: docsFiles, gates, docs }), 'light');
+  assert.equal(await waiverLabel({ pr, files: [{ filename: 'apps/web/src/a.ts' }], gates, docs }), null);
+  assert.deepEqual(asked, ['DEMO-30'], 'Jira is not read for a PR of code');
+  assert.equal(await waiverLabel({ pr, files: docsFiles, gates, docs: { levelOf: async () => { throw new Error('401'); } } }), null);
+  assert.equal(await waiverLabel({ pr, files: docsFiles, gates, docs: undefined }), null, 'no Jira token');
 });
