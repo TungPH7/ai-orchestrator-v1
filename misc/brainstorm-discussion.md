@@ -29692,3 +29692,23 @@ Hai chỗ đó mâu thuẫn nhau. Đề xuất mới, thêm `nextjs-seo`, thay c
    - nó không cần Python, URL thật hay API trả phí.
 3. **Còn một rủi ro:** repo nguồn nhỏ (74 sao). Vì vậy mình sẽ đọc hết skill và sáu file tham khảo của nó trước khi đưa vào kit. Nếu thấy nội dung sai hay lỗi thời, mình quay về cách chỉ dùng prompt và báo bạn.
 4. **Spec vẫn còn câu cũ,** vì bạn dặn chưa sửa gì. Bạn duyệt thì mình sửa điểm 6 ở mục 13 thành: "thêm skill `nextjs-seo`, ghim theo commit, chỉ cho `seo`", và sửa câu "Kit chưa có skill SEO nào" ở mục 6 cho khớp.
+
+# Phiên 33 · Lượt 78 — 2026-11-19
+
+**Bạn:** "sửa lại tài liệu, xong thì dừng lại"
+
+**Claude:**
+
+Mình đã sửa xong tài liệu và dừng ở đây; chưa đụng tới code hay kit.
+
+**`SPEC-c1.md`:**
+- **Mục 2:**
+  - cột QA của bảng ghi rõ: mỗi Story, Task, Bug có một lượt `qa`;
+  - thêm khối "QA theo loại item": Story, Sub-task (không QA riêng), Task (Verification và cả bộ E2E), Bug;
+  - thêm khối "QA lại ở mức Chuẩn": chỉ kiểm lại tiêu chí đã FAIL, cả bộ E2E vẫn chạy. Ở mức Nặng, lần QA lại làm đủ;
+  - ghi nguồn gốc câu "`qa` một lần mỗi Story".
+- **Mục 6:** prompt `seo` viết mới, chỉ lấy ý từ SEO Specialist và ba skill của claude-seo; thêm skill `nextjs-seo` chỉ cho `seo`, kèm bước đọc kỹ trước khi đưa vào kit; lý do không lấy skill nào khác.
+- **Mục 8, 9, 12 và Nguồn:** cập nhật cho khớp: cấu hình, thứ tự làm, hai tiêu chí hoàn thành mới, nguồn của role `seo`.
+- **Mục 13:** điểm 6 ghi đề xuất mới về skill; thêm **điểm 9** về lần QA lại. Giờ có 9 điểm chờ bạn trả lời.
+
+**`quyet-dinh-da-duyet.md`:** thêm một ghi chú dưới bảng A1, nói câu "`qa` một lần mỗi Story" là câu viết tắt và trỏ tới mục 2 của spec. Quyết định đã duyệt không đổi.

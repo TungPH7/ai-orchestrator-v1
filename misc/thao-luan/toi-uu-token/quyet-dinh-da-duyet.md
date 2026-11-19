@@ -36,6 +36,8 @@ Việc gốc của C1, theo hàng C1 của `concerns.md`: chuyển thứ tự ch
 | **Chuẩn** | Tính năng có API và database, không đăng nhập hay thanh toán (như SHOP-7) | `reviewer` `high`; `security` chỉ khi PR chạm tầng đường dẫn Nhạy cảm hay Nguy cấp (A2) | `qa` một lần mỗi Story, theo AC | Gom vào một Task chung mỗi Epic |
 | **Nặng** | Đăng nhập, thanh toán, migration trên dữ liệu thật, hạ tầng, kit | `reviewer` `xhigh`, `security` `max`, sửa tới khi không còn Critical hay High | QA đầy đủ như hiện nay | Như hiện nay |
 
+> **Ghi chú (Lượt 78):** "`qa` một lần mỗi Story, theo AC" là câu viết tắt, chép từ đề xuất ở Lượt 49. Câu này không bỏ QA của Task hay Bug: mỗi Story, Task, Bug vẫn có một lượt `qa`, và Sub-task không có QA riêng, như hiện nay. Nghĩa đúng, cùng đề xuất về lần QA lại, ở [SPEC-c1.md](../../../SPEC-c1.md), mục 2.
+
 **Chọn mức khi nào** (Lượt 50–51):
 - **Item trong Epic:** chọn lúc lập plan.
   - `sa` ghi mức đề xuất cho từng item trong `plan.md`;

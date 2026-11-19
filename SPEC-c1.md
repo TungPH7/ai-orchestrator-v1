@@ -9,6 +9,11 @@
 > - [effort-va-bat-tat-review.md](misc/thao-luan/toi-uu-token/effort-va-bat-tat-review.md)
 >
 > **Trạng thái:** bản nháp, chờ bạn duyệt. Viết ở Phiên 33 · Lượt 71 (2026-11-19), khi bạn nói "Bắt đầu C1". Mục 13 là các điểm cần bạn trả lời. Có duyệt rồi mới lập plan.
+>
+> **Sửa ở Lượt 78** (theo câu hỏi của bạn ở Lượt 76–77):
+> - mục 2: QA theo từng loại item, và lần QA lại khác nhau giữa mức Chuẩn và Nặng;
+> - mục 6: prompt `seo` viết mới, thêm skill `nextjs-seo`;
+> - mục 13: điểm 6 và điểm 9 mới.
 
 ## 1. Mục tiêu
 
@@ -45,8 +50,27 @@
 | Mức | Nhãn | Review | QA | Finding Medium, Low |
 |---|---|---|---|---|
 | Nhẹ | `ao-level-light` | `reviewer` `high` một lần; không có `security` | Không có lượt `qa`: phiên chính viết báo cáo QA ngắn trên Development, rồi bạn Accept | Gom vào Task finding của Epic |
-| Chuẩn | `ao-level-standard`, hoặc không có nhãn | `reviewer` `high`; `security` chỉ khi PR chạm tầng Nhạy cảm hay Nguy cấp | `qa` một lần mỗi Story, theo AC | Gom vào Task finding của Epic |
-| Nặng | `ao-level-heavy` | `reviewer` `xhigh`, `security` `max`, sửa tới khi không còn Critical hay High | QA đầy đủ như hiện nay | Như hiện nay |
+| Chuẩn | `ao-level-standard`, hoặc không có nhãn | `reviewer` `high`; `security` chỉ khi PR chạm tầng Nhạy cảm hay Nguy cấp | Một lượt `qa` cho mỗi Story, Task, Bug. QA lại sau một lần QA fail: chỉ kiểm lại các tiêu chí đã FAIL, cộng cả bộ E2E | Gom vào Task finding của Epic |
+| Nặng | `ao-level-heavy` | `reviewer` `xhigh`, `security` `max`, sửa tới khi không còn Critical hay High | Một lượt `qa` cho mỗi Story, Task, Bug. QA lại: kiểm đủ mọi tiêu chí, kèm bằng chứng mới, như hiện nay | Như hiện nay |
+
+**QA theo loại item** (giống nhau ở mức Chuẩn và Nặng):
+- **Story:** `qa` kiểm từng AC, mỗi AC có bằng chứng, không đòi gì ngoài SPEC, và chạy cả bộ E2E.
+- **Sub-task:** không có QA riêng, ở cả ba mức, như hiện nay. Story chỉ có một PR, nên lượt QA của Story kiểm luôn phần việc của mọi Sub-task.
+- **Task:** DoD "Bộ regression pass" giữ nguyên (Lượt 46). `qa` kiểm danh sách Verification và chạy cả bộ E2E. Chỉ Task Nhẹ, như Task tài liệu, không có lượt `qa`.
+- **Bug:** `qa` kiểm rằng các bước tái hiện không còn ra lỗi, và chạy cả bộ E2E.
+
+Bảng A1 của file quyết định ghi "`qa` một lần mỗi Story, theo AC". Câu đó chép từ đề xuất ở Lượt 49, lúc còn ý gộp Epic thành 6–8 Story to; nghĩa đúng là các dòng trên (Lượt 76).
+
+**QA lại ở mức Chuẩn:**
+1. `ao-step` biết đây là lần QA lại khi báo cáo QA mới nhất của item có kết quả FAIL.
+2. `ao-step` đưa vào prompt danh sách tiêu chí đã FAIL, lấy từ báo cáo đó.
+3. `qa` kiểm lại từng tiêu chí trong danh sách, kèm bằng chứng.
+4. Tiêu chí đã PASS ở lần trước thì không kiểm lại bằng tay. Báo cáo mới ghi "PASS ở báo cáo <comment>".
+5. Cả bộ E2E vẫn chạy. DoD của Story đòi mỗi AC có test E2E, nên một AC đã PASS mà bản sửa làm hỏng vẫn bị bắt. Với Task, dòng Verification nào không có test E2E thì `qa` vẫn kiểm lại dòng đó.
+
+Ở mức Nặng, lần QA lại làm đủ như lần đầu.
+
+`--retest` hiện có giữ nguyên: nó dành cho item có báo cáo NOT TESTED, và làm lại cả lượt QA ở mọi mức.
 
 **Chọn mức:**
 - **Item trong Epic:**
@@ -222,8 +246,31 @@ stages:
 2. `reviewer` đối chiếu mục `## SEO` khi review PR.
 3. `qa` kiểm meta trên Development như một AC.
 4. `seo` chạy Sonnet ở `high` (`agents/roster.yaml`).
-5. Prompt nằm ở `agents/prompts/seo.md`. Kit chưa có skill SEO nào; có thêm một skill cho `seo` hay không là điểm 6 của mục 13.
-6. Agent Field của Jira thêm giá trị "SEO Specialist", và `docs/jira-setup.md` ghi bước bấm.
+5. **Prompt `agents/prompts/seo.md` viết mới cho kit.**
+   - **Không chép agent SEO Specialist** của agency-agents (`marketing/marketing-seo-specialist.md`, MIT), vì ba lý do:
+     - agent đó làm SEO marketing: từ khóa, cụm chủ đề, backlink, số liệu Search Console;
+     - nó cần WebFetch và WebSearch, mà kit không cấp cho agent nào (spec 2.3 của roster);
+     - nó dài khoảng 3.000 chữ, và lượt nào cũng phải nạp hết.
+   - **Prompt chỉ lấy ý,** như `qa` đã làm với hai agent của agency-agents:
+     - từ SEO Specialist: mỗi truy vấn chỉ có một trang chính; tiêu đề và H1 không trùng giữa các trang; canonical và ngôn ngữ nhất quán;
+     - từ `seo-schema` của claude-seo: chỉ dùng loại dữ liệu có cấu trúc mà Google còn hỗ trợ (ví dụ FAQ đã bị bỏ rich result);
+     - từ `seo-ecommerce`: Product kèm Offer, có giá và tình trạng còn hàng;
+     - từ `seo-hreflang`: các bản ngôn ngữ trỏ qua lại nhau, có `x-default`.
+6. **Skill `nextjs-seo`, chỉ cho `seo`.**
+   - **Nguồn:** repo `laguagu/claude-code-nextjs-skills`, giấy phép MIT.
+   - **Cách đưa vào kit:** thêm vào `vendored_skills` của roster, ghim theo commit như các skill khác (`npm run skills:vendor`).
+   - **Vì sao chọn skill này:**
+     - đúng Next.js App Router: Metadata API, `sitemap.ts` và `robots.ts`, canonical, đa ngôn ngữ, JSON-LD an toàn, ảnh chia sẻ, tức đúng năm thứ của mục `## SEO`;
+     - nhỏ: khoảng 500 chữ, sáu file tham khảo chỉ đọc khi cần;
+     - không cần Python, URL thật hay API trả phí.
+   - **Kiểm trước khi đưa vào:** repo nhỏ (74 sao), nên phiên chính đọc hết `SKILL.md` và sáu file tham khảo trước. Nội dung sai hay lỗi thời thì bỏ skill, `seo` chỉ dùng prompt, và báo bạn.
+   - **Chưa cho `fe-dev`:** `fe-dev` làm theo mục `## SEO` của SPEC. Thêm skill cho `fe-dev` khi review ở Epic đầu thấy lỗi SEO trong code.
+   - Bản nháp đầu của spec đề xuất "chưa thêm skill". Lúc đó mình chưa xem skill SEO nào; đề xuất đổi sau khi xem các nguồn bạn cài (Lượt 76–77).
+7. **Không lấy skill nào khác:**
+   - **claude-seo:** phần lớn skill audit một URL thật bằng script Python, như `parse_html.py`, `page_checks.py` và `render_page.py`. Kit chỉ có Node, agent của kit không có WebFetch, và Development nằm sau basic auth. Nhiều skill khác cần API trả phí hay tài khoản riêng (DataForSEO, Google).
+   - **Claude Blog:** dành cho bài blog, mà `shop` chưa có blog. Xét lại khi có Epic làm blog.
+   - Hai plugin vẫn dùng được trong phiên chính, ở user scope, ví dụ để audit Production sau mỗi release.
+8. Agent Field của Jira thêm giá trị "SEO Specialist", và `docs/jira-setup.md` ghi bước bấm.
 
 Phần này phải xong trước Epic đầu tiên cần SEO (concerns.md, điểm 8).
 
@@ -237,7 +284,9 @@ Phần này phải xong trước Epic đầu tiên cần SEO (concerns.md, đi�
 
 | File | Thêm hay đổi |
 |---|---|
-| `agents/roster.yaml` | `reviewer`: `high`; thêm role `seo` |
+| `agents/roster.yaml` | `reviewer`: `high`; thêm role `seo`; thêm `nextjs-seo` vào `vendored_skills` |
+| `agents/prompts/seo.md` | mới (mục 6) |
+| `agents/prompts/qa.md` | lần QA lại ở mức Chuẩn (mục 2) |
 | `contract/roles.yaml`, `contract/work-items.yaml` | role `seo`; giá trị Agent "SEO Specialist" |
 | `contract/stages.yaml` | mới (mục 6) |
 | `quality/gates.yaml` | `review.critical_paths`, `review.sensitive_paths`, `review.waivers`, `dependencies.licenses`; bỏ `security_review.roster_effort_paths` |
@@ -255,10 +304,10 @@ Mỗi phần là một kit PR, với test viết đỏ trước. Phiên chính l
 | 1 | Phần 5: thứ tự chạy trong contract, chưa có `seo` (chỉ dời code, không đổi hành vi) | 1 PR |
 | 2 | Phần 3: tiêu chí finding, luật dừng | 1 PR |
 | 3 | Phần 2: effort `high`, ba tầng đường dẫn, luật tài liệu | 1 PR |
-| 4 | Phần 1: ba mức, nhãn, QA của mức Nhẹ, Task finding của Epic | 1–2 PR |
+| 4 | Phần 1: ba mức, nhãn, QA của mức Nhẹ, QA lại theo mức, Task finding của Epic | 1–2 PR |
 | 5 | Phần 2: miễn review có dấu vết (`merge-gate`, `audit`) | 1 PR |
 | 6 | Phần 4: `dep-check`, danh sách đã duyệt, hook, `policy` | 1–2 PR |
-| 7 | Role `seo` | 1 PR |
+| 7 | Role `seo`, prompt mới, skill `nextjs-seo` | 1 PR |
 | 8 | Chép kit vào `shop` một lần, có review (khoảng 10 USD) | PR của `shop` |
 
 Bước 1 đi trước, vì các bước sau đọc stages từ contract. Bước 3 và 4 đổi chi phí nhiều nhất.
@@ -296,8 +345,9 @@ Bước 1 đi trước, vì các bước sau đọc stages từ contract. Bướ
 3. Một PR Chuẩn chạm controller chạy `reviewer` `high` và `security` `high`. Một PR chạm `SecurityConfig.java` chạy `xhigh` và `max`, và mức của item tự lên Nặng.
 4. Một Medium không có cách tái hiện bị tính là Low. Review không còn Critical hay High thì `ao-step` gợi ý approve.
 5. `pnpm add` một gói chưa duyệt bị gh-guard từ chối, còn `dep-check` một gói đạt thì cho cài. `policy` đỏ khi lockfile có gói trực tiếp mới chưa duyệt.
-6. `/ao-spec` của một Epic có trang công khai chạy `seo` sau `ux`, và Epic không có trang công khai thì không chạy.
+6. `/ao-spec` của một Epic có trang công khai chạy `seo` sau `ux`, với skill `nextjs-seo` đã nạp. Epic không có trang công khai thì không chạy `seo`.
 7. Epic kế tiếp của `shop` có số USD trên mỗi AC, so được với 21,6 USD của SHOP-7.
+8. Lần QA lại của một Story Chuẩn sau QA fail chỉ kiểm các tiêu chí đã FAIL, cộng cả bộ E2E. Với Story Nặng, lần QA lại kiểm đủ mọi tiêu chí.
 
 ## 13. Điểm cần bạn duyệt
 
@@ -308,9 +358,10 @@ Bước 1 đi trước, vì các bước sau đọc stages từ contract. Bướ
 5. **Danh sách đã duyệt nằm trong `project.yaml` của dự án** (mục 5), cùng ngoại lệ audit. Đồng ý chỗ đặt này không?
 6. **Role `seo`:** viết mục SEO ở stage spec, `reviewer` và `qa` đối chiếu; Sonnet `high`. Hai câu hỏi:
    - Có cần `seo` review PR riêng không? Đề xuất là không.
-   - Có thêm một skill SEO vào kit cho `seo` không? Đề xuất là chưa, chỉ dùng prompt, rồi xem ở Epic đầu cần SEO.
+   - Prompt và skill: đề xuất viết mới prompt `seo` và thêm skill `nextjs-seo`, chỉ cho `seo` (mục 6). Bản nháp đầu đề xuất "chưa thêm skill"; đề xuất đổi ở Lượt 77.
 7. **A6** theo bảng ở mục 10: hai việc vào C1, hai việc để sau.
 8. **Thứ tự làm** theo mục 9: phần 5 trước, chép kit một lần ở cuối.
+9. **QA lại** (mục 2): ở mức Chuẩn chỉ kiểm lại các tiêu chí đã FAIL, cộng cả bộ E2E; ở mức Nặng kiểm đủ như hiện nay. Đồng ý không?
 
 ## Nguồn
 
@@ -319,3 +370,7 @@ Bước 1 đi trước, vì các bước sau đọc stages từ contract. Bướ
 - [effort-va-bat-tat-review.md](misc/thao-luan/toi-uu-token/effort-va-bat-tat-review.md): effort, miễn review, tiêu chí finding.
 - [SPEC-kit-copy-review.md](SPEC-kit-copy-review.md): bài thử review mù 2026-11-07.
 - [misc/thao-luan/concerns.md](misc/thao-luan/concerns.md): hàng C1, điểm 8.
+- Nguồn cho role `seo` (Lượt 76), đều giấy phép MIT:
+  - agent SEO Specialist: `agency-agents/marketing/marketing-seo-specialist.md`;
+  - plugin claude-seo 2.6.0: các skill `seo-schema`, `seo-ecommerce`, `seo-hreflang`;
+  - skill `nextjs-seo`: repo `laguagu/claude-code-nextjs-skills`.
