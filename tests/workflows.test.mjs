@@ -32,8 +32,8 @@ test('standard workflow: 10 transitions with the actors of spec 2.4', () => {
     'hand-over: in-progress -> ready-for-qa by devops',
     'request-changes: in-review -> in-progress by reviewer, security, human, automation',
     'deploy-to-qa: in-review -> ready-for-qa by automation',
-    'pick-up: ready-for-qa -> in-qa by qa',
-    'qa-fail: in-qa -> in-progress by qa',
+    'pick-up: ready-for-qa -> in-qa by qa, light-qa',
+    'qa-fail: in-qa -> in-progress by qa, light-qa',
     'accept: in-qa -> done by human',
     'cancel: new|ready|in-progress|in-review|ready-for-qa|in-qa -> cancelled by human',
   ]);

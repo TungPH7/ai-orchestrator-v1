@@ -20,6 +20,7 @@ Bản đọc của hợp đồng trong `contract/`. Nội dung và lý do của 
 | `qa` | Tester/QA Engineer | E2E, regression, báo cáo QA |
 | `devops` | DevOps Engineer | Deploy, cắt release, ship, rollback |
 | `automation` | CI, webhook, Jira Automation | Chuyển trạng thái theo dữ kiện: CI xanh, merge, deploy xong |
+| `light-qa` | Phiên chính, QA của item mức light | Kiểm item mức light thay lượt qa, đăng báo cáo QA ngắn và chuyển item bằng token CI (C1 spec mục 2) |
 
 ## Giai đoạn và cổng
 
@@ -139,8 +140,8 @@ stateDiagram-v2
 | `hand-over` | `in-progress` → `ready-for-qa` | `devops`: Chỉ Task vận hành: không có PR, devops ghi bằng chứng rồi giao cho QA | Item là Task vận hành: có nhãn ao-ops, không có commit hay PR; devops đã ghi bằng chứng của việc vận hành trong một comment có mục ## Ops evidence | `tracker` |  |
 | `request-changes` | `in-review` → `in-progress` | `reviewer`, `security`, `human`, `automation` | Review trên PR yêu cầu sửa, hoặc CI của PR đỏ | `github-pr` | `increment-rework` |
 | `deploy-to-qa` | `in-review` → `ready-for-qa` | `automation` | Bạn đã approve PR ở cổng ③ merge-approval; PR đã merge vào nhánh gốc; Deploy lên môi trường QA của item (mục 2.6) thành công | `github-pr`, `deploy` |  |
-| `pick-up` | `ready-for-qa` → `in-qa` | `qa` | Không có | Không có |  |
-| `qa-fail` | `in-qa` → `in-progress` | `qa` | Báo cáo QA mới nhất của item có kết quả FAIL | `tracker` (`qa-report`) | `increment-rework` |
+| `pick-up` | `ready-for-qa` → `in-qa` | `qa`, `light-qa` | Không có | Không có |  |
+| `qa-fail` | `in-qa` → `in-progress` | `qa`, `light-qa` | Báo cáo QA mới nhất của item có kết quả FAIL | `tracker` (`qa-report`) | `increment-rework` |
 | `accept` | `in-qa` → `done` | `human` | Báo cáo QA mới nhất của item có kết quả PASS; Item đạt DoD của loại đó (mục 2.5) | `tracker` (`qa-report`), `human` |  |
 | `cancel` | `new`, `ready`, `in-progress`, `in-review`, `ready-for-qa`, `in-qa` → `cancelled` | `human` | Item có Resolution: Won't do, Duplicate, Not a bug hoặc Cannot reproduce | `tracker` |  |
 

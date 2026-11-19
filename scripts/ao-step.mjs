@@ -28,6 +28,7 @@ import { npmCli } from '../lib/quality/npm.mjs';
 import { installArgs, managerFromLockfile, pnpmCli, runManager } from '../lib/quality/package-manager.mjs';
 import { attachEvidence } from '../lib/tracker/attachments.mjs';
 import { createGitHubClient, readGitHubToken } from '../lib/tracker/github-client.mjs';
+import { markdownToAdf } from '../lib/tracker/adf.mjs';
 import { bearerAuth, createJiraClient } from '../lib/tracker/jira-client.mjs';
 import { readMapping } from '../lib/tracker/mapping.mjs';
 import { startAgentProcess, killTree, stopProcessesUnder } from '../lib/workflow/agent-process.mjs';
@@ -159,17 +160,17 @@ const secret = (name) => userSecret(name);
 export function runsFile(projectDir, file) {
   const path = resolve(projectDir, file);
   const inside = relative(join(projectDir, '.ai', 'runs'), path);
-  if (inside === '' || inside.startsWith('..') || resolve(inside) === inside) throw new Error(`--note and --answers read only a file in .ai/runs/, not ${file}`);
+  if (inside === '' || inside.startsWith('..') || resolve(inside) === inside) throw new Error(`--note, --answers and --light-report read only a file in .ai/runs/, not ${file}`);
   return path;
 }
 
 
 async function main() {
-  const { values, positionals } = parseArgs({ allowPositionals: true, options: { go: { type: 'boolean', default: false }, answers: { type: 'string' }, note: { type: 'string' }, change: { type: 'string' }, stop: { type: 'boolean', default: false }, retest: { type: 'boolean', default: false } } });
+  const { values, positionals } = parseArgs({ allowPositionals: true, options: { go: { type: 'boolean', default: false }, answers: { type: 'string' }, note: { type: 'string' }, change: { type: 'string' }, stop: { type: 'boolean', default: false }, retest: { type: 'boolean', default: false }, 'light-report': { type: 'string' } } });
   const [command, arg, extra] = positionals;
   const settings = projectSettings(projectDir);
   const space = setting('AO_JIRA_SPACE', settings);
-  const wrong = checkArgument(command, arg, space, extra) ?? checkChange(command, values.change, Boolean(values.note)) ?? (values.stop && command !== 'preview' ? '--stop goes with /ao-preview only' : null);
+  const wrong = checkArgument(command, arg, space, extra) ?? checkChange(command, values.change, Boolean(values.note)) ?? (values.stop && command !== 'preview' ? '--stop goes with /ao-preview only' : null) ?? (values['light-report'] && command !== 'qa' ? '--light-report goes with /ao-qa only' : null);
   if (wrong) {
     console.log(`STOP: ${wrong}`);
     return;
@@ -279,7 +280,7 @@ async function main() {
   // The dev agent of each app by its profile: /ao-fix gives a blocking finding to the side of its app (kit followups,
   // batch 2; PR #62 of shop, Pilot 3).
   const appRoles = appRolesOf(existsSync(projectYaml) ? parse(readFileSync(projectYaml, 'utf8'))?.apps : {});
-  const options = { roster, contract, gates, mapping, appRoles, ...(values.answers && { answers: read(values.answers) }), ...(values.note && { note: read(values.note) }), ...(values.change && { change: values.change }), ...(values.retest && { retest: true }) };
+  const options = { roster, contract, gates, mapping, appRoles, ...(values.answers && { answers: read(values.answers) }), ...(values.note && { note: read(values.note) }), ...(values.change && { change: values.change }), ...(values.retest && { retest: true }), ...(values['light-report'] && { lightReport: read(values['light-report']) }) };
 
   const facts = await gather();
   // A Java app needs Docker for the tests be-dev and qa run (project-scaffold part 3, spec 2.2).
@@ -403,6 +404,8 @@ async function main() {
         if (step.action === 'pr-ready') return prReady(step, { repo, settings });
         if (step.action === 'preview-start') return preview.start(step);
         if (step.action === 'preview-stop') return preview.stop().then(({ notes }) => notes);
+        if (step.action === 'qa-light-start') return qaLightStart(step, { mapping });
+        if (step.action === 'qa-light-report') return qaLightReport(step, { mapping });
         return releaseCut(step, { repo, mapping, userToken });
       },
       git: (checkout, run) => keeper.checkout(checkout, run, command),
@@ -830,6 +833,35 @@ function listFiles(dir) {
     .filter((entry) => entry.isFile())
     .map((entry) => join(entry.parentPath ?? entry.path, entry.name))
     .map((path) => ({ path: path.replaceAll('\\', '/'), mtimeMs: statSync(path).mtimeMs }));
+}
+
+// The Jira client of the CI token: a user variable of your Windows account, which an agent running as you can read past
+// gh-guard, a risk you accept until the CI token leaves the machine (reviews of shop PR #21).
+function ciJira(mapping) {
+  const ciToken = secret('JIRA_CI_TOKEN');
+  if (!ciToken) throw new Error('JIRA_CI_TOKEN is not set in your session');
+  return createJiraClient({ cloudId: mapping.cloud_id, authorization: bearerAuth(ciToken), write: true });
+}
+
+// The Jira name of a contract transition of the work items, from tracker/jira.yaml.
+const transitionName = (mapping, id) => Object.values(mapping.workflows).map(({ transitions = {} }) => transitions[id]?.name).find(Boolean) ?? id;
+
+// /ao-qa of an item of level light (C1 spec section 2): the main session checks it in place of a qa run. The item moves
+// and the report goes up with the CI token, as contract/workflows.yaml lets automation pick up and fail an item.
+async function qaLightStart({ key }, { mapping }) {
+  await ciJira(mapping).transition(key, transitionName(mapping, 'pick-up'));
+  return [`${key} is In QA, picked up with the CI token: level light, no qa run.`];
+}
+
+async function qaLightReport({ key, result, body }, { mapping }) {
+  const jira = ciJira(mapping);
+  await jira.request('POST', `/rest/api/3/issue/${encodeURIComponent(key)}/comment`, {}, { body: markdownToAdf(body) });
+  const notes = [`Posted the ${result} report of the main session on ${key}, with the CI token.`];
+  if (result === 'FAIL') {
+    await jira.transition(key, transitionName(mapping, 'qa-fail'));
+    notes.push(`${key}: QA fail, back to In Progress.`);
+  }
+  return notes;
 }
 
 // After a qa run, before its worktree goes: the evidence to the item with the CI token, which only this session holds,

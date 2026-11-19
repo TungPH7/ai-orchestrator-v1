@@ -133,7 +133,7 @@ test('the DoD lists the common criteria, then the criteria of each type', () => 
 test('each transition row names who moves it, its conditions, evidence and effects', () => {
   assert.ok(
     docs.includes(
-      '| `qa-fail` | `in-qa` → `in-progress` | `qa` | Báo cáo QA mới nhất của item có kết quả FAIL | `tracker` (`qa-report`) | `increment-rework` |',
+      '| `qa-fail` | `in-qa` → `in-progress` | `qa`, `light-qa` | Báo cáo QA mới nhất của item có kết quả FAIL | `tracker` (`qa-report`) | `increment-rework` |',
     ),
   );
 });

@@ -28,7 +28,8 @@ identities:
     account: orchestratorci
     account_id: "712020:14a4a21d-167e-4ee7-87cb-386edf298b62"
     group: ao-automation
-    roles: [automation]
+    # light-qa: the main session, for the QA of an item of level light (C1 spec section 2).
+    roles: [automation, light-qa]
     token_env: JIRA_CI_TOKEN
     token_expires_on: "2027-10-27"
     note: "Vai trò automation, chạy jira-sync trong GitHub Actions"

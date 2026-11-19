@@ -32,7 +32,7 @@ Mỗi mục có phần **Cách làm** (bấm vào đâu) và danh sách `- [ ]` 
 3. Chọn group, xác nhận.
 
 - [ ] Group `ao-agents`: thêm service account `orchestratoragent`, vai trò `pm`, `ba`, `ux`, `sa`, `fe-dev`, `be-dev`, `reviewer`, `security`, `qa`, `devops`
-- [ ] Group `ao-automation`: thêm service account `orchestratorci`, vai trò `automation`
+- [ ] Group `ao-automation`: thêm service account `orchestratorci`, vai trò `automation`, `light-qa`
 
 **Kiểm lại:** mở từng group, tài khoản phải hiện ở tab **Members** hoặc **Agents**.
 
@@ -134,8 +134,8 @@ Lưu ý:
 - [ ] Transition `Hand over`: From `In Progress`, To `Ready for QA`. Restrict → Groups: `ao-agents`
 - [ ] Transition `Request changes`: From `In Review`, To `In Progress`. Restrict → Groups: `ao-humans`, `ao-agents`, `ao-automation`
 - [ ] Transition `Deploy to QA`: From `In Review`, To `Ready for QA`. Restrict → Groups: `ao-automation`
-- [ ] Transition `Pick up`: From `Ready for QA`, To `In QA`. Restrict → Groups: `ao-agents`
-- [ ] Transition `QA fail`: From `In QA`, To `In Progress`. Restrict → Groups: `ao-agents`
+- [ ] Transition `Pick up`: From `Ready for QA`, To `In QA`. Restrict → Groups: `ao-agents`, `ao-automation`
+- [ ] Transition `QA fail`: From `In QA`, To `In Progress`. Restrict → Groups: `ao-agents`, `ao-automation`
 - [ ] Transition `Accept`: From `In QA`, To `Done`. Restrict → Groups: `ao-humans`. Rule đặt Resolution là `Done`
 - [ ] Transition `Cancel`: From `New`, To `Cancelled`. Restrict → Groups: `ao-humans`. Rule hỏi Resolution khi hủy
 - [ ] Transition `Cancel`: From `Ready`, To `Cancelled`. Restrict → Groups: `ao-humans`. Rule hỏi Resolution khi hủy
