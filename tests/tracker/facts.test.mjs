@@ -207,10 +207,9 @@ const evidence = (agent, heading = 'Ops evidence') => ({
     { type: 'paragraph', content: [{ type: 'text', text: 'GET /api/products trả 5 sản phẩm mới, ảnh ở .ai/ops/DEMO-5/' }] },
   ] },
 });
-test('ops-task holds for a Task with the label ao-ops; ops-evidence for a comment of devops with the heading Ops evidence', async () => {
+// ops-task reads GitHub too since the review of shop PR #78: tests/tracker/facts-github.test.mjs.
+test('ops-evidence holds for a comment of devops with the heading Ops evidence', async () => {
   const ops = (labels, list = []) => fakeJira({ issues: [issue({ key: 'DEMO-5', type: 'Task', st: IN_PROGRESS, labels })], comments: { 'DEMO-5': list } });
-  assert.deepEqual(await guards(ops(['ao-ops']), 'DEMO-5', 'devops', ['ops-task']), ['ops-task']);
-  assert.deepEqual(await guards(ops([]), 'DEMO-5', 'devops', ['ops-task']), []);
   assert.deepEqual(await guards(ops(['ao-ops'], [evidence('DevOps Engineer')]), 'DEMO-5', 'devops', ['ops-evidence']), ['ops-evidence']);
   assert.deepEqual(await guards(ops(['ao-ops'], [evidence('Tester/QA Engineer')]), 'DEMO-5', 'devops', ['ops-evidence']), [], 'the evidence is devops\'s');
   assert.deepEqual(await guards(ops(['ao-ops'], [evidence('DevOps Engineer', 'Notes')]), 'DEMO-5', 'devops', ['ops-evidence']), [], 'with its heading');

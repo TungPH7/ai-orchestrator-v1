@@ -218,3 +218,15 @@ test('no agent puts the label ao-env-auth on an item; words in a description or 
   // Your main session, with no agent_type.
   assert.deepEqual(check('mcp__atlassian__editJiraIssue', { cloudId: mapping.cloud_id, issueIdOrKey: 'DEMO-12', fields: { labels: ['ao-env-auth'] } }), ALLOW);
 });
+
+// Review of shop PR #78 (Medium, and a Low of security): a transition takes fields and update too, and labels may come as
+// one string.
+test('no agent puts ao-env-auth through a transition either, or in a string of labels', () => {
+  const byAgent = (tool, input) => checkToolCall({ hook_event_name: 'PreToolUse', tool_name: `mcp__atlassian__${tool}`, tool_input: { cloudId: mapping.cloud_id, ...input }, agent_type: 'devops' }, { mapping, space: 'DEMO' });
+  const refused = { allow: false, reason: 'jira: only you put the label ao-env-auth on an item: it gives devops the basic auth of Development and Staging' };
+  assert.deepEqual(byAgent('transitionJiraIssue', { issueIdOrKey: 'DEMO-12', transition: { id: '3' }, update: { labels: [{ add: 'ao-env-auth' }] } }), refused);
+  assert.deepEqual(byAgent('transitionJiraIssue', { issueIdOrKey: 'DEMO-12', transitionName: 'Start', fields: { labels: 'ao-ops ao-env-auth' } }), refused);
+  assert.deepEqual(byAgent('editJiraIssue', { issueIdOrKey: 'DEMO-12', fields: { labels: 'ao-ops,ao-env-auth' } }), refused);
+  assert.deepEqual(byAgent('transitionJiraIssue', { issueIdOrKey: 'DEMO-12', transitionName: 'Start' }), ALLOW);
+  assert.deepEqual(byAgent('editJiraIssue', { issueIdOrKey: 'DEMO-12', fields: { labels: ['ao-env-auth-old'] } }), ALLOW, 'another label that only starts the same');
+});

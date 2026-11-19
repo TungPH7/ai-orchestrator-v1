@@ -498,6 +498,9 @@ test('the basic auth password stays off command lines: only printf, a builtin of
     'echo "${E2E_HTTP_PASSWORD:-none}"',
     '/usr/bin/test -n "$E2E_HTTP_PASSWORD"',
     '[ -n "$E2E_HTTP_PASSWORD" ] && curl -u "ao:$E2E_HTTP_PASSWORD" "$E2E_BASE_URL"',
+    // Review of shop PR #78 (security, Low): a command run inside a word of [ or test puts the password on its line.
+    'if [ "$(curl -s -o /dev/null -w "%{http_code}" -u "$E2E_HTTP_USER:$E2E_HTTP_PASSWORD" "$E2E_BASE_URL")" = 200 ]; then echo ok; fi',
+    'test -n "`curl -u ao:$E2E_HTTP_PASSWORD $E2E_BASE_URL`"',
   ]) {
     denied(bash(command, 'qa'), /password on a command line/, command);
   }
@@ -724,6 +727,11 @@ test('no agent copies or deletes a tree that holds node_modules, or the whole ap
     'rm -fr node_modules',
     'rm --recursive --force "$PWD/apps"',
     'cd apps/user && rm -rf node_modules/.pnpm',
+    // Review of shop PR #78 (Low): each app of a pnpm workspace holds node_modules, and so does the project folder.
+    'cp -r apps/user /tmp/x',
+    'cp -a ./apps/admin/ /tmp/y',
+    'cp -r . /tmp/whole',
+    'rm -rf ./',
   ]) {
     denied(bash(command, 'ux'), /node_modules/, command);
   }
