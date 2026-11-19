@@ -29950,3 +29950,77 @@ Blog có hai lớp việc khác nhau. Cách tách này đã có từ Phiên 27 (
 3. **Blog:** phần (a) vào C1, và D2 làm ngay sau C1, trước C2. Hay bạn muốn C2 trước?
 
 Câu hỏi của lượt trước vẫn còn mở: có cho riêng `seo` dùng WebSearch và WebFetch, đổi lại không có Bash, không có git, chỉ ghi `docs/specs/**`, Jira chỉ đọc?
+
+# Phiên 33 · Lượt 83 — 2026-11-19
+
+**Bạn:** "tôi đồng ý mở WebSearch và WebFetch cho riêng seo theo cách này
+
+Mục 1. đồng ý các đề xuất
+
+Mục 2. đồng ý các đề xuất, nhưng có 1 điểm cần thảo luận thêm:
+- nhãn ao-seo hay ao-no-seo phải thuộc task hoặc story chứ sao thuộc EPIC nhỉ? Trong EPIC có nhiều task và có task cần làm SEO, có task không cần làm SEO (như task cho trang admin)
+
+Mục 3. Blog: kit phải sẵn sàng
+"  - Trong database, đăng qua Admin (đề xuất từ Phiên 27): agent viết bản nháp, bạn duyệt, rồi đăng qua API của Admin. Không có PR, không cần review code." => cách này sẽ không có code, không có commit, nói chung là không đụng tới workflow của kit à?
+
+- Khi dùng trang admin để viết các blog, thường thì tôi sẽ giao cho claude làm luôn (đóng vai admin của trang), tôi thấy claude cũng sẽ viết code, script để thực hiện viết bài à? Với task như này thì có bỏ qua bước QA như task của devops không?"
+
+Rồi, trong lúc Claude đang ghi: "- Lưu đề xuất này lại để thực hiện trong tương lai. Đề xuất: sau này làm một lệnh riêng, như /ao-seo report hằng tháng, trong một module sau C1."
+
+**Claude:**
+
+Mình đã ghi các điểm bạn duyệt vào `misc/thao-luan/seo/role-seo-va-blog.md`, và lưu đề xuất `/ao-seo report` thành dòng **D4** trong bảng thứ tự của `concerns.md`. D4 ghi "Chờ nhu cầu", vì lệnh này cần một site đã chạy thật. Spec C1 mình chưa sửa; chốt xong chuyện nhãn thì sửa một lần.
+
+**Đã duyệt ở lượt này:**
+- **Web cho `seo`:** `seo` dùng WebSearch và WebFetch; đổi lại không có Bash, không có git, chỉ ghi `docs/specs/**`, và Jira chỉ đọc.
+- **Chia việc của SEO Specialist:** phần spec chạy trong `/ao-spec`; phần làm sau khi site chạy thật là D4.
+- **Bật hay tắt `seo`:**
+  - khóa `seo: true` cho từng app;
+  - hai từ `seo` và `no-seo`;
+  - mặc định bật;
+  - trang private vẫn tắt;
+  - SPEC ghi mỗi màn hình thuộc app nào.
+
+## Nhãn `ao-seo` nên gắn ở đâu
+
+Bạn đúng: trong một Epic, item cần SEO và item không cần là khác nhau. Có hai câu hỏi khác nhau, ở hai thời điểm:
+1. **Có chạy `seo` cho SPEC của Epic không:** hỏi ở `/ao-spec`. Lúc đó Story và Task chưa có, vì chúng chỉ được tạo ở `/ao-plan`, sau khi bạn duyệt SPEC. Nên câu này chỉ trả lời được ở mức Epic.
+2. **Item này có phải làm và kiểm SEO không:** hỏi ở build, review và QA. Câu này đúng là theo từng item, như bạn nói.
+
+**Đề xuất sửa:**
+- **Ở Epic, bỏ nhãn.** Quyết định nằm ngay trong SPEC: SPEC có mục `## SEO`, hoặc có một dòng "SEO: không, vì …" khi bạn chạy `no-seo`. Bạn thấy nó khi duyệt SPEC ở cổng ①, và lần chạy `/ao-spec` sau đọc lại dòng đó.
+- **Trong mục `## SEO`, `seo` chỉ viết cho màn hình của app `seo: true`.** Màn hình admin tự được bỏ qua.
+- **Ở item, nhãn `ao-seo` gắn trên Story hay Task chạm màn hình có SEO:**
+  1. `sa` ghi cột "SEO" trong bảng item của `plan.md`, như cột "Mức";
+  2. bạn duyệt ở cổng ②;
+  3. `ba` gắn nhãn khi tạo item.
+
+  Task cho trang admin không có nhãn.
+- **Tác dụng của nhãn:** `fe-dev` đọc mục `## SEO` khi build, `reviewer` đối chiếu code với mục đó, `qa` kiểm thẻ meta và chữ. Item không có nhãn thì ba role này bỏ qua phần SEO.
+- **Item ngoài Epic** (`/ao-intake`): bản nháp đề xuất nhãn `ao-seo` khi việc chạm trang có SEO, như đổi chữ trang chủ. Khi đó `seo` được gọi bằng `Cần seo:` để viết phần SEO cho item trước khi build.
+- **Không cần nhãn `ao-no-seo`:** item không có `ao-seo` là không làm SEO.
+
+## Blog đăng qua Admin
+
+**1. Cách này không đụng workflow của kit?** Đúng một nửa.
+- **Không đụng SDLC:** viết bài là thêm dữ liệu, giống thêm sản phẩm. Không có code mới, không commit, không PR, không deploy, nên bài không đi qua review và merge.
+- **Vẫn cần một workflow:** chọn chủ đề, viết bản nháp, bạn duyệt, đăng, kiểm trang thật. Đó là D2. Mình đề xuất mỗi bài là một Task trên Jira, như Task vận hành của mục 14, để bạn theo dõi và duyệt.
+- **Code để đăng bài thì thuộc SDLC:** API quản lý bài, trạng thái nháp, link xem trước và công cụ đăng bài đều làm trong Epic tính năng blog, có review và QA như mọi code.
+
+**2. Claude đóng vai admin có viết script để đăng bài không?** Có thể, nhưng không nên viết script mới cho mỗi bài.
+- **Rủi ro:** script viết mới mỗi lần là code chưa ai review, chạy bằng quyền admin trên Production. Ở SHOP-12, mình viết `shop12-seed.mjs` ngoài repo để thêm 5 sản phẩm. Đó là cách tạm của pilot, không nên lặp lại cho blog.
+- **Đề xuất:** Epic tính năng blog làm luôn công cụ đăng bài, ví dụ lệnh `scripts/post-publish.mjs <file bài>` gọi API của Admin. Công cụ được review một lần; sau đó mỗi bài chỉ là một file nội dung cộng một lệnh đăng.
+- **Cách khác:** đi qua giao diện Admin bằng Playwright, như người thật. Cách này chậm hơn và dễ vỡ hơn gọi API.
+
+**3. Có bỏ QA như Task của `devops` không?** Task vận hành của `devops` (mục 14) không bỏ QA: sau "Hand over", item sang Ready for QA và `qa` vẫn kiểm. Với bài blog, mình đề xuất **kiểm trước khi đăng**, không phải sau:
+1. Công cụ đăng bài tạo bài ở trạng thái nháp trên Production, kèm link xem trước mà người ngoài không thấy.
+2. Kiểm trên link đó: bài hiển thị đúng, title và meta, dữ liệu có cấu trúc, hreflang, liên kết, ảnh. Việc kiểm theo mức Nhẹ: phiên chính kiểm và viết báo cáo ngắn, không có lượt agent `qa`.
+3. Bạn đọc bài và duyệt nội dung.
+4. Rồi mới đăng công khai.
+
+Như vậy bài lỗi không lên công khai, và mỗi bài không tốn thêm một lượt `qa`. Muốn vậy, tính năng blog phải có trạng thái nháp và link xem trước; điều này sẽ ghi vào SPEC của Epic blog.
+
+## Còn chờ bạn
+
+1. **Nhãn:** bỏ nhãn ở Epic, để quyết định nằm trong SPEC; gắn nhãn `ao-seo` ở Story và Task. Bạn đồng ý không?
+2. **Blog (câu của lượt trước):** phần (a) vào C1, còn D2 làm ngay sau C1 và trước C2? Hay C2 trước?

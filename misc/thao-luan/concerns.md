@@ -24,6 +24,7 @@ Trạng thái dùng một trong bốn giá trị: Chưa làm · Đang làm · Xo
 | D1 | Module `multi-repo` và profile .NET (trường hợp 3) | Concern 1 | C2 | Chờ nhu cầu | |
 | D2 | Workflow nội dung cho agent viết bài | Concern 3 | C1 | Chờ nhu cầu | |
 | D3 | Chỗ cho skill riêng của kit, chuyển thể từ skill gốc (cách 4), kèm một trang `docs/` ghi quy trình cập nhật skill | Concern 4 | | Chờ nhu cầu | |
+| D4 | Lệnh SEO định kỳ, như `/ao-seo report` hằng tháng: phần việc của SEO Specialist chỉ làm được sau khi site chạy thật (audit site thật và Search Console; backlink và PR, mỗi lần gửi thư cần bạn duyệt; thứ hạng, lưu lượng, ROI). Cần quyền vào Search Console và GA4. Trong lúc chờ, phiên chính dùng plugin claude-seo | Phiên 33 · Lượt 82–83, [seo/role-seo-va-blog.md](seo/role-seo-va-blog.md) mục 2.2 | C1 | Chờ nhu cầu (cần một site đã chạy thật) | |
 
 Concern 4 không có bước riêng: mỗi lần lấy một ý hay vào kit là một PR nhỏ, làm lúc nào cũng được, theo 8 nguyên tắc của concern 4. Các việc còn lại trong backlog Pilot 2, như các Low của tài liệu và của kit-copy-review, nằm trong [verification.md của Pilot 2](../../tasks/archive/pilot-2/verification.md) (mục T10, "Việc kit để sau"). Các lỗ hổng mà lần chạy thật của human-loop tìm ra nằm trong [verification.md của human-loop](../../tasks/archive/human-loop/verification.md) (mục T20, "Việc kit để sau"). Các việc kit mà B2 tìm ra nằm trong [verification.md của project-scaffold phần 2](../../tasks/archive/project-scaffold-2/verification.md) (mục T26, "Việc kit để sau"). Mỗi việc gom vào module gần nhất có sửa tới chỗ đó.
 
