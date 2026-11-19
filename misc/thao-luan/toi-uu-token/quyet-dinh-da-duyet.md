@@ -275,8 +275,8 @@ Danh sách đầy đủ: [tasks/followups-truoc-c1.md](../../../tasks/followups-
 
 ## F. Chưa quyết
 
-- **Nội dung chi tiết của A6,** đặc biệt "review kit một lần ở repo kit": cần spec, rồi bạn duyệt.
 - **Bạn có máy nào chưa từng chạy agent không,** để kiểm khóa `age` sớm hơn hạn (Lượt 42: "làm sau").
-- **PR chỉ đổi tài liệu của item mức Nhẹ: miễn hẳn review, hay `reviewer` ở `high`?** Hai luật đã duyệt chồng nhau ở đúng trường hợp này (A2, mục 3 và mục 4). Lúc viết file này (Lượt 67), mình phát hiện chỗ chồng.
-  - **Đề xuất:** miễn hẳn review khi item Nhẹ và mọi file đều nằm trong danh sách miễn (Lượt 58, quyết định sau). PR chỉ đổi tài liệu của item Chuẩn hay Nặng thì `reviewer` ở `high` (Lượt 46).
-  - Quyết lúc viết spec C1.
+
+**Đã quyết ở Lượt 87,** khi bạn duyệt spec C1 ([SPEC-c1.md](../../../SPEC-c1.md), mục 13):
+- **Nội dung chi tiết của A6:** theo bảng ở mục 10 của spec. Hai việc vào C1 (ngoại lệ audit riêng của dự án; job CI riêng của dự án), "review kit một lần ở repo kit" để sau C2, `/ao-preview` khi bật làn thuộc C2.
+- **PR chỉ đổi tài liệu của item mức Nhẹ:** miễn hẳn review khi item Nhẹ và mọi file đều nằm trong danh sách miễn. PR chỉ đổi tài liệu của item Chuẩn hay Nặng thì `reviewer` ở `high` (Lượt 46). Hai luật từng chồng nhau ở đúng trường hợp này (A2, mục 3 và mục 4; phát hiện ở Lượt 67).

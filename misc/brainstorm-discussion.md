@@ -30171,3 +30171,66 @@ Mình cũng đã ghi hai đính chính này vào mục 2.1 của `misc/thao-luan
 - **12.** Chặn rò dữ liệu qua `seo` như đề xuất ở trên?
 
 Bạn đọc spec rồi trả lời các điểm của mục 13. Có duyệt rồi mình mới lập plan C1.
+
+# Phiên 33 · Lượt 87 — 2026-11-19
+
+**Bạn:** "1. miễn hẳn review
+2. đồng ý
+3. đồng ý
+4. Giữ
+5. đồng ý
+6. theo đề xuất
+7. theo đề xuất
+8. theo đề xuất
+9. đồng ý
+10. đồng ý
+11. đồng ý
+12. đồng ý"
+
+**Claude:**
+
+Spec C1 đã được duyệt. Mình đã ghi 12 câu trả lời vào spec, rồi lập plan C1 trong `tasks/c1/plan.md` và `tasks/c1/todo.md`. Plan đang chờ bạn duyệt; chưa có dòng code nào.
+
+## Đã ghi
+
+- **`SPEC-c1.md`:**
+  - trạng thái: đã duyệt ở Lượt 87;
+  - mục 13 thành bảng "Điểm bạn đã duyệt";
+  - các chỗ còn ghi "đề xuất" trong thân spec (mục 3.3, 6.4, 6.5, 6.7) nay ghi "bạn duyệt ở Lượt 87".
+- **`quyet-dinh-da-duyet.md`, mục F:** hai điểm chưa quyết nay đã có câu trả lời: chi tiết A6, và PR chỉ đổi tài liệu của item Nhẹ được miễn hẳn review.
+- **`concerns.md`:**
+  - dòng C1: spec đã duyệt, kèm phần SEO;
+  - dòng D3: làm trong C1.
+
+## Một chỗ sửa trong spec khi lập plan
+
+Spec mục 6 ghi "file mới `contract/stages.yaml`". Khi đọc code, mình thấy file này đã có: nó khai cổng, stage, môi trường và luật release. Nên thứ tự chạy được đưa vào file đó, bằng một khóa `runs` mới cho bốn stage `spec`, `plan`, `build` và `review`. Nội dung thứ tự giữ đúng như spec; chỉ chỗ đặt khác. Mình đã sửa câu này trong spec.
+
+## Plan C1 tóm tắt
+
+- **21 task, theo mười bước của spec mục 9.** Mỗi bước một kit PR, test viết đỏ trước. Phiên chính tự merge khi CI xanh.
+- **Bước 1 an toàn trước:** trước khi dời thứ tự chạy vào contract, mình chụp lại quyết định của kit trên mọi fixture hiện có, rồi so sau khi sửa. Hai bản phải giống hệt nhau.
+- **Item cũ không có nhãn mức** được tính là mức Chuẩn, nên giữ hành vi cũ. Chỗ đổi duy nhất là effort `high` mà bạn đã duyệt.
+- **Phần 6 (đo USD trên mỗi AC):** spec mục 9 chưa xếp phần này vào bước nào, nên plan đặt nó ở bước 2.
+- **Bốn checkpoint:**
+  1. sau ba tiền đề;
+  2. sau bộ so ở bước 1;
+  3. sau bước 5, khi phần tiết kiệm token đã xong;
+  4. trước khi chép kit vào `shop`, vì từ đó bắt đầu tốn tiền.
+
+**Chi phí:**
+- các kit PR: 0 USD, không gọi agent trả tiền;
+- lượt `seo` thử ở T2: dưới 0,5 USD;
+- review lần chép kit vào `shop` (T20): khoảng 10 USD.
+
+## Ba tiền đề, kiểm trước khi viết code (T2)
+
+1. **WebSearch và WebFetch có chạy được trong một lượt `claude -p --agent`** như `ao-agent.mjs` mở không? Agent của kit chạy không có chế độ quyền riêng, nên phải thử thật.
+2. **Một agent không có Bash có đọc Jira và comment được qua MCP không,** và gh-guard có chặn nhầm không?
+3. **Agent Field trên Jira có giá trị "SEO Specialist" chưa?** Việc này bạn bấm; tới T2 mình sẽ ghi từng bước bấm.
+
+Tiền đề 1 và 2 cần một lượt agent thử ở `ao-pilot`, tốn dưới 0,5 USD. Bạn duyệt plan là duyệt luôn lượt thử này.
+
+## Chờ bạn
+
+Bạn đọc `tasks/c1/plan.md` và duyệt plan. Khi bạn duyệt, mình mở PR tài liệu (T1) rồi làm ba tiền đề (T2).

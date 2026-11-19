@@ -11,7 +11,7 @@
 > - [effort-va-bat-tat-review.md](misc/thao-luan/toi-uu-token/effort-va-bat-tat-review.md)
 > - [seo/role-seo-va-blog.md](misc/thao-luan/seo/role-seo-va-blog.md)
 >
-> **Trạng thái:** bản nháp, chờ bạn duyệt. Viết ở Phiên 33 · Lượt 71 (2026-11-19), khi bạn nói "Bắt đầu C1". Mục 13 là các điểm cần bạn trả lời. Có duyệt rồi mới lập plan.
+> **Trạng thái:** đã duyệt 2026-11-19 (Phiên 33 · Lượt 87): bạn trả lời đủ 12 điểm của mục 13. Viết ở Lượt 71, khi bạn nói "Bắt đầu C1". Plan: [tasks/c1/plan.md](tasks/c1/plan.md).
 >
 > **Sửa ở Lượt 78** (theo câu hỏi của bạn ở Lượt 76–77):
 > - mục 2: QA theo từng loại item, và lần QA lại khác nhau giữa mức Chuẩn và Nặng;
@@ -139,7 +139,7 @@ Như vậy mọi item vẫn có báo cáo QA.
 ### 3.3 Luật cho tài liệu
 
 - **PR chỉ đổi `docs/**` và `**/*.md`, của item Chuẩn hay Nặng:** `reviewer` ở `high`, không có `security`. Job `secrets` của CI vẫn quét PR.
-- **PR như vậy của item Nhẹ:** miễn review (mục 3.4). Đây là đề xuất cho chỗ hai luật chồng nhau (F của file quyết định); xem mục 13, điểm 1.
+- **PR như vậy của item Nhẹ:** miễn review (mục 3.4). Đây là chỗ hai luật chồng nhau (F của file quyết định); bạn chọn miễn hẳn review ở Lượt 87 (mục 13, điểm 1).
 
 ### 3.4 Miễn review theo luật
 
@@ -223,7 +223,7 @@ Kết quả:
 
 ## 6. Phần 5: thứ tự chạy trong contract và role `seo` (C1 gốc)
 
-**File mới `contract/stages.yaml`:**
+**Khóa `runs` mới trong `contract/stages.yaml`:** file này đã có, và khai cổng, stage, môi trường, nhịp làm việc, luật release. Bản nháp đầu của spec ghi nhầm là "file mới" (sửa khi lập plan, Lượt 87). Mỗi stage `spec`, `plan`, `build`, `review` của file thêm khóa `runs`; khối dưới viết gọn theo id của stage:
 
 ```yaml
 stages:
@@ -326,7 +326,7 @@ stages:
   - `qa` kiểm trên Development.
 - **Rủi ro 2, rò dữ liệu** (phát hiện khi viết spec này, Lượt 86): `seo` vừa đọc được file vừa gửi được request ra internet. Một trang có lệnh chèn có thể bảo nó đọc một bí mật rồi gắn vào URL của WebFetch.
   - Hiện nay gh-guard (`lib/quality/commands.mjs`) chỉ chặn agent đọc file khóa, file backup và `hosts.yml` của `gh`. File `.env` và file ngoài dự án vẫn đọc được bằng Read.
-  - **Đề xuất:** gh-guard giới hạn Read, Grep và Glob của `seo` trong thư mục dự án, và từ chối các file `.env*`, trừ `.env.example`. Các role khác giữ như cũ.
+  - **Cách chặn** (bạn duyệt ở Lượt 87): gh-guard giới hạn Read, Grep và Glob của `seo` trong thư mục dự án, và từ chối các file `.env*`, trừ `.env.example`. Các role khác giữ như cũ.
 
 ### 6.5 Skill của `seo` (Lượt 80–84)
 
@@ -349,7 +349,7 @@ stages:
 4. **Chỗ đặt skill viết lại:** `kit/.claude/skills/<tên>/`, cạnh các skill `ao-*`.
    - Đầu file ghi repo, commit gốc, giấy phép và bản quyền của tác giả.
    - `npm run skills:vendor` không cập nhật các skill này; khi bản gốc có bản mới thì so bằng tay.
-   - Đây là trường hợp đầu của dòng D3 trong `concerns.md` (điểm 10 của mục 13).
+   - Đây là trường hợp đầu của dòng D3 trong `concerns.md`. C1 làm luôn D3, kèm một trang `docs/` ghi cách so với bản gốc khi bản gốc có bản mới (bạn duyệt ở Lượt 87, điểm 10 của mục 13).
 5. **Chưa cho `fe-dev` skill nào:** `fe-dev` làm theo phần SEO của item. Khi review ở Epic đầu thấy lỗi SEO trong code thì mới thêm skill cho `fe-dev`.
 6. **Không lấy skill nào khác:**
    - **claude-seo:** phần lớn skill audit một URL thật bằng script Python, như `parse_html.py`, `page_checks.py` và `render_page.py`. Kit chỉ có Node, và Development nằm sau basic auth. Nhiều skill khác cần API trả phí hay tài khoản riêng (DataForSEO, Google).
@@ -400,7 +400,7 @@ Bug sai so với mục `## SEO` của một SPEC cũ thì không cần `Cần se
   - link xem trước mà người ngoài không thấy;
   - công cụ đăng bài gọi API của Admin, ví dụ `scripts/post-publish.mjs <file bài>`, được review một lần.
 
-  Đề xuất: `/ao-intake` của một Epic blog đưa ba yêu cầu này vào bản nháp, để D2 không phải sửa lại tính năng blog (điểm 11 của mục 13).
+  `/ao-intake` của một Epic blog đưa ba yêu cầu này vào bản nháp, để D2 không phải sửa lại tính năng blog (bạn duyệt ở Lượt 87, điểm 11 của mục 13).
 
 ### 6.8 Jira
 
@@ -434,7 +434,7 @@ Phần này phải xong trước Epic đầu tiên cần SEO (concerns.md, đi�
 | `kit/.claude/skills/ao-request/SKILL.md`, `lib/workflow/` | `seo` là role được nhờ; `ao-step` commit thay `seo`; prompt của build, review, QA chỉ tới phần SEO (mục 6.6) |
 | `lib/workflow/conditions.mjs` | điều kiện `spec-has-seo-screens` (mục 6.1) |
 | `contract/roles.yaml`, `contract/work-items.yaml` | role `seo`; giá trị Agent "SEO Specialist" |
-| `contract/stages.yaml` | mới (mục 6) |
+| `contract/stages.yaml`, `contract/schema/stages.schema.json` | khóa `runs` của bốn stage (mục 6) |
 | `quality/gates.yaml` | `review.critical_paths`, `review.sensitive_paths`, `review.waivers`, `dependencies.licenses`; bỏ `security_review.roster_effort_paths` |
 | `tracker/jira.yaml` | `work_labels.level_prefix: ao-level-`; nhãn `ao-findings`, `ao-seo` |
 | `project.yaml` của dự án | khối `dependencies` (`approved`, `exceptions`); khóa `seo` của từng app (mục 6.1) |
@@ -506,20 +506,22 @@ Bước 1 đi trước, vì các bước sau đọc stages từ contract. Bướ
 
 Tiêu chí 6, 9, 10 và 11 kiểm bằng test của kit. Lần chạy thật đầu tiên là Epic đầu tiên cần SEO của một dự án.
 
-## 13. Điểm cần bạn duyệt
+## 13. Điểm bạn đã duyệt (Lượt 87)
 
-1. **PR chỉ đổi tài liệu của item Nhẹ** (F của file quyết định): miễn hẳn review, theo đề xuất, hay `reviewer` ở `high`?
-2. **QA của item Nhẹ:** phiên chính kiểm Verification rồi viết báo cáo QA ngắn, bạn Accept (mục 2). Đồng ý không?
-3. **Task finding của Epic:** `ao-step` tự tạo Task này bằng token CI, rồi thêm Medium và Low bằng comment. Đồng ý không, hay bạn muốn `ba` tạo?
-4. **Tầng Nguy cấp** có cả `.ai-orchestrator/**` và `.claude/**`. Mọi PR chép kit sẽ là Nặng, giống như hiện nay. Giữ vậy không?
-5. **Danh sách đã duyệt nằm trong `project.yaml` của dự án** (mục 5), cùng ngoại lệ audit. Đồng ý chỗ đặt này không?
-6. **Role `seo`:** các quyết định bạn duyệt ở Lượt 80–85 nằm ở mục 6.1–6.8. Còn một câu: có cần `seo` review PR riêng không? Đề xuất là không: `reviewer` đối chiếu code với phần SEO, và `qa` kiểm trên Development.
-7. **A6** theo bảng ở mục 10: hai việc vào C1, hai việc để sau.
-8. **Thứ tự làm** theo mục 9: phần 5 trước, chép kit một lần ở cuối.
-9. **QA lại** (mục 2): ở mức Chuẩn chỉ kiểm lại các tiêu chí đã FAIL, cộng cả bộ E2E; ở mức Nặng kiểm đủ như hiện nay. Đồng ý không?
-10. **Skill viết lại của kit (D3):** ba skill `seo-content-brief`, `blog-schema` và `blog-taxonomy` là trường hợp đầu của dòng D3 trong `concerns.md`. Đề xuất: C1 làm luôn D3, gồm chỗ đặt `kit/.claude/skills/<tên>/`, đầu file ghi nguồn, và một trang `docs/` ghi cách so với bản gốc khi bản gốc có bản mới. Đồng ý không?
-11. **Epic blog** (mục 6.7): `/ao-intake` của một Epic blog đưa vào bản nháp ba yêu cầu mà D2 cần: trạng thái nháp, link xem trước, công cụ đăng bài. Đồng ý không?
-12. **Chặn rò dữ liệu qua `seo`** (mục 6.4, rủi ro 2): gh-guard giới hạn Read, Grep, Glob của `seo` trong thư mục dự án, và từ chối `.env*` trừ `.env.example`. Đồng ý không?
+| Điểm | Câu hỏi | Bạn trả lời |
+|---|---|---|
+| 1 | PR chỉ đổi tài liệu của item Nhẹ (F của file quyết định): miễn hẳn review, hay `reviewer` ở `high`? | Miễn hẳn review, theo đề xuất (mục 3.3, 3.4) |
+| 2 | QA của item Nhẹ: phiên chính kiểm Verification rồi viết báo cáo QA ngắn, bạn Accept (mục 2) | Đồng ý |
+| 3 | Task finding của Epic: `ao-step` tự tạo bằng token CI, rồi thêm Medium và Low bằng comment | Đồng ý |
+| 4 | Tầng Nguy cấp có cả `.ai-orchestrator/**` và `.claude/**`, nên mọi PR chép kit là Nặng | Giữ |
+| 5 | Danh sách thư viện đã duyệt nằm trong `project.yaml` của dự án, cùng ngoại lệ audit (mục 5) | Đồng ý |
+| 6 | `seo` có review PR riêng không? | Theo đề xuất: không. `reviewer` đối chiếu code với phần SEO, `qa` kiểm trên Development |
+| 7 | A6 theo bảng ở mục 10: hai việc vào C1, hai việc để sau | Theo đề xuất |
+| 8 | Thứ tự làm theo mục 9: phần 5 trước, chép kit một lần ở cuối | Theo đề xuất |
+| 9 | QA lại (mục 2): mức Chuẩn chỉ kiểm lại tiêu chí đã FAIL, cộng cả bộ E2E; mức Nặng kiểm đủ | Đồng ý |
+| 10 | C1 làm luôn D3: chỗ đặt skill viết lại, đầu file ghi nguồn, trang `docs/` ghi cách so với bản gốc | Đồng ý |
+| 11 | `/ao-intake` của một Epic blog đưa vào bản nháp ba yêu cầu mà D2 cần (mục 6.7) | Đồng ý |
+| 12 | gh-guard giới hạn Read, Grep, Glob của `seo` trong dự án, từ chối `.env*` trừ `.env.example` (mục 6.4) | Đồng ý |
 
 ## Nguồn
 
