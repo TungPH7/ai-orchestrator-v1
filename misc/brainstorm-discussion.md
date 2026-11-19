@@ -29676,3 +29676,19 @@ Mình đề xuất viết mới prompt `seo` của kit, chỉ thêm một skill 
 **4. Claude Blog: không lấy.** Plugin này để viết và tối ưu bài blog, mà `shop` chưa có blog. Khi có Epic làm blog thì mình xét lại.
 
 Bạn duyệt thì mình sửa mục 6 và điểm 6 ở mục 13 của spec theo hướng này.
+
+# Phiên 33 · Lượt 77 — 2026-11-19
+
+**Bạn:** "bạn nói "2. Skill: chỉ nextjs-seo, cho role seo." nhưng sao trong SPEC-c1.md điểm 6. Role seo mục 13 lại đề xuất chưa thêm một skill SEO vào kit cho seo???"
+
+**Claude:**
+
+Hai chỗ đó mâu thuẫn nhau. Đề xuất mới, thêm `nextjs-seo`, thay cho đề xuất "chưa" trong spec. Lẽ ra ở câu trả lời trước mình phải nói rõ là mình đổi ý, và đổi vì sao.
+
+1. **Lúc viết spec, mình chưa xem skill SEO nào.** Mình chỉ biết kit chưa có skill SEO, nên chọn cách an toàn là "chưa, chỉ dùng prompt", để không đưa vào kit một thứ chưa kiểm.
+2. **Lượt trước, bạn bảo mình xem các nguồn đã cài.** Mình đọc rồi thì thấy `nextjs-seo` không vướng các lý do để chờ:
+   - nó nhỏ: khoảng 500 chữ, tức chừng 700 token cho mỗi lượt `seo`, mà `seo` chỉ chạy một lần cho mỗi Epic có trang công khai;
+   - nó đúng stack Next.js App Router của `shop`;
+   - nó không cần Python, URL thật hay API trả phí.
+3. **Còn một rủi ro:** repo nguồn nhỏ (74 sao). Vì vậy mình sẽ đọc hết skill và sáu file tham khảo của nó trước khi đưa vào kit. Nếu thấy nội dung sai hay lỗi thời, mình quay về cách chỉ dùng prompt và báo bạn.
+4. **Spec vẫn còn câu cũ,** vì bạn dặn chưa sửa gì. Bạn duyệt thì mình sửa điểm 6 ở mục 13 thành: "thêm skill `nextjs-seo`, ghim theo commit, chỉ cho `seo`", và sửa câu "Kit chưa có skill SEO nào" ở mục 6 cho khớp.
