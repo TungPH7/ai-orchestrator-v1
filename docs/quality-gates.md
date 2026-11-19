@@ -133,8 +133,21 @@ Từ C1 ([SPEC-c1.md](../SPEC-c1.md) mục 3), tầng của PR là tầng cao nh
 
 - **Vòng sau:** cả hai role chỉ xem phần mới kể từ báo cáo đầy đủ gần nhất của mình, ở `high`. Phần mới chạm đường dẫn Nguy cấp thì chạy ở mức của tầng Nguy cấp.
 - **Báo cáo `merge-gate` và `audit` đòi:** luôn có `reviewer`. `security` chỉ cần khi PR ở tầng Nhạy cảm hay Nguy cấp, hoặc khi `security` đã từng đăng báo cáo trên PR, để bỏ file đã gọi nó vào cũng không bỏ được High nó tìm ở chỗ khác. GitHub chỉ liệt kê tối đa 3.000 file; PR dài hơn được tính là Nguy cấp.
-- **Item có nhãn effort** (`ao-effort-*`) được review như PR Nguy cấp, cho tới khi có mức quy trình ở bước 4 của C1.
+- **Item mức Nặng** (nhãn `ao-level-heavy`, hay mức tự tăng) được review như PR Nguy cấp, dù đường dẫn của nó thuộc tầng nào ([dev-workflow.md](dev-workflow.md), mục Mức quy trình). Nhãn effort (`ao-effort-*`) nay chỉ còn dùng cho dev agent.
 - CI vẫn chạy SAST, quét secret và `osv-scanner` trên mọi PR, kể cả PR không có `security`.
+
+### Miễn review theo luật
+
+Từ C1 (spec mục 3.4), PR thỏa cả hai điều sau thì không cần báo cáo review:
+1. mọi file của nó nằm trong `files` của một luật ở `review.waivers` của `quality/gates.yaml`;
+2. mức hiệu lực của item bằng `level` của luật đó.
+
+Kit có một luật, `light-docs`: tài liệu, ảnh và file chữ (`messages/*.json`, `locales/**`) của item mức Nhẹ. Chỉ một file nằm ngoài danh sách là review bật lại. File Nguy cấp làm item thành Nặng, nên không luật nào miễn được nó.
+
+- **Dấu vết:** `/ao-review` của PR như vậy không chạy agent. App `ao-review` đăng một review loại COMMENT lên head, có dòng `Waiver: light-docs`, mức và danh sách file.
+- **`merge-gate` và `audit` tự tính lại luật:** từ danh sách file của PR trên GitHub, và nhãn mức của item đọc bằng `JIRA_CI_TOKEN`. Chúng chỉ đọc Jira khi mọi file có thể thuộc một luật. Luật không khớp, hay nhãn không đọc được, thì dòng `Waiver` không có giá trị gì, và PR cần báo cáo như thường. Approve của bạn vẫn luôn cần.
+- **Muốn review đủ:** `/ao-review <PR> full` chạy review cho cả PR được miễn.
+- **Còn hoãn:** khóa `review: off` trong `project.yaml` cho repo nháp, kèm dòng đỏ của `doctor` (spec mục 3.4), vì nó cần `merge-gate` và `audit` đọc `project.yaml` của nhánh base. Làm khi có repo nháp đầu tiên.
 
 ### Chấp nhận một High thay vì sửa
 

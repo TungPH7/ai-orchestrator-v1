@@ -87,12 +87,25 @@
     },
     "review": {
       "type": "object",
-      "required": ["critical_paths", "sensitive_paths", "docs_paths"],
+      "required": ["critical_paths", "sensitive_paths", "docs_paths", "waivers"],
       "additionalProperties": false,
       "properties": {
         "critical_paths": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
         "sensitive_paths": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
-        "docs_paths": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } }
+        "docs_paths": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+        "waivers": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "level", "files"],
+            "additionalProperties": false,
+            "properties": {
+              "id": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$" },
+              "level": { "enum": ["light", "standard", "heavy"] },
+              "files": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } }
+            }
+          }
+        }
       }
     },
     "kit_copy": {

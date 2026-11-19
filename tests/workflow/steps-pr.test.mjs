@@ -500,3 +500,18 @@ test('when a High makes a standard item heavy, the head is reviewed again at xhi
   assert.match(done.reason, /ask for changes/);
   assert.equal(decide('review', prFacts('review', { reports, blockingEver: true, changesRequested: true })).go, false, 'no record of the runs: nothing to compare, no review again');
 });
+
+// C1 spec 3.4: a PR of docs only, of an item at level light, gets the trace of the waiver instead of the reviews.
+test('/ao-review of a PR waived by rule posts its trace, then waits at gate ③; with full it reviews anyway', () => {
+  const files = ['docs/user-guide/cart.md', 'apps/web/messages/vi.json'];
+  const light = (prMore = {}) => prFacts('review', { files, ...prMore }, { item: { level: 'light' } });
+  const first = decide('review', light());
+  assert.deepEqual(first.runs, [{ action: 'review-waiver', key: 'DEMO-21', number: 15, sha: HEAD, waiver: 'light-docs', level: 'light', files }]);
+  const posted = decide('review', light({ waiverOnHead: 'light-docs' }));
+  assert.equal(posted.go, false);
+  assert.match(posted.reason, /^PR #15 needs no review: every file is in the waiver light-docs, and DEMO-21 is at level light/);
+  assert.match(posted.next, /\/ao-review 15 full$/);
+  assert.deepEqual(plan(decide('review', light(), { full: true })), ['reviewer DEMO-21 high review']);
+  assert.equal(decide('review', prFacts('review', { files })).runs[0].role, 'reviewer', 'no label: standard, no waiver');
+  assert.equal(decide('fix', light({ reports: { reviewer: null, security: null } })).go, false, '/ao-fix with nothing to fix runs no review on it');
+});

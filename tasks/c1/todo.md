@@ -118,13 +118,20 @@
 
 ## Bước 5: miễn review có dấu vết, nhánh `task/c1-5`
 
-- [ ] **T12: `review.waivers`** (spec mục 3.4).
+- [x] **T12: `review.waivers`** (spec mục 3.4). Xong 2026-11-20, commit `020d9c6`, trừ `review: off` (hoãn, xem dưới).
   - **Đạt khi:**
     - PR được miễn thì `ao-step review` không chạy agent; `ao-review` đăng review COMMENT có dòng `Waiver: light-docs`, mức và danh sách file;
     - `merge-gate` và `audit` tính lại bằng `waiverHolds`; luật không khớp thì xử lý như thiếu báo cáo;
     - `/ao-review <PR> full` chạy đủ hai role;
     - `review: off` chỉ ở `project.yaml`, và `doctor` báo đỏ.
   - **Kiểm:** tiêu chí 2 của spec bằng test, kể cả PR có thêm một file `.ts`.
+  - **Kết quả:**
+    - `lib/quality/waivers.mjs` có `waiverFor`, `waiverOnHead` và `waiverBody`;
+    - `merge-gate` và `audit` đọc nhãn mức của item bằng `JIRA_CI_TOKEN`, chỉ khi mọi file có thể thuộc một luật miễn (`waiverLabel`); không đọc được nhãn thì không có miễn;
+    - dòng `Waiver` trên head là điều kiện của merge, nhưng không đủ để merge: luật phải khớp lại;
+    - `/ao-review <PR> full` ứng với `ao-step review <PR> --full`;
+    - tiêu chí 2 kiểm bằng test của `merge-gate` và `audit`, kể cả PR có thêm một file code.
+  - **Hoãn:** khóa `review: off` của `project.yaml` và dòng đỏ của `doctor`. Nó cần `merge-gate` và `audit` đọc `project.yaml` của nhánh base, và hiện chưa có repo nháp nào dùng tới. Ghi ở `docs/quality-gates.md`; làm khi có repo nháp đầu tiên.
 
 ### Checkpoint 3: sau T12
 - [ ] Bước 1–5 đã merge; báo bạn kết quả test.

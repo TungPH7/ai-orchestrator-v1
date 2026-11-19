@@ -30,6 +30,7 @@ import { attachEvidence } from '../lib/tracker/attachments.mjs';
 import { createGitHubClient, readGitHubToken } from '../lib/tracker/github-client.mjs';
 import { markdownToAdf } from '../lib/tracker/adf.mjs';
 import { findingsComment, findingsTask, recordedLine } from '../lib/workflow/findings.mjs';
+import { waiverBody } from '../lib/quality/waivers.mjs';
 import { bearerAuth, createJiraClient } from '../lib/tracker/jira-client.mjs';
 import { readMapping } from '../lib/tracker/mapping.mjs';
 import { startAgentProcess, killTree, stopProcessesUnder } from '../lib/workflow/agent-process.mjs';
@@ -167,11 +168,11 @@ export function runsFile(projectDir, file) {
 
 
 async function main() {
-  const { values, positionals } = parseArgs({ allowPositionals: true, options: { go: { type: 'boolean', default: false }, answers: { type: 'string' }, note: { type: 'string' }, change: { type: 'string' }, stop: { type: 'boolean', default: false }, retest: { type: 'boolean', default: false }, 'light-report': { type: 'string' } } });
+  const { values, positionals } = parseArgs({ allowPositionals: true, options: { go: { type: 'boolean', default: false }, answers: { type: 'string' }, note: { type: 'string' }, change: { type: 'string' }, stop: { type: 'boolean', default: false }, retest: { type: 'boolean', default: false }, 'light-report': { type: 'string' }, full: { type: 'boolean', default: false } } });
   const [command, arg, extra] = positionals;
   const settings = projectSettings(projectDir);
   const space = setting('AO_JIRA_SPACE', settings);
-  const wrong = checkArgument(command, arg, space, extra) ?? checkChange(command, values.change, Boolean(values.note)) ?? (values.stop && command !== 'preview' ? '--stop goes with /ao-preview only' : null) ?? (values['light-report'] && command !== 'qa' ? '--light-report goes with /ao-qa only' : null);
+  const wrong = checkArgument(command, arg, space, extra) ?? checkChange(command, values.change, Boolean(values.note)) ?? (values.stop && command !== 'preview' ? '--stop goes with /ao-preview only' : null) ?? (values['light-report'] && command !== 'qa' ? '--light-report goes with /ao-qa only' : null) ?? (values.full && command !== 'review' ? '--full goes with /ao-review only' : null);
   if (wrong) {
     console.log(`STOP: ${wrong}`);
     return;
@@ -281,7 +282,7 @@ async function main() {
   // The dev agent of each app by its profile: /ao-fix gives a blocking finding to the side of its app (kit followups,
   // batch 2; PR #62 of shop, Pilot 3).
   const appRoles = appRolesOf(existsSync(projectYaml) ? parse(readFileSync(projectYaml, 'utf8'))?.apps : {});
-  const options = { roster, contract, gates, mapping, appRoles, ...(values.answers && { answers: read(values.answers) }), ...(values.note && { note: read(values.note) }), ...(values.change && { change: values.change }), ...(values.retest && { retest: true }), ...(values['light-report'] && { lightReport: read(values['light-report']) }) };
+  const options = { roster, contract, gates, mapping, appRoles, ...(values.answers && { answers: read(values.answers) }), ...(values.note && { note: read(values.note) }), ...(values.change && { change: values.change }), ...(values.retest && { retest: true }), ...(values['light-report'] && { lightReport: read(values['light-report']) }), ...(values.full && { full: true }) };
 
   const facts = await gather();
   // A Java app needs Docker for the tests be-dev and qa run (project-scaffold part 3, spec 2.2).
@@ -402,6 +403,7 @@ async function main() {
         if (step.action === 'hotfix-ship') return hotfixShip(step, { repo, settings, userToken });
         if (step.action === 'deploy-request') return deployRequest(step, { repo, userToken });
         if (step.action === 'kit-copy-reports') return kitCopyReports(step, { repo, appEnv });
+        if (step.action === 'review-waiver') return reviewWaiverNote(step, { repo, appEnv });
         if (step.action === 'pr-ready') return prReady(step, { repo, settings });
         if (step.action === 'preview-start') return preview.start(step);
         if (step.action === 'preview-stop') return preview.stop().then(({ notes }) => notes);
@@ -651,6 +653,15 @@ function renderCheck(number, sha, paths) {
 async function kitCopyReports(step, { repo, appEnv }) {
   const { token } = await installationToken({ ...appCredentials('review', { env: appEnv }), repo, permissions: { pull_requests: 'write' } });
   return postKitCopyReports({ github: createGitHubClient({ repo, token, write: true }), step });
+}
+
+// /ao-review of a PR whose review is waived by rule (C1 spec 3.4): the trace on its head, a COMMENT review of the review
+// App, in place of the reports. merge-gate and audit work the rule out again; they never take this review on trust.
+async function reviewWaiverNote({ key, number, sha, waiver, level, files }, { repo, appEnv }) {
+  const { token } = await installationToken({ ...appCredentials('review', { env: appEnv }), repo, permissions: { pull_requests: 'write' } });
+  const github = createGitHubClient({ repo, token, write: true });
+  await github.request('POST', `/pulls/${number}/reviews`, {}, { commit_id: sha, event: 'COMMENT', body: waiverBody({ id: waiver, level, files, key, sha }) });
+  return [`Posted the waiver ${waiver} on the head ${sha.slice(0, 7)} of PR #${number}: no review runs.`];
 }
 
 // The first step of /ao-review on a draft PR (human-loop spec 4.6): marks it ready as the ao-dev App, which opened it.

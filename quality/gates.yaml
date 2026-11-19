@@ -159,6 +159,14 @@ review:
   docs_paths:
     - "docs/**"
     - "**/*.md"
+  # Review waived by rule (C1 spec section 3.4): a PR whose every file is in `files`, for an item whose effective level
+  # is `level`, needs no report. ao-step posts a COMMENT review on the head with the line "Waiver: <id>" instead;
+  # merge-gate and audit work the rule out again from the PR's files and the item's label (lib/quality/waivers.mjs).
+  # A critical file makes the item heavy, so no waiver covers one. /ao-review <PR> full still reviews such a PR.
+  waivers:
+    - id: light-docs
+      level: light
+      files: ["docs/**", "**/*.md", "**/*.png", "**/*.jpg", "**/*.webp", "**/messages/*.json", "**/locales/**"]
 
 # A PR that copies a kit another project reviewed in full (kit-copy-review spec 2.2, 2.3): ao-step compares it with the
 # reviewed head and writes both reports, with no agent. A project's own files, such as .ai-orchestrator/project.yaml

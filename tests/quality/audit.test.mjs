@@ -415,3 +415,18 @@ test('a file list GitHub cut short fails every PR but a release PR into main, as
   assert.deepEqual(audit(release('main')).problems, []);
   assert.deepEqual(audit(release('develop')).problems, ['PR #12 changes 3001 files, of which GitHub listed 2: check its paths by hand']);
 });
+
+// C1 spec 3.4: audit works the waiver of review out again, from the PR's files and the item's label, as merge-gate does.
+test('audit passes the merge of a PR whose review was waived by rule, and fails it once the rule no longer holds', () => {
+  const review = 'tungph7-ao-review[bot]';
+  const waived = (label) => (f) => {
+    f.files = [{ filename: 'docs/user-guide/cart.md', status: 'modified' }];
+    f.reviews = f.reviews.filter((r) => !/Role: (reviewer|security)/.test(r.body ?? ''));
+    f.reviews.push({ user: { login: review }, commit_id: HEAD, state: 'COMMENTED', body: '# Review waiver: DEMO-12\n\nWaiver: light-docs\nLevel: light\n' });
+    f.label = label;
+  };
+  assert.equal(audit(waived('light')).ok, true, audit(waived('light')).problems.join('\n'));
+  const standard = audit(waived('standard'));
+  assert.equal(standard.ok, false);
+  assert.match(standard.problems[0], /reviewer report on head a1b2c3d/);
+});
