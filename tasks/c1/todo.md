@@ -36,19 +36,30 @@
   - **File:** `lib/workflow/steps.mjs`, test.
 
 ### Checkpoint 2: sau T4
-- [ ] PR bước 1 merge; bộ so không khác.
+- [x] PR bước 1 merge; bộ so không khác. Kit PR #314 (`cd8395e`).
 
 ## Bước 2: tiêu chí finding, luật dừng, nhánh `task/c1-2`
 
-- [ ] **T5: bảng tiêu chí; Medium phải có cách tái hiện** (spec mục 4.1, 4.2).
+- [x] **T5: bảng tiêu chí; Medium phải có cách tái hiện** (spec mục 4.1, 4.2). Xong 2026-11-19, commit `dc7b163`.
   - **Đạt khi:** prompt `reviewer` và `templates/review-report.md` có bảng tiêu chí và dòng tái hiện; `readReviewReport` tính Medium thiếu dòng tái hiện là Low; `/ao-status` ghi lý do.
-- [ ] **T6: luật dừng; USD trên mỗi AC** (spec mục 4.3, 4.4, mục 7).
+  - **Kết quả:**
+    - dòng tái hiện là `Tái hiện:` hay `Repro:` trong ô Finding hay Suggested fix;
+    - prompt `security` cũng ghi luật này, vì báo cáo của nó đi qua cùng bộ đọc;
+    - facts của báo cáo có thêm `counts` theo mức;
+    - báo cáo thật của `reviewer` trong fixture (ghi từ `ao-pilot`, trước C1) có một Medium không có dòng tái hiện, nên nay được tính là Low.
+- [x] **T6: luật dừng; USD trên mỗi AC** (spec mục 4.3, 4.4, mục 7). Xong 2026-11-19, commit `6201ddd`.
   - **Đạt khi:**
     - báo cáo trên head không còn Critical hay High thì `decideReview` gợi ý approve;
     - `decideFix` không có ghi chú thì dừng với lý do "không còn gì chặn merge";
     - `/ao-status <Epic>` in USD trên mỗi AC, lượt chưa biết chi phí ghi riêng.
 
   Spec mục 9 chưa xếp phần 6 vào bước nào, nên plan đặt nó ở đây.
+  - **Kết quả:**
+    - `afterReviews` vốn đã gợi ý approve khi không còn Critical hay High; T6 thêm dòng "Findings that do not block" ở `/ao-review`, `/ao-fix` và `/ao-status <KEY>`;
+    - lý do dừng của `/ao-fix` là "nothing blocks the merge";
+    - skill `/ao-review` dặn phiên chính không đề xuất `/ao-fix` cho Medium hay Low;
+    - `/ao-status <EPIC>` đọc `state.json` của các item và đếm AC còn hiệu lực trong SPEC.
+  - 1.609 test xanh.
 
 ## Bước 3: effort và ba tầng đường dẫn, nhánh `task/c1-3`
 
