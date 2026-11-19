@@ -87,16 +87,34 @@
 
 ## Bước 4: ba mức, nhánh `task/c1-4`
 
-- [ ] **T9: `effectiveLevel`, nhãn mức** (spec mục 2, "Chọn mức", "Mức hiệu lực").
+- [x] **T9: `effectiveLevel`, nhãn mức** (spec mục 2, "Chọn mức", "Mức hiệu lực"). Xong 2026-11-20, commit `66a94ed`.
   - **Đạt khi:** không nhãn là Chuẩn; tầng Nguy cấp nâng lên Nặng; Critical hay High nâng một bậc và review lại head ở mức mới; cột "Mức" của `plan.md`; `ba` gắn nhãn; bản nháp `/ao-intake` có mức đề xuất.
-- [ ] **T10: QA theo mức** (spec mục 2, "QA theo loại item", "QA lại", "QA của item Nhẹ").
+  - **Kết quả:**
+    - `lib/workflow/levels.mjs`; nhãn `ao-level-*` (`work_labels.level_prefix`);
+    - Task List của `plan.md` ghi mức ở mỗi dòng, dạng `· level heavy: <lý do>`, vì Task List là danh sách, không phải bảng;
+    - review lại head khi role đã review head đó ở effort thấp hơn, dựa vào `state.json`;
+    - nhãn effort không còn nâng review: item Nặng thay chỗ đó;
+    - quyết định khi làm: QA FAIL không tự nâng mức (spec mục 2 đã ghi lý do).
+- [x] **T10: QA theo mức** (spec mục 2, "QA theo loại item", "QA lại", "QA của item Nhẹ"). Xong 2026-11-20, commit `011ab94`.
   - **Đạt khi:**
     - `/ao-qa` của item Nhẹ không chạy agent, in Verification và URL; `qa-light.mjs` đăng báo cáo bằng token CI;
     - lần QA lại ở mức Chuẩn đưa danh sách tiêu chí đã FAIL vào prompt; mức Nặng kiểm đủ;
     - `--retest` giữ nguyên.
   - **Kiểm:** tiêu chí 8 của spec bằng test.
-- [ ] **T11: Task finding của Epic** (spec mục 2, mục 4.3).
+  - **Kết quả:**
+    - không có `qa-light.mjs`: hai action của `ao-step`, `qa-light-start` và `qa-light-report`, cùng tùy chọn `--light-report <file trong .ai/runs/>`, để một chỗ duy nhất quyết định item có phải Nhẹ không;
+    - báo cáo đăng dạng ADF (`lib/tracker/adf.mjs`);
+    - `readLatestQaReport` trả thêm `id` và `failed`;
+    - role mới `light-qa` (identity `automation`) làm Pick up và QA fail, không dùng `automation`, vì `jira-sync` tự chạy transition của `automation`.
+  - **[bạn] Trên Jira:** thêm group `ao-automation` vào rule Restrict của Pick up và QA fail (workflow `AO standard`). Bản ghi Jira trong test (`tests/fixtures/tracker/api/demo.json`) đã được sửa theo trạng thái sau khi bạn bấm.
+- [x] **T11: Task finding của Epic** (spec mục 2, mục 4.3). Xong 2026-11-20, commit `8ebabe6`.
   - **Đạt khi:** Medium hay Low không sửa ngay thì `ao-step` tạo Task `ao-findings` (lần đầu), nối Blocks tới Epic, và thêm comment ghi PR, mã finding, chỗ.
+  - **Kết quả:**
+    - `/ao-qa` làm việc này trước lượt QA, khi PR đã merge;
+    - action `findings-task` tìm lại Task và comment trước khi tạo, nên chạy lại không tạo thêm;
+    - Task là con của Epic và chặn Epic (`inwardIssue` là Task, như `ba` nối link);
+    - item ngoài Epic thì không có Task finding.
+  - 1.634 test xanh.
 
 ## Bước 5: miễn review có dấu vết, nhánh `task/c1-5`
 
