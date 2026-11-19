@@ -29,6 +29,7 @@ import { installArgs, managerFromLockfile, pnpmCli, runManager } from '../lib/qu
 import { attachEvidence } from '../lib/tracker/attachments.mjs';
 import { createGitHubClient, readGitHubToken } from '../lib/tracker/github-client.mjs';
 import { markdownToAdf } from '../lib/tracker/adf.mjs';
+import { findingsComment, findingsTask, recordedLine } from '../lib/workflow/findings.mjs';
 import { bearerAuth, createJiraClient } from '../lib/tracker/jira-client.mjs';
 import { readMapping } from '../lib/tracker/mapping.mjs';
 import { startAgentProcess, killTree, stopProcessesUnder } from '../lib/workflow/agent-process.mjs';
@@ -406,6 +407,7 @@ async function main() {
         if (step.action === 'preview-stop') return preview.stop().then(({ notes }) => notes);
         if (step.action === 'qa-light-start') return qaLightStart(step, { mapping });
         if (step.action === 'qa-light-report') return qaLightReport(step, { mapping });
+        if (step.action === 'findings-task') return findingsTaskAction(step, { mapping, contract, space });
         return releaseCut(step, { repo, mapping, userToken });
       },
       git: (checkout, run) => keeper.checkout(checkout, run, command),
@@ -862,6 +864,28 @@ async function qaLightReport({ key, result, body }, { mapping }) {
     notes.push(`${key}: QA fail, back to In Progress.`);
   }
   return notes;
+}
+
+// The Medium and Low a review left on a merged PR, to the findings Task of its Epic (C1 spec section 2), with the CI
+// token: the Task made at the first of them, labelled, a child of the Epic that blocks it, then one comment per PR.
+// It searches again before it makes or comments, so a second run adds nothing.
+async function findingsTaskAction({ key, epic, task, pr, findings }, { mapping, contract, space }) {
+  const jira = ciJira(mapping);
+  const label = mapping.work_labels.findings;
+  const notes = [];
+  let found = task ?? (await jira.searchAll(`project = "${space}" AND parent = "${epic}" AND labels = "${label}" ORDER BY created ASC`, ['summary']))[0]?.key ?? null;
+  if (!found) {
+    const { summary, description } = findingsTask({ epic });
+    const typeName = contract.work_types.find(({ id }) => id === 'task').jira_issue_type;
+    ({ key: found } = await jira.request('POST', '/rest/api/3/issue', {}, { fields: { project: { key: space }, issuetype: { name: typeName }, summary, description: markdownToAdf(description), labels: [label], parent: { key: epic } } }));
+    // The item that comes first is the inward one, as ba links them (agents/prompts/ba.md): the Epic waits for it.
+    await jira.request('POST', '/rest/api/3/issueLink', {}, { type: { name: 'Blocks' }, inwardIssue: { key: found }, outwardIssue: { key: epic } });
+    notes.push(`Made ${found}, the findings Task of ${epic}: label ${label}, it blocks ${epic}.`);
+  }
+  const comments = await jira.getAll(`/rest/api/3/issue/${encodeURIComponent(found)}/comment`, {}, 'comments');
+  if (comments.some(({ body }) => adfText(body).includes(recordedLine(pr)))) return [...notes, `${found} names PR #${pr} already.`];
+  await jira.request('POST', `/rest/api/3/issue/${encodeURIComponent(found)}/comment`, {}, { body: markdownToAdf(findingsComment({ key, pr, findings })) });
+  return [...notes, `Added the ${findings.length} Medium and Low finding${findings.length === 1 ? '' : 's'} of PR #${pr} to ${found}.`];
 }
 
 // After a qa run, before its worktree goes: the evidence to the item with the CI token, which only this session holds,

@@ -234,3 +234,12 @@ test('QA again at level standard checks only the criteria that failed, with the 
   assert.doesNotMatch(decide(qaFacts({ qaReport: { ...failed, result: 'NOT TESTED' } })).runs[0].prompt, /QA again/, 'not after a NOT TESTED');
   assert.doesNotMatch(decide(qaFacts()).runs[0].prompt, /QA again/, 'not on a first QA');
 });
+
+// C1 spec section 2: before qa runs, the Medium and Low of the merged PR go to the findings Task of the Epic.
+test('/ao-qa records the Medium and Low of the PR in the findings Task of the Epic first, then runs qa', () => {
+  const minorFindings = [{ role: 'reviewer', severity: 'Low', where: 'a.ts:1', finding: 'x', id: '01234567' }];
+  const epic = { key: 'DEMO-20' };
+  const first = decide(qaFacts({ epic, pr: { minorFindings }, findings: { key: null, recorded: false } }));
+  assert.deepEqual(first.runs, [{ action: 'findings-task', key: 'DEMO-21', epic: 'DEMO-20', task: null, pr: 15, findings: minorFindings, continue: true }]);
+  assert.equal(decide(qaFacts({ epic, pr: { minorFindings }, findings: { key: 'DEMO-40', recorded: true } })).runs[0].role, 'qa');
+});
