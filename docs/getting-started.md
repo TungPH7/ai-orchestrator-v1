@@ -14,7 +14,7 @@ AO Kit đưa một tính năng đi qua đủ các bước của một quy trình
 |---|---|---|
 | **Bạn** | Mô tả ý tưởng, trả lời câu hỏi, duyệt ở 5 gate, bấm các nút chuyển trạng thái trên Jira mà agent không được bấm | Chat với Claude, Jira, GitHub |
 | **Claude ở phiên chính** | Nhận lệnh `/ao-*` của bạn, kiểm trạng thái, gọi đúng agent theo đúng thứ tự, tóm tắt kết quả và hỏi bạn khi cần | Claude Code trong thư mục dự án |
-| **10 agent** | `ba` viết SPEC và tạo item, `ux` vẽ màn hình, `sa` viết plan, `fe-dev` và `be-dev` code, `reviewer` và `security` review, `qa` kiểm, `devops` lo CI và release, `pm` tổng hợp | Phiên Claude Code riêng, do `ao-step` mở |
+| **11 agent** | `ba` viết SPEC và tạo item, `ux` vẽ màn hình, `seo` viết phần SEO của SPEC, `sa` viết plan, `fe-dev` và `be-dev` code, `reviewer` và `security` review, `qa` kiểm, `devops` lo CI và release, `pm` tổng hợp | Phiên Claude Code riêng, do `ao-step` mở |
 | **Script trên GitHub và VPS** | `CI` chạy test, `merge-gate` merge PR đủ điều kiện, `jira-sync` chuyển item theo sự kiện PR và deploy, deployer trên VPS deploy và chạy smoke test, `audit` chặn commit không qua cổng | GitHub Actions, VPS |
 
 **Một vòng, từ ý tưởng tới Production:**
@@ -1216,6 +1216,6 @@ PR #40, tổng 20,49 USD:
 | [docs/dev-workflow.md](dev-workflow.md) | Vòng một item: các lệnh `/ao-*`, nhánh, PR, xem trước, sửa |
 | [docs/release-workflow.md](release-workflow.md) | Cắt release, phát hành, hotfix, rollback, deployer |
 | [docs/quality-gates.md](quality-gates.md) | Hook git, bốn job CI, `merge-gate`, `audit` |
-| [docs/AGENTS.md](AGENTS.md) | Mười agent, effort, skill, chi phí đo được |
+| [docs/AGENTS.md](AGENTS.md) | Mười một agent, effort, skill, chi phí đo được |
 | [docs/vps-setup.md](vps-setup.md) | Dựng VPS, deployer, thêm dự án |
 | [docs/jira-setup.md](jira-setup.md) | Site, service account, workflow, board |

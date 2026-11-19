@@ -30,7 +30,7 @@ const prompts = readdirSync(join(ROOT, 'agents', 'prompts')).filter((file) => fi
 
 test('the real roster, with the skills vendored into the kit and the prompts, breaks no rule', () => {
   assert.deepEqual(validateRoster(roster, contract, { gates, skills: kitSkills, prompts }), []);
-  assert.equal(prompts.length, 10);
+  assert.equal(prompts.length, 11);
 });
 
 test('A4 also checks the vendored folders: each has a SKILL.md named like the skill (T9)', () => {
@@ -57,6 +57,8 @@ test('model and effort of each role (spec 2.2)', () => {
     security: 'opus max',
     qa: 'opus high',
     devops: 'opus high',
+    // C1 spec 6.4: seo writes one section of the SPEC.
+    seo: 'sonnet high',
   });
 });
 

@@ -80,7 +80,7 @@ Hai GitHub App giúp bạn approve được PR của agent, vì GitHub không ch
 
 ## Agent
 
-Mười agent nằm ở `kit/.claude/agents/<role>.md`: `pm`, `ba`, `ux`, `sa`, `fe-dev`, `be-dev`, `reviewer`, `security`, `qa`, `devops`. Chúng không được viết tay. `npm run agents` ghép `agents/roster.yaml` (model, effort, `max_turns`, tool, quyền, skill), prompt `agents/prompts/<role>.md` và hợp đồng thành file agent, cùng file quy ước chung `kit/.claude/rules/ai-orchestrator.md`.
+Mười một agent nằm ở `kit/.claude/agents/<role>.md`: `pm`, `ba`, `ux`, `sa`, `fe-dev`, `be-dev`, `reviewer`, `security`, `qa`, `devops`, và `seo` từ C1. Chúng không được viết tay. `npm run agents` ghép `agents/roster.yaml` (model, effort, `max_turns`, tool, quyền, skill), prompt `agents/prompts/<role>.md` và hợp đồng thành file agent, cùng file quy ước chung `kit/.claude/rules/ai-orchestrator.md`.
 
 | Ai dùng | Dùng thế nào |
 |---|---|
@@ -257,7 +257,7 @@ docs/quality-gates.md      các lớp chốt, từng check, cách xử lý khi c
 docs/github-apps-setup.md  tạo ba GitHub App, từng bước bấm
 docs/release-workflow.md   bốn lệnh của vòng ngoài, Fix Version, hotfix, rollback, yêu cầu với dự án
 docs/vps-setup.md   dựng VPS và deployer, cập nhật bản kit trên VPS
-docs/agents.md      mười agent, cách chạy, nâng effort, skill, design.md, ảnh Figma, dung lượng repo và LFS
+docs/agents.md      mười một agent, cách chạy, nâng effort, skill, design.md, ảnh Figma, dung lượng repo và LFS
 vps/                file của deployer trên VPS: service, timer, cấu hình mẫu, script đặt secret
 tests/              test; tests/fixtures/invalid/ chứa các hợp đồng cố tình sai, mỗi file sai một quy tắc;
                     tests/fixtures/tracker/ chứa ánh xạ sai, dữ liệu API Jira ghi sẵn và sự kiện GitHub mẫu

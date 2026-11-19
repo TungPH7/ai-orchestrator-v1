@@ -244,6 +244,11 @@
         "id": "10036",
         "value": "DevOps Engineer",
         "disabled": false
+      },
+      {
+        "id": "10037",
+        "value": "SEO Specialist",
+        "disabled": false
       }
     ]
   },

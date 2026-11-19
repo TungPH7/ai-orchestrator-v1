@@ -12,13 +12,14 @@ const VALIDATE_SCRIPT = join(ROOT, 'scripts', 'validate-contract.mjs');
 // The real roles.yaml with the name of `pm` removed: breaks R1 only.
 const INVALID_ROLES = readFileSync(join(CONTRACT_DIR, 'roles.yaml'), 'utf8').replace(/^ {4}name: "Project Manager"\r?\n/m, '');
 
-// light-qa: the main session, for the QA of an item of level light (C1 spec section 2).
-test('roles.yaml declares the 12 roles of spec section 2.1, in order, and light-qa of C1', () => {
+// seo: the SEO of the SPEC (C1 spec section 6). light-qa: the main session, for the QA of an item of level light (C1 spec
+// section 2).
+test('roles.yaml declares the 12 roles of spec section 2.1, in order, and seo and light-qa of C1', () => {
   const { roles } = readContract(CONTRACT_DIR);
 
   assert.deepEqual(
     roles.map((role) => role.id),
-    ['human', 'pm', 'ba', 'ux', 'sa', 'fe-dev', 'be-dev', 'reviewer', 'security', 'qa', 'devops', 'automation', 'light-qa'],
+    ['human', 'pm', 'ba', 'ux', 'sa', 'fe-dev', 'be-dev', 'reviewer', 'security', 'qa', 'devops', 'seo', 'automation', 'light-qa'],
   );
 });
 

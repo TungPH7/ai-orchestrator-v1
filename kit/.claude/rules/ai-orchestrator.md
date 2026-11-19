@@ -24,6 +24,7 @@ These rules apply to every agent of the SDLC contract, and to the main session u
 | `security` | Security Engineer |
 | `qa` | Tester/QA Engineer |
 | `devops` | DevOps Engineer |
+| `seo` | SEO Specialist |
 
 - Start every comment you write on an item with the value of your Agent field and a colon, such as `Business Analyst: …`. Scripts tell from it which role wrote it.
 - To ask another role for something, comment on the item with your Agent value, then `Cần <role>:` and what you need, such as `Frontend Developer: Cần ba: tạo Task cho bảng sản phẩm tràn ở 320 px`. The request is done once that role comments on the item. Do not do the other role's work yourself.

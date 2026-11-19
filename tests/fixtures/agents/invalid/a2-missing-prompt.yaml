@@ -2,5 +2,5 @@ description: a role whose agents/prompts/<role>.md is missing
 rule: A2
 expect:
   - "roles.devops"
-prompts: [pm, ba, ux, sa, fe-dev, be-dev, reviewer, security, qa]
+prompts: [pm, ba, ux, sa, fe-dev, be-dev, reviewer, security, qa, seo]
 patch: []

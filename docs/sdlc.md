@@ -19,6 +19,7 @@ Bản đọc của hợp đồng trong `contract/`. Nội dung và lý do của 
 | `security` | Security Engineer | Security review, threat model |
 | `qa` | Tester/QA Engineer | E2E, regression, báo cáo QA |
 | `devops` | DevOps Engineer | Deploy, cắt release, ship, rollback |
+| `seo` | SEO Specialist | Mục SEO của SPEC cho trang mà công cụ tìm kiếm thấy: từ khóa, chữ vi và en, dữ liệu có cấu trúc, hreflang (C1 spec mục 6) |
 | `automation` | CI, webhook, Jira Automation | Chuyển trạng thái theo dữ kiện: CI xanh, merge, deploy xong |
 | `light-qa` | Phiên chính, QA của item mức light | Kiểm item mức light thay lượt qa, đăng báo cáo QA ngắn và chuyển item bằng token CI (C1 spec mục 2) |
 
@@ -80,7 +81,7 @@ Bản đọc của hợp đồng trong `contract/`. Nội dung và lý do của 
 | Affects Version | `bug` | Bản cũ nhất đang có lỗi | ba đề xuất, bạn duyệt |
 | Severity | `bug` | Critical: Mất hoặc sai dữ liệu, lỗ hổng bảo mật, hệ thống hoặc luồng thanh toán ngừng; High: Luồng chính hỏng, không có cách né; Medium: Có cách né; Low: Giao diện, chính tả | ba đề xuất, bạn duyệt |
 | Fix Version | `story`, `task`, `bug` | Bug: suy ra từ bảng định tuyến (mục 2.6). Story, Task: gắn khi cắt release | automation, devops |
-| Agent | `story`, `sub-task`, `task`, `bug` | Project Manager, Business Analyst, UI/UX designer, Solution Architect, Frontend Developer, Backend Developer, Code Reviewer, Security Engineer, Tester/QA Engineer, DevOps Engineer. Vai trò agent đang giữ item. Mọi agent dùng chung một tài khoản Jira, nên assignee không cho biết agent nào; guard wip-available đếm WIP theo trường này | Agent, khi start và pick-up |
+| Agent | `story`, `sub-task`, `task`, `bug` | Project Manager, Business Analyst, UI/UX designer, Solution Architect, Frontend Developer, Backend Developer, Code Reviewer, Security Engineer, Tester/QA Engineer, DevOps Engineer, SEO Specialist. Vai trò agent đang giữ item. Mọi agent dùng chung một tài khoản Jira, nên assignee không cho biết agent nào; guard wip-available đếm WIP theo trường này | Agent, khi start và pick-up |
 | Rework count | `story`, `task`, `bug` | Số lần quay lại in-progress. Không lưu thành trường: là số transition có effect increment-rework trong lịch sử chuyển trạng thái của item | Không ai điền: tự tính từ lịch sử |
 | Flagged | `epic`, `story`, `sub-task`, `task`, `bug` | Lý do bị chặn hoặc cần bạn quyết | Bất kỳ ai |
 | Resolution | `epic`, `story`, `task`, `bug` | Won't do, Duplicate, Not a bug, Cannot reproduce. Điền khi item chuyển sang cancelled | Bạn |
