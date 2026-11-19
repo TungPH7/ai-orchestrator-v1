@@ -29613,3 +29613,66 @@ Việc chép kit `7254716` vào `shop` đã xong trọn vòng: review, merge, QA
 Hai điều đáng để ý, không gấp:
 - Mình có thể ghi một followup: deployer ghi thêm commit status, để danh sách commit của `develop` có dấu xanh hay đỏ sau mỗi lần deploy. [Ước] 1–2 giờ. Bạn muốn thì nhắn.
 - `deploy.yml` của bạn có ba chỗ nên sửa (mục 3.3): test đỏ vẫn deploy; bản mới lỗi thì web sập; key SSH vào VPS đọc được từ workflow của mọi nhánh.
+
+# Phiên 33 · Lượt 76 — 2026-11-19
+
+**Bạn:** "CHưa làm gì cả, trả lời tôi các Câu hỏi ở SPEC-c1.md:
+
+1. Tại 2. Phần 1: ba mức quy trình (A1), 'qa một lần mỗi Story, theo AC' nghĩa là gì? Nó không QA Task, sub task à?
+
+2. Về agent SEO bạn hãy tham khảo các nguồn sau trong plugins, agents và skills tôi đã cài ở user scope. Nên viết mới 1 SEO Specialist hay copy SEO Specialist (agent) của D:\Document\1Khoahoc\4LapTrinh\AI-for-coding\agency-agents, các skills của SEO Specialist agent trong kit nên chọn lọc, lấy những skill nào trong claude-seo, nextjs-seo, Claude Blog.
+
+❯ ✔ claude-seo                       Plugin  agricidaniel-claude-seo · 26 skills · 1 use
+❯ ✔ nextjs-seo                       Skill   user · ~72 tok · never used
+❯ ✔ Claude Blog                      Plugin  agricidaniel-blog · 32 skills
+❯ @"SEO Specialist (agent)""
+
+**Claude:**
+
+Mình chưa sửa gì trong spec hay kit, chỉ đọc và trả lời.
+
+## Câu 1: "qa một lần mỗi Story, theo AC"
+
+Task và Bug vẫn được QA ở mức Chuẩn. Chỉ Sub-task là không có lượt QA riêng, và hiện nay cũng vậy. Câu trong bảng viết tắt nên dễ hiểu sai; đó là lỗi của spec.
+
+1. **Nguồn gốc câu:** câu này chép từ đề xuất đầu tiên (Lượt 49), lúc còn ý gộp cả Epic thành 6–8 Story to. Bạn giữ cách chia item như cũ (Lượt 61), nhưng mình chưa viết lại câu này cho khớp.
+2. **Sub-task:** không có QA riêng ở cả ba mức. Story chỉ có một PR, nên lượt QA của Story kiểm luôn phần việc của mọi Sub-task.
+3. **Task:** mức Chuẩn và Nặng vẫn có một lượt `qa`, vì DoD "Bộ regression pass" của Task giữ nguyên (Lượt 46). Task không có AC, nên `qa` kiểm danh sách Verification và chạy cả bộ E2E, như QA SHOP-77 vừa rồi. Chỉ Task Nhẹ, như Task tài liệu, mới không có lượt `qa`.
+4. **Bug:** vẫn có một lượt `qa`, kiểm rằng các bước tái hiện không còn ra lỗi, và chạy cả bộ E2E.
+5. **"Theo AC":** `qa` kiểm từng AC của Story, mỗi AC kèm bằng chứng, và không đòi gì ngoài SPEC. Đây cũng là cách `qa` đang làm.
+
+Như vậy, theo bảng hiện tại, QA ở mức Chuẩn và Nặng thật ra giống nhau. Phần tiết kiệm QA của mức Chuẩn đến từ Task finding chung của Epic: ở SHOP-7, 28 Task theo dõi tốn 216 USD, mỗi Task có review và QA riêng.
+
+**Đề xuất sửa cột QA ở mục 2,** để hai mức khác nhau ở chỗ tốn tiền thật là lần QA lại:
+- **Chuẩn:** Story, Task, Bug mỗi item một lượt `qa`. Khi QA lại sau một lần QA fail, `qa` chỉ kiểm lại các tiêu chí đã FAIL, cộng với cả bộ E2E.
+- **Nặng:** QA lại thì kiểm đủ mọi tiêu chí, kèm bằng chứng mới, như hiện nay.
+
+## Câu 2: agent và skill SEO
+
+Mình đề xuất viết mới prompt `seo` của kit, chỉ thêm một skill là `nextjs-seo`, và không lấy skill nào của claude-seo hay Claude Blog.
+
+**1. Viết mới, không chép SEO Specialist của agency-agents.**
+- Agent đó là chuyên gia SEO marketing: nghiên cứu từ khóa, cụm chủ đề, xây backlink, đọc số liệu Search Console. Việc của `seo` trong kit hẹp hơn nhiều: viết mục `## SEO` của SPEC cho từng màn hình công khai.
+- Nó cần WebFetch và WebSearch, mà kit không cấp hai công cụ này cho agent nào (spec 2.3 của roster).
+- Bản đó dài khoảng 3.000 chữ, và lượt nào cũng phải nạp cả, trong khi phần lớn không dùng tới.
+- Agent của kit cần phần hợp đồng riêng: Jira, trường Agent, ghi file vào đâu, khi nào dừng.
+- Kit đã làm `qa` theo cách này: lấy ý từ hai agent của agency-agents (giấy phép MIT), không chép nguyên văn. Với `seo`, mình lấy các ý: mỗi truy vấn chỉ có một trang chính, tiêu đề và H1 không trùng giữa các trang, canonical và ngôn ngữ nhất quán.
+
+**2. Skill: chỉ `nextjs-seo`, cho role `seo`.**
+- Skill này đúng stack của `shop`: Metadata API của App Router, `sitemap.ts` và `robots.ts`, canonical, đa ngôn ngữ, JSON-LD an toàn, ảnh chia sẻ. Đó chính là năm thứ mà mục `## SEO` của SPEC cần.
+- Nó nhỏ, khoảng 500 chữ. Sáu file tham khảo chỉ được đọc khi cần, và skill không cần Python hay URL thật.
+- Nguồn là repo `laguagu/claude-code-nextjs-skills`, giấy phép MIT. Repo này nhỏ (74 sao), nên mình sẽ đọc kỹ nội dung trước khi đưa vào kit, rồi ghim theo commit như các skill khác (`npm run skills:vendor`).
+- Chưa thêm skill này cho `fe-dev`: `fe-dev` làm theo mục SEO trong SPEC. Nếu review ở Epic đầu thấy lỗi SEO trong code thì thêm sau.
+
+**3. claude-seo: không đưa skill nào vào kit.**
+- Phần lớn skill của plugin này audit một URL thật bằng script Python (`parse_html.py`, `page_checks.py`, `render_page.py`, `sitemap_discovery.py`). Máy bạn và kit chỉ có Node, agent của kit không có WebFetch, và Development nằm sau basic auth.
+- Nhiều skill khác cần API trả phí hoặc tài khoản riêng: DataForSEO, Google (Search Console, GA4, CrUX), backlink, bản đồ.
+- Mình chỉ lấy ý từ ba skill, viết thành vài dòng kiểm trong prompt `seo`:
+  - `seo-schema`: chỉ dùng loại dữ liệu có cấu trúc mà Google còn hỗ trợ (ví dụ FAQ đã bị Google bỏ rich result);
+  - `seo-ecommerce`: Product kèm Offer (giá, tình trạng còn hàng), hợp với `shop`;
+  - `seo-hreflang`: cặp `vi`/`en` trỏ qua lại, có `x-default`.
+- Plugin này hợp với việc audit Production sau mỗi release. Bạn vẫn dùng nó trong phiên chính, ở user scope như hiện nay.
+
+**4. Claude Blog: không lấy.** Plugin này để viết và tối ưu bài blog, mà `shop` chưa có blog. Khi có Epic làm blog thì mình xét lại.
+
+Bạn duyệt thì mình sửa mục 6 và điểm 6 ở mục 13 của spec theo hướng này.
