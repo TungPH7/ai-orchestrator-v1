@@ -495,6 +495,7 @@ Bước 1 đi trước, vì các bước sau đọc stages từ contract. Bướ
 |---|---|---|
 | Ngoại lệ audit riêng của dự án | **C1**, bước 6 | Cùng khối `dependencies` của `project.yaml`. `ao-kit sync` không còn xóa ngoại lệ của dự án, như từng xảy ra với picomatch ở SHOP-74. |
 | Kit ghi đè job CI riêng của dự án | **C1**, bước 8 | `ci.yml` của kit có thêm chỗ nối, `jobs` của file `.github/workflows/ci.project.yml` do dự án giữ. `ao-kit sync` không đụng file đó. `shop` chuyển `caddy-proxy` và `not-found` sang file đó, nên lần chép sau không phải đặt lại bằng tay. |
+| *Quyết định khi làm T19 (Lượt 92)* | | `ci.project.yml` phải luôn có, vì workflow được gọi mà thiếu thì cả lượt CI đỏ: kit chép một bản mẫu khi dự án chưa có, rồi không ghi đè. Job `project` không là check bắt buộc: GitHub đặt tên check theo job của file được gọi (`project / <job>`). Lần chép kit đầu có bản mẫu thêm một file ngoài kit, nên PR đó không dùng lại được review của dự án khác. |
 | Review kit một lần ở repo kit | **Để sau C2** | Với một dự án, chi phí gần như bằng nhau (Lượt 39). Cách tiết kiệm thật là gom nhiều bản sửa vào một lần chép, như đã làm. |
 | `/ao-preview` khi bật làn | **C2** | Việc này thuộc lớp chạy song song. |
 | `profiles:check` đỏ | Xong | Kit PR #310: `next` 16.4.6. |

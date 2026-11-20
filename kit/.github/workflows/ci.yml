@@ -1,7 +1,8 @@
 # CI of a project (ai-orchestrator, quality-gates spec section 2.4): four jobs, one check each. jira-sync watches this
 # workflow by its name, CI. merge-gate, audit and the ruleset require the four jobs, which .ai-orchestrator/quality/gates.yaml
 # lists under `checks`. The project provides the scripts lint, typecheck, test:coverage (writing lcov) and build, run
-# with npm or pnpm by the lockfile at its root.
+# with npm or pnpm by the lockfile at its root. A fifth job, project, runs the project's own jobs, from
+# .github/workflows/ci.project.yml: add them there, not here, since a kit copy writes this file over.
 name: CI
 
 on:
@@ -179,3 +180,13 @@ jobs:
             *) baseline="--baseline-commit $(git merge-base "$BASE_SHA" "$HEAD_SHA")" ;;
           esac
           uvx "semgrep==${SEMGREP_VERSION}" scan --config p/default --config p/owasp-top-ten --severity ERROR --error --metrics off $baseline
+
+  # The CI jobs of the project (C1, SPEC-c1.md section 10): .github/workflows/ci.project.yml, which the project keeps and
+  # ao-kit sync never writes over, so a kit copy no longer drops them. The env above does not reach a called workflow,
+  # so the two commits go as inputs. It gets no secret, and the permissions of this workflow at most. Not a required
+  # check of gates.yaml, but merge-gate merges only when every check run passed.
+  project:
+    uses: ./.github/workflows/ci.project.yml
+    with:
+      head_sha: ${{ github.event.pull_request.head.sha || github.sha }}
+      base_sha: ${{ github.event.pull_request.base.sha || github.event.before }}

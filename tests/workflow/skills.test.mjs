@@ -138,6 +138,8 @@ test('the adapted skills of seo: adapted_from names the original, the license co
     const meta = frontmatter(text);
     assert.equal(meta.name, name);
     assert.ok(meta.description.length > 50, name);
+    // A plain YAML value ends at " #": the description of seo-content-brief once stopped at "into the section".
+    assert.ok(meta.description.endsWith('.'), `${name}: the description is whole: ${meta.description}`);
     assert.deepEqual(meta.adapted_from, ORIGINALS[name], name);
     assert.ok(readdirSync(join(SKILLS, name)).some((file) => /^LICEN[CS]E/.test(file)), `${name} keeps the MIT notice of its original`);
     assert.doesNotMatch(text, DROPPED[name], name);

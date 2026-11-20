@@ -21,7 +21,9 @@ test('the workflow is named CI, which jira-sync watches, and runs on PRs, on pus
 });
 
 test('every action is pinned to a commit, and gitleaks and Semgrep to a version', () => {
-  for (const [, uses] of text.matchAll(/uses: (\S+)/g)) assert.match(uses, /@[0-9a-f]{40}$/, uses);
+  // A workflow of the repository itself, as ./.github/workflows/ci.project.yml, runs at the commit under test: no pin.
+  for (const [, uses] of text.matchAll(/uses: (\S+)/g)) if (!uses.startsWith('./')) assert.match(uses, /@[0-9a-f]{40}$/, uses);
+  assert.deepEqual([...text.matchAll(/uses: (\.\/\S+)/g)].map(([, uses]) => uses), ['./.github/workflows/ci.project.yml']);
   assert.match(workflow.jobs.secrets.env.GITLEAKS_VERSION, /^\d+\.\d+\.\d+$/);
   assert.match(workflow.jobs.secrets.env.GITLEAKS_SHA256, /^[0-9a-f]{64}$/);
   assert.match(steps('secrets'), /sha256sum --check/);
@@ -69,8 +71,36 @@ test('ci-package-manager.mjs writes PM and PM_INSTALL of an npm project to $GITH
   assert.match(pnpm.stderr, /^::error::the repo has pnpm-lock\.yaml, but package\.json names no pnpm version in packageManager/m);
 });
 
+// The jobs of the kit, which have steps; the job project calls the CI of the project (C1, A6 row 2).
+const kitJobs = () => Object.entries(workflow.jobs).filter(([name]) => name !== 'project');
+
+// C1 spec section 10 (A6 row 2): shop kept two jobs of its own in ci.yml, and each kit copy wrote over them.
+test('the job project calls the CI of the project, ci.project.yml, with the commit under test and no secret', () => {
+  assert.deepEqual(workflow.jobs.project, {
+    uses: './.github/workflows/ci.project.yml',
+    with: { head_sha: '${{ github.event.pull_request.head.sha || github.sha }}', base_sha: '${{ github.event.pull_request.base.sha || github.event.before }}' },
+  });
+  // The env of a workflow does not reach the one it calls, so the commits go as inputs, the same as HEAD_SHA and BASE_SHA.
+  assert.equal(workflow.env.HEAD_SHA, workflow.jobs.project.with.head_sha);
+  assert.equal(workflow.env.BASE_SHA, workflow.jobs.project.with.base_sha);
+  assert.doesNotMatch(text, /secrets: inherit/);
+});
+
+test('the stub ci.project.yml takes the two commits, reads only, and has one job that never runs', () => {
+  const stubText = readFileSync(join(ROOT, 'kit', '.github', 'workflows', 'ci.project.yml'), 'utf8');
+  const stub = parse(stubText);
+  assert.deepEqual(stub.on, { workflow_call: { inputs: { head_sha: { type: 'string', required: true }, base_sha: { type: 'string', required: false, default: '' } } } });
+  assert.deepEqual(stub.permissions, { contents: 'read' });
+  // A workflow it calls must exist, or the whole CI run fails; a job skipped by if costs no runner and counts as passing.
+  assert.deepEqual(Object.keys(stub.jobs), ['none']);
+  assert.equal(stub.jobs.none.if, false);
+  assert.doesNotMatch(stubText, /\bsecrets\./);
+  assert.match(stubText, /ao-kit sync never writes over it/);
+  assert.match(stubText, /inputs\.head_sha/);
+});
+
 test('every job checks out the commit under test with its history, for the merge base', () => {
-  for (const [name, job] of Object.entries(workflow.jobs)) {
+  for (const [name, job] of kitJobs()) {
     const checkout = job.steps.find((step) => step.uses?.startsWith('actions/checkout@'));
     assert.deepEqual(checkout.with, { ref: '${{ env.HEAD_SHA }}', 'fetch-depth': 0 }, name);
   }
@@ -82,7 +112,7 @@ test('every job checks out the commit under test with its history, for the merge
 // skips: a skipped job counts as passing, for the kit's check reader and for the required checks of GitHub.
 test('a run by hand fails every job on a branch that is not develop, main or release/*', () => {
   const guard = workflow.jobs.policy.steps[0];
-  for (const [name, job] of Object.entries(workflow.jobs)) {
+  for (const [name, job] of kitJobs()) {
     assert.deepEqual(job.steps[0], guard, `${name}: the guard is its first step`);
   }
   assert.equal(guard.if, "github.event_name == 'workflow_dispatch'");
