@@ -111,6 +111,7 @@ Trong phiên Claude Code của bạn, ở repo dự án, các lệnh này đưa 
 | `/ao-preview <KEY> [--stop]` | Chuyển thư mục dự án sang nhánh PR và bật app để bạn thử; `--stop` tắt app và về `develop` |
 | `/ao-review <PR>` | Chuyển PR nháp sang sẵn sàng, rồi `reviewer`, `security` (đầy đủ, hoặc chỉ phần mới); dừng ở gate ③ |
 | `/ao-fix <PR> [việc cần sửa]` | Dev agent sửa (theo `be:` / `fe:`); PR nháp thì không review, PR sẵn sàng thì review lại |
+| `/ao-run <EPIC>` | Bộ điều phối: tự chạy các lệnh trên của cả Epic, nhiều lệnh cùng lúc trong `runs.lanes_max`, dừng ở mọi chỗ chờ bạn; `--stop` để dừng ([SPEC-c2.md](SPEC-c2.md) mục 5) |
 
 Câu hỏi của agent được chuyển cho bạn trong chat. Kết quả và chi phí của mỗi lượt nằm ở `.ai/runs/<KEY>/`. [docs/dev-workflow.md](docs/dev-workflow.md) giải thích các phần sau:
 

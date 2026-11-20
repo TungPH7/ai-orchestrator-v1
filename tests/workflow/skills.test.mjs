@@ -9,16 +9,19 @@ import { readGates } from '../../lib/quality/gates.mjs';
 import { CONTRACT_DIR, ROOT } from '../helpers/kit.mjs';
 
 const SKILLS = join(ROOT, 'kit', '.claude', 'skills');
-const COMMANDS = { status: '[KEY]', intake: '<rough description>', preview: '<KEY> [--stop]', spec: '<EPIC> [change | seo | no-seo [reason]]', plan: '<EPIC> [change]', request: '<KEY>', build: '<KEY> [be: … fe: …]', review: '<PR> [full]', fix: '<PR> [what to fix]', qa: '<KEY> [fail: <defect, steps, expected result>] [retest]', release: '[<vX.Y.0> <sha>]', ship: '<vX.Y.Z>', rollback: '<environment> [<sha>]' };
+const COMMANDS = { status: '[KEY]', intake: '<rough description>', preview: '<KEY> [--stop]', spec: '<EPIC> [change | seo | no-seo [reason]]', plan: '<EPIC> [change]', request: '<KEY>', build: '<KEY> [be: … fe: …]', review: '<PR> [full]', fix: '<PR> [what to fix]', qa: '<KEY> [fail: <defect, steps, expected result>] [retest]', release: '[<vX.Y.0> <sha>]', ship: '<vX.Y.Z>', rollback: '<environment> [<sha>]', run: '<EPIC> | <KEY>… (up to four) | --stop' };
 // The positional arguments each check passes on: /ao-release and /ao-rollback take two (release-workflow T17), and
 // /ao-intake none: its description stays in the chat (human-loop spec 3.1).
-const ARGS = { release: '$0 $1', rollback: '$0 $1', intake: '' };
+// /ao-run takes an Epic, or up to four keys (C2 spec 5.1).
+const ARGS = { release: '$0 $1', rollback: '$0 $1', intake: '', run: '$0 $1 $2 $3' };
 const args = (command) => ARGS[command] ?? '$0';
 const checkLine = (command) => ['node .ai-orchestrator/scripts/ao-step.mjs', command, args(command)].filter(Boolean).join(' ');
 // The commands that run no agent: /ao-status reads, and the main session does /ao-intake with you.
 const NO_RUN = ['status', 'intake'];
 // /ao-preview runs a script step in the foreground, with no agent: its apps keep running after it ends (spec 4.3).
 const SCRIPT_ONLY = ['preview'];
+// The dispatcher runs for hours, and starts the other commands itself (C2 spec section 5).
+const DISPATCHER = ['run'];
 const read = (command) => readFileSync(join(SKILLS, `ao-${command}`, 'SKILL.md'), 'utf8');
 const frontmatter = (text) => parse(text.match(/^---\r?\n([\s\S]*?)\r?\n---/)[1]);
 
@@ -42,13 +45,15 @@ test('the check line calls ao-step.mjs for its command with its positional argum
     const text = read(command);
     const bang = text.split('\n').filter((line) => line.startsWith('!`'));
     assert.deepEqual(bang, [`!\`${checkLine(command)}\``], command);
-    const beyond = ARGS[command] === '' ? /\$ARGUMENTS|\$0|\$1/ : ARGS[command] ? /\$ARGUMENTS|\$2/ : /\$ARGUMENTS|\$1/;
+    // Nothing past the last positional argument the check passes on.
+    const last = Math.max(-1, ...[...args(command).matchAll(/\$(\d)/g)].map(([, n]) => Number(n)));
+    const beyond = new RegExp(`\\$ARGUMENTS|\\$${last + 1}`);
     for (const line of text.split('\n').filter((l) => l.includes('ao-step.mjs'))) assert.doesNotMatch(line, beyond, `${command}: ${line}`);
   }
 });
 
 test('every command that runs agents runs --go in the background with a 2-hour timeout, and leaves agents to ao-step', () => {
-  for (const command of Object.keys(COMMANDS).filter((c) => !NO_RUN.includes(c) && !SCRIPT_ONLY.includes(c))) {
+  for (const command of Object.keys(COMMANDS).filter((c) => !NO_RUN.includes(c) && !SCRIPT_ONLY.includes(c) && !DISPATCHER.includes(c))) {
     const text = read(command).replace(/\s+/g, ' ');
     assert.ok(text.includes(`${checkLine(command)} --go`), command);
     assert.match(text, /in the background, with a timeout of 7200000 ms/, command);
@@ -65,6 +70,18 @@ test('/ao-preview runs its script step and --stop in the foreground, and warns t
   assert.match(text, /with a timeout of 600000 ms/);
   assert.doesNotMatch(text, /in the background/);
   assert.match(text, /code no reviewer has read yet, on this machine/);
+});
+
+// C2 spec section 5: the dispatcher runs in the background for hours; the main session watches its log, and ends it
+// with --stop, never by killing it (on Windows its commands would go on, with nobody to watch them).
+test('/ao-run runs --go in the background, is watched through its log, and is ended with --stop', () => {
+  const text = read('run').replace(/\s+/g, ' ');
+  assert.ok(text.includes(`${checkLine('run')} --go`));
+  assert.match(text, /in the background/);
+  assert.match(text, /\.ai\/runs\/_run\/<YYYY-MM-DD>\.log/);
+  assert.match(text, /Do not run any command it runs yourself, no agent, and no change to Jira or GitHub/);
+  assert.ok(text.includes('node .ai-orchestrator/scripts/ao-step.mjs run --stop'));
+  assert.match(text, /Never kill its process/);
 });
 
 test('/ao-intake writes one Jira item, only after your OK, and never a Story (human-loop spec 3.1)', () => {

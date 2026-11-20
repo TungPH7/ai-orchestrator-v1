@@ -8,7 +8,7 @@
 // Jira is read with ATLASSIAN_AGENT_TOKEN, GitHub with a read-only token of the ao-review App. Run it from the project
 // root; the kit is in AO_KIT_DIR when set.
 import { spawn, spawnSync } from 'node:child_process';
-import { appendFileSync, copyFileSync, cpSync, existsSync, mkdirSync, openSync, readdirSync, readFileSync, realpathSync, renameSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import { appendFileSync, closeSync, copyFileSync, cpSync, existsSync, mkdirSync, openSync, readdirSync, readFileSync, realpathSync, renameSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { freemem, tmpdir } from 'node:os';
 import { basename, dirname, isAbsolute, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -56,10 +56,18 @@ import { admitAgent, claimRole, claimsRole, jiraWipStop, liveLocks, releaseAgent
 import { wipHolders } from '../lib/tracker/facts.mjs';
 import { runsAtOnce } from '../lib/workflow/ports.mjs';
 import { hookKitDrift, hookKitNote } from '../lib/workflow/hook-kit.mjs';
+import { planRound, runDispatcher, scopeOf } from '../lib/workflow/dispatch.mjs';
+import { DISPATCHER_FILE, dispatcherEffects, spentSince } from '../lib/workflow/run-command.mjs';
 import { seoChange } from '../lib/workflow/seo-commit.mjs';
 
 const COMMANDS = ['status', 'intake', 'preview', 'spec', 'plan', 'request', 'build', 'review', 'fix', 'qa', 'release', 'ship', 'rollback'];
-const USAGE = 'usage: node .ai-orchestrator/scripts/ao-step.mjs <status|intake|preview|spec|plan|request|build|review|fix|qa|release|ship|rollback> [<KEY>|<PR>|<vX.Y.0> <sha>|<vX.Y.Z>|<environment> [<sha>]] [--go] [--answers <file>] [--note <file>] [--change <word>] [--stop] [--retest]';
+const USAGE = 'usage: node .ai-orchestrator/scripts/ao-step.mjs <status|intake|preview|spec|plan|request|build|review|fix|qa|release|ship|rollback> [<KEY>|<PR>|<vX.Y.0> <sha>|<vX.Y.Z>|<environment> [<sha>]] [--go] [--answers <file>] [--note <file>] [--change <word>] [--stop] [--retest]; or run <EPIC>|<KEY>… [--go] [--budget <USD>], or run --stop';
+// --json (the dry run of the dispatcher /ao-run, C2 spec 5.2) prints the decision as one line of JSON and nothing else;
+// --result <file>, with --go (its real run), writes the last decision there.
+export function decisionJson(decision) {
+  const runs = (decision.runs ?? []).map(({ role, purpose, action, qa }) => ({ role: role ?? null, purpose: purpose ?? null, action: action ?? null, ...(qa?.environment && { qa: { environment: qa.environment } }) }));
+  return JSON.stringify({ go: Boolean(decision.go), reason: decision.reason ?? null, next: decision.next ?? null, waits: decision.waits ?? null, then: decision.then ?? null, runs });
+}
 const ENVIRONMENTS = ['development', 'staging', 'production'];
 // The commands that read deployments with your gh login (release-workflow T12).
 const RELEASE_COMMANDS = ['qa', 'release', 'ship', 'rollback', 'status'];
@@ -171,20 +179,39 @@ export function runsFile(projectDir, file) {
 
 
 async function main() {
-  const { values, positionals } = parseArgs({ allowPositionals: true, options: { go: { type: 'boolean', default: false }, answers: { type: 'string' }, note: { type: 'string' }, change: { type: 'string' }, stop: { type: 'boolean', default: false }, retest: { type: 'boolean', default: false }, 'light-report': { type: 'string' }, full: { type: 'boolean', default: false }, 'seo-ok': { type: 'boolean', default: false } } });
+  const { values, positionals } = parseArgs({ allowPositionals: true, options: { go: { type: 'boolean', default: false }, answers: { type: 'string' }, note: { type: 'string' }, change: { type: 'string' }, stop: { type: 'boolean', default: false }, retest: { type: 'boolean', default: false }, 'light-report': { type: 'string' }, full: { type: 'boolean', default: false }, 'seo-ok': { type: 'boolean', default: false }, json: { type: 'boolean', default: false }, result: { type: 'string' }, budget: { type: 'string' } } });
   const [command, arg, extra] = positionals;
+  if (command === 'run') {
+    await runCommand(positionals.slice(1), values);
+    return;
+  }
   const settings = projectSettings(projectDir);
   const space = setting('AO_JIRA_SPACE', settings);
-  const wrong = checkArgument(command, arg, space, extra) ?? checkChange(command, values.change, Boolean(values.note)) ?? (values.stop && command !== 'preview' ? '--stop goes with /ao-preview only' : null) ?? (values['light-report'] && command !== 'qa' ? '--light-report goes with /ao-qa only' : null) ?? (values.full && command !== 'review' ? '--full goes with /ao-review only' : null) ?? (values['seo-ok'] && command !== 'build' ? '--seo-ok goes with /ao-build only' : null);
+  // The last decision of a run the dispatcher started (--result), and a STOP before any decision, in the shape --json
+  // prints.
+  const writeResult = (decision) => {
+    if (!values.result) return;
+    const file = runsFile(projectDir, values.result);
+    mkdirSync(dirname(file), { recursive: true });
+    writeFileSync(file, `${decisionJson(decision)}\n`);
+  };
+  const early = (reason, waits = 'fix') => {
+    const decision = { go: false, reason, next: null, waits };
+    if (values.json) console.log(decisionJson(decision));
+    else console.log(`STOP: ${reason}`);
+    writeResult(decision);
+  };
+  const wrong = checkArgument(command, arg, space, extra) ?? checkChange(command, values.change, Boolean(values.note)) ?? (values.stop && command !== 'preview' ? '--stop goes with /ao-preview and /ao-run only' : null) ?? (values['light-report'] && command !== 'qa' ? '--light-report goes with /ao-qa only' : null) ?? (values.full && command !== 'review' ? '--full goes with /ao-review only' : null) ?? (values['seo-ok'] && command !== 'build' ? '--seo-ok goes with /ao-build only' : null) ?? (values.budget ? '--budget goes with /ao-run only' : null) ?? (values.result && !values.go ? '--result goes with --go' : null) ?? (values.json && values.go ? '--json is a dry run: it does not go with --go' : null);
   if (wrong) {
-    console.log(`STOP: ${wrong}`);
+    early(wrong);
     return;
   }
   // A preview runs the PR's code from this folder, on its branch: a command that runs agents stops it first, puts the
-  // folder back on develop, and runs again from there, so the approved kit decides (human-loop spec 4.3).
-  const first = previewFirst(command, existsSync(previewActive), Boolean(process.env.AO_PREVIEW_STOPPED));
+  // folder back on develop, and runs again from there, so the approved kit decides (human-loop spec 4.3). The dry run of
+  // the dispatcher (--json) runs no agent, and leaves your preview alone.
+  const first = values.json ? null : previewFirst(command, existsSync(previewActive), Boolean(process.env.AO_PREVIEW_STOPPED));
   if (first === 'refuse') {
-    console.log(`STOP: the preview still runs after ao-step stopped it (${relative(projectDir, previewActive)}): run /ao-preview <KEY> --stop, then /ao-${command} again`);
+    early(`the preview still runs after ao-step stopped it (${relative(projectDir, previewActive)}): run /ao-preview <KEY> --stop, then /ao-${command} again`, 'you');
     return;
   }
   if (first === 'stop') {
@@ -211,7 +238,7 @@ async function main() {
   const onBranch = () => git('branch', '--show-current').stdout?.trim() ?? '';
   const wrongCheckout = checkoutStop(command, onBranch(), gates.protected_branches);
   if (wrongCheckout) {
-    console.log(`STOP: ${wrongCheckout}`);
+    early(wrongCheckout);
     return;
   }
   const localFile = join(kitDir, 'roster.local.yaml');
@@ -294,6 +321,11 @@ async function main() {
   const options = { roster, contract, gates, mapping, appRoles, seoApps, seoHosts, ...(values['seo-ok'] && { seoOk: true }), ...(values.answers && { answers: read(values.answers) }), ...(values.note && { note: read(values.note) }), ...(values.change && { change: values.change }), ...(values.retest && { retest: true }), ...(values['light-report'] && { lightReport: read(values['light-report']) }), ...(values.full && { full: true }) };
 
   const facts = await gather();
+  // The board of the dispatcher (C2 spec 5.2): the items of the space in the order of the board, and the open PRs.
+  if (values.json && command === 'status') {
+    console.log(JSON.stringify({ items: facts.items ?? [], pulls: facts.pulls ?? [] }));
+    return;
+  }
   // A Java app needs Docker for the tests be-dev and qa run (project-scaffold part 3, spec 2.2).
   const projectFile = join(projectDir, '.ai-orchestrator', 'project.yaml');
   const java = existsSync(projectFile) && Object.values(parse(readFileSync(projectFile, 'utf8'))?.apps ?? {}).some((app) => app?.profile === 'spring-boot');
@@ -303,6 +335,10 @@ async function main() {
   // Three seconds before Docker is asked again: the command waits on nothing else meanwhile.
   const pause = () => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 3000);
   const decision = dockerGate(decideStep(command, { ...facts, qaRunning }, options), { java, dockerRunning, pause });
+  if (values.json) {
+    console.log(decisionJson(decision));
+    return;
+  }
   console.log(formatDecision(decision));
   // Agents run the hooks of the kit in AO_KIT_DIR: one that differs from the kit copy of the project is named (review round
   // 3 of shop PR #21).
@@ -327,8 +363,15 @@ async function main() {
     for (const { key: k, environment } of live.filter((lock) => lock.command === 'qa' && lock.environment)) {
       console.log(`QA in progress: qa is testing ${k} on ${environment}. Approve no PR whose merge deploys ${environment} until it ends: the new deploy would stop it, and it would start again`);
     }
+    // The dispatcher /ao-run that runs, if any (C2 spec 5.6).
+    const dispatcher = readJson(join(projectDir, ...DISPATCHER_FILE));
+    if (dispatcher && alive(dispatcher.pid)) console.log(`Dispatcher: /ao-run ${dispatcher.scope} since ${dispatcher.startedAt} (process ${dispatcher.pid}), ${Number(dispatcher.spentUsd ?? 0).toFixed(2)} of ${dispatcher.budgetUsd} USD; running: ${(dispatcher.running ?? []).join(', ') || 'nothing'}`);
   }
-  if (!values.go || !decision.go) return;
+  if (!values.go) return;
+  if (!decision.go) {
+    writeResult(decision);
+    return;
+  }
 
   // A release command has no work item: its runs and report go under the release (.ai/runs/v0.1.0/).
   const key = facts.item?.key ?? facts.runKey;
@@ -338,7 +381,7 @@ async function main() {
   const firstRun = decision.runs?.[0] ?? {};
   const taken = await takeRunLock(activeDir, { pid: process.pid, command, arg, key, role: firstRun.role, environment: firstRun.qa?.environment, startedAt: new Date().toISOString() }, { fs: lockFs, alive, cap, sleep: (ms) => new Promise((done) => setTimeout(done, ms)) });
   if (!taken.ok) {
-    console.log(`STOP: ${taken.reason}`);
+    early(taken.reason, 'item');
     return;
   }
   const lock = taken.file;
@@ -442,6 +485,7 @@ async function main() {
       log: (line) => console.log(line),
     });
     console.log(`\n${formatDecision(final)}\nReport: .ai/runs/${key}/last.md`);
+    writeResult(final);
     const home = homeBranch(command, last, gates.protected_branches);
     const now = onBranch();
     if (home && now !== home) {
@@ -977,6 +1021,93 @@ function removeWorktree({ name }) {
   }
   git('worktree', 'prune');
   return existsSync(path) ? still(`${path} is still there`) : { ok: true };
+}
+
+// /ao-run <EPIC> | <KEY> <KEY>… (C2 spec section 5): the dispatcher. Without --go it prints one round: what it would
+// start now and what waits. With --go it runs until the scope is done or waits for you idle_hours, or until the budget,
+// the usage limit or /ao-run --stop ends it once its commands have ended.
+const END = {
+  done: (scope) => `every item of ${scope} is done, or waits only for Complete`,
+  idle: (scope, { idleHours }) => `nothing of ${scope} could start for ${idleHours} hours`,
+  budget: (scope, { budget, spent }) => `the runs it started cost ${spent.toFixed(2)} USD, and its budget is ${budget} USD`,
+  usage: () => 'an agent hit the usage limit: run /ao-run again after it resets',
+  stop: () => '/ao-run --stop asked it to end',
+};
+
+async function runCommand(keys, values) {
+  const settings = projectSettings(projectDir);
+  const space = setting('AO_JIRA_SPACE', settings);
+  const effects = dispatcherEffects({ kitDir, projectDir, spawn, fs: { existsSync, mkdirSync, openSync, closeSync, readFileSync, writeFileSync, appendFileSync, rmSync }, alive });
+  const other = ['answers', 'note', 'change', 'light-report', 'result'].find((name) => values[name] !== undefined) ?? ['retest', 'full', 'seo-ok', 'json'].find((name) => values[name]);
+  if (other) return console.log(`STOP: --${other} does not go with /ao-run`);
+  if (values.stop) {
+    if (keys.length > 0 || values.go) return console.log('STOP: /ao-run --stop takes no key and no --go');
+    const held = effects.running();
+    if (!held) return console.log('STOP: no /ao-run runs in this project');
+    effects.askStop();
+    return console.log(`/ao-run ${held.scope} (process ${held.pid}) starts no command more; the ones that run go on to their end, then it ends`);
+  }
+  if (keys.length === 0) return console.log(`STOP: /ao-run takes an Epic, or the items to run, such as ${space ?? 'DEMO'}-12`);
+  const bad = keys.find((key) => !/^[A-Z][A-Z0-9]*-\d{1,7}$/.test(key) || (space && !key.startsWith(`${space}-`)));
+  if (bad) return console.log(`STOP: ${bad} is not a Jira key of the space ${space}`);
+  const projectYaml = join(projectDir, '.ai-orchestrator', 'project.yaml');
+  const runs = runsSettings(existsSync(projectYaml) ? parse(readFileSync(projectYaml, 'utf8')) : {});
+  const budget = values.budget === undefined ? runs.budgetUsd : Number(values.budget);
+  if (!(budget > 0) || budget > 1000) return console.log(`STOP: --budget is ${values.budget}: a number of USD above 0, at most 1000`);
+  const cap = runsAtOnce(runs.lanesMax, process.env);
+  const readLocks = () => liveLocks(activeDir, { fs: lockFs, alive });
+  const board = await effects.readBoard();
+  // One key of an Epic is the Epic and its items; any other key, or several, are those items.
+  const scope = keys.length === 1 && board.items.find(({ key }) => key === keys[0])?.workType === 'epic' ? { epic: keys[0] } : { keys };
+  const label = scope.epic ?? keys.join(' ');
+
+  if (!values.go) {
+    const round = await planRound({ ...board, scope, live: readLocks(), cap, decide: effects.decide });
+    console.log(`/ao-run ${label}, ${cap} at once, budget ${budget} USD`);
+    console.log(round.done ? `Every item of ${label} is done, or waits only for Complete` : `Would start now: ${round.start.map(({ command, arg }) => `/ao-${command} ${arg}`).join(', ') || 'nothing'}`);
+    const yours = round.waiting.filter(({ waits }) => waits === 'you');
+    const others = round.waiting.filter(({ waits }) => waits !== 'you');
+    if (yours.length > 0) console.log(['Waiting for you:', ...yours.map(({ key, text }) => `  ${key}: ${text}`)].join('\n'));
+    if (others.length > 0) console.log(['Waiting:', ...others.map(({ key, waits, text }) => `  ${key} (${waits}): ${text}`)].join('\n'));
+    if (!round.done) console.log(`Next: /ao-run ${keys.join(' ')} --go`);
+    return;
+  }
+
+  const since = Date.now();
+  const record = { pid: process.pid, scope: label, startedAt: new Date(since).toISOString(), budgetUsd: budget, spentUsd: 0, running: [] };
+  const locked = effects.lock(record);
+  if (!locked.ok) return console.log(`STOP: ${locked.reason}`);
+  // The items of the scope as it grows (the plan adds them), for what their runs cost.
+  const seen = new Set(scopeOf(board.items, scope).map(({ key }) => key));
+  const readBoard = async () => {
+    const now = await effects.readBoard();
+    for (const { key } of scopeOf(now.items, scope)) seen.add(key);
+    return now;
+  };
+  const spent = () => spentSince([...seen], since, effects.readState);
+  try {
+    effects.log(`/ao-run ${label}: ${cap} at once, budget ${budget} USD, ends after ${runs.idleHours} hours with nothing to start`);
+    const end = await runDispatcher({
+      scope,
+      cap,
+      budgetUsd: budget,
+      idleMs: runs.idleHours * 3600 * 1000,
+      readBoard,
+      readLocks,
+      decide: effects.decide,
+      start: effects.start,
+      spent,
+      stopAsked: effects.stopAsked,
+      now: Date.now,
+      sleep: (ms) => new Promise((done) => setTimeout(done, ms)),
+      log: effects.log,
+      report: ({ running, spent: cost }) => effects.update({ ...record, spentUsd: cost, running }),
+    });
+    effects.log(`/ao-run ${label} ends: ${END[end.reason](label, { idleHours: runs.idleHours, budget, spent: spent() })}. Spent ${spent().toFixed(2)} USD`);
+    if (end.waiting.length > 0) console.log(['Waiting for you:', ...end.waiting.map((line) => `  ${line}`)].join('\n'));
+  } finally {
+    effects.unlock();
+  }
 }
 
 // The second /ao-plan: jira-sync for the Epic, with your gh login, since this is your session, not an agent's.

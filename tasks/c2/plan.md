@@ -31,9 +31,15 @@ tiếp của `shop`.
    không đọc chữ của `next`.
 5. **Một bảng cho lệnh kế tiếp.** Hàm mới `nextCommand(item, pr)` trả `{ command, arg }` hay "chờ bạn". `nextFor` (chữ
    mà `/ao-status` in) dựng từ hàm đó, nên `/ao-status` và bộ điều phối không lệch nhau.
-6. **Bộ điều phối hỏi `decideStep` ngay trong tiến trình của nó,** bằng đúng `gather` và `options` mà `ao-step <lệnh>
-   <arg>` dùng khi không có `--go`. Nó chỉ mở tiến trình con cho lệnh thật (`--go`). Lệnh con chính là lệnh bạn vẫn gõ,
-   nên khóa, log và `state.json` giữ như hiện nay.
+6. **Bộ điều phối hỏi chính `ao-step`.** Đổi khi làm T5: bản đầu định hỏi `decideStep` ngay trong tiến trình của bộ
+   điều phối, nhưng `gather` và `options` nằm trong hàm `main` gần 1.000 dòng của `ao-step`, tách ra thì rủi ro hơn lợi.
+   Nay bộ điều phối mở `ao-step` làm tiến trình con cho cả ba việc:
+   - đọc board: `ao-step status --json`;
+   - hỏi một lệnh có chạy được không: `ao-step <lệnh> <arg> --json` (không chạy agent, không đụng preview của bạn);
+   - chạy thật: `ao-step <lệnh> <arg> --go --result <file>`, file ghi quyết định cuối.
+
+   Câu trả lời vì thế đúng y như khi bạn gõ lệnh, và bộ điều phối không giữ token nào. Cái giá: mỗi câu hỏi mất vài
+   giây (chạy thử trên `shop`: khoảng 10 giây cho một vòng ba item).
 7. **Khóa của bộ điều phối tách khỏi khóa của lệnh:** `.ai/runs/dispatcher.json` (pid, phạm vi, giờ bắt đầu, ngân sách).
    Nó không tính vào `lanes_max`. `--stop` ghi file `.ai/runs/_run/stop`, bộ điều phối đọc ở mỗi vòng.
 8. **Chi phí của một lần `/ao-run`** tính từ `state.json` của các item trong phạm vi: tổng `costUsd` của các lượt bắt đầu
