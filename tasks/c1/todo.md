@@ -219,9 +219,12 @@
     - 1.689 test xanh.
 
 ### Checkpoint 4: sau T19
-- [ ] Mọi kit PR đã merge. Hỏi bạn trước T20.
+- [x] Mọi kit PR đã merge (kit PR #313–#323). Đã hỏi bạn ở Lượt 93, bạn nói "làm tiếp".
 
-- [ ] **T20 [bạn]: chép kit vào `shop`.** Review đầy đủ (khoảng 10 USD). Đặt `seo: true` cho `user`, `seo: false` cho `admin`; chuyển `caddy-proxy` và `not-found` sang `ci.project.yml`. Bạn approve và merge.
+- [x] **T20 [bạn]: chép kit vào `shop`.** Xong 2026-11-20: SHOP-78 Done, cả Task 29,67 USD. Review đầy đủ (khoảng 10 USD). Đặt `seo: true` cho `user`, `seo: false` cho `admin`; chuyển `caddy-proxy` và `not-found` sang `ci.project.yml`. Bạn approve và merge.
   - PR #79 (SHOP-78), kit `719a696`: CI xanh sáu job; review tốn 14,10 USD. `reviewer` 0 Critical, 0 High, 4 Medium, 2 Low; `security` 2 High, 5 Medium.
   - Lượt 95: bạn chọn sửa mọi finding trong một kit PR (SPEC-c1.md mục 6.4), rồi dừng hỏi trước vòng review trả tiền. Bạn đồng ý thì merge kit PR, chép kit lại vào PR #79 và review lại.
-- [ ] **T21: đóng module.** `verification.md` theo 11 tiêu chí của spec mục 12; cập nhật `concerns.md` (C1 xong, D3 xong), `SPEC.md` nếu cần, memory.
+  - Lượt 97: kit PR #324 merge (`5c25aca`); chép lại vào PR #79 (`1ff3358`), CI xanh bảy job. Review lần hai 14,49 USD (SHOP-78 tới giờ 28,59 USD): `reviewer` 0 Critical, 0 High, 4 Medium, 1 Low; `security` 0 Critical, 0 High, 4 Medium, 2 Low; cả hai Approve. Gộp chỗ trùng: 6 Medium và 3 Low, chờ bạn quyết có mở Task sửa kit không. Chờ bạn approve và merge PR #79.
+  - Lượt 98: bạn đã merge PR #79 (`ccf4fde`). Deployer từ chối deploy vì mô tả PR có chữ `<KEY>`: đã sửa mô tả, `audit` chạy thử qua, rồi `/ao-rollback development ccf4fde`, deploy thành công. QA PASS (comment 10608, 1,08 USD; E2E Development 134/0/6; SHOP-78 tới giờ 29,67 USD), nhưng `qa` không Pick up được: Pick up và QA fail có hai rule Restrict tách rời (`ao-agents`, `ao-automation`), Jira đòi thuộc cả hai group. Chờ bạn gộp hai rule thành một trên Jira, rồi phiên chính Pick up bằng token CI và bạn Accept.
+- [ ] **T20b [chờ bạn đồng ý]: Task sửa kit cho 6 Medium và 3 Low của review lần hai PR #79, và lỗi `jira:check` với hai rule Restrict.** Danh sách và cách sửa: [followups-pr79.md](followups-pr79.md). Chỉ làm khi bạn đồng ý (Lượt 98).
+- [x] **T21: đóng module.** `verification.md` theo 11 tiêu chí của spec mục 12; cập nhật `concerns.md` (C1 xong, D3 xong), `SPEC.md` nếu cần, memory. Xong 2026-11-20 (Lượt 99): 10 tiêu chí đạt, tiêu chí 7 chờ Epic kế tiếp ([verification.md](verification.md)); `SPEC.md` không phải sửa.
