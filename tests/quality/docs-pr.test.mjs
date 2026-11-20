@@ -87,6 +87,11 @@ test('not a docs PR: a file elsewhere, another Epic\'s specs, another branch, an
   not((c) => (c.pr.user.login = 'approver'), 'a PR you opened');
   not((c) => (c.pr.user.login = 'tungph7-ao-review[bot]'), 'a PR of the review App');
   not((c) => (c.files = []), 'no file');
+  // Review of shop PR #79: what steers an agent, under the Epic's own specs, is reviewed like code.
+  not((c) => c.files.push({ filename: 'docs/specs/DEMO-20/CLAUDE.md' }), 'a CLAUDE.md in the specs');
+  not((c) => c.files.push({ filename: 'docs/specs/DEMO-20/agents.md' }), 'an AGENTS.md in any case');
+  not((c) => c.files.push({ filename: 'docs/specs/DEMO-20/.claude/rules/x.md' }), 'a .claude folder in the specs');
+  not((c) => c.files.push({ filename: 'docs/adr/.mcp.json' }), 'an MCP config among the ADRs');
 });
 
 test('merge-gate squashes a docs PR without reports or approval once the Epic is past gate ② and its CI ran before you approved', () => {

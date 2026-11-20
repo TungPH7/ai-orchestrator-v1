@@ -91,3 +91,23 @@ test('the new libraries of a plan: one line each of its New Libraries section, i
   assert.deepEqual(planLibraries('## New Libraries\n\nKhông có.\n'), []);
   assert.deepEqual(planLibraries(null), []);
 });
+
+// Review of shop PR #79: a name on the list is no pass for another source, or for a version outside its range.
+test('the policy job: a dependency pointed away from the registry, or an approved one outside its range', () => {
+  const change = (before, after) => unapprovedDependencies([{ path: 'apps/web/package.json', before, after }], APPROVED, ['@shop/ui']);
+  assert.match(change('{"dependencies":{"zod":"^4.6.6"}}', '{"dependencies":{"zod":"npm:evil-pkg@1.0.0"}}')[0], /^apps\/web\/package\.json: zod points to npm:evil-pkg@1\.0\.0, which is no version of the registry/);
+  for (const spec of ['github:x/y', 'git+https://github.com/x/y.git', 'git://x.test/y', 'https://x.test/z.tgz', 'file:../z', 'link:../z', 'x/y', '../vendor/z']) {
+    assert.equal(change('{"dependencies":{"zod":"^4.6.6"}}', `{"devDependencies":{"zod":"${spec}"}}`).length, 1, spec);
+  }
+  assert.equal(change('{}', '{"overrides":{"react":"npm:evil@1"}}').length, 1, 'an override');
+  assert.equal(change('{}', '{"overrides":{"react":{"scheduler":"github:x/y"}}}').length, 1, 'a nested override of npm');
+  assert.equal(change('{}', '{"pnpm":{"overrides":{"react>scheduler":"file:../x"}}}').length, 1, 'an override of pnpm');
+  assert.equal(change('{}', '{"resolutions":{"react":"link:../x"}}').length, 1, 'a resolution of yarn');
+  assert.match(change('{}', '{"dependencies":{"zod":"^5.0.0"}}')[0], /zod asks for \^5\.0\.0, outside \^4\.6\.6, the range dep-check approved/);
+  assert.match(change('{}', '{"dependencies":{"zod":"latest"}}')[0], /zod asks for latest, which cannot be checked against \^4\.6\.6/);
+  assert.deepEqual(change('{}', '{"dependencies":{"zod":"^4.7.0","@shop/ui":"workspace:*"}}'), []);
+  assert.deepEqual(change('{"dependencies":{"react":"^19.0.0"}}', '{"dependencies":{"react":"^19.1.0"}}'), [], 'a new version of one already there');
+  assert.deepEqual(change('{"dependencies":{"x":"file:../x"}}', '{"dependencies":{"x":"file:../x"}}'), [], 'a source already there is not new');
+  assert.match(change('{}', '{"dependencies":')[0], /^apps\/web\/package\.json is no JSON/, 'a package.json that cannot be read');
+  assert.deepEqual(change('{"dependencies":{}}', ''), [], 'a package.json deleted');
+});

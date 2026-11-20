@@ -222,4 +222,6 @@
 - [ ] Mọi kit PR đã merge. Hỏi bạn trước T20.
 
 - [ ] **T20 [bạn]: chép kit vào `shop`.** Review đầy đủ (khoảng 10 USD). Đặt `seo: true` cho `user`, `seo: false` cho `admin`; chuyển `caddy-proxy` và `not-found` sang `ci.project.yml`. Bạn approve và merge.
+  - PR #79 (SHOP-78), kit `719a696`: CI xanh sáu job; review tốn 14,10 USD. `reviewer` 0 Critical, 0 High, 4 Medium, 2 Low; `security` 2 High, 5 Medium.
+  - Lượt 95: bạn chọn sửa mọi finding trong một kit PR (SPEC-c1.md mục 6.4), rồi dừng hỏi trước vòng review trả tiền. Bạn đồng ý thì merge kit PR, chép kit lại vào PR #79 và review lại.
 - [ ] **T21: đóng module.** `verification.md` theo 11 tiêu chí của spec mục 12; cập nhật `concerns.md` (C1 xong, D3 xong), `SPEC.md` nếu cần, memory.

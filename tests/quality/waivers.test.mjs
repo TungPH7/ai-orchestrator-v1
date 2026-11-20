@@ -22,6 +22,10 @@ test('it does not hold when one file is outside it, the level is not light, or t
   assert.equal(waiverFor({ files: DOCS, gates, label: null }), null, 'no label is standard');
   assert.equal(waiverFor({ files: DOCS, gates, label: 'light', blockingFound: true }), null, 'a High made it standard');
   assert.equal(waiverFor({ files: ['docs/a.md', '.claude/rules/ai-orchestrator.md'], gates, label: 'light' }), null, 'a critical file makes it heavy');
+  // Review of shop PR #79: Markdown that steers an agent is no doc, at any depth.
+  for (const file of ['CLAUDE.md', 'apps/user/AGENTS.md', 'apps/user/.claude/rules/x.md', 'docs/specs/SHOP-90/CLAUDE.local.md']) {
+    assert.equal(waiverFor({ files: [...DOCS, file], gates, label: 'light' }), null, file);
+  }
   assert.equal(waiverFor({ files: DOCS, gates, label: 'light', truncated: true }), null);
   assert.equal(waiverFor({ files: [], gates, label: 'light' }), null);
   assert.equal(waiverFor({ files: [{ filename: 'docs/a.md', previous_filename: 'apps/web/src/a.ts' }], gates, label: 'light' }), null, 'a file renamed from code counts by its old name');

@@ -340,6 +340,13 @@ stages:
 - **Rủi ro 2, rò dữ liệu** (phát hiện khi viết spec này, Lượt 86): `seo` vừa đọc được file vừa gửi được request ra internet. Một trang có lệnh chèn có thể bảo nó đọc một bí mật rồi gắn vào URL của WebFetch.
   - Hiện nay gh-guard (`lib/quality/commands.mjs`) chỉ chặn agent đọc file khóa, file backup và `hosts.yml` của `gh`. File `.env` và file ngoài dự án vẫn đọc được bằng Read.
   - **Cách chặn** (bạn duyệt ở Lượt 87): gh-guard giới hạn Read, Grep và Glob của `seo` trong thư mục dự án, và từ chối các file `.env*`, trừ `.env.example`. Các role khác giữ như cũ.
+- **Sửa sau review của `shop` PR #79** (T20, bạn chọn sửa mọi finding ở Lượt 95). `security` tìm ra hai High và năm Medium, `reviewer` bốn Medium và hai Low, đều trong code của kit:
+  - `writes` của `seo` thu về `["docs/specs/*/spec.md", ".ai/ledger/*.seo.md"]`. Ledger riêng của `seo` không agent nào có Bash đọc; `ao-step` chỉ commit thay `seo` đúng `docs/specs/<EPIC>/spec.md`, và trên nhánh tài liệu chỉ SPEC của chính Epic đó;
+  - file lái phiên agent (`CLAUDE.md`, `AGENTS.md`, `.claude/` lồng, `.mcp.json` …) ở mọi độ sâu luôn ở tầng Nguy cấp, do code quyết. Không luật miễn nào phủ chúng, PR tài liệu có chúng thành PR thường, và không agent nào ghi được `.claude/` lồng;
+  - `seo` không đọc file git bỏ qua, không đọc `.env` ở mọi cách viết Windows mở được, chỉ Grep code và tài liệu, không ghi ra temp, và chỉ WebFetch trang mà WebSearch của chính lượt đó trả về, hay tài liệu của Google, schema.org, Next.js, web.dev và MDN. Hook PostToolUse mới `web-search.mjs` ghi các trang đó;
+  - nhãn mức: hook `block-atlassian` chặn agent đổi nhãn mức qua `update.labels` (riêng `ba` gắn khi tạo item), và `ao-step`, `merge-gate`, `audit` bỏ qua thay đổi nhãn mức do tài khoản agent làm, đọc từ changelog;
+  - tầng Thường: thêm vào `sensitive_paths` các file bảo mật mà `security` thấy rơi vào tầng này ở `shop`, và khối `review` của `project.yaml` cho dự án thêm đường dẫn riêng;
+  - duyệt thư viện: Edit được xét trên cả file sau khi sửa; alias, nguồn ngoài registry và registry khác bị từ chối, cả trong `overrides`; phiên bản phải nằm trong `range` đã duyệt; `npx` và `dlx` chỉ tải gói đã duyệt hay công cụ của kit; `.npmrc`, `.yarnrc*`, `bunfig.toml` thành đường dẫn được bảo vệ.
 
 ### 6.5 Skill của `seo` (Lượt 80–84)
 

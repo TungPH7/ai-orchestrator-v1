@@ -1,6 +1,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
+import { mkdtempSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { readRoster } from '../../lib/agents/roster.mjs';
 import { gitRefusal, writeRefusal } from '../../lib/agents/scope.mjs';
@@ -147,6 +149,17 @@ test('without a roster, gh-guard checks only the quality-gates rules', () => {
   allowed(call('reviewer', 'Write', { file_path: `${PROJECT}\\src\\cart.ts` }, {}), 'write');
 });
 
+// Review of shop PR #79: seo reads web pages, so it writes nothing an agent with Bash loads or goes on from.
+test('seo writes the SPEC of an Epic and a ledger of its own, and nothing else', () => {
+  allowed(write('seo', 'docs/specs/SHOP-90/spec.md'), 'the SPEC');
+  allowed(write('seo', 'docs/specs/SHOP-90/SPEC.md'), 'in any case, as Windows writes it');
+  allowed(write('seo', '.ai/ledger/SHOP-90.seo.md'), 'its ledger');
+  for (const path of ['docs/specs/SHOP-90/CLAUDE.md', 'docs/specs/SHOP-90/AGENTS.md', 'docs/specs/SHOP-90/design.md', 'docs/specs/SHOP-90/a/spec.md', 'docs/specs/spec.md', '.ai/ledger/SHOP-90.md', '.ai/reviews/79-seo.md', 'docs/specs/SHOP-90/../../CLAUDE.md']) {
+    denied(write('seo', path), /seo may write only docs\/specs\/\*\/spec\.md, \.ai\/ledger\/\*\.seo\.md/, path);
+  }
+  denied(write('seo', 'docs/specs/SHOP-90/.claude/rules/x.md'), /\*\*\/\.claude\/\*\* is protected/, 'a .claude folder, which no agent writes');
+});
+
 test('the pure rules: writeRefusal and gitRefusal', () => {
   assert.equal(writeRefusal(roster, 'reviewer', '.ai/reviews/1.md'), null);
   assert.match(writeRefusal(roster, 'reviewer', 'src/a.ts'), /^reviewer may write only/);
@@ -165,4 +178,19 @@ test('the gh-guard hook refuses a read-only role a git checkout', () => {
   });
   assert.equal(result.status, 0, result.stderr);
   assert.match(JSON.parse(result.stdout).hookSpecificOutput.permissionDecisionReason, /^gh-guard: reviewer has read-only git/);
+});
+
+// Review of shop PR #79: web-search.mjs records the pages a search gave seo, and gh-guard lets it fetch only those.
+test('the web-search and gh-guard hooks: seo fetches a page its search gave, and no other', (t) => {
+  const temp = mkdtempSync(join(tmpdir(), 'ao-web-'));
+  t.after(() => rmSync(temp, { recursive: true, force: true }));
+  const env = { ...process.env, AO_KIT_DIR: ROOT, CLAUDE_PROJECT_DIR: ROOT, TEMP: temp, TMP: temp, TMPDIR: temp };
+  const hook = (name, input) => spawnSync(process.execPath, [join(ROOT, 'kit', '.claude', 'hooks', name)], { input: JSON.stringify(input), encoding: 'utf8', env });
+  const searched = hook('web-search.mjs', { hook_event_name: 'PostToolUse', session_id: 's-seo-1', agent_type: 'seo', tool_name: 'WebSearch', tool_input: { query: 'giày chạy bộ' }, tool_response: { results: [{ content: [{ title: 'Best shoes', url: 'https://www.example.com/best-shoes' }] }] } });
+  assert.equal(searched.status, 0, searched.stderr);
+  assert.equal(searched.stdout, '');
+  const fetch = (url, session = 's-seo-1') => hook('gh-guard.mjs', { hook_event_name: 'PreToolUse', session_id: session, agent_type: 'seo', tool_name: 'WebFetch', tool_input: { url, prompt: 'x' } });
+  assert.equal(fetch('https://www.example.com/best-shoes').stdout, '', 'a page of its search');
+  assert.match(JSON.parse(fetch('https://evil.test/?d=x').stdout).hookSpecificOutput.permissionDecisionReason, /fetches only a page a WebSearch of this run gave/);
+  assert.match(JSON.parse(fetch('https://www.example.com/best-shoes', 's-other').stdout).hookSpecificOutput.permissionDecisionReason, /fetches only/, 'another run');
 });

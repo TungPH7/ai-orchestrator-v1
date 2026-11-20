@@ -78,10 +78,15 @@ dependencies:
 - **Đáng ngờ:** lệnh không ghi gì. Dev agent comment `Cần security:` trên item, gắn cờ Needs you và dừng. `/ao-request <KEY>` chạy `security` ở `high` chỉ cho thư viện đó; nó comment đề xuất duyệt hay không. Muốn duyệt, bạn tự thêm dòng vào `approved`.
 - **Ở plan:** `plan.md` có mục "New Libraries". Ở gate ②, `/ao-plan` in danh sách đó, và phiên chính chạy `dep-check --dry-run` cho từng thư viện để báo bạn, không ghi gì. Lúc build, dev agent chạy `dep-check` thật.
 - **Chặn:**
-  - gh-guard từ chối `pnpm add`, `npm install <gói>`, `yarn add`, `mvn dependency:get -Dartifact=…` khi gói chưa có trong `approved`, và từ chối cài từ đường dẫn, URL hay git;
-  - gh-guard cũng từ chối Edit và Write thêm dependency chưa duyệt vào `pom.xml` hay `package.json`;
+  - gh-guard từ chối `pnpm add`, `npm install <gói>`, `yarn add`, `yarn global add`, `mvn dependency:get -Dartifact=…` khi gói chưa có trong `approved`, và từ chối cài từ đường dẫn, URL hay git;
+  - gh-guard cũng từ chối Edit và Write thêm dependency chưa duyệt vào `pom.xml` hay `package.json`. Với Edit, hook xét cả file sau khi thay `old_string` bằng `new_string`, không chỉ hai đoạn đó; `package.json` không còn là JSON hợp lệ thì bị từ chối;
   - job `policy` đỏ ở phần New dependencies.
   - `pnpm install` và `npm ci` theo lockfile thì luôn được.
+- **Tên đã duyệt không mở đường cho nguồn khác** (review của `shop` PR #79). gh-guard và job `policy` từ chối:
+  - alias và nguồn ngoài registry, dù tên đã duyệt: `zod@npm:evil-pkg`, `github:`, `git+…`, URL, `file:`, `link:`, đường dẫn. Luật này áp cho cả `overrides`, `pnpm.overrides` và `resolutions` của `package.json`. `workspace:` và `catalog:` của pnpm thì được;
+  - registry khác: `--registry`, `--@scope:registry=`, biến `npm_config_registry`. `.npmrc`, `.yarnrc*` và `bunfig.toml` ở mọi thư mục là đường dẫn được bảo vệ, nên agent không ghi được;
+  - phiên bản ngoài `range` đã duyệt: `pnpm add zod@5.0.0` khi `range` là `^4.6.6`, hay `"zod": "^5.0.0"` trong `package.json`. Phiên bản hay range không kiểm được, như tag `latest`, cũng bị từ chối. Cài không ghi phiên bản (`pnpm add zod`) thì được, rồi job `policy` kiểm range pnpm ghi vào `package.json`;
+  - `npx`, `npm exec`, `pnpm dlx`, `yarn dlx`, `bunx` tải một gói chưa duyệt. Được chạy gói đã duyệt, công cụ của kit (`dependencies.tools` của `quality/gates.yaml`: `@playwright/cli@0.1.22`, `playwright`), và cái dự án đã cài, bằng `pnpm exec` hay `npx --no`.
 
 ### `build-test`
 
@@ -168,8 +173,8 @@ Từ C1 ([SPEC-c1.md](../SPEC-c1.md) mục 3), tầng của PR là tầng cao nh
 
 | Tầng | Gồm | `reviewer` | `security` |
 |---|---|---|---|
-| Nguy cấp | đường dẫn được bảo vệ, và `review.critical_paths`: auth, session, crypto, `.env*`, cấu hình bảo mật, migration, Dockerfile, compose, Maven wrapper, `deploy.yaml` | `xhigh` | `max` |
-| Nhạy cảm | `review.sensitive_paths`: file khai báo thư viện, cấu hình app, controller, DTO, service, repository, entity, middleware | `high` | `high` |
+| Nguy cấp | đường dẫn được bảo vệ; `review.critical_paths`: auth, session, crypto, `.env*`, cấu hình bảo mật, migration, Dockerfile, compose, Maven wrapper, `deploy.yaml`; và mọi file lái phiên agent ở mọi độ sâu: `CLAUDE.md`, `CLAUDE.local.md`, `AGENTS.md`, thư mục `.claude/` hay `.claude-plugin/`, `.mcp.json`, `.gitattributes`, `.gitmodules`, `.lfsconfig` | `xhigh` | `max` |
+| Nhạy cảm | `review.sensitive_paths`: file khai báo thư viện, cấu hình app, controller, DTO, service, repository, entity, middleware; header bảo mật và CSP (`*security*`), env của app (`env.*`, `env/`), `Caddyfile`, luật eslint, client gọi API, trang đăng nhập và đăng ký, `*ExceptionHandler*`, `*Auditor*` | `high` | `high` |
 | Thường | mọi file khác: UI, CSS, i18n, test | `high` | không chạy |
 | Tài liệu | mọi file nằm trong `review.docs_paths` (`docs/**`, `**/*.md`), và không file nào Nguy cấp | `high` | không chạy |
 
@@ -177,6 +182,14 @@ Từ C1 ([SPEC-c1.md](../SPEC-c1.md) mục 3), tầng của PR là tầng cao nh
 - **Báo cáo `merge-gate` và `audit` đòi:** luôn có `reviewer`. `security` chỉ cần khi PR ở tầng Nhạy cảm hay Nguy cấp, hoặc khi `security` đã từng đăng báo cáo trên PR, để bỏ file đã gọi nó vào cũng không bỏ được High nó tìm ở chỗ khác. GitHub chỉ liệt kê tối đa 3.000 file; PR dài hơn được tính là Nguy cấp.
 - **Item mức Nặng** (nhãn `ao-level-heavy`, hay mức tự tăng) được review như PR Nguy cấp, dù đường dẫn của nó thuộc tầng nào ([dev-workflow.md](dev-workflow.md), mục Mức quy trình). Nhãn effort (`ao-effort-*`) nay chỉ còn dùng cho dev agent.
 - CI vẫn chạy SAST, quét secret và `osv-scanner` trên mọi PR, kể cả PR không có `security`.
+- **File lái agent không phải tài liệu** (review của `shop` PR #79). Claude Code nạp `CLAUDE.md`, `AGENTS.md` hay `.claude/` của một thư mục làm chỉ dẫn cho agent có Bash và git. Vì vậy chúng luôn ở tầng Nguy cấp, do code quyết (`lib/quality/review-tiers.mjs`), dù danh sách trong `gates.yaml` nói gì. Không luật miễn nào phủ chúng, và PR tài liệu có một file như vậy thành PR thường.
+- **Đường dẫn riêng của dự án:** khối `review` của `project.yaml` thêm đường dẫn vào hai tầng trên. Kit copy giữ nguyên khối này, và nó chỉ thêm được, không bớt được:
+
+  ```yaml
+  review:
+    critical_paths: ["apps/api/src/main/java/**/payment/**"]
+    sensitive_paths: ["apps/web/src/lib/fetcher.ts"]
+  ```
 
 ### Miễn review theo luật
 
@@ -256,7 +269,8 @@ Từ `dev-workflow` (spec mục 2.4), tài liệu của một Epic (SPEC, design
 
 - head là nhánh `feature/<EPIC>-spec`, và App `ao-dev` mở PR;
 - mọi file PR sửa, kể cả tên cũ của file đổi tên, nằm trong `docs/specs/<EPIC>/**` hoặc `docs/adr/**` (mục `docs_pull_requests` của `quality/gates.yaml`);
-- `<EPIC>` là Epic trên Jira.
+- `<EPIC>` là Epic trên Jira;
+- không file nào lái phiên agent, như một `CLAUDE.md` dưới `docs/specs/<EPIC>/` (review của `shop` PR #79). Bạn đọc SPEC ở gate, không đọc file đó, mà dev agent lại nạp nó làm chỉ dẫn. PR có một file như vậy được review như PR thường.
 
 `merge-gate` squash merge PR tài liệu khi Epic đã qua gate ② (In Progress hoặc Done), `CI` xanh trên head, và lượt `CI` mới nhất của nhánh tài liệu (sự kiện `pull_request`) chạy trên head và bắt đầu trước lúc bạn bấm `Approve plan`. Mỗi lần push lên PR tạo một lượt mới, nên push sau lúc duyệt, kể cả force-push về commit cũ, làm PR thành PR thường. Lượt của cùng commit ở nhánh khác hay chạy tay không được tính. Thời điểm duyệt lấy từ changelog của Epic. Các dòng trong log:
 
@@ -370,7 +384,7 @@ Job của `merge-gate` khai `environment: { name: merge-gate, deployment: false 
 
 ## Hook `gh-guard` của Claude Code
 
-`gh-guard` chạy trước mỗi lần agent dùng `Bash`, `Read`, `Edit`, `Write`, `NotebookEdit`, `Grep` hoặc `Glob`, và chỉ áp cho các vai trò agent của hợp đồng. Phiên chính của bạn không bị chặn. Danh sách đầy đủ ở mục 2.7 của spec. Tóm tắt, hook chặn agent:
+`gh-guard` chạy trước mỗi lần agent dùng `Bash`, `Read`, `Edit`, `Write`, `NotebookEdit`, `Grep`, `Glob` hoặc `WebFetch`, và chỉ áp cho các vai trò agent của hợp đồng. Phiên chính của bạn không bị chặn. Danh sách đầy đủ ở mục 2.7 của spec. Tóm tắt, hook chặn agent:
 
 - bỏ qua hook git: `git commit --no-verify`, `git -c core.hooksPath=…`;
 - push lên `develop`, `main`, `release/*`;
@@ -384,6 +398,7 @@ Job của `merge-gate` khai `environment: { name: merge-gate, deployment: false 
 - từ review vòng 2 đến 4 của `shop` PR #13: `Grep` và `Glob` theo luật của `Read`, và chỉ đọc trong dự án và thư mục temp, như `Edit` và `Write`, kể cả `pattern` của `Glob` đi ra ngoài bằng `..`; một lệnh tìm dấu hiệu của khóa bí mật (`PRIVATE KEY`, `AGE-SECRET-KEY`, viết cách nào cũng vậy) mà nhắm vào thư mục cá nhân của bạn (`~`, `$HOME`, `%USERPROFILE%`, `C:\Users`). Trong dự án thì được: đó là cách `security` tìm khóa bị commit.
 - từ review của `shop` PR #21 (bốn vòng): lệnh có dấu hiệu của khóa bí mật (thêm cả `-----BEGIN` của khối PEM, `BEGIN RSA`, `BEGIN OPENSSH` và các cách viết regex) chỉ được qua khi cả dòng là đúng một lệnh `git commit`, `git log` (không `--output`) hay `git grep` (không `--no-index`, `--untracked`, `-O`), không chuyển hướng `>`, không biến đặt trước, và chạy từ một thư mục của dự án. Mọi cách đọc biến user của Windows, nơi kit giữ token (trong đó có `JIRA_CI_TOKEN`), đều bị chặn: hive `HKCU`, `HKEY_CURRENT_USER`, `HKU`, `HKEY_USERS` và ổ `HKCU:` của PowerShell với bất cứ khóa nào, `GetEnvironmentVariable(s)` ở mọi dạng, API registry của .NET, COM (`WScript.Shell`), `Win32_Environment`, `wmic`, và cả `/proc` (Git Bash cho đọc registry và môi trường của các tiến trình khác dưới `/proc`).
 - từ followup trước C1, Đợt 3 (review của `shop` PR #74, QA SHOP-73, request SHOP-54): dấu hiệu `BEGIN` của khối PEM được bắt ở mọi kiểu chữ và ở dạng regex (`BEGIN.*KEY`, `begin\s+rsa`, `BEGIN[[:space:]]OPENSSH`), còn câu SQL `BEGIN; … PRIMARY KEY` hay tên test vẫn qua. Hook đọc lệnh đứng sau `do`, `then` hay `{`, nên dạng stdin của `curl` trong vòng lặp hay trong hàm không còn bị chặn nhầm. Chép hay xóa đệ quy (`cp -r`, `rm -rf`) một cây có `node_modules` hay cả thư mục `apps` bị chặn;
+- từ C1 và review của `shop` PR #79, với `seo`, vai trò đọc web ([agents.md](agents.md)): đọc và ghi ngoài dự án, kể cả thư mục temp; đọc file `.env` ở mọi cách viết Windows mở được (`.env.`, `.env/.`, `.env::$DATA`, tên ngắn như `ENV~1.DEV`) và file git bỏ qua; Grep không theo một file hay theo glob, type của code và tài liệu; WebFetch tới trang không do một WebSearch của chính lượt đó trả về, ngoài tài liệu của Google, schema.org, Next.js, web.dev và MDN. Hook PostToolUse `web-search.mjs` ghi các trang mà WebSearch trả về vào thư mục temp, nơi `seo` không ghi được;
 - **gh-guard bắt nhầm lẫn, không phải ranh giới.** Nó xét chữ của lệnh, còn agent chạy dưới tài khoản Windows của bạn, nên đọc được những gì bạn đọc được: qua một script nó tự viết rồi chạy, hay một cách viết chưa có trong danh sách. Bốn vòng review PR #21 vòng nào cũng tìm thêm một cách. Đây là rủi ro bạn chấp nhận, cho tới khi token rời biến user của Windows và token CI rời khỏi máy (việc còn mở). Khóa App cũng vậy (`lib/agents/launch.mjs`): muốn giữ chúng khỏi agent thì agent phải chạy dưới một tài khoản Windows khác.
 - hook của agent nạp kit ở `AO_KIT_DIR` khi biến này có. `ao-step` in một dòng `Note:` khi một file trong `lib/`, `scripts/`, `agents/`, `quality/`, `contract/` hay `tracker/` của bản chép kit khác bản ở đó (hook nạp các thư mục này, kể cả qua import; script khởi động agent và cấp token cũng lấy từ đó): kéo bản clone về đúng kit của dự án để agent chạy đúng gh-guard đã được review.
 
