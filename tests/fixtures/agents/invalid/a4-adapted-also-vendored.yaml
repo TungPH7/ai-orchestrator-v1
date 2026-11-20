@@ -1,0 +1,8 @@
+description: an adapted skill that is also a vendored skill, so skills:vendor would overwrite the kit's version
+rule: A4
+expect:
+  - "adapted_skills"
+patch:
+  - op: set
+    path: "adapted_skills"
+    value: [seo-content-brief, blog-schema, blog-taxonomy, playwright-cli]

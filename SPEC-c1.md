@@ -369,6 +369,13 @@ stages:
    - **Claude Blog:** phần còn lại (kế hoạch, viết, kiểm, dịch bài) dành cho D2.
    - Hai plugin vẫn dùng được trong phiên chính, ở user scope, ví dụ để audit Production sau mỗi release.
 
+**Quyết định khi làm T17 (Lượt 91):**
+- **`nextjs-seo` được chép**, ghim ở commit `3621047` (bản 1.7.0, 2026-11-14), commit cuối chạm thư mục skill. Phiên chính đọc hết `SKILL.md` và sáu file tham khảo, rồi đối chiếu các mốc rich result với trang Search Central updates: khớp.
+- **Chỗ ghi nguồn gốc của skill chuyển thể:** chỉ một chỗ, khối `adapted_from` trong frontmatter của `SKILL.md`. Roster chỉ ghi tên, trong danh sách mới `adapted_skills`. Luật A4 kiểm khối này; `skills:vendor` từ chối tên của chúng.
+- **Giấy phép:** file giấy phép MIT của bản gốc nằm cạnh `SKILL.md`, nguyên văn.
+- **Độ dài meta description:** 150–160 ký tự, theo prompt của `seo`; bản gốc của `seo-content-brief` ghi 130–150.
+- Phần giữ, phần bỏ của từng skill nằm ở `docs/skills.md`.
+
 ### 6.6 Nhãn `ao-seo` và yêu cầu `Cần seo:` (Lượt 83–85)
 
 **Item trong Epic:**

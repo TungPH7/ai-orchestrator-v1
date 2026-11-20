@@ -1,0 +1,8 @@
+description: an adapted skill named with the ao- prefix of the kit commands
+rule: A4
+expect:
+  - "adapted_skills"
+patch:
+  - op: set
+    path: "adapted_skills"
+    value: [seo-content-brief, blog-schema, blog-taxonomy, ao-seo]

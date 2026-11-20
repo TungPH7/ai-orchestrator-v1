@@ -85,7 +85,8 @@ node .ai-orchestrator/scripts/ao-agent.mjs fe-dev --effort max -p "..."
 
 ## Skill
 
-- **16 skill chép vào kit** nằm ở `.claude/skills/` của dự án, ghim theo commit trong `agents/roster.yaml`. Đó là 13 skill của agent-skills, cộng `playwright-cli`, `sentry-security-review` và `gha-security-review`. Cập nhật một skill: chạy `npm run skills:vendor -- <name>` trong repo kit sau khi đổi commit trong roster, rồi đọc diff trong PR.
+- **18 skill chép nguyên văn vào kit** nằm ở `.claude/skills/` của dự án, ghim theo commit trong `agents/roster.yaml`. Đó là 14 skill của agent-skills, cộng `playwright-cli`, `sentry-security-review`, `gha-security-review` và `nextjs-seo`. Cập nhật một skill: chạy `npm run skills:vendor -- <name>` trong repo kit sau khi đổi commit trong roster, rồi đọc diff trong PR.
+- **3 skill chuyển thể** cho `seo`: `seo-content-brief`, `blog-schema`, `blog-taxonomy`. Kit chép từ claude-seo và Claude Blog rồi viết lại, bỏ phần không hợp. `skills:vendor` không đụng tới chúng. [docs/skills.md](skills.md) ghi phần giữ, phần bỏ của từng skill, và cách so với bản gốc khi bản gốc có bản mới.
 - **Skill theo stack** do từng dự án khai, trong `.ai-orchestrator/roster.local.yaml`:
 
   ```yaml

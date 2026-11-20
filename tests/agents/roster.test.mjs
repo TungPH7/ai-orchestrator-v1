@@ -17,9 +17,9 @@ const contract = readContract(CONTRACT_DIR);
 const gates = readGates(join(ROOT, 'quality'));
 const roster = readRoster(join(ROOT, 'agents'));
 
-// The SKILL.md of each vendored skill in the kit, by skill name; undefined when the folder or file is missing.
+// The SKILL.md of each vendored or adapted skill in the kit, by skill name; undefined when the folder or file is missing.
 const kitSkills = new Map(
-  roster.vendored_skills.map(({ name }) => {
+  [...roster.vendored_skills.map(({ name }) => name), ...roster.adapted_skills].map((name) => {
     const file = join(ROOT, 'kit', '.claude', 'skills', name, 'SKILL.md');
     return [name, existsSync(file) ? readFileSync(file, 'utf8') : undefined];
   }),
@@ -33,8 +33,16 @@ test('the real roster, with the skills vendored into the kit and the prompts, br
   assert.equal(prompts.length, 11);
 });
 
+// The SKILL.md of an adapted skill: its frontmatter names the original (D3, C1 spec 6.5).
+const adapted = (name, from = { repo: 'owner/repo', path: `skills/${name}`, commit: 'a'.repeat(40), license: 'MIT', copyright: 'Copyright (c) 2026 someone' }) =>
+  `---\nname: ${name}\ndescription: d\nadapted_from: ${JSON.stringify(from)}\n---\n`;
+const fakeSkills = () => new Map([
+  ...roster.vendored_skills.map(({ name }) => [name, `---\nname: ${name}\ndescription: d\n---\n`]),
+  ...roster.adapted_skills.map((name) => [name, adapted(name)]),
+]);
+
 test('A4 also checks the vendored folders: each has a SKILL.md named like the skill (T9)', () => {
-  const skills = new Map(roster.vendored_skills.map(({ name }) => [name, `---\nname: ${name}\ndescription: d\n---\n`]));
+  const skills = fakeSkills();
   assert.deepEqual(validateRoster(roster, contract, { gates, skills }), []);
 
   skills.set('interview-me', undefined);
@@ -43,6 +51,23 @@ test('A4 also checks the vendored folders: each has a SKILL.md named like the sk
     validateRoster(roster, contract, { gates, skills }).map(({ rule, path, message }) => `${rule} ${path}: ${message}`),
     ['A4 vendored_skills.interview-me: has no SKILL.md in kit/.claude/skills/interview-me', 'A4 vendored_skills.playwright-cli: SKILL.md is named playwright, not playwright-cli'],
   );
+});
+
+test('A4 checks the adapted folders: a SKILL.md named like the skill, whose adapted_from names the original (D3, C1 spec 6.5)', () => {
+  const skills = fakeSkills();
+  skills.set('seo-content-brief', undefined);
+  skills.set('blog-schema', adapted('blog'));
+  skills.set('blog-taxonomy', adapted('blog-taxonomy', { repo: 'owner/repo', path: 'skills/blog-taxonomy', commit: 'abc1234', license: 'MIT' }));
+  assert.deepEqual(
+    validateRoster(roster, contract, { gates, skills }).map(({ rule, path, message }) => `${rule} ${path}: ${message}`),
+    [
+      'A4 adapted_skills.seo-content-brief: has no SKILL.md in kit/.claude/skills/seo-content-brief',
+      'A4 adapted_skills.blog-schema: SKILL.md is named blog, not blog-schema',
+      'A4 adapted_skills.blog-taxonomy: the adapted_from block of SKILL.md needs repo, path, a full commit, license and copyright; wrong or missing: commit, copyright',
+    ],
+  );
+  skills.set('seo-content-brief', '---\nname: seo-content-brief\ndescription: d\n---\n');
+  assert.match(validateRoster(roster, contract, { gates, skills }).map(({ message }) => message).join('\n'), /wrong or missing: repo, path, commit, license, copyright/);
 });
 
 test('model and effort of each role (spec 2.2)', () => {
@@ -81,6 +106,8 @@ test('tools, files, git, Jira and skills of each role (spec 2.3)', () => {
   assert.equal(row('security'), 'Bash Write | .ai/** | read | read comment | security-and-hardening sentry-security-review');
   assert.equal(row('qa'), 'Bash Write | .ai/** | read | read create edit comment transition | playwright-cli');
   assert.equal(row('devops'), 'Bash Edit Write | ** | write | read edit comment transition | ci-cd-and-automation shipping-and-launch');
+  // C1 spec 6.4 and 6.5: one vendored skill and three the kit adapted.
+  assert.equal(row('seo'), 'Edit Write WebFetch WebSearch | docs/specs/** .ai/** | read | read comment | nextjs-seo seo-content-brief blog-schema blog-taxonomy');
 });
 
 test('fe-dev alone gets Chrome DevTools, in six groups; memory, extensions, third-party, WebMCP and PWA are not offered (spec 2.3, T2)', () => {
@@ -107,10 +134,14 @@ test('Jira permissions become Rovo MCP tools; only ba may write through executeW
   assert.ok(!Object.values(roster.jira_tools).flat().includes('executeDestructive'));
 });
 
-test('17 vendored skills, each pinned by a full commit: 14 of agent-skills at the 0.6.13 tag and three from the registry (spec 2.7; human-loop spec 3.1)', () => {
+test('18 vendored skills, each pinned by a full commit: 14 of agent-skills at the 0.6.13 tag and four from the registry (spec 2.7; human-loop spec 3.1; C1 spec 6.5)', () => {
   const by = (repo) => roster.vendored_skills.filter((skill) => skill.repo === repo);
 
-  assert.equal(roster.vendored_skills.length, 17);
+  assert.equal(roster.vendored_skills.length, 18);
+  // Read in full before it was vendored (C1 T17): the last commit that changed its folder by 2026-11-20.
+  assert.deepEqual(by('laguagu/claude-code-nextjs-skills'), [
+    { name: 'nextjs-seo', repo: 'laguagu/claude-code-nextjs-skills', path: 'skills/nextjs-seo', commit: '3621047938241b1e3d1dc7850192f5f834ea9e14' },
+  ]);
   assert.equal(by('addyosmani/agent-skills').length, 14);
   for (const skill of by('addyosmani/agent-skills')) {
     assert.deepEqual(skill, { name: skill.name, repo: 'addyosmani/agent-skills', path: `skills/${skill.name}`, commit: 'aeac41d4d005999432bb7312f7ff06383a91d59d' });
@@ -126,6 +157,15 @@ test('17 vendored skills, each pinned by a full commit: 14 of agent-skills at th
   // changes, and idea-refine, which only the main session of /ao-intake uses.
   const preloaded = new Set(Object.values(roster.roles).flatMap(({ skills }) => skills));
   assert.deepEqual(roster.vendored_skills.map(({ name }) => name).filter((name) => !preloaded.has(name)), ['gha-security-review', 'idea-refine']);
+});
+
+test('three skills the kit adapted from another repository, all for seo; skills:vendor never touches them (D3, C1 spec 6.5)', () => {
+  assert.deepEqual(roster.adapted_skills, ['seo-content-brief', 'blog-schema', 'blog-taxonomy']);
+  assert.deepEqual(roster.roles.seo.skills, ['nextjs-seo', 'seo-content-brief', 'blog-schema', 'blog-taxonomy']);
+
+  const result = spawnSync(process.execPath, [join(ROOT, 'scripts', 'vendor-skills.mjs'), 'nextjs-seo', 'blog-schema'], { encoding: 'utf8' });
+  assert.equal(result.status, 2, 'refused before any download');
+  assert.match(result.stderr, /^blog-schema is adapted by the kit, not vendored: compare it with its original by hand \(docs\/skills\.md\)$/m);
 });
 
 test('readRoster names the file it cannot read', () => {

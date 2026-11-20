@@ -105,3 +105,47 @@ test('skills:vendor and rule A4 leave the ao- folders alone: they are not vendor
   const errors = validateRoster(roster, readContract(CONTRACT_DIR), { gates: readGates(join(ROOT, 'quality')), skills });
   assert.deepEqual(errors, []);
 });
+
+test('every folder of kit/.claude/skills/ is a kit command, a vendored skill or an adapted skill (D3)', () => {
+  const roster = readRoster(join(ROOT, 'agents'));
+  const known = new Set([...roster.vendored_skills.map(({ name }) => name), ...roster.adapted_skills]);
+  assert.deepEqual(readdirSync(SKILLS).filter((name) => !name.startsWith(KIT_SKILL_PREFIX) && !known.has(name)), []);
+});
+
+// The originals, read in full at these commits before the kit rewrote them (C1 T17).
+const ORIGINALS = {
+  'seo-content-brief': { repo: 'AgriciDaniel/claude-seo', path: 'skills/seo-content-brief', commit: '5ae8eec73f030719247eea21741d012f3d8ea0b6', license: 'MIT', copyright: 'Copyright (c) 2026 puneetindersingh (the skill); Copyright (c) 2026 agricidaniel (the repository)' },
+  'blog-schema': { repo: 'AgriciDaniel/claude-blog', path: 'skills/blog-schema', commit: '4f9c2cb8fd17f594e868d6c2ce0e8fb2c971f987', license: 'MIT', copyright: 'Copyright (c) 2025-2026 AgriciDaniel' },
+  'blog-taxonomy': { repo: 'AgriciDaniel/claude-blog', path: 'skills/blog-taxonomy', commit: '4f9c2cb8fd17f594e868d6c2ce0e8fb2c971f987', license: 'MIT', copyright: 'Copyright (c) 2025-2026 AgriciDaniel' },
+};
+// What C1 spec 6.5 drops from each original: the parts a run of seo must not follow by mistake.
+const DROPPED = {
+  'seo-content-brief': /Improve mode|DataForSEO|Ahrefs|X\/40|Competitor Analysis/,
+  'blog-schema': /blog_render\.py|"@type": "FAQPage"|CLAUDE_SKILL_DIR/,
+  'blog-taxonomy': /wp-json|articleUpdate|CMS_API_KEY|Sanity|CLAUDE_SKILL_DIR/,
+};
+
+test('the adapted skills of seo: adapted_from names the original, the license comes along, and the dropped parts stay out (C1 spec 6.5)', () => {
+  const roster = readRoster(join(ROOT, 'agents'));
+  for (const name of roster.adapted_skills) {
+    const text = readFileSync(join(SKILLS, name, 'SKILL.md'), 'utf8');
+    const meta = frontmatter(text);
+    assert.equal(meta.name, name);
+    assert.ok(meta.description.length > 50, name);
+    assert.deepEqual(meta.adapted_from, ORIGINALS[name], name);
+    assert.ok(readdirSync(join(SKILLS, name)).some((file) => /^LICEN[CS]E/.test(file)), `${name} keeps the MIT notice of its original`);
+    assert.doesNotMatch(text, DROPPED[name], name);
+    // Loaded into every run of seo: each stays under its original, which has 1,660 to 2,200 words counted this way.
+    const words = text.split(/\s+/).filter(Boolean).length;
+    assert.ok(words < 1400, `${name}: ${words} words`);
+  }
+});
+
+test('seo-content-brief writes into the section ## SEO of the SPEC, in vi and en, with keywords from the human only (C1 spec 6.2, 6.5)', () => {
+  const text = readFileSync(join(SKILLS, 'seo-content-brief', 'SKILL.md'), 'utf8');
+  assert.match(text, /## SEO/);
+  assert.match(text, /\| vi \| en \|/);
+  assert.match(text, /chưa có số liệu/);
+  assert.match(text, /WebSearch/);
+  assert.match(text, /WebFetch/);
+});

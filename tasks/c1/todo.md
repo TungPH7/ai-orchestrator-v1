@@ -182,8 +182,15 @@
 
 ## Bước 8: skill của `seo`, nhánh `task/c1-8`
 
-- [ ] **T17: bốn skill; D3** (spec mục 6.5).
+- [x] **T17: bốn skill; D3** (spec mục 6.5). Xong 2026-11-20.
   - **Đạt khi:** phiên chính đọc hết `nextjs-seo` và sáu file tham khảo rồi mới chép (sai thì bỏ và báo bạn); ba skill viết lại có khối `adapted_from`; `skills:vendor` bỏ qua chúng; `docs/skills.md` ghi cách so với bản gốc; roster nạp bốn skill cho `seo`.
+  - **Kết quả:**
+    - `nextjs-seo` đạt: nội dung đúng, mới (bản 1.7.0), các mốc rich result khớp Search Central; chép bằng `skills:vendor` ở commit `3621047`;
+    - ba skill chuyển thể: `seo-content-brief` (claude-seo `5ae8eec`), `blog-schema` và `blog-taxonomy` (Claude Blog v2.3.2 `4f9c2cb`), mỗi skill có khối `adapted_from` và file giấy phép MIT của bản gốc;
+    - roster có danh sách mới `adapted_skills`; luật A4 kiểm khối `adapted_from`, cấm trùng tên với skill chép nguyên văn và tiền tố `ao-`; hai fixture mới; `skills:vendor` từ chối tên của skill chuyển thể;
+    - `seo` nạp bốn skill; prompt của `seo` ghi skill nào dùng cho việc gì;
+    - `docs/skills.md`: ba loại skill, cách thêm một skill chuyển thể, năm bước so với bản gốc, phần giữ và bỏ của từng skill;
+    - bốn skill nạp vào mỗi lượt `seo` khoảng 3.600 chữ.
 
 ## Bước 9: nhãn `ao-seo`, nhánh `task/c1-9`
 
