@@ -37,6 +37,20 @@ test('one run per item, one QA per environment, one build or fix per dev agent',
   assert.equal(admit({ live, command: 'build', key: 'SHOP-13', role: 'be-dev', cap: 4 }).ok, true);
 });
 
+// C2 spec section 8: a preview in a lane holds its item only; it runs no agent, and counts toward no cap.
+test('a preview in a lane holds its item and nothing else', () => {
+  const preview = lock({ command: 'preview', key: 'SHOP-21', slot: -1, pid: 300 });
+  assert.equal(admit({ live: [preview], command: 'build', key: 'SHOP-13', role: 'be-dev', cap: 1 }).ok, true, 'not counted toward the cap');
+  assert.equal(admit({ live: [preview], command: 'spec', key: 'SHOP-7', cap: 1 }).ok, true, 'not a run that holds the project');
+  assert.match(admit({ live: [preview], command: 'fix', key: 'SHOP-21', role: 'fe-dev', cap: 3 }).reason, /^the preview of SHOP-21 runs \(process 300\): \/ao-preview SHOP-21 --stop first$/);
+  // /ao-preview itself, with lanes on: next to the runs of other items, at any cap.
+  const build = lock({ command: 'build', key: 'SHOP-13', role: 'be-dev' });
+  assert.deepEqual(admit({ live: [build], command: 'preview', key: 'SHOP-21', cap: 1, lanes: true }), { ok: true, name: 'SHOP-21', slot: -1 });
+  assert.match(admit({ live: [lock({ command: 'fix', key: 'SHOP-21', role: 'fe-dev' })], command: 'preview', key: 'SHOP-21', cap: 3, lanes: true }).reason, /already running fix on SHOP-21/);
+  // With lanes off it runs alone, as before.
+  assert.equal(admit({ live: [build], command: 'preview', key: 'SHOP-21', cap: 3 }).ok, false);
+});
+
 // C2 spec section 6: with runs.agents_per_role, N agents of a role build at once, each on its own item.
 test('runs.agents_per_role lets several agents of one role build at once, one item each', () => {
   const live = [lock({ command: 'build', key: 'SHOP-10', role: 'fe-dev' })];
