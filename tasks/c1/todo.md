@@ -194,9 +194,16 @@
 
 ## Bước 9: nhãn `ao-seo`, nhánh `task/c1-9`
 
-- [ ] **T18: nhãn và `Cần seo:`** (spec mục 6.6, 6.7).
+- [x] **T18: nhãn và `Cần seo:`** (spec mục 6.6, 6.7). Xong 2026-11-20.
   - **Đạt khi:** cột "SEO" của `plan.md`; `ba` gắn `ao-seo`; `tracker/jira.yaml` có nhãn; `/ao-intake` gắn nhãn, ghi comment `Cần seo:` sau OK, thêm ba yêu cầu của Epic blog; `/ao-request` nhận `seo`; prompt build, review, QA chỉ tới phần SEO theo bảng của spec mục 6.6.
   - **Kiểm:** tiêu chí 10 của spec bằng test.
+  - **Kết quả:**
+    - `tracker/jira.yaml` có `work_labels.seo: ao-seo`; `workLabels` trả `seo`, và không coi `ao-seo` là nhãn role dù `seo` là một role;
+    - plan: mỗi dòng item chạm màn hình của mục `## SEO` có thêm `· seo: S1, S3` (prompt `sa`, template); `ba` gắn `ao-seo` theo đó;
+    - `decideStep` thêm dòng phần SEO vào prompt của dev agent (build, fix), `reviewer` (review) và `qa` (qa, qa-defect) khi item có nhãn; `security` và item không nhãn không đổi;
+    - `/ao-request` chạy `seo`; prompt yêu cầu của `seo` nói `ao-step` commit thay, vì `seo` không có git;
+    - `/ao-intake`: check in các app `seo: true`; skill đề xuất nhãn, đoạn `Cần seo:` thành comment sau khi tạo item, ba yêu cầu của Epic blog;
+    - `docs/dev-workflow.md` có đoạn "Nhãn `ao-seo`"; test mới `tests/workflow/steps-seo.test.mjs`; 1.686 test xanh.
 
 ## Bước 10: chép kit, nhánh `task/c1-10` rồi `shop`
 

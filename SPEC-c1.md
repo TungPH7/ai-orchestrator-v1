@@ -408,6 +408,11 @@ Bug sai so với mục `## SEO` của một SPEC cũ thì không cần `Cần se
 - Khi bạn sửa SPEC ở phần chạm SEO, `ba` nhờ `seo` bằng `Cần seo:`, như với `ux` và `sa`.
 - Sau khi SPEC đã merge, `/ao-request` làm theo luật hiện có: item có nhánh thì `seo` sửa `spec.md` trên nhánh đó; không có nhánh thì `seo` chỉ comment điều cần đổi, và bạn quyết định.
 
+**Quyết định khi làm T18 (Lượt 91):**
+- **"Cột SEO" của plan là một đoạn trên dòng item**, `· seo: S1, S3`, như `level` và `effort`, vì Task List của plan là danh sách dòng chứ không phải bảng. Đoạn này ghi mã màn hình item chạm. Không có đoạn `seo:` là không có phần SEO.
+- **`/ao-fix` cũng chỉ tới phần SEO**, như `/ao-build`, vì dev agent sửa code của chính phần đó.
+- **`security` không nhận dòng SEO.** Phần SEO không phải việc bảo mật.
+
 **`ao-step` commit thay `seo`:** sau mỗi lượt của `seo` trên một nhánh, ở `/ao-spec` hay `/ao-request`, `ao-step` commit phần đổi, chỉ khi nó nằm trong `docs/specs/`. Có file khác bị đổi thì `ao-step` dừng và báo bạn. Nhánh đã có PR thì `ao-step` push luôn, như role khác làm sau khi commit.
 
 `/ao-request` nhận `seo` là role được nhờ, và `/ao-status` liệt kê yêu cầu `Cần seo:` như các yêu cầu khác.

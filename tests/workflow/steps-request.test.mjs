@@ -77,9 +77,9 @@ test('your own request, a comment with no Agent name, counts like an agent\'s', 
 test('requests to other roles are not run: the command stops and names them', () => {
   const decision = decide('request', storyFacts([request('be-dev', T1, 'fe-dev')]));
   assert.equal(decision.go, false);
-  assert.equal(decision.reason, 'DEMO-21 has no open request to ba, ux, sa or security; 1 open request goes to another role (be-dev)');
+  assert.equal(decision.reason, 'DEMO-21 has no open request to ba, ux, sa, security or seo; 1 open request goes to another role (be-dev)');
   assert.equal(decision.next, '/ao-status DEMO-21');
-  assert.equal(decide('request', storyFacts([])).reason, 'DEMO-21 has no open request to ba, ux, sa or security');
+  assert.equal(decide('request', storyFacts([])).reason, 'DEMO-21 has no open request to ba, ux, sa, security or seo');
 });
 
 test('a flagged item waits for you before any request runs', () => {

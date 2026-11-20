@@ -61,15 +61,18 @@ test('the Agent field value of every role, in the names Jira uses', () => {
 });
 
 test('labels name the dev role and the effort (tracker/jira.yaml work_labels); others are left out', () => {
-  assert.deepEqual(mapping.work_labels, { role_prefix: 'ao-', effort_prefix: 'ao-effort-', level_prefix: 'ao-level-', findings: 'ao-findings', ops: 'ao-ops', env_auth: 'ao-env-auth' });
+  assert.deepEqual(mapping.work_labels, { role_prefix: 'ao-', effort_prefix: 'ao-effort-', level_prefix: 'ao-level-', findings: 'ao-findings', ops: 'ao-ops', env_auth: 'ao-env-auth', seo: 'ao-seo' });
   // The labels of an ops Task are not roles (kit followups, batch 4 item 14).
   assert.deepEqual(workLabels(['ao-ops', 'ao-env-auth', 'ao-devops'], mapping, roster).roles, ['devops']);
-  assert.deepEqual(workLabels(['ao-fe-dev', 'ao-effort-xhigh', 'needs-you'], mapping, roster), { role: 'fe-dev', roles: ['fe-dev'], effort: 'xhigh', level: null });
-  assert.deepEqual(workLabels(['ao-qa-lead', 'ao-effort-huge', 'frontend'], mapping, roster), { role: null, roles: [], effort: null, level: null });
+  assert.deepEqual(workLabels(['ao-fe-dev', 'ao-effort-xhigh', 'needs-you'], mapping, roster), { role: 'fe-dev', roles: ['fe-dev'], effort: 'xhigh', level: null, seo: false });
+  assert.deepEqual(workLabels(['ao-qa-lead', 'ao-effort-huge', 'frontend'], mapping, roster), { role: null, roles: [], effort: null, level: null, seo: false });
   // The level of C1 spec section 2: the higher label wins; a label of another level is left out; neither is a role.
-  assert.deepEqual(workLabels(['ao-be-dev', 'ao-level-light', 'ao-level-heavy', 'ao-level-huge', 'ao-findings'], mapping, roster), { role: 'be-dev', roles: ['be-dev'], effort: null, level: 'heavy' });
+  assert.deepEqual(workLabels(['ao-be-dev', 'ao-level-light', 'ao-level-heavy', 'ao-level-huge', 'ao-findings'], mapping, roster), { role: 'be-dev', roles: ['be-dev'], effort: null, level: 'heavy', seo: false });
   assert.equal(workLabels(['ao-effort-xhigh', 'ao-effort-max'], mapping, roster).effort, 'max', 'the higher effort wins');
   assert.deepEqual(workLabels(['ao-be-dev', 'ao-fe-dev'], mapping, roster).roles, ['be-dev', 'fe-dev'], 'two roles are both kept, for build to refuse');
+  // ao-seo marks an item with an SEO part (C1 spec 6.6): seo is a role of the roster, but its label never names the dev role.
+  assert.deepEqual(workLabels(['ao-seo', 'ao-fe-dev'], mapping, roster), { role: 'fe-dev', roles: ['fe-dev'], effort: null, level: null, seo: true });
+  assert.deepEqual(workLabels(['ao-seo'], mapping, roster), { role: null, roles: [], effort: null, level: null, seo: true });
 });
 
 test('a Story with Sub-tasks: its state, Agent, parent Epic, each Sub-task, its newest PR and the Epic\'s docs', async () => {

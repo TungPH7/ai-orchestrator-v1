@@ -71,7 +71,13 @@ test('/ao-intake writes one Jira item, only after your OK, and never a Story (hu
   const text = read('intake').replace(/\s+/g, ' ');
   assert.match(text, /## What the human wrote \$ARGUMENTS/);
   assert.match(text, /Only after the human's OK, create the item once with the createJiraIssue tool/);
-  assert.match(text, /This is the one Jira write you make: no transition, no comment, no edit of another item/);
+  // C1 spec 6.6: the item, and the comment "Cần seo:" of its draft when nobody wrote its SEO part.
+  assert.match(text, /These are the only Jira writes you make: the item, and that comment when there is one; no transition, no other comment, no edit of another item/);
+  assert.match(text, /gets the label `ao-seo`/);
+  assert.match(text, /add it as one comment on the item with addOrEditJiraIssueComment, word for word as in the draft, starting with `Cần seo:`/);
+  assert.match(text, /needs no `Cần seo:`: its draft points to that section/);
+  // C1 spec 6.7: what the workflow that writes posts (D2) needs of an Epic of a blog.
+  assert.match(text, /posts in draft that only the admin sees, a preview link that people outside cannot open, and a tool that publishes a post through the API of the admin/);
   assert.match(text, /You never make a Story/);
   assert.match(text, /\.ai\/intake\//);
   assert.match(text, /do not run its script/);
