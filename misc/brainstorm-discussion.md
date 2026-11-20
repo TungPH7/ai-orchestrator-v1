@@ -30724,3 +30724,90 @@ Sửa xong, bạn gõ "làm tiếp". Mình sẽ:
 1. đọc lại rule trên Jira để chắc chỉ còn một rule, có đủ hai group;
 2. bấm Pick up cho SHOP-78 bằng token CI và gỡ cờ. Bước này không chạy agent và không tốn tiền, vì `qa` đã đăng báo cáo PASS (comment 10608);
 3. rồi nhờ bạn bấm **Accept** trên SHOP-78. Token admin của mình đã hết hạn, nên bạn bấm.
+
+# Phiên 33 · Lượt 99 — 2026-11-20
+
+**Bạn:** "làm tiếp, token admin tôi đã tạo mới lại rồi mà nhỉ? Bạn check xem nhé"
+
+**Claude:**
+
+Xong rồi: **SHOP-78 đã Done**, và module C1 đã đóng.
+
+## Token admin
+
+- `JIRA_ADMIN_CLASSIC_TOKEN` mới dùng được: Jira trả 200 với tài khoản của bạn. Mình đã dùng nó để Accept SHOP-78 thay bạn.
+- `JIRA_ADMIN_TOKEN`, token có scope mà `jira:check` dùng, vẫn chạy được. Lúc mình gọi thẳng vào site, nó trả 401. Điều đó là bình thường, vì token có scope chỉ đi qua cổng API của Atlassian.
+
+## SHOP-78
+
+1. Rule trên Jira giờ đã đúng: Pick up và QA fail mỗi cái chỉ còn một rule, có đủ `ao-agents` và `ao-automation`.
+2. Mình bấm Pick up bằng token CI (không chạy agent), gỡ cờ, rồi Accept bằng token admin. Comment Accept ghi lời của bạn. Nó cũng ghi rằng dòng V3 dùng kit `5c25aca` thay cho `719a696` vì bạn chọn bản sửa ở Lượt 95.
+3. Cả Task tốn 29,67 USD: review lần một 14,10, review lần hai 14,49, QA 1,08.
+
+## Đóng C1 (T21)
+
+- `tasks/c1/verification.md` ghi kết quả của 11 tiêu chí trong spec:
+  - 10 tiêu chí đạt, nhưng 6 trong số đó mới chỉ đạt bằng test, vì chưa có lượt chạy thật;
+  - tiêu chí 7 (USD trên mỗi AC) chờ Epic kế tiếp của `shop`.
+- `concerns.md` ghi C1 và D3 đã xong; `tasks/todo.md` tick mục 6.
+- Kit PR [#325](https://github.com/TungPH7/ai-orchestrator-v1/pull/325) chỉ đổi tài liệu. 1.710 test xanh, CI xanh, và mình đã merge (`fd01858`).
+
+## Còn chờ bạn
+
+1. **T20b:** Task sửa kit cho 6 Medium, 3 Low và lỗi của `jira:check`. Danh sách ở `tasks/c1/followups-pr79.md`, và mình chỉ làm khi bạn đồng ý. Trước lượt `seo` thật đầu tiên, nên sửa ít nhất mục 1 (WebFetch lọt qua câu search) và mục 5 (`seo` không đọc được ledger của nó).
+2. **Việc kế tiếp sau C1:**
+   - theo thứ tự đã duyệt ở Lượt 84, D2 (workflow để agent viết blog) đi ngay sau C1, trước C2;
+   - mục 7 của `tasks/todo.md` là backlog có hạn. Mục gần hạn nhất là đưa `pr-events.yml` lên `main` trước 2026-12-02.
+
+Bạn chọn làm việc nào tiếp thì báo mình.
+
+# Phiên 33 · Lượt 100 — 2026-11-20
+
+**Bạn:** "Đổi lại plan và thứ tự làm như bên dưới, bạn đánh giá xem có ảnh hưởng xấu gì không nhé." kèm thứ tự: C2, T20b, D2, D1, D4.
+
+**Claude:**
+
+Thứ tự mới làm được, không có ảnh hưởng xấu lớn. Chỉ có một rủi ro thật: nếu C2 đi trước T20b, lượt chạy thật của C2 trên `shop` sẽ chạy khi các lỗi của T20b còn mở. Mình đề xuất đổi chỗ hai việc đầu. Nếu bạn vẫn muốn C2 trước, cần giữ hai điều kiện ở mục 1.
+
+## Chỗ cần xử lý
+
+1. **C2 đi trước T20b.**
+   - C2 phải chạy thật nhiều item song song trên `shop`, tức cần một Epic mới. App `user` của `shop` đang để `seo: true`, nên Epic nào chạm `user` cũng chạy `seo` ở `/ao-spec`. Như vậy `seo` sẽ chạy thật trước khi vá:
+     - mục 1: WebFetch lọt qua câu search, nên một trang web có thể lái `seo` gửi dữ liệu Jira ra ngoài;
+     - mục 5: `seo` không chạy tiếp được nếu bị dừng giữa chừng.
+   - Mục 2 và 3 (còn đường cài gói chưa duyệt, phía npm và phía Maven) áp cho mọi dev agent, không riêng `seo`. Lượt chạy thật của C2 sẽ chạy khi hai lỗ này còn mở.
+   - Mục 6: trong thời gian đó, muốn đổi mức của item thì phải đổi trên giao diện Jira. Đổi qua phiên chính sẽ bị bỏ qua mà không báo.
+   - Nếu giữ C2 trước thì cần hai điều kiện:
+     - Epic chạy thật của C2 chỉ chạm `admin` và `api`, hoặc dùng `no-seo`;
+     - bạn chấp nhận mục 2 và 3 còn mở trong lúc chạy.
+2. **Có thể tốn thêm một lần chép kit.** Mỗi lần chép kit vào `shop` là một Task chép kit kèm một vòng review trả phí. Ở SHOP-78, mỗi vòng review tốn khoảng 14 USD.
+   - Nếu code của T20b merge vào kit trước lần chép kit cho C2, thì một lần chép và một vòng review phủ được cả hai.
+   - Nếu làm trọn C2 (gồm cả chạy thật) rồi mới làm T20b, thì phải chép kit và review thêm một lần, khoảng 8–15 USD.
+
+## Chỗ cần bạn xác nhận
+
+3. **D1 và D4 đang ghi "Chờ nhu cầu".** Đưa hai việc này vào thứ tự thì tới lượt chúng có thể bị kẹt:
+   - D1 (nhiều repo, profile .NET) cần một dự án thật có hai repo hoặc dùng .NET để chạy thử. Nếu không có, phải dựng dự án mẫu, cách mà bạn đã loại ở Lượt 112 vì tốn khoảng 30–40 USD cho code sẽ bỏ đi. Cách còn lại là để code chưa được chạy thật lần nào. Trong khi đó, module nào trước đây cũng lộ lỗi khi chạy thật lần đầu: B3 lộ ba lỗ hổng, C1 lộ lỗi của `jira:check`.
+   - D4 (`/ao-seo report`) cần một site công khai, có Search Console và GA4. Production của `shop` còn basic auth tới khi mở bán, nên Google không đọc được site, và Search Console không có số liệu.
+   - Bạn đã có dự án cần D1, hay site thật cho D4 chưa? Nếu chưa, mình đề xuất vẫn để D1 và D4 cuối danh sách, kèm ghi chú "làm khi có dự án hoặc site thật".
+4. **Backlog có hạn (mục 7 của `tasks/todo.md`) không nằm trong danh sách mới.**
+   - Hạn gần nhất là đưa `pr-events.yml` lên `main` trước 2026-12-02, tức còn 12 ngày.
+   - Các việc còn lại có hạn 2026-12-31: SHOP-40, kiểm khóa `age`, gỡ ngoại lệ picomatch.
+   - Các việc này nhỏ. Mình đề xuất chen chúng vào khi gần tới hạn, không cần đổi thứ tự ở trên.
+
+## Không ảnh hưởng xấu
+
+- **D2 đi sau C2 không sao.** D2 chỉ cần C1 (đã xong) và T20b (vì việc viết bài cũng đọc web). Thứ tự mới đặt T20b trước D2 là đúng. Ở Lượt 84, D2 được đặt trước C2 để blog sớm sẵn sàng, chứ không phải vì phụ thuộc kỹ thuật.
+- **Hai ghi chú cho lúc viết spec C2**, để sau này không phải sửa lại:
+  - bộ điều phối không được coi Task bài blog của D2 là item SDLC;
+  - nếu T20b mục 4 thêm điểm dừng (ví dụ dừng sau `seo`), điểm dừng đó phải nằm trong contract, để bộ điều phối tự đọc được.
+- **D2 vẫn cần Epic tính năng blog của `shop`** (công cụ đăng bài, bản nháp, link xem trước) thì mới chạy thật được. Điều này đúng cả với thứ tự cũ.
+- **D1 đi sau C2 là đúng** như lý do cũ: worktree và khóa theo item phải phủ được cả hai repo.
+
+## Đề xuất
+
+Thứ tự mình đề xuất: **T20b → C2 → D2 → D1 → D4**, tức chỉ đổi chỗ hai việc đầu.
+- T20b nhỏ hơn C2 nhiều: chỉ một kit PR có test. Sau đó lần chép kit của C2 mang luôn T20b vào `shop`.
+- T20b mục 4 cần bạn chọn cách sửa trước khi làm (các cách ghi ở `tasks/c1/followups-pr79.md`).
+
+Mình chưa sửa `concerns.md` hay `tasks/todo.md`. Bạn chốt thứ tự nào thì mình ghi vào hai file đó. T20b vẫn chỉ làm khi bạn đồng ý.

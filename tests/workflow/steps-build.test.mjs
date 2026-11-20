@@ -129,7 +129,7 @@ ${report('FAIL')}` },
 | AC1: a | PASS | x |
 | AC2: b | FAIL | y |
 ` }] };
-  assert.deepEqual(await readLatestQaReport(failing, 'DEMO-21'), { result: 'FAIL', at: AT, id: '10592', failed: ['AC2: b'] });
+  assert.deepEqual(await readLatestQaReport(failing, 'DEMO-21'), { result: 'FAIL', at: AT, id: '10592', failed: ['AC2'] });
   assert.equal(await readLatestQaReport({ getAll: async () => [] }, 'DEMO-21'), null);
 });
 

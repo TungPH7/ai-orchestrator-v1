@@ -1,6 +1,6 @@
 # Task sửa kit: finding của review lần hai `shop` PR #79
 
-**Trạng thái:** chờ bạn đồng ý. Bạn chọn gom ở Phiên 33 · Lượt 98: "Gom 6 Medium và 3 Low vào một Task sửa kit, và chỉ làm khi tôi đồng ý."
+**Trạng thái:** đã sửa trong kit PR #326 (Phiên 33 · Lượt 101), chưa chép vào `shop`. Bạn chọn gom ở Lượt 98 ("Gom 6 Medium và 3 Low vào một Task sửa kit, và chỉ làm khi tôi đồng ý"), đồng ý ở Lượt 101 ("Ok làm T20b trước, rồi làm C2"), và chọn cách sửa mục 4: `seo` chạy cuối. Mục "Đã làm" ở cuối file ghi từng mục làm thế nào.
 
 **Nguồn:** review lần hai của PR #79 (SHOP-78), head `1ff3358`, bản chép kit `5c25aca`. Cả `reviewer` và `security` đều Approve, không có Critical hay High. Báo cáo đầy đủ ở `.ai/reviews/79-reviewer.md` và `.ai/reviews/79-security.md` của `shop`, và đã đăng lên PR. Mỗi finding có phần "Tái hiện" mà agent đã chạy trên head.
 
@@ -50,3 +50,25 @@
 
 - Sau khi PR #79 merge, deployer từ chối deploy `ccf4fde` lên Development: mô tả PR có chữ `<KEY>`, mà `audit` coi là chỗ trống chưa điền của template. Chữ đó do phiên chính viết khi cập nhật mô tả sau lần chép kit thứ hai (đường dẫn `.ai/ledger/<KEY>.seo.md`). Job `policy` không bắt được, vì mô tả được sửa sau khi CI đã chạy. Đã gỡ chặn ở Lượt 98: sửa mô tả, `audit` chạy thử qua, rồi `/ao-rollback development ccf4fde`.
 - Có thể cân nhắc (bạn quyết): `audit` bỏ qua placeholder nằm trong code span; hoặc sửa mô tả PR thì chạy lại kiểm tra mô tả.
+
+## Đã làm (Lượt 101)
+
+Mỗi mục có test viết đỏ trước. Cả bộ: 1.731 test xanh.
+
+1. **WebFetch:** `resultUrls` chỉ lấy `results[].content[].url`, URL `http`/`https` không có user, mật khẩu hay khoảng trắng. Bỏ `query` và phần chữ; dạng lạ thì không ghi gì. Test chạy cả hook `web-search.mjs` với output đúng dạng thật. Chưa thu quyền Jira của `seo`: nó cần comment để trả lời `Cần seo:`, và WebFetch nay không gửi dữ liệu ra địa chỉ nó tự chọn được nữa.
+2. **npm:** gh-guard nhận `npm create`/`init`/`innit <x>`, `pnpm`/`yarn`/`bun create <x>` (gói `create-<x>`, `@scope/create-<x>`, `@scope/create`), `npm install-test`/`it`, `pnpx`, và mọi lệnh qua `corepack <pm>[@version]`. `catalog:` được đọc từ `pnpm-workspace.yaml` (tên phải duyệt, phiên bản phải trong `range`); job `policy` xét `catalog`, `catalogs`, `overrides` khi PR đổi file đó. Gói của dự án: với npm chỉ các `package.json` trong `workspaces` của file gốc, với pnpm không có (chúng vào qua `workspace:`).
+3. **Maven:** POM đọc mọi `<dependency>` dù có khoảng trắng hay thuộc tính, dependency của plugin, `<plugin>` (groupId mặc định `org.apache.maven.plugins`), `<extension>`, `<parent>`, annotation processor của compiler; `${…}` đọc từ `<properties>` và groupId của dự án, không đọc được thì bị từ chối. `<repository>`/`<pluginRepository>` mới bị từ chối. Chạy thử trên `apps/api/pom.xml` của `shop`: 28 artifact, không còn `${`.
+4. **`seo` chạy cuối** (bạn chọn): thứ tự stage spec trong `contract/stages.yaml` là `ba`, `ux`, `sa`, `ba docs-pr`, rồi `seo`; `ao-step` push commit của `seo` lên PR tài liệu. Prompt `docs-pr` bảo `ba` ghi trong PR rằng `seo` viết sau. Câu hỏi mở sau lượt `seo` trả về `seo`. `/ao-build` dừng ở item `ao-seo` ngoài Epic tới khi bạn gõ `/ao-build <KEY> seo-ok` (cờ `--seo-ok`), và cũng dừng khi `Cần seo:` chưa được trả lời. Bước kiểm tất định `lib/workflow/seo-check.mjs` báo địa chỉ ngoài host của app `seo: true` và `schema.org`, khối shell, dòng hay đoạn code bắt đầu bằng một lệnh; nó chạy ở cổng ① cho mục `## SEO` và ở chỗ dừng `seo-ok` cho comment của `seo`. Báo xong vẫn là bạn quyết.
+5. **Ledger của `seo`:** path khớp `writes` của role đọc web qua trước luật file git bỏ qua; `.ai/ledger/<KEY>.seo.md` đọc được, `.ai/ledger/<KEY>.md` vẫn bị chặn.
+6. **Mức:** `trustedLevel` chỉ bỏ thay đổi làm hạ mức (lấy mức cao hơn; không nhãn là Chuẩn), nên nâng mức qua phiên chính được tính. `/ao-status <KEY>` và quyết định của `/ao-review` ghi dòng "Level of …" khi một nhãn bị bỏ qua. `docs/dev-workflow.md` ghi: hạ mức thì làm trên giao diện Jira.
+7. **Tên không kèm version:** `pnpm add zod` bị từ chối khi mục đã duyệt có `range`; `npx` thì không (nó chạy bản dự án đã có).
+8. **Báo cáo QA:** hook `block-atlassian` từ chối agent khác `qa` viết comment có dạng báo cáo QA (comment, sửa comment, comment trong transition). Từ ô đầu của dòng FAIL chỉ lấy mã `AC<n>`; dòng không có mã thì lần QA lại kiểm đủ.
+9. **Low 9 (`shop`):** chưa làm, vào lần chép kit kế tiếp (cùng C2).
+10. **`jira:check`:** một transition có hơn một rule Restrict báo `restrict-split`. Checklist Jira và `docs/dev-workflow.md` ghi: thêm group vào rule có sẵn, không thêm rule mới.
+
+**Mình tự chọn thêm, cần bạn xác nhận:**
+
+- `pnpm-workspace.yaml` (catalog, overrides, và `allowBuilds`, tức gói nào được chạy script lúc cài), `.pnpmfile.*` và cả thư mục `.mvn/` (thêm `maven-wrapper.properties`, nơi ghi URL tải Maven) thành đường dẫn được bảo vệ, nên chúng vào tầng Nguy cấp. Khi cần đổi, bạn đổi.
+- `mvn -s`, `--settings`, `-gs`, `--global-settings` bị gh-guard từ chối như `--registry` của npm: file settings đặt được mirror cho mọi artifact.
+- `seo` không được viết yêu cầu `Cần <role>:` (hook chặn): yêu cầu đó chạy `ba` hay `sa` trên chữ `seo` lấy từ web. Prompt `seo` bảo nó ghi điều cần ở câu trả lời cuối, cho bạn.
+- Mục 8 làm bằng hook theo role thay cho việc `ao-step` ghi id comment: cách này áp cả cho `jira-sync` trên CI, nơi không có bản ghi của máy.

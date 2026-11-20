@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { join } from 'node:path';
 import { addApproved, newestStable, npmFacts, osvIds, parseSpec, pomLicenses, pomParent } from '../../lib/quality/dep-check.mjs';
-import { addedDependencies, auditRule, depVerdict, isApproved, licenseAllowed, packageJsonDependencies, planLibraries, pomDependencies, projectDependencies, unapprovedDependencies } from '../../lib/quality/dependencies.mjs';
+import { addedDependencies, auditRule, depVerdict, isApproved, licenseAllowed, ownPackages, packageJsonDependencies, planLibraries, pomDependencies, projectDependencies, unapprovedDependencies, workspaceCatalogs } from '../../lib/quality/dependencies.mjs';
 import { readGates } from '../../lib/quality/gates.mjs';
 import { ROOT } from '../helpers/kit.mjs';
 
@@ -36,7 +36,7 @@ test('the dependencies a package.json or a pom.xml names, and those a change add
 test('the policy job fails on a new direct dependency not approved, and passes an approved one or the project\'s own package', () => {
   const changes = [
     { path: 'apps/web/package.json', before: '{"dependencies":{}}', after: '{"dependencies":{"zod":"^4.6.6","left-pad":"^1","@shop/ui":"*"}}' },
-    { path: 'apps/api/pom.xml', before: POM([]), after: POM(['org.mapstruct:mapstruct', 'com.acme:${lib}']) },
+    { path: 'apps/api/pom.xml', before: POM([]), after: POM(['org.mapstruct:mapstruct']) },
   ];
   const problems = unapprovedDependencies(changes, APPROVED, ['@shop/ui']);
   assert.equal(problems.length, 1);
@@ -110,4 +110,63 @@ test('the policy job: a dependency pointed away from the registry, or an approve
   assert.deepEqual(change('{"dependencies":{"x":"file:../x"}}', '{"dependencies":{"x":"file:../x"}}'), [], 'a source already there is not new');
   assert.match(change('{}', '{"dependencies":')[0], /^apps\/web\/package\.json is no JSON/, 'a package.json that cannot be read');
   assert.deepEqual(change('{"dependencies":{}}', ''), [], 'a package.json deleted');
+});
+
+// Second review of shop PR #79, Medium: catalog: was taken for the project's own packages, though its version is in
+// pnpm-workspace.yaml, where the policy job read neither the catalogs nor the overrides.
+test('the policy job reads catalog: from pnpm-workspace.yaml, and checks its catalogs and overrides', () => {
+  const workspace = 'packages:\n  - apps/*\ncatalog:\n  zod: ^4.7.0\n  left-pad: ^1.3.0\ncatalogs:\n  next:\n    zod: ^5.0.0\n  bad:\n    zod: npm:evil@1\n';
+  const catalogs = workspaceCatalogs(workspace);
+  const change = (after) => unapprovedDependencies([{ path: 'apps/web/package.json', before: '{"dependencies":{}}', after }], APPROVED, [], { catalogs });
+  assert.match(change('{"dependencies":{"left-pad":"catalog:"}}')[0], /left-pad \(npm\) is new and not on dependencies\.approved/);
+  assert.match(change('{"dependencies":{"zod":"catalog:next"}}')[0], /zod asks for catalog:next \(\^5\.0\.0 in pnpm-workspace\.yaml\), outside \^4\.6\.6/);
+  assert.match(change('{"dependencies":{"zod":"catalog:bad"}}')[0], /zod points to catalog:bad \(npm:evil@1 in pnpm-workspace\.yaml\), which is no version of the registry/);
+  assert.match(change('{"dependencies":{"zod":"catalog:none"}}')[0], /zod asks for catalog:none, which pnpm-workspace\.yaml has no entry for/);
+  assert.deepEqual(change('{"dependencies":{"zod":"catalog:","@shop/ui":"workspace:*"}}'), []);
+
+  const yaml = (before, after) => unapprovedDependencies([{ path: 'pnpm-workspace.yaml', before, after }], APPROVED);
+  const base = 'packages:\n  - apps/*\ncatalog:\n  react: ^19.0.0\noverrides:\n  playwright-core: 1.61.1\n';
+  assert.match(yaml(base, `${base.replace('catalog:\n', 'catalog:\n  left-pad: ^1.3.0\n')}`)[0], /^pnpm-workspace\.yaml: left-pad \(npm\) is new and not on dependencies\.approved/);
+  assert.match(yaml(base, `${base}catalogs:\n  next:\n    zod: ^5.0.0\n`)[0], /^pnpm-workspace\.yaml: zod asks for \^5\.0\.0, outside \^4\.6\.6/);
+  assert.match(yaml(base, base.replace('playwright-core: 1.61.1', 'playwright-core: npm:evil@1'))[0], /^pnpm-workspace\.yaml: playwright-core points to npm:evil@1, which is no version of the registry/);
+  assert.match(yaml(base, `${base}  react>scheduler: github:x/y\n`)[0], /react>scheduler points to github:x\/y/);
+  assert.deepEqual(yaml(base, base.replace('react: ^19.0.0', 'react: ^19.1.0')), [], 'a new version of a catalog entry already there');
+  assert.deepEqual(yaml(base, `${base.replace('catalog:\n', 'catalog:\n  zod: ^4.7.0\n')}`), [], 'an approved library inside its range');
+  assert.match(yaml(base, 'packages: [')[0], /^pnpm-workspace\.yaml is no YAML after this change/);
+});
+
+// Second review of shop PR #79, Medium: the policy job took the name of any package.json in the repo for the project's
+// own, so a package.json an agent added under any name let that name in from the registry. With pnpm, the project's
+// packages come in by workspace: alone; with npm, by name, and only those inside the workspaces of the root package.json.
+test('the project\'s own packages: none with pnpm, and only those inside the workspaces of npm', () => {
+  const manifests = [{ path: 'package.json', name: 'shop' }, { path: 'apps/ui/package.json', name: '@shop/ui' }, { path: 'tools/x/package.json', name: 'left-pad' }, { path: 'apps/web/sub/package.json', name: 'deep' }];
+  assert.deepEqual(ownPackages({ manager: 'pnpm', packageJson: { workspaces: ['apps/*'] }, manifests }), []);
+  assert.deepEqual(ownPackages({ manager: 'npm', packageJson: { workspaces: ['apps/*'] }, manifests }), ['@shop/ui']);
+  assert.deepEqual(ownPackages({ manager: 'npm', packageJson: { workspaces: { packages: ['tools/*/'] } }, manifests }), ['left-pad']);
+  assert.deepEqual(ownPackages({ manager: 'npm', packageJson: {}, manifests }), []);
+});
+
+// Second review of shop PR #79, Medium: the check read only a <dependency> written exactly so. A new plugin, a build
+// extension, a parent or a repository, and a <dependency > with a space, all went past gh-guard and the policy job.
+test('a pom.xml: every dependency, plugin, extension and parent, however the tag is written, and no new repository', () => {
+  const pom = (inner) => `<project><groupId>com.shop</groupId><properties><lib.group>com.acme</lib.group></properties>${inner}</project>`;
+  const change = (before, after) => unapprovedDependencies([{ path: 'apps/api/pom.xml', before: pom(before), after: pom(after) }], APPROVED);
+  const names = (after) => change('', after).map((line) => /: (\S+) \(maven\) is new/.exec(line)?.[1] ?? line);
+  assert.deepEqual(names('<dependencies><dependency >\n <groupId>com.acme</groupId><artifactId>evil</artifactId></dependency ></dependencies>'), ['com.acme:evil']);
+  assert.deepEqual(names('<dependencies><dependency xmlns="x"><artifactId>evil</artifactId><groupId>com.acme</groupId></dependency></dependencies>'), ['com.acme:evil'], 'attributes, and the artifactId first');
+  assert.deepEqual(names('<build><plugins><plugin><artifactId>evil-maven-plugin</artifactId></plugin></plugins></build>'), ['org.apache.maven.plugins:evil-maven-plugin'], 'a plugin, with the default group');
+  assert.deepEqual(names('<build><plugins><plugin><dependencies><dependency><groupId>org.mapstruct</groupId><artifactId>mapstruct</artifactId></dependency></dependencies><groupId>com.acme</groupId><artifactId>p</artifactId></plugin></plugins></build>'), ['com.acme:p'], 'the coordinates of the plugin, not of its dependency');
+  assert.deepEqual(names('<build><extensions><extension><groupId>com.acme</groupId><artifactId>ext</artifactId></extension></extensions></build>'), ['com.acme:ext'], 'a build extension');
+  assert.deepEqual(names('<parent><groupId>com.acme</groupId><artifactId>parent</artifactId><version>1</version></parent>'), ['com.acme:parent'], 'a parent');
+  assert.deepEqual(names('<build><plugins><plugin><groupId>org.mapstruct</groupId><artifactId>mapstruct</artifactId><configuration><annotationProcessorPaths><path><groupId>com.acme</groupId><artifactId>processor</artifactId></path></annotationProcessorPaths></configuration></plugin></plugins></build>'), ['com.acme:processor'], 'an annotation processor of the compiler');
+  assert.deepEqual(names('<dependencies><dependency><groupId>${lib.group}</groupId><artifactId>evil</artifactId></dependency></dependencies>'), ['com.acme:evil'], 'a property of the pom');
+  assert.match(change('', '<dependencies><dependency><groupId>${nowhere}</groupId><artifactId>evil</artifactId></dependency></dependencies>')[0], /apps\/api\/pom\.xml: \$\{nowhere\}:evil takes a property this pom\.xml does not set, so it cannot be checked/);
+  assert.deepEqual(names('<dependencies><dependency><groupId>org.mapstruct</groupId><artifactId>mapstruct</artifactId><exclusions><exclusion><groupId>com.acme</groupId><artifactId>x</artifactId></exclusion></exclusions></dependency></dependencies>'), [], 'an approved one with an exclusion');
+  assert.deepEqual(names('<dependencies><dependency><groupId>${project.groupId}</groupId><artifactId>shared</artifactId></dependency></dependencies>'), ['com.shop:shared'], 'the group of the project, by its property');
+  for (const tag of ['repositories><repository', 'pluginRepositories><pluginRepository']) {
+    const [outer, inner] = tag.split('><');
+    assert.match(change('', `<${outer}><${inner}><id>x</id><url>https://repo.evil.test/maven</url></${inner}></${outer}>`)[0], /apps\/api\/pom\.xml adds the repository https:\/\/repo\.evil\.test\/maven: libraries come only from Maven Central/, tag);
+  }
+  const kept = '<repositories><repository><id>x</id><url>https://repo.example.test/</url></repository></repositories>';
+  assert.deepEqual(change(kept, `${kept}<dependencies><dependency><groupId>org.mapstruct</groupId><artifactId>mapstruct</artifactId></dependency></dependencies>`), [], 'a repository already there');
 });

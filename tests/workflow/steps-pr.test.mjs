@@ -209,6 +209,15 @@ test('/ao-review of a normal PR: reviewer only, and gate ③ says why security d
   const hard = decide('review', prFacts('review', { files }, { item: { ...item, level: 'heavy' } }));
   assert.deepEqual(plan(hard), ['reviewer DEMO-21 xhigh review', `security DEMO-21 ${roster.roles.security.effort} review`]);
   assert.ok(hard.lines.includes('Level of DEMO-21: heavy (label heavy)'));
+  // A label the agents' account lowered does not count, and the decision says so (second review of shop PR #79).
+  const kept = decide('review', prFacts('review', { files }, { item: { ...item, level: 'heavy', levelIgnored: { label: 'light' } } }));
+  assert.ok(kept.lines.includes("Level of DEMO-21: heavy (label heavy). The label ao-level-light was put by the agents' Jira account, which your main session uses too, and lowers the level, so it does not count: lower a level on Jira itself"));
+});
+
+test('/ao-status of an item says when a lower level label does not count', () => {
+  const status = decide('status', prFacts('status', {}, { item: { level: null, levelIgnored: { label: null } } }));
+  assert.ok(status.lines.includes("Level of DEMO-21: standard. Its level label was taken off by the agents' Jira account, which your main session uses too, and lowers the level, so it does not count: lower a level on Jira itself"), status.lines.join(' | '));
+  assert.ok(!decide('status', prFacts('status')).lines.some((line) => line.startsWith('Level of')), 'nothing on a plain item');
 });
 
 test('/ao-review after a small fix: security reviews only the changes since its last report, at high', () => {

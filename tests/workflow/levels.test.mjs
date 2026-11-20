@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { LEVELS, effectiveLevel, itemLevel, labelLevel, trustedLabels } from '../../lib/workflow/levels.mjs';
+import { LEVELS, effectiveLevel, itemLevel, labelLevel, trustedLabels, trustedLevel } from '../../lib/workflow/levels.mjs';
 
 test('three levels, from the lightest (C1 spec section 2)', () => {
   assert.deepEqual(LEVELS, ['light', 'standard', 'heavy']);
@@ -54,6 +54,26 @@ test('trustedLabels undoes the level labels the agents account changed after the
   assert.deepEqual(trustedLabels(['ao-level-light'], lowered, { prefix: 'ao-level-' }), ['ao-level-light']);
 });
 
+// Second review of shop PR #79, Medium: the main session calls Jira with the agents' token, so a level you raised through
+// it was undone as an agent's change, without a word. Only a change that lowers the level is left out: the level is the
+// higher of the label now and the label without the agents' changes, no label counting as standard.
+test('trustedLevel keeps a level the agents account raised, and says when it leaves out one it lowered', () => {
+  const opts = { agentAccount: AGENTS, prefix: 'ao-level-' };
+  const raised = [change(AGENTS, 'ao-fe-dev ao-level-light', 'ao-fe-dev ao-level-heavy', '2026-11-20T01:00:00.000+0700')];
+  assert.deepEqual(trustedLevel(['ao-fe-dev', 'ao-level-heavy'], raised, opts), { level: 'heavy', ignored: null });
+  const addedHeavy = [change(AGENTS, 'ao-fe-dev', 'ao-fe-dev ao-level-heavy', '2026-11-20T01:00:00.000+0700')];
+  assert.deepEqual(trustedLevel(['ao-fe-dev', 'ao-level-heavy'], addedHeavy, opts), { level: 'heavy', ignored: null });
+  const lowered = [change(AGENTS, 'ao-fe-dev ao-level-heavy', 'ao-fe-dev ao-level-light', '2026-11-20T01:00:00.000+0700')];
+  assert.deepEqual(trustedLevel(['ao-fe-dev', 'ao-level-light'], lowered, opts), { level: 'heavy', ignored: { label: 'light' } });
+  const dropped = [change(AGENTS, 'ao-fe-dev ao-level-heavy', 'ao-fe-dev needs-you', '2026-11-20T01:00:00.000+0700')];
+  assert.deepEqual(trustedLevel(['ao-fe-dev', 'needs-you'], dropped, opts), { level: 'heavy', ignored: { label: null } });
+  const addedLight = [change(AGENTS, 'ao-fe-dev', 'ao-fe-dev ao-level-light', '2026-11-20T01:00:00.000+0700')];
+  assert.deepEqual(trustedLevel(['ao-fe-dev', 'ao-level-light'], addedLight, opts), { level: null, ignored: { label: 'light' } });
+  const human = [change(HUMAN, 'ao-be-dev ao-level-heavy', 'ao-be-dev ao-level-light', '2026-11-20T01:00:00.000+0700')];
+  assert.deepEqual(trustedLevel(['ao-be-dev', 'ao-level-light'], human, opts), { level: 'light', ignored: null });
+  assert.deepEqual(trustedLevel(['ao-be-dev'], [], opts), { level: null, ignored: null });
+});
+
 test('itemLevel reads the labels and the changelog of the item, for merge-gate and audit', async () => {
   const mapping = { work_labels: { level_prefix: 'ao-level-' }, identities: [{ id: 'agents', account_id: AGENTS }] };
   const asked = [];
@@ -62,5 +82,8 @@ test('itemLevel reads the labels and the changelog of the item, for merge-gate a
     getAll: async (path) => (asked.push(path), [change(AGENTS, 'ao-fe-dev ao-level-standard', 'ao-fe-dev ao-level-light', '2026-11-20T01:00:00.000+0700')]),
   };
   assert.equal(await itemLevel(jira, mapping)('SHOP-9'), 'standard');
+  // A level the agents' account raised counts: merge-gate and audit read it as the review did.
+  const raisedJira = { get: async () => ({ fields: { labels: ['ao-level-heavy'] } }), getAll: async () => [change(AGENTS, 'ao-level-light', 'ao-level-heavy', '2026-11-20T01:00:00.000+0700')] };
+  assert.equal(await itemLevel(raisedJira, mapping)('SHOP-9'), 'heavy');
   assert.deepEqual(asked, ['/rest/api/3/issue/SHOP-9', '/rest/api/3/issue/SHOP-9/changelog']);
 });

@@ -301,13 +301,18 @@ const SEO_DESIGN = '# Design: Trang chủ\n\n## Screens\n\n| Code | Name | Route
 const ADMIN_DESIGN = SEO_DESIGN.replace('| S1 | Trang chủ | / | x | ASCII | user |\n', '');
 const seoOptions = (note) => ({ seoApps: ['user'], ...(note && { note }) });
 
-test('/ao-spec runs seo after ux for a screen of an app with seo: true; no app with seo: true, no seo', () => {
+// Second review of shop PR #79, Medium: sa and ba, which have Bash, read the SPEC after seo, before you did. seo now
+// writes last, once ba opened the docs PR, and ao-step pushes its commit there: what it took from web pages reaches you
+// at gate ① before any agent with Bash (Phiên 33 · Lượt 101).
+test('/ao-spec runs seo last, after the docs PR, for a screen of an app with seo: true; no app with seo: true, no seo', () => {
   const decision = decide('spec', epicFacts('specifying', { docs: { spec: SPEC, design: SEO_DESIGN } }), seoOptions());
-  assert.deepEqual(plan(decision), ['seo seo-write', 'sa spec-nfr', 'ba docs-pr']);
-  assert.equal(decision.runs[0].prompt, PURPOSES['seo-write']({ key: 'DEMO-20', branch: BRANCH }));
-  assert.match(decision.runs[0].prompt, /You have no git: ao-step commits your change after your run\./);
-  assert.deepEqual(decision.runs[0].checkout, CHECKOUT);
-  assert.deepEqual(plan(decide('spec', epicFacts('specifying', { docs: { spec: null } }), seoOptions())), ['ba spec-write', 'ux design (when the SPEC has screens)', 'seo seo-write (when design.md has screens of an app with seo: true)', 'sa spec-nfr', 'ba docs-pr']);
+  assert.deepEqual(plan(decision), ['sa spec-nfr', 'ba docs-pr', 'seo seo-write']);
+  assert.equal(decision.runs[2].prompt, PURPOSES['seo-write']({ key: 'DEMO-20', branch: BRANCH }));
+  assert.match(decision.runs[2].prompt, /You have no git: ao-step commits your change after your run\./);
+  assert.deepEqual(decision.runs[2].checkout, CHECKOUT);
+  assert.match(decision.runs[1].prompt, / seo writes the section ## SEO of the SPEC after you, and ao-step pushes it to the PR: say so in the PR body\.$/);
+  assert.doesNotMatch(decide('spec', epicFacts('specifying', { docs: { spec: SPEC, design: ADMIN_DESIGN } }), seoOptions()).runs[1].prompt, /seo writes/, 'no seo, no line');
+  assert.deepEqual(plan(decide('spec', epicFacts('specifying', { docs: { spec: null } }), seoOptions())), ['ba spec-write', 'ux design (when the SPEC has screens)', 'sa spec-nfr', 'ba docs-pr', 'seo seo-write (when design.md has screens of an app with seo: true)']);
   assert.deepEqual(plan(decide('spec', epicFacts('specifying', { docs: { spec: SPEC, design: SEO_DESIGN } }))), ['sa spec-nfr', 'ba docs-pr']);
   assert.deepEqual(plan(decide('spec', epicFacts('specifying', { docs: { spec: SPEC, design: ADMIN_DESIGN } }), seoOptions())), ['sa spec-nfr', 'ba docs-pr']);
 });
@@ -338,10 +343,37 @@ test('/ao-spec <EPIC> no-seo: ba writes "SEO: không" with the SPEC, or once in 
 test('/ao-spec <EPIC> seo turns it back on over "SEO: không", and on an open docs PR seo writes its section now', () => {
   const off = WITH_NFR.replace('## Open Questions', 'SEO: không, vì bạn chọn `no-seo`\n\n## Open Questions');
   const again = decide('spec', epicFacts('specifying', { docs: { spec: off, design: SEO_DESIGN } }), seoOptions('seo'));
-  assert.deepEqual(plan(again), ['seo seo-write', 'ba docs-pr']);
-  assert.match(again.runs[0].prompt, /The SPEC has a line "SEO: không" from an earlier run: the human now asks for SEO, so remove that line\./);
-  const open = decide('spec', epicFacts('specifying', { docs: { spec: WITH_NFR, design: SEO_DESIGN, pr: openPr() } }), seoOptions('seo'));
+  assert.deepEqual(plan(again), ['ba docs-pr', 'seo seo-write']);
+  assert.match(again.runs[1].prompt, /The SPEC has a line "SEO: không" from an earlier run: the human now asks for SEO, so remove that line\./);
+  const open = decide('spec', epicFacts('specifying', { docs: { spec: off, design: SEO_DESIGN, pr: openPr() } }), seoOptions('seo'));
   assert.deepEqual(plan(open), ['seo seo-write']);
-  // Without the word, an open docs PR waits for you at gate ①.
-  assert.equal(decide('spec', epicFacts('specifying', { docs: { spec: WITH_NFR, design: SEO_DESIGN, pr: openPr() } }), seoOptions()).go, false);
+  // Without the word too: seo writes after ba opened the docs PR.
+  assert.deepEqual(plan(decide('spec', epicFacts('specifying', { docs: { spec: WITH_NFR, design: SEO_DESIGN, pr: openPr() } }), seoOptions())), ['seo seo-write']);
+  // Once its section is there, the docs PR waits for you at gate ①.
+  const done = WITH_NFR.replace('## Open Questions', '## SEO\n\n- title: Trang chủ\n\n## Open Questions');
+  assert.equal(decide('spec', epicFacts('specifying', { docs: { spec: done, design: SEO_DESIGN, pr: openPr() } }), seoOptions()).go, false);
+  assert.equal(decide('spec', epicFacts('specifying', { docs: { spec: off, design: SEO_DESIGN, pr: openPr() } }), seoOptions()).go, false, 'seo off');
+});
+
+// Second review of shop PR #79, Medium: a check that needs no model looks at the section ## SEO before you read it.
+test('/ao-spec at gate ① names what has no place in the section ## SEO: an address of another host, a command', () => {
+  const spec = WITH_NFR.replace('## Open Questions', '## SEO\n\n- canonical: https://shop.example.test/\n- nguồn: https://evil.test/x\n- `curl https://evil.test/`\n\n## Open Questions');
+  const gate = decide('spec', epicFacts('specifying', { docs: { spec, design: SEO_DESIGN, pr: openPr() } }), { ...seoOptions(), seoHosts: ['shop.example.test'] });
+  assert.equal(gate.go, false);
+  assert.match(gate.reason, /^the docs PR #14 of DEMO-20 is open: stage spec is done and waits for you at gate ① spec-approval\. seo wrote the section ## SEO from web pages, and it holds an address on evil\.test, which is no host of an app with seo: true nor schema\.org; a command: curl https:\/\/evil\.test\/: read it with care before you approve$/);
+  const clean = spec.replace('- nguồn: https://evil.test/x\n- `curl https://evil.test/`\n', '');
+  assert.match(decide('spec', epicFacts('specifying', { docs: { spec: clean, design: SEO_DESIGN, pr: openPr() } }), { ...seoOptions(), seoHosts: ['shop.example.test'] }).reason, /waits for you at gate ① spec-approval$/);
+});
+
+// Open questions seo leaves go back to seo: its answers do not reach ba or sa, which have Bash.
+test('open questions after a run of seo go to seo', () => {
+  const asking = ASKING.replace('## Open Questions', '### Non-functional requirements\n\n- x\n\n## SEO\n\n- title: x\n\n## Open Questions');
+  const facts = epicFacts('specifying', { docs: { spec: asking, design: SEO_DESIGN, pr: openPr() }, run: runState({ role: 'sa', purpose: 'spec-nfr', outcome: 'done' }, { role: 'ba', purpose: 'docs-pr', outcome: 'done' }, { role: 'seo', purpose: 'seo-write', outcome: 'done', effort: 'high', session: 's-seo' }) });
+  const decision = decide('spec', facts, seoOptions());
+  assert.equal(decision.go, false);
+  assert.equal(decision.asker, 'seo');
+  const answered = decide('spec', facts, { ...seoOptions(), answers: 'Q1: có. Q2: không.' });
+  assert.deepEqual(plan(answered), ['seo seo-write']);
+  assert.equal(answered.runs[0].resume, 's-seo');
+  assert.match(answered.runs[0].prompt, /You have no git: ao-step commits your change after your run, and pushes it to the docs PR #14\.$/);
 });

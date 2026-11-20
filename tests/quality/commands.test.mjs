@@ -4,6 +4,7 @@ import { spawnSync } from 'node:child_process';
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { readRoster } from '../../lib/agents/roster.mjs';
 import { readContract } from '../../lib/contract.mjs';
 import { checkAgentCall } from '../../lib/quality/commands.mjs';
 import { readGates } from '../../lib/quality/gates.mjs';
@@ -760,7 +761,7 @@ test('an install of a library not approved is refused; an approved one, or the l
   }
   denied(run('pnpm add ../vendor/lib'), /no package of the registry/, 'a path');
   denied(run('npm install git+https://github.com/x/y'), /no package of the registry/, 'git');
-  for (const command of ['pnpm add zod@4.6.6', 'pnpm --filter web add zod', 'pnpm install', 'npm ci', 'pnpm install --frozen-lockfile', 'mvn dependency:get -Dartifact=org.mapstruct:mapstruct:1.6.3', 'node .ai-orchestrator/scripts/dep-check.mjs npm left-pad@1.3.0']) {
+  for (const command of ['pnpm add zod@4.6.6', 'pnpm --filter web add zod@4.6.6', 'pnpm install', 'npm ci', 'pnpm install --frozen-lockfile', 'mvn dependency:get -Dartifact=org.mapstruct:mapstruct:1.6.3', 'node .ai-orchestrator/scripts/dep-check.mjs npm left-pad@1.3.0']) {
     allowed(run(command), command);
   }
   allowed(bash('pnpm add left-pad'), 'without a project.yaml, as in the kit repo, nothing is checked');
@@ -777,6 +778,11 @@ test('an install of an approved name from elsewhere, or outside its range, is re
   for (const command of ['pnpm add zod --registry https://x.test', 'npm i zod --registry=https://x.test', 'pnpm add zod --@acme:registry=https://x.test', 'npm_config_registry=https://x.test pnpm add zod', 'NPM_CONFIG_REGISTRY=https://x.test npm i zod']) {
     denied(run(command), /registry of the project/, command);
   }
+  // A settings file of Maven can hold a mirror, which serves every artifact from elsewhere (second review of shop PR #79).
+  for (const command of ['mvn -s evil.xml test', './mvnw --settings=evil.xml verify', 'mvn -gs evil.xml package', 'cd apps/api && ./mvnw --global-settings evil.xml test']) {
+    denied(run(command), /registry of the project/, command);
+  }
+  for (const command of ['./mvnw -q test', 'mvn -B verify', 'npm ci -s']) allowed(run(command), command);
   denied(run('pnpm add zod@5.0.0'), /zod@5\.0\.0 is outside \^4\.6\.6, the range dep-check approved/, 'a version outside the range');
   denied(run('pnpm add zod@latest'), /zod@latest cannot be checked against \^4\.6\.6/, 'a tag');
   denied(run('mvn dependency:get -Dartifact=org.mapstruct:mapstruct:1.7.0'), /outside 1\.6\.3/, 'a Maven version outside');
@@ -829,7 +835,69 @@ test('the hook reads the approved libraries of the project.yaml of the project i
   writeFileSync(join(project, '.ai-orchestrator', 'project.yaml'), 'dependencies:\n  approved:\n    - { ecosystem: npm, name: zod, range: ^4.6.6, by: dep-check, on: 2026-11-20 }\n');
   const agent = (command) => runHook({ hook_event_name: 'PreToolUse', agent_type: 'fe-dev', tool_name: 'Bash', tool_input: { command } }, { CLAUDE_PROJECT_DIR: project });
   assert.match(JSON.parse(agent('pnpm add left-pad').stdout).hookSpecificOutput.permissionDecisionReason, /left-pad is not on dependencies\.approved/);
-  assert.equal(agent('pnpm add zod').stdout, '');
+  assert.equal(agent('pnpm add zod@4.6.6').stdout, '');
+});
+
+// Second review of shop PR #79, Medium: the commands that download a package and run it under another verb, and the
+// package managers run through corepack, went past gh-guard.
+test('npm create and init, the create of each package manager, install-test, pnpx and corepack run only what is approved', () => {
+  const approved = () => [{ ecosystem: 'npm', name: 'zod', range: '^4.6.6', by: 'dep-check', on: '2026-11-20' }, { ecosystem: 'npm', name: 'create-vite', range: '^7.0.0', by: 'dep-check', on: '2026-11-20' }];
+  const run = (command) => checkAgentCall({ agent_type: 'fe-dev', tool_name: 'Bash', tool_input: { command } }, { gates, contract, projectDir: PROJECT, tempDir: TEMP, approved });
+  const names = {
+    'npm create evil@latest': 'create-evil',
+    'npm init evil my-app': 'create-evil',
+    'npm innit evil': 'create-evil',
+    'npm init @acme/app': '@acme/create-app',
+    'npm init @acme': '@acme/create',
+    'pnpm create evil': 'create-evil',
+    'yarn create evil': 'create-evil',
+    'bun create evil': 'create-evil',
+    'npm install-test left-pad': 'left-pad',
+    'npm it left-pad': 'left-pad',
+    'pnpx evil-pkg': 'evil-pkg',
+    'corepack pnpm add left-pad': 'left-pad',
+    'corepack pnpm@9.15.0 add left-pad': 'left-pad',
+    'corepack yarn dlx evil-pkg': 'evil-pkg',
+    'corepack npx evil-pkg': 'evil-pkg',
+  };
+  for (const [command, name] of Object.entries(names)) {
+    denied(run(command), new RegExp(`^gh-guard: ${name.replace(/[.*+?^${}()|[\]\\/]/g, '\\$&')} is not on dependencies\\.approved`), command);
+  }
+  denied(run('bun create someone/template'), /no package of the registry/, 'a template from GitHub');
+  denied(run('npm create vite@8.0.0'), /create-vite@8\.0\.0 is outside \^7\.0\.0/, 'an approved create package outside its range');
+  for (const command of ['npm init', 'npm init -y', 'npm init -w apps/x', 'npm it', 'corepack enable', 'npm create vite@7.1.0', 'pnpm create vite@^7.1.0']) allowed(run(command), command);
+});
+
+// Second review of shop PR #79, Low: a name alone installs the newest version, which dep-check never read.
+test('an approved library with a range is installed with a version inside it, not by its name alone', () => {
+  const approved = () => [{ ecosystem: 'npm', name: 'zod', range: '^4.6.6', by: 'dep-check', on: '2026-11-20' }, { ecosystem: 'npm', name: 'clsx', by: 'plan', on: '2026-11-20' }];
+  const run = (command) => checkAgentCall({ agent_type: 'fe-dev', tool_name: 'Bash', tool_input: { command } }, { gates, contract, projectDir: PROJECT, tempDir: TEMP, approved });
+  for (const command of ['pnpm add zod', 'pnpm --filter web add zod', 'npm i -D zod']) {
+    denied(run(command), /zod alone installs the newest version, which dep-check did not read: give a version inside \^4\.6\.6, such as zod@<x\.y\.z>/, command);
+  }
+  for (const command of ['pnpm add zod@4.7.0', 'pnpm add clsx', 'npx zod']) allowed(run(command), command);
+});
+
+// Second review of shop PR #79, Medium: pnpm-workspace.yaml holds the catalogs, overrides and allowBuilds of pnpm, and a
+// .pnpmfile changes any dependency as pnpm reads it; .mvn/ holds the Maven extensions, its options and the URL the
+// wrapper downloads Maven from.
+test('the files where pnpm and Maven read their packages and settings are protected', () => {
+  for (const file of ['pnpm-workspace.yaml', '.pnpmfile.cjs', '.pnpmfile.mjs', 'apps\\web\\.pnpmfile.cjs', 'apps\\api\\.mvn\\extensions.xml', 'apps\\api\\.mvn\\maven.config', 'apps\\api\\.mvn\\wrapper\\maven-wrapper.properties']) {
+    denied(call('fe-dev', 'Write', { file_path: `${PROJECT}\\${file}`, content: 'x' }), /is protected: agents do not edit it/, file);
+  }
+});
+
+// Second review of shop PR #79, Medium: a package.json takes catalog: of pnpm-workspace.yaml, whose version or source
+// the check never read.
+test('a dependency written as catalog: is read from the catalog of pnpm-workspace.yaml', () => {
+  const approved = () => [{ ecosystem: 'npm', name: 'zod', range: '^4.6.6', by: 'dep-check', on: '2026-11-20' }];
+  const workspace = 'packages:\n  - apps/*\ncatalog:\n  zod: ^4.7.0\n  left-pad: ^1.3.0\ncatalogs:\n  next:\n    zod: ^5.0.0\n';
+  const readFile = (file) => (file.replaceAll('\\', '/').endsWith('/pnpm-workspace.yaml') || file === 'pnpm-workspace.yaml' ? workspace : '{"dependencies":{}}');
+  const write = (content) => checkAgentCall({ agent_type: 'fe-dev', tool_name: 'Write', tool_input: { file_path: `${PROJECT}\\apps\\web\\package.json`, content } }, { gates, contract, projectDir: PROJECT, tempDir: TEMP, approved, readFile });
+  denied(write('{"dependencies":{"left-pad":"catalog:"}}'), /left-pad \(npm\) is new and not on dependencies\.approved/, 'a library not approved, through the catalog');
+  denied(write('{"dependencies":{"zod":"catalog:next"}}'), /zod asks for catalog:next \(\^5\.0\.0 in pnpm-workspace\.yaml\), outside \^4\.6\.6/, 'a named catalog outside the range');
+  denied(write('{"dependencies":{"zod":"catalog:old"}}'), /zod asks for catalog:old, which pnpm-workspace\.yaml has no entry for/, 'a catalog that does not exist');
+  allowed(write('{"dependencies":{"zod":"catalog:"}}'), 'the default catalog, inside the range');
 });
 
 // C1 spec 6.4: seo reads web pages, which can carry orders, and can send what it read out with WebFetch.
@@ -899,4 +967,19 @@ test('seo writes only in the project, and fetches only a page its searches gave 
     denied(seo('WebFetch', { url, prompt: 'x' }), /fetches only a page a WebSearch of this run gave/, url);
   }
   denied(checkAgentCall({ agent_type: 'seo', tool_name: 'WebFetch', tool_input: { url: 'https://www.example.com/best-shoes' } }, { gates, contract, projectDir: PROJECT, tempDir: TEMP }), /fetches only/, 'no record of a search');
+});
+
+// Second review of shop PR #79, Medium: .ai/ is ignored by git, so seo could not Read its own ledger, and Claude Code
+// edits no file it has not read: a run of seo that stopped could not go on. The files its roster entry lets it write
+// pass before the rule on ignored files; the ledger of the item, which agents with Bash go on from, does not.
+test('seo reads its own ledger, though git ignores .ai/, and still not the ledger of the item', () => {
+  const roster = readRoster(join(ROOT, 'agents'));
+  const ignored = (path) => path === '.ai' || path.startsWith('.ai/');
+  const seo = (tool, input) => checkAgentCall({ agent_type: 'seo', tool_name: tool, tool_input: input }, { gates, contract, projectDir: PROJECT, tempDir: TEMP, roster, ignored });
+  allowed(seo('Read', { file_path: `${PROJECT}\\.ai\\ledger\\SHOP-9.seo.md` }), 'its ledger');
+  allowed(seo('Read', { file_path: 'D:/work/shop/.ai/ledger/SHOP-9.seo.md' }), 'its ledger, with forward slashes');
+  allowed(seo('Grep', { pattern: 'keyword', path: '.ai/ledger/SHOP-9.seo.md' }), 'Grep in its ledger');
+  denied(seo('Read', { file_path: `${PROJECT}\\.ai\\ledger\\SHOP-9.md` }), /a file git ignores/, 'the ledger of the item');
+  denied(seo('Read', { file_path: `${PROJECT}\\.ai\\ledger\\x\\..\\.env.seo.md` }), /\.env files are not read|a file git ignores/, 'a path that only looks like its ledger');
+  denied(seo('Read', { file_path: `${PROJECT}\\.ai\\ledger\\SHOP-9.seo.md\\..\\..\\runs\\x.json` }), /a file git ignores/, 'climbing out of it');
 });
