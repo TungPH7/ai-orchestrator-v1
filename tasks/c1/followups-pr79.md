@@ -1,6 +1,6 @@
 # Task sửa kit: finding của review lần hai `shop` PR #79
 
-**Trạng thái:** đã sửa trong kit PR của nhánh `task/c1-t20b` (Phiên 33 · Lượt 101), chưa chép vào `shop`. Bạn chọn gom ở Lượt 98 ("Gom 6 Medium và 3 Low vào một Task sửa kit, và chỉ làm khi tôi đồng ý"), đồng ý ở Lượt 101 ("Ok làm T20b trước, rồi làm C2"), và chọn cách sửa mục 4: `seo` chạy cuối. Mục "Đã làm" ở cuối file ghi từng mục làm thế nào.
+**Trạng thái:** đã sửa trong kit PR #326 (Phiên 33 · Lượt 101), chưa chép vào `shop`. Bạn chọn gom ở Lượt 98 ("Gom 6 Medium và 3 Low vào một Task sửa kit, và chỉ làm khi tôi đồng ý"), đồng ý ở Lượt 101 ("Ok làm T20b trước, rồi làm C2"), và chọn cách sửa mục 4: `seo` chạy cuối. Mục "Đã làm" ở cuối file ghi từng mục làm thế nào.
 
 **Nguồn:** review lần hai của PR #79 (SHOP-78), head `1ff3358`, bản chép kit `5c25aca`. Cả `reviewer` và `security` đều Approve, không có Critical hay High. Báo cáo đầy đủ ở `.ai/reviews/79-reviewer.md` và `.ai/reviews/79-security.md` của `shop`, và đã đăng lên PR. Mỗi finding có phần "Tái hiện" mà agent đã chạy trên head.
 
