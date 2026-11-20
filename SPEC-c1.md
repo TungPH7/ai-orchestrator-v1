@@ -260,6 +260,7 @@ stages:
 - **Thêm khi làm T3 (Lượt 88):** mỗi run còn có `done`, cũng là tên một điều kiện: đầu ra của run đã có, như `design-written`, nên run không chạy lại. Một điều kiện trả `null` khi đầu vào của nó chưa có, như màn hình của một SPEC mà `ba` chưa viết; run đó vẫn vào danh sách dự báo, kèm chữ của điều kiện. Khối trên viết gọn nên không ghi `done`; bản đủ nằm trong `contract/stages.yaml`.
 - `npm run validate` báo lỗi khi gặp tên điều kiện lạ, hay role không có trong `roles.yaml`.
 - `decideSpec`, `decidePlan`, `decideBuild`, `decideReview` đọc danh sách thay cho mảng viết cứng.
+- **Đổi ở T20b (Phiên 33 · Lượt 101):** `seo` chạy cuối stage spec, sau `ba docs-pr`, và `ao-step` push commit của nó lên PR tài liệu. Lý do: review lần hai của `shop` PR #79 thấy `sa` và `ba`, có Bash, đọc chữ `seo` lấy từ trang web trước khi bạn đọc. Bạn chọn cách này thay cho việc dừng `/ao-spec` sau `seo`. Đổi lại, lúc viết NFR `sa` không thấy mục SEO.
 - Cùng facts thì quyết định phải giống hệt như trước: một bộ test so quyết định trên mọi fixture hiện có của `tests/workflow/` trước và sau khi đổi.
 
 **Role `seo`:** viết phần SEO của các trang cần lên Google, kể cả trang blog. Thảo luận và mọi quyết định nằm trong [misc/thao-luan/seo/role-seo-va-blog.md](misc/thao-luan/seo/role-seo-va-blog.md) (Lượt 76–85). Mục tiêu bạn đặt ra ở Lượt 82: kit sẵn sàng cho dự án thật có website công khai, không chỉ cho `shop`.

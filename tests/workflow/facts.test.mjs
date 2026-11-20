@@ -133,6 +133,26 @@ test('the level of an item leaves out a level label the agents account changed',
   assert.equal((await gather('build', 'DEMO-15', { change: lowered('557058:you') })).item.level, 'light', 'you lowered it');
 });
 
+// Second review of shop PR #79: /ao-build shows you the comment of seo, and what a check finds in it, before an item with
+// ao-seo outside an Epic starts.
+test('an item comes with the newest comment of SEO Specialist, signed by its Agent value', async () => {
+  const commented = (a) => {
+    const [, read] = Object.entries(a.jira).find(([p]) => p.startsWith('/rest/api/3/issue/DEMO-15?fields=summary'));
+    a.jira['/rest/api/3/issue/DEMO-15?fields=issuetype,status,labels,description,parent,subtasks,issuelinks'] = { key: 'DEMO-15', fields: { ...read.fields, description: null, issuelinks: [] } };
+    a.jira['/rest/api/3/issue/DEMO-15/comment'] = { isLast: true, comments: [
+      { created: '2026-11-20T09:00:00.000+0700', body: 'SEO Specialist: bản cũ' },
+      { created: '2026-11-20T10:00:00.000+0700', body: 'SEO Specialist: title "Giày", canonical https://shop.example.test/giay' },
+      { created: '2026-11-20T11:00:00.000+0700', body: 'Frontend Developer: SEO Specialist: not seo' },
+    ] };
+  };
+  assert.equal((await gather('build', 'DEMO-15', { change: commented })).item.seoComment, 'SEO Specialist: title "Giày", canonical https://shop.example.test/giay');
+  const plain = (x) => {
+    commented(x);
+    x.jira['/rest/api/3/issue/DEMO-15/comment'] = { isLast: true, comments: [] };
+  };
+  assert.equal((await gather('build', 'DEMO-15', { change: plain })).item.seoComment, null);
+});
+
 test('the WIP of each dev agent the item would start, and what .ai/ holds for it', async () => {
   const labelled = (a) => {
     a.jira['/rest/api/3/issue/DEMO-13?fields=summary,issuetype,status,labels'].fields.labels = ['ao-be-dev'];

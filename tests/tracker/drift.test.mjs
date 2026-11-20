@@ -162,6 +162,25 @@ test('a Restrict rule on a group outside the mapping shows its name', async () =
   ]);
 });
 
+// QA of SHOP-78 (Phiên 33 · Lượt 98): Pick up and QA fail of AO standard held two Restrict rules, one per group, under
+// "All". Jira asks a user to pass every rule, so to be in both groups: neither qa nor the CI token saw Pick up, while
+// jira:check read the groups of both rules as one list and said the space matched.
+test('a transition with its groups in separate Restrict rules, which Jira requires all of', async () => {
+  const result = await reread((r) => {
+    const workflows = r['/rest/api/3/workflows/search?expand=values.transitions&queryString=AO standard'];
+    const pickUp = workflows.values[0].transitions.find((t) => t.name === 'Pick up');
+    const [rule] = pickUp.conditions.conditions;
+    const [agents, automation] = rule.parameters.groupIds.split(',');
+    pickUp.conditions.conditions = [
+      { ...rule, parameters: { ...rule.parameters, groupIds: agents } },
+      { ...rule, id: 'second', parameters: { ...rule.parameters, groupIds: automation } },
+    ];
+  });
+  assert.deepEqual(result, [
+    { kind: 'restrict-split', message: 'AO standard: transition "Pick up" from "Ready for QA" to "In QA" has 2 Restrict rules: Jira asks a user to pass every one, so to be in every group. Put "ao-agents", "ao-automation" in one rule' },
+  ]);
+});
+
 test('a cancel that does not ask for a Resolution, or shows a screen without it', () => {
   assert.deepEqual(
     drift((s) => {

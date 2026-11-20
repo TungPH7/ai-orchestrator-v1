@@ -27,7 +27,7 @@
 | Chia việc theo thời điểm | 83 | Phần spec chạy trong `/ao-spec` (mục 2.2). Phần chỉ làm được sau khi site chạy thật lưu thành dòng **D4** của [concerns.md](../concerns.md): lệnh SEO định kỳ, như `/ao-seo report` hằng tháng, sau C1. |
 | Bật hay tắt `seo` | 83 | Khóa `seo: true` cho từng app; hai từ `seo` và `no-seo` cho `/ao-spec`; không truyền gì thì tự quyết theo SPEC, mặc định bật; app `seo: false` thì không chạy `seo`; SPEC ghi app của từng màn hình (mục 2.3). |
 | Không có nhãn ở Epic, nhãn `ao-seo` ở item | 84 | Quyết định của Epic nằm trong SPEC: mục `## SEO`, hoặc dòng "SEO: không, vì …". Nhãn `ao-seo` gắn trên Story hay Task chạm màn hình có SEO: `sa` ghi cột "SEO" trong `plan.md`, bạn duyệt ở cổng ②, `ba` gắn nhãn. Không có nhãn `ao-no-seo` (mục 2.3). |
-| Blog: thứ tự | 84 | Phần (a), tính năng blog, làm trong C1. D2, workflow viết bài, làm ngay sau C1 và trước C2 (mục 2.4). |
+| Blog: thứ tự | 84, 101 | Phần (a), tính năng blog, làm trong C1. D2, workflow viết bài: Lượt 84 đặt ngay sau C1 và trước C2 (mục 2.4); Lượt 101 bạn đổi thành chờ nhu cầu, sau T20b và C2. |
 | Blog: đăng bài | 84 | Công cụ đăng bài làm trong Epic tính năng blog, được review một lần; không viết script mới cho mỗi bài. Mỗi bài là một Task trên Jira. Bài lên ở trạng thái nháp kèm link xem trước, phiên chính kiểm theo mức Nhẹ, bạn duyệt nội dung, rồi mới đăng công khai (mục 2.4). |
 
 **Phần dữ liệu động,** như mô tả sản phẩm, là dữ liệu admin nhập. `seo` chỉ viết vài dòng hướng dẫn cho người nhập (độ dài, cách trình bày), đưa vào hướng dẫn sử dụng.

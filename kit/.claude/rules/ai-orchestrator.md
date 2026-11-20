@@ -126,6 +126,9 @@ Your run ends with your answer, and nothing wakes it after that. A command still
   - `**/.npmrc`: no agent
   - `**/.yarnrc*`: no agent
   - `**/bunfig.toml`: no agent
+  - `**/pnpm-workspace.yaml`: no agent
+  - `**/.pnpmfile.*`: no agent
+  - `**/.mvn/**`: no agent
 
 - Never put a token or a key in a file, a commit, a log or a message.
 - Never copy or delete a folder tree that holds `node_modules`, or the whole `apps` folder. To try a check on a copy, take only the files it needs, as in `git archive HEAD <paths> | tar -x -C <temp folder>`.

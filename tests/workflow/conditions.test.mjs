@@ -11,7 +11,7 @@ const roles = (runs) => runs.map(({ role, purpose, when }) => [role, purpose, wh
 const declared = (runs) => runs.map(({ role, purpose }) => [role, purpose].filter(Boolean).join(' '));
 
 test('the runs of the four stages, in the order of C1 spec section 6', () => {
-  assert.deepEqual(declared(stageRuns(contract, 'spec')), ['ba spec-write', 'ux design', 'seo seo-write', 'sa spec-nfr', 'ba docs-pr']);
+  assert.deepEqual(declared(stageRuns(contract, 'spec')), ['ba spec-write', 'ux design', 'sa spec-nfr', 'ba docs-pr', 'seo seo-write']);
   assert.deepEqual(declared(stageRuns(contract, 'plan')), ['sa plan-write', 'ba plan-items']);
   assert.deepEqual(stageRoles(contract, 'build'), ['be-dev', 'fe-dev', 'devops']);
   assert.deepEqual(stageRoles(contract, 'review'), ['reviewer', 'security']);
