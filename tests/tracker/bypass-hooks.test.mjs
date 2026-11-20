@@ -56,9 +56,13 @@ test('the kit declares each hook once, with the project space to fill in', () =>
     ['mcp__atlassian__transitionJiraIssue', 'node "$CLAUDE_PROJECT_DIR/.claude/hooks/jira-guard.mjs"'],
     ['Bash|mcp__.*', 'node "$CLAUDE_PROJECT_DIR/.claude/hooks/block-atlassian.mjs"'],
     // quality-gates spec section 2.7; Grep and Glob since review round 2 of shop PR #13 (Pilot 3, spec 2.9).
-    ['Bash|Read|Edit|Write|NotebookEdit|Grep|Glob', 'node "$CLAUDE_PROJECT_DIR/.claude/hooks/gh-guard.mjs"'],
+    // WebFetch since the review of shop PR #79, for the pages seo may fetch.
+    ['Bash|Read|Edit|Write|NotebookEdit|Grep|Glob|WebFetch', 'node "$CLAUDE_PROJECT_DIR/.claude/hooks/gh-guard.mjs"'],
   ]);
-  assert.deepEqual(declared('PostToolUse'), [['mcp__atlassian__transitionJiraIssue', 'node "$CLAUDE_PROJECT_DIR/.claude/hooks/jira-rework.mjs"']]);
+  assert.deepEqual(declared('PostToolUse'), [
+    ['mcp__atlassian__transitionJiraIssue', 'node "$CLAUDE_PROJECT_DIR/.claude/hooks/jira-rework.mjs"'],
+    ['WebSearch', 'node "$CLAUDE_PROJECT_DIR/.claude/hooks/web-search.mjs"'],
+  ]);
   assert.equal(settings.env.AO_JIRA_SPACE, '<KEY>');
 });
 

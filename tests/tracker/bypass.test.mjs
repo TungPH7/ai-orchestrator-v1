@@ -219,6 +219,26 @@ test('no agent puts the label ao-env-auth on an item; words in a description or 
   assert.deepEqual(check('mcp__atlassian__editJiraIssue', { cloudId: mapping.cloud_id, issueIdOrKey: 'DEMO-12', fields: { labels: ['ao-env-auth'] } }), ALLOW);
 });
 
+// Review of shop PR #79 (SHOP-78), Medium: the level label lowers the review and the QA of an item, and only the human
+// lowers it. ba puts it when it creates the items of the plan you approved; no other agent puts one, and no agent adds or
+// removes one on an item. The whole list an agent writes when it flags an item passes: ao-step, merge-gate and audit
+// leave out a level the agents' account changed (lib/workflow/levels.mjs, trustedLabels).
+test('only ba creates an item with a level label, and no agent adds or removes one afterwards', () => {
+  const byAgent = (tool, input, agent) => checkToolCall({ hook_event_name: 'PreToolUse', tool_name: `mcp__atlassian__${tool}`, tool_input: { cloudId: mapping.cloud_id, ...input }, agent_type: agent }, { mapping, space: 'DEMO' });
+  const create = { projectKey: 'DEMO', issueTypeName: 'Bug', summary: 'x', additional_fields: { labels: ['ao-level-light'] } };
+  assert.deepEqual(byAgent('createJiraIssue', create, 'ba'), ALLOW);
+  assert.deepEqual(byAgent('createJiraIssue', create, 'qa'), { allow: false, reason: 'jira: only ba, from the plan you approved, and you put a level label (ao-level-*) on an item: it sets how much review and QA the item gets' });
+  const changed = { allow: false, reason: 'jira: only you change the level label (ao-level-*) of an item: it sets how much review and QA the item gets' };
+  assert.deepEqual(byAgent('editJiraIssue', { issueIdOrKey: 'DEMO-12', update: { labels: [{ add: 'ao-level-light' }] } }, 'fe-dev'), changed);
+  assert.deepEqual(byAgent('editJiraIssue', { issueIdOrKey: 'DEMO-12', update: { labels: [{ remove: 'ao-level-heavy' }] } }, 'ba'), changed);
+  assert.deepEqual(byAgent('transitionJiraIssue', { issueIdOrKey: 'DEMO-12', transitionName: 'Start', update: { labels: [{ set: ['ao-fe-dev', 'ao-level-light'] }] } }, 'fe-dev'), changed);
+  // Flagging writes the whole list, the level as it was among it: it passes, and a level changed in it does not count.
+  assert.deepEqual(byAgent('editJiraIssue', { issueIdOrKey: 'DEMO-12', fields: { labels: ['ao-fe-dev', 'ao-level-standard', 'needs-you'] } }, 'fe-dev'), ALLOW);
+  assert.deepEqual(byAgent('editJiraIssue', { issueIdOrKey: 'DEMO-12', update: { labels: [{ add: 'needs-you' }] } }, 'fe-dev'), ALLOW);
+  // Your main session, with no agent_type: /ao-intake sets the level you approved.
+  assert.deepEqual(check('mcp__atlassian__createJiraIssue', { cloudId: mapping.cloud_id, ...create }), ALLOW);
+});
+
 // Review of shop PR #78 (Medium, and a Low of security): a transition takes fields and update too, and labels may come as
 // one string.
 test('no agent puts ao-env-auth through a transition either, or in a string of labels', () => {

@@ -58,7 +58,9 @@ test('only devops may edit workflows; no agent may edit the hooks, the Claude se
   assert.deepEqual(
     gates.protected_paths.map(({ path, editors = [] }) => `${path} ${editors.join(',')}`.trim()),
     // .github/CODEOWNERS since review round 2 of shop PR #13 (Pilot 3, spec 2.9): the rulesets count only its owners.
-    ['.github/workflows/** devops', '.githooks/**', '.claude/**', '.ai-orchestrator/**', '.mcp.json', '.github/CODEOWNERS'],
+    // Since the review of shop PR #79: a .claude folder in an app, and the files of a registry, which an agent could
+    // write to install a name from elsewhere.
+    ['.github/workflows/** devops', '.githooks/**', '.claude/**', '.ai-orchestrator/**', '.mcp.json', '.github/CODEOWNERS', '**/.claude/**', '**/.npmrc', '**/.yarnrc*', '**/bunfig.toml'],
   );
 });
 

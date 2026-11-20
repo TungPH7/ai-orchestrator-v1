@@ -120,6 +120,19 @@ test('an item with no PR and no Epic, and an empty .ai/runs/', async () => {
   assert.deepEqual(status.runs, []);
 });
 
+// Review of shop PR #79: only you lower a level; one the agents' account wrote after the item was made does not count.
+test('the level of an item leaves out a level label the agents account changed', async () => {
+  const agents = mapping.identities.find(({ id }) => id === 'agents').account_id;
+  const lowered = (by) => (a) => {
+    const [path, read] = Object.entries(a.jira).find(([p]) => p.startsWith('/rest/api/3/issue/DEMO-15?fields=summary'));
+    a.jira[path] = { ...read, fields: { ...read.fields, labels: ['ao-level-light', 'needs-you'] } };
+    a.jira['/rest/api/3/issue/DEMO-15?fields=issuetype,status,labels,description,parent,subtasks,issuelinks'] = { key: 'DEMO-15', fields: { ...read.fields, description: null, issuelinks: [] } };
+    a.jira['/rest/api/3/issue/DEMO-15/changelog'] = { isLast: true, values: [{ author: { accountId: by }, created: '2026-11-20T09:00:00.000+0700', items: [{ field: 'labels', fromString: 'ao-level-heavy', toString: 'ao-level-light needs-you' }] }] };
+  };
+  assert.equal((await gather('build', 'DEMO-15', { change: lowered(agents) })).item.level, 'heavy');
+  assert.equal((await gather('build', 'DEMO-15', { change: lowered('557058:you') })).item.level, 'light', 'you lowered it');
+});
+
 test('the WIP of each dev agent the item would start, and what .ai/ holds for it', async () => {
   const labelled = (a) => {
     a.jira['/rest/api/3/issue/DEMO-13?fields=summary,issuetype,status,labels'].fields.labels = ['ao-be-dev'];

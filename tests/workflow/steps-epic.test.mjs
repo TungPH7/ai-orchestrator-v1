@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { readRoster } from '../../lib/agents/roster.mjs';
 import { readContract } from '../../lib/contract.mjs';
-import { PURPOSES, answersPrompt, resumePrompt } from '../../lib/workflow/prompts.mjs';
+import { PURPOSES, answersPrompt, ledgerPath, resumePrompt } from '../../lib/workflow/prompts.mjs';
 import { decideStep } from '../../lib/workflow/steps.mjs';
 import { CONTRACT_DIR, ROOT } from '../helpers/kit.mjs';
 
@@ -103,6 +103,14 @@ test('a run that stopped before its end goes on in its session, with the ledger'
     assert.deepEqual(decide('spec', facts).runs, [{ role: 'ux', key: 'DEMO-20', effort: 'xhigh', purpose: 'design', resume: 's-ux', prompt: resumePrompt('DEMO-20'), checkout: CHECKOUT }], outcome);
   }
   assert.match(resumePrompt('DEMO-20'), /\.ai\/ledger\/DEMO-20\.md/);
+});
+
+test('review of shop PR #79: seo, which reads web pages, keeps a ledger of its own that no agent with Bash reads', () => {
+  assert.equal(ledgerPath('DEMO-20', 'ba'), '.ai/ledger/DEMO-20.md');
+  assert.equal(ledgerPath('DEMO-20', 'seo'), '.ai/ledger/DEMO-20.seo.md');
+  assert.match(resumePrompt('DEMO-20', 'seo'), /Read \.ai\/ledger\/DEMO-20\.seo\.md and go on/);
+  const facts = epicFacts('specifying', { docs: { spec: SPEC }, run: runState({ role: 'seo', purpose: 'seo-write', session: 's-seo', outcome: 'usage-limit', effort: 'high' }) });
+  assert.equal(decide('spec', facts).runs[0].prompt, resumePrompt('DEMO-20', 'seo'));
 });
 
 test('an agent that failed twice in a row on the same step stops the command; once is tried again', () => {

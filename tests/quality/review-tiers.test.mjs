@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { join } from 'node:path';
 import { readGates } from '../../lib/quality/gates.mjs';
-import { deltaEffort, fullEffort, pathTier, requiredReviewRoles } from '../../lib/quality/review-tiers.mjs';
+import { deltaEffort, fullEffort, pathTier, requiredReviewRoles, withProjectPaths } from '../../lib/quality/review-tiers.mjs';
 import { ROOT } from '../helpers/kit.mjs';
 
 const gates = readGates(join(ROOT, 'quality'));
@@ -50,6 +50,44 @@ test('a PR of docs only is docs, unless a file is critical: the instructions of 
   assert.equal(tier('docs/user-guide/cart.md', 'apps/web/src/a.tsx'), 'normal');
   assert.equal(tier('docs/guide.md', '.claude/rules/ai-orchestrator.md'), 'critical');
   assert.equal(tier('docs/guide.md', 'docs/auth/login.md'), 'critical', 'a critical glob wins even on a doc');
+  // Review of shop PR #79: what steers an agent outside .claude/ is no doc either, at the root or in an app, in any case.
+  // Windows finds AGENTS.md under the name agents.md, so docs/agents.md is one too.
+  const steering = ['CLAUDE.md', 'CLAUDE.local.md', 'AGENTS.md', 'apps/user/AGENTS.md', 'apps/api/CLAUDE.md', 'apps/admin/claude.local.md', 'docs/agents.md'];
+  // A .claude folder, a plugin or an MCP config in an app is loaded as the root's are.
+  steering.push('apps/user/.claude/rules/x.md', 'apps/user/.Claude/settings.json', 'apps/api/.mcp.json', 'apps/user/.claude-plugin/plugin.json', 'apps/user/.gitattributes');
+  for (const file of steering) assert.equal(tier(file), 'critical', file);
+  assert.equal(tier('docs/agents-guide.md'), 'docs', 'another name that only looks alike');
+  assert.equal(tier('docs/claude/notes.md'), 'docs', 'a folder named claude, without the dot');
+});
+
+// Review of shop PR #79: security does not run on a normal PR, and these files of shop were normal.
+test('the security files of an app are sensitive: headers, browser env, proxy, lint rules, API client, login, errors', () => {
+  const files = [
+    'apps/user/src/config/security-headers.ts',
+    'apps/user/src/config/env/client.ts',
+    'apps/admin/src/config/env.ts',
+    'apps/admin/Caddyfile',
+    'apps/admin/eslint.config.js',
+    'apps/user/eslint.config.mjs',
+    'apps/web/.eslintrc.json',
+    'apps/admin/src/lib/api/api-client.ts',
+    'apps/admin/src/app/routes/login/login-route.tsx',
+    'apps/user/src/app/[locale]/login/page.tsx',
+    'apps/user/src/app/[locale]/signup/page.tsx',
+    'apps/api/src/main/java/com/acme/common/error/GlobalExceptionHandler.java',
+    'apps/api/src/main/java/com/acme/common/config/CurrentAuditorProvider.java',
+  ];
+  for (const file of files) assert.equal(tier(file), 'sensitive', file);
+});
+
+test('a project adds paths of its own to a tier in its project.yaml, and takes none away', () => {
+  const own = withProjectPaths(gates, { review: { critical_paths: ['apps/api/src/main/java/**/payment/**'], sensitive_paths: ['apps/web/src/lib/fetcher.ts'] } });
+  assert.equal(pathTier(['apps/web/src/lib/fetcher.ts'], own).tier, 'sensitive');
+  assert.equal(pathTier(['apps/api/src/main/java/com/acme/payment/Charge.java'], own).tier, 'critical');
+  assert.equal(pathTier(['apps/web/src/lib/fetcher.ts'], gates).tier, 'normal', 'the lists of the kit stay as they were');
+  assert.equal(own.review.waivers, gates.review.waivers);
+  assert.equal(withProjectPaths(gates, {}), gates);
+  assert.equal(withProjectPaths(gates, null), gates);
 });
 
 test('a renamed file counts by both names: moved out of a critical path, it is still critical', () => {

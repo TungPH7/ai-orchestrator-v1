@@ -107,7 +107,7 @@ test('tools, files, git, Jira and skills of each role (spec 2.3)', () => {
   assert.equal(row('qa'), 'Bash Write | .ai/** | read | read create edit comment transition | playwright-cli');
   assert.equal(row('devops'), 'Bash Edit Write | ** | write | read edit comment transition | ci-cd-and-automation shipping-and-launch');
   // C1 spec 6.4 and 6.5: one vendored skill and three the kit adapted.
-  assert.equal(row('seo'), 'Edit Write WebFetch WebSearch | docs/specs/** .ai/** | read | read comment | nextjs-seo seo-content-brief blog-schema blog-taxonomy');
+  assert.equal(row('seo'), 'Edit Write WebFetch WebSearch | docs/specs/*/spec.md .ai/ledger/*.seo.md | read | read comment | nextjs-seo seo-content-brief blog-schema blog-taxonomy');
 });
 
 test('fe-dev alone gets Chrome DevTools, in six groups; memory, extensions, third-party, WebMCP and PWA are not offered (spec 2.3, T2)', () => {

@@ -40,7 +40,7 @@ Claude của phiên chính không tự mở agent, cũng không tự sửa Jira 
   - PR chạm tầng Nguy cấp thì item thành Nặng;
   - review tìm ra Critical hay High thì mức tăng một bậc, và role đã review head ở effort thấp hơn sẽ review lại head đó ở effort mới.
   - QA FAIL không tự nâng mức: báo cáo QA không ghi mức cho lỗi, và nếu nâng thì item Chuẩn không còn được QA lại theo cách chỉ kiểm tiêu chí đã FAIL.
-  - Chỉ bạn hạ mức, bằng cách đổi nhãn.
+  - Chỉ bạn hạ mức, bằng cách đổi nhãn. Từ review của `shop` PR #79, kit giữ luật này chứ không chỉ dặn trong prompt: hook `block-atlassian` từ chối agent thêm hay bỏ nhãn mức qua `update.labels`, và chỉ `ba` được gắn nhãn mức khi tạo item. Một agent ghi lại cả danh sách nhãn (`fields.labels`) thì hook không biết danh sách cũ, nên `ao-step`, `merge-gate` và `audit` đọc changelog của item và bỏ qua mọi thay đổi nhãn mức do tài khoản của agent làm sau khi item được tạo.
 - **Review theo mức:** item Nặng được review như PR Nguy cấp (`reviewer` `xhigh`, `security` `max`). Item Nhẹ và Chuẩn review theo tầng đường dẫn.
 - **QA theo mức:**
   - **Nhẹ:** không có lượt `qa`. `/ao-qa` chuyển item sang In QA bằng token CI và in các dòng cần kiểm. Phiên chính kiểm từng dòng, viết báo cáo ngắn vào `.ai/runs/<KEY>/light-report.md`, rồi chạy `/ao-qa <KEY> --light-report …`. `ao-step` đăng báo cáo bằng token CI, và chuyển item qua QA fail khi kết quả là FAIL. Bạn vẫn bấm Accept sau PASS.

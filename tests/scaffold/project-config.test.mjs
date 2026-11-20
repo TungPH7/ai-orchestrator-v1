@@ -154,3 +154,10 @@ test('seo: true only for a public app', () => {
   assert.deepEqual(rules(edited((d) => (d.apps.api.seo = true))), ['P10 apps.api.seo']);
   assert.deepEqual(rules(edited((d) => (d.apps.web.seo = 'yes'))), ['P1 apps.web.seo']);
 });
+
+// Review of shop PR #79: the project's own paths of a review tier, which only add to the kit's.
+test('review: the project adds critical_paths and sensitive_paths, lists of globs', () => {
+  assert.deepEqual(rules(edited((d) => (d.review = { critical_paths: ['apps/api/**/payment/**'], sensitive_paths: ['apps/web/src/lib/fetcher.ts'] }))), []);
+  assert.deepEqual(rules(edited((d) => (d.review = { sensitive_paths: [''] }))), ['P1 review.sensitive_paths[0]']);
+  assert.deepEqual(rules(edited((d) => (d.review = { docs_paths: ['apps/**'] }))), ['P1 review.docs_paths'], 'a project lowers no tier');
+});
