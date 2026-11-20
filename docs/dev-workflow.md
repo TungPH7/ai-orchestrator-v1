@@ -22,6 +22,18 @@ Claude của phiên chính không tự mở agent, cũng không tự sửa Jira 
 | `/ao-preview` | `<KEY>` có PR đang mở, thêm `--stop` để tắt | Không. Thư mục dự án chuyển sang nhánh PR, `npm ci` khi lockfile đổi, bật các app của `project.yaml` | App chạy và in URL; `--stop` tắt app và đưa thư mục về `develop` |
 | `/ao-review` | `<PR>` có CI xanh | PR nháp thì một bước script chuyển nó sang sẵn sàng. Rồi `reviewer`, rồi `security`, theo tầng đường dẫn của PR: `reviewer` ở `high`, lên `xhigh` ở tầng Nguy cấp; `security` ở `high` ở tầng Nhạy cảm, `max` ở tầng Nguy cấp, không chạy ở tầng Thường và Tài liệu ([quality-gates.md](quality-gates.md), mục Review theo tầng đường dẫn). Vòng sau chỉ xem phần mới, ở `high` | Báo cáo mà PR cần đã có trên head, chờ bạn ở gate ③ |
 | `/ao-fix` | `<PR> [việc cần sửa]` | `ba` hoặc `sa` khi yêu cầu đổi AC, hợp đồng API hay yêu cầu chung, rồi dev agent sửa. PR đã sẵn sàng thì `reviewer` và `security` review lại | PR nháp: chờ bạn xem lại. PR sẵn sàng: hai báo cáo mới trên head, chờ bạn ở gate ③ |
+| `/ao-run` | `<EPIC>`, hoặc các `<KEY>` cần chạy; thêm `--budget <USD>`; `--stop` để dừng | Không tự chạy agent: bộ điều phối mở các lệnh ở trên (`/ao-spec`, `/ao-plan`, `/ao-request`, `/ao-build`, `/ao-review`, `/ao-fix`, `/ao-qa`) như bạn gõ, nhiều lệnh cùng lúc trong `runs.lanes_max` | Mọi item xong; hay không còn gì chạy được sau `runs.idle_hours`; hay chạm ngân sách, giới hạn usage, `--stop` |
+
+**`/ao-run`, bộ điều phối** (C2, [SPEC-c2.md](../SPEC-c2.md) mục 5):
+- Đây là code thường, không dùng model. Mỗi vòng, nó đọc board (`ao-step status --json`), lấy lệnh kế tiếp của từng item trong phạm vi, hỏi chính `ao-step` lệnh đó có chạy được không (`ao-step <lệnh> <arg> --json`, không chạy agent), rồi mở lệnh thật (`--go`). Việc gần xong được mở trước: QA, review, fix, build, rồi request, plan, spec.
+- Phạm vi là một Epic (Epic và các Story, Task, Bug của nó), hoặc các item bạn nêu. Không có chế độ chạy cả dự án.
+- Nó dừng ở mọi chỗ dừng có `waits: you` và liệt kê ra: các cổng ①–⑤, Accept, Click, `seo-ok`, cờ Needs you, câu hỏi mở, PR nháp chờ xem trước, chấp nhận một High. `/ao-fix` tự chạy chỉ khi báo cáo trên head có Critical hay High. Không bao giờ tự chạy `/ao-preview`, `/ao-intake`, `/ao-release`, `/ao-ship`, `/ao-rollback`.
+- `/ao-spec`, `/ao-plan` và `/ao-request` chạy một mình: bộ điều phối chờ mọi lệnh khác xong, và không mở lệnh mới trong lúc chờ.
+- Bạn bấm xong ở Jira hay GitHub thì nó thấy ở vòng sau (tối đa 2 phút) và tự chạy tiếp.
+- Ngân sách mỗi lần chạy là `runs.budget_usd` (30 USD), hay `--budget`. Tới mức đó, khi chạm giới hạn usage, hay khi bạn gõ `/ao-run --stop`, nó không mở lệnh mới, chờ các lệnh đang chạy xong, rồi dừng. Một lệnh thất bại không được mở lại trong cùng lần chạy.
+- Log: `.ai/runs/_run/<ngày>.log`, mỗi sự kiện một dòng; log của từng lệnh ở `.ai/runs/<KEY>/run-<giờ>.log`. `/ao-status` in bộ điều phối đang chạy, chi phí tới lúc đó và các lệnh của nó.
+- Mỗi dự án chỉ một bộ điều phối. Bạn vẫn gõ lệnh tay được; nó để yên item đang có lệnh của bạn.
+- Đừng tắt tiến trình của nó: trên Windows, các lệnh nó mở sẽ chạy tiếp mà không ai theo dõi. Dùng `/ao-run --stop`.
 
 **`/ao-fix` khi không có gì chặn.** Bạn ghi việc cần sửa ngay sau số PR, ví dụ `/ao-fix 16 sửa hai finding Low đầu của reviewer`. Claude ghi đoạn chữ đó vào `.ai/runs/<KEY>/note.md` và truyền bằng `--note`, không bao giờ đưa nó vào dòng lệnh.
 

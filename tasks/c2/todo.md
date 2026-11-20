@@ -35,7 +35,7 @@ Bộ test lúc bắt đầu: 1.731 test xanh (kit `main` `dc400af`).
 
 ## Phần 2: bộ điều phối, nhánh `task/c2-2`
 
-- [ ] **T4: `lib/workflow/dispatch.mjs`** (spec mục 5.1–5.5).
+- [x] **T4: `lib/workflow/dispatch.mjs`** (spec mục 5.1–5.5). Xong 2026-11-20, commit `f70f886`: `planRound` (một vòng) và `runDispatcher` (vòng chạy, mọi tác động truyền vào), 10 test. Item có lời nhờ tới role cố vấn chạy `/ao-request` trước lệnh kế tiếp của nó; Epic In Progress không nằm trong danh sách chờ; một lệnh mở `MAX_STARTS` (5) lần trên một item trong một lần chạy thì thôi mở.
   - **Đạt khi** có test cho:
     - phạm vi: Epic cùng Story, Task, Bug của nó; hay danh sách item; Sub-task đi theo Story; item ngoài phạm vi bị bỏ;
     - ứng viên từ `nextCommand`, rồi quyết định khô của `decideStep`: chạy được, STOP `next` (chạy `then` sau khi hỏi lại), hay chờ;
@@ -45,7 +45,7 @@ Bộ test lúc bắt đầu: 1.731 test xanh (kit `main` `dc400af`).
     - lệnh thất bại không mở lại cho cùng item trong lần chạy;
     - ngân sách, giới hạn usage, `idle_hours`, `--stop`, mọi item Done hay Cancelled.
   - **File:** `lib/workflow/dispatch.mjs`, test.
-- [ ] **T5: `ao-step run`** (spec mục 5.2, 5.4–5.7).
+- [x] **T5: `ao-step run`** (spec mục 5.2, 5.4–5.7). Xong 2026-11-20. Đổi quyết định 6 của plan: bộ điều phối hỏi chính `ao-step` qua `--json`, chạy thật với `--result <file>`. `lib/workflow/run-command.mjs` (tiến trình con, khóa, `--stop`, log, chi phí) có 6 test với tiến trình và file giả; test của phần này viết cùng lúc với code, không đỏ trước. `--json` bỏ qua bước tắt preview, để lượt hỏi thử không tắt preview của bạn.
   - **Đạt khi:**
     - không `--go` thì in kế hoạch, không mở lệnh;
     - `--go` mở lệnh con `ao-step <lệnh> <arg> --go`, log ở `.ai/runs/<KEY>/run-<giờ>.log`; sự kiện ở `.ai/runs/_run/<ngày>.log`;
@@ -55,7 +55,7 @@ Bộ test lúc bắt đầu: 1.731 test xanh (kit `main` `dc400af`).
     - `/ao-status` in bộ điều phối đang chạy;
     - vòng chạy với Jira, GitHub và tiến trình con giả: từ Epic Specifying tới khi mọi item chờ Accept.
   - **File:** `scripts/ao-step.mjs`, `lib/scaffold/project.schema.json`, `lib/workflow/lanes.mjs` (đọc `runs`), test.
-- [ ] **T6: skill và tài liệu.**
+- [x] **T6: skill và tài liệu.** Xong 2026-11-20. Skill nhận tối đa bốn key qua `$0 $1 $2 $3`, vì luật của kit cấm đưa `$ARGUMENTS` vào dòng lệnh shell (`tests/workflow/skills.test.mjs` bắt được). Chạy thử trên `shop` (chỉ đọc): `run SHOP-40 SHOP-70 SHOP-75` không mở gì, ba Task New chờ được làm rõ; `run SHOP-7` báo Epic đã xong. 1.753 test xanh.
   - **Đạt khi:** `kit/.claude/skills/ao-run/SKILL.md` (phiên chính chạy ở nền, theo dõi log, báo từng chỗ chờ kèm các bước bấm); `docs/dev-workflow.md`, `README.md`; `ao-step run <EPIC>` không `--go` chạy trên `shop` (chỉ đọc Jira và GitHub) và in kế hoạch hợp lý.
   - **File:** skill, tài liệu.
 
