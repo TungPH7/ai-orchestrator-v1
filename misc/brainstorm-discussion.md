@@ -30352,3 +30352,66 @@ Bạn làm xong thì báo mình. Mình chạy `jira:check` để kiểm cả hai
 - **Checkpoint 4:** mình hỏi bạn trước khi chép kit vào `shop`. Từ bước đó bắt đầu tốn tiền.
 
 Bạn báo đã bấm xong (hoặc gõ "làm tiếp" nếu để bấm sau) thì mình làm bước 8.
+
+# Phiên 33 · Lượt 91 — 2026-11-20
+
+**Bạn:** "đã làm 2 việc trên Jira, bạn check giúp tôi xem đúng chưa nhé. Xong thì làm tiếp"
+
+**Bạn (giữa lượt):** "tạm dừng 1 tí nhé, làm xong việc đang làm xong dừng lại 1 tí nhé (nhớ lưu vào bộ nhớ tạm để không mất context, dữ liệu đang làm), khi nào tôi nói làm tiếp thì làm tiếp và file nhớ tạm đó đi"
+
+**Claude:**
+
+Jira đúng cả hai việc. Mình đã làm xong bước 8 và bước 9, cả hai đã merge vào `main` của kit, rồi dừng ở đây như bạn dặn. Trạng thái đang làm nằm trong một file nhớ; bạn gõ "làm tiếp" thì mình đọc file đó và làm bước 10.
+
+## Jira
+
+`jira:check` báo Jira khớp với `tracker/jira.yaml`. Lệnh này so cả thứ tự option của field Agent và group của rule Restrict trên từng transition, nên:
+- option "SEO Specialist" nằm đúng chỗ, cuối field Agent;
+- group `ao-automation` đã có ở rule Restrict của Pick up và QA fail.
+
+## Bước 8: bốn skill của `seo` (T17, D3; kit PR #321)
+
+**`nextjs-seo` đạt, đã chép nguyên văn.**
+- Mình đọc hết `SKILL.md` và sáu file tham khảo, khoảng 3.500 chữ. Nội dung đúng và mới (bản 1.7.0, ngày 2026-11-14).
+- Mình đối chiếu các mốc Google bỏ rich result với trang Search Central, và chúng khớp: FAQ ngừng từ 2026-05-07, Practice Problems bỏ ngày 2026-01-06.
+- Skill nhắm Next.js 16; app `user` của `shop` dùng 16.4.6.
+
+**Ba skill chép rồi viết lại:** `seo-content-brief`, `blog-schema`, `blog-taxonomy`.
+- Đầu mỗi file có khối `adapted_from`: repo, commit gốc, giấy phép, bản quyền. File giấy phép MIT của bản gốc nằm cạnh.
+- Đã bỏ phần không hợp: chấm điểm đối thủ, DataForSEO, Ahrefs, pipeline riêng của Claude Blog, đồng bộ với WordPress hay Shopify.
+- Đã thêm phần của kit: ghi vào mục `## SEO` của SPEC, chữ `vi` và `en`, danh sách "Kiểm" cho `qa`.
+- Bản gốc của `seo-content-brief` có ba chỗ tự mâu thuẫn hay lỗi thời, và bản của kit đã sửa. Ví dụ: một mẫu trang bắt đặt từ khóa vào alt của ảnh, trái với luật "alt tả ảnh" của chính skill đó.
+
+**Cơ chế cho skill chuyển thể (D3):**
+- Roster có danh sách mới `adapted_skills`. `npm run validate` báo lỗi khi khối `adapted_from` thiếu khóa.
+- `npm run skills:vendor` từ chối tên của ba skill này, để không tải bản gốc đè lên bản của kit.
+- Trang mới `docs/skills.md` ghi năm bước so với bản gốc khi bản gốc có bản mới, và phần giữ, phần bỏ của từng skill.
+
+Bốn skill nạp vào mỗi lượt `seo` khoảng 3.600 chữ.
+
+## Bước 9: nhãn `ao-seo` (T18; kit PR #322)
+
+- **Trong Epic:** `sa` ghi `· seo: S1, S3` ở dòng item chạm màn hình của mục `## SEO`. Bạn duyệt ở cổng ②, rồi `ba` gắn nhãn `ao-seo`.
+- **Ngoài Epic:** `/ao-intake` đề xuất nhãn cho Task hay Bug chạm trang của app `seo: true`. Khi phần SEO chưa ai viết, phiên chính comment `Cần seo:` sau khi tạo item, và `/ao-request` chạy `seo`.
+- **Tác dụng:** item có nhãn thì prompt của dev agent, `reviewer` và `qa` chỉ tới phần SEO: mục `## SEO` của SPEC, hoặc comment của `seo` với item ngoài Epic.
+- **Epic blog:** bản nháp của `/ao-intake` có thêm ba yêu cầu mà D2 cần: bài nháp, link xem trước kín, công cụ đăng bài.
+- Cả bộ test xanh: 1.686 test.
+
+## Ba chỗ mình tự quyết, bạn xem lại giúp
+
+1. **"Cột SEO" của plan là một đoạn trên dòng item** (`· seo: S1, S3`), như `level` và `effort`. Task List của plan là danh sách dòng, không phải bảng. Không có đoạn đó là item không có phần SEO.
+2. **`/ao-fix` cũng chỉ tới phần SEO**, như `/ao-build`, vì dev agent sửa chính phần đó. `security` thì không nhận, vì SEO không phải việc bảo mật.
+3. **Meta description dài 150–160 ký tự**, theo prompt của `seo`. Bản gốc của `seo-content-brief` ghi 130–150.
+
+## Một điều nên biết
+
+Máy bạn có một bản `nextjs-seo` cũ hơn ở `~/.claude/skills/`. Khi trùng tên, Claude Code dùng bản đó thay cho bản của dự án.
+- Agent `seo` không bị ảnh hưởng, vì `ao-agent` nạp skill từ `.claude/skills/` của dự án.
+- Phiên chính ở `shop` thì dùng bản cũ. Bản cũ vẫn đúng, chỉ thiếu vài đoạn mới. Muốn dùng bản mới thì bạn xóa thư mục đó; mình không tự xóa.
+
+## Còn lại
+
+- **Bước 10 (T19):** chỗ nối `ci.project.yml`.
+- **Checkpoint 4:** mình hỏi bạn trước khi chép kit vào `shop`, vì từ bước đó bắt đầu tốn tiền.
+
+File nhớ: `C:\Users\Huu Tung\.claude\projects\D--Document-1Khoahoc-4LapTrinh-AI-for-coding\memory\c1-paused-2026-11-20.md`. Bạn gõ "làm tiếp" thì mình đọc file đó và làm bước 10.
