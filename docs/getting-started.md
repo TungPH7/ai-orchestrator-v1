@@ -1075,7 +1075,7 @@ PR #40, tổng 20,49 USD:
 
   - Mỗi item được một worktree `e-commerce/shop-wt/<KEY>`, với cổng riêng và Postgres riêng trên Docker. Nhờ vậy ba item build cùng lúc mà không tranh cổng.
   - Mỗi môi trường chỉ có một lượt QA tại một thời điểm.
-- **Không approve PR khi có QA đang chạy hay đang chờ.** PR merge thì Development deploy bản mới, và lượt QA đang chạy bị thay (`superseded`) rồi phải chạy lại. Chuyện này xảy ra 3 lần trong Pilot 3. Hãy approve các PR cùng lúc, rồi chỉ QA sau lần merge cuối.
+- **(Trước C2) Không approve PR khi có QA đang chạy hay đang chờ.** Từ C2, `merge-gate` chờ lượt QA đó xong rồi mới merge ([release-workflow.md](release-workflow.md)). PR merge thì Development deploy bản mới, và lượt QA đang chạy bị thay (`superseded`) rồi phải chạy lại. Chuyện này xảy ra 3 lần trong Pilot 3. Hãy approve các PR cùng lúc, rồi chỉ QA sau lần merge cuối.
 
 ### Bước 9. Release `v0.3.0`: gate ④ và ⑤
 

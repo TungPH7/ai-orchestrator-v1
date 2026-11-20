@@ -165,7 +165,7 @@ test('CI, a request for changes, the title, the description, the base branch and
 // records each request; `refuse` makes the merge call fail with that HTTP status.
 // `auditMain` audits the commits a merge back brings from main: by default each passes; null gives merge-gate none.
 const passAll = async (pr) => [{ sha: pr.head.sha, ok: true, problems: [] }];
-async function runOnce({ change = () => {}, dryRun = false, refuse, reply = () => ({ merged: true }), auditMain = passAll } = {}) {
+async function runOnce({ change = () => {}, dryRun = false, refuse, reply = () => ({ merged: true }), auditMain = passAll, waitQa } = {}) {
   const copy = structuredClone(answers);
   change(copy);
   const sent = [];
@@ -189,11 +189,27 @@ async function runOnce({ change = () => {}, dryRun = false, refuse, reply = () =
     approvers: ['approver'],
     dryRun,
     ...(auditMain && { auditMain }),
+    ...(waitQa && { waitQa }),
     log: (line) => lines.push(line),
   });
   return { lines, sent, writers, failures };
 }
 const SKIPPED_13 = 'Skipped #13: opened by approver, not by tungph7-ao-dev: whoever opened it merges it';
+
+// C2 spec section 9: before a merge, merge-gate waits while qa tests the commit the merge builds on (waitQa waits, and
+// resolves null once free, or the reason it gave up); the PR then waits for the next run.
+test('merge-gate merges once the QA on the base has ended, and leaves the PR to the next run when it gave up waiting', async () => {
+  const asked = [];
+  const free = await runOnce({ waitQa: async (pr) => (asked.push(pr.base.ref), null) });
+  assert.deepEqual(asked, ['develop']);
+  assert.deepEqual(free.sent.map(({ path }) => path), ['/pulls/12/merge']);
+  const held = await runOnce({ waitQa: async () => 'qa tests DEMO-21 on development, still after 100 minutes' });
+  assert.deepEqual(held.sent, []);
+  assert.deepEqual(held.lines, ['Waiting #12: qa tests DEMO-21 on development, still after 100 minutes', SKIPPED_13]);
+  // A dry run waits for nothing.
+  const dry = await runOnce({ dryRun: true, waitQa: async () => assert.fail('a dry run waited') });
+  assert.match(dry.lines[0], /^Would merge #12/);
+});
 const noApproval = (a) => a['/pulls/12/reviews'].pop();
 
 test('a run merges the PR that meets every condition with the ao-dev App, at its head commit, and skips the PR you opened', async () => {
