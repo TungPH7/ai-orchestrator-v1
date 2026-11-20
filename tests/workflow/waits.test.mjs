@@ -24,15 +24,15 @@ test('every stop of decideStep names what it waits for first: one of WAITS, or a
   assert.deepEqual(bad.map(({ at, rest }) => `line ${at}: stop(${rest}`), []);
 });
 
-test('every stop of the runner sets what it waits for with its reason', () => {
-  const lines = source('runner.mjs').split('\n');
-  const reasons = lines.map((line, index) => ({ line, at: index + 1 })).filter(({ line }) => /\breason = /.test(line) && !/\blet reason\b/.test(line));
-  assert.ok(reasons.length >= 13, `found only ${reasons.length} reasons`);
-  const bad = reasons.filter(({ line }) => {
-    const label = line.match(/\bwaits = '(\w+)'; reason = /);
-    return !label || !WAITS.includes(label[1]);
-  });
-  assert.deepEqual(bad.map(({ at }) => `line ${at}`), []);
+test('every stop of the runner goes through halt, which names what it waits for first', () => {
+  const text = source('runner.mjs');
+  const calls = [...text.matchAll(/(?<![\w$.])halt\(\s*/g)].map((match) => ({ at: text.slice(0, match.index).split('\n').length, rest: text.slice(match.index + match[0].length, match.index + match[0].length + 30) }));
+  const uses = calls.filter(({ rest }) => !rest.startsWith('waits, reason'));
+  assert.ok(uses.length >= 13, `found only ${uses.length} stops`);
+  const bad = uses.filter(({ rest }) => !WAITS.includes(rest.match(/^'(\w+)'/)?.[1]));
+  assert.deepEqual(bad.map(({ at, rest }) => `line ${at}: halt(${rest}`), []);
+  // No reason set another way, which would leave its waits out.
+  assert.doesNotMatch(text, /\breason = /);
 });
 
 test('WAITS holds the seven values of the spec', () => {

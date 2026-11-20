@@ -133,15 +133,18 @@ test('/ao-build stops: not Ready, a dependency not merged, the docs PR not merge
 test('/ao-review: each run starts on the base branch of the PR, with a worktree at the head of the PR', () => {
   const full = decide('review', prFacts('review', { files: ['apps/api/src/cart/cart.controller.ts'] }));
   assert.equal(full.runs.length, 2);
+  // Each role its own worktree, and both marked together, so reviewer and security may run at once (C2 spec section 7).
   for (const run of full.runs) {
     assert.deepEqual(run.checkout, { branch: 'develop', pull: true });
-    assert.deepEqual(run.worktree, { name: 'pr-15', sha: HEAD });
+    assert.deepEqual(run.worktree, { name: `pr-15-${run.role}`, sha: HEAD });
+    assert.equal(run.together, true, run.role);
   }
   const onRelease = decide('review', prFacts('review', { base: 'release/v1.2.0', headRef: 'bugfix/DEMO-21-remove-line', files: ['apps/api/src/cart/cart.service.ts'] }));
   assert.deepEqual(onRelease.runs.map((run) => run.checkout), Array(onRelease.runs.length).fill({ branch: 'release/v1.2.0', pull: true }));
   // The review of the new part reads the same code, at the new head.
   const delta = decide('review', prFacts('review', { reports: { reviewer: report(), security: report({ sha: OLD, onHead: false, at: '2026-11-04T08:00:00Z' }) }, securityCompare: { base: OLD, status: 'ahead', files: [{ filename: 'apps/api/test/cart.spec.ts', additions: 40, deletions: 2 }] } }));
-  assert.deepEqual(delta.runs.map(({ purpose, checkout, worktree }) => [purpose, checkout, worktree]), [['review-delta', { branch: 'develop', pull: true }, { name: 'pr-15', sha: HEAD }]]);
+  assert.deepEqual(delta.runs.map(({ purpose, checkout, worktree }) => [purpose, checkout, worktree]), [['review-delta', { branch: 'develop', pull: true }, { name: 'pr-15-security', sha: HEAD }]]);
+  assert.equal(delta.runs[0].together, undefined, 'one run alone is not marked');
 });
 
 // High of reviewer on ao-pilot PR #23 (T22b): a review run is on record from its start, so a killed one goes on. It goes
@@ -150,7 +153,7 @@ test('/ao-review: each run starts on the base branch of the PR, with a worktree 
 test('a stopped review goes on in its session on the head it was reviewing, with its worktree; on a new head it starts again', () => {
   const stopped = (more = {}) => ({ key: 'DEMO-21', runs: [{ n: 1, command: 'review', role: 'security', purpose: 'review', effort: 'max', session: 's-sec', outcome: 'unfinished', checkout: { branch: 'develop', pull: true }, head: HEAD, ...more }] });
   const goesOn = decide('review', prFacts('review', { reports: { reviewer: report(), security: null } }, { run: stopped() }));
-  assert.deepEqual(goesOn.runs, [{ role: 'security', key: 'DEMO-21', effort: 'max', purpose: 'review', resume: 's-sec', prompt: resumePrompt('DEMO-21'), checkout: { branch: 'develop', pull: true }, head: HEAD, worktree: { name: 'pr-15', sha: HEAD } }]);
+  assert.deepEqual(goesOn.runs, [{ role: 'security', key: 'DEMO-21', effort: 'max', purpose: 'review', resume: 's-sec', prompt: resumePrompt('DEMO-21', 'security'), checkout: { branch: 'develop', pull: true }, head: HEAD, worktree: { name: 'pr-15-security', sha: HEAD } }]);
   assert.deepEqual(decide('review', prFacts('review', { reports: { reviewer: report(), security: null } }, { run: stopped({ outcome: 'usage-limit' }) })).runs[0].resume, 's-sec');
 
   const moved = decide('review', prFacts('review', { reports: { reviewer: null, security: null } }, { run: stopped({ head: OLD }) }));

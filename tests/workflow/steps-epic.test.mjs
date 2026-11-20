@@ -108,6 +108,9 @@ test('a run that stopped before its end goes on in its session, with the ledger'
 test('review of shop PR #79: seo, which reads web pages, keeps a ledger of its own that no agent with Bash reads', () => {
   assert.equal(ledgerPath('DEMO-20', 'ba'), '.ai/ledger/DEMO-20.md');
   assert.equal(ledgerPath('DEMO-20', 'seo'), '.ai/ledger/DEMO-20.seo.md');
+  // reviewer and security keep one each too: they may run at once on one PR (C2 spec section 7).
+  assert.equal(ledgerPath('DEMO-20', 'reviewer'), '.ai/ledger/DEMO-20.reviewer.md');
+  assert.equal(ledgerPath('DEMO-20', 'security'), '.ai/ledger/DEMO-20.security.md');
   assert.match(resumePrompt('DEMO-20', 'seo'), /Read \.ai\/ledger\/DEMO-20\.seo\.md and go on/);
   const facts = epicFacts('specifying', { docs: { spec: SPEC }, run: runState({ role: 'seo', purpose: 'seo-write', session: 's-seo', outcome: 'usage-limit', effort: 'high' }) });
   assert.equal(decide('spec', facts).runs[0].prompt, resumePrompt('DEMO-20', 'seo'));
