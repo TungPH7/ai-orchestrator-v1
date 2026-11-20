@@ -245,7 +245,7 @@ Mỗi lần chạy, `merge-gate` xét mọi PR đang mở, và in vào log một
 | Dòng | Nghĩa |
 |---|---|
 | `Merged #12: …` | Đã squash merge bằng App `ao-dev` |
-| `Waiting #12: …` | Còn thiếu các điều kiện được liệt kê |
+| `Waiting #12: …` | Còn thiếu các điều kiện được liệt kê; hay một lượt QA đang kiểm commit đầu của nhánh đích (commit status `ao/qa` = `pending` do một login trong `AO_APPROVERS` đặt, được đặt lại trong 10 phút qua): `merge-gate` chờ nó trong lượt chạy, đọc lại mỗi phút, tối đa 100 phút, rồi merge (C2, [SPEC-c2.md](../SPEC-c2.md) mục 9) |
 | `Needs you #12: it changes …, so read the diff and merge it yourself` | PR sửa file được bảo vệ. Bạn đọc diff rồi tự merge (mục sau). Phần `(still missing: …)` ở cuối, nếu có, là các điều kiện còn thiếu |
 | `Skipped #12: …` | `merge-gate` không merge loại PR này: PR do bạn mở, PR ở draft, hoặc nhánh không phải của một item |
 | `No open PR` | Không có PR nào đang mở |

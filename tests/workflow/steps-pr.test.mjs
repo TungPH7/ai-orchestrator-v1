@@ -281,25 +281,25 @@ test('/ao-review stops: CI running or red, both reports on the head, a docs PR, 
   }
 });
 
-test('at gate ③ the stop says to wait while qa tests on the environment the merge deploys to (Pilot 3, SHOP-28, SHOP-69)', () => {
-  // An approval merges, the deploy follows, and ao-step stops the QA that runs as superseded: it starts again.
+test('at gate ③ the stop says a qa tests the environment the merge deploys to, and that merge-gate waits for it (C2 spec section 9)', () => {
+  // Before C2 an approval merged, the deploy followed, and ao-step stopped that QA as superseded (Pilot 3, SHOP-28,
+  // SHOP-69). Now merge-gate waits while the QA marks the commit with ao/qa: you approve when you like.
   const reports = { reviewer: report(), security: report() };
   const testing = [{ key: 'DEMO-30', environment: 'development', pid: 4242 }];
   const waiting = decide('review', prFacts('review', { reports }, { qaRunning: testing }));
   assert.equal(waiting.go, false);
-  assert.match(waiting.reason, /gate ③ merge-approval\. Wait: qa is testing DEMO-30 on development now \(process 4242\)/);
+  assert.match(waiting.reason, /gate ③ merge-approval\. qa is testing DEMO-30 on development now \(process 4242\): merge-gate merges after it ends, so the deploy does not cut it/);
   assert.equal(waiting.waits, 'you');
-  assert.match(waiting.reason, /the merge deploys development, and the new deploy stops that QA/);
-  assert.match(waiting.next, /^Once qa ends on development, read the reports/);
+  assert.match(waiting.next, /^Read the reports/);
 
   // A QA on another environment is not in the way: a merge into develop deploys only Development.
   const elsewhere = decide('review', prFacts('review', { reports }, { qaRunning: [{ key: 'DEMO-31', environment: 'staging', pid: 7 }] }));
-  assert.doesNotMatch(elsewhere.reason, /Wait: qa/);
+  assert.doesNotMatch(elsewhere.reason, /qa is testing/);
   assert.match(elsewhere.next, /^Read the reports/);
-  assert.doesNotMatch(decide('review', prFacts('review', { reports })).reason, /Wait: qa/);
+  assert.doesNotMatch(decide('review', prFacts('review', { reports })).reason, /qa is testing/);
   // A release branch deploys Staging.
   const release = decide('review', prFacts('review', { reports, base: 'release/v0.4.0', headRef: 'bugfix/DEMO-21-remove-line' }, { qaRunning: [{ key: 'DEMO-31', environment: 'staging', pid: 7 }] }));
-  assert.match(release.reason, /Wait: qa is testing DEMO-31 on staging/);
+  assert.match(release.reason, /qa is testing DEMO-31 on staging/);
 });
 
 test('/ao-fix: the dev agent of the item fixes what was asked on its branch, then the reviews run again', () => {

@@ -59,6 +59,7 @@ import { hookKitDrift, hookKitNote } from '../lib/workflow/hook-kit.mjs';
 import { planRound, runDispatcher, scopeOf } from '../lib/workflow/dispatch.mjs';
 import { DISPATCHER_FILE, dispatcherEffects, spentSince } from '../lib/workflow/run-command.mjs';
 import { seoChange } from '../lib/workflow/seo-commit.mjs';
+import { QA_CONTEXT, qaSignal } from '../lib/workflow/qa-signal.mjs';
 
 const COMMANDS = ['status', 'intake', 'preview', 'spec', 'plan', 'request', 'build', 'review', 'fix', 'qa', 'release', 'ship', 'rollback'];
 const USAGE = 'usage: node .ai-orchestrator/scripts/ao-step.mjs <status|intake|preview|spec|plan|request|build|review|fix|qa|release|ship|rollback> [<KEY>|<PR>|<vX.Y.0> <sha>|<vX.Y.Z>|<environment> [<sha>]] [--go] [--answers <file>] [--note <file>] [--change <word>] [--stop] [--retest]; or run <EPIC>|<KEY>… [--go] [--budget <USD>], or run --stop';
@@ -370,9 +371,9 @@ async function main() {
   if (command === 'status') {
     const live = liveLocks(activeDir, { fs: lockFs, alive });
     if (live.length > 0) console.log(`Running: ${live.map(({ command: c, key: k, slot, startedAt }) => `${c} ${k} in slot ${slot}, ${Math.round((Date.now() - Date.parse(startedAt)) / 60000)} min`).join('; ')}`);
-    // Approving a PR now would make its merge deploy and stop the QA (Pilot 3, SHOP-28 and SHOP-69 of shop).
+    // merge-gate waits for it before a merge that deploys there (C2 spec section 9).
     for (const { key: k, environment } of live.filter((lock) => lock.command === 'qa' && lock.environment)) {
-      console.log(`QA in progress: qa is testing ${k} on ${environment}. Approve no PR whose merge deploys ${environment} until it ends: the new deploy would stop it, and it would start again`);
+      console.log(`QA in progress: qa is testing ${k} on ${environment}; merge-gate waits for it to end before a merge that deploys ${environment}`);
     }
     // The dispatcher /ao-run that runs, if any (C2 spec 5.6).
     const dispatcher = readJson(join(projectDir, ...DISPATCHER_FILE));
@@ -425,6 +426,12 @@ async function main() {
       const place = await keeper.placeOf(run, command);
       return place ? gitIn(place.dir) : git;
     };
+    // The heartbeat of a qa run on GitHub (C2 spec section 9): ao/qa on the commit it tests, set with your gh login, so
+    // merge-gate waits for its end before a merge that would deploy over it.
+    const statuses = command === 'qa' && userToken ? createGitHubClient({ repo, token: userToken, write: true }) : null;
+    const qaBeat = statuses
+      ? qaSignal({ post: ({ sha, state, description }) => statuses.request('POST', `/statuses/${sha}`, {}, { state, context: QA_CONTEXT, description }), log: (line) => console.log(line) })
+      : (run, start) => start(run);
     // A qa run stops at once when another deploy reaches its environment during the run (spec 5.1); the runner decides
     // again, and qa tests the new version, twice at most.
     const watchQa = deploys
@@ -453,7 +460,9 @@ async function main() {
       agent: async (run, { log }) => {
         await claim(run);
         try {
-          return await watchQa(await placed(run.qa?.auth || run.envAuth ? { ...run, env: { ...run.env, ...basicAuthEnv(secret('AO_ENV_AUTH')) } } : run), (ready, onStart) => startAgent(ready, join(runsDir, key, log), onStart));
+          const logFile = join(runsDir, key, log);
+          const logSize = () => (existsSync(logFile) ? statSync(logFile).size : 0);
+          return await watchQa(await placed(run.qa?.auth || run.envAuth ? { ...run, env: { ...run.env, ...basicAuthEnv(secret('AO_ENV_AUTH')) } } : run), (ready, onStart) => qaBeat(ready, (r) => startAgent(r, logFile, onStart), logSize));
         } finally {
           // Its agent no longer holds RAM for the others that wait (admitAgent).
           if (cap > 1) await releaseAgent(activeDir, run.agentLock ?? lock, { fs: lockFs, alive, sleep });

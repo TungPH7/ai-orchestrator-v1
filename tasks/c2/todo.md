@@ -101,7 +101,7 @@ Bộ test lúc bắt đầu: 1.731 test xanh (kit `main` `dc400af`).
 
 ## Phần 6: nhịp tim của QA, nhánh `task/c2-6`
 
-- [ ] **T11: `ao-step` đặt `ao/qa`** (spec mục 9, bước 1–5).
+- [x] **T11: `ao-step` đặt `ao/qa`** (spec mục 9, bước 1–5). Xong 2026-11-21, cùng commit với T12 (hai task dùng chung `lib/workflow/qa-signal.mjs`). Login `gh` có quyền `repo` (đã kiểm). `qaSignal` bọc lượt khởi động agent `qa`, chạy cùng `qaWatcher`; độ im lặng của log tính từ lúc bắt đầu lượt. Lượt không có commit trên môi trường (QA nhẹ, lỗi bạn báo) không đặt gì.
   - Trước khi viết code: `gh auth status` cho thấy login của bạn có quyền `repo` (chỉ đọc tên quyền, không in token).
   - **Đạt khi:**
     - `pending` lúc lượt QA bắt đầu, lên commit mà lượt đó kiểm;
@@ -109,7 +109,7 @@ Bộ test lúc bắt đầu: 1.731 test xanh (kit `main` `dc400af`).
     - `success` khi lượt xong (PASS, FAIL, bị dừng, superseded), và khi log của agent không có dòng mới trong 15 phút;
     - lỗi khi đặt status chỉ ghi một dòng, không làm hỏng lượt QA.
   - **File:** `lib/workflow/qa.mjs`, `scripts/ao-step.mjs`, test.
-- [ ] **T12: `merge-gate` chờ `ao/qa`** (spec mục 9, bước 6–8).
+- [x] **T12: `merge-gate` chờ `ao/qa`** (spec mục 9, bước 6–8). Xong 2026-11-21. `waitForQa` đọc status của commit đầu nhánh đích (`/git/ref/heads/<base>`), chờ tối đa 100 phút rồi để PR cho lượt sau; lượt chạy thử (`--dry-run`) không chờ. Chữ ở cổng ③ và dòng `QA in progress` của `/ao-status` nay nói `merge-gate` sẽ chờ, không bảo bạn đợi nữa. Tài liệu: `release-workflow.md`, `quality-gates.md`, `getting-started.md`.
   - **Đạt khi:**
     - trước khi merge một PR vào nhánh deploy một môi trường, đọc status `ao/qa` mới nhất do một login trong `AO_APPROVERS` đặt, trên commit đầu của nhánh đích;
     - `pending` còn mới thì chờ, đọc lại mỗi phút; `success` hay quá 10 phút không được đặt lại thì merge; in một dòng "Waiting #N: qa tests KEY on development";
