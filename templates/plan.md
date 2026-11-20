@@ -32,15 +32,17 @@ docs/design-system/<app>.md: a Task fe-dev "Design system của <app>" before ev
 The details of each item live in Jira, written from templates/story.md or templates/task.md.
 After each title: the dev roles that build the item (be-dev, fe-dev, devops), with "(Sub-task)" when each role gets a
 Sub-task of a Story; the level of the item, light, standard or heavy (C1 spec section 2), with the reason when it is not
-standard; and, only for a hard item, its effort xhigh or max with the reason. You approve the levels and the efforts at
-gate ② plan-approval, and ba turns roles, levels and efforts into labels.
+standard; only for a hard item, its effort xhigh or max with the reason; and, when the item touches a screen of the
+section ## SEO of the SPEC, "seo:" with the codes of those screens (C1 spec 6.6). An item with no "seo:" has no SEO
+part, such as a Task of an admin page. You approve the levels, the efforts and the SEO at gate ② plan-approval, and ba
+turns roles, levels, efforts and "seo:" into labels.
 Levels: light for an item whose mistake costs little, such as a docs Task or a change of copy, with no logic: one
 review at high, no security, and the main session checks it in place of a qa run. heavy where a mistake costs much:
 money, security, data that exists: reviewer at xhigh, security at max, fixes until no Critical or High. standard for
 the rest. A PR on a critical path makes its item heavy whatever its label. -->
 
 ### Phase 1: <name>
-- [ ] <KEY>: <Story or Task title> · <roles> · level <light | standard | heavy>: <reason, unless standard> · effort <xhigh | max>: <reason, only for a hard item>
+- [ ] <KEY>: <Story or Task title> · <roles> · level <light | standard | heavy>: <reason, unless standard> · effort <xhigh | max>: <reason, only for a hard item> · seo: <S codes of the section ## SEO it touches>
 
 ### Checkpoint: <name>
 - [ ] <What must work before the next phase>
