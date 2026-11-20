@@ -31,7 +31,7 @@ Claude của phiên chính không tự mở agent, cũng không tự sửa Jira 
 - `/ao-spec`, `/ao-plan` và `/ao-request` chạy một mình: bộ điều phối chờ mọi lệnh khác xong, và không mở lệnh mới trong lúc chờ.
 - Bạn bấm xong ở Jira hay GitHub thì nó thấy ở vòng sau (tối đa 2 phút) và tự chạy tiếp.
 - Ngân sách mỗi lần chạy là `runs.budget_usd` (30 USD), hay `--budget`. Tới mức đó, khi chạm giới hạn usage, hay khi bạn gõ `/ao-run --stop`, nó không mở lệnh mới, chờ các lệnh đang chạy xong, rồi dừng. Một lệnh thất bại không được mở lại trong cùng lần chạy.
-- Log: `.ai/runs/_run/<ngày>.log`, mỗi sự kiện một dòng; log của từng lệnh ở `.ai/runs/<KEY>/run-<giờ>.log`. `/ao-status` in bộ điều phối đang chạy, chi phí tới lúc đó và các lệnh của nó.
+- Log: `.ai/runs/_run/<ngày>.log`, mỗi sự kiện một dòng (`start`, `end`, `waiting for you`, `needs a fix`: chỗ cần ai đó xử lý, như Docker chưa chạy); log của từng lệnh ở `.ai/runs/<KEY>/run-<giờ>.log`. `/ao-status` in bộ điều phối đang chạy, chi phí tới lúc đó và các lệnh của nó.
 - Mỗi dự án chỉ một bộ điều phối. Bạn vẫn gõ lệnh tay được; nó để yên item đang có lệnh của bạn.
 - Đừng tắt tiến trình của nó: trên Windows, các lệnh nó mở sẽ chạy tiếp mà không ai theo dõi. Dùng `/ao-run --stop`.
 

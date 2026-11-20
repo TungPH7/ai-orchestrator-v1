@@ -170,4 +170,6 @@ test('the budget, the usage limit and --stop start nothing new; a command that c
   const end = await runDispatcher(base(broken, w4));
   assert.deepEqual(w4.started, ['build DEMO-21']);
   assert.equal(end.reason, 'idle');
+  // What holds it is in the log, for the main session to act on.
+  assert.ok(w4.log.includes('needs a fix: DEMO-21: build DEMO-21 failed in this run: /ao-status DEMO-21'), w4.log.join('\n'));
 });
