@@ -299,7 +299,7 @@ async function main() {
   // A kit copy is compared with a head of another project, which your gh login reads (kit-copy-review spec 2.5).
   const peers = (setting('AO_KIT_PEERS', settings) ?? '').split(',').map((name) => name.trim()).filter(Boolean);
   const kitCopy = (pr) => readKitCopy({ pr, github, peer: (name) => createGitHubClient({ repo: name, token: readGitHubToken() }), peers, gates, apps, approvers, render: (sha, paths) => renderCheck(pr.number, sha, paths) });
-  const gatherAll = () => gatherFacts({ command, arg, extra, jira, github, deploys, history: developHistory, local: files, contract, mapping, roster, gates, apps, approvers, space, kitCopy });
+  const gatherAll = () => gatherFacts({ command, arg, extra, jira, github, deploys, history: developHistory, local: files, contract, mapping, roster, gates, apps, approvers, space, kitCopy, agentsPerRole: runs.agentsPerRole });
   // /ao-preview also reads this machine: project.yaml, the preview that runs, the folder and the ports (spec 4.3).
   const gather = async () => {
     const gathered = await gatherAll();
@@ -379,7 +379,7 @@ async function main() {
   // How many commands may run at once, and this one's place among them (parallel-runs spec 5.1).
   const cap = runsAtOnce(runs.lanesMax, process.env);
   const firstRun = decision.runs?.[0] ?? {};
-  const taken = await takeRunLock(activeDir, { pid: process.pid, command, arg, key, role: firstRun.role, environment: firstRun.qa?.environment, startedAt: new Date().toISOString() }, { fs: lockFs, alive, cap, sleep: (ms) => new Promise((done) => setTimeout(done, ms)) });
+  const taken = await takeRunLock(activeDir, { pid: process.pid, command, arg, key, role: firstRun.role, environment: firstRun.qa?.environment, startedAt: new Date().toISOString() }, { fs: lockFs, alive, cap, sleep: (ms) => new Promise((done) => setTimeout(done, ms)), agentsPerRole: runs.agentsPerRole });
   if (!taken.ok) {
     early(taken.reason, 'item');
     return;
@@ -421,12 +421,12 @@ async function main() {
     // Each run of build or fix takes its dev agent on the lock first: one item at a time per agent (review of shop PR #21).
     const claim = async (run) => {
       if (!claimsRole(command) || !run.role) return;
-      const claimed = await claimRole(activeDir, lock, run.role, { fs: lockFs, alive, sleep, onWait: (busy) => console.log(`Waiting for ${run.role}: it is at work on ${busy.key} (process ${busy.pid}), and builds one item at a time`) });
+      const claimed = await claimRole(activeDir, lock, run.role, { fs: lockFs, alive, sleep, limit: runs.agentsPerRole[run.role] ?? 1, onWait: (busy) => console.log(`Waiting for ${run.role}: it is at work on ${busy.key} (process ${busy.pid}), and builds one item at a time`) });
       if (!claimed.ok) throw new Error(claimed.reason);
       // Then its WIP on Jira, read now: a build of the role that ended may have left its item In Progress, and jira-guard
       // would refuse the Start of this one (kit followups, batch 2; SHOP-31 after SHOP-58 in Pilot 3).
       if (command === 'build' && run.purpose === 'build') {
-        const { keys, limit } = await wipHolders(jira, { space, actor: run.role, contract, mapping });
+        const { keys, limit } = await wipHolders(jira, { space, actor: run.role, contract, mapping, agentsPerRole: runs.agentsPerRole });
         const wip = jiraWipStop({ role: run.role, key: run.key, story: run.story, keys, limit });
         if (wip) throw new Error(wip);
       }
@@ -1062,7 +1062,7 @@ async function runCommand(keys, values) {
   const label = scope.epic ?? keys.join(' ');
 
   if (!values.go) {
-    const round = await planRound({ ...board, scope, live: readLocks(), cap, decide: effects.decide });
+    const round = await planRound({ ...board, scope, live: readLocks(), cap, decide: effects.decide, agentsPerRole: runs.agentsPerRole });
     console.log(`/ao-run ${label}, ${cap} at once, budget ${budget} USD`);
     console.log(round.done ? `Every item of ${label} is done, or waits only for Complete` : `Would start now: ${round.start.map(({ command, arg }) => `/ao-${command} ${arg}`).join(', ') || 'nothing'}`);
     const yours = round.waiting.filter(({ waits }) => waits === 'you');
@@ -1090,6 +1090,7 @@ async function runCommand(keys, values) {
     const end = await runDispatcher({
       scope,
       cap,
+      agentsPerRole: runs.agentsPerRole,
       budgetUsd: budget,
       idleMs: runs.idleHours * 3600 * 1000,
       readBoard,

@@ -130,6 +130,20 @@ test('wip-available: counts the in-progress work of the same Agent, by Sub-task 
   assert.deepEqual(await guards(busy([['DEMO-3', ['DEMO-4']], ['DEMO-4', []]]), 'DEMO-9', 'fe-dev', ['wip-available']), []);
 });
 
+// C2 spec section 6: runs.agents_per_role lets N agents of one role work at once, each on its own item.
+test('wip-available and wipHolders take the number of agents of the role from runs.agents_per_role', async () => {
+  const item = issue({ key: 'DEMO-9' });
+  const busy = (rows) => fakeJira({ issues: [item], search: () => rows.map(([key]) => ({ key, fields: { subtasks: [] } })) });
+  const two = { 'fe-dev': 2 };
+  const allowed = (client, agentsPerRole) => jiraGuards(client, { key: 'DEMO-9', actor: 'fe-dev', needed: ['wip-available'], contract, mapping, agentsPerRole });
+  assert.deepEqual(await allowed(busy([['DEMO-3']]), two), ['wip-available']);
+  assert.deepEqual(await allowed(busy([['DEMO-3'], ['DEMO-4']]), two), []);
+  // A role it does not name keeps the limit of the contract.
+  assert.deepEqual(await jiraGuards(busy([['DEMO-3']]), { key: 'DEMO-9', actor: 'be-dev', needed: ['wip-available'], contract, mapping, agentsPerRole: two }), []);
+  assert.deepEqual(await wipHolders(busy([['DEMO-3']]), { space: 'DEMO', actor: 'fe-dev', contract, mapping, agentsPerRole: two }), { keys: ['DEMO-3'], limit: 2 });
+  assert.equal((await wipHolders(busy([]), { space: 'DEMO', actor: 'fe-dev', contract, mapping })).limit, 1);
+});
+
 test('wip-available needs an agent role with an Agent value', async () => {
   const client = fakeJira({ issues: [issue({ key: 'DEMO-9' })] });
   await assert.rejects(guards(client, 'DEMO-9', 'automation', ['wip-available']), /No Agent value for role 'automation'/);

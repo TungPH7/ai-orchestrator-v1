@@ -86,6 +86,13 @@ test('fe-dev may not start with no WIP left; the reason names the guard', async 
   });
 });
 
+// C2 spec section 6: with runs.agents_per_role of the project, a second fe-dev starts its own item.
+test('fe-dev may start next to another fe-dev item when runs.agents_per_role gives it two agents', async () => {
+  const busy = fakeJira({ busy: ['DEMO-3'] });
+  assert.deepEqual(await decide(call('fe-dev', { transitionName: 'Start' }), { contract, mapping, jira: busy, github, agentsPerRole: { 'fe-dev': 2 } }), { allow: true });
+  assert.equal((await decide(call('fe-dev', { transitionName: 'Start' }), { contract, mapping, jira: fakeJira({ busy: ['DEMO-3', 'DEMO-4'] }), github, agentsPerRole: { 'fe-dev': 2 } })).allow, false);
+});
+
 test('a missing branch shows up with the other missing guards', async () => {
   const noBranch = { ...github, get: async (path) => (path.startsWith('/git/matching-refs/') ? [] : github.get(path)) };
   assert.deepEqual(await run(call('fe-dev', { transitionName: 'Start' }), fakeJira({ busy: ['DEMO-3'] }), noBranch), {

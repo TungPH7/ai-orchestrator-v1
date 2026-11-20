@@ -64,7 +64,7 @@ Bộ test lúc bắt đầu: 1.731 test xanh (kit `main` `dc400af`).
 
 ## Phần 3: số agent cùng role, nhánh `task/c2-3`
 
-- [ ] **T7: `runs.agents_per_role`** (spec mục 6).
+- [x] **T7: `runs.agents_per_role`** (spec mục 6). Xong 2026-11-21. Con số đi qua `admit`, `takeLock`, `claimRole` (`limit`), `wipHolders`, `jiraGuards`, `decide` của `jira-guard` (hook đọc `project.yaml`; đọc không được thì giữ mức 1 của contract), facts WIP của `/ao-build`, và bộ điều phối. 1.756 test xanh.
   - **Đạt khi:**
     - schema nhận `{ <dev role>: số }`, từ 1 tới `lanes_max`; role lạ hay số lớn hơn `lanes_max` bị từ chối;
     - `claimRole` và `admit` cho tối đa N lệnh build hay fix của cùng role, mỗi lệnh một item;

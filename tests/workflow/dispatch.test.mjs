@@ -34,6 +34,9 @@ test('the cap, one dev agent of a role, one QA on an environment and an item tha
   assert.deepEqual(waiting.filter(({ waits }) => waits === 'item').map(({ key }) => key), ['DEMO-24', 'DEMO-26']);
   const full = await round({ items, decide, live, cap: 2 });
   assert.deepEqual(full.start.map(({ arg }) => arg), ['DEMO-25']);
+  // Two agents of be-dev (runs.agents_per_role, C2 spec section 6): both be-dev builds start.
+  const two = await round({ items, decide, live, cap: 4, agentsPerRole: { 'be-dev': 2 } });
+  assert.deepEqual(two.start.map(({ command, arg }) => `${command} ${arg}`), ['qa DEMO-25', 'build DEMO-21', 'build DEMO-24']);
 });
 
 test('a command that runs alone waits until nothing runs, and nothing new starts while it waits', async () => {
