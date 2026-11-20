@@ -207,8 +207,16 @@
 
 ## Bước 10: chép kit, nhánh `task/c1-10` rồi `shop`
 
-- [ ] **T19: chỗ nối `ci.project.yml`** (A6 mục 10, dòng 2).
+- [x] **T19: chỗ nối `ci.project.yml`** (A6 mục 10, dòng 2). Xong 2026-11-20.
   - **Đạt khi:** `ci.yml` của kit gọi `jobs` của `.github/workflows/ci.project.yml` khi file có; `ao-kit sync` không đụng file đó.
+  - **Kết quả:**
+    - `ci.yml` có job thứ năm `project`, gọi `ci.project.yml` như một workflow được gọi; hai commit đi qua `inputs` (`head_sha`, `base_sha`), vì `env` của bên gọi không tới bên được gọi; không secret, chỉ `contents: read`;
+    - file phải luôn có, vì thiếu thì cả lượt CI đỏ: kit có bản mẫu `kit/.github/workflows/ci.project.yml` với một job `none` có `if: false` (không tốn phút runner, tính là đạt);
+    - `installKit` chép bản mẫu chỉ khi dự án chưa có (`SEED_FILES`), không bao giờ ghi đè; `kitDrift` chỉ báo khi file mất; `ao-kit init` và `sync` ghi một dòng khi chép bản mẫu;
+    - luật Q2 chỉ đếm job có bước chạy: `project` không là check bắt buộc, vì GitHub đặt tên check của nó là `project / <job>`;
+    - `docs/quality-gates.md` có mục "Job CI riêng của dự án"; README;
+    - sửa thêm lỗi của bước 8: mô tả của `seo-content-brief` bị cắt ở "into the section", vì ` #` mở đầu comment của YAML; nay mô tả nằm trong dấu nháy, và test bắt mô tả phải trọn câu;
+    - 1.689 test xanh.
 
 ### Checkpoint 4: sau T19
 - [ ] Mọi kit PR đã merge. Hỏi bạn trước T20.

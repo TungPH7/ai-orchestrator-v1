@@ -21,6 +21,10 @@ test('the real gates break no rule', () => {
   assert.deepEqual(validateGates(gates, contract, { ciJobs }), []);
 });
 
+test('rule Q2 counts the jobs of ci.yml that are checks: project, which calls ci.project.yml, is not one (C1 section 10)', () => {
+  assert.deepEqual(ciJobs, ['policy', 'build-test', 'secrets', 'sast']);
+});
+
 test('the gates hold the values of the spec: four checks, 80% of changed lines, high audit level (spec 2.4, 6)', () => {
   assert.deepEqual(gates.checks, ['policy', 'build-test', 'secrets', 'sast']);
   assert.equal(gates.coverage.changed_lines_min, 80);

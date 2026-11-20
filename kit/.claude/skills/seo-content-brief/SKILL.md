@@ -1,6 +1,6 @@
 ---
 name: seo-content-brief
-description: Plans the SEO of one indexed page before it is built (search intent, primary and secondary keywords, the H1/H2/H3 outline with where each keyword goes, the title and meta description, E-E-A-T and internal links, by page type) and writes it, with the copy in vi and en, into the section ## SEO of the SPEC. Use for each screen of an app with seo true, or for the SEO part a "Cần seo:" request asks for.
+description: 'Plans the SEO of one indexed page before it is built (search intent, primary and secondary keywords, the H1/H2/H3 outline with where each keyword goes, the title and meta description, E-E-A-T and internal links, by page type) and writes it, with the copy in vi and en, into the section ## SEO of the SPEC. Use for each screen of an app with seo true, or for the SEO part a "Cần seo:" request asks for.'
 license: MIT
 adapted_from:
   repo: AgriciDaniel/claude-seo

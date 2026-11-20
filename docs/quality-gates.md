@@ -141,6 +141,18 @@ Semgrep chỉ báo finding do thay đổi mang vào:
 
 Sửa code theo gợi ý của rule. Nếu là báo nhầm, thêm `nosemgrep` kèm `reason:` trên cùng dòng; reviewer sẽ đọc lý do.
 
+### Job CI riêng của dự án: `ci.project.yml`
+
+Dự án đặt job CI của riêng mình vào `.github/workflows/ci.project.yml`, không vào `ci.yml`. `ci.yml` là file của kit, nên mỗi lần chép kit sẽ ghi đè nó và xóa mất job riêng. Ví dụ: `shop` từng mất job `caddy-proxy` và `not-found` như vậy.
+- **Cách chạy:** job `project` của `ci.yml` gọi file này trong mọi lượt `CI`. Job của dự án hiện thành `project / <tên job>`. Nó không phải check bắt buộc của `gates.yaml`, nhưng `merge-gate` chỉ merge khi mọi check đạt, nên job đỏ vẫn chặn merge.
+- **Ai giữ file:** `ao-kit init` (hay `ao-kit sync` khi dự án chưa có file) ghi một bản mẫu, chỉ có job `none` không bao giờ chạy. Từ đó file là của dự án: `ao-kit sync` không ghi đè, và `ao-kit doctor` không coi nó là lệch, chỉ báo khi file mất. Phải giữ file, vì thiếu nó thì cả lượt `CI` đỏ.
+- **Viết một job:**
+  - checkout commit cần kiểm bằng `ref: ${{ inputs.head_sha }}`; `inputs.base_sha` là chỗ thay đổi bắt đầu, như `BASE_SHA` của `ci.yml`;
+  - chép bước đầu **By hand only on develop, main or release/\*** của các job trong `ci.yml`;
+  - xóa job `none` khi đã có job khác.
+- **Quyền:** job không nhận secret nào, và chỉ có quyền đọc (`contents: read`). File nằm dưới `.github/workflows/`, là đường dẫn được bảo vệ, nên chỉ `devops` hay bạn sửa, và bạn tự merge PR đó.
+- PR chép kit không đụng file này. PR nào thêm hay sửa nó thì không còn là PR chép kit thuần, nên không dùng lại được review của dự án khác ([PR chép một bản kit đã được review](#pr-chép-một-bản-kit-đã-được-review)). Lần chép đầu tiên có bản mẫu cũng vậy, vì nó thêm file này.
+
 ## Báo cáo review
 
 `reviewer` và `security` viết báo cáo theo `templates/review-report.md`, có dòng `Role: reviewer` hoặc `Role: security` ngay dưới tiêu đề, rồi đăng bằng `ao-pr.mjs review`:

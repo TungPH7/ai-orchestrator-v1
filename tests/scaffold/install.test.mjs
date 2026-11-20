@@ -6,7 +6,7 @@ import { join, relative } from 'node:path';
 import { parse } from 'yaml';
 import { readGates } from '../../lib/quality/gates.mjs';
 import { matchesGlob } from '../../lib/quality/glob.mjs';
-import { codeownersText, draftFromOldConfig, ensureCodeowners, ensureGitignore, ensurePrepare, gitignoreMissing, installKit, kitDrift, KIT_ONLY_SCRIPTS, PROJECT_SCRIPTS } from '../../lib/scaffold/install.mjs';
+import { codeownersText, draftFromOldConfig, ensureCodeowners, ensureGitignore, ensurePrepare, gitignoreMissing, installKit, kitDrift, KIT_ONLY_SCRIPTS, PROJECT_SCRIPTS, SEED_FILES } from '../../lib/scaffold/install.mjs';
 import { readProjectConfig } from '../../lib/scaffold/project-config.mjs';
 import { ROOT } from '../helpers/kit.mjs';
 
@@ -34,9 +34,14 @@ test('every script of the kit is either copied into projects or kept in the kit,
 
 test('a copy into an empty folder holds the kit files of gates.yaml, and nothing that is rendered or the project\'s', (t) => {
   const dir = temp(t, 'install-');
-  installKit({ kitDir: ROOT, projectDir: dir });
-  const copied = files(dir);
+  const { seeded } = installKit({ kitDir: ROOT, projectDir: dir });
+  // The CI of the project (C1, A6 row 2): written once, from the stub of the kit, and the project's from then on.
+  assert.deepEqual(seeded, SEED_FILES);
+  assert.deepEqual(SEED_FILES, ['.github/workflows/ci.project.yml']);
+  assert.equal(readFileSync(join(dir, '.github/workflows/ci.project.yml'), 'utf8'), readFileSync(join(ROOT, 'kit/.github/workflows/ci.project.yml'), 'utf8'));
+  const copied = files(dir).filter((path) => !SEED_FILES.includes(path));
   const same = [...gates.kit_copy.same, ...gates.kit_copy.same_when_changed];
+  for (const path of SEED_FILES) assert.ok(!same.some((glob) => matchesGlob(glob, path)), `${path} is the project's, not a kit file a kit copy compares`);
   for (const path of copied) assert.ok(same.some((glob) => matchesGlob(glob, path)), `${path} is a kit file`);
   for (const glob of gates.kit_copy.same) assert.ok(copied.some((path) => matchesGlob(glob, path)), `something matches ${glob}`);
   assert.deepEqual(files(dir, '.ai-orchestrator/scripts').map((p) => p.split('/').pop()).sort(), [...PROJECT_SCRIPTS].sort());
@@ -55,11 +60,14 @@ test('a copy over an older one drops what the kit no longer has, and keeps every
     '.claude/settings.local.json': '{}\n',
     '.claude/skills/nestjs-best-practices/SKILL.md': 'stack skill\n',
     '.github/workflows/deploy.yml': 'name: deploy\n',
+    // The CI of the project, which a kit copy never writes over (C1, A6 row 2).
+    '.github/workflows/ci.project.yml': 'name: CI of the project\njobs:\n  caddy-proxy: {}\n',
     'apps/api/src/main.ts': 'listen()\n',
   };
   const old = { '.ai-orchestrator/lib/gone.mjs': 'old\n', '.claude/skills/playwright-cli/old-reference.md': 'old\n', '.claude/hooks/old-hook.mjs': 'old\n' };
   for (const [path, text] of Object.entries({ ...own, ...old })) write(dir, path, text);
-  const { removed } = installKit({ kitDir: ROOT, projectDir: dir });
+  const { removed, seeded } = installKit({ kitDir: ROOT, projectDir: dir });
+  assert.deepEqual(seeded, [], 'the project has its CI already');
   for (const [path, text] of Object.entries(own)) assert.equal(readFileSync(join(dir, path), 'utf8'), text, path);
   for (const path of Object.keys(old)) assert.equal(existsSync(join(dir, path)), false, path);
   assert.deepEqual([...removed].sort(), Object.keys(old).sort());
@@ -139,8 +147,12 @@ test('kitDrift names the kit files that differ from the clone, a missing one too
   const file = join(dir, '.ai-orchestrator/lib/scaffold/install.mjs');
   writeFileSync(file, readFileSync(file, 'utf8').replaceAll('\n', '\r\n'));
   assert.deepEqual(kitDrift({ kitDir: ROOT, projectDir: dir }), [], 'a checkout on Windows writes CRLF');
+  // The CI of the project is the project's: changed, it is no drift; missing, the CI run fails, so it is.
+  write(dir, '.github/workflows/ci.project.yml', 'name: CI of the project\n');
+  assert.deepEqual(kitDrift({ kitDir: ROOT, projectDir: dir }), []);
   write(dir, '.ai-orchestrator/lib/scaffold/install.mjs', 'changed\n');
   rmSync(join(dir, '.mcp.json'));
-  assert.deepEqual(kitDrift({ kitDir: ROOT, projectDir: dir }).sort(), ['.ai-orchestrator/lib/scaffold/install.mjs', '.mcp.json']);
+  rmSync(join(dir, '.github/workflows/ci.project.yml'));
+  assert.deepEqual(kitDrift({ kitDir: ROOT, projectDir: dir }).sort(), ['.ai-orchestrator/lib/scaffold/install.mjs', '.github/workflows/ci.project.yml', '.mcp.json']);
   assert.deepEqual(gitignoreMissing(dir), ['.ai-orchestrator/node_modules/', '.claude/settings.local.json', '.ai/', '.playwright-cli/']);
 });

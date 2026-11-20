@@ -30415,3 +30415,37 @@ Máy bạn có một bản `nextjs-seo` cũ hơn ở `~/.claude/skills/`. Khi tr
 - **Checkpoint 4:** mình hỏi bạn trước khi chép kit vào `shop`, vì từ bước đó bắt đầu tốn tiền.
 
 File nhớ: `C:\Users\Huu Tung\.claude\projects\D--Document-1Khoahoc-4LapTrinh-AI-for-coding\memory\c1-paused-2026-11-20.md`. Bạn gõ "làm tiếp" thì mình đọc file đó và làm bước 10.
+
+# Phiên 33 · Lượt 92 — 2026-11-20
+
+**Bạn:** "làm tiếp"
+
+**Claude:**
+
+Bước 10 xong và đã merge (kit PR #323). Vậy là mọi kit PR của C1 đã vào `main`. Mình dừng ở Checkpoint 4 để hỏi bạn trước T20, vì từ bước đó bắt đầu tốn tiền.
+
+## Bước 10: chỗ nối `ci.project.yml` (T19)
+
+- `ci.yml` của kit có thêm job thứ năm, `project`. Job này gọi `.github/workflows/ci.project.yml`, file của riêng dự án. Job của dự án hiện thành `project / <tên job>`, và `merge-gate` vẫn chờ chúng đạt như mọi check khác.
+- `ao-kit sync` không ghi đè file này. Lần chép kit sau, `shop` không còn mất `caddy-proxy` và `not-found` như trước.
+- Job của dự án không nhận secret nào, chỉ có quyền đọc. File nằm dưới `.github/workflows/`, nên chỉ `devops` hay bạn sửa được.
+- `docs/quality-gates.md` có mục mới "Job CI riêng của dự án", chỉ cách viết một job.
+- Cả bộ test xanh: 1.689 test.
+
+**Ba chỗ mình tự quyết:**
+1. **File phải luôn có.** Thiếu một workflow được gọi thì cả lượt CI đỏ. Vì vậy kit chép một bản mẫu khi dự án chưa có file. Bản mẫu chỉ có một job không bao giờ chạy, nên không tốn phút Actions.
+2. **`project` không là check bắt buộc của `gates.yaml`.** GitHub đặt tên check theo job bên trong (ví dụ `project / caddy-proxy`), không theo `project`.
+3. **Lần chép kit đầu tiên có bản mẫu không dùng lại được review của dự án khác**, vì nó thêm một file ngoài kit. Với `shop` thì không sao, vì T20 review đầy đủ.
+
+**Sửa thêm một lỗi của bước 8:** mô tả của skill `seo-content-brief` bị cắt ở "into the section", vì trong YAML ` #` mở đầu một comment. Mô tả nay nằm trong dấu nháy, và có test bắt mô tả phải trọn câu.
+
+## Checkpoint 4: hỏi bạn trước T20
+
+T20 chép bản kit mới (bước 1–10 của C1) vào `shop`:
+1. Mình tạo một Task trên Jira cho lần chép, như SHOP-77, mở nhánh trong `shop` và chạy `ao-kit sync`.
+2. Trong `project.yaml` của `shop`: `seo: true` cho `user`, `seo: false` cho `admin`.
+3. Chuyển `caddy-proxy` và `not-found` từ `ci.yml` sang `ci.project.yml`.
+4. Mở PR. `reviewer` và `security` review đầy đủ, khoảng 10 USD, như lần chép SHOP-77 (9,36 USD).
+5. Bạn đọc, approve và merge PR.
+
+Bạn gõ "duyệt T20" (hoặc "làm tiếp") thì mình làm T20. Muốn để sau thì bạn cứ nói: mọi phần của C1 đã nằm trên `main` của kit.
