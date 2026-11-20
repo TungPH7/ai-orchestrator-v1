@@ -51,7 +51,7 @@ import { CHANGES, appRolesOf, decideStep, dockerGate } from '../lib/workflow/ste
 import { restoreWip, saveWip } from '../lib/workflow/wip.mjs';
 import { copyRunFiles, laneKeeper, removeNodeModules, runsSettings } from '../lib/workflow/lanes.mjs';
 import { installLane, pullsOfBranch, qaWatcher, runPlacer } from '../lib/workflow/lane-runs.mjs';
-import { checkoutBranch, laneDir, laneRoot } from '../lib/workflow/places.mjs';
+import { checkoutBranch, laneDir } from '../lib/workflow/places.mjs';
 import { admitAgent, claimRole, claimsRole, jiraWipStop, liveLocks, releaseAgent, takeLock as takeRunLock } from '../lib/workflow/locks.mjs';
 import { wipHolders } from '../lib/tracker/facts.mjs';
 import { runsAtOnce } from '../lib/workflow/ports.mjs';
@@ -100,8 +100,15 @@ const preview = previewRunner({
   execPath: process.execPath,
   cliOf: (tool) => (tool === 'pnpm' ? pnpmCli() : npmCli()),
   cleared: CLEARED_ENV,
-  // The lock of this very process, taken for --go, is not another run.
-  agentRunning: () => liveLocks(activeDir, { fs: lockFs, alive }).find(({ pid }) => pid !== process.pid) ?? null,
+  // The lock of this very process, taken for --go, is not another run; in a lane, only a run on the item counts.
+  agentRunning: (key) => liveLocks(activeDir, { fs: lockFs, alive }).find((lock) => lock.pid !== process.pid && lock.command !== 'preview' && (key === undefined || lock.key === key)) ?? null,
+  // A preview in a lane holds its item while its first app runs (C2 spec section 8): the lock dies with that app.
+  gitAt: gitIn,
+  hold: ({ pid, key }) => {
+    mkdirSync(activeDir, { recursive: true });
+    writeFileSync(join(activeDir, `${key}+preview.json`), `${JSON.stringify({ pid, command: 'preview', arg: key, key, agent: false, slot: -1, startedAt: new Date().toISOString() }, null, 2)}\n`);
+  },
+  drop: (key) => rmSync(join(activeDir, `${key}+preview.json`), { force: true }),
 });
 const previewActive = preview.paths.active;
 
@@ -209,7 +216,10 @@ async function main() {
   // A preview runs the PR's code from this folder, on its branch: a command that runs agents stops it first, puts the
   // folder back on develop, and runs again from there, so the approved kit decides (human-loop spec 4.3). The dry run of
   // the dispatcher (--json) runs no agent, and leaves your preview alone.
-  const first = values.json ? null : previewFirst(command, existsSync(previewActive), Boolean(process.env.AO_PREVIEW_STOPPED));
+  // A preview in a lane leaves the project folder on develop: only a command on its item stops it, below, once the item
+  // is known (C2 spec section 8).
+  const previewRecord = readJson(previewActive);
+  const first = values.json || previewRecord?.lane ? null : previewFirst(command, existsSync(previewActive), Boolean(process.env.AO_PREVIEW_STOPPED));
   if (first === 'refuse') {
     early(`the preview still runs after ao-step stopped it (${relative(projectDir, previewActive)}): run /ao-preview <KEY> --stop, then /ao-${command} again`, 'you');
     return;
@@ -273,13 +283,6 @@ async function main() {
     // A lane another command runs on is not pruned (review round 2 of shop PR #21).
     busy: (k) => liveLocks(activeDir, { fs: lockFs, alive }).some((lock) => lock.key === k && lock.pid !== process.pid),
   });
-  if (command === 'preview' && runs.worktrees) {
-    // The dev agents wrote the preview in the lane of the item (review of shop PR #21).
-    const lanePreview = arg && /^[A-Z][A-Z0-9_]*-\d+$/.test(arg) ? join(laneDir(projectDir, arg), '.ai', 'runs', arg, 'preview') : join(laneRoot(projectDir), '<KEY>', '.ai', 'runs', '<KEY>', 'preview');
-    console.log('STOP: /ao-preview runs the apps from the project folder on the PR branch, and with runs.worktrees on that branch is checked out in the lane of the item');
-    console.log(`Next: read the screenshots and API samples in ${lanePreview}, then /ao-review <PR>; or open the lane in your editor`);
-    return;
-  }
   const files = {
     ledger: (key) => keeper.ledgerExists(key),
     runState: readRunState,
@@ -307,7 +310,9 @@ async function main() {
     const itemKey = gathered.item?.key;
     const facts = runs.worktrees && itemKey ? { ...gathered, previewDir: `${join(laneDir(projectDir, itemKey), '.ai', 'runs', itemKey, 'preview').replaceAll('\\', '/')}/` } : gathered;
     if (command === 'status') return { ...facts, previewRunning: readJson(previewActive) };
-    return command === 'preview' ? { ...facts, preview: await preview.facts(values.stop, facts.pr) } : facts;
+    // With lanes on, the preview runs from the lane of the item (C2 spec section 8).
+    const lane = runs.worktrees && itemKey ? { key: itemKey, dir: existsSync(laneDir(projectDir, itemKey)) ? laneDir(projectDir, itemKey) : null } : null;
+    return command === 'preview' ? { ...facts, preview: await preview.facts(values.stop, facts.pr, lane) } : facts;
   };
   const read = (file) => readFileSync(runsFile(projectDir, file), 'utf8');
   // The dev agent of each app by its profile: /ao-fix gives a blocking finding to the side of its app (kit followups,
@@ -321,6 +326,12 @@ async function main() {
   const options = { roster, contract, gates, mapping, appRoles, seoApps, seoHosts, ...(values['seo-ok'] && { seoOk: true }), ...(values.answers && { answers: read(values.answers) }), ...(values.note && { note: read(values.note) }), ...(values.change && { change: values.change }), ...(values.retest && { retest: true }), ...(values['light-report'] && { lightReport: read(values['light-report']) }), ...(values.full && { full: true }) };
 
   const facts = await gather();
+  // A command that runs on the item of a preview in a lane stops it first, with --go: an agent may change its code. A
+  // command of another item leaves it alone (C2 spec section 8).
+  if (previewRecord?.lane && PREVIEW_STOPS.includes(command) && previewRecord.key === facts.item?.key) {
+    if (values.go && !values.json) console.log((await preview.stop()).notes.join('\n'));
+    else if (!values.json) console.log(`The preview of ${previewRecord.key} runs from its lane: --go stops it first.`);
+  }
   // The board of the dispatcher (C2 spec 5.2): the items of the space in the order of the board, and the open PRs.
   if (values.json && command === 'status') {
     console.log(JSON.stringify({ items: facts.items ?? [], pulls: facts.pulls ?? [] }));
@@ -379,7 +390,7 @@ async function main() {
   // How many commands may run at once, and this one's place among them (parallel-runs spec 5.1).
   const cap = runsAtOnce(runs.lanesMax, process.env);
   const firstRun = decision.runs?.[0] ?? {};
-  const taken = await takeRunLock(activeDir, { pid: process.pid, command, arg, key, role: firstRun.role, environment: firstRun.qa?.environment, startedAt: new Date().toISOString() }, { fs: lockFs, alive, cap, sleep: (ms) => new Promise((done) => setTimeout(done, ms)), agentsPerRole: runs.agentsPerRole });
+  const taken = await takeRunLock(activeDir, { pid: process.pid, command, arg, key, role: firstRun.role, environment: firstRun.qa?.environment, startedAt: new Date().toISOString() }, { fs: lockFs, alive, cap, sleep: (ms) => new Promise((done) => setTimeout(done, ms)), agentsPerRole: runs.agentsPerRole, lanes: runs.worktrees });
   if (!taken.ok) {
     early(taken.reason, 'item');
     return;

@@ -42,7 +42,8 @@ const START = { key: 'DEMO-21', number: 15, branch: BRANCH, head: HEAD, protecte
 // npm ci. up(url): whether an app answers. origin: the head of the branch on origin after git fetch. own: what git diff
 // lists from the fork point of the branch, the PR's own changes; all: what it lists from the tip of develop.
 // untracked: what git status lists as untracked (??) or ignored (!!), as `?? CLAUDE.local.md`; m.untracked changes it.
-function machine({ config = CONFIG, lockName = 'package-lock.json', files = {}, on = 'develop', checkoutFails = {}, npmStatus = 0, up = () => true, busyPorts = [], head = HEAD, dirty = '', agent = null, origin = HEAD, own = ['apps/web/src/page.tsx'], all = own, fetched = true, untracked = [] } = {}) {
+function machine({ config = CONFIG, lockName = 'package-lock.json', files = {}, on = 'develop', checkoutFails = {}, npmStatus = 0, up = () => true, busyPorts = [], head = HEAD, dirty = '', agent = null, origin = HEAD, own = ['apps/web/src/page.tsx'], all = own, fetched = true, untracked = [], laneHead = HEAD, laneDirty = '', laneMerges = true } = {}) {
+  let inLane = laneHead;
   let others = untracked;
   const store = new Map(Object.entries({ [join(PROJECT, '.ai-orchestrator/project.yaml')]: config, ...files }));
   const events = [];
@@ -91,7 +92,23 @@ function machine({ config = CONFIG, lockName = 'package-lock.json', files = {}, 
       const status = typeof npmStatus === 'function' ? npmStatus(branch) : npmStatus;
       return { status, stderr: status ? 'npm ERR! the lockfile does not match' : '' };
     },
-    spawn: (file, args, { env }) => {
+    // git in the lane of an item (C2 spec section 8): its own HEAD and changes, the objects of the project.
+    gitAt: (dir) => (...args) => {
+      if (args[0] === 'rev-parse' && args[1] === 'HEAD') return { status: 0, stdout: `${inLane}
+`, stderr: '' };
+      if (args[0] === 'merge') {
+        events.push(['lane merge', dir, args.slice(1).join(' ')]);
+        if (!laneMerges) return { status: 1, stdout: '', stderr: 'fatal: Not possible to fast-forward, aborting.' };
+        inLane = args.at(-1);
+        return { status: 0, stdout: '', stderr: '' };
+      }
+      if (args[0] === 'status' && !args.includes('--ignored=matching')) return { status: 0, stdout: laneDirty, stderr: '' };
+      return git(...args);
+    },
+    hold: (lock) => events.push(['hold', lock.key, lock.pid]),
+    drop: (key) => events.push(['drop', key]),
+    spawn: (file, args, { env, cwd }) => {
+      if (cwd !== PROJECT) events.push(['cwd', cwd]);
       pid += 1;
       events.push(['spawn', pid, [file, ...args].join(' '), env.API_URL ?? '-', `PORT ${env.PORT}`, 'SECRET_TOKEN' in env ? 'with a secret' : 'no secret']);
       return { pid, unref: () => {} };
@@ -325,4 +342,50 @@ test('start and stop of a pnpm project: pnpm install from pnpm-lock.yaml, and th
   const stopped = await m.runner.stop();
   assert.deepEqual(m.events.slice(-1), [['pnpm', 'install --frozen-lockfile --ignore-scripts', 'develop', 'no secret']]);
   assert.equal(stopped.notes.at(-1), 'Ran pnpm install --ignore-scripts again, for the packages of develop.');
+});
+
+// C2 spec section 8: with lanes on, the apps of the PR run from the lane of its item, on the default ports, and the
+// project folder stays on develop. The preview holds the item, so no agent changes its code meanwhile.
+const LANE = 'D:/work/shop-wt/DEMO-21';
+
+test('in a lane, start runs the apps from the lane with no checkout and no install, and holds the item', async () => {
+  const m = machine({ files: installedFor(DEVELOP_LOCK) });
+  const notes = await m.runner.start({ ...START, lane: LANE });
+  assert.equal(m.branch(), 'develop', 'the project folder did not move');
+  assert.deepEqual(m.events, [
+    ['cwd', LANE],
+    ['spawn', 101, 'node npm-cli.js run start:dev -w apps/api', '-', 'PORT 3001', 'no secret'],
+    ['hold', 'DEMO-21', 101],
+    ['cwd', LANE],
+    ['spawn', 102, 'node npm-cli.js run dev -w apps/web', 'http://localhost:3001', 'PORT 3000', 'no secret'],
+  ]);
+  assert.equal(m.json(paths.active).lane, LANE);
+  assert.equal(notes[0], `The apps of PR #15 run from the lane of DEMO-21, on ${BRANCH} at aaaaaaaa; the project folder stays on develop.`);
+});
+
+test('in a lane behind the head that was checked, start moves it there first, and stops when it cannot', async () => {
+  const behind = machine({ laneHead: 'b'.repeat(40) });
+  await behind.runner.start({ ...START, lane: LANE });
+  assert.deepEqual(behind.events[0], ['lane merge', LANE, `--ff-only ${HEAD}`]);
+  const stuck = machine({ laneHead: 'b'.repeat(40), laneMerges: false });
+  await assert.rejects(stuck.runner.start({ ...START, lane: LANE }), /the lane of DEMO-21 is at bbbbbbbb, not aaaaaaaa, the head that was checked, and cannot move there: fatal: Not possible to fast-forward/);
+  assert.ok(!stuck.events.some(([kind]) => kind === 'spawn'), 'no app ran');
+});
+
+test('in a lane, stop ends the apps and lets the item go, with no checkout', async () => {
+  const m = machine({ files: active({ lane: LANE }) });
+  const { home, notes } = await m.runner.stop();
+  assert.equal(home, true);
+  assert.deepEqual(m.events, [['kill', 101], ['kill', 102], ['drop', 'DEMO-21']]);
+  assert.equal(m.store.has(paths.active), false);
+  assert.match(notes.join(' '), new RegExp(`The lane of DEMO-21 stays on ${BRANCH}\.`));
+});
+
+test('in a lane, the facts read the lane: its changes, no install', async () => {
+  const m = machine({ laneDirty: ' M apps/web/src/page.tsx\n' });
+  const facts = await m.runner.facts(false, { headSha: HEAD }, { key: 'DEMO-21', dir: LANE });
+  assert.equal(facts.dirty, 1);
+  assert.equal(facts.install, false);
+  assert.deepEqual(facts.lane, { key: 'DEMO-21', dir: LANE });
+  assert.equal((await m.runner.facts(false, { headSha: HEAD })).lane, null);
 });

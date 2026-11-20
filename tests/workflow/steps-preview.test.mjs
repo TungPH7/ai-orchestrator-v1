@@ -167,3 +167,21 @@ test('/ao-preview of the item whose preview runs, as --go ends: the state and ho
   assert.equal(running.next, '/ao-preview DEMO-21 --stop, when you are done with it');
   assert.doesNotMatch(formatDecision(running), /STOP/);
 });
+
+// C2 spec section 8: with lanes on, /ao-preview runs the apps from the lane of the item, and only what holds that item
+// stops it: an agent of another item runs on.
+test('with lanes on, /ao-preview starts the apps from the lane of the item, and only its own item can hold it back', () => {
+  const lane = 'D:/work/shop-wt/DEMO-21';
+  const decision = decide(facts({ lane: { key: 'DEMO-21', dir: lane } }));
+  assert.equal(decision.go, true);
+  assert.equal(decision.runs[0].lane, lane);
+  assert.match(decision.lines.at(-1), /the packages of its lane/);
+  // No lane: the item was built with lanes off.
+  const none = decide(facts({ lane: { key: 'DEMO-21', dir: null } }));
+  assert.deepEqual([none.waits, none.reason], ['fix', 'DEMO-21 has no lane: with runs.worktrees on, /ao-preview runs the apps of a PR from the lane of its item, and DEMO-21 was built without one']);
+  // An agent at work on this item; changes not committed in its lane.
+  const busy = decide(facts({ lane: { key: 'DEMO-21', dir: lane }, agentRunning: { command: 'fix', arg: '15' } }));
+  assert.deepEqual([busy.waits, busy.reason], ['item', 'ao-step is running fix 15 on DEMO-21: its lane is busy']);
+  const dirty = decide(facts({ lane: { key: 'DEMO-21', dir: lane }, dirty: 2 }));
+  assert.deepEqual([dirty.waits, dirty.reason], ['you', 'the lane of DEMO-21 has changes not committed (2 files)']);
+});

@@ -90,7 +90,7 @@ Bộ test lúc bắt đầu: 1.731 test xanh (kit `main` `dc400af`).
 
 ## Phần 5: `/ao-preview` trong làn, nhánh `task/c2-5`
 
-- [ ] **T10: preview trong làn** (spec mục 8).
+- [x] **T10: preview trong làn** (spec mục 8). Xong 2026-11-21. App chạy từ làn; không checkout, thư mục chính đứng ở `develop`. Làn chưa ở đúng head đã kiểm thì `merge --ff-only` tới đó, không được thì dừng. Khóa `.ai/runs/active/<KEY>+preview.json` theo tiến trình của app đầu tiên: `admit` không đếm nó vào trần, chỉ chặn lệnh của chính item đó. Lệnh của item đó với `--go` tắt preview trước; lượt hỏi thử (`--json`) và lệnh của item khác để yên. Không cài lại package trong làn (khác chữ của spec: làn có package của nhánh, do agent cài; đếm lockfile thêm một lần là thừa). Kiểm file steering như ở thư mục chính, nhưng trong làn. 1.764 test xanh.
   - **Đạt khi:**
     - bật làn thì preview chạy app từ làn của item, cổng mặc định, database mặc định; thư mục chính đứng ở `develop`;
     - preview giữ khóa của item với `agent: false`, không tính vào trần; lệnh của item khác vẫn được mở;
