@@ -63,6 +63,7 @@ test('with the release PR open on the report commit, /ao-ship stops at gate ⑤:
   const open = decide(shipFacts({ branch: { name: 'release/v0.1.0', version: '0.1.0', sha: REPORT }, staging: { sha: HEAD, deployment: 40, url: URL }, regression: { sha: HEAD, result: 'PASS' }, changedSinceRegression: ['CHANGELOG.md', 'docs/releases/v0.1.0.md'], notes: true, pr: { number: 30, headSha: REPORT } }));
   assert.equal(open.go, false);
   assert.equal(open.reason, 'gate ⑤: PR #30 of release/v0.1.0 waits for your approval on its head cccccccc');
+  assert.equal(open.waits, 'you');
   assert.equal(open.next, 'Approve PR #30 on GitHub, without merging it: merge-gate merges it with a merge commit, tags v0.1.0 and merges main back into develop');
 });
 

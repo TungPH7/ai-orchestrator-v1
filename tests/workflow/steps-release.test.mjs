@@ -49,6 +49,7 @@ test('/ao-release prints the cut point, the items, the release and its Fix Versi
   assert.deepEqual(decision.lines, LINES);
   assert.equal(decision.reason, 'gate ④. Read the list, then run /ao-release v0.1.0 22327a5');
   assert.equal(decision.next, '/ao-release v0.1.0 22327a5');
+  assert.equal(decision.waits, 'you');
 });
 
 test('/ao-release lists apart the Cancelled items whose code goes out with the release, and the cut run carries them', () => {

@@ -129,6 +129,7 @@ test('/ao-qa stops while the QA environment does not run a release that holds th
   const older = decide(qaFacts({ qa: { contains: false } }));
   assert.equal(older.reason, 'Development runs cccccccc, which does not hold the merge of PR #15 (bbbbbbbb) yet');
   assert.match(older.next, /deployer/);
+  assert.deepEqual([none.waits, older.waits], ['deploy', 'deploy']);
   const unmerged = decide(qaFacts({ pr: { state: 'open', merged: false, mergeCommit: null } }));
   assert.equal(unmerged.reason, 'PR #15 of DEMO-21 is not merged');
 });
@@ -208,6 +209,7 @@ test('/ao-qa of a light item: picked up by a script, then the lines to check, th
   assert.deepEqual(posted.runs, [{ action: 'qa-light-report', key: 'DEMO-30', result: 'PASS', body: REPORT }]);
   const passed = decide(qaFacts({ item: { ...LIGHT_TASK, state: 'in-qa', status: 'In QA' }, qaReport: { result: 'PASS', at: '2026-11-20T08:00:00.000Z', id: '10700', failed: [] } }));
   assert.match(passed.next, /click Accept on DEMO-30/);
+  assert.equal(passed.waits, 'you');
 });
 
 test('a light report that is not about the item, or has no result, is refused', () => {

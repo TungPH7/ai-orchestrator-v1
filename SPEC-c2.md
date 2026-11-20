@@ -75,7 +75,7 @@ Bộ điều phối cần biết một lệnh dừng vì chờ bạn hay chờ m
   | `deploy` | Chờ deploy | QA chờ bản mới lên môi trường |
   | `item` | Chờ item khác | Link Blocks chưa merge, WIP của role trên Jira, một QA khác trên cùng môi trường, khóa của item |
   | `usage` | Chạm giới hạn usage | |
-  | `fix` | Lỗi cần sửa ở kit hay cấu hình | `project.yaml` sai, nhánh không đúng luật |
+  | `fix` | Lệnh không áp dụng được như đã gõ, hay có chỗ cần sửa trước | `project.yaml` sai, nhánh không đúng luật, lệnh không hợp trạng thái của item |
   | `next` | Lệnh kế tiếp chạy được ngay, ghi ở trường `then` | Review thấy Critical hay High: `then` là `/ao-fix <PR>` |
 
 - Câu chữ của STOP giữ nguyên.

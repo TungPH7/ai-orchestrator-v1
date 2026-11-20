@@ -5,7 +5,7 @@ import { readRoster } from '../../lib/agents/roster.mjs';
 import { readContract } from '../../lib/contract.mjs';
 import { readGates } from '../../lib/quality/gates.mjs';
 import { PURPOSES } from '../../lib/workflow/prompts.mjs';
-import { decideStep, nextFor, noteKey } from '../../lib/workflow/steps.mjs';
+import { decideStep, nextCommand, nextFor, noteKey } from '../../lib/workflow/steps.mjs';
 import { CONTRACT_DIR, ROOT } from '../helpers/kit.mjs';
 import { checkChange } from '../../scripts/ao-step.mjs';
 
@@ -43,6 +43,8 @@ test('/ao-build stops at the draft PR for your preview, with the preview files a
   const decision = decideStep('build', buildFacts(), options);
   assert.equal(decision.go, false);
   assert.equal(decision.reason, 'the draft PR #15 of DEMO-21 waits for your preview: the screenshots and API samples of its dev agents are in .ai/runs/DEMO-21/preview/');
+  // The preview is yours: the dispatcher does not skip it (C2 spec 5.3).
+  assert.equal(decision.waits, 'you');
   assert.equal(decision.next, '/ao-preview DEMO-21, or /ao-review 15 to skip the preview');
   const pending = decideStep('build', buildFacts({ ci: { green: false, failed: false, pending: true } }), options);
   assert.match(pending.reason, /waits for your preview \(CI still running\)/);
@@ -211,6 +213,36 @@ test('the next command of an item In Progress with a draft PR is the preview, or
   assert.equal(nextFor(item, { number: 15, state: 'open', draft: false }), '/ao-review 15');
   assert.equal(nextFor(item, { number: 15, state: 'open' }), '/ao-review 15');
   assert.equal(nextFor(item, null), '/ao-build DEMO-21');
+});
+
+// C2 spec section 5.2: the dispatcher takes the command, /ao-status the words; both from one table (plan, decision 5).
+test('nextCommand gives the command of an item, or what it waits for, with the words nextFor prints', () => {
+  const story = (state, more = {}) => ({ key: 'DEMO-21', workType: 'story', state, flagged: false, ...more });
+  const epic = (state, more = {}) => ({ key: 'DEMO-20', workType: 'epic', state, flagged: false, ...more });
+  const open = (more = {}) => ({ number: 15, state: 'open', ...more });
+  const cases = [
+    [story('ready'), null, { command: 'build', arg: 'DEMO-21', text: '/ao-build DEMO-21' }],
+    [story('in-progress'), null, { command: 'build', arg: 'DEMO-21', text: '/ao-build DEMO-21' }],
+    [story('in-progress'), open(), { command: 'review', arg: 15, text: '/ao-review 15' }],
+    [story('in-progress'), open({ draft: true }), { waits: 'you', text: '/ao-preview DEMO-21 or /ao-review 15' }],
+    [story('in-review'), open(), { command: 'review', arg: 15, text: '/ao-review 15 or /ao-fix 15' }],
+    [story('in-review'), null, { waits: 'fix', text: 'its PR is closed: /ao-status' }],
+    [story('ready-for-qa'), null, { command: 'qa', arg: 'DEMO-21', text: '/ao-qa DEMO-21' }],
+    [story('in-qa'), null, { waits: 'you', text: 'Accept or QA fail on DEMO-21 after the QA report' }],
+    [story('new'), null, { waits: 'item', text: 'waits to be refined (jira-sync after Approve plan, or you)' }],
+    [story('done'), null, { done: true, text: 'done' }],
+    [story('cancelled'), null, { done: true, text: 'cancelled' }],
+    [story('ready', { flagged: true }), null, { waits: 'you', text: 'read the flag comment on DEMO-21 (Needs you)' }],
+    [epic('new'), null, { waits: 'you', text: 'Click Start spec on DEMO-20' }],
+    [epic('specifying'), null, { command: 'spec', arg: 'DEMO-20', text: '/ao-spec DEMO-20' }],
+    [epic('planning'), null, { command: 'plan', arg: 'DEMO-20', text: '/ao-plan DEMO-20' }],
+    [epic('in-progress'), null, { waits: 'item', text: 'its items move on' }],
+    [epic('in-progress', { children: [{ state: 'cancelled' }] }), null, { waits: 'you', text: 'Click Complete on DEMO-20' }],
+  ];
+  for (const [item, pr, expected] of cases) {
+    assert.deepEqual(nextCommand(item, pr), expected, `${item.workType} ${item.state}`);
+    assert.equal(nextFor(item, pr), expected.text);
+  }
 });
 
 test('/ao-status lists a draft PR as one, with the preview as its next command, which waits for you', () => {

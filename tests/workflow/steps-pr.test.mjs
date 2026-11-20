@@ -247,6 +247,19 @@ test('/ao-review after a fix of a High on a protected path: the new part at the 
   ].join('\n\n'));
 });
 
+// What each stop of /ao-build and /ao-review waits for (C2 spec section 4).
+test('the stops of /ao-build and /ao-review say what they wait for', () => {
+  const waits = (command, facts) => {
+    const decision = decide(command, facts);
+    return [decision.waits, decision.then];
+  };
+  assert.deepEqual(waits('build', storyFacts({ dependenciesMerged: false, item: { blockedBy: ['DEMO-19'] } })), ['item', undefined]);
+  assert.deepEqual(waits('review', prFacts('review', { ci: { green: false, failed: false, pending: true } })), ['ci', undefined]);
+  assert.deepEqual(waits('review', prFacts('review', { ci: { green: false, failed: true, pending: false } })), ['next', { command: 'fix', arg: 15 }]);
+  assert.deepEqual(waits('review', prFacts('review', { reports: { reviewer: report(), security: report() } })), ['you', undefined]);
+  assert.deepEqual(waits('review', prFacts('review', { state: 'closed', merged: true })), ['fix', undefined]);
+});
+
 test('/ao-review stops: CI running or red, both reports on the head, a docs PR, a closed PR', () => {
   const cases = [
     [prFacts('review', { ci: { green: false, failed: false, pending: true } }), /CI is still running on the head d1d2d3d/, /once CI is done/],
@@ -272,6 +285,7 @@ test('at gate ③ the stop says to wait while qa tests on the environment the me
   const waiting = decide('review', prFacts('review', { reports }, { qaRunning: testing }));
   assert.equal(waiting.go, false);
   assert.match(waiting.reason, /gate ③ merge-approval\. Wait: qa is testing DEMO-30 on development now \(process 4242\)/);
+  assert.equal(waiting.waits, 'you');
   assert.match(waiting.reason, /the merge deploys development, and the new deploy stops that QA/);
   assert.match(waiting.next, /^Once qa ends on development, read the reports/);
 
@@ -444,6 +458,9 @@ test('/ao-review that stops on Critical or High findings gives their ids, and ho
   assert.equal(decision.go, false);
   assert.equal(decision.reason, 'the reports on the head of PR #15 ask for changes (Critical or High: security 2: 1a2b3c4d 5e6f7a8b). To accept a High instead of fixing it, approve PR #15 on its head with one line per finding: Accept risk: <id> until <YYYY-MM-DD>: <why> (docs/quality-gates.md)');
   assert.equal(decision.next, '/ao-fix 15');
+  // The dispatcher runs /ao-fix from then, not from the words of next (C2 spec 5.3).
+  assert.equal(decision.waits, 'next');
+  assert.deepEqual(decision.then, { command: 'fix', arg: 15 });
 });
 
 test('appRolesOf gives each app of project.yaml the dev agent of its profile, and leaves out any other', () => {
