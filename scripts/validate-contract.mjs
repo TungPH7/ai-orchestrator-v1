@@ -23,10 +23,10 @@ const deployFile = join(dir, '..', 'deploy.yaml');
 // The example of /etc/ao/deployer.yaml lives in the kit only.
 const deployerFile = join(dir, '..', 'vps', 'deployer.example.yaml');
 
-// The SKILL.md of each vendored skill, by name; undefined when it is missing.
+// The SKILL.md of each vendored or adapted skill, by name; undefined when it is missing.
 function readSkills(roster, skillsDir) {
   return new Map(
-    roster.vendored_skills.map(({ name }) => {
+    [...roster.vendored_skills.map(({ name }) => name), ...roster.adapted_skills].map((name) => {
       const file = join(skillsDir, name, 'SKILL.md');
       return [name, existsSync(file) ? readFileSync(file, 'utf8') : undefined];
     }),

@@ -1,6 +1,7 @@
 // Copies the vendored skills of agents/roster.yaml into kit/.claude/skills/, each at its pinned commit (agent-roster
 // spec 2.7). Reads the tree and commit date from the GitHub API, with GITHUB_TOKEN when it is set, and the files
 // from raw.githubusercontent.com.
+// The adapted skills of the roster (adapted_skills) are the kit's own: this script never touches them (docs/skills.md).
 // Usage: npm run skills:vendor [-- <name> ...]   (no name: every vendored skill)
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -10,11 +11,12 @@ import { vendorSkill } from '../lib/agents/vendor.mjs';
 const root = fileURLToPath(new URL('..', import.meta.url));
 const roster = readRoster(join(root, 'agents'));
 const names = process.argv.slice(2);
-const unknown = names.filter((name) => !roster.vendored_skills.some((skill) => skill.name === name));
-if (unknown.length > 0) {
-  console.error(`Not a vendored skill of agents/roster.yaml: ${unknown.join(', ')}`);
-  process.exit(2);
-}
+// An adapted skill is the kit's own rewrite of another skill (D3): a download would replace it with the original.
+const adapted = names.filter((name) => roster.adapted_skills.includes(name));
+for (const name of adapted) console.error(`${name} is adapted by the kit, not vendored: compare it with its original by hand (docs/skills.md)`);
+const unknown = names.filter((name) => !adapted.includes(name) && !roster.vendored_skills.some((skill) => skill.name === name));
+if (unknown.length > 0) console.error(`Not a vendored skill of agents/roster.yaml: ${unknown.join(', ')}`);
+if (adapted.length > 0 || unknown.length > 0) process.exit(2);
 
 const headers = { Accept: 'application/vnd.github+json', ...(process.env.GITHUB_TOKEN ? { Authorization: `Bearer ${process.env.GITHUB_TOKEN}` } : {}) };
 const cache = new Map();

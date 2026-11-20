@@ -8,8 +8,8 @@ import { ROOT } from '../helpers/kit.mjs';
 const roster = readRoster(join(ROOT, 'agents'));
 const PROJECT = 'D:\\work\\shop';
 const skillDir = (name) => join(PROJECT, '.claude', 'skills', name);
-// The SKILL.md of every vendored skill and of one stack skill, as the script reads them from .claude/skills/.
-const skills = new Map([...roster.vendored_skills.map(({ name }) => name), 'vercel-react-best-practices'].map((name) => [name, { dir: skillDir(name), text: `---\nname: ${name}\ndescription: d\n---\n\n# ${name}\n` }]));
+// The SKILL.md of every vendored and adapted skill and of one stack skill, as the script reads them from .claude/skills/.
+const skills = new Map([...roster.vendored_skills.map(({ name }) => name), ...roster.adapted_skills, 'vercel-react-best-practices'].map((name) => [name, { dir: skillDir(name), text: `---\nname: ${name}\ndescription: d\n---\n\n# ${name}\n` }]));
 // What ao-agent.mjs resolves before the session starts (dev-workflow spec 2.3). The token is a marker to look for.
 const TOKEN = 'ghs_READ_TOKEN_MARKER';
 const identity = {

@@ -88,7 +88,7 @@ Mười một agent nằm ở `kit/.claude/agents/<role>.md`: `pm`, `ba`, `ux`, 
 | Bạn hoặc một lệnh điều phối | `node .ai-orchestrator/scripts/ao-agent.mjs <role> -p "<prompt>"` chạy agent làm phiên chính, với skill, effort và `--max-turns` của roster |
 | Hook `gh-guard` và `jira-guard` | Đọc vai trò từ tên agent: file được ghi, quyền git, App GitHub, transition được làm |
 
-Skill của agent được chép vào kit, ghim theo commit (`kit/.claude/skills/`); mỗi dự án thêm skill theo stack trong `.ai-orchestrator/roster.local.yaml`. Agent `ux` viết `design.md` của Epic, và `check-design.mjs` kiểm file đó trong job `policy`. [docs/agents.md](docs/agents.md) giải thích các phần sau:
+Skill của agent được chép vào kit, ghim theo commit (`kit/.claude/skills/`); ba skill của `seo` được chép rồi viết lại, và [docs/skills.md](docs/skills.md) ghi cách so chúng với bản gốc. Mỗi dự án thêm skill theo stack trong `.ai-orchestrator/roster.local.yaml`. Agent `ux` viết `design.md` của Epic, và `check-design.mjs` kiểm file đó trong job `policy`. [docs/agents.md](docs/agents.md) giải thích các phần sau:
 
 - từng vai trò, cách chạy, chi phí đo được;
 - cách nâng effort và cách thêm skill;
@@ -258,6 +258,7 @@ docs/github-apps-setup.md  tạo ba GitHub App, từng bước bấm
 docs/release-workflow.md   bốn lệnh của vòng ngoài, Fix Version, hotfix, rollback, yêu cầu với dự án
 docs/vps-setup.md   dựng VPS và deployer, cập nhật bản kit trên VPS
 docs/agents.md      mười một agent, cách chạy, nâng effort, skill, design.md, ảnh Figma, dung lượng repo và LFS
+docs/skills.md      ba loại skill của kit; skill chuyển thể và cách so với bản gốc
 vps/                file của deployer trên VPS: service, timer, cấu hình mẫu, script đặt secret
 tests/              test; tests/fixtures/invalid/ chứa các hợp đồng cố tình sai, mỗi file sai một quy tắc;
                     tests/fixtures/tracker/ chứa ánh xạ sai, dữ liệu API Jira ghi sẵn và sự kiện GitHub mẫu

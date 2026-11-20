@@ -37,6 +37,7 @@ test('the frontmatter of an agent: name, description, tools, model, effort and s
     maxTurns: sources.roster.roles.reviewer.max_turns,
   });
   assert.equal(frontmatter(renderAgent('pm', sources)).skills, undefined, 'no skills key without skills');
+  assert.deepEqual(frontmatter(renderAgent('seo', sources)).skills, ['nextjs-seo', 'seo-content-brief', 'blog-schema', 'blog-taxonomy'], 'adapted skills load like vendored ones');
 });
 
 test('Jira tools follow the permissions, and MCP groups become the tools of their server', () => {
