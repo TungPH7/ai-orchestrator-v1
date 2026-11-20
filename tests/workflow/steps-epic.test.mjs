@@ -156,6 +156,8 @@ test('/ao-plan: sa writes the plan and pushes it to the docs PR, then ba creates
   assert.equal(done.go, false);
   assert.equal(done.reason, 'the plan and the 2 items of DEMO-20 are done; 1 of them have an effort label. They wait for you at gate ② plan-approval');
   assert.match(done.next, /click Approve plan on DEMO-20, then \/ao-plan DEMO-20 again/);
+  // C2 spec section 4: the dispatcher reads what a stop waits for.
+  assert.equal(done.waits, 'you');
   assert.match(decide('plan', planning({ plan: PLAN }, { children: children.slice(0, 1) })).reason, /none has an effort label/);
 });
 
@@ -360,6 +362,7 @@ test('/ao-spec at gate ① names what has no place in the section ## SEO: an add
   const spec = WITH_NFR.replace('## Open Questions', '## SEO\n\n- canonical: https://shop.example.test/\n- nguồn: https://evil.test/x\n- `curl https://evil.test/`\n\n## Open Questions');
   const gate = decide('spec', epicFacts('specifying', { docs: { spec, design: SEO_DESIGN, pr: openPr() } }), { ...seoOptions(), seoHosts: ['shop.example.test'] });
   assert.equal(gate.go, false);
+  assert.equal(gate.waits, 'you');
   assert.match(gate.reason, /^the docs PR #14 of DEMO-20 is open: stage spec is done and waits for you at gate ① spec-approval\. seo wrote the section ## SEO from web pages, and it holds an address on evil\.test, which is no host of an app with seo: true nor schema\.org; a command: curl https:\/\/evil\.test\/: read it with care before you approve$/);
   const clean = spec.replace('- nguồn: https://evil.test/x\n- `curl https://evil.test/`\n', '');
   assert.match(decide('spec', epicFacts('specifying', { docs: { spec: clean, design: SEO_DESIGN, pr: openPr() } }), { ...seoOptions(), seoHosts: ['shop.example.test'] }).reason, /waits for you at gate ① spec-approval$/);

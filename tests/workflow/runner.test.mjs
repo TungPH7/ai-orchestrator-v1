@@ -280,6 +280,8 @@ test('the usage limit and a run without a result stop the runner; the next comma
   assert.deepEqual(h.calls.map(({ role }) => role), ['ba', 'ux']);
   assert.match(stopped.decision.reason, /^ux hit the usage limit: You've hit your 5-hour limit · resets 1:40am\. Run the same command again after it resets/);
   assert.equal(stopped.decision.next, '/ao-spec DEMO-20');
+  // The dispatcher opens no new command after it (C2 spec 5.4).
+  assert.equal(stopped.decision.waits, 'usage');
 
   const again = harness(world, SPEC_EFFECTS);
   await again.run({ gather });
@@ -457,6 +459,7 @@ test('a PR that conflicts with its base stops the runner at once, and says to me
   const h = harness(world, { 'docs-pr': (w) => ((w.pr = { number: 14, state: 'open', merged: false, base: 'develop', conflicts: true }), (w.ciPendingFor = 999), (w.ciStarted = false)) });
   const stopped = await h.run({ gather, limits: { ciWaitMs: 30 * 60000, ciStartMs: 5 * 60000 } });
   assert.match(stopped.decision.reason, /^PR #14 conflicts with develop, and GitHub runs no CI on a PR it cannot merge: merge origin\/develop into its branch, resolve the conflict, push, then run the command again/);
+  assert.equal(stopped.decision.waits, 'fix');
   assert.ok(world.ciPendingFor >= 999 - 2, 'it did not wait the 5 minutes');
 });
 

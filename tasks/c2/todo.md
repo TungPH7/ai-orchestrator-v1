@@ -12,18 +12,18 @@ Bộ test lúc bắt đầu: 1.731 test xanh (kit `main` `dc400af`).
 
 ## Chuẩn bị
 
-- [ ] **T1: tài liệu.** Spec ghi đã duyệt, có `next` trong bảng `waits` (plan, quyết định 4); plan, todo; nhật ký từ Lượt 101; hàng C2 của `concerns.md` (spec, plan; hai followup lặp lại đã xong ở #306, #309); `tasks/todo.md` mục 8. PR tài liệu.
+- [x] **T1: tài liệu.** Spec ghi đã duyệt, có `next` trong bảng `waits` (plan, quyết định 4); plan, todo; nhật ký từ Lượt 101; hàng C2 của `concerns.md` (spec, plan; hai followup lặp lại đã xong ở #306, #309); `tasks/todo.md` mục 8. PR tài liệu. Xong 2026-11-20: kit PR #327 (`a915788`).
 
 ## Phần 1: chỗ dừng ghi rõ "chờ ai", nhánh `task/c2-1`
 
-- [ ] **T2: `waits` trên mọi STOP** (spec mục 4).
+- [x] **T2: `waits` trên mọi STOP** (spec mục 4). Xong 2026-11-20, cùng commit với T3 (hai task sửa chung `steps.mjs`). 113 STOP của `decideStep` và 13 STOP của runner có nhãn; `tests/workflow/waits.test.mjs` đọc mã nguồn, nên cả STOP không test nào đi qua cũng được kiểm. Bảng `waits` của spec: `fix` gồm cả "lệnh không hợp trạng thái của item". Runner: STOP `next` là chạy lại chính lệnh đó (hết số lượt trong một lệnh, lượt không có kết quả).
   - **Đạt khi:**
     - `stop(reason, next, waits, then)` ném lỗi khi thiếu `waits` hay `waits` lạ (plan, quyết định 3);
     - mọi STOP của `decideStep` có nhãn, và cả bộ test xanh;
     - test riêng: cổng ①–⑤, Accept, Click, `seo-ok`, cờ Needs you, câu hỏi mở, PR nháp là `you`; CI đang chạy là `ci`; chờ deploy là `deploy`; link Blocks, WIP trên Jira, QA khác trên môi trường là `item`; giới hạn usage là `usage`;
     - review thấy Critical hay High: `waits: next`, `then: { command: 'fix', arg: <PR> }`; mọi STOP khác không có `then`.
   - **File:** `lib/workflow/steps.mjs`, test.
-- [ ] **T3: `nextCommand` và `/ao-status`.**
+- [x] **T3: `nextCommand` và `/ao-status`.** Xong 2026-11-20. `/ao-status` của `shop` trước và sau khi sửa in giống hệt nhau (trừ dòng đếm file kit khác bản chép). Item New là `waits: item` (chờ jira-sync), để danh sách chờ bạn giữ như cũ. 1.736 test xanh.
   - **Đạt khi:**
     - `nextCommand(item, pr)` trả `{ command, arg }` hay `{ waits: 'you', text }`; `nextFor` dựng chữ từ đó, chữ in ra giữ như cũ;
     - danh sách "Waiting for you" của `spaceStatus` lấy từ `waits`, không dò chữ;
