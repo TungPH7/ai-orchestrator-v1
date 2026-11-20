@@ -37,6 +37,17 @@ test('one run per item, one QA per environment, one build or fix per dev agent',
   assert.equal(admit({ live, command: 'build', key: 'SHOP-13', role: 'be-dev', cap: 4 }).ok, true);
 });
 
+// C2 spec section 6: with runs.agents_per_role, N agents of a role build at once, each on its own item.
+test('runs.agents_per_role lets several agents of one role build at once, one item each', () => {
+  const live = [lock({ command: 'build', key: 'SHOP-10', role: 'fe-dev' })];
+  const two = { 'fe-dev': 2 };
+  assert.equal(admit({ live, command: 'build', key: 'SHOP-11', role: 'fe-dev', cap: 4, agentsPerRole: two }).ok, true);
+  const more = [...live, lock({ command: 'fix', key: 'SHOP-11', role: 'fe-dev', slot: 1, pid: 101 })];
+  assert.match(admit({ live: more, command: 'build', key: 'SHOP-12', role: 'fe-dev', cap: 4, agentsPerRole: two }).reason, /^fe-dev is at work on SHOP-10 \(process 100\), SHOP-11 \(process 101\): runs\.agents_per_role lets 2 fe-dev agents work at once$/);
+  // Still one run per item.
+  assert.match(admit({ live, command: 'fix', key: 'SHOP-10', role: 'fe-dev', cap: 4, agentsPerRole: two }).reason, /one run per item/);
+});
+
 test('spec, plan, release and the other commands run alone, and nothing starts next to them', () => {
   for (const command of ['spec', 'plan', 'request', 'intake', 'preview', 'release', 'ship', 'rollback']) {
     assert.deepEqual(admit({ live: [], command, key: 'SHOP-7', cap: 3 }), { ok: true, name: '_project', slot: 0 }, command);
@@ -109,6 +120,9 @@ test('a build that moves on to another dev agent takes that role on its lock, an
   // The role it holds already, or a free one, is taken at once.
   assert.deepEqual(await claimRole(dir, story.file, 'fe-dev', { fs, alive, sleep }), { ok: true, waited: false });
   assert.equal(existsSync(join(dir, '.admit')), false, 'the mutex is released');
+  // With two agents of fe-dev (runs.agents_per_role), a second one does not wait (C2 spec section 6).
+  const another = await takeLock(dir, { pid: 4, command: 'build', key: 'SHOP-14' }, { fs, alive, cap: 4, sleep: async () => {} });
+  assert.deepEqual(await claimRole(dir, another.file, 'fe-dev', { fs, alive, sleep: async () => assert.fail('it waited'), limit: 2 }), { ok: true, waited: false });
 });
 
 test('two builds that wait for each other\'s dev agent cannot both wait, and a wait ends', async (t) => {

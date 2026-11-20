@@ -176,12 +176,17 @@ test('a lane stays while its PR is open, has no PR, or holds work not committed 
 });
 
 test('runs of project.yaml: off and one lane when absent; runs.copy holds relative paths inside the project only', () => {
-  const defaults = { worktrees: false, lanesMax: 1, minFreeRamGb: 3, portStep: 100, copy: [], laneEnv: { ports: {}, names: {} }, budgetUsd: 30, idleHours: 8 };
+  const defaults = { worktrees: false, lanesMax: 1, minFreeRamGb: 3, portStep: 100, copy: [], laneEnv: { ports: {}, names: {} }, budgetUsd: 30, idleHours: 8, agentsPerRole: {} };
   assert.deepEqual(runsSettings({}), defaults);
   // The budget of one /ao-run and how long it waits for you with nothing to start (C2 spec 5.4, 5.5).
   assert.deepEqual(runsSettings({ runs: { budget_usd: 12.5, idle_hours: 2 } }), { ...defaults, budgetUsd: 12.5, idleHours: 2 });
   for (const bad of [0, -1, 1001, '30']) assert.throws(() => runsSettings({ runs: { budget_usd: bad } }), /runs\.budget_usd of project\.yaml is .*: a number of USD above 0, at most 1000/, String(bad));
   for (const bad of [0, 49, 0.5, '8']) assert.throws(() => runsSettings({ runs: { idle_hours: bad } }), /runs\.idle_hours of project\.yaml is .*: a whole number of hours from 1 to 48/, String(bad));
+  // How many agents of a dev role work at once, each on its own item (C2 spec section 6).
+  assert.deepEqual(runsSettings({ runs: { worktrees: true, lanes_max: 3, agents_per_role: { 'fe-dev': 2 } } }).agentsPerRole, { 'fe-dev': 2 });
+  assert.throws(() => runsSettings({ runs: { worktrees: true, lanes_max: 2, agents_per_role: { 'fe-dev': 3 } } }), /runs\.agents_per_role of project\.yaml gives fe-dev 3: a whole number from 1 to runs\.lanes_max \(2\)/);
+  assert.throws(() => runsSettings({ runs: { agents_per_role: { qa: 2 } } }), /runs\.agents_per_role of project\.yaml names qa: only be-dev, fe-dev and devops build/);
+  assert.throws(() => runsSettings({ runs: { agents_per_role: ['fe-dev'] } }), /runs\.agents_per_role of project\.yaml is not a map of role to number/);
   assert.deepEqual(runsSettings({ runs: { worktrees: true, copy: ['apps/api/.env', '.env.development'] } }), { ...defaults, worktrees: true, copy: ['apps/api/.env', '.env.development'] });
   assert.deepEqual(runsSettings({ runs: { worktrees: 'yes' } }), defaults);
   assert.deepEqual(runsSettings({ runs: { worktrees: true, lanes_max: 3, min_free_ram_gb: 2.5, port_step: 200 } }), { ...defaults, worktrees: true, lanesMax: 3, minFreeRamGb: 2.5, portStep: 200 });
