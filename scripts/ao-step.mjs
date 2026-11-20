@@ -403,8 +403,9 @@ async function main() {
       runs,
       apps: projectApps,
       // An agent waits for RAM only while another command has one running (live check of shop, 2026-11-16).
-      admitAgent: async () => {
-        const admitted = await admitAgent(activeDir, lock, { fs: lockFs, alive, sleep, freeBytes: freemem, minGb: runs.minFreeRamGb, onWait: (gb) => console.log(`Waiting for RAM: ${gb} GB free, ${runs.minFreeRamGb} GB needed before another agent starts`) });
+      // The second agent of a review that runs at once holds a lock of its own (C2 spec section 7).
+      admitAgent: async (run) => {
+        const admitted = await admitAgent(activeDir, run?.agentLock ?? lock, { fs: lockFs, alive, sleep, freeBytes: freemem, minGb: runs.minFreeRamGb, onWait: (gb) => console.log(`Waiting for RAM: ${gb} GB free, ${runs.minFreeRamGb} GB needed before another agent starts`) });
         if (!admitted.ok) throw new Error(admitted.reason);
       },
       log: (line) => console.log(line),
@@ -444,7 +445,7 @@ async function main() {
           return await watchQa(await placed(run.qa?.auth || run.envAuth ? { ...run, env: { ...run.env, ...basicAuthEnv(secret('AO_ENV_AUTH')) } } : run), (ready, onStart) => startAgent(ready, join(runsDir, key, log), onStart));
         } finally {
           // Its agent no longer holds RAM for the others that wait (admitAgent).
-          if (cap > 1) await releaseAgent(activeDir, lock, { fs: lockFs, alive, sleep });
+          if (cap > 1) await releaseAgent(activeDir, run.agentLock ?? lock, { fs: lockFs, alive, sleep });
         }
       },
       // A defect you reported is checked like a QA run: its evidence goes to the item too (human-loop spec 5.1). seo has
@@ -476,6 +477,15 @@ async function main() {
       dispatch: (action) => dispatchJiraSync(action.key),
       pack: reviewPackWriter({ github, jira }),
       worktree: { add: addWorktree, remove: removeWorktree },
+      // reviewer and security at once (C2 spec section 7): the second agent takes a place of its own under the cap, as
+      // <KEY>+<role>, or runs after the first when there is none.
+      pair: async (run) => {
+        if (cap <= 1) return null;
+        const second = await takeRunLock(activeDir, { pid: process.pid, command, arg, key: `${key}+${run.role}`, startedAt: new Date().toISOString() }, { fs: lockFs, alive, cap, sleep, agentsPerRole: runs.agentsPerRole });
+        if (!second.ok) console.log(`${run.role} runs after the first review: ${second.reason}`);
+        return second.ok ? second.file : null;
+      },
+      unpair: (file) => rmSync(file, { force: true }),
       store: {
         readState: readRunState,
         writeState: (k, state) => writeFileSync(join(runsDir, k, 'state.json'), `${JSON.stringify(state, null, 2)}\n`),

@@ -75,13 +75,13 @@ Bộ test lúc bắt đầu: 1.731 test xanh (kit `main` `dc400af`).
 
 ## Phần 4: `reviewer` cùng lúc với `security`, nhánh `task/c2-4`
 
-- [ ] **T8: ba chỗ dùng chung** (spec mục 7, chỗ 1–3).
+- [x] **T8: ba chỗ dùng chung** (spec mục 7, chỗ 1–3). Xong 2026-11-21. Worktree `pr-<N>-<role>`; ledger `.ai/ledger/<KEY>.<role>.md` (luật trong `agents/rules.md`, sinh lại file agent); `state.json` ghi theo kiểu đọc rồi sửa đúng mục của lượt mình (`put`), không đợi gì giữa đọc và ghi, nên không cần mutex file: hai lượt chạy cùng lúc nằm trong cùng một tiến trình `ao-step` (đổi so với quyết định 10 của plan). Số thứ tự của lượt được giữ trước (`reserve`), nên hai lượt không trùng số.
   - **Đạt khi:**
     - worktree `pr-<N>-<role>`, gỡ khi lượt của role đó xong;
     - ledger `.ai/ledger/<KEY>.<role>.md` cho `reviewer` và `security`, cả khi chạy lần lượt; prompt và `resumePrompt` chỉ đúng file;
     - `updateState` dưới mutex; hai lượt xong cùng lúc không mất bản ghi.
   - **File:** `lib/workflow/steps.mjs`, `lib/workflow/prompts.mjs`, `lib/workflow/runs.mjs`, `scripts/ao-step.mjs`, test.
-- [ ] **T9: vòng chạy** (spec mục 7, chỗ 4).
+- [x] **T9: vòng chạy** (spec mục 7, chỗ 4). Xong 2026-11-21. Thân một lượt của runner tách thành `makeRun`; mọi STOP của runner đi qua `halt(waits, reason)`. `pair(run)` của `ao-step` lấy khóa `<KEY>+<role>` dưới trần; không có chỗ thì chạy lần lượt như cũ. Một lần checkout cho cả cặp. Chốt RAM của agent thứ hai tính trên khóa của nó. Test mới `runner-together.test.mjs` (đỏ trên runner cũ). 1.758 test xanh.
   - **Đạt khi:**
     - `reviewRuns` đánh dấu nhóm `together` khi còn nợ cả hai báo cáo;
     - runner chạy cả nhóm khi agent thứ hai được nhận (khóa `<KEY>+security`), chạy lần lượt khi không; chờ cả nhóm xong rồi quyết lại;
