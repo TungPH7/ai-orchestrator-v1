@@ -31,3 +31,36 @@
 4. Code mới chạy lại 448 lần gọi, so từng quyết định với mốc.
 
 **Kết quả:** 0 khác biệt. Cả bộ test xanh (1.605 test), cùng `validate`, `render:check`, `jira:checklist:check`, `agents:check`. Bộ ghi tạm đã gỡ khỏi `steps.mjs` trước khi commit.
+
+## T20: chép kit vào `shop` (2026-11-20, Lượt 93–99)
+
+- **PR #79 (SHOP-78):** lần chép đầu là kit `719a696`. Review lần một tốn 14,10 USD: `reviewer` 0 Critical, 0 High, 4 Medium, 2 Low; `security` 2 High, 5 Medium.
+- **Sửa:** bạn chọn sửa mọi finding trong một kit PR (Lượt 95). Kit PR #324 (`5c25aca`) có 1.710 test xanh; kit được chép lại vào PR #79 (`1ff3358`).
+- **Review lần hai** tốn 14,49 USD. Cả hai role Approve, 0 Critical, 0 High; còn 6 Medium và 3 Low, gom vào T20b ([followups-pr79.md](followups-pr79.md)). Bạn merge PR #79 (`ccf4fde`).
+- **Deploy:** deployer từ chối `ccf4fde`, vì mô tả PR có chữ `<KEY>` do phiên chính viết. Sửa mô tả, `audit` chạy thử qua, rồi `/ao-rollback development ccf4fde` deploy được.
+- **QA PASS:** comment 10608, 1,08 USD; E2E Development 134 qua, 0 lỗi, 6 bỏ qua. `qa` không bấm được Pick up, vì Pick up và QA fail có hai rule Restrict tách rời. Bạn gộp hai rule; phiên chính bấm Pick up bằng token CI, rồi Accept thay bạn bằng token admin. **SHOP-78 Done.** Cả Task tốn 29,67 USD.
+
+## Tiêu chí hoàn thành (spec mục 12), 2026-11-20
+
+| # | Tiêu chí | Kết quả | Bằng chứng |
+|---|---|---|---|
+| 1 | Bộ test xanh; dời thứ tự vào contract không đổi quyết định nào | **Đạt** | 1.710 test xanh ở `5c25aca` (CI của kit PR #324, cả job `windows`). 0 khác biệt trên 448 quyết định (T3–T4 ở trên) |
+| 2 | PR chỉ đổi tài liệu của item Nhẹ merge không cần lượt review, `audit` cho deploy; thêm một file `.ts` thì bị đòi review | **Đạt bằng test**; chưa chạy thật | `tests/quality/waivers.test.mjs`, `merge-gate.test.mjs` ("a review waived by rule…"), `audit.test.mjs`, `tests/workflow/steps-pr.test.mjs`. Chưa item Nhẹ nào của `shop` đi qua |
+| 3 | PR Chuẩn chạm controller: `reviewer` `high`, `security` `high`; PR chạm `SecurityConfig.java`: `xhigh`, `max`, và mức tự lên Nặng | **Đạt bằng test**; phần Nguy cấp chạy thật | `tests/quality/review-tiers.test.mjs` ("the efforts by tier…"), `tests/workflow/levels.test.mjs`. PR #79 chạm đường dẫn Nguy cấp: hai lượt review chạy ở `xhigh` và `max` |
+| 4 | Medium không có cách tái hiện tính là Low; review hết Critical và High thì `ao-step` gợi ý approve | **Đạt**, có chạy thật | `tests/quality/pull-request.test.mjs` ("a Medium with a Tái hiện or Repro line…"). Review lần hai của PR #79: `ao-step` dừng ở gate ③ và gợi ý approve |
+| 5 | `pnpm add` gói chưa duyệt bị gh-guard từ chối, `dep-check` gói đạt thì cho cài; `policy` đỏ khi có gói trực tiếp mới chưa duyệt | **Đạt** | `tests/quality/commands.test.mjs` ("an install of a library not approved is refused…"), `tests/quality/dependencies.test.mjs` ("the policy job fails on a new direct dependency…"). `dep-check` chạy thật ở T13: `zod@4.1.12` đáng ngờ, `org.mapstruct:mapstruct@1.6.3` đạt. Còn đường vòng: T20b mục 2 và 3 |
+| 6 | `/ao-spec` chạy `seo` sau `ux` cho màn hình của app `seo: true`; không chạy với app `seo: false` hay từ `no-seo`, và SPEC có dòng "SEO: không" | **Đạt bằng test** | `tests/workflow/conditions.test.mjs` (ba test của `spec-has-seo-screens` và `no-seo`), `tests/workflow/steps-epic.test.mjs`; roster nạp bốn skill (`tests/agents/roster.test.mjs`). Lần chạy thật đầu là Epic đầu cần SEO |
+| 7 | Epic kế tiếp có USD trên mỗi AC, so được với 21,6 USD của SHOP-7 | **Chờ Epic kế tiếp** | `/ao-status <Epic>` đã in dòng này (T6) |
+| 8 | QA lại Story Chuẩn chỉ kiểm tiêu chí đã FAIL, cộng cả bộ E2E; Story Nặng kiểm đủ | **Đạt bằng test** | `tests/workflow/steps-qa.test.mjs` ("QA again at level standard checks only the criteria that failed…") |
+| 9 | `validate` báo lỗi khi role khác `seo` có WebFetch hay WebSearch; gh-guard từ chối `seo` đọc `.env` hay file ngoài dự án | **Đạt bằng test** | fixture `tests/fixtures/agents/invalid/a1-web-role-with-bash.yaml`, `tests/agents/scope.test.mjs`, `tests/quality/commands.test.mjs` (mọi cách viết `.env` mà Windows mở, file git bỏ qua). Còn hở: T20b mục 1 (WebFetch qua câu search) và mục 5 (`seo` không đọc được ledger của nó) |
+| 10 | Task ngoài Epic có `ao-seo`: `/ao-intake` ghi `Cần seo:`, `/ao-request` chạy `seo`, prompt build chỉ tới comment đó; Story trong Epic chỉ tới mục `## SEO` | **Đạt bằng test** | `tests/workflow/steps-seo.test.mjs` (build trong và ngoài Epic, review, QA, fix, request, intake), `tests/workflow/skills.test.mjs` |
+| 11 | Lượt `seo` chỉ đổi `docs/specs/` thì `ao-step` commit; đổi file khác thì dừng | **Đạt bằng test**, chặt hơn spec | `tests/workflow/seo-commit.test.mjs`. Từ kit PR #324, chỉ `docs/specs/<EPIC>/spec.md` được commit; trên nhánh tài liệu thì chỉ SPEC của chính Epic đó |
+
+**Kết luận:** 10 tiêu chí đạt, trong đó 6 tiêu chí mới đạt bằng test. Tiêu chí 7 chờ Epic kế tiếp của `shop`. Lần chạy thật đầu của `seo` là Epic đầu tiên cần SEO. Trước lượt đó nên xong T20b mục 1 và 5.
+
+**Còn mở:**
+- **T20b**, chờ bạn đồng ý: 6 Medium và 3 Low của review lần hai PR #79, cùng lỗi `jira:check` không thấy hai rule Restrict tách rời ([followups-pr79.md](followups-pr79.md)).
+- **`review: off`** của `project.yaml`: hoãn từ T12.
+- **So `xhigh` với `high`** (spec mục 7, phần 2): làm ở Epic kế tiếp.
+
+**Chi phí của C1 ở lượt agent:** T2 tốn 0,17 USD, SHOP-78 tốn 29,67 USD (review 14,10 + 14,49, QA 1,08). Công của phiên chính không đo.
