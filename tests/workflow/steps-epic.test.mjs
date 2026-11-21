@@ -366,7 +366,7 @@ test('/ao-spec at gate ① names what has no place in the section ## SEO: an add
   const gate = decide('spec', epicFacts('specifying', { docs: { spec, design: SEO_DESIGN, pr: openPr() } }), { ...seoOptions(), seoHosts: ['shop.example.test'] });
   assert.equal(gate.go, false);
   assert.equal(gate.waits, 'you');
-  assert.match(gate.reason, /^the docs PR #14 of DEMO-20 is open: stage spec is done and waits for you at gate ① spec-approval\. seo wrote the section ## SEO from web pages, and it holds an address on evil\.test, which is no host of an app with seo: true nor schema\.org; a command: curl https:\/\/evil\.test\/: read it with care before you approve$/);
+  assert.match(gate.reason, /^the docs PR #14 of DEMO-20 is open: stage spec is done and waits for you at gate ① spec-approval\. seo wrote the section ## SEO from web pages, and it holds an address outside the hosts of the apps with seo: true and schema\.org, on line 4; a command \(curl\) on line 5 \(lines counted from its heading\): read it with care before you approve$/);
   const clean = spec.replace('- nguồn: https://evil.test/x\n- `curl https://evil.test/`\n', '');
   assert.match(decide('spec', epicFacts('specifying', { docs: { spec: clean, design: SEO_DESIGN, pr: openPr() } }), { ...seoOptions(), seoHosts: ['shop.example.test'] }).reason, /waits for you at gate ① spec-approval$/);
 });

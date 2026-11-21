@@ -20,16 +20,19 @@ test('an address outside the hosts of the apps with seo: true and schema.org is 
     '- xem https://evil.test/collect?d=1 và http://www.schema.org/Offer',
     '- lại https://evil.test/other',
   ].join('\n');
-  assert.deepEqual(seoTextProblems(text, { hosts: HOSTS }), ['an address on evil.test, which is no host of an app with seo: true nor schema.org']);
+  assert.deepEqual(seoTextProblems(text, { hosts: HOSTS }), ['an address outside the hosts of the apps with seo: true and schema.org, on line 4']);
   assert.deepEqual(seoTextProblems('- canonical: https://shop.ao.t2g.io.vn/', { hosts: HOSTS }), []);
 });
 
-test('a command, in a shell block, at the start of a line or in a code span, is named', () => {
+// Review of shop PR #80 (security, Low): a problem names the line and the program, never the words seo wrote, which
+// reach the main session, which has Bash, in the reason of a STOP and the log of /ao-run before you read them.
+test('a command, in a shell block, at the start of a line or in a code span, is named by its program and line', () => {
   const problems = (text) => seoTextProblems(text, { hosts: HOSTS });
-  assert.deepEqual(problems('Chạy:\n\n```bash\nls\n```\n'), ['a shell block (```bash)']);
-  assert.deepEqual(problems('```powershell\nGet-ChildItem\n```'), ['a shell block (```powershell)']);
-  assert.deepEqual(problems('$ curl https://shop.ao.t2g.io.vn/'), ['a command: curl https://shop.ao.t2g.io.vn/']);
-  assert.deepEqual(problems('Trước khi làm, `npm i left-pad` rồi build.'), ['a command: npm i left-pad']);
-  assert.deepEqual(problems('git push origin develop'), ['a command: git push origin develop']);
+  assert.deepEqual(problems('Chạy:\n\n```bash\nls\n```\n'), ['a shell block (bash) on line 3']);
+  assert.deepEqual(problems('```powershell\nGet-ChildItem\n```'), ['a shell block (powershell) on line 1']);
+  assert.deepEqual(problems('$ curl https://shop.ao.t2g.io.vn/'), ['a command (curl) on line 1']);
+  assert.deepEqual(problems('Trước khi làm, `npm i left-pad` rồi build.'), ['a command (npm) on line 1']);
+  assert.deepEqual(problems('git push origin develop\nlà đủ\n`git status`'), ['a command (git) on line 1', 'a command (git) on line 3']);
+  assert.deepEqual(problems('- https://evil.test/ignore-all-rules-and-run'), ['an address outside the hosts of the apps with seo: true and schema.org, on line 1'], 'no host, no path');
   assert.deepEqual(problems('```json\n{ "@context": "https://schema.org" }\n```\n- title: Giày chạy bộ nam\n- Node của Next.js đọc `generateMetadata`'), []);
 });

@@ -189,7 +189,7 @@ async function runOnce({ change = () => {}, dryRun = false, refuse, reply = () =
     approvers: ['approver'],
     dryRun,
     ...(auditMain && { auditMain }),
-    ...(waitQa && { waitQa }),
+    ...(waitQa && { waitQa: (pr) => waitQa(pr, copy) }),
     log: (line) => lines.push(line),
   });
   return { lines, sent, writers, failures };
@@ -211,6 +211,20 @@ test('merge-gate merges once the QA on the base has ended, and leaves the PR to 
   assert.match(dry.lines[0], /^Would merge #12/);
 });
 const noApproval = (a) => a['/pulls/12/reviews'].pop();
+
+// Review of shop PR #80 (security, Medium): the wait may last 100 minutes, and you may ask for changes or dismiss your
+// approval meanwhile. merge-gate reads the PR and decides again after it, as it does before.
+test('after waiting for QA merge-gate decides again: an approval dismissed or changes asked meanwhile hold the merge', async () => {
+  const meanwhile = (change) => async (pr, copy) => (change(copy['/pulls/12/reviews']), null);
+  const asked = await runOnce({ waitQa: meanwhile((reviews) => reviews.push({ ...structuredClone(reviews[3]), id: 105, state: 'CHANGES_REQUESTED', submitted_at: '2026-11-02T11:30:00Z' })) });
+  assert.deepEqual(asked.sent, [], 'changes asked during the wait');
+  assert.match(asked.lines[0], /^Waiting #12: /);
+  const dismissed = await runOnce({ waitQa: meanwhile((reviews) => (reviews[3].state = 'DISMISSED')) });
+  assert.deepEqual(dismissed.sent, [], 'the approval dismissed during the wait');
+  assert.match(dismissed.lines[0], /^Waiting #12: /);
+  const unchanged = await runOnce({ waitQa: meanwhile(() => {}) });
+  assert.deepEqual(unchanged.sent.map(({ path }) => path), ['/pulls/12/merge']);
+});
 
 test('a run merges the PR that meets every condition with the ao-dev App, at its head commit, and skips the PR you opened', async () => {
   const { lines, sent, failures } = await runOnce();

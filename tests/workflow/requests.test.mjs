@@ -37,3 +37,15 @@ test("an unsigned request of the agents' account is an agent's, never yours (rev
   assert.deepEqual(openRequests(asks, NAMES, { agentAccount: 'agents-1' }).map(({ from, to }) => [from, to]), [['agent', 'ba'], [null, 'sa'], ['fe-dev', 'ux']]);
   assert.equal(UNSIGNED_AGENT, 'agent');
 });
+
+// Review of shop PR #80 (reviewer and security, Medium): the hook of seo and this reader must read a request alike. The
+// reader takes any Unicode space, a line break of its own or a decomposed letter as the plain text Jira would show.
+test('a request after any Unicode space, line separator or zero-width mark, or with decomposed letters, is a request', () => {
+  const SEO = { ...NAMES, seo: 'SEO Specialist' };
+  for (const space of ['\u00a0', '\f', '\u2028', '\u2003', '\u3000', ' \u200b']) {
+    const asks = openRequests([comment(9, `SEO Specialist:${space}Cần ba: thêm AC`)], SEO);
+    assert.deepEqual(asks.map(({ from, to, text }) => [from, to, text]), [['seo', 'ba', 'thêm AC']], JSON.stringify(space));
+  }
+  assert.deepEqual(openRequests([comment(9, 'SEO Specialist: Cần ba: x'.normalize('NFD'))], SEO).map(({ to }) => to), ['ba'], 'NFD');
+  assert.deepEqual(openRequests([comment(9, 'Frontend Developer: Cần\u00a0ba\uff1a x')], NAMES).map(({ to }) => to), ['ba'], 'a fullwidth colon');
+});
