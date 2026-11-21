@@ -135,3 +135,14 @@ test('Docker counts as running only when its server answered with a version', ()
   assert.equal(dockerAnswered({ status: 1, stdout: '' }), false);
   assert.equal(dockerAnswered({ status: null, stdout: null, error: new Error('ETIMEDOUT') }), false);
 });
+
+// Review of shop PR #80: run.mjs and mvnw.mjs pass the words after the script to Maven, so the words that make it read
+// another settings file are refused there too, as gh-guard refuses them on a command line.
+test('the wrapper refuses words that make Maven read another settings file', () => {
+  for (const bad of ['-sevil.xml', '-s', '-gsx.xml', '-qsx.xml', '--sett=x.xml', '-settings', '-Duser.home=x']) {
+    assert.throws(() => wrapperCommand('x', ['-B', bad, 'test'], { platform: 'linux', env: {} }), /makes Maven read another settings file/, bad);
+  }
+  for (const fine of ['-Dtest=ProductServiceTest', '-ntp', '-nsu', '-Pprod', '-T4', '-pl', '-o']) {
+    assert.doesNotThrow(() => wrapperCommand('x', ['-B', fine, 'test'], { platform: 'linux', env: {} }), fine);
+  }
+});

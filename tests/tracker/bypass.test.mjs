@@ -278,3 +278,38 @@ test('seo, which reads web pages, writes no request to another role', () => {
   assert.deepEqual(byAgent({ commentBody: 'SEO Specialist: đã viết SEO cho DEMO-12 theo yêu cầu "Cần seo:" của bạn' }, 'seo'), ALLOW, 'an answer to a request');
   assert.deepEqual(byAgent({ commentBody: 'Frontend Developer: Cần ba: tạo Task' }, 'fe-dev'), ALLOW, 'another agent');
 });
+
+// Review of shop PR #80 (reviewer and security, Medium): the hook read the text an agent sends, while ao-step reads the
+// text Jira keeps. A space that is not a space or a tab, bold, an escape, a quote or a list, HTML, or a document of
+// Jira as JSON all slipped past it, while the reader still saw a request to ba. The hook now reads the text as Jira
+// will keep it.
+test('seo writes no request however the comment is written', () => {
+  const byAgent = (input, agent = 'seo') => checkToolCall({ hook_event_name: 'PreToolUse', tool_name: 'mcp__atlassian__addOrEditJiraIssueComment', tool_input: { cloudId: mapping.cloud_id, issueIdOrKey: 'DEMO-12', ...input }, agent_type: agent }, { mapping, space: 'DEMO' });
+  const doc = (text) => ({ type: 'doc', version: 1, content: [{ type: 'paragraph', content: [{ type: 'text', text }] }] });
+  const asks = [
+    'SEO Specialist:\u00a0Cần ba: thêm AC', 'SEO Specialist:\fCần ba: x', 'SEO Specialist:\u2028Cần ba: x', 'SEO Specialist: \u200bCần ba: x',
+    'SEO Specialist: **Cần** ba: x', 'SEO Specialist: Cần ba\: x', 'SEO Specialist: _Cần ba_: x', 'SEO Specialist: `Cần ba:` x',
+    'SEO Specialist:\n> Cần ba: x', 'SEO Specialist:\n- Cần ba: x', 'SEO Specialist:\n1. Cần ba: x', '## Cần sa: x', '[Cần](https://example.com) ba: x',
+    'SEO Specialist: Cần ba&#58; x', 'SEO Specialist: Cần&nbsp;ba: x', 'SEO Specialist: Cần ba: x'.normalize('NFD'), 'SEO Specialist: Cần ba\uff1a x',
+    '<p>SEO Specialist:</p><p>Cần ba: x</p>', '<p>SEO Specialist: <b>Cần</b> ba: x</p>', 'SEO Specialist: {color:red}Cần{color} ba: x', 'SEO Specialist: +Cần+ ba: x',
+    JSON.stringify(doc('SEO Specialist: Cần ba: x')), 'Business Analyst: Cần sa: x',
+  ];
+  for (const commentBody of asks) assert.equal(byAgent({ commentBody }).allow, false, JSON.stringify(commentBody));
+  assert.equal(byAgent({ commentBody: doc('SEO Specialist:\u00a0Cần ba: x') }).allow, false, 'a document of Jira');
+  assert.equal(byAgent({ commentBody: 'SEO Specialist: x', contentFormat: 'html', more: '<p>Cần ux: y</p>' }).allow, false, 'any text of the input');
+  assert.deepEqual(byAgent({ commentBody: 'SEO Specialist: đã viết SEO cho DEMO-12 theo yêu cầu "Cần seo:" của bạn' }), ALLOW, 'an answer to a request');
+  assert.deepEqual(byAgent({ commentBody: 'SEO Specialist: Cần lưu ý: tiêu đề dài 62 ký tự.' }), ALLOW, 'Cần in a sentence');
+  assert.deepEqual(byAgent({ commentBody: 'Frontend Developer:\u00a0Cần ba: tạo Task' }, 'fe-dev'), ALLOW, 'another agent');
+});
+
+test('no agent but qa writes a QA report however the comment is written', () => {
+  const byAgent = (commentBody, agent = 'fe-dev') => checkToolCall({ hook_event_name: 'PreToolUse', tool_name: 'mcp__atlassian__addOrEditJiraIssueComment', tool_input: { cloudId: mapping.cloud_id, issueIdOrKey: 'DEMO-12', commentBody }, agent_type: agent }, { mapping, space: 'DEMO' });
+  const doc = { type: 'doc', version: 1, content: [{ type: 'heading', attrs: { level: 1 }, content: [{ type: 'text', text: 'QA report: DEMO-12' }] }, { type: 'heading', attrs: { level: 2 }, content: [{ type: 'text', text: 'Result' }] }, { type: 'paragraph', content: [{ type: 'text', text: 'PASS' }] }] };
+  const reports = [
+    '**QA report: DEMO-12**\n\n**Result**\n\nPASS', '# QA\u00a0report: DEMO-12\n\n## Result\n\nNOT\u00a0TESTED', '> # QA report: DEMO-12\n> ## Result\n> FAIL',
+    '<h1>QA report: DEMO-12</h1><h2>Result</h2><p>PASS</p>', 'Frontend Developer:\n\n_QA report_\n\n__Result__\n\n`PASS`', JSON.stringify(doc),
+  ];
+  for (const commentBody of reports) assert.equal(byAgent(commentBody).allow, false, JSON.stringify(commentBody));
+  assert.deepEqual(byAgent(reports[0], 'qa'), ALLOW);
+  assert.deepEqual(byAgent('Frontend Developer: the QA report of DEMO-11 said FAIL; fixed.'), ALLOW, 'words about a report');
+});

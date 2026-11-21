@@ -42,9 +42,10 @@ const START = { key: 'DEMO-21', number: 15, branch: BRANCH, head: HEAD, protecte
 // npm ci. up(url): whether an app answers. origin: the head of the branch on origin after git fetch. own: what git diff
 // lists from the fork point of the branch, the PR's own changes; all: what it lists from the tip of develop.
 // untracked: what git status lists as untracked (??) or ignored (!!), as `?? CLAUDE.local.md`; m.untracked changes it.
-function machine({ config = CONFIG, lockName = 'package-lock.json', files = {}, on = 'develop', checkoutFails = {}, npmStatus = 0, up = () => true, busyPorts = [], head = HEAD, dirty = '', agent = null, origin = HEAD, own = ['apps/web/src/page.tsx'], all = own, fetched = true, untracked = [], laneHead = HEAD, laneDirty = '', laneMerges = true } = {}) {
+function machine({ config = CONFIG, lockName = 'package-lock.json', files = {}, on = 'develop', checkoutFails = {}, npmStatus = 0, up = () => true, busyPorts = [], head = HEAD, dirty = '', agent = null, origin = HEAD, own = ['apps/web/src/page.tsx'], all = own, fetched = true, untracked = [], laneUntracked = null, laneHead = HEAD, laneDirty = '', laneMerges = true } = {}) {
   let inLane = laneHead;
   let others = untracked;
+  let laneOthers = laneUntracked;
   const store = new Map(Object.entries({ [join(PROJECT, '.ai-orchestrator/project.yaml')]: config, ...files }));
   const events = [];
   let branch = on;
@@ -103,6 +104,7 @@ function machine({ config = CONFIG, lockName = 'package-lock.json', files = {}, 
         return { status: 0, stdout: '', stderr: '' };
       }
       if (args[0] === 'status' && !args.includes('--ignored=matching')) return { status: 0, stdout: laneDirty, stderr: '' };
+      if (args[0] === 'status' && laneOthers) return { status: 0, stdout: laneOthers.map((entry) => `${entry}\0`).join(''), stderr: '' };
       return git(...args);
     },
     hold: (lock) => events.push(['hold', lock.key, lock.pid]),
@@ -125,7 +127,7 @@ function machine({ config = CONFIG, lockName = 'package-lock.json', files = {}, 
     now: () => Date.parse('2026-11-12T08:00:00Z'),
   });
   const json = (path) => (store.has(path) ? JSON.parse(store.get(path)) : null);
-  return { runner, events, store, json, branch: () => branch, untracked: (entries) => (others = entries) };
+  return { runner, events, store, json, branch: () => branch, untracked: (entries) => (others = entries), laneUntracked: (entries) => (laneOthers = entries) };
 }
 
 const installedFor = (lock) => ({ [paths.state]: JSON.stringify({ lock: lockHash(lock), at: '2026-11-11T08:00:00Z' }) });
@@ -388,4 +390,18 @@ test('in a lane, the facts read the lane: its changes, no install', async () => 
   assert.equal(facts.install, false);
   assert.deepEqual(facts.lane, { key: 'DEMO-21', dir: LANE });
   assert.equal((await m.runner.facts(false, { headSha: HEAD })).lane, null);
+});
+
+// Review of shop PR #80 (reviewer and security, Low): a preview in a lane checked the files that steer a session in the
+// lane only, while the main session and the agents of spec, plan, review and qa load them from the project folder, where
+// the apps of the PR run as you too. stop now names those that appeared in either folder, and says which.
+test('in a lane, stop names the untracked files that steer a session in the project folder and in the lane', async () => {
+  const m = machine({ untracked: ['?? CLAUDE.local.md'], laneUntracked: ['!! node_modules/'] });
+  await m.runner.start({ ...START, lane: LANE });
+  assert.deepEqual([m.json(paths.active).untracked, m.json(paths.active).laneUntracked], [['CLAUDE.local.md'], []]);
+  m.untracked(['?? CLAUDE.local.md', '!! .claude/settings.local.json']);
+  m.laneUntracked(['!! node_modules/', '?? apps/web/AGENTS.md']);
+  const { notes } = await m.runner.stop();
+  assert.ok(notes.includes('Files that steer a session appeared in the project folder during the preview, and git does not track them: .claude/settings.local.json. The apps of the PR may have written them, and /ao-preview --stop does not delete them: read each one, and delete those you did not make.'), notes.join('\n'));
+  assert.ok(notes.includes(`Files that steer a session appeared in the lane of DEMO-21 (${LANE}) during the preview, and git does not track them: apps/web/AGENTS.md. The apps of the PR may have written them, and /ao-preview --stop does not delete them: read each one, and delete those you did not make.`), notes.join('\n'));
 });

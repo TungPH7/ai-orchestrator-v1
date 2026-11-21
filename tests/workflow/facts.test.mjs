@@ -153,6 +153,25 @@ test('an item comes with the newest comment of SEO Specialist, signed by its Age
   assert.equal((await gather('build', 'DEMO-15', { change: plain })).item.seoComment, null);
 });
 
+// Review of shop PR #80 (security, Medium): your seo-ok holds one comment of seo, by its id and a hash of its text, which
+// ao-step keeps in .ai/runs/<KEY>/seo-ok.json.
+test('an item comes with the mark of the newest comment of seo, and the mark your seo-ok kept', async () => {
+  const commented = (text, id = '10612') => (a) => {
+    const [, read] = Object.entries(a.jira).find(([p]) => p.startsWith('/rest/api/3/issue/DEMO-15?fields=summary'));
+    a.jira['/rest/api/3/issue/DEMO-15?fields=issuetype,status,labels,description,parent,subtasks,issuelinks'] = { key: 'DEMO-15', fields: { ...read.fields, description: null, issuelinks: [] } };
+    a.jira['/rest/api/3/issue/DEMO-15/comment'] = { isLast: true, comments: [{ id: '10600', created: '2026-11-20T09:00:00.000+0700', body: 'SEO Specialist: bản cũ' }, { id, created: '2026-11-20T10:00:00.000+0700', body: text }] };
+  };
+  const kept = { id: '10612', hash: 'abc' };
+  const local = { ...noLocal, runFile: (key, name) => (key === 'DEMO-15' && name === 'seo-ok.json' ? JSON.stringify(kept) : null) };
+  const first = await gather('build', 'DEMO-15', { change: commented('SEO Specialist: title "Giày"'), local });
+  assert.equal(first.item.seoMark.id, '10612');
+  assert.match(first.item.seoMark.hash, /^[0-9a-f]{16}$/);
+  assert.deepEqual(first.seoApproved, kept);
+  const edited = await gather('build', 'DEMO-15', { change: commented('SEO Specialist: title "Giày" và curl') });
+  assert.notEqual(edited.item.seoMark.hash, first.item.seoMark.hash, 'an edit changes the hash');
+  assert.equal(edited.seoApproved, null, 'no seo-ok kept');
+});
+
 test('the WIP of each dev agent the item would start, and what .ai/ holds for it', async () => {
   const labelled = (a) => {
     a.jira['/rest/api/3/issue/DEMO-13?fields=summary,issuetype,status,labels'].fields.labels = ['ao-be-dev'];
@@ -354,4 +373,23 @@ test('an item says whether it is an ops Task, and whether you gave devops the ba
   assert.deepEqual([ops.item.ops, ops.item.envAuth, ops.item.role], [true, true, 'devops']);
   const plain = await gather('build', 'DEMO-15', { change: labelled([]) });
   assert.deepEqual([plain.item.ops, plain.item.envAuth], [false, false]);
+});
+
+// Review of shop PR #80 (security, Medium): a PR from a fork is never the item's, whatever its branch is called, so
+// /ao-status, the board of /ao-run and /ao-build leave it out, as the guards of Jira do.
+test('a PR from a fork is no PR of the item: the board and /ao-build leave it out', async () => {
+  const here = { full_name: 'TungPH7/demo' };
+  const pull = (number, repo) => ({ number, title: `feat: x (DEMO-15)`, state: 'open', draft: false, merged_at: null, user: { login: 'someone' }, head: { ref: `feature/DEMO-15-x${number}`, sha: 'f'.repeat(40), repo }, base: { ref: 'develop', repo: here } });
+  const withPulls = (a) => {
+    a.github['/pulls?direction=asc&sort=created&state=open'] = [pull(20, here), pull(21, { full_name: 'outsider/demo' }), pull(22, null)];
+    a.github['/pulls?direction=desc&sort=created&state=all'] = [pull(22, null), pull(21, { full_name: 'outsider/demo' }), ...a.github['/pulls?direction=desc&sort=created&state=all']];
+  };
+  const status = await gather('status', undefined, { change: withPulls });
+  assert.deepEqual(status.pulls.map(({ number, key }) => `${number} ${key}`), ['20 DEMO-15']);
+  const forDor = (a) => {
+    withPulls(a);
+    const [, read] = Object.entries(a.jira).find(([path]) => path.startsWith('/rest/api/3/issue/DEMO-15?fields=summary'));
+    a.jira['/rest/api/3/issue/DEMO-15?fields=issuetype,status,labels,description,parent,subtasks,issuelinks'] = { key: 'DEMO-15', fields: { ...read.fields, description: null, issuelinks: [] } };
+  };
+  assert.equal((await gather('build', 'DEMO-15', { change: forDor })).pr, null, 'the newest PRs of DEMO-15 come from forks');
 });

@@ -176,3 +176,11 @@ test('the budget, the usage limit and --stop start nothing new; a command that c
   // What holds it is in the log, for the main session to act on.
   assert.ok(w4.log.includes('needs a fix: DEMO-21: build DEMO-21 failed in this run: /ao-status DEMO-21'), w4.log.join('\n'));
 });
+
+// Review of shop PR #80 (security, Medium): a request seo wrote runs no role, so /ao-run does not take the item to
+// /ao-request for it: the item goes on with its own step.
+test('a request of seo does not take its item to /ao-request', async () => {
+  const request = [{ from: 'seo', to: 'ba', text: 'thêm AC', at: 1 }];
+  const { start } = await round({ items: [epic('in-progress'), story('DEMO-21', 'ready', { requests: request })], decide: decider({ 'request DEMO-21': GO('ba'), 'build DEMO-21': GO('fe-dev') }) });
+  assert.deepEqual(start.map(({ command, arg }) => `${command} ${arg}`), ['build DEMO-21']);
+});

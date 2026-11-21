@@ -983,3 +983,24 @@ test('seo reads its own ledger, though git ignores .ai/, and still not the ledge
   denied(seo('Read', { file_path: `${PROJECT}\\.ai\\ledger\\x\\..\\.env.seo.md` }), /\.env files are not read|a file git ignores/, 'a path that only looks like its ledger');
   denied(seo('Read', { file_path: `${PROJECT}\\.ai\\ledger\\SHOP-9.seo.md\\..\\..\\runs\\x.json` }), /a file git ignores/, 'climbing out of it');
 });
+
+// Review of shop PR #80 (reviewer Medium, security Low): Maven takes the value of a short option joined to it (-sx.xml),
+// a long option by any prefix that names one option only (--sett), its settings.xml from ~/.m2 of user.home, and more
+// words from MAVEN_ARGS; the JVM takes -D words from MAVEN_OPTS and JAVA_TOOL_OPTIONS. Each could name a settings file
+// with a mirror, which serves every artifact from elsewhere.
+test('Maven reads no other settings, however they are named', () => {
+  const approved = () => [];
+  const run = (command) => checkAgentCall({ agent_type: 'be-dev', tool_name: 'Bash', tool_input: { command } }, { gates, contract, projectDir: PROJECT, tempDir: TEMP, approved });
+  const refused = [
+    'mvn -sevil.xml package', './mvnw -s./evil.xml verify', 'mvn -gsevil.xml test', './mvnw --sett=evil.xml test', './mvnw --se evil.xml test',
+    './mvnw --global-s evil.xml test', 'mvn -Duser.home=./x test', 'mvn -D user.home=./x test', './mvnw -Dorg.apache.maven.user-settings=evil.xml test',
+    "MAVEN_ARGS='-s evil.xml' ./mvnw package", 'MAVEN_OPTS=-Duser.home=x mvn test', 'JAVA_TOOL_OPTIONS=-Duser.home=x ./mvnw test', 'env MAVEN_ARGS=-sx.xml mvn test',
+    'cd apps/api && MAVEN_ARGS=-sevil.xml ./mvnw.cmd test',
+  ];
+  for (const command of refused) denied(run(command), /registry of the project/, command);
+  // A variable set for the commands after it.
+  for (const command of ['export MAVEN_ARGS=-sevil.xml', 'export MAVEN_OPTS="-Duser.home=x"', 'declare -x JAVA_TOOL_OPTIONS=-Duser.home=x', 'export npm_config_registry=https://x.test', 'export NPM_CONFIG_REGISTRY=https://x.test']) {
+    denied(run(command), /registry of the project/, command);
+  }
+  for (const command of ['./mvnw -q test', 'mvn -B verify', './mvnw -Dtest=ProductServiceTest test', 'mvn -T 4 -o test', './mvnw --strict-checksums test', 'export CI=true', 'npm ci -s']) allowed(run(command), command);
+});

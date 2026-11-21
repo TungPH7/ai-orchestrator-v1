@@ -544,3 +544,15 @@ test('/ao-review of a PR waived by rule posts its trace, then waits at gate ③;
   assert.equal(decide('review', prFacts('review', { files })).runs[0].role, 'reviewer', 'no label: standard, no waiver');
   assert.equal(decide('fix', light({ reports: { reviewer: null, security: null } })).go, false, '/ao-fix with nothing to fix runs no review on it');
 });
+
+// Review of shop PR #80 (security, Medium): shop is public, and a PR from a fork on a branch named like the item's made
+// /ao-run review it, and fix it when its CI was red, on an outsider's code. Like /ao-preview, review and fix stop.
+test('/ao-review and /ao-fix stop on a PR from a fork, whatever its branch is called', () => {
+  for (const command of ['review', 'fix']) {
+    const decision = decide(command, prFacts(command, { fromFork: true, ci: { green: false, failed: true, pending: false } }));
+    assert.equal(decision.go, false, command);
+    assert.equal(decision.waits, 'you', command);
+    assert.match(decision.reason, /PR #15 comes from another repository: ao-step reviews and fixes only a branch of this one/, command);
+  }
+  assert.equal(decide('review', prFacts('review', { fromFork: false })).go, true);
+});

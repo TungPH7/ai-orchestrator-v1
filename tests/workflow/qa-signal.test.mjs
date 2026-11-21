@@ -112,3 +112,51 @@ test('merge-gate waits, reading again every minute, until the QA ends, its heart
   const forever = waitForQa({ readStatuses: async () => [status('pending', 0, 'owner', time)], approvers: ['owner'], now: () => time, sleep: async (ms) => (time += ms), maxMs: 5 * 60000, log: () => {} });
   assert.equal(await forever(SHA), 'qa tests DEMO-21 on development, still after 5 minutes');
 });
+
+// Review of shop PR #80 (reviewer, Low): a beat still on its way when the run ended reached GitHub after success, and
+// left ao/qa pending: merge-gate waited for a QA that had ended. Every status now goes out after the one before it.
+test('a beat on its way when the run ends reaches GitHub before success, never after it', async () => {
+  const c = clock();
+  const arrived = [];
+  const later = [];
+  // A pending answers late, a success at once: without an order, success arrives first.
+  const post = (status) => new Promise((done) => {
+    const land = () => (arrived.push(status.state), done());
+    if (status.state === 'pending') later.push(land);
+    else land();
+  });
+  const signal = qaSignal({ post, every: c.every, stop: c.stop, now: c.now, log: () => {} });
+  let finish;
+  const running = signal(RUN, () => new Promise((done) => (finish = done)), () => 0);
+  await flush();
+  later.shift()();
+  await flush();
+  // The beat fires, and its status is on its way when the run ends.
+  const beat = c.advance(BEAT_MS);
+  await flush();
+  finish({ lines: [] });
+  await flush();
+  await flush();
+  assert.deepEqual(arrived, ['pending'], 'success waits for the beat on its way');
+  later.shift()();
+  await beat;
+  await running;
+  assert.deepEqual(arrived, ['pending', 'pending', 'success']);
+});
+
+// Review of shop PR #80 (reviewer, Low): each PR on the same base waited up to 100 minutes again, past the 120 minutes of
+// the job. One run of merge-gate now waits 100 minutes at most in all.
+test('one run of merge-gate waits for QA 100 minutes at most in all, not for each PR', async () => {
+  let time = 0;
+  const wait = waitForQa({ readStatuses: async () => [status('pending', 0, 'owner', time)], approvers: ['owner'], now: () => time, sleep: async (ms) => (time += ms), maxMs: 5 * 60000, log: () => {} });
+  assert.equal(await wait(SHA), 'qa tests DEMO-21 on development, still after 5 minutes');
+  const first = time;
+  assert.equal(await wait(SHA), 'qa tests DEMO-21 on development, still after 5 minutes');
+  assert.equal(time, first, 'the second PR gives up at once');
+  let free = false;
+  const ended = waitForQa({ readStatuses: async () => (free ? [] : [status('pending', 0, 'owner', time)]), approvers: ['owner'], now: () => time, sleep: async (ms) => (time += ms), maxMs: 5 * 60000, log: () => {} });
+  time = 0;
+  assert.notEqual(await ended(SHA), null);
+  free = true;
+  assert.equal(await ended(SHA), null, 'a QA that ended frees the next PR, past the time too');
+});
