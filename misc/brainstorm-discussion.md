@@ -40,6 +40,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 32 | `84d69ed3-b065-40d0-a4e2-3c06a66ac5cb` | 2026-11-15 khoảng 01:52 → | Bạn dán đoạn cuối của Phiên 31, đã Accept `SHOP-6` (T10 xong); T10h: kit chỉ cắt `vX.Y.0` từ `develop`, nên bản đưa `CODEOWNERS` lên `main` là `v0.2.0` và Epic `SHOP-7` lên `v0.3.0`; Fix Version `v0.3.0` tạo qua REST; spec 2.9 phần 7, plan, todo sửa theo; chờ bạn duyệt gate ④ (`fdc2ee0`, `SHOP-6`); lượt 2: bạn duyệt gate ④; `release/v0.2.0` cắt bằng login của bạn, Staging; `/ao-ship v0.2.0` (0,92 USD): regression PASS, PR report #14 do App `ao-merge` merge, PR release #15 CI xanh; chờ bạn approve ở gate ⑤ và chọn ai bấm Release `v0.2.0`; lượt 3: bạn approve gate ⑤; App `ao-merge` merge PR #15, gắn tag `v0.2.0`, merge ngược PR #16; Production và Development deploy thành công; Release `v0.2.0` trên Jira qua REST; dòng `CODEOWNERS` của `doctor` xanh; T10h xong; `/ao-spec SHOP-7` chạy; lượt 4: bạn hỏi ảnh trang mẫu ở đâu; `ba` viết SPEC (2,99 USD) và dừng với 12 câu hỏi, chờ bạn trả lời; lượt 5: bạn đồng ý cả 12 câu và cho mình tự làm theo đề xuất tới hết B4; `ux` hỏi 16 câu có đề xuất, trả lời bằng lời của bạn; ảnh 05 chụp nhầm ở T11; `sa` thêm NFR1–NFR27; PR docs #17, 12,31 USD; chờ bạn duyệt gate ①; lượt 6: bạn bấm Approve spec; `/ao-plan SHOP-7`; lượt 7: bạn hỏi công cụ đo trang mẫu (Playwright); `sa` hỏi 2 câu, `API_URL` kiểm trên VPS; lượt 8: bạn hỏi 4 câu về Playwright, Claude in Chrome, `chrome-devtools`, animation; Playwright bật được light mode; `misc/clone-100pct-ui-ux/cong-cu-inspect-website.md`; lượt 9: giữ bảng màu sáng của `ux`; lượt 10: chốt Playwright + `chrome-devtools`, ghi vai trò tool trong skill; plan, 3 ADR và 30 item `SHOP-8`…`SHOP-37` (13,97 USD); chờ bạn duyệt gate ②; lượt 11: bạn bấm Approve plan; `jira-sync`, PR #17 merge (`41ede25`); chặng 4 của todo sửa theo plan; chặng 4 ước 335–580 USD, vượt mức 125 USD của spec, nên hỏi bạn chọn làm theo đợt, cả Epic hay thu nhỏ; lượt 12: bạn bỏ giới hạn chi phí (gói Max 5x) và chọn làm cả Epic; `SHOP-8` build, CI đỏ ở coverage rồi sửa, review 0 Critical/High/Medium, 7 Low (12,22 USD); gate ③ hỏi bạn sửa Low trước hay approve; build `SHOP-10`; lượt 13: bạn chọn sửa 7 Low của PR #18 trước khi approve; lượt 14: bạn hỏi chạy item song song bằng 2 worktree; kit chưa hỗ trợ (checkout `develop`, cổng, khóa, WIP), đúng việc C2 chưa làm; đề xuất giữ lần lượt hay làm C2 tối thiểu trước; lượt 15: bạn hỏi kỹ về C2 tối thiểu; đánh giá ở `misc/thao-luan/c2-toi-thieu-giua-pilot-3.md`: khả thi, không breaking nếu mặc định 1, 7 chỗ phải sửa, phải làm trong worktree riêng của kit; đề xuất (1) cộng viết spec C2; `SHOP-10` PR #19 CI đỏ cùng lỗi coverage; `/ao-fix 18` sửa 7 Low; lượt 16: chuyển bản đánh giá C2 vào `misc/thao-luan/sdlc-song-song/` và `clone-100pct-ui-ux/` vào `misc/thao-luan/`; lượt 17: bạn chọn chạy lần lượt cộng viết spec C2; thử thật MCP, `--resume` và hook chặn trong worktree: cả ba ổn; `SPEC-parallel-runs.md` nháp, 8 điểm chờ duyệt; `fe-dev` sửa 7 Low của PR #18 (3,30 USD); lượt 18: bạn hỏi cấu hình 1, 2, 3 hay n lượt song song; đề xuất `runs.parallel` 1..4 trong `project.yaml`, biến `AO_RUNS_PARALLEL` để hạ tạm, bắt đầu với 2; chưa sửa spec; `SHOP-8` sửa 7 Low, review lại: 1 Medium và 1 Low trong tài liệu, `security` 0 lỗi (21,14 USD); gate ③ hỏi sửa luôn hay approve; `/ao-fix 19`; lượt 19: giải thích chậm: mỗi item một làn, một worktree, trong làn vẫn một agent; `runs.parallel` là số làn có agent chạy cùng lúc; đề xuất đổi tên thành `runs.items_at_once`; lượt 20: đổi tên khóa thành `runs.items_at_once`; giải thích làn đang mở và agent cùng lúc; đề xuất 2 agent cùng lúc (máy 16 GB, còn 2,6 GB trống), số làn để WIP quyết; lượt 21–23: đổi tên thành `agents_at_once`, làn mở do bạn quyết bằng `lanes_max` (đề xuất 3 và 2), hỏi đáp ở `lan-va-agent-cung-luc.md`; PR #18 sửa Medium và Low; PR #19 tới gate ③ (1 Medium, 5 Low); lượt 24: bạn chọn sửa hết Medium và 5 Low của PR #19 trước khi approve; lượt 25: bạn phản biện, chốt số agent bằng số làn; spec thêm chốt RAM `min_free_ram_gb: 3` (đo: còn 2,8 GB trống, VS Code 3,8 GB); lượt 26: bạn hỏi cái gì tốn RAM; đo: agent `security` 0,34 GB, VS Code 3,8 GB; bạn đúng một nửa; kết luận giữ: số agent bằng số làn, chốt RAM 3 GB; PR #18 sửa xong Medium và Low, còn 3 Low nhỏ, đề xuất approve (`SHOP-8` 25,38 USD); `/ao-fix 19`; lượt 27–28: bạn approve PR #18, `merge-gate` merge (`4605845`); xác nhận kit tự tạo worktree, không cần cửa sổ VS Code; lượt 29: chỉ còn một con số `lanes_max` (số agent bằng nó, hạ tạm bằng `AO_AGENTS_AT_ONCE`); In Review 2 chỉ là mức cột trên board, không chặn, không phải sửa Jira; lượt 30: spec C2 vẫn chờ duyệt; tóm lại 8 điểm ở dạng mới nhất, đề xuất đồng ý cả 8; lượt 31: vì sao chỉ build, fix, review, QA song song: chúng chỉ đụng item của mình; đề xuất thêm mỗi lúc một QA trên một môi trường; chưa sửa spec; lượt 32: spec, plan của hai Epic song song: làm được về kỹ thuật nhưng contract chặn (`epic-shaping: 1`), số ADR trùng; đề xuất để phần 3, làm sau; Development deploy `4605845`; lượt 33: bỏ việc chạy nhiều Epic song song, không ghi vào spec; lượt 34: vì sao một QA trên một môi trường: chung database Development, E2E ghi dữ liệu, kết quả sai tốn thật; đề xuất thêm kiểm bản deploy trước và sau QA; chưa sửa spec; lượt 35: bạn duyệt spec C2 cùng luật QA; kit PR #290 merge; PR #19 lượt hai: 1 Medium thật và 3 Low, hỏi bạn sửa tiếp; `/ao-qa SHOP-8`; `SHOP-8` PASS QA (27,05 USD), chờ bạn Accept; build `SHOP-9`; bắt đầu code C2 phần 1 ở `ai-orchestrator-c2`; C2 phần 1 xong, kit PR #291 merge (1.490 test); bắt đầu phần 2; C2 phần 2 (kit PR #292) và bản sửa coverage (#293) merge; `SHOP-9` PR #20 đỏ CI vì file test; kế tiếp chép kit vào `shop`; `SHOP-38` chép kit `352b3df` vào `shop`, bật 3 làn; PR #21; `/ao-review 21`; lượt 36: bạn nhờ Accept `SHOP-8` (Done qua token admin) và sửa Medium, 3 Low của PR #19; lượt 37: bạn hỏi còn việc gì cần bạn: ngay lúc này không; sắp tới gate ③ của PR #21, #19, #20 và Accept; lượt 38: `/ao-fix 19` chạy code cũ vì tới trước khi PR #21 merge; nhiều làn bắt đầu ngay sau khi PR #21 merge |
 | 33 | `0624de51-1879-44c5-a6f3-793068e0d8be` | 2026-11-16 khoảng 21:22 → | Bạn dán đoạn cuối của Phiên 32, hỏi lại Bug SHOP-51 và cách fix, dặn chưa làm gì; Claude giải thích: khi slug trùng, Hibernate ghi cả câu INSERT kèm tên, mô tả sản phẩm vào log (trái NFR12); đề xuất (a) Low, Affects Version trống, Fix `v0.3.0`, Ready; cách fix: tắt logger `org.hibernate.orm.jdbc.error`, test bắt log, sửa dòng log `root=` của `GlobalExceptionHandler`; chờ bạn |
 | 34 | `ee11b1ec-f133-42e6-ae14-68d9209ea8b8` | 2026-11-19 khoảng 14:25 → | Bạn hỏi năm câu: kit gắn chặt với GitHub, Jira, VPS không, GitLab và EC2, so với agent-skills, vì sao agent-skills phổ biến, quản lý task và gõ lệnh tay; greenfield hay brownfield; luồng deploy của `shop` so với `deploy.yml` của bạn; vì sao chép kit lên VPS; nơi lưu tài liệu của SA, BA, PM, QA, UX. Claude viết `misc/thao-luan/kit-va-du-an-thuc-te/stack-deploy-va-luu-tai-lieu.md` |
+| 35 | `9b7de2de-fbda-493b-951d-5d7c26b8c106` | 2026-11-21 khoảng 01:33 → | Bạn dán đoạn cuối của Phiên 33 và gõ "làm T13"; `SHOP-79` tạo, Refine và Start; `shop` PR #80 chép kit `8a9f25d` (C2, T20b) và Low 9 (khối `review` của `project.yaml`); CI xanh 7 job; review chạy (`reviewer` `xhigh`, `security` `max`); `security` chạm giới hạn 5 giờ, Lượt 2 chạy tiếp; review xong: 0 Critical, 0 High, sau khi gộp còn 5 Medium và 4 Low, đều trong code kit; tổng 15,23 USD; chờ bạn merge PR #80 và quyết đợt sửa kit trước T14 |
 
 ---
 
@@ -31102,3 +31103,221 @@ Ba quyết định trong plan đáng biết:
 ## Bước tiếp
 
 Bạn duyệt plan, hoặc nói chỗ cần đổi. Khi bạn nói "làm", mình bắt đầu từ T1.
+
+
+# Phiên 33 · Lượt 106 — 2026-11-20 → 2026-11-21
+
+**Bạn:** "làm". Giữa lượt, bạn hỏi: "bạn làm tới T mấy rồi nhỉ? còn mấy T nữa?"
+
+**Claude:**
+
+(Giữa lượt, mình trả lời: đã xong T1–T7, đang làm T8–T9, còn 8 task, trong đó T10–T12 là việc của mình, rồi dừng ở Checkpoint 3 để hỏi bạn trước T13.)
+
+Mình đã làm xong cả sáu phần code của C2, từ T1 tới T12, và tới **Checkpoint 3**. Mình dừng ở đây để hỏi bạn, vì từ T13 trở đi bắt đầu tốn tiền.
+
+## Đã xong
+
+Bảy kit PR, mỗi PR đều xanh CI rồi mới merge. Lúc bắt đầu có 1.731 test; giờ có 1.771 test, tất cả xanh.
+
+| Phần | Việc | Kit PR |
+|---|---|---|
+| T1 | Spec, plan, todo, nhật ký | #327 |
+| 1 (T2–T3) | Mỗi chỗ dừng ghi rõ "chờ ai"; một bảng chung cho lệnh kế tiếp của mỗi item | #328 |
+| 2 (T4–T6) | Bộ điều phối `/ao-run <EPIC>` | #329 |
+| 3 (T7) | Nhiều agent cùng role chạy cùng lúc (`runs.agents_per_role`), mỗi agent một item | #330 |
+| 4 (T8–T9) | `reviewer` và `security` chạy cùng lúc khi còn chỗ | #331 |
+| 5 (T10) | `/ao-preview` chạy được khi bật làn | #332 |
+| 6 (T11–T12) | Nhịp tim QA: `merge-gate` chờ QA xong rồi mới merge | #333 |
+
+**Checkpoint 1 và 2:**
+- `/ao-status` của `shop` in y như trước khi sửa.
+- Chạy thử `/ao-run` trên `shop`, chỉ đọc Jira và GitHub:
+  - `SHOP-40`, `SHOP-70`, `SHOP-75` không có gì để chạy, vì cả ba Task còn ở New, chờ được làm rõ;
+  - `SHOP-7` được báo là Epic đã xong.
+
+## Chỗ mình làm khác plan
+
+Bạn nên biết năm chỗ sau:
+
+1. **Bộ điều phối hỏi chính `ao-step`,** qua cờ mới `--json`, thay vì tự gọi hàm quyết định bên trong nó.
+   - Câu trả lời vì thế đúng y như khi bạn tự gõ lệnh, và bộ điều phối không giữ token nào.
+   - Cái giá: mỗi câu hỏi mất vài giây (chạy thử trên `shop`: khoảng 10 giây cho một vòng ba item).
+2. **`state.json` không cần khóa file.** Hai lượt review chạy cùng lúc nằm trong cùng một tiến trình, nên mình ghi theo kiểu "đọc rồi sửa đúng mục của lượt mình", không đợi gì giữa lúc đọc và lúc ghi.
+3. **Preview trong làn không cài lại package.** Làn đã có package của nhánh, do agent cài. Spec ghi "chỉ cài lại khi lockfile đổi", nhưng việc đếm thêm lockfile ở đây là thừa.
+4. **Ở T5, test viết cùng lúc với code,** không viết đỏ trước như các task khác.
+5. **Gom commit:** T2 với T3 chung một commit, T11 với T12 chung một commit, vì mỗi cặp sửa chung một file.
+
+Thêm vài điều nhỏ:
+- Skill `/ao-run` nhận tối đa bốn key. Lý do: luật của kit cấm đưa chữ tự do vào dòng lệnh shell, và test của kit đã bắt được chỗ này.
+- Bộ điều phối ghi thêm dòng `needs a fix` vào log, ví dụ khi Docker chưa chạy làm `be-dev` không build được, để mình xử lý.
+- Chữ ở cổng ③ không còn bảo bạn chờ QA, vì giờ `merge-gate` tự chờ.
+
+## Cần bạn quyết
+
+1. **T13: chép kit vào `shop`.**
+   - Một Task chép kit mang theo C2, T20b và Low 9.
+   - Có review đầy đủ, khoảng **15–30 USD**, và một lượt QA khoảng 1 USD.
+   - Bạn merge PR và bấm Accept, như ở SHOP-77 và SHOP-78.
+
+   Bạn đồng ý thì mình bắt đầu.
+2. **T14: Epic kế tiếp của `shop` là tính năng gì?**
+   - Bộ điều phối chạy thật trên Epic này, với `lanes_max: 3`.
+   - Epic này cũng dùng để đo tiêu chí 7 còn chờ của C1 (USD trên mỗi AC).
+   - Bạn cho mình biết trước lúc chạy thật là được.
+
+## Bước tiếp
+
+Bạn gõ "làm T13", hoặc nói điều bạn muốn đổi. Mình sẽ tạo Task chép kit trên Jira, chép kit, mở PR rồi chạy review.
+
+# Phiên 35 · Lượt 1 — 2026-11-21 01:33
+
+**Bạn:**
+
+````
+Làm tiếp session id: 0624de51-1879-44c5-a6f3-793068e0d8be
+
+làm T13
+
+Đoạn chat của session id: 0624de51-1879-44c5-a6f3-793068e0d8be
+```
+CI của phần 6 đã xanh. Mình merge PR cuối cùng có code.
+
+Bảy kit PR đã merge hết (`8a9f25d`). Mình tick Checkpoint 3, ghi nhật ký và cập nhật bộ nhớ.
+
+Mình đã làm xong cả sáu phần code của C2 (T1–T12) và tới **Checkpoint 3**. Mình dừng ở đây để hỏi bạn, vì từ T13 trở đi bắt đầu tốn tiền.
+
+## Đã xong
+
+Có bảy kit PR, PR nào cũng merge khi CI đã xanh. Bộ test tăng từ 1.731 lên 1.771, tất cả xanh. Kit `main` giờ ở `8a9f25d`.
+
+| Phần | Việc | Kit PR |
+|---|---|---|
+| T1 | Spec, plan, todo, nhật ký | #327 |
+| 1 (T2–T3) | Mỗi chỗ dừng ghi rõ "chờ ai"; một bảng chung cho lệnh kế tiếp của mỗi item | #328 |
+| 2 (T4–T6) | Bộ điều phối `/ao-run <EPIC>` | #329 |
+| 3 (T7) | Nhiều agent cùng role chạy cùng lúc (`runs.agents_per_role`), mỗi agent một item | #330 |
+| 4 (T8–T9) | `reviewer` và `security` chạy cùng lúc khi còn chỗ | #331 |
+| 5 (T10) | `/ao-preview` chạy được khi bật làn | #332 |
+| 6 (T11–T12) | Nhịp tim QA: `merge-gate` chờ QA xong rồi mới merge | #333 |
+
+**Checkpoint 1 và 2:**
+- `/ao-status` của `shop` in y như trước khi sửa.
+- Chạy thử `/ao-run` trên `shop`, chỉ đọc Jira và GitHub:
+  - `SHOP-40`, `SHOP-70`, `SHOP-75` không có gì để chạy, vì cả ba Task còn ở New, chờ được làm rõ;
+  - `SHOP-7` được báo là Epic đã xong.
+
+## Chỗ mình làm khác plan
+
+1. **Bộ điều phối hỏi chính `ao-step`** qua cờ mới `--json`, thay vì tự gọi hàm quyết định bên trong nó.
+   - Lợi: câu trả lời đúng y như khi bạn tự gõ lệnh, và bộ điều phối không giữ token nào.
+   - Cái giá: mỗi câu hỏi mất vài giây. Chạy thử trên `shop`, một vòng ba item mất khoảng 10 giây.
+2. **`state.json` không cần khóa file.** Hai lượt review chạy cùng lúc nằm trong cùng một tiến trình. Mỗi lượt đọc file rồi sửa đúng mục của mình, không đợi gì giữa lúc đọc và lúc ghi, nên hai lượt không ghi đè nhau.
+3. **Preview trong làn không cài lại package.** Làn đã có package của nhánh, do agent cài. Spec ghi "chỉ cài lại khi lockfile đổi", nhưng ở đây việc kiểm thêm lockfile là thừa.
+4. **Ở T5, test viết cùng lúc với code**, không viết đỏ trước như các task khác.
+5. **Gom commit:** T2 với T3 chung một commit, T11 với T12 chung một commit, vì mỗi cặp sửa chung một file.
+
+Thêm vài điều nhỏ:
+- Skill `/ao-run` nhận tối đa bốn key. Lý do: luật của kit cấm đưa chữ tự do vào dòng lệnh shell, và test của kit đã bắt được chỗ này.
+- Bộ điều phối ghi thêm dòng `needs a fix` vào log, để mình xử lý những chỗ như Docker chưa chạy làm `be-dev` không build được.
+- Chữ ở cổng ③ không còn bảo bạn chờ QA, vì giờ `merge-gate` tự chờ.
+
+## Cần bạn quyết
+
+1. **T13: chép kit vào `shop`.**
+   - Một Task chép kit mang theo C2, T20b và Low 9.
+   - Có review đầy đủ, khoảng **15–30 USD**, và một lượt QA khoảng 1 USD.
+   - Bạn merge PR và bấm Accept, như ở SHOP-77 và SHOP-78.
+
+   Bạn đồng ý thì mình bắt đầu.
+2. **T14: Epic kế tiếp của `shop` là tính năng gì?**
+   - Bộ điều phối sẽ chạy thật trên Epic này, với `lanes_max: 3`.
+   - Epic này cũng dùng để đo tiêu chí 7 còn chờ của C1 (USD trên mỗi AC).
+   - Bạn cho mình biết trước lúc chạy thật là được.
+
+## Bước tiếp
+
+Bạn gõ "làm T13", hoặc nói điều bạn muốn đổi. Khi đó mình sẽ tạo Task chép kit trên Jira, chép kit, mở PR rồi chạy review.
+```
+````
+
+**Claude:**
+
+T13 đã chạy tới bước review. Review đang chạy, chưa có kết quả. Xong là mình báo ngay.
+
+## Đã làm
+
+1. **Task `SHOP-79` trên Jira:** "Chép kit 8a9f25d vào shop", nhãn `ao-devops` và `ao-level-heavy`. Mình đã Refine thay bạn bằng token admin, kèm comment ghi chỗ bạn duyệt. Task đang ở In Progress.
+2. **Chép kit vào `shop`,** nhánh `feature/SHOP-79-kit-copy`, hai commit:
+   - `2bd498a`: `ao-kit sync` chép kit `8a9f25d`, gồm C2, T20b và các kit PR từ #325 tới #333. Có 39 file đổi.
+   - `4f14d49`: Low 9. Thêm khối `review` vào `project.yaml`, đưa `apps/user/src/components/seo/**` vào tầng Nhạy cảm. Mình đã thử: `json-ld.tsx` chuyển từ tầng Thường sang Nhạy cảm, còn file khác của `user` giữ nguyên.
+3. **Kiểm tra:**
+   - `ao-kit check` đạt.
+   - `ao-kit doctor` chỉ đỏ hai dòng đã biết: Docker đang tắt, và bản sao backup trên máy đã cũ 71 giờ.
+   - File kit trong `shop` khớp kit của máy.
+4. **PR #80** (nháp, mở qua App `ao-dev`): CI xanh cả 7 job, gồm `policy`, `project / caddy-proxy` và `project / not-found`.
+5. **Review đang chạy** với bản kit đang có trên `develop` của `shop`: `reviewer` ở `xhigh`, `security` ở `max`, như các lần chép kit trước. Mình theo dõi log, có gì bất thường là báo ngay.
+
+## Bước tiếp
+
+- Review xong, mình báo kết quả và chi phí. Mình ước 15–30 USD.
+- Nếu không còn Critical hay High, bạn merge PR #80, vì PR này sửa đường dẫn được bảo vệ. Sau đó mình chạy QA, khoảng 1 USD, rồi bạn bấm Accept `SHOP-79`.
+- Nếu có Critical hay High, mình dừng và hỏi bạn hướng sửa. Medium và Low vào một Task follow-up, không sửa ngay.
+- T14 vẫn chờ bạn chọn tính năng cho Epic kế tiếp của `shop`.
+
+# Phiên 35 · Lượt 2 — 2026-11-21 khoảng 09:09
+
+**Bạn:**
+
+```markdown
+I hit my usage limit while you were working, but it has reset now. Please continue from where you left off
+```
+
+**Claude:**
+
+Review PR #80 đã xong: không có Critical hay High. Tổng chi phí là 15,23 USD, nằm trong khoảng 15–30 USD mình ước. PR đang chờ bạn duyệt và merge.
+
+## Kết quả review
+
+| Role | Effort | Kết quả | Chi phí |
+|---|---|---|---|
+| `reviewer` | `xhigh` | 0 Critical, 0 High, 2 Medium, 3 Low | 4,64 USD |
+| `security` | `max` | 0 Critical, 0 High, 4 Medium, 3 Low | 10,59 USD |
+
+- Lượt đầu của `security` dừng vì chạm giới hạn 5 giờ. Mình chạy lại lúc 09:09, và nó làm tiếp trong cùng phiên.
+- Cả hai báo cáo đã đăng lên PR #80, ở head `4f14d49`.
+- Mọi finding đều nằm trong code của kit. Phần sửa riêng của `shop` (khối `review`) không có finding nào.
+
+Gộp hai báo cáo và bỏ chỗ trùng thì còn 9 việc.
+
+**Medium:**
+1. **PR từ fork lọt vào `/ao-run`.** `shop` là repo public. Một người ngoài mở PR từ fork, đặt tên nhánh như `feature/SHOP-12-x`, là `/ao-run` tự chạy review trên code của họ. Nếu CI của PR đó đỏ, `/ao-run` chạy luôn cả fix.
+2. **merge-gate merge theo thông tin cũ.** merge-gate có thể chờ QA tới 100 phút. Nếu trong lúc đó bạn bấm Request changes hay rút approve, PR vẫn được merge. Lỗ này mở ra cùng nhịp tim QA (T11–T12). Trước đó, khoảng hở chỉ vài giây.
+3. **Hai hook mới bị lách bằng định dạng.** Chỉ cần đặt NBSP sau dấu hai chấm, in đậm, hay viết `\:`, hook sẽ không thấy chữ `Cần ba:` trong comment của seo. Khi đó `/ao-run` tự chạy `ba` theo chữ mà seo chép từ web. Hook "chỉ qa được viết QA report" cũng mắc cùng lỗi. Cả hai role đều báo việc này.
+4. **Cờ `seo-ok` không gắn với comment bạn đã đọc.** Ở lượt fix sau, dev agent dựng theo comment mới nhất của seo, kể cả comment bạn chưa đọc.
+5. **Guard Maven bỏ sót** dạng `-s<file>` viết liền và biến `MAVEN_ARGS`. `reviewer` xếp Medium, `security` xếp Low.
+
+**Low:**
+6. Một nhịp `pending` của QA có thể tới GitHub sau `success`. Hậu quả: merge chậm tối đa 10 phút.
+7. Mỗi PR cùng base lại chờ QA từ đầu, tới 100 phút mỗi PR. Có nhiều PR thì tổng thời gian có thể vượt giới hạn 120 phút của workflow.
+8. Preview trong làn không kiểm các file điều khiển agent (như `CLAUDE.local.md`) mới xuất hiện ở thư mục dự án. Ghi chú của nó cũng chỉ sai thư mục.
+9. Chữ seo lấy từ web tới được phiên chính trước khi bạn đọc, qua lý do STOP và qua skill `ao-build`.
+
+Thêm một điều: hook `block-atlassian` chặn nhầm một lệnh của mỗi role, chỉ vì chữ trong lệnh có nhắc tên dịch vụ Jira. Agent không tìm cách lách hook, nên việc này không gây hại gì.
+
+## Cần bạn làm: duyệt và merge PR #80
+
+PR này sửa đường dẫn được bảo vệ, nên bạn tự merge:
+1. Mở https://github.com/TungPH7/shop/pull/80.
+2. Đọc hai review của `tungph7-ao-review` ở tab **Conversation**, và diff ở tab **Files changed**.
+3. Ở tab **Files changed**, bấm **Review changes** (có giao diện ghi là **Submit review**), chọn **Approve**, rồi bấm **Submit review**.
+4. Quay lại tab **Conversation**, kéo xuống cuối trang, bấm **Squash and merge**, rồi bấm **Confirm squash and merge**.
+
+Khi bạn merge xong, mình kiểm CI của `develop` và bản deploy Development, rồi chạy QA `SHOP-79` (khoảng 1 USD). Sau đó bạn bấm Accept.
+
+## Cần bạn quyết
+
+1. **Khi nào sửa 9 việc trên?** Theo luật dừng vòng sửa, mình không sửa trên PR #80. Mình đề xuất:
+   - Làm một đợt sửa ở repo kit cho cả 9 việc, kèm test, **trước T14**. Lý do: T14 chạy `/ao-run` thật trên `shop`, mà việc 1 và 2 ảnh hưởng thẳng tới lần chạy đó.
+   - Sau đó chép kit vào `shop` thêm một lần, có review, khoảng 15 USD.
+   - Bạn gõ "làm" thì mình mới bắt đầu.
+2. **T14:** Epic kế tiếp của `shop` là tính năng gì? Mình vẫn chờ bạn chọn.
