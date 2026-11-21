@@ -1004,3 +1004,28 @@ test('Maven reads no other settings, however they are named', () => {
   }
   for (const command of ['./mvnw -q test', 'mvn -B verify', './mvnw -Dtest=ProductServiceTest test', 'mvn -T 4 -o test', './mvnw --strict-checksums test', 'export CI=true', 'npm ci -s']) allowed(run(command), command);
 });
+
+// Review of shop PR #81 (reviewer Medium, security Low): -D has a long name, define, that Maven takes after one dash or
+// two and by a prefix, and a letter of it after others (-qD); a variable is set by NAME+=, and exported by name after
+// printf -v or read; npm reads another .npmrc from npm_config_userconfig.
+test('Maven and the package managers read no other settings by define, an appended variable or another config file', () => {
+  const approved = () => [];
+  const run = (command) => checkAgentCall({ agent_type: 'be-dev', tool_name: 'Bash', tool_input: { command } }, { gates, contract, projectDir: PROJECT, tempDir: TEMP, approved });
+  const refused = [
+    'mvn --define user.home=./x test', 'mvn --define=user.home=./x test', './mvnw -define user.home=x test', './mvnw --def=user.home=x test', 'mvn -qDuser.home=x test', 'mvn -BqD user.home=x test',
+    'MAVEN_OPTS+=-Duser.home=x ./mvnw test', 'export MAVEN_OPTS+=-Duser.home=x', 'printf -v MAVEN_OPTS %s -Duser.home=x; export MAVEN_OPTS', 'read MAVEN_ARGS < f; export MAVEN_ARGS',
+    'npm_config_userconfig=./evil.npmrc pnpm add zod', 'export npm_config_globalconfig=./x', 'YARN_RC_FILENAME=evil.yml yarn add zod',
+  ];
+  for (const command of refused) denied(run(command), /registry of the project/, command);
+  for (const command of ['mvn --define skipTests=true test', 'mvn -qDtest=ProductServiceTest test', 'export PATH', 'export CI']) allowed(run(command), command);
+});
+
+// Review of shop PR #81 (security, Low): every role writes .ai/** with Edit and Write, so an agent could write the
+// seo-ok of an item, its run state or a lock. Those files are ao-step's; the screenshots of a preview stay the agents'.
+test('no agent writes the seo-ok, the run state or the locks of ao-step in .ai/runs', () => {
+  for (const file of ['.ai\\runs\\DEMO-30\\seo-ok.json', '.ai\\runs\\DEMO-30\\state.json', '.ai\\runs\\active\\DEMO-30.json', '.AI\\Runs\\demo-30\\SEO-OK.json']) {
+    for (const role of ['fe-dev', 'seo', 'qa']) denied(call(role, 'Write', { file_path: `${PROJECT}\\${file}`, content: '{}' }), /is ao-step's: agents do not write it/, `${role} ${file}`);
+  }
+  allowed(call('fe-dev', 'Write', { file_path: `${PROJECT}\\.ai\\runs\\DEMO-30\\preview\\S1-mobile.png`, content: 'x' }), 'a screenshot of the preview');
+  allowed(call('qa', 'Write', { file_path: `${PROJECT}\\.ai\\ledger\\DEMO-30.md`, content: 'x' }), 'a ledger');
+});

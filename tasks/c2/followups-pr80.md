@@ -57,3 +57,17 @@ Mỗi mục có test viết đỏ trước. Cả bộ: 1.787 test xanh; `validat
 8. **Preview trong làn:** ghi riêng file lái phiên chưa theo dõi của thư mục dự án (`untracked`) và của làn (`laneUntracked`). `--stop` nêu file mới ở từng nơi và nói rõ nơi nào.
 9. **Chữ `seo` tới phiên chính:** `seoTextProblems` chỉ nêu loại, số dòng và tên chương trình (từ danh sách của kit), không chép địa chỉ hay lệnh. Skill `ao-build` không đọc, không trích comment của `seo`, mà bảo bạn tự đọc trên Jira. `/ao-status` không in chữ của yêu cầu do `seo` viết.
    - Còn lại, ngoài phạm vi của finding: câu hỏi mở của `seo` trong SPEC vẫn tới phiên chính để bạn trả lời.
+
+## Lần sửa thứ hai: review của `shop` PR #81 (Phiên 35 · Lượt 6)
+
+Review PR #81 (SHOP-80, chép kit `82b1bca`): `security` 1 High, 2 Medium, 2 Low; `reviewer` 3 Medium, 3 Low. Bạn chọn sửa hết ("Làm"). Báo cáo: `.ai/reviews/81-reviewer.md` và `.ai/reviews/81-security.md` của `shop`. Bộ test: 1.793 xanh.
+
+1. **High, entity HTML lách hook:** `stored-text.mjs` giải mã entity số có hay không có `;`, thêm các entity khoảng trắng, dấu không bề rộng và dấu câu, và tên quen ở đầu một tên lạ khi thiếu `;` (`&nbspreport`). Hook "đóng khi không chắc": `seo` viết một entity mà hook không đọc được thì bị từ chối; QA report được tìm với entity lạ đọc như dấu cách và như không có gì.
+2. **`seo-ok` gắn với dấu bước kiểm đã in:** chỗ dừng in `seo-ok <id>:<hash>`, `--seo-ok` nhận đúng dấu đó, khác thì dừng ("changed after the check showed it"). Skill `ao-build` chuyển dấu từ dòng Next. File duyệt chỉ ghi khi dấu khớp. Khác đề xuất: vẫn ghi trước khi quyết, không đợi lock và GO, vì dấu đã khóa đúng comment bạn đọc.
+3. **`reviewer` và `qa` cũng dừng** khi comment chưa được duyệt; prompt chỉ nêu id comment khi dấu khớp.
+4. **Maven và biến:** bộ đọc option của Maven trả cả giá trị, nên `--define`, `-define`, `-qD…` được xét như `-D`; `NAME+=`; `export NAME` trần; `npm_config_userconfig`, `npm_config_globalconfig`, `YARN_RC_FILENAME`.
+5. **Mã băm `seo-ok`** tính cả thân comment (ADF dạng JSON). **`.ai/runs/`:** agent không Edit/Write được `seo-ok.json`, `state.json` và `active/`; ảnh xem trước vẫn được.
+6. **`programOf`** cắt ở mọi khoảng trắng. **`sameRepo`** một hàm duy nhất trong `lib/tracker/facts.mjs`, dùng cho guard, `ao-step`, `fromFork` và merge-gate.
+7. **Chạy tiếp review:** mọi lượt review cùng dừng trên head chạy tiếp, mỗi lượt trong phiên của nó.
+
+Không làm: "không tin chữ ký của tài khoản chung khi chạy yêu cầu tới role có Bash" (security gợi ý thêm). Lý do: hook đã đóng khi không chắc, và cần thiết kế riêng.

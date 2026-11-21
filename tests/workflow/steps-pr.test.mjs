@@ -556,3 +556,13 @@ test('/ao-review and /ao-fix stop on a PR from a fork, whatever its branch is ca
   }
   assert.equal(decide('review', prFacts('review', { fromFork: false })).go, true);
 });
+
+// Review of shop PR #81: reviewer and security both hit the usage limit at once, and only the run on record last went
+// on in its session; security started again from nothing. Every review stopped on the head goes on, each in its own.
+test('reviews that stopped together on one head both go on, each in its own session and worktree', () => {
+  const run = (n, role, session) => ({ n, command: 'review', role, purpose: 'review', effort: role === 'security' ? 'max' : 'xhigh', session, outcome: 'usage-limit', checkout: { branch: 'develop', pull: true }, head: HEAD });
+  const both = decide('review', prFacts('review', { reports: { reviewer: null, security: null } }, { run: { key: 'DEMO-21', runs: [run(1, 'reviewer', 's-rev'), run(2, 'security', 's-sec')] } }));
+  assert.deepEqual(both.runs.map(({ role, resume, worktree }) => [role, resume, worktree.name]), [['reviewer', 's-rev', 'pr-15-reviewer'], ['security', 's-sec', 'pr-15-security']]);
+  const one = decide('review', prFacts('review', { reports: { reviewer: report(), security: null } }, { run: { key: 'DEMO-21', runs: [run(1, 'reviewer', 's-rev'), run(2, 'security', 's-sec')] } }));
+  assert.deepEqual(one.runs.map(({ role, resume }) => [role, resume]), [['security', 's-sec']], 'the reviewer report reached the head');
+});
