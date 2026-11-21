@@ -71,3 +71,38 @@ Review PR #81 (SHOP-80, chép kit `82b1bca`): `security` 1 High, 2 Medium, 2 Low
 7. **Chạy tiếp review:** mọi lượt review cùng dừng trên head chạy tiếp, mỗi lượt trong phiên của nó.
 
 Không làm: "không tin chữ ký của tài khoản chung khi chạy yêu cầu tới role có Bash" (security gợi ý thêm). Lý do: hook đã đóng khi không chắc, và cần thiết kế riêng.
+
+## Lần sửa thứ ba: review lần hai của `shop` PR #81 (Phiên 35 · Lượt 7)
+
+Review lần hai PR #81 (head `3f2bd98`, kit `8847a84`): `security` 1 High mới, High cũ còn một nửa, 2 Medium, 1 Low; `reviewer` 2 Medium, 4 Low. Bạn chọn "sửa theo đề xuất": bỏ hẳn việc đoán chữ Jira lưu, và sửa hết Medium, Low. Bộ test: 1.796 xanh.
+
+1. **High, hook đoán sai chữ Jira lưu** (`<…>` trong đích link, autolink, comment HTML, entity lạ của QA report):
+   - hook gửi comment của mọi agent trừ `qa` qua `updatedInput`, dạng HTML đã escape (`literalComment`): mỗi dòng một `<p>`, dòng `# ` thành `<h1>`–`<h6>`;
+   - hook xét chữ thô đó, và đó cũng là chữ `ao-step` đọc lại. `markupText`, bảng entity và luật "seo không viết entity" bị bỏ;
+   - các agent này chỉ viết comment mới: không sửa comment (`commentId`), không comment qua `update` của transition hay edit, và chỉ truyền các tham số của tool comment;
+   - đã kiểm trước:
+     - probe cục bộ: Claude Code 2.1.330 đổi input của tool MCP qua `updatedInput`, và hook thấy `agent_type` khi chạy `--agent`;
+     - comment thật trên SHOP-80 (id 10620–10622, không có chữ ký role): HTML đã escape được giữ đúng từng ký tự. Markdown dù escape vẫn biến URL thành card, nên không dùng markdown.
+2. **Medium, mark của skill:** skill `ao-build` dùng đúng mark bạn gõ, hoặc mark của lần kiểm bạn vừa xem trong cùng phiên. `seo-ok` không kèm mark thì dừng.
+3. **Medium, agent đọc comment trên Jira lúc đang chạy:** prompt mang nguyên văn comment đã duyệt, kẹp giữa hai dòng `SEO <hash>`. Agent không đọc trên Jira nữa. Comment dài quá 12000 ký tự thì dừng chờ bạn. Item không có comment nào được duyệt thì prompt bảo không đọc comment nào.
+4. **Medium, vòng lặp `/ao-review` ↔ `/ao-build`:** skill chạy `--seo-ok <mark> --go` kể cả khi lần kiểm dừng vì lý do khác. `ao-step` giữ seo-ok trước khi quyết, in một dòng `seo-ok …` (khớp hay không), rồi dừng ở PR đang mở. Sau đó review đi tiếp.
+5. **Medium, `set -a`:** bị từ chối:
+   - `set -a`, `set -o allexport`, `bash -a`, `bash -o allexport`;
+   - `SHELLOPTS`, `BASHOPTS`, `BASH_ENV`;
+   - `printf -v`, `read`, `mapfile`, `getopts` và `${NAME:=…}` khi ghi vào biến nguồn hay biến của phiên;
+   - tên biến ghép từ biến khác trong `export`/`declare`/`env`, và `declare -n`.
+6. **Low, biến nhà:** `USERPROFILE`, `HOME`, `HOMEDRIVE`, `HOMEPATH`, `XDG_CONFIG_HOME`, `LOCALAPPDATA`, `APPDATA`, `npm_config_prefix` vào nhóm biến nguồn. `NAME+=` với biến của phiên bị từ chối như `NAME=`.
+7. **Low, `::$DATA`:** Edit/Write được xét theo file Windows mở (bỏ stream, dấu chấm hay dấu cách cuối). Tên ngắn `~1` bị từ chối. Luật phụ thuộc của `package.json`/`pom.xml` cũng đọc tên đó.
+8. **Low, URL có `&`:** hết, vì hook không còn đọc entity.
+9. **Low, comment trong code:** comment của `githubGuards` về đúng chỗ, hai comment mồ côi đã xóa, comment của `seoMark` ghi đúng "cả thân comment".
+10. **Gọn hơn:** dòng xét biến nguồn tách thành `sourceWord`.
+
+### Mô hình mối đe dọa trước vòng review sau
+
+| Điểm tin | Ai chạm được | Đã chặn | Còn lại |
+|---|---|---|---|
+| Chữ comment → `openRequests` (chạy role), `qaReportResult` (QA lại, Accept), comment `seo` (prompt dev) | Agent qua MCP (hook), bạn, CI token (jira-sync, báo cáo light) | Agent trừ `qa`: chữ thô, Jira giữ nguyên, hook xét đúng chữ đó; không sửa comment; không comment qua `update` | Chữ ký `Agent:` vẫn tự khai trên tài khoản chung: một agent bị lái có thể ký thay role khác (đã biết, cần thiết kế riêng). `qa` viết markdown tự do và được yêu cầu role khác. |
+| `seo-ok.json`, `state.json`, khóa | `ao-step`; agent qua Edit/Write (chặn, cả stream và tên ngắn); agent qua Bash | Edit/Write | Bash ghi được `.ai/runs/` (đã biết, ghi trong Risks) |
+| Chữ `seo` tới phiên chính có Bash | STOP, `/ao-status`, log | Chỉ in loại, số dòng, mark | Câu hỏi mở của `seo` trong SPEC (đã biết) |
+| Chữ `seo` tới dev | Prompt | Chỉ bản bạn đã duyệt, đúng như lúc so mark | Chữ đó vẫn là chữ từ trang web, bạn đọc trước khi duyệt |
+| Biến môi trường của Maven, trình quản lý gói | Bash của agent | Như trên | Script do agent tự viết rồi chạy thì gh-guard không đọc (đã biết: gh-guard không phải ranh giới) |

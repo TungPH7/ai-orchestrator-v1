@@ -365,7 +365,7 @@ test('the variables of the session identity cannot be set, exported or cleared, 
     'readonly GIT_ASKPASS=/tmp/x',
     'unset GIT_CONFIG_COUNT && git push origin feature/DEMO-1-x',
     'unset -v GH_TOKEN; gh api user',
-    'set -a; GIT_CONFIG_COUNT=0; git push',
+    'set +a; GIT_CONFIG_COUNT=0; git push',
     'env -i PATH=/usr/bin git push origin feature/DEMO-1-x',
     'env --ignore-environment git push',
     'env - git push',
@@ -1028,4 +1028,47 @@ test('no agent writes the seo-ok, the run state or the locks of ao-step in .ai/r
   }
   allowed(call('fe-dev', 'Write', { file_path: `${PROJECT}\\.ai\\runs\\DEMO-30\\preview\\S1-mobile.png`, content: 'x' }), 'a screenshot of the preview');
   allowed(call('qa', 'Write', { file_path: `${PROJECT}\\.ai\\ledger\\DEMO-30.md`, content: 'x' }), 'a ledger');
+});
+
+// Second review of shop PR #81 (reviewer Medium, security Low): set -a exports every variable set after it, by printf -v
+// or read too, with no NAME= word and no export; SHELLOPTS turns it on for a new shell; a name built from a variable or
+// a reference names no variable gh-guard can read. pnpm reads the .npmrc of the home folder, and USERPROFILE or HOME
+// moves it; GIT_CONFIG_PARAMETERS+= sets a variable of the session.
+test('no variable is exported by allexport, a built name or a reference, and the home of a package manager stays', () => {
+  const approved = () => [];
+  const run = (command) => checkAgentCall({ agent_type: 'be-dev', tool_name: 'Bash', tool_input: { command } }, { gates, contract, projectDir: PROJECT, tempDir: TEMP, approved });
+  const shellOptions = [
+    'set -a; printf -v MAVEN_OPTS %s -Duser.home=x; ./mvnw test', 'set -o allexport; read MAVEN_OPTS <<< -Duser.home=x; ./mvnw test', 'set -ea; x=1',
+    'SHELLOPTS=allexport bash -c "./mvnw test"', 'BASH_ENV=./x.sh bash -c "./mvnw test"', 'export SHELLOPTS', 'bash -a -c "./mvnw test"', 'bash -o allexport -c "./mvnw test"',
+  ];
+  for (const command of shellOptions) denied(run(command), /options or the start-up file of a shell/, command);
+  for (const command of ['n=MAVEN; export "${n}_OPTS"', 'declare -x "$name=-Duser.home=x"', 'env "$n=-Duser.home=x" ./mvnw test']) denied(run(command), /write out the name/, command);
+  denied(run('declare -n ref=MAVEN_OPTS; ref=-Duser.home=x; export ref'), /reference to a variable/, 'declare -n');
+  const sources = [
+    'printf -v MAVEN_OPTS %s -Duser.home=x', 'printf -vMAVEN_ARGS %s -sx.xml', 'read -r MAVEN_OPTS < f', 'mapfile JAVA_TOOL_OPTIONS < f', ': ${MAVEN_OPTS:=-Duser.home=x}', 'echo ${MAVEN_OPTS=-Duser.home=x}',
+    'USERPROFILE=./home pnpm add zod', 'HOME=./home npm i zod', 'XDG_CONFIG_HOME=./x pnpm add zod', 'LOCALAPPDATA=./x pnpm i', 'APPDATA=./x npm i', 'npm_config_prefix=./x npm i -g zod', 'export USERPROFILE=./home',
+  ];
+  for (const command of sources) denied(run(command), /registry of the project/, command);
+  for (const command of ['GIT_CONFIG_PARAMETERS+="\'core.hookspath\'=x" git commit -m x', 'export GH_CONFIG_DIR+=x', 'printf -v GH_TOKEN %s x', 'read GIT_CONFIG_COUNT < f', ': ${GH_TOKEN:=x}']) {
+    denied(run(command), /variables of the session/, command);
+  }
+  for (const command of ['set -euo pipefail; ./mvnw test', 'set +a', 'set -- "$@"', 'read -r line < f', 'printf -v out %s x', 'export PATH="$PATH:/x"', 'declare -A map', 'local x=1', 'bash -c "./mvnw test"', 'echo $HOME', 'cd ~ && ls']) {
+    allowed(run(command), command);
+  }
+});
+
+// Second review of shop PR #81 (reviewer, Low): a path is compared as Windows opens it. seo-ok.json::$DATA is
+// seo-ok.json, .npmrc. is .npmrc, and package.json::$DATA is package.json; a short name reaches a file by another name.
+test('a write is checked on the file Windows opens, by a stream, a dot at the end or a short name', () => {
+  for (const file of ['.ai\\runs\\DEMO-30\\seo-ok.json::$DATA', '.ai\\runs\\DEMO-30\\seo-ok.json.', '.ai\\runs\\DEMO-30\\state.json:x']) {
+    denied(call('fe-dev', 'Write', { file_path: `${PROJECT}\\${file}`, content: '{}' }), /is ao-step's: agents do not write it/, file);
+  }
+  for (const file of ['apps\\user\\.npmrc::$DATA', 'apps\\user\\.npmrc.', '.claude\\settings.json::$DATA']) {
+    denied(call('fe-dev', 'Write', { file_path: `${PROJECT}\\${file}`, content: 'x' }), /is protected/, file);
+  }
+  denied(call('fe-dev', 'Edit', { file_path: `${PROJECT}\\apps\\user\\NPMRC~1`, old_string: 'a', new_string: 'b' }), /long name/, 'a short name');
+  const approved = () => [];
+  const write = (file, content) => checkAgentCall({ agent_type: 'fe-dev', tool_name: 'Write', tool_input: { file_path: `${PROJECT}\\${file}`, content } }, { gates, contract, projectDir: PROJECT, tempDir: TEMP, approved, readFile: () => '{"dependencies":{}}' });
+  assert.equal(write('apps\\user\\package.json::$DATA', '{"dependencies":{"left-pad":"1.3.0"}}').allow, false, 'a dependency written through a stream');
+  allowed(call('fe-dev', 'Write', { file_path: `${PROJECT}\\apps\\user\\src\\page.tsx`, content: 'x' }), 'a file of the app');
 });

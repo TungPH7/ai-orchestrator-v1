@@ -32,6 +32,15 @@ test('block-atlassian keeps writes in AO_JIRA_SPACE, and refuses them while it i
   }
 });
 
+// Second review of shop PR #81: the hook sends the comment of an agent other than qa itself, through updatedInput.
+test('block-atlassian sends the comment of an agent as escaped HTML, and that of qa as it is', () => {
+  const comment = (agent_type) => ({ ...pre('mcp__atlassian__addOrEditJiraIssueComment', { issueIdOrKey: 'DEMO-12', commentBody: 'Frontend Developer: <b>xong</b> & **đậm**' }), agent_type });
+  const output = JSON.parse(run('block-atlassian.mjs', comment('fe-dev'), { AO_JIRA_SPACE: 'DEMO' }).stdout).hookSpecificOutput;
+  assert.equal(output.permissionDecision, 'allow');
+  assert.deepEqual(output.updatedInput, { issueIdOrKey: 'DEMO-12', commentBody: '<p>Frontend Developer: &lt;b&gt;xong&lt;/b&gt; &amp; **đậm**</p>', contentFormat: 'html' });
+  assert.equal(run('block-atlassian.mjs', comment('qa'), { AO_JIRA_SPACE: 'DEMO' }).stdout, '');
+});
+
 test('block-atlassian without the kit refuses only what touches Atlassian', () => {
   const missing = { AO_KIT_DIR: join(ROOT, 'no-such-kit') };
   assert.equal(run('block-atlassian.mjs', pre('Bash', { command: 'npm test' }), missing).stdout, '');
