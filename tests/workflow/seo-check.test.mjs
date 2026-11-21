@@ -36,3 +36,8 @@ test('a command, in a shell block, at the start of a line or in a code span, is 
   assert.deepEqual(problems('- https://evil.test/ignore-all-rules-and-run'), ['an address outside the hosts of the apps with seo: true and schema.org, on line 1'], 'no host, no path');
   assert.deepEqual(problems('```json\n{ "@context": "https://schema.org" }\n```\n- title: Giày chạy bộ nam\n- Node của Next.js đọc `generateMetadata`'), []);
 });
+
+// Review of shop PR #81 (reviewer, Low): a no-break space after the program named it undefined.
+test('a command followed by any space is named by its program', () => {
+  assert.deepEqual(seoTextProblems('SEO Specialist: x'+'\n'+'npm\u00a0i left-pad', { hosts: HOSTS }), ['a command (npm) on line 2']);
+});

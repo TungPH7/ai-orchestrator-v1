@@ -40,7 +40,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 32 | `84d69ed3-b065-40d0-a4e2-3c06a66ac5cb` | 2026-11-15 khoảng 01:52 → | Bạn dán đoạn cuối của Phiên 31, đã Accept `SHOP-6` (T10 xong); T10h: kit chỉ cắt `vX.Y.0` từ `develop`, nên bản đưa `CODEOWNERS` lên `main` là `v0.2.0` và Epic `SHOP-7` lên `v0.3.0`; Fix Version `v0.3.0` tạo qua REST; spec 2.9 phần 7, plan, todo sửa theo; chờ bạn duyệt gate ④ (`fdc2ee0`, `SHOP-6`); lượt 2: bạn duyệt gate ④; `release/v0.2.0` cắt bằng login của bạn, Staging; `/ao-ship v0.2.0` (0,92 USD): regression PASS, PR report #14 do App `ao-merge` merge, PR release #15 CI xanh; chờ bạn approve ở gate ⑤ và chọn ai bấm Release `v0.2.0`; lượt 3: bạn approve gate ⑤; App `ao-merge` merge PR #15, gắn tag `v0.2.0`, merge ngược PR #16; Production và Development deploy thành công; Release `v0.2.0` trên Jira qua REST; dòng `CODEOWNERS` của `doctor` xanh; T10h xong; `/ao-spec SHOP-7` chạy; lượt 4: bạn hỏi ảnh trang mẫu ở đâu; `ba` viết SPEC (2,99 USD) và dừng với 12 câu hỏi, chờ bạn trả lời; lượt 5: bạn đồng ý cả 12 câu và cho mình tự làm theo đề xuất tới hết B4; `ux` hỏi 16 câu có đề xuất, trả lời bằng lời của bạn; ảnh 05 chụp nhầm ở T11; `sa` thêm NFR1–NFR27; PR docs #17, 12,31 USD; chờ bạn duyệt gate ①; lượt 6: bạn bấm Approve spec; `/ao-plan SHOP-7`; lượt 7: bạn hỏi công cụ đo trang mẫu (Playwright); `sa` hỏi 2 câu, `API_URL` kiểm trên VPS; lượt 8: bạn hỏi 4 câu về Playwright, Claude in Chrome, `chrome-devtools`, animation; Playwright bật được light mode; `misc/clone-100pct-ui-ux/cong-cu-inspect-website.md`; lượt 9: giữ bảng màu sáng của `ux`; lượt 10: chốt Playwright + `chrome-devtools`, ghi vai trò tool trong skill; plan, 3 ADR và 30 item `SHOP-8`…`SHOP-37` (13,97 USD); chờ bạn duyệt gate ②; lượt 11: bạn bấm Approve plan; `jira-sync`, PR #17 merge (`41ede25`); chặng 4 của todo sửa theo plan; chặng 4 ước 335–580 USD, vượt mức 125 USD của spec, nên hỏi bạn chọn làm theo đợt, cả Epic hay thu nhỏ; lượt 12: bạn bỏ giới hạn chi phí (gói Max 5x) và chọn làm cả Epic; `SHOP-8` build, CI đỏ ở coverage rồi sửa, review 0 Critical/High/Medium, 7 Low (12,22 USD); gate ③ hỏi bạn sửa Low trước hay approve; build `SHOP-10`; lượt 13: bạn chọn sửa 7 Low của PR #18 trước khi approve; lượt 14: bạn hỏi chạy item song song bằng 2 worktree; kit chưa hỗ trợ (checkout `develop`, cổng, khóa, WIP), đúng việc C2 chưa làm; đề xuất giữ lần lượt hay làm C2 tối thiểu trước; lượt 15: bạn hỏi kỹ về C2 tối thiểu; đánh giá ở `misc/thao-luan/c2-toi-thieu-giua-pilot-3.md`: khả thi, không breaking nếu mặc định 1, 7 chỗ phải sửa, phải làm trong worktree riêng của kit; đề xuất (1) cộng viết spec C2; `SHOP-10` PR #19 CI đỏ cùng lỗi coverage; `/ao-fix 18` sửa 7 Low; lượt 16: chuyển bản đánh giá C2 vào `misc/thao-luan/sdlc-song-song/` và `clone-100pct-ui-ux/` vào `misc/thao-luan/`; lượt 17: bạn chọn chạy lần lượt cộng viết spec C2; thử thật MCP, `--resume` và hook chặn trong worktree: cả ba ổn; `SPEC-parallel-runs.md` nháp, 8 điểm chờ duyệt; `fe-dev` sửa 7 Low của PR #18 (3,30 USD); lượt 18: bạn hỏi cấu hình 1, 2, 3 hay n lượt song song; đề xuất `runs.parallel` 1..4 trong `project.yaml`, biến `AO_RUNS_PARALLEL` để hạ tạm, bắt đầu với 2; chưa sửa spec; `SHOP-8` sửa 7 Low, review lại: 1 Medium và 1 Low trong tài liệu, `security` 0 lỗi (21,14 USD); gate ③ hỏi sửa luôn hay approve; `/ao-fix 19`; lượt 19: giải thích chậm: mỗi item một làn, một worktree, trong làn vẫn một agent; `runs.parallel` là số làn có agent chạy cùng lúc; đề xuất đổi tên thành `runs.items_at_once`; lượt 20: đổi tên khóa thành `runs.items_at_once`; giải thích làn đang mở và agent cùng lúc; đề xuất 2 agent cùng lúc (máy 16 GB, còn 2,6 GB trống), số làn để WIP quyết; lượt 21–23: đổi tên thành `agents_at_once`, làn mở do bạn quyết bằng `lanes_max` (đề xuất 3 và 2), hỏi đáp ở `lan-va-agent-cung-luc.md`; PR #18 sửa Medium và Low; PR #19 tới gate ③ (1 Medium, 5 Low); lượt 24: bạn chọn sửa hết Medium và 5 Low của PR #19 trước khi approve; lượt 25: bạn phản biện, chốt số agent bằng số làn; spec thêm chốt RAM `min_free_ram_gb: 3` (đo: còn 2,8 GB trống, VS Code 3,8 GB); lượt 26: bạn hỏi cái gì tốn RAM; đo: agent `security` 0,34 GB, VS Code 3,8 GB; bạn đúng một nửa; kết luận giữ: số agent bằng số làn, chốt RAM 3 GB; PR #18 sửa xong Medium và Low, còn 3 Low nhỏ, đề xuất approve (`SHOP-8` 25,38 USD); `/ao-fix 19`; lượt 27–28: bạn approve PR #18, `merge-gate` merge (`4605845`); xác nhận kit tự tạo worktree, không cần cửa sổ VS Code; lượt 29: chỉ còn một con số `lanes_max` (số agent bằng nó, hạ tạm bằng `AO_AGENTS_AT_ONCE`); In Review 2 chỉ là mức cột trên board, không chặn, không phải sửa Jira; lượt 30: spec C2 vẫn chờ duyệt; tóm lại 8 điểm ở dạng mới nhất, đề xuất đồng ý cả 8; lượt 31: vì sao chỉ build, fix, review, QA song song: chúng chỉ đụng item của mình; đề xuất thêm mỗi lúc một QA trên một môi trường; chưa sửa spec; lượt 32: spec, plan của hai Epic song song: làm được về kỹ thuật nhưng contract chặn (`epic-shaping: 1`), số ADR trùng; đề xuất để phần 3, làm sau; Development deploy `4605845`; lượt 33: bỏ việc chạy nhiều Epic song song, không ghi vào spec; lượt 34: vì sao một QA trên một môi trường: chung database Development, E2E ghi dữ liệu, kết quả sai tốn thật; đề xuất thêm kiểm bản deploy trước và sau QA; chưa sửa spec; lượt 35: bạn duyệt spec C2 cùng luật QA; kit PR #290 merge; PR #19 lượt hai: 1 Medium thật và 3 Low, hỏi bạn sửa tiếp; `/ao-qa SHOP-8`; `SHOP-8` PASS QA (27,05 USD), chờ bạn Accept; build `SHOP-9`; bắt đầu code C2 phần 1 ở `ai-orchestrator-c2`; C2 phần 1 xong, kit PR #291 merge (1.490 test); bắt đầu phần 2; C2 phần 2 (kit PR #292) và bản sửa coverage (#293) merge; `SHOP-9` PR #20 đỏ CI vì file test; kế tiếp chép kit vào `shop`; `SHOP-38` chép kit `352b3df` vào `shop`, bật 3 làn; PR #21; `/ao-review 21`; lượt 36: bạn nhờ Accept `SHOP-8` (Done qua token admin) và sửa Medium, 3 Low của PR #19; lượt 37: bạn hỏi còn việc gì cần bạn: ngay lúc này không; sắp tới gate ③ của PR #21, #19, #20 và Accept; lượt 38: `/ao-fix 19` chạy code cũ vì tới trước khi PR #21 merge; nhiều làn bắt đầu ngay sau khi PR #21 merge |
 | 33 | `0624de51-1879-44c5-a6f3-793068e0d8be` | 2026-11-16 khoảng 21:22 → | Bạn dán đoạn cuối của Phiên 32, hỏi lại Bug SHOP-51 và cách fix, dặn chưa làm gì; Claude giải thích: khi slug trùng, Hibernate ghi cả câu INSERT kèm tên, mô tả sản phẩm vào log (trái NFR12); đề xuất (a) Low, Affects Version trống, Fix `v0.3.0`, Ready; cách fix: tắt logger `org.hibernate.orm.jdbc.error`, test bắt log, sửa dòng log `root=` của `GlobalExceptionHandler`; chờ bạn |
 | 34 | `ee11b1ec-f133-42e6-ae14-68d9209ea8b8` | 2026-11-19 khoảng 14:25 → | Bạn hỏi năm câu: kit gắn chặt với GitHub, Jira, VPS không, GitLab và EC2, so với agent-skills, vì sao agent-skills phổ biến, quản lý task và gõ lệnh tay; greenfield hay brownfield; luồng deploy của `shop` so với `deploy.yml` của bạn; vì sao chép kit lên VPS; nơi lưu tài liệu của SA, BA, PM, QA, UX. Claude viết `misc/thao-luan/kit-va-du-an-thuc-te/stack-deploy-va-luu-tai-lieu.md` |
-| 35 | `9b7de2de-fbda-493b-951d-5d7c26b8c106` | 2026-11-21 khoảng 01:33 → | Bạn dán đoạn cuối của Phiên 33 và gõ "làm T13"; `SHOP-79` tạo, Refine và Start; `shop` PR #80 chép kit `8a9f25d` (C2, T20b) và Low 9 (khối `review` của `project.yaml`); CI xanh 7 job; review chạy (`reviewer` `xhigh`, `security` `max`); `security` chạm giới hạn 5 giờ, Lượt 2 chạy tiếp; review xong: 0 Critical, 0 High, sau khi gộp còn 5 Medium và 4 Low, đều trong code kit; tổng 15,23 USD; chờ bạn merge PR #80 và quyết đợt sửa kit trước T14 |
+| 35 | `9b7de2de-fbda-493b-951d-5d7c26b8c106` | 2026-11-21 khoảng 01:33 → | Bạn dán đoạn cuối của Phiên 33 và gõ "làm T13"; `SHOP-79` tạo, Refine và Start; `shop` PR #80 chép kit `8a9f25d` (C2, T20b) và Low 9 (khối `review` của `project.yaml`); CI xanh 7 job; review chạy (`reviewer` `xhigh`, `security` `max`); `security` chạm giới hạn 5 giờ, Lượt 2 chạy tiếp; review xong: 0 Critical, 0 High, sau khi gộp còn 5 Medium và 4 Low, đều trong code kit; tổng 15,23 USD; PR #80 merged (`20cbfd4`), QA `SHOP-79` PASS, chờ bạn Accept; kit PR #334 sửa 9 việc (`82b1bca`); `SHOP-80` PR #81 chép kit, review: `security` 1 High (entity HTML lách hook của `seo`), chờ bạn chọn hướng sửa |
 
 ---
 
@@ -31321,3 +31321,112 @@ Khi bạn merge xong, mình kiểm CI của `develop` và bản deploy Developme
    - Sau đó chép kit vào `shop` thêm một lần, có review, khoảng 15 USD.
    - Bạn gõ "làm" thì mình mới bắt đầu.
 2. **T14:** Epic kế tiếp của `shop` là tính năng gì? Mình vẫn chờ bạn chọn.
+
+# Phiên 35 · Lượt 3 — 2026-11-21 khoảng 09:28
+
+**Bạn:**
+
+```markdown
+Bạn duyệt và merge giúp tôi được khong?
+
+1. Làm như đề xuất
+2. Sau khi sửa xong 9 việc chúng ta sẽ bàn bạc để chọn tính năng nhé
+```
+
+**Bạn (nhắn thêm trong lúc mình làm):**
+
+```markdown
+Ưu tiên fix kỹ các việc ảnh hưởng tới lần chạy của T14 nhé
+```
+
+**Claude:**
+
+Mình đã nhận lời nhắn: ưu tiên sửa kỹ những việc ảnh hưởng tới lần chạy T14. Mình làm theo thứ tự đó, việc 4 (`seo-ok`, chỉ áp cho item ngoài Epic) để sau cùng.
+
+(Trong lượt này chỉ có các dòng báo tiến độ ngắn. Báo cáo cuối nằm ở Lượt 5.)
+
+# Phiên 35 · Lượt 4 — 2026-11-21 khoảng 10:16
+
+**Bạn:**
+
+```markdown
+I hit my usage limit while you were working, but it has reset now. Please continue from where you left off
+```
+
+**Claude:**
+
+Đồng hồ máy ghi 10:16, còn giới hạn báo reset lúc 10:50. Mình thử chạy tiếp review ngay; nếu vẫn bị chặn thì mình chờ tới 10:50.
+
+# Phiên 35 · Lượt 5 — 2026-11-21 khoảng 10:19
+
+**Bạn:**
+
+```markdown
+KHông phải chạy song song à ? Sao lại là Security comes after
+```
+
+**Claude:**
+
+Đúng ra phải chạy song song. Đây là một chỗ thiếu của kit, không phải mình chọn chạy lần lượt.
+
+Chuyện xảy ra thế này:
+
+1. Lượt đầu, `reviewer` và `security` chạy cùng lúc, đúng như phần 4 của C2.
+2. Sau khoảng 6 phút, cả hai cùng chạm giới hạn 5 giờ và dừng.
+3. Khi chạy tiếp, `ao-step` chỉ cho chạy tiếp **một** lượt đã dừng, là lượt ghi sau cùng trong `state.json`. Hàm `carryOn` (`lib/workflow/steps.mjs:135`) chỉ xét `runs.at(-1)`. Hàm này viết từ trước C2, khi review còn chạy lần lượt, và phần 4 không sửa nó.
+4. Vì vậy giờ chỉ `reviewer` chạy tiếp. `security` sẽ chạy sau khi `reviewer` xong. Có thể nó chạy lại từ đầu chứ không tiếp phiên cũ, tức mất phần đã làm, khoảng 1,56 USD.
+
+Hậu quả: review chậm hơn khoảng 10–15 phút, và có thể tốn thêm chừng 1,5 USD. Kết quả review không bị ảnh hưởng.
+
+Mình không ngắt lượt đang chạy, và cũng không tự sửa code. Theo luật dừng vòng sửa, đây là Low, nên mình đưa nó vào danh sách follow-up. Cách sửa: khi chạy tiếp, mọi lượt review cùng dừng trên một head sẽ chạy tiếp cùng nhau, mỗi lượt trong phiên của nó. Lần chạy thật T14 cũng sẽ gặp đúng chỗ này mỗi khi chạm giới hạn, nên bạn có thể cho sửa luôn trước T14. Bạn quyết nhé.
+
+**Claude (tiếp Lượt 5, sau khi xem log):**
+
+Mình cần sửa lại câu trả lời trước. Log vừa cho thấy `security` đã bắt đầu, và giờ **hai lượt đang chạy song song**: `reviewer` ghi vào `2-reviewer.jsonl`, `security` ghi vào `3-security.jsonl`, cả hai file đều đang được ghi lúc 10:20.
+
+Vậy phần chạy song song vẫn đúng. Chỗ thiếu thật chỉ có một: `security` chạy lại từ đầu, không tiếp phiên cũ. Như vậy mất phần nó đã làm trước khi chạm giới hạn, khoảng 1,56 USD, và chậm vài phút. Lúc nãy mình nói `security` phải chờ `reviewer` xong là sai.
+
+Cách sửa vẫn như mình đề xuất: khi chạy tiếp, mọi lượt review cùng dừng trên một head chạy tiếp trong phiên của nó. Đây là Low. Mình ghi vào follow-up và chờ bạn quyết có sửa trước T14 không. Review xong mình báo kết quả.
+
+**Claude (tiếp Lượt 5, sau review PR #81):**
+
+Review PR #81 đã xong, và **`security` tìm thấy 1 High**. Theo luật, mình dừng ở đây và hỏi bạn hướng sửa. Chi phí của `SHOP-80` tới giờ là 6,89 USD.
+
+## Đã làm trong lượt này
+
+1. **PR #80 (`SHOP-79`):** mình đã duyệt và merge thay bạn, thành commit `20cbfd4`.
+   - CI của `develop` xanh, bản deploy Development thành công.
+   - QA đạt (PASS, 0,94 USD). Tổng chi phí `SHOP-79` là 16,17 USD.
+   - `SHOP-79` đang ở In QA, chờ bạn bấm Accept.
+2. **Sửa 9 việc trong kit:** kit PR #334 đã merge, kit `main` giờ ở `82b1bca`. 1.787 test đều xanh.
+3. **`SHOP-80`:** chép kit `82b1bca` vào `shop`, mở PR #81. CI xanh cả 7 job.
+   - `reviewer` (`xhigh`): 0 Critical, 0 High, 3 Medium, 3 Low.
+   - `security` (`max`): 1 High, 2 Medium, 2 Low.
+
+## Lỗi High
+
+Hook chặn `seo` viết `Cần <role>:` vẫn có thể bị lách bằng entity HTML mà hook không giải mã. Ví dụ: `&ensp;`, `&emsp;`, hay `&#58` thiếu dấu `;`.
+
+- **Hậu quả:** nếu Jira giải mã các entity này khi lưu comment, `ao-step` sẽ đọc ra một yêu cầu "từ `ba` tới `sa`". Khi đó `/ao-run` chạy `sa`, role có Bash, theo chữ do trang web viết. Cũng bằng cách này, một agent không phải `qa` có thể viết được QA report PASS.
+- **Mức chắc chắn:** `security` chưa thấy tận mắt Jira giải mã entity. Nhưng hook của mình cũng đã giả định Jira có giải mã.
+- **Không phải lỗi mới:** trước bản này, lỗ còn rộng hơn. Nhưng đây đúng là chỗ PR #334 nói đã đóng.
+
+## Medium và Low, đã gộp hai báo cáo
+
+1. **`seo-ok` gắn sai comment:** nó gắn với comment mới nhất lúc lệnh chạy, không phải comment bạn đã đọc. File duyệt còn được ghi cả khi lượt chạy bị từ chối. (`security` xếp Medium, `reviewer` xếp Low.)
+2. **Prompt của `reviewer` và `qa` ghi sai:** chúng được bảo comment mới nhất là "đã được bạn duyệt", kể cả khi chưa. (Cả hai xếp Medium.)
+3. **Maven và biến môi trường vẫn còn đường lọt:** `--define`, `-define`, `-qD…`; biến gán kiểu `NAME+=`; `printf -v` hay `read` rồi mới `export NAME`; và `npm_config_userconfig`. (`reviewer` xếp Medium, `security` xếp Low.)
+4. **Mã băm `seo-ok` chỉ tính phần chữ:** đổi đích của một link thì mã không đổi. Ngoài ra, mọi role đều ghi được vào `.ai/runs/` bằng Write. (Low.)
+5. Sau tên lệnh là NBSP thì thông báo in ra "a command (undefined)". (Low.)
+6. Có ba bản `sameRepo` hơi khác nhau, nên gom về một chỗ. (Low.)
+7. Thêm một việc mình tự thấy: khi review chạy tiếp sau giới hạn, `security` chạy lại từ đầu chứ không tiếp phiên cũ.
+
+## Cần bạn quyết
+
+1. **Sửa High (mình đề xuất cách này).** Hook sẽ "đóng khi không chắc": comment của `seo` có bất kỳ `&…` nào mà hook không giải mã được thì bị từ chối. `seo` không cần entity HTML, nên không mất gì.
+   - Cùng đợt đó, mình sửa luôn 7 việc Medium và Low ở trên, vì lượt review sau đằng nào cũng tốn tiền.
+   - Mình gom vào một kit PR, chép lại vào nhánh của `SHOP-80`, rồi review lần hai trên head mới. Ước tính 6–12 USD.
+2. **Hoặc chấp nhận rủi ro High có thời hạn:** bạn approve PR #81 kèm dòng `Accept risk: …`. Mình không khuyên cách này, vì T14 sẽ chạy `seo` thật.
+3. **Accept `SHOP-79`** vẫn là việc của bạn.
+
+Bạn chọn cách 1 thì gõ "làm", mình bắt đầu.
