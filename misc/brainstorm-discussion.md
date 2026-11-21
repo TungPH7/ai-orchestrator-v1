@@ -40,7 +40,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 32 | `84d69ed3-b065-40d0-a4e2-3c06a66ac5cb` | 2026-11-15 khoảng 01:52 → | Bạn dán đoạn cuối của Phiên 31, đã Accept `SHOP-6` (T10 xong); T10h: kit chỉ cắt `vX.Y.0` từ `develop`, nên bản đưa `CODEOWNERS` lên `main` là `v0.2.0` và Epic `SHOP-7` lên `v0.3.0`; Fix Version `v0.3.0` tạo qua REST; spec 2.9 phần 7, plan, todo sửa theo; chờ bạn duyệt gate ④ (`fdc2ee0`, `SHOP-6`); lượt 2: bạn duyệt gate ④; `release/v0.2.0` cắt bằng login của bạn, Staging; `/ao-ship v0.2.0` (0,92 USD): regression PASS, PR report #14 do App `ao-merge` merge, PR release #15 CI xanh; chờ bạn approve ở gate ⑤ và chọn ai bấm Release `v0.2.0`; lượt 3: bạn approve gate ⑤; App `ao-merge` merge PR #15, gắn tag `v0.2.0`, merge ngược PR #16; Production và Development deploy thành công; Release `v0.2.0` trên Jira qua REST; dòng `CODEOWNERS` của `doctor` xanh; T10h xong; `/ao-spec SHOP-7` chạy; lượt 4: bạn hỏi ảnh trang mẫu ở đâu; `ba` viết SPEC (2,99 USD) và dừng với 12 câu hỏi, chờ bạn trả lời; lượt 5: bạn đồng ý cả 12 câu và cho mình tự làm theo đề xuất tới hết B4; `ux` hỏi 16 câu có đề xuất, trả lời bằng lời của bạn; ảnh 05 chụp nhầm ở T11; `sa` thêm NFR1–NFR27; PR docs #17, 12,31 USD; chờ bạn duyệt gate ①; lượt 6: bạn bấm Approve spec; `/ao-plan SHOP-7`; lượt 7: bạn hỏi công cụ đo trang mẫu (Playwright); `sa` hỏi 2 câu, `API_URL` kiểm trên VPS; lượt 8: bạn hỏi 4 câu về Playwright, Claude in Chrome, `chrome-devtools`, animation; Playwright bật được light mode; `misc/clone-100pct-ui-ux/cong-cu-inspect-website.md`; lượt 9: giữ bảng màu sáng của `ux`; lượt 10: chốt Playwright + `chrome-devtools`, ghi vai trò tool trong skill; plan, 3 ADR và 30 item `SHOP-8`…`SHOP-37` (13,97 USD); chờ bạn duyệt gate ②; lượt 11: bạn bấm Approve plan; `jira-sync`, PR #17 merge (`41ede25`); chặng 4 của todo sửa theo plan; chặng 4 ước 335–580 USD, vượt mức 125 USD của spec, nên hỏi bạn chọn làm theo đợt, cả Epic hay thu nhỏ; lượt 12: bạn bỏ giới hạn chi phí (gói Max 5x) và chọn làm cả Epic; `SHOP-8` build, CI đỏ ở coverage rồi sửa, review 0 Critical/High/Medium, 7 Low (12,22 USD); gate ③ hỏi bạn sửa Low trước hay approve; build `SHOP-10`; lượt 13: bạn chọn sửa 7 Low của PR #18 trước khi approve; lượt 14: bạn hỏi chạy item song song bằng 2 worktree; kit chưa hỗ trợ (checkout `develop`, cổng, khóa, WIP), đúng việc C2 chưa làm; đề xuất giữ lần lượt hay làm C2 tối thiểu trước; lượt 15: bạn hỏi kỹ về C2 tối thiểu; đánh giá ở `misc/thao-luan/c2-toi-thieu-giua-pilot-3.md`: khả thi, không breaking nếu mặc định 1, 7 chỗ phải sửa, phải làm trong worktree riêng của kit; đề xuất (1) cộng viết spec C2; `SHOP-10` PR #19 CI đỏ cùng lỗi coverage; `/ao-fix 18` sửa 7 Low; lượt 16: chuyển bản đánh giá C2 vào `misc/thao-luan/sdlc-song-song/` và `clone-100pct-ui-ux/` vào `misc/thao-luan/`; lượt 17: bạn chọn chạy lần lượt cộng viết spec C2; thử thật MCP, `--resume` và hook chặn trong worktree: cả ba ổn; `SPEC-parallel-runs.md` nháp, 8 điểm chờ duyệt; `fe-dev` sửa 7 Low của PR #18 (3,30 USD); lượt 18: bạn hỏi cấu hình 1, 2, 3 hay n lượt song song; đề xuất `runs.parallel` 1..4 trong `project.yaml`, biến `AO_RUNS_PARALLEL` để hạ tạm, bắt đầu với 2; chưa sửa spec; `SHOP-8` sửa 7 Low, review lại: 1 Medium và 1 Low trong tài liệu, `security` 0 lỗi (21,14 USD); gate ③ hỏi sửa luôn hay approve; `/ao-fix 19`; lượt 19: giải thích chậm: mỗi item một làn, một worktree, trong làn vẫn một agent; `runs.parallel` là số làn có agent chạy cùng lúc; đề xuất đổi tên thành `runs.items_at_once`; lượt 20: đổi tên khóa thành `runs.items_at_once`; giải thích làn đang mở và agent cùng lúc; đề xuất 2 agent cùng lúc (máy 16 GB, còn 2,6 GB trống), số làn để WIP quyết; lượt 21–23: đổi tên thành `agents_at_once`, làn mở do bạn quyết bằng `lanes_max` (đề xuất 3 và 2), hỏi đáp ở `lan-va-agent-cung-luc.md`; PR #18 sửa Medium và Low; PR #19 tới gate ③ (1 Medium, 5 Low); lượt 24: bạn chọn sửa hết Medium và 5 Low của PR #19 trước khi approve; lượt 25: bạn phản biện, chốt số agent bằng số làn; spec thêm chốt RAM `min_free_ram_gb: 3` (đo: còn 2,8 GB trống, VS Code 3,8 GB); lượt 26: bạn hỏi cái gì tốn RAM; đo: agent `security` 0,34 GB, VS Code 3,8 GB; bạn đúng một nửa; kết luận giữ: số agent bằng số làn, chốt RAM 3 GB; PR #18 sửa xong Medium và Low, còn 3 Low nhỏ, đề xuất approve (`SHOP-8` 25,38 USD); `/ao-fix 19`; lượt 27–28: bạn approve PR #18, `merge-gate` merge (`4605845`); xác nhận kit tự tạo worktree, không cần cửa sổ VS Code; lượt 29: chỉ còn một con số `lanes_max` (số agent bằng nó, hạ tạm bằng `AO_AGENTS_AT_ONCE`); In Review 2 chỉ là mức cột trên board, không chặn, không phải sửa Jira; lượt 30: spec C2 vẫn chờ duyệt; tóm lại 8 điểm ở dạng mới nhất, đề xuất đồng ý cả 8; lượt 31: vì sao chỉ build, fix, review, QA song song: chúng chỉ đụng item của mình; đề xuất thêm mỗi lúc một QA trên một môi trường; chưa sửa spec; lượt 32: spec, plan của hai Epic song song: làm được về kỹ thuật nhưng contract chặn (`epic-shaping: 1`), số ADR trùng; đề xuất để phần 3, làm sau; Development deploy `4605845`; lượt 33: bỏ việc chạy nhiều Epic song song, không ghi vào spec; lượt 34: vì sao một QA trên một môi trường: chung database Development, E2E ghi dữ liệu, kết quả sai tốn thật; đề xuất thêm kiểm bản deploy trước và sau QA; chưa sửa spec; lượt 35: bạn duyệt spec C2 cùng luật QA; kit PR #290 merge; PR #19 lượt hai: 1 Medium thật và 3 Low, hỏi bạn sửa tiếp; `/ao-qa SHOP-8`; `SHOP-8` PASS QA (27,05 USD), chờ bạn Accept; build `SHOP-9`; bắt đầu code C2 phần 1 ở `ai-orchestrator-c2`; C2 phần 1 xong, kit PR #291 merge (1.490 test); bắt đầu phần 2; C2 phần 2 (kit PR #292) và bản sửa coverage (#293) merge; `SHOP-9` PR #20 đỏ CI vì file test; kế tiếp chép kit vào `shop`; `SHOP-38` chép kit `352b3df` vào `shop`, bật 3 làn; PR #21; `/ao-review 21`; lượt 36: bạn nhờ Accept `SHOP-8` (Done qua token admin) và sửa Medium, 3 Low của PR #19; lượt 37: bạn hỏi còn việc gì cần bạn: ngay lúc này không; sắp tới gate ③ của PR #21, #19, #20 và Accept; lượt 38: `/ao-fix 19` chạy code cũ vì tới trước khi PR #21 merge; nhiều làn bắt đầu ngay sau khi PR #21 merge |
 | 33 | `0624de51-1879-44c5-a6f3-793068e0d8be` | 2026-11-16 khoảng 21:22 → | Bạn dán đoạn cuối của Phiên 32, hỏi lại Bug SHOP-51 và cách fix, dặn chưa làm gì; Claude giải thích: khi slug trùng, Hibernate ghi cả câu INSERT kèm tên, mô tả sản phẩm vào log (trái NFR12); đề xuất (a) Low, Affects Version trống, Fix `v0.3.0`, Ready; cách fix: tắt logger `org.hibernate.orm.jdbc.error`, test bắt log, sửa dòng log `root=` của `GlobalExceptionHandler`; chờ bạn |
 | 34 | `ee11b1ec-f133-42e6-ae14-68d9209ea8b8` | 2026-11-19 khoảng 14:25 → | Bạn hỏi năm câu: kit gắn chặt với GitHub, Jira, VPS không, GitLab và EC2, so với agent-skills, vì sao agent-skills phổ biến, quản lý task và gõ lệnh tay; greenfield hay brownfield; luồng deploy của `shop` so với `deploy.yml` của bạn; vì sao chép kit lên VPS; nơi lưu tài liệu của SA, BA, PM, QA, UX. Claude viết `misc/thao-luan/kit-va-du-an-thuc-te/stack-deploy-va-luu-tai-lieu.md` |
-| 35 | `9b7de2de-fbda-493b-951d-5d7c26b8c106` | 2026-11-21 khoảng 01:33 → | Bạn dán đoạn cuối của Phiên 33 và gõ "làm T13"; `SHOP-79` tạo, Refine và Start; `shop` PR #80 chép kit `8a9f25d` (C2, T20b) và Low 9 (khối `review` của `project.yaml`); CI xanh 7 job; review chạy (`reviewer` `xhigh`, `security` `max`); `security` chạm giới hạn 5 giờ, Lượt 2 chạy tiếp; review xong: 0 Critical, 0 High, sau khi gộp còn 5 Medium và 4 Low, đều trong code kit; tổng 15,23 USD; PR #80 merged (`20cbfd4`), QA `SHOP-79` PASS, chờ bạn Accept; kit PR #334 sửa 9 việc (`82b1bca`); `SHOP-80` PR #81 chép kit, review: `security` 1 High (entity HTML lách hook của `seo`), chờ bạn chọn hướng sửa |
+| 35 | `9b7de2de-fbda-493b-951d-5d7c26b8c106` | 2026-11-21 khoảng 01:33 → | Bạn dán đoạn cuối của Phiên 33 và gõ "làm T13"; `SHOP-79` tạo, Refine và Start; `shop` PR #80 chép kit `8a9f25d` (C2, T20b) và Low 9 (khối `review` của `project.yaml`); CI xanh 7 job; review chạy (`reviewer` `xhigh`, `security` `max`); `security` chạm giới hạn 5 giờ, Lượt 2 chạy tiếp; review xong: 0 Critical, 0 High, sau khi gộp còn 5 Medium và 4 Low, đều trong code kit; tổng 15,23 USD; PR #80 merged (`20cbfd4`), QA `SHOP-79` PASS, chờ bạn Accept; kit PR #334 sửa 9 việc (`82b1bca`); `SHOP-80` PR #81 chép kit, review: `security` 1 High (entity HTML lách hook của `seo`), Lượt 6 ("Làm"): kit PR #335 (`8847a84`), review vòng hai: `security` High mới (hook bỏ `<…>` mà Jira giữ); Lượt 7 ("sửa theo đề xuất"): hook tự gửi comment agent dạng HTML đã escape, kit PR #336 (`9374641`), review vòng ba: `security` 1 High (`plainText` không idempotent), 2 Medium; `reviewer` Approve, 3 Medium, 1 Low; `SHOP-80` 28,40 USD, cờ Needs you vì giới hạn rework; chờ bạn chọn |
 
 ---
 
@@ -31430,3 +31430,126 @@ Hook chặn `seo` viết `Cần <role>:` vẫn có thể bị lách bằng entit
 3. **Accept `SHOP-79`** vẫn là việc của bạn.
 
 Bạn chọn cách 1 thì gõ "làm", mình bắt đầu.
+
+# Phiên 35 · Lượt 6 — 2026-11-21 khoảng 11:15
+
+**Bạn:**
+
+```markdown
+Làm
+```
+
+**Claude:**
+
+Review lần hai đang chạy (`reviewer` và `security` cùng lúc, chỉ xem phần đổi từ `6011951`). Xong là mình báo.
+
+**Bạn (sau giới hạn 5 giờ):**
+
+```markdown
+I hit my usage limit while you were working, but it has reset now. Please continue from where you left off
+```
+
+**Claude:**
+
+Reviewer đã chạy xong vòng hai. Không có Critical hay High. Có 2 Medium và 4 Low:
+
+1. **Medium:** một item `ao-seo` không thuộc Epic có thể kẹt. `/ao-review` dừng chờ seo-ok và chỉ sang `/ao-build`. Nhưng PR của item đang mở, nên `/ao-build` dừng ở lý do khác và không ghi seo-ok. Hai lệnh cứ chỉ qua lại nhau.
+2. **Medium:** agent vẫn đặt được `MAVEN_OPTS`. Cách làm là chạy `set -a` trước, rồi gán biến bằng `printf -v` hoặc `read`.
+3. **Low:** ghi vào `.ai/runs/.../seo-ok.json::$DATA` lọt qua luật cấm ghi.
+4. **Low:** seo không viết được URL có từ hai query parameter trở lên (`?a=1&b=2`), vì hook coi `&b` là một ký hiệu HTML lạ và chặn.
+5. **Low:** skill `ao-build` lấy mark từ lần check mới. Nếu seo viết comment khác ngay trước lúc bạn gõ, bạn có thể duyệt comment mình chưa đọc.
+6. **Low:** sau khi gom `sameRepo` về một chỗ, vài comment trong code bị bỏ lại hoặc ghi sai.
+
+Security bị ngắt vì hết lượt dùng. Mình đã chạy lại, và nó đang làm tiếp trong session cũ (log ở `.pilot3-scratch/review-81-r2b.log`). Có kết quả security là mình báo tiếp, kèm chi phí và bước tiếp theo.
+
+**Claude (tiếp Lượt 6, sau review vòng hai):**
+
+Vòng review thứ hai của PR #81 vẫn còn High, nên mình dừng để bạn chọn. Vòng này tốn 10.11 USD, cả SHOP-80 đến giờ là 17.00 USD.
+
+**Security tìm ra (head `3f2bd98`):**
+1. **High mới:** trước khi kiểm, hook xóa mọi đoạn từ `<` đến `>` gần nhất. Jira lại giữ phần chữ của nhiều đoạn như vậy, ví dụ chữ của link có `<` trong địa chỉ, autolink, hay comment HTML có `>` bên trong. Kết quả: hook đọc thấy câu vô hại, còn Jira lưu "Cần sa: …", và sa (có Bash) chạy theo chữ do trang web viết. Security đã thử 6 dạng, cả 6 đều lọt.
+2. **High cũ, mới sửa một nửa:** phía seo đã bị chặn. Nhưng một role khác qa vẫn giả được báo cáo QA PASS bằng entity lạ, ví dụ `QA rep&oopf;rt`.
+3. **Medium:** skill `ao-build` lấy mark từ lần check mới nhất, không lấy mark bạn gõ. Nếu seo sửa comment ngay trước lúc bạn gõ, bạn duyệt bản mình chưa đọc.
+4. **Medium:** dev agent đọc comment seo trên Jira lúc đang chạy, sau khi mark đã được so. Nếu comment bị sửa trong lúc đó, dev làm theo bản chưa ai duyệt.
+5. **Low:** `USERPROFILE=… pnpm add` làm pnpm đọc một `.npmrc` khác. Ngoài ra `GIT_CONFIG_PARAMETERS+=…` lọt qua gh-guard.
+
+Reviewer không có High. Còn 2 Medium và 4 Low như mình báo ở trên (vòng lặp seo-ok, `set -a`, `::$DATA`, URL có `&`, mark của skill, comment code bị bỏ lại).
+
+**Vì sao lại lọt:** hook đoán Jira sẽ đọc markdown và HTML ra chữ gì. Đoán kiểu đó thì sửa chỗ này lại hở chỗ khác. Máy chủ MCP chỉ nhận `markdown` hoặc `html`, không nhận ADF, nên không gửi chữ thô thẳng vào Jira được.
+
+**Cách sửa mình đề xuất (bỏ hẳn việc đoán):**
+1. Với comment của seo và của mọi role khác qa, hook tự đổi phần nội dung trước khi gửi:
+   - escape `& < > " '` và gửi dạng `html`, mỗi dòng một đoạn `<p>`;
+   - nhờ đó Jira lưu đúng từng chữ agent viết, và hook chỉ cần kiểm chữ thô.
+   - Cách này cũng gỡ Low về URL có `&`.
+   - Cái giá: comment của các role đó không còn định dạng markdown.
+   - Claude Code cho hook đổi input của tool qua `updatedInput`. Mình sẽ kiểm việc này bằng test trong kit trước.
+2. Hai Medium về seo-ok:
+   - skill dùng đúng mark bạn gõ;
+   - ao-step lưu nội dung comment đã duyệt vào một file của run, và dev đọc file đó, không đọc trên Jira nữa.
+3. Sửa hết Medium và Low của cả hai reviewer.
+4. Trước khi trả tiền cho vòng sau, mình liệt kê các ranh giới tin cậy và ai chạm được tới chúng.
+5. Tiếp theo: mở PR kit, chép lại vào nhánh SHOP-80, rồi review vòng ba trên head mới (khoảng 8–12 USD).
+
+**Cách khác:** duyệt PR #81 với dòng `Accept risk` cho hai High, rồi sửa ở một Task sau. Mình không khuyên cách này. T14 mà dùng seo thì chạy đúng vào lỗ này.
+
+Bạn chọn sửa theo đề xuất, hay accept risk?
+
+# Phiên 35 · Lượt 7 — 2026-11-21 khoảng 16:31
+
+**Bạn:**
+
+```markdown
+sửa theo đề xuất
+```
+
+**Claude:**
+
+Review vòng ba của PR #81 vẫn còn **1 High**, nên mình dừng để bạn chọn.
+- Vòng này tốn 11,40 USD. Cả `SHOP-80` đến giờ là 28,40 USD.
+- Jira đã gắn cờ Needs you cho `SHOP-80`, vì PR đã bị yêu cầu sửa 3 lần (giới hạn rework).
+
+**Đã xong trong lượt này**
+1. Kit PR #336 đã merge: kit `main` là `9374641`, 1.796 test xanh. PR này cho hook tự gửi comment của agent dưới dạng HTML đã escape, và sửa mọi Medium, Low của vòng hai.
+2. Trước khi sửa, mình kiểm hai điều, cả hai đều đúng:
+   - Claude Code đổi được input của tool MCP qua hook.
+   - Jira giữ nguyên HTML đã escape. Còn markdown thì dù đã escape, Jira vẫn biến URL thành smart link.
+   - Ba comment thử (10620–10622) vẫn nằm trên `SHOP-80`. Bạn muốn thì mình xóa.
+3. Mình chép kit vào nhánh của `SHOP-80` (commit `80a0e6d`). CI xanh cả 7 job. Review vòng ba chạy đầy đủ.
+
+**`security` tìm ra (chuyển PR sang Request changes)**
+1. **High:** hàm chuẩn hóa chữ `plainText` chạy hai lần cho ra hai kết quả khác nhau.
+   - Một ký tự rộng 0 chèn vào giữa chữ "Cần" làm hook thấy "Cần" ở dạng chưa ghép dấu, nên không nhận ra yêu cầu.
+   - Bộ đọc của `ao-step` chuẩn hóa thêm một lần nữa, ghép lại thành "Cần sa:".
+   - Vậy `seo` vẫn giả được một yêu cầu từ `ba` tới `sa`.
+2. **Medium:** Claude Code tự mở `@<đường dẫn>` trong prompt `-p`. Vòng này mình đưa nguyên văn comment của `seo` vào prompt. Nếu comment có `@../../apps/api/.env`, agent sẽ đọc file đó mà không qua hook nào.
+3. **Medium (chưa kiểm trên Jira):** trình đọc HTML có thể bỏ ký tự U+0000. Đây là cùng kiểu lách như High.
+
+**`reviewer` (Approve, 0 High)**
+
+`reviewer` chạm giới hạn số lượt, nhưng đã viết xong báo cáo:
+1. **Medium:** hook chuẩn hóa NFKC nên làm đổi chữ agent viết: `™` thành `TM`, `42½` thành `421⁄2`. Copy SEO vì thế sẽ sai.
+2. **Medium:** giới hạn 12000 ký tự chặn cả các run không cần comment, như run của `seo` hay `ba`, nên không có đường ra.
+3. **Medium:** Bash vẫn đặt được biến bằng `for NAME in`, `let`, `(( ))`, `set -o pipefail -o allexport` và `shopt -so allexport`.
+4. **Low:** tiêu đề và bảng của PR #81, cùng mô tả `SHOP-80`, vẫn ghi kit `82b1bca`.
+
+**Đề xuất (mình khuyên cách 1)**
+1. **Sửa hết, và thêm một lớp không phụ thuộc vào cách chuẩn hóa chữ:**
+   - Hook buộc comment của mọi agent khác `qa` bắt đầu bằng đúng tên role của nó (`SEO Specialist:`, …).
+     - Bộ đọc vốn đã không chạy yêu cầu do `seo` ký. Vì vậy, dù chữ "Cần sa:" có lọt, nó cũng không chạy role nào.
+     - Bộ đọc QA report sẽ bỏ qua comment do role khác `qa` ký.
+   - Sửa phần chuẩn hóa chữ:
+     - `plainText` cho cùng kết quả dù chạy mấy lần, và bỏ ký tự điều khiển.
+     - Hook kiểm bằng chính các hàm của bộ đọc.
+     - Hook giữ nguyên ký tự agent viết (bỏ NFKC), chỉ bỏ ký tự rộng 0 và ký tự điều khiển.
+   - Comment `seo` đã duyệt được ghi vào file `.ai/runs/<KEY>/seo-<hash>.md`. Prompt chỉ nêu đường dẫn, và agent đọc file bằng Read. Bỏ giới hạn 12000 ký tự.
+   - Chặn thêm `for`, `let`, `(( ))`, `shopt`, và `-o allexport` ở mọi vị trí.
+   - Sửa tiêu đề, bảng của PR và mô tả `SHOP-80`.
+   - Mình gỡ cờ Needs you của `SHOP-80`, chép kit lại, rồi review vòng bốn chỉ phần mới đổi. Ước tính 8–12 USD.
+2. **Hoặc dừng ở đây cho T14:**
+   - Bạn approve PR #81 kèm `Accept risk:` cho High, có hạn tới một ngày cụ thể.
+   - T14 chọn một Epic không có SEO, hoặc dùng `no-seo`.
+   - Mình sửa lỗi trong một Task sau.
+   - Cách này rẻ hơn, nhưng lỗ vẫn mở lần tới `seo` chạy.
+
+Bạn chọn cách nào? Nếu chọn cách 1, bạn gõ "làm".

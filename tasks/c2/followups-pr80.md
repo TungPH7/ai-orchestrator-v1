@@ -106,3 +106,21 @@ Review lần hai PR #81 (head `3f2bd98`, kit `8847a84`): `security` 1 High mới
 | Chữ `seo` tới phiên chính có Bash | STOP, `/ao-status`, log | Chỉ in loại, số dòng, mark | Câu hỏi mở của `seo` trong SPEC (đã biết) |
 | Chữ `seo` tới dev | Prompt | Chỉ bản bạn đã duyệt, đúng như lúc so mark | Chữ đó vẫn là chữ từ trang web, bạn đọc trước khi duyệt |
 | Biến môi trường của Maven, trình quản lý gói | Bash của agent | Như trên | Script do agent tự viết rồi chạy thì gh-guard không đọc (đã biết: gh-guard không phải ranh giới) |
+
+## Còn mở sau review vòng ba (bạn chấp nhận rủi ro, Phiên 35 · Lượt 8)
+
+Review vòng ba của PR #81 (head `80a0e6d`, kit `9374641`, 11,40 USD; `SHOP-80` tổng 28,40 USD): `security` 1 High, 2 Medium; `reviewer` Approve, 3 Medium, 1 Low. Bạn chọn: approve PR #81 với `Accept risk: 08bc0732 until 2026-12-15`, dừng vòng sửa, làm T14 với một Epic có SEO. Các việc dưới đây là Task sửa sau, trước 2026-12-15.
+
+1. **High `08bc0732`, `plainText` không idempotent:** NFKC chạy trước khi bỏ dấu rộng 0, nên `Ca` U+200B U+0302 U+0300 `n sa:` lọt hook, còn bộ đọc ghép lại thành `Cần sa:`. Cách sửa:
+   - bỏ dấu rộng 0 và ký tự điều khiển trước và sau NFKC, rồi test `plainText(plainText(x)) === plainText(x)`;
+   - hook kiểm bằng chính `openRequests` và `qaReportResult` trên ADF dựng từ các khối;
+   - hook buộc comment của agent khác `qa` bắt đầu bằng đúng Agent value của nó;
+   - bộ đọc QA report bỏ comment do role khác `qa` ký.
+2. **Medium, `@` trong prompt `-p`:** Claude Code đọc file nêu sau `@` vào context, không qua hook. Vòng này prompt mang nguyên văn comment `seo` đã duyệt. Cách sửa: ghi chữ đó vào `.ai/runs/<KEY>/seo-<hash>.md`, cấm agent ghi file này, prompt chỉ nêu đường dẫn, agent đọc bằng Read. Bỏ giới hạn 12000 ký tự.
+3. **Medium, U+0000:** trình đọc HTML5 bỏ U+0000 trong thân, nên chữ hook đọc có thể khác chữ Jira giữ. Cách sửa: bỏ ký tự điều khiển C0, C1 (trừ `\n`) trong `plainText` và `literalComment`; đã có cách sửa của mục 1 làm lớp sau.
+4. **Medium, NFKC đổi chữ agent viết:** `™` thành `TM`, `42½` thành `421⁄2`. Cách sửa: chữ gửi đi chỉ chuẩn hóa NFC, bỏ dấu rộng 0 và ký tự điều khiển; vẫn kiểm trên `plainText` của chữ đó.
+5. **Medium, giới hạn 12000 ký tự chặn cả run không cần comment:** run `seo` hay request của `ba` cũng dừng. Hết khi làm mục 2.
+6. **Medium, Bash còn đặt biến:** `for NAME in`, `let`, `(( NAME = … ))`, `set -o pipefail -o allexport`, `set -ox allexport`, `shopt -so allexport`. Cách sửa: thêm `for`, `select`, `let`, `((` vào nhóm builtin ghi tên; `exportsAll` xét mọi cặp `-o <tên>`; từ chối `shopt` có `allexport`.
+7. **Low:** tiêu đề và bảng của PR #81, cùng Verification của `SHOP-80`, vẫn ghi kit `82b1bca`.
+
+`reviewer` chạm `max_turns` (71 lượt) trước khi đăng báo cáo. Phiên chính đăng nguyên văn `.ai/reviews/81-reviewer.md` bằng `ao-pr.mjs review` (COMMENT), để PR có đủ báo cáo trên head. Một lượt review mới từ đầu sẽ tốn thêm khoảng 5 USD.
