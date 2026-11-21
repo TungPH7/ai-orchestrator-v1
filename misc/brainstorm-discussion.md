@@ -40,7 +40,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 32 | `84d69ed3-b065-40d0-a4e2-3c06a66ac5cb` | 2026-11-15 khoảng 01:52 → | Bạn dán đoạn cuối của Phiên 31, đã Accept `SHOP-6` (T10 xong); T10h: kit chỉ cắt `vX.Y.0` từ `develop`, nên bản đưa `CODEOWNERS` lên `main` là `v0.2.0` và Epic `SHOP-7` lên `v0.3.0`; Fix Version `v0.3.0` tạo qua REST; spec 2.9 phần 7, plan, todo sửa theo; chờ bạn duyệt gate ④ (`fdc2ee0`, `SHOP-6`); lượt 2: bạn duyệt gate ④; `release/v0.2.0` cắt bằng login của bạn, Staging; `/ao-ship v0.2.0` (0,92 USD): regression PASS, PR report #14 do App `ao-merge` merge, PR release #15 CI xanh; chờ bạn approve ở gate ⑤ và chọn ai bấm Release `v0.2.0`; lượt 3: bạn approve gate ⑤; App `ao-merge` merge PR #15, gắn tag `v0.2.0`, merge ngược PR #16; Production và Development deploy thành công; Release `v0.2.0` trên Jira qua REST; dòng `CODEOWNERS` của `doctor` xanh; T10h xong; `/ao-spec SHOP-7` chạy; lượt 4: bạn hỏi ảnh trang mẫu ở đâu; `ba` viết SPEC (2,99 USD) và dừng với 12 câu hỏi, chờ bạn trả lời; lượt 5: bạn đồng ý cả 12 câu và cho mình tự làm theo đề xuất tới hết B4; `ux` hỏi 16 câu có đề xuất, trả lời bằng lời của bạn; ảnh 05 chụp nhầm ở T11; `sa` thêm NFR1–NFR27; PR docs #17, 12,31 USD; chờ bạn duyệt gate ①; lượt 6: bạn bấm Approve spec; `/ao-plan SHOP-7`; lượt 7: bạn hỏi công cụ đo trang mẫu (Playwright); `sa` hỏi 2 câu, `API_URL` kiểm trên VPS; lượt 8: bạn hỏi 4 câu về Playwright, Claude in Chrome, `chrome-devtools`, animation; Playwright bật được light mode; `misc/clone-100pct-ui-ux/cong-cu-inspect-website.md`; lượt 9: giữ bảng màu sáng của `ux`; lượt 10: chốt Playwright + `chrome-devtools`, ghi vai trò tool trong skill; plan, 3 ADR và 30 item `SHOP-8`…`SHOP-37` (13,97 USD); chờ bạn duyệt gate ②; lượt 11: bạn bấm Approve plan; `jira-sync`, PR #17 merge (`41ede25`); chặng 4 của todo sửa theo plan; chặng 4 ước 335–580 USD, vượt mức 125 USD của spec, nên hỏi bạn chọn làm theo đợt, cả Epic hay thu nhỏ; lượt 12: bạn bỏ giới hạn chi phí (gói Max 5x) và chọn làm cả Epic; `SHOP-8` build, CI đỏ ở coverage rồi sửa, review 0 Critical/High/Medium, 7 Low (12,22 USD); gate ③ hỏi bạn sửa Low trước hay approve; build `SHOP-10`; lượt 13: bạn chọn sửa 7 Low của PR #18 trước khi approve; lượt 14: bạn hỏi chạy item song song bằng 2 worktree; kit chưa hỗ trợ (checkout `develop`, cổng, khóa, WIP), đúng việc C2 chưa làm; đề xuất giữ lần lượt hay làm C2 tối thiểu trước; lượt 15: bạn hỏi kỹ về C2 tối thiểu; đánh giá ở `misc/thao-luan/c2-toi-thieu-giua-pilot-3.md`: khả thi, không breaking nếu mặc định 1, 7 chỗ phải sửa, phải làm trong worktree riêng của kit; đề xuất (1) cộng viết spec C2; `SHOP-10` PR #19 CI đỏ cùng lỗi coverage; `/ao-fix 18` sửa 7 Low; lượt 16: chuyển bản đánh giá C2 vào `misc/thao-luan/sdlc-song-song/` và `clone-100pct-ui-ux/` vào `misc/thao-luan/`; lượt 17: bạn chọn chạy lần lượt cộng viết spec C2; thử thật MCP, `--resume` và hook chặn trong worktree: cả ba ổn; `SPEC-parallel-runs.md` nháp, 8 điểm chờ duyệt; `fe-dev` sửa 7 Low của PR #18 (3,30 USD); lượt 18: bạn hỏi cấu hình 1, 2, 3 hay n lượt song song; đề xuất `runs.parallel` 1..4 trong `project.yaml`, biến `AO_RUNS_PARALLEL` để hạ tạm, bắt đầu với 2; chưa sửa spec; `SHOP-8` sửa 7 Low, review lại: 1 Medium và 1 Low trong tài liệu, `security` 0 lỗi (21,14 USD); gate ③ hỏi sửa luôn hay approve; `/ao-fix 19`; lượt 19: giải thích chậm: mỗi item một làn, một worktree, trong làn vẫn một agent; `runs.parallel` là số làn có agent chạy cùng lúc; đề xuất đổi tên thành `runs.items_at_once`; lượt 20: đổi tên khóa thành `runs.items_at_once`; giải thích làn đang mở và agent cùng lúc; đề xuất 2 agent cùng lúc (máy 16 GB, còn 2,6 GB trống), số làn để WIP quyết; lượt 21–23: đổi tên thành `agents_at_once`, làn mở do bạn quyết bằng `lanes_max` (đề xuất 3 và 2), hỏi đáp ở `lan-va-agent-cung-luc.md`; PR #18 sửa Medium và Low; PR #19 tới gate ③ (1 Medium, 5 Low); lượt 24: bạn chọn sửa hết Medium và 5 Low của PR #19 trước khi approve; lượt 25: bạn phản biện, chốt số agent bằng số làn; spec thêm chốt RAM `min_free_ram_gb: 3` (đo: còn 2,8 GB trống, VS Code 3,8 GB); lượt 26: bạn hỏi cái gì tốn RAM; đo: agent `security` 0,34 GB, VS Code 3,8 GB; bạn đúng một nửa; kết luận giữ: số agent bằng số làn, chốt RAM 3 GB; PR #18 sửa xong Medium và Low, còn 3 Low nhỏ, đề xuất approve (`SHOP-8` 25,38 USD); `/ao-fix 19`; lượt 27–28: bạn approve PR #18, `merge-gate` merge (`4605845`); xác nhận kit tự tạo worktree, không cần cửa sổ VS Code; lượt 29: chỉ còn một con số `lanes_max` (số agent bằng nó, hạ tạm bằng `AO_AGENTS_AT_ONCE`); In Review 2 chỉ là mức cột trên board, không chặn, không phải sửa Jira; lượt 30: spec C2 vẫn chờ duyệt; tóm lại 8 điểm ở dạng mới nhất, đề xuất đồng ý cả 8; lượt 31: vì sao chỉ build, fix, review, QA song song: chúng chỉ đụng item của mình; đề xuất thêm mỗi lúc một QA trên một môi trường; chưa sửa spec; lượt 32: spec, plan của hai Epic song song: làm được về kỹ thuật nhưng contract chặn (`epic-shaping: 1`), số ADR trùng; đề xuất để phần 3, làm sau; Development deploy `4605845`; lượt 33: bỏ việc chạy nhiều Epic song song, không ghi vào spec; lượt 34: vì sao một QA trên một môi trường: chung database Development, E2E ghi dữ liệu, kết quả sai tốn thật; đề xuất thêm kiểm bản deploy trước và sau QA; chưa sửa spec; lượt 35: bạn duyệt spec C2 cùng luật QA; kit PR #290 merge; PR #19 lượt hai: 1 Medium thật và 3 Low, hỏi bạn sửa tiếp; `/ao-qa SHOP-8`; `SHOP-8` PASS QA (27,05 USD), chờ bạn Accept; build `SHOP-9`; bắt đầu code C2 phần 1 ở `ai-orchestrator-c2`; C2 phần 1 xong, kit PR #291 merge (1.490 test); bắt đầu phần 2; C2 phần 2 (kit PR #292) và bản sửa coverage (#293) merge; `SHOP-9` PR #20 đỏ CI vì file test; kế tiếp chép kit vào `shop`; `SHOP-38` chép kit `352b3df` vào `shop`, bật 3 làn; PR #21; `/ao-review 21`; lượt 36: bạn nhờ Accept `SHOP-8` (Done qua token admin) và sửa Medium, 3 Low của PR #19; lượt 37: bạn hỏi còn việc gì cần bạn: ngay lúc này không; sắp tới gate ③ của PR #21, #19, #20 và Accept; lượt 38: `/ao-fix 19` chạy code cũ vì tới trước khi PR #21 merge; nhiều làn bắt đầu ngay sau khi PR #21 merge |
 | 33 | `0624de51-1879-44c5-a6f3-793068e0d8be` | 2026-11-16 khoảng 21:22 → | Bạn dán đoạn cuối của Phiên 32, hỏi lại Bug SHOP-51 và cách fix, dặn chưa làm gì; Claude giải thích: khi slug trùng, Hibernate ghi cả câu INSERT kèm tên, mô tả sản phẩm vào log (trái NFR12); đề xuất (a) Low, Affects Version trống, Fix `v0.3.0`, Ready; cách fix: tắt logger `org.hibernate.orm.jdbc.error`, test bắt log, sửa dòng log `root=` của `GlobalExceptionHandler`; chờ bạn |
 | 34 | `ee11b1ec-f133-42e6-ae14-68d9209ea8b8` | 2026-11-19 khoảng 14:25 → | Bạn hỏi năm câu: kit gắn chặt với GitHub, Jira, VPS không, GitLab và EC2, so với agent-skills, vì sao agent-skills phổ biến, quản lý task và gõ lệnh tay; greenfield hay brownfield; luồng deploy của `shop` so với `deploy.yml` của bạn; vì sao chép kit lên VPS; nơi lưu tài liệu của SA, BA, PM, QA, UX. Claude viết `misc/thao-luan/kit-va-du-an-thuc-te/stack-deploy-va-luu-tai-lieu.md` |
-| 35 | `9b7de2de-fbda-493b-951d-5d7c26b8c106` | 2026-11-21 khoảng 01:33 → | Bạn dán đoạn cuối của Phiên 33 và gõ "làm T13"; `SHOP-79` tạo, Refine và Start; `shop` PR #80 chép kit `8a9f25d` (C2, T20b) và Low 9 (khối `review` của `project.yaml`); CI xanh 7 job; review chạy (`reviewer` `xhigh`, `security` `max`); `security` chạm giới hạn 5 giờ, Lượt 2 chạy tiếp; review xong: 0 Critical, 0 High, sau khi gộp còn 5 Medium và 4 Low, đều trong code kit; tổng 15,23 USD; PR #80 merged (`20cbfd4`), QA `SHOP-79` PASS, chờ bạn Accept; kit PR #334 sửa 9 việc (`82b1bca`); `SHOP-80` PR #81 chép kit, review: `security` 1 High (entity HTML lách hook của `seo`), Lượt 6 ("Làm"): kit PR #335 (`8847a84`), review vòng hai: `security` High mới (hook bỏ `<…>` mà Jira giữ); Lượt 7 ("sửa theo đề xuất"): hook tự gửi comment agent dạng HTML đã escape, kit PR #336 (`9374641`), review vòng ba: `security` 1 High (`plainText` không idempotent), 2 Medium; `reviewer` Approve, 3 Medium, 1 Low; `SHOP-80` 28,40 USD, cờ Needs you vì giới hạn rework; Lượt 8 ("chọn 2"): approve PR #81 với `Accept risk: 08bc0732 until 2026-12-15`, gỡ cờ, đăng báo cáo `reviewer`; chờ bạn merge PR #81 và chọn Epic có SEO cho T14 |
+| 35 | `9b7de2de-fbda-493b-951d-5d7c26b8c106` | 2026-11-21 khoảng 01:33 → | Bạn dán đoạn cuối của Phiên 33 và gõ "làm T13"; `SHOP-79` tạo, Refine và Start; `shop` PR #80 chép kit `8a9f25d` (C2, T20b) và Low 9 (khối `review` của `project.yaml`); CI xanh 7 job; review chạy (`reviewer` `xhigh`, `security` `max`); `security` chạm giới hạn 5 giờ, Lượt 2 chạy tiếp; review xong: 0 Critical, 0 High, sau khi gộp còn 5 Medium và 4 Low, đều trong code kit; tổng 15,23 USD; PR #80 merged (`20cbfd4`), QA `SHOP-79` PASS, chờ bạn Accept; kit PR #334 sửa 9 việc (`82b1bca`); `SHOP-80` PR #81 chép kit, review: `security` 1 High (entity HTML lách hook của `seo`), Lượt 6 ("Làm"): kit PR #335 (`8847a84`), review vòng hai: `security` High mới (hook bỏ `<…>` mà Jira giữ); Lượt 7 ("sửa theo đề xuất"): hook tự gửi comment agent dạng HTML đã escape, kit PR #336 (`9374641`), review vòng ba: `security` 1 High (`plainText` không idempotent), 2 Medium; `reviewer` Approve, 3 Medium, 1 Low; `SHOP-80` 28,40 USD, cờ Needs you vì giới hạn rework; Lượt 8 ("chọn 2"): approve PR #81 với `Accept risk: 08bc0732 until 2026-12-15`, gỡ cờ, đăng báo cáo `reviewer`; Lượt 9 ("Merge giúp tôi. T14: chọn hướng 1. Danh mục"): PR #81 merged (`154ac4e`), deploy Development OK, gỡ cờ bằng tài khoản admin, QA `SHOP-80` PASS (0,95 USD; tổng 29,35 USD); intake Epic Danh mục, câu hỏi 1; Lượt 10 ("Accept giúp"): `SHOP-79`, `SHOP-80` Done, T13 và T13b xong; bản nháp Epic Danh mục (tối đa 3 item); Lượt 11: Epic `SHOP-81` tạo, Start spec, `/ao-spec`: `ba` viết SPEC (21 AC), hỏi 11 câu; Lượt 12: bạn đồng ý theo khuyên (cho xóa danh mục còn sản phẩm, bỏ AC11), `ux` vẽ màn hình, hỏi 10 câu (5,32 USD); Lượt 13: đồng ý cả 10; `sa`, docs PR #82, `seo` (12,29 USD); `seo` hỏi 3 câu; Lượt 14: đồng ý theo khuyên, `seo` sửa SEO, stage spec xong (10,87 USD), chờ bạn ở cổng ① |
 
 ---
 
@@ -31597,3 +31597,285 @@ Bạn cũng có thể gõ "merge giúp", mình merge thay. Sau khi merge, mình 
 3. **Nội dung sản phẩm theo ngôn ngữ (vi/en, hreflang):** nặng SEO nhất, nhưng đụng dữ liệu và form nhiều hơn.
 
 Bạn chọn hướng nào? Chọn xong, mình soạn bản nháp Epic theo template để bạn tạo trên Jira.
+
+# Phiên 35 · Lượt 9 — 2026-11-21 khoảng 18:45
+
+**Bạn:**
+
+```markdown
+Merge giúp tôi.
+T14: chọn hướng 1. Danh mục
+```
+
+**Claude:**
+
+Đã chạy bước kiểm của `/ao-intake`: space SHOP không còn Epic nào đang mở, và giới hạn WIP còn chỗ (0/1). Mình làm intake cho Epic "Danh mục" theo đúng quy trình: hỏi từng câu, rồi soạn bản nháp để bạn duyệt trước khi tạo trên Jira.
+
+CI của `develop` đang chạy. Xong là mình kiểm bản deploy Development và chạy QA `SHOP-80`.
+
+**Câu hỏi 1: danh mục có mấy cấp, và một sản phẩm thuộc mấy danh mục?**
+
+Mình đề xuất: **danh mục một cấp, mỗi sản phẩm thuộc tối đa một danh mục** (có thể chưa thuộc danh mục nào). Ví dụ: Giày, Áo, Phụ kiện. Lý do:
+1. Đủ để có trang `/categories/<slug>`, breadcrumb "Trang chủ › Giày › Tên sản phẩm" và sitemap. Đó là phần SEO chính.
+2. Gọn cho lần chạy thử T14. Danh mục nhiều cấp (Giày › Giày chạy bộ), hay một sản phẩm thuộc nhiều danh mục, làm phức tạp cả dữ liệu, form admin, breadcrumb và canonical.
+
+Bạn đồng ý, hay muốn nhiều cấp hoặc nhiều danh mục cho một sản phẩm?
+
+**Claude (tiếp Lượt 9, sau QA):**
+
+PR #81 đã merge, và QA `SHOP-80` **PASS**.
+
+**Đã làm**
+1. **Merge PR #81:** commit `154ac4e` trên `develop`. CI của `develop` xanh, bản deploy lên Development thành công.
+2. **Gỡ lại cờ Needs you của `SHOP-80`:** jira-sync đã gắn lại cờ sau lần mình gỡ bằng token CI, vì nó chỉ tính là bạn gỡ khi tài khoản gỡ không phải của kit. Mình gỡ lại bằng tài khoản admin của bạn, kèm comment ghi lý do.
+3. **QA `SHOP-80`: PASS** (comment 10627, 0,95 USD). Cả `SHOP-80` tốn 29,35 USD.
+   - Bốn dòng Verification đều đạt. Bộ E2E trên Development: 134 pass, 6 bỏ qua (đều có lý do ghi trong test), 0 fail.
+   - `qa` nhờ bạn xác nhận hai điều khi Accept:
+     - dòng Verification và tiêu đề PR vẫn ghi kit `82b1bca`, nhưng bản đã merge là `9374641`, tức `82b1bca` cộng hai vòng sửa theo review của chính PR này;
+     - dòng "không còn Critical/High" chỉ đạt vì bạn đã chấp nhận rủi ro `08bc0732`, hạn 2026-12-15.
+4. Mình bật Docker cho QA, QA xong thì tắt. Không xóa gì.
+
+**Cần bạn: Accept `SHOP-79` và `SHOP-80`**
+
+Cả hai đã PASS QA và đang ở In QA.
+1. Mở https://phunghuutung12b4.atlassian.net/browse/SHOP-79, bấm nút trạng thái **In QA**, chọn **Accept**.
+2. Làm giống vậy với https://phunghuutung12b4.atlassian.net/browse/SHOP-80.
+
+Bạn cũng có thể gõ "Accept giúp", mình bấm thay bằng token admin của bạn.
+
+**T14: Epic "Danh mục", câu hỏi 1 vẫn chờ bạn**
+
+Mình đề xuất: danh mục một cấp, mỗi sản phẩm thuộc tối đa một danh mục (có thể chưa thuộc danh mục nào), ví dụ Giày, Áo, Phụ kiện. Bạn đồng ý, hay muốn nhiều cấp, hoặc một sản phẩm thuộc nhiều danh mục?
+
+# Phiên 35 · Lượt 10 — 2026-11-21 khoảng 19:15
+
+**Bạn:**
+
+```markdown
+Accept giúp.
+Danh mục 1 cấp. Tối muốn t14 Epic này có đủ, tối thiểu các task để cover hết các trường hợp đã làm mới, đủ để kiểm xem các update ở c2 hoạt động tốt. Nhưng không quá dài và nhiều task gây mất thời gian và tốn token
+```
+
+**Claude:**
+
+Mình đã Accept `SHOP-79` và `SHOP-80` thay bạn bằng token admin: cả hai giờ là **Done**. T13 và T13b của C2 đã được đánh dấu xong trong todo của kit.
+
+**Bản nháp Epic "Danh mục sản phẩm" (T14)**
+
+Bản nháp nằm ở `e-commerce/shop/.ai/intake/20261121-1917-danh-muc.md`.
+
+1. **Loại: Epic.** Khách và quản trị viên nhìn thấy kết quả, và việc này cần SPEC cùng plan. Epic liên quan: SHOP-7.
+2. **Phạm vi:**
+   - danh mục một cấp; mỗi sản phẩm thuộc tối đa một danh mục, có thể chưa thuộc danh mục nào;
+   - `admin`: danh sách danh mục; tạo, sửa, ẩn, xóa danh mục; chọn danh mục trong form sản phẩm;
+   - `user`: trang `/categories/<slug>` (sắp xếp, phân trang như danh sách hiện có), liên kết tới danh mục từ trang danh sách, breadcrumb ở trang chi tiết;
+   - SEO của trang danh mục: title, meta, canonical, hreflang, BreadcrumbList, sitemap. `seo` viết phần này ở stage spec.
+3. **Ngoài phạm vi:** danh mục nhiều cấp, một sản phẩm thuộc nhiều danh mục, tên danh mục theo ngôn ngữ, ảnh danh mục, kéo thả thứ tự, chuyển hướng slug cũ, đăng nhập.
+4. **Ràng buộc, theo ý bạn (đủ để kiểm C2 nhưng gọn):** tối đa 3 item.
+   - Một Task nền làm trước: bảng, migration, API.
+   - Rồi hai Story độc lập chạy song song: một cho `admin`, một cho `user`.
+   - Như vậy đủ để thử:
+     - `/ao-run` chạy cả Epic;
+     - hai làn song song, có lúc hai agent cùng role;
+     - `reviewer` và `security` review cùng lúc;
+     - xem trước trong làn;
+     - một PR merge trong lúc item kia đang QA trên Development (`ao/qa`).
+5. **Điểm còn mở, kèm đề xuất của mình:**
+   - xóa danh mục còn sản phẩm: không cho xóa, phải bỏ danh mục khỏi các sản phẩm đó trước;
+   - ẩn danh mục: trang danh mục trả 404 và không có trong sitemap; sản phẩm vẫn hiện ở danh sách chung;
+   - slug: tự tạo từ tên và sửa được; đổi slug thì đường dẫn cũ trả 404, như sản phẩm;
+   - thứ tự danh mục ở `user`: theo tên, A→Z;
+   - sản phẩm không thuộc danh mục nào: breadcrumb chỉ là "Trang chủ › <Sản phẩm>".
+
+   Bạn đồng ý đề xuất nào thì `ba` ghi nó thành quyết định trong SPEC, điểm nào chưa chốt thì `ba` hỏi lại.
+
+Bạn trả lời **OK** để mình tạo Epic trên Jira, hoặc nói chỗ cần sửa. Tạo xong, bước của bạn là bấm **Start spec** trên Epic, rồi chạy `/ao-spec <KEY>`.
+
+# Phiên 35 · Lượt 11 — 2026-11-21 khoảng 19:25
+
+**Bạn:**
+
+```markdown
+Ok, sau khi tạo thì bạn bấm Start spec giúp và chạy ao-spec giúp
+```
+
+**Claude:**
+
+Mình đã tạo Epic **SHOP-81** "Danh mục sản phẩm", bấm **Start spec** bằng tài khoản admin của bạn (Epic giờ ở Specifying), và đang chạy `/ao-spec SHOP-81`.
+
+Các bước đang chạy lần lượt:
+1. `ba` viết SPEC.
+2. `ux` vẽ màn hình.
+3. `sa` viết yêu cầu phi chức năng.
+4. `ba` mở docs PR.
+5. Cuối cùng, `seo` viết mục `## SEO` cho các màn hình của `user`.
+
+Stage này dừng ở cổng ①: bạn đọc docs PR rồi bấm Approve spec. Xong hay có câu hỏi là mình báo ngay, kèm chi phí.
+
+**Claude (tiếp Lượt 11, sau lượt của ba):**
+
+`ba` đã viết xong SPEC của SHOP-81 (1,97 USD) và dừng lại hỏi bạn 11 câu trước khi `ux`, `sa` và `seo` chạy.
+
+**SPEC hiện có**
+- 4 user story, 21 tiêu chí (AC1–AC21):
+  - US1: admin quản lý danh mục (AC1–AC8);
+  - US2: chọn danh mục trong form sản phẩm (AC9–AC11);
+  - US3: trang danh mục cho khách, kèm SEO (AC12–AC19);
+  - US4: breadcrumb ở trang chi tiết (AC20–AC21).
+- Ràng buộc tối đa 3 item của bạn đã được ghi lại.
+- Mỗi AC đã viết theo đề xuất bên dưới, nên bạn đồng ý hết thì SPEC không phải sửa gì.
+
+**11 câu hỏi, kèm đề xuất của `ba`**
+1. Không cho xóa danh mục còn sản phẩm, kể cả sản phẩm Ẩn. Phải bỏ danh mục khỏi các sản phẩm đó trước.
+2. Danh mục Ẩn: trang trả 404, không có trong sitemap, trong liên kết danh mục hay trong breadcrumb. Sản phẩm của nó vẫn hiện ở danh sách chung, và admin vẫn gán sản phẩm vào nó được.
+3. Slug tự tạo từ tên và sửa được. Đổi slug thì đường dẫn cũ trả 404, và form cảnh báo trước khi lưu.
+4. Danh mục xếp theo tên A→Z, theo cách xếp chữ tiếng Việt, ở cả `admin` và `user`.
+5. Sản phẩm không có danh mục, hoặc có danh mục Ẩn: breadcrumb chỉ là "Trang chủ › ‹sản phẩm›".
+6. Danh mục Hiện mà chưa có sản phẩm Đang bán: trang vẫn mở, hiện dòng "Chưa có sản phẩm nào trong danh mục này.", nhưng không có trong liên kết danh mục và sitemap. `seo` quyết thẻ robots.
+7. Trang danh mục chỉ có sắp xếp (Mới nhất, Giá thấp→cao, Giá cao→thấp) và "Xem thêm", không có ô tìm.
+8. **Ngoài phạm vi Epic:** thêm bộ lọc Danh mục vào danh sách sản phẩm của `admin` (AC11), vì câu 1 buộc admin phải tìm hết sản phẩm của danh mục trước khi xóa. Bỏ AC11 thì Story `admin` gọn hơn.
+9. Danh mục chỉ có tên, slug, trạng thái, không có mô tả. Meta description dựng từ câu mẫu do `seo` viết.
+10. Tên danh mục dài 1–60 ký tự, không trùng, không phân biệt hoa thường.
+11. `lastmod` trong sitemap là lần sửa muộn hơn giữa danh mục và các sản phẩm Đang bán của nó.
+
+**Mình khuyên:** đồng ý cả 11 câu, trừ câu 1 và câu 8, vì bạn muốn T14 gọn.
+- **Câu 1, đổi thành:** cho xóa danh mục còn sản phẩm. Form hỏi xác nhận, nêu số sản phẩm, và các sản phẩm đó thành "chưa có danh mục".
+- **Câu 8:** bỏ AC11. Sau khi đổi câu 1, admin không cần tìm sản phẩm trước khi xóa nữa.
+
+Bạn trả lời theo ý mình, ví dụ "đồng ý theo khuyên của Claude", hoặc nói từng câu. Mình chép nguyên văn câu trả lời của bạn cho `ba`, rồi chạy tiếp `/ao-spec`.
+
+# Phiên 35 · Lượt 12 — 2026-11-21 khoảng 19:40
+
+**Bạn:**
+
+```markdown
+đồng ý theo khuyên của Claude
+```
+
+**Claude:**
+
+Mình đã gửi câu trả lời của bạn cho `ba` và chạy tiếp `/ao-spec SHOP-81`.
+
+Câu trả lời "đồng ý theo khuyên của Claude" chỉ có nghĩa khi đọc cùng lời khuyên trước đó, mà `ba` không thấy tin nhắn đó. Vì vậy file `.ai/runs/SHOP-81/answers.md` gồm câu trả lời nguyên văn của bạn, kèm lời khuyên mà nó nhắc tới, trích nguyên văn và ghi rõ là trích:
+- câu 1: cho xóa danh mục còn sản phẩm, sau khi xác nhận; các sản phẩm đó thành "chưa có danh mục";
+- câu 8: bỏ AC11;
+- 9 câu còn lại: theo đề xuất của `ba`.
+
+`ba` chạy tiếp trong phiên cũ để sửa SPEC. Sau đó lần lượt `ux`, `sa`, `ba` mở docs PR, rồi `seo`. Log ở `.pilot3-scratch/spec-81-r2.log`.
+
+Bạn cứ chạy `/compact`. Lượt chạy vẫn tiếp tục trong nền, và khi xong mình sẽ báo kết quả cùng chi phí.
+
+**Claude (tiếp Lượt 12, sau lượt của ux):**
+
+`ba` đã ghi câu trả lời của bạn vào SPEC: cho xóa danh mục còn sản phẩm sau khi xác nhận, và bỏ AC11. Tiếp đó `ux` vẽ xong màn hình, rồi dừng lại hỏi bạn 10 câu. Chi phí SHOP-81 tới giờ là 5,32 USD (`ba` 1,97 + 1,53, `ux` 1,82).
+
+**10 câu hỏi của `ux`, kèm đề xuất**
+1. **H1 của trang danh mục:** là tên danh mục, không thêm gì. Nếu `seo` chọn khác ở mục SEO thì theo `seo`.
+2. **Liên kết "← Sản phẩm" ở trang chi tiết:** giữ lại, đặt ngay dưới breadcrumb, vì một E2E của SHOP-7 còn bấm vào nó.
+3. **Task design system riêng:** không cần, để plan vẫn trong 3 item. Story của `user` thêm hai khối mới (Breadcrumb, Hàng liên kết danh mục) vào `docs/design-system/user.md` trong cùng PR. `sa` quyết cuối ở plan.
+4. **Số sản phẩm trong hộp thoại xóa:** lấy từ danh sách lúc tải trang, không đọc lại. Số có thể hơi cũ, nhưng xóa vẫn đúng vì không sản phẩm nào bị xóa.
+5. **Danh mục đã bị xóa ở tab khác:**
+   - bấm Xóa lần nữa thì coi như thành công;
+   - lưu form sửa của danh mục đó thì hiện "Không tìm thấy danh mục này. Có thể nó đã bị xóa."
+6. **Ô Danh mục trong form sản phẩm:**
+   - sau lỗi AC10: đọc lại danh sách, ô về "Không có danh mục" và giữ lỗi tới khi chọn lại;
+   - không tải được danh sách danh mục: khóa nút Lưu.
+7. **Danh sách danh mục của `admin`:** không phân trang, không có ô tìm hay lọc. Bảng sản phẩm không thêm cột Danh mục.
+8. **Hàng liên kết danh mục của khách:** hiện đủ, xuống dòng (không cuộn ngang ở 320 px), không có "Xem thêm", hiện cả khi khách đang tìm.
+9. **Chữ ngoài SPEC** (nhãn Hiện/Ẩn, thông báo, trạng thái trống, lỗi, đang tải, nhãn breadcrumb…): `ux` đã viết cả `vi` và `en`. Muốn đổi chữ sau này thì chỉ sửa file i18n.
+10. **Không có ảnh mẫu:** màn hình vẽ bằng ASCII, theo design system của SHOP-7. Chỉ cần ảnh nếu bạn muốn bố cục khác trang của SHOP-7.
+
+**Mình khuyên:** đồng ý cả 10 đề xuất. Chúng đều hợp lý, giữ đúng phạm vi, và không thêm item.
+
+Bạn trả lời, ví dụ "đồng ý cả 10", hoặc nói câu nào cần đổi. Sau đó `sa`, `ba` (mở docs PR) và `seo` chạy tiếp.
+
+# Phiên 35 · Lượt 13 — 2026-11-21 khoảng 19:55
+
+**Bạn:**
+
+```markdown
+đồng ý cả 10
+```
+
+**Claude:**
+
+Mình đã chép nguyên văn "đồng ý cả 10" vào file trả lời. `ux` đang chạy tiếp trong phiên cũ của nó, nên vẫn biết 10 câu đó là gì. Sau `ux` sẽ lần lượt tới `sa`, `ba` (mở docs PR) và `seo`. Log ở `.pilot3-scratch/spec-81-r3.log`. Khi xong hoặc có câu hỏi mới, mình báo kèm chi phí.
+
+**Claude (tiếp Lượt 13, sau stage spec):**
+
+Stage spec của SHOP-81 đã chạy xong cả bốn lượt. Docs PR là **#82**, và SHOP-81 tốn 12,29 USD tới giờ.
+
+**Đã làm**
+1. `ux` ghi 10 câu trả lời của bạn vào `design.md` (2,24 USD).
+2. `sa` viết yêu cầu phi chức năng (3,32 USD), và không có câu hỏi nào. Các quyết định của `sa`, để bạn duyệt cùng SPEC:
+   - tối đa 200 danh mục, các danh sách danh mục không phân trang;
+   - xóa danh mục dùng `ON DELETE SET NULL`;
+   - xếp tên và kiểm trùng tên theo collation ICU tiếng Việt;
+   - sửa từ một tab `admin` cũ không làm mất danh mục của sản phẩm;
+   - `api` lỗi thì hàng liên kết danh mục ẩn đi, còn danh sách sản phẩm vẫn hiện.
+3. `ba` mở docs PR #82 (0,68 USD).
+4. `seo` viết mục `## SEO` (0,73 USD). `ao-step` đã commit và push thay `seo`.
+
+Một lỗi nhỏ của kit, mình ghi lại cho T14: ngay sau lượt `seo`, GitHub trả lỗi 500 một lần, nên `ao-step` dừng với exit 1 mà chưa viết báo cáo. Mình chạy lại bước kiểm: mọi thứ đã nằm trên GitHub, không mất gì.
+
+**3 câu hỏi của `seo`**
+
+Mỗi câu `seo` đã chọn sẵn một cách, và bạn duyệt cùng SPEC.
+1. **Đoạn mở đầu dưới H1 của trang danh mục:** một câu dựng từ mẫu, ví dụ "{tên} gồm {số} sản phẩm đang bán…", để từ khóa nằm ở đầu nội dung. Nếu thêm thì `ux` phải thêm một khối vào `design.md`.
+2. **Từ khóa thật cho tên danh mục:** `seo` chưa có số liệu tìm kiếm. Bạn gửi danh sách tên dự định khi nào có thể; nếu không gửi, phần SEO vẫn dùng được với mọi tên.
+3. **Danh mục Hiện mà chưa có sản phẩm:** `seo` chọn `noindex`, cho khớp với việc danh mục đó không có trong sitemap.
+
+**Mình khuyên** (để T14 gọn):
+1. Không thêm đoạn mở đầu, bỏ dòng đó khỏi bảng S5. Như vậy khỏi phải chạy lại `ux` và khỏi thêm việc cho dev.
+2. Chưa có từ khóa, để sau.
+3. Đồng ý `noindex`.
+
+**Thêm một điều để ghi:** `ao-step` báo "12 câu hỏi", nhưng chỉ 3 câu trên là câu hỏi thật. 9 dòng còn lại là ghi chép các quyết định của bạn và của `sa` trong mục Open Questions. Mình ghi lỗi đếm này vào ghi chú của T14.
+
+Bạn trả lời, ví dụ "đồng ý theo khuyên", hoặc nói câu nào cần đổi. Sau đó `seo` sửa mục SEO, và stage spec dừng ở cổng ①: bạn đọc docs PR #82, rồi bấm **Approve spec** trên SHOP-81.
+
+# Phiên 35 · Lượt 14 — 2026-11-21 khoảng 20:20
+
+**Bạn:**
+
+```markdown
+đồng ý theo khuyên
+```
+
+**Claude:**
+
+Mình đã gửi câu trả lời cho `seo`: câu trả lời nguyên văn của bạn, kèm phần lời khuyên mà nó nhắc tới. `seo` đang chạy tiếp trong phiên cũ để sửa mục SEO. Xong là stage spec dừng ở cổng ①, và mình báo bạn kèm các bước đọc docs PR #82.
+
+**Claude (tiếp Lượt 14, sau lượt của seo):**
+
+Stage spec của SHOP-81 đã xong, và giờ chờ bạn ở **cổng ①**.
+
+**Đã làm**
+- `seo` ghi ba câu trả lời của bạn vào SPEC (0,41 USD):
+  - bỏ đoạn mở đầu dưới H1;
+  - từ khóa thật để sau;
+  - giữ `noindex` cho danh mục chưa có sản phẩm.
+- Mục Open Questions của SPEC giờ là "Không có". `ao-step` đã commit và push thay đổi lên docs PR #82.
+
+**Chi phí, mình sửa lại cho đúng:** SHOP-81 tới giờ tốn **10,87 USD**. Lượt trước mình báo 12,29 USD là sai. Một lượt chạy tiếp ghi tổng của cả phiên, nên mình đã cộng trùng phần của `ux`. Con số đúng theo từng role:
+
+| Role | Chi phí |
+|---|---|
+| `ba` | 1,97 + 1,53 + 0,68 USD |
+| `ux` | 1,82 + 0,42 USD |
+| `sa` | 3,32 USD |
+| `seo` | 0,73 + 0,41 USD |
+
+**Cần bạn: cổng ①**
+1. Mở https://github.com/TungPH7/shop/pull/82, vào tab **Files changed**. PR có hai file, `docs/specs/SHOP-81/spec.md` và `design.md`, khoảng 1.300 dòng.
+2. Những chỗ nên đọc kỹ:
+   - trong `spec.md`:
+     - **User Stories và Acceptance Criteria:** AC1–AC21, AC11 đã bỏ;
+     - **Category Rules:** xóa, ẩn, slug, thứ tự;
+     - **Non-functional requirements:** các quyết định của `sa`;
+     - **## SEO:** title, meta, canonical, hreflang, BreadcrumbList, sitemap, `noindex`;
+   - trong `design.md`: các màn hình S1–S8.
+3. Đọc xong thấy ổn thì mở https://phunghuutung12b4.atlassian.net/browse/SHOP-81, bấm nút trạng thái **Specifying** và chọn **Approve spec**.
+4. Sau đó là `/ao-plan SHOP-81`: `sa` viết plan (dự kiến 3 item), `ba` tạo item, rồi dừng ở cổng ②.
+
+Bạn cũng có thể gõ "approve spec giúp", mình bấm thay bằng token admin của bạn rồi chạy luôn `/ao-plan`.
