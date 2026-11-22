@@ -492,7 +492,15 @@ async function main() {
         try {
           const logFile = join(runsDir, key, log);
           const logSize = () => (existsSync(logFile) ? statSync(logFile).size : 0);
-          return await watchQa(await placed(run.qa?.auth || run.envAuth ? { ...run, env: { ...run.env, ...basicAuthEnv(secret('AO_ENV_AUTH')) } } : run), (ready, onStart) => qaBeat(ready, (r) => startAgent(r, logFile, onStart), logSize));
+          const ready = await placed(run.qa?.auth || run.envAuth ? { ...run, env: { ...run.env, ...basicAuthEnv(secret('AO_ENV_AUTH')) } } : run);
+          // The words of the comment of seo you approved, in the working folder of the run, just before it starts: the
+          // prompt names this file, which no agent writes (third review of shop PR #81, Medium 2).
+          if (run.seoFile) {
+            const folder = join(ready.cwd ?? projectDir, '.ai', 'runs', key);
+            mkdirSync(folder, { recursive: true });
+            writeFileSync(join(folder, run.seoFile.name), run.seoFile.text);
+          }
+          return await watchQa(ready, (r, onStart) => qaBeat(r, (started) => startAgent(started, logFile, onStart), logSize));
         } finally {
           // Its agent no longer holds RAM for the others that wait (admitAgent).
           if (cap > 1) await releaseAgent(activeDir, run.agentLock ?? lock, { fs: lockFs, alive, sleep });

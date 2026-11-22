@@ -260,3 +260,16 @@ test('the CI of a branch head leaves out the jobs of the kit that are not CI', a
   assert.deepEqual(await readChecks(github, 'c'.repeat(40), { ignore: NOT_BRANCH_CI }), { green: true, failed: false, started: true });
   assert.equal((await readChecks(github, 'c'.repeat(40))).green, false, 'a PR head still counts merge-gate and audit as it did');
 });
+
+// Third review of shop PR #81 (High 08bc0732, part 4): a comment signed by a role other than qa is no QA report, even
+// one written before the hook signed every comment of an agent.
+test('the newest QA report leaves out a comment signed by a role other than qa', async () => {
+  const { readLatestQaReport } = await import('../../lib/tracker/facts.mjs');
+  const comments = [
+    { id: '2', created: '2026-11-22T12:00:00.000+0700', body: 'Frontend Developer:\n# QA report: DEMO-12\n## Result\nFAIL' },
+    { id: '1', created: '2026-11-22T10:00:00.000+0700', body: 'Tester/QA Engineer:\n# QA report: DEMO-12\n## Result\nPASS' },
+  ];
+  const client = { getAll: async () => comments };
+  assert.equal((await readLatestQaReport(client, 'DEMO-12', { notQa: ['Frontend Developer', 'Business Analyst'] })).result, 'PASS');
+  assert.equal((await readLatestQaReport(client, 'DEMO-12')).result, 'FAIL', 'without the signers, as before');
+});
