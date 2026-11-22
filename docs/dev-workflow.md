@@ -39,6 +39,13 @@ Claude của phiên chính không tự mở agent, cũng không tự sửa Jira 
 - QA tạo worktree tại commit mà môi trường đang chạy. Thư mục dự án chưa có commit đó thì `ao-step` fetch trước.
 - Theo dõi `/ao-run` bằng `ao-step status --json`: ngoài `items`, `pulls`, `merged`, nó có `running` (mỗi lệnh đang chạy, slot, lúc bắt đầu, agent có đang chạy không, và `lastLogAt`: lần cuối log agent của item được ghi kể từ khi lệnh bắt đầu) và `dispatcher`. Đừng đoán từ file khoá và thư mục log: thư mục log của item giữ mọi lượt của nó.
 - Log: `.ai/runs/_run/<ngày>.log`, mỗi sự kiện một dòng (`start`, `end`, `waiting for you`, `needs a fix`: chỗ cần ai đó xử lý, như Docker chưa chạy); log của từng lệnh ở `.ai/runs/<KEY>/run-<giờ>.log`. `/ao-status` in bộ điều phối đang chạy, chi phí tới lúc đó và các lệnh của nó.
+- **Watcher `ao-step watch`** (Phiên 35 · Lượt 39–41). Lệnh của kit chạy nền, nên bạn không thấy log của agent. Watcher là script của máy, không gọi model, nên không tốn token khi mọi thứ ổn:
+  - Cứ 2 phút, nó đọc file khoá, log agent và log sự kiện của `/ao-run`. Cứ 10 phút, nó đọc board của space.
+  - Nó chỉ dừng và báo khi có chuyện mới: tiến trình chết mà khoá còn đó, agent không ghi log 20 phút (`--quiet <phút>` để đổi), lệnh không có agent quá 60 phút, dòng `waiting for you` hay `needs a fix`, lệnh kết thúc bằng STOP, item bị gắn cờ Needs you, board đọc hỏng 3 lần liền, hay `/ao-run` kết thúc. Chuyện đã báo thì không báo lại: nó ghi vào `.ai/runs/watch.json`.
+  - Không còn lệnh nào của kit chạy trong 10 phút thì nó tự dừng.
+  - Các skill chạy agent nền (`/ao-spec`, `/ao-plan`, `/ao-request`, `/ao-build`, `/ao-fix`, `/ao-review`, `/ao-qa`, `/ao-release`, `/ao-ship`, `/ao-run`) tự bật watcher. Mỗi lần nó báo, phiên chính báo bạn rồi bật lại nó.
+  - Muốn xem ngay, gõ `! node .ai-orchestrator/scripts/ao-step.mjs watch --once`: lệnh in những gì đang chạy, mỗi lệnh chạy bao lâu, lần cuối agent ghi log, và chuyện mới cần báo, nếu có.
+  - Ngưỡng 20 phút vì agent có lúc im lâu mà vẫn đang làm đúng, như khi chạy test Maven. Watcher chỉ báo, không sửa gì, và không xoá khoá nào.
 - Mỗi dự án chỉ một bộ điều phối. Bạn vẫn gõ lệnh tay được; nó để yên item đang có lệnh của bạn.
 - Đừng tắt tiến trình của nó: trên Windows, các lệnh nó mở sẽ chạy tiếp mà không ai theo dõi. Dùng `/ao-run --stop`.
 

@@ -1088,6 +1088,30 @@ test('for, select, let and (( )) set no variable of the session or of a package 
   for (const command of ['for f in a b; do echo "$f"; done', 'let i=i+1', '(( i++ ))', 'shopt -s globstar', 'set -o pipefail -o errexit', 'set -euo pipefail']) allowed(run(command), command);
 });
 
+// Review of shop PR #90 (security, Low): Bash runs arithmetic in more places than (( )), and each can set a variable:
+// $[ ], the subscript of an array, an operand of -eq in [[ ]], and the value of a variable declared -i. The security
+// agent set a marker variable all four ways in Git Bash; with GIT_CONFIG_COUNT=0, git drops the credential helper of
+// the role and pushes as you.
+test('no arithmetic sets a variable of the session, and no variable takes the integer attribute', () => {
+  const approved = () => [];
+  const run = (command) => checkAgentCall({ agent_type: 'be-dev', tool_name: 'Bash', tool_input: { command } }, { gates, contract, projectDir: PROJECT, tempDir: TEMP, approved });
+  const session = [
+    ': $[GIT_CONFIG_COUNT=0]; git push origin HEAD',
+    'echo $[ GIT_CONFIG_COUNT = 0 ]',
+    'a[GIT_CONFIG_COUNT=0]=1; git push',
+    'echo "${a[GIT_CONFIG_COUNT=0]}"',
+    '[[ 1 -eq GIT_CONFIG_COUNT=0 ]] && git push',
+    "x='GIT_CONFIG_COUNT=0'; (( x )); git push",
+    'echo $(( gh_token = 1 ))',
+    '(( GIT_CONFIG_COUNT++ ))',
+  ];
+  for (const command of session) denied(run(command), /variables of the session/, command);
+  for (const command of ['declare -i n; n=1', 'typeset -i n', 'local -ri n=0', 'declare -ix n=1']) denied(run(command), /integer attribute/, command);
+  for (const command of ['n=GIT_CONFIG_COUNT; echo $[ $n = 0 ]', 'echo $(( ${n} = 0 ))', 'a[$n=0]=1', '[[ 1 -eq $n=0 ]]']) denied(run(command), /write out the name of the variable you set/, command);
+  const fine = ['echo $[1+2]', 'a[0]=1; echo "${a[i+1]}"', '[[ $x = y ]] && echo same', '[[ $n -eq 3 ]]', 'ls file[0-9].txt', 'declare -a list=(a b)', 'git config --get-regexp "^credential"', 'echo $(( i = i + 1 ))'];
+  for (const command of fine) allowed(run(command), command);
+});
+
 // Third review of shop PR #81 (Medium 2): the words of the comment of seo the human approved reach a run in
 // .ai/runs/<KEY>/seo-<hash>.md, which ao-step writes; no agent writes it, in the project or in a lane.
 test('no agent writes the file of the approved comment of seo', () => {

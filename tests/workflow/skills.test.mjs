@@ -79,6 +79,7 @@ test('/ao-run runs --go in the background, is watched through its log, and is en
   assert.ok(text.includes(`${checkLine('run')} --go`));
   assert.match(text, /in the background/);
   assert.match(text, /\.ai\/runs\/_run\/<YYYY-MM-DD>\.log/);
+  assert.ok(text.includes('node .ai-orchestrator/scripts/ao-step.mjs watch'), 'watched by ao-step watch (Phiên 35 · Lượt 41)');
   assert.match(text, /Do not run any command it runs yourself, no agent, and no change to Jira or GitHub/);
   assert.ok(text.includes('node .ai-orchestrator/scripts/ao-step.mjs run --stop'));
   assert.match(text, /Never kill its process/);

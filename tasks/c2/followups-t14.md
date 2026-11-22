@@ -135,3 +135,22 @@ Cách sửa từng mục:
 - `qa` vẫn viết không qua lọc (template QA report có bảng), nên vẫn ký được tên role khác.
 - Một agent khác có Bash vẫn ghi được file `seo-<mã băm>.md` bằng lệnh shell, vì `gh-guard` không đọc chuyển hướng. `ao-step` ghi lại file này ngay trước mỗi lượt chạy.
 - Chữ ký Agent value vẫn chỉ là quy ước trên một tài khoản Jira dùng chung. Muốn chắc hơn thì cần mỗi role một tài khoản, việc này nằm ở backlog tài khoản `ao-agent`.
+
+## Đợt 5: watcher của kit và 5 Low của review PR #90 (kit PR 6)
+
+Bạn duyệt ở Phiên 35 · Lượt 41 ("làm" cho watcher kèm 5 lỗi Low), làm trước SHOP-85. Không tốn tiền agent.
+
+1. **`ao-step watch`** (`lib/workflow/watch.mjs`): watcher bằng script của máy, không gọi model.
+   - Cứ 2 phút, nó đọc khoá, log agent theo role và log sự kiện của `/ao-run`. Cứ 10 phút, nó đọc board.
+   - Nó chỉ dừng và báo khi có chuyện mới: tiến trình chết mà khoá còn, agent im 20 phút, lệnh không có agent 60 phút, dòng chờ bạn hay cần sửa, STOP, item gắn cờ, board đọc hỏng 3 lần, `/ao-run` kết thúc. Chuyện đã báo được ghi vào `.ai/runs/watch.json`.
+   - Không còn gì của kit chạy trong 10 phút thì nó tự dừng. `--once` in những gì đang chạy.
+   - Các skill chạy agent nền tự bật watcher; `/ao-run` dùng nó thay cho Monitor.
+2. **Low 1 (reviewer):** deployer xem lại head `develop` bị từ chối vì CI đỏ, báo `error` một lần, và deploy khi CI chạy lại xanh (`again`, `record.refused`).
+3. **Low 2 (reviewer):** hook `block-atlassian` chỉ đọc contract với công cụ MCP Atlassian (`needsContract`), lệnh Bash không đọc.
+4. **Low 3 (reviewer):** `agentNames` là `agentValues`, một quy tắc duy nhất.
+5. **Low 4 (security):** gh-guard đọc phép gán vào biến của phiên ở mọi chỗ trong lệnh (`$[ ]`, chỉ số mảng, toán hạng `-eq` trong `[[ ]]`, giá trị trong ngoặc); từ chối `declare -i`, và phép gán số học vào tên dựng từ biến.
+6. **Low 5 (security):** `seoTextProblems` đọc chữ qua `plainText`, nên chữ toàn khổ như `ｃｕｒｌ` lại bị bắt.
+
+**Lệch so với quy trình:** test của `lib/workflow/watch.mjs` viết sau code, không đỏ trước. Các mục 2–6 có test viết đỏ trước.
+
+**Rủi ro còn lại:** gh-guard vẫn không đọc tên biến bị tách hay ghép lúc chạy, như `"GIT_CONFIG_""COUNT"`. Rules cấm cách viết này, và gh-guard chỉ chặn nhầm lẫn.
