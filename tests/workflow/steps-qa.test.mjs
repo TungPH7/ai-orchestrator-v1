@@ -246,3 +246,12 @@ test('/ao-qa records the Medium and Low of the PR in the findings Task of the Ep
   assert.deepEqual(first.runs, [{ action: 'findings-task', key: 'DEMO-21', epic: 'DEMO-20', task: null, pr: 15, findings: minorFindings, continue: true }]);
   assert.equal(decide(qaFacts({ epic, pr: { minorFindings }, findings: { key: 'DEMO-40', recorded: true } })).runs[0].role, 'qa');
 });
+
+// SHOP-85 of shop (T14 of C2): the findings Task recorded the Lows of its own PR in itself, and its QA, which checks every
+// finding of its comments, could not pass. Those stay on the reports of the PR, and the QA says so.
+test('/ao-qa of the findings Task does not record the findings of its own PR in it, and says where they stay', () => {
+  const minorFindings = [{ role: 'reviewer', severity: 'Low', where: 'a.ts:1', finding: 'x', id: '01234567' }, { role: 'reviewer', severity: 'Low', where: 'b.ts:2', finding: 'y', id: '89abcdef' }];
+  const own = decide(qaFacts({ epic: { key: 'DEMO-20' }, pr: { minorFindings }, findings: { key: 'DEMO-21', recorded: false } }));
+  assert.equal(own.runs[0].role, 'qa');
+  assert.ok(own.lines.includes('The 2 Medium and Low findings of PR #15 stay on its reports: DEMO-21 is the findings Task of the Epic, and does not record those of its own PR. Make a Task for them if you want them fixed'), own.lines.join('\n'));
+});

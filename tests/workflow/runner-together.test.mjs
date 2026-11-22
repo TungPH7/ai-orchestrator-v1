@@ -96,3 +96,24 @@ test('with no second agent, the reviews run one after another, as before', async
   assert.deepEqual(w.store.state.runs.map(({ n, role }) => [n, role]), [[1, 'reviewer'], [2, 'security']]);
   assert.equal(decision.waits, 'you');
 });
+
+// T14 of C2 (SHOP-89, PR #90 of shop): security went on record before reviewer, so the runs stood as numbers 2, 1; the
+// QA after them took number 2 again from the last record, and wrote its run over that of security, cost and session
+// with it. The runs stay in the order of their numbers, and a new run takes one more than the highest.
+test('the runs stay in the order of their numbers, and a later command never takes the number of an earlier run', async () => {
+  const w = world();
+  const e = effects({ paired: true });
+  const add = e.worktree.add;
+  e.worktree.add = async (spec) => {
+    if (spec.name === 'pr-15-reviewer') await new Promise((done) => setTimeout(done, 30));
+    return add(spec);
+  };
+  await go(w, e);
+  assert.deepEqual(w.store.state.runs.map(({ n, role }) => [n, role]), [[1, 'reviewer'], [2, 'security']]);
+  // A state.json an earlier kit left out of order: the next run still takes number 3.
+  w.store.state.runs.reverse();
+  let calls = 0;
+  const decide = () => (calls++ === 0 ? { go: true, runs: [{ role: 'qa', key: 'DEMO-21', effort: 'high', purpose: 'qa', prompt: 'Do QA of DEMO-21.' }], lines: [] } : { go: false, waits: 'you', reason: 'QA report posted', next: '-', lines: [] });
+  await runGo({ command: 'qa', arg: 'DEMO-21', options: {}, gather: async () => ({ item: { key: 'DEMO-21' }, pr: null }), decide, agent: e.agent, git: e.git, worktree: e.worktree, pair: e.pair, unpair: e.unpair, store: w.store, sleep: async () => {}, now: () => 0, dispatch: async () => {} });
+  assert.deepEqual(w.store.state.runs.map(({ n, role, costUsd }) => [n, role, costUsd]), [[1, 'reviewer', 1], [2, 'security', 2], [3, 'qa', 1]]);
+});

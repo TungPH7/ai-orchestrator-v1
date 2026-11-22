@@ -182,6 +182,9 @@ test('a Story with its own ledger and a Sub-task done goes on with the next Sub-
   assert.equal(decision.go, true, decision.reason);
   assert.deepEqual(plan(decision), ['fe-dev build']);
   assert.match(decision.runs[0].prompt, /^Build Sub-task DEMO-23, .* Keep your ledger in \.ai\/ledger\/DEMO-23\.md, by the key of the Sub-task\./);
+  // SHOP-90 of shop (T14 of C2): be-dev put the key of the Task in its commits, and Complete, which looks for the key of
+  // the Sub-task in a commit header (work-committed), was refused.
+  assert.match(decision.runs[0].prompt, /End the header of each commit of your part with \(DEMO-23\), the key of the Sub-task, not of the Story: its Complete transition looks for that key in a commit header\./);
   const none = decide({ ...facts, ledger: false });
   assert.match(none.reason, /is In Progress but has no ledger/);
 });

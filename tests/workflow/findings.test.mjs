@@ -33,4 +33,5 @@ test('the step: only for a merged PR of an item in an Epic, with Medium or Low o
   assert.equal(findingsStep(facts({ epic: null })), null, 'an item outside an Epic');
   assert.equal(findingsStep(facts({ pr: { number: 15, merged: true, minorFindings: [] } })), null, 'no Medium or Low');
   assert.equal(findingsStep(facts({ pr: { number: 15, merged: false, minorFindings: MINOR } })), null, 'not merged');
+  assert.equal(findingsStep(facts({ findings: { key: 'DEMO-21', recorded: false } })), null, 'the PR of the findings Task itself (SHOP-85 of shop)');
 });

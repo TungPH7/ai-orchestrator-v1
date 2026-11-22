@@ -154,3 +154,19 @@ Bạn duyệt ở Phiên 35 · Lượt 41 ("làm" cho watcher kèm 5 lỗi Low),
 **Lệch so với quy trình:** test của `lib/workflow/watch.mjs` viết sau code, không đỏ trước. Các mục 2–6 có test viết đỏ trước.
 
 **Rủi ro còn lại:** gh-guard vẫn không đọc tên biến bị tách hay ghép lúc chạy, như `"GIT_CONFIG_""COUNT"`. Rules cấm cách viết này, và gh-guard chỉ chặn nhầm lẫn.
+
+## Quan sát mới (SHOP-89, SHOP-85), chờ đợt sau
+
+1. **Commit của Sub-task không mang khoá của Sub-task.** Guard `work-committed` tìm khoá Sub-task trong dòng đầu commit trên nhánh của item cha. Prompt build Sub-task (`lib/workflow/prompts.mjs`) và `rules.md` chỉ ghi `(<KEY>)`, nên `be-dev` ghi SHOP-85 vào cả 7 commit của SHOP-90. Complete bị từ chối, và agent gắn cờ Needs you (6,90 USD vẫn ra kết quả đúng). Phiên chính gỡ bằng một commit rỗng `d6c0374` có `(SHOP-90)`. Cách sửa: prompt Sub-task nói rõ dòng đầu commit mang khoá Sub-task; hoặc guard nhận commit của nhánh cha từ lúc Sub-task bắt đầu.
+2. **`last.md` thiếu chi phí của `security`.** Dòng "Cost of every run on SHOP-89 so far" ghi 3,92 USD (reviewer 3,17 + qa 0,75), bỏ lượt `security` 5,68 USD chạy song song với `reviewer`.
+3. **Task finding ghi finding của chính PR của nó vào chính nó.** Trước QA của SHOP-85, bước `findings-task` thêm 3 Low của PR #91 vào SHOP-85, nên `qa` báo NOT TESTED và gắn cờ: Task finding không bao giờ đóng trọn. Cách sửa: finding của PR của Task finding đi vào một Task finding mới, hay chỉ được ghi lại, không tính vào Verification của nó. Lần này phiên chính chuyển 3 Low sang SHOP-92, ghi lý do, rồi cho `qa` xét lại.
+4. **Watcher bỏ lỡ cờ gỡ nhanh.** Watcher đọc board khoảng 11 phút một lần, nên hai cờ (SHOP-90, SHOP-91) được gỡ trong vài phút không được báo. Đúng thiết kế; báo cáo khi lệnh kết thúc đã nói tới chúng.
+
+## Đợt 6: các quan sát mới (kit PR 7)
+
+Bạn duyệt ở Phiên 35 · Lượt 50 ("làm cả hai"). Không tốn tiền agent. Mỗi mục có test viết đỏ trước.
+
+1. **Số lượt trùng làm mất bản ghi** (quan sát 2, nặng hơn mình tưởng lúc đầu). `state.json` của SHOP-89 không có lượt `security`. `security` vào bản ghi trước `reviewer`, nên mảng là [2, 1]. Lệnh QA lấy số lượt từ bản ghi cuối mảng (số 1), nên nhận số 2, và `put` ghi đè lượt `security`, mất cả chi phí lẫn phiên. Ngân sách của `/ao-run` cũng tính từ đây. Sửa: `reserve` lấy số lớn nhất, `put` giữ các lượt theo thứ tự số; một `state.json` cũ bị lệch thứ tự được sắp lại ở lần ghi kế tiếp. Lỗi "`security` chạy lại từ đầu, không tiếp phiên" ở T13b có thể cùng gốc, vì `carryOn` lấy bản ghi cuối.
+2. **Commit của Sub-task mang khoá của Sub-task** (quan sát 1): prompt build Sub-task và `rules.md` nói rõ điều này.
+3. **Task finding không ghi finding của chính PR của nó** (quan sát 3): `findingsStep` bỏ qua, và lượt QA in một dòng nói các finding đó vẫn nằm trên PR.
+4. **Watcher đọc board ngay khi một lệnh kết thúc** (quan sát 4), ngoài nhịp 10 phút (`boardDue`).

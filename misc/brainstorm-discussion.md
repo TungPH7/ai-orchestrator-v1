@@ -33147,3 +33147,265 @@ Bạn nhắn "làm" thì mình bắt đầu viết watcher ngay nhé?
 Bạn nhắn "merge giúp" và "làm" thì mình merge PR #90, rồi viết watcher kèm 5 Low, trước khi build SHOP-85 nhé?
 
 **Bạn (Lượt 41):** "merge giúp" cho PR #90 và "làm" cho watcher kèm 5 lỗi Low
+
+**Claude (Lượt 41, 21:53):**
+
+**Đã merge PR #90, đã có watcher kèm 5 Low, và SHOP-85 đang build.**
+
+**1. PR #90 và SHOP-89:**
+- Mình approve và squash-merge PR #90 bằng `gh` của bạn (merge commit `c0462b2`), rồi gỡ cờ Needs you của SHOP-89.
+- Cổng CI mới trên VPS chạy đúng: deployer chờ CI của `c0462b2` xanh rồi mới deploy lên Development.
+- QA SHOP-89 đạt (0,75 USD, comment 10672). Cả Task tốn 9,60 USD: review 8,85 và QA 0,75.
+- SHOP-89 đang ở In QA. **Accept là việc của bạn**: bạn bấm Accept trên Jira, hoặc nhắn "Accept giúp".
+
+**2. Kit PR #345 (đã merge, kit main `4928f86`, 1.837 test xanh):**
+- **Lệnh `ao-step watch`** là script của máy, không gọi AI.
+  - Cứ 2 phút, nó đọc file khoá, log agent và log của `/ao-run`. Cứ 10 phút, nó đọc board.
+  - Nó chỉ báo khi có chuyện mới, và không báo lại chuyện đã báo.
+  - Không còn gì của kit chạy trong 10 phút thì nó tự dừng.
+  - Các skill chạy agent nền tự bật nó. `/ao-run` dùng nó thay cho việc đọc từng dòng log.
+  - Bạn muốn xem ngay thì gõ `! node .ai-orchestrator/scripts/ao-step.mjs watch --once` (có sau lần chép kit tới).
+- **5 lỗi Low đã sửa:**
+  - deployer xét lại commit có CI đỏ khi bạn chạy lại CI;
+  - hook Jira chỉ đọc contract khi cần;
+  - bỏ hàm chép đôi;
+  - gh-guard bắt thêm các cách đặt biến;
+  - kiểm chữ `seo` bắt lại chữ toàn khổ.
+- **Lệch quy trình:** test của watcher mình viết sau code, không viết đỏ trước. Test của 5 Low thì viết đỏ trước.
+
+**3. SHOP-85 đang build** (bắt đầu 21:49): `be-dev` làm SHOP-90 trước, rồi `fe-dev` làm SHOP-91. Docker đang bật.
+- Watcher mới đang theo dõi build này, chạy thẳng từ thư mục kit. Nó im lặng nếu mọi thứ ổn.
+- Build xong, mình bỏ bước xem trước và chạy review luôn. Lý do: đây là các bản sửa nhỏ theo finding.
+- Không có High thì mình approve, merge, chạy QA và Accept theo cách bạn cho phép ở T14.
+
+**Ghi chú nhỏ về kit:** `last.md` của SHOP-89 ghi tổng chi phí 3,92 USD, vì bỏ sót lượt `security` (5,68 USD). Mình ghi lại để sửa ở đợt sau.
+
+Mình sẽ báo khi build xong, hoặc khi watcher thấy có chuyện.
+
+**Bạn (Lượt 42):** Sau khi merge kit PR cho watcher xong thì sẽ Build SHOP-85, lúc nãy shop sẽ trỏ tới bản đã fix ở kit chứ không phải bản chép vào repo shop phải không?
+
+**Claude (Lượt 42):**
+
+**Không phải vậy.** Build SHOP-85 chạy bằng bản kit chép trong `shop`, tức `666def3` mà PR #90 vừa đưa vào. Chỉ riêng watcher chạy từ thư mục kit, bản `4928f86`.
+
+**Cụ thể:**
+1. **Build SHOP-85** chạy bằng `node .ai-orchestrator/scripts/ao-step.mjs` trong `shop`, không đặt `AO_KIT_DIR`. Vì vậy `ao-step`, các hook và các agent `be-dev`, `fe-dev` đều dùng bản `666def3` trong `.ai-orchestrator/` của `shop`.
+2. **Bản `666def3` đã có mọi bản sửa của T14** (đợt 1–4): mua lại token sau mỗi lượt agent, ký tên comment, hook đọc chữ như `ao-step`, file chữ `seo`, gh-guard đọc thêm `for`/`let`/`(( ))`.
+3. **Bản này chưa có kit PR #345** (watcher và 5 Low). Các thay đổi đó vào `shop` ở lần chép kit sau, kèm review có trả tiền, như mọi bản sửa kit khác.
+4. **Watcher thì chạy từ thư mục kit**, vì nó chỉ đọc file và board, không sửa gì, và không chạy agent nào. Chạy code chưa review ở đây không có rủi ro.
+
+**Vì sao không cho build dùng bản kit mới luôn:** agent có Bash và quyền ghi git. Hook và gh-guard của chúng nên là bản đã được `reviewer` và `security` review. Bản `4928f86` chưa qua review, nên mình không đặt `AO_KIT_DIR` cho build.
+
+**5 Low còn thiếu ảnh hưởng gì tới SHOP-85:**
+- **Low 1 (deployer xét lại khi CI chạy lại) là đáng kể nhất.** VPS cũng đang chạy `666def3`. Nếu CI của `develop` đỏ chập chờn rồi bạn chạy lại cho xanh, Development vẫn không deploy. Khi đó mình chạy `/ao-rollback development <sha>`, hoặc chờ lần merge sau. Nếu muốn, mình chép `4928f86` lên VPS, nhưng bản ghim trên VPS chỉ đổi khi bạn bảo.
+- **Low 4 (gh-guard):** agent của SHOP-85 vẫn có thể dùng các cách đặt biến mới tìm ra. Rủi ro thấp, vì muốn vậy agent phải bị chữ lạ dẫn dắt, mà gh-guard chỉ là lớp chặn nhầm lẫn.
+- **Low 2, 3, 5:** không ảnh hưởng. Low 2 chỉ là tốc độ, Low 3 là dọn code, còn Low 5 về chữ `seo`, mà SHOP-85 không có phần SEO.
+
+Mình chưa đổi gì. Build vẫn chạy với `be-dev` ở SHOP-90.
+
+**Bạn (Lượt 43):** Tôi hỏi đơn giản là lúc build SHOP-85 thì đã có watcher mà tôi yêu cầu bạn thêm vào kit hay chưa? Trả lời ngắn gọn
+
+**Claude (Lượt 43):**
+
+**Có.** Watcher đã chạy từ khi build SHOP-85 bắt đầu (21:50). Nó chạy từ thư mục kit, vì bản kit trong `shop` chưa có lệnh này. Lần chép kit sau, `shop` sẽ có watcher riêng.
+
+**Bạn (Lượt 44):** AO kit hiện tại ở BE chỉ hỗ trợ Java Springboot à? Có hỗ trợ Nest.js không nhỉ? Trả lời ngắn gọn
+
+**Claude (Lượt 44):**
+
+**Có hỗ trợ NestJS, nhưng mới theo một cách.**
+- **Dự án mới:** profile `next-nest` dựng sẵn Next.js ở `apps/web` và NestJS ở `apps/api`, kèm skill `nestjs-best-practices`. `ao-sample` ở Pilot 1 chạy bằng profile này.
+- **Thêm app BE vào dự án có sẵn** bằng `ao-kit add`, như `shop`: hiện chỉ có stack `spring-boot`, chưa có stack `nestjs`. Hai stack còn lại, `nextjs` và `react`, là FE.
+
+Muốn thêm NestJS vào một dự án như `shop`, kit cần thêm stack `nestjs`.
+
+**Bạn (Lượt 45):** có nghĩa là dự án mới thì tôi có thể chọn BE dùng nest.js hoặc java?
+
+**Claude (Lượt 45):**
+
+**Đúng, dự án mới chọn được một trong hai:**
+1. **NestJS:** `ao-kit init` với profile `next-nest`. Kit dựng sẵn khung code Next.js và NestJS, dùng npm.
+2. **Java Spring Boot:** `ao-kit init --package-manager pnpm` (profile `base-pnpm`), rồi `ao-kit add <thư mục> api --stack spring-boot --from <repo template>`. Kit chưa có khung code Spring Boot, nên code lấy từ repo template của bạn, như `api` của `shop`. App FE thêm bằng `--stack nextjs` hoặc `--stack react`.
+
+**Hạn chế:** chưa trộn được hai cách. Dự án `next-nest` dùng npm, nên `ao-kit add` không thêm app vào được. Dự án pnpm thì chưa có stack `nestjs`.
+
+**Bạn (Lượt 46):** Dự án mới dùng Nest.js thì không dùng codebase template của tôi được à ? Phải bắt buộc dùng "Kit dựng sẵn khung code cho Next.js và NestJS, dùng npm" à?
+
+**Claude (Lượt 46):**
+
+**Không bắt buộc. Bạn dùng được template NestJS của mình**, theo cách "dự án có sẵn code" (mục 4 của `docs/getting-started.md`):
+1. Tạo repo mới, chép code template của bạn (NestJS, kèm FE nếu có) vào thư mục đó.
+2. Chạy `ao-kit init <thư mục> …` trên thư mục có code. Kit không dựng khung và không sửa code của bạn.
+3. Lệnh tự nhận app NestJS (qua `@nestjs/core`), viết `project.yaml`, chép kit, rồi liệt kê những gì còn thiếu: các script `lint`, `typecheck`, `test:coverage`, `build`, Playwright, `Dockerfile` và `deploy.yaml`, nhánh `develop`.
+4. Bạn (hoặc mình) làm nốt các việc trong danh sách đó. Skill `nestjs-best-practices` phải thêm tay.
+
+Cách này đã chạy thật trên `ao-brown` (Next.js + NestJS, npm workspaces, T17).
+
+**Chỗ chưa có:** lệnh `ao-kit add --from <template>` để thêm từng app NestJS vào một dự án pnpm, như cách `shop` thêm `api` Java. Lệnh đó cần stack `nestjs`, mà kit chưa có.
+
+**Bạn (Lượt 47):** Là nếu dùng BE nestjs thì dự án là mono-repo với npm, còn BE Java thì dự án là mono-repo với pnpm à?
+
+**Claude (Lượt 47):**
+
+**Đúng với Java, chưa hẳn đúng với NestJS.**
+- **Java:** bắt buộc pnpm. Chỉ lệnh `ao-kit add --stack spring-boot` thêm được app Java, và lệnh này chỉ nhận dự án pnpm, như `shop`.
+- **NestJS:** khung dựng sẵn của kit (`next-nest`) dùng npm. Còn khi bạn dùng template của mình và chạy `ao-kit init` trên code có sẵn, kit giữ trình quản lý gói của repo: có `pnpm-lock.yaml` hay `pnpm-workspace.yaml` thì là pnpm, không thì npm. Code của kit đã hỗ trợ cả hai, nhưng lần chạy thật duy nhất (`ao-brown`) dùng npm.
+- **Cả hai đều là mono-repo:** một repo, mỗi app một thư mục trong `apps/`.
+
+**Sửa lại ý lượt trước:** về lý thuyết, trộn được NestJS và Java trong một dự án. Template NestJS của bạn dùng pnpm, chạy `ao-kit init`, rồi `ao-kit add --stack spring-boot --from <template Java>`. Cách này chưa chạy thật lần nào.
+
+**Claude (tiếp Lượt 47, 22:32, SHOP-90 bị gắn cờ):**
+
+**`be-dev` đã sửa xong cả 7 finding của SHOP-90, nhưng gắn cờ Needs you vì không làm được Complete.** Mình đã gỡ, và build đang chạy tiếp.
+
+**Kết quả của `be-dev`** (6,90 USD, 34 phút): 1 Medium và 6 Low đều đã sửa và push. 920 test của `api` xanh, dòng mới đổi được phủ test 100%.
+
+**Vì sao bị gắn cờ:** guard `work-committed` tìm khoá SHOP-90 trong dòng đầu commit, nhưng `be-dev` ghi SHOP-85 cho cả 7 commit. Đây là lỗi kit: prompt của Sub-task không nói phải ghi khoá của Sub-task. Mình đã ghi lỗi này vào `followups-t14.md`.
+
+**Cách mình gỡ** (theo quyền bạn cho ở T14):
+- Không force-push, không chuyển SHOP-90 sang Done bằng tay.
+- Mình thêm một commit rỗng `d6c0374` có `(SHOP-90)` lên nhánh.
+- Mình gỡ cờ kèm comment trả lời, rồi chạy lại build. `be-dev` sẽ làm Complete cho SHOP-90, sau đó `fe-dev` làm SHOP-91.
+
+Watcher vẫn đang theo dõi. Mình sẽ báo khi build xong.
+
+**Bạn (Lượt 48):** Tại sao làm SHOP-90 hơn 30 phút? Có gì phức tạp khiến be dev agent làm lâu à?
+
+**Claude (Lượt 48):**
+
+**Phần lớn thời gian là chờ build và test Java, không phải agent nghĩ lâu.** Mình đọc log của lượt đó (137 lượt, 34 phút):
+1. **Model nghĩ và viết code: khoảng 13 phút.**
+2. **Chạy lệnh: khoảng 20 phút**, gần như toàn là Maven:
+   - mỗi lần chạy test của `api` phải bật Postgres trong Docker, rồi chạy tới 920 test;
+   - agent chạy test nhiều lần: test đỏ trước khi sửa, test xanh sau khi sửa, từng nhóm test của các class bị đổi (một lần gần 3 phút), rồi cả bộ test có đo coverage ở cuối;
+   - `spotless` và `typecheck` của Java mỗi lần mất 1,5–3,5 phút.
+3. **Git và Jira: khoảng 2 phút**, kể cả lúc agent thử đổi header commit rồi bị chặn force-push.
+
+**Việc cũng có phần khó:** lỗi Medium là lỗi tranh chấp giữa hai giao dịch database (sửa sản phẩm đúng lúc danh mục bị xóa). Test tái hiện phải giữ một giao dịch xóa chưa commit, rồi chờ khoá, nên vốn chạy chậm. Ngoài ra còn 6 Low, mỗi Low có test riêng.
+
+So với các lượt `be-dev` trước của Epic này (SHOP-82: 171 lượt, hơn 1 giờ), 34 phút cho 7 finding là bình thường.
+
+**Bạn (Lượt 49):** Nếu dự án mới, FE react dùng yarn, FE next.js dùng npm, BE nest dùng pnpm thì repo dự án này dùng trình quản lý gì? mono-repo dùng trình quản lý gì? Giải thích dễ hiểu giúp tôi
+
+**Claude (Lượt 49):**
+
+**Một mono-repo chỉ dùng một trình quản lý gói cho cả repo, không phải mỗi app một trình.** Với kit, bạn chọn npm hoặc pnpm; kit chưa hỗ trợ yarn. Trường hợp của bạn, mình khuyên dùng **pnpm cho cả repo**.
+
+**Vì sao chỉ được một trình:**
+1. Mono-repo là một repo chứa nhiều app, mỗi app một thư mục trong `apps/`.
+2. Bạn cài thư viện một lần ở thư mục gốc. Trình quản lý gói đọc danh sách app, cài thư viện cho tất cả, và ghi một file khoá phiên bản duy nhất ở gốc: `pnpm-lock.yaml` với pnpm, `package-lock.json` với npm.
+3. Nếu mỗi app một trình, repo sẽ có ba file khoá khác nhau. Ba trình cài đè `node_modules` của nhau, CI không biết chạy lệnh nào, và mỗi `Dockerfile` cài một kiểu.
+
+Giống một căn bếp chung: chỉ một tờ danh sách đi chợ. Ba người ba tờ thì mua trùng, mua thiếu.
+
+**Khi gộp ba template vào một repo pnpm:**
+1. Chép code ba app vào `apps/`, ví dụ `apps/web` (Next.js), `apps/admin` (React), `apps/api` (NestJS).
+2. Xóa file khoá cũ của từng app: `yarn.lock`, `package-lock.json`.
+3. Khai báo các app trong `pnpm-workspace.yaml` ở gốc, rồi chạy `pnpm install` một lần.
+4. Sửa các script trong `package.json` còn gọi `yarn …` hay `npm run …` thành `pnpm …`.
+
+Code của app không phải đổi. Chỉ cách cài thư viện đổi.
+
+**Trong kit:** `project.yaml` có một dòng `package_manager` cho cả dự án. `run.mjs`, CI và hook dùng trình đó cho mọi app. Chọn pnpm còn có lợi là sau này thêm được app Java bằng `ao-kit add`.
+
+**Claude (tiếp Lượt 49, 23:01, SHOP-91 bị gắn cờ):**
+
+**SHOP-90 đã Done. `fe-dev` đã sửa và push hết các mục của SHOP-91, nhưng gắn cờ Needs you vì một test cũ chạy quá giờ.** Mình đã trả lời, và build đang chạy tiếp.
+
+**Kết quả:**
+- `be-dev` làm Complete cho SHOP-90 nhờ commit rỗng `d6c0374` (0,26 USD).
+- `fe-dev` (4,45 USD, 30 phút) đã sửa và push các mục sau:
+  - toast của `admin` không còn chờ danh mục tải lại;
+  - test AC10 chập chờn: đã tìm ra nguyên nhân, test giờ đạt 35/35 khi chạy song song lặp 5 lần;
+  - `x-default` của mọi trang trỏ về `/vi`;
+  - breadcrumb dùng `Link` của next-intl, khung xương trang chi tiết giữ chỗ cho breadcrumb;
+  - thêm test ở biên 160 ký tự;
+  - sửa số trong `spec.md`.
+
+**Vì sao bị gắn cờ:** `test:coverage` của `admin` fail 2 lần liền ở `product-form.test.tsx`. Test này gõ 151 ký tự từng ký tự một, nên khi chạy kèm đo coverage thì quá 5 giây. Test này có từ trước, nằm ngoài các finding. `fe-dev` hỏi chọn một trong hai: chạy lại, hoặc sửa test này ngay trong PR.
+
+**Mình chọn sửa test** (theo quyền bạn cho ở T14):
+- Dán cả chuỗi vào ô một lần, không gõ từng ký tự, không tăng timeout. Điều test kiểm giữ nguyên.
+- Lý do: chạy lại thì vẫn có thể fail, kể cả trên CI; SHOP-85 vốn có việc sửa test chập chờn; và thay đổi chỉ nằm trong test.
+
+**Watcher:** chạy `--once` thì nó báo đúng cờ của SHOP-91. Bản chạy nền đọc board 10 phút một lần, nên báo chậm hơn.
+
+SHOP-85 tới giờ tốn 11,61 USD. Cả Epic khoảng 139 USD.
+
+**Claude (tiếp Lượt 49, 23:15, SHOP-85 tới review):**
+
+**Build SHOP-85 xong, PR #91 đang được review.**
+- `fe-dev` sửa test chậm bằng cách dán cả chuỗi vào ô, rồi chạy lại `test:coverage` của `admin`: 618/618 đạt. Mọi dòng code mới đổi đều có test (46/46).
+- `fe-dev` mở trang bằng Chrome DevTools: `x-default` trỏ về `/vi`, breadcrumb đúng, console không lỗi, ở 320 px không có thanh cuộn ngang.
+- `fe-dev` chuyển SHOP-91 sang Done và mở PR nháp #91, CI xanh. Lượt này tốn 1,50 USD; SHOP-85 tới giờ tốn 13,11 USD.
+- Mình bỏ bước xem trước và chạy review luôn: `reviewer` và `security`, cả hai ở effort high, vì PR chạm code `api` nhạy cảm.
+
+Watcher vẫn đang theo dõi. Mình sẽ báo khi review xong.
+
+**Claude (tiếp Lượt 49, 23:21, PR #91 đã merge):**
+
+**Review PR #91 không có lỗi Critical, High hay Medium, nên mình đã approve, và PR đã merge.**
+- `reviewer` (1,48 USD) báo 3 Low:
+  - khung chờ breadcrumb chỉ giữ một hàng, nên tên sản phẩm rất dài trên màn 320 px vẫn đẩy nội dung xuống;
+  - hai class CSS giữ chỗ breadcrumb gần giống nhau;
+  - một câu chú thích dễ hiểu sai.
+- `security` (0,94 USD) không báo gì.
+- Mình approve gate ③ bằng `gh` của bạn, theo quyền bạn cho ở T14. `merge-gate` merge lúc 23:20, commit `62a0bfb` trên `develop`.
+- Chuỗi QA đang chờ CI của `develop` xanh, deploy lên Development, rồi chạy QA cho SHOP-85. Docker vẫn bật, và chuỗi tự tắt Docker khi QA xong.
+
+SHOP-85 tới giờ tốn 15,52 USD. Cả Epic khoảng 143 USD.
+
+3 Low này nhỏ, chỉ thuộc giao diện `user`. Mình đề xuất để chúng trong danh sách finding, không mở thêm vòng sửa.
+
+**Claude (tiếp Lượt 49, 23:30, watcher tự dừng):**
+
+Watcher tự dừng lúc 23:29, vì 10 phút sau khi review xong lúc 23:18 không còn lệnh nào của kit chạy. Đúng như thiết kế.
+- Từ 21:50 tới lúc đó, nó không báo gì, vì không lệnh nào bị treo hay chết.
+- Hai lần gắn cờ (SHOP-90 lúc 22:24, SHOP-91 lúc 22:58) mình đã gỡ chỉ vài phút sau, trước lần đọc board kế tiếp của nó (khoảng 11 phút một lần). Hai lần đó mình biết qua thông báo khi lệnh build kết thúc.
+- Mình đã bật lại watcher cho lượt QA của SHOP-85.
+
+**Claude (tiếp Lượt 49, 23:52, QA SHOP-85):**
+
+**QA SHOP-85 ra NOT TESTED, vì 3 Low mới của PR #91 bị thêm vào chính SHOP-85.** Mình đã chuyển chúng sang Task riêng, và `qa` đang xét lại.
+
+**Kết quả QA** (1,62 USD):
+- Đạt cả 15 finding giao lúc Refine, test AC10 của `admin`, và toàn bộ E2E trên Development: `admin` 76 đạt, `user` 156 đạt.
+- Chưa kiểm 3 Low của PR #91: bước `findings-task` thêm chúng vào chính SHOP-85 sau khi PR merge. `qa` không tự quyết được, nên gắn cờ hỏi bạn.
+- Đây là một lỗi kit nữa: Task finding không bao giờ đóng trọn, vì finding của chính PR nó cũng được ghi vào nó. Mình đã ghi lỗi này vào `followups-t14.md`.
+
+**Mình xử lý đúng như đề xuất trước** (không mở thêm vòng sửa khi không còn Critical hay High):
+1. Tạo SHOP-92 ngoài Epic, cho 3 Low của PR #91. Task này chưa Refine; bạn Refine khi muốn sửa.
+2. Ghi lý do lên SHOP-85 và gỡ cờ.
+3. Bật Docker và chạy `ao-step qa SHOP-85 --retest`, để `qa` xét lại riêng dòng NOT TESTED (khoảng 1 USD). Xét lại xong thì Docker tự tắt.
+
+**Watcher đã báo thật lần đầu**, đúng cờ của SHOP-85 lúc 23:50.
+
+Khi `qa` cho PASS, mình Accept SHOP-85. Lúc đó cả 4 item của Epic SHOP-81 đã xong, chỉ còn bước Complete Epic, việc của bạn.
+
+**Claude (tiếp Lượt 49, 23:56, SHOP-85 Done):**
+
+**SHOP-85 đã Done. Mọi item của Epic SHOP-81 đã xong hoặc đã Cancel.**
+- `qa` xét lại và cho PASS (comment 10685, 0,49 USD). Mình Accept theo quyền bạn cho ở T14.
+- SHOP-85 tốn tổng cộng 17,63 USD. Theo cách kit tính, cả Epic tốn 141,16 USD trong 44 lượt chạy, tức 7,06 USD cho mỗi AC. Ngoài Epic còn SHOP-86 (3,81 USD) và SHOP-89 (9,60 USD). Tổng của T14, tính cả SHOP-86, khoảng 145 USD, dưới mức dừng 170 USD.
+- Docker đã tắt, không còn gì chạy.
+
+**Epic SHOP-81 vẫn ở In Progress, đúng thiết kế:** kit chỉ coi một item là đóng khi nó đã ở trong một Fix Version đã release. Epic chờ đợt release lên Production (gate ④ `/ao-release`, gate ⑤ `/ao-ship`, rồi Release trên Jira). Sau đó bạn bấm Complete trên SHOP-81. Các bước này là của bạn.
+
+**Đang chờ bạn:**
+1. **Accept SHOP-89** (bản chép kit, đã QA PASS): bạn bấm trên Jira, hoặc nhắn "Accept giúp".
+2. **Release** chứa Epic Danh mục: khi bạn muốn.
+3. **SHOP-92** (3 Low của PR #91): Refine khi bạn muốn sửa.
+
+**Việc tiếp theo mình đề xuất:**
+1. **T15, đóng module C2:** viết kết quả và chi phí của T14 vào `tasks/c2/`, đối chiếu tiêu chí của SPEC-c2, rồi gửi một PR tài liệu cho kit. Không tốn tiền agent.
+2. **Một đợt sửa kit** cho 4 quan sát mới:
+   - commit của Sub-task phải mang khoá của Sub-task;
+   - `last.md` thiếu chi phí của `security`;
+   - Task finding ghi finding của chính PR nó vào chính nó;
+   - watcher bỏ lỡ cờ được gỡ nhanh.
+
+   Đợt này không tốn tiền agent. Các bản sửa vào `shop` ở lần chép kit sau, cùng watcher, có review khoảng 10–15 USD.
+
+Bạn nhắn "làm T15" hay "làm cả hai" thì mình bắt đầu nhé?
+
+**Bạn (Lượt 50):** làm cả hai

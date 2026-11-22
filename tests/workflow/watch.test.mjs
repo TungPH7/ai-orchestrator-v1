@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { mkdirSync, mkdtempSync, readdirSync, readFileSync, existsSync, rmSync, statSync, utimesSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { WATCH, eventToTell, look, nextWatchState, nowLines, readWatchState, watchEffects } from '../../lib/workflow/watch.mjs';
+import { WATCH, boardDue, eventToTell, look, nextWatchState, nowLines, readWatchState, watchEffects } from '../../lib/workflow/watch.mjs';
 import { ROOT } from '../helpers/kit.mjs';
 
 const NOW = Date.parse('2026-11-22T15:00:00Z');
@@ -65,6 +65,17 @@ test('a dispatcher gone without its end, an item flagged, and a board that canno
   assert.deepEqual(look({ now: NOW, boardFailed: { count: 2, reason: 'x', since: 1 } }).tell, []);
   assert.deepEqual(look({ now: NOW, boardFailed: { count: WATCH.boardFailures, reason: 'GitHub 502', since: 1 } }).tell, ['the board could not be read 3 times in a row: GitHub 502']);
   assert.deepEqual(look({ now: NOW, boardFailed: { count: 1, reason: 'GitHub 502', since: 1 } }, new Set(), { boardFailures: 1 }).tell, ['the board could not be read: GitHub 502'], '--once reads it once');
+});
+
+// SHOP-85 of shop: an agent flags its item as its command ends, and two flags taken off within minutes were never
+// read, since the board was read every 10 minutes. The board is read again as soon as a command ends.
+test('the board is read every 10 minutes, and as soon as a command ends', () => {
+  const at = { now: NOW, lastBoard: NOW - 3 * MIN };
+  assert.equal(boardDue({ ...at, before: ['DEMO-12'], after: ['DEMO-12'] }), false);
+  assert.equal(boardDue({ ...at, before: ['DEMO-12', 'DEMO-13'], after: ['DEMO-13'] }), true, 'DEMO-12 ended');
+  assert.equal(boardDue({ ...at, before: [], after: ['DEMO-12'] }), false, 'a command that starts');
+  assert.equal(boardDue({ now: NOW, lastBoard: NOW - 10 * MIN, before: [], after: [] }), true);
+  assert.equal(boardDue({ now: NOW, lastBoard: 0, before: [], after: [] }), true, 'the first look');
 });
 
 test('what runs now, for --once', () => {
