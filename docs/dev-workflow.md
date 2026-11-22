@@ -45,7 +45,10 @@ Claude của phiên chính không tự mở agent, cũng không tự sửa Jira 
   - Không còn lệnh nào của kit chạy trong 10 phút thì nó tự dừng.
   - Các skill chạy agent nền (`/ao-spec`, `/ao-plan`, `/ao-request`, `/ao-build`, `/ao-fix`, `/ao-review`, `/ao-qa`, `/ao-release`, `/ao-ship`, `/ao-run`) tự bật watcher. Mỗi lần nó báo, phiên chính báo bạn rồi bật lại nó.
   - Muốn xem ngay, gõ `! node .ai-orchestrator/scripts/ao-step.mjs watch --once`: lệnh in những gì đang chạy, mỗi lệnh chạy bao lâu, lần cuối agent ghi log, và chuyện mới cần báo, nếu có.
-  - Ngưỡng 20 phút vì agent có lúc im lâu mà vẫn đang làm đúng, như khi chạy test Maven. Watcher chỉ báo, không sửa gì, và không xoá khoá nào.
+  - Ngưỡng 20 phút vì agent có lúc im lâu mà vẫn đang làm đúng, như khi chạy test Maven. Khi đó watcher nêu tên tool agent gọi gần nhất, ví dụ Bash, và đã bao lâu. Watcher chỉ báo, không sửa gì, và không xoá khoá nào.
+  - **Watcher chỉ in câu do chính nó dựng** (review của `shop` PR #92). Mọi agent đều ghi được các file nó đọc: log sự kiện, khoá, log agent. Vì vậy nó chỉ đưa vào câu báo những thứ đọc đúng mẫu: khoá item, tên lệnh, role, tên tool. Nó không bao giờ chép chữ của các file đó, và không bảo phiên chính đọc log agent.
+  - Cờ được gỡ thì watcher quên rằng đã báo, nên lần gắn cờ sau của cùng item vẫn được báo.
+  - Mỗi dự án chỉ một watcher (`.ai/runs/watch-process.json`). Watcher thứ hai dừng ngay, và watcher đầu báo cho mọi lệnh.
 - Mỗi dự án chỉ một bộ điều phối. Bạn vẫn gõ lệnh tay được; nó để yên item đang có lệnh của bạn.
 - Đừng tắt tiến trình của nó: trên Windows, các lệnh nó mở sẽ chạy tiếp mà không ai theo dõi. Dùng `/ao-run --stop`.
 
