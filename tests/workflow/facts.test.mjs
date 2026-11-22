@@ -7,6 +7,7 @@ import { readContract } from '../../lib/contract.mjs';
 import { readGates } from '../../lib/quality/gates.mjs';
 import { readMapping } from '../../lib/tracker/mapping.mjs';
 import { findingId } from '../../lib/quality/pull-request.mjs';
+import { agentValues } from '../../lib/tracker/facts.mjs';
 import { agentNames, gatherFacts, reviewReports, workLabels } from '../../lib/workflow/facts.mjs';
 import { fakeJira, recordedClient } from '../helpers/jira.mjs';
 import { CONTRACT_DIR, ROOT } from '../helpers/kit.mjs';
@@ -58,6 +59,9 @@ test('the Agent field value of every role, in the names Jira uses', () => {
   assert.equal(names.ba, 'Business Analyst');
   assert.equal(names['fe-dev'], 'Frontend Developer');
   assert.deepEqual(Object.keys(names).sort(), Object.keys(roster.roles).sort());
+  // One rule for role → Agent value (review of shop PR #90, reviewer, Low): the signature of a comment, the QA report
+  // readers and the requests read it from the same function.
+  assert.equal(agentNames, agentValues);
 });
 
 test('labels name the dev role and the effort (tracker/jira.yaml work_labels); others are left out', () => {

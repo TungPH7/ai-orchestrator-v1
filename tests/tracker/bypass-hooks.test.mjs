@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { cpSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { cpSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { ROOT } from '../helpers/kit.mjs';
 
@@ -39,6 +39,20 @@ test('block-atlassian sends the comment of an agent as escaped HTML, and that of
   assert.equal(output.permissionDecision, 'allow');
   assert.deepEqual(output.updatedInput, { issueIdOrKey: 'DEMO-12', commentBody: '<p>Frontend Developer: &lt;b&gt;xong&lt;/b&gt; &amp; **đậm**</p>', contentFormat: 'html' });
   assert.equal(run('block-atlassian.mjs', comment('qa'), { AO_JIRA_SPACE: 'DEMO' }).stdout, '');
+});
+
+// Review of shop PR #90 (reviewer, Low): reading the contract took about 60 ms on every call. Only the comment of an
+// agent needs it, and that goes through the atlassian MCP server, so a Bash call reads no contract at all.
+test('block-atlassian reads the contract for the atlassian MCP tools only', (t) => {
+  const copy = mkdtempSync(join(ROOT, '.tmp-kit-'));
+  t.after(() => rmSync(copy, { recursive: true, force: true }));
+  for (const dir of ['contract', 'lib', 'tracker']) cpSync(join(ROOT, dir), join(copy, dir), { recursive: true });
+  writeFileSync(join(copy, 'contract', 'work-items.yaml'), 'work_types: [\n');
+  const broken = { AO_KIT_DIR: copy, AO_JIRA_SPACE: 'DEMO' };
+  assert.equal(reason(run('block-atlassian.mjs', pre('Bash', { command: 'curl https://api.atlassian.com/ex/jira' }), broken)), 'jira: do not call Atlassian from Bash; use the tools of the atlassian MCP server');
+  assert.equal(run('block-atlassian.mjs', pre('Bash', { command: 'npm test' }), broken).stdout, '');
+  const comment = { ...pre('mcp__atlassian__addOrEditJiraIssueComment', { issueIdOrKey: 'DEMO-12', commentBody: 'xong' }), agent_type: 'fe-dev' };
+  assert.match(reason(run('block-atlassian.mjs', comment, broken)), /^jira: Cannot read .*work-items\.yaml/);
 });
 
 test('block-atlassian without the kit refuses only what touches Atlassian', () => {

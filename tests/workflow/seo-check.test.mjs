@@ -41,3 +41,11 @@ test('a command, in a shell block, at the start of a line or in a code span, is 
 test('a command followed by any space is named by its program', () => {
   assert.deepEqual(seoTextProblems('SEO Specialist: x'+'\n'+'npm\u00a0i left-pad', { hosts: HOSTS }), ['a command (npm) on line 2']);
 });
+
+// Review of shop PR #90 (security, Low): the hook keeps an agent's words in NFC since the third review of PR #81, so
+// fullwidth letters reach the check as written; it reads them as ao-step does, through plainText.
+test('fullwidth letters and signs are read as their plain form', () => {
+  const text = '- title: Gi\u00e0y'+'\n'+'\uff43\uff55\uff52\uff4c https\uff1a//x.example/a';
+  assert.deepEqual(seoTextProblems(text, { hosts: HOSTS }), ['an address outside the hosts of the apps with seo: true and schema.org, on line 2', 'a command (curl) on line 2']);
+  assert.deepEqual(seoTextProblems('`\uff4e\uff50\uff4d i left-pad`', { hosts: HOSTS }), ['a command (npm) on line 1']);
+});

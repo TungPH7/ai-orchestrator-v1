@@ -131,7 +131,8 @@ test('Development runs a head of develop only once CI of that commit is green', 
   const green = { green: true, failed: false, started: true };
   assert.deepEqual(decide('development', { candidate: { ...head('develop', B, TB, [pass(B)]), ci: green } }), deploy(B, TB, 'branch'));
   const red = decide('development', { candidate: { ...head('develop', B, TB, [pass(B)]), ci: { green: false, failed: true, started: true } } });
-  assertRefuse(red, /^CI failed on bbbbbbb, the head of develop: Development keeps what it runs; a later head with green CI deploys$/);
+  assertRefuse(red, /^CI failed on bbbbbbb, the head of develop: Development keeps what it runs until CI of bbbbbbb or of a later head passes$/);
+  assert.equal(red.again, true, 'the deployer looks at it again (review of shop PR #90)');
   const running = decide('development', { candidate: { ...head('develop', B, TB, [pass(B)]), ci: { green: false, failed: false, started: true } } });
   assert.deepEqual(running, { action: 'wait', reason: 'CI of bbbbbbb, the head of develop, is still running' });
   const none = decide('development', { candidate: { ...head('develop', B, TB, [pass(B)]), ci: { green: false, failed: false, started: false } } });

@@ -33035,3 +33035,115 @@ Tổng T14 đến giờ: **127,34 USD**. Cho SHOP-87 và SHOP-88, vẫn chờ b�
 Bạn trả lời, ví dụ "1 2 3 đồng ý, x-default theo khuyên". Khi đó mình chép kit vào `shop` và chạy review, chép kit lên VPS, rồi chạy SHOP-85 bằng `/ao-run`.
 
 **Bạn (Lượt 38):** 1 2 đồng ý,  3, 4 theo khuyên
+
+**Claude (Lượt 38, 21:04):**
+
+**Review của PR chép kit vào `shop` đang chạy.** VPS đã dùng bản kit mới, và SHOP-85 đã sẵn sàng build.
+
+**Đã làm:**
+1. **Mục 3, ruleset strict:** ghi lý do không bật vào mục Ruleset của `docs/quality-gates.md` (kit PR #344, đã merge). Kit main giờ là `666def3`.
+2. **Mục 2, chép kit vào `shop`:**
+   - Tạo Task SHOP-89, Refine và Start.
+   - Chép kit `666def3` lên nhánh `feature/SHOP-89-kit-copy` và mở PR #90.
+   - `ao-kit check` đạt. `doctor` chỉ báo Docker đang tắt, điều đã biết.
+   - CI xanh cả 7 job.
+   - `reviewer` (xhigh) và `security` (max) đang review, khoảng 15 USD.
+3. **Mục 1, kit trên VPS:** đã chép `666def3` theo mục 12 của `docs/vps-setup.md`.
+   - Dry-run và lượt chạy thật đầu tiên của deployer đều ổn.
+   - Từ giờ Development chỉ deploy `develop` khi CI của chính commit đó xanh.
+   - Tài liệu ghi bản ghim cũ là `dbbf318`, nhưng bản thật trên VPS là `05da881`. Bản này giờ nằm ở `/opt/ao/kit.prev`, và mình đã sửa dòng ghi bản ghim.
+4. **Mục 4 và SHOP-85:** đã Refine SHOP-85 và chia thành hai Sub-task, cùng một nhánh, cùng một PR:
+   - SHOP-90 cho `be-dev`: finding của PR #83 và #85, gồm 1 Medium và 6 Low. Mình giữ nguyên Architecture Decision 6 (AD6), chỉ ghi rủi ro thống kê PostgreSQL cũ vào `plan.md`, vì autoanalyze sửa thống kê trong khoảng một phút.
+   - SHOP-91 cho `fe-dev`: finding của PR #84 và #86, `x-default` của cả site về `/vi` như bạn chọn, và test AC10 của `admin` hay hỏng khi chạy song song.
+
+**Bước tiếp:**
+1. Review xong mà không có High: bạn merge PR #90, hoặc nhắn "merge giúp". PR này sửa đường dẫn được bảo vệ, nên `merge-gate` không tự merge.
+2. Sau đó chờ CI của `develop` và deploy, rồi chạy QA cho SHOP-89.
+3. Cuối cùng build SHOP-85 bằng bản kit mới. Ước tính 20–30 USD. Khi đó cả Epic khoảng 150–160 USD, dưới mức dừng 170 USD. Con số này chưa tính khoảng 15 USD review PR chép kit.
+
+Mình sẽ báo khi review xong.
+
+**Bạn (Lượt 39):** Lúc làm task trong repo dự án, kit chạy là background tasks nên tôi không thấy được log của claude như khi làm việc với claude agent chính, không biết background tasks của kit có bị treo hay tắc gì không, nên tôi thường bảo agent chính tạo thêm 1 watcher ,để kiểm tra, theo dõi xem các agent, tiến trình của kit đang chạy có bị lỗi hay treo gì không, watcher chạy mỗi 2 phút để theo dõi tiến trình của kit và báo cho tôi ở agent chính nếu có vấn đề gì không ổn, nếu kit vẫn ok thì không cần báo để tranh tốn token. Hiện tại kit đã có watcher này chưa? THeo bạn có nên thêm watcher này không? Watcher này chạy bằng script của máy hay bằng AI? Nếu không tốn tiền chạy AI thì nên bổ sung nhỉ? Trả lời tôi trước, chưa được làm gì tiếp cả nhé
+
+**Claude (Lượt 39):**
+
+**Kit chưa có watcher.** Watcher mình đang dùng là một script viết tay, nằm ngoài kit, chạy bằng máy và không gọi AI. Mình khuyên đưa nó vào kit, vì nó gần như không tốn tiền.
+
+**Hiện có gì:**
+1. **Script `.pilot3-scratch/watch-run.sh`**, mình viết khi bạn yêu cầu ở Lượt 18.
+   - Cứ 4 phút, nó đọc file khoá, log sự kiện của dispatcher và log của agent.
+   - Nó chỉ dừng khi có chuyện: một lệnh dừng chờ bạn, tiến trình đã chết, log của agent im quá 20 phút, hoặc dispatcher đã tắt.
+   - Khi nó dừng, Claude Code đánh thức mình, và mình báo bạn.
+2. **Lệnh `ao-step status`** của kit, kể cả `--json` mới thêm ở đợt 1, cho biết lệnh nào đang chạy và lần cuối agent ghi log. Đây là dữ liệu để theo dõi, chưa phải watcher. Muốn xem ngay, bạn gõ `! node .ai-orchestrator/scripts/ao-step.mjs status` trong `shop`.
+3. **Điểm yếu của script:**
+   - Nó nằm ngoài kit và viết bằng bash.
+   - Nó đoán trạng thái từ file khoá và log, nên trong T14 báo nhầm 8 trên 23 lần.
+   - Mỗi lần chạy một lệnh dài, mình phải nhớ bật lại nó.
+
+**Tốn tiền ở đâu:**
+- Script chạy bằng máy, nên không tốn token.
+- Token chỉ tốn khi script báo, vì lúc đó agent chính phải đọc và trả lời bạn. Kit chạy ổn thì script im, không tốn gì.
+- Không nên dùng AI để canh, hay hẹn giờ đánh thức agent chính mỗi 2 phút. Mỗi lần thức là tốn token, khoảng 30 lần một giờ, kể cả khi không có gì xảy ra.
+
+**Đề xuất (chờ bạn bảo làm):**
+1. Thêm lệnh `ao-step watch` vào kit, viết bằng Node để chạy được trên Windows. Lệnh đọc `status --json`, không đoán từ file.
+2. Mỗi 2 phút, lệnh kiểm phần trên máy: tiến trình còn sống không, log của agent có ghi thêm không. Phần phải hỏi GitHub và Jira, như CI và cờ Needs you, thì khoảng 10 phút kiểm một lần, để không gọi API quá nhiều.
+3. Lệnh chỉ dừng và báo khi có chuyện mới:
+   - tiến trình chết;
+   - agent im quá lâu;
+   - lệnh dừng chờ bạn;
+   - item bị gắn cờ;
+   - CI không chạy sau khi push;
+   - hết giới hạn 5 giờ, hoặc hết ngân sách.
+
+   Chuyện đã báo thì không báo lại.
+4. Ngưỡng coi là treo nên là 15–20 phút, không phải 2 phút. Agent có lúc im lâu mà vẫn đang làm đúng, ví dụ khi chạy test Maven.
+5. Skill `/ao-run` và các lệnh phiên chính chạy nền sẽ tự bật watcher, nên bạn không phải nhắc. Sau mỗi lần báo, agent chính tự bật lại nó.
+
+**Chi phí làm:** một kit PR do mình viết và test, không tốn tiền agent. Lệnh này vào `shop` ở lần chép kit sau, để PR #90 đang review không phải trả thêm một lượt review.
+
+Mình chưa làm gì thêm. Review PR #90 vẫn đang chạy; khi xong, mình chỉ báo kết quả cho bạn.
+
+**Bạn (Lượt 40):** Vậy thì nên làm watcher này ngày sau PR #90 và trước SHOP-85 nhỉ?
+
+**Claude (Lượt 40):**
+
+**Đúng, nên làm watcher sau PR #90 và trước SHOP-85.** SHOP-85 có hai agent chạy nối nhau, rồi review và QA, nên nó sẽ là lần thử thật đầu tiên của watcher.
+
+**Thứ tự mình đề xuất:**
+1. Review PR #90 xong. Không có High thì bạn merge, hoặc nhắn "merge giúp".
+2. Trong lúc chờ CI của `develop`, deploy và QA SHOP-89 (khoảng 30–60 phút), mình viết `ao-step watch` thành một kit PR: test viết trước, CI xanh thì merge. Việc này không tốn tiền agent.
+3. Build SHOP-85, có watcher canh từ đầu.
+   - Watcher chỉ đọc, nên chạy được thẳng từ thư mục kit, không cần chép kit vào `shop` thêm lần nữa. Mình sẽ kiểm điều này trước khi dùng.
+   - Nhờ vậy không mất thêm khoảng 15 USD cho một lượt review chép kit nữa.
+4. Watcher vào `shop` ở lần chép kit sau, cùng các bản sửa khác, nên chỉ trả tiền review một lần.
+
+**Cái giá:** SHOP-85 bắt đầu muộn hơn khoảng nửa giờ đến một giờ, nếu viết watcher lâu hơn thời gian chờ ở bước 2.
+
+**Một cách nhanh hơn:** mình bắt đầu viết ngay bây giờ, trong lúc review PR #90 còn chạy (đã 21 phút). Như vậy SHOP-85 gần như không phải chờ thêm.
+
+Bạn nhắn "làm" thì mình bắt đầu viết watcher ngay nhé?
+
+**Claude (tiếp Lượt 40, 21:25, review PR #90 xong):**
+
+**Review PR #90 không có lỗi Critical, High hay Medium.** Hai agent đều cho approve, tốn 8,85 USD, ít hơn ước tính 15 USD.
+
+**Kết quả:**
+- `reviewer` (xhigh, 3,17 USD) báo 3 Low.
+- `security` (max, 5,68 USD) báo 2 Low.
+- `reviewer` so được 32 trên 33 file với kit `666def3`. File còn lại là hook `block-atlassian.mjs`: hook Jira chặn lệnh đọc của agent, vì tên file có chữ Atlassian. Mình đã tự so file này, nó khớp từng byte với kit.
+
+**5 Low, đều nằm trong code kit:**
+1. **Deployer và CI chạy lại.** Khi CI của commit đầu `develop` đỏ, deployer bỏ qua commit đó luôn. Nếu bạn chạy lại CI và nó xanh, Development vẫn không deploy cho tới lần merge sau. Đây là điểm đáng sửa nhất, vì test hiệu năng của `api` từng đỏ chập chờn trên `develop`.
+2. **Hook Jira chậm hơn.** Hook nạp contract ở mọi lệnh Bash và MCP, thêm khoảng 60 ms mỗi lệnh. Chỉ comment của agent mới cần contract.
+3. **Một hàm bị chép đôi.** `agentValues` trùng với `agentNames`.
+4. **gh-guard còn bốn cách đặt biến của Bash chưa đọc**, ví dụ `$[ ]`. Một dev agent có thể đặt lại `GIT_CONFIG_COUNT`, rồi push bằng tài khoản GitHub của bạn. Low vì gh-guard chỉ là lớp chặn nhầm lẫn, không phải ranh giới bảo mật.
+5. **Kiểm chữ của `seo` không còn bắt chữ toàn khổ giả chữ thường**, như `ｃｕｒｌ`. Chuyện này xảy ra từ khi hook lưu comment ở dạng NFC. Bạn vẫn đọc comment trước khi `seo-ok`, nên là Low. Cách sửa chỉ một dòng.
+
+**Mình khuyên:**
+1. **Merge PR #90 ngay.** PR này sửa đường dẫn được bảo vệ, nên bạn tự merge, hoặc nhắn "merge giúp" để mình approve và squash-merge bằng `gh` của bạn.
+2. **Sửa 5 Low trong cùng kit PR với watcher.** Mình làm trong phiên chính, không tốn tiền agent. Chúng vào `shop` ở lần chép kit sau, cùng watcher, nên chỉ trả tiền review một lần.
+
+Bạn nhắn "merge giúp" và "làm" thì mình merge PR #90, rồi viết watcher kèm 5 Low, trước khi build SHOP-85 nhé?
+
+**Bạn (Lượt 41):** "merge giúp" cho PR #90 và "làm" cho watcher kèm 5 lỗi Low

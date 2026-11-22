@@ -311,8 +311,15 @@ test('a head of develop waits for its own CI, deploys once it is green, and is r
   assert.deepEqual(green.inst.installs, ['development c']);
   const red = await run({ repo: { heads: { develop: D, main: H0 }, open: [], trees: TREES }, state: green.state, audits: { [`develop ${D}`]: [pass(D)] }, ci: { [D]: { green: false, failed: true, started: true } } });
   assert.deepEqual(red.inst.installs, []);
-  assert.deepEqual(statuses(red.gh), ['101 error CI failed on ddddddd, the head of develop: Development keeps what it runs; a later head with green CI deploys']);
-  assert.equal(red.state.environments.development.seen.develop, D);
+  assert.deepEqual(statuses(red.gh), ['101 error CI failed on ddddddd, the head of develop: Development keeps what it runs until CI of ddddddd or of a later head passes']);
+  // Review of shop PR #90 (reviewer, Low): a head refused for red CI is looked at again, since a run again of its CI may
+  // pass; it is refused once, and deploys once its CI is green.
+  assert.equal(red.state.environments.development.seen.develop, C, 'not seen: its CI may still pass');
+  const still = await run({ repo: { heads: { develop: D, main: H0 }, open: [], trees: TREES }, state: red.state, audits: { [`develop ${D}`]: [pass(D)] }, ci: { [D]: { green: false, failed: true, started: true } } });
+  assert.deepEqual([still.gh.writes, still.inst.installs], [[], []], 'refused once only');
+  const again = await run({ repo: { heads: { develop: D, main: H0 }, open: [], trees: TREES }, state: still.state, audits: { [`develop ${D}`]: [pass(D)] }, ci: { [D]: { green: true, failed: false, started: true } } });
+  assert.deepEqual(again.inst.installs, ['development d']);
+  assert.equal(again.state.environments.development.seen.develop, D);
   // main and the release branches are not held by their CI here: the gate is for develop (Lượt 33).
   const hotfixed = await run({ repo: { heads: { develop: A, main: H }, open: [], trees: TREES }, state: started(), audits: { [`main ${H}`]: [pass(H, { number: 31, head: 'hotfix/DEMO-40-cart-total' })] }, ci: { [H]: { green: false, failed: false, started: true } } });
   assert.deepEqual(hotfixed.inst.installs, ['staging 1']);

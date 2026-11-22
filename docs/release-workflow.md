@@ -31,7 +31,7 @@ Deployer chạy mỗi phút trên VPS và kiểm mọi commit mới trên lịch
 
 Trên `develop`, deployer còn chờ CI của chính head đó (T14 của C2; bạn quyết ở Phiên 35 · Lượt 33). `audit` chỉ kiểm CI trên head của PR. Khi nhiều làn merge nối nhau, tree sau merge chưa từng được CI của PR nào build: `e93bfc3` của `shop` đã lên Development khi CI của nó đỏ.
 - CI còn chạy, hoặc chưa bắt đầu: deployer chờ và xem lại ở phút sau.
-- CI đỏ: status `error`, Development giữ bản đang chạy, và một head sau có CI xanh sẽ lên.
+- CI đỏ: deployer báo status `error` một lần, và Development giữ bản đang chạy. Deployer vẫn xem lại head đó mỗi phút. Nếu bạn chạy lại CI và CI xanh, head đó lên luôn, không phải chờ lần merge sau (review của `shop` PR #90). Một head sau có CI xanh cũng lên.
 - Các job `merge-gate`, `jira-sync`, `audit` và các relay không tính là CI: GitHub gắn check của các workflow chạy theo `workflow_run` lên head của nhánh mặc định, và `merge-gate` có thể chờ QA ở đó tới 100 phút.
 
 Production có thêm hai điều kiện: có gate ⑤, và tree của commit đã chạy thành công trên Staging. Image được gắn tag theo mã tree, nên Production chạy đúng image đã qua Staging.
