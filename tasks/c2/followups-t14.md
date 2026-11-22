@@ -66,7 +66,7 @@ Các mục 1–7 của "Còn mở sau review vòng ba" ([followups-pr80.md](foll
 ## Sau các đợt
 
 1. Task chép kit vào `shop`, review một lần (khoảng 15 USD). Hỏi bạn trước.
-2. SHOP-85: refine (thêm việc của `sa` về AD6; `x-default` theo quyết định của bạn; test admin AC10 chập chờn), rồi `/ao-run`.
+2. SHOP-85: refine (thêm việc của `sa` về AD6; `x-default` trỏ về `/vi` như SPEC, bạn quyết ở Lượt 38; test admin AC10 chập chờn), rồi `/ao-run`.
 3. T15: đóng module C2.
 
 ## Đã làm
@@ -91,7 +91,7 @@ Tài liệu: `docs/dev-workflow.md`, mục `/ao-run`.
    - `main` và `release/*` chưa bị chặn theo CI của head: bạn quyết cho `develop`. Muốn thêm thì thêm vào `CI_GATED`.
    - Bản kit ghim trên VPS chỉ đổi khi bạn bảo (`docs/vps-setup.md`, mục 12): chờ bạn.
 2. Prompt `qa` và `qa-defect` (`ciEvidence`) cùng `agents/prompts/qa.md`: CI làm bằng chứng là CI của commit môi trường đang chạy (`gh run list --commit <sha>`), không phải CI của head PR.
-3. Ruleset strict: chưa làm, chờ bạn quyết.
+3. Ruleset strict: bạn quyết không bật (Phiên 35 · Lượt 38); lý do ghi ở mục Ruleset của `docs/quality-gates.md`.
 
 Tài liệu: `docs/release-workflow.md` (bảng môi trường, đoạn deployer, bảng status `error`).
 

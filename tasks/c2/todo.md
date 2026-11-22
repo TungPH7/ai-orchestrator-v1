@@ -168,7 +168,7 @@ Bộ test lúc bắt đầu: 1.731 test xanh (kit `main` `dc400af`).
       13. Kit nên tự báo trạng thái để theo dõi, ví dụ `ao-step status --json` cho biết lệnh nào đang chạy và lần cuối agent của nó ghi log. Watcher viết tay phải đoán từ file khoá và log, và đã báo nhầm 8 lần trong T14.
       14. Câu báo khi role dev phải chờ (`ao-step.mjs:461`) vẫn ghi "builds one item at a time" cả khi `agents_per_role` lớn hơn 1 (Low của review PR #87).
       15. Item ở mức light mà PR chạm đường dẫn được bảo vệ thì lên `heavy` (tầng `critical`), nên QA phải chạy agent `qa` (SHOP-86, 0,82 USD). Đúng thiết kế, nhưng `ao-step status` không in dòng "Level of …" nói lý do; chỉ đọc code mới biết.
-    - **Đã sửa** trong batch sau T14 ([followups-t14.md](followups-t14.md); kit PR #339, #340, #341, #342), cùng các việc còn mở của review vòng ba PR #81. Còn chờ bạn: mục 12 (ruleset strict, đề xuất không bật), chép bản kit mới lên VPS cho deployer (mục 1), và Task chép kit vào `shop` có review.
+    - **Đã sửa** trong batch sau T14 ([followups-t14.md](followups-t14.md); kit PR #339, #340, #341, #342), cùng các việc còn mở của review vòng ba PR #81. Lượt 38: bạn đồng ý chép bản kit mới lên VPS cho deployer (mục 1) và Task chép kit vào `shop` có review; mục 12 không bật strict, chỉ ghi lý do vào `docs/quality-gates.md`.
     - Ngoài kit (script của phiên chính): Cancel qua REST không đặt Resolution, vì màn hình Cancel để người chọn; mình đặt "Won't Do" cho SHOP-87, SHOP-88 bằng `.pilot3-scratch/resolution-set.mjs`.
 
 ## Đóng module
