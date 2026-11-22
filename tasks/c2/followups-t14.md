@@ -1,6 +1,6 @@
 # Batch sửa kit sau T14: finding của lần chạy thật SHOP-81 và việc còn mở của review PR #81
 
-**Trạng thái:** đợt 1 đã merge (kit PR #339, `b5788d9`), đợt 2 đã merge (kit PR #340, `0ff0a89`). Đợt 3 đang làm, trên nhánh `task/c2-t14-fix-3` (worktree `ao-t14-fixes`). Bạn bảo làm ở Phiên 35 · Lượt 37 ("Dừng làm SHOP-87 và SHOP-88, làm các finding và lỗi kit nhé").
+**Trạng thái:** đợt 1–3 đã merge (kit PR #339 `b5788d9`, #340 `0ff0a89`, #341 `e8158d1`). Đợt 4 đang làm, trên nhánh `task/c2-t14-fix-4` (worktree `ao-t14-fixes`). Bạn bảo làm ở Phiên 35 · Lượt 37 ("Dừng làm SHOP-87 và SHOP-88, làm các finding và lỗi kit nhé").
 
 **Nguồn:**
 - 15 mục "Findings kit gom lại từ T14" và mục "Quan sát cho T15" ở [todo.md](todo.md), phần T14;
@@ -100,3 +100,38 @@ Tài liệu: `docs/release-workflow.md` (bảng môi trường, đoạn deployer
 2. `sa.md` (bước 2) và hướng dẫn Task List của `templates/plan.md`: hai item cùng role dev, không phụ thuộc nhau, chỉ build cùng lúc khi `runs.agents_per_role` cho role đó hơn một agent. `sa` đọc giá trị này, và khi nó không cho thì ghi dưới phase rằng hai item build lần lượt, kèm giá trị cần đặt để bạn quyết ở gate ②.
 3. Câu hỏi mở đánh số `Q1`, `Q2`… ở đầu dòng: trong hướng dẫn Open Questions của `spec.md`, `design.md`, `plan.md`, và trong prompt `ba`, `sa`, `seo`, `ux`. Ghi chú về câu trả lời và quyết định không đánh số. `openQuestions` đã ưu tiên các dòng `Q<n>`, nên không phải đổi code.
 4. Skill `ao-spec` và `ao-plan`: khi câu trả lời của bạn nhắc tới lời khuyên của phiên chính, phiên chính chép lời khuyên đó nguyên văn sau câu trả lời, dưới dòng `Lời khuyên được nhắc tới:`.
+
+**Đợt 4** (nhánh `task/c2-t14-fix-4`, 1.824 test xanh).
+
+*Threat model* (memory `threat-model-before-paid-review`): lập trước khi viết code. Phần review có trả tiền sẽ chạy cùng Task chép kit.
+
+| Điểm tin cậy | Ai đọc | Ai ghi được |
+|---|---|---|
+| Yêu cầu `Cần <role>:` trên item | `ao-step`, `/ao-run`: chạy `ba`, `sa` (có Bash), `ux`, `security` | mọi agent qua MCP (hook `block-atlassian`), `qa` không qua lọc, phiên chính, bạn |
+| QA report trên item | guard QA fail và Accept; QA lại chỉ kiểm tiêu chí FAIL | như trên; `ao-step` đăng báo cáo của QA nhẹ bằng token CI |
+| Ai viết comment (Agent value ở đầu) | `openRequests` (ai hỏi, ai đã trả lời) | mọi agent dùng **chung một tài khoản Jira** |
+| Chữ `seo` bạn đã duyệt | dev, `reviewer`, `qa` của item ngoài Epic | `ao-step` (từ Jira, khi so dấu) |
+| Biến môi trường của phiên (`GIT_CONFIG_*`, `GH_TOKEN`) và của Maven, pnpm | `git`, `gh`, trình quản lý gói | agent qua Bash (`gh-guard` đọc chữ của lệnh) |
+
+Kẻ tấn công: một agent bị chữ không tin được dẫn dắt, như trang web (`seo`), chữ của PR hay code của repo.
+- Nó viết chữ mà hook đọc một kiểu, `ao-step` đọc kiểu khác (High `08bc0732`, Medium U+0000).
+- Nó ký tên role khác.
+- Nó đưa `@<đường dẫn>` vào prompt của lượt sau.
+- Nó đặt biến bằng cú pháp Bash `gh-guard` chưa đọc.
+
+Cách sửa từng mục:
+1. **High `08bc0732`:** `plainText` chạy lại các bước (bỏ ký tự rộng 0 và ký tự điều khiển, chuẩn hoá, gộp khoảng trắng) tới khi chữ không đổi, nên `plainText(plainText(x)) === plainText(x)`. Hook kiểm `plainText` của từng khối nó gửi, đúng chữ bộ đọc lấy từ chữ Jira giữ. Comment của agent khác `qa` mang Agent value của chính nó: thiếu thì hook thêm một dòng ở đầu, mang của role khác thì hook từ chối. Bộ đọc QA report (`readLatestQaReport`, guard QA) bỏ comment do role khác `qa` ký (`notQaSigners`). Test thuộc tính chạy cả khi có contract.
+2. **Medium `@` trong prompt `-p`, và Medium giới hạn 12000 ký tự:** `ao-step` ghi chữ đã duyệt vào `.ai/runs/<KEY>/seo-<mã băm>.md` trong thư mục làm việc của lượt chạy, ngay trước khi agent chạy; prompt chỉ nêu tên file. `checkEdit` cấm agent ghi file này. Không còn giới hạn ký tự.
+3. **Medium U+0000:** `plainText` và `sentText` bỏ ký tự điều khiển C0, DEL, C1 (trừ ngắt dòng và tab). Bộ giả lập Jira trong test bỏ U+0000 như trình đọc HTML5.
+4. **Medium NFKC đổi chữ agent:** `sentText` chỉ chuẩn hoá NFC; hook kiểm `plainText` của chữ đó.
+5. **Medium Bash còn đặt biến:**
+   - `for`, `select` và `let` qua `namesByKeyword`;
+   - `(( ))` và `$(( ))` đọc trên cả dòng lệnh;
+   - `exportsAll` đọc mọi cặp `-o <tên>` và nhóm cờ có `o`;
+   - `shopt -s -o allexport` bị từ chối.
+6. **Low:** sửa tiêu đề và bảng của `shop` PR #81 (`gh pr edit`, kiểm bằng `pr-body-check`), thêm comment đính chính trên SHOP-80. Mô tả của item Done thì giữ nguyên.
+
+**Rủi ro còn lại:**
+- `qa` vẫn viết không qua lọc (template QA report có bảng), nên vẫn ký được tên role khác.
+- Một agent khác có Bash vẫn ghi được file `seo-<mã băm>.md` bằng lệnh shell, vì `gh-guard` không đọc chuyển hướng. `ao-step` ghi lại file này ngay trước mỗi lượt chạy.
+- Chữ ký Agent value vẫn chỉ là quy ước trên một tài khoản Jira dùng chung. Muốn chắc hơn thì cần mỗi role một tài khoản, việc này nằm ở backlog tài khoản `ao-agent`.

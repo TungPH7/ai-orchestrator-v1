@@ -109,6 +109,8 @@ Review lần hai PR #81 (head `3f2bd98`, kit `8847a84`): `security` 1 High mới
 
 ## Còn mở sau review vòng ba (bạn chấp nhận rủi ro, Phiên 35 · Lượt 8)
 
+**Đã sửa ở đợt 4 của batch sau T14** ([followups-t14.md](followups-t14.md), kit PR đợt 4), trước hạn 2026-12-15. Bản kit trong `shop` đổi khi chép kit lần tới; review có trả tiền chạy với lần chép đó.
+
 Review vòng ba của PR #81 (head `80a0e6d`, kit `9374641`, 11,40 USD; `SHOP-80` tổng 28,40 USD): `security` 1 High, 2 Medium; `reviewer` Approve, 3 Medium, 1 Low. Bạn chọn: approve PR #81 với `Accept risk: 08bc0732 until 2026-12-15`, dừng vòng sửa, làm T14 với một Epic có SEO. Các việc dưới đây là Task sửa sau, trước 2026-12-15.
 
 1. **High `08bc0732`, `plainText` không idempotent:** NFKC chạy trước khi bỏ dấu rộng 0, nên `Ca` U+200B U+0302 U+0300 `n sa:` lọt hook, còn bộ đọc ghép lại thành `Cần sa:`. Cách sửa:

@@ -1072,3 +1072,27 @@ test('a write is checked on the file Windows opens, by a stream, a dot at the en
   assert.equal(write('apps\\user\\package.json::$DATA', '{"dependencies":{"left-pad":"1.3.0"}}').allow, false, 'a dependency written through a stream');
   allowed(call('fe-dev', 'Write', { file_path: `${PROJECT}\\apps\\user\\src\\page.tsx`, content: 'x' }), 'a file of the app');
 });
+
+// Third review of shop PR #81 (reviewer Medium 6): for, select, let and (( )) set a variable they name, with no NAME=
+// word; set takes -o <name> more than once, and a group of flags with o takes the name after it; shopt -o sets the same
+// options as set -o.
+test('for, select, let and (( )) set no variable of the session or of a package manager, and allexport stays off', () => {
+  const approved = () => [];
+  const run = (command) => checkAgentCall({ agent_type: 'be-dev', tool_name: 'Bash', tool_input: { command } }, { gates, contract, projectDir: PROJECT, tempDir: TEMP, approved });
+  const shellOptions = ['set -o pipefail -o allexport; read MAVEN_OPTS < f; ./mvnw test', 'set -ox allexport', 'set -eo allexport', 'shopt -so allexport', 'shopt -s -o allexport', 'shopt -o -s allexport'];
+  for (const command of shellOptions) denied(run(command), /options or the start-up file of a shell/, command);
+  for (const command of ['for MAVEN_OPTS in -Duser.home=x; do export MAVEN_OPTS; done', 'select MAVEN_ARGS in -sx.xml; do break; done', 'let MAVEN_OPTS=1', '(( MAVEN_OPTS = 1 ))', '((MAVEN_OPTS=1))']) {
+    denied(run(command), /registry of the project/, command);
+  }
+  for (const command of ['for GH_TOKEN in x; do :; done', 'let GIT_CONFIG_COUNT=1', '(( GIT_CONFIG_COUNT = 1 ))']) denied(run(command), /variables of the session/, command);
+  for (const command of ['for f in a b; do echo "$f"; done', 'let i=i+1', '(( i++ ))', 'shopt -s globstar', 'set -o pipefail -o errexit', 'set -euo pipefail']) allowed(run(command), command);
+});
+
+// Third review of shop PR #81 (Medium 2): the words of the comment of seo the human approved reach a run in
+// .ai/runs/<KEY>/seo-<hash>.md, which ao-step writes; no agent writes it, in the project or in a lane.
+test('no agent writes the file of the approved comment of seo', () => {
+  for (const file of ['.ai\\runs\\DEMO-30\\seo-a1b2c3d4e5f60718.md', '.AI\\Runs\\demo-30\\SEO-A1B2C3D4E5F60718.MD']) {
+    for (const role of ['fe-dev', 'seo', 'qa', 'reviewer']) denied(call(role, 'Write', { file_path: `${PROJECT}\\${file}`, content: 'x' }), /is ao-step's: agents do not write it/, `${role} ${file}`);
+  }
+  allowed(call('fe-dev', 'Write', { file_path: `${PROJECT}\\.ai\\runs\\DEMO-30\\seo-notes.txt`, content: 'x' }), 'another file');
+});
