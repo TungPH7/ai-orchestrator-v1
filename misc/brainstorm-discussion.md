@@ -33033,3 +33033,5 @@ Tổng T14 đến giờ: **127,34 USD**. Cho SHOP-87 và SHOP-88, vẫn chờ b�
 4. **SHOP-85, `x-default`:** sửa site về `/vi` (mình khuyên), hay sửa SPEC theo `/en`?
 
 Bạn trả lời, ví dụ "1 2 3 đồng ý, x-default theo khuyên". Khi đó mình chép kit vào `shop` và chạy review, chép kit lên VPS, rồi chạy SHOP-85 bằng `/ao-run`.
+
+**Bạn (Lượt 38):** 1 2 đồng ý,  3, 4 theo khuyên
