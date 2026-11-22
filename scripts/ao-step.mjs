@@ -1202,7 +1202,7 @@ async function watchCommand(args, values) {
   const quietMin = values.quiet === undefined ? WATCH.quietMs / 60_000 : Number(values.quiet);
   if (!(quietMin >= 5 && quietMin <= 240)) return console.log(`STOP: --quiet is ${values.quiet}: minutes, from 5 to 240`);
   const options = { quietMs: quietMin * 60_000 };
-  const files = watchEffects({ projectDir, fs: { existsSync, readdirSync, readFileSync, statSync }, alive });
+  const files = watchEffects({ projectDir, fs: { existsSync, readdirSync, readFileSync, statSync, writeFileSync, mkdirSync, rmSync }, alive });
   // The board as the dispatcher reads it: ao-step status --json, with the tokens of this project.
   const board = dispatcherEffects({ kitDir, projectDir, spawn, fs: { existsSync, mkdirSync, openSync, closeSync, readFileSync, writeFileSync, appendFileSync, rmSync }, alive });
   const flaggedNow = async () => (await board.readBoard()).items.filter(({ flagged }) => flagged).map(({ key, flag }) => ({ key, flag }));
@@ -1211,7 +1211,7 @@ async function watchCommand(args, values) {
 
   if (values.once) {
     const now = Date.now();
-    const snapshot = { now, locks: files.locks(), logAt: files.logAt, dispatcher: files.dispatcher(), events: files.newEvents(state.offsets).events };
+    const snapshot = { now, locks: files.locks(), logAt: files.logAt, lastTool: files.lastTool, dispatcher: files.dispatcher(), events: files.newEvents(state.offsets, state.sizes).events };
     let flagged = null;
     let boardFailed = null;
     try {
@@ -1224,6 +1224,18 @@ async function watchCommand(args, values) {
     return;
   }
 
+  // One watcher a project (review of shop PR #92): a second one ends at once, and the first reports for both.
+  const claimed = files.claim(process.pid);
+  if (!claimed.ok) return console.log(`STOP: a watcher already runs in this project (process ${claimed.pid}); it reports for every command`);
+  try {
+    await watchLoop({ files, flaggedNow, options, state, stamp });
+  } finally {
+    files.release(process.pid);
+  }
+}
+
+async function watchLoop({ files, flaggedNow, options, state: first, stamp }) {
+  let state = first;
   let lastBoard = 0;
   let failures = 0;
   let failingSince = null;
@@ -1232,7 +1244,7 @@ async function watchCommand(args, values) {
   let before = [];
   for (;;) {
     const now = Date.now();
-    const { events, offsets } = files.newEvents(state.offsets);
+    const { events, offsets, sizes } = files.newEvents(state.offsets, state.sizes);
     const locks = files.locks();
     const after = locks.filter(({ alive: live }) => live).map(({ name }) => name);
     let flagged = null;
@@ -1250,10 +1262,10 @@ async function watchCommand(args, values) {
     }
     const boardFailed = failures > 0 ? { count: failures, reason, since: failingSince } : null;
     before = after;
-    const result = look({ now, locks, logAt: files.logAt, dispatcher: files.dispatcher(), events, flagged, boardFailed }, new Set(state.told), options);
+    const result = look({ now, locks, logAt: files.logAt, lastTool: files.lastTool, dispatcher: files.dispatcher(), events, flagged, boardFailed }, new Set(state.told), options);
     idleSince = result.running ? null : (idleSince ?? now);
     const ends = idleSince !== null && now - idleSince >= WATCH.endMs;
-    state = nextWatchState(state, { marks: result.marks, offsets });
+    state = nextWatchState(state, { marks: result.marks, forget: result.forget, offsets, sizes });
     mkdirSync(dirname(files.stateFile), { recursive: true });
     writeFileSync(files.stateFile, `${JSON.stringify(state, null, 2)}\n`);
     if (result.tell.length > 0 || ends) {

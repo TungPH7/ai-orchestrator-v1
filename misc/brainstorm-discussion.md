@@ -33449,3 +33449,69 @@ Bạn nhắn "làm T15" hay "làm cả hai" thì mình bắt đầu nhé?
 5. Việc kế tiếp: D1, D2, D4 đang chờ nhu cầu. Mục 7 còn hai việc có hạn: đưa `pr-events.yml` lên `main` của `shop` trước 2026-12-02, và kiểm khóa `age` trước 2026-12-31.
 
 Bạn chọn việc tiếp theo nhé?
+
+**Bạn (Lượt 51):** 1. Đã Accept SHOP-89
+
+Làm mục 4. chép kit tới vào shop
+
+2, 3, 5 bỏ qua
+
+**Claude (Lượt 51, 00:50):**
+
+**Bản kit `42f8f71` đã chép vào `shop` trong PR #92, và review sẽ tự chạy khi CI xanh.**
+1. Mình tạo Task SHOP-93, Refine và Start.
+2. Mình chép kit `42f8f71` (sau kit PR #345–#347) lên nhánh `feature/SHOP-93-kit-copy`, commit `3ef6625`: 26 file, chỉ trong `.ai-orchestrator/` và `.claude/`.
+3. `ao-kit check` đạt. `doctor` chỉ báo Docker đang tắt, điều đã biết.
+4. Mình mở PR nháp #92. Một chuỗi chạy nền chờ CI xanh, rồi chạy `reviewer` và `security`, khoảng 10–15 USD.
+5. Watcher chạy song song từ thư mục kit, và chỉ báo khi có chuyện.
+
+Review xong mà không có High thì bạn merge PR #92, hoặc nhắn "merge giúp". PR này sửa đường dẫn được bảo vệ, nên `merge-gate` không tự merge. Sau đó mình chạy QA cho SHOP-93 (khoảng 1 USD).
+
+**Một điều nên biết:** deployer trên VPS vẫn chạy bản kit `666def3`. Bản sửa "xét lại commit có CI đỏ khi chạy lại CI" (kit PR #345) chỉ có hiệu lực khi bản trên VPS được cập nhật. Bạn muốn thì nhắn, mình chép `42f8f71` lên VPS như lần trước.
+
+**Claude (tiếp Lượt 51, 01:07, review PR #92 xong):**
+
+**Review PR #92 không có lỗi Critical hay High, và cả hai role đều approve.** Review tốn 8,24 USD: `reviewer` 2,79 USD, `security` 5,45 USD.
+
+**Hai lỗi Medium đáng chú ý, đều ở watcher mới:**
+1. **(`security`) Watcher chép nguyên văn chữ lấy từ file mà agent nào cũng ghi được.** Ví dụ một dòng `waiting for you: …` trong log của `/ao-run`. Skill lại bảo phiên chính kể lại dòng đó cho bạn, kèm lệnh hay cú bấm. Một agent bị chữ lạ dẫn dắt có thể ghi một dòng giả vào log, và dòng đó đi thẳng vào phiên chính, nơi giữ quyền của bạn. Cách sửa: watcher chỉ in câu do chính nó dựng, ví dụ "SHOP-85 chờ bạn: `/ao-status SHOP-85`", không chép chữ của log.
+2. **(`reviewer`) Cờ thứ hai của cùng một item không được báo.** Watcher nhớ "đã báo cờ của SHOP-85" mãi mãi, nên lần gắn cờ sau không báo nữa. Cách sửa: quên dấu đó khi cờ được gỡ.
+
+**Các Low:**
+- Hai watcher chạy cùng lúc ghi đè file trạng thái của nhau.
+- Watcher đọc lại mọi file log ngày cũ sau mỗi 2 phút.
+- Dòng báo của Task finding thiếu ở hai nhánh QA.
+- Watcher bảo phiên chính đọc log agent, mà log đó chứa chữ không tin được.
+- gh-guard vẫn không bắt tên biến ghép lúc chạy, như `v=GIT_CONFIG_COUNT; w="$v=0"; (( w ))`. Đây là rủi ro đã biết; `reviewer` cũng nêu nó ở mức Medium.
+
+**Mình đề xuất:**
+1. **Merge PR #92 ngay.** Các finding trên không chặn merge, và theo quy tắc của mình, khi không có Critical hay High thì không mở thêm vòng sửa và review. PR sửa đường dẫn được bảo vệ, nên bạn merge, hoặc nhắn "merge giúp". Sau đó mình chạy QA cho SHOP-93, khoảng 1 USD.
+2. **Sửa 2 Medium và 5 Low trong một đợt kit sau** (không tốn tiền agent). Chúng vào `shop` ở lần chép kit tới. Trong lúc chờ, rủi ro của Medium 1 thấp: agent phải bị dẫn dắt trước, và mình vẫn coi chữ trong báo cáo của watcher là dữ liệu, không làm theo.
+
+Bạn nhắn "merge giúp" và "làm đợt sửa" (hay chỉ một trong hai) nhé?
+
+**Bạn (Lượt 52):** "merge giúp" và "làm đợt sửa"
+
+**Claude (Lượt 52, 01:42, dừng để compact):**
+
+**PR #92 đã merge, QA của SHOP-93 đang chạy, và đợt sửa 7 đã xong phần watcher.** Mình dừng ở đây để bạn gõ `/compact`. Lệnh này bạn gõ trong Claude Code, mình không chạy thay được.
+
+**Đã làm:**
+1. Mình approve và merge PR #92 (`25344a2`), rồi gỡ cờ SHOP-93.
+2. Chuỗi QA của SHOP-93 đang chạy nền: chờ deploy, bật Docker, chạy QA, tắt Docker. Watcher của chính `shop` đang theo dõi.
+3. **Đợt sửa 7**, phần watcher (14 test xanh, chưa commit):
+   - watcher chỉ in câu do nó dựng; khoá item, tên lệnh, role và tên tool được kiểm trước khi in, không chép chữ của file;
+   - gỡ cờ thì watcher quên dấu đã báo, nên cờ sau của cùng item lại được báo;
+   - mỗi dự án chỉ một watcher;
+   - không đọc lại file log không đổi;
+   - báo tên tool cuối của agent, thay cho việc bảo phiên chính đọc log.
+
+**Còn lại của đợt 7** (đã ghi vào memory):
+- nối watcher mới vào `ao-step`;
+- dòng nhắc của Task finding ở hai nhánh QA còn thiếu;
+- gh-guard bắt tên biến ghép và tên bị tách bằng dấu nháy;
+- tài liệu, chạy đủ test, kit PR.
+
+Sau khi bạn compact, bạn nhắn "làm tiếp" là mình làm nốt. QA của SHOP-93 xong thì mình sẽ báo.
+
+**Bạn (Lượt 53):** làm tiếp

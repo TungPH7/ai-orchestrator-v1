@@ -170,3 +170,17 @@ Bạn duyệt ở Phiên 35 · Lượt 50 ("làm cả hai"). Không tốn tiền
 2. **Commit của Sub-task mang khoá của Sub-task** (quan sát 1): prompt build Sub-task và `rules.md` nói rõ điều này.
 3. **Task finding không ghi finding của chính PR của nó** (quan sát 3): `findingsStep` bỏ qua, và lượt QA in một dòng nói các finding đó vẫn nằm trên PR.
 4. **Watcher đọc board ngay khi một lệnh kết thúc** (quan sát 4), ngoài nhịp 10 phút (`boardDue`).
+
+## Đợt 7: 2 Medium và 5 Low của review `shop` PR #92 (kit PR 8)
+
+Bạn duyệt ở Phiên 35 · Lượt 52 ("làm đợt sửa"). Không tốn tiền agent. Mỗi mục có test viết đỏ trước.
+
+1. **Medium (`security`): watcher chép chữ của file agent ghi được.** Giờ nó chỉ in câu do nó dựng: khoá item, tên lệnh, role, tên tool đọc đúng mẫu. Dấu "đã báo" của một dòng log là mã băm của dòng đó.
+2. **Medium (`reviewer`): cờ thứ hai của cùng item không được báo.** Mỗi lần đọc board, watcher bỏ dấu của các cờ board không còn (`forget`).
+3. **Low: hai watcher ghi đè nhau.** Mỗi dự án một watcher (`claim`, `release`, `.ai/runs/watch-process.json`).
+4. **Low: đọc lại mọi log ngày cũ.** Watcher bỏ qua file có cỡ không đổi (`sizes`).
+5. **Low: dòng của Task finding thiếu ở hai nhánh QA.** Giờ có ở nhánh light và nhánh chạy tiếp.
+6. **Low (`security`): watcher bảo phiên chính đọc log agent.** Giờ watcher tự đọc log và chỉ nêu tên tool cuối cùng cùng lúc nó bắt đầu (`lastTool`).
+7. **Low và Medium (`security`, `reviewer`): gh-guard với tên bị tách hay ghép.** gh-guard đọc lệnh sau khi bỏ dấu nháy và `\`. Khi lệnh có phép tính số học ở bất cứ đâu, nó từ chối mọi phép gán dựng từ biến như `w="$v=0"`.
+
+**Rủi ro còn lại:** gh-guard vẫn không đọc tên dựng bằng `printf`, `$'…'` hay từ file. Rules cấm cách viết này, và gh-guard chỉ chặn nhầm lẫn.

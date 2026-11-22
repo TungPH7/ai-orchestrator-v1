@@ -1112,6 +1112,17 @@ test('no arithmetic sets a variable of the session, and no variable takes the in
   for (const command of fine) allowed(run(command), command);
 });
 
+// Review of shop PR #92 (security and reviewer): a name split by quotes or a backslash, and a name built at run time
+// into a value that arithmetic then reads, set a variable of the session too.
+test('no name split by quotes, and no built assignment read by arithmetic, sets a variable of the session', () => {
+  const approved = () => [];
+  const run = (command) => checkAgentCall({ agent_type: 'be-dev', tool_name: 'Bash', tool_input: { command } }, { gates, contract, projectDir: PROJECT, tempDir: TEMP, approved });
+  for (const command of ["x='GIT_CONFIG_COU''NT=0'; (( x )); git push", 'echo $[ GIT_CONFIG_\\COUNT=0 ]', 'x="GIT_CONFIG_""COUNT=0"; a[x]=1']) denied(run(command), /variables of the session/, command);
+  const built = ['v=GIT_CONFIG_COUNT; w="$v=0"; (( w )); git push', 'n=GIT_CONFIG_COUNT; v="${n}=0"; echo $[ v ]', 'v=GIT_CONFIG_COUNT; w="$v=0"; [[ w -eq 0 ]]', 'v=GIT_CONFIG_COUNT; w="$v=0"; a[w]=1'];
+  for (const command of built) denied(run(command), /write out the name of the variable you set/, command);
+  for (const command of ['echo "$k=$v" >> .env.example', 'for i in 1 2; do echo "$i"; done; (( n = n + 1 ))', "printf '%s\\n' 'a=b'"]) allowed(run(command), command);
+});
+
 // Third review of shop PR #81 (Medium 2): the words of the comment of seo the human approved reach a run in
 // .ai/runs/<KEY>/seo-<hash>.md, which ao-step writes; no agent writes it, in the project or in a lane.
 test('no agent writes the file of the approved comment of seo', () => {

@@ -253,5 +253,14 @@ test('/ao-qa of the findings Task does not record the findings of its own PR in 
   const minorFindings = [{ role: 'reviewer', severity: 'Low', where: 'a.ts:1', finding: 'x', id: '01234567' }, { role: 'reviewer', severity: 'Low', where: 'b.ts:2', finding: 'y', id: '89abcdef' }];
   const own = decide(qaFacts({ epic: { key: 'DEMO-20' }, pr: { minorFindings }, findings: { key: 'DEMO-21', recorded: false } }));
   assert.equal(own.runs[0].role, 'qa');
-  assert.ok(own.lines.includes('The 2 Medium and Low findings of PR #15 stay on its reports: DEMO-21 is the findings Task of the Epic, and does not record those of its own PR. Make a Task for them if you want them fixed'), own.lines.join('\n'));
+  const line = 'The 2 Medium and Low findings of PR #15 stay on its reports: DEMO-21 is the findings Task of the Epic, and does not record those of its own PR. Make a Task for them if you want them fixed';
+  assert.ok(own.lines.includes(line), own.lines.join('\n'));
+  // Review of shop PR #92 (reviewer, Low): the line is printed on the light road and on a run that goes on too.
+  const light = decide(qaFacts({ item: { ...LIGHT_TASK, key: 'DEMO-21' }, epic: { key: 'DEMO-20' }, pr: { minorFindings }, findings: { key: 'DEMO-21', recorded: false } }));
+  assert.deepEqual(light.runs, [{ action: 'qa-light-start', key: 'DEMO-21', continue: true }]);
+  assert.ok(light.lines.includes(line), light.lines.join('\n'));
+  const stoppedRun = { n: 1, command: 'qa', role: 'qa', key: 'DEMO-21', purpose: 'qa', effort: 'high', session: 's-qa', outcome: 'usage-limit', startedAt: '2026-11-20T08:00:00.000Z' };
+  const goesOn = decide(qaFacts({ epic: { key: 'DEMO-20' }, pr: { minorFindings }, findings: { key: 'DEMO-21', recorded: false }, run: { key: 'DEMO-21', runs: [stoppedRun] } }));
+  assert.equal(goesOn.runs[0].resume, 's-qa', 'the stopped run goes on');
+  assert.ok(goesOn.lines.includes(line), goesOn.lines.join('\n'));
 });
