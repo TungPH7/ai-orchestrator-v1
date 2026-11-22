@@ -227,6 +227,10 @@ test('nextCommand gives the command of an item, or what it waits for, with the w
     [story('in-progress'), open({ draft: true }), { waits: 'you', text: '/ao-preview DEMO-21 or /ao-review 15' }],
     [story('in-review'), open(), { command: 'review', arg: 15, text: '/ao-review 15 or /ao-fix 15' }],
     [story('in-review'), null, { waits: 'fix', text: 'its PR is closed: /ao-status' }],
+    [story('in-review'), { number: 15, state: 'closed', merged: false }, { waits: 'fix', text: 'its PR is closed: /ao-status' }],
+    // T14 of C2: a merged PR waits for its deploy, from the board of the dispatcher or the PR of /ao-status <KEY>.
+    [story('in-review'), { number: 15, state: 'merged' }, { waits: 'deploy', text: 'PR #15 is merged: jira-sync moves DEMO-21 to Ready for QA once its QA environment runs it' }],
+    [story('in-review'), { number: 15, state: 'closed', merged: true }, { waits: 'deploy', text: 'PR #15 is merged: jira-sync moves DEMO-21 to Ready for QA once its QA environment runs it' }],
     [story('ready-for-qa'), null, { command: 'qa', arg: 'DEMO-21', text: '/ao-qa DEMO-21' }],
     [story('in-qa'), null, { waits: 'you', text: 'Accept or QA fail on DEMO-21 after the QA report' }],
     [story('new'), null, { waits: 'item', text: 'waits to be refined (jira-sync after Approve plan, or you)' }],

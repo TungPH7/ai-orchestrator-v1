@@ -235,3 +235,13 @@ test('ops-evidence reads the markdown of a comment too', async () => {
   assert.deepEqual(await guards(ops('DevOps Engineer: xong\n\n## Ops evidence\n\nGET trả 200'), 'DEMO-5', 'devops', ['ops-evidence']), ['ops-evidence']);
   assert.deepEqual(await guards(ops('DevOps Engineer: xong, Ops evidence ở dưới'), 'DEMO-5', 'devops', ['ops-evidence']), []);
 });
+
+// T14 of C2: comment 10639 of SHOP-82 opened with "Tester/QA Engineer: # QA report: …" in one paragraph, as the rules
+// ask every comment to start with the Agent value, and /ao-qa --retest said it had no QA report.
+test('a QA report behind the Agent value of its writer is read', () => {
+  assert.equal(qaReportResult('Tester/QA Engineer: # QA report: SHOP-82 Danh mục\n\n## Result\n\nNOT TESTED\n'), 'NOT TESTED');
+  assert.equal(qaReportResult('Tester/QA Engineer: QA report: SHOP-82\n## Result\nPASS'), 'PASS');
+  assert.equal(qaReportResult('Tester/QA Engineer:\n# QA report: SHOP-82\n## Result\nFAIL'), 'FAIL');
+  // Words before a colon that are not a name stay what they are.
+  assert.equal(qaReportResult('Xem lại sau khi đọc QA report: chưa có\n## Result\nPASS'), null);
+});

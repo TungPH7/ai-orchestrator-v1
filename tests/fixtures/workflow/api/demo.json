@@ -1414,6 +1414,229 @@
     "fork": false
    }
   },
-  "/pulls?direction=asc&sort=created&state=open": []
+  "/pulls?direction=asc&sort=created&state=open": [],
+  "/pulls?direction=desc&per_page=50&sort=updated&state=closed": [
+   {
+    "number": 13,
+    "title": "chore(probe): check the agent identity (DEMO-18)",
+    "state": "closed",
+    "draft": true,
+    "merged_at": null,
+    "user": {
+     "login": "tungph7-ao-dev[bot]"
+    },
+    "head": {
+     "ref": "feature/DEMO-18-identity-probe",
+     "sha": "738d000115f4813bfe8f2e0c005f2095156481a0"
+    },
+    "base": {
+     "ref": "develop"
+    }
+   },
+   {
+    "number": 12,
+    "title": "ci(deploy): set timeout-minutes on the deploy job (DEMO-16)",
+    "state": "closed",
+    "draft": false,
+    "merged_at": "2026-10-31T05:42:04Z",
+    "user": {
+     "login": "tungph7-ao-dev[bot]"
+    },
+    "head": {
+     "ref": "feature/DEMO-16-deploy-timeout",
+     "sha": "5f9327b3001ddcd2f25565b6251353bd65ea25a3"
+    },
+    "base": {
+     "ref": "develop"
+    }
+   },
+   {
+    "number": 11,
+    "title": "feat(cart): apply a coupon code on the cart page (DEMO-12)",
+    "state": "closed",
+    "draft": false,
+    "merged_at": "2026-10-31T03:10:03Z",
+    "user": {
+     "login": "tungph7-ao-dev[bot]"
+    },
+    "head": {
+     "ref": "feature/DEMO-12-coupon-code",
+     "sha": "2e3689d23cc9ab587355836551a4fa3f5231d4bc"
+    },
+    "base": {
+     "ref": "develop"
+    }
+   },
+   {
+    "number": 10,
+    "title": "docs(design): check the design.md policy (DEMO-11)",
+    "state": "closed",
+    "draft": false,
+    "merged_at": null,
+    "user": {
+     "login": "tungph7-ao-dev[bot]"
+    },
+    "head": {
+     "ref": "feature/DEMO-11-design-check",
+     "sha": "a1f8b3687b4693ace3e9696e6b0ff19e126025e6"
+    },
+    "base": {
+     "ref": "develop"
+    }
+   },
+   {
+    "number": 9,
+    "title": "feat(cart): add the cart page with its server and E2E tests (DEMO-10)",
+    "state": "closed",
+    "draft": false,
+    "merged_at": "2026-10-30T16:32:34Z",
+    "user": {
+     "login": "tungph7-ao-dev[bot]"
+    },
+    "head": {
+     "ref": "feature/DEMO-10-cart-page",
+     "sha": "df09e346857fb7577a85450d9765ddc2c2c5601b"
+    },
+    "base": {
+     "ref": "develop"
+    }
+   },
+   {
+    "number": 8,
+    "title": "chore(kit): copy the kit with the agent roster (DEMO-9)",
+    "state": "closed",
+    "draft": false,
+    "merged_at": "2026-10-30T15:25:00Z",
+    "user": {
+     "login": "tungph7-ao-dev[bot]"
+    },
+    "head": {
+     "ref": "feature/DEMO-9-agent-roster",
+     "sha": "3e41cf0574cf75b19de8eded84c0e113f3d7e85f"
+    },
+    "base": {
+     "ref": "develop"
+    }
+   },
+   {
+    "number": 7,
+    "title": "revert(cart): undo the unapproved merge of PR #6 (DEMO-8)",
+    "state": "closed",
+    "draft": false,
+    "merged_at": "2026-10-29T10:07:58Z",
+    "user": {
+     "login": "tungph7-ao-dev[bot]"
+    },
+    "head": {
+     "ref": "feature/DEMO-8-revert-unapproved-merge",
+     "sha": "6eb5c4e1bbd9ed92906b21f412caa23b6f7d4fcf"
+    },
+    "base": {
+     "ref": "develop"
+    }
+   },
+   {
+    "number": 6,
+    "title": "test(cart): cover a quantity of Infinity (DEMO-8)",
+    "state": "closed",
+    "draft": false,
+    "merged_at": "2026-10-29T09:47:01Z",
+    "user": {
+     "login": "tungph7-ao-dev[bot]"
+    },
+    "head": {
+     "ref": "feature/DEMO-8-infinity-quantity-test",
+     "sha": "451523db6dc196b9093852ff8a6d0933217026f3"
+    },
+    "base": {
+     "ref": "develop"
+    }
+   },
+   {
+    "number": 5,
+    "title": "ci(workflows): stop a hung CI job after 15 minutes (DEMO-7)",
+    "state": "closed",
+    "draft": false,
+    "merged_at": null,
+    "user": {
+     "login": "tungph7-ao-dev[bot]"
+    },
+    "head": {
+     "ref": "feature/DEMO-7-ci-job-timeout",
+     "sha": "a8e842eccd5f012c18bdfe2b4f57b4d5bbb207f9"
+    },
+    "base": {
+     "ref": "develop"
+    }
+   },
+   {
+    "number": 4,
+    "title": "feat(cart): add the shipping fee of a cart (DEMO-6)",
+    "state": "closed",
+    "draft": false,
+    "merged_at": "2026-10-29T09:22:04Z",
+    "user": {
+     "login": "tungph7-ao-dev[bot]"
+    },
+    "head": {
+     "ref": "feature/DEMO-6-shipping-fee",
+     "sha": "8924767757b15722fd530d348458124047ae10d3"
+    },
+    "base": {
+     "ref": "develop"
+    }
+   },
+   {
+    "number": 3,
+    "title": "feat(cart): add discounts (DEMO-5)",
+    "state": "closed",
+    "draft": false,
+    "merged_at": null,
+    "user": {
+     "login": "tungph7-ao-dev[bot]"
+    },
+    "head": {
+     "ref": "feature/DEMO-5-ci-live-test",
+     "sha": "df44b9e2f0fbba95473e4d0b013ceaf60669db90"
+    },
+    "base": {
+     "ref": "develop"
+    }
+   },
+   {
+    "number": 2,
+    "title": "chore(probe): check the GitHub App identities",
+    "state": "closed",
+    "draft": false,
+    "merged_at": "2026-10-28T18:39:22Z",
+    "user": {
+     "login": "tungph7-ao-dev[bot]"
+    },
+    "head": {
+     "ref": "probe/t3-app-identity",
+     "sha": "3a1272756dbe8f32d330834dce3902d52714564b"
+    },
+    "base": {
+     "ref": "develop"
+    }
+   },
+   {
+    "number": 1,
+    "title": "feat(demo): live test of jira-sync (DEMO-3)",
+    "state": "closed",
+    "draft": false,
+    "merged_at": "2026-10-28T04:58:31Z",
+    "user": {
+     "login": "TungPH7"
+    },
+    "head": {
+     "ref": "feature/DEMO-3-t15-live-test",
+     "sha": "fb52d9b0e9e3c28bfaee355b713ffdd4b2f3ceb2"
+    },
+    "base": {
+     "ref": "develop"
+    }
+   }
+  ]
  }
 }

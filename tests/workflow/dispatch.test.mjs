@@ -184,3 +184,25 @@ test('a request of seo does not take its item to /ao-request', async () => {
   const { start } = await round({ items: [epic('in-progress'), story('DEMO-21', 'ready', { requests: request })], decide: decider({ 'request DEMO-21': GO('ba'), 'build DEMO-21': GO('fe-dev') }) });
   assert.deepEqual(start.map(({ command, arg }) => `${command} ${arg}`), ['build DEMO-21']);
 });
+
+// T14 of C2, finding 6: at 11:16 the dispatcher said "waiting for you: SHOP-82: Accept or QA fail … after the QA report"
+// while /ao-qa SHOP-82 still ran: an item whose command runs waits for that command, not for you.
+test('an item whose command runs is not listed as waiting', async () => {
+  const items = [epic('in-progress'), story('DEMO-21', 'in-qa'), story('DEMO-22', 'in-qa')];
+  const live = [{ name: 'DEMO-21', command: 'qa', key: 'DEMO-21', role: 'qa', environment: 'development', slot: 0, pid: 1 }];
+  const { waiting } = await round({ items, decide: decider({}), live });
+  assert.deepEqual(waiting.map(({ key, waits }) => `${key} ${waits}`), ['DEMO-22 you']);
+});
+
+// T14 of C2, finding 7: between the merge of PR #83 and its deploy, SHOP-82 was "needs a fix: its PR is closed". A
+// merged PR waits for its deploy, after which jira-sync moves the item to Ready for QA; a PR closed unmerged still
+// needs you to look.
+test('an item In Review whose PR is merged waits for its deploy; one whose PR closed unmerged needs a fix', async () => {
+  const items = [epic('in-progress'), story('DEMO-21', 'in-review'), story('DEMO-22', 'in-review')];
+  const { waiting } = await round({ items, decide: decider({}), merged: [{ key: 'DEMO-21', number: 15 }] });
+  assert.deepEqual(waiting.map(({ key, waits }) => `${key} ${waits}`), ['DEMO-21 deploy', 'DEMO-22 fix']);
+  assert.match(waiting[0].text, /PR #15 is merged: jira-sync moves DEMO-21 to Ready for QA once its QA environment runs it/);
+  // An open PR of the item counts before a merged one: an item In Progress after QA fail has its new PR open.
+  const again = await round({ items: [epic('in-progress'), story('DEMO-21', 'in-review')], decide: decider({ 'review 16': GO('reviewer') }), pulls: [{ key: 'DEMO-21', number: 16, draft: false }], merged: [{ key: 'DEMO-21', number: 15 }] });
+  assert.deepEqual(again.start.map(({ command, arg }) => `${command} ${arg}`), ['review 16']);
+});

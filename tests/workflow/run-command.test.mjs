@@ -68,12 +68,20 @@ test('the board, a decision and a dry run that gives none come from ao-step itse
     return { stderr: 'ao-step: ATLASSIAN_AGENT_TOKEN is not set', code: 1 };
   });
   const e = effects(spawn, fakeFs());
-  assert.deepEqual(await e.readBoard(), { items: [{ key: 'DEMO-21' }], pulls: [] });
+  assert.deepEqual(await e.readBoard(), { items: [{ key: 'DEMO-21' }], pulls: [], merged: [] });
   assert.equal((await e.decide('build', 'DEMO-21')).go, true);
   const none = await e.decide('build', 'DEMO-22');
   assert.equal(none.waits, 'fix');
   assert.match(none.reason, /gave no decision: ao-step: ATLASSIAN_AGENT_TOKEN is not set/);
   assert.deepEqual(calls.map((args) => args.join(' ')), ['status --json', 'build DEMO-21 --json', 'build DEMO-22 --json']);
+});
+
+// T14 of C2, finding 7: the board carries the PRs merged lately, so an item In Review waits for its deploy.
+test('the board carries the PRs merged lately, and an older ao-step that names none gives an empty list', async () => {
+  const merged = fakeSpawn(() => ({ stdout: '{"items":[],"pulls":[],"merged":[{"key":"DEMO-21","number":15}]}' }));
+  assert.deepEqual(await effects(merged.spawn, fakeFs()).readBoard(), { items: [], pulls: [], merged: [{ key: 'DEMO-21', number: 15 }] });
+  const older = fakeSpawn(() => ({ stdout: '{"items":[],"pulls":[]}' }));
+  assert.deepEqual(await effects(older.spawn, fakeFs()).readBoard(), { items: [], pulls: [], merged: [] });
 });
 
 test('a run goes with --go and --result, and resolves the decision it wrote there, or null when it wrote none', async () => {
