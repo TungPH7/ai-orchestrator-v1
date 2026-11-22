@@ -299,3 +299,24 @@ test('the Epic\'s documents are quoted at the base; when the PR changes one, the
   assert.ok(text.includes('- Files: M docs/specs/SMP-2/plan.md, A docs/adr/0009-no-owner-check.md, R100 docs/adr/0003-old.md → apps/api/x.md'));
   assert.ok(text.includes('This PR changes M docs/specs/SMP-2/plan.md, A docs/adr/0009-no-owner-check.md, R100 docs/adr/0003-old.md → apps/api/x.md. The parts below are at the base aaaaaaa, as approved at gate ②. The changes are in the diff, and an ADR the PR adds or changes has not passed gate ②.'));
 });
+
+// T14 of C2, finding 10: templates/plan.md writes "- [ ] <KEY>: <title>", and the plan of SHOP-81 read
+// "- [ ] SHOP-82 T1: <title>" once ba added the keys; planEntry knew only "Task 1:", so the pack had no entry.
+test('the plan entry of an item is found by the line forms of the template and of a plan whose keys ba added', () => {
+  const plan = [
+    '## Task List',
+    '### Phase 1: Nền',
+    '- [ ] DEMO-11: Module auth dùng chung: băm mật khẩu, phát JWT · be-dev · level heavy: băm mật khẩu và ký JWT',
+    '  - Phạm vi: `apps/api/src/auth/`.',
+    '### Phase 2: Đăng nhập',
+    '- [ ] DEMO-12: Đăng nhập bằng email và mật khẩu (Sub-task BE DEMO-13, FE DEMO-14) · be-dev, fe-dev (Sub-task)',
+    '- [x] SHOP-82 T1: Schema V7 và API danh mục · be-dev · level heavy: dữ liệu có sẵn',
+    '- [ ] SHOP-83 Story 1: Quản lý danh mục trong admin · fe-dev',
+    '### Checkpoint: Đăng nhập',
+    '- [ ] E2E test của DEMO-12 pass trên Development',
+  ].join('\n');
+  assert.equal(planEntry(plan, 'Module auth dùng chung: băm mật khẩu, phát JWT'), '- [ ] DEMO-11: Module auth dùng chung: băm mật khẩu, phát JWT · be-dev · level heavy: băm mật khẩu và ký JWT\n  - Phạm vi: `apps/api/src/auth/`.');
+  assert.match(planEntry(plan, 'Đăng nhập bằng email và mật khẩu'), /^- \[ \] DEMO-12: /);
+  assert.match(planEntry(plan, 'Schema V7 và API danh mục'), /^- \[x\] SHOP-82 T1: /);
+  assert.match(planEntry(plan, 'Quản lý danh mục trong admin'), /^- \[ \] SHOP-83 Story 1: /);
+});

@@ -256,3 +256,33 @@ test('an ADR of an Epic is Proposed with its plan and takes effect at gate ②; 
   assert.match(read('review-report.md'), /^Scope: changes since <short SHA of the commit of that report>$/m);
   assert.match(read('review-report.md').split('## Example')[1], /^Role: security\nScope: changes since 0f1e2d3$/m);
 });
+
+// T14 of C2 (Quan sát cho T15): the STOP after seo counted "12 open questions" on SHOP-81, where 3 were questions; the
+// others were notes on answers and decisions of sa, which openQuestions (lib/workflow/runs.mjs) read as questions since
+// none started with Q1. Every template with Open Questions tells the writer to number each question so.
+test('every Open Questions section asks for questions numbered Q1, Q2…, and notes left unnumbered', () => {
+  for (const file of ['spec.md', 'design.md', 'plan.md']) {
+    const text = readFileSync(join(ROOT, 'templates', file), 'utf8');
+    const at = text.indexOf('## Open Questions');
+    assert.ok(at >= 0, file);
+    assert.match(text.slice(at, at + 600), /Q1, Q2/, `${file}: the guidance names Q1, Q2`);
+    assert.match(text.slice(at, at + 600), /not numbered/, `${file}: notes are not numbered`);
+  }
+});
+
+// T14 of C2, finding 11: the two fe-dev Stories of SHOP-81 built one after the other, since every dev role had one
+// agent, and the plan did not say so. sa says it when items of one dev role could build at once.
+test('sa says when items of one dev role could build at once, and that runs.agents_per_role decides', () => {
+  const sa = readFileSync(join(ROOT, 'agents', 'prompts', 'sa.md'), 'utf8');
+  assert.match(sa, /runs\.agents_per_role/);
+  assert.match(readFileSync(join(ROOT, 'templates', 'plan.md'), 'utf8'), /runs\.agents_per_role/);
+});
+
+// T14 of C2 (Quan sát cho T15): an answer such as "đồng ý theo khuyên của Claude" means nothing to an agent that never
+// saw the advice. The skills that copy the human's answers copy the advice it refers to as well, quoted.
+test('the skills that copy answers word for word also copy the advice an answer refers to', () => {
+  for (const skill of ['ao-spec', 'ao-plan']) {
+    const text = readFileSync(join(ROOT, 'kit', '.claude', 'skills', skill, 'SKILL.md'), 'utf8');
+    assert.match(text, /refers to advice you gave/, skill);
+  }
+});

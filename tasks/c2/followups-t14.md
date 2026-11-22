@@ -1,6 +1,6 @@
 # Batch sửa kit sau T14: finding của lần chạy thật SHOP-81 và việc còn mở của review PR #81
 
-**Trạng thái:** đợt 1 đã merge (kit PR #339, `b5788d9`). Đợt 2 đang làm, trên nhánh `task/c2-t14-fix-2` (worktree `ao-t14-fixes`). Bạn bảo làm ở Phiên 35 · Lượt 37 ("Dừng làm SHOP-87 và SHOP-88, làm các finding và lỗi kit nhé").
+**Trạng thái:** đợt 1 đã merge (kit PR #339, `b5788d9`), đợt 2 đã merge (kit PR #340, `0ff0a89`). Đợt 3 đang làm, trên nhánh `task/c2-t14-fix-3` (worktree `ao-t14-fixes`). Bạn bảo làm ở Phiên 35 · Lượt 37 ("Dừng làm SHOP-87 và SHOP-88, làm các finding và lỗi kit nhé").
 
 **Nguồn:**
 - 15 mục "Findings kit gom lại từ T14" và mục "Quan sát cho T15" ở [todo.md](todo.md), phần T14;
@@ -94,3 +94,9 @@ Tài liệu: `docs/dev-workflow.md`, mục `/ao-run`.
 3. Ruleset strict: chưa làm, chờ bạn quyết.
 
 Tài liệu: `docs/release-workflow.md` (bảng môi trường, đoạn deployer, bảng status `error`).
+
+**Đợt 3** (nhánh `task/c2-t14-fix-3`, 1.817 test xanh):
+1. `planEntry` nhận cả `Task 1:`, `<KEY>:` của template, và `SHOP-82 T1:` (khoá ba thêm vào trước tên).
+2. `sa.md` (bước 2) và hướng dẫn Task List của `templates/plan.md`: hai item cùng role dev, không phụ thuộc nhau, chỉ build cùng lúc khi `runs.agents_per_role` cho role đó hơn một agent. `sa` đọc giá trị này, và khi nó không cho thì ghi dưới phase rằng hai item build lần lượt, kèm giá trị cần đặt để bạn quyết ở gate ②.
+3. Câu hỏi mở đánh số `Q1`, `Q2`… ở đầu dòng: trong hướng dẫn Open Questions của `spec.md`, `design.md`, `plan.md`, và trong prompt `ba`, `sa`, `seo`, `ux`. Ghi chú về câu trả lời và quyết định không đánh số. `openQuestions` đã ưu tiên các dòng `Q<n>`, nên không phải đổi code.
+4. Skill `ao-spec` và `ao-plan`: khi câu trả lời của bạn nhắc tới lời khuyên của phiên chính, phiên chính chép lời khuyên đó nguyên văn sau câu trả lời, dưới dòng `Lời khuyên được nhắc tới:`.
