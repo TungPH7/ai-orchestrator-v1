@@ -40,7 +40,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 32 | `84d69ed3-b065-40d0-a4e2-3c06a66ac5cb` | 2026-11-15 khoảng 01:52 → | Bạn dán đoạn cuối của Phiên 31, đã Accept `SHOP-6` (T10 xong); T10h: kit chỉ cắt `vX.Y.0` từ `develop`, nên bản đưa `CODEOWNERS` lên `main` là `v0.2.0` và Epic `SHOP-7` lên `v0.3.0`; Fix Version `v0.3.0` tạo qua REST; spec 2.9 phần 7, plan, todo sửa theo; chờ bạn duyệt gate ④ (`fdc2ee0`, `SHOP-6`); lượt 2: bạn duyệt gate ④; `release/v0.2.0` cắt bằng login của bạn, Staging; `/ao-ship v0.2.0` (0,92 USD): regression PASS, PR report #14 do App `ao-merge` merge, PR release #15 CI xanh; chờ bạn approve ở gate ⑤ và chọn ai bấm Release `v0.2.0`; lượt 3: bạn approve gate ⑤; App `ao-merge` merge PR #15, gắn tag `v0.2.0`, merge ngược PR #16; Production và Development deploy thành công; Release `v0.2.0` trên Jira qua REST; dòng `CODEOWNERS` của `doctor` xanh; T10h xong; `/ao-spec SHOP-7` chạy; lượt 4: bạn hỏi ảnh trang mẫu ở đâu; `ba` viết SPEC (2,99 USD) và dừng với 12 câu hỏi, chờ bạn trả lời; lượt 5: bạn đồng ý cả 12 câu và cho mình tự làm theo đề xuất tới hết B4; `ux` hỏi 16 câu có đề xuất, trả lời bằng lời của bạn; ảnh 05 chụp nhầm ở T11; `sa` thêm NFR1–NFR27; PR docs #17, 12,31 USD; chờ bạn duyệt gate ①; lượt 6: bạn bấm Approve spec; `/ao-plan SHOP-7`; lượt 7: bạn hỏi công cụ đo trang mẫu (Playwright); `sa` hỏi 2 câu, `API_URL` kiểm trên VPS; lượt 8: bạn hỏi 4 câu về Playwright, Claude in Chrome, `chrome-devtools`, animation; Playwright bật được light mode; `misc/clone-100pct-ui-ux/cong-cu-inspect-website.md`; lượt 9: giữ bảng màu sáng của `ux`; lượt 10: chốt Playwright + `chrome-devtools`, ghi vai trò tool trong skill; plan, 3 ADR và 30 item `SHOP-8`…`SHOP-37` (13,97 USD); chờ bạn duyệt gate ②; lượt 11: bạn bấm Approve plan; `jira-sync`, PR #17 merge (`41ede25`); chặng 4 của todo sửa theo plan; chặng 4 ước 335–580 USD, vượt mức 125 USD của spec, nên hỏi bạn chọn làm theo đợt, cả Epic hay thu nhỏ; lượt 12: bạn bỏ giới hạn chi phí (gói Max 5x) và chọn làm cả Epic; `SHOP-8` build, CI đỏ ở coverage rồi sửa, review 0 Critical/High/Medium, 7 Low (12,22 USD); gate ③ hỏi bạn sửa Low trước hay approve; build `SHOP-10`; lượt 13: bạn chọn sửa 7 Low của PR #18 trước khi approve; lượt 14: bạn hỏi chạy item song song bằng 2 worktree; kit chưa hỗ trợ (checkout `develop`, cổng, khóa, WIP), đúng việc C2 chưa làm; đề xuất giữ lần lượt hay làm C2 tối thiểu trước; lượt 15: bạn hỏi kỹ về C2 tối thiểu; đánh giá ở `misc/thao-luan/c2-toi-thieu-giua-pilot-3.md`: khả thi, không breaking nếu mặc định 1, 7 chỗ phải sửa, phải làm trong worktree riêng của kit; đề xuất (1) cộng viết spec C2; `SHOP-10` PR #19 CI đỏ cùng lỗi coverage; `/ao-fix 18` sửa 7 Low; lượt 16: chuyển bản đánh giá C2 vào `misc/thao-luan/sdlc-song-song/` và `clone-100pct-ui-ux/` vào `misc/thao-luan/`; lượt 17: bạn chọn chạy lần lượt cộng viết spec C2; thử thật MCP, `--resume` và hook chặn trong worktree: cả ba ổn; `SPEC-parallel-runs.md` nháp, 8 điểm chờ duyệt; `fe-dev` sửa 7 Low của PR #18 (3,30 USD); lượt 18: bạn hỏi cấu hình 1, 2, 3 hay n lượt song song; đề xuất `runs.parallel` 1..4 trong `project.yaml`, biến `AO_RUNS_PARALLEL` để hạ tạm, bắt đầu với 2; chưa sửa spec; `SHOP-8` sửa 7 Low, review lại: 1 Medium và 1 Low trong tài liệu, `security` 0 lỗi (21,14 USD); gate ③ hỏi sửa luôn hay approve; `/ao-fix 19`; lượt 19: giải thích chậm: mỗi item một làn, một worktree, trong làn vẫn một agent; `runs.parallel` là số làn có agent chạy cùng lúc; đề xuất đổi tên thành `runs.items_at_once`; lượt 20: đổi tên khóa thành `runs.items_at_once`; giải thích làn đang mở và agent cùng lúc; đề xuất 2 agent cùng lúc (máy 16 GB, còn 2,6 GB trống), số làn để WIP quyết; lượt 21–23: đổi tên thành `agents_at_once`, làn mở do bạn quyết bằng `lanes_max` (đề xuất 3 và 2), hỏi đáp ở `lan-va-agent-cung-luc.md`; PR #18 sửa Medium và Low; PR #19 tới gate ③ (1 Medium, 5 Low); lượt 24: bạn chọn sửa hết Medium và 5 Low của PR #19 trước khi approve; lượt 25: bạn phản biện, chốt số agent bằng số làn; spec thêm chốt RAM `min_free_ram_gb: 3` (đo: còn 2,8 GB trống, VS Code 3,8 GB); lượt 26: bạn hỏi cái gì tốn RAM; đo: agent `security` 0,34 GB, VS Code 3,8 GB; bạn đúng một nửa; kết luận giữ: số agent bằng số làn, chốt RAM 3 GB; PR #18 sửa xong Medium và Low, còn 3 Low nhỏ, đề xuất approve (`SHOP-8` 25,38 USD); `/ao-fix 19`; lượt 27–28: bạn approve PR #18, `merge-gate` merge (`4605845`); xác nhận kit tự tạo worktree, không cần cửa sổ VS Code; lượt 29: chỉ còn một con số `lanes_max` (số agent bằng nó, hạ tạm bằng `AO_AGENTS_AT_ONCE`); In Review 2 chỉ là mức cột trên board, không chặn, không phải sửa Jira; lượt 30: spec C2 vẫn chờ duyệt; tóm lại 8 điểm ở dạng mới nhất, đề xuất đồng ý cả 8; lượt 31: vì sao chỉ build, fix, review, QA song song: chúng chỉ đụng item của mình; đề xuất thêm mỗi lúc một QA trên một môi trường; chưa sửa spec; lượt 32: spec, plan của hai Epic song song: làm được về kỹ thuật nhưng contract chặn (`epic-shaping: 1`), số ADR trùng; đề xuất để phần 3, làm sau; Development deploy `4605845`; lượt 33: bỏ việc chạy nhiều Epic song song, không ghi vào spec; lượt 34: vì sao một QA trên một môi trường: chung database Development, E2E ghi dữ liệu, kết quả sai tốn thật; đề xuất thêm kiểm bản deploy trước và sau QA; chưa sửa spec; lượt 35: bạn duyệt spec C2 cùng luật QA; kit PR #290 merge; PR #19 lượt hai: 1 Medium thật và 3 Low, hỏi bạn sửa tiếp; `/ao-qa SHOP-8`; `SHOP-8` PASS QA (27,05 USD), chờ bạn Accept; build `SHOP-9`; bắt đầu code C2 phần 1 ở `ai-orchestrator-c2`; C2 phần 1 xong, kit PR #291 merge (1.490 test); bắt đầu phần 2; C2 phần 2 (kit PR #292) và bản sửa coverage (#293) merge; `SHOP-9` PR #20 đỏ CI vì file test; kế tiếp chép kit vào `shop`; `SHOP-38` chép kit `352b3df` vào `shop`, bật 3 làn; PR #21; `/ao-review 21`; lượt 36: bạn nhờ Accept `SHOP-8` (Done qua token admin) và sửa Medium, 3 Low của PR #19; lượt 37: bạn hỏi còn việc gì cần bạn: ngay lúc này không; sắp tới gate ③ của PR #21, #19, #20 và Accept; lượt 38: `/ao-fix 19` chạy code cũ vì tới trước khi PR #21 merge; nhiều làn bắt đầu ngay sau khi PR #21 merge |
 | 33 | `0624de51-1879-44c5-a6f3-793068e0d8be` | 2026-11-16 khoảng 21:22 → | Bạn dán đoạn cuối của Phiên 32, hỏi lại Bug SHOP-51 và cách fix, dặn chưa làm gì; Claude giải thích: khi slug trùng, Hibernate ghi cả câu INSERT kèm tên, mô tả sản phẩm vào log (trái NFR12); đề xuất (a) Low, Affects Version trống, Fix `v0.3.0`, Ready; cách fix: tắt logger `org.hibernate.orm.jdbc.error`, test bắt log, sửa dòng log `root=` của `GlobalExceptionHandler`; chờ bạn |
 | 34 | `ee11b1ec-f133-42e6-ae14-68d9209ea8b8` | 2026-11-19 khoảng 14:25 → | Bạn hỏi năm câu: kit gắn chặt với GitHub, Jira, VPS không, GitLab và EC2, so với agent-skills, vì sao agent-skills phổ biến, quản lý task và gõ lệnh tay; greenfield hay brownfield; luồng deploy của `shop` so với `deploy.yml` của bạn; vì sao chép kit lên VPS; nơi lưu tài liệu của SA, BA, PM, QA, UX. Claude viết `misc/thao-luan/kit-va-du-an-thuc-te/stack-deploy-va-luu-tai-lieu.md` |
-| 35 | `9b7de2de-fbda-493b-951d-5d7c26b8c106` | 2026-11-21 khoảng 01:33 → | Bạn dán đoạn cuối của Phiên 33 và gõ "làm T13"; `SHOP-79` tạo, Refine và Start; `shop` PR #80 chép kit `8a9f25d` (C2, T20b) và Low 9 (khối `review` của `project.yaml`); CI xanh 7 job; review chạy (`reviewer` `xhigh`, `security` `max`); `security` chạm giới hạn 5 giờ, Lượt 2 chạy tiếp; review xong: 0 Critical, 0 High, sau khi gộp còn 5 Medium và 4 Low, đều trong code kit; tổng 15,23 USD; PR #80 merged (`20cbfd4`), QA `SHOP-79` PASS, chờ bạn Accept; kit PR #334 sửa 9 việc (`82b1bca`); `SHOP-80` PR #81 chép kit, review: `security` 1 High (entity HTML lách hook của `seo`), Lượt 6 ("Làm"): kit PR #335 (`8847a84`), review vòng hai: `security` High mới (hook bỏ `<…>` mà Jira giữ); Lượt 7 ("sửa theo đề xuất"): hook tự gửi comment agent dạng HTML đã escape, kit PR #336 (`9374641`), review vòng ba: `security` 1 High (`plainText` không idempotent), 2 Medium; `reviewer` Approve, 3 Medium, 1 Low; `SHOP-80` 28,40 USD, cờ Needs you vì giới hạn rework; Lượt 8 ("chọn 2"): approve PR #81 với `Accept risk: 08bc0732 until 2026-12-15`, gỡ cờ, đăng báo cáo `reviewer`; Lượt 9 ("Merge giúp tôi. T14: chọn hướng 1. Danh mục"): PR #81 merged (`154ac4e`), deploy Development OK, gỡ cờ bằng tài khoản admin, QA `SHOP-80` PASS (0,95 USD; tổng 29,35 USD); intake Epic Danh mục, câu hỏi 1; Lượt 10 ("Accept giúp"): `SHOP-79`, `SHOP-80` Done, T13 và T13b xong; bản nháp Epic Danh mục (tối đa 3 item); Lượt 11: Epic `SHOP-81` tạo, Start spec, `/ao-spec`: `ba` viết SPEC (21 AC), hỏi 11 câu; Lượt 12: bạn đồng ý theo khuyên (cho xóa danh mục còn sản phẩm, bỏ AC11), `ux` vẽ màn hình, hỏi 10 câu (5,32 USD); Lượt 13: đồng ý cả 10; `sa`, docs PR #82, `seo` (12,29 USD); `seo` hỏi 3 câu; Lượt 14: đồng ý theo khuyên, `seo` sửa SEO, stage spec xong (10,87 USD), chờ bạn ở cổng ① |
+| 35 | `9b7de2de-fbda-493b-951d-5d7c26b8c106` | 2026-11-21 khoảng 01:33 → | Bạn dán đoạn cuối của Phiên 33 và gõ "làm T13"; `SHOP-79` tạo, Refine và Start; `shop` PR #80 chép kit `8a9f25d` (C2, T20b) và Low 9 (khối `review` của `project.yaml`); CI xanh 7 job; review chạy (`reviewer` `xhigh`, `security` `max`); `security` chạm giới hạn 5 giờ, Lượt 2 chạy tiếp; review xong: 0 Critical, 0 High, sau khi gộp còn 5 Medium và 4 Low, đều trong code kit; tổng 15,23 USD; PR #80 merged (`20cbfd4`), QA `SHOP-79` PASS, chờ bạn Accept; kit PR #334 sửa 9 việc (`82b1bca`); `SHOP-80` PR #81 chép kit, review: `security` 1 High (entity HTML lách hook của `seo`), Lượt 6 ("Làm"): kit PR #335 (`8847a84`), review vòng hai: `security` High mới (hook bỏ `<…>` mà Jira giữ); Lượt 7 ("sửa theo đề xuất"): hook tự gửi comment agent dạng HTML đã escape, kit PR #336 (`9374641`), review vòng ba: `security` 1 High (`plainText` không idempotent), 2 Medium; `reviewer` Approve, 3 Medium, 1 Low; `SHOP-80` 28,40 USD, cờ Needs you vì giới hạn rework; Lượt 8 ("chọn 2"): approve PR #81 với `Accept risk: 08bc0732 until 2026-12-15`, gỡ cờ, đăng báo cáo `reviewer`; Lượt 9 ("Merge giúp tôi. T14: chọn hướng 1. Danh mục"): PR #81 merged (`154ac4e`), deploy Development OK, gỡ cờ bằng tài khoản admin, QA `SHOP-80` PASS (0,95 USD; tổng 29,35 USD); intake Epic Danh mục, câu hỏi 1; Lượt 10 ("Accept giúp"): `SHOP-79`, `SHOP-80` Done, T13 và T13b xong; bản nháp Epic Danh mục (tối đa 3 item); Lượt 11: Epic `SHOP-81` tạo, Start spec, `/ao-spec`: `ba` viết SPEC (21 AC), hỏi 11 câu; Lượt 12: bạn đồng ý theo khuyên (cho xóa danh mục còn sản phẩm, bỏ AC11), `ux` vẽ màn hình, hỏi 10 câu (5,32 USD); Lượt 13: đồng ý cả 10; `sa`, docs PR #82, `seo` (12,29 USD); `seo` hỏi 3 câu; Lượt 14: đồng ý theo khuyên, `seo` sửa SEO, stage spec xong (10,87 USD), chờ bạn ở cổng ①; Lượt 15: Approve spec, `/ao-plan`: `sa` viết plan 3 item (16,52 USD), hỏi 1 câu; Lượt 16: giữ 3 item, `ba` tạo SHOP-82, 83, 84 (21,12 USD), chờ bạn ở cổng ②; Lượt 17: bạn cho Claude duyệt thay trong T14; `sa` đổi tên Task List, Approve plan, docs PR #82 merged, item Ready (22,53 USD); `/ao-run SHOP-81` bắt đầu |
 
 ---
 
@@ -31879,3 +31879,1157 @@ Stage spec của SHOP-81 đã xong, và giờ chờ bạn ở **cổng ①**.
 4. Sau đó là `/ao-plan SHOP-81`: `sa` viết plan (dự kiến 3 item), `ba` tạo item, rồi dừng ở cổng ②.
 
 Bạn cũng có thể gõ "approve spec giúp", mình bấm thay bằng token admin của bạn rồi chạy luôn `/ao-plan`.
+
+# Phiên 35 · Lượt 15 — 2026-11-21 khoảng 20:40
+
+**Bạn:**
+
+```markdown
+approve spec giúp
+```
+
+**Claude:**
+
+Mình đã bấm **Approve spec** trên SHOP-81 bằng token admin của bạn, kèm comment ghi lý do. Epic giờ ở **Planning**.
+
+`/ao-plan SHOP-81` đang chạy trong nền:
+1. `sa` viết `plan.md`, dự kiến 3 item: một Task nền, rồi hai Story chạy song song.
+2. `ba` tạo các item đó trên Jira.
+
+Stage này dừng ở cổng ②: bạn đọc `plan.md` trên docs PR #82, rồi bấm Approve plan. Khi xong hoặc khi có câu hỏi, mình sẽ báo, kèm chi phí và các item cần bạn xem.
+
+**Claude (tiếp Lượt 15, sau lượt của sa):**
+
+`sa` đã viết xong plan của SHOP-81 (5,65 USD) và dừng lại hỏi bạn 1 câu trước khi `ba` tạo item. SHOP-81 tới giờ tốn 16,52 USD.
+
+**Plan: 3 item, đúng giới hạn bạn đặt**
+
+| Item | Role | Mức | Phụ thuộc |
+|---|---|---|---|
+| T1: `api`, schema V7 và API danh mục | `be-dev` | heavy | — |
+| ADM: `admin` quản lý danh mục, chọn danh mục cho sản phẩm (S1–S4) | `fe-dev` | standard | T1 |
+| USR: trang danh mục cho khách, breadcrumb, phần SEO (S5–S8) | `fe-dev` | standard | T1 |
+
+- ADM và USR không chờ nhau. Sau khi T1 merge, hai `fe-dev` chạy song song trong hai làn. Đúng phần C2 cần thử.
+- Không thêm thư viện mới. Có hai ADR mới:
+  - ADR-0004: xóa danh mục thì `category_id` của sản phẩm thành rỗng;
+  - ADR-0005: thứ tự tên theo tiếng Việt, và "Áo" với "áo" tính là trùng.
+- Một quyết định nên biết: khi form sản phẩm cũ không gửi `categoryId`, API giữ nguyên danh mục hiện có. Nhờ vậy form của SHOP-7 trên Development vẫn lưu được trong lúc T1 đã merge mà ADM chưa xong.
+- Rủi ro: `sa` chưa kiểm được image Postgres có dữ liệu collation tiếng Việt không, vì Docker đang tắt. Test đầu tiên của T1 sẽ cho biết. Nếu thiếu, SPEC đã có đường lui: chữ "đ" xếp lẫn với "d".
+
+**Câu hỏi của `sa`**
+
+Giữ 3 item thì mỗi item có khoảng 20–30 file code, gấp 4–6 lần mức thường của một Story (khoảng 5 file). `sa` đã chia mỗi item thành các bước, mỗi bước khoảng 5 file. Có hai cách:
+1. **Giữ 3 item**, mỗi item làm theo các bước nhỏ đó.
+2. **Tách thành 9 item nhỏ.** Plan đã ghi sẵn cách tách.
+
+**Mình khuyên giữ 3 item**, vì đúng ý bạn: ít thời gian và token.
+- 9 item nghĩa là 9 PR, 9 lượt review (`reviewer` và `security`) và 9 lượt QA. Mỗi lượt review tốn vài USD, nên tổng sẽ cao hơn nhiều.
+- Với 3 item, mỗi PR lớn hơn, nên review mỗi PR lâu hơn và có thể ra nhiều finding hơn. Lượt dev cũng dài, nhưng `fe-dev` và `be-dev` có giới hạn 170–260 lượt mỗi lần chạy. Nếu chạm giới hạn, `ao-step` chạy tiếp trong cùng phiên.
+
+Bạn trả lời "giữ 3 item" hoặc "tách 9". Sau đó `ba` tạo item trên Jira, và stage plan dừng ở cổng ②: bạn đọc `plan.md` cùng hai ADR trên docs PR #82, rồi bấm Approve plan.
+
+# Phiên 35 · Lượt 16 — 2026-11-21 khoảng 21:10
+
+**Bạn:**
+
+```markdown
+giữ 3 item
+```
+
+**Claude:**
+
+Mình đã ghi nguyên văn "giữ 3 item" vào file trả lời. `sa` đang chạy tiếp trong phiên cũ để ghi quyết định này vào plan, sau đó `ba` tạo 3 item trên Jira. Khi tới cổng ②, mình báo kèm chi phí và các bước bạn cần làm.
+
+**Claude (tiếp Lượt 16, sau stage plan):**
+
+Stage plan của SHOP-81 đã xong và đang chờ bạn ở **cổng ②**. Tới giờ SHOP-81 tốn 21,12 USD: `sa` 2,00 USD, `ba` 2,61 USD ở lượt này.
+
+**`ba` đã tạo 3 item**, tất cả ở New:
+
+| Key | Loại | Nhãn | Chờ |
+|---|---|---|---|
+| **SHOP-82** | Task: `api`, schema V7 và API danh mục | `be-dev`, effort `xhigh`, heavy | — |
+| **SHOP-83** | Story: admin quản lý danh mục (AC1–AC10) | `fe-dev`, standard | SHOP-82 |
+| **SHOP-84** | Story: trang danh mục cho khách (AC12–AC21) | `fe-dev`, standard, `ao-seo` | SHOP-82 |
+
+- SHOP-82 chặn cả hai Story. Hai Story không chờ nhau, nên chạy song song được sau khi SHOP-82 merge.
+- Hai Story chỉ có việc frontend, vì toàn bộ API nằm trong SHOP-82.
+- `sa` đã ghi quyết định "giữ 3 item" vào plan, và dặn `reviewer` không đòi tách item chỉ vì nhiều file.
+
+**Ở cổng ② bạn duyệt:** plan, hai ADR, effort `xhigh` của SHOP-82, và ngoại lệ SHOP-82 là một Task làm cả API.
+
+**Một lỗi nhỏ của kit, nên sửa trước khi duyệt**
+- Gói ngữ cảnh của review tìm mục của item trong plan theo dạng `Task 1: <tên>` hay `Story 1: <tên>`. Template của plan lại bảo viết `<KEY>: <tên>`, nên plan đang ghi `SHOP-82 T1: …` và gói không tìm thấy. Mình ghi lỗi này vào ghi chú T14 để sửa trong kit sau.
+- Hậu quả: `reviewer` và `security` phải tự đọc cả plan ở mỗi lượt review, tốn thêm token qua nhiều lượt.
+- **Mình khuyên** chạy `/ao-plan SHOP-81` kèm yêu cầu đổi ba dòng trong Task List thành `Task 1: …`, `Story 1: …`, `Story 2: …`, giữ nguyên tên item. `sa` sửa, tốn khoảng 1 USD.
+
+**Bạn chọn:**
+1. **"sửa tên rồi approve plan giúp"** (mình khuyên): mình chạy `/ao-plan` để `sa` đổi tên, rồi bấm Approve plan thay bạn bằng token admin, rồi chạy `/ao-plan SHOP-81` lần nữa để các item sang Ready.
+2. **"approve plan giúp"**: bỏ qua lỗi tên, duyệt luôn.
+3. Tự đọc trước: mở https://github.com/TungPH7/shop/pull/82, tab **Files changed**, đọc `docs/specs/SHOP-81/plan.md` và hai file ADR trong `docs/adr/`. Sau đó vào https://phunghuutung12b4.atlassian.net/browse/SHOP-81, bấm **Planning** và chọn **Approve plan**.
+
+Sau cổng ② là bước chính của T14: `/ao-run SHOP-81`, chạy cả Epic với các phần mới của C2.
+
+# Phiên 35 · Lượt 17 — 2026-11-22 khoảng 00:50
+
+**Bạn:**
+
+```markdown
+Chọn 1. "sửa tên rồi approve plan giúp". Sau đó cứ làm theo bạn đề xuất, những gì bạn không có quyền thì hỏi tôi, còn lại cứ approve theo đề xuất của bạn
+```
+
+**Claude:**
+
+Mình đã làm theo cách 1 và bắt đầu bước chính của T14: **`/ao-run SHOP-81` đang chạy**.
+
+**Đã làm**
+1. **Ghi nhớ cách bạn cho phép trong T14:** mình làm theo đề xuất của mình, và duyệt thay bạn các cổng, PR và Accept. Mình vẫn hỏi bạn khi:
+   - cần quyền mà mình không có;
+   - phải xóa thứ gì không lấy lại được;
+   - review còn finding High;
+   - tới cổng ④⑤ (release).
+2. **`sa` đổi tên ba dòng Task List** thành `Task 1:`, `Story 1:`, `Story 2:` (0,56 USD). Gói review giờ tìm được mục của cả ba item.
+   - `sa` có hỏi `ba` một câu `Cần ba:`. `ao-step` tự chạy `ba` để trả lời (0,86 USD): `ba` kiểm cả ba item trên Jira, không cần sửa gì.
+3. **Duyệt cổng ② thay bạn** bằng token admin. Mình duyệt plan 3 item, hai ADR, effort `xhigh` của SHOP-82, và ngoại lệ SHOP-82 là Task làm cả API.
+4. **Chạy `/ao-plan` lần nữa:** jira-sync và `merge-gate` đã merge docs PR #82, và SHOP-82, 83, 84 đã sang Ready. SHOP-81 tới giờ tốn 22,53 USD.
+5. **Bật Docker:** SHOP-82 cần Docker cho test của app Java. Mình giữ Docker chạy suốt lượt `/ao-run`, xong sẽ tắt.
+
+**`/ao-run SHOP-81` đang làm gì**
+- Chạy tối đa 3 việc cùng lúc. Mỗi lượt `/ao-run` có ngân sách 30 USD.
+- Vòng đầu: `be-dev` build SHOP-82 (API và schema). Hai Story chờ SHOP-82 merge, rồi chạy song song trong hai làn.
+
+**Chi phí ước tính cho phần build:** khoảng 60–100 USD cho cả ba item, gồm build, review và QA. Riêng SHOP-82 là item heavy, nên review tốn nhiều hơn.
+- Khi một lượt `/ao-run` chạm 30 USD, nó dừng lại. Khi đó mình báo bạn số đã tiêu, rồi chạy tiếp.
+- Nếu tổng có vẻ vượt xa 100 USD, mình hỏi bạn trước.
+
+Mình theo dõi log của dispatcher. Mỗi lần có việc chờ bạn hay có lỗi, mình báo ngay.
+
+# Phiên 35 · Lượt 18 — 2026-11-22 khoảng 01:15
+
+**Bạn:**
+
+```markdown
+Tạo 1 watcher 4 phút 1 lần để check xem background task có bị treo hay tắc không nhé. wathcher này chạy bằng script hay bằng AI? Có tốn token không?
+```
+
+**Claude:**
+
+Watcher đã chạy, 4 phút kiểm một lần. Nó **chạy bằng script, không dùng AI**: một file bash (`.pilot3-scratch/watch-run.sh`) chỉ đọc file và hỏi Windows xem tiến trình còn sống không.
+
+**Mỗi 4 phút nó kiểm:**
+1. Log sự kiện của dispatcher: có dòng nào chờ bạn, cần sửa, dừng với STOP, chạm ngân sách hay giới hạn không.
+2. Dispatcher còn chạy không, hay đã kết thúc.
+3. Mỗi lệnh đang chạy:
+   - tiến trình của nó còn sống không;
+   - log của agent đã đứng im bao lâu. Đứng im từ 20 phút trở lên thì báo treo. Mình chọn 20 phút vì một lượt test có thể chạy tới 10 phút mà không ghi gì.
+
+**Có tốn token không:**
+- Script chạy không tốn token nào.
+- Chỉ khi thấy chuyện cần báo, nó mới dừng và đánh thức mình. Mỗi lần như vậy mình đọc rồi báo bạn, tốn bằng một câu trả lời ngắn. Sau đó mình chạy lại watcher.
+- Các dòng tiến độ bình thường (bắt đầu, xong) không đánh thức mình. Chúng được gộp vào lần báo sau.
+
+**Đã thay watcher cũ:** watcher trước kiểm mỗi 30 giây và theo dõi nhầm tên file log, vì log của dispatcher đặt tên theo ngày UTC. Mình đã tắt nó.
+
+**Tình hình lúc này (01:17):** `be-dev` đang build SHOP-82 từ 00:57. Log của nó vừa cập nhật, tiến trình còn sống, dispatcher chạy bình thường.
+
+# Phiên 35 · Lượt 19 — 2026-11-22 khoảng 01:26
+
+**Bạn:**
+
+```markdown
+Tại sao đã hơn 4 phút (kể từ lúc Watcher báo lần đầu) rồi mà vẫn không có thông báo mới từ Watcher??
+```
+
+**Claude:**
+
+Watcher không gửi thông báo vì nó được làm để im lặng khi mọi thứ ổn. Nó vẫn kiểm đều 4 phút một lần, nhưng chỉ đánh thức mình khi có chuyện cần báo. Như vậy mới không tốn token.
+
+Mình vừa kiểm tay lúc 01:26 để chắc chắn:
+1. Watcher vẫn đang chạy, chưa báo gì.
+2. Dispatcher (tiến trình 18912) còn sống. Log sự kiện chưa có dòng mới sau "00:57 start /ao-build SHOP-82".
+3. `be-dev` đang build SHOP-82 (tiến trình 19820 còn sống). Log của agent vừa ghi lúc 01:26, nên nó đang làm việc chứ không treo.
+
+Lần báo đầu lúc 01:18 thật ra là báo nhầm, do dòng khởi động có chữ "budget". Mình đã sửa lỗi đó.
+
+Nếu bạn muốn biết nó vẫn sống dù không có chuyện gì, mình có thể cho watcher gửi thêm một dòng "vẫn ổn" mỗi 30 phút. Mỗi dòng tốn khoảng bằng một câu trả lời ngắn.
+
+**Claude (tiếp Lượt 19, 02:10, sau báo của watcher):**
+
+Watcher vừa báo: **SHOP-82 đã build xong** và đang chờ bạn. Chi phí cao hơn mình ước tính khá nhiều, nên mình hỏi bạn trước khi đi tiếp.
+
+**Kết quả build SHOP-82**
+- `be-dev` mở draft PR #83: +7.219/−119 dòng, 59 file. Phần lớn là test, migration và API.
+- Lượt 1 hết giới hạn 171 lượt sau 49 phút (17,98 USD). Lượt 2 làm xong (6,59 USD). Riêng build SHOP-82 tốn **24,57 USD**, tức đã dùng gần hết ngân sách 30 USD của lượt `/ao-run`.
+- CI của PR: `policy`, `sast`, `secrets` đạt; `build-test` và hai job `project` đang chạy.
+
+**Lỗi của kit, mình đã ghi lại:** `ao-step` mua token đọc GitHub một lần lúc bắt đầu, mà token này chỉ sống 1 giờ. Lượt build dài 70 phút, nên lúc đọc PR sau đó GitHub trả 401. `ao-step` dừng mà không viết báo cáo, và dispatcher ghi "stopped with no decision". Không mất gì: PR đã mở, dispatcher vẫn chạy bình thường.
+
+**Ước tính lại chi phí (thay con số 60–100 USD lúc trước):**
+1. Review PR #83: `reviewer` `xhigh` và `security` `max` trên 59 file. Khoảng **20–30 USD** một vòng, có thể thêm một vòng sửa.
+2. Hai Story, mỗi Story gồm build, review và QA: khoảng 25–35 USD mỗi Story.
+3. Cả Epic, tính cả 22,53 USD của spec và plan: khoảng **130–170 USD**.
+
+**Cần bạn chọn**
+1. **Đi tiếp đủ T14** (mình khuyên): mình chọn `/ao-review 83`, bỏ qua bước xem trước vì SHOP-82 chỉ là API. Bước xem trước sẽ thử trên hai Story có giao diện. Mình chạy lại `/ao-run` với ngân sách khoảng 120 USD để nó không dừng mỗi 30 USD. Mình vẫn dừng hỏi bạn nếu gặp High, hay nếu tổng vượt 170 USD.
+2. **Giữ ngân sách thấp:** chạy tiếp với ngân sách 30 USD mỗi lượt, và mình hỏi bạn mỗi khi nó dừng.
+3. **Dừng T14 sau SHOP-82:** review và merge SHOP-82, bỏ hai Story. Rẻ hơn, nhưng không thử được hai làn song song và xem trước trong làn, là phần chính của C2.
+
+Bạn gõ 1, 2 hay 3.
+
+
+**Claude (tiếp Lượt 19, 10:10, dispatcher tự kết thúc):**
+
+Dispatcher `/ao-run` đã tự kết thúc lúc 10:10, và câu hỏi 1/2/3 ở trên vẫn chờ bạn.
+
+**Chuyện gì xảy ra:**
+1. Từ 02:08, dispatcher chờ bạn chọn bước cho SHOP-82. Hai Story SHOP-83 và SHOP-84 đều bị SHOP-82 chặn, nên không có việc gì chạy được.
+2. Sau 8 tiếng không có việc, nó tự dừng, đúng như thiết kế. Đây không phải lỗi. Tổng chi vẫn là **24,57 USD**, không tiêu thêm.
+3. CI của PR #83 đã xanh hết: `build-test`, `policy`, `sast`, `secrets` và hai job `project`.
+4. Mình đã tắt Docker để nó khỏi chạy không. Khi build Story cần thì mình bật lại.
+5. Watcher đã báo việc này lúc 10:12 rồi tự thoát. Mình chạy lại nó khi có `/ao-run` mới.
+
+**Câu hỏi vẫn chờ, giờ đơn giản hơn** vì dispatcher đã tắt, không cần dừng gì nữa:
+1. **Đi tiếp đủ T14** (mình khuyên): `/ao-review 83`, bỏ bước xem trước, rồi chạy `/ao-run` mới với ngân sách khoảng 120 USD. Mình dừng hỏi bạn nếu gặp High, hay nếu tổng vượt 170 USD.
+2. **Giữ ngân sách thấp:** như trên, nhưng mỗi lượt 30 USD, và mình hỏi bạn mỗi khi nó dừng.
+3. **Dừng T14 sau SHOP-82:** chỉ review và merge SHOP-82.
+
+Bạn gõ 1, 2 hay 3.
+
+
+# Phiên 35 · Lượt 20 — 2026-11-22 khoảng 10:42
+
+**Bạn:**
+
+```markdown
+1
+```
+
+**Claude:**
+
+Đã chạy `/ao-review 83` lúc 10:43, bỏ bước xem trước như mình đề xuất.
+
+**Lượt review này gồm:**
+1. `pr-ready`: một script kiểm PR, không dùng agent.
+2. `reviewer` mức `xhigh` và `security` mức `max` chạy song song. Lý do dùng mức cao: PR có migration `V7__create_categories.sql`, nằm trên đường quan trọng.
+3. Ước tính khoảng 20–30 USD.
+
+**Watcher:** mình đã sửa để nó theo dõi được cả lệnh chạy tay chứ không chỉ dispatcher, và đã bật lại. Nó vẫn chỉ đánh thức mình khi có chuyện.
+
+**Sau khi review xong:**
+- Không có High: mình approve và merge PR #83 theo đề xuất. Sau đó chạy `/ao-run SHOP-81` mới với ngân sách 120 USD, và bật lại Docker cho hai Story.
+- Có High: mình dừng và hỏi bạn.
+
+Tổng T14 đến giờ: 22,53 (spec, plan) + 24,57 (build SHOP-82) = **47,10 USD**. Mình dừng hỏi bạn nếu tổng vượt 170 USD.
+
+
+**Claude (tiếp Lượt 20, 11:03, sau review PR #83):**
+
+Review PR #83 xong lúc 10:56, không có High. PR đã merge, và `/ao-run` mới đã bắt đầu build SHOP-83 lúc 11:02.
+
+**Kết quả review (7,94 USD, rẻ hơn nhiều so với ước tính 20–30 USD):**
+- `reviewer` (3,24 USD): Approve. Có 0 Critical, 0 High, 1 Medium và 3 Low.
+  - Medium: lưu sản phẩm mà không gửi `categoryId`, đúng lúc danh mục cũ bị xoá. Khi đó API trả lỗi 400 về một trường mà request không gửi, đúng ra phải trả 200 và sản phẩm không có danh mục. Dữ liệu không mất, thử lại là được.
+  - Low: dòng log khi xoá có thể đếm thiếu 1 sản phẩm; tài liệu API không ghi `category` có thể là `null`; hai đoạn code tạo slug bị lặp.
+- `security` (4,70 USD): không có finding nào. Nó có dặn một điều cho review SHOP-84: app `user` phải kiểm slug danh mục trước khi gọi API.
+
+**Mình đã làm theo đề xuất:**
+1. Approve PR #83 ở gate ③ bằng tài khoản của bạn. Merge-gate đã merge lúc 10:58 (develop `e93bfc3`). Medium và Low để cho một Task follow-up, chưa sửa.
+2. CI trên develop đang deploy lên Development. Khi xong, dispatcher sẽ tự chạy QA cho SHOP-82.
+3. Bật lại Docker, chạy `/ao-run SHOP-81` với ngân sách 120 USD, và bật watcher mới.
+
+**Một điều cần biết:** SHOP-83 và SHOP-84 đều là việc của `fe-dev`. Cấu hình `shop` chưa cho `fe-dev` làm hai việc cùng lúc, nên hai Story sẽ build lần lượt, không song song. Các làn vẫn chạy song song với role khác: lúc SHOP-84 build thì SHOP-83 được xem trước và review. Mình không đổi cấu hình, vì đổi phải thêm một PR và một vòng review. Mình đã ghi điểm này vào ghi chú T14.
+
+**Lỗi nhỏ của kit:** trong lúc chờ deploy, dispatcher ghi SHOP-82 là "needs a fix: its PR is closed", trong khi đúng ra nó chỉ đang chờ deploy. Watcher sẽ báo dòng này, và mình biết nó vô hại.
+
+**Tổng T14 đến giờ: 55,04 USD** (22,53 spec và plan, 32,52 SHOP-82).
+
+
+**Claude (tiếp Lượt 20, 11:09, CI develop fail):**
+
+Watcher báo lúc 11:05, đúng dòng "needs a fix" mình đã nói trước. SHOP-83 vẫn đang build bình thường.
+
+**Một chuyện mới: CI trên develop `e93bfc3` bị fail**, tức là sau khi merge.
+1. Job hỏng là `build-test`. Cả 935 test chỉ có 1 test hỏng: `CategoryPerformanceIntegrationTest`. Test này đo thời gian đọc danh mục, và lần này đo được trung vị 351 ms, vượt giới hạn 200 ms của NFR2.
+2. Trên PR, cùng test này đã đạt. Test đo thời gian thật trên máy GitHub dùng chung thì lúc nhanh lúc chậm, nên hay chập chờn.
+3. Lúc 11:08, mình đã cho chạy lại job hỏng. Việc này không tốn token.
+4. Deploy lên Development do deployer trên VPS làm riêng, không chờ CI, và nó vẫn đang build. Lần này có đổi API nên lâu hơn lần trước.
+5. Mình đã ghi test này vào Task follow-up của SHOP-82, cùng với Medium và 3 Low của review, nhưng chưa sửa. Hướng sửa: chỉ kiểm số câu lệnh SQL, hoặc nới ngưỡng thời gian khi chạy trên CI.
+
+Mình đang chờ deploy và lần chạy lại xong. Sau đó dispatcher sẽ chạy QA cho SHOP-82. Nếu test vẫn fail lần nữa, mình báo bạn.
+
+
+**Claude (tiếp Lượt 20, 11:15, chạy lại CI vẫn fail):**
+
+Cập nhật lúc 11:15: chạy lại vẫn fail, nên đây **không phải lỗi chập chờn**.
+
+**Kết quả:**
+1. Lần chạy lại lúc 11:10 vẫn fail ở cùng test, trung vị 358 ms (lần đầu 351 ms). Trong khi đó, đọc danh mục ở trang admin chỉ mất 15 ms. Vậy API danh mục của trang khách chậm thật trên máy CI, chưa đạt NFR2 (tối đa 200 ms).
+2. Quy định của kit (`contract/policies.yaml`): CI fail nghi chập chờn thì chạy lại tối đa 1 lần, fail lần nữa thì coi là fail thật. Mình đã làm đúng như vậy.
+3. Deploy lên Development đã xong lúc 11:10. Dispatcher tự chạy `/ao-qa SHOP-82` lúc 11:12, song song với build SHOP-83. Đây là lần đầu hai làn chạy cùng lúc, và chúng chạy đúng.
+
+**Vì sao không bỏ qua được:** lệnh test ở gốc chạy test của mọi app. Nên khi SHOP-83 và SHOP-84 mở PR, CI của chúng cũng sẽ đỏ ở test này, và không merge được.
+
+**Cách sửa theo quy trình của kit:** SHOP-82 chưa Done, nên lỗi này không thành Bug mới. Item quay lại qua `qa-fail` và được sửa trên một nhánh và PR mới, vẫn mang mã SHOP-82.
+1. QA đang chạy. Nếu QA tự báo FAIL, SHOP-82 về In Progress, và dispatcher tự giao `be-dev` sửa. `be-dev` đang rảnh, nên việc sửa chạy song song với `fe-dev` đang build SHOP-83.
+2. Nếu QA báo PASS (vì Development trên VPS có thể nhanh hơn máy CI), mình **không Accept**, vì CI đỏ thì chưa đạt Definition of Done. Mình sẽ chạy lại QA với một ghi chú nêu bằng chứng CI đỏ, để `qa` xét lại và trả item về.
+3. Ước tính tốn thêm khoảng 10–15 USD: `be-dev` tìm nguyên nhân bằng EXPLAIN, sửa câu truy vấn hoặc thêm index, rồi review lại. Tổng T14 vẫn trong khoảng 130–170 USD.
+
+Mình làm theo hướng này, như bạn đã cho phép ở Lượt 17. Bạn muốn khác thì nói mình.
+
+
+**Claude (tiếp Lượt 20, 11:19, watcher báo QA):**
+
+Watcher báo lúc 11:18: dispatcher ghi SHOP-82 "waiting for you: Accept or QA fail". Nhưng `/ao-qa SHOP-82` vẫn đang chạy: tiến trình còn sống, log vừa cập nhật. Dòng này hiện sớm vì `qa` đã chuyển item sang In QA, mà dispatcher lại không xét item đó còn bận. Đây là một lỗi nhỏ nữa của kit, mình đã ghi vào ghi chú T14.
+
+Mình đang chờ QA kết thúc thật, rồi làm theo kế hoạch lúc 11:15: QA FAIL thì để dispatcher giao `be-dev` sửa; QA PASS thì mình không Accept, mà chạy lại QA với bằng chứng CI đỏ.
+
+
+# Phiên 35 · Lượt 21 — 2026-11-22 khoảng 11:20
+
+**Bạn:**
+
+```markdown
+Phản hồi chat bằng tiếng Việt, không tiếng Anh
+```
+
+**Claude:**
+
+Xin lỗi bạn. Mấy tin nhắn vừa rồi mình gửi bằng tiếng Anh, dù bản ghi vào log là tiếng Việt. Từ giờ, mọi tin nhắn mình gửi bạn đều là tiếng Việt, chép đúng từng chữ từ bản tiếng Việt đã ghi vào log. Mình đã ghi lại lỗi này vào bộ nhớ để không lặp lại.
+
+**Tình hình lúc 11:20:**
+1. `/ao-qa SHOP-82` vẫn đang chạy trên Development. Dòng "waiting for you: Accept or QA fail" của dispatcher hiện sớm, vì item đã sang In QA khi `qa` còn đang chạy. Đây là một lỗi nhỏ của kit, và mình đã ghi lại.
+2. `fe-dev` vẫn đang build SHOP-83 từ 11:02.
+3. CI trên develop đỏ ở test hiệu năng `CategoryPerformanceIntegrationTest`: trung vị 351 ms và 358 ms, vượt giới hạn 200 ms của NFR2. Lỗi này phải sửa trước khi PR của hai Story merge được.
+
+**Khi QA xong, mình làm theo kế hoạch lúc 11:15:**
+- Nếu QA báo FAIL: dispatcher tự giao `be-dev` sửa SHOP-82 trên một nhánh mới.
+- Nếu QA báo PASS: mình không Accept, mà chạy lại QA với bằng chứng CI đỏ, để `qa` xét lại.
+
+Mình có một script chờ QA kết thúc và watcher đang chạy, nên khi có kết quả mình sẽ báo bạn ngay.
+
+
+**Claude (tiếp Lượt 21, 11:27, kết quả QA SHOP-82):**
+
+QA SHOP-82 xong lúc 11:23 (1,44 USD). Kết quả là **NOT TESTED**, và item bị gắn cờ "Needs you". Mình đã xử lý theo đề xuất và cho QA chạy lại.
+
+**QA báo gì:**
+1. Không tìm thấy lỗi. V2, V5 và V6 PASS, trong đó E2E trên Development có 134 test đạt và 0 test hỏng.
+2. Hai dòng V3 và V4 không kiểm được trên Development: Development không mở `/v3/api-docs`, và cũng không có sản phẩm nào từ trước V7. QA đưa bằng chứng thay thế, gồm API docs chạy ở máy local và test migration trong CI.
+3. V1 thì QA ghi PASS vì dựa vào CI xanh của PR. Nó **bỏ sót** việc CI trên develop đỏ.
+4. Kit đã tự tạo **SHOP-85**, Task gom các finding của Epic, và ghi vào đó Medium và 3 Low của review PR #83. Đây là tính năng mới của C2, và nó chạy đúng.
+
+**Một lỗi kit quan trọng:** dòng đầu của báo cáo QA là `Tester/QA Engineer: # QA report: …`, tức tên vai nằm cùng dòng với tiêu đề. Hàm đọc báo cáo của kit không nhận ra dạng này, nên coi như item chưa có báo cáo QA. Vì vậy lệnh chạy lại QA bằng `--retest` bị từ chối, và sau này Accept cũng sẽ bị chặn. Mình đã ghi lỗi này vào ghi chú T14 để sửa trong kit.
+
+**Mình đã làm (theo quyền bạn cho ở Lượt 17):**
+1. Gỡ cờ "Needs you" của SHOP-82, kèm comment nêu lý do.
+2. Viết ghi chú cho QA:
+   - V3 và V4: chấp nhận bằng chứng thay thế.
+   - V1: xét lại, kèm bằng chứng CI trên develop đỏ hai lần ở NFR2.
+   - Đặt tên vai trên một dòng riêng, để kit đọc được báo cáo.
+3. Lúc 11:26, chạy lại `/ao-qa SHOP-82` với ghi chú đó, theo đường "lỗi do bạn tìm thấy" của kit. Nếu QA báo FAIL, SHOP-82 về In Progress và `be-dev` sửa trên nhánh mới.
+
+`fe-dev` vẫn đang build SHOP-83. Tổng T14 đến giờ: **56,48 USD**.
+
+
+**Claude (tiếp Lượt 21, 11:28, watcher báo):**
+
+Sửa một chi tiết ở tin trước: QA chạy lại lúc 11:26, không phải 11:30.
+
+Watcher vừa báo ba dòng cũ của SHOP-82 (cờ Needs you, rồi "Accept or QA fail"). Mình đã xử lý cả ba. QA đang chạy lại, và `fe-dev` vẫn build SHOP-83. Mình đã bật lại watcher.
+
+
+# Phiên 35 · Lượt 22 — 2026-11-22 khoảng 11:34
+
+**Bạn:**
+
+```markdown
+[ảnh danh sách background task] sao có 2 background task là 1 và 3 (trên cùng và dưới cùng) đều liên quan đến dispatcher vậy?
+```
+
+**Claude:**
+
+Hai task đó là hai thứ khác nhau: task trên cùng **là** dispatcher, còn task dưới cùng là **watcher theo dõi** dispatcher.
+
+1. **"Start the dispatcher for SHOP-81 with a 120 USD budget"** (31 phút): đây là chính dispatcher `/ao-run SHOP-81`. Nó đọc board, chạy build, QA, review cho các item, và chạy tới khi xong Epic, hết ngân sách hoặc chờ bạn quá 8 tiếng.
+2. **"Run QA of SHOP-82 again …"** (6 phút): QA chạy lại SHOP-82 với ghi chú của mình. Lệnh này mình chạy tay, không do dispatcher khởi động.
+3. **"Restart the dispatcher watcher"** (5 phút): đây là script `watch-run.sh` mà bạn yêu cầu ở Lượt 18. Cứ 4 phút nó đọc file log của dispatcher một lần, không dùng AI và không tốn token. Mỗi lần thấy chuyện cần báo, nó báo rồi tự thoát, và mình bật lại nó. Vì vậy tên của nó là "Restart…", và nó chỉ mới chạy 5 phút.
+
+Tóm lại: task 1 làm việc, task 3 canh chừng task 1. Lúc nào cũng chỉ có một dispatcher.
+
+
+**Claude (tiếp Lượt 22, 11:37, QA FAIL và be-dev sửa):**
+
+QA chạy lại xong lúc 11:33 (0,94 USD), và đường sửa lỗi đã chạy đúng như kế hoạch.
+
+1. **QA báo FAIL ở V1** và tự chuyển SHOP-82 từ In QA về In Progress (`qa-fail`). Các dòng khác đều PASS: V3 và V4 theo bằng chứng thay thế bạn đã chấp nhận, còn E2E chạy lại vẫn 134 đạt, 0 hỏng.
+2. Lần này, báo cáo đặt tên vai trên một dòng riêng, nên kit đọc được kết quả.
+3. QA ghi thêm một chi tiết đáng chú ý: trên CI của PR, "store, categories" chỉ mất **4 ms**, còn trên develop là 351 và 358 ms. Vậy câu truy vấn không chậm đều, mà có lần chậm, có lần không. Có thể do PostgreSQL chọn kế hoạch truy vấn khác nhau sau khi test chèn 10.000 sản phẩm. Phần này `be-dev` sẽ tìm ra.
+4. Lúc 11:36, dispatcher **tự chạy** `/ao-build SHOP-82` để `be-dev` sửa trên nhánh mới. Việc này chạy song song với `fe-dev` đang build SHOP-83. Đây là lần đầu hai agent dev khác role chạy cùng lúc trong hai làn, đúng phần chính của C2.
+
+Tổng T14 đến giờ: **57,42 USD**, chưa tính SHOP-83 đang build.
+
+
+# Phiên 35 · Lượt 23 — 2026-11-22 khoảng 11:44
+
+**Bạn:**
+
+```markdown
+[ảnh danh sách background task] "fe-dev đang build SHOP-83" là nằm trong background task đầu này luôn à?
+```
+
+**Claude:**
+
+Đúng vậy. Cả `fe-dev` build SHOP-83 lẫn `be-dev` sửa SHOP-82 đều nằm trong background task đầu tiên. Mình vừa kiểm cây tiến trình để chắc chắn.
+
+1. Background task đầu tiên là dispatcher (tiến trình 18068).
+2. Dispatcher tự mở hai lệnh con, mỗi lệnh cho một item:
+   - `ao-step build SHOP-83` (tiến trình 7664), lệnh này chạy agent `fe-dev`;
+   - `ao-step build SHOP-82` (tiến trình 23200), lệnh này chạy agent `be-dev`.
+3. Danh sách background task chỉ hiện những lệnh mình gõ trực tiếp. Lệnh con do dispatcher mở thì không hiện riêng, mà nằm gọn trong task của dispatcher.
+4. Lần QA chạy lại vừa rồi có một task riêng, vì lệnh đó mình chạy tay, không qua dispatcher.
+
+Vì vậy giờ chỉ còn hai task, nhưng bên trong task đầu tiên có hai agent đang làm việc song song.
+
+
+# Phiên 35 · Lượt 24 — 2026-11-22 khoảng 11:47
+
+**Bạn:**
+
+```markdown
+Tại sao dispatcher không làm SHOP-84, tôi đa 3 làn mà sao chỉ làm có 2 làn??
+```
+
+**Claude:**
+
+SHOP-84 phải chờ vì nó là việc của `fe-dev`, mà `fe-dev` đang build SHOP-83. Mỗi role dev mặc định chỉ được giữ 1 item In Progress cùng lúc. `lanes_max: 3` là **tối đa** 3 làn, không phải lúc nào cũng mở đủ 3.
+
+Mình vừa chạy thử lệnh build SHOP-84 để xem lý do. Kit trả lời: "fe-dev is at its WIP limit dev-agent: it has an item In Progress already".
+
+1. **Hai làn đang chạy** thuộc hai role khác nhau: `fe-dev` build SHOP-83 (45 phút) và `be-dev` sửa SHOP-82 (10 phút).
+2. **SHOP-84 cũng cần `fe-dev`**, nên phải chờ. Cấu hình `shop` chưa đặt `runs.agents_per_role`, nên mỗi role chỉ có 1 agent. Mình đã nhắc chuyện này ở tin lúc 11:03.
+3. **Khi nào làn thứ ba mở:** khi SHOP-83 build xong và mở PR, nó chuyển sang In Review, và `fe-dev` rảnh. Lúc đó SHOP-84 bắt đầu build. Có thể sẽ có 3 việc cùng lúc: `fe-dev` build SHOP-84, review hoặc xem trước SHOP-83, và `be-dev` sửa SHOP-82.
+4. **Nếu muốn 2 `fe-dev` cùng lúc:** phải thêm `agents_per_role: { fe-dev: 2 }` vào `.ai-orchestrator/project.yaml`. Thư mục này được bảo vệ, nên phải qua một PR có review, rồi khởi động lại dispatcher. Việc đó mất khoảng 15–20 phút và vài USD. Đến lúc xong thì SHOP-83 chắc cũng đã build xong (nó đã chạy 45 phút), nên lợi ích rất nhỏ.
+
+Mình khuyên giữ nguyên lần này, và ghi lại cho lần sau: khi chia item, `sa` nên nhắc nếu hai item cùng role mà muốn chạy song song. Nếu bạn vẫn muốn đổi cấu hình ngay, bạn nói mình.
+
+Ngoài ra, dispatcher còn ghi SHOP-85 (Task gom finding) đang chờ refine. Task đó để làm sau cùng, không ảnh hưởng hai Story.
+
+
+# Phiên 35 · Lượt 25 — 2026-11-22 khoảng 11:55
+
+**Bạn:**
+
+```markdown
+cấu hình này "agents_per_role: { fe-dev: 2 } vào .ai-orchestrator/project.yaml" nằm ở repo kit hay repo dự án SHOP? và được set khi nào?
+```
+
+**Claude:**
+
+**Trả lời câu hỏi:** file đó nằm trong **repo dự án `shop`**, không nằm trong repo kit.
+
+1. **Đường dẫn:** `e-commerce/shop/.ai-orchestrator/project.yaml`. Thư mục `.ai-orchestrator/` chứa bản chép của kit, nhưng riêng `project.yaml` là cấu hình của chính dự án. Repo kit không có file này, chỉ có bản mô tả các trường (`lib/scaffold/project.schema.json`) và tài liệu (`docs/dev-workflow.md`).
+2. **Tạo khi nào:** lúc dựng dự án `shop`, ngày 13/11 (commit `e4a708a`). Phần `runs:` với `worktrees: true` và `lanes_max: 3` được thêm ngày 16/11 ở SHOP-38, khi bật ba làn. Khi chép kit mới, kit không ghi đè file này.
+3. **`agents_per_role` chưa từng được đặt** trong `shop`, nên mỗi role dev mặc định chỉ có 1 agent. Muốn đặt thì sửa file này qua một PR của `shop`, có mã item, có review và merge. Sau đó phải khởi động lại dispatcher, vì nó chỉ đọc cấu hình lúc bắt đầu.
+
+**Tin mới lúc 11:51: SHOP-83 build xong** (15,16 USD). `fe-dev` mở draft PR #84 (+4.565/−83 dòng, 53 file), CI xanh.
+- Theo đề xuất trước đó (bước xem trước thử trên Story có giao diện), mình đã chạy `/ao-preview SHOP-83`. Các app chạy trong làn của SHOP-83, còn thư mục dự án vẫn ở `develop`. Cả 3 app đều trả lời:
+  - trang admin: http://localhost:5173/ (vào mục "Danh mục");
+  - trang khách: http://localhost:3000/en;
+  - API: http://localhost:3001/actuator/health.
+- Mình đã xem 4 ảnh chụp màn hình của `fe-dev`. Danh sách danh mục có tên, đường dẫn, trạng thái Hiện/Ẩn và số sản phẩm. Hộp thoại xoá ghi rõ "2 sản phẩm của danh mục này sẽ thành Không có danh mục", đúng như AC8.
+- **Lưu ý an toàn:** đây là code chưa ai review, đang chạy trên máy bạn dưới tài khoản Windows của bạn. Bạn đừng sửa file trong lúc nó chạy.
+- **Một phát hiện của T14:** trong lúc chờ xem trước, SHOP-83 vẫn tính là `fe-dev` đang làm, nên SHOP-84 vẫn chưa bắt đầu được. Mình đã ghi lại cho kit.
+
+**Bạn có muốn tự mở thử vài phút không?** Xong thì bạn gõ "xong", hoặc gõ "review" nếu không cần xem. Mình sẽ dừng bản xem trước và chạy `/ao-review 84`. Lệnh này chuyển PR sang ready, nên SHOP-84 bắt đầu build ngay.
+
+Tổng T14 đến giờ: **72,58 USD**, chưa tính `be-dev` đang sửa SHOP-82.
+
+
+**Claude (tiếp Lượt 25, 12:03, SHOP-82 sửa xong):**
+
+**`be-dev` sửa SHOP-82 xong lúc 12:01** (3,95 USD, 19 phút), song song với SHOP-83.
+
+**Nguyên nhân test chậm:** test chèn 200 danh mục và 10.000 sản phẩm rồi đo ngay. Lúc đó, PostgreSQL vẫn dùng số liệu thống kê cũ, từ khi bảng còn rất ít dòng, nên chọn cách đọc kém: đọc lại toàn bộ sản phẩm cho từng danh mục. Thứ tự chạy các class test mỗi lần một khác, nên lần thì 4 ms, lần thì 351 ms. `be-dev` đã tái hiện được lỗi trên một PostgreSQL tạm.
+
+**Cách sửa (PR #85, chỉ 1 file test, +77/−1, CI xanh):**
+1. Thêm một test luôn fail khi chưa sửa: test dựng lại đúng tình trạng thống kê cũ.
+2. Sửa: sau khi nạp dữ liệu, test chạy `ANALYZE` cho hai bảng. Danh sách của trang khách giảm từ 351 ms xuống 6 ms.
+3. Code ứng dụng và SQL không đổi. Trên Production, autovacuum tự cập nhật thống kê trong khoảng một phút sau khi dữ liệu thay đổi nhiều.
+
+**Một quyết định để sau, không gấp:** `be-dev` nhắc rằng ba danh sách danh mục vẫn phụ thuộc vào thống kê của PostgreSQL, như mọi câu truy vấn khác. Muốn chúng luôn nhanh bất kể thống kê, phải đổi Architecture Decision 6 của plan, và đó là việc của `sa`. Mình đề xuất để điểm này vào SHOP-85, Task gom finding của Epic, chưa làm bây giờ.
+
+**Đang chạy:**
+- `/ao-review 85` từ 12:02. SHOP-82 chỉ có API, nên mình bỏ bước xem trước. SHOP-82 ở mức heavy, nên review chạy `xhigh` và `max`, nhưng PR chỉ có 1 file nên chắc sẽ rẻ.
+- Bản xem trước của SHOP-83 vẫn chạy và chờ bạn: gõ "xong" hoặc "review".
+
+Tổng T14 đến giờ: **76,53 USD**.
+
+
+**Claude (tiếp Lượt 25, 12:06, watcher báo):**
+
+Watcher chỉ báo lại rằng SHOP-83 vẫn chờ bạn xem trước. Không có gì mới. Review PR #85 đang chạy, và mình đã bật lại watcher.
+
+
+**Claude (tiếp Lượt 25, 12:11, watcher báo nhầm):**
+
+Watcher báo log `fe-dev` của SHOP-83 im 23 phút. Đây là báo nhầm: `fe-dev` đã build xong lúc 11:51, và khoá đang giữ là của bản xem trước, không có agent nào chạy. Mình đã sửa watcher để bỏ qua kiểm tra "im lặng" với bản xem trước, rồi bật lại nó. Review PR #85 vẫn đang chạy bình thường.
+
+
+**Claude (tiếp Lượt 25, 12:12, PR #85 merged):**
+
+**Review PR #85 xong lúc 12:10** (3,97 USD), và PR đã merge.
+
+1. `reviewer` (1,86 USD) cho Approve: 0 Critical, 0 High, 0 Medium, 3 Low. Ba Low được đưa vào SHOP-85, Task gom finding.
+2. `security` (2,11 USD) không có finding nào. Nó cũng xác nhận khách vãng lai không thể cố ý gây chậm, vì chỉ admin, sau basic auth, mới thay đổi được dữ liệu.
+3. Mình approve ở gate ③ bằng tài khoản của bạn. Merge-gate merge lúc 12:11 (develop `d752638`).
+
+**Bước tiếp theo:** mình đang chờ CI trên develop. Đây là bài kiểm thật: lần này test hiệu năng phải xanh. Sau đó, Development deploy, rồi dispatcher chạy lại QA cho SHOP-82.
+
+Bản xem trước của SHOP-83 vẫn chờ bạn: gõ "xong" hoặc "review".
+
+Tổng T14 đến giờ: **80,50 USD**.
+
+
+**Claude (tiếp Lượt 25, 12:15, CI develop xanh):**
+
+CI trên develop `d752638` đã **xanh hết**, kể cả `build-test` có test hiệu năng. Lỗi của SHOP-82 đã được sửa đúng chỗ. Development đang deploy bản này. Xong thì dispatcher sẽ tự chạy lại QA cho SHOP-82.
+
+Dòng "needs a fix: SHOP-82: its PR is closed" lại hiện ra trong lúc chờ deploy, cũng là lỗi nhỏ mình đã ghi. Bản xem trước của SHOP-83 vẫn chờ bạn.
+
+
+# Phiên 35 · Lượt 26 — 2026-11-22 khoảng 12:17
+
+**Bạn:**
+
+```markdown
+đưa tôi link bản xem trước của SHOP-83
+```
+
+**Claude:**
+
+Bản xem trước của SHOP-83 đang chạy. Mình vừa kiểm, cả 3 app đều trả lời bình thường.
+
+**Link để mở:**
+1. **Trang quản lý danh mục (admin):** http://localhost:5173/categories. Đây là phần chính của SHOP-83.
+2. Thêm danh mục: http://localhost:5173/categories/new
+3. Trang chủ admin: http://localhost:5173/. Bạn vào "Sản phẩm", mở sửa một sản phẩm để xem ô chọn danh mục.
+4. Trang khách: http://localhost:3000/en. Phần danh mục cho khách thuộc SHOP-84, nên chưa có ở đây.
+
+**Cần biết khi thử:**
+- Cơ sở dữ liệu của làn này đang trống: danh sách danh mục chưa có gì. Bạn tạo vài danh mục trước, ví dụ "Áo khoác" và "Quần", rồi thử sửa, ẩn và xoá.
+- Đây là code chưa ai review, chạy trên máy bạn dưới tài khoản Windows của bạn. Bạn đừng sửa file trong lúc nó chạy.
+- Muốn đổi gì thì cứ nói với mình, ví dụ "fe: nút Xoá nên…". Mình sẽ gửi cho `fe-dev` bằng `/ao-fix 84`.
+
+Thử xong thì bạn gõ "xong". Mình sẽ dừng bản xem trước và chạy `/ao-review 84`, rồi SHOP-84 bắt đầu build.
+
+
+# Phiên 35 · Lượt 27 — 2026-11-22 khoảng 12:27
+
+**Bạn:**
+
+```markdown
+fe: tôi muốn chỉnh sửa như sau:
+Điều kiện: tôi mở đồng thời 2 tab cho tạo mới danh mục và sản phẩm
+- khi thêm 1 danh mục mới thành công ở tab 1 (http://localhost:5173/categories/new), khi chuyển sang tab 2 thì dropdown list 'Danh mục' ở form 'Thêm sản phẩm' chưa xuất hiện danh mục vừa tạo, chỉ khi f5 trang, mong đợi khi mở dropdown list dropdown list 'Danh mục' ở form 'Thêm sản phẩm' thì fetch lại list mới
+```
+
+**Claude:**
+
+Mình đã gửi yêu cầu của bạn cho `fe-dev` bằng `/ao-fix 84`, chạy từ 12:27.
+
+1. **Ghi nguyên văn:** yêu cầu được ghi đúng từng chữ bạn viết vào `.ai/runs/SHOP-83/note.md`, kể cả tiền tố `fe:`, nên chỉ `fe-dev` nhận việc.
+2. **Yêu cầu này thay đổi gì:** mình chọn `none`, tức là chỉ đổi code, không đổi tiêu chí nghiệm thu.
+   - AC9 chỉ đòi form Thêm sản phẩm có đủ danh mục, xếp theo tên A→Z, và không nói gì về việc danh mục được tạo ở tab khác.
+   - Yêu cầu tải lại danh sách mỗi khi mở dropdown làm hành vi tốt hơn, và không trái với AC nào.
+   - Mình chọn luôn theo quyền bạn cho ở Lượt 17. Nếu bạn muốn ghi nó thành một tiêu chí mới (`ac`), bạn nói mình.
+3. **Đang chạy:** kit đã dừng bản xem trước trước khi sửa, nên các link localhost tạm thời không mở được. `fe-dev` sửa ngay trên draft PR #84, với effort `high`. Vì PR còn là draft, chưa có vòng review nào. Sửa xong, mình chạy lại `/ao-preview SHOP-83` và gửi link để bạn thử lại.
+
+**Cùng lúc đó:** Development đã deploy bản sửa của SHOP-82, và dispatcher đã tự chạy lại QA cho SHOP-82 lúc 12:26.
+
+
+**Claude (tiếp Lượt 27, 12:30, QA SHOP-82 không tạo được worktree):**
+
+**Thêm một lỗi kit lúc 12:27, đã xử lý xong.**
+
+1. Dispatcher chạy QA cho SHOP-82 ngay khi Development deploy bản `d752638`. Nhưng thư mục `shop` trên máy chưa tải commit đó về. Vì vậy kit không tạo được worktree cho QA ("invalid reference"), và lệnh dừng.
+2. Dispatcher đánh dấu lệnh này là "failed in this run", nên sẽ không tự chạy lại trong lượt `/ao-run` này.
+3. Mình đã tải commit về (`git fetch`) và chạy tay `/ao-qa SHOP-82` lúc 12:29. Lần này QA xét V1 trên CI develop đã xanh.
+4. Lỗi này đã được ghi vào ghi chú T14 để sửa trong kit: kit phải tải commit về trước khi tạo worktree cho QA.
+
+**Đang chạy song song:** `fe-dev` sửa dropdown Danh mục theo yêu cầu của bạn (PR #84), và `qa` kiểm lại SHOP-82.
+
+
+**Claude (tiếp Lượt 27, 12:33, watcher):**
+
+Watcher lại báo những dòng chờ mình đã biết. Dispatcher ghi lại cả danh sách chờ mỗi khi danh sách thay đổi, kể cả khi lệnh còn đang chạy. Mình đã sửa watcher để chỉ đánh thức mình khi có dòng chờ với nội dung mới, nhờ vậy bớt những lần báo thừa. Hai việc đang chạy vẫn bình thường: `qa` kiểm SHOP-82, `fe-dev` sửa PR #84.
+
+
+# Phiên 35 · Lượt 28 — 2026-11-22 khoảng 12:34
+
+**Bạn:**
+
+```markdown
+[ảnh danh sách background task] vì sao có task chạy fe dev và be dev rồi mà vẫn còn 2 task đầu và task cuối?
+```
+
+**Claude:**
+
+Hai task ở giữa là hai lệnh mình chạy tay. Task đầu (dispatcher) và task cuối (watcher) vẫn còn, vì chúng chạy suốt cả Epic chứ không chỉ cho một lệnh. Mình vừa kiểm: lúc này dispatcher **không tự chạy lệnh nào** ("running: nothing").
+
+1. **Task 2, "Run fe-dev's fix of PR 84":** `fe-dev` sửa dropdown Danh mục theo yêu cầu của bạn. Mình chạy tay vì đây là yêu cầu của bạn. Dispatcher chỉ tự chạy những bước không cần ý của người, còn chọn xem trước, review hay sửa là việc của bạn.
+2. **Task 3, "Run QA of SHOP-82":** đây là `qa` kiểm lại SHOP-82, không phải `be-dev`. `be-dev` đã sửa xong lúc 12:01. Mình chạy tay vì dispatcher đã đánh dấu lệnh QA này là "failed" sau lỗi worktree lúc 12:27, nên nó không tự chạy lại.
+3. **Task 1, dispatcher:** nó vẫn chạy để lo các bước sau của Epic. Cứ 2 phút nó đọc board một lần, và lúc chờ thì không tốn token, vì nó là code thường, không phải AI. Nó thấy hai lệnh chạy tay qua khoá của chúng, nên không chạy trùng. Ví dụ: khi SHOP-83 sang review và `fe-dev` rảnh, nó sẽ tự chạy build SHOP-84.
+4. **Task 4, watcher:** nó canh dispatcher và mọi lệnh đang chạy, kể cả hai lệnh chạy tay. Cứ 4 phút nó kiểm một lần, không dùng AI. Nó vừa được bật lại sau khi mình sửa, nên chỉ mới chạy 5 giây.
+
+Dispatcher sẽ dừng khi xong Epic, khi hết ngân sách 120 USD, hoặc khi chờ bạn quá 8 tiếng. Lúc đó watcher cũng tự thoát.
+
+
+**Claude (tiếp Lượt 28, 12:39, SHOP-82 Done):**
+
+**SHOP-82 đã Done** lúc 12:38. Đây là item đầu tiên của Epic hoàn thành.
+
+1. QA PASS trên `d752638` (1,54 USD). V1 dùng CI của develop, lần này xanh ngay từ đầu, và `GET /api/categories` giờ chỉ mất 3 ms. V3 và V4 dùng bằng chứng thay thế bạn đã chấp nhận. Các dòng còn lại kiểm lại đều đạt, E2E 134 test đạt và 0 hỏng.
+2. Báo cáo lần này có tên vai trên một dòng riêng, nên kit đọc được kết quả PASS.
+3. Mình đã Accept theo quyền bạn cho ở Lượt 17. SHOP-82 tốn tổng cộng **44,36 USD**: build, review, một lần QA FAIL, sửa, review lại và QA.
+4. QA nhắc lại điều `be-dev` đã nói: trên Production, danh sách danh mục có thể chậm khoảng 350 ms trong lúc PostgreSQL chưa cập nhật thống kê. Không AC nào nói về trường hợp này. Mình ghi lại để đưa vào SHOP-85 cho `sa` quyết định sau.
+
+**Còn chạy:** `fe-dev` vẫn đang sửa dropdown Danh mục trên PR #84. Sửa xong, mình mở lại bản xem trước để bạn thử.
+
+Tổng T14 đến giờ: **82,04 USD**.
+
+
+**Claude (tiếp Lượt 28, 12:47, fe-dev sửa xong, xem trước lại):**
+
+**`fe-dev` đã sửa xong dropdown Danh mục** lúc 12:45 (1,90 USD, 13 phút). Bản xem trước đã chạy lại để bạn thử.
+
+**`fe-dev` đã làm gì:**
+1. Mỗi lần mở dropdown "Danh mục", bằng chuột hay bằng bàn phím, danh sách được tải lại. Áp dụng cho cả form thêm lẫn form sửa sản phẩm.
+2. Trong lúc tải, dropdown vẫn mở và vẫn hiện danh sách cũ. Danh mục đang chọn được giữ nguyên, và nút Lưu không bị khoá.
+3. Có 4 unit test mới, và một test E2E chạy đúng kịch bản 2 tab của bạn: `AC9 lists a category added in another tab once the field is opened, without a reload`. Lint, typecheck và 612 unit test đều xanh.
+
+**Link để thử lại (cả 4 đều đã trả lời 200):**
+1. Tab 1, thêm danh mục: http://localhost:5173/categories/new
+2. Tab 2, thêm sản phẩm: http://localhost:5173/products/new
+3. Danh sách danh mục: http://localhost:5173/categories
+
+Cách thử: mở sẵn cả hai tab. Ở tab 1, tạo một danh mục. Chuyển sang tab 2 và mở dropdown "Danh mục" mà không bấm F5: danh mục vừa tạo phải hiện ra.
+
+Như lần trước, đây là code chưa review, chạy trên máy bạn, nên bạn đừng sửa file trong lúc nó chạy. Thử xong, bạn gõ "xong" để mình chạy `/ao-review 84`, hoặc viết tiếp `fe: …` nếu muốn sửa nữa.
+
+
+# Phiên 35 · Lượt 29 — 2026-11-22 khoảng 13:39
+
+**Bạn:**
+
+```markdown
+xong
+```
+
+**Claude:**
+
+Mình đã chạy `/ao-review 84` lúc 12:52.
+
+1. Lệnh review dừng bản xem trước trước, nên các link localhost giờ không mở được nữa.
+2. `pr-ready` chuyển PR #84 từ draft sang ready. Khi CI xanh, SHOP-83 sang In Review, `fe-dev` rảnh, và dispatcher sẽ tự chạy build SHOP-84.
+3. `reviewer` và `security` chạy song song, cùng ở mức `high`. Mức này cao hơn bình thường vì PR có sửa `apps/admin/eslint.config.js`, là đường dẫn nhạy cảm. Mình ước tính khoảng 4–8 USD.
+
+Có High thì mình dừng và hỏi bạn. Không có High thì mình approve ở gate ③ như các lần trước.
+
+
+**Claude (tiếp Lượt 29, 13:47, review PR #84):**
+
+**Review PR #84 xong** (2,63 USD). Không có High, nhưng có **1 Medium chạm vào AC9**, nên mình hỏi bạn trước khi approve.
+
+**Kết quả:**
+- `security` (0,88 USD): không có finding nào. Tên danh mục không chèn được script, ID được mã hoá đúng, và không có secret.
+- `reviewer` (1,75 USD): 0 Critical, 0 High, 1 Medium, 1 Low.
+  - **Medium:** sau khi thêm, sửa hoặc xoá sản phẩm, trang Danh mục có thể hiện **số sản phẩm cũ** trong tối đa 60 giây, nếu bạn chuyển trang bằng menu mà không F5. Ví dụ: "Áo" đang 3, thêm một sản phẩm vào "Áo", bấm sang Danh mục thì vẫn thấy 3. AC9 lại đòi số này phải tăng 1. Hộp thoại xoá cũng có thể bỏ mất câu cảnh báo "N sản phẩm sẽ thành Không có danh mục". Cách sửa nhỏ: làm mới danh sách danh mục sau mỗi lần lưu sản phẩm.
+  - **Low:** khi lưu bị từ chối vì danh mục đã bị xoá, thông báo lỗi danh mục vẫn hiện cho tới khi đổi lựa chọn. Lỗi này không chặn lần Lưu sau.
+
+**Cùng lúc đó:** SHOP-83 đã sang In Review, và dispatcher đã tự chạy **build SHOP-84** lúc 13:40.
+
+**Bạn chọn:**
+1. **Sửa Medium trước rồi mới merge** (mình khuyên): mình gửi `fe: làm mới danh sách danh mục sau mỗi lần lưu sản phẩm` cho `fe-dev` bằng `/ao-fix 84`.
+   - `fe-dev` đang build SHOP-84, nên việc sửa sẽ chờ tới khi nó xong, khoảng 1 giờ nữa.
+   - Sau đó chỉ review lại phần mới. Tốn thêm khoảng 3–5 USD.
+   - Rẻ hơn để QA bắt lỗi AC9 rồi phải đi thêm một vòng sửa, review và QA (khoảng 6–8 USD).
+2. **Approve ngay:** Medium và Low vào SHOP-85. SHOP-83 merge và QA sớm hơn, nhưng QA có thể báo FAIL ở AC9.
+
+Bạn gõ 1 hoặc 2.
+
+Tổng T14 đến giờ: **86,57 USD**, chưa tính SHOP-84 đang build.
+
+
+**Claude (tiếp Lượt 29, 13:49, watcher):**
+
+Watcher chỉ báo dòng PR #84 chờ approve. Đó chính là câu hỏi 1 hoặc 2 ở trên, vẫn chờ bạn. `fe-dev` đang build SHOP-84 bình thường.
+
+
+# Phiên 35 · Lượt 30 — 2026-11-22 khoảng 13:52
+
+**Bạn:**
+
+```markdown
+Sửa Medium trước rồi mới merge
+```
+
+**Claude:**
+
+Mình đã chuẩn bị sửa Medium của PR #84 theo lựa chọn của bạn. Lệnh sửa sẽ tự chạy khi `fe-dev` build xong SHOP-84.
+
+1. **Ghi chú cho `fe-dev`:** câu trả lời của bạn được ghi nguyên văn vào `.ai/runs/SHOP-83/note.md`, kèm lời khuyên mà nó chọn, trích từ tin nhắn của mình. Lời khuyên đó bắt đầu bằng `fe:`, nên chỉ `fe-dev` nhận việc. Loại thay đổi là `none`, vì việc sửa nhằm cho đúng AC9 đang có, không đổi AC nào.
+2. **Vì sao chưa chạy ngay:** lệnh `/ao-fix 84` dừng ngay với lý do "fe-dev is at work on SHOP-84". Kit không cho lệnh sửa xếp hàng chờ `fe-dev`. Mình đã ghi điểm này vào ghi chú T14.
+3. **Cách mình xử lý:** một script nhỏ chạy nền, không dùng AI, chờ tới khi dispatcher ghi "end /ao-build SHOP-84". Sau đó nó chạy lệnh sửa. Xong phần sửa, `reviewer` và `security` chỉ review lại phần mới.
+4. **Sau đó:** không có High thì mình approve PR #84, và SHOP-83 đi tiếp tới QA.
+
+`fe-dev` đã build SHOP-84 được khoảng 15 phút. Lần build SHOP-83 trước mất khoảng 50 phút.
+
+
+# Phiên 35 · Lượt 31 — 2026-11-22 khoảng 14:03
+
+**Bạn:**
+
+```markdown
+build => review  => QA. Khi bước review pass, thì kit sẽ merge PR vào nhánh develop, chờ deploy thành công và sẽ chuyển item Ready to QA phải không?
+```
+
+**Claude:**
+
+Gần đúng, nhưng thiếu một bước: review pass thì kit **chưa merge ngay**. Giữa review và merge còn gate ③, là bước bạn approve PR. Trong T14, mình approve thay bạn theo quyền bạn cho ở Lượt 17.
+
+Luồng đầy đủ của một item:
+1. **Build:** agent dev làm việc trong làn riêng, rồi mở draft PR. Item ở In Progress.
+2. **Xem trước:** chỉ với item có giao diện. Bạn thử app trên máy, cần sửa thì gửi `fe: …` qua `/ao-fix`. Item vẫn ở In Progress.
+3. **Review:** `pr-ready` chuyển PR sang ready, và khi CI xanh thì item sang In Review. `reviewer` và `security` đăng báo cáo dạng COMMENT, và không agent nào được approve PR.
+4. **Gate ③, bạn approve:** người duyệt có tên trong `github.approvers` bấm Approve trên GitHub. Có High thì sửa trước. Medium và Low thì bạn chọn sửa ngay, hoặc để vào Task gom finding (SHOP-85).
+5. **Merge:** workflow `merge-gate` trên GitHub tự merge PR vào `develop` khi đủ ba điều kiện: có approve, CI xanh, và có báo cáo review trên đúng commit cuối.
+6. **Deploy:** deployer trên VPS tự build và deploy bản mới của `develop` lên Development, không chờ CI.
+7. **Ready for QA:** `jira-sync` tự chuyển item từ In Review sang Ready for QA khi đủ ba điều kiện: PR đã được approve, đã merge, và Development đang chạy bản có merge đó.
+8. **QA:** `qa` nhận item (In QA) và kiểm trên Development.
+   - PASS: item chờ bạn Accept, rồi Done.
+   - FAIL: item về In Progress, và agent dev sửa trên nhánh mới có đuôi `-r2`.
+
+Một điểm T14 đã lộ ra: kit không kiểm CI trên `develop` trước khi QA. Với SHOP-82, CI đỏ sau khi merge mà QA lần đầu vẫn không thấy. Mình đã ghi lại để sửa kit.
+
+
+# Phiên 35 · Lượt 32 — 2026-11-22 khoảng 14:29
+
+**Bạn:**
+
+```markdown
+- VÌ sao deployer deploy luôn mà không chờ CI xanh trên develop?
+- CI trên PR xanh có đồng nghĩa với CI trên develop xanh không?
+- nếu có 3 làn cùng merge vào develop cùng lúc thì deployer gom 3 commit deploy 1 lần hay chạy deploy tuần tự cho 3 commit của 3 làn?
+```
+
+**Claude:**
+
+Mình đã đọc code và spec của kit để trả lời ba câu.
+
+**1. Vì sao deployer deploy luôn, không chờ CI trên develop?**
+Theo thiết kế, deployer kiểm CI xanh trên **head của PR**, không kiểm CI trên commit merge vào `develop`.
+1. Cứ mỗi phút, deployer trên VPS chạy một lượt. Mỗi commit mới của `develop` phải qua `audit`, và `audit` kiểm: PR có review, có approve của bạn, và CI xanh trên head của PR (`lib/quality/audit.mjs`).
+2. Spec đặt mục tiêu "deploy chậm tối đa khoảng một phút sau merge", để QA trên Development bắt đầu sớm. Development là môi trường để thử, chưa phải bản phát hành. Staging và Production có cổng chặt hơn: CI xanh trên PR release, regression trên Staging, và gate ⑤.
+3. Spec không ghi rõ lý do vì sao bỏ CI của `develop`. SHOP-82 cho thấy đây là một lỗ hổng: CI của `develop` đỏ mà bản đó vẫn lên Development và vẫn được QA. Mình đề xuất đưa vào kit: QA, hoặc deployer, phải chờ CI xanh trên commit merge.
+
+**2. CI trên PR xanh có đồng nghĩa với CI trên develop xanh không?**
+Không. Có ba lý do:
+1. CI của PR chạy trên head của nhánh PR, không chạy trên kết quả sau khi merge.
+2. Ruleset của `shop` không bắt nhánh PR phải cập nhật theo `develop` trước khi merge (`strict_required_status_checks_policy: false`). Nên nếu làn khác vừa merge, tổ hợp "code của PR này + code mới của develop" chưa từng được CI chạy thử, cho tới khi nó đã nằm trên `develop`.
+3. Có test phụ thuộc môi trường hoặc thứ tự chạy, như test hiệu năng của SHOP-82: cùng một cây code, CI của PR đo được 4 ms, còn trên `develop` đo được 351 ms.
+
+**3. Ba làn merge gần như cùng lúc thì deployer làm sao?**
+Tuỳ các merge rơi vào lượt nào của deployer:
+1. Deployer chạy mỗi phút, và mỗi lúc chỉ làm một việc: lượt trước chưa xong thì lượt mới không bắt đầu.
+2. Mỗi lượt, nó lấy **head mới nhất** của `develop`, rồi kiểm `audit` lần lượt **từng** commit mới, từ cũ tới mới. Commit nào trượt thì nó dừng ở đó.
+3. Nếu cả 3 merge xong trước lượt kế tiếp, deployer build và deploy **một lần**, cho head mới nhất, là bản đã chứa cả 3 merge. Cả 3 commit vẫn được `audit` riêng từng cái.
+4. Nếu đang có một lượt deploy, ví dụ build API mất khoảng 10 phút như SHOP-82, thì các merge đến sau phải chờ. Lượt sau sẽ deploy head mới nhất lúc đó, và có thể bỏ qua các bản ở giữa.
+5. `jira-sync` chuyển từng item sang Ready for QA khi Development chạy một bản có chứa merge của item đó. Nếu một lượt QA đang chạy mà có bản mới deploy lên, lượt QA đó dừng, rồi chạy lại trên bản mới.
+
+Mình sẽ ghi ý 1 và ý 2 vào ghi chú T14, để cân nhắc cho kit: chờ CI trên commit merge trước QA, hoặc bật cập nhật nhánh trước khi merge.
+
+
+**Claude (tiếp Lượt 32, 14:57, SHOP-84 build xong):**
+
+**SHOP-84 build xong lúc 14:50** (20,20 USD, 69 phút). Đây là Story trang danh mục cho khách, có phần SEO.
+
+1. `fe-dev` mở draft PR #86 (+4.287/−179 dòng, 60 file), kèm ảnh chụp các màn S5 đến S8 trên desktop và mobile.
+2. Lại gặp lỗi token hết hạn của kit, như lần build SHOP-82: build dài 69 phút, nên lúc đọc PR, GitHub trả 401, và dispatcher ghi "stopped with no decision". Không mất gì: PR đã mở, agent đã làm xong. Lỗi này đã có trong ghi chú T14, giờ thêm lần thứ hai.
+3. CI của PR #86 đang chạy. Khi CI xong, mình mở bản xem trước của SHOP-84 rồi gửi link để bạn thử trang khách.
+
+**Cùng lúc đó:** `fe-dev` đang sửa Medium của PR #84. Script chờ đã tự chạy lệnh sửa ngay khi build SHOP-84 xong.
+
+Tổng T14 đến giờ: **106,77 USD**. Phần còn lại ước tính khoảng 20–30 USD, gồm sửa và review lại PR #84, review PR #86, và QA hai Story. Tổng cuối khoảng 130–140 USD, vẫn dưới mốc 170 USD.
+
+
+**Claude (tiếp Lượt 32, 15:00, xem trước SHOP-84):**
+
+**Bản xem trước của SHOP-84 đã chạy** (trang danh mục cho khách, có phần SEO). Mình đã kiểm, tất cả link dưới đây đều trả lời đúng.
+
+**Dữ liệu có sẵn trong làn này:** danh mục "Xe máy" có 1 sản phẩm là "Honda SH 350i". Danh mục "Điện thoại" ở trạng thái Hiện nhưng chưa có sản phẩm nào.
+
+**Link để thử:**
+1. Trang danh mục có sản phẩm: http://localhost:3000/vi/categories/xe-may
+2. Danh mục chưa có sản phẩm: http://localhost:3000/vi/categories/dien-thoai. Trang này phải mở được và báo chưa có sản phẩm (AC15). "Điện thoại" cũng không được có trong các liên kết danh mục (AC17), cũng như trong sitemap (AC19).
+3. Chi tiết sản phẩm, có liên kết tới danh mục của nó: http://localhost:3000/vi/products/honda-sh-350i
+4. Danh sách sản phẩm, có các liên kết danh mục: http://localhost:3000/vi/products
+5. Sitemap: http://localhost:3000/sitemap.xml
+6. Danh mục không tồn tại phải trả 404: http://localhost:3000/vi/categories/khong-co
+
+**Cần biết khi thử:**
+- Trang admin trong làn này chưa có phần quản lý danh mục, vì SHOP-83 chưa merge. Muốn thêm dữ liệu thì bạn nói mình, mình thêm qua API của làn.
+- Đây là code chưa review, chạy trên máy bạn. Bạn đừng sửa file trong lúc nó chạy.
+- Muốn đổi gì thì viết `fe: …`, mình gửi cho `fe-dev` bằng `/ao-fix 86`. Nhưng `fe-dev` đang sửa PR #84, nên việc đó sẽ chạy sau.
+
+Thử xong, bạn gõ "xong" để mình chạy `/ao-review 86`.
+
+
+**Claude (tiếp Lượt 32, 15:09, PR #84 merged):**
+
+**PR #84 (SHOP-83) đã merge lúc 15:07** (develop `de27ece`), đúng như bạn chọn: sửa Medium trước, rồi mới merge.
+
+1. `fe-dev` sửa Medium (1,36 USD): sau mỗi lần thêm, sửa hoặc xoá sản phẩm, dữ liệu danh mục được đánh dấu là cũ, nên trang Danh mục tải số mới. Có thêm unit test và một test E2E chỉ đi bằng link trong app, không F5.
+2. Review lại chỉ phần mới (1,08 USD): `reviewer` xác nhận Medium đã sửa xong, `security` không có finding.
+3. Còn 2 Low, đưa vào SHOP-85:
+   - lỗi AC10 không chặn lần Lưu sau (Low cũ);
+   - lúc lưu sản phẩm, form chờ danh sách danh mục tải xong mới báo "đã lưu". Nếu mạng chậm, form có thể đứng ở "Đang lưu…" vài giây, trường hợp xấu nhất khoảng 45 giây. Kết quả cuối vẫn đúng.
+4. Mình đã approve ở gate ③, và merge-gate merge ngay. Mình cũng đã tải `develop` mới về máy trước, để QA của SHOP-83 không gặp lỗi "invalid reference" như SHOP-82.
+
+**Tiếp theo:** Development deploy bản này, rồi dispatcher tự chạy QA cho SHOP-83. Bản xem trước của SHOP-84 vẫn chạy và chờ bạn: gõ "xong" khi thử xong.
+
+Tổng T14 đến giờ: **109,21 USD**.
+
+
+**Claude (tiếp Lượt 32, 15:11, watcher):**
+
+Watcher báo "needs a fix: SHOP-83: its PR is closed". Đây là dòng tạm thời mình đã biết, hiện ra trong lúc chờ Development deploy. Deploy xong thì dispatcher sẽ chạy QA cho SHOP-83. Bản xem trước của SHOP-84 vẫn chờ bạn.
+
+
+**Claude (tiếp Lượt 32, 15:24, QA SHOP-83 đang chạy):**
+
+Dispatcher đã tự chạy QA cho SHOP-83 lúc 15:19. Lần này không gặp lỗi worktree, vì mình đã tải `develop` về trước. Dòng "Accept or QA fail" lại hiện sớm trong lúc QA còn chạy, giống lần SHOP-82. Mình đang chờ QA xong thật rồi sẽ báo kết quả. Bản xem trước của SHOP-84 vẫn chờ bạn.
+
+
+**Claude (tiếp Lượt 32, 15:38, SHOP-83 Done):**
+
+**SHOP-83 đã Done** lúc 15:37. Đây là item thứ hai của Epic hoàn thành.
+
+1. QA PASS trên `de27ece` (1,55 USD, 14 phút). Cả 10 AC, từ AC1 đến AC10, đều đạt. `qa` vừa kiểm bằng tay trên giao diện admin tiếng Việt có chụp ảnh, vừa chạy E2E: 168 test đạt, 0 hỏng.
+2. AC9 lần này đạt cả phần "số sản phẩm tăng 1": chính là phần Medium bạn chọn sửa trước khi merge.
+3. Trước khi Accept, mình kiểm hai điều: CI trên develop `de27ece` xanh, và kit đọc được báo cáo QA. Sau đó mình Accept theo quyền bạn cho ở Lượt 17.
+4. SHOP-83 tốn tổng cộng **22,80 USD**: build, sửa theo yêu cầu của bạn, review, sửa Medium, review lại và QA.
+5. Ghi chú của `qa` về tốc độ: tải lại toàn bộ trang Danh mục mất khoảng 970–990 ms, sát giới hạn 1 giây của NFR5. Giới hạn này đo trên Staging, nên số trên Development chỉ để tham khảo.
+
+**Còn lại:** SHOP-84 (trang khách, có SEO). Bản xem trước vẫn đang chạy và chờ bạn: gõ "xong" để mình chạy `/ao-review 86`. Sau đó còn SHOP-85, Task gom finding.
+
+Tổng T14 đến giờ: **110,76 USD**.
+
+
+**Claude (tiếp Lượt 32, 15:39, watcher):**
+
+Watcher chỉ báo QA SHOP-83 đã kết thúc, việc mình vừa xử lý xong. Giờ chỉ còn bản xem trước của SHOP-84 đang chờ bạn.
+
+
+# Phiên 35 · Lượt 33 — 2026-11-22 khoảng 15:47
+
+**Bạn:**
+
+```markdown
+Xong. 
+Gom findings này nữa nhé:
+
+* deployer phải chờ CI xanh trên develop thì mới deploy develop
+* Lỗi token hết hạn của kit lại xảy ra, giống lần build SHOP-82: build dài 69 phút, nên khi đọc PR, GitHub trả 401 và dispatcher ghi "stopped with no decision".
+
+Nên tăng thời gian token lên bao nhiêu để không bị lỗi token này?
+```
+
+**Claude:**
+
+**Không tăng được thời gian của token này.** GitHub cố định token của GitHub App ở đúng 1 giờ, và không cho cấu hình. Cách sửa đúng là kit phải **mua token mới** khi token cũ sắp hết hạn.
+
+1. **Vì sao không tăng được:** lỗi 401 đến từ installation token của App `ao-review`, loại token mà GitHub luôn cho hết hạn sau 1 giờ. Không có tuỳ chọn nào để đặt dài hơn.
+2. **Đặt một con số cũng không đủ:** các lượt build ở T14 dài 49, 69 và 70 phút. Agent chạy dài bao lâu thì tuỳ việc, nên không có con số nào an toàn mãi.
+3. **Cách sửa trong kit:** hàm `installationToken` đã trả về cả giờ hết hạn (`expiresAt`), nhưng `ao-step` chỉ mua token một lần lúc bắt đầu (dòng 267). Sửa thành: trước mỗi lần đọc GitHub, nếu token còn dưới 10 phút thì mua token mới. Hoặc đơn giản hơn: luôn mua lại sau mỗi lượt agent. Mỗi lần mua chỉ mất khoảng 1 giây.
+
+**Đã gom findings:** mình đã gom hết vào mục "Findings kit gom lại từ T14" trong `tasks/c2/todo.md` của kit, tổng cộng 12 mục. Hai mục bạn nêu đứng đầu:
+1. Deployer chỉ deploy develop khi CI trên develop xanh. Mình ghi là bạn đã quyết.
+2. Kit tự mua token mới khi token sắp hết hạn.
+
+Mười mục còn lại là các lỗi kit gặp trong T14: báo cáo QA không đọc được, worktree của QA thiếu fetch, dòng "waiting for you" hiện sớm, `/ao-fix` không xếp hàng, item chờ xem trước giữ WIP, v.v. Hết T14, mình đề xuất sửa cả 12 mục trong một batch có test.
+
+Các finding của code `shop` (Medium và Low từ review) vẫn nằm ở SHOP-85, tách riêng với findings của kit.
+
+**`/ao-review 86` đã chạy** lúc 15:45. Lệnh này dừng bản xem trước của SHOP-84. `reviewer` và `security` chạy song song ở mức `high`, vì PR có sửa `apps/user/src/proxy.ts` và file eslint, đều là đường dẫn nhạy cảm. Prompt của `reviewer` có kèm phần SEO của Epic, vì SHOP-84 có nhãn `ao-seo`.
+
+
+**Claude (tiếp Lượt 33, 15:49, watcher báo nhầm):**
+
+Watcher báo log `fe-dev` của SHOP-84 im 57 phút. Đây là báo nhầm: review của PR #86 vừa bắt đầu, nên log mới nhất của SHOP-84 vẫn là log build cũ. Mình đã sửa watcher để tính thời gian im lặng từ lúc lệnh hiện tại bắt đầu, rồi bật lại nó. Review vẫn chạy bình thường.
+
+
+# Phiên 35 · Lượt 34 — 2026-11-22 khoảng 15:55
+
+**Bạn:**
+
+```markdown
+* Nếu mua token không tốn tiền thì luôn mua lại sau mỗi lượt agent.
+* Vì sao watcher báo nhầm mãi vậy? Báo nhầm từ đầu epic tới giờ rồi? Root cause là gì? Lỗi kit hay lỗi shop?
+```
+
+**Claude:**
+
+**Về token:** mua token GitHub App không tốn tiền, chỉ là một lời gọi API mất khoảng 1 giây. Mình đã ghi quyết định của bạn vào mục 2 của danh sách findings: luôn mua lại token sau mỗi lượt agent.
+
+**Về watcher báo nhầm:** mình đã xem lại cả 23 lần watcher báo từ đầu Epic. Không phải lần nào cũng nhầm, và lỗi có hai nguồn: **script watcher của mình**, và **dòng log sai của kit**. Không có lỗi nào từ `shop`.
+
+1. **Khoảng 11 lần báo đúng và có ích:** build xong (02:10, 11:51, 12:01, 14:54), dispatcher kết thúc (10:12), QA bị dừng vì lỗi worktree (12:27), PR chờ approve (12:14, 13:49), v.v.
+2. **8 lần do lỗi script watcher, tức lỗi của mình**, không phải của kit hay `shop`. Mình viết script ở Lượt 18 mà chưa kiểm kỹ cách kit ghi file, nên sai ba giả định:
+   - **Có khoá là có agent đang chạy:** sai. Bản xem trước cũng giữ khoá mà không có agent nào (báo nhầm lúc 12:10).
+   - **Log mới nhất là log của lệnh đang chạy:** sai. Log của mọi lệnh trên một item nằm chung một thư mục, nên lúc review vừa bắt đầu, log mới nhất vẫn là log build cũ (báo nhầm lúc 15:48).
+   - **Mỗi dòng "waiting for you" là chuyện mới:** sai. Dispatcher ghi lại cả danh sách chờ mỗi khi danh sách đổi. Vì vậy watcher đánh thức mình 5 lần cho những dòng đã biết.
+   - Thêm lần 01:18, khi chữ "budget" trong dòng khởi động bị hiểu là chạm ngân sách.
+   Mình đã sửa từng chỗ ngay khi gặp, lúc 01:18, 12:11, 12:33 và 15:49. Từ 15:49, watcher không còn mắc ba giả định trên.
+3. **Khoảng 6 lần do kit ghi dòng sai, và watcher chỉ chuyển lời đúng như kit ghi:** "waiting for you" trong lúc QA hay build vẫn đang chạy (11:18, 11:59, 12:32, 15:23), và "needs a fix: its PR is closed" trong lúc chỉ đang chờ deploy (11:05, 15:11). Đây là mục 6 và 7 trong danh sách findings của kit.
+
+**Cách sửa tận gốc:** watcher không nên đoán trạng thái từ file. Kit nên tự cho biết lệnh nào đang chạy và agent của lệnh đó ghi log lần cuối lúc nào, ví dụ qua `ao-step status --json`. Khi đó, watcher chỉ cần đọc con số này. Mình thêm việc này vào danh sách findings thành mục 13.
+
+**Tiến độ:** PR #86 (SHOP-84) đã merge lúc 15:54 (develop `30450f2`), sau review 3,00 USD: 5 Low, không Medium, không High. Mình đã approve ở gate ③ và đã tải `develop` mới về máy. Development đang deploy. Xong thì dispatcher chạy QA cho SHOP-84, item cuối của Epic.
+
+Tổng T14 đến giờ: **113,76 USD**.
+
+
+**Claude (tiếp Lượt 34, 15:57, watcher):**
+
+Watcher báo hai dòng mình đã biết: PR #86 chờ approve (đã xong lúc 15:54), và "needs a fix: SHOP-84: its PR is closed", là dòng tạm thời của kit trong lúc chờ deploy (mục 7 của findings). Mình cho watcher coi dòng "its PR is closed" là tiến độ, không đánh thức mình nữa. Development đang deploy SHOP-84, xong thì dispatcher chạy QA.
+
+
+# Phiên 35 · Lượt 35 — 2026-11-22 khoảng 16:04
+
+**Bạn:**
+
+```markdown
+Xong SHOP-84 thì Tạo 2 task FE nhỏ (như thêm background image cho 2 trang user, admin) trong epic này, không trigger review để test việc 2 làn chạy role FE dev cùng lúc
+```
+
+```markdown
+cần bật agents_per_role này làm ở bước tạo epic à? Nên giờ không đổi agents_per_role được à? Kiểm tra giúp tôi
+```
+
+**Claude:**
+
+**Trả lời câu hỏi:** không cần đặt `agents_per_role` từ lúc tạo Epic, và đổi lúc này được. Đây là cấu hình của cả dự án `shop`, không gắn với Epic nào. Mình đã kiểm trong code của kit xem ai đọc con số này và đọc khi nào:
+
+1. **`ao-step`** đọc `project.yaml` lúc mỗi lệnh bắt đầu, để xem một role được chạy mấy agent. Lệnh nào bắt đầu sau khi đổi thì thấy ngay số mới.
+2. **Dispatcher `/ao-run`** chỉ đọc một lần lúc khởi động, nên đổi xong phải chạy lại `/ao-run`.
+3. **Hook `jira-guard`** của mỗi agent đọc `project.yaml` **trong làn của agent đó**. Làn là bản sao của `develop` lúc làn được tạo. Vì vậy số mới phải được **merge vào `develop` trước khi tạo làn** cho item mới. Nếu không, lúc agent chuyển item sang In Progress, hook vẫn coi `fe-dev` chỉ được 1 item và từ chối.
+
+Vì thế, cách đúng là sửa qua một PR vào `develop`, giống lần SHOP-55. File nằm trong `.ai-orchestrator/`, là đường dẫn agent không được sửa, nên mình sửa trong phiên chính.
+
+**Mình đã làm phần chuẩn bị:**
+1. Tạo **SHOP-86** (Task ngoài Epic, mức light), commit thêm 4 dòng `agents_per_role: { fe-dev: 2 }` vào `project.yaml`, và mở PR #87. Kit đã kiểm file vẫn đúng schema.
+2. PR #87 cần review của `reviewer` và `security` thì merge-gate mới merge. Đây là cổng của kit với mọi PR, và không liên quan tới hai Task FE. PR chỉ 4 dòng nên chắc tốn khoảng 1–2 USD. Review sẽ tự chạy khi CI xanh.
+3. Đã soạn sẵn hai Task FE trong Epic SHOP-81: "user: thêm ảnh nền SVG nhẹ cho trang chủ" và "admin: thêm ảnh nền SVG nhẹ cho layout". Ảnh là SVG tự vẽ, dưới 5 KB, không lấy từ ngoài. Hai Task sửa hai app khác nhau nên không đụng file của nhau.
+
+**Thứ tự tiếp theo, đúng như bạn dặn "xong SHOP-84 thì tạo":**
+1. Development đã deploy SHOP-84 lúc 16:02, và dispatcher sắp chạy QA. QA PASS thì mình Accept.
+2. Sau đó mình mới merge PR #87, để lần deploy của nó không cắt ngang QA SHOP-84. Rồi mình tải `develop` về máy.
+3. Tạo hai Task FE và đưa chúng sang Ready, rồi dừng dispatcher cũ và chạy `/ao-run` mới để nó đọc `fe-dev: 2`.
+4. Hai `fe-dev` build cùng lúc trong hai làn, rồi dừng ở draft PR. Mình không chạy review, theo ý bạn.
+
+Ước tính thêm khoảng 10–15 USD: hai lượt build nhỏ, cộng review PR #87.
+
+
+**Claude (tiếp Lượt 35, 16:09, QA SHOP-84 đang chạy):**
+
+Dispatcher đã tự chạy QA cho SHOP-84 lúc 16:05. Dòng "Accept or QA fail" lại hiện sớm trong lúc QA vẫn đang chạy (mục 6 của findings). Mình đang chờ QA xong thật. Review PR #87 sẽ tự chạy khi CI của nó xanh.
+
+
+**Claude (tiếp Lượt 35, 16:20, review PR #87):**
+
+**Review PR #87 (SHOP-86, cấu hình `fe-dev: 2`) xong lúc 16:17**, tốn 2,99 USD.
+
+1. `reviewer` (0,76 USD) đã chạy thử code của kit với cấu hình mới. Build `fe-dev` thứ hai được chạy, build thứ ba phải chờ. `be-dev` vẫn chỉ 1, và tổng số việc vẫn không quá `lanes_max: 3`. Kết quả: 0 Critical, 0 High, 0 Medium, 1 Low. Low này nằm trong code kit: khi `fe-dev` phải chờ, câu báo vẫn ghi "builds one item at a time", sai khi giới hạn là 2. Mình thêm nó vào danh sách findings của kit.
+2. `security` (2,23 USD): không có finding nào.
+3. Mình đã approve PR #87 ở gate ③.
+
+**Cần bạn:** PR sửa `.ai-orchestrator/project.yaml`, là đường dẫn được bảo vệ, nên merge-gate **không tự merge**. Nó gắn cờ "Needs you" lên SHOP-86 với lời nhắn: chỉ bạn được merge. Bạn chọn một trong hai cách:
+1. Gõ "merge giúp", như lần PR #81. Sau khi QA SHOP-84 xong, mình Squash and merge bằng tài khoản của bạn, rồi gỡ cờ.
+2. Tự merge:
+   1. Mở https://github.com/TungPH7/shop/pull/87.
+   2. Kéo xuống cuối, bấm **Squash and merge**, rồi bấm **Confirm squash and merge**.
+   3. Báo mình. Mình gỡ cờ và làm tiếp.
+
+Nên merge sau khi QA SHOP-84 xong, để lần deploy của PR này không cắt ngang QA. QA đang chạy từ 16:05.
+
+
+**Claude (tiếp Lượt 35, 16:27, SHOP-84 Done):**
+
+**SHOP-84 đã Done** lúc 16:26. Cả ba item trong plan của Epic SHOP-81 giờ đều Done: SHOP-82, SHOP-83 và SHOP-84.
+
+1. QA PASS trên `30450f2` (2,68 USD, 18 phút). Đạt cả AC5–AC9 phía khách và AC12–AC21. Phần SEO đều đạt: title, meta description, canonical, hreflang, BreadcrumbList, sitemap, `noindex` cho danh mục rỗng, và tên danh mục chứa script được escape đúng.
+2. E2E chạy 231 trên 238 test đạt. Có 1 test admin của SHOP-83 fail một lần khi chạy song song, chạy riêng thì 7/7 đạt, nên có thể là test chập chờn.
+3. Mình đã kiểm CI develop `30450f2` xanh và kit đọc được báo cáo, rồi Accept. SHOP-84 tốn tổng cộng **25,87 USD**.
+
+**Cần bạn quyết sau, khi refine SHOP-85:** `x-default` của cả site trỏ về `/en`, trong khi phần SEO của SPEC ghi `/vi`. AC18 chỉ đòi có `x-default`, nên QA vẫn cho PASS. Bạn chọn sửa SPEC hay sửa site. Mình đã ghi điểm này, cùng test chập chờn kia, vào danh sách cho SHOP-85.
+
+**Còn lại của T14:**
+1. Thử hai làn `fe-dev`: đang chờ bạn ở PR #87. Gõ "merge giúp", hoặc tự bấm Squash and merge. QA SHOP-84 đã xong, nên merge lúc nào cũng được.
+2. SHOP-85, Task gom finding: nó đang chặn Epic. Sau phần thử ở trên, mình sẽ đề xuất làm gì với nó.
+
+Tổng T14 đến giờ: **118,55 USD**, tính cả 2,99 USD review PR #87.
+
+
+**Claude (tiếp Lượt 35, 16:29, watcher):**
+
+Watcher chỉ báo QA SHOP-84 đã kết thúc, việc mình đã xử lý xong (SHOP-84 Done). Giờ chỉ còn chờ bạn quyết việc merge PR #87.
+
+
+**Bạn (Lượt 36):** Merge giúp
+
+**Claude (Lượt 36, 17:56):**
+
+**Đã merge PR #87 và hai làn `fe-dev` đang chạy cùng lúc.**
+
+1. Mình đã Squash and merge PR #87 bằng tài khoản của bạn lúc 17:50. Commit trên `develop` là `c8e91d9`, CI của `develop` xanh. Mình đã gỡ cờ "Needs you" của SHOP-86.
+2. Mình đã tạo hai Task trong Epic SHOP-81:
+   - **SHOP-87**: ảnh nền SVG nhẹ cho trang chủ app `user`.
+   - **SHOP-88**: ảnh nền SVG nhẹ cho layout app `admin`.
+
+   jira-sync chỉ Refine các con của Epic lúc bạn Approve plan, nên mình Refine hai Task này thay bạn.
+3. Mình dừng dispatcher cũ, vì nó chỉ đọc cấu hình lúc khởi động. Đợt chạy đó tốn 60,51 USD, đã tính trong tổng T14.
+4. Chạy thử `/ao-run SHOP-81` (không `--go`) in ra "Would start now: /ao-build SHOP-87, /ao-build SHOP-88". Trước đây, khi chỉ có 1 `fe-dev`, câu này chỉ có một build.
+5. Lúc 17:52, mình chạy `/ao-run SHOP-81` mới với ngân sách 30 USD. **Lúc 17:53, cả hai `/ao-build` cùng bắt đầu**, mỗi build trong làn riêng: `shop-wt/SHOP-87` (slot 0) và `shop-wt/SHOP-88` (slot 1). Watcher đã chạy lại trên dispatcher mới.
+
+**Không review:** cả hai đều là item giao diện. Build xong, kit dừng ở draft PR và chờ bạn chọn `/ao-preview` hoặc `/ao-review`, nên không tự review. Lúc đó mình báo bạn để quyết bước tiếp.
+
+**SHOP-86 chưa Done:** kit không cho nó đi đường light. Theo code, mức light bị nâng lên vì PR #87 sửa đường dẫn được bảo vệ, nên kit đòi một lượt QA bằng agent `qa`, khoảng 3 USD. Mình chưa chạy QA để nó không giành RAM với hai build. Mình đã ghi bằng chứng lên SHOP-86: kết quả chạy thử, hai dòng "start" lúc 17:53, hai slot đang chạy, CI xanh. QA sẽ đọc bằng chứng này. Khi hai build xong, mình chạy QA rồi Accept theo standing approval.
+
+**Lưu ý:** finding 2 (token hết hạn sau 60 phút) chưa sửa. Nếu một build kéo dài quá 60 phút, nó có thể lại kết thúc bằng "stopped with no decision"; PR thì vẫn còn nguyên.
+
+Tổng T14 đến giờ: **118,55 USD**. Ngân sách tối đa của đợt này là 30 USD, cộng khoảng 3 USD QA SHOP-86, nên tổng vẫn dưới mức dừng 170 USD.
+
+
+**Claude (tiếp Lượt 36, 18:28, hai làn fe-dev):**
+
+**Thử hai làn `fe-dev` cùng lúc: đạt.** Hai agent `fe-dev` cùng bắt đầu lúc 17:53, mỗi agent trong làn riêng, và chạy song song khoảng 30 phút.
+
+| Item | Làn | Agent chạy | Kết quả | Chi phí |
+|---|---|---|---|---|
+| SHOP-87 (`user`, trang chủ) | slot 0, `shop-wt/SHOP-87` | 17:53 → 18:23 | draft PR #88, CI xanh. SVG 573 byte, có test đơn vị và E2E | 3,13 USD |
+| SHOP-88 (`admin`, layout) | slot 1, `shop-wt/SHOP-88` | 17:53 → 18:25 | draft PR #89, CI gần xong. SVG 501 byte, có test đơn vị và E2E | 4,84 USD |
+
+Ảnh chụp của agent cho thấy hoạ tiết hình học mờ phía sau nội dung: chữ, bảng và nút vẫn rõ. Mỗi item có ảnh cả giao diện sáng và tối, trong `shop-wt/SHOP-87/.ai/runs/SHOP-87/preview/` và `shop-wt/SHOP-88/.ai/runs/SHOP-88/preview/`.
+
+**Không review, đúng như bạn muốn:** cả hai đứng ở draft PR. Dispatcher ghi "waiting for you: /ao-preview hoặc /ao-review" và không tự chạy gì thêm.
+
+**Đang chạy:** khi lệnh build SHOP-88 nhả slot (nó chờ CI của PR #89 xong), mình tự chạy QA SHOP-86 (khoảng 3 USD), rồi Accept nếu PASS.
+
+**Cần bạn chọn cho SHOP-87 và SHOP-88:**
+1. **Làm tiếp đến Done** (mình khuyên): review, merge, QA rồi Accept, theo standing approval. Thêm khoảng 10–15 USD, nên tổng T14 lên khoảng 140 USD.
+2. **Dừng ở đây:** mình Cancel hai Task và đóng PR #88, #89 (không xoá nhánh).
+3. **Bạn xem trước rồi mới quyết:** mình chạy `/ao-preview` cho từng item và gửi link.
+
+Tổng T14 đến giờ: **126,52 USD**.
+
+
+**Claude (tiếp Lượt 36, 18:40, SHOP-86 Done):**
+
+**SHOP-86 đã Done** lúc 18:39.
+
+1. QA PASS trên `c8e91d9` (0,82 USD, 8 phút). Cả ba mục checklist đều đạt: đã thêm `fe-dev: 2`, `runs:` không đổi gì khác, file vẫn đúng schema.
+2. Verification đạt. Dòng "Would start now" không chạy lại được, vì SHOP-87 và SHOP-88 đã In Progress. QA dựa vào bằng chứng mình ghi trên Jira và log dispatcher: hai build cùng bắt đầu lúc 17:53, mỗi build có worktree riêng. CI xanh trên head PR và trên commit merge.
+3. QA còn chạy cả bộ E2E trên Development: 231 test đạt, 5 bỏ qua, không test nào fail.
+4. Mình đã Accept theo standing approval.
+
+Tổng T14 đến giờ: **127,34 USD**. Cho SHOP-87 và SHOP-88, vẫn chờ bạn chọn 1 (làm tiếp đến Done), 2 (dừng, Cancel) hoặc 3 (xem preview trước).
+
+
+**Bạn (Lượt 37):** Dừng làm SHOP-87 và SHOP-88, làm các finding và lỗi kit nhé
+
+**Claude (Lượt 37, 19:06):**
+
+**Đã dừng SHOP-87 và SHOP-88. T14 xong.**
+
+1. Mình dừng dispatcher bằng `ao-step run --stop`. Đợt chạy cuối tốn 7,97 USD.
+2. Mình Cancel SHOP-87 và SHOP-88 bằng token admin. Gọi Cancel qua API thì Jira không bắt chọn Resolution, nên mình đặt thêm "Won't Do" cho cả hai.
+3. Mình đóng PR #88 và #89, giữ nguyên hai nhánh.
+4. Mình tắt Docker, vì phần sửa kit chỉ cần Node.
+5. Mình đánh dấu T14 xong trong `tasks/c2/todo.md`. **Tổng T14: 127,34 USD.**
+
+**Sửa finding và lỗi kit:** một agent đang dò code, để tìm đúng chỗ sửa cho từng mục. Khi nó báo về, mình viết file kế hoạch `tasks/c2/followups-t14.md` rồi làm luôn đợt 1. Theo luật đã duyệt, mỗi đợt là một kit PR: test viết đỏ trước, CI xanh thì mình tự merge, không tốn tiền agent.
+
+1. **Đợt 1: dispatcher và `ao-step` chạy cho chắc.**
+   - Mua lại token GitHub sau mỗi lượt agent.
+   - Thử lại khi GitHub trả lỗi 5xx.
+   - Đọc được QA report có tiền tố tên role.
+   - QA fetch trước khi tạo worktree.
+   - Không báo "waiting for you" khi lệnh của item còn chạy.
+   - Chờ deploy thì không ghi "needs a fix".
+   - `/ao-fix` xếp hàng chờ role dev.
+   - Item chờ preview không giữ WIP của role.
+   - Thêm `status --json`, sửa câu "one item at a time", và in lý do của level.
+2. **Đợt 2: cổng CI.**
+   - Deployer chỉ deploy develop khi CI của develop xanh. Mình phải cập nhật thêm bản deployer trên VPS.
+   - QA đọc CI của commit merge.
+3. **Đợt 3: plan và prompt.**
+   - `planEntry` nhận dạng `<KEY>: <tên>`.
+   - `sa` nhắc `agents_per_role`.
+   - Đếm câu hỏi mở của `seo` cho đúng.
+   - Skill `ao-spec` ghi cách chép kèm lời khuyên.
+4. **Đợt 4: các việc bảo mật còn mở từ review PR #81:** High `08bc0732` (hạn 2026-12-15) và 5 mục khác. Mình lập threat model trước.
+5. **Sau đó, chép kit vào `shop` một lần, có review khoảng 15 USD.** Mình sẽ hỏi bạn trước khi chạy bước tốn tiền này.
+6. **Cuối cùng là SHOP-85** (finding của `shop`), chạy bằng `/ao-run` trên bản kit mới.
+
+**Hai chỗ cần bạn quyết. Chưa gấp, mình làm kit trước:**
+1. **Mục 12, ruleset strict.** Mình khuyên **không bật**.
+   - `shop` là repo của tài khoản cá nhân, nên GitHub không cho dùng merge queue.
+   - Bật strict thì mỗi lần một làn merge, mọi PR khác phải cập nhật nhánh và chạy lại CI.
+   - Đợt 2 đã chặn tổ hợp hỏng: không deploy khi CI develop đỏ, và QA đọc CI develop.
+
+   Mình chỉ ghi lý do này vào tài liệu.
+2. **SHOP-85, `x-default`:** SPEC ghi `/vi`, còn site đang trỏ `/en`. Bạn chọn sửa SPEC theo site, hay sửa site theo SPEC. Mình khuyên **sửa site về `/vi`**, vì khách chính dùng tiếng Việt và SPEC đã duyệt ở cổng ①.
+
+
+**Claude (tiếp Lượt 37, 19:55, xong batch sửa kit):**
+
+**Đã sửa xong các lỗi kit gom từ T14 và các việc bảo mật còn mở của PR #81.** Có 4 kit PR, tất cả CI xanh, tổng 1.824 test, và không tốn tiền agent.
+
+**Đợt 1 (kit PR #339): dispatcher và `ao-step`.**
+- Token GitHub được mua lại sau mỗi lượt agent, nên build dài không còn lỗi 401.
+- Khi GitHub trả lỗi 500, `ao-step` thử lại.
+- `ao-step` đọc được QA report có tiền tố tên role.
+- QA fetch commit trước khi tạo worktree.
+- Dispatcher không báo "waiting for you" khi item còn chạy. PR đã merge thì item chờ deploy, không bị ghi "needs a fix".
+- `/ao-fix` xếp hàng chờ role dev rảnh.
+- Câu báo WIP nêu tên item đang giữ chỗ.
+- `status --json` có thêm phần cho người theo dõi.
+- `/ao-status` in lý do của level.
+
+**Đợt 2 (kit PR #340): cổng CI.**
+- Deployer chỉ deploy develop khi CI của chính commit đó xanh.
+- QA lấy CI của commit đang chạy làm bằng chứng.
+
+**Đợt 3 (kit PR #341): plan và prompt.**
+- Review pack tìm được mục plan dạng `SHOP-82: …`.
+- `sa` nhắc `agents_per_role` khi hai item cùng role có thể chạy song song.
+- Câu hỏi mở được đánh số Q1, Q2…
+- Skill chép kèm lời khuyên khi bạn trả lời "đồng ý theo khuyên".
+
+**Đợt 4 (kit PR #342): High `08bc0732` cùng 5 Medium và 1 Low của review vòng ba PR #81, hạn 2026-12-15.** Mình lập threat model trước khi viết code.
+- Hook đọc chữ đúng như `ao-step` đọc.
+- Comment của agent luôn ký đúng tên role của nó.
+- Chữ `seo` đã duyệt đi qua một file, không nằm trong prompt.
+- Hook chặn thêm các cách đặt biến trong Bash.
+- Low: mình đã sửa tiêu đề và mô tả PR #81, và thêm comment đính chính trên SHOP-80.
+
+**Mục 9, item chờ xem trước vẫn giữ WIP:** mình giữ nghĩa WIP của contract, chỉ làm câu báo rõ hơn. Đổi nghĩa WIP là đổi guard trên Jira, lớn hơn lợi ích. Muốn hai item cùng role chạy song song thì đặt `agents_per_role`.
+
+**Cần bạn quyết:**
+1. **Chép bản kit mới lên VPS cho deployer?** Theo `docs/vps-setup.md`, bản kit ghim trên VPS chỉ đổi khi bạn bảo. Chưa chép thì Development vẫn deploy như cũ, tức là không chờ CI của develop. Mình khuyên chép ngay sau khi kit vào `shop`.
+2. **Task chép kit vào `shop`, có review.** `reviewer` và `security` review, khoảng 15 USD. Cần bước này để `shop` dùng được các bản sửa: hook, prompt và workflow. Bước này tốn tiền nên mình hỏi trước.
+3. **Ruleset strict (mục 12):** mình khuyên không bật, lý do ở lượt trước. Bạn đồng ý thì mình chỉ ghi vào tài liệu.
+4. **SHOP-85, `x-default`:** sửa site về `/vi` (mình khuyên), hay sửa SPEC theo `/en`?
+
+Bạn trả lời, ví dụ "1 2 3 đồng ý, x-default theo khuyên". Khi đó mình chép kit vào `shop` và chạy review, chép kit lên VPS, rồi chạy SHOP-85 bằng `/ao-run`.
