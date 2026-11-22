@@ -1,6 +1,6 @@
 # Batch sửa kit sau T14: finding của lần chạy thật SHOP-81 và việc còn mở của review PR #81
 
-**Trạng thái:** đợt 1 đang làm, trên nhánh `task/c2-t14-fix-1` (worktree `ao-t14-fixes`). Bạn bảo làm ở Phiên 35 · Lượt 37 ("Dừng làm SHOP-87 và SHOP-88, làm các finding và lỗi kit nhé").
+**Trạng thái:** đợt 1 đã merge (kit PR #339, `b5788d9`). Đợt 2 đang làm, trên nhánh `task/c2-t14-fix-2` (worktree `ao-t14-fixes`). Bạn bảo làm ở Phiên 35 · Lượt 37 ("Dừng làm SHOP-87 và SHOP-88, làm các finding và lỗi kit nhé").
 
 **Nguồn:**
 - 15 mục "Findings kit gom lại từ T14" và mục "Quan sát cho T15" ở [todo.md](todo.md), phần T14;
@@ -85,3 +85,12 @@ Các mục 1–7 của "Còn mở sau review vòng ba" ([followups-pr80.md](foll
 11. `/ao-status <KEY>` in dòng "Level of" khi item có nhãn mức hay mức đã tăng.
 
 Tài liệu: `docs/dev-workflow.md`, mục `/ao-run`.
+
+**Đợt 2** (nhánh `task/c2-t14-fix-2`, 1.813 test xanh):
+1. `decideTarget` có thêm hành động `wait`. Head của nhánh trong `CI_GATED` (`develop`) phải có CI xanh trên chính commit đó: CI đỏ thì `refuse`, CI còn chạy hoặc chưa bắt đầu thì `wait`. `tick` không đánh dấu head đang `wait` là đã thấy, nên phút sau xem lại. `readChecks` nhận `ignore`; `NOT_BRANCH_CI` bỏ `merge-gate` và `audit`, ngoài các job đã bỏ trước đó. `scripts/ao-deploy.mjs` gắn `readCi`.
+   - `main` và `release/*` chưa bị chặn theo CI của head: bạn quyết cho `develop`. Muốn thêm thì thêm vào `CI_GATED`.
+   - Bản kit ghim trên VPS chỉ đổi khi bạn bảo (`docs/vps-setup.md`, mục 12): chờ bạn.
+2. Prompt `qa` và `qa-defect` (`ciEvidence`) cùng `agents/prompts/qa.md`: CI làm bằng chứng là CI của commit môi trường đang chạy (`gh run list --commit <sha>`), không phải CI của head PR.
+3. Ruleset strict: chưa làm, chờ bạn quyết.
+
+Tài liệu: `docs/release-workflow.md` (bảng môi trường, đoạn deployer, bảng status `error`).
