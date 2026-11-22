@@ -173,4 +173,4 @@ Bộ test lúc bắt đầu: 1.731 test xanh (kit `main` `dc400af`).
 
 ## Đóng module
 
-- [ ] **T15:** `verification.md` theo 6 tiêu chí của spec mục 15; hàng C2 của `concerns.md`; `tasks/todo.md`; memory. PR tài liệu.
+- [x] **T15:** `verification.md` theo 6 tiêu chí của spec mục 15; hàng C2 của `concerns.md`; `tasks/todo.md`; memory. PR tài liệu. Xong 2026-11-23: [verification.md](verification.md); 3 trên 6 tiêu chí đạt, tiêu chí 4 và 5 không đạt, các lỗi đã sửa ở kit PR #339–#346.
