@@ -33515,3 +33515,81 @@ Bạn nhắn "merge giúp" và "làm đợt sửa" (hay chỉ một trong hai) n
 Sau khi bạn compact, bạn nhắn "làm tiếp" là mình làm nốt. QA của SHOP-93 xong thì mình sẽ báo.
 
 **Bạn (Lượt 53):** làm tiếp
+
+**Claude (Lượt 53, 01:39):**
+
+**Đợt sửa 7 đã xong và đã merge** (kit PR #348, kit main `9203355`, 1.844 test xanh, không tốn tiền agent). Cả 2 Medium và 5 Low của review PR #92 đều đã sửa:
+1. Watcher chỉ in câu do nó dựng, không chép chữ từ file mà agent ghi được.
+2. Cờ được gỡ thì watcher quên, nên lần gắn cờ sau của cùng item lại được báo.
+3. Mỗi dự án chỉ một watcher. Watcher thứ hai dừng ngay; mình đã thử thật.
+4. Watcher bỏ qua file log không đổi.
+5. Dòng nhắc của Task finding có ở mọi nhánh QA.
+6. Khi agent im lâu, watcher tự đọc log và chỉ nêu tên tool cuối, không bảo phiên chính đọc log.
+7. gh-guard bắt cả tên biến bị tách bằng dấu nháy, và phép gán dựng từ biến mà phép tính số học đọc lại.
+
+**QA của SHOP-93** chạy từ 01:35. Xong thì mình báo. Accept là việc của bạn.
+
+**Lưu ý:** `shop` đang chạy kit `42f8f71`. Các bản sửa của đợt 7 vào `shop` ở lần chép kit sau (có review khoảng 10–15 USD); bạn muốn thì nhắn. Deployer trên VPS vẫn chạy `666def3`, như mình báo ở lượt trước.
+
+**Claude (tiếp Lượt 53, 01:47, QA SHOP-93 xong):**
+
+**QA của SHOP-93 đạt cả 4 dòng Verification** (1,15 USD). SHOP-93 tốn tổng cộng 9,39 USD.
+- CI của PR #92 xanh đủ 8 check.
+- Hai báo cáo review nằm trên head của PR, đều approve, không có Critical hay High.
+- 25 trên 26 file khớp từng byte với kit `42f8f71`. File còn lại chỉ khác ở dòng mà `ao-kit sync` điền khoá space `SHOP`.
+- CI của `develop` (`25344a2`) xanh, và lượt deploy lên Development báo `success`.
+
+SHOP-93 đang ở In QA. **Accept là việc của bạn**: bạn bấm trên Jira, hoặc nhắn "Accept giúp". Docker đã tắt, không còn gì chạy.
+
+**Một việc nhỏ:** worktree tạm của lượt QA, `%TEMP%\ao-reviews\shop-SHOP-93-qa`, không xóa được vì Windows đang khóa `node_modules` (EPERM). Mình để yên, không xóa tay: `node_modules` của worktree có thể nối tới thư mục thật, như sự cố trước đây. Lần chạy sau `ao-step` sẽ dọn nó.
+
+**Bạn (Lượt 54):** đã accept, giờ làm gì tiếp
+
+**Claude (Lượt 54):**
+
+**Mình khuyên làm release v0.4.0 tiếp theo.** Một lần release giải quyết luôn hai việc: hạn 2026-12-02 trong backlog (release v0.4.0, hoặc đưa `pr-events.yml` lên `main`), và đóng Epic SHOP-81. Epic chỉ Complete được khi các item của nó đã ở trong một bản release.
+
+**Các việc còn lại, theo thứ tự mình đề xuất:**
+1. **Chép kit mới lên VPS** (`9203355`, khoảng 5 phút, không tốn tiền). Nên làm trước release, để deployer có bản sửa "xét lại commit khi CI chạy lại xanh". Bản ghim trên VPS chỉ đổi khi bạn bảo.
+2. **Release v0.4.0** (chứa Epic Danh mục):
+   - `/ao-release`: mình in điểm cắt, bạn duyệt ở gate ④;
+   - lên Staging, `qa` chạy regression, khoảng 10–20 USD;
+   - `/ao-ship`: bạn duyệt ở gate ⑤, rồi bấm Release trên Jira và Complete trên SHOP-81.
+3. **Trước 2026-12-31:**
+   - SHOP-40 cùng tài khoản Windows `ao-agent` (khoảng nửa ngày, cần bạn bấm vài chỗ);
+   - bạn kiểm khóa `age` trên một máy chưa từng chạy agent;
+   - gỡ ngoại lệ picomatch khi có bản vá.
+4. **Để sau:** chép kit PR #348 vào `shop` (gộp với lần sửa kit sau, để chỉ trả tiền review một lần); SHOP-92, SHOP-75, SHOP-70, SHOP-72 khi bạn Refine.
+5. **Dọn dẹp (cần bạn đồng ý từng việc xóa):** worktree `ao-t14-fixes` và các nhánh kit đã merge; 3 comment thử 10620–10622 trên SHOP-80.
+
+Ngoài kit: VPS `dtddeploy` cũ vẫn còn việc đổi các secret đã lộ và dọn trên máy (khóa `dtd_deploy`, `known_hosts`, `D:\backup\dtddeploy`).
+
+Bạn nhắn "làm 1 và 2" thì mình bắt đầu bằng việc chép kit lên VPS, rồi chạy bước kiểm của `/ao-release`. Bước kiểm này chưa tốn tiền và chưa cắt nhánh.
+
+**Bạn (Lượt 55):** Làm:
+
+* Chép kit mới (9203355) lên VPS
+* Dọn dẹp
+
+**Claude (Lượt 55):**
+
+**Đã chép kit `9203355` lên VPS và dọn dẹp xong.**
+
+**1. Kit trên VPS:**
+- Mình làm theo mục 12 của `docs/vps-setup.md`.
+- `deployer.mjs` và `targets.mjs` trên VPS khớp từng byte với `9203355`.
+- Dry-run và một lượt chạy thật của deployer đều ổn, timer đã bật lại.
+- Bản `666def3` giờ nằm ở `/opt/ao/kit.prev`. Mình đã ghi bản ghim mới vào `docs/vps-setup.md`.
+
+**2. Dọn dẹp:**
+- **Worktree `ao-t14-fixes`: đã xóa.** Trước khi xóa, mình kiểm `node_modules` của nó: là thư mục thật, không phải liên kết. `node_modules` của kit chính còn nguyên (48 mục).
+- **Nhánh kit đã merge: đã xóa 103 nhánh trên máy và 109 nhánh trên GitHub.** Chỉ xóa nhánh có PR đã merge, nên nội dung đã nằm trong `main`. Tên và SHA của từng nhánh lưu ở `.pilot3-scratch/deleted-kit-branches.txt` và `deleted-kit-remote-branches.txt`. Nhánh trên GitHub khôi phục được bằng nút "Restore branch" trên trang PR.
+- **3 comment thử 10620–10622 trên SHOP-80: đã xóa.** Mình đọc lại trước khi xóa: đúng là comment thử định dạng của review lần hai PR #81.
+
+**Còn lại, mình chưa đụng vì không có trong danh sách bạn duyệt:**
+1. Hai worktree cũ: `ao-c1-fixes` (nhánh `task/c1-review-fixes`, đã merge ở #324) và `ao-followups-1` (detached). Cả hai đều sạch, `node_modules` là thư mục thật.
+2. Sáu nhánh kit không có PR: `docs/phien-26-log`, `task/after-pilot3`, `task/c2-t13`, `task/pilot3-5`, `task/pilot3-7`, `worktree-agent-abb253dc…`. Hai nhánh đầu còn trên GitHub. Các nhánh này có thể chứa việc chưa merge, nên cần xem từng nhánh trước.
+3. Nhánh `SHOP-90-reworded-headers` trên máy, trong repo `shop`, do `be-dev` tạo.
+4. Worktree tạm của QA SHOP-93 trong `%TEMP%`, bị Windows khóa (EPERM); `ao-step` sẽ tự dọn ở lần chạy sau.
+
+Bạn muốn dọn tiếp mục 1 và 3 thì nhắn "xóa 1 và 3". Mục 2, mình có thể xem từng nhánh rồi báo nhánh nào an toàn để xóa.
