@@ -44,8 +44,9 @@ test('/ao-qa runs qa on the release of the QA environment, in a worktree at the 
   assert.deepEqual(run.qa, { environment: 'development', sha: RUNNING, auth: true });
   assert.equal(
     run.prompt,
-    `QA Story DEMO-21 on Development. Development runs cccccccc at ${URL}, which holds the merge of PR #15. Check DEMO-21 against its acceptance criteria there, and run the E2E of the repo with E2E_BASE_URL, E2E_HTTP_USER and E2E_HTTP_PASSWORD, which are set. Save your screenshots in .ai/qa/DEMO-21/. Write your QA report on DEMO-21, then move it as your definition says.`,
+    `QA Story DEMO-21 on Development. Development runs cccccccc at ${URL}, which holds the merge of PR #15. Check DEMO-21 against its acceptance criteria there, and run the E2E of the repo with E2E_BASE_URL, E2E_HTTP_USER and E2E_HTTP_PASSWORD, which are set. Save your screenshots in .ai/qa/DEMO-21/. Write your QA report on DEMO-21, then move it as your definition says.\n\nWhere a criterion or a Verification line asks for green CI, the evidence is the CI of cccccccc, the commit Development runs (gh run list --commit ${RUNNING}), not the CI of the head of PR #15: the tree after a merge is not the tree the CI of its PR built.`,
   );
+  // T14 of C2, finding 5: QA of SHOP-82 took the green CI of the PR head for V1 while CI of the merge on develop was red.
   assert.match(decision.lines.join('\n'), /Development runs cccccccc, which holds the merge of PR #15/);
 });
 

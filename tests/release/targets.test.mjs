@@ -123,3 +123,19 @@ test('an unknown environment, or nothing to decide, is a mistake of the caller',
   assert.throws(() => decide('qa', { candidate: head('develop', A, TA, [pass(A)]) }), /unknown environment qa/);
   assert.throws(() => decide('development', {}), /a candidate or a request/);
 });
+
+// T14 of C2, finding 1 (Phiên 35 · Lượt 33: "deployer phải chờ CI xanh trên develop thì mới deploy develop"): the
+// audit read CI of the PR head only, and Development ran e93bfc3 while CI of that merge commit was red. With ci, the CI
+// of the head of the branch: red refuses it, and CI still running or not started waits for a later round.
+test('Development runs a head of develop only once CI of that commit is green', () => {
+  const green = { green: true, failed: false, started: true };
+  assert.deepEqual(decide('development', { candidate: { ...head('develop', B, TB, [pass(B)]), ci: green } }), deploy(B, TB, 'branch'));
+  const red = decide('development', { candidate: { ...head('develop', B, TB, [pass(B)]), ci: { green: false, failed: true, started: true } } });
+  assertRefuse(red, /^CI failed on bbbbbbb, the head of develop: Development keeps what it runs; a later head with green CI deploys$/);
+  const running = decide('development', { candidate: { ...head('develop', B, TB, [pass(B)]), ci: { green: false, failed: false, started: true } } });
+  assert.deepEqual(running, { action: 'wait', reason: 'CI of bbbbbbb, the head of develop, is still running' });
+  const none = decide('development', { candidate: { ...head('develop', B, TB, [pass(B)]), ci: { green: false, failed: false, started: false } } });
+  assert.deepEqual(none, { action: 'wait', reason: 'CI has not started on bbbbbbb, the head of develop: if Actions was off at the push, run gh workflow run CI --ref develop' });
+  // An audit that failed still comes first: it says what to read.
+  assertRefuse(decide('development', { candidate: { ...head('develop', B, TB, [fail(B, 'pushed without a PR')]), ci: green } }), /did not pass audit/);
+});

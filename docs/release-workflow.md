@@ -23,11 +23,18 @@ Không có lệnh `/ao-hotfix`: hotfix đi qua các lệnh sẵn có.
 
 | Môi trường | Bản | Khi nào |
 |---|---|---|
-| Development | Head của `develop` | Mỗi commit mới qua `audit` |
+| Development | Head của `develop` | Mỗi commit mới qua `audit`, và CI của chính head đó xanh |
 | Staging | Head của `release/*` đang mở, hoặc commit hotfix trên `main` chưa lên Production | Mỗi commit mới qua `audit` |
 | Production | Merge commit của PR release bạn đã approve, hoặc một yêu cầu deploy do bạn tạo | Sau gate ⑤ |
 
-Deployer chạy mỗi phút trên VPS và kiểm mọi commit mới trên lịch sử first-parent, không chỉ commit mới nhất. Production có thêm hai điều kiện: có gate ⑤, và tree của commit đã chạy thành công trên Staging. Image được gắn tag theo mã tree, nên Production chạy đúng image đã qua Staging.
+Deployer chạy mỗi phút trên VPS và kiểm mọi commit mới trên lịch sử first-parent, không chỉ commit mới nhất.
+
+Trên `develop`, deployer còn chờ CI của chính head đó (T14 của C2; bạn quyết ở Phiên 35 · Lượt 33). `audit` chỉ kiểm CI trên head của PR. Khi nhiều làn merge nối nhau, tree sau merge chưa từng được CI của PR nào build: `e93bfc3` của `shop` đã lên Development khi CI của nó đỏ.
+- CI còn chạy, hoặc chưa bắt đầu: deployer chờ và xem lại ở phút sau.
+- CI đỏ: status `error`, Development giữ bản đang chạy, và một head sau có CI xanh sẽ lên.
+- Các job `merge-gate`, `jira-sync`, `audit` và các relay không tính là CI: GitHub gắn check của các workflow chạy theo `workflow_run` lên head của nhánh mặc định, và `merge-gate` có thể chờ QA ở đó tới 100 phút.
+
+Production có thêm hai điều kiện: có gate ⑤, và tree của commit đã chạy thành công trên Staging. Image được gắn tag theo mã tree, nên Production chạy đúng image đã qua Staging.
 
 ## Một vòng release
 
@@ -109,7 +116,7 @@ Hotfix chiếm Staging tới khi lên Production. Nếu đang có bản release 
 
 | Status | Nghĩa là | Điều xảy ra |
 |---|---|---|
-| `error` | Deployer từ chối trước khi deploy: commit không qua `audit`, thiếu điều kiện của Production, người yêu cầu ngoài `AO_APPROVERS`, thiếu biến hay file `.db.env`, build lỗi, database không trả lời trong 60 giây | Không môi trường nào đổi. Trên Development và Staging, `jira-sync` gắn cờ Needs you |
+| `error` | Deployer từ chối trước khi deploy: commit không qua `audit`, CI đỏ trên head của `develop`, thiếu điều kiện của Production, người yêu cầu ngoài `AO_APPROVERS`, thiếu biến hay file `.db.env`, build lỗi, database không trả lời trong 60 giây | Không môi trường nào đổi. Trên Development và Staging, `jira-sync` gắn cờ Needs you |
 | `failure` | Container mới không chạy, hoặc smoke test fail sau `start_timeout` giây (mặc định 60) | Container mới bị gỡ, container cũ vẫn phục vụ. Trên Development và Staging, item được gắn cờ. Trên Production, `jira-sync` tạo Bug Critical, Found in Production, Affects Version là bản vừa thử |
 
 Deployer không tự thử lại một yêu cầu đã `failure`. Trong bài thử trên `ao-pilot`, Production không lỗi lần nào suốt lúc smoke fail. Mức độ của Bug tự tạo nằm ở trường Severity; trường Priority vẫn là mặc định của Jira.

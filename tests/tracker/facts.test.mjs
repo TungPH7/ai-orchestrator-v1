@@ -245,3 +245,18 @@ test('a QA report behind the Agent value of its writer is read', () => {
   // Words before a colon that are not a name stay what they are.
   assert.equal(qaReportResult('Xem lại sau khi đọc QA report: chưa có\n## Result\nPASS'), null);
 });
+
+// T14 of C2, finding 1: merge-gate and jira-sync run on workflow_run, and GitHub puts their check runs on the head of the
+// default branch, where merge-gate may wait for QA up to 100 minutes. The CI of a branch head leaves them out.
+test('the CI of a branch head leaves out the jobs of the kit that are not CI', async () => {
+  const { readChecks, NOT_BRANCH_CI } = await import('../../lib/tracker/facts.mjs');
+  const runs = [
+    { name: 'build-test', status: 'completed', conclusion: 'success' },
+    { name: 'merge-gate', status: 'in_progress', conclusion: null },
+    { name: 'jira-sync', status: 'completed', conclusion: 'failure' },
+    { name: 'audit', status: 'queued', conclusion: null },
+  ];
+  const github = { getAll: async () => runs, get: async () => ({ total_count: 0, state: 'pending' }) };
+  assert.deepEqual(await readChecks(github, 'c'.repeat(40), { ignore: NOT_BRANCH_CI }), { green: true, failed: false, started: true });
+  assert.equal((await readChecks(github, 'c'.repeat(40))).green, false, 'a PR head still counts merge-gate and audit as it did');
+});

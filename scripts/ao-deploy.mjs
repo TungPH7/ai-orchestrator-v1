@@ -25,6 +25,7 @@ import { createInstaller, gitAuthEnv, readHeads, tick } from '../lib/release/dep
 import { validateDeployerConfig } from '../lib/release/deployer-config.mjs';
 import { baseline, hasBaseline, readState, stateText } from '../lib/release/record.mjs';
 import { createGitHubClient } from '../lib/tracker/github-client.mjs';
+import { NOT_BRANCH_CI, readChecks } from '../lib/tracker/facts.mjs';
 import { bearerAuth, createJiraClient } from '../lib/tracker/jira-client.mjs';
 import { readMapping } from '../lib/tracker/mapping.mjs';
 
@@ -95,6 +96,8 @@ async function tickAll(config, { dryRun }) {
         token: c.token,
         github: c.github,
         audit: ({ since, head, branch }) => auditRange({ git: c.git, github: c.reader, docs, since, head, branch, gates, apps: config.apps, approvers: config.approvers, space: project.space }),
+        // The CI of a head of develop, which deploys only once it is green (T14 of C2, finding 1).
+        readCi: (sha) => readChecks(c.reader, sha, { ignore: NOT_BRANCH_CI }),
         installer: createInstaller({ project, git: c.git, docker, workDir: join(c.dir, 'work'), readSecrets: (env) => readFile(join(config.secrets_dir, project.name, `${env}.env`), 'utf8') }),
         approvers: config.approvers,
         log,

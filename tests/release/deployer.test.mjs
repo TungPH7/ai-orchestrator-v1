@@ -74,7 +74,7 @@ function fakeInstaller(results = []) {
   };
 }
 
-async function run({ repo, state, deployments, audits = {}, results, dryRun = false, project = PROJECT }) {
+async function run({ repo, state, deployments, audits = {}, results, dryRun = false, project = PROJECT, ci }) {
   const g = fakeGit(repo);
   const gh = fakeGitHub(deployments);
   const inst = fakeInstaller(results);
@@ -90,6 +90,7 @@ async function run({ repo, state, deployments, audits = {}, results, dryRun = fa
       token: TOKEN,
       github: gh,
       audit: fakeAudit(audits),
+      ...(ci && { readCi: async (s) => ci[s] }),
       installer: inst,
       approvers: [YOU],
       log: (line) => lines.push(line),
@@ -295,4 +296,24 @@ test('the deployment of two public apps names the URL of the first, on its own h
   const r = await run({ project: { ...PROJECT, hosts }, repo: { heads: { develop: C, main: H0 }, open: [], trees: TREES }, state: started(), audits: { [`develop ${C}`]: [pass(B), pass(C)] }, results: [{ outcome: 'success', public: [{ app: 'user', port: 3000 }, { app: 'admin', port: 5173 }] }] });
   assert.equal(r.gh.writes.at(-1).body.environment_url, 'https://shop-dev.ao.t2g.io.vn');
   assert.deepEqual(r.state.environments.development.current.public, [{ app: 'user', port: 3000 }, { app: 'admin', port: 5173 }]);
+});
+
+// T14 of C2, finding 1 (Phiên 35 · Lượt 33): Development runs a head of develop only once CI of that commit is green.
+// CI still running holds the head for a later round, without marking it seen; red CI is reported and the head is seen.
+test('a head of develop waits for its own CI, deploys once it is green, and is refused when it is red', async () => {
+  const repo = { heads: { develop: C, main: H0 }, open: [], trees: TREES };
+  const audits = { [`develop ${C}`]: [pass(B), pass(C)] };
+  const running = await run({ repo, state: started(), audits, ci: { [C]: { green: false, failed: false, started: true } } });
+  assert.deepEqual([running.gh.writes, running.inst.installs], [[], []]);
+  assert.equal(running.state.environments.development.seen.develop, A, 'not seen: the next round looks again');
+  assert.match(running.lines.join('\n'), /development: wait for ccccccc on develop: CI of ccccccc, the head of develop, is still running/);
+  const green = await run({ repo, state: running.state, audits, ci: { [C]: { green: true, failed: false, started: true } } });
+  assert.deepEqual(green.inst.installs, ['development c']);
+  const red = await run({ repo: { heads: { develop: D, main: H0 }, open: [], trees: TREES }, state: green.state, audits: { [`develop ${D}`]: [pass(D)] }, ci: { [D]: { green: false, failed: true, started: true } } });
+  assert.deepEqual(red.inst.installs, []);
+  assert.deepEqual(statuses(red.gh), ['101 error CI failed on ddddddd, the head of develop: Development keeps what it runs; a later head with green CI deploys']);
+  assert.equal(red.state.environments.development.seen.develop, D);
+  // main and the release branches are not held by their CI here: the gate is for develop (Lượt 33).
+  const hotfixed = await run({ repo: { heads: { develop: A, main: H }, open: [], trees: TREES }, state: started(), audits: { [`main ${H}`]: [pass(H, { number: 31, head: 'hotfix/DEMO-40-cart-total' })] }, ci: { [H]: { green: false, failed: false, started: true } } });
+  assert.deepEqual(hotfixed.inst.installs, ['staging 1']);
 });
