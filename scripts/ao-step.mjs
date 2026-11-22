@@ -59,7 +59,7 @@ import { runsAtOnce } from '../lib/workflow/ports.mjs';
 import { hookKitDrift, hookKitNote } from '../lib/workflow/hook-kit.mjs';
 import { planRound, runDispatcher, scopeOf } from '../lib/workflow/dispatch.mjs';
 import { DISPATCHER_FILE, dispatcherEffects, spentSince } from '../lib/workflow/run-command.mjs';
-import { WATCH, look, nextWatchState, nowLines, readWatchState, watchEffects } from '../lib/workflow/watch.mjs';
+import { WATCH, boardDue, look, nextWatchState, nowLines, readWatchState, watchEffects } from '../lib/workflow/watch.mjs';
 import { seoChange } from '../lib/workflow/seo-commit.mjs';
 import { QA_CONTEXT, qaSignal } from '../lib/workflow/qa-signal.mjs';
 
@@ -1229,11 +1229,14 @@ async function watchCommand(args, values) {
   let failingSince = null;
   let reason = '';
   let idleSince = null;
+  let before = [];
   for (;;) {
     const now = Date.now();
     const { events, offsets } = files.newEvents(state.offsets);
+    const locks = files.locks();
+    const after = locks.filter(({ alive: live }) => live).map(({ name }) => name);
     let flagged = null;
-    if (now - lastBoard >= WATCH.remoteEveryMs) {
+    if (boardDue({ now, lastBoard, before, after })) {
       lastBoard = now;
       try {
         flagged = await flaggedNow();
@@ -1246,7 +1249,8 @@ async function watchCommand(args, values) {
       }
     }
     const boardFailed = failures > 0 ? { count: failures, reason, since: failingSince } : null;
-    const result = look({ now, locks: files.locks(), logAt: files.logAt, dispatcher: files.dispatcher(), events, flagged, boardFailed }, new Set(state.told), options);
+    before = after;
+    const result = look({ now, locks, logAt: files.logAt, dispatcher: files.dispatcher(), events, flagged, boardFailed }, new Set(state.told), options);
     idleSince = result.running ? null : (idleSince ?? now);
     const ends = idleSince !== null && now - idleSince >= WATCH.endMs;
     state = nextWatchState(state, { marks: result.marks, offsets });

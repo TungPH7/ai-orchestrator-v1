@@ -54,9 +54,9 @@ test('/ao-build of a Story: BE Sub-task first from develop, then FE, at the effo
   assert.equal(decision.go, true);
   assert.deepEqual(plan(decision), ['be-dev DEMO-22 high build', 'fe-dev DEMO-23 xhigh build']);
   const [be, fe] = decision.runs;
-  assert.equal(be.prompt, 'Build Sub-task DEMO-22, the BE Sub-task of Story DEMO-21, which is Ready. The branch develop is checked out and up to date with origin. Keep your ledger in .ai/ledger/DEMO-22.md, by the key of the Sub-task.');
+  assert.equal(be.prompt, 'Build Sub-task DEMO-22, the BE Sub-task of Story DEMO-21, which is Ready. The branch develop is checked out and up to date with origin. Keep your ledger in .ai/ledger/DEMO-22.md, by the key of the Sub-task. End the header of each commit of your part with (DEMO-22), the key of the Sub-task, not of the Story: its Complete transition looks for that key in a commit header.');
   assert.deepEqual(be.checkout, { branch: 'develop', pull: true });
-  assert.equal(fe.prompt, 'Build Sub-task DEMO-23, the FE Sub-task of Story DEMO-21. Sub-task DEMO-22 is done on the branch of the Story, which is checked out; read its handover comment. Keep your ledger in .ai/ledger/DEMO-23.md, by the key of the Sub-task. Open the PR of the Story when your Sub-task is done.');
+  assert.equal(fe.prompt, 'Build Sub-task DEMO-23, the FE Sub-task of Story DEMO-21. Sub-task DEMO-22 is done on the branch of the Story, which is checked out; read its handover comment. Keep your ledger in .ai/ledger/DEMO-23.md, by the key of the Sub-task. End the header of each commit of your part with (DEMO-23), the key of the Sub-task, not of the Story: its Complete transition looks for that key in a commit header. Open the PR of the Story when your Sub-task is done.');
   assert.equal(fe.checkout, undefined, 'FE goes on on the branch BE left');
   assert.equal(be.story, 'DEMO-21');
   assert.match(decision.lines[0], /^DEMO-21 Story "Xóa sản phẩm khỏi giỏ hàng": Ready; Sub-task DEMO-23 \(ao-fe-dev\), DEMO-22 \(ao-be-dev\); no PR$/);
