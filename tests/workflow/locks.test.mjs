@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { admit, admitAgent, claimRole, jiraWipStop, liveLocks, releaseAgent, takeLock } from '../../lib/workflow/locks.mjs';
+import { admit, admitAgent, claimRole, jiraWipStop, liveLocks, releaseAgent, roleBusyWhy, roleOnLock, runningNow, takeLock } from '../../lib/workflow/locks.mjs';
 
 // Who may run now (parallel-runs spec, part 2).
 const lock = (more) => ({ name: more.key ?? '_project', pid: 100, slot: 0, ...more });
@@ -241,4 +241,56 @@ test('jiraWipStop stops a build run while another item of its role is In Progres
   assert.equal(jiraWipStop({ role: 'fe-dev', key: 'SHOP-33', story: 'SHOP-31', keys: ['SHOP-33'], limit: 1 }), null, 'a Sub-task that goes on holds its own WIP');
   assert.equal(jiraWipStop({ role: 'be-dev', key: 'SHOP-9', keys: [], limit: 1 }), null);
   assert.match(jiraWipStop({ role: 'be-dev', key: 'SHOP-9', keys: ['SHOP-4', 'SHOP-5'], limit: 2 }), /SHOP-4, SHOP-5 are In Progress, and SHOP-9 would be one more\. Once one of them is In Review, \/ao-build SHOP-9 again$/);
+});
+
+// T14 of C2, finding 13: a watcher of /ao-run guessed from the lock files and the agent logs, and reported wrongly 8
+// times, since the logs of an item hold every run of it. ao-step status --json says what runs, and when its agent last
+// wrote: only a log written since the command started counts.
+test('what runs now: each lock, with the last write of an agent log since its command started', () => {
+  const live = [
+    { name: 'SHOP-87', command: 'build', key: 'SHOP-87', role: 'fe-dev', slot: 0, pid: 11, startedAt: '2026-11-22T10:53:25.000Z', agent: true },
+    { name: 'SHOP-88', command: 'build', key: 'SHOP-88', role: 'fe-dev', slot: 1, pid: 12, startedAt: '2026-11-22T10:53:26.000Z' },
+    { name: 'SHOP-86', command: 'qa', key: 'SHOP-86', slot: 2, pid: 13, startedAt: '2026-11-22T11:29:00.000Z', agent: true },
+  ];
+  const logs = { 'SHOP-87': Date.parse('2026-11-22T11:20:00.000Z'), 'SHOP-88': Date.parse('2026-11-22T10:40:00.000Z'), 'SHOP-86': null };
+  assert.deepEqual(runningNow(live, (key) => logs[key]), [
+    { command: 'build', key: 'SHOP-87', role: 'fe-dev', slot: 0, pid: 11, startedAt: '2026-11-22T10:53:25.000Z', agent: true, lastLogAt: '2026-11-22T11:20:00.000Z' },
+    { command: 'build', key: 'SHOP-88', role: 'fe-dev', slot: 1, pid: 12, startedAt: '2026-11-22T10:53:26.000Z', agent: false, lastLogAt: null },
+    { command: 'qa', key: 'SHOP-86', role: null, slot: 2, pid: 13, startedAt: '2026-11-22T11:29:00.000Z', agent: true, lastLogAt: null },
+  ]);
+});
+
+// T14 of C2, finding 8: /ao-fix 84 stopped at once with "fe-dev is at work on SHOP-84", and a script of the main session
+// had to wait for the build to end. A fix takes its lock with no role, so admit lets it in, and claimRole waits for the
+// role; a build still stops at once, since the WIP of its role on Jira decides after the wait.
+test('a fix waits for its dev role; a build of a busy role stops at once', async (t) => {
+  assert.equal(roleOnLock('fix', 'fe-dev'), undefined);
+  assert.equal(roleOnLock('build', 'fe-dev'), 'fe-dev');
+  assert.equal(roleOnLock('review', 'reviewer'), 'reviewer');
+  const live = [lock({ command: 'build', key: 'SHOP-84', role: 'fe-dev' })];
+  assert.equal(admit({ live, command: 'fix', key: 'SHOP-83', role: roleOnLock('fix', 'fe-dev'), cap: 3 }).ok, true);
+  assert.equal(admit({ live, command: 'build', key: 'SHOP-85', role: roleOnLock('build', 'fe-dev'), cap: 3 }).ok, false);
+  const dir = mkdtempSync(join(tmpdir(), 'locks-'));
+  t.after(() => rmSync(dir, { recursive: true, force: true }));
+  const alive = () => true;
+  await takeLock(dir, { pid: 1, command: 'build', key: 'SHOP-84', role: 'fe-dev' }, { fs, alive, cap: 3, sleep: async () => {} });
+  const fix = await takeLock(dir, { pid: 2, command: 'fix', key: 'SHOP-83', role: roleOnLock('fix', 'fe-dev') }, { fs, alive, cap: 3, sleep: async () => {} });
+  assert.equal(fix.ok, true);
+  const waits = [];
+  const stuck = await claimRole(dir, fix.file, 'fe-dev', { fs, alive, sleep: async () => {}, most: 1, onWait: (busy) => waits.push(busy.key) });
+  assert.deepEqual([stuck.ok, waits], [false, ['SHOP-84']]);
+});
+
+// T14 of C2, finding 14 (Low of the review of shop PR #87): the wait said "builds one item at a time" with two agents.
+test('why a dev role is busy names runs.agents_per_role when it allows more than one', async (t) => {
+  assert.equal(roleBusyWhy('fe-dev', 1), 'a dev agent builds one item at a time');
+  assert.equal(roleBusyWhy('fe-dev', 2), 'runs.agents_per_role lets 2 fe-dev agents work at once');
+  const dir = mkdtempSync(join(tmpdir(), 'locks-'));
+  t.after(() => rmSync(dir, { recursive: true, force: true }));
+  const alive = () => true;
+  await takeLock(dir, { pid: 1, command: 'build', key: 'SHOP-87', role: 'fe-dev' }, { fs, alive, cap: 3, sleep: async () => {}, agentsPerRole: { 'fe-dev': 2 } });
+  await takeLock(dir, { pid: 2, command: 'build', key: 'SHOP-88', role: 'fe-dev' }, { fs, alive, cap: 3, sleep: async () => {}, agentsPerRole: { 'fe-dev': 2 } });
+  const third = await takeLock(dir, { pid: 3, command: 'fix', key: 'SHOP-83' }, { fs, alive, cap: 3, sleep: async () => {} });
+  const stuck = await claimRole(dir, third.file, 'fe-dev', { fs, alive, sleep: async () => {}, most: 1, limit: 2 });
+  assert.match(stuck.reason, /fe-dev stayed at work on SHOP-87 \(process 1\) while this command waited for it: runs\.agents_per_role lets 2 fe-dev agents work at once$/);
 });

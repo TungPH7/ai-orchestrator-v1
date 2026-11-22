@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createVerify, generateKeyPairSync } from 'node:crypto';
-import { appCredentials, appJwt, botIdentity, githubRepoOf, installationToken, userSecret } from '../../lib/quality/github-app.mjs';
+import { appCredentials, appJwt, botIdentity, githubRepoOf, installationToken, renewableToken, userSecret } from '../../lib/quality/github-app.mjs';
 
 const { privateKey, publicKey } = generateKeyPairSync('rsa', {
   modulusLength: 2048,
@@ -127,4 +127,33 @@ test('a secret comes from your Windows user variables first: Claude Code keeps t
   // Not a user variable: the environment, such as a CI job or a shell that set it for one command.
   assert.equal(userSecret('JIRA_CI_TOKEN', { env: { JIRA_CI_TOKEN: 'ci' }, readUserVariable: read }), 'ci');
   assert.equal(userSecret('JIRA_CI_TOKEN', { env: {}, readUserVariable: read }), undefined);
+});
+
+// T14 of C2: an App token lives one hour, which GitHub fixes; a build ran 70 minutes (SHOP-82, SHOP-84). renewableToken
+// buys one when none is held or the one held ends within ten minutes, and again on renew(), which ao-step calls after
+// each run of an agent (Phiên 35 · Lượt 34: buying a token costs nothing).
+test('a renewable token is bought once, again near its end, and again on renew', async () => {
+  let now = Date.parse('2026-11-22T10:00:00Z');
+  const bought = [];
+  const buy = async () => {
+    bought.push(now);
+    return { token: `t${bought.length}`, expiresAt: new Date(now + 3_600_000).toISOString() };
+  };
+  const held = renewableToken(buy, { now: () => now });
+  assert.equal(await held.get(), 't1');
+  now += 49 * 60_000;
+  assert.equal(await held.get(), 't1');
+  now += 2 * 60_000;
+  assert.equal(await held.get(), 't2');
+  assert.equal(await held.renew(), 't3');
+  assert.equal(await held.get(), 't3');
+  assert.equal(bought.length, 3);
+});
+
+test('a token with no end is kept until renew', async () => {
+  let n = 0;
+  const held = renewableToken(async () => ({ token: `t${++n}` }));
+  assert.equal(await held.get(), 't1');
+  assert.equal(await held.get(), 't1');
+  assert.equal(await held.renew(), 't2');
 });

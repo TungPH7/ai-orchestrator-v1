@@ -143,3 +143,28 @@ test('a run with lane: false, as the build of an ops Task, works in the project 
   const build = { worktrees: true, command: 'build' };
   assert.equal(laneOf({ role: 'devops', key: 'SHOP-80', purpose: 'build', lane: false }, build), null);
 });
+
+// T14 of C2: /ao-qa SHOP-82 added its worktree at d752638, which Development ran but the project folder had not fetched,
+// and git answered "fatal: invalid reference". A commit the folder lacks is fetched first.
+test('a commit the folder lacks is fetched before a worktree is added at it', async () => {
+  const { haveCommit } = await import('../../lib/workflow/places.mjs');
+  const calls = [];
+  let fetched = false;
+  const git = (...args) => {
+    calls.push(args.join(' '));
+    if (args[0] === 'fetch') {
+      fetched = true;
+      return { status: 0, stdout: '', stderr: '' };
+    }
+    return { status: fetched ? 0 : 1, stdout: '', stderr: '' };
+  };
+  assert.deepEqual(haveCommit(git, 'd752638'), { ok: true });
+  assert.deepEqual(calls, ['cat-file -e d752638^{commit}', 'fetch --quiet origin', 'cat-file -e d752638^{commit}']);
+
+  calls.length = 0;
+  assert.deepEqual(haveCommit(() => ({ status: 0, stdout: '', stderr: '' }), 'e93bfc3'), { ok: true });
+  const missing = (...args) => (args[0] === 'fetch' ? { status: 0, stdout: '', stderr: '' } : { status: 1, stdout: '', stderr: '' });
+  assert.match(haveCommit(missing, 'abcdef1').reason, /origin has no commit abcdef1/);
+  const offline = (...args) => (args[0] === 'fetch' ? { status: 128, stdout: '', stderr: 'could not resolve host' } : { status: 1, stdout: '', stderr: '' });
+  assert.match(haveCommit(offline, 'abcdef1').reason, /git fetch failed: could not resolve host/);
+});

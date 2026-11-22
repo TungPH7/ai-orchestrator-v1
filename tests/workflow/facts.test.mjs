@@ -100,7 +100,7 @@ test('a Story with Sub-tasks: its state, Agent, parent Epic, each Sub-task, its 
   assert.equal(pr.reports.security.onHead, true);
   assert.deepEqual([pr.changesRequested, pr.approved, pr.protectedPaths], [false, true, []]);
   assert.deepEqual([facts.dependenciesMerged, facts.ledger, facts.run], [true, false, null]);
-  assert.deepEqual(facts.wip, { epicShaping: { used: 0, limit: 1 }, devAgent: {} });
+  assert.deepEqual(facts.wip, { epicShaping: { used: 0, limit: 1 }, devAgent: {}, holders: {} });
 });
 
 test('a PR command reads the PR first, then the item of its branch', async () => {
@@ -184,6 +184,7 @@ test('the WIP of each dev agent the item would start, and what .ai/ holds for it
   const facts = await gather('build', 'DEMO-12', { change: labelled, local });
   assert.deepEqual(facts.item.subtasks.map(({ role, effort }) => [role, effort]), [['be-dev', null], ['fe-dev', 'xhigh']]);
   assert.deepEqual(facts.wip.devAgent, { 'be-dev': false, 'fe-dev': true });
+  assert.deepEqual(facts.wip.holders, { 'be-dev': ['DEMO-31'], 'fe-dev': [] }, 'the items that hold the WIP, for the stop');
   assert.deepEqual([facts.ledger, facts.run], [true, { key: 'DEMO-12', runs: [] }]);
 });
 
@@ -255,7 +256,7 @@ test('/ao-status of the space reads the items of an Epic In Progress, with their
       'project = "DEMO" AND parent = "DEMO-11"': [issue('DEMO-12', 'Story', 'Done', { fixVersions: [{ name: 'v0.2.0', released: true }] })],
     },
   });
-  const { items } = await gatherFacts({ command: 'status', jira, github: { getAll: async () => [] }, local: noLocal, ...ctx });
+  const { items } = await gatherFacts({ command: 'status', jira, github: { getAll: async () => [], get: async () => [] }, local: noLocal, ...ctx });
   assert.deepEqual(items[0].children.map(({ key, state, fixVersions }) => [key, state, fixVersions]), [['DEMO-12', 'done', [{ name: 'v0.2.0', released: true }]]]);
   assert.deepEqual(items.slice(1).map(({ children }) => children), [undefined, undefined], 'only an Epic In Progress can be completed');
 });
@@ -392,4 +393,20 @@ test('a PR from a fork is no PR of the item: the board and /ao-build leave it ou
     a.jira['/rest/api/3/issue/DEMO-15?fields=issuetype,status,labels,description,parent,subtasks,issuelinks'] = { key: 'DEMO-15', fields: { ...read.fields, description: null, issuelinks: [] } };
   };
   assert.equal((await gather('build', 'DEMO-15', { change: forDor })).pr, null, 'the newest PRs of DEMO-15 come from forks');
+});
+
+// T14 of C2, finding 7: the board names the PRs merged lately, so the dispatcher tells an item In Review whose PR is
+// merged, and waits for its deploy, from one whose PR closed unmerged.
+test('the board of the space names the PRs merged lately, from this repository only', async () => {
+  const facts = await gather('status');
+  assert.deepEqual(facts.merged.slice(0, 3), [{ number: 12, key: 'DEMO-16' }, { number: 11, key: 'DEMO-12' }, { number: 9, key: 'DEMO-10' }]);
+  assert.ok(!facts.merged.some(({ number }) => number === 13), 'PR #13 closed unmerged');
+  const forked = await gather('status', undefined, {
+    change: (a) => {
+      const pr = a.github['/pulls?direction=desc&per_page=50&sort=updated&state=closed'][1];
+      pr.head = { ...pr.head, repo: { full_name: 'someone/fork' } };
+      pr.base = { ...pr.base, repo: { full_name: 'TungPH7/ao-pilot' } };
+    },
+  });
+  assert.ok(!forked.merged.some(({ number }) => number === 12), 'a merged PR from a fork is no item\'s');
 });

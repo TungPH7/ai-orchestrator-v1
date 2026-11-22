@@ -115,6 +115,8 @@ test('/ao-build stops: not Ready, a dependency not merged, the docs PR not merge
     [storyFacts({ item: { subtasks: [sub('DEMO-22', 'be-dev', { roles: [], role: null, labels: [] })] } }), /DEMO-22 has no role label: \/ao-build does not guess/, /label it ao-<role>/],
     [storyFacts({ item: { subtasks: [], roles: ['be-dev', 'fe-dev'], role: 'be-dev' } }), /DEMO-21 has 2 role labels/, /label it/],
     [storyFacts({ wip: { epicShaping: { used: 0, limit: 1 }, devAgent: { 'be-dev': false, 'fe-dev': true } } }), /be-dev is at its WIP limit dev-agent/, /\/ao-status/],
+    // T14 of C2, finding 9: the stop names the items that hold the WIP, and that a draft PR waiting for your preview does.
+    [storyFacts({ wip: { epicShaping: { used: 0, limit: 1 }, devAgent: { 'be-dev': false, 'fe-dev': true }, holders: { 'be-dev': ['DEMO-30'] } } }), /^be-dev is at its WIP limit dev-agent: DEMO-30 is In Progress\. An item whose draft PR waits for your preview holds it too, until you \/ao-preview or \/ao-review it$/, /\/ao-status/],
     [storyFacts({ pr: pr() }), /PR #15 of DEMO-21 is open: the build is done/, /^\/ao-review 15$/],
     [storyFacts({ item: { type: 'Sub-task', workType: 'sub-task', parent: { key: 'DEMO-21', type: 'Story' } } }), /is a Sub-task/, /^\/ao-build DEMO-21$/],
     [storyFacts({ item: { type: 'Epic', workType: 'epic' } }), /is an Epic/, /^\/ao-plan DEMO-21$/],
@@ -221,6 +223,15 @@ test('/ao-status of an item says when a lower level label does not count', () =>
   const status = decide('status', prFacts('status', {}, { item: { level: null, levelIgnored: { label: null } } }));
   assert.ok(status.lines.includes("Level of DEMO-21: standard. Its level label was taken off by the agents' Jira account, which your main session uses too, and lowers the level, so it does not count: lower a level on Jira itself"), status.lines.join(' | '));
   assert.ok(!decide('status', prFacts('status')).lines.some((line) => line.startsWith('Level of')), 'nothing on a plain item');
+});
+
+// T14 of C2, finding 15: SHOP-86 was labelled light, and /ao-qa ran an agent of qa, since its PR touched a protected
+// path; only the code said why. /ao-status <KEY> says the level and why it went up.
+test('/ao-status of an item says its level, and why it is above its label', () => {
+  const raised = decide('status', prFacts('status', { tier: 'critical' }, { item: { level: 'light' } }));
+  assert.ok(raised.lines.includes('Level of DEMO-21: heavy (label light; the PR touches a critical path)'), raised.lines.join(' | '));
+  const labelled = decide('status', prFacts('status', { tier: 'normal' }, { item: { level: 'light' } }));
+  assert.ok(labelled.lines.includes('Level of DEMO-21: light (label light)'), labelled.lines.join(' | '));
 });
 
 test('/ao-review after a small fix: security reviews only the changes since its last report, at high', () => {

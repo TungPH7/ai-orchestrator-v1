@@ -123,3 +123,24 @@ test('a read is tried again on 502, 503, 504 and a network error; a write and ot
   await assert.rejects(createGitHubClient({ repo: 'TungPH7/ao-pilot', token: 't', fetch: missing.fetch, sleep }).get('/pulls/99'), /returned 404/);
   assert.deepEqual([write.calls.length, missing.calls.length, waits], [1, 1, []]);
 });
+
+// T14 of C2 (SHOP-82 and SHOP-84): a build of 70 minutes outlived the App token ao-step bought at its start, and the
+// reads after it got 401. A token given as a function is asked before each request, so a token bought again reaches
+// the client at once.
+test('a token given as a function is read before each request', async () => {
+  const { fetch, calls } = fakeFetch([{ body: [] }, { body: [] }]);
+  let token = 'first';
+  const github = createGitHubClient({ repo: 'TungPH7/shop', token: async () => token, fetch });
+  await github.get('/pulls');
+  token = 'second';
+  await github.get('/pulls');
+  assert.deepEqual(calls.map(({ init }) => init.headers.Authorization), ['Bearer first', 'Bearer second']);
+});
+
+// Quan sát của T14: ao-step ended with exit 1 on one 500 of GET /pulls/82/reviews after a run of seo.
+test('a read is tried again on 500 too', async () => {
+  const waits = [];
+  const flaky = fakeFetch([{ status: 500, body: {} }, { body: { number: 82 } }]);
+  assert.deepEqual(await createGitHubClient({ repo: 'TungPH7/shop', token: 't', fetch: flaky.fetch, sleep: async (ms) => waits.push(ms) }).get('/pulls/82'), { number: 82 });
+  assert.deepEqual(waits, [1000]);
+});
