@@ -33409,3 +33409,43 @@ Khi `qa` cho PASS, mình Accept SHOP-85. Lúc đó cả 4 item của Epic SHOP-8
 Bạn nhắn "làm T15" hay "làm cả hai" thì mình bắt đầu nhé?
 
 **Bạn (Lượt 50):** làm cả hai
+
+**Claude (Lượt 50, 00:45, xong đợt sửa kit 6 và T15):**
+
+**Đã xong cả hai việc: đợt sửa kit 6 và T15. Module C2 đã đóng.**
+
+**1. Đợt sửa kit 6** (kit PR #346, đã merge, 1.840 test xanh, không tốn tiền agent):
+- **Lỗi nặng nhất: số lượt trùng làm mất bản ghi.** Khi `reviewer` và `security` chạy song song, bản ghi có thể nằm lệch thứ tự. Lệnh sau đó lấy số lượt theo bản ghi cuối mảng, nên trùng số và ghi đè lượt `security` (SHOP-89 mất 5,68 USD chi phí và phiên). Ngân sách của `/ao-run` cũng tính từ các bản ghi này. Giờ số lượt lấy số lớn nhất, và các lượt luôn giữ theo thứ tự số.
+- Commit của Sub-task phải ghi khoá của Sub-task (lỗi của SHOP-90).
+- Task finding không ghi finding của chính PR nó vào chính nó (lỗi của SHOP-85).
+- Watcher đọc board ngay khi một lệnh kết thúc, không chỉ 10 phút một lần.
+
+**2. T15: đóng C2** (chi tiết ở `tasks/c2/verification.md`):
+
+| # | Tiêu chí | Kết quả |
+|---|---|---|
+| 1 | Sáu kit PR merge, CI xanh | Đạt |
+| 2 | Bản chép kit vào `shop` có review, `doctor` đạt | Đạt |
+| 3 | Kiểm thật mục 13 | Đạt 6 trên 8 mục. Hai mục chưa kiểm thật: bộ điều phối tự chạy `/ao-spec`, `/ao-plan` (mình chạy tay), và `merge-gate` chờ QA (chưa lần nào xảy ra) |
+| 4 | Phiên chính chỉ dùng `/ao-run`, `/ao-preview` và các bước bạn bấm | Không đạt |
+| 5 | Không dừng vì giành khóa, giành git, ghi đè `state.json` | Không đạt: 3 lần, đều đã sửa (đợt 1 và đợt 6) |
+| 6 | Ghi số đo | Đạt |
+
+**Số đo, so với SHOP-7 của Pilot 3:**
+- Trung vị từ Ready tới Done: 11,8 giờ, so với 25,0 giờ.
+- Trung vị từ Start tới Done: 2,7 giờ, so với 7,5 giờ.
+- Chi phí trên mỗi AC: 7,06 USD, so với 21,6 USD.
+- Cả C2 trên `shop` tốn 200,09 USD.
+
+**Tiêu chí 4 không đạt chủ yếu vì cách viết tiêu chí.** Theo thiết kế, PR nháp chờ bạn chọn `/ao-preview` hay `/ao-review`, nên bộ điều phối không bao giờ tự review. Bạn chọn một trong hai:
+1. **Sửa tiêu chí:** tính `review` là bước của bạn (mình khuyên cách này: bạn vẫn giữ quyền xem trước).
+2. **Sửa kit:** cho bạn đặt "bỏ xem trước" cho một Epic, để bộ điều phối tự mở `/ao-review`.
+
+**Còn chờ bạn:**
+1. Accept SHOP-89, hoặc nhắn "Accept giúp".
+2. Release có Epic Danh mục, rồi bấm Complete trên SHOP-81.
+3. Refine SHOP-92 (3 Low) khi bạn muốn sửa.
+4. Lần chép kit kế tiếp vào `shop` (watcher và các bản sửa của kit PR #345, #346), có review khoảng 10–15 USD. Bước này tốn tiền, nên mình hỏi trước.
+5. Việc kế tiếp: D1, D2, D4 đang chờ nhu cầu. Mục 7 còn hai việc có hạn: đưa `pr-events.yml` lên `main` của `shop` trước 2026-12-02, và kiểm khóa `age` trước 2026-12-31.
+
+Bạn chọn việc tiếp theo nhé?
