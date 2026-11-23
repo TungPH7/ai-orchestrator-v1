@@ -145,6 +145,55 @@ test('a post that marked some PRs and stopped goes on with the review of the sam
   assert.deepEqual(other.runs.map(({ role, note }) => `${role} ${note}`), ['reviewer after-merge:32', 'security after-merge:32']);
 });
 
+// Review of shop PR #97 (reviewer Medium 1): the roles of the post are those of the review it goes on with, not those
+// the PRs left would need. Here DEMO-21 is heavy and its PR #31 is marked; DEMO-22 alone would need reviewer only.
+test('a post that goes on keeps every report of its review, security included, even when the PRs left need fewer roles', () => {
+  const half = (more = () => {}) => (f) => {
+    f.afterMerge.files = ['apps/web/app/cart/page.tsx'];
+    f.afterMerge.levels['DEMO-21'] = 'heavy';
+    f.run = { runs: [runOf('reviewer'), runOf('security')] };
+    f.afterMerge.reports = { [afterMergeReport('DEMO-20', 'reviewer', HEAD)]: report('reviewer'), [afterMergeReport('DEMO-20', 'security', HEAD)]: report('security') };
+    f.afterMerge.pulls[0].mark = { key: 'DEMO-20', head: HEAD, blocking: 1, fix: 'DEMO-30' };
+    more(f);
+    return f;
+  };
+  const [post] = decide(facts(half())).runs;
+  assert.equal(post.action, 'after-merge-post');
+  assert.deepEqual(post.pulls, [31, 32]);
+  assert.deepEqual(Object.keys(post.reports), ['reviewer', 'security']);
+  assert.deepEqual(Object.keys(post.hashes), ['reviewer', 'security']);
+  // A report of that review changed: you read it; deleting it gives the PRs not marked yet a new review.
+  const changed = decide(facts(half((f) => (f.afterMerge.reports[afterMergeReport('DEMO-20', 'security', HEAD)] += '\nedited'))));
+  assert.equal(changed.waits, 'you');
+  assert.match(changed.next, /delete it, then \/ao-review DEMO-20 again: the PRs not marked yet get a new review/);
+  // Gone: the post cannot go on with that review, so PR #32 gets a review of its own, with the roles it needs.
+  const gone = decide(facts(half((f) => delete f.afterMerge.reports[afterMergeReport('DEMO-20', 'security', HEAD)])));
+  assert.deepEqual(gone.runs.map(({ role, note }) => `${role} ${note}`), ['reviewer after-merge:32']);
+});
+
+// Review of shop PR #97 (reviewer Low 2): a role run again after you deleted its report reads the head the other role
+// read, so both reports, the line on KEY and the marks name one head.
+test('a role run again reads the head of the report it joins; reports of two heads are not posted', () => {
+  const OLD = 'a'.repeat(40);
+  const reviewerAt = (head) => runOf('reviewer', { head, report: { name: afterMergeReport('DEMO-20', 'reviewer', head), sha256: reportHash(report('reviewer')) } });
+  const again = decide(facts((f) => {
+    f.run = { runs: [reviewerAt(OLD), runOf('security')] };
+    f.afterMerge.reports = { [afterMergeReport('DEMO-20', 'reviewer', OLD)]: report('reviewer') };
+    return f;
+  }));
+  assert.deepEqual(again.runs.map(({ role, head, worktree }) => `${role} ${head} ${worktree.sha}`), [`security ${OLD} ${OLD}`]);
+  assert.match(again.runs[0].prompt, /git diff b{40} a{40} -- <file>/);
+  assert.match(again.runs[0].prompt, /\.ai\/reviews\/DEMO-20-security-aaaaaaa\.md/);
+  const split = decide(facts((f) => {
+    f.run = { runs: [runOf('security', { endedAt: '2026-11-21T10:00:00Z' }), { ...reviewerAt(OLD), endedAt: '2026-11-20T10:00:00Z' }] };
+    f.afterMerge.reports = { [afterMergeReport('DEMO-20', 'reviewer', OLD)]: report('reviewer'), [afterMergeReport('DEMO-20', 'security', HEAD)]: report('security') };
+    return f;
+  }));
+  assert.equal(split.go, false);
+  assert.match(split.reason, /read two heads of develop: aaaaaaa, ddddddd/);
+  assert.match(split.next, /Delete the report at aaaaaaa, then \/ao-review DEMO-20 again/);
+});
+
 test('nothing to review, or every PR reviewed after merge: it says so, and names the fix Task left', () => {
   const none = decide(facts((f) => (f.afterMerge.pulls = [{ number: 33, key: 'DEMO-24', merged: true, skipped: false, mark: null }]) && f));
   assert.equal(none.go, false);

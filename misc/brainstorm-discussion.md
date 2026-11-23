@@ -34278,3 +34278,653 @@ Lượt QA của SHOP-96 mất 14 phút, nên lượt này chắc xong khoảng 
 3. Refine SHOP-98 để sửa Medium của API.
 
 Mình đề xuất làm theo thứ tự 1 → 2, còn SHOP-98 tùy lúc bạn Refine. Bạn nhắn "làm" thì mình bắt đầu.
+
+**Bạn (Lượt 74):** Làm 1  đợt sửa kit, bạn làm theo đề xuất, accept không cần hỏi tôi, khi xong 1 thì dừng lại hỏi xác nhận để qua 2 ux
+
+**Claude (Lượt 74, đang làm):** Kit PR #351 (`c0931cf`, nhánh `task/review-per-item-fixes`) sửa 4 Medium và 6 Low của review shop PR #93, cùng 3 điểm của lượt thử SHOP-95. Hai điểm còn lại của lượt thử không đổi code. 1883 test xanh. Các bước tiếp theo:
+1. CI xanh thì merge PR #351.
+2. Chép kit vào `shop`, có review, rồi QA và Accept.
+3. Dừng hỏi bạn trước mục 10.
+
+**Claude (Lượt 74, tiếp, 19:20):**
+- CI của kit PR #351 xanh, và mình đã merge nó thành kit main `8aba159`.
+- Task chép kit là **SHOP-99**, đã Refine và Start. Bản chép `8aba159` gồm 12 file, `ao-kit check` và `ao-kit doctor` đều đạt.
+- PR nháp là shop #97. Một chuỗi lệnh nền đang chờ CI xanh rồi chạy review (`reviewer` và `security`).
+
+**Bạn (Lượt 75):** đã chạy review chưa? / chưa chạy review thì dừng lại, chưa chạy review có được không?
+
+**Claude (Lượt 75):** Review đã chạy rồi. `reviewer` (xhigh) và `security` (max) bắt đầu lúc 19:23, sau khi CI của PR #97 xanh cả 7 job. Lúc 19:32 cả hai vẫn đang chạy và log vẫn ghi đều. Vì vậy mình không dừng. Lúc 19:20 mình còn ghi nhầm giờ trong nhật ký thành 20:15, nay đã sửa.
+
+**Bỏ review bản chép này được không?** Được, nhưng không tiết kiệm được gì:
+1. Theo cách đã chốt, mỗi phiên bản kit chỉ review một lần, đúng ở bước chép kit này. Bỏ lượt này thì bản kit `8aba159` không được ai review.
+2. Thiếu báo cáo review thì `audit` trên VPS từ chối deploy commit merge lên Development, trừ khi SHOP-99 mang nhãn `ao-review-skip` do chính bạn gắn.
+3. Có nhãn đó thì release sau phải chờ `/ao-review SHOP-99` (review sau merge), tốn gần bằng lượt này. Như vậy chỉ dời tiền sang sau.
+4. Dừng giữa chừng thì phải dừng tiến trình đang chạy, và phần đã chạy khoảng 9 phút coi như mất.
+
+Mình khuyên để lượt review chạy xong. Nó còn khoảng 10–20 phút, tổng chừng 8–10 USD như các lần chép kit trước. Nếu bạn vẫn muốn dừng, nhắn "dừng review" thì mình dừng.
+
+**Bạn (Lượt 76):** Thôi cứ để review chạy. Đang lẽ làm 1. sửa kit xong thì làm tiếp 2. ux xong rồi chép 1 lần luôn thì đỡ tốn token hơn chứ nhỉ? Giờ chép xong, làm tiếp 2. ux rồi chép tiếp lần nữa, lại tốn token ???
+
+**Claude (Lượt 76):** Bạn nói đúng. Gộp mục 1 và mục 2 rồi chép một lần thì đỡ được một lượt chép kit, khoảng 10–12 USD (review 8–10, QA khoảng 1) và chừng 30–40 phút. Lẽ ra mình phải đề xuất gộp ngay khi bạn chọn "xong 1 thì qua 2". Mình đã làm theo đề xuất cũ là chép ngay sau đợt sửa, và không xem lại khi thứ tự đổi.
+
+Lượt review đang chạy cũng không phí hẳn: nó là lượt duy nhất mà agent đọc các bản sửa bảo mật của đợt này, gồm mã băm, nhãn gắn lúc tạo và gh-guard. Nếu bạn qua mục 2, mình đề xuất làm thế này để không tốn thêm lượt chép nào:
+1. Làm mục 2 trong kit như thường, có test, rồi merge kit PR.
+2. **Chưa chép vào `shop`.** Phần `ux` nhận link Claude Design chỉ có ích khi có một Epic mới dùng Claude Design. Mình gộp nó vào lần chép kit kế tiếp, khi bạn cần dùng hay khi có đợt sửa kit khác. Như vậy chỉ thêm một lượt review cho cả hai.
+
+Mình ghi nhớ cách này: khi các mục kit đi liền nhau, chỉ chép kit vào `shop` một lần, sau mục cuối.
+
+**Claude (Lượt 76, tiếp, 20:05): xong mục 1, đợt sửa kit.**
+- Kit PR #351 đã merge thành kit main `8aba159`.
+- Task chép kit **SHOP-99**:
+  - PR shop #97 đã merge thành develop `eb0f4d0`;
+  - review tốn 9,59 USD và không có Critical hay High;
+  - QA đạt (comment 10720, 0,72 USD);
+  - mình đã Accept, nên SHOP-99 là Done. Cả Task tốn 10,31 USD.
+- Review PR #97 tìm ra 5 Medium và 4 Low, đều trong code kit, nằm ở các bản sửa vừa làm. Mình ghi chúng thành mục 11 của `tasks/todo.md` và chưa sửa:
+  - khi lượt đăng sau merge dừng giữa chừng, `security` có thể rơi khỏi lượt;
+  - `audit` có thể tính sai nhãn bỏ review nếu nhãn bị gỡ sau merge;
+  - gh-guard còn lọt vài dạng `printf -v`;
+  - agent đổi được Epic cha của item;
+  - mã băm nằm trong `state.json`, mà agent ghi được file này bằng Bash. Vì vậy câu "mã băm là chốt chặn thật" mình ghi trong tài liệu là nói quá, và sẽ sửa ở đợt sau.
+- Kit trên VPS vẫn là `0e3c9ec`. `merge-gate` trên GitHub đã chạy bản `8aba159` của `shop`. Mình đề xuất chép kit lên VPS một lần, cùng lần chép kit vào `shop` sau mục 10 và 11.
+
+**Dừng để bạn xác nhận:** làm tiếp mục 10 (`ux` nhận link Claude Design, ước 3–5 giờ) cùng mục 11 (5 Medium và 4 Low, ước 2–3 giờ), rồi chép kit vào `shop` một lần, có review (khoảng 10–12 USD), và chép kit lên VPS cùng lúc?
+
+**Bạn (Lượt 77):** chưa làm tôi hỏi: "Review PR #97 tìm ra 5 Medium và 4 Low, đều nằm trong chính các bản sửa vừa làm" tại sao sửa 4 Medium và 6 Low từ review PR #93 rồi bay giờ lại sinh ra thêm 5 Medium và 4 Low vậy? Cứ fix finding là sinh ra thêm finding mới thì thành ra là đang tạo finding chứ có phải đang fix finding đâu?
+
+**Claude (Lượt 77):**
+
+Bạn nói đúng một nửa. 9 finding mới chia làm hai loại, và loại nào cũng có lỗi của mình.
+
+**Loại 1: lỗi mới do bản sửa của mình gây ra (2 Medium, 3 Low).** Mỗi bản sửa thêm code mới, và code mới có lỗi mới:
+- khi dùng lại bộ PR cũ, `security` có thể rơi khỏi lượt đăng;
+- `audit` đọc nhãn hiện tại thay vì nhãn lúc merge;
+- chạy lại một role thì hai báo cáo ghi lệch head;
+- watcher hiểu nhầm là đã chết khi máy ngủ;
+- một chú thích đặt sai chỗ.
+
+Đây đúng là "tạo finding". Mình chỉ tự rà trước khi mở PR, không cho ai rà độc lập. Lượt review trả tiền vì vậy làm luôn việc bắt lỗi của chính bản sửa.
+
+**Loại 2: bản sửa chưa kín hẳn (3 Medium, 1 Low).** Đây là cùng một lỗ cũ, nhưng ở dạng khác:
+- gh-guard: mình chặn đúng 4 dạng câu lệnh được báo, còn bash thì viết được vô số dạng khác;
+- mã băm: mình cất nó trong `state.json`, mà agent ghi được file đó bằng Bash;
+- nhãn gắn lúc tạo item: agent vẫn đổi được Epic cha của item.
+
+Gốc chung của loại này: agent chạy chung tài khoản Windows với ao-step và có Bash, nên ghi được mọi file trong dự án. Mọi rào bằng file hay bằng mẫu câu lệnh chỉ làm khó thêm, không chặn hẳn được. Cứ vá từng dạng thì review lần sau sẽ tìm ra dạng kế tiếp.
+
+**Vì sao mình để tới mức này:**
+1. Mình không lập threat model trước khi trả tiền review, dù bộ nhớ đã ghi phải làm vậy.
+2. Mình sửa cả Medium lẫn Low trong cùng đợt. Code càng nhiều thì càng nhiều chỗ để soi.
+
+**Đề xuất để thôi vòng lặp:**
+1. **Loại 2 thì ngừng vá.** Mình ghi nhận rủi ro một lần trong tài liệu: trên cùng tài khoản Windows, agent có Bash ghi được mọi file. Chốt thật là chạy agent dưới tài khoản Windows riêng `ao-agent`, mục SHOP-40 trong backlog, hạn 2026-12-31. Tài khoản đó không ghi được file của ao-step, nên một lần đóng cả lớp lỗi này. Trong lúc chờ, sửa câu "chốt chặn thật" trong tài liệu cho đúng.
+2. **Loại 1 thì sửa,** vì đó là lỗi logic thật và nhỏ, ước khoảng 1–2 giờ.
+3. **Trước khi trả tiền review lần sau:**
+   - lập threat model cho phần sửa;
+   - cho một agent rà độc lập trong phiên này, như `code-reviewer`, để bắt lỗi do chính bản sửa gây ra trước khi trả tiền.
+4. **Luật dừng:** nếu review sau vẫn ra nhiều finding mới cỡ này mà không có Critical hay High, mình dừng, ghi nhận rủi ro, và không sửa tiếp.
+
+Mình chưa làm gì. Bạn đồng ý hướng này thì nhắn, mình gộp nó vào mục 10 và 11.
+
+**Bạn (Lượt 78):** ok, đồng ý sửa loại 1, ngưng loại 2. Bây giờ sẽ thảo luận để làm phần ux trước. Tôi mong muốn phần ux này sẽ linh hoạt, có thể nhận UI/UX từ ảnh chụp tôi gửi, từ link Figma, từ handoff của Claude Design, Claude Design System, thảo luận kỹ về phần ux này nhé, chưa được làm gì.
+
+**Claude (Lượt 78):**
+
+Ghi nhận: mục 11 sửa loại 1 và ngưng loại 2. Mình sẽ ghi quyết định này vào `tasks/todo.md` khi bắt đầu làm.
+
+**Trả lời ngắn:** làm được. Mình đề xuất một nguyên tắc chung: mọi nguồn thiết kế đều được "nhập" về một dạng chung trong `.ai/design-inbox/<EPIC>/` trước khi `ux` chạy. `ux` không bao giờ tự mở link.
+
+**Kit hiện có gì:** ba kiểu màn hình là hình ASCII, ảnh export từ Figma và ảnh chụp. Link Figma hiện chỉ để ghi nguồn: bạn phải tự export ảnh. `ux` chỉ có Bash, Edit và Write, không có công cụ web.
+
+**Đề xuất: bốn nguồn, một hộp thiết kế**
+
+| Nguồn | Ai lấy về | Lấy được gì | Cần gì |
+|---|---|---|---|
+| Ảnh chụp | Bạn bỏ vào hộp | Ảnh | Như hiện nay |
+| Link Figma (frame có `node-id`) | Một script của phiên chính, gọi Figma REST API bằng token cá nhân của bạn | Ảnh từng frame; số liệu chính xác về màu, font, khoảng cách, bo góc; mã phiên bản | Token Figma chỉ đọc, để trên máy bạn, không đưa cho agent |
+| Claude Design (link hoặc handoff) | Phiên chính, bằng công cụ đọc artifact của tài khoản claude.ai của bạn | HTML/CSS của bản mẫu, và ảnh từng màn hình chụp bằng trình duyệt | Phải thử trước: mình chưa biết chính xác handoff gồm những gì |
+| Claude Design System | Phiên chính | Token (màu, chữ, khoảng cách) và danh sách component | Phải thử trước, và chốt đâu là nguồn chính |
+
+**Luồng làm việc:**
+1. Bạn dán link vào mô tả Epic, hoặc đưa link lúc `/ao-intake`, và ghi rõ mỗi link là màn hình nào.
+2. Trước `/ao-spec`, phiên chính chạy một bước mới, "nhập thiết kế". Bước này tải về và chuẩn hóa:
+   - ảnh theo luật hiện có: tối đa 1 MB, cạnh dài tối đa 2.000 px;
+   - một file `inbox.yaml` ghi cho mỗi màn hình: nguồn, link, phiên bản hay thời điểm tải, mã băm, và các file đi kèm.
+3. `ux` chạy như nay, nhưng đọc thêm `inbox.yaml` và file nguồn:
+   - `design.md` ghi kiểu của từng màn hình: `figma:`, `claude-design:` hay `screenshot:`;
+   - giá trị token lấy chính xác từ nguồn, không phải ước từ ảnh.
+4. `check-design` kiểm thêm kiểu mới.
+5. `fe-dev` đọc `design.md` và ảnh như nay. Với Claude Design, nó có thêm HTML của bản mẫu để tham khảo, không chép thẳng vào app.
+
+**Design System: phải chọn đâu là nguồn chính.**
+- (a) Claude Design System (hay thư viện Figma) là nguồn chính. Kit nhập token về `docs/design-system/<app>.md`. Khi Design System đổi, kit mở một Task "cập nhật design system" cho `fe-dev`.
+- (b) Repo là nguồn chính; Claude Design System chỉ để xem.
+
+Nếu bạn thiết kế bằng Claude Design thì mình khuyên chọn (a).
+
+**Rủi ro và điểm cần quyết:**
+1. **Bảo mật:** link và token chỉ nằm ở phiên chính; `ux` vẫn không có công cụ web. HTML có thể chứa chữ trông như lệnh, nhất là thiết kế do người khác chia sẻ, nên `ux` phải đọc nó như dữ liệu.
+2. **Phiên bản:** thứ bạn duyệt ở cổng ① là ảnh đã commit. Nguồn có đổi sau đó cũng không ảnh hưởng, trừ khi nhập lại. Figma có mã phiên bản; với Claude Design, kit ghi thời điểm tải và mã băm.
+3. **Dung lượng repo:** ảnh và file token thì commit. HTML của bản mẫu thì có hai cách: commit, với giới hạn khoảng 500 KB, hoặc chỉ giữ trong `.ai/`.
+4. **Figma:** theo mình biết, REST API dùng được với mọi gói Figma. Còn Dev Mode MCP cần ứng dụng desktop và một chỗ ngồi trả phí. Mình đề xuất dùng REST, và sẽ kiểm lại điều này trước khi làm.
+5. **Claude Design bản riêng** đóng trước 2026-12-14, nên kit chỉ nên nhận link artifact trong Claude.
+
+**Bạn trả lời giúp mình bốn câu:**
+1. Bạn dùng gói Figma nào, và có đồng ý tạo một token cá nhân chỉ đọc không?
+2. "Handoff" của Claude Design mà bạn nhận được trông thế nào: một link, một file zip, hay một lệnh cho Claude Code? Gửi mình một mẫu, mình thử đọc. Việc này không tốn tiền chạy agent.
+3. Design System: nguồn chính là (a) Claude Design System hay (b) repo?
+4. HTML của bản mẫu Claude Design: commit vào repo cho `fe-dev` tham khảo, hay chỉ giữ ảnh?
+
+**Ước lượng sau khi chốt:**
+- nhập từ Figma, hộp thiết kế, `ux` và `check-design`: khoảng 1 ngày;
+- nhập từ Claude Design: khoảng nửa ngày, sau khi thử;
+- Design System: khoảng nửa ngày.
+
+Tổng 1,5–2 ngày, chưa tính lượt chạy thật. Con số này lớn hơn ước lượng 3–5 giờ lúc trước, vì phạm vi giờ gồm cả Figma tự động và Design System.
+
+Mình chưa làm gì.
+
+
+**Bạn (Lượt 79):** Tôi sẽ đồng bộ Claude Design System với Design System trong repo nên là chọn (b)
+Design System: Repo là nguồn chính; Claude Design System chỉ để xem.
+
+1. Tôi đang dùng gói Figma free nhưng sẵn sàng nâng lên gói Education để có dev mode
+2. một gói folder handoff được export từ Claude Design System (C:\Users\Huu Tung\Downloads\design_handoff_nocturne)
+3. repo
+4. HTML của bản mẫu Claude Design: commit vào repo cho fe-dev tham khảo
+
+Thảo luận thêm:
+- Vì sao không dùng Figma MCP Server mà lại dùng Figma REST API??
+- Nếu có design rồi thì cần gì agent ux trong kit nữa nhỉ?
+
+**Claude (Lượt 79):**
+
+Mình đã đọc gói `design_handoff_nocturne` và tra lại giới hạn của Figma. Lượt trước mình nói sai một điều về Figma, mình sửa ở câu 1.
+
+**Mình ghi nhận ba câu trả lời của bạn:**
+- **Design System:** repo là nguồn chính, Claude Design System chỉ để xem.
+- **HTML bản mẫu:** commit vào repo cho `fe-dev` tham khảo.
+- **Figma:** đang dùng gói Free, sẵn sàng lên Education.
+
+**Gói Nocturne là handoff của một Design System, không có màn hình nào.** Gói là một thư mục 16 file, nặng 260 KB:
+- `README.md`: token, component và luật Do/Don't;
+- `reference/styles.css`: token và class của component;
+- `theme.json`: các tham số gốc;
+- 11 trang HTML minh họa và một ảnh.
+
+Như vậy handoff của Claude Design là một thư mục bạn tải về, không phải link. Phiên chính không cần đọc claude.ai: bạn bỏ thư mục vào hộp thiết kế là xong.
+
+Gói này không đi vào `ux` của từng Epic. Nó là đầu vào cho một Task riêng, "đồng bộ Design System" (xem phần cuối). Đọc gói, mình thấy bốn điều kit phải xử lý:
+1. **README có đoạn "Suggested CLAUDE.md snippet".** Đó là lời dặn viết cho AI. Kit không tự áp dụng nó; mọi thay đổi phải đi qua PR để bạn duyệt.
+2. **Gói thiếu file.** `reference/readme.md` nhắc tới `templates/landing/`, `thumbnail.html`, `theme.html`, nhưng gói không có các file này. Bước nhập phải báo ra file nào thiếu, không bỏ qua lặng lẽ.
+3. **Gói kéo theo hai phụ thuộc mới:** icon Phosphor và font Inter từ Google Fonts. Trong khi đó, `docs/design-system/user.md` của shop ghi "không có thư viện biểu tượng" và dùng font Be Vietnam Pro.
+4. **README tự nói các file HTML chỉ để tham khảo**, không phải code để chép. Điều này khớp với câu trả lời 4 của bạn.
+
+**1. Vì sao dùng REST mà không dùng Figma MCP Server?**
+
+Lý do mình đưa ra lượt trước đã cũ. Tra lại hôm nay, có hai điểm mình nói sai:
+- **Figma giờ có MCP server từ xa** (`mcp.figma.com/mcp`). Server này không cần ứng dụng desktop hay Dev Mode, và gói nào cũng dùng được; các gói chỉ khác nhau ở số lượt gọi.
+- **REST không dễ như mình nói.** File nằm trong gói Starter mà đọc bằng token cá nhân thì có thể chỉ được 6 lượt mỗi tháng, kể cả khi bạn có Full seat ở gói khác. Hai trang tài liệu của Figma ghi lệch nhau ở chỗ này. Ngoài ra, API đọc biến (variables) của REST chỉ dành cho gói Enterprise.
+
+So sánh, khi bạn đã có gói Education:
+
+| | MCP từ xa | REST |
+|---|---|---|
+| Số lượt gọi | Education tính như Full/Dev seat của gói Professional: 200 lượt mỗi ngày, 10 lượt mỗi phút. Gói Free chỉ khoảng 6–20 lượt mỗi tháng, không đủ dùng | Tier 1: 10–20 lượt mỗi phút, tùy gói. File thuộc gói Starter có thể chỉ được 6 lượt mỗi tháng |
+| Ảnh của frame | `get_screenshot` | `GET /v1/images` |
+| Tên token (biến màu, chữ, khoảng cách) | `get_variable_defs` | Chỉ có ở gói Enterprise |
+| Cấu trúc và code tham khảo | `get_design_context`: mặc định trả React + Tailwind, đổi được sang framework khác | JSON thô rất lớn, phải viết script lọc |
+| Ai gọi | Model trong phiên chính, tốn token | Script, không tốn token, test được |
+
+**Đề xuất mới:** dùng MCP từ xa, gắn vào **phiên chính**, không gắn cho `ux`, và bỏ hẳn phần script REST. Không gắn cho `ux` vì ba lẽ:
+1. **Ghim phiên bản.** Phiên chính lấy dữ liệu một lần, rồi commit cả ảnh lẫn kết quả. Ở cổng ①, bạn duyệt đúng những gì đã commit. Khi `ux` chạy lại trong vòng sửa, nó không gọi Figma nữa, nên bản đặc tả không lệch dù có ai sửa file Figma giữa chừng.
+2. **Bảo mật.** Tên layer, chữ và comment trong Figma sẽ đi thẳng vào ngữ cảnh của agent. Phiên chính thì có bạn ngồi đó theo dõi. Còn `ux` vẫn không có công cụ mạng, và đọc file như dữ liệu.
+3. **Đếm trước được số lượt gọi.** Mỗi frame tốn khoảng 3 lượt: ảnh, context và biến. Một Epic có 5 màn hình, mỗi màn hình hai cỡ desktop và mobile, tốn khoảng 30 lượt, còn dư xa so với 200 lượt mỗi ngày.
+
+Hai lưu ý:
+- **Gói Education** miễn phí, nhưng Figma sẽ xác minh bạn là học sinh, sinh viên hay giáo viên. Nếu bạn không đủ điều kiện, phương án trả phí là gói Professional với Dev seat.
+  - File thiết kế phải nằm trong team thuộc gói đó. File ở team Starter vẫn bị giới hạn của Starter.
+  - Bạn cần nâng gói để có nhiều lượt gọi hơn, không phải để có Dev Mode: MCP từ xa không dùng Dev Mode.
+- **Code của `get_design_context`** mặc định là Tailwind, trong khi cả `user` lẫn `admin` đều không dùng Tailwind (NFR13: CSS variables và CSS thường). Vì vậy bước nhập sẽ xin React với CSS thường. `fe-dev` chỉ dùng code đó để tham khảo; mọi giá trị đều lấy từ token của repo.
+
+**2. Đã có design rồi thì còn cần `ux` không?**
+
+Vẫn cần, nhưng việc của `ux` nhẹ đi nhiều. Thiết kế cho biết màn hình *trông* ra sao. Việc của `ux` là biến thiết kế thành bản đặc tả mà các agent và các bước kiểm dùng được. Có năm việc ảnh hay Figma không tự làm được:
+1. **Nối màn hình với SPEC.** Mỗi màn hình gắn với user story và mã `AC<n>`, có cột App và luồng Mermaid. `fe-dev`, `seo`, `qa` và `check-design` đều đọc bảng này.
+2. **Viết phần thiết kế thường không vẽ.** Thiết kế thường chỉ vẽ đường đi suôn sẻ. `ux` bổ sung:
+   - trạng thái lỗi, rỗng, đang tải, không có quyền;
+   - bản mobile;
+   - chữ của các thông báo;
+   - ghi chú truy cập: thứ tự focus, nhãn.
+3. **So với Design System của repo.** `ux` ghi token và component nào "có", nào "mới", giá trị nào lệch. Nhờ đó `fe-dev` biết phải thêm gì vào `tokens.css`, và bạn thấy ngay khi thiết kế dùng một màu không có trong repo.
+4. **Giữ SPEC và thiết kế khớp nhau.** `ux` hỏi bạn, và nhờ `ba` khi câu trả lời làm đổi SPEC (`Cần ba:`). Khi SPEC đổi sau đó, `ux` trả lời các yêu cầu `Cần ux:`.
+5. **Gom về một file cố định cho cổng ①.** Bạn duyệt `design.md`, và `check-design` kiểm được file đó bằng máy.
+
+Khi có nguồn chính xác như Figma hay Claude Design, `ux` không còn phải vẽ ASCII và đoán token từ ảnh, hai việc tốn công nhất của nó. Nó chỉ chép đúng giá trị từ nguồn. Task đồng bộ Design System (như Nocturne) thì không cần `ux`: đó là việc của `fe-dev`.
+
+**Thiết kế sau khi chốt:**
+- **Nguồn màn hình, theo từng Epic.** Mọi nguồn đều gom về `.ai/design-inbox/<EPIC>/`, kèm file `inbox.yaml`:
+  - ảnh chụp: bạn bỏ vào thư mục;
+  - Figma: phiên chính lấy qua MCP từ xa;
+  - Claude Design: bạn bỏ thư mục handoff vào; phiên chính kiểm, rồi HTML được commit vào `docs/specs/<EPIC>/design/prototype/`.
+- **Nguồn Design System, thỉnh thoảng mới có** (handoff của Claude Design System):
+  - phiên chính mở một Task "đồng bộ Design System";
+  - `fe-dev` chuyển `styles.css` vào `tokens.css` và `components.css`, cập nhật `docs/design-system/<app>.md` và `tokens.test.ts`;
+  - Task đi qua PR có review, và repo vẫn là nguồn chính.
+
+  Phần này hầu như không cần lệnh mới trong kit, chỉ cần tài liệu và một mẫu Task.
+- **Ước lượng:** khoảng 1–1,5 ngày, ít hơn mức 1,5–2 ngày lúc trước vì bỏ phần script REST.
+
+**Bạn trả lời giúp mình hai câu:**
+1. Nocturne là giao diện mới của shop thật, hay chỉ là mẫu để thử? Nếu là thật, áp cho `user`, `admin`, hay cả hai? Nocturne khác hẳn shop hiện tại, nên áp vào app nào là đổi toàn bộ giao diện app đó:
+   - chỉ có nền tối, trong khi shop có ba chế độ Sáng, Tối, Hệ thống;
+   - dùng font Inter thay cho Be Vietnam Pro;
+   - dùng icon Phosphor;
+   - nút chỉ có viền.
+2. Bạn gửi thêm một handoff **màn hình** của Claude Design, tức một trang hay một luồng chứ không phải Design System, để mình thử đọc. Gói Nocturne không có màn hình nào.
+
+Mình chưa làm gì.
+
+Nguồn:
+- [Figma MCP: rate limits and access](https://developers.figma.com/docs/figma-mcp-server/rate-limits-access/)
+- [Figma MCP: plans, access and permissions](https://developers.figma.com/docs/figma-mcp-server/plans-access-and-permissions)
+- [Figma REST API: rate limits](https://developers.figma.com/docs/rest-api/rate-limits)
+- [Figma Help: What if I'm rate limited](https://help.figma.com/hc/en-us/articles/34963238552855)
+- [Figma REST API: variables endpoints](https://developers.figma.com/docs/rest-api/variables-endpoints)
+
+
+**Bạn (Lượt 80):** 1. Nocturne chỉ là mẫu để thử
+2. một handoff màn hình của Claude Design
+
+C:\Users\Huu Tung\Downloads\Landing page hero.html
+
+```
+Nhiệm vụ: dựng hero của landing page theo design tham chiếu trong `hero-reference.html`.
+
+Cách dùng file tham chiếu
+- File là HTML xuất từ một canvas thiết kế. Chỉ dùng nó để lấy bố cục, nội dung chữ, màu và khoảng cách. Đừng copy nguyên mã hay thẻ riêng của canvas.
+- Dựng lại bằng stack hiện có của project (hãy kiểm tra framework và cách đặt component trước khi viết). Nếu chưa có stack, dùng HTML + CSS thuần.
+
+Bố cục
+- Thanh điều hướng: logo "Lumen" (biểu tượng mặt trời nét mảnh), 3 liên kết (Tính năng, Bảng giá, Khách hàng), nút phụ "Đăng nhập".
+- Hai cột, nội dung tối đa 1200px, căn giữa, khoảng cách giữa cột 48px.
+  - Trái: nhãn accent "Mới: Tóm tắt cuối ngày", tiêu đề, đoạn mô tả, nút chính "Dùng thử miễn phí" (có mũi tên), nút phụ "Xem demo", dòng ghi chú nhỏ.
+  - Phải: khung xanh nhạt chứa một thẻ trắng "Hôm nay" với 3 việc (việc đầu đang được chọn) và dòng "Hạn gần nhất".
+- Màn hình hẹp: hai cột xếp chồng, thanh điều hướng tự xuống dòng. Không dùng chiều cao cố định theo vh.
+
+Design tokens (Lumen). Khai báo thành biến CSS, không viết cứng mã màu trong component
+- Màu: surface #fbf8f3, surface-raised #ffffff, ink #1f1b16, ink-muted #5f574d, line #e3dccf, brand #1f5f4a, brand-ink #ffffff, brand-tint #dcebe3, accent #e8a33d.
+- Font: Inter. Tiêu đề 48/52 đậm 700, h2 24/30 đậm 600, nội dung 16/24, chữ nhỏ 14/20, chú thích 12/16.
+- Khoảng cách: 4, 8, 12, 16, 24, 32px. Bo góc: nút 10px, thẻ 16px, huy hiệu dạng viên thuốc.
+- Bóng thẻ: 0 1px 2px rgba(31,27,22,0.08), 0 4px 12px rgba(31,27,22,0.06). Không dùng bóng và viền cùng lúc trên một thẻ.
+- Màu accent chỉ dùng một lần (nhãn "Mới").
+
+Hành vi và truy cập
+- Hover nút chính: xanh đậm hơn khoảng 8%. Hover nút phụ: nền kem nhạt.
+- Focus: viền 2px màu brand, cách 2px, trên mọi phần tử tương tác.
+- Nút và liên kết cao tối thiểu 44px, dùng thẻ <a> hoặc <button> thật.
+- Biểu tượng trang trí thêm aria-hidden="true". Tỷ lệ tương phản chữ tối thiểu 4.5:1.
+
+Chưa làm / cần hỏi lại
+- Chữ trong hero là nội dung tạm. Hỏi tôi tên sản phẩm và thông điệp thật trước khi chốt.
+- Các liên kết (#tinh-nang, #bang-gia, #cau-chuyen, #dang-nhap, #dung-thu, #demo) chưa có trang đích. Để nguyên dạng neo.
+- Không tạo giao diện tối. Design system Lumen chỉ có một chủ đề sáng.
+
+Tiêu chí hoàn thành
+- Mở ở rộng 1440px và 390px đều khớp design tham chiếu về bố cục, màu, chữ.
+- Không có mã màu hoặc cỡ chữ viết cứng ngoài các token ở trên.
+- Điều hướng được bằng bàn phím và nhìn thấy viền focus.
+```
+
+
+3. Có 1 vấn đề với Claude Design hiện tại:
+- Nếu tạo Claude Design System bằng Artifact trong Claude chat thì sẽ không có link của Claude Design kiểu này:
+```
+Use the claude_design MCP (https://api.anthropic.com/v1/design/mcp, auth via /design-login) to import this project:
+https://claude.ai/design/p/1c62be76-f099-48af-969b-d7bd990ce472
+```
+Nên trong phần 'luồng làm việc' bạn nói bây giờ chỉ còn có link của Figma mà thôi, nguồn screen shot và Claude Design, Claude design system tôi phải tải về repo trước khi '/ao-spec'
+
+- Hình như Claude Design chuẩn bị chuyển về Claude chat (bỏ bảng stand-alone) nên sẽ không có link tới Claude Design nữa mà chỉ còn download folder handoff về máy thôi.
+
+Bạn kiểm tra xem thông tin trên có đúng không nhé
+
+**Bạn (Lượt 80, gửi thêm):** Thông tin thêm cho mục 3:
+https://support.claude.com/en/articles/17440474-move-from-standalone-claude-design-to-claude
+
+**Bạn (Lượt 80, gửi thêm):** mục 3: [ảnh chụp trang Artifacts của Claude: khung "Claude Design lives here now. New Slides and Design projects are created as artifacts." với nút "Visit the standalone homepage"; hàng "Make something new": Docs, Slides, Design, Data, Whiteboard (Beta)]
+
+**Bạn (Lượt 80, gửi thêm):** mục 2 bạn thử đọc thoi, chứ đừng có làm, code phần hero đó nhé
+
+**Claude (Lượt 80):**
+
+Mình ghi nhận Nocturne chỉ là mẫu để thử, nên bỏ câu hỏi áp giao diện mới cho shop.
+
+Bạn đúng hai ý, nhưng kết luận "chỉ còn link Figma" thì chưa đúng. Design và Design System làm trong Claude chat vẫn có link, dạng `claude.ai/artifact/…`, và phiên chính đọc thẳng được link đó. Mình vừa thử với chính hai artifact "Landing page hero" và "Lumen" của bạn.
+
+**Kiểm tra từng ý** (đã đối chiếu với bài hướng dẫn chính thức bạn gửi):
+
+| Ý của bạn | Kết luận | Căn cứ |
+|---|---|---|
+| Design System làm bằng Artifact trong Claude chat không có link `claude.ai/design/p/…` để import qua MCP `claude_design` (`/design-login`) | Đúng | MCP đó chỉ đọc project của bản riêng `claude.ai/design` |
+| Claude Design sắp chuyển hẳn vào Claude chat, bỏ bản riêng | Đúng | Xem các trích dẫn ngay dưới bảng |
+| Vì vậy không còn link nào, chỉ còn cách tải folder handoff về | Sai | Design và Design System trong Claude là Artifact, mỗi cái có link riêng. Bài hướng dẫn không nói gì về Claude Code, nên mình thử trực tiếp: phiên chính đọc được bằng công cụ Artifact, không cần tải về |
+
+Căn cứ cho ý thứ hai:
+- **Bài hướng dẫn:**
+  - bản riêng đóng ngày **14/12/2026**;
+  - project và design system chuyển sang bằng "Move to Claude" thì "becomes an artifact";
+  - design, design system và slide mới làm trong Claude đều "created as an artifact".
+- **Mô tả công cụ của chính Claude Code** ghi: "Claude Design now lives in Claude."
+- **Ảnh chụp trang Artifacts** của bạn ("Claude Design lives here now") cũng khớp.
+
+**Mình vừa đọc thử** (chỉ đọc, không tốn tiền agent). Tài khoản của bạn có 4 artifact, mình đọc hai cái.
+
+**"Landing page hero"** (kiểu Design). Phần thiết kế của bạn chỉ gồm ba file:
+- `project/Main.dc.html`, 6,7 KB: chính là màn hình hero, viết bằng HTML với style đặt thẳng trong thẻ, chữ tiếng Việt thật;
+- `project/canvas.json`: khung 1440×760, kèm tên và link của Design System đã dùng (Lumen) cùng thời điểm chép;
+- `project/ds/lumen/tokens.json`: bản chép token của Lumen, trùng mã băm với bản gốc.
+
+Khoảng 30 file còn lại là phần mềm của kiểu Design (app.js, font, bản dịch), không liên quan tới thiết kế.
+
+**"Lumen"** (kiểu Design System) gồm hai file chính:
+- `project/tokens.json`: 10 màu, 7 kiểu chữ, 6 bậc khoảng cách, 4 bo góc và 1 bóng; mỗi token có ghi chú dùng khi nào;
+- `project/README.md`: đặc tả nút, ô nhập, thẻ và huy hiệu.
+
+Mỗi lần đọc, công cụ trả về số phiên bản của artifact, ví dụ `1795459699-c1d6`. Kit ghi số này vào `inbox.yaml` để ghim đúng bản đã duyệt.
+
+So với file bạn tải về (`Landing page hero.html`):
+- **File tải về nặng và đóng gói.** File nặng 315 KB, gói sẵn font Inter, React và mã nén, và phải mở bằng trình duyệt có JavaScript mới thấy được.
+- **Hợp để xem, khó để agent đọc.** File này hợp để bạn xem bằng mắt. Còn với agent, `Main.dc.html` lấy từ link sạch hơn nhiều.
+- **Đoạn lời dặn bạn dán kèm** là lời dặn viết cho Claude Code. Kit coi nó là ghi chú, tức dữ liệu chứ không phải lệnh. `ux` chuyển phần "Chưa làm / cần hỏi lại" của nó thành Open Questions.
+
+**Giới hạn của đường link**
+1. **Quyền đọc.** Phiên chính chỉ đọc đầy đủ được artifact của bạn, hoặc artifact người khác chia sẻ cho bạn quyền sửa. Nếu bạn chỉ có quyền xem, công cụ chỉ trả về bản tóm tắt; khi đó phải tải về.
+2. **Ai gọi được công cụ.** Công cụ Artifact và Figma MCP là công cụ của model trong phiên chính; script node không gọi được. Vì vậy bước "nhập thiết kế" sẽ là một lệnh cho phiên chính, ví dụ `/ao-design <EPIC>`, kèm một script kiểm hộp thiết kế: dung lượng, mã băm và `inbox.yaml`.
+3. **Ảnh để duyệt** là điểm duy nhất còn phải thử. `Main.dc.html` cần bộ chạy của canvas (`support.js`, thẻ `<x-dc>`), nên không mở thẳng trong trình duyệt được. Có hai cách:
+   - chụp bằng Playwright sau khi bỏ lớp vỏ canvas;
+   - chụp từ file tải về, vì file đó tự chạy được.
+4. **Design System đã chuyển sang Claude.** Bài hướng dẫn nói nó giữ nguyên file, nhưng bạn chưa sửa tay được trên trang của nó, chỉ nhờ Claude sửa được. Với kit thì không sao, vì repo là nguồn chính.
+
+**Luồng làm việc sau khi sửa**
+
+| Nguồn | Bạn đưa vào bằng | Ai lấy về |
+|---|---|---|
+| Figma | link frame trong Epic | phiên chính, qua MCP từ xa (cần gói Education) |
+| Design hoặc Design System trong Claude, của bạn hoặc được quyền sửa | link `claude.ai/artifact/…` trong Epic | phiên chính, qua công cụ Artifact |
+| Artifact chỉ được xem | tải về, bỏ vào `.ai/design-inbox/<EPIC>/` | bạn |
+| Project còn ở bản riêng mà không chuyển | trước 14/12, xuất bằng "Share → Project HTML → Project archive" (file .zip) hoặc "Download design system", rồi bỏ vào `.ai/design-inbox/<EPIC>/` | bạn |
+| Ảnh chụp | bỏ vào `.ai/design-inbox/<EPIC>/` | bạn |
+| Link cũ `claude.ai/design/p/…` | không hỗ trợ, vì bản riêng đóng ngày 14/12/2026; project đã chuyển thì dùng link artifact mới | — |
+
+Như vậy bạn đúng ở chỗ ảnh chụp phải bỏ tay vào trước `/ao-spec`. Còn Design và Design System của chính bạn thì chỉ cần dán link, như Figma. Thứ được commit cho `fe-dev` tham khảo là `Main.dc.html` và `tokens.json`, vài KB, chứ không phải file 315 KB.
+
+**Hero này cũng cho thấy vì sao vẫn cần `ux`:**
+- **Mã màu viết thẳng.** `Main.dc.html` dùng mã màu, không dùng tên token. `ux` đối chiếu với `tokens.json` để ghi tên token. Hai màu hover `#1b5542` và `#f3eee5` không có trong token, nên `ux` ghi "mới" hoặc hỏi bạn.
+- **Nội dung chưa chốt.** Lời dặn ghi "Chữ trong hero là nội dung tạm" và "các liên kết chưa có trang đích". `ux` đưa hai điểm này vào Open Questions.
+- **Thiếu bản mobile.** Thiết kế chỉ vẽ cỡ 1440 px; cỡ 390 px chỉ được tả bằng chữ. `ux` viết bố cục mobile, hoặc hỏi bạn.
+
+Ước lượng giữ nguyên, khoảng 1–1,5 ngày: đường link của Claude thay cho phần nhập folder, cộng thêm việc thử chụp ảnh.
+
+Mình chỉ đọc thử, đúng như bạn dặn: không code phần hero, không sửa gì trong kit hay shop. Bản đọc lưu trong thư mục tạm của phiên.
+
+Nguồn:
+- [Move from standalone Claude Design to Claude (Claude Help Center)](https://support.claude.com/en/articles/17440474-move-from-standalone-claude-design-to-claude)
+- [Get started with Claude Design (Claude Help Center)](https://support.claude.com/en/articles/14604416-get-started-with-claude-design)
+- [Claude Design MCP in Claude Code (wmedia.es)](https://wmedia.es/en/tips/claude-code-claude-design-mcp-connect)
+
+**Bạn (Lượt 81):** có link Artifact thì phiên agent chính có thể download được Main.dc.html và tokens.json về repo để fe-dev tham khảo phải không? Trả lời ngắn gọn
+
+**Claude (Lượt 81):**
+
+Đúng vậy. Ở lượt trước mình đã tải thật `Main.dc.html`, `canvas.json` và `tokens.json`, chỉ là mới lưu vào thư mục tạm của phiên chứ chưa đưa vào repo.
+
+Cách làm:
+1. Phiên chính đọc artifact theo link, chỉ lấy đúng những file cần.
+2. Công cụ lưu từng file kèm mã băm và số phiên bản của artifact.
+3. Phiên chính chép các file đó vào `docs/specs/<EPIC>/design/` để `fe-dev` tham khảo. Cũng có thể lưu thẳng vào repo, nhưng mỗi lần lưu ra ngoài thư mục tạm, công cụ sẽ hỏi bạn trước.
+
+Điều kiện:
+- artifact là của bạn, hoặc người khác chia sẻ cho bạn quyền sửa;
+- phiên chính đang đăng nhập đúng tài khoản claude.ai có artifact đó.
+
+
+**Bạn (Lượt 82):** Luồng làm việc sau khi sửa từ đầu như nào? đi qua các slash command nào?
+
+**Claude (Lượt 82):**
+
+Luồng vẫn đi qua các lệnh cũ, chỉ thêm **một lệnh mới là `/ao-design`**, chạy ngay trước `/ao-spec`. Lệnh này do phiên chính chạy, vì chỉ phiên chính có Figma MCP và công cụ Artifact. Vì vậy `/ao-run` không tự chạy nó, giống như với `/ao-intake`.
+
+**Chuẩn bị một lần** [bạn]:
+- **Figma:** lên gói Education, rồi thêm Figma MCP từ xa vào Claude Code bằng lệnh `claude mcp add --transport http figma https://mcp.figma.com/mcp`, và đăng nhập qua `/mcp`. Agent không gọi được MCP này, vì công cụ của agent bị giới hạn theo roster.
+- **Claude Design:** không cần cài gì. Phiên chính dùng luôn tài khoản claude.ai đang đăng nhập.
+
+**Một Epic có giao diện, từ đầu tới cuối:**
+
+| # | Lệnh hay việc | Ai | Làm gì |
+|---|---|---|---|
+| 1 | `/ao-intake <mô tả>` | phiên chính và bạn | Như cũ, thêm một câu hỏi: màn hình nào đã có thiết kế, thiết kế nằm ở đâu. Link Figma và link `claude.ai/artifact/…` được ghi vào mô tả Epic, kèm mỗi link là màn hình nào |
+| 2 | Bấm `Start spec` | bạn | Như cũ |
+| 3 | Bỏ ảnh chụp hay file tải về vào `.ai/design-inbox/<EPIC>/` | bạn | Chỉ khi có nguồn dạng file |
+| 4 | **`/ao-design <EPIC>`** (mới) | phiên chính | Xem chi tiết ngay dưới bảng |
+| 5 | `/ao-spec <EPIC>` | `ba`, `ux`, `sa`, `seo` | Như cũ, với hai điểm mới (xem dưới bảng) |
+| 6 | Gate ①, `Approve spec` | bạn | Đọc `design.md`, ảnh và file mẫu trên PR tài liệu |
+| 7 | `/ao-plan <EPIC>`, gate ②, rồi `/ao-plan` lần nữa | `sa`, `ba`, bạn | Như cũ. Có token hay component "mới" thì `sa` đặt Task "Design system của <app>" lên đầu plan |
+| 8 | `/ao-build <KEY>`, `/ao-preview`, `/ao-review <PR>`, gate ③ | dev, `reviewer`, `security`, bạn | Như cũ. `fe-dev` có thêm file mẫu `*.dc.html` để tham khảo, còn giá trị thì lấy từ token của repo |
+| 9 | `/ao-qa`, Accept, `/ao-release`, `/ao-ship` | như cũ | Không đổi |
+
+**Bước 4, `/ao-design <EPIC>`, làm bốn việc:**
+1. Đọc các link trong mô tả Epic.
+2. Lấy thiết kế về:
+   - Figma qua MCP: ảnh, context và biến;
+   - artifact của Claude qua công cụ Artifact: `*.dc.html`, `canvas.json`, `tokens.json`, rồi chụp ảnh.
+3. Ghi tất cả vào hộp thiết kế, kèm `inbox.yaml` (nguồn, link, phiên bản, mã băm), rồi chạy script kiểm.
+4. Dừng lại, cho bạn xem danh sách những gì đã lấy về.
+
+**Bước 5, `/ao-spec`, có hai điểm mới:**
+- `ux` đọc `inbox.yaml` và chép đúng token từ nguồn. Nó ghi nguồn của từng màn hình (`figma:`, `claude-design:` hay `screenshot:`), rồi chuyển ảnh và file mẫu vào `docs/specs/<EPIC>/design/`.
+- Epic có link mà chưa qua `/ao-design` thì `/ao-spec` dừng lại và nhắc bạn gõ `/ao-design`.
+
+Từ bước 5 trở đi, `/ao-run <EPIC>` vẫn tự chạy các lệnh như cũ và dừng ở các cổng.
+
+**Khi thiết kế đổi giữa chừng:**
+- **Trước gate ①:**
+  1. Sửa thiết kế ở Figma hay ở Claude.
+  2. Gõ lại `/ao-design <EPIC>`. Lệnh lấy bản mới và ghi phiên bản mới.
+  3. Gõ `/ao-spec <EPIC> [sửa]`, hoặc comment `Cần ux:` rồi gõ `/ao-request`.
+- **Sau gate ②:** xử lý như mọi thay đổi khác. Còn PR mở thì dùng `/ao-fix <PR> …`; nếu không thì mở Epic mới qua `/ao-intake`.
+
+**Đồng bộ Design System** là một đường riêng, không qua `ux`:
+1. `/ao-intake đồng bộ design system <app> theo <link>` tạo một Task cho `fe-dev`.
+2. `/ao-design <TASK>` lấy `tokens.json` và `README.md` của artifact Design System vào hộp thiết kế.
+3. `/ao-build <TASK>`: `fe-dev` đưa token vào `tokens.css` và `components.css`, cập nhật `docs/design-system/<app>.md` và `tokens.test.ts`, rồi mở PR.
+4. `/ao-review <PR>`, gate ③, QA, Accept, như một Task thường.
+
+**Epic không có thiết kế** thì bỏ bước 3 và 4; `ux` vẽ ASCII như hiện nay.
+
+Mình chưa làm gì.
+
+
+**Bạn (Lượt 83):** Ok, bây giờ làm gì tiếp theo. Trả lời và chờ tôi xác nhận
+
+**Claude (Lượt 83):**
+
+Mình đề xuất làm 6 bước theo thứ tự dưới đây. Theo memory "chép kit một lần", bản chép kit vào `shop` chỉ làm một lần, sau khi xong cả mục 11 và mục 10.
+
+1. **Mục 11: sửa các lỗi loại 1 của review PR #97.** Khoảng 2–3 giờ, không tốn tiền agent.
+   - Sửa 5 finding loại 1:
+     - `security` có thể rơi khỏi lượt đăng;
+     - `madeFacts` xét nhãn hiện tại thay vì nhãn lúc merge;
+     - watcher bị coi là chết khi máy ngủ;
+     - lệch head khi chạy lại một role;
+     - chú thích của `KIT_SIGNER` đặt sai chỗ.
+   - Mỗi bản sửa có một test đỏ trước khi sửa.
+   - Với loại 2: ghi rủi ro vào tài liệu, và sửa câu "chốt chặn thật" trong SPEC 7b và `quality-gates.md`.
+2. **Mục 10: thử trước khi code.** Việc này không tốn tiền agent.
+   - Mình thử chụp ảnh `Main.dc.html` của artifact hero bằng Playwright.
+   - Bạn lên gói Figma Education và thêm Figma MCP, rồi gửi mình link một frame bất kỳ để thử ba lượt gọi: ảnh, context, biến.
+   - Phần Figma có thể làm sau, nếu bạn chưa lên gói kịp.
+3. **Mục 10: viết đặc tả ngắn** vào `tasks/todo.md`, cho bạn duyệt trước khi code. Đặc tả gồm:
+   - lệnh `/ao-design`;
+   - định dạng `inbox.yaml` và script kiểm;
+   - phần sửa prompt của `ux`, `check-design` và mẫu `design.md`;
+   - điểm dừng mới của `/ao-spec`;
+   - câu hỏi mới của `/ao-intake`;
+   - tài liệu.
+4. **Mục 10: code và test,** khoảng 1–1,5 ngày. Đây là việc trong repo kit, đi qua kit PR như các đợt trước.
+5. **Trước lần review trả tiền:** lập threat model cho phần mới, gồm link, nội dung thiết kế đi vào agent và file được commit. Sau đó cho một agent rà độc lập, rồi sửa hết, kể cả Low. Đây là cách mình đã hứa sau review PR #97.
+6. **Chép kit vào `shop` một lần,** gồm review `reviewer` và `security` (khoảng 10 USD), QA và Accept. Sau đó, nếu bạn muốn, chạy thử một Epic nhỏ của shop có thiết kế từ Claude Design. Lượt này tốn tiền: Epic SHOP-95 trước đây hết khoảng 43 USD, nên mình sẽ hỏi trước.
+
+Nhật ký và `tasks/todo.md` chưa commit sẽ đi kèm kit PR của bước 1.
+
+**Bạn xác nhận giúp mình:**
+- Thứ tự 1 → 6 như trên có được không?
+- Ở bước 1, mình làm theo đề xuất và tự merge kit PR như đợt sửa trước, hay bạn muốn duyệt?
+
+Mình chờ bạn xác nhận rồi mới làm.
+
+
+**Bạn (Lượt 84):** 1. thêm 1 điểm nữa là Claude Design ở Artifact của tôi sẽ có mã cho mỗi màn hình, lúc code dự sẽ dùng mã màn hình này luôn, hiện tại ux agent hình như có tự đánh số cho màn hình nên không biết có bị conflict chỗ mã màn hình này không? Bạn kiểm tra và đề xuất hướng làm giúp tôi nhé.
+2. làm cho claude design trước, Figma thì làm sau nhé (khi nào tôi nâng lên gói Figma Education thì sẽ làm, chắc trong tương lại gần)
+
+
+Thảo luận thêm ý 1, chưa được làm gì cả nhé
+
+**Claude (Lượt 84):**
+
+Mình ghi nhận: làm phần Claude Design trước, phần Figma để sau, khi bạn đã lên gói Education.
+
+**Ý 1: có xung đột.** Bạn đoán đúng: `ux` tự đánh mã `S1`, `S2`… cho màn hình. Mã đó chỉ có nghĩa trong một Epic, và kit chỉ chấp nhận đúng dạng `S<số>`.
+
+**Mình đã kiểm những gì:**
+1. **Chỉ chấp nhận dạng `S<số>`.** `check-design` (`lib/quality/design.mjs`) có 7 chỗ chỉ nhận dạng này: bảng Screens, YAML `screen:`, hình ASCII, chú thích ảnh, sơ đồ Mermaid. Ngoài ra, gói bối cảnh review (`review-pack.mjs`) và phần lọc màn hình cho `seo` (`screenApps`) cũng chỉ nhận dạng đó. Một mã như `LP-01` sẽ bị báo lỗi D1 ngay.
+2. **Mã chỉ có nghĩa trong một Epic.** `S1` của SHOP-7, `S1` của SHOP-81 và `S1` của SHOP-95 là ba màn hình khác nhau. Cùng một màn hình mà Epic sau sửa lại thì nhận mã mới. `design.md` của SHOP-95 phải giải thích "S1 là bảng danh mục (SHOP-81 S1)… khi viết 'SHOP-81 S2.5', đó là khối của design SHOP-81, không phải S2 của file này".
+3. **Code của shop đã dùng mã màn hình.** 164 file trong `apps/` ghi mã kiểu "S1.1 of docs/specs/SHOP-7/design.md" hay "S4.2 of SHOP-81". Vì mã chỉ có nghĩa trong Epic, lúc nào cũng phải kèm tên Epic.
+4. **Các agent khác chỉ chép lại mã của `design.md`:**
+   - `ba` ghi mã vào Story;
+   - `sa` ghi vào plan;
+   - `fe-dev` đặt tên ảnh xem trước theo mã;
+   - `seo` dùng mã làm tiêu đề mục.
+
+   Vì vậy, khi `design.md` dùng mã của bạn, các agent này tự theo. Chỉ cần sửa ví dụ trong prompt và trong template.
+
+**Đề xuất: dùng mã của bạn làm "mã màn hình của dự án".** Cách này còn sửa luôn điểm yếu ở mục 2 và 3.
+1. **Một màn hình, một mã, dùng cho cả dự án.** Epic sau sửa màn hình đó thì giữ nguyên mã. Viết `CAT-02.5` là đủ rõ, không cần kèm "of SHOP-81".
+2. **Màn hình có thiết kế thì mã do bạn đặt trong Claude Design:**
+   - mã nằm ở đầu tên board, ví dụ "LP-01 · Hero". Một artifact Design có thể có nhiều board, mỗi board là một màn hình;
+   - `/ao-design` đọc mã từ `canvas.json`, và dừng lại khi một board thiếu mã hay hai board trùng mã;
+   - `ux` không bao giờ đánh số lại mã của bạn.
+3. **Màn hình không có thiết kế** (vẽ ASCII hay ảnh chụp): `ux` đề xuất mã kế tiếp theo cùng dạng. Một script liệt kê các mã đã dùng trong mọi `design.md` của dự án để `ux` không chọn trùng, và bạn duyệt mã đó ở gate ①.
+4. **Khối trong màn hình** vẫn do `ux` đánh số như cũ: `LP-01.1`, `LP-01.2`… Claude Design không có mã khối.
+5. **`check-design` kiểm thêm:**
+   - mã đúng dạng của dự án;
+   - một mã dùng ở Epic khác thì phải cùng route và cùng app, tức là cùng một màn hình.
+6. **Màn hình cũ** (16 màn hình của SHOP-7, SHOP-81, SHOP-95) giữ nguyên mã `S<số>`, không đổi lại. Đổi thì phải sửa 164 file code và các tài liệu đã duyệt, rủi ro mà không được gì. `check-design` vẫn nhận dạng cũ cho các file đó; mỗi `design.md` chỉ dùng một dạng.
+7. **Trong code,** `fe-dev` ghi mã ở chú thích, tên test và tên ảnh xem trước (`LP-01-desktop.png`), như hiện nay nhưng không cần kèm tên Epic. Mình không đề xuất đưa mã vào tên file, tên component hay route, vì đổi mã về sau sẽ kéo theo đổi tên.
+
+Cần thử thêm một điểm: mã có dấu gạch như `LP-01` có hiện đúng trong sơ đồ Mermaid trên GitHub không. Nếu không, dùng dạng không có gạch, như `LP01`.
+
+**Bạn trả lời giúp mình bốn câu:**
+1. Bạn định đặt mã theo dạng nào: `LP-01`, `HOME-01`, `ADM-CAT-01`, hay dạng khác? Mã đặt ở đầu tên board có được không?
+2. Mã dùng chung cho cả dự án, tức cùng một màn hình thì giữ một mã qua mọi Epic: bạn đồng ý không? Mình khuyên dùng.
+3. Màn hình cũ giữ mã `S<số>` (mình khuyên), hay đổi hết sang dạng mới?
+4. Trong code, mã chỉ nằm ở chú thích, test và ảnh xem trước như mình đề xuất, hay bạn muốn dùng ở chỗ khác nữa (ví dụ `data-testid`)?
+
+Phần này cộng thêm khoảng nửa ngày vào mục 10.
+
+Mình chưa làm gì.
+
+
+**Bạn (Lượt 85):** 1. Nghiên cứu và gợi ý cách đặt để hoạt động tốt nhất, tránh lỗi. "đầu tên board" nghĩa là sao tôi chưa hiểu
+2. Mã màn hình phải unique cho cả dự án. Đọc mã là xác định thuộc màn hình nào.
+3. Làm như bạn khuyên
+4. Làm như bạn khuyên
+
+Trả lời câu 1 đã nhé, chưa làm gì cả
+
+**Claude (Lượt 85):**
+
+Mình ghi nhận câu 2–4:
+- mã là duy nhất trong cả dự án, đọc mã là biết màn hình nào;
+- màn hình cũ giữ mã `S<số>`;
+- trong code, mã chỉ nằm ở chú thích, test và ảnh xem trước.
+
+Dưới đây là câu 1.
+
+**"Đầu tên board" nghĩa là gì**
+
+Trong Claude Design, canvas gồm nhiều khung (artboard, mình gọi tắt là board). Mỗi khung là một màn hình, có một tên và một file riêng. Mình đọc artifact "Landing page hero" của bạn và thấy:
+- nó có đúng một khung;
+- khung đó tên "Hero" (trường `title` trong `canvas.json`), và nằm trong file `Main.dc.html`;
+- tài liệu của kiểu Design ghi rõ: mỗi màn hình là một file `.dc.html`, và các màn hình nối với nhau bằng tên file, ví dụ `<a href="Cart.dc.html">`.
+
+"Đầu tên board" nghĩa là viết mã ở đầu tên khung, ví dụ "USR-HOME01 · Hero". Sau khi nghiên cứu, mình đề xuất **đặt mã ở cả hai chỗ**:
+- **tên file** là `USR-HOME01.dc.html`, thay cho `Main.dc.html`. Trong một artifact không thể có hai file trùng tên, nên trùng mã bị chặn ngay từ gốc. `/ao-design` đọc mã từ tên file;
+- **tên khung** là "USR-HOME01 · Trang chủ", để bạn nhìn canvas là thấy mã. `/ao-design` kiểm tên khung có bắt đầu đúng bằng mã của file không; lệch là dừng.
+
+Bạn không cần đổi tên bằng tay. Khi nhờ Claude dựng thiết kế, bạn dặn một câu, ví dụ: "Mỗi màn hình một khung. Tên file theo mã màn hình, như `USR-HOME01.dc.html`; tên khung bắt đầu bằng mã, như 'USR-HOME01 · Trang chủ'; bản mobile hay trạng thái khác thêm hậu tố, như `USR-HOME01-mobile.dc.html`."
+
+**Dạng mã đề xuất: `<APP>-<KHU><SỐ>`, ví dụ `USR-CART01`**
+
+| Phần | Luật | Ví dụ |
+|---|---|---|
+| APP | 3 chữ hoa, cố định cho mỗi app trong `project.yaml` | `USR` cho app `user`, `ADM` cho app `admin` |
+| KHU | 2–4 chữ hoa, lấy từ danh sách khu trong sổ mã | `HOME` trang chủ, `PRD` sản phẩm, `CAT` danh mục, `CART` giỏ hàng, `CHK` thanh toán, `ACC` tài khoản |
+| SỐ | 2 chữ số, cấp lần lượt trong khu, từ 01 | `01`, `02` … `99` |
+| Khối | Mã màn hình, dấu chấm, số khối do `ux` đánh | `ADM-CAT02.3`: ô thứ 3 của form danh mục |
+| Biến thể | Hậu tố chữ thường sau dấu gạch, cùng mã | `USR-CART01-mobile`, `USR-CART01-empty` |
+
+**Vì sao chọn như vậy để tránh lỗi:**
+1. **Không có dấu gạch ngay trước số,** nên mã không bao giờ giống mã item Jira như `SHOP-95`. Kit và Jira nhận mã item theo dạng "CHỮ-SỐ". Nếu mã màn hình là `CART-01`, nó có thể bị đọc nhầm thành item `CART-1`, nhất là trong commit, PR và comment. `USR-CART01` thì không khớp dạng đó.
+2. **Chỉ chữ hoa và số:**
+   - Windows không phân biệt hoa thường trong tên file, nên `usr-cart01` và `USR-CART01` là cùng một file;
+   - Mermaid coi `end` viết thường là từ khóa;
+   - không dấu tiếng Việt, không khoảng trắng, nên mã dùng được trong tên file, YAML, regex và câu lệnh mà không cần ngoặc.
+3. **Mermaid nhận được dấu gạch.** Mình đã đọc grammar của Mermaid: tên nút được có `-`, miễn là ngay sau nó không phải `-`, `>` hay `.`. Dạng này không bao giờ rơi vào trường hợp đó, nên `USR-CART01 --> USR-CHK01` vẽ đúng.
+4. **Không dùng dấu chấm trong mã:** dấu chấm dành cho mã khối, `USR-CART01.4`.
+5. **Số luôn 2 chữ số,** để sắp xếp đúng (01, 02 … 10). Nếu viết `CART1` và `CART10` thì thứ tự sẽ lệch.
+6. **Khác hẳn dạng cũ `S1`.** Hai dạng không bao giờ trùng nhau, nên `check-design` biết mỗi file theo luật nào.
+7. **Trạng thái và cỡ màn hình không phải màn hình mới.** Bản mobile, giỏ rỗng hay lỗi dùng chung mã, chỉ thêm hậu tố. Hộp thoại chỉ mở từ một màn hình là một khối của màn hình đó; hộp thoại dùng ở nhiều màn hình thì có mã riêng.
+8. **Không cấp lại, không đánh số lại.** Màn hình bị bỏ vẫn giữ mã trong sổ, ghi "bỏ", và số đó không cấp cho màn hình khác.
+
+**Sổ mã màn hình**, để "đọc mã là biết màn hình nào" và để mã là duy nhất:
+- **Là gì:** một file của repo, ví dụ `docs/design-system/screens.md`. File gồm ba bảng:
+  - mã APP của từng app;
+  - danh sách KHU;
+  - mọi màn hình: mã, tên, app, route, Epic tạo ra, Epic sửa gần nhất, trạng thái.
+- **Ai ghi:** `ux` thêm dòng cho màn hình mới trong PR tài liệu, và bạn duyệt ở gate ①.
+- **Ai kiểm:**
+  - `/ao-design` dừng khi mã trong Claude Design trùng mã của một màn hình khác (khác route hay khác app);
+  - `check-design` trong CI báo lỗi khi mã sai dạng, chưa có trong sổ, hay sổ có hai dòng trùng mã.
+- **Màn hình cũ:** 16 màn hình cũ giữ mã `S<số>` và chưa vào sổ. Khi một Epic sau sửa một màn hình cũ, `ux` cấp mã mới cho nó và ghi trong sổ "trước đây: SHOP-81 S2". Như vậy dự án chuyển dần sang mã mới mà không phải sửa code cũ.
+
+Mình chưa làm gì.
+
+Nguồn:
+- [Mermaid flowchart syntax](https://mermaid.js.org/syntax/flowchart.html)
+- [Mermaid flowchart grammar (flow.jison)](https://raw.githubusercontent.com/mermaid-js/mermaid/develop/packages/mermaid/src/diagrams/flowchart/parser/flow.jison)
+
+
+**Bạn (Lượt 86):** ok, giờ làm gì tiếp, 6 mục lúc nãy cần tôi confirm rồi bạn mới bắt đầu làm phải không?
+
+**Claude (Lượt 86):**
+
+Đúng vậy, mình đang chờ bạn xác nhận. Đây là 6 bước, đã cập nhật theo các quyết định vừa rồi: làm Claude Design trước, Figma để sau, và thêm mã màn hình.
+
+1. **Mục 11: sửa 5 finding loại 1** của review PR #97, mỗi bản sửa có một test đỏ trước. Với loại 2 thì ghi rủi ro vào tài liệu và sửa câu "chốt chặn thật". Khoảng 2–3 giờ.
+2. **Mục 10: thử trước khi code.** Mình chụp ảnh `Main.dc.html` của artifact hero bằng Playwright. Bỏ phần thử Figma, để làm sau.
+3. **Mục 10: viết đặc tả ngắn** vào `tasks/todo.md` để bạn duyệt. Đặc tả gồm:
+   - lệnh `/ao-design` và `inbox.yaml`;
+   - mã màn hình `<APP>-<KHU><SỐ>` và sổ mã `docs/design-system/screens.md`;
+   - phần sửa `ux`, `check-design`, các template và prompt;
+   - điểm dừng mới của `/ao-spec`, câu hỏi mới của `/ao-intake`;
+   - tài liệu.
+4. **Mục 10: code và test** qua kit PR. Khoảng 1,5–2 ngày, vì phần mã màn hình cộng thêm nửa ngày.
+5. **Lập threat model, rồi cho một agent rà độc lập,** và sửa hết trước lần review trả tiền.
+6. **Chép kit vào `shop` một lần,** kèm review `reviewer` và `security` (khoảng 10 USD), QA và Accept. Chạy thử một Epic thật là tùy chọn, và mình sẽ hỏi trước vì tốn tiền.
+
+**Bạn xác nhận giúp mình hai điều:**
+- Làm theo thứ tự 1 → 6 này?
+- Kit PR của bước 1 (và bước 4): mình tự merge khi CI xanh, như đợt sửa trước, hay bạn muốn tự duyệt?
+
+Ngoài ra, mình sẽ tự dừng ở bước 3 để bạn duyệt đặc tả, và ở bước 6 trước khi chạy review trả tiền.

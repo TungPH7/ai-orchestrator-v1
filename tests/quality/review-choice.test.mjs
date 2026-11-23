@@ -168,6 +168,14 @@ test('the readers: the item from Jira, the default from GitHub, on at any failur
   });
   assert.equal((await itemReview(madeBy('2026-11-23T07:00:00.000+0000'), mapping)('SHOP-90')).skip, true);
   assert.equal((await itemReview(madeBy('2026-11-23T09:00:00.000+0000'), mapping)('SHOP-90')).skip, false);
+  // Review of shop PR #97 (reviewer Medium 3): audit reads the labels at the merge, so a label removed after it still
+  // counts, and the Epic's changelog is read for it.
+  const removedLater = {
+    get: async () => ({ fields: { labels: [], creator: { accountId: agents }, created: '2026-11-23T07:00:00.000+0000', parent: { key: 'SHOP-81' } } }),
+    getAll: async (path) => (path.includes('SHOP-81') ? epicMoves : [change(YOU, 'ao-review-skip', '', '2026-11-23T11:00:00.000+0000')]),
+  };
+  assert.deepEqual(await itemReview(removedLater, mapping)('SHOP-90', { at: '2026-11-23T10:00:00.000+0000' }), { skip: true, why: 'label', by: 'plan', ignored: null });
+  assert.equal((await itemReview(removedLater, mapping)('SHOP-90')).skip, false, 'now, the label is gone');
   const content = (text) => ({ get: async (path, { ref }) => (path === '/contents/.ai-orchestrator/project.yaml' && ref === 'develop' ? { content: Buffer.from(text).toString('base64') } : null) });
   assert.equal(await projectDefaultAt(content('review:\n  default: off\n'), 'develop'), 'off');
   assert.equal(await projectDefaultAt(content('review:\n  default: on\n'), 'develop'), 'on');
