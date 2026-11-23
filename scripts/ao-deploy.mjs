@@ -28,6 +28,8 @@ import { createGitHubClient } from '../lib/tracker/github-client.mjs';
 import { NOT_BRANCH_CI, readChecks } from '../lib/tracker/facts.mjs';
 import { bearerAuth, createJiraClient } from '../lib/tracker/jira-client.mjs';
 import { readMapping } from '../lib/tracker/mapping.mjs';
+import { itemReview } from '../lib/quality/review-choice.mjs';
+import { itemLevel } from '../lib/workflow/levels.mjs';
 
 const run = promisify(execFile);
 const kit = fileURLToPath(new URL('..', import.meta.url));
@@ -75,10 +77,11 @@ function saveState(file, state) {
 async function tickAll(config, { dryRun }) {
   const gates = readGates(join(kit, 'quality'));
   const mapping = readMapping(join(kit, 'tracker'));
-  // The merge of a docs PR passes on the Epic's state (dev-workflow spec 2.4), read with the read-only Jira token.
-  const docs = config.jira_token_file
-    ? { jira: createJiraClient({ cloudId: mapping.cloud_id, authorization: bearerAuth(readFileSync(config.jira_token_file, 'utf8').trim()) }), passage: gatePassage(readContract(join(kit, 'contract')), mapping, gates.docs_pull_requests.gate) }
-    : undefined;
+  // The merge of a docs PR passes on the Epic's state (dev-workflow spec 2.4), read with the read-only Jira token; so
+  // does a review waived by the level of the item (C1 spec 3.4) or skipped by its choice (SPEC-review-per-item.md
+  // section 2): without levelOf and reviewOf, audit asked such a PR for the reports it never needed.
+  const jira = config.jira_token_file ? createJiraClient({ cloudId: mapping.cloud_id, authorization: bearerAuth(readFileSync(config.jira_token_file, 'utf8').trim()) }) : null;
+  const docs = jira ? { jira, passage: gatePassage(readContract(join(kit, 'contract')), mapping, gates.docs_pull_requests.gate), levelOf: itemLevel(jira, mapping), reviewOf: itemReview(jira, mapping) } : undefined;
   let failed = false;
   const states = {};
   for (const project of config.projects) {

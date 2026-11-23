@@ -3,7 +3,8 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { readGates } from '../../lib/quality/gates.mjs';
-import { decideMerge, reviewRolesNeeded, runMergeGate, waiverLabel } from '../../lib/quality/merge-gate.mjs';
+import { decideMerge, readReleasePulls, reviewChoiceOf, reviewRolesNeeded, runMergeGate, waiverLabel } from '../../lib/quality/merge-gate.mjs';
+import { markBody, skipBody } from '../../lib/quality/review-choice.mjs';
 import { findingId, readReviewReport } from '../../lib/quality/pull-request.mjs';
 import { recordedClient } from '../helpers/jira.mjs';
 import { ROOT } from '../helpers/kit.mjs';
@@ -471,6 +472,8 @@ async function runRelease({ change = asRelease, more = () => {}, answers: replie
       a['/pulls?base=develop&state=open'] = [];
       // The tags of the repository, as GET /git/matching-refs/tags/v lists them: an annotated tag names a tag object.
       a['/git/matching-refs/tags/v'] = [{ ref: 'refs/tags/v0.1.0', object: { sha: HEAD, type: 'commit' } }, { ref: 'refs/tags/v0.0.9', object: { sha: FIRST, type: 'tag' } }];
+      // The PRs each commit of the release merged (SPEC-review-per-item.md section 5): none here.
+      for (const { sha } of a['/pulls/12/commits']) a[`/commits/${sha}/pulls`] = [];
       more(a);
     },
     reply: (method, path) => {
@@ -679,6 +682,7 @@ test('when the read after merging a release PR fails, the run still tags it and 
   const copy = structuredClone(answers);
   copy['/pulls?direction=asc&sort=created&state=open'] = [asRelease(copy['/pulls/12'])];
   copy['/pulls?base=develop&state=open'] = [];
+  for (const { sha } of copy['/pulls/12/commits']) copy[`/commits/${sha}/pulls`] = [];
   const recorded = recordedClient(copy);
   const github = {
     ...recorded,
@@ -749,4 +753,91 @@ test('the label of the item is read only when a waiver could take in every file,
   assert.deepEqual(asked, ['DEMO-30'], 'Jira is not read for a PR of code');
   assert.equal(await waiverLabel({ pr, files: docsFiles, gates, docs: { levelOf: async () => { throw new Error('401'); } } }), null);
   assert.equal(await waiverLabel({ pr, files: docsFiles, gates, docs: undefined }), null, 'no Jira token');
+});
+
+// SPEC-review-per-item.md 3.5: an item that skips review needs the trace on the head in place of the reports; CI, your
+// approval and the rest stay.
+const skipTrace = (sha, key = 'DEMO-12') => ({ user: { login: BOT }, state: 'COMMENTED', commit_id: sha, body: skipBody({ key, sha, reason: 'label ao-review-skip' }), submitted_at: '2026-11-23T10:00:00Z' });
+const merges = (decision) => decision.action === 'merge' && decision.sha === HEAD;
+test('an item that skips review merges with the trace on its head, CI and your approval, and no report', () => {
+  const skipping = (f) => {
+    f.reviews = [approval(f), skipTrace(HEAD)];
+    f.review = { skip: true, why: 'label' };
+  };
+  assert.equal(merges(decide(skipping)), true);
+  // Without the trace on the head: it waits for it.
+  assert.deepEqual(decide((f) => { skipping(f); f.reviews = [approval(f), skipTrace(FIRST)]; }), { action: 'wait', missing: ['the trace of the review DEMO-12 skips on head a1b2c3d, which ao-step review posts'] });
+  // Your approval and CI stay.
+  assert.deepEqual(decide((f) => { skipping(f); f.reviews = [skipTrace(HEAD)]; }).missing, ['approval on head a1b2c3d']);
+  assert.deepEqual(decide((f) => { skipping(f); f.checks = { green: false, failed: false }; }).missing, ['CI green on head a1b2c3d']);
+  // The choice is review, or could not be read: the reports.
+  for (const review of [null, { skip: false, why: 'label' }]) {
+    assert.deepEqual(decide((f) => { skipping(f); f.review = review; }).missing, ['reviewer report on head a1b2c3d', 'security report on head a1b2c3d'], JSON.stringify(review));
+  }
+});
+
+test('the skip holds only for an item PR into develop, and no longer once a review of the PR found a Critical or High (spec 2.6, 2.7)', () => {
+  // The fixture: the first reviewer report asked for changes with a High; the reports on the head are clean.
+  assert.equal(merges(decide((f) => { f.reviews = [...f.reviews, skipTrace(HEAD)]; f.review = { skip: true, why: 'label' }; })), true, 'it merges on its reports');
+  const stillHigh = decide((f) => { f.reviews = [f.reviews[0], approval(f), skipTrace(HEAD)]; f.review = { skip: true, why: 'label' }; });
+  assert.equal(stillHigh.action, 'wait');
+  assert.match(stillHigh.missing.join('; '), /reviewer report on head a1b2c3d/);
+  const intoRelease = decide((f) => { f.pr.base.ref = 'release/v0.1.0'; f.pr.head.ref = 'bugfix/DEMO-12-login'; f.reviews = [approval(f), skipTrace(HEAD)]; f.review = { skip: true, why: 'label' }; });
+  assert.match(intoRelease.missing.join('; '), /reviewer report on head a1b2c3d/);
+});
+
+test('a release PR waits for the review after merge of each PR it brings that skipped review (spec 5.1)', () => {
+  const mark = { key: 'DEMO-1', head: 'c'.repeat(40), blocking: 0, fix: null };
+  assert.deepEqual(decide((f) => { asRelease(f.pr); f.releasePulls = [{ number: 20, key: 'DEMO-20', skipped: true, mark }]; }), RELEASE_MERGE);
+  assert.deepEqual(decide((f) => { asRelease(f.pr); f.releasePulls = [{ number: 20, key: 'DEMO-20', skipped: true, mark: null }]; }), { action: 'wait', missing: ['review after merge of #20 (DEMO-20), which skipped review: /ao-review <its Epic>'] });
+  assert.equal(decide((f) => { asRelease(f.pr); f.releasePulls = null; }).action, 'wait', 'more commits than GitHub lists');
+  const found = { ...mark, blocking: 1, fix: 'DEMO-25' };
+  assert.equal(decide((f) => { asRelease(f.pr); f.releasePulls = [{ number: 20, key: 'DEMO-20', skipped: true, mark: found }]; }).action, 'wait');
+  assert.deepEqual(decide((f) => { asRelease(f.pr); f.releasePulls = [{ number: 20, key: 'DEMO-20', skipped: true, mark: found }, { number: 26, key: 'DEMO-25', skipped: false, mark: null }]; }), RELEASE_MERGE);
+});
+
+test('the PRs a release brings, read from its commits: skipped when the trace is the only word of the App on its head', async () => {
+  const head = (n) => String(n).padEnd(40, 'e');
+  const mergeSha = (n) => String(n).padEnd(40, 'f');
+  const merged = (n, base = 'develop') => ({ number: n, merged_at: '2026-11-20T10:00:00Z', merge_commit_sha: mergeSha(n), base: { ref: base }, head: { ref: `feature/DEMO-${n}-x`, sha: head(n) } });
+  const answers = {
+    '/pulls/12/commits': [{ sha: mergeSha(20) }, { sha: mergeSha(21) }, { sha: mergeSha(22) }, { sha: '9'.repeat(40) }],
+    [`/commits/${mergeSha(20)}/pulls`]: [merged(20)],
+    [`/commits/${mergeSha(21)}/pulls`]: [merged(21)],
+    [`/commits/${mergeSha(22)}/pulls`]: [merged(22, 'release/v0.1.0')],
+    [`/commits/${'9'.repeat(40)}/pulls`]: [],
+    '/pulls/20/reviews': [skipTrace(head(20), 'DEMO-20')],
+    '/pulls/21/reviews': [skipTrace(head(21), 'DEMO-21'), { user: { login: BOT }, commit_id: head(21), body: 'Role: reviewer' }],
+    '/pulls/22/reviews': [],
+    '/issues/20/comments': [{ user: { login: BOT }, body: markBody({ key: 'DEMO-1', head: 'c'.repeat(40), blocking: 0 }) }],
+  };
+  const github = {
+    getAll: async (path) => {
+      if (!(path in answers)) throw new Error(`no answer for ${path}`);
+      return answers[path];
+    },
+  };
+  const pr = { number: 12, head: { ref: 'release/v0.1.0' } };
+  assert.deepEqual(await readReleasePulls(github, pr, { apps: { review: 'tungph7-ao-review' } }), [
+    { number: 20, key: 'DEMO-20', skipped: true, mark: { key: 'DEMO-1', head: 'c'.repeat(40), blocking: 0, fix: null } },
+    { number: 21, key: 'DEMO-21', skipped: false, mark: null },
+    { number: 22, key: 'DEMO-22', skipped: false, mark: null },
+  ]);
+  const many = { getAll: async () => Array.from({ length: 250 }, (_, i) => ({ sha: String(i) })) };
+  assert.equal(await readReleasePulls(many, pr, { apps: { review: 'tungph7-ao-review' } }), null);
+});
+
+test('the choice of a PR is read only for an item PR into develop, with the default of project.yaml at the ref asked', async () => {
+  const asked = [];
+  const docs = { reviewOf: async (key, options) => (asked.push([key, options]), { skip: options.projectDefault === 'off', why: 'default' }) };
+  const github = { get: async (path, { ref }) => (asked.push(['contents', ref]), { content: Buffer.from('review:\n  default: off\n').toString('base64') }) };
+  const pr = { head: { ref: 'feature/DEMO-12-login' }, base: { ref: 'develop' } };
+  assert.deepEqual(await reviewChoiceOf({ pr, docs, github }), { skip: true, why: 'default' });
+  assert.deepEqual(asked, [['contents', 'develop'], ['DEMO-12', { at: undefined, projectDefault: 'off' }]]);
+  asked.length = 0;
+  await reviewChoiceOf({ pr, docs, github, at: '2026-11-23T10:00:00Z', ref: 'a'.repeat(40) });
+  assert.deepEqual(asked, [['contents', 'a'.repeat(40)], ['DEMO-12', { at: '2026-11-23T10:00:00Z', projectDefault: 'off' }]]);
+  assert.equal(await reviewChoiceOf({ pr: { ...pr, base: { ref: 'release/v0.1.0' } }, docs, github }), null);
+  assert.equal(await reviewChoiceOf({ pr, docs: undefined, github }), null, 'no Jira token');
+  assert.equal(await reviewChoiceOf({ pr, docs: { reviewOf: async () => { throw new Error('401'); } }, github }), null);
 });
