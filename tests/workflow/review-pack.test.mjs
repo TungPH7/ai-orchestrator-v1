@@ -87,6 +87,8 @@ test('the codes an entry names: every criterion of a range, ADR numbers, screens
     adrs: ['0001', '0003'],
     screens: ['S1', 'S2'],
   });
+  // Project screen codes (tasks/todo.md item 10): a block code names its screen, and a Jira key is no screen.
+  assert.deepEqual(namedCodes('Design: USR-CART01.4 và ADM-CAT02, sửa ở SHOP-95').screens, ['ADM-CAT02', 'USR-CART01']);
   assert.deepEqual(criteriaLines(SPEC, ['AC4', 'AC10']), ['- AC4: Given tiêu đề dài 101 ký tự, Then thấy lỗi.', '- AC10: Given chưa có ghi chú, Then thấy "Chưa có ghi chú nào."']);
 });
 
