@@ -1366,11 +1366,16 @@ async function watchLoop({ files, flaggedNow, options, state: first, stamp }) {
     const result = look({ now, locks, logAt: files.logAt, lastTool: files.lastTool, dispatcher: files.dispatcher(), events, flagged, boardFailed }, new Set(state.told), options);
     idleSince = result.running ? null : (idleSince ?? now);
     const ends = idleSince !== null && now - idleSince >= WATCH.endMs;
+    // The file of this watcher, written again at each round: one not written for three rounds holds nothing. A watcher
+    // that finds another holding it ends, before it writes the state the other one keeps (review of shop PR #97).
+    const held = files.beat(process.pid);
+    if (!held.ok) {
+      console.log(`${stamp()} ao-step watch:\n- another watcher (process ${held.pid ?? 'unknown'}) took over this project while this one waited, so this one ends`);
+      return;
+    }
     state = nextWatchState(state, { marks: result.marks, forget: result.forget, offsets, sizes });
     mkdirSync(dirname(files.stateFile), { recursive: true });
     writeFileSync(files.stateFile, `${JSON.stringify(state, null, 2)}\n`);
-    // The file of this watcher, written again at each round: one not written for three rounds holds nothing.
-    files.beat(process.pid);
     if (result.tell.length > 0 || ends) {
       const lines = [...result.tell, ...(ends ? [`nothing of the kit has run for ${WATCH.endMs / 60_000} min, so the watcher ends`] : [])];
       console.log([`${stamp()} ao-step watch:`, ...lines.map((line) => `- ${line}`)].join('\n'));

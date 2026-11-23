@@ -205,11 +205,12 @@ test('a watcher holds the project only while it writes its file at each round', 
   const files = watchEffects({ projectDir: project, fs: fsOf, alive: () => true, now: () => clock });
   assert.deepEqual(files.claim(11), { ok: true });
   clock += 5 * 60_000;
-  files.beat(11);
+  assert.deepEqual(files.beat(11), { ok: true });
   clock += 5 * 60_000;
   assert.deepEqual(files.claim(12), { ok: false, pid: 11 }, 'written 5 minutes ago: it runs');
   clock += 2 * 60_000;
   assert.deepEqual(files.claim(12), { ok: true }, 'not written for 7 minutes, more than three rounds: it holds nothing, though its pid lives');
-  files.beat(11);
+  // Review of shop PR #97 (reviewer Low 1): the watcher that slept learns it lost the file, and ends.
+  assert.deepEqual(files.beat(11), { ok: false, pid: 12 });
   assert.equal(JSON.parse(readFileSync(join(project, '.ai', 'runs', 'watch-process.json'), 'utf8')).pid, 12, 'the beat of another watcher writes nothing');
 });

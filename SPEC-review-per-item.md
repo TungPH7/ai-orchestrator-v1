@@ -107,12 +107,27 @@ một PR có review.
 
 - **Nhãn gắn lúc tạo item (2.4):** nhãn `ao-review-skip` mà tài khoản agent gắn lúc tạo item chỉ được tính khi item được tạo trước lần đầu Epic của nó qua cổng ②. Item tạo sau cổng ②, hay không thuộc Epic nào, thì nhãn không được tính: bạn tự gắn. Dấu vết, chỗ dừng và `/ao-status` ghi ai gắn nhãn.
 - **Báo cáo của review sau merge (4.4, 4.5):**
-  - ao-step giữ mã băm của file khi lượt chạy kết thúc, và không đăng file đã đổi sau đó. Đây là chốt chặn thật;
+  - ao-step giữ mã băm của file khi lượt chạy kết thúc, và không đăng file đã đổi sau đó. Mã băm bắt được thay đổi vô tình hay qua Write và Edit, nhưng không phải chốt chặn trước một agent cố ý: mã băm nằm trong `state.json`, mà agent ghi được cả file đó lẫn báo cáo bằng Bash (mục 7c);
   - gh-guard chỉ cho đúng role ghi file báo cáo của nó, nhưng chỉ qua Write và Edit; nó không kiểm đích ghi của lệnh Bash;
   - comment trên Jira mở đầu bằng `ao-step:`, và không comment nào của ao-step được đọc là báo cáo QA;
   - dấu trên PR đi sau cùng, nên một bước Jira lỗi thì lần gõ lại vẫn đăng tiếp.
 - **Release (5.3):** `/ao-release` và `/ao-ship` ghi lệnh `/ao-review` với khóa Epic của item.
 - **Watcher:** file của watcher là của ao-step; watcher ghi lại file mỗi vòng, và một file không được ghi trong ba vòng thì không giữ dự án nữa.
+
+## 7c. Sửa sau review `shop` PR #97 và rủi ro còn lại (2026-11-24)
+
+Bạn chốt ở Phiên 35 · Lượt 78: sửa các lỗi do chính bản sửa trước gây ra, và ngưng vá tiếp các lỗ của gh-guard.
+
+- **Đã sửa:**
+  - review sau merge đăng tiếp sau khi dừng giữa chừng thì giữ đủ các role của lượt review đó, kể cả `security`, dù các PR còn lại chỉ cần ít role hơn; một báo cáo của lượt đó mất thì các PR chưa có dấu được review lại;
+  - role chạy lại sau khi bạn xóa báo cáo đọc đúng head của báo cáo còn giữ; hai báo cáo ở hai head thì không đăng;
+  - `audit` xét nhãn tại lúc merge cả khi đọc changelog của Epic: nhãn gỡ sau merge vẫn được tính;
+  - watcher thấy watcher khác đã chiếm file của dự án thì dừng, không báo trùng.
+- **Rủi ro còn lại, không vá tiếp:** gh-guard đọc mẫu lệnh, nên không phải ranh giới bảo mật. Agent có Bash vẫn có thể:
+  - gán biến qua những dạng `printf` và phép tính mà mẫu chưa biết (`printf -vNAME`, `-v` trong dấu nháy, `printf`, `${n}T=0`, `w+=…`);
+  - ghi báo cáo của review sau merge cùng mã băm của nó trong `state.json`, vì gh-guard không kiểm đích ghi của lệnh Bash;
+  - đổi trường `parent` của item, nên luật "item tạo trước cổng ②" đọc Epic cha hiện tại chứ không phải Epic lúc tạo.
+- **Chốt chặn thật** là tách quyền theo tài khoản hệ điều hành: agent chạy dưới tài khoản Windows `ao-agent`, không ghi được file của phiên chính và không đọc được token của bạn (SHOP-40, hạn 2026-12-31). Tới lúc đó, cổng ③ và review của bạn vẫn là chỗ dừng cuối.
 
 ## 8. Sửa kèm
 
