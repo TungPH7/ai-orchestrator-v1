@@ -33593,3 +33593,264 @@ Bạn nhắn "làm 1 và 2" thì mình bắt đầu bằng việc chép kit lên
 4. Worktree tạm của QA SHOP-93 trong `%TEMP%`, bị Windows khóa (EPERM); `ao-step` sẽ tự dọn ở lần chạy sau.
 
 Bạn muốn dọn tiếp mục 1 và 3 thì nhắn "xóa 1 và 3". Mục 2, mình có thể xem từng nhánh rồi báo nhánh nào an toàn để xóa.
+
+**Bạn (Lượt 56):** dọn dẹp sạch sẽ giúp tôi, cái nào không dùng nữa thì xóa nhé
+
+**Claude (Lượt 56, 02:25):**
+
+**Đã dọn sạch những gì không còn dùng trong kit, `shop` và thư mục làm việc.** Trước mỗi lần xóa, mình kiểm có liên kết nào trỏ ra ngoài không, và sao lưu những gì chưa merge.
+
+**Repo kit:**
+- Xóa 2 worktree cũ, `ao-c1-fixes` và `ao-followups-1`. Cả hai đều sạch, và commit của chúng đã nằm trong `main`.
+- Xóa 7 nhánh còn lại trên máy và 2 nhánh trên GitHub. Phần nội dung chưa vào `main` theo nguyên văn đều đã được viết lại về sau. Cả 7 nhánh được sao lưu trong `kit-unmerged-branches-2026-11-23.bundle`.
+- Giờ kit chỉ còn nhánh `main`, trên máy lẫn trên GitHub, và một worktree.
+
+**Repo `shop`:**
+- Xóa 77 nhánh trên máy: 75 nhánh đã merge, 2 nhánh của SHOP-87 và SHOP-88 đã Cancel, và nhánh `SHOP-90-reworded-headers`.
+- Xóa 2 nhánh SHOP-87, SHOP-88 trên GitHub. Ba nhánh chưa merge được sao lưu trong `shop-unmerged-branches-2026-11-23.bundle`.
+- Mình giữ `develop`, `main`, `release/v0.1.0`–`v0.3.0` (deployer và lịch sử release cần), và 3 nhánh dependabot (PR còn mở).
+- Xóa 14 thư mục sót lại trong `%TEMP%\ao-reviews`, kể cả worktree QA bị khóa của SHOP-93. Không thư mục nào có liên kết trỏ ra ngoài. `node_modules` của `shop` vẫn đủ (678 gói trong `.pnpm`).
+
+**Thư mục `.pilot3-scratch`:** xóa 167 file, khoảng 31 MB: file nén kit, log của các lượt đã xong, mô tả PR, bản sao báo cáo, watcher viết tay cũ, và đồ cũ của Pilot 3. Mình giữ các script còn dùng, hai bundle sao lưu, và danh sách nhánh đã xóa kèm SHA.
+
+**Jira:** comment thử 10603 trên DEMO-25 không xóa được, vì tài khoản admin của bạn không có quyền xóa comment của người khác trong space DEMO. DEMO-25 là Bug thử đã Cancel, nên để lại cũng không sao.
+
+**Mình chưa xóa, vì lớn hoặc có dữ liệu. Cần bạn quyết:**
+1. **Các dự án thử:**
+   - `ao-brown` và `ao-green`: dự án làm một lần ở T17 để viết hướng dẫn. Mình khuyên xóa thư mục; repo GitHub thì tùy bạn.
+   - `ao-pilot`: chỗ thử kit, vẫn dùng khi kiểm hook. Mình khuyên giữ.
+   - `ao-sample`: repo public của Pilot 1, tài liệu nhắc tới. Mình khuyên giữ.
+2. **VPS `dtddeploy` cũ, trên máy bạn:** mục `dtddeploy` trong `~/.ssh/config`, dòng của nó trong `known_hosts`, khóa `~/.ssh/dtd_deploy`, và `D:\backup\dtddeploy`. Lưu ý: `D:\backup\minio` giữ 50 file logistics không có bản nào khác, nên mình không đề xuất xóa thư mục đó.
+
+Bạn nhắn ví dụ "xóa ao-brown, ao-green và mục 2" thì mình làm tiếp.
+
+**Bạn (Lượt 57):** Vậy là "Các concern khi mở rộng AO kit" trong misc/thao-luan/concerns.md đã làm xong ngoài trừ các mục D chưa có nhu cầu làm ngày, giờ kit có thể sử dụng để xây dựng các dự án phần mềm rồi phải không?
+
+**Claude (Lượt 57):**
+
+**Đúng: mọi concern đã xong, trừ D1, D2, D4 đang chờ nhu cầu. Kit đã dùng được để xây dự án phần mềm thật, trong phạm vi nó đã được thử.** Bằng chứng mạnh nhất là Epic "Danh mục" (SHOP-81) của `shop`: từ ý tưởng tới code đã deploy, qua SPEC, plan, build song song, review, QA, khoảng 7 USD cho mỗi AC.
+
+**Kit làm tốt, đã chạy thật:**
+1. Đi trọn quy trình: `/ao-intake` → SPEC (cổng ①) → plan (cổng ②) → build → xem trước → review (cổng ③) → QA → Accept. Release lên Staging và Production (cổng ④ ⑤) đã chạy ở Pilot 3, từ `v0.1.0` tới `v0.3.0`.
+2. Stack: Next.js, React (Vite), Spring Boot (từ template của bạn), NestJS (profile `next-nest`, hoặc code có sẵn). Một repo nhiều app, npm hoặc pnpm.
+3. Chạy song song: nhiều làn, hai `fe-dev` cùng lúc, `reviewer` song song `security`, bộ điều phối `/ao-run`, watcher không tốn token.
+4. Có nhiều lớp chặn: hook Jira, gh-guard, ruleset, `merge-gate`, `audit` của deployer, deploy chỉ khi CI xanh.
+
+**Giới hạn cần biết trước khi dùng cho dự án mới:**
+1. **Bạn vẫn là người quyết:** 5 cổng, chọn xem trước hay review, trả lời câu hỏi của agent, Accept. Kit không tự chạy từ đầu tới cuối khi không có bạn.
+2. **Chi phí:** một Epic cỡ SHOP-81 (20 AC) tốn khoảng 140 USD theo giá API. Gói Max của bạn không tính tiền theo cách này, nhưng giới hạn 5 giờ vẫn có thể làm lượt chạy dừng giữa chừng.
+3. **Môi trường đã thử:** Windows, Jira Cloud, GitHub, một VPS với deployer chạy Docker. Chưa có: hai repo cho một dự án hay .NET (D1), viết bài blog (D2), báo cáo SEO định kỳ (D4).
+4. **Vài thứ chưa kiểm thật,** dù đã có test: bộ điều phối tự đi qua cổng ① ②, và `merge-gate` chờ QA xong mới merge.
+5. **Việc bảo mật còn mở, nên làm trước khi đưa dự án thật lên Production:**
+   - mọi agent dùng chung một tài khoản Jira, nên chữ ký trong comment chỉ là quy ước;
+   - gh-guard chỉ chặn nhầm lẫn, không phải ranh giới bảo mật;
+   - SHOP-40 và tài khoản Windows `ao-agent`, để đưa token CI ra khỏi máy chạy agent (hạn 2026-12-31);
+   - kiểm khóa `age` của bản sao backup.
+6. **Bản kit mới nhất** (kit PR #348) chưa vào `shop`. Dự án mới thì chép bản mới nhất ngay từ đầu.
+
+**Nếu bắt đầu dự án mới, mình khuyên:**
+1. Dùng `docs/getting-started.md`: mục 3 cho dự án mới, mục 4 cho dự án có sẵn code, mục 5 cho nhiều app từ template.
+2. Bắt đầu bằng một Epic nhỏ để làm quen.
+3. Làm SHOP-40 cùng tài khoản `ao-agent` trước khi dự án có dữ liệu thật.
+
+**Bạn (Lượt 58):** Tôi muốn 1 phiên bản ao kit không có bước Review. Nên checkout ra 1 nhánh riêng của repo kit rồi làm, những repo dự án nào muốn dùng phiên bản không có review này thì chép vào hay là làm theo cách bật/tắt cờ khi làm 1 item, hãy đề xuất cách làm giúp tôi. Bạn xem xét kỹ, đánh giá xem việc bỏ qua bước Review này làm bao lâu? Ảnh hưởng những chỗ nào giúp tôi nhé. Trả lời tôi trước, chưa được làm gì cả nhé.
+
+**Claude (Lượt 58):**
+
+**Mình khuyên làm bằng công tắc, không tách nhánh kit.** Kit đã có sẵn nửa cơ chế này: luật miễn review (`review.waivers`, làm ở C1). C1 cũng đã thiết kế, nhưng hoãn lại, một khóa `review: off` trong `project.yaml` cho dự án không cần review. Làm nốt phần đó mất khoảng **1 ngày công của phiên chính, không tốn tiền agent**. Sau đó mỗi dự án muốn dùng thì chép kit một lần, có review, khoảng 10–15 USD.
+
+**Vì sao không nên tách nhánh kit:**
+1. **Deployer trên VPS chỉ chạy một bản kit cho mọi dự án.** `audit` của nó đòi báo cáo review trước khi deploy. Một nhánh kit không có review sẽ làm deployer từ chối dự án đó, trừ khi VPS chạy chính nhánh ấy, mà khi đó các dự án khác lại mất review.
+2. **Mỗi bản sửa kit phải làm hai lần**, trên `main` và trên nhánh, và lần nào cũng có thể xung đột. Chỉ riêng sau T14 đã có 7 đợt sửa.
+3. **`ao-kit sync` và bước so sánh bản chép kit** đều giả định chỉ có một dòng kit.
+
+**Cách mình đề xuất:**
+1. **Khóa `review: off` trong `project.yaml`**, cho cả dự án. `project.yaml` là đường dẫn được bảo vệ, chỉ bạn merge, nên agent không tự tắt review được.
+   - `merge-gate` và `audit` đọc khóa này từ `project.yaml` của nhánh gốc (`develop`), không phải của PR. Một PR không thể tự tắt review cho chính nó.
+   - `ao-kit doctor` và `/ao-status` in một dòng đỏ: "review tắt".
+2. **Vẫn review những file nguy hiểm**, theo tầng `critical`: đường dẫn được bảo vệ (bản chép kit, workflow, `.claude/`), auth, secret. Mình khuyên giữ điều này, vì các lỗi High của T13 và T14 đều nằm ở đây.
+3. **Tùy chọn thêm, theo từng item:** nhãn `ao-review-skip` do bạn gắn, cho dự án vẫn bật review. Hook chặn agent gắn nhãn này, như nhãn mức. Thêm khoảng 3 giờ.
+4. **`/ao-review <PR> full` vẫn chạy được** khi bạn muốn review một PR cụ thể.
+
+**Những chỗ bị ảnh hưởng:**
+1. **`ao-step`** (`steps.mjs`): build xong không chờ `/ao-review` nữa. PR được đánh dấu ready, kèm một dòng ghi "miễn review" để còn dấu vết, rồi chờ bạn approve ở cổng ③.
+2. **`/ao-run`:** bộ điều phối không dừng ở bước review. Tiêu chí 4 của C2 phần lớn tự đạt.
+3. **`merge-gate`** (workflow trong dự án) và **`audit`** (deployer trên VPS): dùng chung một hàm kiểm (`unmetConditions`), nên chỉ sửa một chỗ. Nhưng phải chép kit lên VPS.
+4. **Task finding:** không còn finding Medium và Low để gom, vì không có báo cáo review.
+5. **Mức item (light, standard, heavy):** item heavy vì chạm file `critical` vẫn được review.
+6. **Schema của `project.yaml`, `doctor`, skill `/ao-review` và `/ao-build`, tài liệu** (`quality-gates.md`, `dev-workflow.md`, `getting-started.md`), cùng test của `merge-gate`, `audit`, `steps`.
+7. **Không đổi:** Jira workflow, CI (SAST, quét secret, `osv-scanner` vẫn chạy trên mọi PR), QA, cổng ①②④⑤.
+
+**Được và mất:**
+- **Được:** ở Epic SHOP-81, review tốn khoảng 21 USD trên 141 USD (15%), cùng 4–20 phút mỗi PR, chưa kể lúc chờ bạn chọn xem trước hay review.
+- **Mất:** không ai đọc code trước khi merge, ngoài CI và cú approve của bạn. Ở T14, review tìm ra 1 Medium thật trong code `api` (lỗi tranh chấp khi xóa danh mục) và nhiều Low. QA sau merge sẽ bắt một phần, nhưng lỗi bảo mật thì QA thường không thấy.
+
+**Ước tính thời gian:**
+
+| Việc | Thời gian | Tiền agent |
+|---|---|---|
+| Khóa `review: off`: `merge-gate`, `audit`, `ao-step`, `doctor`, schema, test, tài liệu | 6–8 giờ | 0 |
+| Nhãn theo item `ao-review-skip` (nếu muốn) | 2–3 giờ | 0 |
+| Chép kit lên VPS | 10 phút | 0 |
+| Chép kit vào mỗi dự án dùng nó | 30 phút | 10–15 USD mỗi dự án |
+
+**Cần bạn quyết trước khi làm:**
+1. "Bỏ review" là chỉ bỏ hai agent `reviewer` và `security`, còn bạn vẫn approve ở cổng ③ (mình khuyên)? Hay bỏ luôn cú approve, để `merge-gate` tự merge khi CI xanh? Cách thứ hai phải đổi ruleset của repo, và bỏ đi lớp chặn cuối cùng trước `develop`.
+2. Giữ review cho file `critical` (mình khuyên), hay tắt hết?
+3. Công tắc cho cả dự án, theo từng item, hay cả hai?
+
+Mình chưa làm gì. Bạn trả lời 3 câu trên rồi nhắn "làm" thì mình bắt đầu.
+
+**Bạn (Lượt 59):** Thảo luận thêm, chưa được làm gì cả nhé: Tôi mong muốn
+- đã tắt review là không có review dù là các file critical.
+- không tắt review theo kiểu "tắt cho toàn dự án và không thể bật lại được sau khi epic đã chạy".
+- có thể bật/tắt bước review cho từng item cụ thể trong epic.
+- Ví dụ epic có 5 item, tôi muốn làm 4 item không có bước review, 1 item có review, sau khi làm xong cả 5 item, tôi muốn chạy review 1 lần cho cả epic.
+- Tôi bảo là bỏ review chứ đâu có nói là 'bỏ luôn cú approve' mà bạn lại đề xuất??!!! vẫn có approve nhé
+
+**Claude (Lượt 59):**
+
+Làm được đúng như bạn muốn: bật hoặc tắt review cho từng item bằng một nhãn Jira, và review cả Epic một lần ở cuối. Không tách nhánh kit, không có khóa cho cả dự án. Xin lỗi về câu hỏi bỏ approve: bạn không hề nói vậy, câu đó thừa. Cổng ③ giữ nguyên, bạn vẫn approve từng PR.
+
+**Cách làm:**
+1. **Nhãn `review:skip` trên item trong Jira.**
+   - Bạn gắn hoặc gỡ nhãn này trong Jira bất cứ lúc nào trước khi approve PR ở cổng ③. Item không có nhãn thì review như bây giờ.
+   - Nếu plan bạn duyệt ghi item nào bỏ review, ba gắn sẵn nhãn khi tạo item. Ngoài ra không agent nào gắn hay gỡ được nhãn này: hook chặn agent, còn `merge-gate` và `audit` bỏ qua mọi thay đổi nhãn do tài khoản agent làm. Nhãn mức (light, standard, heavy) hiện nay cũng được bảo vệ như vậy.
+   - Nhãn được tính theo lúc PR merge, nên gỡ nhãn sau đó không đổi gì.
+2. **Item có nhãn:**
+   - Build xong, bạn vẫn xem trước được bằng `/ao-preview`.
+   - Sau đó ao-step không gọi `reviewer` và `security`. Nó đăng lên PR một dòng "bỏ review theo nhãn" để còn dấu vết, đánh dấu PR ready, rồi chờ bạn approve.
+   - Áp dụng cho mọi file, kể cả file `critical`.
+   - CI vẫn chạy. QA vẫn chạy sau khi merge.
+3. **Review cả Epic: `/ao-review SHOP-81`** (gõ key của Epic).
+   - `reviewer` rồi `security` đọc một lượt toàn bộ thay đổi mà các item bỏ review đưa vào `develop`, gộp thành một diff theo trạng thái cuối.
+   - Item đã review riêng thì không review lại, trừ chỗ mà item bỏ review sửa sau đó.
+   - Lỗi Critical hoặc High: mỗi lỗi thành một item sửa trong Epic và đi luồng bình thường.
+   - Lỗi Medium và Low: vào Task finding của Epic, như hiện nay.
+   - App review đăng báo cáo lên các PR đã bỏ review, như báo cáo review bây giờ, để `merge-gate` và `audit` đọc được. Một bản tóm tắt được đăng lên Epic trong Jira.
+4. **Chặn ở release** (mình khuyên, xem câu 1 bên dưới): PR release vào `main` chỉ merge được khi mọi item bỏ review trong bản đó đã qua một lượt review Epic, và không còn Critical hay High nào mở. `merge-gate` và `audit` cùng kiểm điều này. Development vẫn nhận code ngay sau khi merge như bây giờ, để QA chạy được.
+
+**Ví dụ Epic có 5 item:**
+1. Bạn gắn `review:skip` cho 4 item, để nguyên item còn lại.
+2. Bốn item có nhãn đi luồng: build, xem trước nếu muốn, bạn approve, merge, QA.
+3. Item không có nhãn đi luồng như hiện nay: build, review, bạn approve, merge, QA.
+4. Khi cả 5 item xong, bạn gõ `/ao-review SHOP-81`. Lượt review này đọc code của 4 item kia.
+5. Nếu có lỗi High, mình tạo item sửa. Sửa xong thì release.
+
+Còn khóa `review: off` mình đề xuất lượt trước: nó vẫn bật lại được bằng một PR sửa `project.yaml`, nhưng nó tắt review cho mọi item cùng lúc. Vì vậy mình bỏ khóa đó, chỉ làm theo từng item.
+
+**Những chỗ bị ảnh hưởng:**
+1. **Jira:** thêm nhãn mới vào cấu hình nhãn, chặn agent trong hook `block-atlassian`, và kiểm lịch sử thay đổi nhãn.
+2. **ao-step** (`steps.mjs`): với item có nhãn, sau build và xem trước là đăng dấu vết rồi tới cổng ③. `/ao-run` không dừng ở bước review của item đó. `/ao-status` và watcher hiện chữ "bỏ review".
+3. **`merge-gate` và `audit`:** dùng chung hàm kiểm `unmetConditions`. Hàm này sẽ nhận "nhãn bỏ review cộng dấu vết trên head" thay cho báo cáo review. Ruleset không đổi: vẫn cần 1 approve của code owner.
+4. **Lệnh review Epic (mới):** tính diff gộp, viết prompt cho `reviewer` và `security` đọc diff gộp, đăng báo cáo, tạo item sửa, ghi Task finding.
+5. **Release:** `/ao-release` báo sớm nếu còn item chưa qua review Epic. `merge-gate` và `audit` kiểm PR release vào `main`.
+6. **Task finding:** item bỏ review không có finding riêng. Finding của lượt review Epic vào Task này.
+7. **Mức item** (light, standard, heavy): vẫn quyết cách QA, nhưng không quyết review cho item có nhãn.
+8. **Skill, tài liệu, test:** các skill `ao-review`, `ao-build`, `ao-run`, `ao-status`, `ao-release`; các tài liệu `quality-gates.md`, `dev-workflow.md`, `release-workflow.md`, `getting-started.md`; và test.
+9. **VPS:** chép kit mới lên, vì `audit` đổi.
+10. **Không đổi:** workflow trên Jira, CI (quét SAST, secret, `osv-scanner`), QA, cả 5 cổng, và luật miễn `light-docs`.
+
+**Rủi ro bạn nên biết:**
+- **Lỗi được tìm ra muộn.** Sửa sau khi merge cần một item mới và một PR mới, tốn hơn sửa trước merge. Trong lúc chờ sửa, code lỗi nằm trên `develop` và Development, nhưng chưa lên Production nếu chặn ở release.
+- **File `critical` có hiệu lực ngay khi merge,** trước khi lượt review Epic kịp đọc. Ví dụ, một workflow bị sửa sẽ chạy từ PR kế tiếp; `.claude/` bị sửa thì đổi luật của agent ngay. Với PR loại này, bạn đọc diff kỹ trước khi approve.
+- **Diff gộp lớn dễ sót lỗi hơn** review từng PR nhỏ, vì `reviewer` phải đọc nhiều thứ cùng lúc.
+
+**Ước tính:**
+
+| Việc | Thời gian |
+|---|---|
+| Nhãn bỏ review theo item: hook, ao-step, `merge-gate`, `audit`, status, skill, test | 5–7 giờ |
+| Lệnh review Epic: diff gộp, prompt, đăng báo cáo, item sửa, Task finding | 6–8 giờ |
+| Chặn ở release: `/ao-release`, `merge-gate` và `audit` của PR release | 3–4 giờ |
+| Tài liệu | 1–2 giờ |
+| Chép kit lên VPS | 10 phút |
+| Chép kit vào mỗi dự án | 30 phút, cộng 10–15 USD nếu bản chép được review |
+
+- Tổng cộng khoảng 15–21 giờ, tức 2–3 ngày làm của phiên chính. Phần làm kit không tốn tiền agent.
+- Bản sửa này đụng `merge-gate` và `audit`, hai chỗ kit dựa vào để chặn. Trước khi mở PR kit, mình sẽ tự rà các đường lách, ví dụ agent tự gắn nhãn, hay nhãn bị gỡ sau khi merge. PR kit có cần review trả tiền hay không thì bạn quyết lúc đó.
+- Ở SHOP-81, review tốn khoảng 21 USD. Một lượt review Epic cùng cỡ có thể rẻ hơn, vì agent chỉ đọc bối cảnh một lần, nhưng mình chưa đo. Lần chạy đầu sẽ cho số thật.
+
+**Cần bạn quyết:**
+1. Có chặn release khi còn item bỏ review chưa qua review Epic không? Mình khuyên chặn. Nếu không chặn, review Epic chỉ chạy khi bạn gọi, và code chưa ai đọc có thể lên Production.
+2. Khi item cuối của Epic xong, `/ao-run` nên dừng và báo "Epic sẵn sàng review: `/ao-review SHOP-81`" để bạn tự gõ (mình khuyên, vì bước này tốn tiền), hay tự chạy luôn?
+3. Chỉ đặt nhãn trên từng item (mình khuyên, vì đơn giản nhất)? Hay thêm nhãn trên Epic làm mặc định cho mọi item của nó? Ví dụ Epic gắn `review:skip`, còn item nào cần review thì gắn `review:on`.
+
+Mình chưa làm gì. Bạn trả lời 3 câu trên rồi nhắn "làm" thì mình bắt đầu.
+
+**Bạn (Lượt 60):** Trả lời 3 điểm cần tôi quyết: 1,2 làm như khuyên. 3. Thảo luận thêm: 'Chỉ đặt nhãn trên từng item nhưng mặc định sẽ là tắt review' so với việc "thêm nhãn trên Epic làm mặc định cho mọi item của nó, item nào muốn review thì gắn review:on" thì cái nào làm nhanh và đơn giản hơn?
+
+Tôi hỏi thêm:
+1. "App review đăng báo cáo lên các PR đã bỏ review, như báo cáo review bây giờ, để merge-gate và audit đọc được" => Các "PR đã bỏ review" là 4 item đã làm và merge trước đó, merge xong thì PR của 4 item này thành closed, mà bạn nói "App review đăng báo cáo lên các PR đã bỏ review" thì có làm được không??
+2. "Lỗi Critical hoặc High: mỗi lỗi thành một item sửa trong Epic và đi luồng bình thường" tại sao không gom tất cả lỗi tìm được vào 1 item mà lại là mỗi lỗi 1 item??
+3. "File critical có hiệu lực ngay khi merge, trước khi lượt review Epic kịp đọc. Ví dụ, một workflow bị sửa sẽ chạy từ PR kế tiếp; .claude/ bị sửa thì đổi luật của agent ngay. Với PR loại này, bạn đọc diff kỹ trước khi approve." => Giải thích chậm ý này, tôi chưa hiểu.
+
+**Claude (Lượt 60):**
+
+Mình đã ghi lại quyết định cho câu 1 và câu 2: release bị chặn khi còn item bỏ review chưa qua review Epic, và `/ao-run` sẽ dừng lại báo để bạn tự gõ `/ao-review <Epic>`.
+
+**Câu 3: cách 1 (nhãn trên từng item, mặc định tắt review) nhanh và đơn giản hơn.**
+1. **Cách 1:** kit chỉ nhìn chính item đó. Có nhãn `review:on` thì review, không có thì bỏ. Mỗi lần kiểm, kit chỉ đọc một item và lịch sử nhãn của nó.
+2. **Cách 2:** kit phải đọc cả item lẫn Epic chứa nó, và kiểm lịch sử nhãn ở cả hai nơi. Kit còn phải xử lý thêm vài trường hợp:
+   - item không thuộc Epic nào, như SHOP-92 hay item chép kit;
+   - item bị chuyển sang Epic khác;
+   - nhãn của Epic bị đổi giữa chừng;
+   - item có cả hai nhãn.
+
+   Mỗi trường hợp là một chỗ agent có thể lách, nên mình phải rà thêm.
+3. **Chênh lệch:** cách 1 tốn thêm khoảng 1 giờ so với ước tính trước, cách 2 tốn thêm khoảng 3 giờ.
+4. **Chỗ đặt mặc định:** "tắt" được đặt trong `project.yaml` của từng dự án, ví dụ `review: { default: off }`, không đặt cứng trong kit. Nếu đặt cứng trong kit, mọi dự án dùng kit đều mất review mặc định. `merge-gate` vốn đã đọc file này từ `develop`, nên thêm vào không tốn nhiều.
+5. **Đây không phải khóa:** nhãn trên item luôn thắng mặc định. Dự án nào để mặc định bật thì dùng nhãn ngược lại là `review:skip`. Muốn đổi mặc định thì mở một PR sửa `project.yaml`. Đây là file được bảo vệ, chỉ bạn merge được, và đổi lại lúc nào cũng được.
+
+**Hỏi thêm 1: PR đã merge vẫn nhận được comment.**
+1. Đúng là PR của 4 item đó đã merge và đã đóng. Nhưng GitHub vẫn cho comment vào PR đã đóng; chỉ PR bị khóa (lock) mới không comment được. Bạn hay thấy bot ghi "PR này đã có trong bản v1.2" lên những PR merge từ lâu, đó chính là kiểu comment này.
+2. Câu "như báo cáo review bây giờ" mình viết chưa chính xác. Báo cáo review hiện nay là một review gắn với commit head của PR đang mở. Với PR đã merge, kit dùng comment thường và không mở lại PR.
+3. Cụ thể:
+   - **Báo cáo đầy đủ:** một comment trên Epic trong Jira, để bạn đọc ở một chỗ.
+   - **Trên mỗi PR trong 4 PR:** App review ghi một dòng ngắn, ví dụ "Đã qua review Epic SHOP-81 ở commit abc1234: 0 Critical/High". Dòng này để `merge-gate` và `audit` đọc.
+4. Vì sao vẫn cần dòng trên GitHub: `merge-gate` và `audit` chỉ tin chữ do App review viết. Comment trên Jira thì agent cũng viết được, nên không dùng nó để chặn release.
+
+**Hỏi thêm 2: bạn đúng, gộp vào một item hợp lý hơn.**
+1. Mình viết "mỗi lỗi một item" theo thói quen tách nhỏ, để mỗi PR dễ đọc và lỗi này không kẹt lỗi kia. Nhưng một lượt review Epic thường chỉ tìm ra vài lỗi Critical hay High. Gộp lại thì chỉ cần một lần build, một PR, một lần approve và một lần QA, nên nhanh và rẻ hơn.
+2. Mình đổi đề xuất: mọi Critical và High của một lượt review Epic vào một item sửa. Nếu lỗi nằm ở cả FE và BE, item đó có Sub-task cho từng agent, như SHOP-85 đã làm.
+3. Item sửa này tự bật review trên PR của nó, dù mặc định của dự án là tắt. Nếu nó cũng bỏ review, phải chạy lại review Epic thêm một lần nữa mới release được.
+
+**Hỏi thêm 3: vì sao file `critical` khác code thường.**
+1. **Code thường** (một trang web, một API) chỉ có tác dụng khi app chạy. Nếu có lỗi, lỗi nằm yên trên `develop` và Development. Review Epic tìm ra nó ở cuối, trước khi lên Production. Trong lúc chờ, không có gì tệ thêm.
+2. **File `critical` không phải code của app.** Đó là luật chơi mà GitHub, kit và agent đọc để biết phải làm gì và phải chặn gì:
+   - `.github/workflows/`: CI và `merge-gate`;
+   - `.claude/`: luật, hook và skill của agent;
+   - `.ai-orchestrator/`: bản chép kit.
+3. **Luật chơi đổi ngay khi merge.**
+   - `merge-gate` luôn chạy bản trên `develop`.
+   - Agent của item kế tiếp đọc `.claude/` trên `develop`.
+   - CI của PR kế tiếp chạy file CI mới.
+
+   Nghĩa là item 3, 4, 5 chạy theo luật mà item 2 vừa sửa, còn review Epic thì chỉ đọc ở cuối.
+4. **Ví dụ:**
+   - Item 2 bỏ review. Để CI xanh, agent của item 2 sửa bước quét secret trong file CI cho nó bỏ qua một thư mục.
+   - Bạn thấy CI xanh và approve, không để ý dòng đó.
+   - Item 4 lỡ đưa một khóa API vào đúng thư mục ấy. CI không bắt được, và khóa vào `develop`.
+   - Review Epic đọc ra ở cuối, nhưng khóa đã nằm trong lịch sử git. Phải đổi khóa.
+5. **Tóm lại:** với code thường, review sau chỉ là tìm lỗi muộn. Với file `critical`, review sau nghĩa là các item ở giữa chạy với một hàng rào đã bị gỡ.
+6. **Cách đỡ mà không cần review:** ở cổng ③, PR nào sửa file `critical` thì bạn đọc kỹ phần diff của riêng các file đó, thường chỉ vài dòng. Mình có thể cho `/ao-status` ghi rõ ở cổng ③: "PR #N sửa file critical: <danh sách file>". Việc này mất khoảng 30 phút, bạn muốn thì mình thêm vào.
+
+**Ước tính cập nhật:**
+
+| Việc | Thời gian |
+|---|---|
+| Nhãn theo item, mặc định trong `project.yaml`: hook, ao-step, `merge-gate`, `audit`, status, skill, test | 6–8 giờ |
+| Lệnh review Epic: diff gộp, prompt, báo cáo lên Jira, dòng ngắn trên PR, một item sửa, Task finding | 6–8 giờ |
+| Chặn ở release: `/ao-release`, `merge-gate` và `audit` của PR release | 3–4 giờ |
+| Dòng nhắc file `critical` ở cổng ③ (nếu bạn muốn) | 30 phút |
+| Tài liệu | 1–2 giờ |
+
+Tổng cộng khoảng 16–22 giờ, tức 2–3 ngày làm của phiên chính. Chép kit lên VPS và vào dự án vẫn như ước tính trước.
+
+**Còn chờ bạn:**
+1. Câu 3: chốt cách 1, với mặc định đặt trong `project.yaml` (mình khuyên)?
+2. Có thêm dòng nhắc file `critical` ở cổng ③ không?
+
+Mình chưa làm gì. Bạn chốt hai điểm trên rồi nhắn "làm" thì mình bắt đầu.
+
+**Bạn (Lượt 61):** 1. Câu 3: chốt cách 1, với mặc định đặt trong project.yaml 2. Có thêm dòng nhắc file critical ở cổng ③ Làm nhé
