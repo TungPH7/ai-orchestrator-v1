@@ -33854,3 +33854,104 @@ Tổng cộng khoảng 16–22 giờ, tức 2–3 ngày làm của phiên chính
 Mình chưa làm gì. Bạn chốt hai điểm trên rồi nhắn "làm" thì mình bắt đầu.
 
 **Bạn (Lượt 61):** 1. Câu 3: chốt cách 1, với mặc định đặt trong project.yaml 2. Có thêm dòng nhắc file critical ở cổng ③ Làm nhé
+
+**Claude (Lượt 61):**
+
+Mình đã làm xong tính năng bật/tắt review theo từng item. Nó nằm ở **kit PR #350**, CI xanh, và mình chưa merge.
+
+**Bạn dùng thế nào:**
+1. **Đặt mặc định cho dự án** trong `.ai-orchestrator/project.yaml`. Không ghi gì thì mặc định là review như hiện nay:
+   ```yaml
+   review:
+     default: off
+   ```
+2. **Chọn cho từng item** bằng nhãn trên Jira: `ao-review-skip` để bỏ review, `ao-review-on` để review. Nhãn luôn thắng mặc định. Mình đặt tên nhãn có tiền tố `ao-` cho giống các nhãn khác của kit, thay vì `review:skip` như ví dụ trong lúc thảo luận. Bạn đổi nhãn lúc nào cũng được, miễn là trước khi approve PR. Nếu plan bạn duyệt có ghi `review: skip` cho item nào, ba gắn sẵn nhãn khi tạo item. Ngoài ba, không agent nào gắn hay gỡ được hai nhãn này.
+3. **Item bỏ review:** sau khi build, không agent nào review PR. Kit đăng một dòng "bỏ review" lên PR để còn dấu vết, rồi chờ bạn approve. Nếu PR sửa file `critical`, kit ghi tên các file đó ngay ở cổng ③ để bạn đọc kỹ.
+4. **Khi cả Epic xong:** `/ao-run` dừng và nhắc bạn gõ `/ao-review SHOP-xx`. Lệnh này cho `reviewer` và `security` đọc gộp phần code của các item đã bỏ review. Sau đó kit tự làm bốn việc:
+   - gom mọi lỗi Critical và High vào **một Task sửa**;
+   - đặt dấu "đã review sau merge" lên từng PR;
+   - đăng báo cáo đầy đủ lên Epic trên Jira;
+   - ghi các lỗi Medium và Low vào Task finding của Epic.
+5. **Chặn release:** bản release vẫn lên Staging để QA như thường. Nhưng `/ao-ship` dừng, và `merge-gate` không merge PR release vào `main`, cho tới khi mọi PR đã bỏ review có review sau merge, và Task sửa của chúng (nếu có) đã nằm trong bản release.
+
+**Những gì đã làm thêm:**
+- Mình sửa một lỗi cũ: deployer trên VPS không đọc nhãn mức của item, nên PR được luật `light-docs` miễn review sẽ bị từ chối deploy.
+- Trong lúc tự rà, mình bắt được một lỗi của chính bản mới: gõ `/ao-review <PR> full` cho item bỏ review thì `merge-gate` vẫn đòi dòng "bỏ review". Mình đã sửa và thêm test.
+
+**Thời gian và kết quả kiểm:** khoảng 5 giờ, trong ước tính 16–22 giờ. Mình viết tổng cộng 8 commit. Toàn bộ 1875 test của kit xanh, và CI của PR xanh.
+
+**Bạn nên biết:**
+- Dấu "đã review sau merge" do App review đăng, nên được tin ngang báo cáo review hiện nay. Một agent review bị lừa vẫn có thể đăng dấu giả, cũng như nó có thể đăng một báo cáo giả.
+- Mình chưa đo chi phí thật của một lượt review sau merge. Lần chạy đầu sẽ cho số.
+
+**Chờ bạn quyết:**
+1. Có cho agent review PR #350 không? Lượt này tốn tiền. PR sửa `merge-gate` và `audit`, hai chốt chặn chính của kit, nên mình khuyên review một lượt.
+2. Merge PR #350: bạn tự merge, hoặc nhắn "merge giúp".
+3. Sau khi merge:
+   - chép kit lên VPS (khoảng 10 phút);
+   - chép kit vào `shop` (khoảng 30 phút, cộng 10–15 USD nếu review bản chép);
+   - chạy thử trên một Epic nhỏ có một item bỏ review và một item review.
+
+Mình làm từng việc khi bạn nhắn.
+
+**Bạn (Lượt 62):** thảo luận mục 1: "cho agent review PR #350" đây là review cho PR của kit repo phải không? sau lâu giờ tôi không thấy bạn hỏi review? Lâu giờ làm C1, C2 vẫn đâu thấy bạn hỏi review cho repo kit?? Trả lời ngắn gọn, chưa được làm gì cả nhé.
+
+**Claude (Lượt 62):**
+
+Đúng, mục 1 là review riêng PR #350 của repo kit. Hỏi như vậy là mình sai so với cách đã chốt.
+
+**Vì sao trước giờ không hỏi:**
+1. Sau đợt so sánh mức review hồi tháng 11, cách đã chốt là mỗi phiên bản kit chỉ review một lần. Repo kit không review từng PR.
+2. Lượt review đó nằm ở bước chép kit vào `shop`. PR chép kit chứa toàn bộ code kit mới, và `reviewer` cùng `security` của `shop` đọc nó.
+3. C1 và C2 vẫn có review theo đường này. Mình đã hỏi bạn trước mỗi lần, dưới tên "chép kit vào shop, có review (~15 USD)": shop PR #79 (C1), #80 và #81 (C2), #90 (sau T14). Các lỗi High tìm ra ở đó đều là lỗi code kit.
+
+**Sửa lại đề xuất:**
+- Bỏ mục 1. Review riêng #350 rồi review bản chép là trả tiền hai lần cho cùng một đoạn code.
+- Merge #350, rồi chép kit vào `shop` có review như mọi lần.
+- Lần này nên chép kit lên VPS sau khi review bản chép không còn Critical hay High, vì deployer trên VPS cũng đổi theo.
+
+Mình chưa làm gì.
+
+**Bạn (Lượt 63):** Giờ làm tiếp những việc gì? Theo thứ tự nào?
+
+**Claude (Lượt 63):**
+
+Mình đề xuất làm xong và chạy thử review theo item, nhưng làm release v0.4.0 xen vào trước lượt chạy thử, vì release có hạn 2026-12-02.
+
+**A. Đưa review theo item vào dùng**
+1. Mình ghi Lượt 61–63 của nhật ký vào PR #350, và bỏ chữ "review trả tiền" ở mục 9 của `tasks/todo.md`. Việc này mất khoảng 5 phút.
+2. **[bạn]** Merge PR #350, hoặc nhắn "merge giúp". CI của PR đang xanh.
+3. Chép kit vào `shop` theo cách mọi lần: mở Task, mở PR, cho agent review (10–15 USD), rồi QA (khoảng 1 USD). **[bạn]** merge PR chép kit và Accept Task. Bản chép này mang luôn #348 (sửa watcher), vì bản đó chưa vào `shop`. Mất khoảng 1–2 giờ, phần lớn là chờ review.
+4. Chép kit lên VPS, sau khi review bản chép không còn Critical hay High. Mất khoảng 10 phút.
+
+**B. Có hạn 2026-12-02**
+
+5. Release v0.4.0 đưa SHOP-81 và các bản chép kit lên `main`.
+   - **[bạn]** Bạn làm cổng ④ và ⑤, bấm Release trên Jira, rồi bấm Complete cho SHOP-81.
+   - Làm trước bước 6 thì hạn release không phải chờ lượt chạy thử, vì item bỏ review mà đã merge sẽ chặn release cho tới khi review sau merge xong.
+   - Lần này cũng kiểm thật cổng release mới, ở trường hợp không có PR nào bỏ review.
+
+**C. Chạy thử**
+
+6. Chạy một Epic nhỏ, có một item bỏ review và một item review. **[bạn]** chọn tính năng.
+   - Ước chừng 30–50 USD. Khi có Epic, mình ước lại.
+   - Lượt này kiểm các điểm sau:
+     - dòng "bỏ review" trên PR;
+     - dòng nhắc file `critical` ở cổng ③;
+     - `/ao-run` dừng và nhắc bạn gõ `/ao-review <EPIC>`;
+     - review sau merge;
+     - release bị chặn cho tới khi review sau merge xong.
+
+**D. Có hạn 2026-12-31**
+
+7. Còn ba việc:
+   - SHOP-40 và tài khoản Windows `ao-agent`: khoảng nửa ngày, có vài chỗ cần bạn bấm.
+   - **[bạn]** Kiểm khóa `age`.
+   - Gỡ ngoại lệ picomatch khi có bản vá.
+
+**Chờ bạn, không gấp:**
+- Refine SHOP-92, SHOP-75, SHOP-70 và SHOP-72.
+- Chọn cách xử lý tiêu chí 4 của C2.
+- Trả lời câu hỏi dọn `ao-brown`, `ao-green` và dtddeploy trên máy, mình hỏi từ Lượt 56.
+
+SHOP-93 đã Done, nên không còn item nào chờ bạn Accept. Bạn nhắn "làm" thì mình làm bước 1, rồi chờ bạn ở bước 2.
