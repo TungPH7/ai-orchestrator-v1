@@ -117,7 +117,7 @@ node <kit>/scripts/ao-kit.mjs init ao-green --name ao-green --title "AO Green" -
 - **Ý nghĩa:** `init` làm lần lượt:
   - tạo repo git với nhánh `develop`, rồi thêm remote `origin` trỏ tới `--repo`;
   - chép khung app của profile;
-  - viết `.ai-orchestrator/project.yaml`, file cấu hình của dự án;
+  - viết `.ai-orchestrator/project.yaml`, file cấu hình của dự án. Mọi item được review, trừ khi bạn thêm `review: { default: off }` vào file này, hay gắn nhãn `ao-review-skip` cho từng item ([quality-gates.md](quality-gates.md), mục Bật hay tắt review theo item);
   - chép kit, sinh `.claude/settings.json` và các agent;
   - chạy `npm ci` và tải Chromium cho Playwright.
 
