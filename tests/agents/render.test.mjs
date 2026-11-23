@@ -70,7 +70,7 @@ test('the contract section: stages, artifacts, GitHub App, files and git (spec 2
   const reviewer = body(renderAgent('reviewer', sources));
   assert.match(reviewer, /^## Contract$/m);
   assert.match(reviewer, /^- Stage `review` \(Review code và security\), with `security` and the human\. Input: PR có CI xanh\. Output: Báo cáo review\. Passes: Không còn finding Critical\/High; gate ③ `merge-approval`: Bạn approve PR\. Note: human duyệt sau reviewer và security\.$/m);
-  assert.match(reviewer, /^- You create Báo cáo review \(`review-report`\) from `\.ai-orchestrator\/templates\/review-report\.md`, stored in GitHub: Review trên PR\.$/m);
+  assert.match(reviewer, /^- You create Báo cáo review \(`review-report`\) from `\.ai-orchestrator\/templates\/review-report\.md`, stored in GitHub: Review trên PR; Jira: Comment trên Epic hay item, với review sau merge \(SPEC-review-per-item\.md mục 4\)\.$/m);
   assert.match(reviewer, /^- GitHub: `node \.ai-orchestrator\/scripts\/ao-pr\.mjs review` with the review App \(`AO_REVIEW_APP`\)\. You never approve a PR\.$/m);
   assert.match(reviewer, /^- Files you may write: `\.ai\/\*\*`\. Git: read only \(status, log, show, diff, fetch and the other reading commands\)\.$/m);
   assert.match(body(renderAgent('ux', sources)), /^- GitHub: you have no App, so you do not open or comment on PRs\.$/m);

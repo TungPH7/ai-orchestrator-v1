@@ -9,7 +9,7 @@ import { readGates } from '../../lib/quality/gates.mjs';
 import { CONTRACT_DIR, ROOT } from '../helpers/kit.mjs';
 
 const SKILLS = join(ROOT, 'kit', '.claude', 'skills');
-const COMMANDS = { status: '[KEY]', intake: '<rough description>', preview: '<KEY> [--stop]', spec: '<EPIC> [change | seo | no-seo [reason]]', plan: '<EPIC> [change]', request: '<KEY>', build: '<KEY> [be: … fe: …]', review: '<PR> [full]', fix: '<PR> [what to fix]', qa: '<KEY> [fail: <defect, steps, expected result>] [retest]', release: '[<vX.Y.0> <sha>]', ship: '<vX.Y.Z>', rollback: '<environment> [<sha>]', run: '<EPIC> | <KEY>… (up to four) | --stop' };
+const COMMANDS = { status: '[KEY]', intake: '<rough description>', preview: '<KEY> [--stop]', spec: '<EPIC> [change | seo | no-seo [reason]]', plan: '<EPIC> [change]', request: '<KEY>', build: '<KEY> [be: … fe: …]', review: '<PR> [full] | <KEY>', fix: '<PR> [what to fix]', qa: '<KEY> [fail: <defect, steps, expected result>] [retest]', release: '[<vX.Y.0> <sha>]', ship: '<vX.Y.Z>', rollback: '<environment> [<sha>]', run: '<EPIC> | <KEY>… (up to four) | --stop' };
 // The positional arguments each check passes on: /ao-release and /ao-rollback take two (release-workflow T17), and
 // /ao-intake none: its description stays in the chat (human-loop spec 3.1).
 // /ao-run takes an Epic, or up to four keys (C2 spec 5.1).
