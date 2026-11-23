@@ -6,7 +6,7 @@ import { readContract } from '../../lib/contract.mjs';
 import { readGates } from '../../lib/quality/gates.mjs';
 import { readMapping } from '../../lib/tracker/mapping.mjs';
 import { PURPOSES, resumePrompt } from '../../lib/workflow/prompts.mjs';
-import { appRolesOf, decideStep, noteKey } from '../../lib/workflow/steps.mjs';
+import { appRolesOf, decideStep, nextCommand, noteKey } from '../../lib/workflow/steps.mjs';
 import { CONTRACT_DIR, ROOT } from '../helpers/kit.mjs';
 
 const contract = readContract(CONTRACT_DIR);
@@ -576,4 +576,50 @@ test('reviews that stopped together on one head both go on, each in its own sess
   assert.deepEqual(both.runs.map(({ role, resume, worktree }) => [role, resume, worktree.name]), [['reviewer', 's-rev', 'pr-15-reviewer'], ['security', 's-sec', 'pr-15-security']]);
   const one = decide('review', prFacts('review', { reports: { reviewer: report(), security: null } }, { run: { key: 'DEMO-21', runs: [run(1, 'reviewer', 's-rev'), run(2, 'security', 's-sec')] } }));
   assert.deepEqual(one.runs.map(({ role, resume }) => [role, resume]), [['security', 's-sec']], 'the reviewer report reached the head');
+});
+
+// SPEC-review-per-item.md section 3: an item that skips review gets the trace of the skip on its head, then gate ③.
+test('/ao-review of an item that skips review posts its trace, with the critical files it changes, then waits at gate ③', () => {
+  const skipping = (prMore = {}, item = {}) => prFacts('review', prMore, { item: { review: { skip: true, why: 'label', ignored: null }, ...item } });
+  const first = decide('review', skipping());
+  assert.deepEqual(first.runs, [{ action: 'review-skip', key: 'DEMO-21', number: 15, sha: HEAD, reason: 'label ao-review-skip', critical: [] }]);
+  const posted = decide('review', skipping({ skipOnHead: 'DEMO-21' }));
+  assert.equal(posted.go, false);
+  assert.equal(posted.waits, 'you');
+  assert.match(posted.reason, /^PR #15 skips review \(label ao-review-skip\), and its trace is on the head d1d2d3d: it waits for you at gate ③ merge-approval$/);
+  assert.match(posted.next, /^Read the diff of PR #15, approve it; merge-gate merges it\. To review it anyway: \/ao-review 15 full$/);
+  // The critical files it changes, at gate ③ and in the trace.
+  const critical = ['.github/workflows/ci.yml', '.claude/rules/x.md'];
+  const risky = decide('review', skipping({ skipOnHead: 'DEMO-21', critical, protectedPaths: critical }));
+  assert.ok(risky.lines.includes('PR #15 changes critical files with no review: .github/workflows/ci.yml, .claude/rules/x.md. Read the diff of these files closely before you approve'));
+  assert.match(risky.next, /^Read the diff of PR #15, the critical files above all, approve it, then Squash and merge it yourself/);
+  assert.deepEqual(decide('review', skipping({ critical })).runs[0].critical, critical);
+  // The default of the project, a draft PR made ready first, a full review asked, a High found, a PR into a release.
+  assert.equal(decide('review', prFacts('review', {}, { item: { review: { skip: true, why: 'default' } } })).runs[0].reason, 'the project default, review.default: off in project.yaml');
+  assert.deepEqual(decide('review', skipping({ draft: true })).runs.map(({ action }) => action), ['pr-ready']);
+  assert.deepEqual(plan(decide('review', skipping(), { full: true })), ['reviewer DEMO-21 high review', 'security DEMO-21 high review']);
+  assert.equal(decide('review', skipping({ blockingEver: true })).runs[0].role, 'reviewer');
+  assert.equal(decide('review', skipping({ base: 'release/v0.1.0', headRef: 'bugfix/DEMO-21-remove-line' })).runs[0].role, 'reviewer');
+  assert.equal(decide('review', prFacts('review')).runs[0].role, 'reviewer', 'no choice: review');
+  // Changes you request go to /ao-fix, which posts the trace again on the new head.
+  assert.equal(decide('review', skipping({ skipOnHead: 'DEMO-21', changesRequested: true })).then.command, 'fix');
+  assert.deepEqual(decide('fix', skipping()).runs.map(({ action }) => action), ['review-skip']);
+  assert.equal(decide('fix', skipping({ skipOnHead: 'DEMO-21' })).waits, 'you');
+});
+
+test('an item that skips review goes on from its draft PR to /ao-review: no wait for a preview (spec 3.4)', () => {
+  const draft = { number: 15, state: 'open', draft: true };
+  const item = { key: 'DEMO-21', workType: 'story', state: 'in-progress', review: { skip: true } };
+  assert.deepEqual(nextCommand(item, draft), { command: 'review', arg: 15, text: '/ao-review 15' });
+  assert.equal(nextCommand({ ...item, review: { skip: false } }, draft).waits, 'you');
+  const built = decide('build', prFacts('build', { draft: true }, { item: { state: 'in-progress', review: { skip: true, why: 'label' } } }));
+  assert.equal(built.waits, 'next');
+  assert.deepEqual(built.then, { command: 'review', arg: 15 });
+});
+
+test('/ao-status says an item skips review, and why, or that a label the agents put does not count', () => {
+  const status = (item, prMore = { critical: ['.github/workflows/ci.yml'] }) => decide('status', prFacts('status', prMore, { item })).lines;
+  assert.ok(status({ review: { skip: true, why: 'label' } }).some((line) => line.startsWith('Review of DEMO-21: skipped (label ao-review-skip); ') && line.endsWith('PR #15 changes critical files with no review: .github/workflows/ci.yml. Read the diff of these files closely before you approve')));
+  assert.ok(status({ review: { skip: false, why: 'default', ignored: { label: 'ao-review-skip' } } }).some((line) => /^Review of DEMO-21: on\. The label ao-review-skip was put by the agents' Jira account/.test(line)));
+  assert.equal(status({ review: { skip: false, why: 'default', ignored: null } }).some((line) => line.startsWith('Review of')), false);
 });

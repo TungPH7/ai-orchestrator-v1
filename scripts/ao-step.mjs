@@ -23,6 +23,7 @@ import { touchedPaths, unquotePath } from '../lib/quality/diff-paths.mjs';
 import { readProjectYaml } from '../lib/quality/approved-file.mjs';
 import { epicOfDocsBranch, readGates } from '../lib/quality/gates.mjs';
 import { withProjectPaths } from '../lib/quality/review-tiers.mjs';
+import { projectReviewDefault, skipBody } from '../lib/quality/review-choice.mjs';
 import { matchesGlob } from '../lib/quality/glob.mjs';
 import { DOCKER_INFO, dockerAnswered } from '../lib/quality/maven.mjs';
 import { markReadyForReview, READY_PERMISSIONS } from '../lib/quality/pr-ready.mjs';
@@ -314,7 +315,9 @@ async function main() {
   // A kit copy is compared with a head of another project, which your gh login reads (kit-copy-review spec 2.5).
   const peers = (setting('AO_KIT_PEERS', settings) ?? '').split(',').map((name) => name.trim()).filter(Boolean);
   const kitCopy = (pr) => readKitCopy({ pr, github, peer: (name) => createGitHubClient({ repo: name, token: readGitHubToken() }), peers, gates, apps, approvers, render: (sha, paths) => renderCheck(pr.number, sha, paths) });
-  const gatherAll = () => gatherFacts({ command, arg, extra, jira, github, deploys, history: developHistory, local: files, contract, mapping, roster, gates, apps, approvers, space, kitCopy, agentsPerRole: runs.agentsPerRole });
+  // The default of review of project.yaml (SPEC-review-per-item.md 2.1): an item with no review label follows it.
+  const reviewDefault = projectReviewDefault(readProjectYaml(projectDir));
+  const gatherAll = () => gatherFacts({ command, arg, extra, jira, github, deploys, history: developHistory, local: files, contract, mapping, roster, gates, apps, approvers, space, kitCopy, agentsPerRole: runs.agentsPerRole, reviewDefault });
   // /ao-preview also reads this machine: project.yaml, the preview that runs, the folder and the ports (spec 4.3).
   const gather = async () => {
     const gathered = await gatherAll();
@@ -526,6 +529,7 @@ async function main() {
         if (step.action === 'deploy-request') return deployRequest(step, { repo, userToken });
         if (step.action === 'kit-copy-reports') return kitCopyReports(step, { repo, appEnv });
         if (step.action === 'review-waiver') return reviewWaiverNote(step, { repo, appEnv });
+        if (step.action === 'review-skip') return reviewSkipNote(step, { repo, appEnv });
         if (step.action === 'pr-ready') return prReady(step, { repo, settings });
         if (step.action === 'preview-start') return preview.start(step);
         if (step.action === 'preview-stop') return preview.stop().then(({ notes }) => notes);
@@ -797,6 +801,15 @@ async function reviewWaiverNote({ key, number, sha, waiver, level, files }, { re
   const github = createGitHubClient({ repo, token, write: true });
   await github.request('POST', `/pulls/${number}/reviews`, {}, { commit_id: sha, event: 'COMMENT', body: waiverBody({ id: waiver, level, files, key, sha }) });
   return [`Posted the waiver ${waiver} on the head ${sha.slice(0, 7)} of PR #${number}: no review runs.`];
+}
+
+// /ao-review of a PR whose item skips review (SPEC-review-per-item.md 3.1): the trace on its head, a COMMENT review of
+// the review App, with the critical files it changes. merge-gate and audit work the choice out again from Jira.
+async function reviewSkipNote({ key, number, sha, reason, critical }, { repo, appEnv }) {
+  const { token } = await installationToken({ ...appCredentials('review', { env: appEnv }), repo, permissions: { pull_requests: 'write' } });
+  const github = createGitHubClient({ repo, token, write: true });
+  await github.request('POST', `/pulls/${number}/reviews`, {}, { commit_id: sha, event: 'COMMENT', body: skipBody({ key, sha, reason, critical }) });
+  return [`Posted the trace of the review ${key} skips on the head ${sha.slice(0, 7)} of PR #${number}: no review runs.`];
 }
 
 // The first step of /ao-review on a draft PR (human-loop spec 4.6): marks it ready as the ao-dev App, which opened it.
