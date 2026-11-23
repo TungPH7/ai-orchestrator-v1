@@ -65,7 +65,9 @@ test('the Agent field value of every role, in the names Jira uses', () => {
 });
 
 test('labels name the dev role and the effort (tracker/jira.yaml work_labels); others are left out', () => {
-  assert.deepEqual(mapping.work_labels, { role_prefix: 'ao-', effort_prefix: 'ao-effort-', level_prefix: 'ao-level-', findings: 'ao-findings', ops: 'ao-ops', env_auth: 'ao-env-auth', seo: 'ao-seo' });
+  assert.deepEqual(mapping.work_labels, { role_prefix: 'ao-', effort_prefix: 'ao-effort-', level_prefix: 'ao-level-', findings: 'ao-findings', ops: 'ao-ops', env_auth: 'ao-env-auth', seo: 'ao-seo', review_on: 'ao-review-on', review_skip: 'ao-review-skip' });
+  // The labels of review per item are no roles (SPEC-review-per-item.md section 2).
+  assert.deepEqual(workLabels(['ao-review-on', 'ao-review-skip', 'ao-be-dev'], mapping, roster).roles, ['be-dev']);
   // The labels of an ops Task are not roles (kit followups, batch 4 item 14).
   assert.deepEqual(workLabels(['ao-ops', 'ao-env-auth', 'ao-devops'], mapping, roster).roles, ['devops']);
   assert.deepEqual(workLabels(['ao-fe-dev', 'ao-effort-xhigh', 'needs-you'], mapping, roster), { role: 'fe-dev', roles: ['fe-dev'], effort: 'xhigh', level: null, seo: false });

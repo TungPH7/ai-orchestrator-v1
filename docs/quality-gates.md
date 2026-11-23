@@ -212,7 +212,40 @@ Kit có một luật, `light-docs`: tài liệu, ảnh và file chữ (`messages
 - **Dấu vết:** `/ao-review` của PR như vậy không chạy agent. App `ao-review` đăng một review loại COMMENT lên head, có dòng `Waiver: light-docs`, mức và danh sách file.
 - **`merge-gate` và `audit` tự tính lại luật:** từ danh sách file của PR trên GitHub, và nhãn mức của item đọc bằng `JIRA_CI_TOKEN`. Chúng chỉ đọc Jira khi mọi file có thể thuộc một luật. Luật không khớp, hay nhãn không đọc được, thì dòng `Waiver` không có giá trị gì, và PR cần báo cáo như thường. Approve của bạn vẫn luôn cần.
 - **Muốn review đủ:** `/ao-review <PR> full` chạy review cho cả PR được miễn.
-- **Còn hoãn:** khóa `review: off` trong `project.yaml` cho repo nháp, kèm dòng đỏ của `doctor` (spec mục 3.4), vì nó cần `merge-gate` và `audit` đọc `project.yaml` của nhánh base. Làm khi có repo nháp đầu tiên.
+- **Khóa `review: off` của C1 (spec mục 3.4):** không làm. Thay vào đó là bật hay tắt review theo từng item, ở mục sau.
+
+### Bật hay tắt review theo item
+
+Từ [SPEC-review-per-item.md](../SPEC-review-per-item.md), bạn chọn review cho từng item:
+
+1. **Mặc định của dự án:** `review.default` trong `.ai-orchestrator/project.yaml`, `on` hoặc `off`. Thiếu khóa này là `on`. `project.yaml` là file được bảo vệ, nên chỉ bạn merge PR đổi nó, và đổi lại lúc nào cũng được.
+
+   ```yaml
+   review:
+     default: off
+   ```
+
+2. **Nhãn trên item:** `ao-review-on` thì review, `ao-review-skip` thì bỏ. Nhãn thắng mặc định; có cả hai nhãn thì review. Bạn gắn hay gỡ nhãn trên Jira bất cứ lúc nào trước khi approve ở cổng ③. ba gắn sẵn khi tạo item, nếu plan bạn duyệt ghi vậy. Hook `block-atlassian` chặn mọi agent khác thêm hay gỡ hai nhãn này.
+3. **Tài khoản agent:** phiên chính cũng dùng tài khoản này. Thay đổi của nó theo hướng bỏ review (thêm `ao-review-skip`, gỡ `ao-review-on`) không được tính; `/ao-status <KEY>` nói rõ khi gặp. Muốn bỏ review, bạn tự gắn nhãn trên Jira.
+4. **Phạm vi:** chỉ PR của Story, Task, Bug vào `develop`. PR vào nhánh release, hotfix, PR tài liệu, báo cáo release và merge back giữ luật cũ. Một review trên PR từng tìm ra Critical hay High (ví dụ sau `/ao-review <PR> full`) thì PR đó cần báo cáo như thường.
+
+PR của item bỏ review:
+
+- **Không agent nào review.** `/ao-review <PR>` đăng một review loại COMMENT của App `ao-review` lên head, có dòng `Review skipped: <KEY>`, lý do, và danh sách file Nguy cấp mà PR sửa. Rồi nó dừng ở cổng ③. `/ao-run` đi thẳng từ PR nháp tới bước này; bạn vẫn `/ao-preview` được trước khi approve.
+- **File Nguy cấp:** chỗ dừng ở cổng ③, `/ao-status <KEY>` và dấu vết trên GitHub ghi "PR #N changes critical files with no review: …". Các file này (workflow, `.claude/`, bản chép kit) có hiệu lực ngay khi merge, trước khi lượt review sau merge kịp đọc: đọc kỹ diff của chúng trước khi approve.
+- **`merge-gate` và `audit` tự tính lại lựa chọn:** từ nhãn và lịch sử nhãn của item (bằng `JIRA_CI_TOKEN`), và `project.yaml` của nhánh base trên GitHub. `audit` dựng lại nhãn tại lúc merge, và đọc `project.yaml` ở commit ngay trước lần merge. Không đọc được thì PR cần báo cáo như thường. Khi lựa chọn là bỏ review, điều kiện báo cáo được thay bằng dấu vết `Review skipped` trên head (dòng `the trace of the review <KEY> skips on head <sha>` trong `Waiting`). CI, approve của bạn và mọi điều kiện khác giữ nguyên.
+
+**Review sau merge: `/ao-review <KEY>`**, với KEY là một Epic hay một Story, Task, Bug:
+
+1. Nó tìm các PR của item đã merge vào `develop` mà bỏ review, và chưa có dấu review sau merge. `reviewer` và `security` (khi tier đòi) đọc diff gộp từ commit trước lần merge cũ nhất tới `develop` hiện tại, trên các file của những PR đó. Mỗi agent lưu báo cáo vào `.ai/reviews/<KEY>-<role>-<head>.md` và không đăng.
+2. Sau đó ao-step tự làm, không agent:
+   - mọi Critical và High vào **một Task sửa** thuộc Epic, có nhãn `ao-review-on`, chặn Epic; lỗi ở nhiều app thì mỗi role một Sub-task;
+   - App `ao-review` comment **dấu review sau merge** lên từng PR (`Reviewed after merge`, head, số Critical và High, Task sửa);
+   - hai báo cáo đầy đủ lên KEY trong Jira;
+   - Medium và Low vào Task finding của Epic.
+3. `/ao-run <EPIC>` dừng với "chờ bạn: /ao-review <EPIC>" khi mọi item của Epic đã Done mà còn PR chờ review sau merge. Nó không tự chạy lượt này, vì lượt này tốn tiền.
+
+**Chặn ở release:** PR release vào `main` chỉ merge, và commit merge của nó chỉ lên Production, khi mọi PR bỏ review mà bản release mang tới có dấu review sau merge với 0 Critical và High, hoặc có Task sửa mà PR của nó cũng nằm trong bản release. Dòng `Waiting` ghi `review after merge of #N (<KEY>)` cho mỗi PR còn thiếu. `/ao-release` liệt kê các PR này ở cổng ④, và `/ao-ship` dừng trước cổng ⑤ cho tới khi xong. Staging vẫn nhận bản release để QA.
 
 ### Chấp nhận một High thay vì sửa
 

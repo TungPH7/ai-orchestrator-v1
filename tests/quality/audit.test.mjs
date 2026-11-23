@@ -6,6 +6,7 @@ import { auditBroughtBack, commitArgument, decideAudit, mergedPull, runAudit } f
 import { findingId, readReviewReport } from '../../lib/quality/pull-request.mjs';
 import { readGates } from '../../lib/quality/gates.mjs';
 import { readMapping } from '../../lib/tracker/mapping.mjs';
+import { skipBody } from '../../lib/quality/review-choice.mjs';
 import { recordedClient } from '../helpers/jira.mjs';
 import { ROOT } from '../helpers/kit.mjs';
 
@@ -367,6 +368,8 @@ function mainOf(chain) {
     answers[`/commits/${sha}/pulls`] = pull ? [pull] : [];
     if (pull) {
       answers[`/pulls/${pull.number}`] = pull;
+      // The commits of the release PR, none of them the merge of an item's PR (SPEC-review-per-item.md section 5).
+      answers[`/pulls/${pull.number}/commits`] = [];
       answers[`/pulls/${pull.number}/files`] = [{ filename: 'apps/api/pom.xml', status: 'modified' }];
       answers[`/pulls/${pull.number}/reviews`] = [{ user: { login: 'approver' }, state: 'APPROVED', commit_id: pull.head.sha, body: '', submitted_at: '2026-11-14T10:00:00Z' }];
       answers[`/commits/${pull.head.sha}/check-runs`] = { check_runs: [{ name: 'build-test', status: 'completed', conclusion: 'success' }] };
@@ -429,4 +432,36 @@ test('audit passes the merge of a PR whose review was waived by rule, and fails 
   const standard = audit(waived('standard'));
   assert.equal(standard.ok, false);
   assert.match(standard.problems[0], /reviewer report on head a1b2c3d/);
+});
+
+// SPEC-review-per-item.md 2.5, 3.5, 5.1: audit passes the merge of an item that skipped review, on the choice at the time
+// of the merge, and the release PR into main only once each PR it brings that skipped review had its review after merge.
+test('audit passes the merge of an item that skipped review, with its trace, and fails it on the reports otherwise', () => {
+  const reviewApp = 'tungph7-ao-review[bot]';
+  const skipped = (review) => (f) => {
+    f.reviews = f.reviews.filter((r) => r.user.login !== reviewApp);
+    f.reviews.push({ user: { login: reviewApp }, commit_id: HEAD, state: 'COMMENTED', body: skipBody({ key: 'DEMO-12', sha: HEAD, reason: 'label ao-review-skip' }) });
+    f.review = review;
+  };
+  assert.deepEqual(audit(skipped({ skip: true, why: 'label' })), PASSED);
+  const reviewed = audit(skipped({ skip: false, why: 'label' }));
+  assert.equal(reviewed.ok, false);
+  assert.match(reviewed.problems[0], /reviewer report on head a1b2c3d/);
+  assert.match(audit(skipped(null)).problems[0], /reviewer report on head a1b2c3d/, 'the choice could not be read');
+});
+
+test('audit fails the merge of a release PR into main while a PR it brings waits for its review after merge', () => {
+  const release = (pulls) => (f) => {
+    f.branch = 'main';
+    f.pull.title = 'release: v0.1.0';
+    f.pull.head.ref = 'release/v0.1.0';
+    f.pull.base.ref = 'main';
+    f.pull.head.repo = { full_name: 'TungPH7/ao-pilot' };
+    f.pull.base.repo = { full_name: 'TungPH7/ao-pilot' };
+    f.releasePulls = pulls;
+  };
+  assert.equal(audit(release([{ number: 20, key: 'DEMO-20', skipped: false, mark: null }])).ok, true);
+  const waiting = audit(release([{ number: 20, key: 'DEMO-20', skipped: true, mark: null }]));
+  assert.equal(waiting.ok, false);
+  assert.match(waiting.problems[0], /review after merge of #20 \(DEMO-20\)/);
 });

@@ -96,3 +96,14 @@ test('/ao-ship stops while Staging runs another commit, a Bug Critical or High i
 test('/ao-ship stops when the deployment Staging runs has no URL for the regression', () => {
   assert.equal(decide(shipFacts({ staging: { sha: HEAD, deployment: 40, url: null } })).reason, 'the deployment of aaaaaaaa on Staging has no URL: only the deployer of the kit deploys there with one (spec 2.3)');
 });
+
+// SPEC-review-per-item.md 5.3: /ao-ship stops before gate ⑤ while a PR the release brings waits for its review after merge.
+test('/ao-ship stops while a PR of the release that skipped review waits for its review after merge', () => {
+  const gap = 'review after merge of #31 (DEMO-21), which skipped review: /ao-review <its Epic>';
+  const held = decide(shipFacts({ reviewGaps: [gap] }));
+  assert.equal(held.go, false);
+  assert.equal(held.waits, 'you');
+  assert.match(held.reason, /^v0\.1\.0 brings PRs that skipped review and wait for their review after merge: review after merge of #31 \(DEMO-21\)/);
+  assert.match(held.next, /\/ao-ship v0\.1\.0 again$/);
+  assert.equal(decide(shipFacts({ reviewGaps: [] })).go, true);
+});

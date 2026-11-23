@@ -242,6 +242,25 @@ test('only ba creates an item with a level label, and no agent adds or removes o
   assert.deepEqual(check('mcp__atlassian__createJiraIssue', { cloudId: mapping.cloud_id, ...create }), ALLOW);
 });
 
+// SPEC-review-per-item.md 2.3: the labels that review or skip an item, on the terms of the level label.
+test('only ba creates an item with ao-review-on or ao-review-skip, and no agent adds or removes one afterwards', () => {
+  const byAgent = (tool, input, agent) => checkToolCall({ hook_event_name: 'PreToolUse', tool_name: `mcp__atlassian__${tool}`, tool_input: { cloudId: mapping.cloud_id, ...input }, agent_type: agent }, { mapping, space: 'DEMO' });
+  const create = (label) => ({ projectKey: 'DEMO', issueTypeName: 'Task', summary: 'x', additional_fields: { labels: ['ao-be-dev', label] } });
+  assert.deepEqual(byAgent('createJiraIssue', create('ao-review-skip'), 'ba'), ALLOW);
+  const made = { allow: false, reason: 'jira: only ba, from the plan you approved, and you put ao-review-on or ao-review-skip on an item: it decides whether the item is reviewed' };
+  assert.deepEqual(byAgent('createJiraIssue', create('ao-review-skip'), 'qa'), made);
+  assert.deepEqual(byAgent('createJiraIssue', create('ao-review-on'), 'devops'), made);
+  const changed = { allow: false, reason: 'jira: only you put or take off ao-review-on or ao-review-skip on an item: it decides whether the item is reviewed' };
+  assert.deepEqual(byAgent('editJiraIssue', { issueIdOrKey: 'DEMO-12', update: { labels: [{ add: 'ao-review-skip' }] } }, 'be-dev'), changed);
+  assert.deepEqual(byAgent('editJiraIssue', { issueIdOrKey: 'DEMO-12', update: { labels: [{ remove: 'ao-review-on' }] } }, 'ba'), changed);
+  assert.deepEqual(byAgent('transitionJiraIssue', { issueIdOrKey: 'DEMO-12', transitionName: 'Start', update: { labels: [{ set: ['ao-fe-dev', 'ao-review-skip'] }] } }, 'fe-dev'), changed);
+  // The role label ao-reviewer is no review label; flagging writes the whole list.
+  assert.deepEqual(byAgent('editJiraIssue', { issueIdOrKey: 'DEMO-12', update: { labels: [{ add: 'ao-reviewer' }] } }, 'ba'), ALLOW);
+  assert.deepEqual(byAgent('editJiraIssue', { issueIdOrKey: 'DEMO-12', fields: { labels: ['ao-fe-dev', 'ao-review-skip', 'needs-you'] } }, 'fe-dev'), ALLOW);
+  // Your main session, with no agent_type.
+  assert.deepEqual(check('mcp__atlassian__editJiraIssue', { cloudId: mapping.cloud_id, issueIdOrKey: 'DEMO-12', update: { labels: [{ add: 'ao-review-on' }] } }), ALLOW);
+});
+
 // Review of shop PR #78 (Medium, and a Low of security): a transition takes fields and update too, and labels may come as
 // one string.
 test('no agent puts ao-env-auth through a transition either, or in a string of labels', () => {
