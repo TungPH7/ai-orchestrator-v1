@@ -99,7 +99,7 @@ test('/ao-ship stops when the deployment Staging runs has no URL for the regress
 
 // SPEC-review-per-item.md 5.3: /ao-ship stops before gate ⑤ while a PR the release brings waits for its review after merge.
 test('/ao-ship stops while a PR of the release that skipped review waits for its review after merge', () => {
-  const gap = 'review after merge of #31 (DEMO-21), which skipped review: /ao-review <its Epic>';
+  const gap = 'review after merge of #31 (DEMO-21), which skipped review: /ao-review DEMO-20';
   const held = decide(shipFacts({ reviewGaps: [gap] }));
   assert.equal(held.go, false);
   assert.equal(held.waits, 'you');

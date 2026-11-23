@@ -33955,3 +33955,326 @@ Mình đề xuất làm xong và chạy thử review theo item, nhưng làm rele
 - Trả lời câu hỏi dọn `ao-brown`, `ao-green` và dtddeploy trên máy, mình hỏi từ Lượt 56.
 
 SHOP-93 đã Done, nên không còn item nào chờ bạn Accept. Bạn nhắn "làm" thì mình làm bước 1, rồi chờ bạn ở bước 2.
+
+**Bạn (Lượt 64):** làm 1, 2, 3, 4, không làm 5, làm  6 (hỏi tôi để chọn tính năng), không làm 7
+
+**Claude (Lượt 64):**
+
+**Bước 1–2 xong:**
+- Nhật ký Lượt 61–63 và mục 9 của `tasks/todo.md` đã vào PR #350.
+- PR #350 đã merge thành kit main `0e3c9ec`.
+
+**Bước 3 đang chạy:**
+- Mình đã tạo SHOP-94 (Task chép kit), bấm Refine với Start, và đang để nó ở In Progress.
+- Bản chép `0e3c9ec` nằm trên nhánh `feature/SHOP-94-kit-copy` và gồm 33 file, đều trong `.ai-orchestrator/` và `.claude/`. `ao-kit check` và `ao-kit doctor` đều đạt. Doctor chỉ báo một dòng đỏ đã biết: Docker đang tắt.
+- PR nháp là shop #93. Một chuỗi lệnh chạy nền đang chờ CI xanh, rồi chạy review (`reviewer` và `security`, khoảng 10–15 USD). Review xong mình báo bạn.
+
+**Bước 4 đã kiểm trước:** deployer trên VPS đã có file token Jira, và tài khoản `aodeploy` đọc được file đó. Vì vậy bản kit mới đọc được nhãn của item mà không cần thêm gì. Mình chỉ chép kit lên VPS sau khi review bản chép không còn lỗi Critical hay High.
+
+**Bước 6: bạn chọn tính năng cho Epic chạy thử.** Mỗi gợi ý có hai item nhỏ. Item sửa API giữ review, item giao diện bỏ review.
+1. **Sản phẩm cùng danh mục** (mình khuyên): trang chi tiết sản phẩm có thêm một khối, hiện tối đa 4 sản phẩm cùng danh mục.
+   - Item 1: API trả danh sách đó (`be-dev`, có review).
+   - Item 2: khối giao diện trên trang (`fe-dev`, bỏ review).
+   - Không đổi cơ sở dữ liệu, và dùng luôn danh mục vừa làm ở SHOP-81.
+2. **Thứ tự danh mục**: admin đặt thứ tự hiển thị cho danh mục, và trang của khách hiện theo thứ tự đó.
+   - Item 1: thêm cột, migration và API (`be-dev`, có review).
+   - Item 2: ô nhập thứ tự trong admin (`fe-dev`, bỏ review).
+3. Hoặc bạn nêu một tính năng khác.
+
+Mỗi gợi ý ước chừng 30–50 USD. Dòng nhắc file `critical` chỉ hiện khi item bỏ review sửa một file `critical`, như file đăng nhập, bảo mật hay `.env`. Cả hai gợi ý đều không sửa file nào như vậy, nên lượt chạy thử không kiểm được dòng đó. Test tự động của kit đã phủ dòng đó.
+
+**Bạn (Lượt 65):** Tại sao không làm Lượt chạy thử có các kiểm như bạn nói lúc nãy??? (dòng "bỏ review" trên PR; dòng nhắc file `critical` ở cổng ③; `/ao-run` dừng và nhắc bạn gõ `/ao-review <EPIC>`; lượt review sau merge chạy đúng; release bị chặn cho tới khi review sau merge xong.)
+
+**Claude (Lượt 65):**
+
+Lượt chạy thử vẫn kiểm được đủ 5 điểm. Lúc nãy mình sai: mình chọn sai item để bỏ review, nên tưởng không kiểm được dòng nhắc file `critical`.
+
+**Cách kiểm đủ 5 điểm:**
+1. **Chọn gợi ý 2 (Thứ tự danh mục), và đảo item bỏ review:**
+   - Item 1 gồm migration và API, và **bỏ review**. File migration nằm ở `db/migration/`, một đường dẫn `critical` của `shop`, nên cổng ③ sẽ hiện dòng nhắc.
+   - Item 2 là ô nhập thứ tự trong admin, và **có review**.
+   - Gợi ý 1 không kiểm được dòng này. API của nó nằm dưới `/api/**`, vốn đã mở sẵn, và không cần migration, nên nó không sửa file `critical` nào.
+2. **Dòng "bỏ review" trên PR:** có ở item 1.
+3. **`/ao-run` dừng và nhắc `/ao-review <EPIC>`:** có khi hai item đều Done.
+4. **Review sau merge:** bạn gõ `/ao-review <EPIC>`, mình kiểm báo cáo, dấu trên PR, Task sửa nếu có, và Task finding.
+5. **Release bị chặn:** bạn đã chọn không làm release. Mình kiểm bằng `/ao-release` chạy thử, không có `--go`. Lệnh này chỉ in cổng ④, không cắt release.
+   - Trước khi review sau merge, nó phải liệt kê PR của item 1.
+   - Sau khi review, dòng đó phải hết.
+   - Phần merge-gate chặn PR release vào `main` chỉ kiểm thật được ở lần release kế tiếp. Test tự động của kit đã phủ phần này.
+
+**Bạn nên biết:** item 1 sẽ đưa migration lên Development mà chưa review, cho tới khi bạn gõ `/ao-review`. Production vẫn được giữ, vì release bị chặn tới lúc đó.
+
+Bạn nhắn "chọn 2" thì mình viết bản nháp Epic theo cách trên. Review của shop PR #93 vẫn đang chạy nền.
+
+**Bạn (Lượt 66):** chọn 2
+
+**Claude (Lượt 66):**
+
+Mình đã viết bản nháp Epic ở `e-commerce/shop/.ai/intake/20261123-1354-thu-tu-danh-muc.md`. Bạn đọc tóm tắt dưới đây, rồi nhắn "OK" hoặc nói chỗ cần sửa.
+
+**Loại:** Epic, vì khách và quản trị viên đều thấy kết quả, và việc này cần SPEC với plan.
+
+**Tên:** Thứ tự hiển thị danh mục, liên quan SHOP-81.
+
+**Phạm vi:**
+- **Có:**
+  - mỗi danh mục có một số thứ tự (migration);
+  - API của `admin` nhận số này khi tạo và sửa danh mục;
+  - mọi danh sách danh mục xếp theo số này, rồi theo tên;
+  - `admin` có ô nhập số trong form, và cột thứ tự trong bảng danh mục.
+- **Không:** kéo thả, thứ tự theo ngôn ngữ, thứ tự sản phẩm trong danh mục, danh mục nhiều cấp.
+
+**Ràng buộc:**
+- Đúng hai item, mỗi item một PR.
+  - Item 1 gồm migration và API (`be-dev`), và **bỏ review**: plan ghi `review: skip`, rồi `ba` gắn nhãn `ao-review-skip`.
+  - Item 2 là phần `admin` (`fe-dev`), có review như mặc định.
+- Trong bản nháp đã ghi năm điểm lượt chạy thử phải kiểm.
+- Chi phí khoảng 30–50 USD.
+- `/ao-plan` chỉ chạy sau khi shop PR #93 (bản chép kit) đã merge.
+
+**Điểm mở, kèm đề xuất:**
+1. Số thứ tự là số nguyên từ 0 tới 9999. Số nhỏ hiện trước.
+2. Danh mục đang có và danh mục mới đều mang số 0. Vì vậy thứ tự vẫn theo tên cho tới khi quản trị viên đặt số.
+3. Ô chọn danh mục trong form sản phẩm của `admin` cũng xếp theo thứ tự mới.
+4. Không có trang mới của `user`, nên `seo` chỉ ghi "không đổi".
+
+**Sau khi bạn OK:**
+1. Mình tạo Epic trên Jira.
+2. Mình bấm Start spec và chạy `/ao-spec`. Bước này chạy được ngay, không cần chờ PR #93.
+3. Tới cổng ① (duyệt SPEC), cổng ② (duyệt plan) và cổng ③ (approve PR), mình dừng hỏi bạn, trừ khi bạn giao cho mình như ở T14.
+
+Review của shop PR #93 vẫn đang chạy nền.
+
+**Bạn (Lượt 67):** OK, tôi giao cổng 1, 2, 3 cho bạn
+
+**Claude (Lượt 67):**
+
+Mình đã tạo Epic **SHOP-95** "Thứ tự hiển thị danh mục" (https://phunghuutung12b4.atlassian.net/browse/SHOP-95), bấm Start spec (đang Specifying), và đặt `/ao-spec SHOP-95` tự chạy ngay khi review của PR #93 xong, vì `/ao-spec` không chạy cùng lúc với một lượt review. Thứ tự chạy là `ba` viết SPEC, `ux`, `sa`, `ba` mở PR tài liệu, rồi `seo`.
+
+**Phần mình làm, phần còn của bạn:**
+- Mình tự duyệt cổng ①, ② và ③ của Epic này.
+- Mình vẫn hỏi bạn khi review tìm ra lỗi Critical hay High.
+- Accept các item vẫn là việc của bạn.
+- Không làm release.
+
+**Đang chạy:** review của shop PR #93 (bản chép kit, SHOP-94). `reviewer` và `security` đã chạy được khoảng 15 phút. Sau đó tới `/ao-spec SHOP-95`.
+
+Mình báo khi có kết quả, hoặc khi agent hỏi điều cần bạn quyết.
+
+**Claude (Lượt 67, tiếp, 14:15):**
+
+**Review shop PR #93 xong.** Lượt review tốn 9,52 USD. Không có lỗi Critical hay High, và cả `reviewer` lẫn `security` đều Approve. Báo cáo có 4 Medium, trong đó một lỗi được cả hai báo, và 6 Low. Tất cả đều là lỗi trong code kit, quanh phần bỏ review và review sau merge:
+1. Báo cáo review sau merge được đăng lên Jira mà không mở đầu bằng tên vai trò, nên kit có thể đọc nhầm nó thành báo cáo QA. Lỗi chỉ xảy ra khi gõ `/ao-review` cho một item đang QA, không xảy ra với Epic.
+2. ao-step đặt dấu "đã review sau merge" lên PR trước, rồi mới đăng báo cáo lên Jira. Nếu bước Jira lỗi, lần chạy lại sẽ không đăng báo cáo nữa.
+3. File báo cáo của review sau merge nằm trong `.ai/reviews/`, và agent khác ghi đè được trước khi ao-step đăng. Khi đó PR mang dấu giả "Blocking: 0", và release không còn chờ.
+4. Nhãn `ao-review-skip` mà `ba` gắn lúc tạo item luôn được tính. Điều này đúng cả với item `ba` tạo sau cổng ②, theo yêu cầu "Cần ba:" của một agent khác.
+
+`security` khuyên sửa lỗi 3 và 4 trước khi dùng `ao-review-skip`, mà lượt chạy thử sắp dùng đúng nhãn này.
+
+**Bạn chọn:**
+1. **Merge #93 ngay và chạy thử luôn** (mình khuyên chọn cách này). Sau lượt thử, mình gom 4 Medium, 6 Low và những lỗi lượt thử lộ ra vào một đợt sửa kit, rồi chép kit và review một lần.
+   - Lỗi 3 và 4 chỉ xảy ra khi có một agent bị dẫn dắt làm việc ngoài phận sự.
+   - Trong lượt thử, mình tự đọc lại nhãn của từng item, và hai file báo cáo trước bước đăng.
+2. **Sửa trước:**
+   - một kit PR sửa 4 Medium;
+   - chép lại kit vào nhánh của SHOP-94;
+   - review lần hai, khoảng 6–10 USD.
+
+   Lượt thử sẽ chậm khoảng 2–3 giờ.
+
+Trong lúc chờ bạn chọn, `/ao-spec SHOP-95` đang chạy (bắt đầu với `ba` viết SPEC). Bước này không cần bản kit mới, nên không mất thời gian. Lựa chọn của bạn chỉ chặn `/ao-plan`.
+
+Báo cáo nằm ở `e-commerce/shop/.ai/reviews/93-reviewer.md` và `93-security.md`, và cũng đã đăng trên PR #93.
+
+merge-gate đã cắm cờ Needs you cho SHOP-94. Đây là cờ đã biết trước: PR #93 sửa đường dẫn được bảo vệ, nên chỉ có thể merge tay. Mình gỡ cờ ngay sau khi merge.
+
+**14:30:** `ba` viết SPEC xong và hỏi 6 câu. Câu 1–4 là các đề xuất bạn đã OK trong bản nháp Epic. Câu 5 (sitemap giữ thứ tự theo `id`) và câu 6 (ô thứ tự để trống thì form báo lỗi) là chi tiết mới, thuộc phần duyệt SPEC ở cổng ① mà bạn giao cho mình. Mình trả lời theo đề xuất của `ba` (`.ai/runs/SHOP-95/answers.md`), rồi chạy tiếp `/ao-spec`: `ba` sửa SPEC, sau đó tới `ux`, `sa`, `ba` mở PR tài liệu, rồi `seo`.
+
+**Bạn (Lượt 68):** 1 là merge ngay rồi chạy thử
+
+**Claude (Lượt 68):**
+
+**Đã làm:**
+- Mình approve shop PR #93 trên head `7c929bf` bằng `gh` của bạn và squash-merge nó, thành develop `8d65cd0`. Sau đó mình gỡ cờ Needs you của SHOP-94.
+- **Bước 4 xong:** kit trên VPS giờ là `0e3c9ec`.
+  - Mã băm của `ao-deploy.mjs` và `audit.mjs` trên VPS khớp với kit.
+  - Lệnh chạy thử của deployer báo đang chờ CI của `8d65cd0` trên develop, đúng như mong đợi.
+  - Bản cũ `9203355` được giữ ở `/opt/ao/kit.prev`.
+  - Dòng commit ghim trong `docs/vps-setup.md` đã sửa trong kit, nhưng chưa commit. Mình sẽ đưa nó vào nhánh tài liệu kế tiếp.
+- **SHOP-95, cổng ①:** `ux` viết `design.md` và hỏi 4 câu. Mình trả lời theo đề xuất của `ux`:
+  - cột Thứ tự hiển thị đứng trước cột Thao tác, và item 2 sửa helper `expectCells` của E2E;
+  - cách kiểm AC8 được tách ra cho cả hai item;
+  - số hiện không có dấu phân cách hàng nghìn;
+  - giữ các chữ `ux` đã viết.
+
+  `/ao-spec` đang chạy tiếp: `ux` sửa thiết kế, rồi tới `sa`, `ba` mở PR tài liệu, và `seo`.
+
+**Đang chờ:** một chuỗi lệnh nền đợi SHOP-94 sang Ready for QA, tức là CI của develop xanh, deploy Development xong, rồi jira-sync chuyển trạng thái. Sau đó nó bật Docker và chạy QA, khoảng 1 USD. Vì `/ao-spec` phải chạy một mình, QA sẽ đợi tới khi `/ao-spec` xong.
+
+**Tiền đã tốn:** review SHOP-94 hết 9,52 USD. SHOP-95 tới giờ có `ba` hai lượt và `ux` một lượt. Mình sẽ báo tổng khi qua cổng ①.
+
+**Claude (Lượt 68, tiếp, 14:50):**
+
+- `/ao-spec SHOP-95` xong: PR tài liệu shop #94, gồm `spec.md` (263 dòng, AC1–AC8) và `design.md`. `seo` không chạy, vì Epic không có màn hình nào của `user`. Tới giờ SHOP-95 tốn 7,07 USD.
+- Mình đọc SPEC trước khi duyệt cổng ①. SPEC khớp bản nháp Epic, chỉ vênh một chỗ: SPEC còn ghi "mọi E2E của SHOP-81 vẫn pass mà không sửa". Câu đó trái với câu trả lời Q1 của `ux`: item 2 sửa helper `expectCells`. Mình cho `ba` sửa câu đó (`--note`, khoảng 0,5–1 USD), rồi mới bấm Approve spec.
+- QA của SHOP-94 đang chạy. Vì `/ao-spec` phải chạy một mình, lượt sửa của `ba` sẽ tự chạy ngay sau khi QA xong.
+
+**Claude (Lượt 68, tiếp, 14:52):** QA của SHOP-94 đạt (PASS, comment 10697, 1,65 USD). Cả Task SHOP-94 tốn 11,17 USD. SHOP-94 đang ở In QA. **Accept là việc của bạn**: bạn bấm trên Jira, hoặc nhắn "Accept giúp". Docker đã tắt. Lượt sửa SPEC của `ba` cho SHOP-95 đang chạy.
+
+**Claude (Lượt 68, tiếp, 15:00):** `ba` đã sửa câu SPEC ở `ed744d9`. Mình bấm Approve spec thay bạn (cổng ①), nên SHOP-95 sang Planning. `/ao-plan SHOP-95` đang chạy: `sa` viết plan, rồi `ba` tạo hai item. Đây là lần đầu `sa` ghi `review: skip` và `ba` gắn nhãn `ao-review-skip`, nên khi xong mình đọc lại nhãn của từng item.
+
+**Claude (Lượt 68, tiếp, 15:20):**
+- `sa` đã viết plan, rồi `ba` tạo hai Story:
+  - **SHOP-96** (`be-dev`, heavy): migration V8 thêm cột `display_order`, và API. Story này mang nhãn `ao-review-skip`. `/ao-status` đọc đúng: "Review of SHOP-96: skipped (label ao-review-skip)".
+  - **SHOP-97** (`fe-dev`, standard): phần `admin`. Story này không có nhãn review, nên được review như mặc định.
+- Mình đọc plan rồi bấm Approve plan thay bạn (cổng ②). jira-sync Refine hai Story, và merge-gate merge PR tài liệu #94.
+- SHOP-95 tới giờ tốn 12,77 USD cho spec và plan.
+- Docker đã bật. Dispatcher `/ao-run SHOP-95` đang chạy với ngân sách 40 USD, và đã bắt đầu `/ao-build SHOP-96`. SHOP-97 chờ SHOP-96 merge.
+
+**Bạn (Lượt 69):** ở bước ux thay vì chụp ảnh màn hình làm input cho ux thì tôi đưa link Claude Design, Claude Design System có được không? Kit hiện tại có hỗ trợ không?
+
+**Claude (Lượt 69):**
+
+Kit hiện tại chưa hỗ trợ đưa link: `ux` không mở được link nào. Bạn vẫn dùng được thiết kế từ Claude Design, nhưng phải đi qua ảnh.
+
+**Vì sao chưa được:**
+1. `ux` chỉ có Bash, Edit và Write. Nó không có công cụ đọc web. Trong kit, chỉ `seo` đọc được web, và cũng chỉ đọc được trang công khai.
+2. Link Claude Design là trang riêng, cần đăng nhập tài khoản claude.ai của bạn. Agent chạy nền không mở được trang này.
+3. Kit hiện nhận ba kiểu màn hình:
+   - hình ASCII do `ux` vẽ;
+   - ảnh export từ Figma, kèm link Figma, nhưng link chỉ để ghi nguồn chứ `ux` không mở;
+   - ảnh chụp hoặc mockup, bạn bỏ vào `.ai/design-inbox/<EPIC>/`.
+
+**Cách dùng ngay hôm nay, không sửa kit:**
+1. Mở thiết kế trên Claude Design, chụp hoặc xuất ảnh từng màn hình. Mỗi ảnh là PNG hay JPG, tối đa 1 MB, cạnh dài tối đa 2.000 px.
+2. Bỏ ảnh vào `.ai/design-inbox/<EPIC>/` của dự án, và dán link Claude Design vào mô tả Epic.
+3. `ux` làm như với ảnh chụp: đặt tên ảnh theo mã màn hình, ghi `screenshot:` là link Claude Design, rồi rút màu, font, khoảng cách và component vào mục Design System.
+
+**Muốn kit nhận thẳng link thì cần sửa kit.** Bước lấy thiết kế phải do phiên chính làm, không phải `ux`:
+- Phiên chính đọc được thiết kế Claude Design của chính bạn, vì nó có quyền tài khoản claude.ai. Nó lưu bản HTML vào `design-inbox`, rồi mở bằng trình duyệt để chụp từng màn hình.
+- `ux` đọc cả ảnh lẫn HTML. Từ CSS của HTML, `ux` lấy được màu, cỡ chữ và khoảng cách chính xác hơn khi đoán từ ảnh.
+- Một Claude Design System có thể thành nguồn của `docs/design-system/<app>.md`. Tuy vậy, công cụ đọc Design System mà mình có hiện chỉ được dùng cho việc đồng bộ thư viện component do bạn khởi động, nên phần này cần thử trước.
+- Bạn nên biết: Claude Design bản riêng (claude.ai/design) đóng trước 2026-12-14 và chuyển vào Claude, nên link cũ có thể đổi.
+- Ước chừng 3–5 giờ cho kit, chưa kể lần thử thật. Phần đọc thiết kế từ phiên chính mình chưa thử.
+
+Nếu bạn muốn, mình ghi việc này vào hàng chờ của kit, sau lượt chạy thử SHOP-95. Hiện `be-dev` vẫn đang build SHOP-96.
+
+**Bạn (Lượt 70):** ghi việc này vào hàng chờ của kit, làm sau lượt chạy thử SHOP-95
+
+**Claude (Lượt 70):** Mình đã ghi việc này thành mục 10 của `tasks/todo.md` trong kit. Mục ghi: việc "`ux` nhận thiết kế từ link Claude Design và Claude Design System", hướng làm, ước lượng 3–5 giờ, mốc Claude Design bản riêng đóng trước 2026-12-14, và cách dùng ảnh chụp tới khi làm xong. Ngay dưới mục đó, mình ghi luôn đợt sửa kit bạn đã chọn ở Lượt 68: 4 Medium và 6 Low của review shop PR #93, cùng những gì lượt chạy thử lộ ra. Mình chưa commit file này; nó sẽ vào nhánh tài liệu kế tiếp, cùng nhật ký và dòng ghim VPS. Hiện `be-dev` vẫn đang build SHOP-96.
+
+**Claude (Lượt 70, tiếp, 16:35):**
+- `be-dev` build xong SHOP-96 trong 61 phút, tốn 12,86 USD. PR nháp shop #95 có CI xanh.
+- **Kiểm được điểm 2 của lượt thử:** `/ao-status SHOP-96` ghi "PR #95 changes critical files with no review: …/V8__add_category_display_order.sql. Read the diff of these files closely before you approve".
+- `be-dev` cắm cờ và hỏi `sa` (comment 10702). Plan ghi số `-1.5` trả hai lỗi trên trường thứ tự, nhưng handler hiện có chỉ trả một lỗi cho mỗi trường, như trường giá của sản phẩm. Mình quyết thay bạn, vì đây là quyết định của plan (cổng ②):
+  - giữ PR như hiện tại, tức là một lỗi;
+  - không đổi handler;
+  - `sa` sửa dòng đó trong hợp đồng.
+
+  Mình đã gỡ cờ, với comment ghi quyết định này. `/ao-request SHOP-96` đang chạy `sa`.
+- SHOP-95 tới giờ tốn khoảng 25,6 USD.
+- **Ghi nhận cho kit:** `be-dev` heavy tốn 12,86 USD, gần bằng cả spec và plan cộng lại.
+
+**Claude (Lượt 70, tiếp, 16:40):**
+- `sa` trả lời câu hỏi của `be-dev` (0,49 USD) theo quyết định giữ PR. SHOP-96 tới giờ tốn 13,35 USD.
+- Dispatcher chạy `/ao-review 95` lúc 16:31. Không agent nào chạy. App review đăng dấu vết "Bỏ review: SHOP-96" trên head `b1a40f8`, kèm dòng **"PR này sửa file critical mà không review: …/V8__add_category_display_order.sql"**. Như vậy **điểm kiểm 1 và 2 của lượt thử đã đạt**.
+- Mình đã đọc V8 và đường sửa danh mục:
+  - V8 chỉ thêm cột, có DEFAULT 0, CHECK 0–9999 và `lock_timeout` 5 giây, không sửa dòng nào;
+  - lệnh sửa danh mục mà không gửi số thì giữ số cũ.
+
+  Sau đó mình approve PR #95 ở cổng ③. Giờ mình chờ merge-gate merge PR này.
+
+**Claude (Lượt 70, tiếp, 16:45):** merge-gate merge PR #95 lúc 16:33, thành develop `10f0df1`. PR chỉ có dấu vết bỏ review, CI xanh và approve, không có báo cáo nào, và merge-gate vẫn nhận. Dispatcher bắt đầu `/ao-build SHOP-97` (`fe-dev`) 18 giây sau. Làn của SHOP-97 fetch `origin/develop` trước khi tạo nhánh, nên đã có phần API của SHOP-96. SHOP-96 chờ deploy Development, rồi dispatcher chạy QA. Accept SHOP-96 là việc của bạn.
+
+**Claude (Lượt 70, tiếp, 17:10):**
+- QA của SHOP-96 đạt (PASS, comment 10705, 1,47 USD) trên Development, ở commit `10f0df1`.
+  - QA kiểm AC4, AC6, AC7 và AC8, có 6 ảnh làm bằng chứng.
+  - SHOP-96 tốn tổng cộng 14,82 USD.
+- `fe-dev` vẫn đang build SHOP-97.
+- **Cần bạn Accept SHOP-94 và SHOP-96**, hoặc nhắn "Accept giúp". Lý do:
+  - Bước `/ao-run` dừng và nhắc gõ `/ao-review SHOP-95` (điểm kiểm 3) chỉ hiện khi mọi item của Epic đã Done.
+  - Accept vẫn là việc của bạn.
+
+**Bạn (Lượt 71):** Accept giúp
+
+**Claude (Lượt 71):** Mình đã Accept SHOP-94 (Task chép kit) và SHOP-96 (Story phần nền, đã bỏ review). Cả hai đều Done, với resolution Done. Trong Epic SHOP-95 giờ chỉ còn SHOP-97: `fe-dev` vẫn đang build phần `admin`, và Story này sẽ được review như mặc định.
+
+**Claude (Lượt 71, tiếp, 17:20):**
+- `fe-dev` build xong SHOP-97 trong 32 phút, tốn 6,47 USD. PR nháp shop #96 có CI xanh.
+- Mình xem ảnh preview của `fe-dev`:
+  - cột "Thứ tự hiển thị" đứng sau "Số sản phẩm" và trước "Thao tác";
+  - các dòng xếp theo thứ tự 0, 1, 1, 2, 1000;
+  - nhập 1.5 thì báo lỗi "Thứ tự là số nguyên từ 0 đến 9999".
+- Vì vậy mình bỏ bước preview và chạy `/ao-review 96`. Story này có review như mặc định.
+- SHOP-95 tới giờ tốn khoảng 34,1 USD: spec và plan 12,77, SHOP-96 14,82, SHOP-97 6,47.
+
+**Claude (Lượt 71, tiếp, 17:30):**
+- Review PR #96 tốn 1,06 USD. `reviewer` Approve, chỉ có 1 Low: hai dòng chú thích dài quá 100 ký tự. PR thuộc mức `normal`, nên không cần `security`. SHOP-97 tới giờ tốn 7,54 USD. Mình approve PR #96 ở cổng ③.
+- **Điểm kiểm 5, nửa đầu, đạt:** `/ao-release` chạy thử, không `--go` và không tạo gì, in ra "Skipped review, to review after merge before v0.4.0 reaches Production: review after merge of #95 (SHOP-96), which skipped review". Lệnh dừng ở cổng ④, vì thiếu Fix Version v0.5.0.
+- **Ghi nhận cho kit:** dòng trên ghi `/ao-review <its Epic>`, chưa ghi sẵn SHOP-95.
+- Đang chờ: merge-gate merge #96, deploy, rồi QA của SHOP-97.
+
+**Bạn (Lượt 72):** sao chạy QA của SHOP-97 lâu vậy nhỉ?
+
+**Claude (Lượt 72):** QA của SHOP-97 chưa lâu: nó mới chạy khoảng 7 phút, bắt đầu lúc 17:30. Thời gian chờ chủ yếu nằm ở các bước trước QA. Các mốc từ lúc mình approve:
+1. **17:17:** merge-gate merge PR #96, thành develop `45149d5`, chừng 5 phút sau khi mình approve.
+2. **17:17–17:29:** CI của develop chạy lại trên commit merge. Deployer trên VPS chỉ đưa `develop` lên Development khi CI của chính commit đó xanh. Sau đó deploy, rồi jira-sync chuyển SHOP-97 sang Ready for QA.
+3. **17:30:** dispatcher bắt đầu `/ao-qa SHOP-97`. Lúc 17:38, agent `qa` vẫn đang chạy và log vẫn ghi đều, chưa có dấu hiệu bị treo.
+
+Lượt QA của SHOP-96 mất 14 phút, nên lượt này chắc xong khoảng 17:45–17:50. Xong mình báo kết quả.
+
+**Claude (Lượt 72, tiếp, 17:50):**
+- QA của SHOP-97 đạt (PASS, comment 10711, 1,17 USD), ở commit `45149d5` trên Development. `qa` kiểm tay AC1, AC2, AC3, AC5 và AC8 trên `admin`, kèm ảnh làm bằng chứng.
+- SHOP-97 tốn tổng cộng 8,71 USD. Cả Epic SHOP-95 tới giờ tốn 36,31 USD, tức 4,54 USD cho mỗi AC.
+- Kit đã tạo Task finding **SHOP-98**, mang nhãn `ao-findings`, để giữ Low của PR #96. Task này không chặn bước review sau merge.
+- `/ao-status SHOP-95` đã ghi: "Review after merge: PR #95 (SHOP-96) skipped review and wait for it → /ao-review SHOP-95".
+- **Cần bạn Accept SHOP-97**, hoặc nhắn "Accept giúp". Sau đó:
+  1. mình kiểm dòng `/ao-run` dừng và nhắc `/ao-review SHOP-95` (điểm kiểm 3);
+  2. mình chạy `/ao-review SHOP-95` (điểm kiểm 4). Diff của PR #95 có file `critical`, nên lượt này gồm `reviewer` ở mức xhigh và `security` ở mức max, ước 5–10 USD. Nếu bạn muốn tự gõ lệnh này thì nhắn mình;
+  3. mình chạy lại `/ao-release` thử, để xem dòng của PR #95 đã hết chưa (điểm kiểm 5, nửa sau).
+
+**Bạn (Lượt 73):** Accept giúp và làm tiếp
+
+**Claude (Lượt 73):**
+- Mình đã Accept SHOP-97, giờ nó Done.
+- **Điểm kiểm 3 đạt:** lúc 18:24, dispatcher ghi "waiting for you: SHOP-95: /ao-review SHOP-95". Nó chỉ nhắc mà không tự chạy. Task finding SHOP-98 không chặn bước này.
+- **Điểm kiểm 4 đang chạy:** mình chạy `/ao-review SHOP-95`.
+  - Lượt chạy thử của lệnh chọn đúng phần cần review: "To review after merge: PR #95 (SHOP-96); 26 files".
+  - Lệnh đang chạy `reviewer` ở mức xhigh và `security` ở mức max, cùng lúc, vì có file `critical` V8.
+  - SHOP-98 chưa merge nên bị để ngoài.
+
+**Claude (Lượt 73, tiếp, 18:45): lượt chạy thử SHOP-95 xong, đạt cả 5 điểm kiểm.**
+
+| Điểm kiểm | Kết quả |
+|---|---|
+| 1. Dòng "bỏ review" trên PR | Đạt. App review đăng "Bỏ review: SHOP-96" trên head `b1a40f8` của PR #95, và merge-gate merge PR chỉ với dấu đó, CI và approve. |
+| 2. Dòng nhắc file `critical` ở cổng ③ | Đạt. Dòng nhắc có trong dấu vết, trong `/ao-status` và ở chỗ dừng: `V8__add_category_display_order.sql`. |
+| 3. `/ao-run` dừng và nhắc `/ao-review SHOP-95` | Đạt. Lúc 18:24, dispatcher ghi "waiting for you: SHOP-95: /ao-review SHOP-95" và không tự chạy. |
+| 4. Review sau merge | Đạt. `reviewer` (xhigh, 2,91 USD) và `security` (max, 3,40 USD) đọc 26 file của PR #95. Kết quả: 0 Critical, 0 High. Sau đó ao-step làm ba việc. Một, đặt dấu "Reviewed after merge: SHOP-95, Blocking: 0" lên PR #95. Hai, đăng báo cáo lên SHOP-95 (comment 10714). Ba, ghi 1 Medium và các Low vào Task finding SHOP-98 (comment 10715). |
+| 5. Release bị chặn tới khi review sau merge xong | Đạt. `/ao-release` chạy thử liệt kê PR #95 trước lượt review, và không còn liệt kê sau lượt đó. Phần merge-gate chặn PR release vào `main` chưa kiểm thật, vì bạn chọn không release. |
+
+**Chi phí:**
+- Epic SHOP-95 tốn 42,61 USD (5,33 USD cho mỗi AC), nằm trong khoảng 30–50:
+  - spec và plan 12,77 USD;
+  - SHOP-96 14,82 USD, riêng `be-dev` heavy là 12,86;
+  - SHOP-97 8,71 USD;
+  - review sau merge 6,31 USD.
+- Task chép kit SHOP-94 tốn thêm 11,17 USD.
+
+**Lỗi thật của sản phẩm:** review sau merge tìm ra 1 Medium. API coi chuỗi rỗng, chuỗi chỉ có khoảng trắng hay chuỗi `"null"` ở trường thứ tự là như không gửi, nên giữ số cũ thay vì trả 400 như AC4 yêu cầu. Lỗi này nằm trong Task finding SHOP-98, đang chờ bạn Refine. Nên sửa nó trước bản release có SHOP-95.
+
+**Ghi nhận cho kit:** 5 điểm, đã ghi vào `tasks/todo.md` ngay dưới đợt sửa kit:
+1. `/ao-release` ghi `<its Epic>` thay vì khóa SHOP-95.
+2. `sa` trả lời câu hỏi mà không sửa `plan.md` đã merge.
+3. Trả lời câu hỏi của `ux` không kéo `ba` chạy lại để sửa SPEC.
+4. Watcher báo lại các chỗ chờ cũ mỗi lần bật lại.
+5. Báo cáo của review sau merge được đăng ngay trong cùng lượt, nên người không đọc được trước. Lần này mình kiểm sau khi đăng: hai file báo cáo do chính `reviewer` và `security` ghi, và lúc đó không agent nào khác chạy.
+
+**Dọn dẹp:** dispatcher đã dừng bằng `--stop`, và Docker đã tắt. Epic SHOP-95 vẫn In Progress cho tới khi có release.
+
+**Việc kế tiếp, chờ bạn chọn:**
+1. Đợt sửa kit: 4 Medium và 6 Low của review shop PR #93, cộng 5 điểm ở trên. Sau đó chép kit vào `shop` một lần, có review.
+2. Mục 10: `ux` nhận link Claude Design, ước 3–5 giờ.
+3. Refine SHOP-98 để sửa Medium của API.
+
+Mình đề xuất làm theo thứ tự 1 → 2, còn SHOP-98 tùy lúc bạn Refine. Bạn nhắn "làm" thì mình bắt đầu.

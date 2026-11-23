@@ -319,7 +319,7 @@ journalctl -u ao-deploy --since "10 min ago"
 
 ## 12. Cập nhật bản kit trên VPS
 
-Bản kit ghim theo một commit của `main`, nên bản sửa của deployer hay `audit` chỉ có hiệu lực khi được chép lên. Commit ghim hiện tại: `92033553f14c8e24d3e7c1487efde22b73261072` (2026-11-23, sau C2: deployer xem lại đầu `develop` bị từ chối vì CI đỏ, và deploy khi chạy lại CI mà xanh). Trước đó là `666def3` (2026-11-22: deployer chỉ đưa `develop` lên Development khi CI của chính commit đầu nhánh xanh), ở `/opt/ao/kit.prev`. Trước nữa là `05da881` (2026-11-14, Pilot 3, T10); mục này từng ghi `dbbf318`, nhưng `audit.mjs` trên VPS khớp `05da881`. Việc này cần đăng nhập root (mục 9), và bạn đồng ý từng lần.
+Bản kit ghim theo một commit của `main`, nên bản sửa của deployer hay `audit` chỉ có hiệu lực khi được chép lên. Commit ghim hiện tại: `0e3c9ec74ed3327a86860eb6afddae75f3d972fe` (2026-11-23, review theo item: `audit` của deployer đọc nhãn review và nhãn mức của item, nên cần `jira_token_file` trong `deployer.yaml`). Trước đó là `9203355` (2026-11-23, sau C2: deployer xem lại đầu `develop` bị từ chối vì CI đỏ, và deploy khi chạy lại CI mà xanh), ở `/opt/ao/kit.prev`. Trước nữa là `666def3` (2026-11-22: deployer chỉ đưa `develop` lên Development khi CI của chính commit đầu nhánh xanh). Trước nữa là `05da881` (2026-11-14, Pilot 3, T10); mục này từng ghi `dbbf318`, nhưng `audit.mjs` trên VPS khớp `05da881`. Việc này cần đăng nhập root (mục 9), và bạn đồng ý từng lần.
 
 Trên máy bạn, ở repo kit:
 
