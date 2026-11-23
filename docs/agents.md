@@ -171,7 +171,11 @@ Design và Design System làm trong Claude là artifact, mỗi cái có link `ht
 
 **Design System của Claude** không đi qua `ux`: tạo một Task "đồng bộ design system" bằng `/ao-intake`, gõ `/ao-design <TASK>` để lấy `tokens.json` và `README.md`, rồi `/ao-build <TASK>`: `fe-dev` đưa token vào code và `docs/design-system/<app>.md`, qua PR có review.
 
-**Giới hạn:** phiên chính đọc đầy đủ artifact của bạn, hay artifact được chia sẻ quyền sửa. Chỉ có quyền xem thì tải folder về và bỏ vào `.ai/design-inbox/<EPIC>/`. Figma qua MCP sẽ làm sau, khi bạn có gói Education.
+**Giới hạn và cách xử lý:**
+- Phiên chính đọc đầy đủ artifact của bạn, hay artifact được chia sẻ quyền sửa. Chỉ có quyền xem thì giữ file tải về ở ngoài dự án, mở nó, chụp từng màn hình và bỏ ảnh vào `.ai/design-inbox/<EPIC>/` (màn hình kiểu Ảnh).
+- Khung có dữ liệu động: chụp tay, đặt tên `<mã>-desktop.png` hay `<mã>-mobile.png`, bỏ vào `.ai/design-inbox/<EPIC>/`, rồi chạy lại `render`: nó dùng ảnh của bạn.
+- Link artifact không phải thiết kế, như một bản ghi chú: `design-inbox.mjs skip <EPIC> --url <link> --why <lý do>` ghi lại, để `/ao-spec` không chờ nó.
+- Figma qua MCP sẽ làm sau, khi bạn có gói Education.
 
 ## Đưa ảnh chụp màn hình vào repo
 

@@ -62,17 +62,21 @@ test('an artboard renders with no script: its helmet goes to head, scripts, hand
   const { html, dynamic } = stripCanvas(ARTBOARD);
   assert.equal(dynamic, false);
   assert.match(html, /^<!doctype html>\n<html lang="vi">/);
-  assert.match(html, /<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline' https:\/\/fonts\.googleapis\.com; font-src https:\/\/fonts\.gstatic\.com; img-src 'self' data:">/);
-  assert.match(html, /<link href="https:\/\/fonts\.googleapis\.com\/css2\?family=Inter" rel="stylesheet">/);
-  assert.match(html, /<a class="btn" href="#dung-thu" style="color:#1f5f4a">Dùng thử<\/a>/);
-  for (const gone of [/<script/i, /onclick/i, /javascript:/i, /<iframe/i, /http-equiv="refresh"/i, /evil\.example/, /<x-dc>/, /<helmet>/]) assert.doesNotMatch(html, gone);
+  assert.match(html, /<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline' https:\/\/fonts\.googleapis\.com; font-src https:\/\/fonts\.gstatic\.com; img-src 'self' data:; base-uri 'none'; form-action 'none'">/);
+  assert.match(html, /<link rel="stylesheet" href="https:\/\/fonts\.googleapis\.com\/css2\?family=Inter">/);
+  assert.match(html, /<a class="btn" href="#dung-thu"\s+style="color:#1f5f4a">Dùng thử<\/a>/);
+  // The tags that run or move the page are text now (their "<" escaped), never tags: only one meta, the CSP, is live.
+  for (const gone of [/<script/i, /onclick/i, /javascript:/i, /<iframe/i, /<x-dc>/, /<helmet>/]) assert.doesNotMatch(html, gone);
+  assert.equal([...html.matchAll(/<meta\b/gi)].length, 2, 'the charset and the CSP');
+  assert.match(html, /&lt;meta http-equiv="refresh"/);
   assert.equal(stripCanvas(ARTBOARD.replace('Dùng thử', '{{ title }}')).dynamic, true);
   assert.equal(stripCanvas(ARTBOARD.replace('Dùng thử', '<sc-for list="{{ items }}" as="item"></sc-for>')).dynamic, true);
   assert.match(stripCanvas('<html><body>x</body></html>').problem, /has no <x-dc> element/);
   // Threat model of item 10: only the stylesheet of Google Fonts stays among the links.
   const links = stripCanvas(ARTBOARD.replace('<style>', '<link rel="prefetch" href="https://evil.example/a"><link rel="stylesheet" href="https://evil.example/b.css"><style>')).html;
-  assert.doesNotMatch(links, /evil\.example/);
-  assert.match(links, /fonts\.googleapis\.com\/css2\?family=Inter/);
+  const head = links.slice(0, links.indexOf('</head>'));
+  assert.doesNotMatch(head, /evil\.example/);
+  assert.match(head, /fonts\.googleapis\.com\/css2\?family=Inter/);
 });
 
 test('render reads only an artboard add could have written: inbox.yaml sits in .ai/, which agents write', () => {
@@ -114,7 +118,7 @@ test('the problems of an inbox: a link not taken, a file missing or changed, an 
   const retired = readRegistry(registry ? '## Apps\n\n| Prefix | App |\n|---|---|\n| USR | user |\n\n## Areas\n\n| Area | Meaning |\n|---|---|\n| HOME | Trang chủ |\n\n## Screens\n\n| Code | Name | App | Route | Epic | State |\n|---|---|---|---|---|---|\n| USR-HOME01 | Cũ | user | /old | SHOP-1 | bỏ |\n' : '');
   assert.deepEqual(inboxProblems(inbox, { files: onDisk, registry: retired }), ['USR-HOME01 is retired in docs/design-system/screens.md: give project/USR-HOME01.dc.html a new code']);
   const noShot = { ...inbox, sources: [entry] };
-  assert.deepEqual(inboxProblems(noShot, { files: onDisk, registry }), ['USR-HOME01 (Hero) has no image yet: run render, or put a screenshot of it in the inbox']);
+  assert.deepEqual(inboxProblems(noShot, { files: onDisk, registry }), ['USR-HOME01 (Hero) has no image yet: put a screenshot of it in the inbox, named USR-HOME01-desktop.png or USR-HOME01-mobile.png, then run render again']);
   const forged = { ...inbox, sources: [{ ...inbox.sources[0], files: [...entry.files, { path: 'project/CLAUDE.md', sha256: 'x' }] }] };
   assert.deepEqual(inboxProblems(forged, { files: onDisk, registry }), ['4MHNq6Tk2x3o31S4RVXD5V/project/CLAUDE.md is not a file the inbox keeps']);
 });
