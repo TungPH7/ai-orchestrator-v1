@@ -41,7 +41,7 @@ function facts(change = () => {}) {
     command: 'review',
     arg: 'DEMO-20',
     space: 'DEMO',
-    item: { key: 'DEMO-20', type: 'Epic', workType: 'epic', state: 'in-progress', status: 'In Progress', summary: 'Giỏ hàng', labels: [], children: [], subtasks: [], parent: null },
+    item: { key: 'DEMO-20', type: 'Epic', workType: 'epic', state: 'in-progress', status: 'In Progress', summary: 'Giỏ hàng', labels: [], children: [], subtasks: [], parent: null, requests: [] },
     pr: null,
     docs: null,
     afterMerge: {
@@ -192,4 +192,11 @@ test('/ao-run of an Epic whose items are all done asks you for its review after 
   // Nothing to review: nothing waits for it.
   const none = await planRound({ items: [epic], scope: { epic: 'DEMO-20' }, cap: 2, decide: async () => ({ go: false, waits: 'fix', reason: 'no PR' }) });
   assert.deepEqual(none.waiting, []);
+});
+
+test('/ao-status <Epic> names the PRs that wait for their review after merge, or what it found (spec 6.3)', () => {
+  const status = (pulls) => decideStep('status', facts((f) => (f.command = 'status') && (f.afterMerge.pulls = pulls) && f), options).lines;
+  assert.ok(status([{ number: 31, key: 'DEMO-21', merged: true, skipped: true, mark: null }]).includes('Review after merge: PR #31 (DEMO-21) skipped review and wait for it → /ao-review DEMO-20'));
+  assert.ok(status([{ number: 31, key: 'DEMO-21', merged: true, skipped: true, mark: { blocking: 2, fix: 'DEMO-30' } }]).includes('Review after merge: done for 1 PR; its Critical and High wait for DEMO-30'));
+  assert.equal(status([{ number: 33, key: 'DEMO-24', merged: true, skipped: false, mark: null }]).some((line) => line.startsWith('Review after merge')), false);
 });

@@ -767,6 +767,8 @@ test('an item that skips review merges with the trace on its head, CI and your a
   assert.equal(merges(decide(skipping)), true);
   // Without the trace on the head: it waits for it.
   assert.deepEqual(decide((f) => { skipping(f); f.reviews = [approval(f), skipTrace(FIRST)]; }), { action: 'wait', missing: ['the trace of the review DEMO-12 skips on head a1b2c3d, which ao-step review posts'] });
+  // The clean reports of a full review you asked for do as well as the trace.
+  assert.equal(merges(decide((f) => { f.reviews = f.reviews.slice(1); f.review = { skip: true, why: 'label' }; })), true);
   // Your approval and CI stay.
   assert.deepEqual(decide((f) => { skipping(f); f.reviews = [skipTrace(HEAD)]; }).missing, ['approval on head a1b2c3d']);
   assert.deepEqual(decide((f) => { skipping(f); f.checks = { green: false, failed: false }; }).missing, ['CI green on head a1b2c3d']);
