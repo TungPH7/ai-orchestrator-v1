@@ -34928,3 +34928,37 @@ Nguồn:
 - Kit PR của bước 1 (và bước 4): mình tự merge khi CI xanh, như đợt sửa trước, hay bạn muốn tự duyệt?
 
 Ngoài ra, mình sẽ tự dừng ở bước 3 để bạn duyệt đặc tả, và ở bước 6 trước khi chạy review trả tiền.
+
+**Bạn (Lượt 87):** Làm theo thứ tự 1 → 6 như trên. Bạn cứ làm theo đề xuất, những gì không có quyền thì mới hỏi tôi, còn lại tôi cho phép bạn accept và approve . Hoàn thành cả 6 mục giúp tôi, không cần dừng ở bước 3
+
+**Claude (Lượt 87):**
+
+Xong cả 6 bước. SHOP-100 (chép kit `ee5865f` vào `shop`) đã Done.
+
+| Bước | Kết quả |
+|---|---|
+| 1. Sửa loại 1 sau review PR #97 | 5 finding đã sửa, mỗi cái có test đỏ trước. Rủi ro loại 2 đã ghi ở SPEC mục 7c và `quality-gates.md`. Kit PR #352 đã merge. |
+| 2. Thử chụp ảnh | Bỏ lớp vỏ canvas của `Main.dc.html` rồi chụp được: desktop 1440×760, mobile 390×1214. |
+| 3. Đặc tả mục 10 | Đã ghi vào `tasks/todo.md`. |
+| 4. Code mục 10 | Lệnh `/ao-design`, script `design-inbox.mjs` (add, skip, render, check, codes), mã màn hình `<APP>-<KHU><SỐ>` kèm sổ mã `docs/design-system/screens.md`, D10 và D11 của `check-design`, `/ao-spec` dừng khi còn link chưa nhập; đã sửa prompt, template và tài liệu cho khớp. 1911 test xanh. Kit PR #353 đã merge. |
+| 5. Threat model và rà độc lập | Agent rà độc lập tìm ra 2 High, 4 Medium, 6 Low, đã sửa hết trước lần review trả tiền. Hai High là: một thẻ meta refresh lọt qua bước bóc vỏ, và `--url` ghi được file vào `.claude/rules/`. |
+| 6. Chép kit vào `shop` | PR #98: CI xanh, review không có Critical hay High; mình approve ở gate ③ thay bạn và merge. QA PASS trên Development, rồi Accept. Chi phí SHOP-100: 10,75 USD (review khoảng 9,2, QA 1,55). |
+
+**Ba điều bạn nên biết:**
+1. **Review PR #98 còn 4 Medium và 6 Low**, đã ghi thành mục 12 của kit. Đáng chú ý nhất là lỗi chung của cả `reviewer` và `security`:
+   - trong khối `<style>`, mình vẫn dùng cách xóa chữ, nên hai nửa ghép lại thành `</style>`, và một thẻ refresh có thể đưa trình duyệt chụp ảnh sang trang ngoài;
+   - đúng kiểu lỗi đã sửa ở phần body, nhưng sót ở `<head>`.
+
+   Theo luật "không có Critical hay High thì không mở thêm vòng review trả tiền", PR đã merge. **Tới khi sửa xong, chỉ chạy `/ao-design` trên artifact của chính bạn.**
+2. **Trên Windows, file tên `claude.md` bị Claude Code nạp như `CLAUDE.md`.** Mình gặp điều này khi đặt tên một fixture. Vì vậy `add` không bao giờ giữ file chỉ dẫn nào từ artifact, ở mọi cách viết hoa thường.
+3. **E2E chập chờn:** `accessibility.spec.ts` › products page S4 (en, dark) hết giờ một lần, chạy lại thì đạt. PR không đổi code app. `qa` chưa mở Bug; nếu test này fail lại thì nên mở.
+
+**Cách dùng ngay bây giờ:**
+1. Trong Claude, dặn khi dựng thiết kế: mỗi màn hình một khung, tên file theo mã, như `USR-HOME01.dc.html`, và tên khung bắt đầu bằng mã, như "USR-HOME01 · Trang chủ".
+2. Dán link artifact vào mô tả Epic.
+3. Gõ `/ao-design <EPIC>`, rồi `/ao-spec <EPIC>`.
+
+**Còn chờ bạn quyết:**
+1. Mục 12: sửa trong kit ngay (không tốn tiền agent; review trả tiền sẽ đi cùng lần chép kit sau), hay để sau?
+2. Chạy thử một Epic nhỏ của shop có thiết kế từ Claude Design: tốn khoảng 40 USD, như SHOP-95.
+3. Kit trên VPS còn ghim ở `0e3c9ec`. Bản sửa `audit` của mục 11 chỉ tới deployer khi bạn cho đổi ghim.
