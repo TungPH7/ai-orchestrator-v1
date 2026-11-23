@@ -54,7 +54,7 @@ test('the label beats the default, and both labels review (spec 2.2)', () => {
 test('a change of the agents account towards skipping does not count; one towards review does (spec 2.4)', () => {
   const skipAdded = change(AGENTS, 'ao-be-dev', 'ao-be-dev ao-review-skip');
   const choice = reviewChoice({ labels: ['ao-be-dev', 'ao-review-skip'], histories: [skipAdded], agentAccount: AGENTS, names });
-  assert.deepEqual(choice, { skip: false, why: 'default', ignored: { label: 'ao-review-skip' } });
+  assert.deepEqual(choice, { skip: false, why: 'default', ignored: { label: 'ao-review-skip', change: 'added' } });
   // The same change by you counts.
   assert.equal(reviewChoice({ labels: ['ao-review-skip'], histories: [change(YOU, '', 'ao-review-skip')], agentAccount: AGENTS, names }).skip, true);
   // ao-review-on taken off by the agents' account comes back, under a default off.
@@ -67,6 +67,28 @@ test('a change of the agents account towards skipping does not count; one toward
   const flagged = change(AGENTS, 'ao-review-skip', 'ao-review-skip needs-you');
   assert.equal(reviewChoice({ labels: ['ao-review-skip', 'needs-you'], histories: [change(YOU, '', 'ao-review-skip', '2026-11-22T10:00:00.000+0000'), flagged], agentAccount: AGENTS, names }).skip, true);
   assert.deepEqual(trustedReviewLabels(['x'], [skipAdded], { agentAccount: undefined, names }), ['x'], 'no account id');
+  // Review of shop PR #93 (reviewer, Low 2): ao-review-on taken off under a default off is named as such.
+  assert.deepEqual(reviewChoice({ labels: [], histories: [onRemoved], agentAccount: AGENTS, names, projectDefault: 'off' }).ignored, { label: 'ao-review-on', change: 'removed' });
+});
+
+// Review of shop PR #93 (security, Medium 2): a label set when an item is made leaves no line in its changelog. The
+// agents' account (ba) sets ao-review-skip when it makes an item from the plan you approved at gate ②; an item it made
+// after that gate, or outside an Epic, you never saw, so its skip does not count.
+test('a skip the agents account set when it made the item counts only for an item made before gate ② of its Epic', () => {
+  const choose = (made, histories = []) => reviewChoice({ labels: ['ao-be-dev', 'ao-review-skip'], histories, agentAccount: AGENTS, names, made });
+  const plan = '2026-11-23T08:00:00.000+0000';
+  const before = choose({ by: AGENTS, at: '2026-11-23T07:30:00.000+0000', planApprovedAt: plan });
+  assert.deepEqual(before, { skip: true, why: 'label', by: 'plan', ignored: null });
+  assert.match(skipReason(before, names), /^label ao-review-skip, put by ba from the plan you approved at gate ②$/);
+  assert.deepEqual(choose({ by: AGENTS, at: '2026-11-23T09:00:00.000+0000', planApprovedAt: plan }), { skip: false, why: 'default', ignored: { label: 'ao-review-skip', change: 'made' } });
+  assert.equal(choose({ by: AGENTS, at: '2026-11-23T07:30:00.000+0000', planApprovedAt: null }).skip, false, 'outside an Epic, or its plan not approved');
+  const yours = choose({ by: YOU, at: '2026-11-23T09:00:00.000+0000', planApprovedAt: plan });
+  assert.deepEqual(yours, { skip: true, why: 'label', by: 'you', ignored: null });
+  assert.match(skipReason(yours, names), /, put by you$/);
+  // You put it again later: it counts.
+  assert.equal(choose({ by: AGENTS, at: '2026-11-23T09:00:00.000+0000', planApprovedAt: plan }, [change(YOU, 'ao-be-dev', 'ao-be-dev ao-review-skip', '2026-11-23T10:00:00.000+0000')]).skip, true);
+  // Without what made the item, as for the board: the labels alone.
+  assert.equal(reviewChoice({ labels: ['ao-review-skip'], names }).skip, true);
 });
 
 test('the labels at the time of the merge (spec 2.5)', () => {
@@ -124,6 +146,9 @@ test('a release waits for every PR that skipped review (spec 5.1)', () => {
   const found = { blocking: 2, fix: 'SHOP-95', key: 'SHOP-81' };
   assert.deepEqual(releaseReviewGaps([{ number: 1, key: 'SHOP-82', skipped: true, mark: clean }, { number: 2, key: 'SHOP-83', skipped: false, mark: null }]), []);
   assert.match(releaseReviewGaps([{ number: 1, key: 'SHOP-82', skipped: true, mark: null }])[0], /^review after merge of #1 \(SHOP-82\)/);
+  // The command names the Epic when it is known, else the item itself (SHOP-95: the line read "/ao-review <its Epic>").
+  assert.match(releaseReviewGaps([{ number: 95, key: 'SHOP-96', epic: 'SHOP-95', skipped: true, mark: null }])[0], /which skipped review: \/ao-review SHOP-95$/);
+  assert.match(releaseReviewGaps([{ number: 95, key: 'SHOP-96', skipped: true, mark: null }])[0], /which skipped review: \/ao-review SHOP-96$/);
   assert.match(releaseReviewGaps([{ number: 1, key: 'SHOP-82', skipped: true, mark: found }])[0], /^the PR of SHOP-95/);
   assert.deepEqual(releaseReviewGaps([{ number: 1, key: 'SHOP-82', skipped: true, mark: found }, { number: 3, key: 'SHOP-95', skipped: false, mark: null }]), []);
 });
@@ -134,6 +159,15 @@ test('the readers: the item from Jira, the default from GitHub, on at any failur
     getAll: async () => [change(YOU, '', 'ao-review-skip')],
   };
   assert.equal((await itemReview(jira, mapping)('SHOP-90')).skip, true);
+  // An item the agents' account made with the label: its Epic's changelog tells when the plan was approved.
+  const agents = mapping.identities.find(({ id }) => id === 'agents').account_id;
+  const epicMoves = [{ author: { accountId: YOU }, created: '2026-11-23T08:00:00.000+0000', items: [{ field: 'status', fromString: 'Planning', toString: 'In Progress' }] }];
+  const madeBy = (created) => ({
+    get: async () => ({ fields: { labels: ['ao-review-skip'], creator: { accountId: agents }, created, parent: { key: 'SHOP-81' } } }),
+    getAll: async (path) => (path.includes('SHOP-81') ? epicMoves : []),
+  });
+  assert.equal((await itemReview(madeBy('2026-11-23T07:00:00.000+0000'), mapping)('SHOP-90')).skip, true);
+  assert.equal((await itemReview(madeBy('2026-11-23T09:00:00.000+0000'), mapping)('SHOP-90')).skip, false);
   const content = (text) => ({ get: async (path, { ref }) => (path === '/contents/.ai-orchestrator/project.yaml' && ref === 'develop' ? { content: Buffer.from(text).toString('base64') } : null) });
   assert.equal(await projectDefaultAt(content('review:\n  default: off\n'), 'develop'), 'off');
   assert.equal(await projectDefaultAt(content('review:\n  default: on\n'), 'develop'), 'on');

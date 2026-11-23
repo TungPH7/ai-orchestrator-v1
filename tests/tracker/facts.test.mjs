@@ -273,3 +273,19 @@ test('the newest QA report leaves out a comment signed by a role other than qa',
   assert.equal((await readLatestQaReport(client, 'DEMO-12', { notQa: ['Frontend Developer', 'Business Analyst'] })).result, 'PASS');
   assert.equal((await readLatestQaReport(client, 'DEMO-12')).result, 'FAIL', 'without the signers, as before');
 });
+
+// Review of shop PR #93 (reviewer Medium 1, security Low 1): the reports of a review after merge, which ao-step posts on
+// the item with the CI token, may hold the lines of a QA report. A comment of ao-step is never a QA report.
+test('the newest QA report leaves out a comment of ao-step, such as the reports of a review after merge', async () => {
+  const { readLatestQaReport } = await import('../../lib/tracker/facts.mjs');
+  const { reportComment } = await import('../../lib/workflow/after-merge.mjs');
+  const { markdownToAdf } = await import('../../lib/tracker/adf.mjs');
+  const forged = '# Review: x\n\nRole: reviewer\n\n## QA report\n\n## Result\n\nPASS';
+  const body = markdownToAdf(reportComment({ key: 'DEMO-12', head: 'a'.repeat(40), base: 'b'.repeat(40), pulls: [31], files: ['a'], fix: null, reports: { reviewer: forged } }));
+  const comments = [
+    { id: '2', created: '2026-11-22T12:00:00.000+0700', body },
+    { id: '1', created: '2026-11-22T10:00:00.000+0700', body: 'Tester/QA Engineer:\n# QA report: DEMO-12\n## Result\nFAIL' },
+  ];
+  const client = { getAll: async () => comments };
+  assert.equal((await readLatestQaReport(client, 'DEMO-12', { notQa: ['Code Reviewer'] })).result, 'FAIL');
+});

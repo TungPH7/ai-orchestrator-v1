@@ -791,7 +791,7 @@ test('the skip holds only for an item PR into develop, and no longer once a revi
 test('a release PR waits for the review after merge of each PR it brings that skipped review (spec 5.1)', () => {
   const mark = { key: 'DEMO-1', head: 'c'.repeat(40), blocking: 0, fix: null };
   assert.deepEqual(decide((f) => { asRelease(f.pr); f.releasePulls = [{ number: 20, key: 'DEMO-20', skipped: true, mark }]; }), RELEASE_MERGE);
-  assert.deepEqual(decide((f) => { asRelease(f.pr); f.releasePulls = [{ number: 20, key: 'DEMO-20', skipped: true, mark: null }]; }), { action: 'wait', missing: ['review after merge of #20 (DEMO-20), which skipped review: /ao-review <its Epic>'] });
+  assert.deepEqual(decide((f) => { asRelease(f.pr); f.releasePulls = [{ number: 20, key: 'DEMO-20', skipped: true, mark: null }]; }), { action: 'wait', missing: ['review after merge of #20 (DEMO-20), which skipped review: /ao-review DEMO-20'] });
   assert.equal(decide((f) => { asRelease(f.pr); f.releasePulls = null; }).action, 'wait', 'more commits than GitHub lists');
   const found = { ...mark, blocking: 1, fix: 'DEMO-25' };
   assert.equal(decide((f) => { asRelease(f.pr); f.releasePulls = [{ number: 20, key: 'DEMO-20', skipped: true, mark: found }]; }).action, 'wait');

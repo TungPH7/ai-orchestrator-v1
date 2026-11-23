@@ -194,3 +194,22 @@ test('one watcher a project', (t) => {
   live.clear();
   assert.deepEqual(first.claim(13), { ok: true }, 'a watcher whose process is gone holds nothing');
 });
+
+// Review of shop PR #93 (security, Low 2): a pid of a long-lived process written into watch-process.json kept every
+// watcher from starting. A watcher writes its file again at each round; one not written for three rounds holds nothing.
+test('a watcher holds the project only while it writes its file at each round', (t) => {
+  const project = mkdtempSync(join(tmpdir(), 'ao-watch-'));
+  t.after(() => rmSync(project, { recursive: true, force: true }));
+  let clock = Date.parse('2026-11-23T10:00:00Z');
+  const fsOf = { existsSync, readdirSync, readFileSync, statSync, writeFileSync, mkdirSync, rmSync };
+  const files = watchEffects({ projectDir: project, fs: fsOf, alive: () => true, now: () => clock });
+  assert.deepEqual(files.claim(11), { ok: true });
+  clock += 5 * 60_000;
+  files.beat(11);
+  clock += 5 * 60_000;
+  assert.deepEqual(files.claim(12), { ok: false, pid: 11 }, 'written 5 minutes ago: it runs');
+  clock += 2 * 60_000;
+  assert.deepEqual(files.claim(12), { ok: true }, 'not written for 7 minutes, more than three rounds: it holds nothing, though its pid lives');
+  files.beat(11);
+  assert.equal(JSON.parse(readFileSync(join(project, '.ai', 'runs', 'watch-process.json'), 'utf8')).pid, 12, 'the beat of another watcher writes nothing');
+});

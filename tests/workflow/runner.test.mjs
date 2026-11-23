@@ -709,6 +709,20 @@ test('a superseded qa run is on record as superseded, attaches nothing, and the 
   assert.equal(decision.go, false);
 });
 
+// Review of shop PR #93 (security Medium 1): what ao-step reads after a run, such as the hash of the report of a review
+// after merge, stays on the record of that run.
+test('the record of a run keeps what the step after it read, such as the hash of its report', async () => {
+  const states = {};
+  const store = { readState: (k) => states[k] ?? null, writeState: (k, s) => (states[k] = s), writeLast: () => {} };
+  let decisions = 0;
+  const decide = () => (++decisions === 1 ? { go: true, runs: [{ role: 'reviewer', key: 'DEMO-20', effort: 'high', purpose: 'review-after-merge', prompt: 'Review after merge', head: 'd'.repeat(40), note: 'after-merge:31' }] } : { go: false, reason: 'done', next: '/ao-status DEMO-20', lines: [] });
+  const agent = async () => ({ lines: runLines({ session: 's1' }), stopped: false });
+  const after = async () => ({ notes: [], record: { report: { name: 'DEMO-20-reviewer-ddddddd.md', sha256: 'f'.repeat(64) } } });
+  const { made } = await runGo({ command: 'review', arg: 'DEMO-20', options, gather: async () => ({ command: 'review', item: { key: 'DEMO-20' }, pr: null, docs: null }), decide, agent, git: async () => ({ ok: true }), dispatch: async () => {}, after, store, sleep: async () => {}, now: () => 0 });
+  assert.deepEqual(made[0].report, { name: 'DEMO-20-reviewer-ddddddd.md', sha256: 'f'.repeat(64) });
+  assert.deepEqual(states['DEMO-20'].runs[0].report, made[0].report);
+});
+
 test('the temp folder of the worktrees is its long path: pnpm --filter finds no app under a short 8.3 path (QA SHOP-68)', () => {
   // Pilot 3: os.tmpdir() gave C:/Users/HUUTUN~1/AppData/Local/Temp, and pnpm --filter in the qa worktree found no app.
   const long = 'C:/Users/Huu Tung/AppData/Local/Temp';

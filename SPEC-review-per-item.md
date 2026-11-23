@@ -103,6 +103,17 @@
 Workflow trên Jira, CI (SAST, quét secret, `osv-scanner`), QA, cả năm cổng, ruleset, luật miễn `light-docs`, cách review
 một PR có review.
 
+## 7b. Sửa sau review `shop` PR #93 và lượt thử SHOP-95 (2026-11-23)
+
+- **Nhãn gắn lúc tạo item (2.4):** nhãn `ao-review-skip` mà tài khoản agent gắn lúc tạo item chỉ được tính khi item được tạo trước lần đầu Epic của nó qua cổng ②. Item tạo sau cổng ②, hay không thuộc Epic nào, thì nhãn không được tính: bạn tự gắn. Dấu vết, chỗ dừng và `/ao-status` ghi ai gắn nhãn.
+- **Báo cáo của review sau merge (4.4, 4.5):**
+  - ao-step giữ mã băm của file khi lượt chạy kết thúc, và không đăng file đã đổi sau đó. Đây là chốt chặn thật;
+  - gh-guard chỉ cho đúng role ghi file báo cáo của nó, nhưng chỉ qua Write và Edit; nó không kiểm đích ghi của lệnh Bash;
+  - comment trên Jira mở đầu bằng `ao-step:`, và không comment nào của ao-step được đọc là báo cáo QA;
+  - dấu trên PR đi sau cùng, nên một bước Jira lỗi thì lần gõ lại vẫn đăng tiếp.
+- **Release (5.3):** `/ao-release` và `/ao-ship` ghi lệnh `/ao-review` với khóa Epic của item.
+- **Watcher:** file của watcher là của ao-step; watcher ghi lại file mỗi vòng, và một file không được ghi trong ba vòng thì không giữ dự án nữa.
+
 ## 8. Sửa kèm
 
 Deployer trên VPS gọi `audit` không có trình đọc nhãn mức, nên một PR được luật `light-docs` miễn sẽ bị từ chối deploy. Nó

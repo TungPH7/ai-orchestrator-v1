@@ -10,7 +10,7 @@
     "name": "Agent"
    }
   ],
-  "/rest/api/3/issue/DEMO-12?fields=summary,issuetype,status,labels,parent,subtasks,issuelinks,customfield_10046": {
+  "/rest/api/3/issue/DEMO-12?fields=summary,issuetype,status,labels,parent,subtasks,issuelinks,creator,created,customfield_10046": {
    "expand": "renderedFields,names,schema,operations,editmeta,changelog,versionedRepresentations",
    "id": "10015",
    "key": "DEMO-12",
@@ -304,7 +304,7 @@
     "labels": []
    }
   },
-  "/rest/api/3/issue/DEMO-11?fields=summary,issuetype,status,labels,parent,subtasks,issuelinks,customfield_10046": {
+  "/rest/api/3/issue/DEMO-11?fields=summary,issuetype,status,labels,parent,subtasks,issuelinks,creator,created,customfield_10046": {
    "expand": "renderedFields,names,schema,operations,editmeta,changelog,versionedRepresentations",
    "id": "10014",
    "key": "DEMO-11",
@@ -497,7 +497,7 @@
   "/rest/api/3/search/jql?fields=status&jql=project = \"DEMO\" AND issuetype = \"Epic\" AND status in (\"Specifying\", \"Planning\")": {
    "issues": []
   },
-  "/rest/api/3/issue/DEMO-15?fields=summary,issuetype,status,labels,parent,subtasks,issuelinks,customfield_10046": {
+  "/rest/api/3/issue/DEMO-15?fields=summary,issuetype,status,labels,parent,subtasks,issuelinks,creator,created,customfield_10046": {
    "expand": "renderedFields,names,schema,operations,editmeta,changelog,versionedRepresentations",
    "id": "10048",
    "key": "DEMO-15",

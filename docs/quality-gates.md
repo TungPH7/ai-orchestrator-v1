@@ -226,7 +226,9 @@ Từ [SPEC-review-per-item.md](../SPEC-review-per-item.md), bạn chọn review 
    ```
 
 2. **Nhãn trên item:** `ao-review-on` thì review, `ao-review-skip` thì bỏ. Nhãn thắng mặc định; có cả hai nhãn thì review. Bạn gắn hay gỡ nhãn trên Jira bất cứ lúc nào trước khi approve ở cổng ③. ba gắn sẵn khi tạo item, nếu plan bạn duyệt ghi vậy. Hook `block-atlassian` chặn mọi agent khác thêm hay gỡ hai nhãn này.
-3. **Tài khoản agent:** phiên chính cũng dùng tài khoản này. Thay đổi của nó theo hướng bỏ review (thêm `ao-review-skip`, gỡ `ao-review-on`) không được tính; `/ao-status <KEY>` nói rõ khi gặp. Muốn bỏ review, bạn tự gắn nhãn trên Jira.
+3. **Tài khoản agent:** phiên chính cũng dùng tài khoản này. Thay đổi của nó theo hướng bỏ review (thêm `ao-review-skip`, gỡ `ao-review-on`) không được tính; `/ao-status <KEY>` nói rõ nhãn nào và đổi theo hướng nào. Muốn bỏ review, bạn tự gắn nhãn trên Jira.
+   - Nhãn `ao-review-skip` gắn lúc tạo item không để lại dòng nào trong lịch sử. Vì vậy nhãn mà tài khoản agent (ba) gắn lúc tạo chỉ được tính khi item được tạo trước lần đầu Epic của nó qua cổng ② (Approve plan). Item ba tạo sau cổng ②, ví dụ theo một yêu cầu `Cần ba:`, hay item không thuộc Epic nào, thì nhãn đó không được tính: bạn tự gắn nếu muốn (review của `shop` PR #93).
+   - Dấu vết trên PR, chỗ dừng và `/ao-status` ghi ai gắn nhãn: "put by ba from the plan you approved at gate ②" hay "put by you".
 4. **Phạm vi:** chỉ PR của Story, Task, Bug vào `develop`. PR vào nhánh release, hotfix, PR tài liệu, báo cáo release và merge back giữ luật cũ. Một review trên PR từng tìm ra Critical hay High (ví dụ sau `/ao-review <PR> full`) thì PR đó cần báo cáo như thường.
 
 PR của item bỏ review:
@@ -238,14 +240,16 @@ PR của item bỏ review:
 **Review sau merge: `/ao-review <KEY>`**, với KEY là một Epic hay một Story, Task, Bug:
 
 1. Nó tìm các PR của item đã merge vào `develop` mà bỏ review, và chưa có dấu review sau merge. `reviewer` và `security` (khi tier đòi) đọc diff gộp từ commit trước lần merge cũ nhất tới `develop` hiện tại, trên các file của những PR đó. Mỗi agent lưu báo cáo vào `.ai/reviews/<KEY>-<role>-<head>.md` và không đăng.
-2. Sau đó ao-step tự làm, không agent:
+   - Khi lượt chạy kết thúc, ao-step giữ mã băm của file trong bản ghi của lượt. File bị đổi sau đó thì ao-step không đăng, mà dừng hỏi bạn. Muốn chạy lại role đó, xóa file rồi gõ lại `/ao-review <KEY>`.
+   - gh-guard chỉ cho đúng role đó ghi file báo cáo của nó bằng Write và Edit. Lệnh Bash như `cp` hay `>` thì gh-guard không kiểm đích ghi, như với mọi file khác, nên chốt thật là mã băm. Còn một khe nhỏ: một agent khác ghi đè file trong vài giây giữa lúc role viết xong báo cáo và lúc lượt chạy kết thúc.
+2. Sau đó ao-step tự làm, không agent, theo thứ tự:
    - mọi Critical và High vào **một Task sửa** thuộc Epic, có nhãn `ao-review-on`, chặn Epic; lỗi ở nhiều app thì mỗi role một Sub-task;
-   - App `ao-review` comment **dấu review sau merge** lên từng PR (`Reviewed after merge`, head, số Critical và High, Task sửa);
-   - hai báo cáo đầy đủ lên KEY trong Jira;
-   - Medium và Low vào Task finding của Epic.
+   - hai báo cáo đầy đủ lên KEY trong Jira, trong một comment mở đầu bằng `ao-step:`, nên không bao giờ bị đọc nhầm thành báo cáo QA;
+   - Medium và Low vào Task finding của Epic;
+   - cuối cùng, App `ao-review` comment **dấu review sau merge** lên từng PR (`Reviewed after merge`, head, số Critical và High, Task sửa). Dấu đóng lượt review, nên nó đi sau cùng: bước Jira lỗi thì gõ lại `/ao-review <KEY>`, ao-step đăng tiếp mà không chạy lại agent, kể cả khi đã đặt dấu cho một phần PR.
 3. `/ao-run <EPIC>` dừng với "chờ bạn: /ao-review <EPIC>" khi mọi item của Epic đã Done mà còn PR chờ review sau merge. Nó không tự chạy lượt này, vì lượt này tốn tiền.
 
-**Chặn ở release:** PR release vào `main` chỉ merge, và commit merge của nó chỉ lên Production, khi mọi PR bỏ review mà bản release mang tới có dấu review sau merge với 0 Critical và High, hoặc có Task sửa mà PR của nó cũng nằm trong bản release. Dòng `Waiting` ghi `review after merge of #N (<KEY>)` cho mỗi PR còn thiếu. `/ao-release` liệt kê các PR này ở cổng ④, và `/ao-ship` dừng trước cổng ⑤ cho tới khi xong. Staging vẫn nhận bản release để QA.
+**Chặn ở release:** PR release vào `main` chỉ merge, và commit merge của nó chỉ lên Production, khi mọi PR bỏ review mà bản release mang tới có dấu review sau merge với 0 Critical và High, hoặc có Task sửa mà PR của nó cũng nằm trong bản release. Dòng `Waiting` ghi `review after merge of #N (<KEY>)` cho mỗi PR còn thiếu. `/ao-release` liệt kê các PR này ở cổng ④, kèm lệnh cần gõ với khóa Epic của item, và `/ao-ship` dừng trước cổng ⑤ cho tới khi xong. Staging vẫn nhận bản release để QA.
 
 ### Chấp nhận một High thay vì sửa
 

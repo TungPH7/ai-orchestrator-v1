@@ -1123,6 +1123,29 @@ test('no name split by quotes, and no built assignment read by arithmetic, sets 
   for (const command of ['echo "$k=$v" >> .env.example', 'for i in 1 2; do echo "$i"; done; (( n = n + 1 ))', "printf '%s\\n' 'a=b'"]) allowed(run(command), command);
 });
 
+// Review of shop PR #93 (security, Low 3): an assignment sign after a quote or a backslash, or printf -v, built the
+// assignment out of sight of the check above.
+test('an assignment built with quotes, a backslash or printf -v is refused when the command does arithmetic', () => {
+  const run = (command) => call('be-dev', 'Bash', { command });
+  const built = ['n=GIT_CONFIG_COUNT; v="$n"\'=0\'; (( v ))', 'n=GIT_CONFIG_COUNT; v=$n\\=0; (( v ))', 'n=GIT_CONFIG_COUNT; printf -v v \'%s=0\' "$n"; (( v ))', 'n=GIT_CONFIG_COUNT; v=${n}"=0"; (( v ))'];
+  for (const command of built) denied(run(command), /write out the name of the variable you set/, command);
+  for (const command of ['printf -v line \'%s\' "$x"; echo "$line"', 'v="$n"\'=0\'; echo "$v"']) allowed(run(command), command);
+});
+
+// Review of shop PR #93 (security, Medium 1 and Low 2): the report of a review after merge is the role's that wrote it,
+// and the files of the watcher are ao-step's.
+test('only its role writes the report of a review after merge, and no agent writes the files of the watcher', () => {
+  const report = (role) => `${PROJECT}\\.ai\\reviews\\DEMO-20-${role}-ddddddd.md`;
+  allowed(call('reviewer', 'Write', { file_path: report('reviewer'), content: 'x' }), 'reviewer, its own');
+  allowed(call('security', 'Write', { file_path: report('security'), content: 'x' }), 'security, its own');
+  for (const role of ['qa', 'security', 'fe-dev', 'ba']) denied(call(role, 'Write', { file_path: report('reviewer'), content: 'x' }), /is the report of reviewer: only reviewer writes it/, role);
+  denied(call('reviewer', 'Write', { file_path: `${PROJECT}\\.AI\\Reviews\\demo-20-SECURITY-ddddddd.MD`, content: 'x' }), /only security writes it/);
+  allowed(call('qa', 'Write', { file_path: `${PROJECT}\\.ai\\reviews\\93-context.md`, content: 'x' }), 'another file of .ai/reviews/');
+  for (const file of ['.ai\\runs\\watch-process.json', '.ai\\runs\\watch.json']) {
+    for (const role of ['fe-dev', 'qa', 'reviewer']) denied(call(role, 'Write', { file_path: `${PROJECT}\\${file}`, content: '{}' }), /is ao-step's: agents do not write it/, `${role} ${file}`);
+  }
+});
+
 // Third review of shop PR #81 (Medium 2): the words of the comment of seo the human approved reach a run in
 // .ai/runs/<KEY>/seo-<hash>.md, which ao-step writes; no agent writes it, in the project or in a lane.
 test('no agent writes the file of the approved comment of seo', () => {

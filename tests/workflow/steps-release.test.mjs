@@ -104,7 +104,7 @@ test('/ao-release stops when the Fix Versions are not on Jira yet, the version i
 
 // SPEC-review-per-item.md 5.3: gate ④ names the PRs that still wait for their review after merge; the cut goes on.
 test('/ao-release names the PRs up to the cut point that wait for their review after merge', () => {
-  const gap = 'review after merge of #31 (DEMO-21), which skipped review: /ao-review <its Epic>';
+  const gap = 'review after merge of #31 (DEMO-21), which skipped review: /ao-review DEMO-20';
   const decision = decide(releaseFacts({ release: { reviewGaps: [gap] } }));
   assert.ok(decision.lines.some((line) => line.startsWith('Skipped review, to review after merge before v0.') && line.endsWith(gap)));
   assert.equal(decide(releaseFacts()).lines.some((line) => line.startsWith('Skipped review')), false);
