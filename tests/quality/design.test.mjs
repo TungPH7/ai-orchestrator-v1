@@ -180,3 +180,72 @@ test('an Image screen names where its screenshot comes from, needs no Figma vers
   const noSection = screenshot.slice(0, screenshot.indexOf('\n## Design System'));
   assert.deepEqual(checkDesign(noSection, { images: figmaImages() }).map(({ rule }) => rule), ['D9']);
 });
+
+// Project screen codes and Claude Design screens (tasks/todo.md item 10, Phiên 35 · Lượt 84–87).
+const claude = readFileSync(join(FIXTURES, 'claude-design-screens.md'), 'utf8');
+const claudeFiles = () => new Map([['USR-CART01-desktop.png', png(1440, 900)], ['USR-CART01-mobile.png', png(390, 1214)], ['USR-CART01.dc.html', Buffer.from('<x-dc><div>Giỏ hàng</div></x-dc>')]]);
+const screensFile = (rows = ['| USR-CART01 | Giỏ hàng | user | /cart | SHOP-120 | dùng |', '| USR-CHK01 | Thanh toán | user | /checkout | SHOP-120 | dùng |']) => [
+  '# Mã màn hình', '', '## Apps', '', '| Prefix | App |', '|---|---|', '| USR | user |', '| ADM | admin |', '',
+  '## Areas', '', '| Area | Meaning |', '|---|---|', '| CART | Giỏ hàng |', '| CHK | Thanh toán |', '',
+  '## Screens', '', '| Code | Name | App | Route | Epic | State |', '|---|---|---|---|---|---|', ...rows, '',
+].join('\n');
+const rulesOf = (text, more = {}) => checkDesign(text, { images: claudeFiles(), registry: screensFile(), ...more }).map(({ rule, message }) => `${rule} ${message}`);
+
+test('a design with project codes, a Claude Design screen, its images and prototype, and its codes in the registry has no error', () => {
+  assert.deepEqual(checkDesign(claude, { images: claudeFiles(), registry: screensFile() }), []);
+  const design = readDesign(claude);
+  assert.deepEqual(design.rows.map(({ code }) => code), ['USR-CART01', 'USR-CHK01']);
+  assert.deepEqual(design.drawings.map(({ code }) => code), ['USR-CHK01']);
+  assert.deepEqual(design.images.map(({ code }) => code), ['USR-CART01', 'USR-CART01']);
+  assert.equal(design.claudeVersion.value, '1795459699-c1d6');
+});
+
+test('D10: one file uses one kind of screen code', () => {
+  const mixed = claude.replaceAll('USR-CHK01', 'S2');
+  assert.deepEqual(rulesOf(mixed, { registry: undefined }).filter((r) => r.startsWith('D10')), ['D10 the file mixes project screen codes, such as USR-CART01, with codes of one Epic, such as S2: use one kind']);
+});
+
+test('D11: a project code is in docs/design-system/screens.md, with the same app and route; the registry itself is valid', () => {
+  assert.deepEqual(rulesOf(claude, { registry: screensFile(['| USR-CART01 | Giỏ hàng | user | /cart | SHOP-120 | dùng |']) }), ['D11 USR-CHK01 is not in docs/design-system/screens.md: add its row with its name, app, route, Epic and state']);
+  assert.deepEqual(rulesOf(claude, { registry: screensFile(['| USR-CART01 | Giỏ hàng | user | /basket | SHOP-90 | dùng |', '| USR-CHK01 | Thanh toán | user | /checkout | SHOP-120 | dùng |']) }), ['D11 USR-CART01 has the route /basket in docs/design-system/screens.md, but /cart here: one code names one screen']);
+  assert.deepEqual(rulesOf(claude, { registry: screensFile(['| USR-CART01 | Giỏ hàng | user | /cart | SHOP-120 | bỏ |', '| USR-CHK01 | Thanh toán | user | /checkout | SHOP-120 | dùng |']) }), ['D11 USR-CART01 is retired (bỏ) in docs/design-system/screens.md: a retired code is never used again']);
+  assert.deepEqual(rulesOf(claude.replace('| Claude Design | user |', '| Claude Design | admin |')), ['D11 USR-CART01 is a screen of user in docs/design-system/screens.md, but its App here is admin']);
+  assert.deepEqual(rulesOf(claude, { registry: null }), ['D11 the file uses project screen codes, so docs/design-system/screens.md lists them; the project has no such file']);
+  assert.deepEqual(rulesOf(claude, { registry: screensFile(['| USR-CART01 | Giỏ hàng | user | /cart | SHOP-120 | dùng |', '| USR-CHK01 | Thanh toán | user | /checkout | SHOP-120 | dùng |', '| USR-CART01 | Khác | user | /x | SHOP-1 | dùng |']) }), ['D11 docs/design-system/screens.md:23 R5 USR-CART01 is listed twice: a code names one screen only']);
+  // A design.md of one Epic, S1 and S2, does not read the registry.
+  assert.deepEqual(checkDesign(valid, { registry: null }), []);
+});
+
+test('D7: a Claude Design screen names its artifact, one source only, and the file names the approved Claude Design version', () => {
+  assert.deepEqual(rulesOf(claude.replace('https://claude.ai/artifact/4MHNq6Tk2x3o31S4RVXD5V', 'https://claude.ai/design/p/1c62be76')), ['D7 claude-design of USR-CART01 must be the link of a Claude artifact, such as https://claude.ai/artifact/<id>']);
+  assert.deepEqual(rulesOf(claude.replace('prototype:', 'screenshot: ảnh của bạn\nprototype:')), ['D7 USR-CART01 has more than one of figma, claude-design and screenshot: an image screen comes from one of them']);
+  assert.deepEqual(rulesOf(claude.replace('1795459699-c1d6', 'none')), ['D7 name the approved Claude Design version: the file has Claude Design screens']);
+  assert.deepEqual(rulesOf(claude.replace('>\n> **Claude Design version:** 1795459699-c1d6\n', '')), ['D7 the file has Claude Design screens, so its header needs a "Claude Design version:" line']);
+});
+
+test('D8: a prototype sits in design/, is an HTML file of at most 256 KB, and counts as used', () => {
+  const files = claudeFiles();
+  files.delete('USR-CART01.dc.html');
+  assert.deepEqual(rulesOf(claude, { images: files }), ['D8 design/USR-CART01.dc.html does not exist']);
+  assert.deepEqual(rulesOf(claude.replace('prototype: design/USR-CART01.dc.html', 'prototype: ../USR-CART01.dc.html')), ['D8 design/USR-CART01.dc.html is in design/ but design.md does not use it', 'D8 ../USR-CART01.dc.html must be an .html file in the design/ folder next to design.md']);
+  const big = claudeFiles();
+  big.set('USR-CART01.dc.html', Buffer.alloc(300 * 1024, 'a'));
+  assert.deepEqual(rulesOf(claude, { images: big }), ['D8 design/USR-CART01.dc.html is 307200 bytes; a prototype is at most 256 KB (262144 bytes)']);
+});
+
+test('check-design of docs/specs/<KEY>/design.md reads the registry of its project, and says when there is none', (t) => {
+  const project = mkdtempSync(join(tmpdir(), 'design-project-'));
+  t.after(() => rmSync(project, { recursive: true, force: true }));
+  const dir = join(project, 'docs', 'specs', 'SHOP-120');
+  mkdirSync(join(dir, 'design'), { recursive: true });
+  writeFileSync(join(dir, 'design.md'), claude);
+  for (const [name, bytes] of claudeFiles()) writeFileSync(join(dir, 'design', name), bytes);
+  const run = () => spawnSync(process.execPath, [join(ROOT, 'scripts', 'check-design.mjs'), join(dir, 'design.md')], { encoding: 'utf8' });
+
+  const none = run();
+  assert.equal(none.status, 1);
+  assert.match(none.stderr, /D11 the file uses project screen codes, so docs\/design-system\/screens\.md lists them/);
+  mkdirSync(join(project, 'docs', 'design-system'));
+  writeFileSync(join(project, 'docs', 'design-system', 'screens.md'), screensFile());
+  assert.equal(run().status, 0, run().stderr);
+});

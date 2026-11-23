@@ -43,6 +43,9 @@ test('each role writes inside the paths of its roster entry, and is refused outs
     denied(write(role, outside), new RegExp(`^gh-guard: ${role} may write only .* \\(agents/roster\\.yaml\\), not ${outside.replaceAll('.', '\\.')}$`), `${role} writes ${outside}`);
   }
   denied(call('reviewer', 'Edit', { file_path: `${PROJECT}\\src\\cart.ts` }), /reviewer may write only \.ai\/\*\*/, 'Edit');
+  // ux keeps the registry of screen codes, and nothing else of docs/design-system/ (tasks/todo.md item 10).
+  allowed(write('ux', 'docs/design-system/screens.md'), 'ux writes the registry');
+  denied(write('ux', 'docs/design-system/user.md'), /^gh-guard: ux may write only/, 'ux writes a design system');
   denied(call('pm', 'NotebookEdit', { notebook_path: `${PROJECT}\\notebooks\\a.ipynb` }), /pm may write only/, 'NotebookEdit');
   // A path with .. is read where it leads (security review of ao-pilot PR #8).
   denied(write('reviewer', '.ai/../src/cart.ts'), /reviewer may write only \.ai\/\*\* \(agents\/roster\.yaml\), not src\/cart\.ts$/, '.ai/../src/cart.ts');

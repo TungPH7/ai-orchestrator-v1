@@ -383,3 +383,16 @@ test('open questions after a run of seo go to seo', () => {
   assert.equal(answered.runs[0].resume, 's-seo');
   assert.match(answered.runs[0].prompt, /You have no git: ao-step commits your change after your run, and pushes it to the docs PR #14\.$/);
 });
+
+// tasks/todo.md item 10: ux reads the inbox, never a link. A Claude artifact the Epic links that /ao-design has not
+// taken stops stage spec for you, before any agent runs.
+test('/ao-spec stops for /ao-design while the Epic links a Claude artifact the design inbox does not hold', () => {
+  const LINK = 'https://claude.ai/artifact/4MHNq6Tk2x3o31S4RVXD5V';
+  const stopped = decide('spec', epicFacts('specifying', { docs: { spec: SPEC }, designLinks: [LINK], designInbox: null }));
+  assert.equal(stopped.go, false);
+  assert.equal(stopped.waits, 'you');
+  assert.equal(stopped.reason, `DEMO-20 links 1 Claude artifact that is not in .ai/design-inbox/DEMO-20/: ${LINK}`);
+  assert.equal(stopped.next, '/ao-design DEMO-20');
+  assert.deepEqual(plan(decide('spec', epicFacts('specifying', { docs: { spec: SPEC }, designLinks: [LINK], designInbox: [LINK] }))), ['ux design', 'sa spec-nfr', 'ba docs-pr']);
+  assert.deepEqual(plan(decide('spec', epicFacts('specifying', { docs: { spec: SPEC }, designLinks: [], designInbox: null }))), ['ux design', 'sa spec-nfr', 'ba docs-pr']);
+});

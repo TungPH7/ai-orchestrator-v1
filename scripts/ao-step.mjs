@@ -25,6 +25,7 @@ import { epicOfDocsBranch, readGates } from '../lib/quality/gates.mjs';
 import { withProjectPaths } from '../lib/quality/review-tiers.mjs';
 import { markBody, newestMark, projectReviewDefault, skipBody } from '../lib/quality/review-choice.mjs';
 import { findingId, readReviewReport } from '../lib/quality/pull-request.mjs';
+import { INBOX_FILE, readInbox } from '../lib/quality/design-inbox.mjs';
 import { afterMergeReport, findingsSource, fixSubtask, fixTask, reportComment, reportHash, reportLine, splitFindings } from '../lib/workflow/after-merge.mjs';
 import { matchesGlob } from '../lib/quality/glob.mjs';
 import { DOCKER_INFO, dockerAnswered } from '../lib/quality/maven.mjs';
@@ -313,6 +314,16 @@ async function main() {
     },
     // A file the agents of a release command wrote in .ai/runs/<release>/ (release-workflow T15).
     runFile: (k, name) => readRunFile(k, name),
+    // The links of the Claude artifacts the design inbox of `key` holds (tasks/todo.md item 10), null with no inbox.
+    designInbox: (key) => {
+      const file = join(projectDir, '.ai', 'design-inbox', key, INBOX_FILE);
+      if (!existsSync(file)) return null;
+      try {
+        return readInbox(readFileSync(file, 'utf8')).sources.map(({ url }) => url);
+      } catch {
+        return [];
+      }
+    },
     // The reports of a review after merge in .ai/reviews/ whose name starts with `prefix` (SPEC-review-per-item.md 4.4).
     reviews: (prefix) => {
       const dir = join(projectDir, '.ai', 'reviews');

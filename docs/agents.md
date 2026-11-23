@@ -8,7 +8,7 @@
 |---|---|---|---|---|---|---|---|
 | `pm` | Bản tổng hợp mỗi sáng của space, thứ Sáu thêm số liệu retro | Sonnet | `medium` | 20 | `.ai/**` | Đọc | Không |
 | `ba` | SPEC của Epic; tạo Story, Task, Sub-task theo plan | Opus | `xhigh` | 90 | `docs/specs/**`, `CHANGELOG.md`, `.ai/**` | Ghi | `ao-dev` |
-| `ux` | `design.md` của Epic có giao diện | Sonnet | `xhigh` | 60 | `docs/specs/**`, `.ai/**` | Ghi | Không |
+| `ux` | `design.md` của Epic có giao diện | Sonnet | `xhigh` | 60 | `docs/specs/**`, `docs/design-system/screens.md`, `.ai/**` | Ghi | Không |
 | `sa` | Phần kiến trúc của SPEC, plan, ADR | Opus | `xhigh` | 80 | `docs/specs/**`, `docs/adr/**`, `.ai/**` | Ghi | `ao-dev` |
 | `fe-dev` | Code giao diện theo TDD, mở PR | Opus | `high` | 260 | Mọi file, trừ đường dẫn được bảo vệ | Ghi | `ao-dev` |
 | `be-dev` | Code backend theo TDD, mở PR | Opus | `high` | 170 | Như `fe-dev` | Ghi | `ao-dev` |
@@ -108,14 +108,14 @@ node .ai-orchestrator/scripts/ao-agent.mjs fe-dev --effort max -p "..."
 
 ## `design.md`
 
-`ux` viết `docs/specs/<EPIC-KEY>/design.md` theo template `design.md`, khi Epic có giao diện. Mỗi màn hình có một trong ba kiểu:
+`ux` viết `docs/specs/<EPIC-KEY>/design.md` theo template `design.md`, khi Epic có giao diện. Mỗi màn hình có một trong bốn kiểu:
 
-| | Kiểu ASCII | Kiểu Figma | Kiểu Ảnh |
-|---|---|---|---|
-| Dùng khi | Màn hình chưa có thiết kế | Màn hình đã có thiết kế Figma | Bạn có ảnh chụp màn hình, hoặc mockup vẽ bằng công cụ khác |
-| Bố cục | Hình ASCII có đánh số khối | Ảnh export từ Figma trong `docs/specs/<EPIC-KEY>/design/` | Ảnh của bạn, cũng trong `docs/specs/<EPIC-KEY>/design/` |
-| YAML ghi nguồn | | `figma:`, link của frame có `node-id` | `screenshot:`, ảnh lấy từ đâu |
-| Hành vi | YAML ngay dưới hình | YAML ngay dưới ảnh | YAML ngay dưới ảnh |
+| | Kiểu ASCII | Kiểu Figma | Kiểu Claude Design | Kiểu Ảnh |
+|---|---|---|---|---|
+| Dùng khi | Màn hình chưa có thiết kế | Màn hình đã có thiết kế Figma | Màn hình là một khung của Design làm trong Claude | Bạn có ảnh chụp màn hình, hoặc mockup vẽ bằng công cụ khác |
+| Bố cục | Hình ASCII có đánh số khối | Ảnh export từ Figma trong `docs/specs/<EPIC-KEY>/design/` | Ảnh do `/ao-design` chụp, và file khung `<mã>.dc.html` cho `fe-dev` tham khảo, cùng trong `design/` | Ảnh của bạn, cũng trong `docs/specs/<EPIC-KEY>/design/` |
+| YAML ghi nguồn | | `figma:`, link của frame có `node-id` | `claude-design:`, link của artifact; `prototype:`, file khung | `screenshot:`, ảnh lấy từ đâu |
+| Hành vi | YAML ngay dưới hình | YAML ngay dưới ảnh | YAML ngay dưới ảnh | YAML ngay dưới ảnh |
 
 Khi có màn hình Figma hay Ảnh, `design.md` có thêm mục **Design System** (project-scaffold phần 2, mục 2.5):
 - `ux` rút từ ảnh ra màu, font, cỡ chữ, khoảng cách, bo góc, bóng, điểm ngắt, và các component lặp lại cùng trạng thái của chúng.
@@ -127,13 +127,51 @@ Bảng Screens có cột App từ C1: app của màn hình, một khóa của `a
 
 Năm quy tắc:
 
-1. Màn hình đánh mã `S1`, `S2`. Khối đánh `[1]`, `[2]` theo thứ tự đọc, và được trỏ tới bằng mã đầy đủ, ví dụ `S1.4`. Sau khi SPEC được duyệt, số không đổi.
+1. Màn hình mang mã của dự án, ví dụ `USR-CART01` (mục "Mã màn hình" bên dưới); `design.md` viết trước khi có mã này giữ mã của Epic, `S1`, `S2`, và mỗi file chỉ dùng một kiểu. Khối đánh `[1]`, `[2]` theo thứ tự đọc, và được trỏ tới bằng mã đầy đủ, ví dụ `USR-CART01.4`. Sau khi SPEC được duyệt, số không đổi.
 2. Hình ASCII chỉ dùng `+ - | [ ] _`, rộng tối đa 100 cột, trong khung chỉ có số và nhãn ngắn.
 3. YAML nằm ngay dưới hình hoặc ảnh, khóa tiếng Anh, giá trị tiếng Việt.
 4. Mermaid dùng mã màn hình làm tên nút.
 5. `node .ai-orchestrator/scripts/check-design.mjs <file>` kiểm file; `ux` chạy lệnh này trước khi giao, và job `policy` của CI chạy lại trên mọi PR đụng tới `design.md` hay ảnh của nó.
 
 Ảnh: export 1x, PNG hoặc JPG, mỗi ảnh tối đa 1 MB, cạnh dài tối đa 2.000 px, và mọi ảnh trong `design/` phải được `design.md` nhắc tới. Chỉ commit bản đã duyệt, vì ảnh bị thay vẫn nằm trong lịch sử Git.
+
+## Mã màn hình
+
+Mỗi màn hình có đúng một mã trong cả dự án (Phiên 35 · Lượt 84–87). Đọc mã là biết màn hình nào, không cần kèm khóa Epic.
+
+- **Dạng `<APP>-<KHU><SỐ>`**, ví dụ `USR-CART01`:
+  - APP: 3 chữ hoa, một cho mỗi app, như `USR` cho `user`, `ADM` cho `admin`;
+  - KHU: 2–4 chữ hoa, như `HOME`, `PRD`, `CAT`, `CART`, `CHK`, `ACC`;
+  - SỐ: 2 chữ số, cấp lần lượt trong khu, từ 01.
+- **Khối:** `USR-CART01.4`. **Biến thể** (bản mobile, trạng thái rỗng): cùng mã, thêm hậu tố, như `USR-CART01-mobile`. Hộp thoại chỉ mở từ một màn hình là một khối của màn hình đó; hộp thoại dùng ở nhiều màn hình thì có mã riêng.
+- **Vì sao dạng này:**
+  - không có dấu gạch ngay trước số, nên mã không bao giờ giống mã item Jira như `SHOP-95`;
+  - chỉ chữ hoa và số, vì Windows không phân biệt hoa thường trong tên file, và Mermaid coi `end` viết thường là từ khóa;
+  - không có dấu chấm, vì dấu chấm mở mã khối;
+  - grammar của Mermaid nhận dấu gạch trong tên nút, nên `USR-CART01 --> USR-CHK01` vẽ đúng.
+- **Sổ mã** `docs/design-system/screens.md` có ba bảng: Apps (tiền tố của từng app), Areas (các khu) và Screens (mã, tên, app, route, các Epic, trạng thái `dùng` hay `bỏ`). `ux` ghi dòng của màn hình mới trong PR tài liệu, và bạn duyệt ở gate ①. Một mã không bao giờ được cấp lại, kể cả mã đã bỏ.
+- **`check-design` kiểm:** D10, mỗi file một kiểu mã; D11, mã dự án có trong sổ, cùng app và route, chưa bỏ, và sổ không trùng mã. Job `policy` kiểm sổ khi PR sửa nó.
+- **Trong code:** mã nằm ở chú thích, tên test và tên ảnh xem trước (`USR-CART01-desktop.png`), không ở tên file, tên component hay route.
+- **Màn hình cũ:** `design.md` của SHOP-7, SHOP-81, SHOP-95 giữ mã `S<số>`. Epic sau sửa một màn hình cũ thì `ux` cấp mã mới cho nó và ghi "trước đây: SHOP-81 S2" trong sổ.
+- `node .ai-orchestrator/scripts/design-inbox.mjs codes` in sổ và mã kế tiếp của một khu.
+
+## Đưa thiết kế Claude Design vào repo
+
+Design và Design System làm trong Claude là artifact, mỗi cái có link `https://claude.ai/artifact/<id>`. Claude Design bản riêng (`claude.ai/design`) đóng ngày 2026-12-14; project ở đó chuyển sang Claude bằng "Move to Claude". `ux` không mở link nào: phiên chính của bạn đọc artifact rồi bỏ vào hộp thiết kế.
+
+1. Trong Claude, mỗi màn hình là một khung (artboard). Đặt tên file khung theo mã, như `USR-CART01.dc.html` (bản mobile `USR-CART01-mobile.dc.html`), và tên khung bắt đầu bằng mã, như "USR-CART01 · Giỏ hàng". Cách dễ nhất là dặn Claude khi nhờ dựng thiết kế: "Mỗi màn hình một khung; tên file theo mã màn hình, như USR-CART01.dc.html; tên khung bắt đầu bằng mã".
+2. Dán link artifact vào mô tả Epic, ghi mỗi link có những màn hình nào. `/ao-intake` hỏi điều này.
+3. Gõ `/ao-design <EPIC>`. Phiên chính:
+   - đọc các file nguồn của artifact bằng công cụ Artifact: `canvas.json`, các khung `*.dc.html`, token. Không đọc phần mềm của kiểu artifact;
+   - chạy `design-inbox.mjs add`: chỉ giữ file nguồn, không bao giờ giữ file mà Claude Code đọc như chỉ dẫn (`CLAUDE.md`, `AGENTS.md`, `.claude/`), chép vào `.ai/design-inbox/<EPIC>/<id>/`, ghi `inbox.yaml` với link, phiên bản và mã băm từng file;
+   - chạy `design-inbox.mjs render`: bỏ vỏ canvas và mọi script, chặn tải ngoài trừ Google Fonts bằng CSP, server chỉ ở `127.0.0.1`, rồi chụp từng khung ở bề rộng của nó và ở 390 px vào `shots/` (cao tối đa 2.000 px). Khung có dữ liệu động (`{{ }}`, `sc-for`) thì bạn chụp ảnh và bỏ vào hộp;
+   - chạy `design-inbox.mjs check`: in bảng màn hình và lỗi, như khung chưa có mã, file đã đổi sau khi lấy, link chưa lấy.
+4. Gõ `/ao-spec <EPIC>`. Lệnh dừng và chỉ bạn tới `/ao-design` khi mô tả Epic còn link chưa có trong `inbox.yaml`. `ux` lấy mã của từng khung, chép ảnh và file khung vào `design/`, ghi `claude-design:`, `prototype:` và dòng `Claude Design version:`, lấy token đúng giá trị của Design, và so với `docs/design-system/<app>.md` của repo, vì repo là nguồn chính của design system.
+5. Ở gate ①, bạn duyệt ảnh và file khung đã commit. Artifact có đổi sau đó cũng không ảnh hưởng, cho tới khi bạn gõ lại `/ao-design` và `/ao-spec <EPIC> [sửa]`.
+
+**Design System của Claude** không đi qua `ux`: tạo một Task "đồng bộ design system" bằng `/ao-intake`, gõ `/ao-design <TASK>` để lấy `tokens.json` và `README.md`, rồi `/ao-build <TASK>`: `fe-dev` đưa token vào code và `docs/design-system/<app>.md`, qua PR có review.
+
+**Giới hạn:** phiên chính đọc đầy đủ artifact của bạn, hay artifact được chia sẻ quyền sửa. Chỉ có quyền xem thì tải folder về và bỏ vào `.ai/design-inbox/<EPIC>/`. Figma qua MCP sẽ làm sau, khi bạn có gói Education.
 
 ## Đưa ảnh chụp màn hình vào repo
 
