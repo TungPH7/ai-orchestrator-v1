@@ -3,7 +3,11 @@
 > **Spec:** [SPEC-guided-setup.md](../../SPEC-guided-setup.md) mục 6. Lần chạy thử thật trên `du-an-1`: phiên chính làm
 > đúng theo [ao-kit-setup.md](../../ao-kit-setup.md), ghi từng bước, thời gian, và mọi chỗ file sai hay thiếu.
 
-**Trạng thái:** đang chạy, từ 2026-11-24 19:41, trên kit `ce0c4ba` (kit PR #359).
+**Trạng thái:** **đạt**, 2026-11-25. Chạy từ 2026-11-24 19:41 trên kit `ce0c4ba` (kit PR #359), qua kit PR #360 và #361; VPS chạy kit `3d47633`. Đủ bốn điều kiện của SPEC mục 6:
+- `doctor` in `Every row passes.`;
+- `verify` đạt mọi dòng, và MCP đọc được Task của nó;
+- ba app chạy trên Development;
+- mọi chỗ lần chạy tìm ra đã sửa trong kit (bảng cuối).
 
 ## Các bước
 
@@ -25,6 +29,16 @@
 | 10. `/ao-preview DA1-1` | Lần đầu dừng: `web did not answer`, vì `web` cần `AUTH_SECRET` mà máy chưa có file env nào. Sau khi ghi `apps/web/.env.development` (git bỏ qua) với giá trị ngẫu nhiên thì chạy: `web` `/en` và `/en/products`, `admin` `/` và `/login`, `api` `/actuator/health` (`UP`, có database) đều 200; `/api/v1/health` qua `admin` 200; `/api/products` trả `[]` | 2 phút 34 giây (dừng), 2 phút 14 giây |
 | 10. Dừng preview | `/ao-review 8` dừng preview và báo `apps/web/AGENTS.md` mới xuất hiện: khối mà `next dev` tự viết, như `shop` PR #5. Commit vào PR (`eda2098`), CI chạy lại | |
 | 11. VPS: secret, `deployer.yaml`, `baseline` | Secret Development sinh trên VPS (8 biến app, 6 biến database, kiểm bằng tên và độ dài); mục `du-an-1` chèn trước khóa `backup:` của `deployer.yaml`; `baseline` `760f6de` cho cả `develop` và `main`; `tick --dry-run` chỉ ghi Caddyfile. Lượt kế: Caddyfile thêm 42 dòng, không xóa dòng nào; sáu host có chứng chỉ sau khoảng 1 phút, trả 401 khi không có basic auth | vài phút |
+| 10. Gate ③ và merge | `/ao-review 8`: chuyển PR khỏi nháp, ghi dấu bỏ review lên `eda2098` (29 giây), nêu 6 file critical. Trước đó GitHub kẹt check `secrets` ở `in_progress` dù job đã `success`; chạy lại riêng job đó thì hết. Bạn (phiên chính thay bạn) approve; `merge-gate` tự merge sau 11 giây, commit `25a2662`. `DA1-1` Cancel, resolution `Done`, kèm comment trỏ PR #8, như `SHOP-1` | |
+| 11. Deploy đầu | CI của `develop` xanh, nhưng deployer từ chối `25a2662` vì hai check `Dependabot` đỏ (sửa ở kit PR #361). Chép kit `3d47633` lên VPS (mục 12): `tick --dry-run` in `would deploy 25a2662 from develop`, rồi deployer tự deploy, không cần `/ao-rollback` | |
+| 11. Deploy đầu, kết quả | `deployed 25a2662` lúc 17:19 UTC: build `web`, `admin`, `api` trên VPS, tạo `ao-du-an-1-development-db`, script init, smoke test. Qua basic auth: `web` `/en` và `/en/products` 200 (tiêu đề "Server-first enterprise foundation"), `/` 307 sang `/en`; `admin` `/` và `/login` 200; `/api/v1/health` qua `admin` 200 (`UP`, profile `staging`); `/api/products` 200. Không có basic auth: 401. Staging và Production: 503 | khoảng 18,5 phút |
+| 11. Backup | `ao-backup`: bản dump 109.287 byte, cùng bản sao `age`; `restore-check du-an-1 development`: 15 bảng, 38 dòng, khớp; `ao-backup-pull` kéo bản sao về `D:\ao-backups` | 9 giây, 25 giây, 8 giây |
+| 11. RAM trên VPS 4 GB | Trước `du-an-1`: còn sẵn 1.713 MB. Sau: 1.274 MB. Container: `api` 335 MiB, `web` 137 MiB, `admin` 46 MiB, Postgres 66 MiB. Image: `web` 400 MB, `api` 429 MB, `admin` 144 MB. Đĩa dùng 49% | |
+| 12. `doctor` | Lần đầu: một dòng đỏ, `Docker is running`, vì Docker Desktop chỉ bật khi cần. Bật Docker, chạy lại: `Every row passes.`, rồi tắt Docker. Hai dòng `?` (App `ao-deploy`, `deployer.yaml`) đã có câu trả lời ở bước 11 | 22 giây |
+| 13. `verify` | Đạt cả 9 dòng: Jira tạo, đọc, comment và Cancel `DA1-2`; `ao-dev` tạo, đọc, xóa nhánh `ao-kit-verify-20261124-1722`; `ao-review` lấy token; `web` `/en` và `admin` `/` đúng cả có và không có basic auth | 9,9 giây |
+| 13. Đọc qua MCP | `claude -p` (Sonnet) trong `du-an-1`, chỉ cho `getJiraIssue`: `status=Cancelled; labels=ao-kit-verify`. MCP không trả resolution; REST xác nhận `Won't Do` | 16,5 giây |
+| 14. Bàn giao | `ao-step.mjs status`: Development chạy `25a2662`, hai URL; Staging và Production chưa có gì | |
+| 8. PR của Dependabot | 10 PR cập nhật bảo mật, mỗi gói một PR cho `/` và một cho thư mục app. Sau PR #8, bốn PR tự đóng (`next`, `zod`, `axios`, `vite`); sáu PR còn mở (`i18next`, `vitest`, `dompurify`, mức moderate hay low) | |
 
 ## Kit sửa theo lần chạy
 
@@ -41,4 +55,7 @@
 | `ao-kit-setup.md` bước 10 | `docker-compose.yml` của template Java đặt cứng tên container, volume (`learn-postgres-data`) và network; `shop` đang có volume đó, với mật khẩu khác, và giữ cổng 5432 | Đặt tên riêng của dự án trong `.env` (`COMPOSE_PROJECT_NAME`, `POSTGRES_CONTAINER_NAME`, `COMPOSE_NETWORK_NAME`), và cổng khác (`POSTGRES_HOST_PORT`, `DB_PORT` 5442) |
 | `ao-kit-setup.md` bước 10 | `web` cần `AUTH_SECRET` khi chạy, mà template chỉ commit `.env.example`: `/ao-preview` dừng sau 2 phút | Ghi file env của máy (`.env.development`) với giá trị ngẫu nhiên, như `.env` của `api` |
 | `lib/tracker/facts.mjs` (`NOT_BRANCH_CI`) | Sau khi PR #8 merge, CI của `develop` xanh, nhưng deployer từ chối `25a2662` ("CI failed"): hai check `Dependabot` (cập nhật bảo mật `minimatch`, `@vitest/mocker`) đỏ trên head, và đỏ lại sau mỗi lần push | Check `Dependabot` không tính là CI của nhánh; test đỏ trước; `docs/release-workflow.md`. VPS cần bản kit mới (mục 12 của `vps-setup.md`) |
+| `ao-kit-setup.md` bước 11 | Chưa nói: kit trên VPS phải đủ mới; mục dự án nằm trước khóa `backup:` của `deployer.yaml`; `baseline` trước khi PR của bước 10 merge thì không cần `/ao-rollback`; chứng chỉ cần khoảng 1 phút; dòng backup của `doctor` cần backup, `restore-check` và kéo bản sao về | Viết lại bước 11 thành 6 mục |
+| `ao-kit-setup.md` bước 12 | Dòng `Docker is running` đỏ trên máy chỉ bật Docker khi cần | Bật Docker cho `doctor`, rồi tắt |
+| `ao-kit-setup.md` bước 8, 14 | PR của Dependabot không tự đóng hết; Task bỏ review cần review sau merge ở bản release đầu | Bước 8 nói PR nào tự đóng; bước 14 nhắc PR còn mở, file `.env` của máy, và `/ao-review <KEY>` |
 | `ao-kit-setup.md` bước 10 | `next dev` viết `apps/web/AGENTS.md`; lúc dừng preview, kit báo file đó là file điều khiển phiên vừa xuất hiện | Đọc file; nếu chỉ là khối của Next.js thì commit vào PR của Task. Thêm bước `/ao-review <PR>` để ghi dấu bỏ review |

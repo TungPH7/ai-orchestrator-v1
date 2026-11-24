@@ -13,6 +13,7 @@ Thứ tự theo Lượt 7. Mỗi mục xong thì đánh dấu, kèm một dòng 
   - `init` coi thư mục chỉ có `.ai/` là trống, để `answers.md` có trước `init`.
 - [x] 4. Tài liệu cho người: `docs/quick-start.md`, `docs/setup-steps.md` (chuyển từ `misc/thao-luan/setup-du-an/`), một
   dòng trong `getting-started.md` và `README.md`, dòng `verify` trong bảng tra lệnh.
-- [ ] 5. Chạy thử thật trên `du-an-1` (spec mục 6), ghi vào [verification.md](verification.md); sửa kit theo những gì
-  lần chạy tìm ra.
+- [x] 5. Chạy thử thật trên `du-an-1` (spec mục 6), ghi vào [verification.md](verification.md); sửa kit theo những gì
+  lần chạy tìm ra. Đạt 2026-11-25: `doctor` và `verify` xanh, ba app trên Development; 15 chỗ sửa qua kit PR #360,
+  #361 và PR chốt bước này.
 - [ ] 6. Review một lần: chép kit vào `shop` trong một Task, review PR chép kit, sửa Critical và High, QA, Accept.
