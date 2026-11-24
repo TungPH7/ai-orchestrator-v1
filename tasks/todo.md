@@ -51,6 +51,7 @@
     - đĩa từ 92% xuống 42%, image, container và volume giữ nguyên, lượt chạy deployer sau đó thành công.
   - **Sửa kit (kit PR #357):** `PRUNE_CACHE` thành lệnh `until=72h` ở trên, có test (`tests/release/docker.test.mjs`), ghi ở `docs/vps-setup.md` mục 13.
   - **Chưa chép kit**, cả vào `shop` lẫn lên VPS: VPS vẫn chạy `a05e214` với lệnh dọn cũ cho tới lần chép kế tiếp.
+- [ ] **14. Setup có hướng dẫn** (Phiên 36 · Lượt 2–8; bạn chốt "Làm theo thứ tự bạn đề xuất … cứ làm cho xong"). Spec [SPEC-guided-setup.md](../SPEC-guided-setup.md): `ao-kit-setup.md` cho phiên chính, `ao-kit verify`, `add` ghi `.ai/setup/add-report.md`, `docs/quick-start.md` và `docs/setup-steps.md`; chạy thử thật trên `du-an-1` với ba template của bạn và VPS; review một lần ở bản chép kế tiếp vào `shop`. Tiến độ ở [guided-setup/todo.md](guided-setup/todo.md).
 - [x] **Đợt sửa kit sau SHOP-95** (bạn chốt ở Phiên 35 · Lượt 74: "làm theo đề xuất, accept không cần hỏi, xong thì dừng hỏi trước mục 10"). Gồm 4 Medium và 6 Low của review shop PR #93 (`e-commerce/shop/.ai/reviews/93-reviewer.md`, `93-security.md`), cùng những gì lượt chạy thử lộ ra. Xong đợt sửa thì chép kit vào `shop` một lần, có review. Kit làm xong trên nhánh `task/review-per-item-fixes` (1883 test):
   - comment báo cáo sau merge mở đầu bằng `ao-step:`, và báo cáo QA không bao giờ là comment của ao-step;
   - dấu trên PR đi sau cùng, và lần đăng dừng giữa chừng thì làm tiếp với cùng bộ PR;

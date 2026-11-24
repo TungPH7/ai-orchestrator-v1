@@ -2,6 +2,8 @@
 
 > Spec: [SPEC-project-scaffold.md](../SPEC-project-scaffold.md) mục 2.7. Mọi lệnh, đầu ra, thời gian và chi phí trong tài liệu này lấy từ lần chạy thật: `ao-green` (phần 3), `ao-brown` (phần 4), `shop` (phần 5), Epic `SMP-23` của `ao-sample` (phần 6), Epic `SHOP-7` của `shop` (phần 7), và `/ao-run` trên Epic `SHOP-81` của `shop` (phần 9).
 
+> **Muốn agent làm setup cùng bạn?** Đọc [quick-start.md](quick-start.md): mở Claude Code trong thư mục trống, gõ "Làm theo `<kit>/ao-kit-setup.md`". Từng bước và thư mục dự án có gì sau mỗi bước: [setup-steps.md](setup-steps.md). Tài liệu này vẫn là chỗ tra lệnh, đầu ra thật và lỗi đã gặp.
+
 Tài liệu này dành cho dev chưa dùng kit. Bạn đọc từ trên xuống: chuẩn bị một lần, dựng dự án, rồi làm một tính năng từ ý tưởng tới Production. Mỗi lệnh có bốn ý: làm gì, gõ khi nào, kết quả mong đợi, lỗi thì làm gì.
 
 Trong tài liệu, `<kit>` là thư mục bạn clone kit về, ví dụ `D:/work/ai-orchestrator`. Mọi lệnh gõ trong Git Bash.
@@ -252,6 +254,7 @@ node <kit>/scripts/ao-kit.mjs doctor ao-green
 - **Ý nghĩa:** chỉ đọc. Mỗi dòng `✘` kèm việc cần làm. Dòng `?` của VPS là câu hỏi.
 - **Kết quả mong đợi:** `Every row passes.`
 - **Đưa lên VPS:** làm như bước 8 của phần 5: cài App `ao-deploy` vào repo, thêm đoạn mà `doctor` in ra vào `/etc/ao/deployer.yaml` ([docs/vps-setup.md](vps-setup.md) mục 13), rồi yêu cầu deploy lần đầu bằng `/ao-rollback development <sha>`.
+- **Ghi thử:** `doctor` xanh thì chạy `node <kit>/scripts/ao-kit.mjs verify ao-green` (bảng tra lệnh, phần 8). Mọi dòng phải đạt; lệnh ghi kết quả vào `.ai/setup/verify.md`.
 
 ### Bước 10. Lệnh đầu tiên
 
@@ -1177,6 +1180,7 @@ PR #40, tổng 20,49 USD:
 | `setup jira` | Space, board, bộ lọc, rồi `jira:check`; in từng chỗ còn lệch | Sau `init` |
 | `setup github` | Nhánh mặc định, Dependabot, environment, secret, ruleset | Ngay sau khi `develop` lên GitHub |
 | `doctor` | Kiểm máy, repo, GitHub, Jira, Claude Code; mỗi dòng kèm việc cần làm | Sau mỗi bước, và khi có gì lạ |
+| `verify` | Ghi thử lên Jira, GitHub và VPS rồi dọn lại: token CI tạo, đọc, comment một Task, token thường của bạn Cancel nó; `ao-dev` tạo rồi xóa một nhánh; `ao-review` lấy token đăng review; Development của từng app public trả 200 khi có basic auth, 401 khi không. Ghi `.ai/setup/verify.md` | Khi `doctor` đã xanh |
 | `check` | Kiểm `project.yaml`, đối chiếu với `deploy.yaml` và `package.json` | Sau khi sửa `project.yaml` |
 | `render` | Sinh lại `settings.json` và agent | Sau khi sửa `project.yaml` |
 | `sync --key <KEY>` | Chép bản kit mới vào dự án, trên nhánh riêng, một commit, không push | Khi kit có bản mới |

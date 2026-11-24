@@ -160,7 +160,9 @@ Bốn lệnh đưa code từ `develop` lên Development, Staging và Production 
 
 ## Cài kit vào repo dự án
 
-Làm theo [docs/getting-started.md](docs/getting-started.md). Tài liệu này đi từng lệnh, mỗi lệnh có ý nghĩa, kết quả mong đợi chép từ lần chạy thật, và cách xử lý khi lỗi:
+Cách nhanh nhất: [docs/quick-start.md](docs/quick-start.md). Bạn mở Claude Code trong một thư mục trống và gõ "Làm theo `<kit>/ao-kit-setup.md`"; agent chính hỏi config và stack, chạy các lệnh, dẫn bạn bấm những việc chỉ bạn làm được, rồi kiểm bằng `ao-kit verify` ([SPEC-guided-setup.md](SPEC-guided-setup.md)). [docs/setup-steps.md](docs/setup-steps.md) cho thấy từng bước và thư mục dự án có gì sau mỗi bước.
+
+Muốn tự làm, hay cần tra một lệnh: làm theo [docs/getting-started.md](docs/getting-started.md). Tài liệu này đi từng lệnh, mỗi lệnh có ý nghĩa, kết quả mong đợi chép từ lần chạy thật, và cách xử lý khi lỗi:
 - chuẩn bị máy và tài khoản (phần 2);
 - dự án mới từ thư mục trống (phần 3);
 - repo đang phát triển (phần 4);
@@ -169,7 +171,7 @@ Làm theo [docs/getting-started.md](docs/getting-started.md). Tài liệu này �
 - một Epic trọn vòng trên dự án có Spring Boot, với chi phí thật (phần 7);
 - cập nhật kit, hết usage, hotfix, rollback (phần 9).
 
-Các lệnh `ao-kit` (`init`, `add`, `sync`, `setup github`, `setup jira`, `doctor`, `check`, `render`) làm phần việc mà máy làm được. Hướng dẫn chỉ rõ từng bước bạn phải bấm trên GitHub và Jira.
+Các lệnh `ao-kit` (`init`, `add`, `sync`, `setup github`, `setup jira`, `doctor`, `verify`, `check`, `render`) làm phần việc mà máy làm được. Hướng dẫn chỉ rõ từng bước bạn phải bấm trên GitHub và Jira.
 
 `ao-kit init` và `ao-kit sync` chép vào dự án:
 - `.ai-orchestrator/`: `contract/`, `lib/`, `tracker/`, `quality/`, `agents/`, `templates/`, các script, `package.json` của kit, và `docs/sdlc.md` thành `.ai-orchestrator/docs/sdlc.md`, vì template trỏ tới DoD trong đó;
@@ -280,6 +282,9 @@ scripts/            lệnh của kit: kiểm và sinh tài liệu, Jira, ao-kit.
 kit/                file đặt vào repo dự án: .mcp.json, .claude/ (agent, file quy ước, skill, hook), .githooks/, .jira/config.yml, workflow CI, jira-sync, merge-gate, audit
 docs/sdlc.md        sinh tự động, không sửa tay
 docs/jira-setup.md  checklist dựng Jira, sinh tự động, không sửa tay
+ao-kit-setup.md     chỉ dẫn cho phiên chính khi setup dự án mới cùng bạn (SPEC-guided-setup.md)
+docs/quick-start.md        một trang: cài gì, gõ câu nào để agent setup dự án cùng bạn
+docs/setup-steps.md        từng bước setup, thư mục dự án có gì sau mỗi bước
 docs/getting-started.md    cài kit vào dự án, từng lệnh, từ máy trống tới Production
 docs/dev-workflow.md       các lệnh /ao-* của vòng trong, làn, .ai/runs/, khi nào lệnh dừng, chạy tiếp
 docs/quality-gates.md      các lớp chốt, từng check, cách xử lý khi cổng đỏ
