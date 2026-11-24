@@ -217,3 +217,36 @@ test('add a Java app from a template: a package.json that runs its Maven wrapper
   assert.equal(addApp({ kitDir: ROOT, projectDir: p.dir, app: 'api', options: { stack: 'spring-boot', from }, git: realGit, run: p.run }).ok, false);
   assert.equal(read(p.dir, '.ai-orchestrator/deploy.yaml'), before);
 });
+
+test('add writes what each app still needs into .ai/setup/add-report.md, one section an app, with the kit files a Java app needs by hand (SPEC-guided-setup.md 4)', (t) => {
+  const p = pnpmProject(t);
+  assert.match(read(p.dir, '.gitignore'), /^\.ai\/$/m);
+  assert.equal(addApp({ kitDir: ROOT, projectDir: p.dir, app: 'user', options: { stack: 'nextjs', public: true, seo: true }, git: realGit, run: p.run }).ok, true);
+  let report = read(p.dir, '.ai/setup/add-report.md');
+  assert.match(report, /^# What ao-kit add says each app still needs$/m);
+  assert.match(report, /^## user \(nextjs\)\n\nCode to change:\n\n- Nothing\.\n/m);
+
+  // A Java template whose JaCoCo leaves files out: both lines by hand, and the code to change.
+  const from = javaTemplate(t);
+  write(from, 'pom.xml', read(from, 'pom.xml').replace('<executions>', '<configuration><excludes><exclude>com/acme/config/**</exclude></excludes></configuration><executions>'));
+  realGit(['commit', '--quiet', '-am', 'excludes'], from);
+  const result = addApp({ kitDir: ROOT, projectDir: p.dir, app: 'api', options: { stack: 'spring-boot', from }, git: realGit, run: p.run });
+  assert.equal(result.ok, true, result.notes.join('\n'));
+  assert.match(result.notes.join('\n'), /Write by hand before the first commit, since these files steer the kit:/);
+  assert.match(result.notes.join('\n'), /Wrote the section of api in \.ai\/setup\/add-report\.md/);
+  report = read(p.dir, '.ai/setup/add-report.md');
+  assert.match(report, /^## user \(nextjs\)$/m);
+  const api = report.slice(report.indexOf('## api (spring-boot)'));
+  assert.match(api, /^Code to change:\n\n- apps\/api\/src\/main\/resources\/application\.yml takes server\.port from SERVER_PORT/m);
+  assert.match(api, /^By hand:\n\n- \.ai-orchestrator\/deploy\.yaml has no database: key/m);
+  assert.match(api, /copy its <excludes> into coverage_exclude of api/);
+  assert.equal(report.match(/^## /gm).length, 2);
+
+  // With database and coverage_exclude written, a second Java app needs neither line.
+  const deployFile = join(p.dir, '.ai-orchestrator/deploy.yaml');
+  writeFileSync(deployFile, `${read(p.dir, '.ai-orchestrator/deploy.yaml')}database:\n  image: postgres:17-alpine\n  init: apps/api/docker/postgres/init\n  memory: 256m\n`);
+  const other = addApp({ kitDir: ROOT, projectDir: p.dir, app: 'jobs', options: { stack: 'spring-boot', from: javaTemplate(t) }, git: realGit, run: p.run });
+  assert.equal(other.ok, true, other.notes.join('\n'));
+  assert.doesNotMatch(other.notes.join('\n'), /Write by hand/);
+  assert.doesNotMatch(read(p.dir, '.ai/setup/add-report.md').slice(read(p.dir, '.ai/setup/add-report.md').indexOf('## jobs')), /By hand/);
+});

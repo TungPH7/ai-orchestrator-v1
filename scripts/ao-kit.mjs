@@ -20,10 +20,13 @@
 //                 by row with what to do; reads only, and prints no secret
 //   setup jira <dir>     the space of project.yaml with the schemes of --template (DEMO), its board and filter, then
 //                 jira:check; with JIRA_ADMIN_EMAIL and JIRA_ADMIN_CLASSIC_TOKEN. --space-name <name> (the project name)
+//   verify <dir>  once doctor passes (SPEC-guided-setup.md section 5): a Jira Task the CI token makes and comments on, which
+//                 your classic token cancels; a branch ao-dev makes at the head of develop and deletes; a review token of
+//                 ao-review; the Development host of each public app with and without basic auth. Writes .ai/setup/verify.md
 // Exit: 0 when it did what it says, 1 when the project has a problem it names, 2 on a wrong command line.
 import { spawnSync } from 'node:child_process';
-import { existsSync, readdirSync, readFileSync } from 'node:fs';
-import { join, resolve } from 'node:path';
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 import { DOCKER_INFO, dockerAnswered, findJdk, javaVersionOf } from '../lib/quality/maven.mjs';
@@ -39,9 +42,12 @@ import { initProject, syncKit } from '../lib/scaffold/init.mjs';
 import { setupGithub } from '../lib/scaffold/setup-github.mjs';
 import { setupJira } from '../lib/scaffold/setup-jira.mjs';
 import { readMapping } from '../lib/tracker/mapping.mjs';
+import { bearerAuth, createJiraClient } from '../lib/tracker/jira-client.mjs';
+import { readContract } from '../lib/contract.mjs';
+import { VERIFY_FILE, verifyProject, verifyReport } from '../lib/scaffold/verify.mjs';
 import { checkProject, PROJECT_FILE, readProjectConfig } from '../lib/scaffold/project-config.mjs';
 
-const USAGE = 'usage: node <kit>/scripts/ao-kit.mjs <init|add|sync|render|check|doctor|setup github|setup jira> <project dir> [options]; see the top of scripts/ao-kit.mjs';
+const USAGE = 'usage: node <kit>/scripts/ao-kit.mjs <init|add|sync|render|check|doctor|verify|setup github|setup jira> <project dir> [options]; see the top of scripts/ao-kit.mjs';
 const kitDir = fileURLToPath(new URL('..', import.meta.url));
 
 const git = (args, cwd) => spawnSync('git', args, { cwd, encoding: 'utf8' });
@@ -257,22 +263,56 @@ const COMMANDS = {
     const [email, token] = [secret('JIRA_ADMIN_EMAIL'), secret('JIRA_ADMIN_CLASSIC_TOKEN')];
     if (!email || !token) return print({ ok: false, notes: ['Set JIRA_ADMIN_EMAIL and JIRA_ADMIN_CLASSIC_TOKEN, a classic API token of your Atlassian account, as user variables (docs/getting-started.md)'] });
     const mapping = readMapping(join(kitDir, 'tracker'));
-    const auth = `Basic ${Buffer.from(`${email}:${token}`).toString('base64')}`;
-    // A call that hangs ends after 30 s, and setupJira reports it as a network error (project-scaffold part 3, 2.6).
-    const jira = async (method, path, body) => {
-      const res = await fetch(`https://${mapping.site}${path}`, { method, headers: { Authorization: auth, Accept: 'application/json', 'Accept-Language': 'en-US', ...(body && { 'Content-Type': 'application/json' }) }, body: body && JSON.stringify(body), signal: AbortSignal.timeout(30_000) });
-      const text = await res.text();
-      let json = null;
-      try {
-        json = text ? JSON.parse(text) : null;
-      } catch {
-        json = null;
-      }
-      return { status: res.status, json };
-    };
+    const jira = siteCall(mapping.site, email, token);
     return print(await setupJira({ kitDir, space: config.jira.space, name: v['space-name'] ?? config.name, template: v.template ?? 'DEMO', mapping, jira, run }));
   },
+  // SPEC-guided-setup.md section 5: one write on Jira, GitHub and the VPS, each cleaned up; the rows, and .ai/setup/verify.md.
+  verify: async (dir) => {
+    const config = projectConfig(dir);
+    if (!config) return 1;
+    const mapping = readMapping(join(kitDir, 'tracker'));
+    const taskType = readContract(join(kitDir, 'contract')).work_types.find(({ id }) => id === 'task').jira_issue_type;
+    const ciToken = secret('JIRA_CI_TOKEN');
+    const jira = ciToken ? createJiraClient({ cloudId: mapping.cloud_id, authorization: bearerAuth(ciToken), write: true }) : null;
+    const [email, classic] = [secret('JIRA_ADMIN_EMAIL'), secret('JIRA_ADMIN_CLASSIC_TOKEN')];
+    const admin = email && classic ? siteCall(mapping.site, email, classic) : null;
+    const repo = config.github.repo;
+    const appToken = async (kind, permissions) => {
+      const appEnv = { ...process.env, [`AO_${kind.toUpperCase()}_APP`]: config.github.apps[kind], [`AO_${kind.toUpperCase()}_APP_ID`]: String(config.github.apps[`${kind}_id`]) };
+      return (await installationToken({ ...appCredentials(kind, { env: appEnv }), repo, permissions })).token;
+    };
+    const github = async (method, path, token, body) => jsonCall(`https://api.github.com/${path}`, { method, headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' }, body });
+    const now = new Date();
+    const result = await verifyProject({ config, now, taskType, jira, admin, appToken, github, envAuth: secret('AO_ENV_AUTH') });
+    console.log(formatDoctor(result.rows));
+    for (const note of result.notes) console.log(`- ${note}`);
+    const file = join(dir, VERIFY_FILE);
+    mkdirSync(dirname(file), { recursive: true });
+    writeFileSync(file, verifyReport({ ...result, now }));
+    console.log(`Wrote ${VERIFY_FILE}${result.item ? `. Next, in Claude Code: read ${result.item} through the atlassian server` : ''}`);
+    return result.rows.some(({ ok }) => ok === false) ? 1 : 0;
+  },
 };
+
+// A JSON call that ends after 30 s: { status, json }, json null when the body is empty or not JSON.
+async function jsonCall(url, { method, headers, body }) {
+  const res = await fetch(url, { method, headers: { ...headers, ...(body && { 'Content-Type': 'application/json' }) }, body: body && JSON.stringify(body), signal: AbortSignal.timeout(30_000) });
+  const text = await res.text();
+  let json = null;
+  try {
+    json = text ? JSON.parse(text) : null;
+  } catch {
+    json = null;
+  }
+  return { status: res.status, json };
+}
+
+// Your Jira site with your email and classic token. A call that hangs ends after 30 s, and setupJira reports it as a
+// network error (project-scaffold part 3, 2.6).
+function siteCall(site, email, token) {
+  const auth = `Basic ${Buffer.from(`${email}:${token}`).toString('base64')}`;
+  return (method, path, body) => jsonCall(`https://${site}${path}`, { method, headers: { Authorization: auth, Accept: 'application/json', 'Accept-Language': 'en-US' }, body });
+}
 if (!COMMANDS[command] || !dirArg) {
   console.error(USAGE);
   process.exit(2);

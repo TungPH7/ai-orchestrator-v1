@@ -194,6 +194,9 @@ test('without the name, sync writes nothing and makes no branch: it says what it
 test('init --package-manager pnpm in an empty folder: the root of base-pnpm, no app, the kit, then pnpm install', (t) => {
   const dir = temp(t);
   mkdirSync(join(dir, '.git'));
+  // The answers ao-kit-setup.md keeps before init (SPEC-guided-setup.md 3.2): the folder is still empty, and they stay.
+  mkdirSync(join(dir, '.ai', 'setup'), { recursive: true });
+  writeFileSync(join(dir, '.ai', 'setup', 'answers.md'), '# Answers\n');
   const fx = effects({ answers: noOrigin });
   const options = { ...OPTIONS, profile: undefined, packageManager: 'pnpm' };
   const { notes, ok } = initProject({ kitDir: ROOT, projectDir: dir, options, ...fx });
@@ -213,6 +216,7 @@ test('init --package-manager pnpm in an empty folder: the root of base-pnpm, no 
   assert.match(readFileSync(join(dir, '.gitignore'), 'utf8'), /^!\.env\.example$/m);
   assert.deepEqual(fx.calls.run.map(([argv]) => argv), ['npm ci --prefix .ai-orchestrator --no-audit --no-fund', 'node .ai-orchestrator/scripts/render-agents.mjs --project .', 'pnpm install', 'pnpm exec playwright install chromium']);
   assert.match(notes.join('\n'), /Next: add each app with ao-kit add <dir> <app> --stack nextjs\|react/);
+  assert.equal(readFileSync(join(dir, '.ai', 'setup', 'answers.md'), 'utf8'), '# Answers\n');
 });
 
 test('init refuses a package manager the profile does not use, and one the kit does not know', (t) => {
