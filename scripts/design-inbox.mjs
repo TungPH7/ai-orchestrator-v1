@@ -16,7 +16,7 @@
 //   node .ai-orchestrator/scripts/design-inbox.mjs codes [--prefix USR --area CART]
 //       prints the registry of screen codes, the next free code of an area and what is wrong with the registry
 import { spawn } from 'node:child_process';
-import { existsSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
 import { createServer } from 'node:http';
 import { tmpdir } from 'node:os';
 import { dirname, join, relative, resolve, sep } from 'node:path';
@@ -40,9 +40,10 @@ const options = (args) => {
   }
   return { named, plain };
 };
+// A refusal: thrown, not an exit, so render still writes inbox.yaml and closes its browser (independent pass of item 12).
+class Refused extends Error {}
 const fail = (message) => {
-  console.error(`design-inbox: ${message}`);
-  process.exit(1);
+  throw new Refused(message);
 };
 const inboxDir = (key) => {
   if (!KEY.test(key ?? '')) fail(`'${key ?? ''}' is not a Jira key such as SHOP-120`);
@@ -89,6 +90,13 @@ function writeInside(file, bytes) {
   // Removing a hard link leaves the other file as it was; "wx" writes no file another process put there meanwhile.
   if (stat !== null) rmSync(file);
   writeFileSync(file, bytes, { flag: 'wx' });
+  // A folder made a link between the check and the write (independent pass of item 12): the file landed elsewhere, as
+  // a new file, which "wx" made sure of, so it goes.
+  const real = realpathSync.native(file);
+  if (real.toLowerCase() !== join(realpathSync.native(project), relative(project, file)).toLowerCase()) {
+    rmSync(file, { force: true });
+    fail(`${shown(file)} was written through a link, ${real}: deleted it; delete the link, then run the command again`);
+  }
 }
 // The bytes of a file of the inbox, or null when it is not there.
 function readInside(file) {
@@ -177,7 +185,9 @@ const NPX_CLI = join(dirname(process.execPath), 'node_modules', 'npm', 'bin', 'n
 const [NPX, NPX_ARGS] = existsSync(NPX_CLI) ? [process.execPath, [NPX_CLI]] : ['npx', []];
 function cli(args, browser) {
   return new Promise((done) => {
-    const child = spawn(NPX, [...NPX_ARGS, '-y', PLAYWRIGHT, '-s=ao-design', ...args], { cwd: browser.work, env: browser.env, shell: false });
+    // --prefix: npm looks for packages in the work folder only, never in a folder above it, where a package.json with
+    // workspaces could name it (independent pass of item 12), and not among global packages.
+    const child = spawn(NPX, [...NPX_ARGS, `--prefix=${browser.work}`, '-y', PLAYWRIGHT, '-s=ao-design', ...args], { cwd: browser.work, env: browser.env, shell: false });
     let out = '';
     child.stdout.on('data', (chunk) => (out += chunk));
     child.stderr.on('data', (chunk) => (out += chunk));
@@ -191,8 +201,7 @@ function cli(args, browser) {
 // from there (security review of shop PR #98: npx ran in the inbox, which agents write).
 async function startBrowser() {
   const work = mkdtempSync(join(tmpdir(), 'ao-design-'));
-  // npm takes the first folder up from where it runs that has a package.json as the project: this one, which has no
-  // node_modules, so npx runs the CLI of its own cache.
+  // The project of npm, with no node_modules, so npx runs the CLI of its own cache.
   writeFileSync(join(work, 'package.json'), '{ "private": true }\n');
   mkdirSync(join(work, 'pages'));
   mkdirSync(join(work, 'shots'));
@@ -275,8 +284,15 @@ async function render([key]) {
           }
           continue;
         }
-        // The artboard as add took it: inbox.yaml records its hash.
-        const board = readInside(join(dir, source.dir, screen.file));
+        // The artboard as add took it: inbox.yaml records its hash. One that is a link stops its screen only.
+        let board;
+        try {
+          board = readInside(join(dir, source.dir, screen.file));
+        } catch (error) {
+          if (!(error instanceof Refused)) throw error;
+          report.push(`${id}: ${error.message}`);
+          continue;
+        }
         if (board === null || sha256(board) !== hashes.get(screen.file)) {
           report.push(`${id}: ${source.dir}/${screen.file} changed after it was taken, or is missing: take the artifact again with add`);
           continue;
@@ -311,11 +327,19 @@ async function render([key]) {
       }
     }
   } finally {
-    if (browser) {
-      browser.server.close();
-      rmSync(browser.work, { recursive: true, force: true, maxRetries: 3 });
+    // inbox.yaml first: a temp folder the CLI still holds must not cost the record of the images.
+    try {
+      writeInside(join(dir, INBOX_FILE), writeInbox(inbox));
+    } finally {
+      if (browser) {
+        browser.server.close();
+        try {
+          rmSync(browser.work, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 });
+        } catch {
+          report.push(`the temp folder ${browser.work} is still in use: delete it later`);
+        }
+      }
     }
-    writeInside(join(dir, INBOX_FILE), writeInbox(inbox));
   }
   console.log([`Rendered the Designs of .ai/design-inbox/${key}/ with no script:`, ...report.map((line) => `  ${line}`)].join('\n'));
 }
@@ -323,13 +347,16 @@ async function render([key]) {
 function check([key, ...more]) {
   const dir = inboxDir(key);
   const inbox = readInboxOf(dir);
-  const links = options(more).named.link ?? [];
+  const links = (options(more).named.link ?? []).map(normalLink);
   if (!inbox) {
     console.log(`.ai/design-inbox/${key}/${INBOX_FILE}: none yet${links.length > 0 ? `; to take: ${links.join(', ')}` : ''}`);
     if (links.length > 0) process.exitCode = 1;
     return;
   }
-  const files = new Map(walk(dir).map((path) => [path, readFileSync(join(dir, path))]));
+  // Plain files only: a hard link could be any file of yours, and its text must not reach a parse error (independent
+  // pass of item 12).
+  const linked = walk(dir).filter((path) => linkProblem(join(dir, path)) !== null);
+  const files = new Map(walk(dir).filter((path) => !linked.includes(path)).map((path) => [path, readFileSync(join(dir, path))]));
   const lines = [`.ai/design-inbox/${key}/${INBOX_FILE}:`];
   for (const source of inbox.sources) {
     if (source.kind === 'not-design') {
@@ -339,7 +366,7 @@ function check([key, ...more]) {
     lines.push(`- ${source.kind} ${source.url} version ${source.version ?? 'unknown'}: ${source.title ?? ''}`);
     for (const screen of source.screens ?? []) lines.push(`  - ${idOf(screen)} · ${screen.name}: ${screen.file}; images ${screen.shots?.length ? screen.shots.join(', ') : 'none'}`);
   }
-  const problems = inboxProblems(inbox, { files, registry: registry(), links });
+  const problems = [...linked.map((path) => `${path} is a link to another file: delete it, then take the artifact again with add`), ...inboxProblems(inbox, { files, registry: registry(), links })];
   lines.push(problems.length === 0 ? 'Inbox OK' : `Problems:\n${problems.map((problem) => `  - ${problem}`).join('\n')}`);
   console.log(lines.join('\n'));
   if (problems.length > 0) process.exitCode = 1;
@@ -371,5 +398,11 @@ function codes(args) {
 }
 
 const commands = { add, skip, render, check, codes };
-if (!commands[command]) fail('usage: design-inbox.mjs add|skip|render|check|codes …');
-await commands[command](rest);
+try {
+  if (!commands[command]) fail('usage: design-inbox.mjs add|skip|render|check|codes …');
+  await commands[command](rest);
+} catch (error) {
+  if (!(error instanceof Refused)) throw error;
+  console.error(`design-inbox: ${error.message}`);
+  process.exitCode = 1;
+}

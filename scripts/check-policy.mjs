@@ -106,8 +106,9 @@ try {
     // The registry of screen codes, when the PR changes it (tasks/todo.md item 10): one code a screen, declared prefixes,
     // listed here once and not again by each design.md; and D11 of every design.md with project codes, which a retired
     // code or a new route of the registry breaks though the PR does not change it (review of shop PR #98).
-    const registryChanged = changes.some(({ status, path }) => path === REGISTRY_FILE && status !== 'D') && existsSync(join(root, REGISTRY_FILE));
-    const registryErrors = registryChanged ? checkRegistry(readRegistry(readFileSync(join(root, REGISTRY_FILE), 'utf8'))).map(({ rule, line, message }) => `${REGISTRY_FILE}:${line} ${rule} ${message}`) : [];
+    // A deleted or renamed registry counts too: every design.md with project codes then lacks it (independent pass).
+    const registryChanged = changes.some(({ path }) => path === REGISTRY_FILE);
+    const registryErrors = registryChanged && existsSync(join(root, REGISTRY_FILE)) ? checkRegistry(readRegistry(readFileSync(join(root, REGISTRY_FILE), 'utf8'))).map(({ rule, line, message }) => `${REGISTRY_FILE}:${line} ${rule} ${message}`) : [];
     const coded = registryChanged
       ? globSync('docs/specs/*/design.md', { cwd: root }).map((path) => path.replaceAll('\\', '/')).filter((path) => !designs.includes(path) && usesProjectCodes(readFileSync(join(root, path), 'utf8'))).sort()
       : [];

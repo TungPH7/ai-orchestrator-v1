@@ -6,7 +6,7 @@ import { spawnSync } from 'node:child_process';
 import { existsSync, linkSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { RENDER_POLICY, artifactLinks, cliConfig, cliEnv, isArtifactLink, normalLink, readInbox, renderedPageProblems, stripCanvas } from '../../lib/quality/design-inbox.mjs';
+import { RENDER_POLICY, artifactLinks, boardsOf, cliConfig, cliEnv, isArtifactLink, normalLink, readInbox, renderedPageProblems, stripCanvas } from '../../lib/quality/design-inbox.mjs';
 import { checkDesign } from '../../lib/quality/design.mjs';
 import { ROOT } from '../helpers/kit.mjs';
 
@@ -215,4 +215,62 @@ test('Low (security): ux reads the pages render wrote, never an artboard, and co
   assert.doesNotMatch(ux, /design\/<code>\.dc\.html/);
   const fe = readFileSync(join(ROOT, 'agents', 'prompts', 'fe-dev.md'), 'utf8');
   assert.doesNotMatch(fe, /dc\.html/);
+});
+
+// The independent pass over the fixes of item 12 (2026-11-24): 7 Low and 1 note, each with the input that showed it.
+test('pass Low: check reads no file of the inbox through a link and prints none of its text; a link with a slash is the one taken', (t) => {
+  const { outside, run, inbox } = inboxProject(t);
+  const canvas = join(inbox, 'KBBSLaVz8cHnCY9Vo57rj6', 'project', 'canvas.json');
+  writeFileSync(join(outside, 'secret.txt'), 'notjson SECRET-TOKEN-123');
+  rmSync(canvas);
+  linkSync(join(outside, 'secret.txt'), canvas);
+  const checked = run('check', 'SHOP-1', '--link', 'https://claude.ai/artifact/KBBSLaVz8cHnCY9Vo57rj6/');
+  assert.equal(checked.status, 1);
+  assert.match(checked.stdout, /KBBSLaVz8cHnCY9Vo57rj6\/project\/canvas\.json is a link to another file/);
+  assert.doesNotMatch(checked.stdout + checked.stderr, /SECRET|notjson|not in the inbox/);
+});
+
+test('pass Low: an artboard that is a link stops its screen only; render still writes inbox.yaml and exits', (t) => {
+  const { outside, run, inbox } = inboxProject(t);
+  const board = join(inbox, 'KBBSLaVz8cHnCY9Vo57rj6', 'project', 'USR-HOME01.dc.html');
+  writeFileSync(join(outside, 'board.html'), readFileSync(board));
+  rmSync(board);
+  linkSync(join(outside, 'board.html'), board);
+  writeFileSync(join(inbox, 'inbox.yaml'), readFileSync(join(inbox, 'inbox.yaml'), 'utf8').replace('shots: []', 'shots: [old]'));
+  const rendered = run('render', 'SHOP-1');
+  assert.equal(rendered.status, 0, rendered.stderr);
+  assert.match(rendered.stdout, /USR-HOME01: .*USR-HOME01\.dc\.html is a link to another file/);
+  assert.doesNotMatch(readFileSync(join(inbox, 'inbox.yaml'), 'utf8'), /shots: \[old\]|- old/);
+});
+
+test('pass Low: canvas.json that does not parse is named, not quoted', () => {
+  assert.deepEqual(boardsOf('notjson SECRET-TOKEN-123').problems, ['canvas.json does not parse as JSON']);
+});
+
+test('pass note: a handler glued to a slash or a quote is stripped too, and a fenced frame is escaped', () => {
+  for (const trick of ['<img/onerror=alert(1) src=x>', '<img src="x"onerror="alert(1)">', "<img src='x'onerror=alert(1)>", '<fencedframe src="https://evil.example/"></fencedframe>']) {
+    const body = stripCanvas(artboard(`<div>${trick}</div>`, '<style>body{margin:0}</style>')).html.split('<body>')[1];
+    assert.doesNotMatch(body, /onerror/i, trick);
+    assert.ok(!tags(body).includes('fencedframe'), trick);
+  }
+});
+
+test('pass Low: a PR that deletes or renames the registry checks every design.md with project codes', (t) => {
+  const dir = mkdtempSync(join(tmpdir(), 'policy98-gone-'));
+  t.after(() => rmSync(dir, { recursive: true, force: true }));
+  const git = (...args) => spawnSync('git', ['-c', 'user.email=t@example.com', '-c', 'user.name=t', ...args], { cwd: dir, encoding: 'utf8' });
+  git('init', '-q', '-b', 'develop');
+  mkdirSync(join(dir, 'docs', 'design-system'), { recursive: true });
+  writeFileSync(join(dir, 'docs', 'design-system', 'screens.md'), registry());
+  mkdirSync(join(dir, 'docs', 'specs', 'SHOP-120', 'design'), { recursive: true });
+  writeFileSync(join(dir, 'docs', 'specs', 'SHOP-120', 'design.md'), claude);
+  for (const [name, bytes] of files()) writeFileSync(join(dir, 'docs', 'specs', 'SHOP-120', 'design', name), bytes);
+  git('add', '.');
+  git('commit', '-q', '-m', 'docs(design): start (DEMO-1)');
+  git('checkout', '-q', '-b', 'feature/DEMO-4-move');
+  git('mv', 'docs/design-system/screens.md', 'docs/design-system/codes.md');
+  git('commit', '-q', '-m', 'docs(design): rename the registry (DEMO-4)');
+  const policy = spawnSync(process.execPath, [join(ROOT, 'scripts', 'check-policy.mjs'), '--base', 'develop', '--title', 'docs(design): rename the registry (DEMO-4)'], { cwd: dir, encoding: 'utf8', env: { ...process.env, GITHUB_STEP_SUMMARY: '' } });
+  assert.equal(policy.status, 1, policy.stdout + policy.stderr);
+  assert.match(policy.stdout, /docs\/specs\/SHOP-120\/design\.md:\d+ D11 the file uses project screen codes, so docs\/design-system\/screens\.md lists them; the project has no such file/);
 });
