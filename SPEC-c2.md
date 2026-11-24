@@ -7,6 +7,11 @@
 > **Trạng thái:** đã duyệt 2026-11-20. Viết ở Phiên 33 · Lượt 103, sau khi T20b merge (kit PR #326, `dc400af`). Bạn
 > duyệt điểm 1–5, 7, 9 ở Lượt 104; điểm 6 (số agent cùng role) và điểm 8 (nhịp tim của QA) sửa theo thảo luận ở Lượt
 > 104, duyệt ở Lượt 105. Thứ tự C1 → T20b → C2 bạn chốt ở Lượt 101.
+>
+> **Hoàn thành 2026-11-23** (Phiên 35 · Lượt 50): spec, plan, todo ở kit PR #327; sáu phần ở #328–#333; sửa sau review
+> bản chép `shop` PR #80, #81 (T13b) ở #334–#336; chạy thật trên Epic `SHOP-81` (T14); sáu đợt sửa sau T14 ở
+> #339–#346, có watcher `ao-step watch`; đóng ở #347. Kết quả: [tasks/c2/verification.md](tasks/c2/verification.md):
+> 3 trên 6 tiêu chí đạt, tiêu chí 3 đạt 6 trên 8 mục, tiêu chí 4 và 5 không đạt (các lỗi đã sửa); 7,06 USD trên mỗi AC.
 
 ## 1. Mục tiêu
 

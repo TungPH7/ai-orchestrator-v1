@@ -118,8 +118,8 @@ blocks:
 
 ## Design System
 
-<!-- When a screen is Figma or Image: the tokens and components read from its images, so every screen of the Epic is
-built the same way. Compare each with docs/design-system/<app>.md when the app has one: "có" when it has the item,
+<!-- When a screen is Figma, Claude Design or Image: the tokens and components read from its images, or for Claude Design
+from the tokens of the design in the inbox, so every screen of the Epic is built the same way. Compare each with docs/design-system/<app>.md when the app has one: "có" when it has the item,
 "mới" when it does not. Values read from an image are estimates: write what the image does not settle under Open
 Questions. When an item is "mới", or the app has no docs/design-system/<app>.md, sa puts a Task "Design system của
 <app>" first in the plan. -->

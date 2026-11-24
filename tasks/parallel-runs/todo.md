@@ -42,4 +42,4 @@ Bộ test lúc bắt đầu: 1.470 test xanh, khoảng 47 giây.
 - [x] `/ao-preview` dừng khi bật worktree (bật app trong làn để sau).
 - [x] `docs/dev-workflow.md`, `README.md`: mục worktree theo item.
 - [x] `npm run validate`, `npm test` (1.490), `npm run agents:check` xanh.
-- [ ] Kit PR phần 1, review.
+- [x] Kit PR phần 1, review (kit PR #291, merge 2026-11-15; review ở bản chép vào `shop`, `SHOP-38`).

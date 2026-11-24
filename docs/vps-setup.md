@@ -4,7 +4,7 @@ Hướng dẫn này thuộc module `release-workflow` ([SPEC-release-workflow.md
 
 - Chỉ phiên chính của Claude dùng SSH vào VPS, khi bạn yêu cầu. Agent của kit không bao giờ SSH.
 - Key, mật khẩu và token không bao giờ đi qua chat, repo hay log. Bạn tự gõ chúng trong terminal của bạn.
-- Phần cài deployer nằm ở mục 11. Thêm một dự án vào deployer đang chạy: mục 13. Database của dự án: mục 14. Backup và khôi phục: mục 15.
+- Phần cài deployer nằm ở mục 11. Cập nhật bản kit trên VPS: mục 12. Thêm một dự án vào deployer đang chạy: mục 13. Database của dự án: mục 14. Backup và khôi phục: mục 15. Bản sao backup về máy bạn: mục 16.
 
 **VPS của kit:** BKNS, gói VPS MMO4, IP `42.96.4.120`, cổng SSH `26266`, hostname `vps.ao.t2g.io.vn`, Ubuntu 24.04. Host key ED25519: `SHA256:nxU5j2RoNi+ffPow22zT35H+4F/Kthn/Tmnpi79V1ko`.
 
@@ -252,6 +252,7 @@ ssh -p 26266 -i "$env:USERPROFILE\.ssh\ao_vps" -t root@42.96.4.120 bash /opt/ao/
 ```
 
 - Lệnh thứ nhất hỏi token có scope `read:jira-work` của tài khoản `orchestratorci`. Đó là giá trị của biến `AO_JIRA_READ_TOKEN` trên máy bạn.
+- Deployer đọc token đó ở `jira_token_file` của `deployer.yaml` (`/etc/ao/jira-read.token`). `audit` cần nó để đọc trạng thái Epic của PR tài liệu, mức của item và lựa chọn review của item. Thiếu nó thì `audit` đòi báo cáo review cả ở PR được miễn hay bỏ review.
 - Lệnh thứ hai hỏi mật khẩu của user `ao` cho Development và Staging. Trên VPS chỉ lưu bản băm bcrypt. Trên máy bạn, biến `AO_ENV_AUTH` của user Windows mang giá trị `ao:<mật khẩu đó>`. Mật khẩu không được chứa dấu nháy kép, dấu `\` hay ký tự xuống dòng, vì `qa` đưa nó cho `curl` trong một dòng cấu hình; `ao-step` từ chối chạy `qa` khi mật khẩu có các ký tự đó.
 - Biến bí mật của app dùng cùng script: `bash /opt/ao/kit/vps/ao-secret.sh env <dự án> <môi trường> <TÊN>`.
 
@@ -410,7 +411,7 @@ Image chỉ build một lần cho mỗi commit, nên đỉnh RAM lúc build khô
 - **Vì sao cache phình to:** lệnh dọn `--max-used-space 4gb` thiếu `--all`, nên không bao giờ xóa phần BuildKit đánh dấu "shared". Đó là các lớp cha của layer image, như lớp `pnpm fetch` của giai đoạn build, mỗi bản build khoảng 1 GB. Mốc theo dung lượng cũng không với tới phần này, vì BuildKit chỉ đếm phần không shared khi so với mốc.
 - **Hậu quả:** cache lên 27 GB, trong đó 23 GB shared, và đĩa đầy 92%.
 - **Đã dọn tay:** `docker buildx prune --all --force --filter until=72h`, chạy trong 8 phút 47 giây và lấy lại 20,13 GB. Đĩa còn dùng 42%, cache còn 6,9 GB; image, container và volume giữ nguyên.
-- **Lệnh dọn của deployer:** chính lệnh trên, chạy sau mỗi lần deploy, giữ phần cache được dùng trong 3 ngày gần nhất. Lệnh này có trong kit từ PR sửa của Lượt 90; VPS chỉ có nó khi chép lại kit (mục 12). Tới lúc đó, VPS vẫn chạy lệnh cũ.
+- **Lệnh dọn của deployer:** chính lệnh trên, chạy sau mỗi lần deploy, giữ phần cache được dùng trong 3 ngày gần nhất. Lệnh này có trong kit từ PR sửa của Lượt 90 (kit PR #357, `2dd0e31`); VPS chỉ có nó khi chép lại kit (mục 12). Tới lúc đó, VPS vẫn chạy lệnh cũ.
 - **Dọn tay khi cần:** tắt timer (`systemctl stop ao-deploy.timer`), chờ `ao-deploy.service` hết chạy, chạy lệnh trên, rồi bật lại timer.
 
 ## 14. Database của dự án
@@ -498,7 +499,7 @@ Timer `ao-backup` chạy `scripts/ao-backup.mjs run` bằng root, mỗi ngày l�
 - Dump được ghi vào `<tên>.part`, và chỉ đổi tên khi `pg_dump` xong. Nhờ vậy bản dump dở dang không bao giờ được tính.
 - Mỗi môi trường giữ mọi bản của 48 giờ gần nhất, rồi bản mới nhất của 7 ngày gần nhất và của 4 tuần gần nhất. Các bản khác bị xóa sau mỗi lần chạy. Ở T22, luật cũ chỉ giữ bản mới nhất của mỗi ngày, nên một lượt chạy tay lúc 04:55 đã xóa bản lúc 04:49 cùng ngày. Luật 48 giờ có để một lượt chạy tay không bao giờ xóa bản của đêm hôm đó.
 - Lúc 02:30 mà VPS đang tắt thì lượt đó chạy khi VPS khởi động lại (`Persistent=true`).
-- Bản sao ra ngoài VPS chưa có. Chỗ để bản sao sẽ được chọn trước bản release đầu của `shop` (spec mục 9, câu 2).
+- Bản sao ra ngoài VPS: từ Pilot 3, mỗi bản dump được giữ có một bản sao mã hóa, và máy bạn kéo về (mục 16).
 
 **1. Cài timer.** Làm một lần cho VPS, khi dự án đầu tiên có database:
 

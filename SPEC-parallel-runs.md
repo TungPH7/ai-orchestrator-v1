@@ -8,6 +8,11 @@
 > **Trạng thái:** đã duyệt 2026-11-15 (Phiên 32 · Lượt 35), cả 8 điểm ở mục 12, cộng "mỗi lúc một QA trên một môi
 > trường" và việc QA kiểm bản đang chạy (mục 5.1). Viết ở Lượt 17, sửa ở Lượt 18–34, trong lúc `SHOP-7` của Pilot 3 chạy
 > lần lượt. Làm ngay, song song với `SHOP-7` (điểm 7).
+>
+> **Hoàn thành 2026-11-15:** kit PR #290 (spec), #291 (phần 1), #292 (phần 2), #293 (coverage trước khi push). Chép
+> vào `shop` ở `SHOP-38` (`lanes_max: 3`), rồi chạy thật tới hết Epic `SHOP-7`; năm vòng review của bản chép đó (`shop`
+> PR #21) sửa ở kit PR #294–#299. Nhật ký ở [tasks/archive/pilot-3/verification.md](tasks/archive/pilot-3/verification.md), todo phần 1
+> ở [tasks/parallel-runs/todo.md](tasks/parallel-runs/todo.md). Phần còn lại của C2: [SPEC-c2.md](SPEC-c2.md).
 
 Tên module: hai lệnh `ao-step` chạy cùng lúc trên hai item khác nhau, mỗi item một worktree.
 

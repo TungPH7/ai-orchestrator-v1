@@ -11,7 +11,7 @@
 > - [effort-va-bat-tat-review.md](misc/thao-luan/toi-uu-token/effort-va-bat-tat-review.md)
 > - [seo/role-seo-va-blog.md](misc/thao-luan/seo/role-seo-va-blog.md)
 >
-> **Trạng thái:** đã duyệt 2026-11-19 (Phiên 33 · Lượt 87): bạn trả lời đủ 12 điểm của mục 13. Viết ở Lượt 71, khi bạn nói "Bắt đầu C1". Plan: [tasks/c1/plan.md](tasks/c1/plan.md), bạn duyệt ở Lượt 88.
+> **Trạng thái:** đã duyệt 2026-11-19 (Phiên 33 · Lượt 87): bạn trả lời đủ 12 điểm của mục 13. Viết ở Lượt 71, khi bạn nói "Bắt đầu C1". Plan: [tasks/c1/plan.md](tasks/c1/plan.md), bạn duyệt ở Lượt 88. **Hoàn thành 2026-11-20** (Lượt 99): kit PR #313–#324, chép vào `shop` ở SHOP-78 (PR #79); 10 trên 11 tiêu chí đạt, tiêu chí 7 (USD trên mỗi AC) chờ Epic kế tiếp. Kết quả: [tasks/c1/verification.md](tasks/c1/verification.md). Finding của review lần hai PR #79 (T20b, [tasks/c1/followups-pr79.md](tasks/c1/followups-pr79.md)) sửa ở kit PR #326 (`dc400af`, 2026-11-20). Tiêu chí 7 đo ở Epic `SHOP-81` của C2: 7,06 USD trên mỗi AC ([tasks/c2/verification.md](tasks/c2/verification.md)).
 >
 > **Sửa ở Lượt 78** (theo câu hỏi của bạn ở Lượt 76–77):
 > - mục 2: QA theo từng loại item, và lần QA lại khác nhau giữa mức Chuẩn và Nặng;
