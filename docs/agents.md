@@ -113,8 +113,8 @@ node .ai-orchestrator/scripts/ao-agent.mjs fe-dev --effort max -p "..."
 | | Kiểu ASCII | Kiểu Figma | Kiểu Claude Design | Kiểu Ảnh |
 |---|---|---|---|---|
 | Dùng khi | Màn hình chưa có thiết kế | Màn hình đã có thiết kế Figma | Màn hình là một khung của Design làm trong Claude | Bạn có ảnh chụp màn hình, hoặc mockup vẽ bằng công cụ khác |
-| Bố cục | Hình ASCII có đánh số khối | Ảnh export từ Figma trong `docs/specs/<EPIC-KEY>/design/` | Ảnh do `/ao-design` chụp, và file khung `<mã>.dc.html` cho `fe-dev` tham khảo, cùng trong `design/` | Ảnh của bạn, cũng trong `docs/specs/<EPIC-KEY>/design/` |
-| YAML ghi nguồn | | `figma:`, link của frame có `node-id` | `claude-design:`, link của artifact; `prototype:`, file khung | `screenshot:`, ảnh lấy từ đâu |
+| Bố cục | Hình ASCII có đánh số khối | Ảnh export từ Figma trong `docs/specs/<EPIC-KEY>/design/` | Ảnh do `/ao-design` chụp, và trang `<mã>.html` không script mà `/ao-design` làm từ khung, cho `fe-dev` tham khảo, cùng trong `design/` | Ảnh của bạn, cũng trong `docs/specs/<EPIC-KEY>/design/` |
+| YAML ghi nguồn | | `figma:`, link của frame có `node-id` | `claude-design:`, link của artifact; `prototype:`, trang không script của khung | `screenshot:`, ảnh lấy từ đâu |
 | Hành vi | YAML ngay dưới hình | YAML ngay dưới ảnh | YAML ngay dưới ảnh | YAML ngay dưới ảnh |
 
 Khi có màn hình Figma hay Ảnh, `design.md` có thêm mục **Design System** (project-scaffold phần 2, mục 2.5):
@@ -164,10 +164,10 @@ Design và Design System làm trong Claude là artifact, mỗi cái có link `ht
 3. Gõ `/ao-design <EPIC>`. Phiên chính:
    - đọc các file nguồn của artifact bằng công cụ Artifact: `canvas.json`, các khung `*.dc.html`, token. Không đọc phần mềm của kiểu artifact;
    - chạy `design-inbox.mjs add`: chỉ giữ file nguồn, không bao giờ giữ file mà Claude Code đọc như chỉ dẫn (`CLAUDE.md`, `AGENTS.md`, `.claude/`), chép vào `.ai/design-inbox/<EPIC>/<id>/`, ghi `inbox.yaml` với link, phiên bản và mã băm từng file;
-   - chạy `design-inbox.mjs render`: bỏ vỏ canvas và mọi script, chặn tải ngoài trừ Google Fonts bằng CSP, server chỉ ở `127.0.0.1`, rồi chụp từng khung ở bề rộng của nó và ở 390 px vào `shots/` (cao tối đa 2.000 px). Khung có dữ liệu động (`{{ }}`, `sc-for`) thì bạn chụp ảnh và bỏ vào hộp;
+   - chạy `design-inbox.mjs render`: bỏ vỏ canvas và mọi script, ghi mỗi khung thành trang `render/<mã>.html`, rồi chụp từng trang ở bề rộng của nó và ở 390 px vào `shots/` (cao tối đa 2.000 px). Trình duyệt chạy trong một thư mục tạm ngoài dự án, chỉ được tải từ server `127.0.0.1` của lệnh và Google Fonts, có CSP, không tải file về; trang bị chuyển đi nơi khác thì ảnh bị bỏ. Khung có dữ liệu động (`{{ }}`, `sc-for`) thì bạn chụp ảnh và bỏ vào hộp;
    - chạy `design-inbox.mjs check`: in bảng màn hình và lỗi, như khung chưa có mã, file đã đổi sau khi lấy, link chưa lấy.
-4. Gõ `/ao-spec <EPIC>`. Lệnh dừng và chỉ bạn tới `/ao-design` khi mô tả Epic còn link chưa có trong `inbox.yaml`. `ux` lấy mã của từng khung, chép ảnh và file khung vào `design/`, ghi `claude-design:`, `prototype:` và dòng `Claude Design version:`, lấy token đúng giá trị của Design, và so với `docs/design-system/<app>.md` của repo, vì repo là nguồn chính của design system.
-5. Ở gate ①, bạn duyệt ảnh và file khung đã commit. Artifact có đổi sau đó cũng không ảnh hưởng, cho tới khi bạn gõ lại `/ao-design` và `/ao-spec <EPIC> [sửa]`.
+4. Gõ `/ao-spec <EPIC>`. Lệnh dừng và chỉ bạn tới `/ao-design` khi mô tả Epic còn link chưa có trong `inbox.yaml`. `ux` lấy mã của từng khung, đọc trang `render/<mã>.html` (không bao giờ đọc file khung gốc), chép ảnh và trang đó vào `design/`, ghi `claude-design:`, `prototype:` và dòng `Claude Design version:`, lấy token đúng giá trị của Design, và so với `docs/design-system/<app>.md` của repo, vì repo là nguồn chính của design system.
+5. Ở gate ①, bạn duyệt ảnh và trang `<mã>.html` đã commit. Artifact có đổi sau đó cũng không ảnh hưởng, cho tới khi bạn gõ lại `/ao-design` và `/ao-spec <EPIC> [sửa]`.
 
 **Design System của Claude** không đi qua `ux`: tạo một Task "đồng bộ design system" bằng `/ao-intake`, gõ `/ao-design <TASK>` để lấy `tokens.json` và `README.md`, rồi `/ao-build <TASK>`: `fe-dev` đưa token vào code và `docs/design-system/<app>.md`, qua PR có review.
 

@@ -32,7 +32,7 @@ flowchart LR
 screen: USR-CART01
 route: /cart
 claude-design: https://claude.ai/artifact/4MHNq6Tk2x3o31S4RVXD5V
-prototype: design/USR-CART01.dc.html
+prototype: design/USR-CART01.html
 blocks:
   1:
     name: Danh sách sản phẩm

@@ -396,3 +396,12 @@ test('/ao-spec stops for /ao-design while the Epic links a Claude artifact the d
   assert.deepEqual(plan(decide('spec', epicFacts('specifying', { docs: { spec: SPEC }, designLinks: [LINK], designInbox: [LINK] }))), ['ux design', 'sa spec-nfr', 'ba docs-pr']);
   assert.deepEqual(plan(decide('spec', epicFacts('specifying', { docs: { spec: SPEC }, designLinks: [], designInbox: null }))), ['ux design', 'sa spec-nfr', 'ba docs-pr']);
 });
+
+// tasks/todo.md item 12 (review of shop PR #98, Low 4): a description that could not be read stops, never passes.
+test('/ao-spec stops when the description of the Epic could not be read for its design links', () => {
+  const stopped = decide('spec', epicFacts('specifying', { docs: { spec: SPEC }, designLinks: null, designInbox: null }));
+  assert.equal(stopped.go, false);
+  assert.equal(stopped.waits, 'you');
+  assert.equal(stopped.reason, 'Jira gave no description of DEMO-20, so the Claude artifacts it links are not known');
+  assert.equal(stopped.next, 'Check that DEMO-20 is an Epic of the space in Jira, then /ao-spec DEMO-20 again');
+});
