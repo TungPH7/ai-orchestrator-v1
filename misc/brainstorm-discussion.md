@@ -34962,3 +34962,36 @@ Xong cả 6 bước. SHOP-100 (chép kit `ee5865f` vào `shop`) đã Done.
 1. Mục 12: sửa trong kit ngay (không tốn tiền agent; review trả tiền sẽ đi cùng lần chép kit sau), hay để sau?
 2. Chạy thử một Epic nhỏ của shop có thiết kế từ Claude Design: tốn khoảng 40 USD, như SHOP-95.
 3. Kit trên VPS còn ghim ở `0e3c9ec`. Bản sửa `audit` của mục 11 chỉ tới deployer khi bạn cho đổi ghim.
+
+**Bạn (Lượt 88):** 1. Mục 12: sửa trong kit ngay, nhưng chưa chép kit ngay, chờ lần chép kit sau 2. Chưa cần làm ngay, chờ 3. Đổi ghim nghĩa là chép lại kit lên VPS, nếu vậy thì update kit mới nhất cho VPS đi
+
+**Claude (Lượt 88):**
+
+Xong cả hai việc. Mục 12 đã sửa trong kit, chưa chép vào `shop`. Kit trên VPS đã lên bản mới nhất.
+
+**1. Mục 12: kit PR #355 đã merge, `main` giờ ở `a05e214`**
+- Đã sửa đủ 4 Medium và 6 Low của review PR #98, mỗi cái có một test đỏ trước khi sửa. 1930/1930 test xanh, CI xanh, cả job `windows`.
+- Ba chỗ quan trọng nhất:
+  1. **Chữ CSS trong `<head>`:** không xóa chữ nữa, mà đổi mọi `<` thành `\3c `, nên mẹo `</sty</stylele>` không còn đóng được khối style. Mình thử thật trên "Landing page hero" có gài mẹo đó kèm thẻ refresh: trang không bị chuyển đi, ảnh vẫn đúng.
+  2. **Trình duyệt chụp ảnh:**
+     - chạy trong một thư mục tạm ngoài dự án, chỉ được tải từ server cục bộ và Google Fonts, không tải file về;
+     - ảnh chỉ được giữ khi trang vẫn là trang đã mở;
+     - mọi bước đọc và ghi trong hộp thiết kế từ chối symlink, junction và hard link.
+  3. **`ux` không còn đọc file khung gốc**, là file có script:
+     - `render` ghi mỗi khung thành một trang không script, `render/<mã>.html`;
+     - `ux` đọc trang đó và commit đúng trang đó làm prototype `design/<mã>.html`;
+     - `check-design` từ chối prototype nào không phải trang như vậy.
+- Một agent rà độc lập các bản sửa, có chạy thật `add` và `render`. Nó không tìm thấy Critical hay High; 7 Low và 1 ghi chú đã được sửa hết trước khi merge.
+- `shop` chỉ nhận bản sửa ở lần chép kit kế tiếp. Tới lúc đó, vẫn chỉ chạy `/ao-design` trên artifact của chính bạn.
+
+**2. Kit trên VPS**
+- Đúng vậy: đổi ghim nghĩa là chép lại kit lên VPS. Mình đã chép `a05e214` để thay `0e3c9ec`. Bản cũ giữ ở `/opt/ao/kit.prev`, khi cần thì quay lại được.
+- Kết quả:
+  - `npm ci` báo 0 lỗ hổng;
+  - `tick --dry-run` không báo lỗi;
+  - timer đã bật lại, và hai lượt chạy thật sau đó (01:44 và 01:45 UTC) xong bình thường.
+- `deployer.yaml` không cần đổi. Commit ghim mới đã ghi vào `docs/vps-setup.md`, mục 12 (kit PR #356). VPS vẫn mở như bạn dặn.
+
+**Bạn nên biết:** ổ đĩa VPS đã dùng 92%, còn 3,3 GB. Chưa gấp, nhưng mỗi lần build image lại dùng thêm. Mình chưa dọn gì: khi nào bạn muốn, mình sẽ đề xuất cách dọn cache build để bạn duyệt.
+
+**Còn chờ bạn:** Epic chạy thử với Claude Design (khoảng 40 USD), khi bạn bảo làm.
