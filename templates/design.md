@@ -52,12 +52,13 @@ flowchart LR
   Export at 1x as PNG or JPG; each image at most 1 MB and at most 2,000 px on its long side; slice a long frame.
   Commit only approved images, with the SPEC.
 - Claude Design: the images the main session drew of its artboard (shots/ of the design inbox), shown the same way and
-  with the same limits, and its artboard copied as design/<code>.dc.html for fe-dev to read.
+  with the same limits, and the page with no script that render wrote of it (render/<code>.html of the design inbox)
+  copied as design/<code>.html for fe-dev to read.
 - Image: a screenshot or a mockup the human put in .ai/design-inbox/<EPIC-KEY>/, shown the same way and with the same
   limits. An image over them goes back to the human: never edit one.
 Right under the drawing or the images comes one ```yaml block with `screen`, `route`, `blocks`, and for a Figma screen
 `figma`, the link of the frame with its node-id, for a Claude Design screen `claude-design`, the link of the artifact,
-and `prototype`, design/<code>.dc.html, or for an Image screen `screenshot`, where the screenshot or mockup comes from. Each block has `name` and `type`, and when needed `content`, `behavior`,
+and `prototype`, design/<code>.html, or for an Image screen `screenshot`, where the screenshot or mockup comes from. Each block has `name` and `type`, and when needed `content`, `behavior`,
 `validation`, `states`, `a11y`, `ac` (AC<n> codes of the SPEC) and `figma` (node id of the layer). Elsewhere, point to a
 block by its full code, for example USR-CART01.4 (S1.4 in a design.md of an older Epic). After approval a removed block leaves its number unused, and a new block takes
 the next number. -->

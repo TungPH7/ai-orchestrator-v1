@@ -5,6 +5,7 @@ import { mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSyn
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { checkDesign, imageInfo, readDesign } from '../../lib/quality/design.mjs';
+import { stripCanvas } from '../../lib/quality/design-inbox.mjs';
 import { ROOT } from '../helpers/kit.mjs';
 import { jpeg, lfs, png } from '../helpers/images.mjs';
 
@@ -183,7 +184,7 @@ test('an Image screen names where its screenshot comes from, needs no Figma vers
 
 // Project screen codes and Claude Design screens (tasks/todo.md item 10, Phiên 35 · Lượt 84–87).
 const claude = readFileSync(join(FIXTURES, 'claude-design-screens.md'), 'utf8');
-const claudeFiles = () => new Map([['USR-CART01-desktop.png', png(1440, 900)], ['USR-CART01-mobile.png', png(390, 1214)], ['USR-CART01.dc.html', Buffer.from('<x-dc><div>Giỏ hàng</div></x-dc>')]]);
+const claudeFiles = () => new Map([['USR-CART01-desktop.png', png(1440, 900)], ['USR-CART01-mobile.png', png(390, 1214)], ['USR-CART01.html', Buffer.from(stripCanvas('<x-dc><div>Giỏ hàng</div></x-dc>').html)]]);
 const screensFile = (rows = ['| USR-CART01 | Giỏ hàng | user | /cart | SHOP-120 | dùng |', '| USR-CHK01 | Thanh toán | user | /checkout | SHOP-120 | dùng |']) => [
   '# Mã màn hình', '', '## Apps', '', '| Prefix | App |', '|---|---|', '| USR | user |', '| ADM | admin |', '',
   '## Areas', '', '| Area | Meaning |', '|---|---|', '| CART | Giỏ hàng |', '| CHK | Thanh toán |', '',
@@ -211,7 +212,7 @@ test('D11: a project code is in docs/design-system/screens.md, with the same app
   assert.deepEqual(rulesOf(claude, { registry: screensFile(['| USR-CART01 | Giỏ hàng | user | /cart | SHOP-120 | bỏ |', '| USR-CHK01 | Thanh toán | user | /checkout | SHOP-120 | dùng |']) }), ['D11 USR-CART01 is retired (bỏ) in docs/design-system/screens.md: a retired code is never used again']);
   assert.deepEqual(rulesOf(claude.replace('| Claude Design | user |', '| Claude Design | admin |')), ['D11 USR-CART01 is a screen of user in docs/design-system/screens.md, but its App here is admin']);
   assert.deepEqual(rulesOf(claude, { registry: null }), ['D11 the file uses project screen codes, so docs/design-system/screens.md lists them; the project has no such file']);
-  assert.deepEqual(rulesOf(claude, { registry: screensFile(['| USR-CART01 | Giỏ hàng | user | /cart | SHOP-120 | dùng |', '| USR-CHK01 | Thanh toán | user | /checkout | SHOP-120 | dùng |', '| USR-CART01 | Khác | user | /x | SHOP-1 | dùng |']) }), ['D11 docs/design-system/screens.md:23 R5 USR-CART01 is listed twice: a code names one screen only']);
+  assert.deepEqual(rulesOf(claude, { registry: screensFile(['| USR-CART01 | Giỏ hàng | user | /cart | SHOP-120 | dùng |', '| USR-CHK01 | Thanh toán | user | /checkout | SHOP-120 | dùng |', '| USR-CART01 | Khác | user | /x | SHOP-1 | dùng |']) }), ['D11 docs/design-system/screens.md has 1 problem: node .ai-orchestrator/scripts/design-inbox.mjs codes lists it']);
   // A design.md of one Epic, S1 and S2, does not read the registry.
   assert.deepEqual(checkDesign(valid, { registry: null }), []);
 });
@@ -225,12 +226,12 @@ test('D7: a Claude Design screen names its artifact, one source only, and the fi
 
 test('D8: a prototype sits in design/, is an HTML file of at most 256 KB, and counts as used', () => {
   const files = claudeFiles();
-  files.delete('USR-CART01.dc.html');
-  assert.deepEqual(rulesOf(claude, { images: files }), ['D8 design/USR-CART01.dc.html does not exist']);
-  assert.deepEqual(rulesOf(claude.replace('prototype: design/USR-CART01.dc.html', 'prototype: ../USR-CART01.dc.html')), ['D8 design/USR-CART01.dc.html is in design/ but design.md does not use it', 'D8 ../USR-CART01.dc.html must be an .html file in the design/ folder next to design.md']);
+  files.delete('USR-CART01.html');
+  assert.deepEqual(rulesOf(claude, { images: files }), ['D8 design/USR-CART01.html does not exist']);
+  assert.deepEqual(rulesOf(claude.replace('prototype: design/USR-CART01.html', 'prototype: ../USR-CART01.html')), ['D8 design/USR-CART01.html is in design/ but design.md does not use it', 'D8 ../USR-CART01.html must be an .html file in the design/ folder next to design.md']);
   const big = claudeFiles();
-  big.set('USR-CART01.dc.html', Buffer.alloc(300 * 1024, 'a'));
-  assert.deepEqual(rulesOf(claude, { images: big }), ['D8 design/USR-CART01.dc.html is 307200 bytes; a prototype is at most 256 KB (262144 bytes)']);
+  big.set('USR-CART01.html', Buffer.alloc(300 * 1024, 'a'));
+  assert.deepEqual(rulesOf(claude, { images: big }), ['D8 design/USR-CART01.html is 307200 bytes; a prototype is at most 256 KB (262144 bytes)']);
 });
 
 test('check-design of docs/specs/<KEY>/design.md reads the registry of its project, and says when there is none', (t) => {
