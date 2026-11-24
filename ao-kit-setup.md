@@ -140,8 +140,12 @@ from the next commit on, and in every PR, a line that switches a check off needs
    `node <kit>/scripts/ao-kit.mjs setup github . --merge-app-key-file "<the .pem>"`, and the human deletes the file.
 2. GitHub for Atlassian on the repo: the clicks of part 3 step 6, "Bạn làm".
 3. `gh run list --repo <repo> --workflow CI --branch develop`. No run: the human enables Actions (part 3 step 7), then
-   `gh workflow run CI --repo <repo> --ref develop`. Part 3: CI is green. Templates: red at `build-test` or `policy`,
-   which step 10 fixes; Dependabot may open PRs, which close by themselves after step 10.
+   `gh workflow run CI --repo <repo> --ref develop`. Part 3: CI is green. Templates: red at `build-test`, `policy` or
+   `secrets`, which step 10 fixes; Dependabot may open PRs, which close by themselves after step 10. `secrets` runs
+   gitleaks, which can flag a template line the `pre-commit` hook passed, such as the name of a localStorage key
+   (du-an-1), and the CI log names no file. Find the file and line with `gitleaks git --redact` on this machine, never
+   the value: the gitleaks release of the version that `ci.yml` pins, checked against the release's checksums, in a temp
+   folder. Show the human the line; when they say it is no secret, step 10 marks it `gitleaks:allow reason: …`.
 4. **End of session 1.** Write `progress.md`, then tell the human, numbered: type `/exit`; run `claude` again in this
    folder; accept the trust question; keep both MCP servers ticked and choose **Enable selected** (part 3 step 8); type
    "làm tiếp `ao-kit-setup.md`".
@@ -157,11 +161,25 @@ and allows both.
 
 The code changes of `add-report.md` go through one Task and one PR, which change nothing in `.ai-orchestrator/`
 (part 5 step 7; Spring Boot, step 9 items 3–4):
-1. `/ao-intake` makes the Task from `add-report.md`, with the label `ao-review-skip` when the human chose no review.
+1. `/ao-intake` makes the Task from `add-report.md`. When the human chose no review, they add the label
+   `ao-review-skip` on Jira themselves (numbered clicks: open the item, **Labels**, type `ao-review-skip`, **Enter**): a
+   skip label that the agents' account sets does not count (SPEC-review-per-item.md 2.4), and `/ao-intake` writes as
+   that account. `ao-step.mjs status <KEY>` then prints `skipped (label ao-review-skip, put by you)`. Then they Refine it.
 2. You change the code on the Task's branch, as the main session did in `shop` (PR #5 and #9 there list the usual
    changes), and open the PR through `ao-dev`. For a Spring Boot app, copy `.env.example` to `.env` with new random
-   passwords first, so its database runs on this machine.
-3. `/ao-preview <KEY>` runs the apps; the human looks, and approves the PR at gate ③ (or you, when they gave you that
+   passwords first, so its database runs on this machine. When its `docker-compose.yml` names the container, the volume
+   or the network with a fixed default, such as `learn-postgres`, also set those names in `.env` to names of this
+   project, with `COMPOSE_PROJECT_NAME`, and move `POSTGRES_HOST_PORT` and `DB_PORT` off a port that another database
+   holds (`docker ps`). Two projects from one template otherwise share one volume, whose password is the other
+   project's (du-an-1 and `shop`). For an app whose server checks a secret when it starts, such as `AUTH_SECRET` of the
+   Next.js template, write its local env file (`.env.development`, which git ignores) with a new random value: the
+   template commits only `.env.example`, and without the value `/ao-preview` stops with `web did not answer`.
+3. `/ao-preview <KEY>` runs the apps once CI is green on the PR; the human looks at them.
+4. `next dev` writes `apps/<app>/AGENTS.md` on its first run, and stopping the preview names it as a file that appeared.
+   Read it: when it is only the block between `BEGIN:nextjs-agent-rules` and `END:nextjs-agent-rules`, commit it in the
+   Task's PR, as PR #5 of `shop` did, so the next preview does not name it again.
+5. `/ao-review <PR>` once CI is green on the head: the item skips review, so it posts the trace of the skip on the head
+   and no agent runs; it also stops the preview. The human approves the PR at gate ③ (or you, when they gave you that
    right). When it is merged, cancel the Task with a comment that names the PR. CI on `develop` is green from here.
 
 ### Step 11. Development on the VPS (when chosen)
