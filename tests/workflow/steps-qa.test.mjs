@@ -204,7 +204,8 @@ test('/ao-qa of a light item: picked up by a script, then the lines to check, th
   const picked = decide(qaFacts({ item: { ...LIGHT_TASK, state: 'in-qa', status: 'In QA' }, description: DESCRIPTION }));
   assert.equal(picked.go, false);
   assert.match(picked.reason, /^DEMO-30 is at level light: no qa run\. Check each line below on Development/);
-  assert.match(picked.next, /--light-report \.ai\/runs\/DEMO-30\/light-report\.md$/);
+  // The command the skill runs (step 4 of ao-qa/SKILL.md): /ao-qa itself takes no --light-report.
+  assert.match(picked.next, /node \.ai-orchestrator\/scripts\/ao-step\.mjs qa DEMO-30 --light-report \.ai\/runs\/DEMO-30\/light-report\.md --go$/);
   assert.deepEqual(picked.lines.slice(-3), ['To check:', '  Verification: Chữ trên nút khớp file i18n.', '  Verification: Mở S1 trên Development: ảnh khớp màn hình.']);
   const posted = decide(qaFacts({ item: { ...LIGHT_TASK, state: 'in-qa', status: 'In QA' } }), { lightReport: REPORT });
   assert.deepEqual(posted.runs, [{ action: 'qa-light-report', key: 'DEMO-30', result: 'PASS', body: REPORT }]);
