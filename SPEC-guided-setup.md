@@ -61,7 +61,9 @@
    Agent dẫn từng cú bấm, rồi chờ bạn báo xong.
 6. **Template.** Template phải là repo git; `add` chỉ chép phần đã commit. Agent báo khi template có thay đổi chưa commit,
    và không sửa gì trong template. Trước commit đầu, agent ghi các mục của `.ai-orchestrator/` mà `add` không ghi (với
-   Spring Boot: khóa `database` của `deploy.yaml`, `coverage_exclude` của `project.yaml`). Phần code còn phải sửa đi qua
+   Spring Boot: `env:` của app và khóa `database` của `deploy.yaml`, `coverage_exclude` của `project.yaml`). Commit đầu
+   mang code đã có của template, nên hook `pre-commit` không kiểm luật Suppressions ở commit đó; job `policy` vẫn kiểm mọi
+   PR. Phần code còn phải sửa đi qua
    một Task và một PR, sau khi Claude Code đã mở lại có MCP. Task đó mặc định bỏ review (nhãn `ao-review-skip`), vì
    code là template của bạn; agent hỏi bạn có muốn review không.
 7. **Luật.** Không hỏi và không nhận token trong chat. Không in nội dung file secret. Không xóa gì không lấy lại được khi

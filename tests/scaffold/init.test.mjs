@@ -215,7 +215,7 @@ test('init --package-manager pnpm in an empty folder: the root of base-pnpm, no 
   assert.equal(pkg.scripts.prepare, 'node .ai-orchestrator/scripts/install-hooks.mjs');
   assert.match(readFileSync(join(dir, '.gitignore'), 'utf8'), /^!\.env\.example$/m);
   assert.deepEqual(fx.calls.run.map(([argv]) => argv), ['npm ci --prefix .ai-orchestrator --no-audit --no-fund', 'node .ai-orchestrator/scripts/render-agents.mjs --project .', 'pnpm install', 'pnpm exec playwright install chromium']);
-  assert.match(notes.join('\n'), /Next: add each app with ao-kit add <dir> <app> --stack nextjs\|react/);
+  assert.match(notes.join('\n'), /Next: add each app with ao-kit add <dir> <app> --stack nextjs\|react\|spring-boot/);
   assert.equal(readFileSync(join(dir, '.ai', 'setup', 'answers.md'), 'utf8'), '# Answers\n');
 });
 

@@ -78,7 +78,8 @@ Check, printing no secret:
   `JIRA_ADMIN_EMAIL`, `JIRA_ADMIN_TOKEN`, `JIRA_ADMIN_CLASSIC_TOKEN`, and `AO_ENV_AUTH` when the project goes to the VPS;
   the two key files exist;
 - the Apps: `ao-dev`, `ao-review`, `ao-merge`, and `ao-deploy` for the VPS. Their slugs and ids are in another project's
-  `.ai-orchestrator/project.yaml`, or `gh api apps/<slug> --jq .id`;
+  `.ai-orchestrator/project.yaml`, or on the page of each App (GitHub → Settings → Developer settings → GitHub Apps →
+  Edit: App ID). `gh api apps/<slug>` answers 404 for a private App, so do not count on it;
 - Jira: `node <kit>/scripts/jira-check.mjs --space DEMO`, run in `<kit>`, says the site and its template space match the
   kit;
 - the VPS, when chosen: ask whether its deployer runs ([docs/vps-setup.md](docs/vps-setup.md) sections 1–11).
@@ -102,9 +103,13 @@ started.
 1. For each app, `node <kit>/scripts/ao-kit.mjs add . <app> --stack <stack> --from <folder> --ref <branch>
    --exclude <path>… [--public --seo|--no-seo]` (part 5 step 3; Spring Boot: part 5 step 9, item 2). Each run adds its
    section to `.ai/setup/add-report.md`.
-2. Do the "By hand" lines of `add-report.md` now, before the first commit: the `database` key of `deploy.yaml`
-   ([docs/vps-setup.md](docs/vps-setup.md) section 14, the shape in part 5 step 9 item 2) and `coverage_exclude`.
-3. With the VPS: the `hosts` of each public app in `project.yaml` (part 5 step 4).
+2. Do the "By hand" lines of `add-report.md` now, before the first commit, since these files steer the kit and a later
+   change to them is a PR the human merges: the `env:` of the app and the `database` key of `deploy.yaml`
+   ([docs/vps-setup.md](docs/vps-setup.md) section 14, the shape in part 5 step 9 item 2), and `coverage_exclude`, from
+   the list the line gives.
+3. With the VPS: the `hosts` of each public app in `project.yaml` (part 5 step 4). A Next.js app that reads the API on
+   the server takes `API_URL` and `AUTH_SECRET` from the secrets file: name them under `env:` of the app in `deploy.yaml`,
+   and the localhost URLs the apps give each other under `env:` of the app in `project.yaml`, as `shop` does.
 4. `node <kit>/scripts/ao-kit.mjs check .` prints `project.yaml OK: …`.
 
 ### Step 5. The Jira space
@@ -115,17 +120,19 @@ human the steps of that section, word for word, then run the command again until
 
 ### Step 6. The Apps on the repo
 
-`ao-dev`, `ao-review`, `ao-merge`, and `ao-deploy` for the VPS. Try the API first, with the human's gh login:
-`gh api /user/installations --jq '.installations[] | {id, app_slug}'` for each installation id,
-`gh api repos/<repo> --jq .id`, then `gh api -X PUT /user/installations/<installation id>/repositories/<repo id>`.
-When GitHub refuses, give the clicks of part 3 step 4.
+`ao-dev`, `ao-review`, `ao-merge`, and `ao-deploy` for the VPS: the clicks of part 3 step 4, once for each App. The API
+cannot do it with the human's gh login: listing installations needs a token of a GitHub App (du-an-1, 403). Ask for these
+clicks together with the board columns of step 5 and the key of step 8, so the human goes to the browser once. Check
+afterwards with `doctor` (rows `ao-dev`, `ao-review`).
 
 ### Step 7. The first commit, and the push
 
 Part 3 step 5: run the four checks first. Templates, part 5 step 5: skip them, since the template code is not fitted yet.
 Then `git add -A`, one commit `chore(scaffold): set up <name> with ao-kit` (templates: `…, and <apps> from templates`),
 `git push -u origin develop`, `git push origin develop:main`. The `pre-commit` hook scans for secrets: when it stops on a
-template file, show the human the line and ask; mark it `gitleaks:allow` only when they say it is no secret.
+template file, show the human the line and ask; mark it `gitleaks:allow` only when they say it is no secret. On this first
+commit the hook skips its Suppressions check, so the `eslint-disable` and `@SuppressWarnings` lines a template has pass;
+from the next commit on, and in every PR, a line that switches a check off needs its `reason:`.
 
 ### Step 8. GitHub, and the first CI
 

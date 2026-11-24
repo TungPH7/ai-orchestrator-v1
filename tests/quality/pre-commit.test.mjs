@@ -29,10 +29,12 @@ test('scanStaged lints the staged text of each file and skips binary content', a
   assert.deepEqual(await scanStaged({ files: [], read: () => '', lint }), { ok: true, output: '' });
 });
 
-function gitRepo(t, packageJson) {
+// A repo with one commit already, as every commit but the first one has; { first: true } for a repo with none.
+function gitRepo(t, packageJson, { first = false } = {}) {
   const dir = mkdtempSync(join(tmpdir(), 'pre-commit-'));
   t.after(() => rmSync(dir, { recursive: true, force: true }));
   spawnSync('git', ['init', '-q'], { cwd: dir });
+  if (!first) spawnSync('git', ['-c', 'user.name=t', '-c', 'user.email=t@example.com', 'commit', '-q', '--allow-empty', '-m', 'chore: start'], { cwd: dir });
   if (packageJson) writeFileSync(join(dir, 'package.json'), JSON.stringify(packageJson));
   return dir;
 }
@@ -82,6 +84,20 @@ test('the pre-commit script refuses a staged line that switches a check off with
   const never = gitRepo(t);
   stage(never, 'src/a.test.ts', 'it.only("x", () => {});\n');
   assert.match(preCommit(never).stderr, /src\/a\.test\.ts:1 \.only\( is never allowed/);
+});
+
+test('the first commit of a repo brings code that is there already: no Suppressions check, as on a push, but the secret scan still runs', (t) => {
+  // du-an-1 (SPEC-guided-setup.md 6): the apps ao-kit add copied from the templates hold their own eslint-disable and
+  // @SuppressWarnings lines, and the first commit stopped on ten of them. The policy job checks the lines a PR adds.
+  const first = gitRepo(t, undefined, { first: true });
+  stage(first, 'apps/web/src/a.ts', '// eslint-disable-next-line no-console\nconsole.log(1);\n');
+  const passed = preCommit(first);
+  assert.equal(passed.status, 0, passed.stderr);
+  assert.match(passed.stderr, /pre-commit: the first commit of the repo: the Suppressions check starts with the next commit/);
+
+  const secret = gitRepo(t, undefined, { first: true });
+  stage(secret, 'src/key.ts', `export const key = \`${privateKey}\`;\n`);
+  assert.match(preCommit(secret).stderr, /found private key/);
 });
 
 test('the pre-commit script passes with nothing staged, and runs the project precommit script', (t) => {
