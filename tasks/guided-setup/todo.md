@@ -16,4 +16,8 @@ Thứ tự theo Lượt 7. Mỗi mục xong thì đánh dấu, kèm một dòng 
 - [x] 5. Chạy thử thật trên `du-an-1` (spec mục 6), ghi vào [verification.md](verification.md); sửa kit theo những gì
   lần chạy tìm ra. Đạt 2026-11-25: `doctor` và `verify` xanh, ba app trên Development; 15 chỗ sửa qua kit PR #360,
   #361 và PR chốt bước này.
-- [ ] 6. Review một lần: chép kit vào `shop` trong một Task, review PR chép kit, sửa Critical và High, QA, Accept.
+- [x] 6. Review một lần: chép kit vào `shop` trong một Task, review PR chép kit, sửa Critical và High, QA, Accept.
+  SHOP-101, PR #100 (kit `800936a`, 22 file): review 8,00 USD, không Critical hay High (1 Medium, 5 Low, sang mục 15
+  của `tasks/todo.md`); approve thay bạn, merge `494c4d1`; CI của `develop` xanh, Development deploy `success`. Không
+  QA và Accept được: Task chưa được Start trước khi mở PR, nên phiên chính kiểm bốn dòng Verification rồi đóng bằng
+  Cancel (`Done`), như SHOP-1. Chỗ hở này cũng vào mục 15.

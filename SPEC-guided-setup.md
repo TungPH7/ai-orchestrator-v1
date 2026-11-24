@@ -4,7 +4,8 @@
 > Lượt 5–6 (agent hỏi stack, dựng app từ template của bạn), Lượt 8 (ba câu chốt, thứ tự làm, và quyền cho phiên chính
 > làm tới hết).
 >
-> **Trạng thái:** phiên chính duyệt thay bạn ngày 2026-11-24, theo quyền ở Lượt 8. Tiến độ ở
+> **Trạng thái:** phiên chính duyệt thay bạn ngày 2026-11-24, theo quyền ở Lượt 8. **Xong** ngày 2026-11-25: chạy thật
+> trên `du-an-1` đạt, review một lần ở `shop` PR #100 không có Critical hay High. Tiến độ ở
 > [tasks/guided-setup/todo.md](tasks/guided-setup/todo.md).
 
 ## 1. Mục tiêu
