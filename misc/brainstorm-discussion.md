@@ -34995,3 +34995,95 @@ Xong cả hai việc. Mục 12 đã sửa trong kit, chưa chép vào `shop`. Ki
 **Bạn nên biết:** ổ đĩa VPS đã dùng 92%, còn 3,3 GB. Chưa gấp, nhưng mỗi lần build image lại dùng thêm. Mình chưa dọn gì: khi nào bạn muốn, mình sẽ đề xuất cách dọn cache build để bạn duyệt.
 
 **Còn chờ bạn:** Epic chạy thử với Claude Design (khoảng 40 USD), khi bạn bảo làm.
+
+**Bạn (Lượt 89):** Ngoài epic chạy thử thì kiểm tra lại xem kit còn cần làm những gì? Các mục A, B, C đã hoàn thành rồi phải ko?
+
+**Claude (Lượt 89):**
+
+Đúng, A, B và C đều đã xong. Cách đọc: theo `misc/thao-luan/concerns.md` và `tasks/todo.md`, tính tới hôm nay.
+
+| Nhóm | Trạng thái |
+|---|---|
+| A1, A3–A6 | Xong 11–12/11. A2 đã gộp vào C2. |
+| B1–B4 | Xong 13–18/11 (Pilot 3). |
+| C1, C2 | Xong 20/11 và 23/11. |
+| D3 | Xong trong C1. |
+| D1 (nhiều repo, .NET), D2 (viết blog), D4 (SEO định kỳ) | Chờ nhu cầu: chỉ làm khi có dự án thật cần. |
+
+**Ngoài Epic chạy thử, kit còn những việc sau.**
+
+Có hạn chót:
+1. **Release v0.4.0, hạn 2026-12-02, còn 8 ngày.** Đây là việc gấp nhất.
+   - Release đưa lên `main`: Epic Danh mục (SHOP-81), Epic SHOP-95 (đang In Progress chờ release), các bản chép kit, và `pr-events.yml`. Thiếu `pr-events.yml` trên `main` thì PR hotfix không có relay.
+   - Mục 9 (review theo item) cũng chỉ đóng được sau release này.
+   - Gate ④ và ⑤ là của bạn.
+2. **SHOP-40 và tài khoản Windows `ao-agent`, hạn 2026-12-31, khoảng nửa ngày.** Từ mục 12 có thêm một việc: giữ mã băm của hộp thiết kế ở nơi `ao-agent` không ghi được.
+3. **Việc của bạn:** kiểm khóa `age` đã cất và sinh cặp khóa mới. Cùng hạn 2026-12-31.
+4. **Gỡ ngoại lệ picomatch** khi có bản vá, trước 2026-12-31.
+
+Chưa có hạn:
+
+5. **Chép kit `a05e214` vào `shop`**, có review trả tiền khoảng 10 USD. Nên làm trước Epic chạy thử: prompt `ux` trong `shop` hiện vẫn chép file khung gốc, chưa phải trang không script.
+6. **Item của `shop` chờ bạn Refine:**
+   - SHOP-98: Medium của API, tìm ra ở review sau merge SHOP-95;
+   - SHOP-75;
+   - SHOP-70 và SHOP-72: cần xong trước khi gỡ basic auth của Production.
+7. **Figma**, khi bạn lên gói Education.
+8. **Followup nhỏ:**
+   - dự án chưa có chỗ ghi ngoại lệ audit riêng;
+   - hai Low về chữ của hướng dẫn người dùng;
+   - admin mở bằng tiếng Anh với trình duyệt chỉ đặt `vi-VN`;
+   - hai test chập chờn: unit test admin "151 ký tự" và E2E accessibility.
+9. **Ổ đĩa VPS đã dùng 92%.** Cần dọn cache build trước khi đầy, và việc dọn cần bạn duyệt.
+
+Có vài dòng trong todo đã xong mà chưa đánh dấu: hai checkpoint của C2, job CI riêng của dự án (`ci.project.yml`) và review kit một lần. Mình sẽ đánh dấu chúng ở lần sửa tài liệu tới.
+
+**Mình đề xuất làm theo thứ tự này:**
+1. Release v0.4.0.
+2. Chép kit vào `shop`.
+3. Epic chạy thử Claude Design.
+4. SHOP-40 và `ao-agent`, trước cuối tháng 12.
+
+Bạn chọn xong thì nhắn "làm".
+
+**Bạn (Lượt 90):** Dọn ổ đĩa VPS nhé
+
+**Claude (Lượt 90):**
+
+**Mình đã đo xong và chưa xóa gì.** Gần hết phần đầy là build cache của Docker, khoảng 25 GB trên ổ 38 GB. Nếu dọn như dưới đây thì sẽ lấy lại được khoảng 20 GB.
+
+**35 GB đang dùng chia ra thế này:**
+- Build cache của Docker: khoảng 25 GB (Docker tự báo 27 GB).
+- Swap: 4 GB, phải giữ.
+- Hệ điều hành (`/usr`): 2,3 GB.
+- Image của cả 3 dự án: khoảng 2,2 GB, vì các bản build của cùng một app dùng chung gần hết dữ liệu.
+- Phần còn lại dưới 2 GB:
+  - cache gói apt 0,5 GB;
+  - log 0,2 GB;
+  - volume database 0,3 GB;
+  - kit và deployer 0,15 GB.
+
+**Vì sao build cache to như vậy:** đây là lỗi của kit.
+1. Sau mỗi lần deploy, deployer chạy lệnh dọn để build cache chỉ còn 4 GB.
+2. Nhưng lệnh đó thiếu cờ `--all`. Mình đã đọc mã nguồn BuildKit: thiếu cờ này thì lệnh bỏ qua phần cache được đánh dấu "shared", ở đây là 23 GB.
+3. Lệnh chỉ dọn được 3,9 GB còn lại, nên cache cứ to dần: 7 GB lúc đo ở T2, giờ là 27 GB. Tuần vừa rồi build nhiều, cache tăng khoảng 10 GB một tuần.
+
+**Mình đề xuất dọn hai thứ:**
+1. **Build cache:** chạy `docker buildx prune --all --force --max-used-space 4gb`.
+   - Giữ lại 4 GB dùng gần nhất, để lần build sau vẫn nhanh.
+   - Không đụng image, container hay volume, nên rollback vẫn dùng image cũ như bây giờ.
+   - Lấy lại khoảng 20 GB. Chạy xong mình sẽ đo lại.
+2. **Cache gói apt:** chạy `apt-get clean`, lấy lại 0,5 GB. Đây chỉ là các gói đã tải về, cần thì tải lại được.
+
+**Những thứ mình để nguyên:**
+- image: 3 bản cho mỗi môi trường, để rollback;
+- volume database;
+- log hệ thống: 0,17 GB, có lịch sử deploy;
+- 3 volume Postgres không còn dùng từ ngày 14/11: mỗi cái 42 MB, chứa dữ liệu Postgres cũ. Xóa rồi thì không lấy lại được, mà chỗ trống thu được rất ít.
+
+**Sửa kit để đĩa không đầy lại:** việc này tách riêng với việc dọn, bạn chọn có làm hay không.
+- Cần thêm `--all` vào lệnh dọn sau deploy, trong `lib/release/docker.mjs`, kèm test.
+- VPS chỉ có bản sửa khi mình chép kit lên VPS lần tới.
+- Nếu không sửa, cache sẽ to lại sau mỗi lần build.
+
+Bạn nhắn "làm" thì mình dọn hai mục 1 và 2. Nếu muốn sửa kit luôn thì nói thêm một câu.

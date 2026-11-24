@@ -35,6 +35,16 @@
   - **Low, security:** `ux` (có Bash) đọc HTML gốc và chép nó làm prototype cho `fe-dev`. Hướng: commit trang đã bóc vỏ thay cho khung gốc, hay cho `ux` dữ liệu đã lọc.
   - **Low, reviewer:** lỗi của sổ mã lặp lại ở mỗi `design.md` và ở job `policy`; PR chỉ đổi `screens.md` không kiểm các `design.md` dùng mã; `CLAUDE_LINK` của `design.mjs` chép lại pattern của `design-inbox.mjs`; `designLinks` rỗng khi đọc Jira lỗi (cho qua thay vì dừng); dòng artifact "Thiết kế màn hình" trong `contract/policies.yaml` chưa nói tới Claude Design và prototype.
   - **Kết quả (Phiên 35 · Lượt 88, bạn chốt "sửa trong kit ngay, chưa chép kit"):** sửa hết 4 Medium và 6 Low, mỗi cái có test (`tests/quality/design-inbox-review-98.test.mjs`). Một agent rà độc lập các bản sửa, chạy thật add và render: không Critical hay High, 7 Low và 1 ghi chú, đã sửa hết. Chi tiết ở `tasks/threat-model-design-import.md`, mục "Review của shop PR #98 và mục 12". Thử thật trên "Landing page hero": ảnh 1440×760 và 390×1214 như trước; với mẹo `</sty</stylele>` + refresh, trang không rời đi. Bản sửa vào `shop` ở lần chép kit kế tiếp, cùng review trả tiền của lần đó.
+- [x] **13. Đĩa VPS đầy 92% và lệnh dọn build cache của deployer** (Phiên 35 · Lượt 90–91; bạn chốt "Làm và sửa kit luôn. Nhưng chưa chép kit nhé").
+  - **Nguyên nhân:**
+    - build cache lên 27 GB, trong đó 23 GB BuildKit đánh dấu "shared", chủ yếu là lớp `pnpm fetch`, khoảng 1 GB mỗi bản build;
+    - lệnh dọn sau deploy (`--max-used-space 4gb`, thiếu `--all`) bỏ qua phần shared, còn mốc theo dung lượng chỉ đếm phần không shared (3,9 GB, dưới mốc), nên không xóa gì.
+  - **Đã dọn tay trên VPS:**
+    - `apt-get clean` lấy lại 0,5 GB;
+    - `docker buildx prune --all --force --filter until=72h` lấy lại 20,13 GB;
+    - đĩa từ 92% xuống 42%, image, container và volume giữ nguyên, lượt chạy deployer sau đó thành công.
+  - **Sửa kit:** `PRUNE_CACHE` thành lệnh `until=72h` ở trên, có test (`tests/release/docker.test.mjs`), ghi ở `docs/vps-setup.md` mục 13.
+  - **Chưa chép kit**, cả vào `shop` lẫn lên VPS: VPS vẫn chạy `a05e214` với lệnh dọn cũ cho tới lần chép kế tiếp.
 - [x] **Đợt sửa kit sau SHOP-95** (bạn chốt ở Phiên 35 · Lượt 74: "làm theo đề xuất, accept không cần hỏi, xong thì dừng hỏi trước mục 10"). Gồm 4 Medium và 6 Low của review shop PR #93 (`e-commerce/shop/.ai/reviews/93-reviewer.md`, `93-security.md`), cùng những gì lượt chạy thử lộ ra. Xong đợt sửa thì chép kit vào `shop` một lần, có review. Kit làm xong trên nhánh `task/review-per-item-fixes` (1883 test):
   - comment báo cáo sau merge mở đầu bằng `ao-step:`, và báo cáo QA không bao giờ là comment của ao-step;
   - dấu trên PR đi sau cùng, và lần đăng dừng giữa chừng thì làm tiếp với cùng bộ PR;

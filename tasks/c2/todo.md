@@ -31,7 +31,7 @@ Bộ test lúc bắt đầu: 1.731 test xanh (kit `main` `dc400af`).
   - **File:** `lib/workflow/steps.mjs`, test.
 
 ### Checkpoint 1: sau T3
-- [ ] PR phần 1 merge, CI xanh.
+- [x] PR phần 1 merge, CI xanh (kit PR #328).
 
 ## Phần 2: bộ điều phối, nhánh `task/c2-2`
 
@@ -60,7 +60,7 @@ Bộ test lúc bắt đầu: 1.731 test xanh (kit `main` `dc400af`).
   - **File:** skill, tài liệu.
 
 ### Checkpoint 2: sau T6
-- [ ] PR phần 2 merge, CI xanh. Gửi bạn kế hoạch mà `ao-step run` in ra trên `shop`.
+- [x] PR phần 2 merge, CI xanh (kit PR #329). Gửi bạn kế hoạch mà `ao-step run` in ra trên `shop`.
 
 ## Phần 3: số agent cùng role, nhánh `task/c2-3`
 
