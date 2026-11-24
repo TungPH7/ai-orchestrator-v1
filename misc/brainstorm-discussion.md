@@ -41,6 +41,7 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 33 | `0624de51-1879-44c5-a6f3-793068e0d8be` | 2026-11-16 khoảng 21:22 → | Bạn dán đoạn cuối của Phiên 32, hỏi lại Bug SHOP-51 và cách fix, dặn chưa làm gì; Claude giải thích: khi slug trùng, Hibernate ghi cả câu INSERT kèm tên, mô tả sản phẩm vào log (trái NFR12); đề xuất (a) Low, Affects Version trống, Fix `v0.3.0`, Ready; cách fix: tắt logger `org.hibernate.orm.jdbc.error`, test bắt log, sửa dòng log `root=` của `GlobalExceptionHandler`; chờ bạn |
 | 34 | `ee11b1ec-f133-42e6-ae14-68d9209ea8b8` | 2026-11-19 khoảng 14:25 → | Bạn hỏi năm câu: kit gắn chặt với GitHub, Jira, VPS không, GitLab và EC2, so với agent-skills, vì sao agent-skills phổ biến, quản lý task và gõ lệnh tay; greenfield hay brownfield; luồng deploy của `shop` so với `deploy.yml` của bạn; vì sao chép kit lên VPS; nơi lưu tài liệu của SA, BA, PM, QA, UX. Claude viết `misc/thao-luan/kit-va-du-an-thuc-te/stack-deploy-va-luu-tai-lieu.md` |
 | 35 | `9b7de2de-fbda-493b-951d-5d7c26b8c106` | 2026-11-21 khoảng 01:33 → | Bạn dán đoạn cuối của Phiên 33 và gõ "làm T13"; `SHOP-79` tạo, Refine và Start; `shop` PR #80 chép kit `8a9f25d` (C2, T20b) và Low 9 (khối `review` của `project.yaml`); CI xanh 7 job; review chạy (`reviewer` `xhigh`, `security` `max`); `security` chạm giới hạn 5 giờ, Lượt 2 chạy tiếp; review xong: 0 Critical, 0 High, sau khi gộp còn 5 Medium và 4 Low, đều trong code kit; tổng 15,23 USD; PR #80 merged (`20cbfd4`), QA `SHOP-79` PASS, chờ bạn Accept; kit PR #334 sửa 9 việc (`82b1bca`); `SHOP-80` PR #81 chép kit, review: `security` 1 High (entity HTML lách hook của `seo`), Lượt 6 ("Làm"): kit PR #335 (`8847a84`), review vòng hai: `security` High mới (hook bỏ `<…>` mà Jira giữ); Lượt 7 ("sửa theo đề xuất"): hook tự gửi comment agent dạng HTML đã escape, kit PR #336 (`9374641`), review vòng ba: `security` 1 High (`plainText` không idempotent), 2 Medium; `reviewer` Approve, 3 Medium, 1 Low; `SHOP-80` 28,40 USD, cờ Needs you vì giới hạn rework; Lượt 8 ("chọn 2"): approve PR #81 với `Accept risk: 08bc0732 until 2026-12-15`, gỡ cờ, đăng báo cáo `reviewer`; Lượt 9 ("Merge giúp tôi. T14: chọn hướng 1. Danh mục"): PR #81 merged (`154ac4e`), deploy Development OK, gỡ cờ bằng tài khoản admin, QA `SHOP-80` PASS (0,95 USD; tổng 29,35 USD); intake Epic Danh mục, câu hỏi 1; Lượt 10 ("Accept giúp"): `SHOP-79`, `SHOP-80` Done, T13 và T13b xong; bản nháp Epic Danh mục (tối đa 3 item); Lượt 11: Epic `SHOP-81` tạo, Start spec, `/ao-spec`: `ba` viết SPEC (21 AC), hỏi 11 câu; Lượt 12: bạn đồng ý theo khuyên (cho xóa danh mục còn sản phẩm, bỏ AC11), `ux` vẽ màn hình, hỏi 10 câu (5,32 USD); Lượt 13: đồng ý cả 10; `sa`, docs PR #82, `seo` (12,29 USD); `seo` hỏi 3 câu; Lượt 14: đồng ý theo khuyên, `seo` sửa SEO, stage spec xong (10,87 USD), chờ bạn ở cổng ①; Lượt 15: Approve spec, `/ao-plan`: `sa` viết plan 3 item (16,52 USD), hỏi 1 câu; Lượt 16: giữ 3 item, `ba` tạo SHOP-82, 83, 84 (21,12 USD), chờ bạn ở cổng ②; Lượt 17: bạn cho Claude duyệt thay trong T14; `sa` đổi tên Task List, Approve plan, docs PR #82 merged, item Ready (22,53 USD); `/ao-run SHOP-81` bắt đầu |
+| 36 | `2118cec2-bb09-4ce4-93c2-b25c1cdcb384` | 2026-11-24 khoảng 16:36 → | Bạn hỏi tài liệu cài kit cho dự án greenfield nằm ở đâu; Claude chỉ `docs/getting-started.md` phần 3 và tóm tắt 6 bước; bạn đề xuất một tài liệu ngắn cho người, cộng một file `ao-kit-setup.md` để agent chính tự setup, hỏi config và kiểm thử, dặn chưa làm; Claude đồng ý, đề xuất ba lớp tài liệu, luồng hỏi config dựa trên `doctor`, kiểm thử hai mức, và hỏi lại ba câu |
 
 ---
 
@@ -35087,3 +35088,167 @@ Bạn chọn xong thì nhắn "làm".
 - Nếu không sửa, cache sẽ to lại sau mỗi lần build.
 
 Bạn nhắn "làm" thì mình dọn hai mục 1 và 2. Nếu muốn sửa kit luôn thì nói thêm một câu.
+
+**Bạn (Lượt 91):** Làm và sửa kit luôn. Nhưng chưa chép kit nhé
+
+**Claude (Lượt 91):**
+
+Xong cả hai việc. Ổ đĩa VPS từ 92% xuống 42%, còn trống 23 GB. Lệnh dọn trong kit đã sửa ở kit PR #357, và chưa chép đi đâu.
+
+**1. Dọn VPS**
+- **Lệnh đầu tiên không xóa được gì.** Lệnh mình đề xuất (`--max-used-space 4gb`, thêm `--all`) chạy xong nhưng xóa 0 B. Đọc mã BuildKit mới thấy lý do: mốc theo dung lượng chỉ tính phần cache không "shared". Phần đó chỉ có 3,9 GB, dưới mốc 4 GB, nên lệnh dừng ngay.
+- **Phần "shared" là gì:** 23 GB này chủ yếu là lớp `pnpm fetch` của giai đoạn build, mỗi bản build khoảng 1 GB. Nó không phải layer của image.
+- **Lệnh đã chạy:**
+  - `docker buildx prune --all --force --filter until=72h`: chỉ giữ cache được dùng trong 3 ngày gần nhất. Chạy gần 9 phút, lấy lại 20,13 GB;
+  - `apt-get clean`: lấy lại thêm 0,5 GB.
+- **Sau khi dọn** (lúc dọn, mình tắt tạm timer của deployer rồi bật lại):
+  - 37 image và 22 container vẫn nguyên, 3 container `api` vẫn healthy;
+  - lượt chạy kế tiếp của deployer thành công;
+  - build cache còn 6,9 GB.
+- 3 volume Postgres cũ từ ngày 14/11 vẫn để nguyên, như đã nói.
+
+**2. Sửa kit: PR #357 đã merge, `main` giờ ở `2dd0e31`**
+- Từ bản kit này, sau mỗi lần deploy, deployer chạy đúng lệnh `until=72h` ở trên. Test mới đỏ trước khi sửa. Toàn bộ 1930 test xanh, CI cũng xanh.
+- Nguyên nhân và cách dọn tay ghi ở `docs/vps-setup.md` mục 13. Kết quả ghi ở `tasks/todo.md` mục 13.
+- Nhân lần sửa tài liệu này, mình đánh dấu xong các dòng todo đã làm mà chưa đánh dấu:
+  - hai checkpoint của C2 (kit PR #328 và #329);
+  - job CI riêng của dự án, `ci.project.yml` (kit PR #323);
+  - việc review kit một lần (bạn đã chốt ở Lượt 62).
+- Log Lượt 89–90 cũng đã commit.
+- **Chưa chép kit**, cả vào `shop` lẫn lên VPS.
+  - VPS vẫn chạy `a05e214` với lệnh dọn cũ, nên cache sẽ lại tăng dần.
+  - Nếu build nhiều như tuần trước, cache tăng khoảng 10 GB một tuần, và 23 GB trống đủ cho khoảng 2 tuần.
+  - Lần chép kit lên VPS tới sẽ có lệnh mới.
+
+**Rủi ro của lệnh mới:**
+- Hơn 3 ngày không build thì lần build sau không có cache, chậm như lần build đầu, khoảng 9 phút với `shop`.
+- Lệnh không còn mốc dung lượng, nên 3 ngày build nhiều thì cache lớn hơn. Với số build của tuần trước, cache giữ lại khoảng 6,4 GB.
+
+# Phiên 36 · Lượt 1 — 2026-11-24 khoảng 16:36
+
+**Bạn:**
+
+```markdown
+Tài liệu hướng dẫn cài đặt, sử dung ao kit (D:\Document\1Khoahoc\4LapTrinh\AI-for-coding\ai-orchestrator) cho dự án greenfield nằm ở đâu? Tóm tắt ngắn gọn cách dùng cho dự án greenfield.
+```
+
+**Claude:**
+
+Mình vừa đọc xong phần 3 của tài liệu, nên tóm tắt luôn cho bạn.
+
+Tài liệu nằm ở `ai-orchestrator/docs/getting-started.md`. Dự án greenfield là **phần 3 "Dự án mới, từ thư mục trống"** (`docs/getting-started.md:92`). Phần 2 (dòng 43) là các việc chuẩn bị làm một lần.
+
+Các file hỗ trợ cùng thư mục `docs/`:
+- `jira-setup.md`: dựng Jira.
+- `github-apps-setup.md`: tạo các GitHub App.
+- `vps-setup.md`: VPS và deployer.
+
+Cách dùng cho dự án greenfield:
+
+1. **Chuẩn bị một lần (phần 2).** Cài Node 24, Git, `gh`, Claude Code. Có sẵn Jira và các service account, 3 GitHub App (`ao-dev`, `ao-review`, `ao-merge`), biến môi trường token, và (nếu cần deploy) VPS. Sau đó chạy `git clone https://github.com/TungPH7/ai-orchestrator-v1 <kit>` rồi `npm ci` trong thư mục kit.
+2. **Tạo repo trống và dựng khung.** Chạy `gh repo create <owner>/<tên> --private`. Rồi `mkdir <tên>` và `node <kit>/scripts/ao-kit.mjs init <tên> --name … --title … --space … --repo … --approvers … --dev-app… --review-app…`. `init` tạo git với nhánh `develop`, chép khung app (profile `next-nest`), chép kit, viết `.ai-orchestrator/project.yaml`, chạy `npm ci` và tải Chromium.
+3. **Dựng Jira và cài App.** Chạy `ao-kit.mjs setup jira <tên>`. Bạn tự chỉnh cột board và giới hạn cột In Review = 2 trên giao diện, rồi chạy lại tới khi hết dòng `By hand`. Sau đó cài 3 App vào repo trên GitHub.
+4. **Commit đầu và push.** Trong thư mục dự án chạy `npm run lint && npm run typecheck && npm run test:coverage && npm run build`. Rồi commit `chore(scaffold): …`, và push `develop` cùng `develop:main`. Đây là lần duy nhất push thẳng lên hai nhánh đó.
+5. **Dựng phần GitHub và chạy CI.** Tạo key cho `ao-merge`, rồi chạy `ao-kit.mjs setup github <tên> --merge-app-key-file <file .pem>` và xóa file key. Vào tab Actions để bật Actions, chạy `gh workflow run CI` nếu chưa có lượt nào. CI phải xanh đủ 4 job.
+6. **Mở Claude Code và kiểm.** Chạy `claude` trong thư mục dự án, bật 2 MCP `atlassian` và `chrome-devtools`. Rồi chạy `ao-kit.mjs doctor <tên>` tới khi báo `Every row passes.`, gõ `/ao-status` và bắt đầu việc đầu tiên bằng `/ao-intake`.
+
+Sau đó mỗi tính năng đi theo phần 6 của tài liệu: `/ao-intake`, `/ao-spec`, `/ao-plan`, `/ao-build`, `/ao-review`, `/ao-qa`, `/ao-release`, `/ao-ship`. Bạn chỉ duyệt ở 5 gate.
+
+# Phiên 36 · Lượt 2 — 2026-11-24 khoảng 17:08
+
+**Bạn:**
+
+```markdown
+- File D:\Document\1Khoahoc\4LapTrinh\AI-for-coding\ai-orchestrator\docs\getting-started.md tôi thấy rất chi tiết, phù hợp với việc tra cứu chi tiết, tham khảo sâu và hướng dẫn cho AI setup kit để sử dụng. Đối với người, developer tôi nghĩ nên có tài liệu ngắn gọn và trừu tượng hóa hơn. Như kiểu developer chỉ cần chuẩn bị các môi trường, token, app của VPS, Jira, Github, pull kit về, gõ prompt "làm ao-kit-setup.md" (file này sẽ hướng dẫn agent chính cần làm những gì, navigate tới file nào trong ai-orchestrator\docs), còn lại thì agent chính sẽ làm nhiệm vụ setup, có thể dừng lại để hỏi về các config cho repo dự án (ví dụ: bật hay tắt bươc review, chọn số làn, số agent chạy cùng lúc,... hỏi tất cả các config khác nữa) và hướng dẫn developer setup cùng, sau cùng thực hiện các hành động đọc/ghi nháp trên các tech stack để xác nhận kit đã được cài đặt thành công và sẵn sàng phát triển tính năng.
+
+Bạn thấy sao? Thảo luận đã nhé, chưa được làm gì cả.
+```
+
+**Claude:**
+
+**Mình thấy hướng này đúng, và làm được.** Kit đã có sẵn phần khó nhất: `ao-kit doctor` kiểm từng dòng còn thiếu (máy, token, repo, GitHub, Jira, Claude Code, VPS) và in việc cần làm. Vì vậy `ao-kit-setup.md` chỉ cần dặn agent chính ba việc: hỏi config, chạy lệnh, rồi lặp "chạy `doctor`, sửa dòng đỏ" tới khi xanh hết.
+
+**Đề xuất: ba lớp tài liệu**
+
+| Tài liệu | Cho ai | Nội dung |
+|---|---|---|
+| `docs/quick-start.md` (mới, khoảng 1 trang) | Developer | Cài 4 công cụ, clone kit, mở Claude Code, gõ một câu |
+| `ao-kit-setup.md` (mới, ở gốc kit) | Agent chính | Thứ tự việc, câu hỏi config, việc nào agent tự làm, việc nào phải hướng dẫn bạn bấm, link tới đúng mục của `getting-started.md` |
+| `docs/getting-started.md` (giữ nguyên) | Tra cứu; agent đọc khi cần | Lệnh, đầu ra thật, lỗi thường gặp |
+
+`ao-kit-setup.md` chỉ trỏ tới mục, không chép lại lệnh, để hai file không lệch nhau.
+
+**Luồng mình hình dung**
+
+1. **Bạn:** cài Node, Git, `gh`, Claude Code; clone kit; tạo thư mục trống; mở `claude` trong đó và gõ: "Làm theo `<kit>/ao-kit-setup.md`, dự án mới".
+2. **Agent hỏi config theo 3 nhóm.** Mỗi câu có sẵn giá trị đề xuất, bạn chỉ sửa chỗ muốn khác:
+   - tên dự án, tên hiển thị, mã space Jira, repo, người duyệt;
+   - stack: `next-nest` có sẵn, hay pnpm nhiều app (Next.js, React, Spring Boot, template của bạn); app nào public, cần SEO;
+   - quy trình và deploy: review mặc định bật hay tắt; số làn (mặc định 1); số agent mỗi vai trò chạy cùng lúc; ngân sách một `/ao-run` (mặc định 30 USD); lên VPS ngay hay để sau.
+
+   Agent in bảng tổng hợp, bạn duyệt, rồi mới ghi `project.yaml`.
+3. **Agent tự làm phần chạy bằng lệnh:** `init`, `setup jira`, commit đầu, `setup github`, chạy CI.
+4. **Việc chỉ bạn làm được thì agent hướng dẫn từng cú bấm rồi chờ:** đặt token vào biến môi trường Windows (agent không bao giờ thấy token), sửa cột board Jira, cài App vào repo, tạo key `ao-merge`, bật Actions, bật MCP.
+5. **Agent lặp `doctor`** tới khi in `Every row passes.`
+6. **Kiểm thử bằng ghi nháp** (mục dưới).
+
+**Phần "đọc/ghi nháp": chia hai mức**
+
+- **Mức 1, không tốn tiền agent (bắt buộc).** Một script mới, ví dụ `ao-kit verify`, ghi thật rồi dọn đồ của chính nó:
+  - Jira: tạo một Task "Kiểm kit", chuyển trạng thái, comment, rồi chuyển sang Cancelled (không xóa); đọc thử qua MCP bằng token của agent;
+  - GitHub: `ao-dev` đẩy một nhánh và mở PR nháp, `ao-review` comment, CI chạy, rồi đóng PR;
+  - VPS (nếu có): deploy Development, gọi `health` qua basic auth.
+
+  Mình đề xuất làm thành script, không để agent tự gõ lệnh: script lần nào chạy cũng giống nhau, có test, và token không đi qua phiên chat.
+- **Mức 2, tốn tiền (tùy chọn, hỏi bạn trước).** Chạy trọn một Task rất nhỏ, ví dụ "trang hiện số phiên bản", qua `/ao-intake` → `/ao-build` → review → QA. Mức này chứng minh các agent chạy được. Theo các lượt đã đo, khoảng 5–10 USD.
+
+**Ba điểm cần biết trước**
+
+1. **Phải mở Claude Code hai lần.** Sau `init`, thư mục mới có `.claude/` và `.mcp.json`. Claude Code chỉ nạp chúng khi bạn mở lại, bấm tin cậy thư mục và bật MCP. Đặt biến môi trường mới cũng phải mở lại. Vì vậy file phải làm tiếp được: bạn gõ "làm tiếp `ao-kit-setup.md`", agent chạy `doctor` để biết đã tới đâu.
+2. **Phần chuẩn bị một lần** (Jira site, hai service account, GitHub App, VPS) là phần dài nhất. Nếu `ao-kit-setup.md` hướng dẫn luôn phần này, `quick-start.md` chỉ còn "cài 4 công cụ, clone kit, gõ một câu". Mình nghiêng về cách này.
+3. **Phải chạy thử thật một lần** trên một dự án trống mới (như `ao-green` ở T16) để sửa file cho đúng: khoảng 1–2 giờ, tốn một space Jira và một repo.
+
+**Bạn cho mình biết ba điều:**
+1. `ao-kit-setup.md` có hướng dẫn luôn phần chuẩn bị một lần không, hay chỉ bắt đầu khi đã có đủ tài khoản?
+2. Mức 2 (Task thật, tốn tiền) nằm trong setup, hay để bạn tự chọn sau?
+3. Làm cho greenfield trước, rồi mới thêm dự án đang phát triển và dự án nhiều app?
+
+Ngoài log, mình chưa sửa gì. Bạn nói "bắt đầu" thì mình mới làm.
+
+**Lưu ý:** lúc mình ghi log (khoảng 17:08), `README.md` và `docs/getting-started.md` của kit vừa được sửa và chưa commit: thêm danh sách module đã xong, App `ao-merge`, và vài chỗ khác. Không phải mình sửa. Nếu bạn đang sửa hai file này ở một phiên khác thì không sao, mình sẽ không đụng tới chúng.
+
+**Bạn (Lượt 92):** Thực hiện rà soát và update các tài liệu trong repo kit, đảm bảo up to date, đồng bộ, nhất quán với những gì đã làm từ A, B, C, D nhé
+
+**Claude (Lượt 92):**
+
+Bạn đã chạm giới hạn usage, nên việc này mới xong một phần. Mình chưa commit gì.
+
+**Đã xong** (sửa trong thư mục làm việc của kit, trên `main`, chưa commit):
+- `README.md`, `SPEC.md`, bảng tiến độ trong `misc/thao-luan/concerns.md`, và dòng trạng thái đầu các file `SPEC-*.md`:
+  - đủ 11 role và 15 lệnh `/ao-*`;
+  - danh mục module có thêm Pilot 1–3, `parallel-runs`, C1, C2, review theo item;
+  - các dòng "chưa làm" cũ đã sửa, ví dụ T20b.
+- `docs/getting-started.md`:
+  - thêm `/ao-run`, `/ao-design` và `ao-step watch`;
+  - sửa số App thành ba, `ao-merge` thay `ao-dev` cho merge-gate;
+  - sửa chỗ ghi ngoại lệ audit của dự án và các link `AGENTS.md` sai chữ hoa, vốn hỏng trên GitHub.
+- `docs/release-workflow.md`, `docs/vps-setup.md`, `docs/github-apps-setup.md` và các file todo:
+  - thêm luật chặn release ở `audit` và item mức Nhẹ không chạy `qa`;
+  - thêm App `ao-merge`;
+  - đánh dấu xong những followup có bằng chứng.
+- Test của các agent đều xanh, không link nào hỏng.
+
+**Chưa xong:**
+1. Agent rà `docs/dev-workflow.md`, `docs/agents.md`, `docs/skills.md`, `docs/quality-gates.md` bị mình dừng giữa chừng, nên mấy file này có thể còn sửa dở.
+2. Mình chưa đọc lại diff, chưa chạy toàn bộ test, chưa mở PR.
+3. Mình chưa tự kiểm khẳng định "GitHub đã rút lời khuyên bảo mật picomatch" mà một agent ghi vào mục 7 của todo.
+4. Còn vài lỗi nhỏ ngoài các file đã giao:
+   - `docs/dev-workflow.md:18` link `AGENTS.md`;
+   - `tasks/c1/followups-pr79.md:3`;
+   - `tasks/parallel-runs/todo.md`;
+   - chú thích `jira_token_file` trong `vps/deployer.example.yaml`;
+   - phần 9–10 của `docs/jira-setup.md`, phải sửa ở file sinh ra nó `lib/tracker/checklist.mjs`.
+
+**Cần bạn chọn:**
+- `README.md` ghi tên nhánh `task/t<N>-<slug>`, trong khi các PR gần đây dùng `feat/…` và `fix/…`. Sửa luật hay sửa cách làm?
+- Có đổi tên tiêu đề "Lộ trình Cấp 2–3 (chưa viết spec)" trong `SPEC.md` không, vì C2 đã làm một phần `orchestrator-cli`?
