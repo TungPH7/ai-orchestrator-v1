@@ -17,6 +17,8 @@ Vòng trong (`/ao-spec` tới `/ao-fix`, [docs/dev-workflow.md](dev-workflow.md)
 
 `/ao-status` hiện thêm bản đang chạy ở từng môi trường, nhánh release đang mở, item Done chưa release, Fix Version đã lên Production nhưng chưa bấm Release, và Epic đã đủ điều kiện `Complete`.
 
+Item mức Nhẹ (C1, [dev-workflow.md](dev-workflow.md)) không có lượt `qa`. `/ao-qa <KEY>` chuyển item sang In QA bằng token CI, phiên chính kiểm các dòng cần kiểm và đăng báo cáo ngắn, rồi bạn vẫn bấm `Accept`.
+
 Không có lệnh `/ao-hotfix`: hotfix đi qua các lệnh sẵn có.
 
 ## Bản nào lên môi trường nào
@@ -44,7 +46,7 @@ Production có thêm hai điều kiện: có gate ⑤, và tree của commit đ�
 2. `/ao-qa <KEY>`: `qa` kiểm trên Development và ghi báo cáo lên item. PASS thì item ở In QA; FAIL thì item về In Progress.
 3. Bạn đọc báo cáo, rồi `Accept` để item sang Done. Bạn thấy lỗi trước khi bấm `Accept` thì dùng `/ao-qa <KEY> fail: …` (mục "Lỗi bạn thấy khi QA" ở dưới).
 4. Bạn tạo trên Jira Fix Version của bản này và bản kế tiếp, nếu chưa có. Từng bước ở mục dưới.
-5. `/ao-release`: đọc điểm cắt và danh sách item. Lệnh dừng ở gate ④. Lệnh cũng liệt kê các PR đã bỏ review mà chưa có review sau merge ([SPEC-review-per-item.md](../SPEC-review-per-item.md)): bản release vẫn lên Staging, nhưng `/ao-ship` dừng, và `merge-gate` giữ PR release vào `main`, cho tới khi `/ao-review <EPIC>` xong và mọi Critical hay High nó tìm ra có PR sửa nằm trong bản release.
+5. `/ao-release`: đọc điểm cắt và danh sách item. Lệnh dừng ở gate ④. Lệnh cũng liệt kê các PR đã bỏ review mà chưa có review sau merge ([SPEC-review-per-item.md](../SPEC-review-per-item.md)): bản release vẫn lên Staging, nhưng `/ao-ship` dừng, `merge-gate` giữ PR release vào `main`, và `audit` của deployer không đưa merge của PR đó lên Production, cho tới khi `/ao-review <EPIC>` xong và mọi Critical hay High nó tìm ra có PR sửa nằm trong bản release.
 6. **Gate ④:** `/ao-release <vX.Y.0> <sha>`. Script tạo nhánh release bằng login `gh` của bạn, gắn Fix Version cho item trong điểm cắt, và chuyển item sau điểm cắt sang bản kế tiếp. Deployer đưa bản lên Staging. Chỉ admin của repo tạo được nhánh `release/*` (ruleset `ao-release-branches`, Pilot 3, spec 2.9), nên agent không cắt được một nhánh release ở commit chưa ai review.
 7. `/ao-ship <vX.Y.0>`: `qa` chạy full regression, `devops` viết release note, rồi script làm hai việc:
    - bot `ao-dev` commit báo cáo regression (`docs/releases/vX.Y.0.md`) và `CHANGELOG.md` lên nhánh `release-notes/vX.Y.0`, và mở PR vào nhánh release, tiêu đề `release notes: vX.Y.0`. `merge-gate` merge PR này bằng `ao-merge` khi CI xanh, vì nó chỉ đổi hai file đó và là đúng một commit trên đầu nhánh release. Nhánh release đã đi tiếp thì lệnh dựng lại nhánh report. Lệnh chờ tối đa 15 phút; quá thì dừng, và gõ lại lệnh là chạy tiếp (Pilot 3, spec 2.9: ruleset không cho App nào push thẳng lên `release/*`);
@@ -156,7 +158,7 @@ Deployer không tự thử lại một yêu cầu đã `failure`. Trong bài th�
   - Deployment trên GitHub mang URL của app công khai đầu tiên trong `deploy.yaml`.
 - **`AO_PUBLIC_URL`:** deployer đặt biến này cho mỗi app `public`, là URL host của chính app đó. Server phải nhận Host và Origin của URL đó, vì Caddy đứng trước app. `ao-pilot` ghi lý do ở ADR-0003.
 - **`playwright.config.ts`:** có `E2E_BASE_URL` thì test chạy vào URL đó, với `httpCredentials` từ `E2E_HTTP_USER` và `E2E_HTTP_PASSWORD` khi có cả hai. Test gửi request mà trình duyệt không gửi được mang tag `@local` và chạy trên server tại chỗ. Với nhiều app công khai, `qa` còn nhận `E2E_<APP>_URL` cho từng app, như `E2E_ADMIN_URL`, lấy từ `hosts` của `project.yaml` ở commit đang chạy. `playwright.config.ts` của profile `base-pnpm` đọc sẵn các biến này. `/ao-qa` dừng khi URL của deployment không phải host của app nào trong `project.yaml`, vì như vậy là hai file đang lệch nhau.
-- **`AO_ENV_AUTH`:** biến môi trường user trên máy bạn, giá trị `ao:<mật khẩu>`, là basic auth của Development và Staging. `ao-step` chỉ truyền nó cho `qa`, dưới dạng biến môi trường.
+- **`AO_ENV_AUTH`:** biến môi trường user trên máy bạn, giá trị `ao:<mật khẩu>`, là basic auth của Development và Staging. `ao-step` chỉ truyền nó cho `qa`, và cho `devops` của một Task vận hành mang nhãn `ao-env-auth` mà bạn gắn, dưới dạng biến môi trường.
 
 Trace của Playwright giữ `httpCredentials` ở dạng rõ. Vì vậy sau `qa` trên Development và Staging, trace nằm lại `.ai/runs/<KEY>/traces/` trên máy bạn, và chỉ ảnh, video được gắn lên Jira. Đừng đưa `test-results/` lên nơi nào khác.
 
@@ -189,9 +191,9 @@ Vì vậy mỗi migration phải chạy được với bản trước nó. Promp
 | Token | Đọc | Ghi | Không làm được |
 |---|---|---|---|
 | `ATLASSIAN_AGENT_TOKEN` | REST và Rovo MCP | Chỉ qua Rovo MCP. Ghi bằng REST trả 401 scope | Chuyển trạng thái dành cho người (`Accept`, `Cancel`) |
-| `JIRA_CI_TOKEN` | REST | REST: comment, Fix Version trên item, file đính kèm, cờ | Tạo hay phát hành Fix Version, vì thiếu quyền Administer Projects |
+| `JIRA_CI_TOKEN` | REST | REST: chuyển trạng thái của group `ao-automation`, comment, Fix Version trên item, file đính kèm, cờ | Tạo hay phát hành Fix Version, vì thiếu quyền Administer Projects |
 
-Luật Restrict của workflow Jira quyết định ai chuyển được trạng thái nào: `Start` và `Pick up` của agent, `Submit` và `Deploy to QA` của automation, `Refine` của người và automation, `Accept` và `Cancel` của người.
+Luật Restrict của workflow Jira quyết định ai chuyển được trạng thái nào: `Start` và `Hand over` của agent; `Pick up` và `QA fail` của agent, và của automation khi phiên chính QA một item mức Nhẹ; `Submit` và `Deploy to QA` của automation; `Refine` của người và automation; `Accept` và `Cancel` của người.
 
 ## Chi phí đo được
 

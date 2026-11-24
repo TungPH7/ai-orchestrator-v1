@@ -14,7 +14,7 @@
 //                 before project-scaffold
 //   render <dir>  .claude/settings.json and the agents again, from project.yaml
 //   check <dir>   project.yaml against its schema, deploy.yaml, package.json and the folders; writes nothing
-//   setup github <dir>   the GitHub side, with your gh login: default branch, branch deletion, Dependabot, the four
+//   setup github <dir>   the GitHub side, with your gh login: default branch, branch deletion, Dependabot, the five
 //                 environments, JIRA_CI_TOKEN and AO_MERGE_APP_KEY (--merge-app-key-file <path>), the rulesets
 //   doctor <dir>  what the project still lacks, on this machine, in the repo, on GitHub, on Jira and in Claude Code, row
 //                 by row with what to do; reads only, and prints no secret

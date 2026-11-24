@@ -1,6 +1,6 @@
 # Bắt đầu với AO Kit
 
-> Spec: [SPEC-project-scaffold.md](../SPEC-project-scaffold.md) mục 2.7. Mọi lệnh, đầu ra, thời gian và chi phí trong tài liệu này lấy từ lần chạy thật: `ao-green` (phần 3), `ao-brown` (phần 4), `shop` (phần 5), Epic `SMP-23` của `ao-sample` (phần 6), Epic `SHOP-7` của `shop` (phần 7).
+> Spec: [SPEC-project-scaffold.md](../SPEC-project-scaffold.md) mục 2.7. Mọi lệnh, đầu ra, thời gian và chi phí trong tài liệu này lấy từ lần chạy thật: `ao-green` (phần 3), `ao-brown` (phần 4), `shop` (phần 5), Epic `SMP-23` của `ao-sample` (phần 6), Epic `SHOP-7` của `shop` (phần 7), và `/ao-run` trên Epic `SHOP-81` của `shop` (phần 9).
 
 Tài liệu này dành cho dev chưa dùng kit. Bạn đọc từ trên xuống: chuẩn bị một lần, dựng dự án, rồi làm một tính năng từ ý tưởng tới Production. Mỗi lệnh có bốn ý: làm gì, gõ khi nào, kết quả mong đợi, lỗi thì làm gì.
 
@@ -35,10 +35,12 @@ flowchart LR
 | Gate | Bạn làm gì |
 |---|---|
 | ① Duyệt SPEC | Đọc `spec.md` và `design.md` trong PR tài liệu, rồi bấm `Approve spec` trên Epic |
-| ② Duyệt plan | Đọc `plan.md`, rồi bấm `Approve plan` trên Epic |
-| ③ Approve PR | Đọc hai báo cáo review và diff, rồi approve PR. `merge-gate` merge; PR sửa đường dẫn được bảo vệ thì bạn tự merge |
+| ② Duyệt plan | Đọc `plan.md`, rồi bấm `Approve plan` trên Epic. Từ C1, mỗi dòng Task List của plan ghi mức của item (`light`, `standard`, `heavy`), effort khi item khó, `seo:` khi item chạm màn hình có SEO, và `review: skip` hay `review: on` khi bạn yêu cầu. Mục New Libraries kê thư viện mới, mà `/ao-plan` kiểm bằng `dep-check`. Bạn duyệt cả các mục này ([dev-workflow.md](dev-workflow.md), mục Mức quy trình) |
+| ③ Approve PR | Đọc báo cáo review và diff, rồi approve PR. `merge-gate` merge; PR sửa đường dẫn được bảo vệ thì bạn tự merge. Item bỏ review (nhãn `ao-review-skip`, hay `review: { default: off }` của `project.yaml`) không có báo cáo, chỉ có dấu vết `Review skipped`: đọc kỹ diff của các file Nguy cấp mà chỗ dừng liệt kê ([quality-gates.md](quality-gates.md), mục Bật hay tắt review theo item) |
 | ④ Cắt release | Đọc điểm cắt và danh sách item mà `/ao-release` in ra, rồi gõ `/ao-release <vX.Y.0> <sha>` |
 | ⑤ Approve PR release | Thử trên Staging, đọc PR release, rồi approve |
+
+Giữa các gate, phần 6 và phần 7 gõ từng lệnh. Từ C2, `/ao-run <EPIC>` gõ các lệnh đó thay bạn, nhiều lệnh cùng lúc, và dừng ở mọi việc của bạn: gate, PR nháp chờ xem trước, `Accept`, câu hỏi (phần 9, mục Chạy cả Epic bằng `/ao-run`).
 
 ## 2. Chuẩn bị một lần
 
@@ -58,7 +60,7 @@ Phần này làm **một lần cho mọi dự án**, trừ khi có ghi "mỗi d�
 | Việc | Làm một lần | Hướng dẫn |
 |---|---|---|
 | Site Jira Cloud, hai service account (`orchestratoragent`, `orchestratorci`), group, workflow, field | Có | [docs/jira-setup.md](jira-setup.md) mục 1–8 |
-| Hai GitHub App `ao-dev`, `ao-review`, key của chúng trên máy | Có | [docs/github-apps-setup.md](github-apps-setup.md) mục 1, 2, 4 |
+| Hai GitHub App `ao-dev`, `ao-review`, key của chúng trên máy; App `ao-merge` của `merge-gate`, key của nó không nằm trên máy (phần 3, bước 6) | Có | [docs/github-apps-setup.md](github-apps-setup.md) mục 1, 2, 4, 8 |
 | VPS và deployer, App `ao-deploy` mà deployer dùng để đọc repo | Có | [docs/vps-setup.md](vps-setup.md) mục 1–11, [docs/github-apps-setup.md](github-apps-setup.md) mục 7. Mỗi dự án lên VPS cài thêm App này vào repo (phần 5, bước 8) |
 
 ### 2.3 Biến môi trường
@@ -94,7 +96,7 @@ cd <kit> && npm ci
 Ví dụ: dự án `ao-green`, repo `TungPH7/ao-green`, space Jira `AOG`, dựng bằng profile `next-nest` (Next.js ở `apps/web`, NestJS ở `apps/api`). Mỗi bước dưới đây đã được làm thật trên `ao-green` (T16), và đầu ra ghi ở đây là đầu ra thật.
 
 Thứ tự các bước là có lý do:
-- Jira và hai App đi trước Claude Code, vì mọi lệnh `/ao-*` cần cả hai.
+- Jira và các App đi trước Claude Code, vì mọi lệnh `/ao-*` cần cả Jira lẫn App.
 - Commit đầu không cần item Jira nào.
 - Phần GitHub (`setup github`) chạy sau lần push đầu, vì nó cần nhánh `develop` có trên GitHub.
 
@@ -266,7 +268,7 @@ Ví dụ: repo `TungPH7/ao-brown` có sẵn app Next.js (`apps/web`) và NestJS 
 
 Khác với dự án mới ở ba điểm:
 - `init` không đụng file của app, chỉ liệt kê việc còn thiếu.
-- Repo đã có commit, nên commit chép kit cần một Task trên Jira. Vì vậy Claude Code và hai App đi trước commit.
+- Repo đã có commit, nên commit chép kit cần một Task trên Jira. Vì vậy Claude Code và các App đi trước commit.
 - CI lần đầu có thể gặp lỗi có sẵn trong code cũ. Lỗi đó được sửa như mọi Bug.
 
 ### Bước 1. Cài kit
@@ -287,7 +289,7 @@ node <kit>/scripts/ao-kit.mjs init ao-brown --name ao-brown --space AOG --repo T
   - `Ran npm ci --prefix .ai-orchestrator`, `Ran node .ai-orchestrator/scripts/render-agents.mjs --project .`;
   - các dòng `Missing:`, ở T17 là `no .ai-orchestrator/deploy.yaml` và `no develop branch`;
   - dòng `Next:`.
-- **Khác dự án mới:** `init` không thêm skill theo stack, như `vercel-react-best-practices` hay `nestjs-best-practices`. Muốn có thì làm theo mục "Skill" của [docs/AGENTS.md](AGENTS.md).
+- **Khác dự án mới:** `init` không thêm skill theo stack, như `vercel-react-best-practices` hay `nestjs-best-practices`. Muốn có thì làm theo mục "Skill" của [docs/agents.md](agents.md).
 
 ### Bước 2. Làm từng việc còn thiếu
 
@@ -313,7 +315,7 @@ node <kit>/scripts/ao-kit.mjs check ao-brown
 ### Bước 3. Jira, App và Claude Code
 
 1. `node <kit>/scripts/ao-kit.mjs setup jira ao-brown`. Space `AOG` đã có, nên lệnh chỉ kiểm. Kết quả mong đợi: `jira:check: Jira space AOG matches tracker/jira.yaml`.
-2. Cài hai App vào repo, như bước 4 của phần 3.
+2. Cài ba App `ao-dev`, `ao-review` và `ao-merge` vào repo, như bước 4 của phần 3.
 3. Nối GitHub for Atlassian với repo, như bước 6 của phần 3.
 4. Mở `claude` trong thư mục, tin cậy thư mục, chọn **Enable selected** cho hai server MCP, như bước 8 của phần 3.
 
@@ -345,7 +347,7 @@ git push -u origin develop
 
 ### Bước 6. Phần GitHub
 
-Tạo key thứ hai của `ao-dev` cho repo này, chạy `setup github`, rồi xóa file key, như bước 6 của phần 3. Chạy lệnh **ngay sau khi push**:
+Tạo key của `ao-merge` cho repo này, chạy `setup github --merge-app-key-file …`, rồi xóa file key, như bước 6 của phần 3. Chạy lệnh **ngay sau khi push**:
 - Lệnh đổi nhánh mặc định sang `develop`. `jira-sync` và `merge-gate` chỉ chạy theo bản workflow của nhánh mặc định.
 - Nếu có PR đang mở trên `main` từ trước, merge hoặc đóng chúng trước khi chạy lệnh.
 
@@ -575,7 +577,7 @@ node <kit>/scripts/ao-kit.mjs check e-commerce/shop
 - server đọc từ file secret của môi trường trên VPS, như `API_URL`;
 - trình duyệt gọi API qua `/api` trên chính host của app.
 
-**Chép kit trong một PR riêng.** PR sửa app không được sửa `.ai-orchestrator/`, `.claude/` hay workflow. Ở `shop`, PR #5 mang theo một sửa của kit, nên `/ao-preview` dừng với `PR #5 changes …, which steer the kit and the agents`, và hai app phải chạy tay. Nếu kit có bản mới sau `init`, chép nó bằng `ao-kit sync` trong một Task và PR riêng (phần 8), trước PR sửa app.
+**Chép kit trong một PR riêng.** PR sửa app không được sửa `.ai-orchestrator/`, `.claude/` hay workflow. Ở `shop`, PR #5 mang theo một sửa của kit, nên `/ao-preview` dừng với `PR #5 changes …, which steer the kit and the agents`, và hai app phải chạy tay. Nếu kit có bản mới sau `init`, chép nó bằng `ao-kit sync` trong một Task và PR riêng (phần 9), trước PR sửa app.
 
 - **Kết quả mong đợi:**
   - PR #5 xanh đủ năm job;
@@ -700,7 +702,7 @@ node <kit>/scripts/ao-kit.mjs check e-commerce/shop
    - sau, lúc rảnh: còn trống 2.508 MB. `api` dùng 286 MiB, Postgres 45 MiB;
    - ước cho ba môi trường: Staging và Production thêm khoảng 820 MB, còn trống khoảng 1,7 GB lúc rảnh. Image chỉ build một lần cho mỗi commit, nên đỉnh lúc build không nhân lên. VPS 4 GB vẫn đủ; đo lại khi Staging và Production lên.
 
-Dự án đã sẵn sàng cho việc đầu tiên: `/ao-intake` (phần 6). Nếu bạn có ảnh chụp màn hình thay cho Figma, xem bước 2 của phần 6.
+Dự án đã sẵn sàng cho việc đầu tiên: `/ao-intake` (phần 6). Nếu bạn có ảnh chụp màn hình, hay thiết kế làm trong Claude, thay cho Figma, xem bước 2 của phần 6.
 
 ## 6. Một tính năng lớn, từ ý tưởng tới Production
 
@@ -723,6 +725,8 @@ Ví dụ thật: Epic `SMP-23` "Ghim ghi chú lên đầu danh sách" của `ao-
 | | **Tổng** | | | **35** | **khoảng 3,5 giờ** | **khoảng 55,1** |
 
 Ba lượt chạm giới hạn usage 5 giờ của tài khoản. Lần nào cũng vậy: chạy lại đúng lệnh khi hạn mức mở lại, và agent chạy tiếp đúng phiên của nó (phần 9).
+
+Lần chạy này có trước `/ao-run` (C2), nên bạn gõ từng lệnh. Cách để `/ao-run` gõ thay nằm ở phần 9.
 
 ### Bước 1. Ý tưởng thành Epic: `/ao-intake`
 
@@ -758,6 +762,11 @@ Ba lượt chạm giới hạn usage 5 giờ của tài khoản. Lần nào cũn
   - Trước khi gõ `/ao-spec`, chép ảnh vào `.ai/design-inbox/<EPIC>/`. Mỗi ảnh tối đa 1 MB, cạnh dài tối đa 2.000 px; [docs/agents.md](agents.md) chỉ cách thu nhỏ bằng Paint.
   - `ux` biến các ảnh này thành màn hình kiểu Ảnh, ghi `screenshot:`, và rút màu, font, khoảng cách và component vào mục Design System của `design.md`.
   - Ở `/ao-plan`, nếu app chưa có `docs/design-system/<app>.md`, hoặc có mục "mới", thì `sa` đặt Task "Design system của <app>" lên đầu plan. `fe-dev` làm Task đó trước mọi Story có giao diện.
+- **Có thiết kế làm trong Claude** (Design hay Design System, mỗi cái là một artifact `https://claude.ai/artifact/<id>`; kit PR #353, #355; đã thử `add` và `render` trên một artifact thật, chưa chạy trong Epic nào):
+  - Trong Claude, mỗi màn hình là một khung, tên file theo mã màn hình của dự án, như `USR-CART01.dc.html`. Dán link artifact vào mô tả Epic; `/ao-intake` hỏi điều này.
+  - Sau `Start spec`, trước `/ao-spec`, gõ `/ao-design <EPIC>`. Không agent nào chạy: phiên chính đọc artifact, chép file nguồn vào `.ai/design-inbox/<EPIC>/`, chụp từng khung, rồi in bảng màn hình và lỗi.
+  - `/ao-spec` dừng và chỉ bạn tới `/ao-design` khi mô tả Epic còn link chưa lấy. `ux` viết màn hình kiểu Claude Design, ghi `claude-design:` và `prototype:` (trang `<mã>.html` không script), và thêm mã mới vào sổ `docs/design-system/screens.md`. Bạn duyệt cả ảnh, trang mẫu và sổ mã ở gate ①.
+  - Cách đặt tên khung, mã màn hình và các giới hạn: [docs/agents.md](agents.md), mục Mã màn hình và mục Đưa thiết kế Claude Design vào repo.
 - **Gate ①:** đọc `spec.md` và `design.md` trong PR #22, rồi bấm `Approve spec` trên Epic.
 - **Thời gian, chi phí:** 9 lượt (`ba` 6, `ux` 3), 24 phút, 6,10 USD. Lượt đắt nhất là `ba` viết SPEC (7,9 phút, 1,73 USD).
 
@@ -1035,7 +1044,7 @@ PR #40, tổng 20,49 USD:
 | 6–7 | `qa` (lượt 6 bị thay, bước 8) | `high` | 5,0 phút | 0,72 |
 
 - **Review:** không có Critical hay High. 1 Medium và 1 Low phía `api` thành Task `SHOP-53`.
-- **`/ao-preview`:** không chạy trong Epic này. Lúc đầu `fe-dev` tự chụp ảnh trang ở 1440 và 1024 px, sáng và tối, vào `.ai/runs/<KEY>/preview/`. Từ khi bật làn chạy song song (bước 8), `/ao-preview` dừng ngay ở bước kiểm. Bật app trong làn là việc kit còn phải làm. `/ao-preview` đã chạy đủ ba app và Postgres ở `SHOP-4` (phần 5, bước 9), trước Epic.
+- **`/ao-preview`:** không chạy trong Epic này. Lúc đầu `fe-dev` tự chụp ảnh trang ở 1440 và 1024 px, sáng và tối, vào `.ai/runs/<KEY>/preview/`. Từ khi bật làn chạy song song (bước 8), `/ao-preview` dừng ngay ở bước kiểm. Bật app trong làn lúc đó là việc kit còn phải làm. C2 đã làm việc này (kit PR #332): `/ao-preview` bật app từ làn của item, thư mục dự án đứng yên ở `develop`, và đã chạy thật ở `SHOP-83`, `SHOP-84` ([tasks/c2/verification.md](../tasks/c2/verification.md)). `/ao-preview` đã chạy đủ ba app và Postgres ở `SHOP-4` (phần 5, bước 9), trước Epic.
 
 ### Bước 7. Review, gate ③, và finding Medium, Low
 
@@ -1050,6 +1059,12 @@ PR #40, tổng 20,49 USD:
 
   Luật này ra đời vì mỗi vòng sửa cộng review lại tốn 4–9 USD, và vòng sau thường chỉ tìm thêm Low.
 - **Gate ③ ở `shop`:** từ giữa Epic, bạn giao Claude approve PR không còn Critical hay High, và Accept item sau khi QA đạt. Gate ④ và ⑤, Release và Complete trên Jira vẫn là của bạn.
+- **Từ C1 (kit PR #313–#324, sau Epic này), kit làm sẵn các luật trên:**
+  - chỉ Critical và High chặn merge; Medium và Low không mở vòng sửa, và `/ao-qa` đưa chúng vào Task finding của Epic (nhãn `ao-findings`);
+  - review theo tầng đường dẫn của PR: `reviewer` ở `high`, lên `xhigh` ở tầng Nguy cấp; `security` ở `max` ở tầng Nguy cấp, `high` ở tầng Nhạy cảm, và không chạy ở tầng Thường và Tài liệu;
+  - item mức Nặng (`ao-level-heavy`) được review như PR Nguy cấp. Nhãn effort chỉ còn dùng cho dev agent.
+
+  Chi tiết: [quality-gates.md](quality-gates.md), mục Review theo tầng đường dẫn, và [dev-workflow.md](dev-workflow.md), mục Mức quy trình.
 
 ### Bước 8. QA trên Development, và chạy song song
 
@@ -1082,6 +1097,7 @@ PR #40, tổng 20,49 USD:
 - **Dữ liệu thử trên Production trước gate ④:** 5 sản phẩm, thêm qua API quản trị trên Staging và Production.
   - Kit chưa đưa basic auth của Production vào phiên `devops`, nên Claude chạy việc này bằng script.
   - Task `SHOP-12` của việc đó không có PR, nên không chuyển sang Done được. Nó bị Cancel với resolution "Won't do", kèm comment ghi đã làm bằng script.
+  - Từ kit PR #311, việc như vậy trên Development và Staging là Task vận hành (nhãn `ao-ops`): `devops` làm trên môi trường và ghi bằng chứng, `qa` kiểm, rồi bạn Accept, không cần PR ([dev-workflow.md](dev-workflow.md), mục Task vận hành). Production vẫn chưa có đường này: agent không có basic auth của Production.
 - **`/ao-release`** (không tham số):
   - lệnh in 53 commit từ `v0.2.0`, điểm cắt `187898c` và 50 item;
   - rồi dừng cho tới khi Jira có Fix Version kế tiếp (`v0.4.0`). Bạn tạo version đó, duyệt gate ④, rồi gõ:
@@ -1115,9 +1131,9 @@ PR #40, tổng 20,49 USD:
 
 ### Bớt chi phí: bài học từ `SHOP-7`
 
-1. **Không chạy thêm vòng sửa và review khi PR không còn Critical hay High.** Medium và Low thành Task theo dõi; Low nhỏ gom vào một Task chung cho mỗi vai trò. Nếu áp luật này từ đầu, phần lớn trong 216 USD của các item thêm trong lúc làm đã không tốn.
+1. **Không chạy thêm vòng sửa và review khi PR không còn Critical hay High.** Medium và Low thành Task theo dõi; Low nhỏ gom vào một Task chung cho mỗi vai trò. Nếu áp luật này từ đầu, phần lớn trong 216 USD của các item thêm trong lúc làm đã không tốn. Từ C1, kit làm luật này (bước 7).
 2. **Gom các bản sửa kit vào một lần chép.** Ba lần chép kit trong Pilot 3 tốn 95 USD. Hai lần đầu đi 4 và 5 vòng review (40,19 và 45,18 USD); lần thứ ba đi 1 vòng (9,61 USD).
-3. **Approve các PR cùng lúc, rồi QA sau lần merge cuối,** để không lượt QA nào bị thay giữa chừng (bước 8).
+3. **Approve các PR cùng lúc, rồi QA sau lần merge cuối,** để không lượt QA nào bị thay giữa chừng (bước 8). Từ C2, `merge-gate` chờ lượt QA đang chạy xong rồi mới merge, nên bạn approve lúc nào cũng được.
 4. **Chạy agent khi hạn mức còn nhiều.** Cả Pilot 3 có 21 lượt dừng vì giới hạn usage. Chạy lại đúng lệnh thì agent chạy tiếp đúng phiên của nó; hai lỗi khi chạy tiếp đã được sửa ở kit PR #301 và #302.
 
 ### Khi gặp lỗi
@@ -1126,7 +1142,7 @@ PR #40, tổng 20,49 USD:
 - **Dev server mồ côi sau khi QA bị dừng:** tìm tiến trình cha, rồi `taskkill /T /F` nó. Lúc đó mới xóa được worktree QA.
 - **QA trong worktree thiếu `.env`:** thêm file đó vào `runs.copy` của `project.yaml`.
 - **`pnpm` dưới Git Bash báo lỗi đường dẫn:** agent dùng `pnpm.cmd`.
-- **`policy` đỏ ở mọi PR vì một lỗ hổng chưa có bản vá** (ở `shop`: GHSA-fc5q-39xc-vjpf của `picomatch`): thêm ngoại lệ có `reason` và `expires` vào `dependencies.exceptions` của `.ai-orchestrator/quality/gates.yaml`, sau khi bạn đồng ý. Gỡ ngoại lệ khi gói có bản vá.
+- **`policy` đỏ ở mọi PR vì một lỗ hổng chưa có bản vá** (ở `shop`: GHSA-fc5q-39xc-vjpf của `picomatch`): thêm ngoại lệ có `reason` và `expires` vào `dependencies.exceptions` của `.ai-orchestrator/quality/gates.yaml`, sau khi bạn đồng ý. Gỡ ngoại lệ khi gói có bản vá. Lần chép kit ở `SHOP-74` đã xóa ngoại lệ đó. Từ C1 (kit PR #319), ngoại lệ của dự án nằm ở `dependencies.exceptions` của `.ai-orchestrator/project.yaml`, gồm `advisory`, `reason` và `expires`, và lần chép kit không đụng tới nó ([quality-gates.md](quality-gates.md), mục `policy`).
 - **`gh-guard` từ chối lệnh `curl` có basic auth, kể cả khi mật khẩu đi qua stdin:** `qa` dùng script Playwright đọc mật khẩu từ biến môi trường.
 
 ## 8. Bảng tra lệnh
@@ -1136,17 +1152,20 @@ PR #40, tổng 20,49 USD:
 | Lệnh | Làm gì | Gõ khi nào | Thường dừng ở | Kế tiếp |
 |---|---|---|---|---|
 | `/ao-status [KEY]` | Việc đang chờ bạn, lệnh kế tiếp, chi phí, bản đang chạy ở ba môi trường | Bất cứ lúc nào | Không chạy agent | Lệnh nó gợi ý |
-| `/ao-intake <ý tưởng>` | Phỏng vấn bạn, rồi tạo Epic, Task hay Bug | Có ý tưởng mới, hay thấy lỗi | Chờ bạn "ok" bản nháp | Bấm `Start spec` (Epic), hoặc `/ao-build` (Task, Bug đã Ready) |
-| `/ao-spec <EPIC> [sửa]` | `ba`, `ux`, `sa` viết SPEC và design, mở PR tài liệu | Epic ở Specifying | Gate ①, hoặc câu hỏi cho bạn | Bấm `Approve spec`, rồi `/ao-plan` |
-| `/ao-plan <EPIC> [sửa]` | `sa` viết plan, `ba` tạo item | Epic ở Planning | Gate ② | Bấm `Approve plan` |
-| `/ao-request <KEY>` | Chạy các yêu cầu `Cần ba:`, `Cần ux:`, `Cần sa:` còn mở | `/ao-status` báo có yêu cầu mở | Hết yêu cầu | Lệnh trước đó |
-| `/ao-build <KEY> [be: … fe: …]` | Dev agent code, mở PR nháp | Item Ready, hoặc sau `QA fail` | PR nháp chờ bạn xem trước | `/ao-preview` hoặc `/ao-review` |
-| `/ao-preview <KEY> [--stop]` | Bật app của PR trên máy bạn | PR nháp mở, CI xanh | App chạy, in URL | `/ao-fix` hoặc `/ao-review` |
+| `/ao-intake <ý tưởng>` | Phỏng vấn bạn, rồi tạo Epic, Task hay Bug | Có ý tưởng mới, hay thấy lỗi | Chờ bạn "ok" bản nháp | Bấm `Start spec` (Epic), rồi `/ao-design` khi Epic có thiết kế làm trong Claude; hoặc `/ao-build` (Task, Bug đã Ready) |
+| `/ao-design <KEY>` | Phiên chính lấy thiết kế làm trong Claude mà mô tả item link tới vào `.ai/design-inbox/<KEY>/`, chụp từng khung; không agent | Epic ở Specifying có link artifact của Claude, trước `/ao-spec`; hay Task đưa Design System vào repo | Bảng màn hình và lỗi của hộp thiết kế | `/ao-spec <EPIC>`, hoặc `/ao-build <TASK>` |
+| `/ao-spec <EPIC> [sửa \| seo \| no-seo [lý do]]` | `ba`, `ux`, `sa` viết SPEC và design, mở PR tài liệu, rồi `seo` viết mục SEO cho màn hình của app `seo: true`; từ `seo` hay `no-seo` bật hay tắt `seo` cho Epic | Epic ở Specifying | Gate ①, hoặc câu hỏi cho bạn | Bấm `Approve spec`, rồi `/ao-plan` |
+| `/ao-plan <EPIC> [sửa]` | `sa` viết plan, `ba` tạo item | Epic ở Planning | Gate ② | Bấm `Approve plan`, rồi `/ao-plan` lần nữa |
+| `/ao-request <KEY>` | Chạy các yêu cầu `Cần ba:`, `Cần ux:`, `Cần sa:`, `Cần security:`, `Cần seo:` còn mở | `/ao-status` báo có yêu cầu mở | Hết yêu cầu | Lệnh trước đó |
+| `/ao-build <KEY> [be: … fe: …] [seo-ok <dấu>]` | Dev agent code, mở PR nháp. Item `ao-seo` ngoài Epic dừng trước, chờ bạn đọc comment của `seo` rồi gõ `seo-ok` | Item Ready, hoặc sau `QA fail` | PR nháp chờ bạn xem trước | `/ao-preview` hoặc `/ao-review` |
+| `/ao-preview <KEY> [--stop]` | Bật app của PR trên máy bạn, từ làn của item khi bật `runs.worktrees` | PR nháp mở, CI xanh | App chạy, in URL | `/ao-fix` hoặc `/ao-review` |
 | `/ao-fix <PR> [sửa]` | Dev agent sửa; `be:`/`fe:` chia việc; hỏi bạn yêu cầu có đổi AC không | Bạn muốn sửa, CI đỏ, review có lỗi | Đẩy xong phần sửa | `/ao-preview` lần nữa, hoặc `/ao-review` |
-| `/ao-review <PR>` | Chuyển PR nháp sang sẵn sàng; `reviewer`, `security` review | Bạn đã xem trước xong | Gate ③ | Approve PR |
-| `/ao-qa <KEY> [fail: …]` | `qa` kiểm trên môi trường QA; với `fail:`, tái hiện lỗi bạn thấy | Item Ready for QA | Báo cáo QA | Bấm `Accept`, hoặc `/ao-build` sau `QA fail` |
-| `/ao-release [<vX.Y.0> <sha>]` | In điểm cắt; có tham số thì cắt nhánh release | Có item Done chưa phát hành | Gate ④ | `/ao-ship` |
-| `/ao-ship <vX.Y.Z>` | Regression, release note, PR release | Nhánh release đã lên Staging | Gate ⑤ | Bấm `Release` Fix Version, `Complete` Epic |
+| `/ao-review <PR> [full]` | Chuyển PR nháp sang sẵn sàng; `reviewer`, `security` review theo tầng đường dẫn. Item bỏ review: không agent, chỉ đăng dấu vết | Bạn đã xem trước xong | Gate ③ | Approve PR |
+| `/ao-review <KEY>` | Review sau merge các PR của Epic hay item đã bỏ review; Critical và High vào một Task sửa | `/ao-run`, `/ao-release` hay `/ao-ship` báo PR chờ review sau merge | Báo cáo trên Jira, dấu trên từng PR | Task sửa, nếu có: `/ao-status` in bước kế tiếp của nó |
+| `/ao-qa <KEY> [fail: … \| retest]` | `qa` kiểm trên môi trường QA; với `fail:`, tái hiện lỗi bạn thấy; `retest` kiểm lại sau báo cáo NOT TESTED. Item mức Nhẹ không có lượt `qa`: phiên chính kiểm | Item Ready for QA | Báo cáo QA | Bấm `Accept`, hoặc `/ao-build` sau `QA fail` |
+| `/ao-run <EPIC> \| <KEY>… [--budget <USD>]`, `/ao-run --stop` | Bộ điều phối gõ các lệnh trên thay bạn, nhiều lệnh cùng lúc trong `runs.lanes_max` (phần 9) | Muốn chạy cả Epic, hay vài item, mà không gõ từng lệnh | Mọi việc chờ bạn; kết thúc khi xong, hết ngân sách hay gõ `--stop` | Việc nó báo là chờ bạn |
+| `/ao-release [<vX.Y.0> <sha>]` | In điểm cắt; có tham số thì cắt nhánh release. Nêu PR của bản còn chờ review sau merge | Có item Done chưa phát hành | Gate ④ | `/ao-ship` |
+| `/ao-ship <vX.Y.Z>` | Regression, release note, PR release; dừng trước gate ⑤ khi còn PR chờ review sau merge | Nhánh release đã lên Staging | Gate ⑤ | Bấm `Release` Fix Version, `Complete` Epic |
 | `/ao-rollback <môi trường> [<sha>]` | Chạy lại bản trước, hoặc một commit bạn chỉ | Bản mới lỗi | Deploy xong | `/ao-status` |
 
 **Lệnh `ao-kit`**, gõ trong Git Bash: `node <kit>/scripts/ao-kit.mjs <lệnh> <thư mục dự án>`.
@@ -1154,7 +1173,7 @@ PR #40, tổng 20,49 USD:
 | Lệnh | Làm gì | Gõ khi nào |
 |---|---|---|
 | `init` | Dựng khung (thư mục trống) hoặc chỉ cài kit (repo có code); thêm `origin` nếu thiếu. Có `--package-manager pnpm` thì chỉ dựng phần gốc của dự án pnpm | Lần đầu của mỗi dự án |
-| `add <app> --stack nextjs\|react [--from <template> [--ref <nhánh hay tag>]] [--exclude <đường dẫn>] [--public --seo\|--no-seo]` | Thêm một app vào dự án pnpm, từ khung của stack hoặc từ template của bạn; báo chỗ code app còn phải sửa | Sau `init --package-manager pnpm`, mỗi app một lần |
+| `add <app> --stack nextjs\|react\|spring-boot [--from <template> [--ref <nhánh hay tag>]] [--exclude <đường dẫn>] [--public --seo\|--no-seo]` | Thêm một app vào dự án pnpm, từ khung của stack hoặc từ template của bạn (`spring-boot` chỉ từ template); báo chỗ code app còn phải sửa | Sau `init --package-manager pnpm`, mỗi app một lần |
 | `setup jira` | Space, board, bộ lọc, rồi `jira:check`; in từng chỗ còn lệch | Sau `init` |
 | `setup github` | Nhánh mặc định, Dependabot, environment, secret, ruleset | Ngay sau khi `develop` lên GitHub |
 | `doctor` | Kiểm máy, repo, GitHub, Jira, Claude Code; mỗi dòng kèm việc cần làm | Sau mỗi bước, và khi có gì lạ |
@@ -1163,6 +1182,33 @@ PR #40, tổng 20,49 USD:
 | `sync --key <KEY>` | Chép bản kit mới vào dự án, trên nhánh riêng, một commit, không push | Khi kit có bản mới |
 
 ## 9. Việc thường ngày và khi gặp sự cố
+
+### Chạy cả Epic bằng `/ao-run`
+
+Từ C2, `/ao-run` gõ các lệnh `/ao-*` thay bạn. Ví dụ, sau gate ② của Epic:
+
+```
+/ao-run SHOP-81
+```
+
+- **Ý nghĩa:** bộ điều phối là code thường, không dùng model. Cứ 2 phút, nó đọc board, lấy lệnh kế tiếp của từng item trong Epic, rồi mở lệnh đó như bạn gõ: `/ao-spec`, `/ao-plan`, `/ao-request`, `/ao-build`, `/ao-review`, `/ao-fix`, `/ao-qa`. Nhiều lệnh chạy cùng lúc, tối đa `runs.lanes_max`. `/ao-fix` chỉ tự chạy khi báo cáo review có Critical hay High. Thay cho `<EPIC>`, bạn nêu được tới bốn item.
+- **Kết quả mong đợi:** bước kiểm in vòng đầu: lệnh sẽ mở, việc chờ bạn, và ngân sách. Rồi bộ điều phối chạy nền hàng giờ. Claude báo bạn mỗi khi có việc của bạn: một gate, PR nháp chờ xem trước (`/ao-preview` hay `/ao-review`), `Accept`, câu hỏi, cờ Needs you. Bạn bấm xong thì nó thấy ở vòng sau và tự chạy tiếp.
+- **Nó không bao giờ tự chạy** `/ao-preview`, `/ao-design`, `/ao-intake`, `/ao-release`, `/ao-ship`, `/ao-rollback`. Khi mọi item của Epic đã Done mà còn PR bỏ review, nó báo `/ao-review <EPIC>` là việc chờ bạn: lượt review sau merge tốn tiền, nên chỉ chạy khi bạn gõ.
+- **Kết thúc** khi mọi item xong; khi không còn gì chạy được sau `runs.idle_hours` (mặc định 8 giờ); khi các lượt nó mở tốn tới `runs.budget_usd` (mặc định 30 USD), hay `--budget <USD>`; khi chạm giới hạn usage; hoặc khi bạn gõ `/ao-run --stop`. Lệnh đang chạy được chạy xong trước. Đừng tắt tiến trình của nó: trên Windows, các lệnh nó mở sẽ chạy tiếp mà không ai theo dõi.
+- **Ở `shop`** (Epic `SHOP-81`, C2): `/ao-run SHOP-81` chạy ba lần sau gate ②. Lần đầu dừng ở PR nháp của `SHOP-82` chờ bạn, rồi tự kết thúc sau 8 giờ không có gì chạy được. Lần thứ hai, với ngân sách 120 USD, build `SHOP-83`, build lại `SHOP-82` cùng lúc với `SHOP-83`, build `SHOP-84` và chạy các lượt QA; nó tốn 60,51 USD ([tasks/c2/verification.md](../tasks/c2/verification.md)).
+- Chi tiết, kể cả `runs.agents_per_role` cho hai agent cùng role: [docs/dev-workflow.md](dev-workflow.md), mục Các lệnh và mục Nhiều làn chạy cùng lúc.
+
+### Theo dõi lệnh chạy nền: `ao-step watch`
+
+Lệnh của kit chạy nền, nên bạn không thấy log của agent. Mọi skill chạy agent nền, kể cả `/ao-run`, tự bật watcher `ao-step watch`:
+- Watcher là script, không gọi model, nên không tốn token khi mọi việc ổn.
+- Nó chỉ báo khi có chuyện mới: một việc chờ bạn, lệnh kết thúc bằng STOP, agent không ghi log 20 phút, tiến trình chết mà khóa còn, item bị gắn cờ Needs you, hay `/ao-run` kết thúc. Claude báo bạn bằng tiếng Việt, rồi bật lại nó.
+- Không còn lệnh nào của kit chạy trong 10 phút thì nó tự dừng.
+- Muốn xem ngay những gì đang chạy, gõ trong Claude Code:
+
+  ```
+  ! node .ai-orchestrator/scripts/ao-step.mjs watch --once
+  ```
 
 ### Cập nhật kit trong dự án
 
@@ -1181,6 +1227,7 @@ PR #40, tổng 20,49 USD:
 
 - Lượt agent dừng với lý do giới hạn usage. `/ao-status` báo item đang dở.
 - Chờ tới giờ hạn mức mở lại, rồi gõ **đúng lệnh cũ**. `ao-step` chạy tiếp đúng phiên của agent đó. Phần code dev agent chưa commit được cất vào stash có nhãn, rồi được áp lại trước khi chạy tiếp.
+- Với `/ao-run`: nó không mở lệnh mới, chờ các lệnh đang chạy xong, rồi kết thúc với dòng `an agent hit the usage limit: run /ao-run again after it resets`. Khi hạn mức mở lại, gõ lại `/ao-run <EPIC>`.
 - Ở `SMP-23`, chuyện này xảy ra ba lần. Không lần nào phải làm lại từ đầu.
 - Ở Pilot 3 (`shop`), 21 lượt dừng vì giới hạn usage, và lượt nào cũng chạy tiếp được. Hai lỗi khi chạy tiếp đã được sửa trong kit:
   - lượt `build` bị cắt giữa chừng giờ chạy tiếp trong phiên cũ trước bước kiểm ledger (kit PR #301);
@@ -1215,9 +1262,9 @@ PR #40, tổng 20,49 USD:
 
 | Tài liệu | Nội dung |
 |---|---|
-| [docs/dev-workflow.md](dev-workflow.md) | Vòng một item: các lệnh `/ao-*`, nhánh, PR, xem trước, sửa |
+| [docs/dev-workflow.md](dev-workflow.md) | Vòng một item: các lệnh `/ao-*`, nhánh, PR, xem trước, sửa; mức quy trình; `/ao-run`, làn chạy song song, watcher |
 | [docs/release-workflow.md](release-workflow.md) | Cắt release, phát hành, hotfix, rollback, deployer |
-| [docs/quality-gates.md](quality-gates.md) | Hook git, bốn job CI, `merge-gate`, `audit` |
-| [docs/AGENTS.md](AGENTS.md) | Mười một agent, effort, skill, chi phí đo được |
+| [docs/quality-gates.md](quality-gates.md) | Hook git, bốn job CI, review theo tầng và theo item, review sau merge, `merge-gate`, `audit` |
+| [docs/agents.md](agents.md) | Mười một agent, effort, skill, chi phí đo được; `design.md`, Claude Design, mã màn hình |
 | [docs/vps-setup.md](vps-setup.md) | Dựng VPS, deployer, thêm dự án |
 | [docs/jira-setup.md](jira-setup.md) | Site, service account, workflow, board |

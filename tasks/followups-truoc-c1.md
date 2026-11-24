@@ -36,6 +36,8 @@ Cả Pilot 3 tốn 719 USD: build 44%, review 34%, QA 11%. Phần lãng phí l�
 
 Các mục này đổi luật của contract, roster, `gates.yaml` hay hook. Chúng cần spec, nên làm một lần trong C1, không làm trong các đợt dưới đây:
 
+**Mục 1–4 xong ở C1** (kit PR #313–#324, [c1/verification.md](c1/verification.md)). Ở mục 5, USD trên mỗi AC đo được ở Epic `SHOP-81` của C2: 7,06 USD ([c2/verification.md](c2/verification.md)).
+
 1. **Ba mức quy trình theo rủi ro** (Nhẹ, Chuẩn, Nặng), chọn cho từng item ở gate ②, như mục 5 của [danh-gia-chi-phi-shop-7.md](../misc/thao-luan/toi-uu-token/danh-gia-chi-phi-shop-7.md):
    - QA theo mức: Nhẹ không có lượt `qa`, Chuẩn có `qa` một lần mỗi Story, Nặng giữ như hiện nay;
    - Low gom vào một Task chung mỗi Epic.
@@ -189,15 +191,15 @@ Các mục này không tốn token agent, nhưng làm item bị kẹt, và phiê
 
 ## Đợt 5: cần thiết kế, đưa vào spec của C1 hay C2
 
-- **Review kit một lần ở repo kit** ([review-kit-o-dau.md](../misc/thao-luan/review-kit-o-dau.md)). Đây là khoản tiết kiệm lớn: ba lần chép kit trong Pilot 3 tốn 95 USD. Trong lúc chờ, cứ gom nhiều bản sửa kit vào một lần chép.
-- **Kit ghi đè job CI riêng của dự án** và **Dự án không có chỗ cho ngoại lệ audit riêng.**
-- **`/ao-preview` không chạy được khi bật làn.**
+- **(Chốt theo cách khác ở Phiên 35 · Lượt 62: PR kit không review riêng, mỗi bản kit được review một lần ở bản chép vào `shop`)** **Review kit một lần ở repo kit** ([review-kit-o-dau.md](../misc/thao-luan/review-kit-o-dau.md)). Đây là khoản tiết kiệm lớn: ba lần chép kit trong Pilot 3 tốn 95 USD. Trong lúc chờ, cứ gom nhiều bản sửa kit vào một lần chép.
+- **(Xong ở C1: bước 10, kit PR #323, `ci.project.yml`; bước 6, kit PR #319, `dependencies.exceptions` của `project.yaml`)** **Kit ghi đè job CI riêng của dự án** và **Dự án không có chỗ cho ngoại lệ audit riêng.**
+- **(Xong ở C2 phần 5, kit PR #332)** **`/ao-preview` không chạy được khi bật làn.**
 - **(Xong 2026-11-19, kit PR #310)** **`profiles:check` đỏ ở bước `build` của app Next.js.** Nguyên nhân là hai advisory Medium của `next` 16.4.3; đã nâng lên 16.4.6. Cần kiểm sớm xem có phải lỗ hổng của bản `next` không. Nếu phải, mục này lên Đợt 3.
 
 ## Không phải việc của kit
 
 - **Việc của `shop`**, mỗi việc một Task khi bạn muốn:
-  - **unit test `admin` "a name of 151 characters" chập chờn**;
+  - **unit test `admin` "a name of 151 characters" chập chờn** (xong ở `shop` PR #91, SHOP-85);
   - **hai Low về chữ của hướng dẫn người dùng**;
   - **trình duyệt chỉ đặt `vi-VN` mở trang quản trị bằng tiếng Anh**;
   - SHOP-75.

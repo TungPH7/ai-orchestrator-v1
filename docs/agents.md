@@ -1,6 +1,6 @@
 # Agent
 
-> **Spec:** [SPEC-agent-roster.md](../SPEC-agent-roster.md). Tài liệu này dành cho bạn. Nó trả lời: mười một agent làm gì, chạy chúng thế nào, nâng effort ra sao, thêm skill theo stack thế nào. Nó cũng hướng dẫn viết `design.md`, đưa ảnh Figma vào repo và theo dõi dung lượng repo. Số đo nêu ở đây lấy từ lần chạy thật trên `ao-pilot`, ghi trong [tasks/archive/agent-roster/verification.md](../tasks/archive/agent-roster/verification.md).
+> **Spec:** [SPEC-agent-roster.md](../SPEC-agent-roster.md). Tài liệu này dành cho bạn. Nó trả lời: mười một agent làm gì, chạy chúng thế nào, nâng effort ra sao, thêm skill theo stack thế nào. Nó cũng hướng dẫn viết `design.md`, đặt mã màn hình, đưa thiết kế Claude Design, ảnh chụp và ảnh Figma vào repo, và theo dõi dung lượng repo. Số đo nêu ở đây lấy từ lần chạy thật trên `ao-pilot`, ghi trong [tasks/archive/agent-roster/verification.md](../tasks/archive/agent-roster/verification.md).
 
 ## Mười một vai trò
 
@@ -15,7 +15,7 @@
 | `reviewer` | Review PR theo năm trục, đăng báo cáo | Opus | `high` | 70 | `.ai/**` | Đọc | `ao-review` |
 | `security` | Review bảo mật của PR, đăng báo cáo | Opus | `max` | 120 | `.ai/**` | Đọc | `ao-review` |
 | `qa` | Kiểm từng AC trên môi trường QA, báo cáo lên item | Opus | `high` | 80 | `.ai/**` | Đọc | Không |
-| `devops` | Sửa CI/CD qua PR do bạn merge; sau này cắt release, ship | Opus | `high` | 50 | Như `fe-dev`, thêm `.github/workflows/**` | Ghi | `ao-dev` |
+| `devops` | Sửa CI/CD qua PR do bạn merge; Task vận hành (`ao-ops`); release note của `/ao-ship` | Opus | `high` | 50 | Như `fe-dev`, thêm `.github/workflows/**` | Ghi | `ao-dev` |
 | `seo` | Mục SEO của SPEC cho trang mà công cụ tìm kiếm thấy (từ C1) | Sonnet | `high` | 60 | `docs/specs/*/spec.md`, `.ai/ledger/*.seo.md` | Không: `ao-step` commit thay | Không |
 
 - **`maxTurns`** bằng gấp đôi số lượt model cao nhất đo được của vai trò, làm tròn lên hàng chục. Giới hạn này chặn agent chạy vòng tròn và đốt usage. Lượt cao nhất của `fe-dev` (130) là lượt chạy ở `max` của phép so, nên giới hạn vẫn đủ khi bạn nâng effort cho một item khó. Agent chạm giới hạn thì `claude -p` dừng với `error_max_turns`. Nếu điều đó lặp lại ở một vai trò, nâng giới hạn của vai trò đó trong `agents/roster.yaml` qua một PR.
@@ -25,7 +25,7 @@
   - nó không đọc file git bỏ qua, nơi giữ secret của máy, và không đọc `.env` ở mọi cách viết Windows mở được. Grep của nó phải có một file, hay một glob hoặc type của code và tài liệu, như `**/*.{ts,tsx}` hay `ts`: glob của Grep với tới cả file git bỏ qua, nên `*.json` không được; file JSON thì đọc theo đường dẫn;
   - WebFetch chỉ tới trang mà một WebSearch của chính lượt đó trả về (hook `web-search.mjs` ghi lại), hay tài liệu của Google, schema.org, Next.js, web.dev và MDN. Như vậy một trang web không khiến nó gửi những gì nó đọc tới một địa chỉ do trang đó chọn;
   - nó không ghi ra ngoài dự án, kể cả thư mục temp, nơi giữ bản ghi đó.
-- **Skill nạp sẵn** của từng vai trò nằm ở mục 2.3 của spec.
+- **Skill nạp sẵn** của từng vai trò nằm ở `skills` của vai trò đó trong `agents/roster.yaml`, và ở mục 2.3 của spec; skill của `seo` ở mục 6.5 của [SPEC-c1.md](../SPEC-c1.md).
 
 Agent được sinh, không viết tay. `agents/roster.yaml`, prompt `agents/prompts/<role>.md`, `agents/rules.md` và hợp đồng được ghép thành `kit/.claude/agents/<role>.md` và `kit/.claude/rules/ai-orchestrator.md` bằng `npm run agents`. Muốn đổi agent thì sửa nguồn, chạy lại lệnh, rồi commit cả hai. `npm run agents:check` trong CI đỏ khi file sinh ra cũ hơn nguồn.
 
@@ -52,7 +52,7 @@ Prompt của `qa` nên nói môi trường QA ở đâu, vì Deploy của sandbo
 
 **Khi chạy:**
 
-- Chạy từng agent một trên cùng bản checkout, không chạy song song. Hai agent chạy E2E cùng lúc sẽ tranh cổng, và máy ít RAM có thể dừng shell nền.
+- Chạy tay thì chạy từng agent một trên cùng bản checkout, không chạy song song. Hai agent chạy E2E cùng lúc sẽ tranh cổng, và máy ít RAM có thể dừng shell nền. `ao-step` thì chạy được nhiều agent cùng lúc, mỗi item một làn với dải cổng riêng và chốt RAM ([dev-workflow.md](dev-workflow.md), mục Nhiều làn chạy cùng lúc).
 - Agent ghi tiến độ vào `.ai/ledger/<KEY>.md` sau mỗi bước. Khi hết usage giữa chừng, chạy lại agent với prompt bảo nó đọc ledger rồi làm tiếp.
 - Gặp chỗ cần bạn quyết, agent gắn cờ "Needs you" lên item rồi dừng. Hook từ chối thì agent trích nguyên văn lý do rồi dừng, không tìm đường khác.
 - Agent tự mở server để xem trang thì chỉ dừng đúng process của nó, không dừng mọi `node`.
@@ -67,7 +67,7 @@ Prompt của `qa` nên nói môi trường QA ở đâu, vì Deploy của sandbo
 | Một Task sửa workflow | `devops`, `reviewer`, `security` | 4,70 |
 | Bản tổng hợp sáng | `pm` | 0,09 |
 
-`security` ở `max` thường là lượt đắt nhất của một PR: 3–6 USD và 10–22 phút.
+`security` ở `max` thường là lượt đắt nhất của một PR: 3–6 USD và 10–22 phút. Từ C1 (2026-11-19), `security` chỉ chạy ở `max` với PR tầng Nguy cấp hay item mức Nặng; tầng Nhạy cảm ở `high`, tầng Thường và Tài liệu không chạy ([quality-gates.md](quality-gates.md), mục Review theo tầng đường dẫn).
 
 ## Nâng effort
 
@@ -81,7 +81,7 @@ node .ai-orchestrator/scripts/ao-agent.mjs fe-dev --effort max -p "..."
 - Biến môi trường thắng cờ `--effort` mà script truyền (kiểm bằng Haiku ở T21). Cách thứ hai dùng được vì script không truyền mức của roster khi bạn đã truyền `--effort`. `--max-turns <n>` của bạn cũng thay giới hạn của roster theo cách đó.
 - Khi subagent chạy, biến môi trường cũng thắng effort trong frontmatter.
 - **Có đáng nâng không:** ở phép so của T21, `fe-dev` ở `max` tốn gấp 3,2 lần và chạy lâu gấp 3,9 lần so với `high`. Kết quả thì như nhau: cùng cách làm, cùng đạt checklist và trường hợp biên, cùng mức finding. Vì vậy roster giữ `high`. Chỉ nâng cho item thật sự khó, hoặc item bị trả về lần hai.
-- Chọn effort theo từng item (`sa` ghi mức trong plan, bạn duyệt ở gate ②, script đọc nhãn của item) là việc của `dev-workflow`.
+- Effort theo từng item có từ `dev-workflow`: `sa` ghi effort của item khó trong plan, bạn duyệt ở gate ②, `ba` gắn nhãn `ao-effort-*`, và `/ao-build` đọc nhãn đó cho dev agent. Effort của `reviewer` và `security` theo tầng đường dẫn của PR và mức của item, từ C1.
 
 ## Cache của lượt chạy
 
@@ -117,8 +117,8 @@ node .ai-orchestrator/scripts/ao-agent.mjs fe-dev --effort max -p "..."
 | YAML ghi nguồn | | `figma:`, link của frame có `node-id` | `claude-design:`, link của artifact; `prototype:`, trang không script của khung | `screenshot:`, ảnh lấy từ đâu |
 | Hành vi | YAML ngay dưới hình | YAML ngay dưới ảnh | YAML ngay dưới ảnh | YAML ngay dưới ảnh |
 
-Khi có màn hình Figma hay Ảnh, `design.md` có thêm mục **Design System** (project-scaffold phần 2, mục 2.5):
-- `ux` rút từ ảnh ra màu, font, cỡ chữ, khoảng cách, bo góc, bóng, điểm ngắt, và các component lặp lại cùng trạng thái của chúng.
+Khi có màn hình hiện bằng ảnh (Figma, Claude Design hay Ảnh), `design.md` có thêm mục **Design System** (project-scaffold phần 2, mục 2.5):
+- `ux` rút từ ảnh ra màu, font, cỡ chữ, khoảng cách, bo góc, bóng, điểm ngắt, và các component lặp lại cùng trạng thái của chúng. Với Claude Design, `ux` lấy đúng giá trị từ token của Design trong hộp thiết kế.
 - Mỗi mục ghi "có" nếu `docs/design-system/<app>.md` đã có nó, hoặc "mới".
 - Có mục "mới", hoặc app chưa có file design system, thì `sa` đặt một Task `fe-dev` "Design system của <app>" lên đầu plan. Task đó đưa token vào code, dựng component dùng chung và viết `docs/design-system/<app>.md`.
 - `check-design` báo lỗi D9 khi thiếu mục này.
@@ -133,7 +133,7 @@ Năm quy tắc:
 4. Mermaid dùng mã màn hình làm tên nút.
 5. `node .ai-orchestrator/scripts/check-design.mjs <file>` kiểm file; `ux` chạy lệnh này trước khi giao, và job `policy` của CI chạy lại trên mọi PR đụng tới `design.md` hay ảnh của nó.
 
-Ảnh: export 1x, PNG hoặc JPG, mỗi ảnh tối đa 1 MB, cạnh dài tối đa 2.000 px, và mọi ảnh trong `design/` phải được `design.md` nhắc tới. Chỉ commit bản đã duyệt, vì ảnh bị thay vẫn nằm trong lịch sử Git.
+Ảnh: export 1x, PNG hoặc JPG, mỗi ảnh tối đa 1 MB, cạnh dài tối đa 2.000 px, và mọi ảnh trong `design/` phải được `design.md` nhắc tới. Trang `<mã>.html` của màn hình Claude Design tối đa 256 KB, và phải là trang mà `render` của `/ao-design` viết, không script, không bao giờ là file khung gốc (D8, review của `shop` PR #98). Chỉ commit bản đã duyệt, vì ảnh bị thay vẫn nằm trong lịch sử Git.
 
 ## Mã màn hình
 
@@ -202,7 +202,7 @@ Bạn export ảnh; `ux` đổi tên, chuyển ảnh vào chỗ của nó rồi 
 7. Lặp lại cho bản mobile, nếu có.
 8. Lấy link của frame: chuột phải vào frame, chọn **Copy/Paste as** → **Copy link** (đối chiếu giao diện). Dán các link vào mô tả Epic trên Jira.
 9. Lưu phiên bản đã duyệt: mở menu chính, chọn **File** → **Save to version history** (phím tắt **Ctrl+Alt+S**), đặt tên, ví dụ "DEMO-11 duyệt" (đối chiếu giao diện). Báo tên này cho `ux`, vì `design.md` ghi nó ở dòng `Figma version:`.
-10. Chạy `ux` cho Epic. Agent đổi tên ảnh theo mã màn hình (ví dụ `S2-desktop.png`), chuyển ảnh vào `docs/specs/<EPIC-KEY>/design/`, chạy `check-design`, rồi commit.
+10. Chạy `ux` cho Epic. Agent đổi tên ảnh theo mã màn hình (ví dụ `USR-CART01-desktop.png`, hay `S2-desktop.png` ở `design.md` cũ), chuyển ảnh vào `docs/specs/<EPIC-KEY>/design/`, chạy `check-design`, rồi commit.
 
 ## Dung lượng repo và Git LFS
 

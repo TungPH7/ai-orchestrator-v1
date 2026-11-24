@@ -4,11 +4,12 @@ Hướng dẫn này thuộc module `quality-gates` ([SPEC-quality-gates.md](../S
 
 | App | Tên | Repository permissions | Dùng cho |
 |---|---|---|---|
-| `ao-dev` | `tungph7-ao-dev` | Contents: Read and write; Pull requests: Read and write; Workflows: Read and write; Actions: Read-only; Checks: Read-only | `ba`, `sa`, `fe-dev`, `be-dev`, `devops` mở và sửa PR; agent push commit; `merge-gate` merge |
-| `ao-review` | `tungph7-ao-review` | Contents: Read-only; Pull requests: Read and write; Actions: Read-only; Checks: Read-only | `reviewer`, `security` đăng báo cáo review; mọi agent đọc PR và CI bằng token chỉ đọc |
+| `ao-dev` | `tungph7-ao-dev` | Contents: Read and write; Pull requests: Read and write; Workflows: Read and write; Actions: Read-only; Checks: Read-only | `ba`, `sa`, `fe-dev`, `be-dev`, `devops` mở và sửa PR; agent push commit; `merge-gate` merge ở dự án chưa có `ao-merge` |
+| `ao-review` | `tungph7-ao-review` | Contents: Read-only; Pull requests: Read and write; Actions: Read-only; Checks: Read-only | `reviewer`, `security` đăng báo cáo review; `ao-step` đăng vết miễn review, vết bỏ review và dấu review sau merge; mọi agent đọc PR và CI bằng token chỉ đọc |
 | `ao-deploy` | `tungph7-ao-deploy` | Contents: Read-only; Pull requests: Read-only; Checks: Read-only; Commit statuses: Read-only; Actions: Read-only; Deployments: Read and write | deployer trên VPS đọc code và cổng, rồi báo deployment (mục 7) |
+| `ao-merge` | `tungph7-ao-merge` | Contents: Read and write; Pull requests: Read and write; Workflows: Read and write | `merge-gate` merge, gắn tag, mở PR merge ngược (mục 8) |
 
-Bạn tạo hai App một lần cho tài khoản. Mỗi dự án mới chỉ cần cài thêm hai App vào repo của dự án (mục 3). App tạo trước `dev-workflow` thiếu ba quyền mới: thêm theo mục 6.
+Bạn tạo hai App một lần cho tài khoản. Mỗi dự án mới chỉ cần cài thêm hai App vào repo của dự án (mục 3), cùng `ao-deploy` (mục 7) và `ao-merge` (mục 8). App tạo trước `dev-workflow` thiếu ba quyền mới: thêm theo mục 6.
 
 Mỗi token mà kit tạo chỉ xin phần quyền nó cần. Ví dụ, token để `git push` chỉ xin Workflows cho vai trò `devops`, và token đọc PR của agent chỉ có quyền đọc.
 
@@ -68,7 +69,7 @@ Làm cho từng App, ngay sau khi tạo App.
 4. Tạo thư mục `C:\Users\Huu Tung\ao-keys`, rồi chuyển (cắt và dán, không sao chép) file `.pem` vào đó. Thư mục này nằm ngoài mọi repo và ngoài các thư mục OneDrive có thể đồng bộ, như Desktop và Documents.
 5. Không mở file để sao chép nội dung, và không dán nội dung file vào chat, issue, commit hay bất cứ đâu.
 
-Workflow `merge-gate` trên GitHub Actions sẽ dùng một key thứ hai của `ao-dev`. Key đó tạo ở bước sau, khi cài `merge-gate`; bây giờ chưa cần.
+Workflow `merge-gate` trên GitHub Actions không cần key của `ao-dev`: từ Pilot 3, nó merge bằng App riêng `ao-merge` (mục 8).
 
 ## 3. Cài App vào repo của dự án
 
@@ -103,7 +104,7 @@ ao-dev: tungph7-ao-dev, 1234567
 ao-review: tungph7-ao-review, 1234568
 ```
 
-Claude ghi bốn giá trị này vào mục `env` của `.claude/settings.json` của dự án (`AO_DEV_APP`, `AO_DEV_APP_ID`, `AO_REVIEW_APP`, `AO_REVIEW_APP_ID`), rồi kiểm từng App lấy được token cho repo của dự án.
+Claude ghi bốn giá trị này vào `github.apps` của `.ai-orchestrator/project.yaml` (`dev`, `dev_id`, `review`, `review_id`). `ao-kit render` sinh từ đó mục `env` của `.claude/settings.json` (`AO_DEV_APP`, `AO_DEV_APP_ID`, `AO_REVIEW_APP`, `AO_REVIEW_APP_ID`). Rồi Claude kiểm từng App lấy được token cho repo của dự án.
 
 ## 6. Thêm quyền cho dev-workflow
 

@@ -1,6 +1,6 @@
 # SPEC: kit-copy-review
 
-Trạng thái: hoàn thành 2026-11-07 (Phiên 27 · Lượt 72); đã duyệt ở Lượt 67. Chen trước Pilot 2 theo yêu cầu ở Phiên 27. Thứ tự: `kit-copy-review` → Pilot 2 → `project-scaffold`.
+Trạng thái: hoàn thành 2026-11-07 (Phiên 27 · Lượt 72); đã duyệt ở Lượt 67. Chen trước Pilot 2 theo yêu cầu ở Phiên 27. Thứ tự: `kit-copy-review` → Pilot 2 → `project-scaffold`. Plan, todo và kết quả kiểm thật: [tasks/archive/kit-copy-review/](tasks/archive/kit-copy-review/verification.md).
 
 Spec này sửa mục 2.6 của [`SPEC-dev-workflow.md`](SPEC-dev-workflow.md) ở một điểm: `/ao-review` có thêm một nhánh cho PR chép kit. Nó không đổi luật của `merge-gate` và `audit`.
 

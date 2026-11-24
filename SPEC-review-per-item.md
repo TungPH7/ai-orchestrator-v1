@@ -5,6 +5,10 @@
 > (câu 3), một item sửa cho mọi Critical và High, và dòng nhắc file `critical` ở cổng ③.
 >
 > **Trạng thái:** đã duyệt 2026-11-23. Không có nhánh kit riêng, không có khóa tắt review cho cả dự án.
+>
+> **Kit xong 2026-11-23:** kit PR #350. Chép vào `shop` ở SHOP-94 (PR #93), rồi chạy thử trên Epic `SHOP-95`. Sửa sau
+> review PR #93 và lượt chạy thử ở kit PR #351, sau review bản chép kế tiếp (SHOP-99, PR #97) ở #352; bản chép `ee5865f`
+> (SHOP-100) mang cả hai. Còn mở: release `v0.4.0` của `shop`. Tiến độ ở mục 9 của [tasks/todo.md](tasks/todo.md).
 
 ## 1. Mục tiêu
 
