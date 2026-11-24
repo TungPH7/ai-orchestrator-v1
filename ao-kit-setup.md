@@ -141,7 +141,9 @@ from the next commit on, and in every PR, a line that switches a check off needs
 2. GitHub for Atlassian on the repo: the clicks of part 3 step 6, "Bạn làm".
 3. `gh run list --repo <repo> --workflow CI --branch develop`. No run: the human enables Actions (part 3 step 7), then
    `gh workflow run CI --repo <repo> --ref develop`. Part 3: CI is green. Templates: red at `build-test`, `policy` or
-   `secrets`, which step 10 fixes; Dependabot may open PRs, which close by themselves after step 10. `secrets` runs
+   `secrets`, which step 10 fixes. Dependabot opens PRs of security updates, one per folder: those of a package that
+   step 10 bumps close by themselves; the moderate and low ones stay open for the first Task of the project, and step 14
+   names them. `secrets` runs
    gitleaks, which can flag a template line the `pre-commit` hook passed, such as the name of a localStorage key
    (du-an-1), and the CI log names no file. Find the file and line with `gitleaks git --redact` on this machine, never
    the value: the gitleaks release of the version that `ci.yml` pins, checked against the release's checksums, in a temp
@@ -184,14 +186,24 @@ The code changes of `add-report.md` go through one Task and one PR, which change
 
 ### Step 11. Development on the VPS (when chosen)
 
-Part 5 step 8, and step 9 item 5 for a database: open the VPS (vps-setup section 9), add the project to the deployer
-(sections 13 and 14), make the secrets files there, `baseline`, then `/ao-rollback development <sha>` for the first
-deploy. Each public app answers on its Development host. Close the VPS again (section 9), unless the human says to keep
-it open.
+Part 5 step 8, and step 9 item 5 for a database:
+1. Open the VPS (vps-setup section 9). Its kit must be at the commit that vps-setup section 12 pins, or later; copy it
+   there otherwise (section 12).
+2. Make the secrets files (sections 13 and 14; a database name with `_`, such as `du_an_1`), put the entry that `doctor`
+   prints under `projects:` of `/etc/ao/deployer.yaml`, before the top-level `backup:` key, then `baseline`.
+3. Do this before the PR of step 10 merges: its merge then deploys by itself once CI on `develop` is green (du-an-1).
+   When it merged already, `/ao-rollback development <sha>` makes the first deploy.
+4. Caddy gets the certificates of the new hosts within about a minute; until then a call fails in TLS. Each public app
+   then answers on its Development host: 401 without basic auth, 200 with it.
+5. With a database: run the backup once and `restore-check` (section 15), then pull the copy to this machine with
+   `ao-backup-pull.mjs pull` (section 16), so that the row of backup copies in `doctor` passes.
+6. Close the VPS again (section 9), unless the human says to keep it open.
 
 ### Step 12. `doctor`
 
-`node <kit>/scripts/ao-kit.mjs doctor .` until `Every row passes.` The VPS row is a question; step 11 answered it.
+`node <kit>/scripts/ao-kit.mjs doctor .` until `Every row passes.` The VPS row and the row of `ao-deploy` are
+questions; step 11 answered them. With a Java app, the row `Docker is running` needs Docker Desktop: when the human runs
+it only on demand, start it for `doctor`, then quit it again.
 
 ### Step 13. `verify`
 
@@ -201,8 +213,11 @@ uses the agents' token, the way every agent reaches Jira.
 
 ### Step 14. Hand over
 
-Tell the human, in a few lines: the repo, the board, the Development hosts, what you did for them, anything left open, and
-that the first piece of work starts with `/ao-intake` (getting-started part 6). Then run `/ao-status`.
+Tell the human, in a few lines: the repo, the board, the Development hosts, what you did for them, anything left open
+(such as the Dependabot PRs still open, and the files of this machine only: `.env` files with their random values), and
+that the first piece of work starts with `/ao-intake` (getting-started part 6). A Task of step 10 that skipped review
+is in the first release: that release needs `/ao-review <KEY>` after merge, as `ao-step.mjs status` says. Then run
+`/ao-status`.
 
 ## Time, as measured
 
@@ -212,4 +227,10 @@ that the first piece of work starts with `/ao-intake` (getting-started part 6). 
 | `init --package-manager pnpm` | `shop` | 25 seconds |
 | `add`, one app | `shop` | 13–35 seconds |
 | First commit, two apps, 799 files, through the hooks | `shop` | 143 seconds |
-| First deploy of three apps with a database | `shop` | about 18.5 minutes |
+| First commit, three apps, through the hooks | du-an-1 | 133 seconds |
+| `setup github`, a public repo | du-an-1 | 28 seconds |
+| CI of the Task's PR, with the Java tests | du-an-1 | about 5 minutes |
+| `/ao-preview`, three apps, with `pnpm install` | du-an-1 | 2 minutes 14 seconds |
+| First deploy of three apps with a database | `shop`, du-an-1 | about 18.5 minutes |
+| `doctor`, `verify` | du-an-1 | 22 seconds, 10 seconds |
+| The whole setup, from the empty folder to `verify`, three templates and the VPS | du-an-1 | about 5 hours, with the kit fixes the run found; the human clicked once, in one round of the browser |
