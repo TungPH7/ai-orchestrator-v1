@@ -261,6 +261,24 @@ test('the CI of a branch head leaves out the jobs of the kit that are not CI', a
   assert.equal((await readChecks(github, 'c'.repeat(40))).green, false, 'a PR head still counts merge-gate and audit as it did');
 });
 
+// du-an-1, after its first merge (tasks/guided-setup/verification.md): the security updates of Dependabot run as
+// "Dependabot" check runs on the head of the default branch, and one that cannot bump a package deep in the lockfile
+// fails on every push. The deployer read that as red CI and never deployed develop.
+test('the CI of a branch head leaves out the update jobs of Dependabot', async () => {
+  const { readChecks, NOT_BRANCH_CI } = await import('../../lib/tracker/facts.mjs');
+  const runs = [
+    { name: 'build-test', status: 'completed', conclusion: 'success' },
+    { name: 'policy', status: 'completed', conclusion: 'success' },
+    { name: 'Dependabot', status: 'completed', conclusion: 'failure' },
+    { name: 'Dependabot', status: 'in_progress', conclusion: null },
+  ];
+  const github = { getAll: async () => runs, get: async () => ({ total_count: 0, state: 'pending' }) };
+  assert.deepEqual(await readChecks(github, 'c'.repeat(40), { ignore: NOT_BRANCH_CI }), { green: true, failed: false, started: true });
+  const red = [...runs, { name: 'build-test', status: 'completed', conclusion: 'failure' }];
+  const failing = { ...github, getAll: async () => red };
+  assert.equal((await readChecks(failing, 'c'.repeat(40), { ignore: NOT_BRANCH_CI })).failed, true, 'a red job of CI still counts');
+});
+
 // Third review of shop PR #81 (High 08bc0732, part 4): a comment signed by a role other than qa is no QA report, even
 // one written before the hook signed every comment of an agent.
 test('the newest QA report leaves out a comment signed by a role other than qa', async () => {

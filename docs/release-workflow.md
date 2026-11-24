@@ -35,6 +35,7 @@ Trên `develop`, deployer còn chờ CI của chính head đó (T14 của C2; b�
 - CI còn chạy, hoặc chưa bắt đầu: deployer chờ và xem lại ở phút sau.
 - CI đỏ: deployer báo status `error` một lần, và Development giữ bản đang chạy. Deployer vẫn xem lại head đó mỗi phút. Nếu bạn chạy lại CI và CI xanh, head đó lên luôn, không phải chờ lần merge sau (review của `shop` PR #90). Một head sau có CI xanh cũng lên.
 - Các job `merge-gate`, `jira-sync`, `audit` và các relay không tính là CI: GitHub gắn check của các workflow chạy theo `workflow_run` lên head của nhánh mặc định, và `merge-gate` có thể chờ QA ở đó tới 100 phút.
+- Check `Dependabot` cũng không tính là CI. Đó là các lượt cập nhật bảo mật của GitHub, chạy trên head của nhánh mặc định sau mỗi lần push. Lượt nào không nâng được một gói nằm sâu trong lockfile thì đỏ ở mọi lần push. Ở `du-an-1`, hai lượt như vậy (`minimatch`, `@vitest/mocker`) làm deployer từ chối mọi head của `develop`, dù CI xanh.
 
 Production có thêm hai điều kiện: có gate ⑤, và tree của commit đã chạy thành công trên Staging. Image được gắn tag theo mã tree, nên Production chạy đúng image đã qua Staging.
 
