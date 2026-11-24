@@ -252,8 +252,12 @@ test('an image still in use is left alone', async () => {
   assert.deepEqual(await pruneImages({ run: d.run, project: 'sample', keep: new Set() }), []);
 });
 
-test('the build cache is trimmed to the 4 GB used most recently (T2: six builds left 7.25 GB)', () => {
-  assert.deepEqual(PRUNE_CACHE, ['buildx', 'prune', '--force', '--max-used-space', '4gb']);
+test('the build cache keeps what the last 3 days used, shared records too (VPS at 92%, Phiên 35 · Lượt 90)', () => {
+  // `--max-used-space 4gb` without `--all` never removed a record BuildKit marks shared: a parent of an image layer, as
+  // the `pnpm fetch` layer of each build stage, about 1 GB a build. The cache grew to 27 GB, 23 GB of it shared, and a
+  // size cap cannot reach them: BuildKit counts only the records that are not shared against it (cache/manager.go).
+  assert.deepEqual(PRUNE_CACHE, ['buildx', 'prune', '--all', '--force', '--filter', 'until=72h']);
+  assert.ok(!PRUNE_CACHE.some((arg) => /space|storage/.test(arg)), 'no size cap: it stops once the records not shared are under it');
 });
 
 // project-scaffold part 3, spec 2.5: a memory cap on every container, and time for a JVM app to start.

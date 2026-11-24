@@ -406,6 +406,13 @@ systemctl start ao-deploy.timer
 
 Image chỉ build một lần cho mỗi commit, nên đỉnh RAM lúc build không nhân theo số môi trường. VPS 4 GB vẫn đủ. Lúc đo, build cache là 7,07 GB, trên mốc 4 GB mà lệnh dọn của deployer (`PRUNE_CACHE`) giữ lại; đĩa còn trống 23 GB.
 
+**Build cache** (24/11/2026, Phiên 35 · Lượt 90):
+- **Vì sao cache phình to:** lệnh dọn `--max-used-space 4gb` thiếu `--all`, nên không bao giờ xóa phần BuildKit đánh dấu "shared". Đó là các lớp cha của layer image, như lớp `pnpm fetch` của giai đoạn build, mỗi bản build khoảng 1 GB. Mốc theo dung lượng cũng không với tới phần này, vì BuildKit chỉ đếm phần không shared khi so với mốc.
+- **Hậu quả:** cache lên 27 GB, trong đó 23 GB shared, và đĩa đầy 92%.
+- **Đã dọn tay:** `docker buildx prune --all --force --filter until=72h`, chạy trong 8 phút 47 giây và lấy lại 20,13 GB. Đĩa còn dùng 42%, cache còn 6,9 GB; image, container và volume giữ nguyên.
+- **Lệnh dọn của deployer:** chính lệnh trên, chạy sau mỗi lần deploy, giữ phần cache được dùng trong 3 ngày gần nhất. Lệnh này có trong kit từ PR sửa của Lượt 90; VPS chỉ có nó khi chép lại kit (mục 12). Tới lúc đó, VPS vẫn chạy lệnh cũ.
+- **Dọn tay khi cần:** tắt timer (`systemctl stop ao-deploy.timer`), chờ `ao-deploy.service` hết chạy, chạy lệnh trên, rồi bật lại timer.
+
 ## 14. Database của dự án
 
 Từ project-scaffold phần 3 (spec mục 2.4), một dự án khai database PostgreSQL trong `.ai-orchestrator/deploy.yaml`:
