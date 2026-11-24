@@ -226,9 +226,9 @@ test('add writes what each app still needs into .ai/setup/add-report.md, one sec
   assert.match(report, /^# What ao-kit add says each app still needs$/m);
   assert.match(report, /^## user \(nextjs\)\n\nCode to change:\n\n- Nothing\.\n/m);
 
-  // A Java template whose JaCoCo leaves files out: both lines by hand, and the code to change.
+  // A Java template whose JaCoCo leaves files out: three lines by hand, and the code to change.
   const from = javaTemplate(t);
-  write(from, 'pom.xml', read(from, 'pom.xml').replace('<executions>', '<configuration><excludes><exclude>com/acme/config/**</exclude></excludes></configuration><executions>'));
+  write(from, 'pom.xml', read(from, 'pom.xml').replace('<executions>', '<configuration><excludes><exclude>com/acme/config/**</exclude><exclude>com/acme/App.class</exclude><exclude>com/acme/Props$*.class</exclude></excludes></configuration><executions>'));
   realGit(['commit', '--quiet', '-am', 'excludes'], from);
   const result = addApp({ kitDir: ROOT, projectDir: p.dir, app: 'api', options: { stack: 'spring-boot', from }, git: realGit, run: p.run });
   assert.equal(result.ok, true, result.notes.join('\n'));
@@ -238,15 +238,24 @@ test('add writes what each app still needs into .ai/setup/add-report.md, one sec
   assert.match(report, /^## user \(nextjs\)$/m);
   const api = report.slice(report.indexOf('## api (spring-boot)'));
   assert.match(api, /^Code to change:\n\n- apps\/api\/src\/main\/resources\/application\.yml takes server\.port from SERVER_PORT/m);
-  assert.match(api, /^By hand:\n\n- \.ai-orchestrator\/deploy\.yaml has no database: key/m);
-  assert.match(api, /copy its <excludes> into coverage_exclude of api/);
+  // The profile the Dockerfile sets, then the database variables of application.yml, with a default or not: the list
+  // shop's deploy.yaml ended with.
+  assert.match(api, /^By hand:\n\n- \.ai-orchestrator\/deploy\.yaml names no SPRING_PROFILES_ACTIVE, DB_HOST, DB_PORT, POSTGRES_DB, POSTGRES_USER, POSTGRES_PASSWORD under env: of api: write env: \[ SPRING_PROFILES_ACTIVE, DB_HOST, DB_PORT, POSTGRES_DB, POSTGRES_USER, POSTGRES_PASSWORD \]/m);
+  assert.match(api, /^- \.ai-orchestrator\/deploy\.yaml has no database: key/m);
+  // The class patterns as source paths; a nested class is in the file of its outer class.
+  assert.match(api, /leaves 3 patterns out of JaCoCo: .* From its <excludes>: src\/main\/java\/com\/acme\/config\/\*\*, src\/main\/java\/com\/acme\/App\.java$/m);
   assert.equal(report.match(/^## /gm).length, 2);
 
-  // With database and coverage_exclude written, a second Java app needs neither line.
+  // With database written, a second Java app needs only its env: line. Its pom leaves Lombok out of the Spring Boot
+  // plugin, after JaCoCo: that is not a JaCoCo exclude.
   const deployFile = join(p.dir, '.ai-orchestrator/deploy.yaml');
   writeFileSync(deployFile, `${read(p.dir, '.ai-orchestrator/deploy.yaml')}database:\n  image: postgres:17-alpine\n  init: apps/api/docker/postgres/init\n  memory: 256m\n`);
-  const other = addApp({ kitDir: ROOT, projectDir: p.dir, app: 'jobs', options: { stack: 'spring-boot', from: javaTemplate(t) }, git: realGit, run: p.run });
+  const jobs = javaTemplate(t);
+  write(jobs, 'pom.xml', read(jobs, 'pom.xml').replace('</plugins>', '<plugin><artifactId>spring-boot-maven-plugin</artifactId><configuration><excludes><exclude><artifactId>lombok</artifactId></exclude></excludes></configuration></plugin></plugins>'));
+  realGit(['commit', '--quiet', '-am', 'lombok'], jobs);
+  const other = addApp({ kitDir: ROOT, projectDir: p.dir, app: 'jobs', options: { stack: 'spring-boot', from: jobs }, git: realGit, run: p.run });
   assert.equal(other.ok, true, other.notes.join('\n'));
-  assert.doesNotMatch(other.notes.join('\n'), /Write by hand/);
-  assert.doesNotMatch(read(p.dir, '.ai/setup/add-report.md').slice(read(p.dir, '.ai/setup/add-report.md').indexOf('## jobs')), /By hand/);
+  const section = read(p.dir, '.ai/setup/add-report.md').slice(read(p.dir, '.ai/setup/add-report.md').indexOf('## jobs'));
+  assert.match(section, /names no SPRING_PROFILES_ACTIVE, .* under env: of jobs/);
+  assert.doesNotMatch(section, /database: key|JaCoCo/);
 });
