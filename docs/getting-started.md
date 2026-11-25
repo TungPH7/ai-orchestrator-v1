@@ -1,6 +1,6 @@
 # Bắt đầu với AO Kit
 
-> Spec: [SPEC-project-scaffold.md](../SPEC-project-scaffold.md) mục 2.7. Mọi lệnh, đầu ra, thời gian và chi phí trong tài liệu này lấy từ lần chạy thật: `ao-green` (phần 3), `ao-brown` (phần 4), `shop` (phần 5), Epic `SMP-23` của `ao-sample` (phần 6), Epic `SHOP-7` của `shop` (phần 7), và `/ao-run` trên Epic `SHOP-81` của `shop` (phần 9).
+> Spec: [SPEC-project-scaffold.md](../SPEC-project-scaffold.md) mục 2.7. Mọi lệnh, đầu ra, thời gian và chi phí trong tài liệu này lấy từ lần chạy thật: `ao-green` (phần 3), `ao-brown` (phần 4), `shop` (phần 5), Epic `SMP-23` của `ao-sample` (phần 6), Epic `SHOP-7` của `shop` (phần 7), và `/ao-run` trên Epic `SHOP-81` của `shop` (phần 9). Repo `ao-green`, `ao-brown` và space `AOG` đã xóa ngày 2026-11-25, còn `ao-sample` được archive; lệnh và kết quả ở đây vẫn đúng như lúc chạy.
 
 > **Muốn agent làm setup cùng bạn?** Đọc [quick-start.md](quick-start.md): mở Claude Code trong thư mục trống, gõ "Làm theo `<kit>/ao-kit-setup.md`". Từng bước và thư mục dự án có gì sau mỗi bước: [setup-steps.md](setup-steps.md). Tài liệu này vẫn là chỗ tra lệnh, đầu ra thật và lỗi đã gặp.
 

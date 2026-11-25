@@ -266,7 +266,7 @@ for env in development staging production; do
 done
 ```
 
-**6. `deployer.yaml`.** Claude chép từ `vps/deployer.example.yaml`, và chỉ giữ những dự án đã cài App `ao-deploy`. Lúc đầu chỉ có `pilot`; `sample` vào sau, ở Pilot 2.
+**6. `deployer.yaml`.** Claude chép từ `vps/deployer.example.yaml`, và chỉ giữ những dự án đã cài App `ao-deploy`. Lúc đầu chỉ có `pilot`; `sample` vào sau, ở Pilot 2. Từ 2026-11-25 (Phiên 37), `pilot` và `sample` đã được gỡ khỏi VPS (mục 17), và `deployer.yaml` còn `shop` và `du-an-1`.
 
 ```
 install -o root -g aodeploy -m 640 /opt/ao/kit/vps/deployer.example.yaml /etc/ao/deployer.yaml
@@ -638,3 +638,32 @@ Bản giải mã là đúng bản dump của mục 15: khôi phục như bước
 - Container tạm và bản giải mã đã xóa ngay sau đó.
 
 **7. Chuyển sang B2 sau này.** Thư mục bản sao và khóa giữ nguyên. Kit sẽ thêm bước đẩy thư mục đó lên B2 bằng `rclone`; cách khôi phục không đổi.
+
+## 17. Gỡ một dự án khỏi deployer
+
+Làm khi một dự án không còn chạy trên VPS. Claude làm qua SSH bằng root, và chỉ xóa sau khi bạn đồng ý danh sách. Deployer không tự xóa gì: bỏ dự án khỏi `deployer.yaml` chỉ làm Caddy bỏ site của nó; container, image, network và dữ liệu vẫn nằm đó.
+
+**1. Dừng deployer, sao lưu `deployer.yaml`.** Chờ lượt đang chạy xong (`systemctl is-active ao-deploy.service` không còn `activating`), rồi:
+
+```
+systemctl stop ao-deploy.timer
+cp -p /etc/ao/deployer.yaml /root/deployer.yaml.$(date +%F).bak
+```
+
+**2. Bỏ khối của dự án** (`- name: <dự án>` cùng các dòng thụt vào dưới nó) khỏi `projects:`. Quyền file giữ nguyên `root:aodeploy 640`.
+
+**3. Chạy deployer.** `tick --dry-run` phải in `caddy: would write /etc/ao/caddy/Caddyfile and reload Caddy`. Sau đó `systemctl start ao-deploy.service` chạy một lượt thật: Caddyfile không còn site của dự án.
+
+**4. Xóa theo đúng tên**, không dùng `xargs` hay `prune`:
+- container `ao-<dự án>-<môi trường>-<app>-<sha>` và `ao-<dự án>-<môi trường>-db`;
+- image `ao-<dự án>-<app>`, cùng image của các container vừa xóa: image của Staging và Production thường đã mất tag, nên lấy id bằng `docker inspect -f '{{.Image}}' <container>` trước khi xóa container;
+- network `ao-<dự án>-<môi trường>`. Caddy nối vào từng network này, nên chạy `docker network disconnect <network> caddy` trước, rồi mới `docker network rm <network>`;
+- `/var/lib/ao/<dự án>`: mirror, record và thư mục work.
+
+Những thứ không hoàn tác được thì xóa riêng, khi bạn đồng ý từng thứ: volume database `ao-<dự án>-<môi trường>-db`, bản sao lưu `/var/backups/ao/<dự án>`, và biến của app `/etc/ao/secrets/<dự án>`.
+
+**5. Bật lại deployer** bằng `systemctl start ao-deploy.timer`, rồi kiểm các dự án còn lại vẫn chạy. Bản ghi wildcard DNS (mục 7) giữ nguyên; host của dự án đã gỡ không còn site trên Caddy.
+
+**6. Ngoài VPS:** archive repo trên GitHub nếu tài liệu kit còn dẫn tới PR của nó, và quyết riêng việc giữ hay xóa space Jira. Không xóa space `DEMO`, vì `ao-kit setup jira` lấy scheme của nó làm mẫu.
+
+**Đã chạy thật** (Phiên 37, 25/11/2026): gỡ `pilot` (`ao-pilot`) và `sample` (`ao-sample`): 9 container, 6 network, 18 image, và `/var/lib/ao` của hai dự án. Hai dự án này không có database. Cùng lúc, Claude xóa 4 volume database bỏ không do `restore-check` để lại (mục 15). RAM đang dùng giảm từ 2.622 xuống 2.445 MB. Caddy còn site của `shop` và `du-an-1`. `/etc/ao/secrets/pilot` và `/etc/ao/secrets/sample` vẫn còn.
