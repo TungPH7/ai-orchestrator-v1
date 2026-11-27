@@ -22,6 +22,14 @@ test('an offset of 0 keeps the default ports; an offset moves each port and each
   assert.equal(shiftLocalUrls('http://localhost:3001', 0), 'http://localhost:3001');
 });
 
+// The apps an agent starts itself in a lane take env, never e2e_env: only the servers Playwright starts load the mock
+// backend (private-car-v1-1, PCV11-3).
+test('the variables a lane names for an app are its env, never its e2e_env', () => {
+  const [user] = lanePorts({ user: { ...APPS.user, e2e_env: { E2E_API_MOCKING: '1' } } }, 100);
+  assert.deepEqual(user.env, { API_URL: 'http://localhost:3101' });
+  assert.doesNotMatch(portsNote([user], 100), /E2E_API_MOCKING/);
+});
+
 test('the note names each port and its variable, and says to keep away from the defaults', () => {
   const note = portsNote(lanePorts(APPS, 100), 100);
   assert.match(note, /AO_PORT_OFFSET=100\): user on 3100 \(PORT=3100\), admin on 5273 \(PORT=5273\), api on 3101 \(PORT=3101\)/);

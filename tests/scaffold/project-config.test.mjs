@@ -147,6 +147,14 @@ test('coverage_exclude of an app holds globs inside the app folder', () => {
   }
 });
 
+// private-car-v1-1, PCV11-3: the env only the servers Playwright starts for the E2E get.
+test('e2e_env of an app: variable names in capitals, text values', () => {
+  assert.deepEqual(rules(edited((d) => (d.apps.web.e2e_env = { E2E_API_MOCKING: '1' }))), []);
+  assert.deepEqual(rules(edited((d) => (d.apps.web.e2e_env = { e2e_api_mocking: '1' }))), ['P1 apps.web.e2e_env']);
+  assert.deepEqual(rules(edited((d) => (d.apps.web.e2e_env = { E2E_API_MOCKING: 1 }))), ['P1 apps.web.e2e_env.E2E_API_MOCKING']);
+  assert.deepEqual(rules(edited((d) => (d.apps.web.e2e_env = ['E2E_API_MOCKING=1']))), ['P1 apps.web.e2e_env']);
+});
+
 // C1 spec 6.1: seo writes the SEO of the screens of an app a search engine reaches.
 test('seo: true only for a public app', () => {
   assert.deepEqual(rules(edited((d) => (d.apps.web.seo = true))), []);

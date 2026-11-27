@@ -31,6 +31,8 @@ function pnpmProject(t) {
   mkdirSync(join(dir, '.git'));
   const quiet = { git: (args) => ({ status: args[0] === 'remote' ? 2 : 0, stdout: '', stderr: '' }), run: () => ({ status: 0, stdout: '', stderr: '' }) };
   assert.equal(initProject({ kitDir: ROOT, projectDir: dir, options: OPTIONS, ...quiet }).ok, true);
+  // What npm ci --prefix .ai-orchestrator of init leaves.
+  mkdirSync(join(dir, '.ai-orchestrator', 'node_modules'));
   const runs = [];
   return { dir, runs, run: (argv, cwd) => (runs.push([argv.join(' '), cwd]), { status: 0, stdout: '', stderr: '' }) };
 }
@@ -62,6 +64,16 @@ test('add from the skeleton of a stack: the app, its place in project.yaml, depl
   assert.equal(readProjectConfig(read(p.dir, '.ai-orchestrator/project.yaml')).config.apps['shop-web'].port.default, 3001);
   assert.match(read(p.dir, 'apps/shop-web/Dockerfile'), /^EXPOSE 3001$/m);
   assert.deepEqual(readDeployConfig(read(p.dir, '.ai-orchestrator/deploy.yaml')).config.smoke.map(({ app }) => app), ['user', 'shop-web']);
+});
+
+// private-car-v1-1: init stopped on the TODOs of the Apps before the packages of the kit copy, so the render of add
+// stopped on "Cannot find package 'ajv'".
+test('add installs the packages of the kit copy before the render when they are not there', (t) => {
+  const p = pnpmProject(t);
+  rmSync(join(p.dir, '.ai-orchestrator', 'node_modules'), { recursive: true });
+  const result = addApp({ kitDir: ROOT, projectDir: p.dir, app: 'user', options: { stack: 'nextjs', public: true, seo: true }, git: realGit, run: p.run });
+  assert.equal(result.ok, true, result.notes.join('\n'));
+  assert.deepEqual(p.runs.map(([argv]) => argv), ['pnpm install', 'npm ci --prefix .ai-orchestrator --no-audit --no-fund', 'node .ai-orchestrator/scripts/render-agents.mjs --project .']);
 });
 
 test('add from a template: its code without what the kit replaces, the files of the container it lacks, its skill, and what its code still has to change', (t) => {
@@ -112,6 +124,31 @@ test('add a Next.js template with next-intl: / redirects to the default locale, 
   assert.equal(config.apps.user.health, '/en');
   assert.deepEqual(config.smoke, [{ app: 'user', path: '/en', expect_status: 200, expect_text: '<html' }]);
   assert.match(result.notes.join('\n'), /next-intl in apps\/user\/src\/i18n\/routing\.ts sends \/ to \/en: health is \/en/);
+});
+
+// private-car-v1-1, PCV11-3: 7 E2E tests of the web need its mock backend, which E2E_API_MOCKING=1 in the webServer env
+// of the template's playwright.config.ts turns on. add leaves that file out, so the flag moves to e2e_env.
+test('add a template whose Playwright config gives its E2E server a mock switch: e2e_env of the app, and what is not sure goes to the report', (t) => {
+  const p = pnpmProject(t);
+  const from = temp(t, 'tpl-e2e-');
+  realGit(['init', '--quiet'], from);
+  write(from, 'package.json', JSON.stringify({ name: 'tpl', scripts: { dev: 'next dev', build: 'next build', lint: 'eslint .', typecheck: 'tsc --noEmit', 'test:coverage': 'vitest run --coverage' }, dependencies: { next: '16.0.0' } }));
+  write(from, 'next.config.ts', "export default { output: 'standalone' };\n");
+  write(from, 'vitest.config.ts', "export default { test: { coverage: { reporter: ['lcov'] } } };\n");
+  write(from, 'playwright.config.ts', "export default {\n  webServer: {\n    command: 'pnpm start',\n    env: {\n      PORT: String(3100),\n      // MSW in the server, for the E2E only.\n      E2E_API_MOCKING: '1',\n      NEXT_TELEMETRY_DISABLED: '1',\n      SHOW_BANNER: 'no',\n    },\n  },\n};\n");
+  realGit(['add', '-A'], from);
+  realGit(['commit', '--quiet', '-m', 'template'], from);
+
+  const result = addApp({ kitDir: ROOT, projectDir: p.dir, app: 'web', options: { stack: 'nextjs', from, public: true, seo: true }, git: realGit, run: p.run });
+  assert.equal(result.ok, true, result.notes.join('\n'));
+  const { config, errors } = readProjectConfig(read(p.dir, '.ai-orchestrator/project.yaml'));
+  assert.deepEqual(errors, []);
+  assert.deepEqual(config.apps.web.e2e_env, { E2E_API_MOCKING: '1' });
+  assert.equal(config.apps.web.env, undefined, 'not env, which /ao-preview reads too');
+  assert.match(result.notes.join('\n'), /e2e_env of web in \.ai-orchestrator\/project\.yaml: E2E_API_MOCKING=1, from the webServer env of playwright\.config\.ts of the template/);
+  const report = read(p.dir, '.ai/setup/add-report.md');
+  assert.match(report, /^By hand:\n\n- playwright\.config\.ts of the template gives its E2E server SHOW_BANNER = "no", and add leaves that file out: if the E2E tests of web need it, write it under e2e_env of web/m);
+  assert.doesNotMatch(report, /E2E_API_MOCKING|NEXT_TELEMETRY_DISABLED|PORT =/);
 });
 
 test('add refuses an npm project, a bad name, an app that is there, and a stack the kit has not, and changes nothing', (t) => {
@@ -209,7 +246,9 @@ test('add a Java app from a template: a package.json that runs its Maven wrapper
   assert.match(text, /apps\/api\/Dockerfile exposes 8080 and checks its health on 8080, but the app runs on 3001/);
   assert.match(text, /apps\/api\/Dockerfile sets SPRING_PROFILES_ACTIVE for every environment/);
   assert.match(text, /apps\/api\/\.dockerignore line 3 holds a comment after a pattern/);
-  assert.match(text, /reads POSTGRES_DB, POSTGRES_USER, POSTGRES_PASSWORD with no default/);
+  // The variables with no default once: by hand, for env: of deploy.yaml, not as code to change (private-car-v1-1).
+  assert.doesNotMatch(text, /with no default/);
+  assert.match(text, /deploy\.yaml names no .*POSTGRES_DB, POSTGRES_USER, POSTGRES_PASSWORD under env: of api/);
   assert.doesNotMatch(text, /writes no lcov|has no .* script/);
 
   // Again: the app is there, so nothing changes.

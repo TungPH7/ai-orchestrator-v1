@@ -39,6 +39,13 @@ test('the apps of project.yaml, in order: the dev command, a URL on this machine
   assert.deepEqual(own[0].env, { API_URL: 'http://localhost:3001', WEB_PORT: '4000' }, 'the port of project.yaml wins');
 });
 
+// e2e_env is for the servers Playwright starts (private-car-v1-1, PCV11-3): an app you open in a preview never loads
+// the mock backend.
+test('a preview starts each app with its env, never its e2e_env', () => {
+  const [web] = previewApps({ ...SAMPLE, apps: { web: { ...SAMPLE.apps.web, env: { API_URL: 'http://localhost:3001' }, e2e_env: { E2E_API_MOCKING: '1' } } } });
+  assert.deepEqual(web.env, { API_URL: 'http://localhost:3001', PORT: '3000' });
+});
+
 test('the sample /ao-preview prints when the project has no project.yaml is valid apps of that file', () => {
   const sample = readProjectConfig(`${PREVIEW_SAMPLE}\n${['name: shop', 'jira: { space: SHOP }', 'github: { repo: acme/shop, approvers: [owner], apps: { dev: a-dev, dev_id: 1, review: a-review, review_id: 2 } }', 'repos: [{ name: shop, path: . }]'].join('\n')}`);
   assert.deepEqual(sample.errors, []);

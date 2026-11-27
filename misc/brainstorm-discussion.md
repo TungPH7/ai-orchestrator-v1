@@ -42,7 +42,9 @@ Ghi nguyên văn các lượt brainstorm giữa bạn và Claude Code: câu hỏ
 | 34 | `ee11b1ec-f133-42e6-ae14-68d9209ea8b8` | 2026-11-19 khoảng 14:25 → | Bạn hỏi năm câu: kit gắn chặt với GitHub, Jira, VPS không, GitLab và EC2, so với agent-skills, vì sao agent-skills phổ biến, quản lý task và gõ lệnh tay; greenfield hay brownfield; luồng deploy của `shop` so với `deploy.yml` của bạn; vì sao chép kit lên VPS; nơi lưu tài liệu của SA, BA, PM, QA, UX. Claude viết `misc/thao-luan/kit-va-du-an-thuc-te/stack-deploy-va-luu-tai-lieu.md` |
 | 35 | `9b7de2de-fbda-493b-951d-5d7c26b8c106` | 2026-11-21 khoảng 01:33 → | Bạn dán đoạn cuối của Phiên 33 và gõ "làm T13"; `SHOP-79` tạo, Refine và Start; `shop` PR #80 chép kit `8a9f25d` (C2, T20b) và Low 9 (khối `review` của `project.yaml`); CI xanh 7 job; review chạy (`reviewer` `xhigh`, `security` `max`); `security` chạm giới hạn 5 giờ, Lượt 2 chạy tiếp; review xong: 0 Critical, 0 High, sau khi gộp còn 5 Medium và 4 Low, đều trong code kit; tổng 15,23 USD; PR #80 merged (`20cbfd4`), QA `SHOP-79` PASS, chờ bạn Accept; kit PR #334 sửa 9 việc (`82b1bca`); `SHOP-80` PR #81 chép kit, review: `security` 1 High (entity HTML lách hook của `seo`), Lượt 6 ("Làm"): kit PR #335 (`8847a84`), review vòng hai: `security` High mới (hook bỏ `<…>` mà Jira giữ); Lượt 7 ("sửa theo đề xuất"): hook tự gửi comment agent dạng HTML đã escape, kit PR #336 (`9374641`), review vòng ba: `security` 1 High (`plainText` không idempotent), 2 Medium; `reviewer` Approve, 3 Medium, 1 Low; `SHOP-80` 28,40 USD, cờ Needs you vì giới hạn rework; Lượt 8 ("chọn 2"): approve PR #81 với `Accept risk: 08bc0732 until 2026-12-15`, gỡ cờ, đăng báo cáo `reviewer`; Lượt 9 ("Merge giúp tôi. T14: chọn hướng 1. Danh mục"): PR #81 merged (`154ac4e`), deploy Development OK, gỡ cờ bằng tài khoản admin, QA `SHOP-80` PASS (0,95 USD; tổng 29,35 USD); intake Epic Danh mục, câu hỏi 1; Lượt 10 ("Accept giúp"): `SHOP-79`, `SHOP-80` Done, T13 và T13b xong; bản nháp Epic Danh mục (tối đa 3 item); Lượt 11: Epic `SHOP-81` tạo, Start spec, `/ao-spec`: `ba` viết SPEC (21 AC), hỏi 11 câu; Lượt 12: bạn đồng ý theo khuyên (cho xóa danh mục còn sản phẩm, bỏ AC11), `ux` vẽ màn hình, hỏi 10 câu (5,32 USD); Lượt 13: đồng ý cả 10; `sa`, docs PR #82, `seo` (12,29 USD); `seo` hỏi 3 câu; Lượt 14: đồng ý theo khuyên, `seo` sửa SEO, stage spec xong (10,87 USD), chờ bạn ở cổng ①; Lượt 15: Approve spec, `/ao-plan`: `sa` viết plan 3 item (16,52 USD), hỏi 1 câu; Lượt 16: giữ 3 item, `ba` tạo SHOP-82, 83, 84 (21,12 USD), chờ bạn ở cổng ②; Lượt 17: bạn cho Claude duyệt thay trong T14; `sa` đổi tên Task List, Approve plan, docs PR #82 merged, item Ready (22,53 USD); `/ao-run SHOP-81` bắt đầu |
 | 36 | `2118cec2-bb09-4ce4-93c2-b25c1cdcb384` | 2026-11-24 khoảng 16:36 → 2026-11-25 khoảng 01:15 | Bạn hỏi tài liệu cài kit cho dự án greenfield nằm ở đâu; Claude chỉ `docs/getting-started.md` phần 3 và tóm tắt 6 bước; bạn đề xuất một tài liệu ngắn cho người, cộng một file `ao-kit-setup.md` để agent chính tự setup, hỏi config và kiểm thử, dặn chưa làm; Claude đồng ý, đề xuất ba lớp tài liệu, luồng hỏi config dựa trên `doctor`, kiểm thử hai mức, và hỏi lại ba câu; bạn hỏi lại ba câu và muốn xem thư mục sau từng bước; Claude bỏ mức Task thật, giải thích greenfield, vẽ cây thư mục du-an-1 qua 12 bước; bạn nhờ ghi phần đó thành file, Claude viết misc/thao-luan/setup-du-an/cac-buoc-setup.md và hỏi việc tiếp theo; bạn hỏi cách dựng app React, Next.js, Spring Boot từ template trên máy và muốn agent hỏi stack; Claude: đó là phần 5, cũng là greenfield, agent hỏi ở bước 1, bảng 11 bước khác đi thế nào và cây thư mục khi dùng template; bạn nhờ thêm phần 5 vào file, Claude cập nhật phần 3 và thêm section phần 5 (bước 0–13); bạn hỏi làm gì tiếp; Claude đề xuất SPEC ngắn trước, rồi ao-kit-setup.md, ao-kit verify, quick-start, chạy thử thật, review một lần, và hỏi ba điều cần chốt; bạn chốt ba điều, đưa ba template, cho lên VPS và cho làm tới hết; kit PR #359, #360 merge; du-an-1 tới commit đầu và push, chờ bạn bấm board, App, Actions, key ao-merge, MCP; bạn bấm xong và đưa tên file key; setup github, CI lần đầu đỏ như dự đoán, Task DA1-1 sửa code template qua PR #8, du-an-1 lên Development, doctor và verify xanh, kit PR #361 (check Dependabot không tính là CI, chép kit 3d47633 lên VPS) và #362; bước 6: SHOP-101, shop PR #100, review 8,00 USD không Critical hay High, đóng bằng Cancel (Done) vì Task chưa được Start, kit PR #363 thêm mục 15; đợt xong |
-| 37 | `9d42ddbf-aea1-4691-9de0-e0d0fd6e3049` | 2026-11-25 khoảng 09:57 → | Bạn nhờ rà soát các dự án Claude đã tạo bằng kit, báo cáo dự án, môi trường và container trên VPS, chờ xác nhận mới xóa; Claude đọc GitHub, Jira, thư mục máy và VPS (chỉ đọc), đề xuất giữ `shop`, xóa `du-an-1`, `ao-green`, `ao-brown`, archive `ao-pilot`, `ao-sample`, giữ space `DEMO` vì `ao-kit setup jira` dùng làm mẫu; phát hiện healthcheck api của `du-an-1` bị 401; bạn giữ `du-an-1`, Claude đưa lại thứ tự 5 bước, thêm lỗi volume thừa sau `restore-check` |
+| 37 | `9d42ddbf-aea1-4691-9de0-e0d0fd6e3049` | 2026-11-25 khoảng 09:57 → | Bạn nhờ rà soát các dự án Claude đã tạo bằng kit, báo cáo dự án, môi trường và container trên VPS, chờ xác nhận mới xóa; Claude đọc GitHub, Jira, thư mục máy và VPS (chỉ đọc), đề xuất giữ `shop`, xóa `du-an-1`, `ao-green`, `ao-brown`, archive `ao-pilot`, `ao-sample`, giữ space `DEMO` vì `ao-kit setup jira` dùng làm mẫu; phát hiện healthcheck api của `du-an-1` bị 401; bạn giữ `du-an-1`, Claude đưa lại thứ tự 5 bước, thêm lỗi volume thừa sau `restore-check`; bạn "làm": VPS chỉ còn `shop` và `du-an-1`, archive `ao-pilot`, `ao-sample`, `AOG` vào thùng rác, xóa 4 thư mục sau khi bundle, kit PR #364; bạn tự xóa 2 repo; Claude xóa biến của `pilot`, `sample` trên VPS, bảng AOG, 6 nhánh đã merge của `shop`, merge kit PR #364; khôi phục commit nhật ký của Phiên 38 lỡ bị xóa cùng nhánh; hai ngày sau bạn hỏi có phải commit gì trên nhánh `docs/phien-37-cleanup` trước khi update tiếp không, Claude đáp không: nhánh đã commit hết, chỉ còn file handoff chưa theo dõi của phiên dựng `private-car-v1-1`, và lần tới sẽ rebase nhánh lên `main` rồi tạo nhánh mới từ đó; bạn bảo sửa các lỗi trong handoff của `private-car-v1-1`: kit PR #365 (Caddyfile của stack react tin Caddy của VPS, khóa `e2e_env` cho server E2E, `init` cài gói kit trước khi dừng ở TODO), dry run ba app từ nhánh `ao-kit` ra đúng kết quả mong đợi, 11 phát hiện ghi vào mục 16 của `todo.md`, chờ bạn merge; bạn xin link PR và nhắc trả lời bằng tiếng Việt, vì lượt trước Claude lỡ trả lời trong chat bằng tiếng Anh |
+| 38 | `45a7bb6a-8d37-45f9-b0f7-d670d5e0049e` | 2026-11-25 khoảng 10:55 → | Bạn hỏi VPS 1 core / 2 GB có đủ cho một môi trường Development của `shop` không, vì báo cáo dọn dẹp ghi `shop` chạy 3 môi trường hết khoảng 1,28 GB; Claude đối chiếu số đo RAM, CPU, đĩa từ Pilot 3 và Phiên 36: lúc rảnh ổn, lúc build thiếu RAM, kết luận chọn gói 4 GB |
+| 39 | `3608ed50-b8a5-4349-ac01-1fe289949c17` | 2026-11-27 khoảng 12:25 → | Bạn hỏi dựng dự án greenfield có backend Java thì template `tungph7-learnPostgresql-api-java` nên lấy nhánh `codebase` hay `base-3/implement-features-to-learn-postgresql`, và `shop` đang dùng nhánh nào; Claude đáp `codebase` (`shop` lấy `codebase` ở `0a0ccac`, đã chốt ở Phiên 28), nêu 5 lý do, và phát hiện `du-an-1` lấy nhầm `base-3` vì thư mục template đang mở ở nhánh đó |
 
 ---
 
@@ -35897,3 +35899,275 @@ Mình vừa kiểm thêm: 4 volume bỏ không là phần thừa của bước k
 Lưu ý: api của `du-an-1` vẫn `unhealthy` (healthcheck bị 401, app vẫn chạy). Muốn sửa thì làm một Task `DA1` riêng sau đợt dọn này.
 
 Bạn gõ "làm" để mình làm 5 bước trên.
+
+---
+
+# Phiên 37 · Lượt 3 — 2026-11-25 khoảng 10:25 đến 10:55
+
+**Bạn:**
+
+```markdown
+làm
+```
+
+**Claude:**
+
+Xong gần hết. Chỉ còn xóa 2 repo `ao-green`, `ao-brown` trên GitHub: `gh` chưa có quyền xóa repo, nên bạn cần cấp quyền (hướng dẫn ở cuối).
+
+**1. VPS: xong**
+- Đã bỏ `pilot`, `sample` khỏi `deployer.yaml` (bản sao lưu ở `/root/deployer.yaml.2026-11-25.bak`). Caddy giờ chỉ còn site của `shop` và `du-an-1`.
+- Đã xóa 9 container, 6 network, 18 image, thư mục `/var/lib/ao/pilot`, `/var/lib/ao/sample` và 4 volume bỏ không.
+- VPS còn 17 container: `shop` 12, `du-an-1` 4, `caddy` 1. RAM đang dùng giảm từ 2.622 xuống 2.445 MB. Năm lượt deploy tự động sau đó đều chạy xong.
+- Có một chỗ khác dự kiến: network không xóa được vì Caddy còn nối vào. Mình tách Caddy ra rồi mới xóa, và đã ghi bước này vào hướng dẫn.
+
+**2. GitHub: xong một nửa**
+- Đã archive `ao-pilot`, `ao-sample`.
+- Chưa xóa được `ao-green`, `ao-brown`, vì `gh` thiếu quyền `delete_repo`.
+
+**3. Jira: xong**
+- Space `AOG` đã vào thùng rác, khôi phục được tới khoảng 24/01/2027.
+- Bảng "AOG board" vẫn còn, vì xóa space không xóa bảng.
+
+**4. Máy bạn: xong**
+- Mình đã đóng gói 4 repo vào `D:\Document\1Khoahoc\4LapTrinh\AI-for-coding\.pilot3-scratch\retired-2026-11-25\`, gồm cả 2 nhánh chưa push và stash của `ao-pilot`. Bản nháp cũ `cac-buoc-setup.md` cũng chép vào đó.
+- Đã xóa:
+  - 4 thư mục `ao-pilot`, `ao-sample`, `ao-green`, `ao-brown`;
+  - worktree `ao-kit-guided-setup` và nhánh của nó;
+  - thư mục nháp `misc/thao-luan/setup-du-an/` và thư mục rỗng `shop-wt`;
+  - 2 nhánh đã merge.
+- Trước khi xóa, mình kiểm không có junction nào trỏ ra ngoài các thư mục đó. `node_modules` của kit, `shop` và `du-an-1` vẫn nguyên.
+
+**5. Kit: PR #364, CI xanh, chưa merge**
+- PR thêm mục 17 "Gỡ một dự án khỏi deployer" vào `docs/vps-setup.md`, ghi 2 lỗi mới vào mục 15, và kèm nhật ký Phiên 36–37.
+- Mình chưa merge vì tài liệu trong PR ghi `ao-green`, `ao-brown` đã xóa. Xóa xong 2 repo thì mình merge.
+
+**Bạn cần làm để cấp quyền xóa repo:**
+1. Gõ vào ô chat dòng này. Nếu lệnh treo, chạy nó trong PowerShell, bỏ dấu `!`:
+   ```
+   ! gh auth refresh -h github.com -s delete_repo
+   ```
+2. Lệnh in một mã dạng `XXXX-XXXX` và link `https://github.com/login/device`. Mở link đó.
+3. Dán mã vào trang, bấm **Continue**.
+4. Trang hỏi quyền cho GitHub CLI: bấm **Authorize github**.
+5. Quay lại đây gõ "làm tiếp". Mình sẽ xóa 2 repo rồi merge PR #364.
+
+**Còn lại, không có trong danh sách bạn duyệt nên mình chưa đụng:**
+- `/etc/ao/secrets/pilot` và `/etc/ao/secrets/sample` trên VPS (6 file biến của app);
+- bảng "AOG board" trên Jira;
+- 6 nhánh local `feature/SHOP-94` tới `feature/SHOP-100` ở `shop`.
+
+Muốn xóa mấy thứ này thì bạn nói. VPS vẫn mở đăng nhập root như bạn dặn.
+
+---
+
+# Phiên 38 · Lượt 1 — 2026-11-25 khoảng 10:55
+
+**Bạn:**
+
+```markdown
+dự án dùng ao kit, nếu chỉ có tạo 1 môi trường development ở VPS, staging, production chưa tạo, thì VPS cấu hình này có đáp ứng được không? [Image #1], hiện tại ao kit đang yêu cầu [Image #2]. Nhưng theo như báo cáo tại session cleanup-sau-khi-xong-ao-kit-sau-c2 [Image #3], thì shop chạy 3 môi trường, mỗi môi trường có user, admin, api, db, với RAM là 1,28 GB, nếu VPS RAM 2GB chỉ cho 1 môi trường thì chắc ổn nhỉ? Kiểm tra kỹ và báo cáo lại tôi. Tham khảo session id (nếu cần):
+2118cec2-bb09-4ce4-93c2-b25c1cdcb384
+edafa594-933f-4742-9a40-ce6cd90a6600
+```
+
+- [Image #1](images/phien-38-luot-1-anh-1.png): gói VPS 1 core, RAM 2 GB, SSD 25 GB, 1 IPv4, 100 Mbps.
+- [Image #2](images/phien-38-luot-1-anh-2.png): gói VPS 2 core, RAM 4 GB, SSD 40 GB, 1 IPv4, 150 Mbps, là mức kit đang yêu cầu.
+- [Image #3](images/phien-38-luot-1-anh-3.png): bảng trong báo cáo dọn dẹp, VPS có 26 container: `shop` 12 container khoảng 1,28 GB, `du-an-1` 4 container khoảng 0,57 GB, `ao-sample` 6 container khoảng 40 MB, `ao-pilot` 3 container khoảng 15 MB, `caddy` 1 container khoảng 57 MB.
+
+**Claude:**
+
+**Không ổn.** Gói 1 core / 2 GB chạy được `shop` Development lúc rảnh, nhưng lúc deploy thì thiếu RAM và CPU, vì deployer build image ngay trên VPS. Kit đòi 4 GB vì lúc build, không phải vì số môi trường.
+
+**1. Phép tính 1,28 GB của bạn đúng, nhưng thiếu hai khoản.**
+- Một môi trường `shop` dùng khoảng 0,43 GB (1,28 GB chia 3; đo ngày 14/11: `api` 286 MiB, Postgres 45, `user` 60, `admin` 14).
+- Thiếu khoản 1: chính máy VPS (hệ điều hành, Docker, deployer) tốn khoảng 0,55–0,8 GB. Ví dụ ngày 25/11: RAM dùng 2.445 MB, trừ các container (shop 1,28 + du-an-1 0,57 + caddy 0,06 GB) còn khoảng 0,54 GB.
+- Thiếu khoản 2: RAM lúc build (mục 2).
+- Lúc rảnh: 0,55–0,8 + 0,43 + 0,06 ≈ 1,05–1,3 GB trên máy khoảng 1,9 GB. Phần này ổn.
+
+**2. Lúc deploy mới là chỗ chết.**
+- Deployer build `user`, `admin` (Next.js) và `api` (Maven) ngay trên VPS, từng cái một.
+- Đo ngày 14/11 trên VPS 4 GB, lúc deploy Development của `shop`: RAM dùng nhảy từ 1.131 lên 2.441 MB khi build `user`, tức thêm khoảng 1,0–1,3 GB.
+- Trên máy 2 GB: 1,05–1,3 + 1,0–1,3 = 2,0–2,6 GB, trong khi máy chỉ có khoảng 1,9 GB. Thiếu tới 0,7 GB, phải đẩy sang bộ nhớ tạm trên đĩa. Với 1 core thì rất chậm, và hệ điều hành có thể tự tắt tiến trình đang build.
+- Chính kit đặt mốc cho VPS 4 GB: nâng gói nếu lúc build RAM còn trống dưới 1 GB (`tasks/archive/project-scaffold-3/verification.md`, dòng 213). Gói 2 GB còn trống bằng 0 hoặc âm lúc build. Muốn còn trống 1 GB cần khoảng 3–3,6 GB, tức gói 4 GB, kể cả khi chỉ có 1 môi trường.
+
+**3. CPU 1 core làm deploy chậm, gần chạm giới hạn thời gian.**
+- Deploy đầu tiên của `shop` Development trên máy 2 core mất 18,5 phút (build `user` khoảng 6 phút, `api` khoảng 6,5 phút, `api` khởi động 66 giây).
+- Trên 1 core [ước] chậm 1,3–2 lần: khoảng 24–37 phút. Deployer bị cắt sau 45 phút mỗi lượt (`vps/ao-deploy.service`, `TimeoutStartSec=45min`), và `api` có tối đa 180 giây để khởi động (ước 85–130 giây).
+- Trong lúc build, 1 core bị chiếm hết, nên web dev và test QA chạy vào lúc đó sẽ chậm.
+
+**4. Đĩa 25 GB đủ, nhưng ít dư.**
+- Ngày 14/11 trên VPS 4 GB: dùng 15 GB trên 38 GB, trong đó build cache 6,5 GB và file swap 4 GB.
+- Gói 25 GB có khoảng 23 GB dùng được [ước]; 1 môi trường dùng khoảng 12–15 GB, dư khoảng 8 GB. Lệnh dọn cache đã được sửa (kit PR #357, VPS có từ 25/11); trước đó cache từng lên 27 GB.
+
+| | `shop` 1 môi trường Dev cần | VPS 1 core / 2 GB có | Kết quả |
+|---|---|---|---|
+| RAM lúc rảnh | 1,05–1,3 GB | khoảng 1,9 GB | Ổn |
+| RAM lúc build | 2,0–2,6 GB [ước] | khoảng 1,9 GB | Thiếu |
+| Deploy đầu tiên | 24–37 phút [ước] | tối đa 45 phút | Sát |
+| Đĩa | 12–15 GB [ước] | khoảng 23 GB | Ổn |
+
+**5. Kit không chặn, nhưng cũng không bảo đảm.**
+- Không đoạn mã nào của kit đọc RAM hay CPU của VPS, nên cài và chạy deployer được. Mức "2 vCPU, 4 GB, 40 GB" là khuyến nghị ở `docs/vps-setup.md` mục 2 và `SPEC-release-workflow.md` mục 2.11, chọn theo số đo.
+- Kit từng loại VPS 1 vCPU / 961 MB vì "quá nhỏ" (`SPEC-release-workflow.md`, Phiên 26 · Lượt 13–17). Gói 2 GB lớn hơn, nhưng vẫn dưới mức đã đo.
+
+**Kết luận:** chọn gói 2 core / 4 GB (ảnh thứ hai). Một môi trường Development chạy tốt, và sau này thêm Staging, Production không phải đổi VPS. Các số có chữ [ước] là suy ra từ số đo trên VPS 4 GB; mình chưa thử trên máy 2 GB thật.
+
+---
+
+# Phiên 37 · Lượt 4 — 2026-11-25 khoảng 11:00 đến 11:10
+
+**Bạn:**
+
+```markdown
+Đã xóa 2 repo green, brown. Xóa các thứ bạn nói giúp toi
+```
+
+**Claude:**
+
+Đã xóa hết, đợt dọn dẹp xong.
+
+**Mình đã xóa:**
+- `/etc/ao/secrets/pilot` và `/etc/ao/secrets/sample` trên VPS. Thư mục biến giờ chỉ còn của `shop` và `du-an-1`.
+- Bảng "AOG board" trên Jira.
+- 6 nhánh local `feature/SHOP-94` tới `feature/SHOP-100` ở `shop`. Trước khi xóa, mình kiểm từng nhánh trùng đúng commit đầu của PR đã merge (#93–#98), nên không mất gì. Mình vẫn đóng gói lại vào `D:\Document\1Khoahoc\4LapTrinh\AI-for-coding\.pilot3-scratch\retired-2026-11-25\shop-merged-branches.bundle`. `shop` giờ chỉ còn `develop` và `main`.
+- Mình cũng kiểm lại: `ao-green` và `ao-brown` đã không còn trên GitHub.
+
+**Kit:** PR #364 đã merge (`main` của kit là `b56f105`).
+
+**Một sự cố nhỏ, đã khôi phục:** bạn đang chạy song song một phiên khác (Phiên 38, hỏi về gói VPS 1 core / 2 GB), dùng cùng bản clone của kit. Phiên đó đã commit nhật ký của nó (`90f89e3`, kèm 3 ảnh) lên nhánh mình đang dùng, chưa push. Lúc dọn nhánh sau khi merge, mình xóa mất commit đó. Mình thấy ngay, lấy lại từ reflog và đưa bản clone về đúng chỗ phiên kia để lại, nên không mất gì. Mình đã ghi nhớ: lần sau, trước khi xóa hay đổi nhánh trong bản clone kit, phải so với commit mình đã push.
+
+**Còn lại:**
+- Bản clone kit đang ở nhánh `docs/phien-37-cleanup`, chứa nhật ký của Phiên 37 và 38 chưa lên `main`. Nhật ký này sẽ đi cùng PR tài liệu kế tiếp.
+- Bộ lọc "Filter for AOG board" trên Jira vẫn còn (xóa bảng không xóa bộ lọc). Nó vô hại; muốn xóa thì bạn nói.
+- VPS vẫn mở đăng nhập root như bạn dặn.
+
+---
+
+# Phiên 39 · Lượt 1 — 2026-11-27 khoảng 12:25
+
+**Bạn:**
+
+```markdown
+Khi setup repo green field với ao kit với BE dùng Java thì đối với template /d/Document/1Khoahoc/4LapTrinh/java/tungph7-learnPostgresql-api-java nên dùng code ở nhánh nào? base-3/implement-features-to-learn-postgresql hay codebase. Tìm hiểu kỹ giúp tôi, xem repo D:\Document\1Khoahoc\4LapTrinh\AI-for-coding\e-commerce\shop đang dùng nhánh nào?
+```
+
+**Claude:**
+
+**Dùng nhánh `codebase`.** `shop` cũng đang dùng `codebase`, ở commit `0a0ccac`.
+
+**`shop` lấy từ `codebase`, mình kiểm ba chỗ:**
+1. Lệnh thêm `api` vào `shop` (Task `SHOP-3`, PR #8) có `--ref codebase` và in ra `Copied 93 files of tungph7-learnPostgresql-api-java codebase at 0a0ccaca` (`docs/getting-started.md`, bước "Thêm `api`").
+2. Code `api` lúc mới vào `shop` (commit `866dc15`) khớp `codebase`: 3 migration (V1–V3) và 2 tính năng mẫu `health`, `product`. `base-3` có 19 migration và 11 tính năng.
+3. Bạn đã hỏi đúng câu này ở Phiên 28 · Lượt 5–7 và chốt `codebase` (`SPEC-project-scaffold-3.md`, mục 1.1).
+
+**Vì sao `codebase` hợp với dự án mới:**
+1. `codebase` là nền sạch: phần dựng dự án (Docker, CI, công cụ kiểm code) cộng một commit dọn dẹp `0a0ccac` (bỏ ghi chú riêng và tài liệu học, dịch comment sang tiếng Anh).
+2. `base-3` là nhánh học Postgres: có thêm 54 commit mà `codebase` không có, với 9 tính năng bán hàng (danh mục, khách hàng, kho, mã giảm giá, đơn hàng, thanh toán, dashboard, tìm kiếm, quản trị database). Dự án mới không cần chúng, agent lại phải gỡ ra.
+3. `base-3` có các đường quản trị database `/api/v1/admin` (chạy VACUUM, ANALYZE, EXPLAIN, benchmark) không cần đăng nhập, vì mọi đường `/api/**` đều mở.
+4. `base-3` chưa qua commit dọn dẹp: còn `backups/` (một bản dump database), `log.txt`, `note.md`, `study-guide-impl/` (281 file) và comment tiếng Việt.
+5. `base-3` ở máy bạn còn 11 commit chưa push (F07 dashboard, F08 search), nên khác bản trên GitHub.
+
+**Mình tìm thấy thêm:** `du-an-1` (dựng thử ngày 24/11) lại lấy `base-3`.
+- Lý do: `ao-kit-setup.md` đề xuất nhánh đang mở của thư mục template, mà thư mục này đang ở `base-3`; lần đó bạn chọn "nhánh hiện tại".
+- Kết quả: `api` của `du-an-1` có 378 file, 19 migration và các đường `/api/v1/admin` ở trên. Trên Development, app `admin` chuyển `/api/*` sang `api`, nên ai qua được basic auth là gọi được chúng.
+
+**Lần tới dựng dự án mới:** khi được hỏi nhánh của `api`, trả lời `codebase`. Lệnh tương ứng:
+
+```
+node <kit>/scripts/ao-kit.mjs add <dự án> api --stack spring-boot --from D:\Document\1Khoahoc\4LapTrinh\java\tungph7-learnPostgresql-api-java --ref codebase --exclude study-guide-impl/ --exclude prompt.md
+```
+
+Phần code dùng chung hay của `base-3` (`PagedResponse`, `SqlStatement`, `TstzRange`, `ClockConfig`, ba exception) thì đưa vào qua một Task khi Epic đầu cần, như đã chốt ở Phiên 28. `shop` tới giờ chưa đưa phần nào vào.
+
+---
+
+# Phiên 37 · Lượt 5 — 2026-11-27 khoảng 21:00
+
+**Bạn:**
+
+```markdown
+Giờ cần commit code trên nhánh docs/phien-37-cleanup rồi mới làm các update tiếp được à?
+```
+
+**Claude:**
+
+Không cần. Trên nhánh `docs/phien-37-cleanup` không còn gì chưa commit, nên bạn làm update tiếp được ngay.
+
+**Nhánh đang có gì** (mình vừa kiểm):
+1. Nhánh hơn `main` 3 commit:
+   - `589e10e`: bản gốc của PR #364. Nội dung đã vào `main` thành `b56f105`, giống hệt, nên coi như đã xong.
+   - `90f89e3`: nhật ký Phiên 38 (hỏi gói VPS) kèm 3 ảnh.
+   - `e9db631`: nhật ký Phiên 37 · Lượt 4 và Phiên 39 (hỏi nhánh `codebase` của template Java), do Phiên 39 commit lúc 12:32 hôm nay.
+2. Chỉ còn một file chưa commit: `tasks/handoff-2026-11-27-kit-fixes-private-car-v1-1.md`, Git chưa theo dõi nó. File do phiên dựng `private-car-v1-1` viết lúc 20:53 hôm nay, giao cho kit hai bản sửa: Caddyfile của stack react thiếu `trusted_proxies`, và cờ `E2E_API_MOCKING` của E2E. Đây là đầu vào của việc sắp làm, không cần commit trước. Đổi nhánh cũng không làm mất file này.
+
+**Khi bắt đầu update kế tiếp, mình sẽ:**
+1. Đưa nhánh lên `main` mới nhất (rebase lên `origin/main`). Git tự bỏ `589e10e` vì `main` đã có nội dung đó.
+2. Tạo nhánh mới cho việc sửa từ đây. Hai commit nhật ký đi cùng PR của việc sửa, không cần PR riêng.
+
+Mình không tạo nhánh mới thẳng từ `main`, vì khi đó file nhật ký trên nhánh mới thiếu Phiên 38 và 39, và phiên sau ghi tiếp vào đó sẽ bị conflict lúc merge.
+
+**Một lưu ý:** chỉ nên để một phiên đổi nhánh trong bản clone kit. Nếu bạn giao file handoff cho một phiên khác, phiên này sẽ không đụng tới nhánh.
+
+---
+
+# Phiên 37 · Lượt 6 — 2026-11-27 khoảng 21:05 đến 22:00
+
+**Bạn:**
+
+```markdown
+Ok xử lý nhánh xong thì Fix các lỗi trong file handoff D:\Document\1Khoahoc\4LapTrinh\AI-for-coding\ai-orchestrator\tasks\handoff-2026-11-27-kit-fixes-private-car-v1-1.md
+```
+
+**Claude:**
+
+Đã sửa xong các lỗi trong file handoff. CI của PR #365 đã xanh (cả `contract` lẫn `profiles`), PR đang chờ bạn merge.
+
+**Nhánh:** mình đã đưa `docs/phien-37-cleanup` lên `main` mới nhất; commit trùng với PR #364 tự bị bỏ. Từ đó mình tạo nhánh `fix/kit-caddy-proxy-e2e-env`, và ba commit nhật ký đi cùng PR này.
+
+**Đã sửa:**
+1. **Lỗi 1, Caddyfile của stack react:** thêm `trusted_proxies static private_ranges`, kèm test. Admin của dự án mới sẽ không còn bị 403 "Invalid CORS request" khi POST, PUT hay DELETE.
+2. **Lỗi 2, cờ `E2E_API_MOCKING`:** làm theo cách 1 bạn đã duyệt.
+   - `project.yaml` có thêm khóa `e2e_env`. Chỉ server mà Playwright tự bật để chạy E2E nhận khóa này. `/ao-preview`, app mà agent tự bật trong lane và deployer thì không nhận. Mình có test cho cả hai phía.
+   - `ao-kit add` đọc env của server E2E trong `playwright.config` của template, tức file mà nó bỏ đi. Cờ mock được ghi thẳng sang `e2e_env`. Biến nào không chắc thì vào mục "By hand" của `add-report.md` để bạn quyết.
+   - Tài liệu đã cập nhật: `getting-started.md`, `setup-steps.md`, `release-workflow.md`.
+3. **Lỗi `Cannot find package 'ajv'`:** mình tái hiện được.
+   - Nguyên nhân: khi `init` dừng vì thiếu thông tin App, nó chưa cài gói của kit, nên `render` hỏng.
+   - Sửa: giờ `init` cài gói trước khi dừng, và `add` tự cài nếu còn thiếu.
+4. **`ao-kit-setup.md`:** template có nhánh `ao-kit` thì đề xuất nhánh đó, kèm những việc dự án vẫn phải làm tay. Không có thì đề xuất nhánh hiện tại và liệt kê các nhánh khác để bạn chọn. Như vậy sẽ không lặp lại chuyện `du-an-1` lấy nhầm `base-3`.
+5. **Thêm một sửa nhỏ:** báo cáo của `api` không còn ghi hai lần các biến database không có giá trị mặc định.
+
+**Dry run** (theo mục 5 của handoff; thư mục tạm đã xóa):
+- chạy `init`, rồi `add` `web`, `admin`, `api` từ nhánh `ao-kit`;
+- `apps/admin/Caddyfile` có `trusted_proxies`, và `project.yaml` có `e2e_env: { E2E_API_MOCKING: "1" }` cho `web`;
+- báo cáo ra đúng như handoff mong: `web` một ghi chú `NEXT_PUBLIC_SITE_URL`, `admin` không còn mục nào, `api` chỉ còn phần "By hand";
+- 7 test `@local` của `web` pass;
+- 1 test smoke khác ("About") hỏng, có hay không có `e2e_env` cũng vậy: nút "Open Next.js Dev Tools" của `next dev` che mất link. Mình đã ghi lại để sửa sau.
+
+**Kiểm:** `npm test` 1943 test pass; CI của PR #365 xanh.
+
+**Ghi lại cho PR sau** (`tasks/todo.md`, mục 16):
+- job `caddy-proxy` vào CI của kit;
+- 8 phát hiện ở mục 7 của handoff;
+- 2 phát hiện mới từ dry run: vài đường dẫn `coverage_exclude` mà `add` đề xuất cho `api` bị sai, và test "About" ở trên.
+
+**Còn chờ bạn:**
+- Merge PR #365. Như các lần trước, PR kit không review riêng; phần review diễn ra ở lần chép kit vào dự án.
+- Mình không chép gì vào `shop`, như handoff dặn. `private-car-v1-1` đang ghi cứng cờ E2E. Muốn chuyển sang `e2e_env` thì làm bằng một Task riêng của dự án đó.
+
+**Một sự cố nhỏ, đã xử lý:** một lệnh sửa file của mình bị treo 2 phút và để lại hai tiến trình `python.exe`. Mình đã dừng chúng theo PID, và file không bị đổi gì.
+
+---
+
+# Phiên 37 · Lượt 7 — 2026-11-27 khoảng 22:05
+
+**Bạn:**
+
+```markdown
+Đưa tôi link PR. Lưu ý phản hồi chat bằng tiếng Việt
+```
+
+**Claude:**
+
+Link PR: https://github.com/TungPH7/ai-orchestrator-v1/pull/365
+
+Xin lỗi bạn, lượt trước mình lỡ trả lời trong chat bằng tiếng Anh. Bản tiếng Việt của báo cáo đó (cùng nội dung) nằm trong nhật ký, ở mục "Phiên 37 · Lượt 6" của `misc/brainstorm-discussion.md`. Từ giờ mình trả lời bằng tiếng Việt.
