@@ -72,13 +72,15 @@ test('init leaves an origin that is there, and says so when it is not the repo o
   assert.match(notes.join('\n'), /origin is acme\/old-shop, not acme\/shop of project\.yaml: ao-step reads the repo from origin/);
 });
 
-test('init with no App values leaves them as TODO, renders nothing, and says what to fill', (t) => {
+// The packages of the kit copy go in before the stop: the render after the TODOs are filled in imports ajv from them
+// (private-car-v1-1: ao-kit add stopped on "Cannot find package 'ajv'").
+test('init with no App values leaves them as TODO, installs the packages of the kit copy, renders nothing, and says what to fill', (t) => {
   const dir = temp(t);
   const fx = effects();
   const { ok, notes } = initProject({ kitDir: ROOT, projectDir: dir, options: { ...OPTIONS, devApp: undefined, devAppId: undefined }, env: {}, ...fx });
   assert.equal(ok, false);
   assert.match(notes.join('\n'), /Fill in .ai-orchestrator\/project\.yaml: github\.apps\.dev, github\.apps\.dev_id/);
-  assert.equal(fx.calls.run.length, 0);
+  assert.deepEqual(fx.calls.run.map(([argv]) => argv), ['npm ci --prefix .ai-orchestrator --no-audit --no-fund']);
   assert.match(readFileSync(join(dir, '.ai-orchestrator/project.yaml'), 'utf8'), /dev: TODO/);
 });
 

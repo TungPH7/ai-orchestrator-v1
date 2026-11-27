@@ -97,6 +97,16 @@ test('copyStack writes the app into apps/<app> with its name, port and the proje
   assert.equal(existsSync(join(dir, 'apps/user/package.json')), false);
 });
 
+// Caddy of the VPS reaches the container from a private address. Without trusted_proxies, Caddy of the app writes
+// X-Forwarded-Proto http, and the api refuses every POST of the admin with 403 "Invalid CORS request" (shop SHOP-56,
+// private-car-v1 PCAR-6, private-car-v1-1 PCV11-1: three projects fixed it by hand).
+test('Caddy of the react stack trusts the X-Forwarded-* headers of Caddy of the VPS, in its global options', () => {
+  const caddyfile = readFileSync(join(ROOT, 'profiles/stacks/react/files/Caddyfile'), 'utf8');
+  const global = /^\{\n([\s\S]*?)^\}\n/m.exec(caddyfile)?.[1] ?? '';
+  assert.match(global, /^\tservers \{\n\t\ttrusted_proxies static private_ranges\n\t\}$/m);
+  assert.ok(caddyfile.indexOf(global) < caddyfile.indexOf(':__PORT__ {'), 'the global options come before the site block');
+});
+
 test('a stack skill comes from where the kit keeps it, so it is not copied twice into the kit', () => {
   assert.equal(findSkill(ROOT, 'vercel-react-best-practices'), join(ROOT, 'profiles', 'next-nest', 'files', '.claude', 'skills', 'vercel-react-best-practices'));
   assert.equal(findSkill(ROOT, 'angular-best-practices'), null);

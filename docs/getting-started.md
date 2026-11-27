@@ -446,6 +446,10 @@ node <kit>/scripts/ao-kit.mjs add e-commerce/shop admin --stack react --from <th
     - `.github/`: CI của kit chạy ở gốc repo;
     - `.claude/`: agent của kit có cài đặt riêng;
     - lockfile, `pnpm-workspace.yaml`, `.nvmrc`, `playwright.config`: mỗi thứ chỉ có một bản, ở gốc repo;
+  - đọc `env` mà `playwright.config` của template đặt cho server E2E của nó, vì file này bị bỏ:
+    - cờ bật mock (tên có `MOCK`) hay biến `E2E_…` có giá trị chữ thì vào `e2e_env` của app trong `project.yaml`, như `E2E_API_MOCKING: '1'` của template Next.js (private-car-v1-1, PCV11-3);
+    - biến khác nằm ở mục "By hand" của `.ai/setup/add-report.md` để bạn quyết; cổng và `NEXT_TELEMETRY_DISABLED` thì bỏ qua;
+    - chỉ server mà Playwright tự bật cho E2E nhận `e2e_env`. `/ao-preview`, app mà agent tự bật trong lane và deployer chỉ đọc `env`, nên app bạn mở không nạp mock;
   - gộp cài đặt pnpm của template, như `allowBuilds`, vào `pnpm-workspace.yaml` ở gốc, giữ cả comment. Hai template đặt khác nhau cùng một khóa thì lệnh dừng, chưa ghi gì;
   - đưa lint-staged lên script `precommit` ở gốc, mà hook `pre-commit` của kit gọi;
   - biến `CLAUDE.md` của template thành skill `<app>-conventions`, gán cho `fe-dev`. Luật của kit vẫn thắng skill;

@@ -183,6 +183,8 @@ Agent làm thêm:
 
 `add` ghi danh sách chỗ phải sửa vào `.ai/setup/add-report.md`, để phiên thứ hai còn đọc được.
 
+Template có `playwright.config` riêng, mà `add` bỏ, thì `add` đọc `env` của server E2E trong file đó. Cờ bật mock như `E2E_API_MOCKING: '1'` vào `e2e_env` của app trong `project.yaml`. Chỉ server mà Playwright tự bật cho E2E nhận nó, còn `/ao-preview` và deployer thì không. Biến nào `add` không chắc thì nằm ở mục "By hand" của `add-report.md`.
+
 Thư mục có thêm:
 
 ```

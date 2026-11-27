@@ -5,7 +5,7 @@ import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { parse } from 'yaml';
-import { copyTemplate, mergeWorkspace } from '../../lib/scaffold/template.mjs';
+import { copyTemplate, mergeWorkspace, templateE2eEnv } from '../../lib/scaffold/template.mjs';
 
 // The code of a template into apps/<app> (project-scaffold part 2, spec 2.2; plan, decisions 6 and 7), on real folders
 // and a real git: two templates like the Next.js and React ones of the user, with husky, commitlint, their CI, their
@@ -178,4 +178,52 @@ test('copyTemplate copies a branch of the template given by ref, without checkin
   assert.match(result.notes[0], /^Copied 3 files of tpl-\S+ ui-integration at [0-9a-f]{8} into apps\/admin$/);
   assert.notEqual(git(['branch', '--show-current'], from).stdout.trim(), 'ui-integration', 'the template stays on its branch');
   assert.match(copyTemplate({ from, ref: 'nowhere', projectDir: dir, app: 'web', git }).notes[0], /has no branch or tag nowhere/);
+});
+
+// private-car-v1-1, PCV11-3: the Playwright config of the user's Next.js template turned on its mock backend with
+// E2E_API_MOCKING=1 in the env of its webServer, and add leaves that file out. Its shape, comments and all.
+const NEXT_PLAYWRIGHT = `import { defineConfig, devices } from '@playwright/test';
+
+// The backend is mocked by MSW inside the Next process (instrumentation.ts + \`E2E_API_MOCKING=1\`): don't run in parallel.
+const PORT = 3100;
+const baseURL = \`http://localhost:\${PORT}\`;
+
+export default defineConfig({
+  testDir: './e2e',
+  use: { baseURL, locale: 'en-US' },
+  projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
+  webServer: {
+    command: 'pnpm start', // = next start, after pnpm build
+    url: baseURL,
+    env: {
+      PORT: String(PORT),
+      // Turns on MSW in the server (instrumentation.ts reads it), for the E2E only: http://example.com/x, {braces}.
+      E2E_API_MOCKING: '1',
+      /* no telemetry */ NEXT_TELEMETRY_DISABLED: '1',
+    },
+  },
+});
+`;
+
+test('templateE2eEnv: a mock switch of the webServer env goes to e2e_env; the port and telemetry stay out; the rest is yours to decide', () => {
+  assert.deepEqual(templateE2eEnv(NEXT_PLAYWRIGHT), { env: { E2E_API_MOCKING: '1' }, unsure: [] });
+  const more = NEXT_PLAYWRIGHT.replace("E2E_API_MOCKING: '1',", "E2E_API_MOCKING: '1',\n      'API_URL': \"http://localhost:3001\",\n      E2E_HTTP_PASSWORD: 'p4ss',\n      FEATURE: process.env.FEATURE ?? 'off',\n      USE_MOCKS: `yes`,");
+  assert.deepEqual(templateE2eEnv(more), {
+    env: { E2E_API_MOCKING: '1', USE_MOCKS: 'yes' },
+    unsure: [{ name: 'API_URL', shown: '"http://localhost:3001"' }, { name: 'E2E_HTTP_PASSWORD', shown: null }, { name: 'FEATURE', shown: "process.env.FEATURE ?? 'off'" }],
+  });
+  // A list of servers, each with its env.
+  assert.deepEqual(templateE2eEnv("export default { webServer: [{ command: 'a', env: { A_MOCK: '1' } }, { command: 'b', env: { E2E_B: 'x' } }] };").env, { A_MOCK: '1', E2E_B: 'x' });
+  // No webServer, or no env in it: nothing.
+  assert.deepEqual(templateE2eEnv("export default { use: { env: { E2E_X: '1' } } };"), { env: {}, unsure: [] });
+  assert.deepEqual(templateE2eEnv("export default { webServer: { command: 'pnpm dev' } };"), { env: {}, unsure: [] });
+});
+
+test('copyTemplate gives back the env of the E2E servers of the playwright.config it leaves out', (t) => {
+  const from = template(t, { ...NEXT_TEMPLATE, 'playwright.config.ts': NEXT_PLAYWRIGHT });
+  const result = copyTemplate({ from, projectDir: project(t), app: 'user', git });
+  assert.equal(result.ok, true, result.notes.join('\n'));
+  assert.deepEqual(result.e2e, { file: 'playwright.config.ts', env: { E2E_API_MOCKING: '1' }, unsure: [] });
+  const none = copyTemplate({ from: template(t, { 'package.json': '{"name":"x"}', 'src/a.ts': 'x\n' }), projectDir: project(t), app: 'admin', git });
+  assert.deepEqual(none.e2e, { file: null, env: {}, unsure: [] });
 });

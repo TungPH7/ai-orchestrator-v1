@@ -18,7 +18,11 @@ import { parse } from 'yaml';
 // Playwright writes the context options into a trace, httpCredentials with the password in clear, so the trace of an
 // environment test holds the basic auth of Development or Staging. The kit keeps those traces off Jira; do not upload
 // test-results/ anywhere either.
-type App = { path: string; dev: string; port: { env: string; default: number }; health: string; public?: boolean; env?: Record<string, string> };
+//
+// The servers started here get the env of their app in project.yaml, then its e2e_env, such as E2E_API_MOCKING=1 for
+// the mock backend of a Next.js app (private-car-v1-1, PCV11-3). Nothing else reads e2e_env: /ao-preview, the apps an
+// agent starts itself in a lane and the deployer take env only, so an app you or an agent opens never loads the mocks.
+type App = { path: string; dev: string; port: { env: string; default: number }; health: string; public?: boolean; env?: Record<string, string>; e2e_env?: Record<string, string> };
 
 const config = parse(readFileSync('.ai-orchestrator/project.yaml', 'utf8')) as { apps?: Record<string, App> };
 const apps = Object.entries(config.apps ?? {});
@@ -74,6 +78,6 @@ export default defineConfig({
     url: `${localUrl(app)}${app.health}`,
     reuseExistingServer: !process.env.CI && process.env.AO_PORT_OFFSET === undefined,
     timeout: 120_000,
-    env: { ...Object.fromEntries(Object.entries(app.env ?? {}).map(([name, value]) => [name, shift(value)])), [app.port.env]: String(portOf(app)) },
+    env: { ...Object.fromEntries(Object.entries({ ...app.env, ...app.e2e_env }).map(([name, value]) => [name, shift(value)])), [app.port.env]: String(portOf(app)) },
   })),
 });

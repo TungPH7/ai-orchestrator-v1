@@ -216,7 +216,13 @@
             "production": { "$ref": "#/$defs/host" }
           }
         },
-        "env": { "type": "object", "additionalProperties": { "type": "string" } }
+        "env": { "type": "object", "additionalProperties": { "type": "string" } },
+        "e2e_env": {
+          "description": "Variables only the servers Playwright starts for the E2E tests get, after env: such as E2E_API_MOCKING=1, which turns on the mock backend of a Next.js app (private-car-v1-1 PCV11-3). /ao-preview, the apps an agent starts itself in a lane and the deployer take env only, so an app you or an agent opens never loads the mocks. ao-kit add writes it from the playwright.config of the template, which it leaves out.",
+          "type": "object",
+          "propertyNames": { "pattern": "^[A-Z_][A-Z0-9_]*$" },
+          "additionalProperties": { "type": "string" }
+        }
       }
     }
   }

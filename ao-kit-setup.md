@@ -45,9 +45,23 @@ Ask in four groups, each question with the value you propose. The human only cha
 
 1. **Stack.** The kit's skeleton `next-nest` (Next.js in `apps/web`, NestJS in `apps/api`; part 3), or apps from their
    templates (part 5). For templates, one line per app: name (lower case, digits, hyphens, at most 20 characters), stack
-   (`nextjs`, `react` or `spring-boot`), template folder, branch (propose its current one:
-   `git -C <folder> rev-parse --abbrev-ref HEAD`), public or not, and for a public app whether search engines index it
-   (`--seo` or `--no-seo`). For each template, check and say:
+   (`nextjs`, `react` or `spring-boot`), template folder, branch, public or not, and for a public app whether search
+   engines index it (`--seo` or `--no-seo`). The branch to propose:
+   - `ao-kit` when the template has one (`git -C <folder> branch -a --list ao-kit origin/ao-kit`): a branch of the
+     template whose code already fits the kit, so the Task of step 10 has little or nothing to change
+     (private-car-v1-1: 3, 4 and 5 code changes went down to 1, 0 and 1). `--ref` reads the branches of the folder, so
+     with only `origin/ao-kit` there, propose `git -C <folder> branch ao-kit origin/ao-kit` first. Say what each
+     project still does by hand:
+     the production host of a web app in its code, such as `PRODUCTION_ORIGIN` in `apps/web/src/config/env/client.ts`
+     of the user's Next.js template, which says `https://example.com`; and the lines of `add-report.md` under "By hand",
+     such as `env:` and `database:` of a Spring Boot api in `deploy.yaml` and its `coverage_exclude` in `project.yaml`.
+     When the branch the `ao-kit` branch came from moved on (such as `write-cv` or `codebase`), say that `ao-kit` must
+     be rebased or merged on it first, or the project misses that work;
+   - else the branch the template is on (`git -C <folder> rev-parse --abbrev-ref HEAD`), with its other branches
+     listed, so the human can pick: du-an-1 took `base-3/implement-features-to-learn-postgresql` of the Java template,
+     a branch for learning Postgres, because its folder was on it, where `codebase` was meant (Phiên 39).
+
+   For each template, check and say:
    - it is a git repo; changes not committed (`git -C <folder> status --porcelain`) will not be copied;
    - files git tracks that look like secrets (`git -C <folder> ls-files` for `.env`, `*.pem`, `*.key`, `backups/`): propose
      `--exclude` for them;
